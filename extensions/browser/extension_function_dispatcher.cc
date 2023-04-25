@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/result_codes.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/api_activity_monitor.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/content_script_tracker.h"
@@ -41,6 +42,7 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/context_type_adapter.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
@@ -489,11 +491,41 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
     extension = registry->enabled_extensions().GetHostedAppByURL(*rfh_url);
   }
 
+  Feature::Context context_type =
+      MojomContextToFeatureContext(params.context_type);
+  if (!process_map->CanProcessHostContextType(extension, render_process_id,
+                                              context_type)) {
+    // TODO(https://crbug.com/1186557): Ideally, we'd be able to mark some
+    // of these as bad messages. We can't do that in all cases because there
+    // are times some of these might legitimately fail (for instance, during
+    // extension unload), but there are others that should never, ever happen
+    // (privileged extension contexts in web processes).
+    static constexpr char kInvalidContextType[] =
+        "Invalid context type provided.";
+    ResponseCallbackOnError(std::move(callback), ExtensionFunction::FAILED,
+                            kInvalidContextType);
+    return;
+  }
+
+  if (context_type == Feature::WEBUI_UNTRUSTED_CONTEXT) {
+    // TODO(https://crbug.com/1435575): We should, at minimum, be using an
+    // origin here. It'd be even better if we could have a more robust way of
+    // checking that a process can host untrusted webui.
+    if (extension || !rfh_url ||
+        !rfh_url->SchemeIs(content::kChromeUIUntrustedScheme)) {
+      constexpr char kInvalidWebUiUntrustedContext[] =
+          "Context indicated it was untrusted webui, but is invalid.";
+      ResponseCallbackOnError(std::move(callback), ExtensionFunction::FAILED,
+                              kInvalidWebUiUntrustedContext);
+      return;
+    }
+  }
+
   const bool is_worker_request = IsRequestFromServiceWorker(params);
 
   scoped_refptr<ExtensionFunction> function = CreateExtensionFunction(
       params, extension, render_process_id, is_worker_request, rfh_url,
-      *process_map, ExtensionAPI::GetSharedInstance(), std::move(callback),
+      context_type, ExtensionAPI::GetSharedInstance(), std::move(callback),
       render_frame_host);
   if (!function.get())
     return;
@@ -660,7 +692,7 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
     int requesting_process_id,
     bool is_worker_request,
     const GURL* rfh_url,
-    const ProcessMap& process_map,
+    Feature::Context context_type,
     ExtensionAPI* api,
     ExtensionFunction::ResponseCallback callback,
     content::RenderFrameHost* render_frame_host) {
@@ -676,9 +708,6 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   }
 
   function->SetArgs(params.arguments.Clone());
-
-  const Feature::Context context_type = process_map.GetMostLikelyContextType(
-      extension, requesting_process_id, rfh_url);
 
   // Determine the source URL. When possible, prefer fetching this value from
   // the RenderFrameHost, but fallback to the value in the `params` object if

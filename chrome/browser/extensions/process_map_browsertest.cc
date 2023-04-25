@@ -16,6 +16,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/constants.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -118,6 +121,89 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
     return extension;
   }
 
+  const Extension* AddExtensionWithWebViewAndOpen() {
+    static constexpr char kManifest[] =
+        R"({
+             "name": "Web View",
+             "manifest_version": 2,
+             "version": "0.1",
+             "app": {
+               "background": { "scripts": ["background.js"] }
+             },
+             "webview": {
+               "partitions": [{
+                 "name": "foo",
+                 "accessible_resources": ["accessible.html"]
+               }]
+             },
+             "permissions": ["webview"]
+           })";
+    static constexpr char kBackgroundJs[] =
+        R"(chrome.app.runtime.onLaunched.addListener(() => {
+             chrome.app.window.create('embedder.html', {}, function () {});
+           });)";
+    static constexpr char kEmbedderHtml[] =
+        R"(<html>
+           <body>
+             <webview partition="foo"></webview>
+             <script src="embedder.js"></script>
+           </body>
+           </html>)";
+    static constexpr char kEmbedderJs[] =
+        R"(onload = () => {
+             let webview = document.querySelector('webview');
+             webview.addEventListener('loadstop', () => {
+               chrome.test.sendMessage('webview loaded');
+             });
+             webview.addEventListener('loadabort', (e) => {
+               console.error('Webview aborted load: ' + e.toString());
+             });
+             webview.src = 'accessible.html';
+           };)";
+    auto extension_dir = std::make_unique<TestExtensionDir>();
+    extension_dir->WriteManifest(kManifest);
+    extension_dir->WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+    extension_dir->WriteFile(FILE_PATH_LITERAL("embedder.html"), kEmbedderHtml);
+    extension_dir->WriteFile(FILE_PATH_LITERAL("embedder.js"), kEmbedderJs);
+    extension_dir->WriteFile(FILE_PATH_LITERAL("accessible.html"), "hello");
+
+    ExtensionTestMessageListener webview_listener("webview loaded");
+    const Extension* extension = LoadAndLaunchApp(extension_dir->UnpackedPath(),
+                                                  /*uses_guest_view=*/true);
+    extension_dirs_.push_back(std::move(extension_dir));
+    EXPECT_TRUE(webview_listener.WaitUntilSatisfied());
+
+    return extension;
+  }
+
+  content::WebContents* GetAppWindowContents() {
+    AppWindowRegistry* registry = AppWindowRegistry::Get(profile());
+    if (registry->app_windows().size() != 1) {
+      ADD_FAILURE() << "Incorrect number of app windows: "
+                    << registry->app_windows().size();
+      return nullptr;
+    }
+
+    return (*registry->app_windows().begin())->web_contents();
+  }
+
+  content::WebContents* GetWebViewFromEmbedder(content::WebContents* embedder) {
+    std::vector<content::WebContents*> inner_web_contents =
+        embedder->GetInnerWebContents();
+    if (inner_web_contents.size() != 1) {
+      ADD_FAILURE() << "Unexpected number of inner web contents: "
+                    << inner_web_contents.size();
+      return nullptr;
+    }
+
+    content::WebContents* inner_contents = inner_web_contents[0];
+    if (!WebViewGuest::FromWebContents(inner_contents)) {
+      return nullptr;
+    }
+
+    return inner_contents;
+  }
+
   // Opens a new tab to the given `domain`.
   void OpenDomain(base::StringPiece domain) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -168,6 +254,43 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
     return is_sandboxed;
   }
 
+  // Iterates over every context type and checks if it could be hosted given the
+  // pairing of `extension` and `process_id`, expecting it to be allowed if and
+  // only if the context type is in `allowed_contexts`. `debug_string` is used
+  // in a scoped trace to make test failures more meaningful.
+  void RunCanProcessHostContextTypeChecks(
+      const Extension* extension,
+      int process_id,
+      const std::vector<Feature::Context>& allowed_contexts,
+      base::StringPiece debug_string) {
+    std::vector<Feature::Context> all_types = {
+        Feature::UNSPECIFIED_CONTEXT,
+        Feature::BLESSED_EXTENSION_CONTEXT,
+        Feature::UNBLESSED_EXTENSION_CONTEXT,
+        Feature::CONTENT_SCRIPT_CONTEXT,
+        Feature::WEB_PAGE_CONTEXT,
+        Feature::BLESSED_WEB_PAGE_CONTEXT,
+        Feature::WEBUI_CONTEXT,
+        Feature::WEBUI_UNTRUSTED_CONTEXT,
+        Feature::LOCK_SCREEN_EXTENSION_CONTEXT,
+        Feature::OFFSCREEN_EXTENSION_CONTEXT,
+        Feature::USER_SCRIPT_CONTEXT,
+    };
+
+    for (auto context_type : all_types) {
+      SCOPED_TRACE(testing::Message()
+                   << "Testing Context Type: " << context_type
+                   << ", Extension: "
+                   << (extension ? extension->name() : "<no extension>")
+                   << ", Debug String: " << debug_string);
+      bool expected_to_be_allowed =
+          base::Contains(allowed_contexts, context_type);
+      EXPECT_EQ(expected_to_be_allowed,
+                process_map()->CanProcessHostContextType(extension, process_id,
+                                                         context_type));
+    }
+  }
+
   ProcessMap* process_map() { return ProcessMap::Get(profile()); }
 
  private:
@@ -192,6 +315,28 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
       *extension, GetActiveMainFrameProcessID()));
 }
 
+// Tests the type of contexts that can be hosted in web page processes.
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebPages) {
+  // For fun, make sure an extension with access to the given web page is
+  // loaded (just to validate we're not doing anything related to
+  // extension permissions in our calculations).
+  const Extension* extension =
+      AddExtensionWithHostPermission("test", "*://example.com/*");
+  ASSERT_TRUE(extension);
+
+  OpenDomain("example.com");
+  int web_page_process_id = GetActiveMainFrameProcessID();
+
+  RunCanProcessHostContextTypeChecks(
+      extension, web_page_process_id,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT},
+      "web page with extension passed");
+  RunCanProcessHostContextTypeChecks(
+      nullptr, web_page_process_id,
+      {Feature::WEB_PAGE_CONTEXT, Feature::WEBUI_UNTRUSTED_CONTEXT},
+      "web page without extension passed");
+}
+
 // Tests that web ui pages are not considered privileged extension processes.
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
                        IsPrivilegedExtensionProcess_WebUiPages) {
@@ -203,6 +348,24 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 
   EXPECT_FALSE(process_map()->IsPrivilegedExtensionProcess(
       *extension, GetActiveMainFrameProcessID()));
+}
+
+// Tests the type of processes that can be hosted in web ui processes.
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebUiPages) {
+  const Extension* extension =
+      AddExtensionWithHostPermission("test", "*://example.com/*");
+  ASSERT_TRUE(extension);
+
+  OpenWebUi();
+  int webui_process_id = GetActiveMainFrameProcessID();
+
+  RunCanProcessHostContextTypeChecks(
+      extension, webui_process_id,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT},
+      "webui page with extension passed");
+  RunCanProcessHostContextTypeChecks(nullptr, webui_process_id,
+                                     {Feature::WEBUI_CONTEXT},
+                                     "webui page without extension passed");
 }
 
 // Tests that normal extension pages are considered privileged extension
@@ -234,6 +397,60 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
       *extension2, GetActiveMainFrameProcessID()));
 }
 
+// Tests the type of contexts that can be hosted in regular extension processes.
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
+                       CanHostContextType_ExtensionPages) {
+  // Load up two extensions, each with the same permissions.
+  const Extension* extension1 =
+      AddExtensionWithHostPermission("test1", "*://example.com/*");
+  const Extension* extension2 =
+      AddExtensionWithHostPermission("test2", "*://example.com/*");
+  ASSERT_TRUE(extension1);
+  ASSERT_TRUE(extension2);
+
+  // Navigate to a page within the first extension. It should be a privileged
+  // page for that extension, but not the other.
+  OpenExtensionPage(*extension1);
+
+  int extension1_process_id =
+      GetActiveTab()->GetPrimaryMainFrame()->GetProcess()->GetID();
+
+  RunCanProcessHostContextTypeChecks(
+      extension1, extension1_process_id,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT,
+       Feature::BLESSED_EXTENSION_CONTEXT,
+       Feature::OFFSCREEN_EXTENSION_CONTEXT},
+      "extension1 page with extension1 passed");
+  RunCanProcessHostContextTypeChecks(
+      extension2, extension1_process_id,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT},
+      "extension1 page with extension2 passed");
+  RunCanProcessHostContextTypeChecks(
+      nullptr, extension1_process_id, {},
+      "extension1 page without extension passed");
+
+  // Inversion: Navigate to the page of the second extension. It should be a
+  // privileged page in the second, but not the first.
+  OpenExtensionPage(*extension2);
+
+  int extension2_process_id =
+      GetActiveTab()->GetPrimaryMainFrame()->GetProcess()->GetID();
+
+  RunCanProcessHostContextTypeChecks(
+      extension2, extension2_process_id,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT,
+       Feature::BLESSED_EXTENSION_CONTEXT,
+       Feature::OFFSCREEN_EXTENSION_CONTEXT},
+      "extension2 page with extension2 passed");
+  RunCanProcessHostContextTypeChecks(
+      extension1, extension2_process_id,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT},
+      "extension2 page with extension1 passed");
+  RunCanProcessHostContextTypeChecks(
+      nullptr, extension2_process_id, {},
+      "extension2 page without extension passed");
+}
+
 // Tests that a web page with injected content scripts is not considered a
 // privileged extension process.
 IN_PROC_BROWSER_TEST_F(
@@ -248,6 +465,28 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_FALSE(process_map()->IsPrivilegedExtensionProcess(
       *extension, GetActiveMainFrameProcessID()));
+}
+
+// Tests the type of contexts that can be hosted in a web page process that has
+// had a content script injected in it.
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
+                       CanHostContextType_WebPagesWithContentScripts) {
+  const Extension* extension =
+      AddExtensionWithContentScript("test", "*://example.com/*");
+  ASSERT_TRUE(extension);
+
+  // Navigate to a web page and wait for the content script to inject.
+  OpenDomainAndWaitForContentScript("example.com");
+  int page_process_id = GetActiveMainFrameProcessID();
+
+  RunCanProcessHostContextTypeChecks(
+      extension, page_process_id,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT},
+      "web page with extension passed");
+  RunCanProcessHostContextTypeChecks(
+      nullptr, page_process_id,
+      {Feature::WEB_PAGE_CONTEXT, Feature::WEBUI_UNTRUSTED_CONTEXT},
+      "web page without extension passed");
 }
 
 // Tests that sandboxed extension frames are considered privileged
@@ -271,12 +510,112 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   EXPECT_FALSE(ExtensionFrameIsSandboxed(main_frame));
   EXPECT_TRUE(ExtensionFrameIsSandboxed(sandboxed_frame));
 
-  EXPECT_EQ(main_frame->GetProcess()->GetID(),
-            sandboxed_frame->GetProcess()->GetID());
+  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int sandboxed_frame_process_id = sandboxed_frame->GetProcess()->GetID();
+
+  EXPECT_EQ(main_frame_process_id, sandboxed_frame_process_id);
   EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
-      *extension, main_frame->GetProcess()->GetID()));
+      *extension, main_frame_process_id));
   EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
-      *extension, sandboxed_frame->GetProcess()->GetID()));
+      *extension, sandboxed_frame_process_id));
+}
+
+// Tests the type of contexts that can be hosted in extension processes with
+// a sandboxed process frame.
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
+                       CanHostContextType_SandboxedExtensionFrame) {
+  const Extension* extension = AddExtensionWithSandboxedFrame();
+  ASSERT_TRUE(extension);
+
+  OpenExtensionPageWithSandboxedFrame(*extension);
+
+  content::WebContents* web_contents = GetActiveTab();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* sandboxed_frame =
+      content::ChildFrameAt(main_frame, 0);
+
+  EXPECT_FALSE(ExtensionFrameIsSandboxed(main_frame));
+  EXPECT_TRUE(ExtensionFrameIsSandboxed(sandboxed_frame));
+
+  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int sandboxed_frame_process_id = sandboxed_frame->GetProcess()->GetID();
+
+  EXPECT_EQ(main_frame_process_id, sandboxed_frame_process_id);
+
+  RunCanProcessHostContextTypeChecks(
+      extension, main_frame_process_id,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT,
+       Feature::BLESSED_EXTENSION_CONTEXT,
+       Feature::OFFSCREEN_EXTENSION_CONTEXT},
+      "main frame process with extension passed");
+  RunCanProcessHostContextTypeChecks(
+      nullptr, main_frame_process_id, {},
+      "main frame process without extension passed");
+
+  RunCanProcessHostContextTypeChecks(
+      extension, sandboxed_frame_process_id,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT,
+       Feature::BLESSED_EXTENSION_CONTEXT,
+       Feature::OFFSCREEN_EXTENSION_CONTEXT},
+      "sandboxed frame process with extension passed");
+  RunCanProcessHostContextTypeChecks(
+      nullptr, sandboxed_frame_process_id, {},
+      "sandboxed frame process without extension passed");
+}
+
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
+                       IsPrivilegedExtensionProcess_WebViews) {
+  const Extension* extension = AddExtensionWithWebViewAndOpen();
+  ASSERT_TRUE(extension);
+
+  content::WebContents* embedder = GetAppWindowContents();
+  ASSERT_TRUE(embedder);
+
+  content::WebContents* webview = GetWebViewFromEmbedder(embedder);
+  ASSERT_TRUE(webview);
+
+  // The embedder (the app window) should be a privileged extension process,
+  // but the webview should not.
+  EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
+      *extension, embedder->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_FALSE(process_map()->IsPrivilegedExtensionProcess(
+      *extension, webview->GetPrimaryMainFrame()->GetProcess()->GetID()));
+}
+
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebViews) {
+  const Extension* extension = AddExtensionWithWebViewAndOpen();
+  ASSERT_TRUE(extension);
+
+  content::WebContents* embedder = GetAppWindowContents();
+  ASSERT_TRUE(embedder);
+
+  content::WebContents* webview = GetWebViewFromEmbedder(embedder);
+  ASSERT_TRUE(webview);
+
+  // The embedder (the app window) can host any kind of extension context
+  // except an unblessed extension context (which is only available to
+  // webviews).
+  RunCanProcessHostContextTypeChecks(
+      extension, embedder->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT,
+       Feature::BLESSED_EXTENSION_CONTEXT,
+       Feature::OFFSCREEN_EXTENSION_CONTEXT},
+      "embedder process");
+
+  // The webview can only host content scripts, user scripts, and
+  // unblessed extension contexts (accessible resources).
+  RunCanProcessHostContextTypeChecks(
+      extension, webview->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT,
+       Feature::UNBLESSED_EXTENSION_CONTEXT},
+      "webview process with extension passed");
+
+  // If the extension isn't associated with the call, the webview could only
+  // possibly contain web pages and untrusted web ui.
+  RunCanProcessHostContextTypeChecks(
+      nullptr, webview->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      {Feature::WEB_PAGE_CONTEXT, Feature::WEBUI_UNTRUSTED_CONTEXT},
+      "webview process without extension passed");
 }
 
 }  // namespace extensions
