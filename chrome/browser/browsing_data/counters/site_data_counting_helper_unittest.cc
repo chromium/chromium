@@ -36,6 +36,7 @@ class SiteDataCountingHelperTest : public testing::Test {
   }
 
   void TearDown() override {
+    base::RunLoop().RunUntilIdle();
     profile_.reset();
     base::RunLoop().RunUntilIdle();
   }
