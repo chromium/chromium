@@ -111,7 +111,6 @@ build_webui("build") {
     "controls/controlled_button.ts",
     "controls/controlled_radio_button.ts",
     "controls/settings_checkbox.ts",
-    "controls/settings_dropdown_menu.ts",
     "controls/settings_radio_group.ts",
     "controls/settings_slider.ts",
     "controls/settings_toggle_button.ts",

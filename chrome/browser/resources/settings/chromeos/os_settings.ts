@@ -97,6 +97,7 @@ export {getContactManager, observeContactManager, setContactManagerForTesting} f
 export * as nearbyShareMojom from '/shared/nearby_share.mojom-webui.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '/shared/nearby_share_settings.js';
 export {NearbySettings, NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
+export {SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
 export {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 export {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
@@ -106,7 +107,6 @@ export {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/p
 export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 export {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-export {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 export {SettingsSliderElement} from '../controls/settings_slider.js';
 export {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';

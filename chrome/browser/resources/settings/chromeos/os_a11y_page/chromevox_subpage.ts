@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../../settings_shared.css.js';
 import './bluetooth_braille_display_ui.js';
 
+import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -20,7 +21,6 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../../controls/settings_dropdown_menu.js';
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_settings_routes.js';

@@ -256,7 +256,6 @@ web_component_files = [
   "controls/controlled_button.ts",
   "controls/controlled_radio_button.ts",
   "controls/password_prompt_dialog.ts",
-  "controls/settings_dropdown_menu.ts",
   "controls/settings_radio_group.ts",
   "controls/settings_slider.ts",
   "controls/settings_toggle_button.ts",

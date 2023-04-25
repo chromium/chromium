@@ -10,7 +10,10 @@ build_webui("build") {
   grd_prefix = "settings_shared"
   grd_resource_path_prefix = "shared/settings"
 
-  web_component_files = [ "controls/extension_controlled_indicator.ts" ]
+  web_component_files = [
+    "controls/extension_controlled_indicator.ts",
+    "controls/settings_dropdown_menu.ts",
+  ]
 
   non_web_component_files = [
     "extension_control_browser_proxy.ts",

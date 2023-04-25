@@ -20,6 +20,7 @@ import '../icons.html.js';
 import '../settings_shared.css.js';
 
 import {PrefControlMixinInterface} from '/shared/settings/controls/pref_control_mixin.js';
+import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -32,7 +33,6 @@ import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
