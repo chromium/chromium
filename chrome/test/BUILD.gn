@@ -8484,7 +8484,9 @@ test("unit_tests") {
 
   if (is_android || is_chromeos_ash || is_win) {
     sources += [ "../browser/media/protected_media_identifier_permission_context_unittest.cc" ]
-  } else {
+  }
+
+  if (!is_android && !is_chromeos_ash) {
     sources += [
       "../browser/lifetime/switch_utils_unittest.cc",
       "../browser/profiles/profile_list_desktop_unittest.cc",
@@ -8493,8 +8495,7 @@ test("unit_tests") {
     ]
   }
 
-  # TODO(crbug.com/1272111): reenable these on Windows
-  if (!is_android && !is_win) {
+  if (!is_android) {
     sources += [
       "../browser/ui/startup/startup_browser_creator_impl_unittest.cc",
       "../browser/ui/startup/startup_browser_creator_unittest.cc",
