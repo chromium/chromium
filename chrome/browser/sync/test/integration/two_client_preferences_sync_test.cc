@@ -5,9 +5,9 @@
 #include <map>
 #include <string>
 
-#include "base/guid.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/uuid.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -48,7 +48,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
   const std::string new_home_page = base::StringPrintf(
-      "https://example.com/%s", base::GenerateGUID().c_str());
+      "https://example.com/%s",
+      base::Uuid::GenerateRandomV4().AsLowercaseString().c_str());
 
   base::HistogramTester histogram_tester;
   ChangeStringPref(0, prefs::kHomePage, new_home_page);

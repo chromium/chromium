@@ -13,11 +13,11 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
@@ -267,8 +267,8 @@ bool HasNodeWithURL(int profile, const GURL& url);
                                                     const std::string& title);
 
 // Returns whether there exists a BookmarkNode in the bookmark model of
-// profile |profile| whose GUID matches |guid|.
-bool ContainsBookmarkNodeWithGUID(int profile, const base::GUID& guid);
+// profile |profile| whose UUID matches `uuid`.
+bool ContainsBookmarkNodeWithUuid(int profile, const base::Uuid& uuid);
 
 // Creates a favicon of |color| with image reps of the platform's supported
 // scale factors (eg MacOS) in addition to 1x.
@@ -524,20 +524,20 @@ class BookmarksUrlChecker : public SingleBookmarkModelStatusChangeChecker {
   const int expected_count_;
 };
 
-// Checker used to block until there exists a bookmark with the given GUID.
-class BookmarksGUIDChecker : public SingleBookmarksModelMatcherChecker {
+// Checker used to block until there exists a bookmark with the given UUID.
+class BookmarksUuidChecker : public SingleBookmarksModelMatcherChecker {
  public:
-  BookmarksGUIDChecker(int profile, const base::GUID& guid);
-  ~BookmarksGUIDChecker() override;
+  BookmarksUuidChecker(int profile, const base::Uuid& uuid);
+  ~BookmarksUuidChecker() override;
 };
 
 // Waits until the fake server has the similar structure of bookmarks like the
-// bookmark model. The checker verifies that all nodes have the same GUID,
+// bookmark model. The checker verifies that all nodes have the same UUID,
 // title, URL, parent and order. It doesn't check favicons and any other fields.
 // Note that this class is not enough to verify test's result as it only waits
 // for the state when the bookmark model has the same structure on the server.
 // It doesn't check their content and the expected number of bookmarks. The fake
-// server must have entities with unique GUIDs.
+// server must have entities with unique UUIDs.
 class BookmarkModelMatchesFakeServerChecker
     : public SingleClientStatusChangeChecker {
  public:
@@ -551,11 +551,11 @@ class BookmarkModelMatchesFakeServerChecker
   std::map<std::string, sync_pb::SyncEntity>
   GetServerPermanentBookmarksGroupedBySyncId() const;
 
-  // Fills in |server_bookmarks_by_guid| with all non-permanent entities stored
-  // on the server. All entities must have unique GUID in specifics. Returns
+  // Fills in |server_bookmarks_by_uuid| with all non-permanent entities stored
+  // on the server. All entities must have unique UUID in specifics. Returns
   // false if there are duplicate entities on the server.
-  bool GetServerBookmarksByUniqueGUID(std::map<base::GUID, sync_pb::SyncEntity>*
-                                          server_bookmarks_by_guid) const;
+  bool GetServerBookmarksByUniqueUuid(std::map<base::Uuid, sync_pb::SyncEntity>*
+                                          server_bookmarks_by_uuid) const;
 
   // Check that a permanent parent node of given |node| is the same as for the
   // matching |server_entity|.
@@ -567,13 +567,13 @@ class BookmarkModelMatchesFakeServerChecker
   // matching server entity.
   bool CheckParentNode(
       const bookmarks::BookmarkNode* node,
-      const std::map<base::GUID, sync_pb::SyncEntity>& server_bookmarks_by_guid,
+      const std::map<base::Uuid, sync_pb::SyncEntity>& server_bookmarks_by_uuid,
       std::ostream* os) const;
 
-  // Return ordered GUIDs of server entities grouped by their parents.
-  std::map<std::string, std::vector<base::GUID>>
-  GetServerGuidsGroupedByParentSyncId(
-      const std::map<base::GUID, sync_pb::SyncEntity>& server_bookmarks_by_guid)
+  // Return ordered UUIDs of server entities grouped by their parents.
+  std::map<std::string, std::vector<base::Uuid>>
+  GetServerUuidsGroupedByParentSyncId(
+      const std::map<base::Uuid, sync_pb::SyncEntity>& server_bookmarks_by_uuid)
       const;
 
   const raw_ptr<fake_server::FakeServer> fake_server_;

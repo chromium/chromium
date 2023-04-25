@@ -4,11 +4,11 @@
 
 #include <string>
 
-#include "base/guid.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/sessions/session_service.h"
@@ -75,8 +75,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
 
   // Open tab and access a url on client 0
   ScopedWindowMap client0_windows;
-  std::string url =
-      base::StringPrintf(kURLTemplate, base::GenerateGUID().c_str());
+  std::string url = base::StringPrintf(
+      kURLTemplate, base::Uuid::GenerateRandomV4().AsLowercaseString().c_str());
 
   ASSERT_TRUE(OpenTab(0, GURL(url)));
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
@@ -109,8 +109,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, E2E_ENABLED(AllChanged)) {
   // Open tabs on all clients and retain window information.
   for (int i = 0; i < num_clients(); ++i) {
     ScopedWindowMap windows;
-    std::string url =
-        base::StringPrintf(kURLTemplate, base::GenerateGUID().c_str());
+    std::string url = base::StringPrintf(
+        kURLTemplate,
+        base::Uuid::GenerateRandomV4().AsLowercaseString().c_str());
     ASSERT_TRUE(OpenTab(i, GURL(url)));
   }
 

@@ -56,18 +56,18 @@ syncer::ModelTypeSet DefaultInterestedDataTypes() {
   return Difference(syncer::ProtocolTypes(), syncer::CommitOnlyTypes());
 }
 
-// Injects a new bookmark into the |fake_server| and returns a GUID of a created
+// Injects a new bookmark into the |fake_server| and returns a UUID of a created
 // entity. Note that this trigges an invalidations from the server.
-base::GUID InjectSyncedBookmark(fake_server::FakeServer* fake_server) {
+base::Uuid InjectSyncedBookmark(fake_server::FakeServer* fake_server) {
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(kSyncedBookmarkTitle);
   std::unique_ptr<syncer::LoopbackServerEntity> bookmark_entity =
       bookmark_builder.BuildBookmark(GURL(kSyncedBookmarkURL));
-  base::GUID bookmark_guid = base::GUID::ParseLowercase(
+  base::Uuid bookmark_uuid = base::Uuid::ParseLowercase(
       bookmark_entity->GetSpecifics().bookmark().guid());
   fake_server->InjectEntity(std::move(bookmark_entity));
-  return bookmark_guid;
+  return bookmark_uuid;
 }
 
 MATCHER_P(HasBeenUpdatedAfter, last_updated_timestamp, "") {
@@ -381,9 +381,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   ASSERT_TRUE(SetupSync());
 
   // Simulate a server-side change which generates an invalidation.
-  base::GUID bookmark_guid = InjectSyncedBookmark(GetFakeServer());
+  base::Uuid bookmark_uuid = InjectSyncedBookmark(GetFakeServer());
   ASSERT_TRUE(
-      bookmarks_helper::BookmarksGUIDChecker(/*profile=*/0, bookmark_guid)
+      bookmarks_helper::BookmarksUuidChecker(/*profile=*/0, bookmark_uuid)
           .Wait());
 
   sync_pb::ClientToServerMessage message;
@@ -489,9 +489,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 
   // Trigger a new sync cycle by a server-side change to initiate GU_TRIGGER
   // GetUpdates.
-  base::GUID bookmark_guid = InjectSyncedBookmark(GetFakeServer());
+  base::Uuid bookmark_uuid = InjectSyncedBookmark(GetFakeServer());
   ASSERT_TRUE(
-      bookmarks_helper::BookmarksGUIDChecker(/*profile=*/0, bookmark_guid)
+      bookmarks_helper::BookmarksUuidChecker(/*profile=*/0, bookmark_uuid)
           .Wait());
 
   sync_pb::ClientToServerMessage message;
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   const std::vector<sync_pb::SyncEntity> server_device_infos_before =
       fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
 
-  // Check here for size only, cache GUID will be verified after SetupcClients()
+  // Check here for size only, cache UUID will be verified after SetupcClients()
   // call.
   ASSERT_THAT(server_device_infos_before, SizeIs(1));
   const int64_t last_updated_timestamp = server_device_infos_before.front()
@@ -581,14 +581,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
                        ShouldReceiveInvalidationSentBeforeSetupClients) {
-  const base::GUID bookmark_guid = InjectSyncedBookmark(GetFakeServer());
+  const base::Uuid bookmark_uuid = InjectSyncedBookmark(GetFakeServer());
 
   ASSERT_TRUE(SetupClients());
 
   // When configuration refresher is disabled, the following condition will be
   // possible only if invalidations are delivered.
   EXPECT_TRUE(
-      bookmarks_helper::BookmarksGUIDChecker(/*profile=*/0, bookmark_guid)
+      bookmarks_helper::BookmarksUuidChecker(/*profile=*/0, bookmark_uuid)
           .Wait());
 }
 
@@ -712,9 +712,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Trigger a new sync cycle by a server-side change to initiate GU_TRIGGER
   // GetUpdates.
-  base::GUID bookmark_guid = InjectSyncedBookmark(GetFakeServer());
+  base::Uuid bookmark_uuid = InjectSyncedBookmark(GetFakeServer());
   ASSERT_TRUE(
-      bookmarks_helper::BookmarksGUIDChecker(/*profile=*/0, bookmark_guid)
+      bookmarks_helper::BookmarksUuidChecker(/*profile=*/0, bookmark_uuid)
           .Wait());
 
   sync_pb::ClientToServerMessage message;

@@ -7,12 +7,12 @@
 #include <limits>
 #include <tuple>
 
-#include "base/guid.h"
 #include "base/hash/hash.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
@@ -266,10 +266,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(DeleteTwo)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
-  PasswordForm form0 =
-      CreateTestPasswordForm(base::FastHash(base::GenerateGUID()));
-  PasswordForm form1 =
-      CreateTestPasswordForm(base::FastHash(base::GenerateGUID()));
+  PasswordForm form0 = CreateTestPasswordForm(
+      base::FastHash(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+  PasswordForm form1 = CreateTestPasswordForm(
+      base::FastHash(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   GetProfilePasswordStoreInterface(0)->AddLogin(form0);
   GetProfilePasswordStoreInterface(0)->AddLogin(form1);
 
