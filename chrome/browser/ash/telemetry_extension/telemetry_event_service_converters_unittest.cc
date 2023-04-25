@@ -92,6 +92,9 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
 
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack),
             cros_healthd::mojom::EventCategoryEnum::kAudioJack);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kLid),
+            cros_healthd::mojom::EventCategoryEnum::kLid);
 }
 
 TEST(TelemetryEventServiceConvertersTest,
