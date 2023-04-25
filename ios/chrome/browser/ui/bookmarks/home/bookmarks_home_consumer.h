@@ -7,9 +7,12 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_consumer.h"
 
+@class BookmarksHomeMediator;
 @class NSIndexPath;
 @class ShowSigninCommand;
 @class SigninPromoViewConfigurator;
+@class UITableView;
+@class TableViewModel;
 
 typedef NS_ENUM(NSInteger, BookmarksHomeBackgroundStyle) {
   // The default background style.
@@ -24,6 +27,17 @@ typedef NS_ENUM(NSInteger, BookmarksHomeBackgroundStyle) {
 
 // BookmarksHomeConsumer provides methods that allow mediators to update the UI.
 @protocol BookmarksHomeConsumer <ChromeTableViewConsumer>
+
+// The model backing the table view.
+@property(nonatomic, readonly) TableViewModel* tableViewModel;
+
+// The UITableView to show bookmarks.
+@property(nonatomic, readonly) UITableView* tableView;
+
+// The cell for the newly created folder while its name is being edited. Set
+// to nil once the editing completes. Corresponds to `editingFolderNode`.
+@property(nonatomic, weak)
+    UITableViewCell<BookmarkTableCellTitleEditing>* editingFolderCell;
 
 // Refreshes the UI.
 - (void)refreshContents;
@@ -48,6 +62,9 @@ typedef NS_ENUM(NSInteger, BookmarksHomeBackgroundStyle) {
 - (void)configureSigninPromoWithConfigurator:
             (SigninPromoViewConfigurator*)configurator
                                  atIndexPath:(NSIndexPath*)indexPath;
+
+// Called when the set of edit nodes is cleared.
+- (void)mediatorDidClearEditNodes:(BookmarksHomeMediator*)mediator;
 
 @end
 

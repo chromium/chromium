@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -37,9 +38,9 @@
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
+#import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_editing.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmark_promo_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_consumer.h"
-#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_shared_state.h"
 #import "ios/chrome/browser/ui/bookmarks/synced_bookmarks_bridge.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -55,6 +56,20 @@ namespace {
 // Maximum number of entries to fetch when searching.
 const int kMaxBookmarksSearchResults = 50;
 }  // namespace
+
+bool IsABookmarkNodeSectionForIdentifier(
+    BookmarksHomeSectionIdentifier section_identifier) {
+  switch (section_identifier) {
+    case BookmarksHomeSectionIdentifierPromo:
+    case BookmarksHomeSectionIdentifierMessages:
+      return false;
+    case BookmarksHomeSectionIdentifierBookmarks:
+    case BookmarksHomeSectionIdentifierRootProfile:
+    case BookmarksHomeSectionIdentifierRootAccount:
+      return true;
+  }
+  NOTREACHED_NORETURN();
+}
 
 @interface BookmarksHomeMediator () <BookmarkModelBridgeObserver,
                                      BookmarkPromoControllerDelegate,
@@ -81,9 +96,6 @@ const int kMaxBookmarksSearchResults = 50;
   UIViewController* _baseViewController;
 }
 
-// Shared state between Bookmark home classes.
-@property(nonatomic, strong) BookmarksHomeSharedState* sharedState;
-
 // The controller managing the display of the promo cell and the promo view
 // controller.
 @property(nonatomic, strong) BookmarkPromoController* bookmarkPromoController;
@@ -93,14 +105,24 @@ const int kMaxBookmarksSearchResults = 50;
 
 @end
 
-@implementation BookmarksHomeMediator
+@implementation BookmarksHomeMediator {
+  bookmark_utils_ios::NodeSet _selectedNodesForEditMode;
+}
 
-- (instancetype)initWithSharedState:(BookmarksHomeSharedState*)sharedState
-                            browser:(Browser*)browser
-                 baseViewController:(UIViewController*)baseViewController {
+- (instancetype)initWithBrowser:(Browser*)browser
+             baseViewController:(UIViewController*)baseViewController
+           profileBookmarkModel:(bookmarks::BookmarkModel*)profileBookmarkModel
+           accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
+                  displayedNode:(const bookmarks::BookmarkNode*)displayedNode {
   if ((self = [super init])) {
     DCHECK(browser);
-    _sharedState = sharedState;
+    CHECK(!base::FeatureList::IsEnabled(
+              bookmarks::kEnableBookmarksAccountStorage) ||
+          accountBookmarkModel);
+    CHECK(displayedNode);
+    _profileBookmarkModel = profileBookmarkModel;
+    _accountBookmarkModel = accountBookmarkModel;
+    _displayedNode = displayedNode;
     _browser = browser->AsWeakPtr();
     _baseViewController = baseViewController;
   }
@@ -109,12 +131,11 @@ const int kMaxBookmarksSearchResults = 50;
 
 - (void)startMediating {
   DCHECK(self.consumer);
-  DCHECK(self.sharedState);
 
   // Set up observers.
   ChromeBrowserState* browserState = [self originalBrowserState];
-  _modelBridge = std::make_unique<BookmarkModelBridge>(
-      self, self.sharedState.profileBookmarkModel);
+  _modelBridge =
+      std::make_unique<BookmarkModelBridge>(self, self.profileBookmarkModel);
   _syncedBookmarksObserver =
       std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(
           self, browserState);
@@ -154,7 +175,6 @@ const int kMaxBookmarksSearchResults = 50;
   _syncedBookmarksObserver = nullptr;
   _browser = nullptr;
   self.consumer = nil;
-  self.sharedState = nil;
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
 }
@@ -166,14 +186,12 @@ const int kMaxBookmarksSearchResults = 50;
   [self resetSections];
 
   // Regenerate the list of all bookmarks.
-  if (!self.sharedState.profileBookmarkModel->loaded() ||
-      !self.sharedState.tableViewDisplayedRootNode) {
+  if (!self.profileBookmarkModel->loaded() || !self.displayedNode) {
     [self updateTableViewBackground];
     return;
   }
 
-  if (self.sharedState.tableViewDisplayedRootNode ==
-      self.sharedState.profileBookmarkModel->root_node()) {
+  if (self.displayedNode == self.profileBookmarkModel->root_node()) {
     [self generateTableViewDataForRootNode];
     [self updateTableViewBackground];
     return;
@@ -185,24 +203,22 @@ const int kMaxBookmarksSearchResults = 50;
 // Generate the table view data when the currently displayed node is a child
 // node.
 - (void)generateTableViewData {
-  if (!self.sharedState.tableViewDisplayedRootNode) {
+  if (!self.displayedNode) {
     return;
   }
   bookmarks::BookmarkModel* currentModel =
-      bookmark_utils_ios::GetBookmarkModelForNode(
-          self.sharedState.tableViewDisplayedRootNode,
-          self.sharedState.profileBookmarkModel,
-          self.sharedState.accountBookmarkModel);
+      bookmark_utils_ios::GetBookmarkModelForNode(self.displayedNode,
+                                                  self.profileBookmarkModel,
+                                                  self.accountBookmarkModel);
   BOOL shouldDisplayCloudSlashIcon =
       [self shouldDisplayCloudSlashIconWithBookmarkModel:currentModel];
   // Add all bookmarks and folders of the currently displayed node to the table.
-  for (const auto& child :
-       self.sharedState.tableViewDisplayedRootNode->children()) {
+  for (const auto& child : self.displayedNode->children()) {
     BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:child.get()];
     nodeItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
-    [self.sharedState.tableViewModel
+    [self.consumer.tableViewModel
                         addItem:nodeItem
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
   }
@@ -216,7 +232,7 @@ const int kMaxBookmarksSearchResults = 50;
     return;
   }
   [self
-      generateTableViewDataForModel:self.sharedState.profileBookmarkModel
+      generateTableViewDataForModel:self.profileBookmarkModel
                           inSection:BookmarksHomeSectionIdentifierRootProfile];
   if (!bookmark_utils_ios::IsAccountBookmarkModelAvailable(
           _authenticationService)) {
@@ -224,7 +240,7 @@ const int kMaxBookmarksSearchResults = 50;
   }
   [self updateHeaderForProfileRootNode];
   [self
-      generateTableViewDataForModel:self.sharedState.accountBookmarkModel
+      generateTableViewDataForModel:self.accountBookmarkModel
                           inSection:BookmarksHomeSectionIdentifierRootAccount];
   [self updateHeaderForAccountRootNode];
 }
@@ -240,8 +256,8 @@ const int kMaxBookmarksSearchResults = 50;
       [[BookmarksHomeNodeItem alloc] initWithType:BookmarksHomeItemTypeBookmark
                                      bookmarkNode:mobileNode];
   mobileItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
-  [self.sharedState.tableViewModel addItem:mobileItem
-                   toSectionWithIdentifier:sectionIdentifier];
+  [self.consumer.tableViewModel addItem:mobileItem
+                toSectionWithIdentifier:sectionIdentifier];
 
   // Add "Bookmarks Bar" and "Other Bookmarks" only when they are not empty.
   const BookmarkNode* bookmarkBar = model->bookmark_bar_node();
@@ -250,8 +266,8 @@ const int kMaxBookmarksSearchResults = 50;
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:bookmarkBar];
     barItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
-    [self.sharedState.tableViewModel addItem:barItem
-                     toSectionWithIdentifier:sectionIdentifier];
+    [self.consumer.tableViewModel addItem:barItem
+                  toSectionWithIdentifier:sectionIdentifier];
   }
 
   const BookmarkNode* otherBookmarks = model->other_node();
@@ -260,8 +276,8 @@ const int kMaxBookmarksSearchResults = 50;
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:otherBookmarks];
     otherItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
-    [self.sharedState.tableViewModel addItem:otherItem
-                     toSectionWithIdentifier:sectionIdentifier];
+    [self.consumer.tableViewModel addItem:otherItem
+                  toSectionWithIdentifier:sectionIdentifier];
   }
 
   // Add "Managed Bookmarks" to the table if it exists.
@@ -274,8 +290,8 @@ const int kMaxBookmarksSearchResults = 50;
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:managedNode];
     managedItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
-    [self.sharedState.tableViewModel addItem:managedItem
-                     toSectionWithIdentifier:sectionIdentifier];
+    [self.consumer.tableViewModel addItem:managedItem
+                  toSectionWithIdentifier:sectionIdentifier];
   }
 }
 
@@ -288,9 +304,8 @@ const int kMaxBookmarksSearchResults = 50;
   query.word_phrase_query.reset(new std::u16string);
   *query.word_phrase_query = base::SysNSStringToUTF16(searchText);
   BOOL shouldDisplayCloudSlashIcon = [self
-      shouldDisplayCloudSlashIconWithBookmarkModel:self.sharedState
-                                                       .profileBookmarkModel];
-  GetBookmarksMatchingProperties(self.sharedState.profileBookmarkModel, query,
+      shouldDisplayCloudSlashIconWithBookmarkModel:self.profileBookmarkModel];
+  GetBookmarksMatchingProperties(self.profileBookmarkModel, query,
                                  kMaxBookmarksSearchResults, &nodes);
 
   int count = 0;
@@ -299,7 +314,7 @@ const int kMaxBookmarksSearchResults = 50;
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:node];
     nodeItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
-    [self.sharedState.tableViewModel
+    [self.consumer.tableViewModel
                         addItem:nodeItem
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
     count++;
@@ -311,7 +326,7 @@ const int kMaxBookmarksSearchResults = 50;
     item.textAlignment = NSTextAlignmentLeft;
     item.textColor = [UIColor colorNamed:kTextPrimaryColor];
     item.text = noResults;
-    [self.sharedState.tableViewModel
+    [self.consumer.tableViewModel
                         addItem:item
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierMessages];
     return;
@@ -324,10 +339,8 @@ const int kMaxBookmarksSearchResults = 50;
   // If the currently displayed node is the outermost root, check if we need to
   // show the spinner backgound. Otherwise, check if we need to show the empty
   // background.
-  if (self.sharedState.tableViewDisplayedRootNode ==
-      self.sharedState.profileBookmarkModel->root_node()) {
-    if (self.sharedState.profileBookmarkModel
-            ->HasNoUserCreatedBookmarksOrFolders() &&
+  if (self.displayedNode == self.profileBookmarkModel->root_node()) {
+    if (self.profileBookmarkModel->HasNoUserCreatedBookmarksOrFolders() &&
         _syncedBookmarksObserver->IsPerformingInitialSync()) {
       [self.consumer
           updateTableViewBackgroundStyle:BookmarksHomeBackgroundStyleLoading];
@@ -341,8 +354,7 @@ const int kMaxBookmarksSearchResults = 50;
     return;
   }
 
-  if (![self hasBookmarksOrFolders] &&
-      !self.sharedState.currentlyShowingSearchResults) {
+  if (![self hasBookmarksOrFolders] && !self.currentlyShowingSearchResults) {
     [self.consumer
         updateTableViewBackgroundStyle:BookmarksHomeBackgroundStyleEmpty];
   } else {
@@ -356,23 +368,23 @@ const int kMaxBookmarksSearchResults = 50;
 - (void)computePromoTableViewData {
   // We show promo cell only on the root view, that is when showing
   // the permanent nodes.
-  BOOL promoVisible = ((self.sharedState.tableViewDisplayedRootNode ==
-                        self.sharedState.profileBookmarkModel->root_node()) &&
-                       self.bookmarkPromoController.shouldShowSigninPromo &&
-                       !self.sharedState.currentlyShowingSearchResults) &&
-                      !self.isSyncDisabledByAdministrator;
+  BOOL promoVisible =
+      ((self.displayedNode == self.profileBookmarkModel->root_node()) &&
+       self.bookmarkPromoController.shouldShowSigninPromo &&
+       !self.currentlyShowingSearchResults) &&
+      !self.isSyncDisabledByAdministrator;
 
-  if (promoVisible == self.sharedState.promoVisible) {
+  if (promoVisible == self.promoVisible) {
     return;
   }
-  self.sharedState.promoVisible = promoVisible;
+  self.promoVisible = promoVisible;
 
   SigninPromoViewMediator* signinPromoViewMediator =
       self.bookmarkPromoController.signinPromoViewMediator;
-  if (self.sharedState.promoVisible) {
-    DCHECK(![self.sharedState.tableViewModel
+  if (self.promoVisible) {
+    DCHECK(![self.consumer.tableViewModel
         hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]);
-    [self.sharedState.tableViewModel
+    [self.consumer.tableViewModel
         insertSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo
                             atIndex:0];
 
@@ -385,9 +397,8 @@ const int kMaxBookmarksSearchResults = 50;
     signinPromoItem.delegate = signinPromoViewMediator;
     [signinPromoViewMediator signinPromoViewIsVisible];
 
-    [self.sharedState.tableViewModel
-                        addItem:signinPromoItem
-        toSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo];
+    [self.consumer.tableViewModel addItem:signinPromoItem
+                  toSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo];
   } else {
     if (!signinPromoViewMediator.invalidClosedOrNeverVisible) {
       // When the sign-in view is closed, the promo state changes, but
@@ -396,15 +407,35 @@ const int kMaxBookmarksSearchResults = 50;
       [signinPromoViewMediator signinPromoViewIsHidden];
     }
 
-    DCHECK([self.sharedState.tableViewModel
+    DCHECK([self.consumer.tableViewModel
         hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]);
-    [self.sharedState.tableViewModel
+    [self.consumer.tableViewModel
         removeSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo];
   }
-  [self.sharedState.tableView reloadData];
+  [self.consumer.tableView reloadData];
   // Update the TabelView background to make sure the new state of the promo
   // does not affect the background.
   [self updateTableViewBackground];
+}
+
+- (bookmark_utils_ios::NodeSet&)selectedNodesForEditMode {
+  return _selectedNodesForEditMode;
+}
+
+- (void)setCurrentlyInEditMode:(BOOL)currentlyInEditMode {
+  DCHECK(self.consumer.tableView);
+
+  // If not in editing mode but the tableView's editing is ON, it means the
+  // table is waiting for a swipe-to-delete confirmation.  In this case, we need
+  // to close the confirmation by setting tableView.editing to NO.
+  if (!_currentlyInEditMode && self.consumer.tableView.editing) {
+    self.consumer.tableView.editing = NO;
+  }
+  [self.consumer.editingFolderCell stopEdit];
+  _currentlyInEditMode = currentlyInEditMode;
+  _selectedNodesForEditMode.clear();
+  [self.consumer mediatorDidClearEditNodes:self];
+  [self.consumer.tableView setEditing:currentlyInEditMode animated:YES];
 }
 
 #pragma mark - BookmarkModelBridgeObserver Callbacks
@@ -420,7 +451,7 @@ const int kMaxBookmarksSearchResults = 50;
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
         didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   // The root folder changed. Do nothing.
-  if (bookmarkNode == self.sharedState.tableViewDisplayedRootNode) {
+  if (bookmarkNode == self.displayedNode) {
     return;
   }
 
@@ -434,15 +465,14 @@ const int kMaxBookmarksSearchResults = 50;
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
     didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   // In search mode, we want to refresh any changes (like undo).
-  if (self.sharedState.currentlyShowingSearchResults) {
+  if (self.currentlyShowingSearchResults) {
     [self.consumer refreshContents];
   }
   // The currently displayed folder's children changed. Reload everything.
   // (When adding new folder, table is already been updated. So no need to
   // reload here.)
-  if (bookmarkNode == self.sharedState.tableViewDisplayedRootNode &&
-      !self.addingNewFolder) {
-    if (self.sharedState.currentlyInEditMode && ![self hasBookmarksOrFolders]) {
+  if (bookmarkNode == self.displayedNode && !self.addingNewFolder) {
+    if (self.currentlyInEditMode && ![self hasBookmarksOrFolders]) {
       [self.consumer setTableViewEditing:NO];
     }
     [self.consumer refreshContents];
@@ -455,8 +485,7 @@ const int kMaxBookmarksSearchResults = 50;
           didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
            fromParent:(const bookmarks::BookmarkNode*)oldParent
              toParent:(const bookmarks::BookmarkNode*)newParent {
-  if (oldParent == self.sharedState.tableViewDisplayedRootNode ||
-      newParent == self.sharedState.tableViewDisplayedRootNode) {
+  if (oldParent == self.displayedNode || newParent == self.displayedNode) {
     // A folder was added or removed from the currently displayed folder.
     [self.consumer refreshContents];
   }
@@ -466,10 +495,10 @@ const int kMaxBookmarksSearchResults = 50;
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
         didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
-  if (self.sharedState.currentlyShowingSearchResults) {
+  if (self.currentlyShowingSearchResults) {
     [self.consumer refreshContents];
-  } else if (self.sharedState.tableViewDisplayedRootNode == node) {
-    self.sharedState.tableViewDisplayedRootNode = NULL;
+  } else if (self.displayedNode == node) {
+    self.displayedNode = NULL;
     [self.consumer refreshContents];
   }
 }
@@ -492,8 +521,8 @@ const int kMaxBookmarksSearchResults = 50;
 
   // Check that this cell is visible.
   NSIndexPath* indexPath =
-      [self.sharedState.tableViewModel indexPathForItem:nodeItem];
-  NSArray* visiblePaths = [self.sharedState.tableView indexPathsForVisibleRows];
+      [self.consumer.tableViewModel indexPathForItem:nodeItem];
+  NSArray* visiblePaths = [self.consumer.tableView indexPathsForVisibleRows];
   if (![visiblePaths containsObject:indexPath]) {
     return;
   }
@@ -504,7 +533,7 @@ const int kMaxBookmarksSearchResults = 50;
 
 - (BookmarksHomeNodeItem*)itemForNode:
     (const bookmarks::BookmarkNode*)bookmarkNode {
-  NSArray<TableViewItem*>* items = [self.sharedState.tableViewModel
+  NSArray<TableViewItem*>* items = [self.consumer.tableViewModel
       itemsInSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
   for (TableViewItem* item in items) {
     if (item.type == BookmarksHomeItemTypeBookmark) {
@@ -527,12 +556,12 @@ const int kMaxBookmarksSearchResults = 50;
 - (void)configureSigninPromoWithConfigurator:
             (SigninPromoViewConfigurator*)configurator
                              identityChanged:(BOOL)identityChanged {
-  if (![self.sharedState.tableViewModel
+  if (![self.consumer.tableViewModel
           hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]) {
     return;
   }
 
-  NSIndexPath* indexPath = [self.sharedState.tableViewModel
+  NSIndexPath* indexPath = [self.consumer.tableViewModel
       indexPathForItemType:BookmarksHomeItemTypePromo
          sectionIdentifier:BookmarksHomeSectionIdentifierPromo];
   [self.consumer configureSigninPromoWithConfigurator:configurator
@@ -558,8 +587,7 @@ const int kMaxBookmarksSearchResults = 50;
   // Bookmarks") at the root node might be added after syncing.  So we need to
   // refresh here.
   [self.consumer refreshContents];
-  if (self.sharedState.tableViewDisplayedRootNode !=
-          self.sharedState.profileBookmarkModel->root_node() &&
+  if (self.displayedNode != self.profileBookmarkModel->root_node() &&
       !self.isSyncDisabledByAdministrator) {
     [self updateTableViewBackground];
   }
@@ -584,7 +612,7 @@ const int kMaxBookmarksSearchResults = 50;
           initWithType:BookmarksHomeItemTypeHeader];
   profileHeader.text =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_ONLY_ON_THIS_DEVICE);
-  [self.sharedState.tableViewModel
+  [self.consumer.tableViewModel
                      setHeader:profileHeader
       forSectionWithIdentifier:BookmarksHomeSectionIdentifierRootProfile];
 }
@@ -595,7 +623,7 @@ const int kMaxBookmarksSearchResults = 50;
           initWithType:BookmarksHomeItemTypeHeader];
   accountHeader.text =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_IN_YOUR_GOOGLE_ACCOUNT);
-  [self.sharedState.tableViewModel
+  [self.consumer.tableViewModel
                      setHeader:accountHeader
       forSectionWithIdentifier:BookmarksHomeSectionIdentifierRootAccount];
 }
@@ -608,12 +636,10 @@ const int kMaxBookmarksSearchResults = 50;
 }
 
 - (BOOL)hasBookmarksOrFolders {
-  if (self.sharedState.tableViewDisplayedRootNode ==
-      self.sharedState.profileBookmarkModel->root_node()) {
+  if (self.displayedNode == self.profileBookmarkModel->root_node()) {
     // The root node always has its permanent nodes. If all the permanent nodes
     // are empty, we treat it as if the root itself is empty.
-    const auto& childrenOfRootNode =
-        self.sharedState.tableViewDisplayedRootNode->children();
+    const auto& childrenOfRootNode = self.displayedNode->children();
     for (const auto& child : childrenOfRootNode) {
       if (!child->children().empty()) {
         return YES;
@@ -621,8 +647,7 @@ const int kMaxBookmarksSearchResults = 50;
     }
     return NO;
   }
-  return self.sharedState.tableViewDisplayedRootNode &&
-         !self.sharedState.tableViewDisplayedRootNode->children().empty();
+  return self.displayedNode && !self.displayedNode->children().empty();
 }
 
 // Ensure all sections exists and are empty.
@@ -642,7 +667,7 @@ const int kMaxBookmarksSearchResults = 50;
 // Delete all items for the given `sectionIdentifier` section, or create it
 // if it doesn't exist, hence ensuring the section exists and is empty.
 - (void)deleteAllItemsOrAddSectionWithIdentifier:(NSInteger)sectionIdentifier {
-  TableViewModel* model = self.sharedState.tableViewModel;
+  TableViewModel* model = self.consumer.tableViewModel;
   if ([model hasSectionForSectionIdentifier:sectionIdentifier]) {
     [model deleteAllItemsFromSectionWithIdentifier:sectionIdentifier];
   } else {
@@ -667,14 +692,14 @@ const int kMaxBookmarksSearchResults = 50;
 // `bookmarkModel`.
 - (BOOL)shouldDisplayCloudSlashIconWithBookmarkModel:
     (bookmarks::BookmarkModel*)bookmarkModel {
-  if (bookmarkModel == self.sharedState.profileBookmarkModel) {
+  if (bookmarkModel == self.profileBookmarkModel) {
     return bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
         _syncSetupService);
   }
-  CHECK_EQ(bookmarkModel, self.sharedState.accountBookmarkModel)
+  CHECK_EQ(bookmarkModel, self.accountBookmarkModel)
       << "bookmarkModel: " << bookmarkModel
-      << ", profileBookmarkModel: " << self.sharedState.profileBookmarkModel
-      << ", accountBookmarkModel: " << self.sharedState.accountBookmarkModel;
+      << ", profileBookmarkModel: " << self.profileBookmarkModel
+      << ", accountBookmarkModel: " << self.accountBookmarkModel;
   return NO;
 }
 

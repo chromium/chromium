@@ -6,8 +6,6 @@ source_set("home") {
     "bookmarks_home_consumer.h",
     "bookmarks_home_mediator.h",
     "bookmarks_home_mediator.mm",
-    "bookmarks_home_shared_state.h",
-    "bookmarks_home_shared_state.mm",
     "bookmarks_home_view_controller.h",
     "bookmarks_home_view_controller.mm",
   ]
