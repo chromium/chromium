@@ -1180,8 +1180,6 @@ void Component::StateUpdatingDiff::DoHandle() {
 #if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
   // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
   // we should remove this #if.
-  VLOG(1) << "Diff Updating.. prev fp: " << component.previous_fp_
-          << " Next fp: " << component.next_fp_;
   if (!update_context.crx_cache_.has_value()) {
     main_task_runner->PostTask(
         FROM_HERE,
