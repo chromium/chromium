@@ -44,7 +44,8 @@ RendererWebMediaPlayerDelegate::RendererWebMediaPlayerDelegate(
   idle_cleanup_interval_ = base::Seconds(5);
   idle_timeout_ = base::Seconds(15);
 
-  is_low_end_ = base::SysInfo::IsLowEndDevice();
+  is_low_end_ = base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled();
+
   idle_cleanup_timer_.SetTaskRunner(
       render_frame->GetTaskRunner(blink::TaskType::kInternalMedia));
 }

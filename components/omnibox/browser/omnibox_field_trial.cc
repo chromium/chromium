@@ -448,7 +448,7 @@ int OmniboxFieldTrial::MaxNumHQPUrlsIndexedAtStartup() {
   constexpr int kDefaultOnNonLowEndDevices = 20000;
 #endif
 
-  if (base::SysInfo::IsLowEndDevice()) {
+  if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
     return kDefaultOnLowEndDevices;
   } else {
     return kDefaultOnNonLowEndDevices;

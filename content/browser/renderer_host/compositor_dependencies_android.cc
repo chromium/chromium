@@ -151,7 +151,7 @@ void CompositorDependenciesAndroid::ConnectVizFrameSinkManagerOnMainThread(
 }
 
 void CompositorDependenciesAndroid::EnqueueLowEndBackgroundCleanup() {
-  if (base::SysInfo::IsLowEndDevice()) {
+  if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
     low_end_background_cleanup_task_.Reset(base::BindOnce(
         &CompositorDependenciesAndroid::DoLowEndBackgroundCleanup,
         base::Unretained(this)));

@@ -478,7 +478,8 @@ bool MemoryCache::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
 void MemoryCache::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
   saved_page_resources_.clear();
-  if (MemoryPressureListenerRegistry::IsLowEndDevice()) {
+  if (MemoryPressureListenerRegistry::
+          IsLowEndDeviceOrPartialLowEndModeEnabled()) {
     PruneAll();
   }
 }

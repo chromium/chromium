@@ -50,10 +50,11 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
   // TODO(crbug/1199857): Tune these limits.
   constexpr int kMB = 1024 * 1024;
 #if BUILDFLAG(IS_ANDROID)
-  SkGraphics::SetFontCacheLimit(base::SysInfo::IsLowEndDevice() ? kMB
-                                                                : 8 * kMB);
-  SkGraphics::SetResourceCacheTotalByteLimit(
-      base::SysInfo::IsLowEndDevice() ? 32 * kMB : 64 * kMB);
+  bool is_low_end_mode =
+      base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled();
+  SkGraphics::SetFontCacheLimit(is_low_end_mode ? kMB : 8 * kMB);
+  SkGraphics::SetResourceCacheTotalByteLimit(is_low_end_mode ? 32 * kMB
+                                                             : 64 * kMB);
   SkGraphics::SetResourceCacheSingleAllocationByteLimit(16 * kMB);
 #else
   SkGraphics::SetResourceCacheSingleAllocationByteLimit(64 * kMB);

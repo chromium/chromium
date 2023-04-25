@@ -49,16 +49,19 @@ CanvasFontCache::~CanvasFontCache() {
 }
 
 unsigned CanvasFontCache::MaxFonts() {
-  return MemoryPressureListenerRegistry::IsLowEndDevice()
+  return MemoryPressureListenerRegistry::
+                 IsLowEndDeviceOrPartialLowEndModeEnabled()
              ? CanvasFontCacheMaxFontsLowEnd
              : CanvasFontCacheMaxFonts;
 }
 
 unsigned CanvasFontCache::HardMaxFonts() {
-  return document_->hidden() ? CanvasFontCacheHiddenMaxFonts
-                             : (MemoryPressureListenerRegistry::IsLowEndDevice()
-                                    ? CanvasFontCacheHardMaxFontsLowEnd
-                                    : CanvasFontCacheHardMaxFonts);
+  return document_->hidden()
+             ? CanvasFontCacheHiddenMaxFonts
+             : (MemoryPressureListenerRegistry::
+                        IsLowEndDeviceOrPartialLowEndModeEnabled()
+                    ? CanvasFontCacheHardMaxFontsLowEnd
+                    : CanvasFontCacheHardMaxFonts);
 }
 
 bool CanvasFontCache::GetFontUsingDefaultStyle(HTMLCanvasElement& element,

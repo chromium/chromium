@@ -72,7 +72,8 @@ void V8GCForContextDispose::NotifyContextDisposed(
   // memory use and trigger a V8+Blink GC. However, on Android, if the frame
   // will not be reused, the process will likely to be killed soon so skip this.
   if (is_main_frame && frame_reuse_status == WindowProxy::kFrameWillBeReused &&
-      ((MemoryPressureListenerRegistry::IsLowEndDevice() &&
+      ((MemoryPressureListenerRegistry::
+            IsLowEndDeviceOrPartialLowEndModeEnabled() &&
         MemoryPressureListenerRegistry::IsCurrentlyLowMemory()) ||
        force_page_navigation_gc_)) {
     const size_t pre_gc_memory_usage = GetMemoryUsage();

@@ -44,7 +44,7 @@ StorageController::DomStorageConnection GetDomStorageConnection() {
 StorageController* StorageController::GetInstance() {
   DEFINE_STATIC_LOCAL(StorageController, gCachedStorageAreaController,
                       (GetDomStorageConnection(),
-                       base::SysInfo::IsLowEndDevice()
+                       base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()
                            ? kStorageControllerTotalCacheLimitInBytesLowEnd
                            : kStorageControllerTotalCacheLimitInBytes));
   return &gCachedStorageAreaController;

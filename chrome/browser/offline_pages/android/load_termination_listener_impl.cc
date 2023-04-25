@@ -12,11 +12,12 @@
 namespace offline_pages {
 
 LoadTerminationListenerImpl::LoadTerminationListenerImpl() {
-  if (base::SysInfo::IsLowEndDevice())
+  if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
     app_listener_ =
         base::android::ApplicationStatusListener::New(base::BindRepeating(
             &LoadTerminationListenerImpl::OnApplicationStateChange,
             weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 LoadTerminationListenerImpl::~LoadTerminationListenerImpl() {

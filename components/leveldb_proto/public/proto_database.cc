@@ -16,7 +16,8 @@ leveldb_env::Options CreateSimpleOptions() {
   leveldb_env::Options options;
   options.create_if_missing = true;
   options.max_open_files = 0;  // Use minimum.
-  static bool is_low_end_device = base::SysInfo::IsLowEndDevice();
+  static bool is_low_end_device =
+      base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled();
   if (is_low_end_device)
     options.write_buffer_size = kDatabaseWriteBufferSizeBytesForLowEndDevice;
   else
