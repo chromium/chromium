@@ -116,6 +116,8 @@ void FeatureTile::CreateChildViews() {
 
   label_ = title_container->AddChildView(std::make_unique<views::Label>());
   label_->SetAutoColorReadabilityEnabled(false);
+  label_->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
+      ash::TypographyToken::kCrosButton2));
 
   if (is_compact) {
     label_->SetPreferredSize(kCompactTitleLabelSize);
@@ -123,16 +125,15 @@ void FeatureTile::CreateChildViews() {
     // clipping and center aligned.
     label_->SetMultiLine(true);
     label_->SetLineHeight(kCompactTitleLineHeight);
-    // TODO(b/252873172): update FontList.
-    label_->SetFontList(views::Label::GetDefaultFontList().Derive(
-        -1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
+    label_->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
+        ash::TypographyToken::kCrosAnnotation2));
   } else {
     sub_label_ =
         title_container->AddChildView(std::make_unique<views::Label>());
     sub_label_->SetAutoColorReadabilityEnabled(false);
-    // TODO(b/252873172): update FontList.
-    sub_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
-        -1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
+    sub_label_->SetFontList(
+        ash::TypographyProvider::Get()->ResolveTypographyToken(
+            ash::TypographyToken::kCrosAnnotation1));
     sub_label_->SetLineHeight(kPrimarySubtitleLineHeight);
     if (chromeos::features::IsJellyEnabled()) {
       TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,

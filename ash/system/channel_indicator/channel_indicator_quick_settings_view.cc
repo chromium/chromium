@@ -14,6 +14,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
+#include "ash/style/typography.h"
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_constants.h"
@@ -23,6 +24,7 @@
 #include "base/ranges/algorithm.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkScalar.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -272,10 +274,10 @@ class VersionButton : public views::LabelButton {
  private:
   void SetBackgroundAndFont() {
     if (features::IsQsRevampEnabled()) {
-      // TODO(b/252873172): Revisit font style and color. For now use the
-      // default size (which is obviously too small).
-      SetEnabledTextColors(
-          GetColorProvider()->GetColor(kColorAshTextColorSecondary));
+      SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurfaceVariant);
+      label()->SetFontList(
+          ash::TypographyProvider::Get()->ResolveTypographyToken(
+              ash::TypographyToken::kCrosBody2));
     } else {
       label()->SetFontList(
           gfx::FontList().DeriveWithWeight(gfx::Font::Weight::MEDIUM));
@@ -360,8 +362,7 @@ class SubmitFeedbackButton : public IconButton {
   void OnThemeChanged() override {
     auto* color_provider = GetColorProvider();
     if (features::IsQsRevampEnabled()) {
-      // TODO(b/252873172): Revisit icon color.
-      SetIconColor(color_provider->GetColor(kColorAshIconColorSecondary));
+      SetIconColorId(cros_tokens::kCrosSysOnSurfaceVariant);
 
       const SkColor ink_drop_base_color =
           color_provider->GetColor(kColorAshInkDropOpaqueColor);
