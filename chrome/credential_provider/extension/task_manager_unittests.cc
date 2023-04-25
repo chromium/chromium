@@ -8,11 +8,11 @@
 #include <windows.h>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/credential_provider/extension/extension_utils.h"
 #include "chrome/credential_provider/extension/task.h"
 #include "chrome/credential_provider/extension/task_manager.h"
@@ -184,7 +184,8 @@ TEST_F(TaskManagerTest, TaskExecuted) {
 
   FakeTokenGenerator fake_token_generator;
   fake_token_generator.SetTokensForTesting(
-      {base::GenerateGUID(), base::GenerateGUID()});
+      {base::Uuid::GenerateRandomV4().AsLowercaseString(),
+       base::Uuid::GenerateRandomV4().AsLowercaseString()});
 
   ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid1));
 
@@ -284,7 +285,8 @@ TEST_F(TaskManagerTest, BackOff) {
 
   FakeTokenGenerator fake_token_generator;
   fake_token_generator.SetTokensForTesting(
-      {base::GenerateGUID(), base::GenerateGUID()});
+      {base::Uuid::GenerateRandomV4().AsLowercaseString(),
+       base::Uuid::GenerateRandomV4().AsLowercaseString()});
 
   ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid1));
 

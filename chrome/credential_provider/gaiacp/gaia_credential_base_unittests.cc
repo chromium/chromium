@@ -13,7 +13,6 @@
 #include "base/base64.h"
 #include "base/base_paths_win.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -26,6 +25,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "base/uuid.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_base.h"
@@ -3389,7 +3389,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
                       base::UTF8ToWide(kDefaultGaiaId), std::wstring(), domain,
                       &sid));
 
-  std::string dm_token = base::GenerateGUID();
+  std::string dm_token = base::Uuid::GenerateRandomV4().AsLowercaseString();
   FakeTokenGenerator fake_token_generator;
   fake_token_generator.SetTokensForTesting({dm_token});
 
