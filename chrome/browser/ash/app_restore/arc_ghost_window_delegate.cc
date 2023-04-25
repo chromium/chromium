@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_delegate.h"
 
+#include "base/notreached.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -114,18 +116,25 @@ void ArcGhostWindowDelegate::OnBoundsChanged(
     return;
   }
 
-  shell_surface_->SetBounds(display_id, bounds_in_screen);
-
-  if (requested_state != window_state->GetStateType()) {
-    DCHECK(requested_state == chromeos::WindowStateType::kPrimarySnapped ||
-           requested_state == chromeos::WindowStateType::kSecondarySnapped);
-
-    if (requested_state == chromeos::WindowStateType::kPrimarySnapped)
+  switch (requested_state) {
+    case chromeos::WindowStateType::kPrimarySnapped:
+      // TODO(b/279530665): Maybe sync to ARC.
       shell_surface_->SetSnapPrimary(chromeos::kDefaultSnapRatio);
-    else
+      break;
+    case chromeos::WindowStateType::kSecondarySnapped:
+      // TODO(b/279530665): Maybe sync to ARC.
       shell_surface_->SetSnapSecondary(chromeos::kDefaultSnapRatio);
-    // TODO(sstan): Currently the snap state will be ignored. Sync it to ARC.
+      break;
+    case chromeos::WindowStateType::kFloated:
+      // Ignore the unsupported request.
+      return;
+    default:
+      if (requested_state != window_state->GetStateType()) {
+        NOTREACHED();
+      }
   }
+
+  shell_surface_->SetBounds(display_id, bounds_in_screen);
   shell_surface_->OnSurfaceCommit();
   bounds_ = gfx::Rect(bounds_in_screen);
   UpdateWindowInfoToArc();
