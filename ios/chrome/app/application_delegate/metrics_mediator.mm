@@ -200,7 +200,7 @@ InactiveTabsThresholdSetting InactiveTabsSettingFromPreference(int preference) {
     case 21:
       return InactiveTabsThresholdSetting::kThreeWeeks;
     default:
-      NOTREACHED_NORETURN();
+      return InactiveTabsThresholdSetting::kUnknown;
   }
 }
 }  // namespace
