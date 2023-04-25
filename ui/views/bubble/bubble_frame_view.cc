@@ -739,27 +739,34 @@ gfx::Rect BubbleFrameView::GetUpdatedWindowBounds(
         preferred_arrow_adjustment_ == PreferredArrowAdjustment::kOffset) {
       const bool mirror_vertical =
           BubbleBorder::is_arrow_on_horizontal(delegate_arrow);
-      MirrorArrowIfOutOfBounds(mirror_vertical, anchor_rect, size,
-                               GetAvailableAnchorWindowBounds());
+      if (use_anchor_window_bounds_) {
+        MirrorArrowIfOutOfBounds(mirror_vertical, anchor_rect, size,
+                                 GetAvailableAnchorWindowBounds());
+      }
       MirrorArrowIfOutOfBounds(mirror_vertical, anchor_rect, size,
                                GetAvailableScreenBounds(anchor_rect));
-      OffsetArrowIfOutOfBounds(anchor_rect, size,
-                               GetAvailableAnchorWindowBounds());
+      if (use_anchor_window_bounds_) {
+        OffsetArrowIfOutOfBounds(anchor_rect, size,
+                                 GetAvailableAnchorWindowBounds());
+      }
       OffsetArrowIfOutOfBounds(anchor_rect, size,
                                GetAvailableScreenBounds(anchor_rect));
     } else {
-      MirrorArrowIfOutOfBounds(true, anchor_rect, size,
-                               GetAvailableAnchorWindowBounds());
+      if (use_anchor_window_bounds_) {
+        MirrorArrowIfOutOfBounds(true, anchor_rect, size,
+                                 GetAvailableAnchorWindowBounds());
+      }
       MirrorArrowIfOutOfBounds(true, anchor_rect, size,
                                GetAvailableScreenBounds(anchor_rect));
-      MirrorArrowIfOutOfBounds(false, anchor_rect, size,
-                               GetAvailableAnchorWindowBounds());
+      if (use_anchor_window_bounds_) {
+        MirrorArrowIfOutOfBounds(false, anchor_rect, size,
+                                 GetAvailableAnchorWindowBounds());
+      }
       MirrorArrowIfOutOfBounds(false, anchor_rect, size,
                                GetAvailableScreenBounds(anchor_rect));
     }
   }
 
-  // Calculate the bounds with the arrow in its updated location and offset.
   return bubble_border_->GetBounds(anchor_rect, size);
 }
 

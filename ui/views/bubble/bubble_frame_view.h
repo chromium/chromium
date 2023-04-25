@@ -139,6 +139,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
     hit_test_transparent_ = hit_test_transparent;
   }
 
+  void set_use_anchor_window_bounds(bool use_anchor_window_bounds) {
+    use_anchor_window_bounds_ = use_anchor_window_bounds;
+  }
+
   // Set the corner radius of the bubble border.
   void SetCornerRadius(int radius);
   int GetCornerRadius() const;
@@ -191,6 +195,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   virtual gfx::Rect GetAvailableScreenBounds(const gfx::Rect& rect) const;
 
   // Returns the available anchor window bounds in the screen.
+  // This will only be used if `use_anchor_window_bounds_` is true.
   virtual gfx::Rect GetAvailableAnchorWindowBounds() const;
 
   // Override and return true to allow client view to overlap into the title
@@ -326,6 +331,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   // If true the view is transparent to all hit tested events (i.e. click and
   // hover). DEPRECATED: See note above set_hit_test_transparent().
   bool hit_test_transparent_ = false;
+
+  // If true the bubble will try to stay inside the bounds returned by
+  // `GetAvailableAnchorWindowBounds`.
+  bool use_anchor_window_bounds_ = true;
 
   InputEventActivationProtector input_protector_;
 };
