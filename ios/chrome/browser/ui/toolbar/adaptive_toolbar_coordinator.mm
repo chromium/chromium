@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
@@ -89,6 +90,16 @@
   [super stop];
   [self.mediator disconnect];
   self.mediator = nil;
+}
+
+#pragma mark - Public
+
+- (BOOL)isOmniboxFirstResponder {
+  return [self.locationBarCoordinator isOmniboxFirstResponder];
+}
+
+- (BOOL)showingOmniboxPopup {
+  return [self.locationBarCoordinator showingOmniboxPopup];
 }
 
 #pragma mark - SideSwipeToolbarSnapshotProviding

@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 
-@class LocationBarCoordinator;
 @protocol SharingPositioner;
 @class ViewRevealingVerticalPanHandler;
 @protocol ViewRevealingAnimatee;
@@ -17,10 +16,6 @@
 // adaptive toolbar.
 @interface PrimaryToolbarCoordinator
     : AdaptiveToolbarCoordinator <FakeboxFocuser>
-
-// A reference to the location bar coordinator. TODO(crbug.com/1435010): move
-// to `AdaptiveToolbarCoordinator`.
-@property(nonatomic, weak) LocationBarCoordinator* locationBarCoordinator;
 
 // A reference to the view controller that implements the view revealing
 // vertical pan handler delegate methods.
@@ -31,10 +26,6 @@
 
 // Shows the animation when transitioning to a prerendered page.
 - (void)showPrerenderingAnimation;
-// Whether the omnibox is currently the first responder.
-- (BOOL)isOmniboxFirstResponder;
-// Whether the omnibox popup is currently presented.
-- (BOOL)showingOmniboxPopup;
 
 // Coordinates the location bar focusing/defocusing. For example, initiates
 // transition to the expanded location bar state of the view controller.

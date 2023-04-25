@@ -141,14 +141,6 @@
   [self.viewController showPrerenderingAnimation];
 }
 
-- (BOOL)isOmniboxFirstResponder {
-  return [self.locationBarCoordinator isOmniboxFirstResponder];
-}
-
-- (BOOL)showingOmniboxPopup {
-  return [self.locationBarCoordinator showingOmniboxPopup];
-}
-
 - (void)transitionToLocationBarFocusedState:(BOOL)focused {
   if (self.viewController.traitCollection.verticalSizeClass ==
       UIUserInterfaceSizeClassUnspecified) {
