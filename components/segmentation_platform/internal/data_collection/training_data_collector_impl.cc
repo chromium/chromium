@@ -7,6 +7,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
@@ -99,6 +100,7 @@ struct TrainingDataCollectorImpl::TrainingTimings {
 TrainingDataCollectorImpl::TrainingDataCollectorImpl(
     processing::FeatureListQueryProcessor* processor,
     HistogramSignalHandler* histogram_signal_handler,
+    UserActionSignalHandler* user_action_signal_handler,
     StorageService* storage_service,
     std::vector<std::unique_ptr<Config>>* configs,
     PrefService* profile_prefs,
@@ -106,6 +108,7 @@ TrainingDataCollectorImpl::TrainingDataCollectorImpl(
     : segment_info_database_(storage_service->segment_info_database()),
       feature_list_query_processor_(processor),
       histogram_signal_handler_(histogram_signal_handler),
+      user_action_signal_handler_(user_action_signal_handler),
       signal_storage_config_(storage_service->signal_storage_config()),
       configs_(configs),
       clock_(clock),
@@ -116,6 +119,7 @@ TrainingDataCollectorImpl::TrainingDataCollectorImpl(
 
 TrainingDataCollectorImpl::~TrainingDataCollectorImpl() {
   histogram_signal_handler_->RemoveObserver(this);
+  user_action_signal_handler_->RemoveObserver(this);
 }
 
 void TrainingDataCollectorImpl::OnModelMetadataUpdated() {
@@ -137,6 +141,7 @@ void TrainingDataCollectorImpl::OnServiceInitialized() {
 void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
     DefaultModelManager::SegmentInfoList segments) {
   histogram_signal_handler_->AddObserver(this);
+  user_action_signal_handler_->AddObserver(this);
   std::map<SegmentId, proto::SegmentInfo> segment_list =
       GetPreferredSegmentInfo(std::move(segments));
 
@@ -206,9 +211,15 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
       const auto& trigger = training_config.observation_trigger(i);
       if (trigger.has_uma_trigger() &&
           trigger.uma_trigger().has_uma_feature()) {
-        immediate_trigger_histograms_
-            [trigger.uma_trigger().uma_feature().name_hash()]
-                .emplace(segment.first);
+        const auto& feature = trigger.uma_trigger().uma_feature();
+        if (feature.type() == proto::SignalType::USER_ACTION) {
+          immediate_trigger_user_actions_[feature.name_hash()].emplace(
+              segment.first);
+        } else if (feature.type() == proto::SignalType::HISTOGRAM_VALUE ||
+                   feature.type() == proto::SignalType::HISTOGRAM_ENUM) {
+          immediate_trigger_histograms_[feature.name_hash()].emplace(
+              segment.first);
+        }
       }
     }
   }
@@ -232,14 +243,33 @@ void TrainingDataCollectorImpl::OnHistogramSignalUpdated(
     param->output_value = static_cast<float>(sample);
     for (auto segment : segments) {
       segment_info_database_->GetSegmentInfo(
-          segment, base::BindOnce(&TrainingDataCollectorImpl::
-                                      OnHistogramUpdatedReportForSegmentInfo,
-                                  weak_ptr_factory_.GetWeakPtr(), param));
+          segment,
+          base::BindOnce(
+              &TrainingDataCollectorImpl::OnUmaUpdatedReportForSegmentInfo,
+              weak_ptr_factory_.GetWeakPtr(), param));
     }
   }
 }
 
-void TrainingDataCollectorImpl::OnHistogramUpdatedReportForSegmentInfo(
+void TrainingDataCollectorImpl::OnUserAction(const std::string& user_action,
+                                             base::TimeTicks action_time) {
+  // Report training data for all models which output collection is triggered by
+  // |user_action|.
+  auto hash = base::HashMetricName(user_action);
+  auto it = immediate_trigger_user_actions_.find(hash);
+  if (it != immediate_trigger_user_actions_.end()) {
+    auto segments = it->second;
+    for (auto segment : segments) {
+      segment_info_database_->GetSegmentInfo(
+          segment,
+          base::BindOnce(
+              &TrainingDataCollectorImpl::OnUmaUpdatedReportForSegmentInfo,
+              weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
+    }
+  }
+}
+
+void TrainingDataCollectorImpl::OnUmaUpdatedReportForSegmentInfo(
     const absl::optional<ImmediaCollectionParam>& param,
     absl::optional<proto::SegmentInfo> segment) {
   if (segment.has_value()) {

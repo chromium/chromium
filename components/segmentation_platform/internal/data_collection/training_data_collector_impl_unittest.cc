@@ -24,11 +24,13 @@
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/signals/mock_histogram_signal_handler.h"
+#include "components/segmentation_platform/internal/signals/mock_user_action_signal_handler.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/local_state_helper.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/types.pb.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -119,7 +121,8 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
 
     collector_ = std::make_unique<TrainingDataCollectorImpl>(
         &feature_list_processor_, &histogram_signal_handler_,
-        storage_service_.get(), &configs_, &prefs_, &clock_);
+        &user_action_signal_handler_, storage_service_.get(), &configs_,
+        &prefs_, &clock_);
   }
 
  protected:
@@ -140,7 +143,8 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     collector_.reset();
     collector_ = std::make_unique<TrainingDataCollectorImpl>(
         &feature_list_processor_, &histogram_signal_handler_,
-        storage_service_.get(), &configs_, &prefs_, &clock_);
+        &user_action_signal_handler_, storage_service_.get(), &configs_,
+        &prefs_, &clock_);
   }
 
   proto::SegmentInfo* CreateSegmentInfo(DecisionType type,
@@ -166,12 +170,26 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
           uma_trigger->mutable_uma_trigger()->mutable_uma_feature();
       uma_feature->set_name(kHistogramName0);
       uma_feature->set_name_hash(base::HashMetricName(kHistogramName0));
+      uma_feature->set_type(proto::SignalType::HISTOGRAM_VALUE);
     } else if (type == kPeriodicDecisionType) {
       // Add a uma feature output based on |kHistogramName0| if trigger type is
       // PERIODIC.
       AddOutput(segment_info, kHistogramName0);
     }
     return segment_info;
+  }
+
+  void AddUserActionTrigger(proto::SegmentInfo* segment_info,
+                            std::string name) {
+    auto* trigger = segment_info->mutable_model_metadata()
+                        ->mutable_training_outputs()
+                        ->mutable_trigger_config();
+    auto* uma_trigger = trigger->add_observation_trigger();
+    auto* uma_feature =
+        uma_trigger->mutable_uma_trigger()->mutable_uma_feature();
+    uma_feature->set_name(name);
+    uma_feature->set_name_hash(base::HashMetricName(name));
+    uma_feature->set_type(proto::SignalType::USER_ACTION);
   }
 
   void AddTimeTrigger(proto::SegmentInfo* segment_info, base::TimeDelta delay) {
@@ -280,6 +298,15 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     run_loop.Run();
   }
 
+  void WaitForUserActionSignalUpdated(const std::string& user_action_name,
+                                      base::TimeTicks action_time) {
+    base::RunLoop run_loop;
+    test_recorder_.SetOnAddEntryCallback(
+        Segmentation_ModelExecution::kEntryName, run_loop.QuitClosure());
+    collector_->OnUserAction(user_action_name, action_time);
+    run_loop.Run();
+  }
+
   void WaitForContinuousCollection() {
     base::RunLoop run_loop;
     test_recorder_.SetOnAddEntryCallback(
@@ -296,6 +323,7 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
   ukm::TestAutoSetUkmRecorder test_recorder_;
   NiceMock<processing::MockFeatureListQueryProcessor> feature_list_processor_;
   NiceMock<MockHistogramSignalHandler> histogram_signal_handler_;
+  NiceMock<MockUserActionSignalHandler> user_action_signal_handler_;
   raw_ptr<NiceMock<MockSignalStorageConfig>> signal_storage_config_;
   raw_ptr<test::TestSegmentInfoDatabase> test_segment_info_db_;
   std::unique_ptr<TrainingDataCollectorImpl> collector_;
@@ -541,6 +569,32 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithUMATrigger) {
   ExpectResult1Ukm();
 }
 
+// Tests that if uma user action trigger is set, collection will happen when the
+// trigger user action is observed.
+TEST_F(TrainingDataCollectorImplTest, DataCollectionWithUserActionTrigger) {
+  constexpr base::TimeDelta kTriggerDuration = base::Seconds(10);
+  base::Time current = clock()->Now();
+  SetupFeatureProcessorResult1(current, current + kTriggerDuration);
+
+  // Create a segment that contain a uma trigger.
+  AddUserActionTrigger(
+      CreateSegmentInfo(kOnDemandDecisionType, /*upload_tensors=*/true),
+      kHistogramName1);
+  Init();
+
+  // Wait for input collection to be done and cached in memory.
+  auto input_context = base::MakeRefCounted<InputContext>();
+  collector()->OnDecisionTime(kTestOptimizationTarget0, input_context,
+                              proto::TrainingOutputs::TriggerConfig::ONDEMAND);
+  task_environment()->RunUntilIdle();
+  clock()->Advance(kTriggerDuration);
+  ExpectUkmCount(0u);
+
+  // Trigger output collection and ukm data recording.
+  WaitForUserActionSignalUpdated(kHistogramName1, base::TimeTicks());
+  ExpectResult1Ukm();
+}
+
 // A histogram interested by multiple model will trigger multiple UKM reports.
 TEST_F(TrainingDataCollectorImplTest,
        DataCollectionWithUMATrigger_MultipleModels) {
@@ -566,6 +620,7 @@ TEST_F(TrainingDataCollectorImplTest,
   auto* uma_feature = uma_trigger->mutable_uma_trigger()->mutable_uma_feature();
   uma_feature->set_name(kHistogramName0);
   uma_feature->set_name_hash(base::HashMetricName(kHistogramName0));
+  uma_feature->set_type(proto::SignalType::HISTOGRAM_VALUE);
 
   // Wait for input collection to be done and cached in memory.
   Init();

@@ -407,6 +407,19 @@ std::vector<proto::UMAFeature> GetAllUmaFeatures(
     }
   }
 
+  // Add uma trigger features.
+  if (model_metadata.training_outputs().has_trigger_config()) {
+    const auto& training_config =
+        model_metadata.training_outputs().trigger_config();
+    for (int i = 0; i < training_config.observation_trigger_size(); i++) {
+      const auto& trigger = training_config.observation_trigger(i);
+      if (trigger.has_uma_trigger() &&
+          trigger.uma_trigger().has_uma_feature()) {
+        features.push_back(trigger.uma_trigger().uma_feature());
+      }
+    }
+  }
+
   return features;
 }
 

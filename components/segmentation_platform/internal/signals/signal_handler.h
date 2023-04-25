@@ -58,6 +58,9 @@ class SignalHandler {
   HistogramSignalHandler* deprecated_histogram_signal_handler() {
     return histogram_signal_handler_.get();
   }
+  UserActionSignalHandler* user_action_signal_handler() {
+    return user_action_signal_handler_.get();
+  }
 
  private:
   std::unique_ptr<UserActionSignalHandler> user_action_signal_handler_;

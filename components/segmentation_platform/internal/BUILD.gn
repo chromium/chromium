@@ -302,6 +302,8 @@ source_set("unit_tests") {
     "signals/history_delegate_impl_unittest.cc",
     "signals/mock_histogram_signal_handler.cc",
     "signals/mock_histogram_signal_handler.h",
+    "signals/mock_user_action_signal_handler.cc",
+    "signals/mock_user_action_signal_handler.h",
     "signals/signal_filter_processor_unittest.cc",
     "signals/ukm_config_unittest.cc",
     "signals/ukm_observer_unittest.cc",

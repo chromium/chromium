@@ -20,6 +20,7 @@
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/history_service_observer.h"
 #include "components/segmentation_platform/internal/signals/mock_histogram_signal_handler.h"
+#include "components/segmentation_platform/internal/signals/mock_user_action_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
@@ -44,12 +45,6 @@ constexpr UkmMetricHash TestMetric(uint64_t val) {
 }
 
 }  // namespace
-class MockUserActionSignalHandler : public UserActionSignalHandler {
- public:
-  MockUserActionSignalHandler() : UserActionSignalHandler(nullptr) {}
-  MOCK_METHOD(void, SetRelevantUserActions, (std::set<uint64_t>));
-  MOCK_METHOD(void, EnableMetrics, (bool));
-};
 
 class MockHistoryObserver : public HistoryServiceObserver {
  public:

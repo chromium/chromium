@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
@@ -19,6 +20,7 @@ UserActionSignalHandler::UserActionSignalHandler(
 }
 
 UserActionSignalHandler::~UserActionSignalHandler() {
+  DCHECK(observers_.empty());
   if (metrics_enabled_ && base::GetRecordActionTaskRunner())
     base::RemoveActionCallback(action_callback_);
 }
@@ -43,6 +45,14 @@ void UserActionSignalHandler::SetRelevantUserActions(
   user_actions_ = std::move(user_actions);
 }
 
+void UserActionSignalHandler::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void UserActionSignalHandler::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void UserActionSignalHandler::OnUserAction(const std::string& user_action,
                                            base::TimeTicks action_time) {
   DCHECK(metrics_enabled_);
@@ -51,8 +61,22 @@ void UserActionSignalHandler::OnUserAction(const std::string& user_action,
   if (iter == user_actions_.end())
     return;
 
-  db_->WriteSample(proto::SignalType::USER_ACTION, user_action_hash,
-                   absl::nullopt, base::DoNothing());
+  db_->WriteSample(
+      proto::SignalType::USER_ACTION, user_action_hash, absl::nullopt,
+      base::BindOnce(&UserActionSignalHandler::OnSampleWritten,
+                     weak_ptr_factory_.GetWeakPtr(), user_action, action_time));
+}
+
+void UserActionSignalHandler::OnSampleWritten(const std::string& user_action,
+                                              base::TimeTicks action_time,
+                                              bool success) {
+  if (!success) {
+    return;
+  }
+
+  for (Observer& ob : observers_) {
+    ob.OnUserAction(user_action, action_time);
+  }
 }
 
 }  // namespace segmentation_platform

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 
 namespace segmentation_platform {
@@ -20,6 +21,18 @@ class SignalDatabase;
 // internal database for future processing.
 class UserActionSignalHandler {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a histogram signal tracked by segmentation platform is
+    // updated and written to database.
+    virtual void OnUserAction(const std::string& user_action,
+                              base::TimeTicks action_time) = 0;
+    ~Observer() override = default;
+
+   protected:
+    Observer() = default;
+  };
+
   explicit UserActionSignalHandler(SignalDatabase* signal_database);
   virtual ~UserActionSignalHandler();
 
@@ -35,9 +48,16 @@ class UserActionSignalHandler {
   // This can be called early even before relevant user actions are known.
   virtual void EnableMetrics(bool enable_metrics);
 
+  // Add/Remove observer for histogram update events.
+  virtual void AddObserver(Observer* observer);
+  virtual void RemoveObserver(Observer* observer);
+
  private:
   void OnUserAction(const std::string& user_action,
                     base::TimeTicks action_time);
+  void OnSampleWritten(const std::string& user_action,
+                       base::TimeTicks action_time,
+                       bool success);
 
   // The database storing relevant user actions.
   raw_ptr<SignalDatabase> db_;
@@ -49,6 +69,8 @@ class UserActionSignalHandler {
   // The set of user actions relevant to the segmentation platform. Everything
   // else will be filtered out.
   std::set<uint64_t> user_actions_;
+
+  base::ObserverList<Observer> observers_;
 
   // Whether or not the segmentation platform should record metrics events.
   bool metrics_enabled_;

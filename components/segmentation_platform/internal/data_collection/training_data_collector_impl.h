@@ -18,6 +18,7 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
+#include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,10 +31,12 @@ class SegmentationResultPrefs;
 
 // Implementation of TrainingDataCollector.
 class TrainingDataCollectorImpl : public TrainingDataCollector,
-                                  public HistogramSignalHandler::Observer {
+                                  public HistogramSignalHandler::Observer,
+                                  public UserActionSignalHandler::Observer {
  public:
   TrainingDataCollectorImpl(processing::FeatureListQueryProcessor* processor,
                             HistogramSignalHandler* histogram_signal_handler,
+                            UserActionSignalHandler* user_action_signal_handler,
                             StorageService* storage_service,
                             std::vector<std::unique_ptr<Config>>* configs,
                             PrefService* profile_prefs,
@@ -56,6 +59,10 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   void OnHistogramSignalUpdated(const std::string& histogram_name,
                                 base::HistogramBase::Sample sample) override;
 
+  // UserActionSignalHandler::Observer implementation.
+  void OnUserAction(const std::string& user_action,
+                    base::TimeTicks action_time) override;
+
  private:
   struct TrainingTimings;
 
@@ -65,7 +72,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       const absl::optional<ImmediaCollectionParam>& param,
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments);
 
-  void OnHistogramUpdatedReportForSegmentInfo(
+  void OnUmaUpdatedReportForSegmentInfo(
       const absl::optional<ImmediaCollectionParam>& param,
       absl::optional<proto::SegmentInfo> segment);
 
@@ -124,6 +131,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   const raw_ptr<processing::FeatureListQueryProcessor>
       feature_list_query_processor_;
   const raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
+  const raw_ptr<UserActionSignalHandler> user_action_signal_handler_;
   const raw_ptr<SignalStorageConfig> signal_storage_config_;
   const raw_ptr<std::vector<std::unique_ptr<Config>>> configs_;
   const raw_ptr<base::Clock> clock_;
@@ -146,6 +154,10 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   // Hash of histograms for trigger based training data collection.
   base::flat_map<uint64_t, base::flat_set<proto::SegmentId>>
       immediate_trigger_histograms_;
+
+  // Hash of user actions for trigger based training data collection.
+  base::flat_map<uint64_t, base::flat_set<proto::SegmentId>>
+      immediate_trigger_user_actions_;
 
   // A list of segment IDs that needs to report metrics continuously.
   base::flat_set<SegmentId> continuous_collection_segments_;

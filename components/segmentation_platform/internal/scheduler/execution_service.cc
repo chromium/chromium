@@ -57,8 +57,9 @@ void ExecutionService::Initialize(
 
   training_data_collector_ = TrainingDataCollector::Create(
       feature_list_query_processor_.get(),
-      signal_handler->deprecated_histogram_signal_handler(), storage_service,
-      configs, profile_prefs, clock);
+      signal_handler->deprecated_histogram_signal_handler(),
+      signal_handler->user_action_signal_handler(), storage_service, configs,
+      profile_prefs, clock);
 
   model_executor_ = std::make_unique<ModelExecutorImpl>(
       clock, feature_list_query_processor_.get());
