@@ -158,20 +158,6 @@ base::android::ScopedJavaLocalRef<jstring> StringViewToJavaString(
   }
 }
 
-void WasmAsyncResolvePromiseCallback(v8::Isolate* isolate,
-                                     v8::Local<v8::Context> context,
-                                     v8::Local<v8::Promise::Resolver> resolver,
-                                     v8::Local<v8::Value> compilation_result,
-                                     v8::WasmAsyncSuccess success) {
-  v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
-  if (success == v8::WasmAsyncSuccess::kSuccess) {
-    CHECK(resolver->Resolve(context, compilation_result).FromJust());
-  } else {
-    CHECK(resolver->Reject(context, compilation_result).FromJust());
-  }
-}
-
 class NoopInspectorChannel final : public v8_inspector::V8Inspector::Channel {
  public:
   ~NoopInspectorChannel() override = default;
@@ -513,9 +499,8 @@ void JsSandboxIsolate::InitializeIsolateOnThread() {
       gin::IsolateHolder::AccessMode::kSingleThread,
       gin::IsolateHolder::IsolateType::kUtility, std::move(params));
   v8::Isolate* isolate = isolate_holder_->isolate();
-  v8::Isolate::Scope isolate_scope(isolate);
+  isolate_scope_ = std::make_unique<v8::Isolate::Scope>(isolate);
   isolate->SetMicrotasksPolicy(v8::MicrotasksPolicy::kAuto);
-  isolate->SetWasmAsyncResolvePromiseCallback(WasmAsyncResolvePromiseCallback);
 
   isolate->AddNearHeapLimitCallback(&JsSandboxIsolate::NearHeapLimitCallback,
                                     this);
@@ -541,7 +526,6 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
   base::AutoReset<JsSandboxIsolateCallback*> callback_autoreset(
       &current_callback_, callback.get());
 
-  v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
   v8::HandleScope handle_scope(isolate_holder_->isolate());
   v8::Context::Scope scope(context_holder_->context());
   v8::Isolate* v8_isolate = isolate_holder_->isolate();
@@ -640,7 +624,6 @@ void JsSandboxIsolate::ConvertPromiseToArrayBufferInIsolateSequence(
     std::string name,
     std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
     std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver) {
-  v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
   v8::HandleScope handle_scope(isolate_holder_->isolate());
   v8::Context::Scope scope(context_holder_->context());
 
@@ -659,7 +642,6 @@ void JsSandboxIsolate::ConvertPromiseToFailureInIsolateSequence(
     std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
     std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
     std::string reason) {
-  v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
   v8::HandleScope handle_scope(isolate_holder_->isolate());
   v8::Context::Scope scope(context_holder_->context());
 
@@ -861,7 +843,6 @@ void JsSandboxIsolate::EnableOrDisableInspectorAsNeeded() {
     inspector_.reset();
     inspector_client_.reset();
   } else if (!already_enabled && needed) {
-    v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
     v8::HandleScope handle_scope(isolate_holder_->isolate());
     v8::Context::Scope scope(context_holder_->context());
 

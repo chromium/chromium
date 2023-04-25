@@ -162,6 +162,12 @@ class JsSandboxIsolate {
   // Should be used from isolate_task_runner_.
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
   // Should be used from isolate_task_runner_.
+  //
+  // This isolate scope is entered during initialization from inside the
+  // isolate_task_runner_ thread and exited only at isolate teardown. It is thus
+  // used implicitly by all tasks run on the isolate thread.
+  std::unique_ptr<v8::Isolate::Scope> isolate_scope_;
+  // Should be used from isolate_task_runner_.
   std::unique_ptr<gin::ContextHolder> context_holder_;
 
   base::Lock named_fd_lock_;

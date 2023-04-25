@@ -149,6 +149,7 @@ android_apk("webview_instrumentation_apk") {
 
 android_resources("webview_instrumentation_apk_resources") {
   sources = [
+    "../javatests/res/raw/add_two_numbers.wasm",
     "shell/res/layout/testshell_activity.xml",
     "shell/res/raw/resource_file.html",
     "shell/res/raw/resource_icon.png",
@@ -299,6 +300,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/androidx_javascriptengine:javascriptengine_common_java",
     "//third_party/androidx_javascriptengine:javascriptengine_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/blink/public/mojom:web_feature_mojo_bindings_java",

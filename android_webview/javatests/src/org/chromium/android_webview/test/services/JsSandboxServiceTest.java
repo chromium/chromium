@@ -303,10 +303,11 @@ public class JsSandboxServiceTest {
         // The bytes of a minimal WebAssembly module, courtesy of v8/test/cctest/test-api-wasm.cc
         final byte[] bytes = {0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00};
         final String code = ""
-                + "android.consumeNamedDataAsArrayBuffer(\"id-1\").then((value) => {"
-                + " return WebAssembly.compile(value).then((module) => {"
+                + "android.consumeNamedDataAsArrayBuffer(\"id-1\").then((wasm) => {"
+                + " return WebAssembly.compile(wasm).then((module) => {"
+                + "  new WebAssembly.Instance(module);"
                 + "  return \"success\";"
-                + "  });"
+                + " });"
                 + "});";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
@@ -411,7 +412,6 @@ public class JsSandboxServiceTest {
             jsIsolate.provideNamedData("id-3", bytes);
             jsIsolate.provideNamedData("id-4", bytes);
             jsIsolate.provideNamedData("id-5", bytes);
-            Thread.sleep(1000);
             ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavaScriptAsync(code);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
