@@ -55,8 +55,6 @@
 @property(nonatomic, strong) PrimaryToolbarMediator* primaryToolbarMediator;
 // Redefined as PrimaryToolbarViewController.
 @property(nonatomic, strong) PrimaryToolbarViewController* viewController;
-// The coordinator for the location bar in the toolbar.
-@property(nonatomic, strong) LocationBarCoordinator* locationBarCoordinator;
 // Orchestrator for the expansion animation.
 @property(nonatomic, strong) OmniboxFocusOrchestrator* orchestrator;
 // Whether the omnibox focusing should happen with animation.
@@ -69,8 +67,6 @@
 @implementation PrimaryToolbarCoordinator
 
 @dynamic viewController;
-@synthesize popupPresenterDelegate = _popupPresenterDelegate;
-@synthesize delegate = _delegate;
 
 #pragma mark - ChromeCoordinator
 
@@ -88,10 +84,6 @@
   self.primaryToolbarMediator = [[PrimaryToolbarMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()];
   self.primaryToolbarMediator.delegate = self;
-
-  // LocationBarCoordinator dispatches OmniboxCommands therefore Location Bar
-  // setup should be done before using OmniboxCommands handler (below).
-  [self setUpLocationBar];
 
   self.viewController = [[PrimaryToolbarViewController alloc] init];
   self.viewController.shouldHideOmniboxOnNTP =
@@ -135,7 +127,6 @@
   self.primaryToolbarMediator.delegate = nil;
   [self.primaryToolbarMediator disconnect];
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
-  [self.locationBarCoordinator stop];
   _fullscreenUIUpdater = nullptr;
   self.started = NO;
 }
@@ -316,19 +307,6 @@
 - (void)resetToolbarAfterSideSwipeSnapshot {
   [super resetToolbarAfterSideSwipeSnapshot];
   [self.locationBarCoordinator.locationBarViewController.view setHidden:NO];
-}
-
-#pragma mark - Private
-
-// Sets the location bar up.
-- (void)setUpLocationBar {
-  self.locationBarCoordinator =
-      [[LocationBarCoordinator alloc] initWithBaseViewController:nil
-                                                         browser:self.browser];
-  self.locationBarCoordinator.delegate = self.delegate;
-  self.locationBarCoordinator.popupPresenterDelegate =
-      self.popupPresenterDelegate;
-  [self.locationBarCoordinator start];
 }
 
 @end

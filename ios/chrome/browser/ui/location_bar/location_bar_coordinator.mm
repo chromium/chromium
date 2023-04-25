@@ -144,6 +144,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   return self.viewController;
 }
 
+- (instancetype)initWithBrowser:(Browser*)browser {
+  CHECK(browser);
+  return [super initWithBaseViewController:nil browser:browser];
+}
+
 - (void)start {
   DCHECK(self.browser);
 

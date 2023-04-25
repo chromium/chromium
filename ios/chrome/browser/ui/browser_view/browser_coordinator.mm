@@ -124,6 +124,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
+#import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
@@ -323,6 +324,9 @@ enum class ToolbarKind {
 // keyboard.
 @property(nonatomic, strong)
     FormInputAccessoryCoordinator* formInputAccessoryCoordinator;
+
+// Coordinator for the location bar containing the omnibox.
+@property(nonatomic, strong) LocationBarCoordinator* locationBarCoordinator;
 
 // The container coordinators for the infobar modalities.
 @property(nonatomic, strong)
@@ -746,8 +750,13 @@ enum class ToolbarKind {
 
   _fullscreenController = FullscreenController::FromBrowser(self.browser);
 
+  self.locationBarCoordinator =
+      [[LocationBarCoordinator alloc] initWithBrowser:self.browser];
+
   _primaryToolbarCoordinator =
       [[PrimaryToolbarCoordinator alloc] initWithBrowser:self.browser];
+  _primaryToolbarCoordinator.locationBarCoordinator =
+      self.locationBarCoordinator;
 
   _secondaryToolbarCoordinator =
       [[SecondaryToolbarCoordinator alloc] initWithBrowser:self.browser];
@@ -838,16 +847,13 @@ enum class ToolbarKind {
       UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
 
   // TODO(crbug.com/1413769) Typecast should be performed using
-  // HandlerForProtocol method. PrimaryToolbarCoordinator isn't started yet, so
-  // LocationBarCoordinator is not created at this point and therefore not
-  // dispatching LoadQueryCommands.
+  // HandlerForProtocol method. LocationBarCoordinator isn't started yet
+  // therefore not dispatching LoadQueryCommands.
   id<LoadQueryCommands> _loadQueryCommandsHandler =
       static_cast<id<LoadQueryCommands>>(_dispatcher);
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
-  if (_primaryToolbarCoordinator) {
-    _voiceSearchController.dispatcher = _loadQueryCommandsHandler;
-  }
+  _voiceSearchController.dispatcher = _loadQueryCommandsHandler;
 
   _viewControllerDependencies.prerenderService = prerenderService;
   _viewControllerDependencies.bubblePresenter = _bubblePresenter;
@@ -928,8 +934,10 @@ enum class ToolbarKind {
   _lensCoordinator.baseViewController = self.viewController;
   [_lensCoordinator start];
 
-  _primaryToolbarCoordinator.delegate = self.viewController;
-  _primaryToolbarCoordinator.popupPresenterDelegate = self.viewController;
+  self.locationBarCoordinator.delegate = self.viewController;
+  self.locationBarCoordinator.popupPresenterDelegate = self.viewController;
+  [self.locationBarCoordinator start];
+
   [_primaryToolbarCoordinator start];
 
   _legacyTabStripCoordinator.baseViewController = self.viewController;
@@ -998,6 +1006,9 @@ enum class ToolbarKind {
 
   [self.browserContainerCoordinator stop];
   self.browserContainerCoordinator = nil;
+
+  [self.locationBarCoordinator stop];
+  self.locationBarCoordinator = nil;
 
   [_NTPCoordinator stop];
   _NTPCoordinator = nil;

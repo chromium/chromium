@@ -8,9 +8,8 @@
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 
+@class LocationBarCoordinator;
 @protocol SharingPositioner;
-@protocol OmniboxPopupPresenterDelegate;
-@protocol OmniboxFocusDelegate;
 @class ViewRevealingVerticalPanHandler;
 @protocol ViewRevealingAnimatee;
 
@@ -19,13 +18,9 @@
 @interface PrimaryToolbarCoordinator
     : AdaptiveToolbarCoordinator <FakeboxFocuser>
 
-// Delegate for this coordinator.
-// TODO(crbug.com/799446): Change this.
-@property(nonatomic, weak) id<OmniboxFocusDelegate> delegate;
-
-// Defines where the omnibox popup will be positioned.
-@property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
-    popupPresenterDelegate;
+// A reference to the location bar coordinator. TODO(crbug.com/1435010): move
+// to `AdaptiveToolbarCoordinator`.
+@property(nonatomic, weak) LocationBarCoordinator* locationBarCoordinator;
 
 // A reference to the view controller that implements the view revealing
 // vertical pan handler delegate methods.

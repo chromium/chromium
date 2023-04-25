@@ -138,8 +138,8 @@ class LocationBarCoordinatorTest : public PlatformTest {
     delegate_ = [[TestOmniboxFocusDelegate alloc] init];
 
     coordinator_ = [[LocationBarCoordinator alloc]
-        initWithBaseViewController:nil
-                           browser:browser_.get()];
+
+        initWithBrowser:browser_.get()];
     coordinator_.delegate = delegate_;
   }
 
