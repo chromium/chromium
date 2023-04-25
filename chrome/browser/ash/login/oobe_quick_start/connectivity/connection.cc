@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/wifi_credentials.h"
 #include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
@@ -61,8 +62,11 @@ Connection::Connection(
       nonce_generator_(std::move(nonce_generator)),
       on_connection_closed_(std::move(on_connection_closed)),
       on_connection_authenticated_(std::move(on_connection_authenticated)) {
+  // Since we aren't expecting any disconnections, treat any drops of the
+  // connection as an unknown error.
   nearby_connection->SetDisconnectionListener(base::BindOnce(
-      &Connection::OnConnectionClosed, weak_ptr_factory_.GetWeakPtr()));
+      &Connection::OnConnectionClosed, weak_ptr_factory_.GetWeakPtr(),
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kUnknownError));
 }
 
 Connection::~Connection() = default;
@@ -76,6 +80,21 @@ void Connection::MarkConnectionAuthenticated() {
 
 Connection::State Connection::GetState() {
   return connection_state_;
+}
+
+void Connection::Close(
+    TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
+  CHECK(connection_state_ == State::kOpen);
+
+  connection_state_ = State::kClosing;
+
+  // Update the disconnect listener to treat disconnections as the reason listed
+  // above.
+  nearby_connection_->SetDisconnectionListener(base::BindOnce(
+      &Connection::OnConnectionClosed, weak_ptr_factory_.GetWeakPtr(), reason));
+
+  // Issue a close
+  nearby_connection_->Close();
 }
 
 void Connection::RequestWifiCredentials(
@@ -229,11 +248,10 @@ void Connection::SendPayloadAndReadResponse(
   nearby_connection_->Read(std::move(callback));
 }
 
-void Connection::OnConnectionClosed() {
-  // TODO (b/278898402): Handle other connection closed reasons.
+void Connection::OnConnectionClosed(
+    TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
   connection_state_ = Connection::State::kClosed;
-  std::move(on_connection_closed_)
-      .Run(TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete);
+  std::move(on_connection_closed_).Run(reason);
 }
 
 }  // namespace ash::quick_start

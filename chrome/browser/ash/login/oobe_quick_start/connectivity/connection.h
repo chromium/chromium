@@ -88,6 +88,9 @@ class Connection
   // Get the state of the connection (open, closing, or closed)
   State GetState();
 
+  // Close the connection.
+  void Close(TargetDeviceConnectionBroker::ConnectionClosedReason reason);
+
   // Changes the connection state to authenticated and invokes the
   // ConnectionAuthenticatedCallback. The caller must ensure that the connection
   // is authenticated before calling this function.
@@ -146,7 +149,8 @@ class Connection
   void SendPayloadAndReadResponse(const base::Value::Dict& message_payload,
                                   PayloadResponseCallback callback);
 
-  void OnConnectionClosed();
+  void OnConnectionClosed(
+      TargetDeviceConnectionBroker::ConnectionClosedReason reason);
 
   raw_ptr<NearbyConnection, ExperimentalAsh> nearby_connection_;
   RandomSessionId random_session_id_;
