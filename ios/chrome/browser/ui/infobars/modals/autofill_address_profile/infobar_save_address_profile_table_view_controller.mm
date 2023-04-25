@@ -122,13 +122,16 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.tableView.sectionHeaderHeight = 0;
   self.tableView.sectionFooterHeight = 0;
-  [self.tableView
-      setSeparatorInset:UIEdgeInsetsMake(
-                            0,
-                            self.isUpdateModal
-                                ? kTableViewHorizontalSpacing
-                                : kInfobarSaveAddressProfileSeparatorInset,
-                            0, 0)];
+  if (self.isUpdateModal && [self shouldShowOldSection]) {
+    [self.tableView
+        setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0,
+                                           0)];
+  } else {
+    [self.tableView
+        setSeparatorInset:UIEdgeInsetsMake(
+                              0, kInfobarSaveAddressProfileSeparatorInset, 0,
+                              0)];
+  }
 
   if (!self.isMigrationToAccount || self.currentAddressProfileSaved) {
     // Do not show the cancel button when the migration prompt is presented and
@@ -334,19 +337,13 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 - (void)loadUpdateAddressModal {
   DCHECK([self.profileDataDiff count] > 0);
 
-  // Determines whether the old section is to be shown or not.
-  BOOL showOld = NO;
-  for (NSNumber* type in self.profileDataDiff) {
-    if ([self.profileDataDiff[type][1] length] > 0) {
-      showOld = YES;
-    }
-  }
-
   TableViewModel* model = self.tableViewModel;
 
   [model addSectionWithIdentifier:SectionIdentifierFields];
   [model addItem:[self updateModalDescriptionItem]
       toSectionWithIdentifier:SectionIdentifierFields];
+
+  BOOL showOld = [self shouldShowOldSection];
 
   if (showOld) {
     TableViewTextItem* newTitleItem = [self
@@ -581,6 +578,18 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       [[UIMenuItem alloc] initWithTitle:@"Edit"
                                  action:@selector(showEditAddressProfileModal)];
   return @[ editOption ];
+}
+
+// Returns YES if the old section is shown in the update modal.
+- (BOOL)shouldShowOldSection {
+  // Determines whether the old section is to be shown or not.
+  for (NSNumber* type in self.profileDataDiff) {
+    if ([self.profileDataDiff[type][1] length] > 0) {
+      return YES;
+    }
+  }
+
+  return NO;
 }
 
 #pragma mark - Item Constructors
