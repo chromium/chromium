@@ -91,10 +91,9 @@ bool AuraOutputManager::SendOutputMetrics(wl_resource* output_resource,
   // floats. As different CPU architectures may use different endian
   // representations for IEEE 754 floats, this implicitly assumes that the
   // caller and receiver are the same machine.
-  const int32_t bit_cast_value =
-      base::bit_cast<uint32_t>(output_metrics.device_scale_factor);
   zaura_output_manager_send_device_scale_factor(
-      manager_resource_, output_resource, bit_cast_value);
+      manager_resource_, output_resource,
+      base::bit_cast<uint32_t>(output_metrics.device_scale_factor));
 
   zaura_output_manager_send_logical_transform(
       manager_resource_, output_resource, output_metrics.logical_transform);
