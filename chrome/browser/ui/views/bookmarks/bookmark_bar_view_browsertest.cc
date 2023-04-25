@@ -339,13 +339,10 @@ using ukm::builders::Preloading_Attempt;
 using ukm::builders::Preloading_Prediction;
 static const auto kMockElapsedTime =
     base::ScopedMockElapsedTimersForTest::kMockElapsedTime;
-class PrerenderBookmarkBarNavigationTest : public BookmarkBarNavigationTest {
- public:
-  PrerenderBookmarkBarNavigationTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kBookmarkTriggerForPrerender2);
-  }
 
+class PrerenderBookmarkBarNavigationTestBase
+    : public BookmarkBarNavigationTest {
+ public:
   content::WebContents* GetActiveWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -353,19 +350,12 @@ class PrerenderBookmarkBarNavigationTest : public BookmarkBarNavigationTest {
   void SetUpOnMainThread() override {
     BookmarkBarNavigationTest::SetUpOnMainThread();
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    ukm_entry_builder_ =
-        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            chrome_preloading_predictor::kPointerDownOnBookmarkBar);
     scoped_test_timer_ =
         std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
     return test_ukm_recorder_.get();
-  }
-
-  const content::test::PreloadingAttemptUkmEntryBuilder& ukm_entry_builder() {
-    return *ukm_entry_builder_;
   }
 
   void CreateBookmarkButton() {
@@ -404,10 +394,7 @@ class PrerenderBookmarkBarNavigationTest : public BookmarkBarNavigationTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
-      ukm_entry_builder_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
 
@@ -416,7 +403,39 @@ constexpr int kFinalStatusActivated = 0;
 
 constexpr int kPreloadingTriggeringOutcomeSuccess = 5;
 
-IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarNavigationTest,
+class PrerenderBookmarkBarOnPressedNavigationTest
+    : public PrerenderBookmarkBarNavigationTestBase {
+ public:
+  PrerenderBookmarkBarOnPressedNavigationTest() {
+    // Mousedown prerender trigger is disabled explicitly and onHover delay is
+    // set to 0ms for testing.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kBookmarkTriggerForPrerender2,
+             {{"prerender_bookmarkbar_on_mouse_pressed_trigger", "true"},
+              {"prerender_bookmarkbar_on_mouse_hover_trigger", "false"}}},
+        },
+        /*disabled_features=*/{});
+  }
+
+  const content::test::PreloadingAttemptUkmEntryBuilder& ukm_entry_builder() {
+    return *ukm_entry_builder_;
+  }
+
+  void SetUpOnMainThread() override {
+    PrerenderBookmarkBarNavigationTestBase::SetUpOnMainThread();
+    ukm_entry_builder_ =
+        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+            chrome_preloading_predictor::kPointerDownOnBookmarkBar);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
+      ukm_entry_builder_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnPressedNavigationTest,
                        PrerenderActivation) {
   base::HistogramTester histogram_tester;
   // Navigate to an non-empty tab
@@ -460,5 +479,85 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarNavigationTest,
       kFinalStatusActivated, 1);
   histogram_tester.ExpectUniqueSample(
       "Preloading.Prerender.Attempt.PointerDownOnBookmarkBar.TriggeringOutcome",
+      kPreloadingTriggeringOutcomeSuccess, 1);
+}
+
+class PrerenderBookmarkBarOnHoverNavigationTest
+    : public PrerenderBookmarkBarNavigationTestBase {
+ public:
+  PrerenderBookmarkBarOnHoverNavigationTest() {
+    // Mousedown prerender trigger is disabled explicitly and onHover delay is
+    // set to 0ms for testing.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kBookmarkTriggerForPrerender2,
+             {{"prerender_start_delay_on_mouse_hover_ms", "0"},
+              {"prerender_bookmarkbar_on_mouse_pressed_trigger", "false"},
+              {"prerender_bookmarkbar_on_mouse_hover_trigger", "true"}}},
+        },
+        /*disabled_features=*/{});
+  }
+
+  const content::test::PreloadingAttemptUkmEntryBuilder& ukm_entry_builder() {
+    return *ukm_entry_builder_;
+  }
+
+  void SetUpOnMainThread() override {
+    PrerenderBookmarkBarNavigationTestBase::SetUpOnMainThread();
+    ukm_entry_builder_ =
+        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+            chrome_preloading_predictor::kMouseHoverOnBookmarkBar);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
+      ukm_entry_builder_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
+                       PrerenderActivation) {
+  base::HistogramTester histogram_tester;
+  // Navigate to an non-empty tab
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL("/empty.html")));
+
+  content::NavigationHandleObserver activation_observer(
+      GetActiveWebContents(),
+      https_test_server()->GetURL("/empty.html?prerender"));
+
+  CreateBookmarkButton();
+  NavigateToBookmarkByMousePressed();
+
+  {
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(ukm_entries.size(), 1u);
+
+    std::vector<UkmEntry> expected_entries = {
+        ukm_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kSuccess,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true,
+            /*ready_time=*/kMockElapsedTime),
+    };
+    EXPECT_THAT(ukm_entries,
+                testing::UnorderedElementsAreArray(expected_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
+                                                             expected_entries);
+  }
+
+  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
+            https_test_server()->GetURL("/empty.html?prerender"));
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
+      kFinalStatusActivated, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prerender.Attempt.MouseHoverOnBookmarkBar.TriggeringOutcome",
       kPreloadingTriggeringOutcomeSuccess, 1);
 }

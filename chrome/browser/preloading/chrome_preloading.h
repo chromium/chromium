@@ -76,10 +76,16 @@ static constexpr content::PreloadingPredictor kBackButtonHover(
     "BackButtonHover");
 
 // When a pointerdown (e.g. mousedown or touchstart) event happens on an
-// bookmark bar link to an HTTP(S) origin, we may attempt to preload the link.
+// bookmark bar link to an HTTPS origin, we may attempt to preload the link.
 static constexpr content::PreloadingPredictor kPointerDownOnBookmarkBar(
     107,
     "PointerDownOnBookmarkBar");
+
+// When a mousehover event happens on a bookmark bar link to an HTTPS origin,
+// we may attempt to preload the link.
+static constexpr content::PreloadingPredictor kMouseHoverOnBookmarkBar(
+    108,
+    "MouseHoverOnBookmarkBar");
 
 // TODO(crbug.com/1309934): Integrate more Preloading predictors with
 // Preloading logging APIs.

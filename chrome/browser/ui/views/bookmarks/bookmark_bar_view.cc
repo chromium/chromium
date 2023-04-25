@@ -38,6 +38,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
@@ -181,6 +182,17 @@ enum class PreloadBookmarkMetricsEvent {
   kMouseClick = 2,
   kMaxValue = kMouseClick,
 };
+
+// These are used as control the behavior of kBookmarkTriggerForPrerender2.
+const base::FeatureParam<int> kPrerenderStartDelayOnMouseHoverByMiliSeconds{
+    &features::kBookmarkTriggerForPrerender2,
+    "prerender_start_delay_on_mouse_hover_ms", 300};
+const base::FeatureParam<bool> kPrerenderBookmarkBarOnMousePressedTrigger{
+    &features::kBookmarkTriggerForPrerender2,
+    "prerender_bookmarkbar_on_mouse_pressed_trigger", true};
+const base::FeatureParam<bool> kPrerenderBookmarkBarOnMouseHoverTrigger{
+    &features::kBookmarkTriggerForPrerender2,
+    "prerender_bookmarkbar_on_mouse_hover_trigger", true};
 
 // BookmarkButtonBase -----------------------------------------------
 
@@ -337,6 +349,18 @@ class BookmarkButton : public BookmarkButtonBase {
         "Prerender.Experimental.BookmarkUrlButtonEvent",
         PreloadBookmarkMetricsEvent::kMouseOver);
     BookmarkButtonBase::OnMouseEntered(event);
+
+    if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2) &&
+        kPrerenderBookmarkBarOnMouseHoverTrigger.Get() &&
+        url_->SchemeIs("https")) {
+      preloading_timer_.Start(
+          FROM_HERE,
+          base::Milliseconds(
+              kPrerenderStartDelayOnMouseHoverByMiliSeconds.Get()),
+          base::BindRepeating(
+              &BookmarkButton::StartPrerendering, base::Unretained(this),
+              chrome_preloading_predictor::kMouseHoverOnBookmarkBar, *url_));
+    }
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
@@ -366,18 +390,11 @@ class BookmarkButton : public BookmarkButtonBase {
             duration);
       }
     }
-    if (event.IsOnlyLeftMouseButton()) {
-      // TODO(https://crbug.com/1422819): Cancel the prerendering if the mouse
-      // exits without triggering PressedCallback. Prerender only for https
-      // scheme, and add an enum metric to report the protocol scheme.
-      if (base::FeatureList::IsEnabled(
-              features::kBookmarkTriggerForPrerender2)) {
-        PrerenderManager::CreateForWebContents(
-            browser_->tab_strip_model()->GetActiveWebContents());
-        auto* prerender_manager = PrerenderManager::FromWebContents(
-            browser_->tab_strip_model()->GetActiveWebContents());
-        prerender_manager->StartPrerenderBookmark(*url_);
-      }
+    if (event.IsOnlyLeftMouseButton() &&
+        base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2) &&
+        kPrerenderBookmarkBarOnMousePressedTrigger.Get()) {
+      StartPrerendering(chrome_preloading_predictor::kPointerDownOnBookmarkBar,
+                        *url_);
     }
     return result;
   }
@@ -388,6 +405,22 @@ class BookmarkButton : public BookmarkButtonBase {
   }
 
  private:
+  void StartPrerendering(content::PreloadingPredictor predictor, GURL url) {
+    // TODO(https://crbug.com/1422819): Cancel the prerendering if the mouse
+    // exits without triggering PressedCallback. Prerender only for https
+    // scheme, and add an enum metric to report the protocol scheme.
+    CHECK(
+        base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2));
+    if (!prerender_handle_) {
+      PrerenderManager::CreateForWebContents(
+          browser_->tab_strip_model()->GetActiveWebContents());
+      auto* prerender_manager = PrerenderManager::FromWebContents(
+          browser_->tab_strip_model()->GetActiveWebContents());
+      prerender_handle_ =
+          prerender_manager->StartPrerenderBookmark(url, predictor);
+    }
+  }
+
   // A cached value of maximum width for tooltip to skip generating
   // new tooltip text.
   mutable int max_tooltip_width_ = 0;
@@ -395,6 +428,8 @@ class BookmarkButton : public BookmarkButtonBase {
   PressedCallback callback_;
   const raw_ref<const GURL> url_;
   const raw_ptr<Browser> browser_;
+  base::WeakPtr<content::PrerenderHandle> prerender_handle_;
+  base::RetainingOneShotTimer preloading_timer_;
 
   // Information for metrics.
   absl::optional<base::TimeTicks> mouse_entered_time_;

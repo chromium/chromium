@@ -332,7 +332,9 @@ void PrerenderManager::DidFinishNavigation(
 }
 
 base::WeakPtr<content::PrerenderHandle>
-PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
+PrerenderManager::StartPrerenderBookmark(
+    const GURL& prerendering_url,
+    content::PreloadingPredictor predictor) {
   // Helpers to create content::PreloadingAttempt.
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents());
@@ -342,9 +344,9 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
   // Create new PreloadingAttempt and pass all the values corresponding to
   // this prerendering attempt for Prerender.
   content::PreloadingAttempt* preloading_attempt =
-      preloading_data->AddPreloadingAttempt(
-          chrome_preloading_predictor::kPointerDownOnBookmarkBar,
-          content::PreloadingType::kPrerender, std::move(same_url_matcher));
+      preloading_data->AddPreloadingAttempt(predictor,
+                                            content::PreloadingType::kPrerender,
+                                            std::move(same_url_matcher));
 
   if (bookmark_prerender_handle_) {
     if (bookmark_prerender_handle_->GetInitialPrerenderingUrl() ==
