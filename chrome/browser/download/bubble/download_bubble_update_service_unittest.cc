@@ -39,6 +39,8 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
 using ::testing::WithArg;
+using AllDownloadUIModelsInfo =
+    DownloadDisplayController::AllDownloadUIModelsInfo;
 using DownloadState = download::DownloadItem::DownloadState;
 using DownloadUIModelPtrVector =
     std::vector<DownloadUIModel::DownloadUIModelPtr>;
@@ -183,6 +185,7 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
     EXPECT_CALL(item, GetGuid()).WillRepeatedly(ReturnRefOfCopy(guid));
     EXPECT_CALL(item, GetState()).WillRepeatedly(Return(state));
     EXPECT_CALL(item, GetStartTime()).WillRepeatedly(Return(start_time));
+    EXPECT_CALL(item, GetEndTime()).WillRepeatedly(Return(start_time));
     EXPECT_CALL(item, GetTargetFilePath())
         .WillRepeatedly(
             ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("foo"))));
@@ -668,6 +671,28 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetProgressInfo) {
   EXPECT_EQ(progress_info.download_count, 3);
   EXPECT_FALSE(progress_info.progress_certain);
   EXPECT_EQ(progress_info.progress_percentage, 50);
+}
+
+TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfo) {
+  base::Time now = base::Time::Now();
+  base::Time two_hours_ago = now - base::Hours(2);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "now_download",
+                   /*is_paused=*/false, now);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "two_hours_ago_download",
+                   /*is_paused=*/false, two_hours_ago);
+  InitDownloadItem(DownloadState::COMPLETE, "completed_download",
+                   /*is_paused=*/false, two_hours_ago);
+  InitOfflineItems({OfflineItemState::PAUSED, OfflineItemState::PAUSED},
+                   {"now_offline_item", "two_hours_ago_offline_item"},
+                   {now, two_hours_ago});
+
+  AllDownloadUIModelsInfo info = update_service_->GetAllModelsInfo();
+  EXPECT_EQ(info.all_models_size, 5u);
+  EXPECT_EQ(info.last_completed_time, now);
+  EXPECT_EQ(info.in_progress_count, 4);
+  EXPECT_EQ(info.paused_count, 2);
+  EXPECT_TRUE(info.has_unactioned);
+  EXPECT_FALSE(info.has_deep_scanning);
 }
 
 class DownloadBubbleUpdateServiceIncognitoTest

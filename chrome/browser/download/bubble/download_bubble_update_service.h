@@ -90,6 +90,12 @@ class DownloadBubbleUpdateService
       std::vector<DownloadUIModel::DownloadUIModelPtr>& models,
       bool force_backfill_download_items = false);
 
+  // Returns information relevant to the display state of the download button.
+  // Does not prune the cache or backfill missing items. May be slightly
+  // inaccurate in edge cases. Virtual for testing.
+  virtual const DownloadDisplayController::AllDownloadUIModelsInfo&
+  GetAllModelsInfo();
+
   // Computes progress info based on in-progress downloads. Does not prune the
   // cache or backfill missing items, so the returned progress info may be
   // slightly inaccurate in edge cases. This is ok, as it is only for the
@@ -268,6 +274,10 @@ class DownloadBubbleUpdateService
   // controllers.
   void OnDelayedCrxDownloadCreated(const std::string& guid);
 
+  // Updates |all_models_info_| based on the current contents of the cache.
+  // This is kept updated as items are added or removed from the cache.
+  void UpdateAllModelsInfo();
+
 #if DCHECK_IS_ON()
   // Checks that the cache data structures are consistent.
   bool ConsistencyCheckCaches() const;
@@ -320,6 +330,10 @@ class DownloadBubbleUpdateService
   // the UI. GUIDs are added here when the download begins, and are removed
   // when the 2 second delay is up.
   std::set<std::string> delayed_crx_guids_;
+
+  // Holds the latest info about all models, relevant to the display state of
+  // the download toolbar icon.
+  DownloadDisplayController::AllDownloadUIModelsInfo all_models_info_;
 
   // Observes the offline content provider.
   base::ScopedObservation<

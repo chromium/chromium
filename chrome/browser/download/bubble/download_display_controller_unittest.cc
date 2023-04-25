@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/bubble/download_bubble_utils.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -131,29 +132,52 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
 
   ~MockDownloadBubbleUpdateService() override = default;
 
-  bool GetAllModelsToDisplay(
-      std::vector<DownloadUIModelPtr>& models,
-      bool force_backfill_download_items = true) override {
-    models.clear();
+  void UpdateInfoForModel(
+      const DownloadUIModel& model,
+      DownloadDisplayController::AllDownloadUIModelsInfo& info) {
+    ++info.all_models_size;
+    info.last_completed_time =
+        std::max(info.last_completed_time, model.GetEndTime());
+    if (model.GetDangerType() ==
+            download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING &&
+        model.GetState() != download::DownloadItem::CANCELLED) {
+      info.has_deep_scanning = true;
+    }
+    if (!model.WasActionedOn()) {
+      info.has_unactioned = true;
+    }
+    if (IsModelInProgress(&model)) {
+      ++info.in_progress_count;
+      if (model.IsPaused()) {
+        ++info.paused_count;
+      }
+    }
+  }
+
+  const DownloadDisplayController::AllDownloadUIModelsInfo& GetAllModelsInfo()
+      override {
+    info_ = DownloadDisplayController::AllDownloadUIModelsInfo{};
     int download_item_index = 0, offline_item_index = 0;
     // Compose a list of models from the items stored in the test fixture.
     for (ModelType type : model_types_) {
       if (type == ModelType::kDownloadItem) {
         auto model = DownloadItemModel::Wrap(
             download_items_.at(download_item_index++).get());
-        if (model->ShouldShowInBubble()) {
-          models.push_back(std::move(model));
+        if (!model->ShouldShowInBubble()) {
+          continue;
         }
+        UpdateInfoForModel(*model, info_);
       } else {
         auto model = OfflineItemModel::Wrap(
             OfflineItemModelManagerFactory::GetForBrowserContext(profile_),
             offline_items_.at(offline_item_index++));
-        if (model->ShouldShowInBubble()) {
-          models.push_back(std::move(model));
+        if (!model->ShouldShowInBubble()) {
+          continue;
         }
+        UpdateInfoForModel(*model, info_);
       }
     }
-    return true;
+    return info_;
   }
 
   void AddModel(ModelType type) { model_types_.push_back(type); }
@@ -176,7 +200,8 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
               (const override));
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
+  DownloadDisplayController::AllDownloadUIModelsInfo info_;
   std::vector<ModelType> model_types_;
   const std::vector<std::unique_ptr<StrictMockDownloadItem>>& download_items_;
   const OfflineItemList& offline_items_;
@@ -374,7 +399,9 @@ class DownloadDisplayControllerTest : public testing::Test {
         may_show_details);
   }
 
-  void OnRemovedItem(const ContentId& id) { controller().OnRemovedItem(id); }
+  void OnRemovedItem(const std::string& id) {
+    controller().OnRemovedItem(ContentId{"LEGACY_DOWNLOAD", id});
+  }
 
   void RemoveLastDownload() {
     items_.pop_back();
@@ -714,30 +741,6 @@ TEST_F(DownloadDisplayControllerTest,
 TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_OnRemovedItem) {
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  std::string same_id = "Download 1";
-  std::string different_id = "Download 2";
-  EXPECT_CALL(item(0), GetGuid()).WillRepeatedly(ReturnRef(same_id));
-
-  OnRemovedItem(ContentId("LEGACY_DOWNLOAD", different_id));
-  // The download display is still shown, because the removed download is
-  // different. Details are not shown because there is still a download in
-  // progress.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
-                                 /*icon_state=*/DownloadIconState::kProgress,
-                                 /*is_active=*/true));
-
-  OnRemovedItem(ContentId("LEGACY_DOWNLOAD", same_id));
-  // The download display is hided, because the only item in the download list
-  // is about to be removed.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
-                                 /*icon_state=*/DownloadIconState::kProgress,
-                                 /*is_active=*/true));
-}
-
-TEST_F(DownloadDisplayControllerTest,
-       UpdateToolbarButtonState_OnRemovedItemMultipleDownloads) {
-  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
-                   download::DownloadItem::IN_PROGRESS);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar1.pdf"),
                    download::DownloadItem::IN_PROGRESS);
   std::vector<std::string> ids = {"Download 1", "Download 2"};
@@ -747,13 +750,15 @@ TEST_F(DownloadDisplayControllerTest,
   // The download display is still shown, because there are multiple downloads
   // in the list. Details are not shown because there is still a download in
   // progress.
-  OnRemovedItem(ContentId("LEGACY_DOWNLOAD", ids[0]));
+  RemoveLastDownload();
+  OnRemovedItem(ids[1]);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
+  // Display is hidden because the last download was deleted.
   RemoveLastDownload();
-  OnRemovedItem(ContentId("LEGACY_DOWNLOAD", ids[0]));
+  OnRemovedItem(ids[0]);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
