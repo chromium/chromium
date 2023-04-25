@@ -86,6 +86,7 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
   // InstallableAmbientBadgeClient overrides.
   void AddToHomescreenFromBadge() override;
   void BadgeDismissed() override;
+  void BadgeIgnored() override;
 
   // Hides the ambient badge if it is showing.
   void HideAmbientBadge();

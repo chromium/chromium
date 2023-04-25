@@ -97,6 +97,16 @@ void AmbientBadgeManager::BadgeDismissed() {
   UpdateState(State::kDismissed);
 }
 
+void AmbientBadgeManager::BadgeIgnored() {
+  AppBannerSettingsHelper::RecordBannerEvent(
+      web_contents_.get(), validated_url_, a2hs_params_->GetAppIdentifier(),
+      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW,
+      AppBannerManager::GetCurrentTime());
+
+  RecordAmbientBadgeDismissEvent(a2hs_params_->app_type);
+  UpdateState(State::kDismissed);
+}
+
 void AmbientBadgeManager::HideAmbientBadge() {
   message_controller_.DismissMessage();
   infobars::ContentInfoBarManager* infobar_manager =
@@ -225,14 +235,28 @@ void AmbientBadgeManager::OnGotClassificationResult(
 
   // TODO(eirage): replace this with label type.
   if (result.ordered_labels[0] == "ShowMessage") {
-    if (!ShouldMessageBeBlockedByGuardrail()) {
+    if (ShouldMessageBeBlockedByGuardrail()) {
+      UpdateState(State::kBlocked);
+    } else {
       ShowAmbientBadge();
     }
   }
 }
 
 bool AmbientBadgeManager::ShouldMessageBeBlockedByGuardrail() {
-  // TODO(eirage): implement guardrail blocks.
+  if (AppBannerSettingsHelper::WasBannerRecentlyBlocked(
+          web_contents(), validated_url_, a2hs_params_->GetAppIdentifier(),
+          AppBannerManager::GetCurrentTime())) {
+    return true;
+  }
+
+  if (AppBannerSettingsHelper::WasBannerRecentlyIgnored(
+          web_contents(), validated_url_, a2hs_params_->GetAppIdentifier(),
+          AppBannerManager::GetCurrentTime())) {
+    return true;
+  }
+
+  // TODO(eirage): add global guardrails.
   return false;
 }
 

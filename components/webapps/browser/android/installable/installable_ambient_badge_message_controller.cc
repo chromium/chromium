@@ -93,7 +93,10 @@ void InstallableAmbientBadgeMessageController::HandleMessageDismissed(
   message_.reset();
   if (dismiss_reason == messages::DismissReason::GESTURE) {
     client_->BadgeDismissed();
+  } else if (dismiss_reason == messages::DismissReason::TIMER) {
+    client_->BadgeIgnored();
   }
+
   if (dismiss_reason != messages::DismissReason::PRIMARY_ACTION) {
     GetThrottler()->AddStrike(save_origin_);
   }

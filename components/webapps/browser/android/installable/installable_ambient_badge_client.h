@@ -17,7 +17,10 @@ class InstallableAmbientBadgeClient {
   // Called to inform the client that the badge was dismissed.
   virtual void BadgeDismissed() = 0;
 
-  virtual ~InstallableAmbientBadgeClient() {}
+  // Called to inform the client that the badge was ignored.
+  virtual void BadgeIgnored() = 0;
+
+  virtual ~InstallableAmbientBadgeClient() = default;
 };
 
 }  // namespace webapps
