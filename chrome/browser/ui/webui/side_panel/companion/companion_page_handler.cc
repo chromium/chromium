@@ -10,6 +10,7 @@
 #include "chrome/browser/companion/core/companion_url_builder.h"
 #include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/companion/core/signin_delegate.h"
+#include "chrome/browser/companion/text_finder/text_finder_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
@@ -173,6 +174,17 @@ void CompanionPageHandler::RecordUiSurfaceClicked(
   metrics_logger_->RecordUiSurfaceClicked(ui_surface);
 }
 
+void CompanionPageHandler::OnCqCandidatesAvailable(
+    const std::vector<std::string>& text_directives) {
+  auto* text_finder_manager =
+      TextFinderManager::GetForPage(web_contents()->GetPrimaryPage());
+  CHECK(text_finder_manager);
+  text_finder_manager->CreateTextFinders(
+      text_directives,
+      base::BindOnce(&CompanionPageHandler::DidFinishFindingCqTexts,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void CompanionPageHandler::EnableMsbb(bool enable_msbb) {
   auto* consent_service =
       UnifiedConsentServiceFactory::GetForProfile(GetProfile());
@@ -188,6 +200,18 @@ Browser* CompanionPageHandler::GetBrowser() {
 Profile* CompanionPageHandler::GetProfile() {
   CHECK(companion_untrusted_ui_);
   return Profile::FromWebUI(companion_untrusted_ui_->web_ui());
+}
+
+void CompanionPageHandler::DidFinishFindingCqTexts(
+    const std::vector<std::pair<std::string, bool>>& text_found_vec) {
+  std::vector<std::string> text_directives(text_found_vec.size(), "");
+  std::vector<bool> find_results(text_found_vec.size(), false);
+  for (size_t i = 0; i < text_found_vec.size(); i++) {
+    const auto& text_found = text_found_vec[i];
+    text_directives[i] = text_found.first;
+    find_results[i] = text_found.second;
+  }
+  page_->OnCqFindTextResultsAvailable(text_directives, find_results);
 }
 
 }  // namespace companion

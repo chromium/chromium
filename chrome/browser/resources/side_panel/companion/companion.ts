@@ -22,6 +22,9 @@ enum ParamType {
   // Mandatory arguments.
   METHOD_TYPE = 'type',
 
+  // Arguments for MethodType.kOnCqCandidatesAvailable.
+  CQ_TEXT_DIRECTIVES = 'cqTextDirectives',
+
   // Optional arguments.
   // Arguments for MethodType.kOnExpsOptInStatusAvailable.
   IS_EXPS_OPTED_IN = 'isExpsOptedIn',
@@ -44,6 +47,9 @@ enum ParamType {
 
   // Arguments for browser -> iframe communication.
   COMPANION_UPDATE_PARAMS = 'companion_update_params',
+
+  // Arguments for sending text find results from browser to iframe.
+  CQ_TEXT_FIND_RESULTS = 'cqTextFindResults',
 }
 
 const companionProxy: CompanionProxy = CompanionProxyImpl.getInstance();
@@ -128,6 +134,22 @@ function initialize() {
         queryForm.reset();
       });
 
+  companionProxy.callbackRouter.onCqFindTextResultsAvailable.addListener(
+      (textDirectives: string[], results: boolean[]) => {
+        const companionOrigin =
+            new URL(loadTimeData.getString('companion_origin')).origin;
+        const message = {
+          [ParamType.CQ_TEXT_DIRECTIVES]: textDirectives,
+          [ParamType.CQ_TEXT_FIND_RESULTS]: results,
+        };
+
+        const frame = document.body.querySelector('iframe');
+        assert(frame);
+        if (frame.contentWindow) {
+          frame.contentWindow.postMessage(message, companionOrigin);
+        }
+      });
+
   companionProxy.handler.showUI();
 }
 
@@ -165,6 +187,9 @@ function onCompanionMessageEvent(event: MessageEvent) {
         data[ParamType.UI_SURFACE], data[ParamType.CHILD_ELEMENT_COUNT]);
   } else if (methodType === MethodType.kRecordUiSurfaceClicked) {
     companionProxy.handler.recordUiSurfaceClicked(data[ParamType.UI_SURFACE]);
+  } else if (methodType === MethodType.kOnCqCandidatesAvailable) {
+    companionProxy.handler.onCqCandidatesAvailable(
+        data[ParamType.CQ_TEXT_DIRECTIVES]);
   }
 }
 

@@ -28,6 +28,9 @@ enum MethodType {
 
   // Method corresponding to `CompanionPageHandler.RecordUiSurfaceClicked`.
   kRecordUiSurfaceClicked = 6,
+
+  // Method called when cq candidates are available.
+  kOnCqCandidatesAvailable = 7,
 };
 
 // Types of promos shown in the companion UI.
@@ -124,6 +127,9 @@ interface CompanionPageHandler {
   // surface on the companion page. These clicks are actual clicks on the
   // surface which exclude clicks on the feedback elements.
   RecordUiSurfaceClicked(UiSurface ui_surface);
+
+  // Called to notify the browser that the cq candidates are available.
+  OnCqCandidatesAvailable(array<string> text_directives);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
@@ -140,4 +146,9 @@ interface CompanionPage {
   // Pass a new companion URL needed along with a byte string representing the
   // image bytes that should be used for the query.
   OnImageQuery(ImageQuery image_query);
+
+  // Pass the finding results for cq texts to the iframe.
+  // `text_directives` and `results` have the same length.
+  OnCqFindTextResultsAvailable(array<string> text_directives,
+    array<bool> results);
 };
