@@ -1316,6 +1316,9 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
       // when `contain: strict` is explicitly set.
       if (fragment.HasAnchorQuery())
         return false;
+    } else if (RuntimeEnabledFeatures::LayoutNewSubtreeRootEnabled()) {
+      // We need a previous layout result to begin layout at a subtree root.
+      return false;
     }
 
     // A box which doesn't establish a new formating context can pass a whole
