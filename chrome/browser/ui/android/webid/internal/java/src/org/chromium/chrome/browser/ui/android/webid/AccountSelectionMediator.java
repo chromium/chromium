@@ -91,6 +91,7 @@ class AccountSelectionMediator {
     private IdentityProviderMetadata mIdpMetadata;
     private Bitmap mBrandIcon;
     private ClientIdMetadata mClientMetadata;
+    private String mRpContext;
 
     // All of the user's accounts.
     private List<Account> mAccounts;
@@ -181,11 +182,11 @@ class AccountSelectionMediator {
     private void handleBackPress() {
         mSelectedAccount = null;
         showAccountsInternal(mTopFrameForDisplay, mIframeForDisplay, mIdpForDisplay, mAccounts,
-                mIdpMetadata, mClientMetadata, /*isAutoReauthn=*/false);
+                mIdpMetadata, mClientMetadata, /*isAutoReauthn=*/false, mRpContext);
     }
 
     private PropertyModel createHeaderItem(HeaderType headerType, String topFrameForDisplay,
-            String iframeForDisplay, String idpForDisplay, IdentityProviderMetadata idpMetadata) {
+            String iframeForDisplay, String idpForDisplay, String rpContext) {
         Runnable closeOnClickRunnable = () -> {
             onDismissed(IdentityRequestDialogDismissReason.CLOSE_BUTTON);
 
@@ -202,6 +203,7 @@ class AccountSelectionMediator {
                 .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, topFrameForDisplay)
                 .with(HeaderProperties.IFRAME_FOR_DISPLAY, iframeForDisplay)
                 .with(HeaderProperties.TYPE, headerType)
+                .with(HeaderProperties.RP_CONTEXT, rpContext)
                 .build();
     }
 
@@ -256,7 +258,7 @@ class AccountSelectionMediator {
 
     void showAccounts(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
             List<Account> accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata, boolean isAutoReauthn) {
+            ClientIdMetadata clientMetadata, boolean isAutoReauthn, String rpContext) {
         if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
             // Use placeholder icon so that the header text wrapping does not change when the icon
             // is fetched.
@@ -267,7 +269,7 @@ class AccountSelectionMediator {
 
         mSelectedAccount = accounts.size() == 1 ? accounts.get(0) : null;
         showAccountsInternal(topFrameForDisplay, iframeForDisplay, idpForDisplay, accounts,
-                idpMetadata, clientMetadata, isAutoReauthn);
+                idpMetadata, clientMetadata, isAutoReauthn, rpContext);
         setComponentShowTime(SystemClock.elapsedRealtime());
 
         if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
@@ -294,13 +296,14 @@ class AccountSelectionMediator {
 
     private void showAccountsInternal(String topFrameForDisplay, String iframeForDisplay,
             String idpForDisplay, List<Account> accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata, boolean isAutoReauthn) {
+            ClientIdMetadata clientMetadata, boolean isAutoReauthn, String rpContext) {
         mTopFrameForDisplay = topFrameForDisplay;
         mIframeForDisplay = iframeForDisplay;
         mIdpForDisplay = idpForDisplay;
         mAccounts = accounts;
         mIdpMetadata = idpMetadata;
         mClientMetadata = clientMetadata;
+        mRpContext = rpContext;
 
         if (mSelectedAccount != null) {
             accounts = Arrays.asList(mSelectedAccount);
@@ -344,7 +347,7 @@ class AccountSelectionMediator {
 
     private void updateHeader() {
         PropertyModel headerModel = createHeaderItem(
-                mHeaderType, mTopFrameForDisplay, mIframeForDisplay, mIdpForDisplay, mIdpMetadata);
+                mHeaderType, mTopFrameForDisplay, mIframeForDisplay, mIdpForDisplay, mRpContext);
         mModel.set(ItemProperties.HEADER, headerModel);
     }
 
@@ -413,7 +416,7 @@ class AccountSelectionMediator {
         mSelectedAccount = selectedAccount;
         if (oldSelectedAccount == null && !mSelectedAccount.isSignIn()) {
             showAccountsInternal(mTopFrameForDisplay, mIframeForDisplay, mIdpForDisplay, mAccounts,
-                    mIdpMetadata, mClientMetadata, /*isAutoReauthn=*/false);
+                    mIdpMetadata, mClientMetadata, /*isAutoReauthn=*/false, mRpContext);
             return;
         }
 

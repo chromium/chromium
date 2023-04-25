@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/android/webid/jni_headers/IdentityProviderMetadata_jni.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
@@ -103,6 +104,26 @@ Account ConvertFieldsToAccount(
                  login_state);
 }
 
+ScopedJavaLocalRef<jstring> ConvertRpContextToJavaString(
+    JNIEnv* env,
+    blink::mojom::RpContext rp_context) {
+  std::string rp_context_string;
+  switch (rp_context) {
+    case blink::mojom::RpContext::kSignUp:
+      rp_context_string = "signup";
+      break;
+    case blink::mojom::RpContext::kUse:
+      rp_context_string = "use";
+      break;
+    case blink::mojom::RpContext::kContinue:
+      rp_context_string = "continue";
+      break;
+    default:
+      rp_context_string = "signin";
+  }
+  return ConvertUTF8ToJavaString(env, rp_context_string);
+}
+
 }  // namespace
 
 AccountSelectionViewAndroid::AccountSelectionViewAndroid(
@@ -145,13 +166,15 @@ void AccountSelectionViewAndroid::Show(
   ScopedJavaLocalRef<jobject> client_id_metadata_obj =
       ConvertToJavaClientIdMetadata(env,
                                     identity_provider_data[0].client_metadata);
+
   Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_,
       ConvertUTF8ToJavaString(env, top_frame_for_display),
       ConvertUTF8ToJavaString(env, iframe_url_for_display.value_or("")),
       ConvertUTF8ToJavaString(env, identity_provider_data[0].idp_for_display),
       accounts_obj, idp_metadata_obj, client_id_metadata_obj,
-      sign_in_mode == Account::SignInMode::kAuto);
+      sign_in_mode == Account::SignInMode::kAuto,
+      ConvertRpContextToJavaString(env, identity_provider_data[0].rp_context));
 }
 
 void AccountSelectionViewAndroid::ShowFailureDialog(

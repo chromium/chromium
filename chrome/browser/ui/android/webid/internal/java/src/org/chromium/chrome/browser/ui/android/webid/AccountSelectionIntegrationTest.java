@@ -141,7 +141,7 @@ public class AccountSelectionIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
                     TEST_ETLD_PLUS_ONE_2, Arrays.asList(ANA, BOB), IDP_METADATA, mClientIdMetadata,
-                    false);
+                    false /* isAutoReauthn */, "signin" /* rpContext */);
         });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -155,7 +155,7 @@ public class AccountSelectionIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
                     TEST_ETLD_PLUS_ONE_2, Arrays.asList(BOB), IDP_METADATA, mClientIdMetadata,
-                    false);
+                    false /* isAutoReauthn */, "signin" /* rpContext */);
         });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -213,7 +213,7 @@ public class AccountSelectionIntegrationTest {
         runOnUiThreadBlocking(() -> {
             mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
                     TEST_ETLD_PLUS_ONE_2, Arrays.asList(ANA, BOB), IDP_METADATA, mClientIdMetadata,
-                    false);
+                    false /* isAutoReauthn */, "signin" /* rpContext */);
         });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any(), any());

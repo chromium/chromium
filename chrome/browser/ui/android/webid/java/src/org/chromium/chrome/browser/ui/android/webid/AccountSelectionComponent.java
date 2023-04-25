@@ -44,10 +44,13 @@ public interface AccountSelectionComponent {
      * @param idpMetadata Metadata related to identity provider.
      * @param clientMetadata Metadata related to relying party.
      * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
+     * @param rpContext is a {@link String} representing the desired text to be used in the title of
+     *         the FedCM prompt: "signin", "continue", etc.
+
      */
     void showAccounts(String topFrameEtldPlusOne, String iframeEtldPlusOne, String idpEtldPlusOne,
             List<Account> accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata, boolean isAutoReauthn);
+            ClientIdMetadata clientMetadata, boolean isAutoReauthn, String rpContext);
 
     /**
      * Closes the outstanding bottom sheet.

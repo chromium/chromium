@@ -70,9 +70,11 @@ class AccountSelectionProperties {
                 new ReadableObjectPropertyKey<>("brand_icon");
         static final ReadableObjectPropertyKey<HeaderType> TYPE =
                 new ReadableObjectPropertyKey<>("type");
+        static final ReadableObjectPropertyKey<String> RP_CONTEXT =
+                new ReadableObjectPropertyKey<>("rp_context");
 
         static final PropertyKey[] ALL_KEYS = {CLOSE_ON_CLICK_LISTENER, IDP_FOR_DISPLAY,
-                TOP_FRAME_FOR_DISPLAY, IFRAME_FOR_DISPLAY, IDP_BRAND_ICON, TYPE};
+                TOP_FRAME_FOR_DISPLAY, IFRAME_FOR_DISPLAY, IDP_BRAND_ICON, TYPE, RP_CONTEXT};
 
         private HeaderProperties() {}
     }
