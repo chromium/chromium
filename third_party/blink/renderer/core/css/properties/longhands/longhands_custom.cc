@@ -467,7 +467,7 @@ const CSSValue* AnimationRangeStart::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
   return css_parsing_utils::ConsumeCommaSeparatedList(
       css_parsing_utils::ConsumeAnimationRange, range, context,
       /* default_offset_percent */ 0.0);
@@ -489,7 +489,7 @@ const CSSValue* AnimationRangeEnd::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
   return css_parsing_utils::ConsumeCommaSeparatedList(
       css_parsing_utils::ConsumeAnimationRange, range, context,
       /* default_offset_percent */ 100.0);

@@ -900,7 +900,7 @@
       valid_for_marker: true,
       is_animation_property: true,
       valid_for_keyframe: false,
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "animation-range-end",
@@ -913,7 +913,7 @@
       valid_for_marker: true,
       is_animation_property: true,
       valid_for_keyframe: false,
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "animation-timeline",
@@ -926,7 +926,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
       is_animation_property: true,
     },
     {
@@ -4415,7 +4415,7 @@
       type_name: "Vector<TimelineAttachment>",
       converter: "ConvertViewTimelineAttachment",
       separator: ",",
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "scroll-timeline-axis",
@@ -4426,7 +4426,7 @@
       type_name: "Vector<TimelineAxis>",
       converter: "ConvertViewTimelineAxis",
       separator: ",",
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "scroll-timeline-name",
@@ -4438,7 +4438,7 @@
       wrapper_pointer_name: "Persistent",
       converter: "ConvertViewTimelineName",
       separator: ",",
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "shape-image-threshold",
@@ -5186,7 +5186,7 @@
       type_name: "Vector<TimelineAttachment>",
       converter: "ConvertViewTimelineAttachment",
       separator: ",",
-      runtime_flag: "CSSViewTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "view-timeline-axis",
@@ -5197,7 +5197,7 @@
       type_name: "Vector<TimelineAxis>",
       converter: "ConvertViewTimelineAxis",
       separator: ",",
-      runtime_flag: "CSSViewTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "view-timeline-inset",
@@ -5209,7 +5209,7 @@
       type_name: "Vector<TimelineInset>",
       converter: "ConvertViewTimelineInset",
       separator: ",",
-      runtime_flag: "CSSViewTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "view-timeline-name",
@@ -5221,7 +5221,7 @@
       wrapper_pointer_name: "Persistent",
       converter: "ConvertViewTimelineName",
       separator: ",",
-      runtime_flag: "CSSViewTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "view-transition-name",
@@ -6664,7 +6664,7 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_keyframe: false,
-      runtime_flag: 'CSSScrollTimeline',
+      runtime_flag: 'ScrollTimeline',
     },
     {
       // Variant of the "animation" shorthand which includes the
@@ -6689,7 +6689,7 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_keyframe: false,
-      runtime_flag: 'CSSScrollTimeline',
+      runtime_flag: 'ScrollTimeline',
     },
     {
       name: "background",
@@ -7189,7 +7189,7 @@
       name: "scroll-timeline",
       longhands: ["scroll-timeline-name", "scroll-timeline-axis", "scroll-timeline-attachment"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "text-decoration",
@@ -7215,7 +7215,7 @@
       name: "view-timeline",
       longhands: ["view-timeline-name", "view-timeline-axis", "view-timeline-attachment"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSViewTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "-webkit-border-after",
@@ -7803,7 +7803,7 @@
       name: "-webkit-alternative-animation-with-timeline",
       alias_for: "-alternative-animation-with-timeline",
       alternative_of: "-webkit-animation",
-      runtime_flag: "CSSScrollTimeline",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "-webkit-alternative-animation-with-delay-start-end",

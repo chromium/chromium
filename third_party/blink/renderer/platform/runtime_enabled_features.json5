@@ -721,7 +721,7 @@
       // Additionally, animation-delay becomes a shorthand which expands
       // to those properties.
       name: "CSSAnimationDelayStartEnd",
-      depends_on: ["CSSScrollTimeline"],
+      depends_on: ["ScrollTimeline"],
       status: "test",
     },
     {
@@ -1046,14 +1046,6 @@
       status: "test",
       base_feature: "none",
     },
-    // Support for scroll-timeline.
-    //
-    // https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-shorthand
-    {
-      name: "CSSScrollTimeline",
-      status: "experimental",
-      base_feature: "none",
-    },
     {
       name: "CSSSelectorFragmentAnchor",
       status: "experimental",
@@ -1181,14 +1173,6 @@
       // https://drafts.csswg.org/css-values-4/#viewport-relative-units
       name: "CSSViewportUnits4",
       status: "stable",
-      base_feature: "none",
-    },
-    // Support for view-timeline.
-    //
-    // https://drafts.csswg.org/scroll-animations-1/#view-timeline-shorthand
-    {
-      name: "CSSViewTimeline",
-      status: "experimental",
       base_feature: "none",
     },
     // `white-space` as a shorthand. crbug.com/1417543
@@ -3014,7 +2998,7 @@
     {
       name: "ScrollTimeline",
       status: "experimental",
-      implied_by: ["AnimationWorklet", "CSSScrollTimeline", "CSSViewTimeline"],
+      implied_by: ["AnimationWorklet"],
       base_feature: "none",
     },
     // Implements documentElement.scrollTop/Left and bodyElement.scrollTop/Left

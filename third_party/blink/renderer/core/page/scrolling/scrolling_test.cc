@@ -2655,7 +2655,7 @@ TEST_P(ScrollingSimTest, ImmediateCompositedScroll) {
 }
 
 TEST_P(ScrollingSimTest, CompositedScrollDeferredWithLinkedAnimation) {
-  ScopedCSSScrollTimelineForTest scroll_timeline_enabled(true);
+  ScopedScrollTimelineForTest scroll_timeline_enabled(true);
 
   String kUrl = "https://example.com/test.html";
   SimRequest request(kUrl, "text/html");

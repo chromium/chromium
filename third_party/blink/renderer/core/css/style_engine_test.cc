@@ -5952,7 +5952,7 @@ TEST_F(StyleEngineTest, AnimationDelayStartEndFlags) {
 TEST_F(StyleEngineTest, AnimationShorthandFlags) {
   String css = "animation: foo 1s";
   {
-    ScopedCSSScrollTimelineForTest scroll_timeline_enabled(false);
+    ScopedScrollTimelineForTest scroll_timeline_enabled(false);
     ScopedCSSAnimationDelayStartEndForTest start_end_enabled(false);
     const CSSPropertyValueSet* set =
         css_test_helpers::ParseDeclarationBlock(css);
@@ -5968,7 +5968,7 @@ TEST_F(StyleEngineTest, AnimationShorthandFlags) {
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationName));
   }
   {
-    ScopedCSSScrollTimelineForTest scroll_timeline_enabled(true);
+    ScopedScrollTimelineForTest scroll_timeline_enabled(true);
     ScopedCSSAnimationDelayStartEndForTest start_end_enabled(false);
     const CSSPropertyValueSet* set =
         css_test_helpers::ParseDeclarationBlock(css);
@@ -5987,7 +5987,7 @@ TEST_F(StyleEngineTest, AnimationShorthandFlags) {
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationRangeEnd));
   }
   {
-    ScopedCSSScrollTimelineForTest scroll_timeline_enabled(true);
+    ScopedScrollTimelineForTest scroll_timeline_enabled(true);
     ScopedCSSAnimationDelayStartEndForTest start_end_enabled(true);
     const CSSPropertyValueSet* set =
         css_test_helpers::ParseDeclarationBlock(css);
@@ -6006,10 +6006,10 @@ TEST_F(StyleEngineTest, AnimationShorthandFlags) {
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationRangeStart));
     EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationRangeEnd));
   }
-  // Note that the combination CSSScrollTimeline=false and
+  // Note that the combination ScrollTimeline=false and
   // CSSAnimationDelayStartEnd=true is not supported, via 'depends_on'
   // in runtime_enabled_features.json5.
-  EXPECT_FALSE(!RuntimeEnabledFeatures::CSSScrollTimelineEnabled() &&
+  EXPECT_FALSE(!RuntimeEnabledFeatures::ScrollTimelineEnabled() &&
                RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
 }
 

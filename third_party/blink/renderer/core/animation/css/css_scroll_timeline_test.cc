@@ -24,9 +24,9 @@
 namespace blink {
 
 class CSSScrollTimelineTest : public PageTestBase,
-                              private ScopedCSSScrollTimelineForTest {
+                              private ScopedScrollTimelineForTest {
  public:
-  CSSScrollTimelineTest() : ScopedCSSScrollTimelineForTest(true) {}
+  CSSScrollTimelineTest() : ScopedScrollTimelineForTest(true) {}
 
   DocumentAnimations& GetDocumentAnimations() const {
     return GetDocument().GetDocumentAnimations();

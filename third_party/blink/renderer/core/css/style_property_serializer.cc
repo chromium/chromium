@@ -1594,7 +1594,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
         if (!ident || (ident->GetValueID() !=
                        CSSAnimationData::InitialTimeline().GetKeyword())) {
-          DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+          DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
         is_initial_value = true;
@@ -1609,7 +1609,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       if (property->IDEquals(CSSPropertyID::kAnimationRangeStart)) {
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
         if (!ident || (ident->GetValueID() != CSSValueID::kNormal)) {
-          DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+          DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
         is_initial_value = true;
@@ -1617,7 +1617,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       if (property->IDEquals(CSSPropertyID::kAnimationRangeEnd)) {
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
         if (!ident || (ident->GetValueID() != CSSValueID::kNormal)) {
-          DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+          DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
         is_initial_value = true;
