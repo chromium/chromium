@@ -476,7 +476,7 @@ vars = {
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       'bff81b702ff4b7f74b1c0ed02a4bcf6c2744a90b',
+  'libcxx_revision':       '0e4617cf8c09a8e2b6704a51a8a0a9560715cf70',
 
   # GN CIPD package version.
   'gn_version': 'git_revision:5a004f9427a050c6c393c07ddb85cba8ff3849fa',
@@ -3936,7 +3936,7 @@ deps = {
     },
 
   'src/chromeos/assistant/libassistant/src': {
-      'url': Var('chrome_git') + '/external/gob/libassistant-internal/standalone/src.git' + '@' + '7e8a91342977bbcac4536afdee7af96ab45e51f3',
+      'url': Var('chrome_git') + '/external/gob/libassistant-internal/standalone/src.git' + '@' + '18376d73f1fab1204ee03e1b998ac83aa0539607',
       'condition': 'checkout_src_internal and checkout_chromeos',
   },
 
