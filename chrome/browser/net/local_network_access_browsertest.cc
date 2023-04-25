@@ -178,7 +178,6 @@ std::vector<WebFeature> AllAddressSpaceFeatures() {
       WebFeature::kAddressSpacePublicNonSecureContextNavigatedToPrivate,
       WebFeature::kAddressSpaceUnknownSecureContextNavigatedToPrivate,
       WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToPrivate,
-      WebFeature::kPrivateNetworkAccessIgnoredPreflightError,
       WebFeature::kPrivateNetworkAccessFetchedWorkerScript,
       WebFeature::kPrivateNetworkAccessFetchedSubFrame,
       WebFeature::kPrivateNetworkAccessFetchedTopFrame,
@@ -423,7 +422,6 @@ IN_PROC_BROWSER_TEST_F(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1},
-          {WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1},
           {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
       }));
 }
@@ -452,7 +450,6 @@ IN_PROC_BROWSER_TEST_F(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1},
-          {WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1},
           {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
       }));
 }
@@ -965,7 +962,6 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessWithFeatureEnabledWorkerBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
-          {WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1},
           {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
       }));
 }
@@ -1103,7 +1099,6 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessWithFeatureEnabledWorkerBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
-          {WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1},
           {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
       }));
 }
@@ -1239,7 +1234,6 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessWithFeatureEnabledWorkerBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kPrivateNetworkAccessWithinWorker, 1},
-          {WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1},
           {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
       }));
 }
@@ -1282,9 +1276,6 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessWithFeatureEnabledWorkerBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kPrivateNetworkAccessWithinWorker, 1},
-          // `kPrivateNetworkAccessIgnoredPreflightError` is not recorded.
-          // TODO(https://crbug.com/1428688): Consider recording the usecounter
-          // correctly.
           {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
       }));
 }

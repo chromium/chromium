@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                           "fetch($1).then(response => response.ok)",
                           https_server().GetURL("b.com", "/cors-ok.txt"))));
 
-  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1);
+  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
   CheckCounter(
       WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError, 1);
   CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(
                                       https_server().GetURL("subdomain.a.com",
                                                             "/cors-ok.txt"))));
 
-  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1);
+  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
   CheckCounter(
       WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError, 1);
   CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                           "fetch($1).then(response => response.ok)",
                           https_server().GetURL("a.com", "/cors-ok.txt"))));
 
-  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1);
+  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
   CheckCounter(
       WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError, 0);
   CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,

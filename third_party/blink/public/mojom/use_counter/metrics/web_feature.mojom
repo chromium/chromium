@@ -3406,7 +3406,7 @@ enum WebFeature {
   kCrossOriginOpenerPolicySameOriginAllowPopupsReportOnly = 4089,
   kCrossOriginOpenerPolicySameOriginReportOnly = 4090,
   kImageLoadAtDismissalEvent = 4091,
-  kPrivateNetworkAccessIgnoredPreflightError = 4092,
+  kOBSOLETE_PrivateNetworkAccessIgnoredPreflightError = 4092,
   kAbortPaymentRespondWithTrue = 4093,
   // The items above roughly this point are available in the M98 branch.
 
