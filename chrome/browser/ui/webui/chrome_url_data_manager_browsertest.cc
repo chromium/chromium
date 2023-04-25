@@ -249,7 +249,10 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
 //  2) Presence of TrustedTypes checks (see TrustedTypesEnabled test).
 static constexpr const char* const kChromeUrls[] = {
     "chrome://accessibility",
+// TODO:(https://crbug.com/1439754): Flakily crashes on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
     "chrome://app-service-internals",
+#endif
     "chrome://attribution-internals",
     "chrome://autofill-internals",
     "chrome://bookmarks",
