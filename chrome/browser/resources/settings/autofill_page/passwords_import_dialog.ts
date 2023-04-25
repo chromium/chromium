@@ -336,7 +336,7 @@ export class PasswordsImportDialogElement extends
                 this.results_.displayedEntries.length);
         this.conflicts_ = this.results_.displayedEntries;
         this.dialogState = ImportDialogState.CONFLICTS;
-        return;
+        break;
       case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
         this.descriptionText_ =
             this.i18nAdvanced('importPasswordsFileSizeExceeded');
