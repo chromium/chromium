@@ -64,7 +64,7 @@ def main():
     register_device_args(parser)
     register_emulator_args(parser)
     register_executable_test_args(parser)
-    register_update_args(parser, default_os_check='ignore', default_pave=True)
+    register_update_args(parser, default_os_check='ignore', default_pave=False)
     register_log_args(parser)
     register_package_args(parser, allow_temp_repo=True)
     register_serve_args(parser)
