@@ -40,6 +40,9 @@ int GetInputMethodTestInterfaceVersion() {
       crosapi::mojom::InputMethodTestInterface::Uuid_);
 }
 
+// Used to parameterize these tests.
+struct TestParam {};
+
 // Binds an InputMethodTestInterface to Ash-Chrome, which allows these tests to
 // execute IME operations from Ash-Chrome.
 // `required_versions` are the `MethodMinVersion` values of all the test methods
@@ -49,6 +52,7 @@ int GetInputMethodTestInterfaceVersion() {
 // InputMethodTestInterface does not support the required test methods or
 // capabilities.
 mojo::Remote<InputMethodTestInterface> BindInputMethodTestInterface(
+    const TestParam& test_param,
     std::initializer_list<InputMethodTestInterface::MethodMinVersions>
         required_versions,
     const std::vector<base::StringPiece>& required_test_capabilities = {}) {
@@ -486,14 +490,21 @@ void WaitUntilSurroundingTextIs(
   }
 }
 
-using InputMethodLacrosBrowserTest = InProcessBrowserTest;
+// Keep this fixture simple: only use this to enable / disable feature flags.
+class InputMethodLacrosBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<TestParam> {};
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+INSTANTIATE_TEST_SUITE_P(InputMethodLacrosBrowserTestAllParams,
+                         InputMethodLacrosBrowserTest,
+                         ::testing::Values(TestParam{}));
+
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        FocusingInputFieldSendsFocus) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
-          {InputMethodTestInterface::MethodMinVersions::
-               kWaitForFocusMinVersion});
+          GetParam(), {InputMethodTestInterface::MethodMinVersions::
+                           kWaitForFocusMinVersion});
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }
@@ -504,10 +515,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
   input_method_async_waiter.WaitForFocus();
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        CommitTextInsertsTextInInputField) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::kCommitTextMinVersion});
   if (!input_method.is_bound()) {
@@ -524,10 +536,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "hello", gfx::Range(5)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        CommitTextUpdatesSurroundingText) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::kCommitTextMinVersion,
            InputMethodTestInterface::MethodMinVersions::
@@ -550,10 +563,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
   EXPECT_EQ(selection_range, gfx::Range(3));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        CommitTextReplacesCompositionText) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kSetCompositionMinVersion,
@@ -577,10 +591,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "hello abc", gfx::Range(9)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        CommitEmptyTextDeletesCompositionText) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kSetCompositionMinVersion,
@@ -602,10 +617,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "", gfx::Range(0)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        CommitTextReplacesSelection) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::kCommitTextMinVersion});
   if (!input_method.is_bound()) {
@@ -624,10 +640,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "habclo", gfx::Range(4)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        CommitTextTriggersWebEvents) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kKeyEventHandledMinVersion});
@@ -659,10 +676,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
   EXPECT_FALSE(event_listener.HasMessages());
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        CommitTextWhileHandlingKeyEventTriggersWebEvents) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kSetCompositionMinVersion,
@@ -707,10 +725,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "。", gfx::Range(1)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SetCompositionInsertsCompositionInEmptyInputField) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kSetCompositionMinVersion});
@@ -728,10 +747,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "hello", gfx::Range(3)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SetCompositionInsertsCompositionAtStartOfInputField) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kSetCompositionMinVersion});
@@ -751,10 +771,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "hello world", gfx::Range(5)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SetCompositionInsertsCompositionAtEndOfInputField) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kSetCompositionMinVersion});
@@ -774,10 +795,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "hello world", gfx::Range(11)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SetCompositionInsertsCompositionInMiddleOfInputField) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kSetCompositionMinVersion});
@@ -797,10 +819,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "hello world", gfx::Range(5)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SetCompositionReplacesCompositionInInputField) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kSetCompositionMinVersion});
@@ -819,10 +842,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "abc", gfx::Range(2)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SetCompositionTriggersWebEvents) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kKeyEventHandledMinVersion});
@@ -859,10 +883,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
   EXPECT_FALSE(event_listener.HasMessages());
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SetCompositionUpdatesSurroundingText) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::kCommitTextMinVersion,
            InputMethodTestInterface::MethodMinVersions::
@@ -885,10 +910,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
   EXPECT_EQ(selection_range, gfx::Range(3));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SendKeyEventNotHandledTypesInEmptyTextField) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kKeyEventHandledMinVersion});
@@ -915,10 +941,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "abc", gfx::Range(3)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SendBackspaceDeletesNonEmptyTextField) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kKeyEventHandledMinVersion});
@@ -957,10 +984,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "lo", gfx::Range(0)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SendLeftArrowKeyWithSelectionCollapsesSelectionLeft) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kKeyEventHandledMinVersion});
@@ -986,10 +1014,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "abcde", gfx::Range(1)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SendRightArrowKeyWithSelectionCollapsesSelectionRight) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kKeyEventHandledMinVersion});
@@ -1015,10 +1044,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "abcde", gfx::Range(4)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SendKeyEventShortcutsModifiesSelection) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kKeyEventHandledMinVersion},
@@ -1106,10 +1136,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "abc abc abc", gfx::Range(11, 11)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SetCompositionWhileHandlingKeyEventTriggersWebEvents) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kSetCompositionMinVersion,
@@ -1153,10 +1184,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "ㅎ", gfx::Range(1)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SendKeyEventTriggersWebEvents) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kKeyEventHandledMinVersion});
@@ -1186,10 +1218,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
   EXPECT_FALSE(event_listener.HasMessages());
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SendKeyEventModifiersTriggersWebEvents) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kKeyEventHandledMinVersion},
@@ -1242,10 +1275,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
   EXPECT_FALSE(event_listener.HasMessages());
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        ConfirmCompositionWithNoSelectionAndNoComposition) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kWaitForNextSurroundingTextChangeMinVersion},
@@ -1267,10 +1301,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "hello", gfx::Range(3)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        ConfirmCompositionWithNoSelectionAndComposition) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kWaitForNextSurroundingTextChangeMinVersion},
@@ -1291,10 +1326,11 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "hello", gfx::Range(3)));
 }
 
-IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        ConfirmCompositionWithSelectionAndNoComposition) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
+          GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kWaitForNextSurroundingTextChangeMinVersion},
