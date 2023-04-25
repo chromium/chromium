@@ -432,16 +432,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Result updated in ImageRequestCallback().
   RequestHandlerResult image_request_result_;
 
-  // Indicates that RunCallback has already been called. This is used to
-  // prevent race conditions when a UI thread task blocked on a user interaction
-  // is racing against a scanning request.
-  bool run_callback_called_ = false;
-
-  // Indicates that `this` can be deleted right away. This is used with
-  // `run_callback_called_` to handle race conditions where non-blocking scans
-  // should wait before deleting `this`.
-  bool all_work_done_ = false;
-
   base::TimeTicks upload_start_time_;
 
   base::WeakPtrFactory<ContentAnalysisDelegate> weak_ptr_factory_{this};
