@@ -28,6 +28,27 @@ export enum PromoCardId {
   ACCESS_ON_ANY_DEVICE = 'access_on_any_device_promo',
 }
 
+/**
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Needs to stay in sync with PromoCardType in promo_card.cc
+ */
+enum PromoCardMetricId {
+  CHECKUP = 0,
+  UNUSED_WEB_PASSWORD_MANAGER = 1,
+  SHORTCUT = 2,
+  UNUSED_ACCESS_ON_ANY_DEVICE = 3,
+  // Must be last.
+  COUNT = 4,
+}
+
+function recordPromoCardAction(card: PromoCardMetricId) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'PasswordManager.PromoCard.ActionButtonClicked', card,
+      PromoCardMetricId.COUNT);
+}
+
 export interface PromoCardElement {
   $: {
     actionButton: CrButtonElement,
@@ -64,9 +85,11 @@ export class PromoCardElement extends PolymerElement {
         const params = new URLSearchParams();
         params.set(UrlParam.START_CHECK, 'true');
         Router.getInstance().navigateTo(Page.CHECKUP, null, params);
+        recordPromoCardAction(PromoCardMetricId.CHECKUP);
         break;
       case PromoCardId.SHORTCUT:
         PasswordManagerImpl.getInstance().showAddShortcutDialog();
+        recordPromoCardAction(PromoCardMetricId.SHORTCUT);
         break;
       default:
         assertNotReached();

@@ -3151,6 +3151,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PromoCard.ActionButtonClicked"
+    enum="PasswordManagerPromoCard" expires_after="2023-09-30">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records the type of a promo card for which user clicked action button in the
+    Password Manager UI. Recorded when a promo card action button is clicked.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PromoCard.Dismissed"
+    enum="PasswordManagerPromoCard" expires_after="2023-09-30">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records the type of a promo card dismissed in the Password Manager UI.
+    Recorded when a promo card is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PromoCard.Shown"
+    enum="PasswordManagerPromoCard" expires_after="2023-09-30">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records the type of a promo card shown in the Password Manager UI. Recorded
+    when a promo card is shown.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ProvisionalSaveFailure"
     enum="ProvisionalSaveFailure" expires_after="2023-10-31">
   <owner>kazinova@google.com</owner>

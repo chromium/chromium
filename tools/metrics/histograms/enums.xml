@@ -80254,6 +80254,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="New pref is 'on', legacy pref is 'on'"/>
 </enum>
 
+<enum name="PasswordManagerPromoCard">
+  <int value="0" label="Checkup promo"/>
+  <int value="1" label="Web password manager promo"/>
+  <int value="2" label="Add shortcut promo"/>
+  <int value="3" label="Access on any device promo"/>
+</enum>
+
 <enum name="PasswordManagerPslDomainMatchTriggering">
   <summary>
     The value indicates whether an entry returned by password autofill contains
