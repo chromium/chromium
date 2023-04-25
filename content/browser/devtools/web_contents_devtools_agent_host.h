@@ -82,9 +82,16 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
 
   // WebContentsObserver overrides.
   void WebContentsDestroyed() override;
+  void RenderFrameHostChanged(RenderFrameHost* old_host,
+                              RenderFrameHost* new_host) override;
 
   DevToolsAgentHostImpl* GetPrimaryFrameAgent();
   scoped_refptr<DevToolsAgentHost> GetOrCreatePrimaryFrameAgent();
+
+  // The method returns a pointer retaining this. Once the pointer goes
+  // out of scope, this may be destroyed.
+  [[nodiscard]] scoped_refptr<WebContentsDevToolsAgentHost>
+  RevalidateSessionAccess();
 
   std::unique_ptr<AutoAttacher> const auto_attacher_;
 };

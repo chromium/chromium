@@ -70,6 +70,8 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
       delete;
 
   static void AttachToWebContents(WebContents* web_contents);
+  static bool ShouldAllowSession(RenderFrameHost* frame_host,
+                                 DevToolsSession* session);
 
   FrameTreeNode* frame_tree_node() { return frame_tree_node_; }
 
@@ -150,8 +152,6 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   void UpdateFrameHost(RenderFrameHostImpl* frame_host);
   void ChangeFrameHostAndObservedProcess(RenderFrameHostImpl* frame_host);
   void UpdateFrameAlive();
-
-  bool ShouldAllowSession(DevToolsSession* session);
 
 #if BUILDFLAG(IS_ANDROID)
   device::mojom::WakeLock* GetWakeLock();

@@ -345,6 +345,16 @@ void WebContentsDevToolsAgentHost::WebContentsDestroyed() {
   InnerDetach();
 }
 
+void WebContentsDevToolsAgentHost::RenderFrameHostChanged(
+    RenderFrameHost* old_host,
+    RenderFrameHost* new_host) {
+  CHECK(web_contents());
+  if (new_host == web_contents()->GetPrimaryMainFrame()) {
+    std::ignore = RevalidateSessionAccess();
+    // `this` is invalid at this point!
+  }
+}
+
 // DevToolsAgentHostImpl overrides.
 DevToolsSession::Mode WebContentsDevToolsAgentHost::GetSessionMode() {
   return DevToolsSession::Mode::kSupportsTabTarget;
@@ -352,6 +362,10 @@ DevToolsSession::Mode WebContentsDevToolsAgentHost::GetSessionMode() {
 
 bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                                  bool acquire_wake_lock) {
+  if (web_contents() && !RenderFrameDevToolsAgentHost::ShouldAllowSession(
+                            web_contents()->GetPrimaryMainFrame(), session)) {
+    return false;
+  }
   session->SetBrowserOnly(true);
   const bool may_attach_to_brower = session->GetClient()->IsTrusted();
   session->CreateAndAddHandler<protocol::TargetHandler>(
@@ -365,6 +379,26 @@ bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session,
 protocol::TargetAutoAttacher* WebContentsDevToolsAgentHost::auto_attacher() {
   DCHECK(auto_attacher_);
   return auto_attacher_.get();
+}
+
+scoped_refptr<WebContentsDevToolsAgentHost>
+WebContentsDevToolsAgentHost::RevalidateSessionAccess() {
+  scoped_refptr<WebContentsDevToolsAgentHost> retain_this(this);
+  WebContents* wc = web_contents();
+  if (!wc) {
+    return retain_this;
+  }
+  std::vector<DevToolsSession*> restricted_sessions;
+  for (DevToolsSession* session : sessions()) {
+    if (!RenderFrameDevToolsAgentHost::ShouldAllowSession(
+            wc->GetPrimaryMainFrame(), session)) {
+      restricted_sessions.push_back(session);
+    }
+  }
+  if (!restricted_sessions.empty()) {
+    ForceDetachRestrictedSessions(restricted_sessions);
+  }
+  return retain_this;
 }
 
 }  // namespace content
