@@ -292,6 +292,15 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     /** @see org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlFocusChange(boolean) */
     void onUrlFocusChange(boolean hasFocus) {
         mUrlHasFocus = hasFocus;
+
+        // Propagate the information about focus change to all the processors first.
+        // Processors need this for accounting purposes.
+        // The focus change information should be passed before Processors receive first
+        // batch of suggestions, that is:
+        // - before any call to startZeroSuggest() (when first suggestions are populated), and
+        // - before stopAutocomplete() (when current suggestions are erased).
+        mDropdownViewInfoListBuilder.onUrlFocusChange(hasFocus);
+
         if (hasFocus) {
             dismissDeleteDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
             mRefineActionUsage = RefineActionUsage.NOT_USED;
@@ -332,8 +341,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             // a consequence the omnibox is unfocused).
             hideSuggestions();
         }
-
-        mDropdownViewInfoListBuilder.onUrlFocusChange(hasFocus);
     }
 
     /**

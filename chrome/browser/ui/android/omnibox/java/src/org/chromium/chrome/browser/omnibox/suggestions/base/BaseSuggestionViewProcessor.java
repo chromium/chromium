@@ -182,6 +182,14 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         }
     }
 
+    @Override
+    @CallSuper
+    public void onSuggestionsReceived() {
+        if (mActionChipsProcessor != null) {
+            mActionChipsProcessor.onSuggestionsReceived();
+        }
+    }
+
     /**
      * Apply In-Place highlight to matching sections of Suggestion text.
      *

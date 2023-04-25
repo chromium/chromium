@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragm
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
@@ -54,7 +53,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -62,12 +60,10 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxActionType;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.components.omnibox.action.OmniboxPedalType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.ArrayList;
@@ -265,13 +261,6 @@ public class OmniboxPedalsTest {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(name)
                 .setActions(List.of(new OmniboxPedal("hint", id)))
-                .build();
-    }
-
-    private AutocompleteMatch createDummyHistoryClustersAction(String name) {
-        return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                .setDisplayText(name)
-                .setActions(List.of(new HistoryClustersAction("hint", name)))
                 .build();
     }
 
@@ -556,37 +545,5 @@ public class OmniboxPedalsTest {
 
         SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
         Assert.assertNotNull("Should show a pedal if the suggestion is in top 3 suggestions", info);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.HISTORY_JOURNEYS})
-    public void testHistoryClustersAction() throws Exception {
-        if (mIncognito) return;
-        mOmniboxUtils.requestFocus();
-        List<AutocompleteMatch> suggestionsList = buildDummySuggestionsList(2, "Suggestion");
-        suggestionsList.add(createDummyHistoryClustersAction("query"));
-
-        mOmniboxUtils.setSuggestions(
-                AutocompleteResult.fromCache(suggestionsList, null), "Suggestion");
-        mOmniboxUtils.checkSuggestionsShown();
-
-        SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
-        Assert.assertNotNull("Should show", info);
-
-        clickOnPedal();
-
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(sActivityTestRule.getActivity())) {
-            CriteriaHelper.pollUiThread(() -> {
-                Tab tab = sActivityTestRule.getActivity().getActivityTab();
-                Criteria.checkThat(tab, Matchers.notNullValue());
-                Criteria.checkThat(
-                        tab.getUrl().getSpec(), Matchers.startsWith("chrome://history/journeys"));
-            });
-        } else {
-            mTargetActivity = ActivityTestUtils.waitForActivity(
-                    InstrumentationRegistry.getInstrumentation(), HistoryActivity.class);
-            Assert.assertNotNull("Could not find the history activity", mTargetActivity);
-        }
     }
 }

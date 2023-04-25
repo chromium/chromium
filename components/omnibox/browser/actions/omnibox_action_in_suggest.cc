@@ -88,9 +88,12 @@ OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
 
 void OmniboxActionInSuggest::RecordActionShown(size_t position,
                                                bool executed) const {
-  base::UmaHistogramEnumeration(executed ? "Omnibox.ActionInSuggest.Used"
-                                         : "Omnibox.ActionInSuggest.Shown",
+  base::UmaHistogramEnumeration("Omnibox.ActionInSuggest.Shown",
                                 ToUmaActionType(action_info_.action_type()));
+  if (executed) {
+    base::UmaHistogramEnumeration("Omnibox.ActionInSuggest.Used",
+                                  ToUmaActionType(action_info_.action_type()));
+  }
 }
 
 void OmniboxActionInSuggest::Execute(ExecutionContext& context) const {
