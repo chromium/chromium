@@ -12,7 +12,7 @@ members = ["cxxbridge_cmd/v1/crate"]
 bitflags = "1"
 cargo-platform = "0.1"
 cargo_metadata = "0.14"
-clap = "3"
+clap = "4"
 cxx = "1"
 cxxbridge-cmd = "1"
 lazy_static = "1"
@@ -82,17 +82,9 @@ package = "cargo_metadata"
 path = "cfg_if/v1/crate"
 package = "cfg-if"
 
-[patch.crates-io.clap_lex_v0_1]
-path = "clap_lex/v0_1/crate"
-package = "clap_lex"
-
 [patch.crates-io.clap_lex_v0_3]
 path = "clap_lex/v0_3/crate"
 package = "clap_lex"
-
-[patch.crates-io.clap_v3]
-path = "clap/v3/crate"
-package = "clap"
 
 [patch.crates-io.clap_v4]
 path = "clap/v4/crate"
@@ -241,10 +233,6 @@ package = "tempfile"
 [patch.crates-io.termcolor_v1]
 path = "termcolor/v1/crate"
 package = "termcolor"
-
-[patch.crates-io.textwrap_v0_15]
-path = "textwrap/v0_15/crate"
-package = "textwrap"
 
 [patch.crates-io.toml_v0_5]
 path = "toml/v0_5/crate"

@@ -62,7 +62,7 @@ dependencies = [
  "bitflags",
  "cargo-platform",
  "cargo_metadata",
- "clap 3.1.12",
+ "clap",
  "cxx",
  "cxxbridge-cmd",
  "lazy_static",
@@ -86,31 +86,13 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "3.1.12"
+version = "4.0.26"
 dependencies = [
  "atty",
  "bitflags",
- "clap_lex 0.1.1",
- "indexmap",
+ "clap_lex",
  "strsim",
  "termcolor",
- "textwrap",
-]
-
-[[package]]
-name = "clap"
-version = "4.0.26"
-dependencies = [
- "bitflags",
- "clap_lex 0.3.0",
- "strsim",
-]
-
-[[package]]
-name = "clap_lex"
-version = "0.1.1"
-dependencies = [
- "os_str_bytes",
 ]
 
 [[package]]
@@ -140,7 +122,7 @@ dependencies = [
 name = "cxxbridge-cmd"
 version = "1.0.82"
 dependencies = [
- "clap 4.0.26",
+ "clap",
  "codespan-reporting",
  "proc-macro2",
  "quote",
@@ -381,10 +363,6 @@ version = "1.1.2"
 dependencies = [
  "winapi-util",
 ]
-
-[[package]]
-name = "textwrap"
-version = "0.15.0"
 
 [[package]]
 name = "toml"

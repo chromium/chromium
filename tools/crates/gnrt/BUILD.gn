@@ -79,7 +79,7 @@ rust_executable("gnrt") {
   deps = [
     ":gnrt_lib",
     "//third_party/rust/cargo_metadata/v0_14:test_support",
-    "//third_party/rust/clap/v3:test_support",
+    "//third_party/rust/clap/v4:test_support",
     "//third_party/rust/semver/v1:test_support",
     "//third_party/rust/serde/v1:lib",
     "//third_party/rust/serde_json/v1:test_support",
