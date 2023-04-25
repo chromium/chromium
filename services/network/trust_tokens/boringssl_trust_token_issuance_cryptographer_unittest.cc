@@ -24,10 +24,10 @@ std::string GenerateValidVerificationKey(KeyType key_type) {
   const TRUST_TOKEN_METHOD* method;
   switch (key_type) {
     case kPmb:
-      method = TRUST_TOKEN_experiment_v2_pmb();
+      method = TRUST_TOKEN_pst_v1_pmb();
       break;
     case kVoprf:
-      method = TRUST_TOKEN_experiment_v2_voprf();
+      method = TRUST_TOKEN_pst_v1_voprf();
       break;
   }
   CHECK(TRUST_TOKEN_generate_key(
@@ -47,11 +47,11 @@ TEST(BoringsslTrustTokenIssuanceCryptographer, RespectsKeyLimitPmb) {
   // Test that adding more than the number of support keys fails.
   BoringsslTrustTokenIssuanceCryptographer cryptographer;
   ASSERT_TRUE(cryptographer.Initialize(
-      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb,
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb,
       /*issuer_configured_batch_size=*/10));
 
   size_t max_keys = TrustTokenMaxKeysForVersion(
-      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb);
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb);
   for (size_t i = 0; i < max_keys; ++i) {
     ASSERT_TRUE(
         cryptographer.AddKey(GenerateValidVerificationKey(KeyType::kPmb)))
@@ -65,11 +65,11 @@ TEST(BoringsslTrustTokenIssuanceCryptographer, RespectsKeyLimitVoprf) {
   // Test that adding more than the number of support keys fails.
   BoringsslTrustTokenIssuanceCryptographer cryptographer;
   ASSERT_TRUE(cryptographer.Initialize(
-      mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf,
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf,
       /*issuer_configured_batch_size=*/10));
 
   size_t max_keys = TrustTokenMaxKeysForVersion(
-      mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf);
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf);
   for (size_t i = 0; i < max_keys; ++i) {
     ASSERT_TRUE(
         cryptographer.AddKey(GenerateValidVerificationKey(KeyType::kVoprf)))

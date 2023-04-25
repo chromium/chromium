@@ -30,6 +30,12 @@ std::unique_ptr<BoringsslTrustTokenState> BoringsslTrustTokenState::Create(
     case mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf:
       method = TRUST_TOKEN_experiment_v2_voprf();
       break;
+    case mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb:
+      method = TRUST_TOKEN_pst_v1_pmb();
+      break;
+    case mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf:
+      method = TRUST_TOKEN_pst_v1_voprf();
+      break;
   }
 
   auto ctx = bssl::UniquePtr<TRUST_TOKEN_CLIENT>(TRUST_TOKEN_CLIENT_new(

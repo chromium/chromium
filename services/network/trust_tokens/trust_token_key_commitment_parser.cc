@@ -87,8 +87,11 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
   // Confirm that the protocol_version field is present. If the server supports
   // multiple versions, we prefer the VOPRF version, since it's more efficient
   // (and we're free to choose which version to use).
-  for (auto version : {mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf,
-                       mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb}) {
+  for (auto version :
+       {mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf,
+        mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb,
+        mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf,
+        mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb}) {
     std::string version_label = internal::ProtocolVersionToString(version);
     if (commitments_dict.contains(version_label)) {
       dict = commitments_dict.FindDict(version_label);
