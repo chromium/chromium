@@ -50,6 +50,12 @@ ASH_EXPORT void AdjustAdminTemplateWindowBounds(
     const std::vector<gfx::Rect>& existing_bounds,
     gfx::Rect& bounds);
 
+// Returns the number of `window_count` bounds for windows on the
+// `available_bounds` screen.
+ASH_EXPORT std::vector<gfx::Rect> GetInitialWindowLayout(
+    const gfx::Rect& work_area,
+    const int window_count);
+
 // This class is used to launch an admin template and track the windows that
 // have been launched from it.
 class ASH_EXPORT AdminTemplateLaunchTracker {

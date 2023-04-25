@@ -9,12 +9,15 @@
 #include "ash/wm/overview/overview_test_base.h"
 #include "base/json/json_string_value_serializer.h"
 #include "components/app_restore/restore_data.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ash {
 namespace {
 
 using testing::_;
+using testing::ElementsAre;
 using testing::Eq;
+using testing::Le;
 using testing::Not;
 using testing::Optional;
 
@@ -66,7 +69,19 @@ constexpr char kAdminTemplateJson[] = R"json({
    }
 })json";
 
-class AdminTemplateTest : public OverviewTestBase {
+constexpr char kAdminTemplateWithoutBoundsJson[] = R"json({
+   "mgndgikekgjfcpckkfioiadnlibdjbkf": {
+      "1": {
+         "active_tab_index": 0,
+         "app_name": "",
+         "index": 0,
+         "urls": [ "https://www.google.com/" ]
+      }
+   }
+})json";
+
+class AdminTemplateTest : public OverviewTestBase,
+                          public testing::WithParamInterface<const char*> {
  public:
   AdminTemplateTest() = default;
   AdminTemplateTest(const AdminTemplateTest&) = delete;
@@ -97,7 +112,7 @@ class AdminTemplateTest : public OverviewTestBase {
   const app_restore::AppRestoreData* GetRestoreData(
       const DeskTemplate& admin_template,
       const std::string& app_id,
-      int32_t window_id) {
+      absl::optional<int32_t> window_id = absl::nullopt) {
     const auto& app_id_to_launch_list =
         admin_template.desk_restore_data()->app_id_to_launch_list();
     auto it = app_id_to_launch_list.find(app_id);
@@ -106,8 +121,11 @@ class AdminTemplateTest : public OverviewTestBase {
     }
 
     const auto& launch_list = it->second;
-    auto it2 = launch_list.find(window_id);
-    return it2 != launch_list.end() ? it2->second.get() : nullptr;
+    if (window_id.has_value()) {
+      auto it2 = launch_list.find(*window_id);
+      return it2 != launch_list.end() ? it2->second.get() : nullptr;
+    }
+    return launch_list.begin()->second.get();
   }
 };
 
@@ -195,8 +213,43 @@ TEST_F(AdminTemplateTest, AdjustAdminTemplateWindowBounds) {
   }
 }
 
-TEST_F(AdminTemplateTest, LaunchTemplate) {
-  auto admin_template = CreateTemplateFromJson(kAdminTemplateJson);
+// Tests that when we have different number of windows the bounds for each
+// window is expected.
+TEST_F(AdminTemplateTest, GetInitialWindowLayout) {
+  const gfx::Rect work_area(0, 0, 1000, 800);
+
+  // Verifies the bounds when there is only one window.
+  EXPECT_THAT(GetInitialWindowLayout(work_area, 1),
+              ElementsAre(gfx::Rect(100, 80, 800, 640)));
+
+  // Verifies the bounds when there are two windows.
+  EXPECT_THAT(
+      GetInitialWindowLayout(work_area, 2),
+      ElementsAre(gfx::Rect(0, 0, 500, 800), gfx::Rect(500, 0, 500, 800)));
+
+  // Verifies the bounds when there are three windows.
+  EXPECT_THAT(
+      GetInitialWindowLayout(work_area, 3),
+      ElementsAre(gfx::Rect(0, 0, 500, 800), gfx::Rect(500, 0, 500, 400),
+                  gfx::Rect(500, 400, 500, 400)));
+
+  // Verifies the bounds when there are four windows.
+  EXPECT_THAT(
+      GetInitialWindowLayout(work_area, 4),
+      ElementsAre(gfx::Rect(0, 0, 500, 400), gfx::Rect(500, 0, 500, 400),
+                  gfx::Rect(500, 400, 500, 400), gfx::Rect(0, 400, 500, 400)));
+
+  // Verifies the bounds when there are eight windows.
+  EXPECT_THAT(
+      GetInitialWindowLayout(work_area, 8),
+      ElementsAre(gfx::Rect(0, 0, 500, 400), gfx::Rect(500, 0, 500, 400),
+                  gfx::Rect(500, 400, 500, 400), gfx::Rect(0, 400, 500, 400),
+                  gfx::Rect(0, 0, 500, 400), gfx::Rect(500, 0, 500, 400),
+                  gfx::Rect(500, 400, 500, 400), gfx::Rect(0, 400, 500, 400)));
+}
+
+TEST_P(AdminTemplateTest, LaunchTemplate) {
+  auto admin_template = CreateTemplateFromJson(GetParam());
   ASSERT_TRUE(admin_template);
 
   AdminTemplateLaunchTracker launch_tracker(std::move(admin_template),
@@ -217,16 +270,23 @@ TEST_F(AdminTemplateTest, LaunchTemplate) {
 
   ASSERT_TRUE(launched_template);
   // The first launched window will start at -2.
-  const auto* app_restore_data = GetRestoreData(
-      *launched_template, "mgndgikekgjfcpckkfioiadnlibdjbkf", -2);
+  const auto* app_restore_data =
+      GetRestoreData(*launched_template, "mgndgikekgjfcpckkfioiadnlibdjbkf");
   ASSERT_TRUE(app_restore_data);
 
+  // Verifies that the window has been assigned with bounds.
+  ASSERT_FALSE(app_restore_data->current_bounds->IsEmpty());
   // Verifies that a display id has been assigned.
   EXPECT_THAT(app_restore_data->display_id, Optional(Not(Eq(-1))));
   // And window activation index.
   EXPECT_THAT(app_restore_data->activation_index,
-              Optional(kAdminTemplateStartingActivationIndex));
+              Optional(Le(kAdminTemplateStartingActivationIndex)));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AdminTemplateTest,
+                         testing::Values(kAdminTemplateJson,
+                                         kAdminTemplateWithoutBoundsJson));
 
 }  // namespace
 }  // namespace ash

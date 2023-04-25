@@ -17,6 +17,7 @@
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ash {
 
@@ -205,6 +206,27 @@ app_restore::AppRestoreData* GetAppRestoreData(DeskTemplate& admin_template,
   return nullptr;
 }
 
+// Returns true if all windows have bounds.
+bool DoesAllWindowsHaveBounds(const DeskTemplate& admin_template) {
+  const auto& app_id_to_launch_list =
+      admin_template.desk_restore_data()->app_id_to_launch_list();
+  for (auto& [app_id, launch_list] : app_id_to_launch_list) {
+    for (auto& [window_id, app_restore_data] : launch_list) {
+      if (!app_restore_data->current_bounds.has_value()) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+struct BoundsCoeff {
+  float x;
+  float y;
+  float w;
+  float h;
+};
+
 }  // namespace
 
 bool MergeAdminTemplateWindowUpdate(DeskTemplate& admin_template,
@@ -243,6 +265,50 @@ void AdjustAdminTemplateWindowBounds(
 
     bounds.Offset(xoffset, yoffset);
   }
+}
+
+std::vector<gfx::Rect> GetInitialWindowLayout(const gfx::Rect& work_area,
+                                              const int window_count) {
+  if (window_count == 0) {
+    return std::vector<gfx::Rect>();
+  }
+
+  std::vector<gfx::Rect> all_bounds;
+  std::vector<BoundsCoeff> coeff;
+
+  const int total_width = work_area.width();
+  const int total_height = work_area.height();
+
+  if (window_count == 1) {
+    coeff.push_back({0.1, 0.1, 0.8, 0.8});
+  } else if (window_count == 2) {
+    coeff.push_back({0, 0, 0.5, 1});
+    coeff.push_back({0.5, 0, 0.5, 1});
+  } else if (window_count == 3) {
+    coeff.push_back({0, 0, 0.5, 1});
+    coeff.push_back({0.5, 0, 0.5, 0.5});
+    coeff.push_back({0.5, 0.5, 0.5, 0.5});
+  } else {
+    std::vector<BoundsCoeff> tmp = {{0, 0, 0.5, 0.5},
+                                    {0.5, 0, 0.5, 0.5},
+                                    {0.5, 0.5, 0.5, 0.5},
+                                    {0, 0.5, 0.5, 0.5}};
+
+    for (int i = 0; i < window_count; ++i) {
+      coeff.push_back(tmp.at(i % 4));
+    }
+  }
+
+  for (int i = 0; i < window_count; ++i) {
+    gfx::Rect bounds =
+        gfx::Rect(work_area.x() + total_width * coeff.at(i).x,
+                  work_area.y() + total_height * coeff.at(i).y,
+                  total_width * coeff.at(i).w, total_height * coeff.at(i).h);
+
+    all_bounds.push_back(bounds);
+  }
+
+  return all_bounds;
 }
 
 AdminTemplateLaunchTracker::AdminTemplateLaunchTracker(
@@ -286,23 +352,44 @@ void AdminTemplateLaunchTracker::LaunchTemplate(SavedDeskDelegate* delegate,
   // Maps root windows to a list of restore window IDs for the display.
   base::flat_map<aura::Window*, std::vector<WindowIdPair>> root_to_rwids;
 
-  auto& app_id_to_launch_list = admin_template->mutable_desk_restore_data()
-                                    ->mutable_app_id_to_launch_list();
-  for (auto& [app_id, launch_list] : app_id_to_launch_list) {
-    for (auto& [window_id, app_restore_data] : launch_list) {
-      int64_t display_id =
-          app_restore_data->display_id.value_or(default_display_id);
+  if (DoesAllWindowsHaveBounds(*admin_template)) {
+    auto& app_id_to_launch_list = admin_template->mutable_desk_restore_data()
+                                      ->mutable_app_id_to_launch_list();
+    for (auto& [app_id, launch_list] : app_id_to_launch_list) {
+      for (auto& [window_id, app_restore_data] : launch_list) {
+        int64_t display_id =
+            app_restore_data->display_id.value_or(default_display_id);
 
-      // If the display doesn't exist, fall back.
-      aura::Window* root = Shell::GetRootWindowForDisplayId(display_id);
-      if (!root) {
-        display_id = default_display_id;
-        root = default_root;
+        // If the display doesn't exist, fall back.
+        aura::Window* root = Shell::GetRootWindowForDisplayId(display_id);
+        if (!root) {
+          display_id = default_display_id;
+          root = default_root;
+        }
+
+        app_restore_data->display_id = display_id;
+        root_to_rwids[root].push_back(
+            {.template_rwid = mapping[window_id], .unique_rwid = window_id});
       }
+    }
+  } else {
+    auto& app_id_to_launch_list = admin_template->mutable_desk_restore_data()
+                                      ->mutable_app_id_to_launch_list();
+    int window_count = 0;
+    for (auto& [app_id, launch_list] : app_id_to_launch_list) {
+      window_count += launch_list.size();
+    }
+    const std::vector<gfx::Rect> all_bounds = GetInitialWindowLayout(
+        WorkAreaInsets::ForWindow(default_root)->user_work_area_bounds(),
+        window_count);
 
-      app_restore_data->display_id = display_id;
-      root_to_rwids[root].push_back(
-          {.template_rwid = mapping[window_id], .unique_rwid = window_id});
+    for (auto& [app_id, launch_list] : app_id_to_launch_list) {
+      for (auto& [window_id, app_restore_data] : launch_list) {
+        app_restore_data->current_bounds = all_bounds.at(--window_count);
+        app_restore_data->display_id = default_display_id;
+        root_to_rwids[default_root].push_back(
+            {.template_rwid = mapping[window_id], .unique_rwid = window_id});
+      }
     }
   }
 
