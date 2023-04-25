@@ -63,21 +63,21 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
     return isConnected() && IsFocusableStyleAfterUpdate();
   }
 
- private:
-  void DefaultEventHandler(Event&) override;
-
-  void SetIsModal(bool is_modal);
-  void ScheduleCloseEvent();
-
   // https://html.spec.whatwg.org/C/#the-dialog-element
   // Chooses the focused element when show() or showModal() is invoked.
-  void SetFocusForDialog();
+  void SetFocusForDialog(bool is_modal);
 
   // This is the old dialog initial focus behavior which is currently being
   // replaced by SetFocusForDialog.
   // TODO(http://crbug.com/383230): Remove this when DialogNewFocusBehavior gets
   // to stable with no issues.
   static void SetFocusForDialogLegacy(HTMLDialogElement* dialog);
+
+ private:
+  void DefaultEventHandler(Event&) override;
+
+  void SetIsModal(bool is_modal);
+  void ScheduleCloseEvent();
 
   bool is_modal_;
   String return_value_;
