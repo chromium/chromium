@@ -1510,8 +1510,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 // From that system dialog we can cause a cancel to occur.
 // TODO(crbug.com/809738):  Expand this to also cover in-browser, once an
 // appropriate signal is available to use for tracking expected events.
-// TODO(crbug.com/1435566):  Enable this once the CHECK failure in
-// PrintViewManagerBase::RegisterSystemPrintClient() is resolved.
+// TODO(crbug.com/1435566):  Enable this test once it works without the need
+// for --single-process-tests flag.
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
                        DISABLED_SystemPrintFromPrintPreviewCancelRetry) {
   AddPrinter("printer1");
@@ -1541,7 +1541,10 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 
   // Now try to initiate the system print from a Print Preview again.
   // Same number of expected events.
+  ResetNumReceivedMessages();
+
   SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
+
   EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kCanceled);
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 0);

@@ -652,6 +652,10 @@ void PrintBrowserTest::SetNumExpectedMessages(unsigned int num) {
   num_expected_messages_ = num;
 }
 
+void PrintBrowserTest::ResetNumReceivedMessages() {
+  num_received_messages_ = 0;
+}
+
 void PrintBrowserTest::WaitUntilCallbackReceived() {
   base::RunLoop run_loop;
   quit_callback_ = run_loop.QuitClosure();

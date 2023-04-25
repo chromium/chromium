@@ -244,6 +244,10 @@ void PrinterQueryOop::OnDidUpdatePrintSettings(
     PRINTER_LOG(ERROR) << "Error updating print settings via service for `"
                        << device_name << "`: " << result;
 
+    // `PrintViewManagerBase` owns the client ID, so `PrinterQueryOop` must not
+    // unregister it.  Just drop any local reference to it.
+    query_with_ui_client_id_.reset();
+
     // TODO(crbug.com/809738)  Fill in support for handling of access-denied
     // result code.
   } else {

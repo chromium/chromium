@@ -696,6 +696,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
       context->UpdatePrintSettings(std::move(job_settings));
 
   if (result != mojom::ResultCode::kSuccess) {
+    persistent_printing_contexts_.erase(context_id);
     std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(result));
     return;
   }

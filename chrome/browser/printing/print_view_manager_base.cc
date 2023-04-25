@@ -346,6 +346,12 @@ void PrintViewManagerBase::OnPrintSettingsDone(
   // displayed.  Otherwise this should only happen on Windows when the system
   // dialog is cancelled.
   if (printer_query->last_status() == mojom::ResultCode::kCanceled) {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
+        query_with_ui_client_id_.has_value()) {
+      UnregisterSystemPrintClient();
+    }
+#endif
     queue_->QueuePrinterQuery(std::move(printer_query));
 #if BUILDFLAG(IS_WIN)
     content::GetUIThreadTaskRunner({})->PostTask(
