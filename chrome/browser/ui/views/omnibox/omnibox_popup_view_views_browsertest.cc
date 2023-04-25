@@ -398,8 +398,19 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, MAYBE_ClickOmnibox) {
   views::Textfield* textfield = omnibox_view();
   EXPECT_EQ(u"foo", textfield->GetSelectedText());
 
-  generator.MoveMouseTo(location_bar()->GetBoundsInScreen().CenterPoint());
-  generator.ClickLeftButton();
+  // The omnibox likes to select all when it becomes focused which can happen
+  // when we send a click. To avoid this, send a drag that won't trigger a
+  // click.
+  gfx::Point click_point = location_bar()->GetBoundsInScreen().CenterPoint();
+  gfx::Point release_point(click_point.x() + 50, click_point.y());
+  // Sanity check that our drag doesn't count as a click.
+  ASSERT_TRUE(
+      omnibox_view()->ExceededDragThreshold(release_point - click_point));
+
+  generator.MoveMouseTo(click_point);
+  generator.PressLeftButton();
+  generator.MoveMouseTo(release_point);
+  generator.ReleaseLeftButton();
   EXPECT_EQ(std::u16string(), textfield->GetSelectedText());
 
   // Clicking the result should dismiss the popup (asynchronously).
