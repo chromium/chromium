@@ -15,7 +15,6 @@
 -KeepAliveDevToolsTest.KeepsAliveUntilBrowserClose
 -OmniboxPopupViewViewsTest.ClickOmnibox
 -OmniboxPopupViewViewsTest.PopupMatchesLocationBarBackground
--OutOfProcessPPAPITest.Printing
 -ProfileListDesktopBrowserTest.SwitchToProfile
 -SSLUITest.TestCloseTabWithUnsafePopup
 # crbug.com/1121486
