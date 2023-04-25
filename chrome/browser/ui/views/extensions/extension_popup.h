@@ -115,6 +115,12 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   void DevToolsAgentHostDetached(
       content::DevToolsAgentHost* agent_host) override;
 
+  // Closes the popup immediately, if possible. On Mac, if a nested
+  // run loop is running, schedule a deferred close for after the
+  // nested loop ends.
+  void CloseDeferredIfNecessary(views::Widget::ClosedReason reason =
+                                    views::Widget::ClosedReason::kUnspecified);
+
   // Returns the most recently constructed popup. For testing only.
   static ExtensionPopup* last_popup_for_testing();
 
@@ -161,6 +167,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   // OnExtensionUnloaded().
   std::unique_ptr<ScopedDevToolsAgentHostObservation>
       scoped_devtools_observation_;
+
+  base::WeakPtrFactory<ExtensionPopup> deferred_close_weak_ptr_factory_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POPUP_H_
