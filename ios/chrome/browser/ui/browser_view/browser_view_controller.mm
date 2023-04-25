@@ -2675,22 +2675,6 @@ enum HeaderBehaviour {
   return -(topHeader.frame.origin.y - self.headerOffset);
 }
 
-// Returns the insets into `view` that result in the visible viewport.
-- (UIEdgeInsets)viewportInsetsForView:(UIView*)view {
-  DCHECK(view);
-  UIEdgeInsets viewportInsets =
-      self.fullscreenController->GetCurrentViewportInsets();
-  // TODO(crbug.com/917548): Use BVC for viewport inset coordinate space rather
-  // than the content area.
-  CGRect viewportFrame = [view
-      convertRect:UIEdgeInsetsInsetRect(self.contentArea.bounds, viewportInsets)
-         fromView:self.contentArea];
-  return UIEdgeInsetsMake(
-      CGRectGetMinY(viewportFrame), CGRectGetMinX(viewportFrame),
-      CGRectGetMaxY(view.bounds) - CGRectGetMaxY(viewportFrame),
-      CGRectGetMaxX(view.bounds) - CGRectGetMaxX(viewportFrame));
-}
-
 #pragma mark - MainContentUI
 
 - (MainContentUIState*)mainContentUIState {
