@@ -55,10 +55,7 @@ if (android_sdk_release == "tprivacysandbox") {
     apk_name = "SdkSandboxWebviewSdk"
     android_manifest = "webview_sdk/AndroidManifest.xml"
     sources = [ "webview_sdk/src/org/chromium/sdk_sandbox/webview_sdk/WebViewSandboxedSdkProvider.java" ]
-    deps = [
-      ":sdksandbox_aidl_java",
-      "//third_party/androidx:androidx_webkit_webkit_java",
-    ]
+    deps = [ ":sdksandbox_aidl_java" ]
   }
 
   android_aidl("sdksandbox_aidl") {
