@@ -5464,6 +5464,13 @@
         {}
        ]
       ],
+      "popover-hint-crash.tentative.html": [
+       "82f83538e93e364dc90b45aa41515a586ea2089b",
+       [
+        null,
+        {}
+       ]
+      ],
       "popover-manual-crash.html": [
        "535eb4c7d120186f620c376a149158900721fe12",
        [
@@ -270074,11 +270081,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "462d294c6a871563cf98b49332f3228f6349bdfc",
+     "2ad079ea1bbedfaa41e9d38a31e6e06cbc59b0b3",
      []
     ],
     "mtime.json": [
-     "4d9364118948cf3ff84d40ce2ac4b2aeab164663",
+     "511d51003e6d595a1b207d02e8897149734895a4",
      []
     ]
    },
@@ -271398,7 +271405,7 @@
      []
     ],
     "worklet-animation-local-time-null-2.https.html.ini": [
-     "c5c79208424782f15542cfeeb81c92e4f76affed",
+     "c8e4379a5730fba22b182832c3699d413910dd76",
      []
     ],
     "worklet-animation-pause-immediately.https.html.ini": [
@@ -308796,7 +308803,7 @@
        []
       ],
       "clip-path-scaled-video.html.ini": [
-       "d83f400618c1ff40af94692f10746cfd962e3fc2",
+       "3ba1844a01451f1093076848d022ccd0d7e3e564",
        []
       ],
       "clip-path-scroll.html.ini": [
@@ -308849,6 +308856,10 @@
       ],
       "clip-path-svg-text-backdrop-filter-ref.html": [
        "194c4734828bfd9ff496cbbc31cf2abcf4a57a67",
+       []
+      ],
+      "clip-path-svg-text-backdrop-filter.html.ini": [
+       "f181a1c6b467fe537f5a8ef866679f16bf4ff355",
        []
       ],
       "clip-path-viewBox-1a.html.ini": [
@@ -326869,6 +326880,10 @@
        "d8d05f85cdcff1cf718a9af855602ffd89e8b878",
        []
       ],
+      "kind-of-widget-fallback-input-reset-background-clip-001.html.ini": [
+       "35fd610ca98a59ca67e85a4a229c2604a0ff47e9",
+       []
+      ],
       "kind-of-widget-fallback-input-reset-background-size-001.html.ini": [
        "84b2aa611163625a43a4f6dddf833d523ef30051",
        []
@@ -326931,6 +326946,10 @@
       ],
       "kind-of-widget-fallback-input-reset-border-top-color-001.html.ini": [
        "14b26723f548de962341d22594eefaf841cec560",
+       []
+      ],
+      "kind-of-widget-fallback-input-search-background-clip-001.html.ini": [
+       "8d12dfe5143a2da958d4ef1d9fe09a2b9578e11a",
        []
       ],
       "kind-of-widget-fallback-input-search-background-image-001.html.ini": [
@@ -327130,7 +327149,7 @@
        []
       ],
       "kind-of-widget-fallback-input-submit-border-block-end-width-001.html.ini": [
-       "0d819011f7f7df4cc05590aaa06da099f39e6597",
+       "8016a814a0f605f95889ebb0373f54f7779e02f5",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-block-start-style-001.html.ini": [
@@ -327199,6 +327218,10 @@
       ],
       "kind-of-widget-fallback-input-submit-border-left-width-001.html.ini": [
        "7e86e3dde9c51af132c681e6c1b829bcefefbc34",
+       []
+      ],
+      "kind-of-widget-fallback-input-submit-border-right-style-001.html.ini": [
+       "92aa3cd1b0a5a00b7c008cabc4b74c39a8dc747e",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-right-width-001.html.ini": [
@@ -334203,7 +334226,7 @@
       []
      ],
      "backdrop-filters-brightness.html.ini": [
-      "a95d0fb793c07b57e380d0d72eafdc6a502b81f4",
+      "3fb8d11144d59cc6c49d68d17a101d7dd7931582",
       []
      ],
      "backdrop-filters-contrast-ref.html": [
@@ -334212,6 +334235,10 @@
      ],
      "backdrop-filters-grayscale-001.html.ini": [
       "d90d0039fd8d209222414b66ba983ca3265cd9f1",
+      []
+     ],
+     "backdrop-filters-grayscale-002.html.ini": [
+      "ae3f41c16cc8093e8772c2da3ac54b9f0cebd0d8",
       []
      ],
      "backdrop-filters-grayscale-003.html.ini": [
@@ -334231,7 +334258,7 @@
       []
      ],
      "backdrop-filters-invert.html.ini": [
-      "932dff64aa7e5694f2f063ce81506bfca0e006e6",
+      "5b3348f93919cedfcfb07f28b0900a32edf7cbbd",
       []
      ],
      "backdrop-filters-opacity-ref.html": [
@@ -336734,7 +336761,7 @@
    },
    "density-size-correction": {
     "density-corrected-image-in-canvas.html.ini": [
-     "bcf5c9bfd960d18be62a49b8b50de898a77453c1",
+     "7740502e869430ff2e403cac2e7e4a27c653a4ac",
      []
     ],
     "density-corrected-image-svg-aspect-ratio-cross-origin.sub.html.ini": [
@@ -341704,7 +341731,7 @@
      []
     ],
     "event-click-visibilitychange.html.ini": [
-     "89fce3af5f45a24479e5d44a20acf97bb5d594b2",
+     "0e015ebba321a525b88dfd96fff416c8cf80a461",
      []
     ],
     "first-input-interactionid-tap.html.ini": [
@@ -350716,7 +350743,7 @@
        []
       ],
       "clear-window-name.https.html.ini": [
-       "e7d16638a317dd20f4fe996ea5c07e9537e9c893",
+       "5bcd71c98ebefc4d6bfa1a475e731f108ec7136e",
        []
       ],
       "document-domain-removed-iframe-expected.txt": [
@@ -354107,7 +354134,7 @@
         []
        ],
        "reporting-observer.html.ini": [
-        "7965b2c9212999599e1236adee1133ab8f5c88c2",
+        "2b82b238a310c2e7b61e452b8d9160e42f643109",
         []
        ]
       },
@@ -361966,7 +361993,7 @@
        ],
        "decode": {
         "image-decode-iframe.html.ini": [
-         "e93e004c661d52ccd15729be3a409737a343c315",
+         "ad8883e85a158e04a4cd82edd9353c025dc7c735",
          []
         ]
        },
@@ -362281,7 +362308,7 @@
         []
        ],
        "object-events.html.ini": [
-        "ce15add966c29a2f17bc6d9552d8c0929eab780b",
+        "055c09e0a3b41bb850ba3bd68afbae4fad4dff11",
         []
        ],
        "object-fallback-failed-cross-origin-navigation.sub-expected.txt": [
@@ -369956,7 +369983,7 @@
      []
     ],
     "cross-origin-iframe.sub.html.ini": [
-     "89dc46716c2b8e0f4685c83e4dba22ece1bcc6c3",
+     "0543237396f7c6faaa4042963ca3eeb9de224d0d",
      []
     ],
     "idlharness.window-expected.txt": [
@@ -371770,7 +371797,7 @@
        []
       ],
       "tabindex-002.html.ini": [
-       "5dcce868229beef768e8ab19329f07ae2c2ed748",
+       "b35f85201bf65981b91626b2ee45b7c539802fb9",
        []
       ],
       "unique-identifier-1-iframe-1.html": [
@@ -372446,11 +372473,11 @@
      []
     ],
     "mediasource-correct-frames-after-reappend.html.ini": [
-     "924c37ee9b53a1c14c95c990b0e0e1ef06619310",
+     "743e81a72e476e7cc34397de0fe532e344f7d5b4",
      []
     ],
     "mediasource-correct-frames.html.ini": [
-     "ddf4760f6601067839989cb18238f7d84b22a0ab",
+     "2d071fe67e06ed495538cd2383b0c036741ff15b",
      []
     ],
     "mediasource-duration-expected.txt": [
@@ -372846,7 +372873,7 @@
      []
     ],
     "MediaRecorder-peerconnection-no-sink.https.html.ini": [
-     "d7186be95ff23a95179185d71ced951b88263c89",
+     "d1f792e6bf97f7ec2ba2bbdf4f1ed2e196f3253d",
      []
     ],
     "MediaRecorder-peerconnection.https.html.ini": [
@@ -375136,7 +375163,7 @@
      []
     ],
     "navigation-id-resource-timing.tentative.html.ini": [
-     "f2408ea2c085f8bb46302e703b1f8da0f015b0e3",
+     "303699b750f25587fd908f3f63d33c1eda57eaba",
      []
     ],
     "navigation-id.helper.js": [
@@ -375335,11 +375362,11 @@
       []
      ],
      "private-state-token-redemption-default-permissions-policy.tentative.https.sub.html.ini": [
-      "046f05b4e09b3f873cfb644a210c2658bc85da46",
+      "9f4614a19526af696c44120bd6b9617882820401",
       []
      ],
      "private-state-token-redemption-supported-by-permissions-policy.tentative.html.ini": [
-      "54ff0dbba29a1224b39d9d6b0dc0333584adc06a",
+      "5e44491d4d8c0f58aa863eb4b47660e9a1c1b8a2",
       []
      ],
      "resources": {
@@ -383445,7 +383472,7 @@
       []
      ],
      "unregister-immediately-during-extendable-events.https.html.ini": [
-      "4507f109d4a7c9681a8acaa819e15213d5906200",
+      "099411deb66fa0fed34a5258192b037681df15b1",
       []
      ],
      "unregister-then-register-new-script.https-expected.txt": [
@@ -384289,39 +384316,39 @@
     },
     "prerender": {
      "about-blank-iframes.html.ini": [
-      "eee27e12168717219be8c3f2830df40141ed67bf",
+      "15f2a68eeddb7e095a7488af3efae8b91ad4004a",
       []
      ],
      "accept-clint-hint-cache.https.html.ini": [
-      "e35a01fd7fd92b8334123d4f81fb2ac70f81ce70",
+      "a89648017d86b1f126d04587ac2302fafa40ade1",
       []
      ],
      "activation-start.html.ini": [
-      "ca5a9c78961f4100945e566b4467d38e1fb7e9cf",
+      "e116e0db3d3d2f2721cffd8506d4ec40994c8e2b",
       []
      ],
      "cache-storage.https.html.ini": [
-      "a0b6f6990bdc7e10dfa6d0f89f6952516c7bf8d8",
+      "70bdc22bd2c416ee39a5cdb3abf9e7b7c15afb47",
       []
      ],
      "clients-matchall.https.html.ini": [
-      "6837e4c4817134ed915cad8cdb1d84a03930349f",
+      "d158edd74cd9232b9f824d65b86ccab07dcfb88c",
       []
      ],
      "cookies.https.html.ini": [
-      "251b3471d47bc9f15c9901ee97908abcc2947bf6",
+      "cfca822abfbcb74e7d8aae0a6f79c9e61723bc72",
       []
      ],
      "credentialed-prerender-opt-in.html.ini": [
-      "9beef48da5e5559f7dbc7b678fc0fc09774eae7a",
+      "8801d5b51fb9c8bc92b5efb682eb5b8ff3c1493d",
       []
      ],
      "cross-origin-iframe.html.ini": [
-      "6baae604fb44eea872de39aae7b176cff2cd1b35",
+      "a16b689afb4577ac50a4d877b5bd5fda011918f2",
       []
      ],
      "cross-origin-isolated.https.html.ini": [
-      "a2c4df468947ee68b7304e4e4f12f7fe16f0b6f1",
+      "f9732f4a1224652cbebf55c5ef4837f9eafca310",
       []
      ],
      "csp-script-src-elem-inline-speculation-rules.tentative.html.ini": [
@@ -384337,35 +384364,35 @@
       []
      ],
      "csp-script-src-strict-dynamic.html.ini": [
-      "6563cff979a6a2b6a097280b64097676ec223e8c",
+      "5cb3798c82a672a0aa44fe3704f09ba6e2320e38",
       []
      ],
      "csp-script-src-unsafe-inline.html.ini": [
-      "191ed7f745ff643f911ba24b76cda823a9fdace0",
+      "3021c8872299a642a5c9c322fc0bc351dac7ce9d",
       []
      ],
      "fetch-blob.html.ini": [
-      "7d9696ef4468e9f26c33da54722c54c9d51805c9",
+      "d37fa6a479b034bbae96d1e6716948eeecc81816",
       []
      ],
      "fetch-intercepted-by-service-worker.https.html.ini": [
-      "e2ca52f23b59ab36fdc8428d018f67613574f6cf",
+      "65a50baa3ea15187f65298afe498ee6a733d5852",
       []
      ],
      "iframe-added-post-activation.html.ini": [
-      "7d679b0e1cadbf51933a625a1fdbe73380cc5faa",
+      "43c2772eeb0d3e81f415c9558ef3f60b5d1d198b",
       []
      ],
      "indexeddb.html.ini": [
-      "8f43c365e676ea9d979e094958a65eb8c47c5ce5",
+      "2a080fb802f136b03920319f09a5f4b52d8b2501",
       []
      ],
      "local-storage.html.ini": [
-      "2b5676071995f3d381de824ae711dffe6278b8c3",
+      "20709c81d4adc07ae90e79c36011420f75101509",
       []
      ],
      "main-frame-navigation.https.html.ini": [
-      "742da7108a833ad200ed7feb5d93e430e6704a0c",
+      "155ce16ff7508bed23b2a138ac6f4fcea0cea822",
       []
      ],
      "media-autoplay-expected.txt": [
@@ -384373,19 +384400,19 @@
       []
      ],
      "media-autoplay.html.ini": [
-      "aeb045e766ab18857817dae07562768e6f84f696",
+      "4375eb5474c5500d6d9975ecc8fe8f4291d84b60",
       []
      ],
      "navigation-intercepted-by-service-worker.https.html.ini": [
-      "4efbbff04dba9fc52ecf9c05efc274d684cda92d",
+      "d3cae063b95407abb8255cd8c28f07633b142d6f",
       []
      ],
      "navigator-plugins.tentative.html.ini": [
-      "be80e7407dc508b5c3d41fffd0385c159aa890c0",
+      "31b9a7f734b756c6d6fcff3edc3f02189cbfc927",
       []
      ],
      "navigator-subapp.https.tentative.html.ini": [
-      "b59f8528347ebeaa2cd36507b9528f95ea206806",
+      "a220b7b72f1467d05a18fc9961a5b21e09b8b852",
       []
      ],
      "prefetch.https.html.ini": [
@@ -384397,27 +384424,27 @@
       []
      ],
      "referrer-policy-mismatch.html.ini": [
-      "7dce1222075e1621bea7b284e397dd798ce762fd",
+      "7b9c5b65f313683e3495405dc1ce86a0f7f2083e",
       []
      ],
      "referrer-policy-no-referrer.html.ini": [
-      "4ce7c0767407f551c3037c1d563bfb41b54eb6ac",
+      "cdb0a5cbdc0cbce87e2510011473eb94a657234d",
       []
      ],
      "referrer-policy-origin.html.ini": [
-      "8451be50733f07bff66a07c4e5c74504cdc1e89e",
+      "67b549445614dd61ffeef87ccc761b1f7162b916",
       []
      ],
      "referrer-policy-strict-origin.html.ini": [
-      "4b21fd4e3ccbb00c6d217a4aeefe25ff23227d6d",
+      "73b1bfb248fbaccdb0750c7a6b41205358206f25",
       []
      ],
      "referrer.html.ini": [
-      "a32534cf8d671a4f6003b7618758c3819805876e",
+      "00518007a7982191090ee065d1e46cbf26e6ed01",
       []
      ],
      "register-service-worker.https.html.ini": [
-      "db713f6a715f97dc1577c34811c85ad8a50ac876",
+      "b3ba96844cfff12dd6f5c9f9d0774a30d0a6d01b",
       []
      ],
      "resources": {
@@ -384839,199 +384866,199 @@
       []
      ],
      "restriction-audio-setSinkId-with-invalid-sinkId.https.tentative.html.ini": [
-      "5dd34491d1b84c5efd98d0e3766d19509aa0d052",
+      "f3c5e33c2981750ca07bba697a5ec64c693f273b",
       []
      ],
      "restriction-audio-setSinkId.https.tentative.html.ini": [
-      "0ff6e76f112c55de24e811c3700b90d5b2a51f0d",
+      "2635df52e4ea5979e274614bbb4ecfbc8866278c",
       []
      ],
      "restriction-background-fetch.https.html.ini": [
-      "1ac295b334d2b0181d434ad896e7d9e0469372b4",
+      "66fd117289a5fc2bedf99ce4634217d852561619",
       []
      ],
      "restriction-background-sync.tentative.https.html.ini": [
-      "893f72f908bc206f384871e0d4aeac5946b59531",
+      "fb0a21fd22f180119a1d935fa73fcd782223e4f0",
       []
      ],
      "restriction-battery-status.https.html.ini": [
-      "90dee5cce9835a5c1e5529d76859ce8b3171ccd4",
+      "4cdf4ace04cded6446bcf63a9fb69293326d7e48",
       []
      ],
      "restriction-bluetooth.tentative.https.html.ini": [
-      "1018a2fc7b9588c66c60843c45b30f5647013135",
+      "78e6d0e563950fa90f3e0a6c6839bc283fe0189c",
       []
      ],
      "restriction-broadcast-channel.html.ini": [
-      "d174790e1f16087aeb063113cbb50f2740f28697",
+      "6064b01418fc29d3733b03f2c4b626b9d9f947bd",
       []
      ],
      "restriction-dedicated-worker.https.html.ini": [
-      "a8944b78a2e662243ee17f80267bcdeb61c83499",
+      "748cf85221eb66fbd844e12f29e2b7efb83faeb4",
       []
      ],
      "restriction-encrypted-media-unsupported-config.https.html.ini": [
-      "9d332b176cb56fc612c20f6a863282c7b03e1aaa",
+      "e6e00f8b3b6c5572139c70e83a73956a39fba681",
       []
      ],
      "restriction-encrypted-media.https.html.ini": [
-      "e87ab013b8a7a2eaabd247ff4ca8a77c463d00b6",
+      "463706028c21ead17ab84cfaec1b882baccd0297",
       []
      ],
      "restriction-focus.html.ini": [
-      "c68dd60d1a75da7cf736a43571f95d4efef3883c",
+      "9538fafb46603ddb9b065b9e026f53c1c012d8bd",
       []
      ],
      "restriction-idle-detection.https.html.ini": [
-      "53b068270a81e4b8efcff96a90a143f5f36fb4a6",
+      "da69b36f75bab779615212d47b600110f6dc8df9",
       []
      ],
      "restriction-local-file-system-access.https.html.ini": [
-      "1ba40e694d06fdb6540fdd06c95a5fc413bac8e5",
+      "45bbe74988ab48f00946a81adf744c3ed50eb859",
       []
      ],
      "restriction-media-auto-play-attribute.html.ini": [
-      "66742d368ccc70a5dd063f28bf578ad6ab1cc43d",
+      "924ea8ade34ad476a72999ac8374cd342c016e6c",
       []
      ],
      "restriction-media-camera.https.html.ini": [
-      "6c294d0667b55bb94d67171dd5a56fa6e8cdaa47",
+      "738d253980c8189cb27b8fbf0866202b1a633805",
       []
      ],
      "restriction-media-device-info.https.html.ini": [
-      "a23bb17d22c89c43d4e2a73f009c13de0238f591",
+      "61d296a68e0c55b2583ddb13538efd99857afd6e",
       []
      ],
      "restriction-media-microphone.https.html.ini": [
-      "6e30e4dbe254c538c9ba457ca42750b94a0029b6",
+      "e85411a4b7eca6c894822bdb5af772c60f89e21b",
       []
      ],
      "restriction-media-play.html.ini": [
-      "813502fd866e6774091b6e51c4b957e74fef29c4",
+      "9f5436f149bb483f8526b5e6eff3545845de3448",
       []
      ],
      "restriction-message-boxes.html.ini": [
-      "5ca869cb703f21fc0d13f73395f8143dc0cf42c7",
+      "ab996156ee607066516475c6a1a46e8a3a50b73b",
       []
      ],
      "restriction-midi-sysex.https.html.ini": [
-      "f97d8b4d9146ab40eab5ddc560ad07576af41973",
+      "556ea50bdf38e212282451feb353b8351fe8e77e",
       []
      ],
      "restriction-midi.https.html.ini": [
-      "1ba11ff3269140b99e0563420d2f308a4c5e7e22",
+      "12865807d1e5c6fbe576d0adc5fd2aea0e8b5aaf",
       []
      ],
      "restriction-notification.https.html.ini": [
-      "00e171547a6cb114f8a31c0101be65e4dbc9df1b",
+      "3805cbf625445dedad811060493e178128a47c91",
       []
      ],
      "restriction-presentation-request.https.html.ini": [
-      "014edcaea08187b72dc82def14525b5fd1c194e8",
+      "58f8e8f7eb968b170db9bbc91f9a72f99eb8c610",
       []
      ],
      "restriction-prompt-by-before-unload.html.ini": [
-      "8943a52da46ce93ced4da72a74623c8105c8b180",
+      "0400a720606c36aa54705a5bd280f8743e79df1f",
       []
      ],
      "restriction-push.https.html.ini": [
-      "4779329d3032b90f0bcd3456f67bd95131a65b79",
+      "bdcef470fe54a8bf136f51bb1bb22f6a0a4d2d35",
       []
      ],
      "restriction-request-picture-in-picture.html.ini": [
-      "b276b792edb362704558b73b6e369f13fcfb9a59",
+      "74a349ba8bbdddba3342fdc15042d0900b4112c6",
       []
      ],
      "restriction-screen-capture.https.html.ini": [
-      "b24d1f2de37566a23c719551bac25d775cfa52f9",
+      "f6720a34067e74eeb727d8a2fab2b5b3c9a0716f",
       []
      ],
      "restriction-screen-orientation-lock.https.html.ini": [
-      "3b750165910a0c556064959906b89ccd8f130375",
+      "9680a561a93eabbc46aad70cf25c05dfd3451f72",
       []
      ],
      "restriction-sensor-accelerometer.https.html.ini": [
-      "7923b1f54580eb1ccadbfe89010c59f5b2a60b5c",
+      "d389e7703a4d6786dc65917c317d25780a7e4fd1",
       []
      ],
      "restriction-sensor-ambient-light-sensor.https.html.ini": [
-      "7604105a1cffd21a42bff0dddff4e4b35d575c86",
+      "64ee876aba53b0135cb96fc1ee5aa8ecc11ced05",
       []
      ],
      "restriction-sensor-gyroscope.https.html.ini": [
-      "a418c2f7afde34a23a514216b93cd2f0c217d92e",
+      "75954a142c03e57c20683e45ae056ea4ca606a5e",
       []
      ],
      "restriction-sensor-magnetometer.https.html.ini": [
-      "2fb9a9f54be08972874a8e618302d09b79d3070a",
+      "fc3e540904aa6ee0305d051a354d10d1030dd370",
       []
      ],
      "restriction-service-worker-postmessage.https.html.ini": [
-      "95868e1603180eb28b798a8b21ab9fa519894626",
+      "edf451f1138f9a63ecd13f176557057dd3e18049",
       []
      ],
      "restriction-service-worker-unregister.https.html.ini": [
-      "39994bdbf6fdad26308a59cd149f252bf24cdca5",
+      "e337ae3e9fe3c4d993533bc6cd5bc110fb15cc60",
       []
      ],
      "restriction-service-worker-update.https.html.ini": [
-      "9b17e751ff5c8a454f0fb1434ef7c0f8ffcb15b4",
+      "d9490c75ac13dc269bdbec813cd0d62d712ac525",
       []
      ],
      "restriction-speech-synthesis.html.ini": [
-      "f4624323a4a185e5c4cea6eea3461fbb64cf3805",
+      "279143cbea1f951faaced8562b5f780caacebefa",
       []
      ],
      "restriction-storage-persist.https.html.ini": [
-      "b182a0a9f64a36cb4dca820b2e9ca4a18d736b7a",
+      "f77b4fd99a05d022edb151f8fef3e75f40bd3ccb",
       []
      ],
      "restriction-wake-lock.https.html.ini": [
-      "8968bd90c98be03771200a5d930cc4d4db5fba29",
+      "716464b10e454e7eeb4a672fefcb390af774508c",
       []
      ],
      "restriction-web-hid.https.html.ini": [
-      "b65a55c49fd1db358ace6714d6f170e82898fdef",
+      "fc0e2947bee867a78132832c61ca7737f03e845d",
       []
      ],
      "restriction-web-locks.https.html.ini": [
-      "6cd318469cd4b61032a08cd3c100193f23078afa",
+      "fd27659940e63deea7ba34bbf2bf829668b782c2",
       []
      ],
      "restriction-web-nfc.https.html.ini": [
-      "8b504495fc3aae225a25e88c8c80fec62e451475",
+      "dffcae9805c1a334a22dfd42c239d186659bccb3",
       []
      ],
      "restriction-web-serial.tentative.https.html.ini": [
-      "cb21c440a07915e5c697add346a4dd689e794eac",
+      "2b1973274ecfb2e1158f61078ad1344971c0490c",
       []
      ],
      "restriction-web-share.https.html.ini": [
-      "a9c0545b40f3b19f06a8e2afdda969723c5485fc",
+      "9d5cb42c707c59470507c9b005b223eadc38bfef",
       []
      ],
      "restriction-web-usb.https.html.ini": [
-      "1481c56063eddea648966b6d1c8d59dba77ee9fb",
+      "5b7d5df13ac65a69d49b0c22fe9956d46d354255",
       []
      ],
      "restriction-web-xr-immersive-vr-session.https.html.ini": [
-      "6c113b2ec5450f2da088788846cb15ec42de043e",
+      "76115e12e5b6f1e8794a7dc8a8314c1bdb6c3a94",
       []
      ],
      "restriction-web-xr-inline-session.https.html.ini": [
-      "20922ee2ac9a3853ff8e8841b97690cfbdd5544e",
+      "522e3feecb5bc9ddc527c95aad2b3a1d1339d520",
       []
      ],
      "restriction-window-move.html.ini": [
-      "6b2a50d8dad8b42743ccca391611b626b41624c8",
+      "f70c295c91ce121752951c0694c79ae4e6f4e7b8",
       []
      ],
      "restriction-window-open.html.ini": [
-      "245368db503c115f17c749ad84583d784d50557d",
+      "8657f83495bb8fb0cb7d5502e1dfa717c6b8e527",
       []
      ],
      "restriction-window-resize.html.ini": [
-      "5e2909edb818508ad6395035d54c67cbff555f9e",
+      "4275a6e35f1ecd36ba12752ebbe777e2f2de5086",
       []
      ],
      "restrictions.html.ini": [
@@ -385039,7 +385066,7 @@
       []
      ],
      "sandbox-iframe.html.ini": [
-      "ed62e078766229bf1d93dfb334695080d46171d1",
+      "37f386bfc93885e96d238ea0729373d5cf94602d",
       []
      ],
      "service-workers.https.html.ini": [
@@ -385047,59 +385074,59 @@
       []
      ],
      "session-history-activation.https.html.ini": [
-      "08c85686db357339adf5220d13bfe182c6851fbe",
+      "d839cd0a9232d97ce31da6132f85dd0afdc489c7",
       []
      ],
      "session-history-location.https.html.ini": [
-      "44e4e48072b0872ffcb054c3abbf2348391f1210",
+      "3a6c36c9874c5a0567262fef7ffb3fcfa375adde",
       []
      ],
      "session-history-navigation.https.html.ini": [
-      "8194d4ebc445a30241d62a652212f8305eafbf23",
+      "dc642f5ce2e337222ffcdf47a03529f72828f963",
       []
      ],
      "session-history-pushstate.https.html.ini": [
-      "2e4711c7104ba208966b57fca58c586403372a3a",
+      "15c9b501222df3d74dcb79a33904c033d1804dc6",
       []
      ],
      "session-history-subframe-navigation.https.html.ini": [
-      "4141fe17f04861e1257fa143f211d68793b42519",
+      "727a7fc8ebb58131f14e6736fca23212452f3fa1",
       []
      ],
      "session-history-subframe-reload.https.html.ini": [
-      "ab5c561b898149fcb7871ac0130f87c6accfdf3a",
+      "3192ed037b602260df99ba4d736f0ff9548de32c",
       []
      ],
      "state-and-event.html.ini": [
-      "2f570890348cf3d96cb3e583045e7c5fb8703cb2",
+      "93c7a36616dd1b18f9fb6269803fd13ed84fa0c2",
       []
      ],
      "visibility-state.html.ini": [
-      "bffcc56ac0e34675615b02dcc6b964669d789249",
+      "8960e0be34d75092aa8d9526cd31feaf38770d36",
       []
      ],
      "web-database.https.html.ini": [
-      "9558e9783421aeb525e5f39f5e02ffed86a385dc",
+      "ab8ae616fc6f440687ad68ef7e7edd37d4521555",
       []
      ],
      "windowclient-navigate-to-cross-origin-url-on-iframe.https.html.ini": [
-      "92b0e5e9a11986f7fcacd38e71ea4aa6695cce11",
+      "3324bfb8fa300e06fd1beec5d3a6f3088afe6633",
       []
      ],
      "windowclient-navigate-to-same-origin-url-on-iframe.https.html.ini": [
-      "4235b8b0ef81babc44168f69ec5607ddd8db9789",
+      "d5abf2543bb4b05eb79d09ad5e67eda60af23bea",
       []
      ],
      "windowclient-navigate.https.html.ini": [
-      "c934bee68c7f3ef5408991957053874d901ea069",
+      "3c1da9e271f08775bec30956b2265a7e26ed6d64",
       []
      ],
      "workers-in-cross-origin-iframe.html.ini": [
-      "bc3a810dec604a50946197aaccc1f91cab5433dd",
+      "cde9c659499580197ccbaf9011ce4d649d0664cf",
       []
      ],
      "workers.html.ini": [
-      "794e82acc208449aaa25319963ec1447f48ed42d",
+      "01d27284333b0c618f0b515997040ed9dde80cba",
       []
      ]
     }
@@ -388414,7 +388441,7 @@
      []
     ],
     "failure.html.ini": [
-     "aec09b98e86c829dff0a7ca9fdf18c9b269fd285",
+     "74bd7a8a5eeeeabb6c0dcc25caa573079cd987b2",
      []
     ],
     "idlharness-shadowrealm.window-expected.txt": [
@@ -391959,6 +391986,10 @@
       ]
      }
     },
+    "postMessage_cross_domain_image_transfer_webgl.sub.htm.ini": [
+     "7676117d453f6e6115ebf6dc4b4bb6b77ca425e3",
+     []
+    ],
     "resources": {
      "post-cryptokey-to-opener.html": [
       "91c70165f03ec63615ac286dc9ae3555706f49ad",
@@ -391980,6 +392011,10 @@
      ],
      "compare.js": [
       "5341b374381ffeb44fcd7b8bc92c33cdc9826bd4",
+      []
+     ],
+     "cross-domain-image-receive.htm": [
+      "253b34bd769734b8a096647a0afb3b69c98bb4af",
       []
      ]
     },
@@ -392097,6 +392132,10 @@
      "b33ebb8f2bfa17e8cc33a6ec75d8d358b01e2b9f",
      []
     ],
+    "hard_sigmoid.https.any.js.ini": [
+     "72fe9565a99c5e5975ac518f919fad3543b91d09",
+     []
+    ],
     "hard_swish.https.any.js.ini": [
      "1d4d2d09471f27b2286b7dd04b2572bafe20b8ff",
      []
@@ -392107,6 +392146,10 @@
     ],
     "leaky_relu.https.any.js.ini": [
      "7b3310be72b46a3b99c5fea423dd8cbeda2cdfcd",
+     []
+    ],
+    "linear.https.any.js.ini": [
+     "b3bb1d888bd1a2392a2ea1b219e30afaacfe089a",
      []
     ],
     "matmul.https.any-expected.txt": [
@@ -392215,12 +392258,20 @@
        "3738e19f7c641020309de975b4474fd652fbcb35",
        []
       ],
+      "hard_sigmoid.json": [
+       "22fe7c6da0c2135ab663eec54d7bf3661c3d1e20",
+       []
+      ],
       "hard_swish.json": [
        "8d7812d21e23a1e9aef93dfd14bf2872d556550e",
        []
       ],
       "leaky_relu.json": [
        "a95a9a0cfcee9bd549f2e1aed40429592b2049ba",
+       []
+      ],
+      "linear.json": [
+       "ded1d2d7e3537492497453b29c8dbaded5c6a3f3",
        []
       ],
       "log.json": [
@@ -392337,7 +392388,7 @@
       ]
      },
      "utils.js": [
-      "d24562eba1fe70f3c46b36c88426015c774505db",
+      "49f1762a3bb3716b7e4fcb89c988c9e6dc450a32",
       []
      ]
     },
@@ -392748,7 +392799,7 @@
      []
     ],
     "RTCRtpReceiver-getSynchronizationSources.https.html.ini": [
-     "e5eb21199da99d385eeb92b6dd5fa024652d1509",
+     "fb1b72fcf96a3417cfba194764c74d9c4b626e08",
      []
     ],
     "RTCRtpSender-getStats.https-expected.txt": [
@@ -392929,7 +392980,7 @@
       []
      ],
      "vp9-scalability-mode.https.html.ini": [
-      "86234908e66031ed4fdaaf66266580c859697a6f",
+      "ab351810151d9e0b50621f5d184e9f8b459bad9b",
       []
      ],
      "vp9.https.html.ini": [
@@ -393266,7 +393317,7 @@
      []
     ],
     "hardware-capability-stats.https.html.ini": [
-     "629a492ba0e16aa30d84570d405f7e28748fbaaa",
+     "ae8b422c7817afcd494136867230777558ef42c3",
      []
     ],
     "outbound-rtp.https-expected.txt": [
@@ -393884,7 +393935,7 @@
        []
       ],
       "backpressure-send.any.js.ini": [
-       "79fa753a59180878bbb109028d3fdce69a899ba7",
+       "84f0c69d11a32f30ddbc246644d93225349f8153",
        []
       ],
       "backpressure-send.any.sharedworker_wpt_flags=h2-expected.txt": [
@@ -425432,8 +425483,22 @@
    },
    "content-security-policy": {
     "base-uri": {
+     "base-uri-allow-leading-zero-port.sub.html": [
+      "614d7dd50eb464779fa10cee6603676c08ebb3b6",
+      [
+       null,
+       {}
+      ]
+     ],
      "base-uri-allow.sub.html": [
       "cda0c2db44faa685679152ddfd9f85fb0450dad6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "base-uri-deny-url-encoded-host.sub.html": [
+      "5e7fad9d9e367bfd5e6f156a31618416d5e83109",
       [
        null,
        {}
@@ -469137,7 +469202,7 @@
        ]
       ],
       "modal-pseudo-class-in-has.html": [
-       "1bff896d49e97a289adafcd9580533ca3ede3ead",
+       "140f7cc4f83688a5a2bd7d666e110466157975ca",
        [
         null,
         {
@@ -552383,7 +552448,7 @@
        ]
       ],
       "popover-light-dismiss.html": [
-       "0ac73ec4549c6f91aa6e0c1f40508a2ba328dbdf",
+       "5800b7bc4d4426ae15c8790dc83a83b06575a6e6",
        [
         null,
         {
@@ -552393,7 +552458,7 @@
        ]
       ],
       "popover-move-documents.html": [
-       "2ead18a2b73956e8821cd61490c4f25861e33ed8",
+       "9feaa4b2bf8756aa1774cfa973327912d534ffac",
        [
         null,
         {}
@@ -605911,7 +605976,7 @@
       ]
      ],
      "document-rules.https.html": [
-      "b0b07a878494da33145347e5995d76425fc775c7",
+      "eb8170923dc74e17c30f9b688cba524a229f4118",
       [
        "speculation-rules/prefetch/document-rules.https.html?include=and",
        {}
@@ -605946,6 +606011,30 @@
       ],
       [
        "speculation-rules/prefetch/document-rules.https.html?include=or",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=selectorMatches",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=selectorMatchesDisplayLocked",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=selectorMatchesDisplayNone",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=selectorMatchesInShadowTree",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=selectorMatchesScopingRoot",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=unslottedLink",
        {}
       ]
      ],
@@ -633930,6 +634019,20 @@
       {}
      ]
     ],
+    "postMessage_cross_domain_image_transfer_2d.sub.htm": [
+     "4faf979274b292c69dd1a212f9e10de87a22c509",
+     [
+      null,
+      {}
+     ]
+    ],
+    "postMessage_cross_domain_image_transfer_webgl.sub.htm": [
+     "0c5458953f87f73f471a14a18e5c24a733fd0575",
+     [
+      null,
+      {}
+     ]
+    ],
     "postMessage_crosssite.sub.htm": [
      "25bccd9df27a6688ae823bc15e9badcf7534825e",
      [
@@ -634905,6 +635008,57 @@
       }
      ]
     ],
+    "hard_sigmoid.https.any.js": [
+     "81bd5124ce90f09da63b292def464701101e9b15",
+     [
+      "webnn/hard_sigmoid.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API hardSigmoid operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/hard_sigmoid.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API hardSigmoid operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
     "hard_swish.https.any.js": [
      "052c7f2a208013ffca4d5c4ddb09404cd69d17d5",
      [
@@ -635048,6 +635202,57 @@
         [
          "title",
          "test WebNN API leakyRelu operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "linear.https.any.js": [
+     "4b2c05540b7fec01a6142af2351204213d436259",
+     [
+      "webnn/linear.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API linear operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/linear.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API linear operation"
         ],
         [
          "global",
