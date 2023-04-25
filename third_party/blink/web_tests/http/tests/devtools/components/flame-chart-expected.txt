@@ -1,4 +1,0 @@
-Smoke test for basic FlameChart functionality.
-
-PASSED
-
