@@ -346,6 +346,9 @@ download::DownloadItemImpl* DownloadManagerImpl::CreateActiveItem(
   DownloadItemUtils::AttachInfo(
       download, GetBrowserContext(),
       WebContentsImpl::FromRenderFrameHostID(global_id), global_id);
+  if (delegate_) {
+    delegate_->AttachExtraInfo(download);
+  }
 
   return download;
 }
@@ -861,6 +864,9 @@ void DownloadManagerImpl::CreateSavePackageDownloadItemWithId(
   DownloadItemUtils::AttachInfo(
       download_item, GetBrowserContext(),
       WebContentsImpl::FromRenderFrameHostID(global_id), global_id);
+  if (delegate_) {
+    delegate_->AttachExtraInfo(download_item);
+  }
 
   OnDownloadCreated(base::WrapUnique(download_item));
   if (!item_created.is_null())
@@ -1108,6 +1114,9 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
   download::DownloadItemImpl* download = item.get();
   DownloadItemUtils::AttachInfo(download, GetBrowserContext(), nullptr,
                                 GlobalRenderFrameHostId());
+  if (delegate_) {
+    delegate_->AttachExtraInfo(download);
+  }
   OnDownloadCreated(std::move(item));
   return download;
 }
@@ -1183,6 +1192,9 @@ void DownloadManagerImpl::ImportInProgressDownloads(uint32_t id) {
     item->SetDelegate(this);
     DownloadItemUtils::AttachInfo(item.get(), GetBrowserContext(), nullptr,
                                   GlobalRenderFrameHostId());
+    if (delegate_) {
+      delegate_->AttachExtraInfo(item.get());
+    }
     download = in_progress_downloads_.erase(download);
     OnDownloadCreated(std::move(item));
   }

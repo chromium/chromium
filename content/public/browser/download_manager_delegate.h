@@ -231,6 +231,9 @@ class CONTENT_EXPORT DownloadManagerDelegate {
       base::flat_map<base::FilePath, base::FilePath> save_package_files,
       SavePackageAllowedCallback callback);
 
+  // Attaches any extra per-DownloadItem info.
+  virtual void AttachExtraInfo(download::DownloadItem* item) {}
+
  protected:
   virtual ~DownloadManagerDelegate();
 };

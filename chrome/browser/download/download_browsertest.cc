@@ -50,6 +50,7 @@
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_item_web_app_data.h"
 #include "chrome/browser/download/download_manager_utils.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_request_limiter.h"
@@ -72,6 +73,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -5114,3 +5117,26 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxDenyInstallClosesSurface) {
   EXPECT_FALSE(IsDownloadSurfaceVisible(browser()->window()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Test that web app info is properly attached to the download.
+IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadFromWebApp) {
+  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/downloads/a_zip_file.zip");
+
+  // Load an app.
+  web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+      browser()->profile(), "testapp", embedded_test_server()->GetURL("/"));
+  Browser* app_browser =
+      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+
+  DownloadAndWait(app_browser, url);
+
+  DownloadManager* manager = DownloadManagerForBrowser(app_browser);
+  std::vector<DownloadItem*> all_downloads;
+  manager->GetAllDownloads(&all_downloads);
+  ASSERT_EQ(all_downloads.size(), 1u);
+  auto* web_app_data = DownloadItemWebAppData::Get(all_downloads[0]);
+  EXPECT_NE(web_app_data, nullptr);
+  EXPECT_EQ(web_app_data->id(), app_id);
+}

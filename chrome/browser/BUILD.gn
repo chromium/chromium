@@ -3605,6 +3605,8 @@ static_library("browser") {
       "download/download_dir_policy_handler.h",
       "download/download_dir_util.cc",
       "download/download_dir_util.h",
+      "download/download_item_web_app_data.cc",
+      "download/download_item_web_app_data.h",
       "download/download_open_prompt.cc",
       "download/download_open_prompt.h",
       "download/download_session_durations_metrics_recorder.cc",
