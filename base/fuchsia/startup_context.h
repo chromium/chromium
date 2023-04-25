@@ -7,7 +7,6 @@
 
 #include <fuchsia/component/runner/cpp/fidl.h>
 #include <fuchsia/io/cpp/fidl.h>
-#include <fuchsia/sys/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/zx/channel.h>
 
@@ -22,7 +21,7 @@ class OutgoingDirectory;
 
 namespace base {
 
-// Helper for unpacking a fuchsia.sys.StartupInfo and creating convenience
+// Helper for unpacking component start info and creating convenience
 // wrappers for the various fields (e.g. the incoming & outgoing service
 // directories, resolve launch URL etc).
 // Embedders may derived from StartupContext to e.g. add bound pointers to
@@ -32,10 +31,6 @@ class BASE_EXPORT StartupContext final {
   explicit StartupContext(
       ::fuchsia::component::runner::ComponentStartInfo start_info);
   ~StartupContext();
-
-  // TODO(https://crbug.com/1065707): Remove this overload once the CFv1
-  // Runner implementations are removed.
-  explicit StartupContext(::fuchsia::sys::StartupInfo startup_info);
 
   StartupContext(const StartupContext&) = delete;
   StartupContext& operator=(const StartupContext&) = delete;

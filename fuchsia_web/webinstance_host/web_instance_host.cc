@@ -6,7 +6,6 @@
 
 #include <fuchsia/component/decl/cpp/fidl.h>
 #include <fuchsia/io/cpp/fidl.h>
-#include <fuchsia/sys/cpp/fidl.h>
 #include <lib/fit/function.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/outgoing_directory.h>

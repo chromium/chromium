@@ -463,7 +463,6 @@ component("skia") {
     deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts:fuchsia.fonts_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys:fuchsia.sys_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/zx",
       "//third_party/icu:icuuc",
