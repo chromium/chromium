@@ -704,10 +704,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // initial load of push_state.html, and start and stop for
   // the "navigation" triggered by history.pushState(). However, the start
   // notification for the history.pushState() navigation should set
-  // should_show_loading_ui to false.
+  // should_show_loading_ui to false, as should all stop notifications.
   EXPECT_EQ("pushState", shell()->web_contents()->GetLastCommittedURL().ref());
   EXPECT_EQ(4, delegate->loadingStateChangedCount());
-  EXPECT_EQ(3, delegate->loadingStateShowLoadingUICount());
+  EXPECT_EQ(1, delegate->loadingStateShowLoadingUICount());
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ResourceLoadComplete) {

@@ -4681,11 +4681,10 @@ void RenderFrameHostImpl::StartLoadingForAsyncNavigationApiCommit() {
   if (is_loading()) {
     return;
   }
-  bool was_loading =
-      frame_tree()->LoadingTree()->IsLoadingIncludingInnerFrameTrees();
-  is_loading_ = true;
-  frame_tree_node()->DidStartLoading(true /* should_show_loading_ui */,
-                                     was_loading);
+  LoadingState previous_frame_tree_loading_state =
+      frame_tree()->LoadingTree()->GetLoadingState();
+  loading_state_ = LoadingState::LOADING_UI_REQUESTED;
+  frame_tree_node()->DidStartLoading(previous_frame_tree_loading_state);
 }
 
 void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
@@ -4831,15 +4830,15 @@ void RenderFrameHostImpl::SetNavigationRequest(
     std::unique_ptr<NavigationRequest> navigation_request) {
   DCHECK(navigation_request);
 
-  is_loading_ = true;
-
   if (NavigationTypeUtils::IsSameDocument(
           navigation_request->common_params().navigation_type)) {
+    loading_state_ = LoadingState::LOADING_WITHOUT_UI;
     same_document_navigation_requests_[navigation_request->commit_params()
                                            .navigation_token] =
         std::move(navigation_request);
     return;
   }
+  loading_state_ = LoadingState::LOADING_UI_REQUESTED;
   navigation_requests_[navigation_request.get()] =
       std::move(navigation_request);
 }
@@ -7602,11 +7601,12 @@ void RenderFrameHostImpl::DidStopLoading() {
   // BeforeUnload or Unload events.
   // TODO(fdegans): Change this to a DCHECK after LoadEventProgress has been
   // refactored in Blink. See crbug.com/466089
-  if (!is_loading_)
+  if (!is_loading()) {
     return;
+  }
 
   was_discarded_ = false;
-  is_loading_ = false;
+  loading_state_ = LoadingState::NONE;
 
   // If we have a PeakGpuMemoryTrack, close it as loading as stopped. It will
   // asynchronously receive the statistics from the GPU process, and update
@@ -10233,10 +10233,11 @@ void RenderFrameHostImpl::ResetLoadingState() {
     // When pending deletion, just set the loading state to not loading.
     // Otherwise, DidStopLoading will take care of that, as well as sending
     // notification to the FrameTreeNode about the change in loading state.
-    if (IsPendingDeletion() || IsInBackForwardCache())
-      is_loading_ = false;
-    else
+    if (IsPendingDeletion() || IsInBackForwardCache()) {
+      loading_state_ = LoadingState::NONE;
+    } else {
       DidStopLoading();
+    }
   }
 }
 
@@ -12315,12 +12316,13 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
         same_document_params->same_document_navigation_type ==
             blink::mojom::SameDocumentNavigationType::kNavigationApiIntercept;
 
-    bool was_loading =
-        frame_tree()->LoadingTree()->IsLoadingIncludingInnerFrameTrees();
-    is_loading_ = true;
+    LoadingState previous_frame_tree_loading_state =
+        frame_tree()->LoadingTree()->GetLoadingState();
+    loading_state_ = should_show_loading_ui ? LoadingState::LOADING_UI_REQUESTED
+                                            : LoadingState::LOADING_WITHOUT_UI;
     // TODO(https://crbug.com/1405759): Explain why this is true.
     CHECK(owner_);
-    owner_->DidStartLoading(should_show_loading_ui, was_loading);
+    owner_->DidStartLoading(previous_frame_tree_loading_state);
   }
 
   if (navigation_request)
@@ -14364,6 +14366,13 @@ void RenderFrameHostImpl::EnableMojoJsBindingsWithBroker(
 
 bool RenderFrameHostImpl::IsOutermostMainFrame() const {
   return !GetParentOrOuterDocument();
+}
+
+void RenderFrameHostImpl::SetIsLoadingForRendererDebugURL() {
+  LoadingState previous_frame_tree_loading_state =
+      frame_tree()->LoadingTree()->GetLoadingState();
+  loading_state_ = LoadingState::LOADING_UI_REQUESTED;
+  owner_->DidStartLoading(previous_frame_tree_loading_state);
 }
 
 BackForwardCacheMetrics* RenderFrameHostImpl::GetBackForwardCacheMetrics() {

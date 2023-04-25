@@ -54,6 +54,7 @@
 #include "content/browser/renderer_host/cross_origin_opener_policy_access_report_manager.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/keep_alive_handle_factory.h"
+#include "content/browser/renderer_host/loading_state.h"
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
 #include "content/browser/renderer_host/navigation_discard_reason.h"
@@ -947,12 +948,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns this RenderFrameHost's loading state. This method is only used by
   // FrameTreeNode. The proper way to check whether a frame is loading is to
   // call FrameTreeNode::IsLoading.
-  bool is_loading() const { return is_loading_; }
+  bool is_loading() const { return loading_state_ != LoadingState::NONE; }
 
-  // Sets `is_loading_` to true to handle renderer debug URLs. This is needed
-  // to generate DidStopLoading events for these URLs.
-  void SetIsLoadingForRendererDebugURL() { is_loading_ = true; }
+  LoadingState loading_state() const { return loading_state_; }
 
+  // Sets `loading_state_` to LOADING_UI_REQUESTED to handle renderer debug
+  // URLs. This is needed to generate DidStopLoading events for these URLs.
+  void SetIsLoadingForRendererDebugURL();
   // Returns true if this is a top-level frame, or if this frame
   // uses a proxy to communicate with its parent frame. Local roots are
   // distinguished by owning a RenderWidgetHost, which manages input events
@@ -4270,8 +4272,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool was_discarded_ = false;
 
   // Indicates whether this RenderFrameHost is in the process of loading a
-  // document or not.
-  bool is_loading_ = false;
+  // document or not, and if so, whether it should show loading UI.
+  LoadingState loading_state_ = LoadingState::NONE;
 
   // The unique ID of the latest NavigationEntry that this RenderFrameHost is
   // showing. This may change even when this frame hasn't committed a page,

@@ -118,8 +118,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // now as it confuses WebContentsObserver instances because they can not
   // distinguish between the different FrameTrees.
 
-  void DidStartLoading(FrameTreeNode* frame_tree_node,
-                       bool should_show_loading_ui) override {}
+  void LoadingStateChanged(LoadingState new_state) override {}
+  void DidStartLoading(FrameTreeNode* frame_tree_node) override {}
   void DidStopLoading() override;
   bool IsHidden() override;
   FrameTree* LoadingTree() override;

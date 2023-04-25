@@ -3676,12 +3676,7 @@ void NavigationControllerImpl::HandleRendererDebugURL(
   // the renderer process is done handling the URL.
   // TODO(crbug.com/1254130): Remove the test dependency on this behavior.
   if (!url.SchemeIs(url::kJavaScriptScheme)) {
-    bool was_loading = frame_tree_node->frame_tree()
-                           .LoadingTree()
-                           ->IsLoadingIncludingInnerFrameTrees();
     frame_tree_node->current_frame_host()->SetIsLoadingForRendererDebugURL();
-    frame_tree_node->DidStartLoading(true /* should_show_loading_ui */,
-                                     was_loading);
   }
   frame_tree_node->current_frame_host()->HandleRendererDebugURL(url);
 }

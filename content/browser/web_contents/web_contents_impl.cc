@@ -2034,7 +2034,8 @@ double WebContentsImpl::GetLoadProgress() {
 }
 
 bool WebContentsImpl::ShouldShowLoadingUI() {
-  return IsLoading() && should_show_loading_ui_;
+  return primary_frame_tree_.GetLoadingState() ==
+         LoadingState::LOADING_UI_REQUESTED;
 }
 
 bool WebContentsImpl::IsDocumentOnLoadCompletedInPrimaryMainFrame() {
@@ -6872,17 +6873,14 @@ void WebContentsImpl::ResetLoadProgressState() {
 
 // Notifies the RenderWidgetHost instance about the fact that the page is
 // loading, or done loading.
-void WebContentsImpl::LoadingStateChanged(bool should_show_loading_ui,
-                                          LoadNotificationDetails* details) {
+void WebContentsImpl::LoadingStateChanged(LoadingState new_state) {
   if (IsBeingDestroyed())
     return;
 
-  bool is_loading = IsLoading();
-
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::LoadingStateChanged",
-                        "is_loading", is_loading);
+                        "loading_state", new_state);
 
-  if (!is_loading) {
+  if (new_state == LoadingState::NONE) {
     load_state_ =
         net::LoadStateWithParam(net::LOAD_STATE_IDLE, std::u16string());
     load_state_host_.clear();
@@ -6890,34 +6888,11 @@ void WebContentsImpl::LoadingStateChanged(bool should_show_loading_ui,
     upload_position_ = 0;
   }
 
-  should_show_loading_ui_ = should_show_loading_ui;
-
-  if (delegate_)
-    delegate_->LoadingStateChanged(this, should_show_loading_ui_);
-  NotifyNavigationStateChanged(INVALIDATE_TYPE_LOAD);
-
-  std::string url = (details ? details->url.possibly_invalid_spec() : "NULL");
-  if (is_loading) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-        "browser,navigation", "WebContentsImpl Loading", this, "URL", url,
-        "Primary Main FrameTreeNode id",
-        GetPrimaryFrameTree().root()->frame_tree_node_id());
-    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStartLoading");
-    observers_.NotifyObservers(&WebContentsObserver::DidStartLoading);
-  } else {
-    TRACE_EVENT_NESTABLE_ASYNC_END1(
-        "browser,navigation", "WebContentsImpl Loading", this, "URL", url);
-    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStopLoading");
-    observers_.NotifyObservers(&WebContentsObserver::DidStopLoading);
+  if (delegate_) {
+    delegate_->LoadingStateChanged(
+        this, new_state == LoadingState::LOADING_UI_REQUESTED);
   }
-
-  // TODO(avi): Remove. http://crbug.com/170921
-  int type = is_loading ? NOTIFICATION_LOAD_START : NOTIFICATION_LOAD_STOP;
-  NotificationDetails det = NotificationService::NoDetails();
-  if (details)
-    det = Details<LoadNotificationDetails>(details);
-  NotificationService::current()->Notify(
-      type, Source<NavigationController>(&GetController()), det);
+  NotifyNavigationStateChanged(INVALIDATE_TYPE_LOAD);
 }
 
 void WebContentsImpl::NotifyViewSwapped(RenderViewHost* old_view,
@@ -7638,14 +7613,21 @@ PrerenderHostRegistry* WebContentsImpl::GetPrerenderHostRegistry() {
   return prerender_host_registry_.get();
 }
 
-void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node,
-                                      bool should_show_loading_ui) {
+void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidStartLoading",
                         "frame_tree_node", frame_tree_node);
-  LoadingStateChanged(
-      frame_tree_node->GetFrameType() == FrameType::kPrimaryMainFrame &&
-          should_show_loading_ui,
-      nullptr);
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
+      "browser,navigation", "WebContentsImpl Loading", this, "URL", "NULL",
+      "Primary Main FrameTreeNode id",
+      GetPrimaryFrameTree().root()->frame_tree_node_id());
+  SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStartLoading");
+  observers_.NotifyObservers(&WebContentsObserver::DidStartLoading);
+
+  // TODO(avi): Remove. http://crbug.com/170921
+  NotificationService::current()->Notify(
+      NOTIFICATION_LOAD_START, Source<NavigationController>(&GetController()),
+      NotificationService::NoDetails());
 
   // Reset the focus state from DidStartNavigation to false if a new load starts
   // afterward, in case loading logic triggers a FocusLocationBarByDefault call.
@@ -7663,6 +7645,9 @@ void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node,
 
 void WebContentsImpl::DidStopLoading() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidStopLoading");
+  if (IsBeingDestroyed()) {
+    return;
+  }
   std::unique_ptr<LoadNotificationDetails> details;
 
   // Use the last committed entry rather than the active one, in case a
@@ -7677,7 +7662,20 @@ void WebContentsImpl::DidStopLoading() {
         GetController().GetCurrentEntryIndex());
   }
 
-  LoadingStateChanged(true /* should_show_loading_ui */, details.get());
+  std::string url = (details ? details->url.possibly_invalid_spec() : "NULL");
+  TRACE_EVENT_NESTABLE_ASYNC_END1("browser,navigation",
+                                  "WebContentsImpl Loading", this, "URL", url);
+  SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStopLoading");
+  observers_.NotifyObservers(&WebContentsObserver::DidStopLoading);
+
+  // TODO(avi): Remove. http://crbug.com/170921
+  NotificationDetails det = NotificationService::NoDetails();
+  if (details) {
+    det = Details<LoadNotificationDetails>(details.get());
+  }
+  NotificationService::current()->Notify(
+      NOTIFICATION_LOAD_STOP, Source<NavigationController>(&GetController()),
+      det);
 }
 
 void WebContentsImpl::DidChangeLoadProgressForPrimaryMainFrame() {
