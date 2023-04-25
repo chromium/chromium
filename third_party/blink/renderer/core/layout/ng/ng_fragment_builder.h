@@ -67,18 +67,7 @@ class CORE_EXPORT NGFragmentBuilder {
         style_variant_(NGStyleVariant::kStandard) {
     DCHECK(style_);
   }
-  explicit NGFragmentBuilder(WritingDirectionMode writing_direction)
-      : writing_direction_(writing_direction) {}
 
-  NGFragmentBuilder(const NGPhysicalFragment& fragment)
-      : style_(&fragment.Style()),
-        writing_direction_(style_->GetWritingDirection()),
-        style_variant_(fragment.StyleVariant()),
-        size_(fragment.Size().ConvertToLogical(GetWritingMode())),
-        layout_object_(fragment.GetMutableLayoutObject()),
-        is_hidden_for_paint_(fragment.IsHiddenForPaint()) {}
-
- protected:
   scoped_refptr<const ComputedStyle> style_;
   WritingDirectionMode writing_direction_;
   NGStyleVariant style_variant_;
