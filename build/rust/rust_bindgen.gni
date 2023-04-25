@@ -176,5 +176,18 @@ template("rust_bindgen") {
         "/clang:-fallow-editor-placeholders",
       ]
     }
+
+    if (!is_cfi) {
+      # LLVM searches for a default CFI ignorelist at (exactly)
+      # $(cwd)/lib/clang/$(llvm_version)/share/cfi_ignorelist.txt
+      # Even if we provide a custom -fsanitize-ignorelist, the absence
+      # of this default file will cause a fatal error. clang finds
+      # it within third_party/llvm-build, but for bindgen our cwd
+      # is the $out_dir. We _could_ create this file at the right
+      # location within the outdir using a "copy" target, but as
+      # we don't actually generate code within bindgen, the easier
+      # option is to tell bindgen to ignore all CFI ignorelists.
+      args += [ "-fno-sanitize-ignorelist" ]
+    }
   }
 }
