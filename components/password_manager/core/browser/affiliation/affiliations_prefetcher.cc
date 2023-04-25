@@ -29,7 +29,8 @@ bool IsFacetValidForAffiliation(const FacetURI& facet) {
          (facet.IsValidWebFacetURI() &&
           (base::FeatureList::IsEnabled(
                features::kFillingAcrossAffiliatedWebsites) ||
-           base::FeatureList::IsEnabled(features::kPasswordsGrouping)));
+           base::FeatureList::IsEnabled(features::kPasswordsGrouping) ||
+           base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites)));
 }
 
 }  // namespace
