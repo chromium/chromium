@@ -138,35 +138,6 @@ void ReadAnythingModel::SetSelectedLetterSpacingByIndex(size_t new_index) {
   NotifyThemeChanged();
 }
 
-void ReadAnythingModel::AccessibilityEventReceived(
-    const content::AXEventNotificationDetails& details) {
-  for (Observer& obs : observers_) {
-    obs.AccessibilityEventReceived(details);
-  }
-}
-
-void ReadAnythingModel::OnActiveAXTreeIDChanged(
-    const ui::AXTreeID& tree_id,
-    const ukm::SourceId& ukm_source_id) {
-  for (Observer& obs : observers_) {
-    obs.OnActiveAXTreeIDChanged(tree_id, ukm_source_id);
-  }
-}
-
-void ReadAnythingModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
-  for (Observer& obs : observers_) {
-    obs.OnAXTreeDestroyed(tree_id);
-  }
-}
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void ReadAnythingModel::ScreenAIServiceReady() {
-  for (Observer& obs : observers_) {
-    obs.ScreenAIServiceReady();
-  }
-}
-#endif
-
 double ReadAnythingModel::GetValidFontScale(double font_scale) {
   if (font_scale < kReadAnythingMinimumFontScale)
     return kReadAnythingMinimumFontScale;

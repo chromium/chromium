@@ -129,12 +129,16 @@ void ReadAnythingCoordinator::RemoveModelObserver(
 
 void ReadAnythingCoordinator::OnEntryShown(SidePanelEntry* entry) {
   DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
-  controller_->Activate(true);
+  for (Observer& obs : observers_) {
+    obs.Activate(true);
+  }
 }
 
 void ReadAnythingCoordinator::OnEntryHidden(SidePanelEntry* entry) {
   DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
-  controller_->Activate(false);
+  for (Observer& obs : observers_) {
+    obs.Activate(false);
+  }
 }
 
 std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {

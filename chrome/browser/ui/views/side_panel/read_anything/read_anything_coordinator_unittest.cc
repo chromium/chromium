@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -22,6 +24,7 @@ using testing::_;
 class MockReadAnythingCoordinatorObserver
     : public ReadAnythingCoordinator::Observer {
  public:
+  MOCK_METHOD(void, Activate, (bool active), (override));
   MOCK_METHOD(void, OnCoordinatorDestroyed, (), (override));
 };
 
@@ -57,7 +60,6 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   std::unique_ptr<views::View> CreateContainerView() {
     return read_anything_coordinator_->CreateContainerView();
   }
-  bool IsControllerActive() { return GetController()->IsActiveForTesting(); }
 
  protected:
   raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
@@ -99,18 +101,27 @@ TEST_F(ReadAnythingCoordinatorTest, OnCoordinatorDestroyedCalled) {
   EXPECT_CALL(coordinator_observer_, OnCoordinatorDestroyed()).Times(1);
 }
 
-TEST_F(ReadAnythingCoordinatorTest, ActivatesAndDeactivatesController) {
-  side_panel_coordinator_->Show(SidePanelEntry::Id::kReadAnything);
-  EXPECT_TRUE(IsControllerActive());
-  side_panel_coordinator_->Close();
-  EXPECT_FALSE(IsControllerActive());
+TEST_F(ReadAnythingCoordinatorTest, ActivateCalled_ShowAndCloseSidePanel) {
+  AddObserver(&coordinator_observer_);
 
+  EXPECT_CALL(coordinator_observer_, Activate(true)).Times(1);
+  side_panel_coordinator_->Show(SidePanelEntry::Id::kReadAnything);
+
+  EXPECT_CALL(coordinator_observer_, Activate(false)).Times(1);
+  side_panel_coordinator_->Close();
+}
+
+TEST_F(ReadAnythingCoordinatorTest,
+       ActivateCalled_ShowAndHideReadAnythingEntry) {
+  AddObserver(&coordinator_observer_);
   SidePanelEntry* entry = side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+
+  EXPECT_CALL(coordinator_observer_, Activate(true)).Times(1);
   entry->OnEntryShown();
-  EXPECT_TRUE(IsControllerActive());
+
+  EXPECT_CALL(coordinator_observer_, Activate(false)).Times(1);
   entry->OnEntryHidden();
-  EXPECT_FALSE(IsControllerActive());
 }
 
 #endif  // !defined(ADDRESS_SANITIZER)
