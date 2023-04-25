@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.ExtensionsWithPageActions" units="units"
-    expires_after="2023-04-30">
+    expires_after="2023-07-07">
   <obsolete>
     Histogram is in the process of being removed in in favor of
     Extensions.ExtensionsWithPageActions that emits only on profile open for
