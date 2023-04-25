@@ -2777,6 +2777,10 @@ test("base_perftests") {
     # build, only do stack trace perftest for unofficial build
     sources += [ "debug/stack_trace_perftest.cc" ]
   }
+
+  if (build_allocation_stack_trace_recorder) {
+    sources += [ "debug/allocation_trace_perftest.cc" ]
+  }
 }
 
 test("base_i18n_perftests") {
