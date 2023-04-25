@@ -15,6 +15,7 @@
 
 namespace remote_cocoa {
 
+// This must return an autoreleased object.
 using RenderWidgetHostViewMacDelegateCallback =
     base::OnceCallback<NSObject<RenderWidgetHostViewMacDelegate>*()>;
 

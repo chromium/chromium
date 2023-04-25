@@ -160,8 +160,8 @@ class AppShimController : public chrome::mojom::AppShim {
       mojo::ScopedInterfaceEndpointHandle host_handle,
       mojo::ScopedInterfaceEndpointHandle view_request_handle);
 
-  static NSObject<RenderWidgetHostViewMacDelegate>*
-  CreateRenderWidgetHostViewDelegate(uint64_t view_id);
+  static NSObject<RenderWidgetHostViewMacDelegate>* GetDelegateForHost(
+      uint64_t view_id);
 
   const Params params_;
 

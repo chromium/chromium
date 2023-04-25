@@ -36,7 +36,7 @@ class ChromeWebContentsViewDelegateViewsMac
 
   // WebContentsViewDelegate:
   gfx::NativeWindow GetNativeWindow() override;
-  NSObject<RenderWidgetHostViewMacDelegate>* CreateRenderWidgetHostViewDelegate(
+  NSObject<RenderWidgetHostViewMacDelegate>* GetDelegateForHost(
       content::RenderWidgetHost* render_widget_host,
       bool is_popup) override;
   content::WebDragDestDelegate* GetDragDestDelegate() override;
