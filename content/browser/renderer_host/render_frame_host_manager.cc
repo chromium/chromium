@@ -167,11 +167,21 @@ bool IsSiteInstanceCompatibleWithErrorIsolation(
     SiteInstanceImpl* site_instance,
     const FrameTreeNode& frame_tree_node,
     NavigationRequest::ErrorPageProcess error_page_process) {
-  // With no error isolation all SiteInstances are compatible with any
-  // |error_page_process|.
+  if (error_page_process ==
+      NavigationRequest::ErrorPageProcess::kCurrentProcess) {
+    // If an error page must commit in the current process, the current
+    // SiteInstance must be reused.
+    return site_instance ==
+           frame_tree_node.current_frame_host()->GetSiteInstance();
+  }
+
   if (!frame_tree_node.IsErrorPageIsolationEnabled()) {
-    DCHECK_NE(error_page_process,
-              NavigationRequest::ErrorPageProcess::kIsolatedProcess);
+    // With no error isolation or current process requirement, all SiteInstances
+    // are compatible with any |error_page_process|.
+    CHECK(error_page_process ==
+              NavigationRequest::ErrorPageProcess::kNotErrorPage ||
+          error_page_process ==
+              NavigationRequest::ErrorPageProcess::kDestinationProcess);
     return true;
   }
 
@@ -1527,8 +1537,9 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     navigation_rfh->web_ui()->WebUIRenderFrameCreated(navigation_rfh);
   }
 
-  // If this function picked an incompatible process for the URL, capture a
-  // crash dump to diagnose why it is occurring.
+  // If this function picked an incompatible process for the URL, except for
+  // allowed cases such as navigating to an error page reusing the current
+  // process, capture a crash dump to diagnose why it is occurring.
   // TODO(creis): Remove this check after we've gathered enough information to
   // debug issues with browser-side security checks. https://crbug.com/931895.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -1540,7 +1551,9 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       !policy->CanAccessDataForOrigin(
           navigation_rfh->GetProcess()->GetID(),
           url::Origin::Create(request->common_params().url)) &&
-      !request->IsForMhtmlSubframe()) {
+      !request->IsForMhtmlSubframe() &&
+      request->ComputeErrorPageProcess() !=
+          NavigationRequest::ErrorPageProcess::kCurrentProcess) {
     SCOPED_CRASH_KEY_STRING256("GetFrameHostForNav", "lock_url",
                                process_lock.ToString());
     SCOPED_CRASH_KEY_STRING64(
@@ -2580,6 +2593,20 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // SiteInstanceRelation::RELATED_IN_COOP_GROUP relations to `current_instance`
   // iff `browsing_context_group_swap.ShouldSwap()` is true.
 
+  // If this is an error page that must reuse the current process, ensure that
+  // `current_instance` is used. Note that this must be the first check to
+  // avoid picking the destination instance or other instances, to preserve the
+  //  previous behavior where we didn't call this function (or even
+  // `GetFrameHostForNavigation()`) at all and immediately picked the current
+  // SiteInstance (through picking the current RenderFrameHost directly) in
+  // `NavigationRequest::OnRequestFailedInternal()`.
+  if (error_page_process ==
+      NavigationRequest::ErrorPageProcess::kCurrentProcess) {
+    AppendReason(reason,
+                 "DetermineSiteInstanceForURL => error-current-instance");
+    return SiteInstanceDescriptor(current_instance);
+  }
+
   // If the entry has an instance already we should usually use it, unless it is
   // no longer suitable.
 
@@ -2602,7 +2629,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // reloads. In UrlInfo below we use kNone for OriginIsolationRequest since
     // error pages cannot request origin isolation: this is done implicitly in
     // the UrlInfoInit constructor.
-    AppendReason(reason, "DetermineSiteInstanceForURL => error-instance");
+    AppendReason(reason,
+                 "DetermineSiteInstanceForURL => error-isolated-instance");
 
     // Top level frames ending up as error pages should use COOP: unsafe-none.
     // They should therefore be non isolated. Note that it is possible for a

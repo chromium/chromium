@@ -4565,7 +4565,6 @@ void NavigationRequest::OnRequestFailedInternal(
       policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
       url::Origin(), net::NetworkAnonymizationKey::CreateTransient());
 
-  RenderFrameHostImpl* render_frame_host = nullptr;
   switch (ComputeErrorPageProcess()) {
     case ErrorPageProcess::kCurrentProcess:
       // There's no way to get here with a same-document navigation, it would
@@ -4573,7 +4572,6 @@ void NavigationRequest::OnRequestFailedInternal(
       // same document navigations don't go to the network so it wouldn't know
       // about the change.
       CHECK(!IsSameDocument());
-      render_frame_host = frame_tree_node_->current_frame_host();
       break;
     case ErrorPageProcess::kIsolatedProcess:
       // In this case we are isolating the error page from the source and
@@ -4592,30 +4590,33 @@ void NavigationRequest::OnRequestFailedInternal(
       // https://crbug.com/1125106.
       common_params_->navigation_type =
           ConvertToCrossDocumentType(common_params_->navigation_type);
-      if (auto result =
-              frame_tree_node_->render_manager()->GetFrameHostForNavigation(
-                  this, &browsing_context_group_swap_);
-          result.has_value()) {
-        render_frame_host = result.value();
-      } else {
-        switch (result.error()) {
-          case GetFrameHostForNavigationFailed::kCouldNotReinitializeMainFrame:
-            // TODO(https://crbug.com/1400535): This was unhandled
-            // before and remains explicitly unhandled. This branch may be
-            // removed in the future.
-            break;
-          case GetFrameHostForNavigationFailed::kBlockedByPendingCommit:
-            // TODO(https://crbug.com/1220337): Split OnRequestFailedInternal()
-            // so the process selection logic is at the top of its own method.
-            break;
-        }
-      }
       break;
     case ErrorPageProcess::kNotErrorPage:
     case ErrorPageProcess::kPostCommitErrorPage:
       NOTREACHED();
       break;
   }
+
+  RenderFrameHostImpl* render_frame_host = nullptr;
+  if (auto result =
+          frame_tree_node_->render_manager()->GetFrameHostForNavigation(
+              this, &browsing_context_group_swap_);
+      result.has_value()) {
+    render_frame_host = result.value();
+  } else {
+    switch (result.error()) {
+      case GetFrameHostForNavigationFailed::kCouldNotReinitializeMainFrame:
+        // TODO(https://crbug.com/1400535): This was unhandled
+        // before and remains explicitly unhandled. This branch may be
+        // removed in the future.
+        break;
+      case GetFrameHostForNavigationFailed::kBlockedByPendingCommit:
+        // TODO(https://crbug.com/1220337): Split OnRequestFailedInternal()
+        // so the process selection logic is at the top of its own method.
+        break;
+    }
+  }
+
   // Sanity check that we haven't changed the RenderFrameHost picked for the
   // error page in OnRequestFailedInternal when running the WillFailRequest
   // checks.
