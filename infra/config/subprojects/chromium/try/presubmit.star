@@ -154,7 +154,6 @@ presubmit_builder(
     },
     tryjob = try_.job(
         disable_reuse = False,
-        experiment_percentage = 100,
     ),
 )
 
