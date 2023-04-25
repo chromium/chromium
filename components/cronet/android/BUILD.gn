@@ -23,6 +23,7 @@ _templates_dir = "$target_gen_dir/templates"
 _gn_path = "//buildtools/linux64/gn"
 
 assert(!is_component_build)
+assert(is_cronet_build)
 
 declare_args() {
   # In integrated mode, CronetEngine will use the shared network task runner by
@@ -1703,9 +1704,6 @@ action("dependencies_checks") {
     "--stamp",
     rebase_path(outputs[0], root_build_dir),
   ]
-  if (is_cronet_build) {
-    args += [ "--is_cronet_build" ]
-  }
   deps = [ ":cronet" ]
 }
 
