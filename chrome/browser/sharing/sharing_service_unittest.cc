@@ -210,6 +210,11 @@ class SharingServiceTest : public testing::Test {
   syncer::TestSyncService test_sync_service_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
 
+ private:
+  // `sharing_service_` must outlive the raw_ptrs below.
+  std::unique_ptr<SharingService> sharing_service_;
+
+ protected:
   testing::NiceMock<MockInstanceIDDriver> mock_instance_id_driver_;
   raw_ptr<testing::NiceMock<MockSharingHandlerRegistry>> handler_registry_;
   raw_ptr<testing::NiceMock<MockSharingFCMHandler>> fcm_handler_;
@@ -222,7 +227,6 @@ class SharingServiceTest : public testing::Test {
   bool device_candidates_initialized_ = false;
 
  private:
-  std::unique_ptr<SharingService> sharing_service_;
   absl::optional<SharingSendMessageResult> send_message_result_;
   std::unique_ptr<chrome_browser_sharing::ResponseMessage>
       send_message_response_;
