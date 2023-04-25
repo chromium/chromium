@@ -8,11 +8,11 @@
 
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
-#include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/common/chrome_features.h"
@@ -107,7 +107,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
       base::FilePath::StringPieceType name,
       const std::string& content_type,
       unsigned file_length) {
-    const std::string uuid = base::GenerateGUID();
+    const std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
     auto blob = blink::mojom::SerializedBlob::New();
     blob->uuid = uuid;

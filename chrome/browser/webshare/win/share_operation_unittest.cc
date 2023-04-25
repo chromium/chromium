@@ -5,12 +5,12 @@
 #include "chrome/browser/webshare/win/share_operation.h"
 
 #include "base/files/file_path.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
 #include "chrome/browser/webshare/share_service_impl.h"
@@ -151,7 +151,7 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
       const std::string& content_type,
       const std::string& contents) {
     auto blob = blink::mojom::SerializedBlob::New();
-    const std::string uuid = base::GenerateGUID();
+    const std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     blob->uuid = uuid;
     blob->content_type = content_type;
     blob->size = contents.size();
