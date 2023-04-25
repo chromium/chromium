@@ -18,15 +18,6 @@ namespace base {
 
 namespace internal {
 
-// Uses expression SFINAE to detect whether using operator<< would work.
-template <typename T, typename = void>
-struct SupportsOstreamOperator : std::false_type {};
-template <typename T>
-struct SupportsOstreamOperator<T,
-                               decltype(void(std::declval<std::ostream&>()
-                                             << std::declval<T>()))>
-    : std::true_type {};
-
 template <typename T, typename = void>
 struct SupportsToString : std::false_type {};
 template <typename T>

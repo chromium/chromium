@@ -9,8 +9,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/template_util.h"
 #include "base/trace_event/base_tracing_forward.h"
+#include "base/types/supports_ostream_operator.h"
 
 namespace base {
 
@@ -154,7 +154,7 @@ class StrongAlias {
 template <typename TagType,
           typename UnderlyingType,
           typename = std::enable_if_t<
-              base::internal::SupportsOstreamOperator<UnderlyingType>::value>>
+              internal::SupportsOstreamOperator<UnderlyingType>::value>>
 std::ostream& operator<<(std::ostream& stream,
                          const StrongAlias<TagType, UnderlyingType>& alias) {
   return stream << alias.value();

@@ -61,8 +61,7 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
     int retry_count = 1;
     while (base::PathExists(test_output_folder) && retry_count < 5) {
       test_output_folder = output_file_path.DirName().Append(
-          test_name + base::ToString(".retry_") +
-          base::NumberToString(retry_count));
+          test_name + ".retry_" + base::NumberToString(retry_count));
       ++retry_count;
     }
     // Unlikely the path still exist. But in case it happens, we would let

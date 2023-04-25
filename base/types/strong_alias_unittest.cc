@@ -14,7 +14,7 @@
 #include <utility>
 
 #include "base/strings/string_piece.h"
-#include "base/template_util.h"
+#include "base/types/supports_ostream_operator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
@@ -371,8 +371,7 @@ TEST(StrongAliasTest, EnsureConstexpr) {
 void StreamOperatorExists() {
   // Aliases of ints should be streamable because ints are streamable.
   using StreamableAlias = StrongAlias<class IntTag, int>;
-  static_assert(base::internal::SupportsOstreamOperator<StreamableAlias>::value,
-                "");
+  static_assert(internal::SupportsOstreamOperator<StreamableAlias>::value);
 
   // Aliases of a class which does not expose a stream operator should
   // themselves not be streamable.
@@ -381,8 +380,7 @@ void StreamOperatorExists() {
     Scope() = default;
   };
   using NonStreamableAlias = StrongAlias<class ScopeTag, Scope>;
-  static_assert(
-      !base::internal::SupportsOstreamOperator<NonStreamableAlias>::value, "");
+  static_assert(!internal::SupportsOstreamOperator<NonStreamableAlias>::value);
 }
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)

@@ -9,7 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"

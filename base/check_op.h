@@ -15,6 +15,7 @@
 #include "base/debug/debugging_buildflags.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/template_util.h"
+#include "base/types/supports_ostream_operator.h"
 
 // This header defines the (DP)CHECK_EQ etc. macros.
 //

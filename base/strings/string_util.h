@@ -13,8 +13,6 @@
 #include <stdint.h>
 
 #include <initializer_list>
-#include <memory>
-#include <sstream>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -26,7 +24,6 @@
 #include "base/cxx20_to_address.h"
 #include "base/strings/string_piece.h"  // For implicit conversions.
 #include "base/strings/string_util_internal.h"
-#include "base/template_util.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -114,93 +111,6 @@ constexpr StringPiece16 MakeStringPiece16(Iter begin, Iter end) {
 template <typename Iter>
 constexpr WStringPiece MakeWStringPiece(Iter begin, Iter end) {
   return MakeBasicStringPiece<wchar_t>(begin, end);
-}
-
-// Convert a type with defined `operator<<` or `.ToString()` method into a
-// string.
-
-// I/O manipulators are function pointers, but should be sent directly to the
-// `ostream` instead of being cast to `const void*` like other function
-// pointers.
-template <typename T, typename = void>
-constexpr bool IsIomanip = false;
-template <typename T>
-constexpr bool
-    IsIomanip<T&(T&), std::enable_if_t<std::is_base_of_v<std::ios_base, T>>> =
-        true;
-
-// Function pointers implicitly convert to `bool`, so use this to avoid printing
-// function pointers as 1 or 0.
-template <typename T, typename = void>
-constexpr bool WillBeIncorrectlyStreamedAsBool = false;
-template <typename T>
-constexpr bool WillBeIncorrectlyStreamedAsBool<
-    T,
-    std::enable_if_t<std::is_function_v<typename std::remove_pointer_t<T>> &&
-                     !IsIomanip<typename std::remove_pointer_t<T>>>> = true;
-
-// Fallback case when there is no better representation.
-template <typename T, typename = void>
-struct ToStringHelper {
-  static void Stringify(const T& v, std::ostringstream& ss) {
-    ss << "[" << sizeof(v) << "-byte object at 0x" << std::addressof(v) << "]";
-  }
-};
-
-// Most streamables.
-template <typename T>
-struct ToStringHelper<
-    T,
-    std::enable_if_t<base::internal::SupportsOstreamOperator<const T&>::value &&
-                     !WillBeIncorrectlyStreamedAsBool<T>>> {
-  static void Stringify(const T& v, std::ostringstream& ss) { ss << v; }
-};
-
-// Functions and function pointers.
-template <typename T>
-struct ToStringHelper<
-    T,
-    std::enable_if_t<base::internal::SupportsOstreamOperator<const T&>::value &&
-                     WillBeIncorrectlyStreamedAsBool<T>>> {
-  static void Stringify(const T& v, std::ostringstream& ss) {
-    ToStringHelper<const void*>::Stringify(reinterpret_cast<const void*>(v),
-                                           ss);
-  }
-};
-
-// Non-streamables that have a `ToString` member.
-template <typename T>
-struct ToStringHelper<
-    T,
-    std::enable_if_t<
-        !base::internal::SupportsOstreamOperator<const T&>::value &&
-        base::internal::SupportsToString<const T&>::value>> {
-  static void Stringify(const T& v, std::ostringstream& ss) {
-    // .ToString() may not return a std::string, e.g. blink::WTF::String.
-    ToStringHelper<decltype(v.ToString())>::Stringify(v.ToString(), ss);
-  }
-};
-
-// Non-streamable enums (i.e. scoped enums where no `operator<<` overload was
-// declared).
-template <typename T>
-struct ToStringHelper<T,
-                      std::enable_if_t<!base::internal::SupportsOstreamOperator<
-                                           const T&>::value &&
-                                       std::is_enum_v<T>>> {
-  static void Stringify(const T& v, std::ostringstream& ss) {
-    using UT = typename std::underlying_type_t<T>;
-    ToStringHelper<UT>::Stringify(static_cast<UT>(v), ss);
-  }
-};
-
-template <typename... Ts>
-std::string ToString(const Ts&... values) {
-  std::ostringstream ss;
-  (ToStringHelper<typename std::remove_cvref_t<decltype(values)>>::Stringify(
-       values, ss),
-   ...);
-  return ss.str();
 }
 
 // ASCII-specific tolower.  The standard library's tolower is locale sensitive,
