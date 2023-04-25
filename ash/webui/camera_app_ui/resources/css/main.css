@@ -8,6 +8,8 @@
   --blue-300: rgb(var(--blue-300-rgb));
   --blue-500: rgb(66, 133, 244);
   --blue-600: rgb(26, 115, 232);
+  --red-300-rgb: 242, 139, 130;
+  --red-300: rgb(var(--red-300-rgb));
   --grey-100: rgb(241, 243, 244);
   --grey-200-rgb: 233, 234, 237;
   --grey-200: rgb(var(--grey-200-rgb));
@@ -621,14 +623,23 @@ body:not(.enable-ptz) #open-ptz-panel {
 #open-mirror-panel,
 #open-grid-panel,
 #open-timer-panel,
-#open-ptz-panel {
+#open-ptz-panel,
+#toggle-mic {
   border-radius: 12px;
 }
 
 #open-mirror-panel,
-#open-grid-panel {
+#open-grid-panel,
+#toggle-mic {
   .on-icon {
     display: none;
+  }
+}
+
+body:not(.mic) #toggle-mic {
+  background: var(--cros-sys-error_container);
+  .off-icon {
+    color: var(--cros-sys-on_error_container);
   }
 }
 
@@ -640,7 +651,8 @@ body.view-ptz-panel #open-ptz-panel {
 }
 
 body.mirror #open-mirror-panel,
-body.grid #open-grid-panel {
+body.grid #open-grid-panel,
+body.mic #toggle-mic {
   .off-icon {
     display: none;
   }
@@ -682,14 +694,6 @@ body.scan #settings-photo-resolution,
 body.scan #settings-video-resolution,
 body.scan #preview-grid {
   display: none;
-}
-
-#toggle-mic:checked {
-  background-image: url(/images/camera_button_mic_on.svg);
-}
-
-#toggle-mic {
-  background-image: url(/images/camera_button_mic_off.svg);
 }
 
 body.should-handle-intent-result #open-settings {

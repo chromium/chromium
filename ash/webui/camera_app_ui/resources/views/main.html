@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="/css/views/settings.css">
     <script type="module" src="/js/init.js"></script>
   </head>
-  <body class="sound mirror mic view-splash">
+  <body class="sound mirror view-splash">
     <div id="spoken_msg" class="centered-overlay" tabindex="-1"
          aria-live="polite"></div>
     <div id="view-camera">
@@ -129,9 +129,13 @@
                 i18n-label="back_button"></button>
       </div>
       <div class="top-stripe right-stripe circle buttons">
-        <input id="toggle-mic" type="checkbox" tabindex="0"
-               i18n-label="toggle_mic_button" data-state="mic"
-               i18n-aria="aria_mute_off" data-key="toggleMic" checked>
+        <button id="toggle-mic" role="checkbox" tabindex="0"
+               i18n-label="toggle_mic_button" i18n-aria="aria_mute_off">
+          <svg-wrapper name="camera_button_mic_off.svg"
+                       class="off-icon"></svg-wrapper>
+          <svg-wrapper name="camera_button_mic_on.svg"
+                       class="on-icon"></svg-wrapper>
+        </button>
       </div>
       <div id="options-group" class="left-stripe buttons circle">
         <!--

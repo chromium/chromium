@@ -1,22 +1,3 @@
-<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <defs>
-        <filter x="-54.2%" y="-40.6%" width="208.3%" height="181.2%" filterUnits="objectBoundingBox" id="filter-1">
-            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
-            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
-            <feColorMatrix values="0 0 0 0 0.125490196   0 0 0 0 0.129411765   0 0 0 0 0.141176471  0 0 0 0.3 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
-            <feMerge>
-                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
-                <feMergeNode in="SourceGraphic"></feMergeNode>
-            </feMerge>
-        </filter>
-        <path d="M5.83333333,10 C7.21666667,10 8.33333333,8.88333333 8.33333333,7.5 L8.33333333,2.5 C8.33333333,1.11666667 7.21666667,0 5.83333333,0 C4.45,0 3.33333333,1.11666667 3.33333333,2.5 L3.33333333,7.5 C3.33333333,8.88333333 4.45,10 5.83333333,10 Z M10,7.5 C10,9.8 8.13333333,11.6666667 5.83333333,11.6666667 C3.53333333,11.6666667 1.66666667,9.8 1.66666667,7.5 L0,7.5 C0,10.4416667 2.175,12.8583333 5,13.2666667 L5,15.8333333 L6.66666667,15.8333333 L6.66666667,13.2666667 C9.49166667,12.8583333 11.6666667,10.4416667 11.6666667,7.5 L10,7.5 Z" id="path-2"></path>
-    </defs>
-    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Group" filter="url(#filter-1)" transform="translate(6.166667, 4.500000)">
-            <mask id="mask-3" fill="white">
-                <use xlink:href="#path-2"></use>
-            </mask>
-            <use id="ic_mic_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-2"></use>
-        </g>
-    </g>
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M10 12.1053C11.4229 12.1053 12.5629 10.9768 12.5629 9.57895L12.5714 4.52632C12.5714 3.12842 11.4229 2 10 2C8.57716 2 7.42859 3.12842 7.42859 4.52632V9.57895C7.42859 10.9768 8.57716 12.1053 10 12.1053ZM14.5429 9.57898C14.5429 12.1053 12.3657 13.8737 10 13.8737C7.63429 13.8737 5.45714 12.1053 5.45714 9.57898H4C4 12.459 6.33143 14.8253 9.14286 15.2379V18H10.8571V15.2379C13.6686 14.8337 16 12.459 16 9.57898H14.5429Z"/>
 </svg>
