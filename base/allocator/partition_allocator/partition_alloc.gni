@@ -94,6 +94,20 @@ declare_args() {
   force_enable_raw_ptr_exclusion = false
 }
 
+declare_args() {
+  # Determines whether `raw_ptr_experimental<T>` is an alias for
+  # `raw_ptr<T>` or `T*` (true raw pointer).
+  #
+  # Members rewritten as `raw_ptr_experimental` rely on this as an
+  # escape hatch to degrade to a `T*` if `raw_ptr` performance proves
+  # problematic. Defaults to match standard `raw_ptr` support.
+  #
+  # One side effect of this is that `raw_ptr_experimental<T> foo_` must
+  # not use `foo_.get()`; this is incoherent when `foo_` is a `T*`.
+  # Use `base::to_address()` instead.
+  enable_raw_ptr_experimental = enable_backup_ref_ptr_support
+}
+
 assert(!enable_pointer_compression_support || glue_core_pools,
        "Pointer compression relies on core pools being contiguous.")
 
@@ -195,6 +209,7 @@ if (is_nacl) {
 if (!use_partition_alloc) {
   use_partition_alloc_as_malloc = false
   enable_backup_ref_ptr_support = false
+  enable_raw_ptr_experimental = false
   use_asan_backup_ref_ptr = false
   use_asan_unowned_ptr = false
   use_hookable_raw_ptr = false
@@ -217,6 +232,10 @@ assert(
 # is true.
 assert(enable_backup_ref_ptr_support || !enable_backup_ref_ptr_slow_checks,
        "Can't enable additional BackupRefPtr checks if it isn't enabled at all")
+
+assert(
+    enable_backup_ref_ptr_support || !enable_raw_ptr_experimental,
+    "Can't make `raw_ptr_experimental` = `raw_ptr` when the latter is wholly disabled")
 
 # enable_dangling_raw_ptr_checks can only be used if enable_backup_ref_ptr_support
 # is true.

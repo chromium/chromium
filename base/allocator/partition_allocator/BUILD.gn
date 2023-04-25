@@ -427,6 +427,7 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_BACKUP_REF_PTR_SUPPORT=$enable_backup_ref_ptr_support",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$enable_backup_ref_ptr_slow_checks",
     "ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=$enable_backup_ref_ptr_feature_flag",
+    "ENABLE_RAW_PTR_EXPERIMENTAL=$enable_raw_ptr_experimental",
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$enable_dangling_raw_ptr_checks",
     "ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=$enable_dangling_raw_ptr_feature_flag",
     "ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT=$enable_dangling_raw_ptr_perf_experiment",
