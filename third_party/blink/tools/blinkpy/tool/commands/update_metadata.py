@@ -867,7 +867,10 @@ class MetadataUpdater:
             statuses_by_config = collections.defaultdict(set)
             for prop, config, value in results:
                 if prop == 'status':
-                    statuses_by_config[config].add(value)
+                    status, known_intermittent = metadata.unpack_result(value)
+                    statuses_by_config[config].add(status)
+                    if known_intermittent:
+                        statuses_by_config[config].update(known_intermittent)
             # Writing a conditional `disabled` value is complicated, so just
             # disable the test unconditionally if any configuration times out
             # consistently.

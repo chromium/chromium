@@ -1274,6 +1274,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 'results': [{
                     'test': '/variant.html?foo=baz',
                     'status': 'OK',
+                    'known_intermittent': ['TIMEOUT'],
                 }],
             }, {
                 'run_info': {
