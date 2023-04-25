@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
+#include "chrome/browser/devtools/protocol/storage_handler.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace content {
@@ -22,6 +23,7 @@ class BrowserHandler;
 class CastHandler;
 class PageHandler;
 class SecurityHandler;
+class StorageHandler;
 class TargetHandler;
 class WindowManagerHandler;
 
@@ -62,6 +64,7 @@ class ChromeDevToolsSession : public protocol::FrontendChannel {
   std::unique_ptr<EmulationHandler> emulation_handler_;
   std::unique_ptr<PageHandler> page_handler_;
   std::unique_ptr<SecurityHandler> security_handler_;
+  std::unique_ptr<StorageHandler> storage_handler_;
   std::unique_ptr<TargetHandler> target_handler_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<WindowManagerHandler> window_manager_handler_;

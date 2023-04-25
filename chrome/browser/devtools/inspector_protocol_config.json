@@ -37,6 +37,11 @@
                 "domain": "Security",
                 "include": [ "enable", "disable" ],
                 "include_events": [ "visibleSecurityStateChanged" ]
+            },
+            {
+                "domain": "Storage",
+                "include": ["runBounceTrackingMitigations"],
+                "async": ["runBounceTrackingMitigations"]
             }
         ]
     },

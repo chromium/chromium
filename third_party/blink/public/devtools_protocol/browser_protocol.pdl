@@ -9384,6 +9384,11 @@ experimental domain Storage
       string storageKey
       string bucketName
 
+  # Deletes state for sites identified as potential bounce trackers, immediately.
+  experimental command runBounceTrackingMitigations
+    returns
+      array of string deletedSites
+
   # A cache's contents have been modified.
   event cacheStorageContentUpdated
     parameters

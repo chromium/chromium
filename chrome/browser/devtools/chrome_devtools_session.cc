@@ -15,6 +15,7 @@
 #include "chrome/browser/devtools/protocol/emulation_handler.h"
 #include "chrome/browser/devtools/protocol/page_handler.h"
 #include "chrome/browser/devtools/protocol/security_handler.h"
+#include "chrome/browser/devtools/protocol/storage_handler.h"
 #include "chrome/browser/devtools/protocol/target_handler.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
@@ -56,6 +57,11 @@ ChromeDevToolsSession::ChromeDevToolsSession(
     if (IsDomainAvailableToUntrustedClient<CastHandler>() ||
         channel->GetClient()->IsTrusted()) {
       cast_handler_ = std::make_unique<CastHandler>(
+          agent_host->GetWebContents(), &dispatcher_);
+    }
+    if (IsDomainAvailableToUntrustedClient<StorageHandler>() ||
+        channel->GetClient()->IsTrusted()) {
+      storage_handler_ = std::make_unique<StorageHandler>(
           agent_host->GetWebContents(), &dispatcher_);
     }
   }

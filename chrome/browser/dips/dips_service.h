@@ -38,6 +38,8 @@ class DIPSService : public KeyedService {
  public:
   using RecordBounceCallback = base::RepeatingCallback<
       void(const GURL& url, base::Time time, bool stateful)>;
+  using DeletedSitesCallback =
+      base::OnceCallback<void(const std::vector<std::string>& sites)>;
 
   ~DIPSService() override;
 
@@ -59,7 +61,7 @@ class DIPSService : public KeyedService {
 
   // This allows for deletion of state for sites deemed eligible when evaluated
   // with no grace period.
-  void DeleteEligibleSitesImmediately();
+  void DeleteEligibleSitesImmediately(DeletedSitesCallback callback);
 
   void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
                            DIPSRedirectChainInfoPtr chain);
@@ -111,9 +113,11 @@ class DIPSService : public KeyedService {
 
   void OnStorageInitialized();
   void OnTimerFired();
-  void DeleteDIPSEligibleState(base::Time deletion_start,
+  void DeleteDIPSEligibleState(DeletedSitesCallback callback,
+                               base::Time deletion_start,
                                std::vector<std::string> sites_to_clear);
-  void PostDeletionTaskToUIThread(base::Time deletion_start,
+  void PostDeletionTaskToUIThread(base::OnceClosure callback,
+                                  base::Time deletion_start,
                                   std::vector<std::string> sites_to_clear);
   void RunDeletionTaskOnUIThread(
       std::unique_ptr<content::BrowsingDataFilterBuilder> filter,

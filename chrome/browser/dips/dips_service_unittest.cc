@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -421,9 +422,19 @@ TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
           content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
       filter_builder.get());
 
-  // Perform immediate enforcement of deletion, without regard for grace period.
-  GetService()->DeleteEligibleSitesImmediately();
+  // Perform immediate enforcement of deletion, without regard for grace period
+  // and verify `url` is returned the `DeletedSitesCallback`.
+  base::RunLoop run_loop;
+  base::OnceCallback<void(const std::vector<std::string>& sites)> callback =
+      base::BindLambdaForTesting(
+          [&](const std::vector<std::string>& deleted_sites) {
+            EXPECT_THAT(deleted_sites,
+                        testing::UnorderedElementsAre(GetSiteForDIPS(url)));
+            run_loop.Quit();
+          });
+  GetService()->DeleteEligibleSitesImmediately(std::move(callback));
   task_environment_.RunUntilIdle();
+  run_loop.Run();
 
   // Verify that a removal task was posted to the BrowsingDataRemover(Delegate)
   // for 'url'.

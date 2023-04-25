@@ -21,6 +21,9 @@
 #include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "chrome/browser/dips/dips_features.h"
+#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
@@ -330,6 +333,55 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetRPHRegistrationMode) {
   SendCommandAsync("Page.setRPHRegistrationMode", std::move(params));
   EXPECT_EQ(custom_handlers::RphRegistrationMode::kAutoAccept,
             registry->registration_mode());
+}
+
+class DevToolsProtocolTest_BounceTrackingMitigations
+    : public DevToolsProtocolTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        dips::kFeature,
+        {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
+
+    DevToolsProtocolTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
+                       RunBounceTrackingMitigations) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  Attach();
+
+  const GURL bouncer(
+      embedded_test_server()->GetURL("example.test", "/title1.html"));
+
+  // Get DIPS Service
+  DIPSService* dips_service = DIPSService::Get(browser()->profile());
+  dips_service->WaitForInitCompleteForTesting();
+
+  // Record a stateful bounce for `bouncer`.
+  dips_service->storage()
+      ->AsyncCall(&DIPSStorage::RecordBounce)
+      .WithArgs(bouncer, base::Time::Now(), true);
+  dips_service->storage()->FlushPostedTasksForTesting();
+
+  SendCommandSync("Storage.runBounceTrackingMitigations");
+
+  const base::Value::List* deleted_sites_list =
+      result()->FindList("deletedSites");
+  ASSERT_TRUE(deleted_sites_list);
+
+  std::vector<std::string> deleted_sites;
+  for (const auto& site : *deleted_sites_list) {
+    deleted_sites.push_back(site.GetString());
+  }
+
+  EXPECT_THAT(deleted_sites, testing::ElementsAre("example.test"));
 }
 
 using DevToolsProtocolTest_AppId = DevToolsProtocolTest;
