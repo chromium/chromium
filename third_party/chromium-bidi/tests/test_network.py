@@ -281,3 +281,42 @@ async def test_network_bad_ssl(websocket, context_id):
             "errorText": "net::ERR_CERT_DATE_INVALID"
         }
     }
+
+
+@pytest.mark.asyncio
+async def test_network_before_request_sent_event_with_data_url_emitted(
+        websocket, context_id):
+    await subscribe(websocket, "network.beforeRequestSent", context_id)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "data:text/html,hello",
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "network.beforeRequestSent",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": "data:text/html,hello",
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": ANY_LIST,
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT
+            },
+            "initiator": {
+                "type": "other"
+            },
+            "timestamp": ANY_TIMESTAMP
+        }
+    }

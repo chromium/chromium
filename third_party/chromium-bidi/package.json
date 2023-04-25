@@ -4,7 +4,7 @@
   "description": "An implementation of the WebDriver BiDi protocol for Chromium implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.",
   "scripts": {
     "build": "wireit",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib .wireit",
     "coverage": "nyc mocha",
     "e2e-headful": "wireit",
     "e2e-headless": "wireit",
@@ -55,7 +55,6 @@
     },
     "prepare": {
       "dependencies": [
-        "clean",
         "build"
       ]
     },
@@ -114,7 +113,7 @@
         "src/**/*.ts"
       ],
       "output": [
-        "lib/**"
+        "lib/cjs/**"
       ]
     }
   },

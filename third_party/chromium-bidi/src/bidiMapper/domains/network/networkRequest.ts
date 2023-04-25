@@ -83,7 +83,16 @@ export class NetworkRequest {
       throw new Error('ResponseReceivedEvent is already set');
     }
     this.#responseReceivedEvent = responseReceivedEvent;
-    if (this.#responseReceivedExtraInfoEvent !== undefined) {
+    if (
+      responseReceivedEvent.hasExtraInfo !== true &&
+      !this.#beforeRequestSentDeferred.isFinished
+    ) {
+      this.#beforeRequestSentDeferred.resolve();
+    }
+    if (
+      responseReceivedEvent.hasExtraInfo !== true ||
+      this.#responseReceivedExtraInfoEvent !== undefined
+    ) {
       this.#responseReceivedDeferred.resolve();
     }
     this.#sendResponseReceivedEvent();
