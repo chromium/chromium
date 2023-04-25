@@ -104,12 +104,12 @@ struct Config {
   // No effect if `persist_clusters_in_history_db` is disabled. Determines how
   // soon to update clusters after startup in minutes. E.g., by default, will
   // update clusters 5 minutes after startup.
-  int persist_clusters_in_history_db_after_startup_delay_minutes = 5;
+  int persist_clusters_in_history_db_after_startup_delay_minutes = 1;
 
   // No effect if `persist_clusters_in_history_db` is disabled. Determines how
   // often to update clusters in minutes. E.g., by default, will update clusters
   // every 1 hour.
-  int persist_clusters_in_history_db_period_minutes = 60;
+  int persist_clusters_in_history_db_period_minutes = 1;
 
   // No effect if `persist_clusters_in_history_db` is disabled. If disabled,
   // persistence occurs on a timer (see the above 2 params). If enabled, will
@@ -338,7 +338,7 @@ struct Config {
 
   // Whether to use the new clustering path that does context clustering at
   // navigation and embellishes clusters for display at UI time.
-  bool use_navigation_context_clusters = false;
+  bool use_navigation_context_clusters = true;
 
   // The duration between context clustering clean up passes.
   base::TimeDelta context_clustering_clean_up_duration = base::Minutes(10);
