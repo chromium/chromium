@@ -40,7 +40,6 @@ class _VersionTest(unittest.TestCase):
 
   _ANDROID_CHROME_VARS = [
       'chrome_version_code',
-      'chrome_modern_version_code',
       'monochrome_version_code',
       'trichrome_version_code',
       'webview_stable_version_code',
@@ -106,7 +105,6 @@ class _VersionTest(unittest.TestCase):
     contents = output['contents']
 
     self.assertRegex(contents, r'\bchrome_version_code = "\d+"\s')
-    self.assertRegex(contents, r'\bchrome_modern_version_code = "\d+"\s')
     self.assertRegex(contents, r'\bmonochrome_version_code = "\d+"\s')
     self.assertRegex(contents, r'\btrichrome_version_code = "\d+"\s')
     self.assertRegex(contents, r'\bwebview_stable_version_code = "\d+"\s')

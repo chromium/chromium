@@ -41,7 +41,6 @@ if (is_mac) {
 
   _version_dictionary_template +=
       "chrome_version_code = " + "\"@CHROME_VERSION_CODE@\" " +
-      "chrome_modern_version_code = \"@CHROME_MODERN_VERSION_CODE@\" " +
       "monochrome_version_code = \"@MONOCHROME_VERSION_CODE@\" " +
       "trichrome_version_code = \"@TRICHROME_VERSION_CODE@\" " +
       "trichrome_beta_version_code = \"@TRICHROME_BETA_VERSION_CODE@\" " +
@@ -144,7 +143,6 @@ if (is_mac) {
 } else if (target_os == "android") {
   forward_variables_from(_result,
                          [
-                           "chrome_modern_version_code",
                            "chrome_version_code",
                            "monochrome_version_code",
                            "monochrome_32_version_code",
@@ -184,7 +182,6 @@ if (is_android && current_toolchain == default_toolchain) {
   lines_to_write = [
     "VersionName: $chrome_version_name",
     "Chrome: $chrome_version_code",
-    "ChromeModern: $chrome_modern_version_code",
     "Monochrome: $monochrome_version_code",
     "TrichromeChrome: $trichrome_version_code",
     "TrichromeChromeOpenBeta: $trichrome_beta_version_code",

@@ -170,8 +170,7 @@ template("chrome_common_apk_or_module_tmpl") {
   } else if (_is_monochrome) {
     _version_code = MONOCHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
   } else {
-    # TODO(agrieve): Merge chrome_modern_version_code with chrome_version_code.
-    _version_code = chrome_modern_version_code
+    _version_code = chrome_version_code
   }
 
   if (defined(invoker.manifest_package)) {

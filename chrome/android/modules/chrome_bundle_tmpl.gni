@@ -55,8 +55,7 @@ template("chrome_bundle") {
   # TODO(crbug.com/1126301): Isolated splits cause various bugs with resource
   # access. For now, move all resources to the base module.
   # TODO(crbug.com/1278419): Macro resource types only work when all resources
-  # are in the same split. For now, keep all resources in the base module even
-  # in Chrome Modern.
+  # are in the same split. For now, keep all resources in the base module.
   _base_target_name = get_label_info(invoker.base_module_target, "name")
   android_resources("${_base_target_name}__all_dfm_resources") {
     recursive_resource_deps = true
@@ -100,7 +99,7 @@ template("chrome_bundle") {
     } else if (_is_monochrome) {
       _version_code = MONOCHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
     } else {
-      _version_code = chrome_modern_version_code
+      _version_code = chrome_version_code
     }
   }
 
