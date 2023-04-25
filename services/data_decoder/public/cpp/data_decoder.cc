@@ -4,6 +4,10 @@
 
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"

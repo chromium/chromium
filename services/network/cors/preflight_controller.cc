@@ -236,44 +236,35 @@ base::expected<void, CorsErrorStatus> CheckPreflightAccess(
                               result);
   }
 
-  // Prefer using a preflight specific error code.
-  if (!cors_result.has_value()) {
-    switch (cors_result.error().cors_error) {
-      case mojom::CorsError::kWildcardOriginNotAllowed:
-        cors_result.error().cors_error =
-            mojom::CorsError::kPreflightWildcardOriginNotAllowed;
-        break;
-      case mojom::CorsError::kMissingAllowOriginHeader:
-        cors_result.error().cors_error =
-            mojom::CorsError::kPreflightMissingAllowOriginHeader;
-        break;
-      case mojom::CorsError::kMultipleAllowOriginValues:
-        cors_result.error().cors_error =
-            mojom::CorsError::kPreflightMultipleAllowOriginValues;
-        break;
-      case mojom::CorsError::kInvalidAllowOriginValue:
-        cors_result.error().cors_error =
-            mojom::CorsError::kPreflightInvalidAllowOriginValue;
-        break;
-      case mojom::CorsError::kAllowOriginMismatch:
-        cors_result.error().cors_error =
-            mojom::CorsError::kPreflightAllowOriginMismatch;
-        break;
-      case mojom::CorsError::kInvalidAllowCredentials:
-        cors_result.error().cors_error =
-            mojom::CorsError::kPreflightInvalidAllowCredentials;
-        break;
-      default:
-        NOTREACHED();
-        break;
+  if (cors_result.has_value()) {
+    if (has_ok_status) {
+      return base::ok();
     }
-  } else if (!has_ok_status) {
-    cors_result = base::unexpected<CorsErrorStatus>(
-        mojom::CorsError::kPreflightInvalidStatus);
-  } else {
-    return base::ok();
+    return base::unexpected(
+        CorsErrorStatus(mojom::CorsError::kPreflightInvalidStatus));
   }
 
+  // Prefer using a preflight specific error code.
+  const auto map_to_preflight_error_codes = [](mojom::CorsError error) {
+    switch (error) {
+      case mojom::CorsError::kWildcardOriginNotAllowed:
+        return mojom::CorsError::kPreflightWildcardOriginNotAllowed;
+      case mojom::CorsError::kMissingAllowOriginHeader:
+        return mojom::CorsError::kPreflightMissingAllowOriginHeader;
+      case mojom::CorsError::kMultipleAllowOriginValues:
+        return mojom::CorsError::kPreflightMultipleAllowOriginValues;
+      case mojom::CorsError::kInvalidAllowOriginValue:
+        return mojom::CorsError::kPreflightInvalidAllowOriginValue;
+      case mojom::CorsError::kAllowOriginMismatch:
+        return mojom::CorsError::kPreflightAllowOriginMismatch;
+      case mojom::CorsError::kInvalidAllowCredentials:
+        return mojom::CorsError::kPreflightInvalidAllowCredentials;
+      default:
+        NOTREACHED_NORETURN();
+    }
+  };
+  cors_result.error().cors_error =
+      map_to_preflight_error_codes(cors_result.error().cors_error);
   return cors_result;
 }
 

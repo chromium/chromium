@@ -16,28 +16,6 @@ const char kNoVarySearchSpecProposalUrl[] =
 
 const char kRFC8941DictionaryDefinitionUrl[] =
     "https://www.rfc-editor.org/rfc/rfc8941.html#name-dictionaries";
-
-mojom::NoVarySearchParseError ConvertParseError(
-    const net::HttpNoVarySearchData::ParseErrorEnum& parse_error) {
-  switch (parse_error) {
-    case net::HttpNoVarySearchData::ParseErrorEnum::kOk:
-      return mojom::NoVarySearchParseError::kOk;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kDefaultValue:
-      return mojom::NoVarySearchParseError::kDefaultValue;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kNotDictionary:
-      return mojom::NoVarySearchParseError::kNotDictionary;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kUnknownDictionaryKey:
-      return mojom::NoVarySearchParseError::kUnknownDictionaryKey;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kNonBooleanKeyOrder:
-      return mojom::NoVarySearchParseError::kNonBooleanKeyOrder;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kParamsNotStringList:
-      return mojom::NoVarySearchParseError::kParamsNotStringList;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kExceptNotStringList:
-      return mojom::NoVarySearchParseError::kExceptNotStringList;
-    case net::HttpNoVarySearchData::ParseErrorEnum::kExceptWithoutTrueParams:
-      return mojom::NoVarySearchParseError::kExceptWithoutTrueParams;
-  }
-}
 }  // namespace
 
 mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
@@ -47,9 +25,32 @@ mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
   const auto no_vary_search_data =
       net::HttpNoVarySearchData::ParseFromHeaders(headers);
   if (!no_vary_search_data.has_value()) {
+    using Input = net::HttpNoVarySearchData::ParseErrorEnum;
+    const auto map_error = [](Input error) {
+      using Output = mojom::NoVarySearchParseError;
+      switch (error) {
+        case Input::kOk:
+          return Output::kOk;
+        case Input::kDefaultValue:
+          return Output::kDefaultValue;
+        case Input::kNotDictionary:
+          return Output::kNotDictionary;
+        case Input::kUnknownDictionaryKey:
+          return Output::kUnknownDictionaryKey;
+        case Input::kNonBooleanKeyOrder:
+          return Output::kNonBooleanKeyOrder;
+        case Input::kParamsNotStringList:
+          return Output::kParamsNotStringList;
+        case Input::kExceptNotStringList:
+          return Output::kExceptNotStringList;
+        case Input::kExceptWithoutTrueParams:
+          return Output::kExceptWithoutTrueParams;
+      }
+      NOTREACHED_NORETURN();
+    };
     return mojom::NoVarySearchWithParseError::NewParseError(
-        ConvertParseError(no_vary_search_data.error()));
-  }
+        map_error(no_vary_search_data.error()));
+  };
 
   mojom::NoVarySearchPtr no_vary_search = network::mojom::NoVarySearch::New();
   no_vary_search->vary_on_key_order = no_vary_search_data->vary_on_key_order();
