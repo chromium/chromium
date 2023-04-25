@@ -13,6 +13,7 @@
 #include "ash/shutdown_reason.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -33,11 +34,13 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -138,6 +141,27 @@ std::u16string GetEmailMenuItemText() {
   return base::UTF8ToUTF16(user_session->user_info.display_email);
 }
 
+// The menu delegate for power button menu, which overrides the fontlist for
+// menu labels.
+class PowerButtonMenuDelegate : public ui::SimpleMenuModel {
+ public:
+  explicit PowerButtonMenuDelegate(Delegate* delegate)
+      : ui::SimpleMenuModel(delegate) {
+    font_list_ = ash::TypographyProvider::Get()->ResolveTypographyToken(
+        ash::TypographyToken::kCrosButton2);
+  }
+  PowerButtonMenuDelegate(const PowerButtonMenuDelegate&) = delete;
+  PowerButtonMenuDelegate& operator=(const PowerButtonMenuDelegate&) = delete;
+  ~PowerButtonMenuDelegate() override = default;
+
+  // ui::MenuModel
+  const gfx::FontList* GetLabelFontListAt(size_t index) const override {
+    return &font_list_;
+  }
+
+  gfx::FontList font_list_;
+};
+
 }  // namespace
 
 class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
@@ -224,7 +248,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
     // right before the menu view is shown. For example in the non-logged in
     // page, we only build power off and restart button.
     context_menu_model_ =
-        std::make_unique<ui::SimpleMenuModel>(/*delegate=*/this);
+        std::make_unique<PowerButtonMenuDelegate>(/*delegate=*/this);
 
     SessionControllerImpl* session_controller =
         Shell::Get()->session_controller();
@@ -239,7 +263,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
       context_menu_model_->AddItemWithIcon(
           VIEW_ID_QS_POWER_EMAIL_MENU_BUTTON, GetEmailMenuItemText(),
           ui::ImageModel::FromVectorIcon(kSystemMenuNewUserIcon,
-                                         ui::kColorAshSystemUIMenuIcon,
+                                         cros_tokens::kCrosSysOnSurface,
                                          kTrayTopShortcutButtonIconSize));
       context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
     }
@@ -248,20 +272,20 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
         VIEW_ID_QS_POWER_OFF_MENU_BUTTON,
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_OFF),
         ui::ImageModel::FromVectorIcon(kSystemPowerButtonMenuPowerOffIcon,
-                                       ui::kColorAshSystemUIMenuIcon,
+                                       cros_tokens::kCrosSysOnSurface,
                                        kTrayTopShortcutButtonIconSize));
     context_menu_model_->AddItemWithIcon(
         VIEW_ID_QS_POWER_RESTART_MENU_BUTTON,
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_REBOOT),
         ui::ImageModel::FromVectorIcon(kSystemPowerButtonMenuRestartIcon,
-                                       ui::kColorAshSystemUIMenuIcon,
+                                       cros_tokens::kCrosSysOnSurface,
                                        kTrayTopShortcutButtonIconSize));
     if (!is_on_login_screen) {
       context_menu_model_->AddItemWithIcon(
           VIEW_ID_QS_POWER_SIGNOUT_MENU_BUTTON,
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIGN_OUT),
           ui::ImageModel::FromVectorIcon(kSystemPowerButtonMenuSignOutIcon,
-                                         ui::kColorAshSystemUIMenuIcon,
+                                         cros_tokens::kCrosSysOnSurface,
                                          kTrayTopShortcutButtonIconSize));
     }
     if (can_show_settings && can_lock_screen) {
@@ -269,7 +293,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
           VIEW_ID_QS_POWER_LOCK_MENU_BUTTON,
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOCK),
           ui::ImageModel::FromVectorIcon(kSystemPowerButtonMenuLockScreenIcon,
-                                         ui::kColorAshSystemUIMenuIcon,
+                                         cros_tokens::kCrosSysOnSurface,
                                          kTrayTopShortcutButtonIconSize));
     }
   }

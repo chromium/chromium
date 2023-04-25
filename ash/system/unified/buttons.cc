@@ -13,6 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/supervised/supervised_icon_string.h"
@@ -94,6 +95,9 @@ ManagedStateView::ManagedStateView(PressedCallback callback,
 
   if (features::IsQsRevampEnabled()) {
     image_->SetPreferredSize(kManagedStateImageSize);
+    label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                               *label_);
   } else {
     image_->SetPreferredSize(
         gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
@@ -121,16 +125,20 @@ views::View* ManagedStateView::GetTooltipHandlerForPoint(
 
 void ManagedStateView::OnThemeChanged() {
   views::Button::OnThemeChanged();
+  if (features::IsQsRevampEnabled()) {
+    const std::pair<SkColor, float> base_color_and_opacity =
+        AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
+    views::InkDrop::Get(this)->SetBaseColor(base_color_and_opacity.first);
+    image_->SetImage(gfx::CreateVectorIcon(
+        *icon_,
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant)));
+    return;
+  }
   label_->SetEnabledColor(GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary));
   image_->SetImage(gfx::CreateVectorIcon(
       *icon_, GetContentLayerColor(
                   AshColorProvider::ContentLayerType::kIconColorSecondary)));
-  if (features::IsQsRevampEnabled()) {
-    const std::pair<SkColor, float> base_color_and_opacity =
-        AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
-    views::InkDrop::Get(this)->SetBaseColor(base_color_and_opacity.first);
-  }
 }
 
 void ManagedStateView::PaintButtonContents(gfx::Canvas* canvas) {
@@ -140,8 +148,7 @@ void ManagedStateView::PaintButtonContents(gfx::Canvas* canvas) {
   // Draw a button outline similar to ChannelIndicatorQuickSettingsView's
   // VersionButton outline.
   cc::PaintFlags flags;
-  flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-      ColorProvider::ContentLayerType::kSeparatorColor));
+  flags.setColor(GetColorProvider()->GetColor(cros_tokens::kCrosSysSeparator));
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setAntiAlias(true);
   canvas->DrawPath(
