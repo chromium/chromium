@@ -19,6 +19,7 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -192,6 +193,15 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // opacity blending, so always prefer to use additional layers if possible.
   void SetFilters(std::vector<Filter> filters);
 
+  // Set the rounded corner radii in layer space (same as `SetBounds`). It
+  // is applied to the layer and its subtree. Setting this to non-empty also has
+  // similar effect as `SetMasksToBounds(true)` that the subtree is clipped to
+  // its bounds (with rounded corner).
+  void SetRoundedCorner(const gfx::RoundedCornersF& corner_radii);
+  const gfx::RoundedCornersF& corner_radii() const;
+  // Returns true if any of the corner has a non-zero radius set.
+  bool HasRoundedCorner() const;
+
  protected:
   friend class LayerTreeCcWrapper;
   friend class LayerTreeImpl;
@@ -233,6 +243,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
                            float opacity);
   virtual viz::SharedQuadState* CreateAndAppendSharedQuadState(
       viz::CompositorRenderPass& render_pass,
+      FrameData& data,
       const gfx::Transform& transform_to_target,
       const gfx::Rect* clip_in_target,
       const gfx::Rect& visible_rect,
@@ -272,6 +283,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   gfx::Point3F transform_origin_;
 
   std::vector<Filter> filters_;
+  gfx::RoundedCornersF rounded_corners_;
 
   SkColor4f background_color_ = SkColors::kTransparent;
   float opacity_ = 1.0f;

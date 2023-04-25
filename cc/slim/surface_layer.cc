@@ -158,8 +158,9 @@ void SurfaceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
                                const gfx::Rect* clip_in_target,
                                const gfx::Rect& visible_rect,
                                float opacity) {
-  viz::SharedQuadState* quad_state = CreateAndAppendSharedQuadState(
-      render_pass, transform_to_target, clip_in_target, visible_rect, opacity);
+  viz::SharedQuadState* quad_state =
+      CreateAndAppendSharedQuadState(render_pass, data, transform_to_target,
+                                     clip_in_target, visible_rect, opacity);
 
   if (surface_range_.IsValid()) {
     auto* quad = render_pass.CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();

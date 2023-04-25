@@ -13,6 +13,7 @@
 #include "cc/slim/damage_data.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 
 namespace viz {
 class CompositorFrame;
@@ -39,6 +40,7 @@ struct FrameData {
   // render passes as needed
   SimpleEnclosedRegion occlusion_in_target;
   RenderPassDamageData render_pass_damage;
+  gfx::MaskFilterInfo mask_filter_info_in_target;
 
   FrameDamageData current_frame_damage;
   bool subtree_property_changed_from_parent = false;
