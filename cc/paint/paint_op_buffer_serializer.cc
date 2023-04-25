@@ -50,8 +50,11 @@ std::unique_ptr<SkCanvas> MakeAnalysisCanvas(
 
 PaintOpBufferSerializer::PaintOpBufferSerializer(
     SerializeCallback serialize_cb,
+    void* callback_data,
     const PaintOp::SerializeOptions& options)
-    : serialize_cb_(std::move(serialize_cb)), options_(options) {
+    : serialize_cb_(serialize_cb),
+      callback_data_(callback_data),
+      options_(options) {
   DCHECK(serialize_cb_);
 }
 
@@ -308,9 +311,8 @@ bool PaintOpBufferSerializer::SerializeOp(SkCanvas* canvas,
   // correctly for analysis of records in filters.
   PlaybackOnAnalysisCanvas(canvas, op, flags_to_serialize, params);
 
-  size_t bytes =
-      serialize_cb_.Run(op, options_, flags_to_serialize,
-                        canvas->getLocalToDevice(), params.original_ctm);
+  size_t bytes = serialize_cb_(callback_data_, op, options_, flags_to_serialize,
+                               canvas->getLocalToDevice(), params.original_ctm);
   if (!bytes) {
     valid_ = false;
     return false;
@@ -364,16 +366,15 @@ SimpleBufferSerializer::SimpleBufferSerializer(
     void* memory,
     size_t size,
     const PaintOp::SerializeOptions& options)
-    : PaintOpBufferSerializer(
-          base::BindRepeating(&SimpleBufferSerializer::SerializeToMemory,
-                              base::Unretained(this)),
-          options),
+    : PaintOpBufferSerializer(&SimpleBufferSerializer::SerializeToMemory,
+                              this,
+                              options),
       memory_(memory),
       total_(size) {}
 
 SimpleBufferSerializer::~SimpleBufferSerializer() = default;
 
-size_t SimpleBufferSerializer::SerializeToMemory(
+size_t SimpleBufferSerializer::SerializeToMemoryImpl(
     const PaintOp& op,
     const PaintOp::SerializeOptions& options,
     const PaintFlags* flags_to_serialize,
