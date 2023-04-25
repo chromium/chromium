@@ -32,6 +32,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.Headless.Action" enum="HeadlessChromeAction"
+    expires_after="2023-12-31">
+  <owner>kvitekp@chromium.org</owner>
+  <owner>headless-owners@chromium.org</owner>
+  <summary>
+    Records headless chrome action, e.g. remote debugging, screenshot, print to
+    PDF, DOM dump. Reported once when the browser process is launched in
+    headless mode. If more than one action is requested only one will be
+    reported.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.KAnonymityService.JoinSet.Action"
     enum="KAnonymityServiceJoinSetAction" expires_after="2023-10-01">
   <owner>behamilton@google.com</owner>

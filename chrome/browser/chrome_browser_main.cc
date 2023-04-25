@@ -287,6 +287,11 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/headless/headless_mode_metrics.h"  // nogncheck
+#include "chrome/browser/headless/headless_mode_util.h"     // nogncheck
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 #include "chrome/browser/chrome_process_singleton.h"
 #include "chrome/browser/process_singleton.h"
@@ -1281,6 +1286,12 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
   language::LanguageUsageMetrics::RecordPageLanguages(
       *UrlLanguageHistogramFactory::GetForBrowserContext(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (headless::IsHeadlessMode()) {
+    headless::ReportHeadlessActionMetrics();
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 void ChromeBrowserMainParts::PreBrowserStart() {

@@ -49189,6 +49189,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Multiple YUV streams of different aspect ratio with BLOB"/>
 </enum>
 
+<enum name="HeadlessChromeAction">
+  <int value="0" label="None"/>
+  <int value="1" label="RemoteDebuggingPipe"/>
+  <int value="2" label="RemoteDebuggingPort"/>
+  <int value="3" label="DumpDom"/>
+  <int value="4" label="Screenshot"/>
+  <int value="5" label="PrintToPDF"/>
+</enum>
+
 <enum name="HeapProfilingMode">
   <int value="0" label="None"/>
   <int value="1" label="Minimal"/>

@@ -827,7 +827,10 @@ test("headless_browsertests") {
   }
 
   if (headless_enable_commands) {
-    deps += [ "//components/headless/command_handler" ]
+    deps += [
+      "//components/headless/command_handler",
+      "//components/headless/command_handler:switches",
+    ]
   }
 
   configs += [ ":headless_defines_config" ]
