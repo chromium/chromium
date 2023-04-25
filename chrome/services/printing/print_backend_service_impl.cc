@@ -19,6 +19,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -953,14 +954,12 @@ PrintBackendServiceImpl::GetXpsCapabilities(const std::string& printer_name) {
     return base::unexpected(value_result->get_result_code());
   }
 
-  base::expected<XpsCapabilities, mojom::ResultCode> xps_capabilities =
-      ParseValueForXpsPrinterCapabilities(value_result->get_capabilities());
-  if (!xps_capabilities.has_value()) {
-    DLOG(ERROR) << "Failure parsing value of XPS capabilities of printer "
-                << printer_name << ", error: " << xps_capabilities.error();
-    return base::unexpected(xps_capabilities.error());
-  }
-  return std::move(xps_capabilities).value();
+  return ParseValueForXpsPrinterCapabilities(value_result->get_capabilities())
+      .transform_error([&](mojom::ResultCode code) {
+        DLOG(ERROR) << "Failure parsing value of XPS capabilities of printer "
+                    << printer_name << ", error: " << code;
+        return code;
+      });
 }
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -23,12 +23,9 @@ ExtensionFunction::ResponseAction BrowserOpenTabFunction::Run() {
   options.create_browser_if_needed = true;
   options.url = params->options.url;
 
-  auto result =
+  const auto result =
       extensions::ExtensionTabUtil::OpenTab(this, options, user_gesture());
-  if (!result.has_value())
-    return RespondNow(Error(result.error()));
-
-  return RespondNow(NoArguments());
+  return RespondNow(result.has_value() ? NoArguments() : Error(result.error()));
 }
 
 }  // namespace api

@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -117,8 +116,6 @@ base::Value::List HostResolverEndpointResultsToBaseList(
   }
   return endpoint_results_list;
 }
-
-using ResolveHostResult = base::expected<base::Value, std::string>;
 
 // This class implements network::mojom::ResolveHostClient.
 class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {

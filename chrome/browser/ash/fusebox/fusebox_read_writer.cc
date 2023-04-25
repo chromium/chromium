@@ -366,18 +366,10 @@ void ReadWriter::OnTempFileInitialized(
     base::expected<base::ScopedFD, int> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (!result.has_value()) {
-    Write2ResponseProto response_proto;
-    response_proto.set_posix_error_code(result.error());
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), response_proto));
-    return;
-  }
-
   ReadWriter* self = weak_ptr.get();
-  if (!self) {
+  if (!result.has_value() || !self) {
     Write2ResponseProto response_proto;
-    response_proto.set_posix_error_code(EBUSY);
+    response_proto.set_posix_error_code(result.error_or(EBUSY));
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), response_proto));
     return;

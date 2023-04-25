@@ -80,10 +80,8 @@ UrlIdentity CreateChromeExtensionIdentityFromUrl(Profile* profile,
 absl::optional<web_app::AppId> GetIsolatedWebAppIdFromUrl(const GURL& url) {
   base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
       web_app::IsolatedWebAppUrlInfo::Create(url);
-  if (!url_info.has_value()) {
-    return absl::nullopt;
-  }
-  return url_info.value().app_id();
+  return url_info.has_value() ? absl::make_optional(url_info.value().app_id())
+                              : absl::nullopt;
 }
 
 UrlIdentity CreateIsolatedWebAppIdentityFromUrl(Profile* profile,

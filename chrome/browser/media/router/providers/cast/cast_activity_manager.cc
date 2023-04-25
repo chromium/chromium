@@ -697,40 +697,39 @@ void CastActivityManager::SendRouteJsonMessage(
     const std::string& media_route_id,
     const std::string& message,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    logger_->LogError(
-        mojom::LogCategory::kRoute, kLoggerComponent,
-        "Error parsing JSON data when sending route JSON message: " +
-            result.error(),
-        "", MediaRoute::GetMediaSourceIdFromMediaRouteId(media_route_id),
-        MediaRoute::GetPresentationIdFromMediaRouteId(media_route_id));
-    return;
-  }
+  const auto activity = [&]()
+      -> base::expected<std::pair<CastActivity*, std::string>, std::string> {
+    if (!result.has_value()) {
+      return base::unexpected(
+          "Error parsing JSON data when sending route JSON message: " +
+          result.error());
+    }
 
-  const std::string* client_id = result->FindStringKey("clientId");
-  if (!client_id) {
+    const std::string* const client_id =
+        result.value().FindStringKey("clientId");
+    if (!client_id) {
+      return base::unexpected(
+          "Cannot send route JSON message without client id.");
+    }
+
+    const auto it = activities_.find(media_route_id);
+    if (it == activities_.end()) {
+      return base::unexpected(
+          "No activity found with the given route_id to send route JSON "
+          "message.");
+    }
+    return std::make_pair(it->second.get(), *client_id);
+  }();
+  if (!activity.has_value()) {
     logger_->LogError(
-        mojom::LogCategory::kRoute, kLoggerComponent,
-        "Cannot send route JSON message without client id.", "",
+        mojom::LogCategory::kRoute, kLoggerComponent, activity.error(), "",
         MediaRoute::GetMediaSourceIdFromMediaRouteId(media_route_id),
         MediaRoute::GetPresentationIdFromMediaRouteId(media_route_id));
     return;
   }
-
-  const auto it = activities_.find(media_route_id);
-  if (it == activities_.end()) {
-    logger_->LogError(
-        mojom::LogCategory::kRoute, kLoggerComponent,
-        "No activity found with the given route_id to send route JSON message.",
-        "", MediaRoute::GetMediaSourceIdFromMediaRouteId(media_route_id),
-        MediaRoute::GetPresentationIdFromMediaRouteId(media_route_id));
-    return;
-  }
-  CastActivity& activity = *it->second;
-
-  auto message_ptr =
-      blink::mojom::PresentationConnectionMessage::NewMessage(message);
-  activity.SendMessageToClient(*client_id, std::move(message_ptr));
+  activity->first->SendMessageToClient(
+      std::move(activity->second),
+      blink::mojom::PresentationConnectionMessage::NewMessage(message));
 }
 
 void CastActivityManager::AddNonLocalActivity(const MediaSinkInternal& sink,

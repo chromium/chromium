@@ -284,9 +284,8 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
   UpdateWebAppInfoFromManifest(manifest, manifest_url, &info);
 
   if (!manifest.id.has_value()) {
-    return base::unexpected{
-        base::StrCat({"Manifest `id` is not present. manifest_url: ",
-                      manifest_url.possibly_invalid_spec()})};
+    return base::unexpected("Manifest `id` is not present. manifest_url: " +
+                            manifest_url.possibly_invalid_spec());
   }
 
   // In other installations the best-effort encoding is fine, but for isolated
@@ -307,8 +306,8 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
     // the application and do not include other information in order to be able
     // to identify Isolated Web Apps by origin because there is always only 1
     // app per origin.
-    return base::unexpected{base::StrCat(
-        {R"(Manifest `id` must be "/". Resolved manifest id: )", *encoded_id})};
+    return base::unexpected(
+        R"(Manifest `id` must be "/". Resolved manifest id: )" + *encoded_id);
   }
 
   url::Origin origin = url_info_.origin();

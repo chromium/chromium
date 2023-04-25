@@ -194,9 +194,8 @@ void AuthorizationZoneImpl::FinishAuthorization(const GURL& redirect_url,
   base::expected<std::string, std::string> val_or_err =
       ExtractParameter(query, "state");
   if (!val_or_err.has_value()) {
-    std::move(callback).Run(
-        StatusCode::kInvalidResponse,
-        base::StrCat({"Authorization Request: ", val_or_err.error()}));
+    std::move(callback).Run(StatusCode::kInvalidResponse,
+                            "Authorization Request: " + val_or_err.error());
     return;
   }
   const std::string state = std::move(val_or_err.value());
@@ -215,9 +214,8 @@ void AuthorizationZoneImpl::FinishAuthorization(const GURL& redirect_url,
   if (query.contains("error")) {
     val_or_err = ExtractParameter(query, "error");
     if (!val_or_err.has_value()) {
-      std::move(callback).Run(
-          StatusCode::kInvalidResponse,
-          base::StrCat({"Authorization Request: ", val_or_err.error()}));
+      std::move(callback).Run(StatusCode::kInvalidResponse,
+                              "Authorization Request: " + val_or_err.error());
       return;
     }
     const std::string error = std::move(val_or_err.value());
@@ -230,17 +228,15 @@ void AuthorizationZoneImpl::FinishAuthorization(const GURL& redirect_url,
     } else {
       status = StatusCode::kAccessDenied;
     }
-    std::move(callback).Run(
-        status, base::StrCat({"Authorization Request: error=", error}));
+    std::move(callback).Run(status, "Authorization Request: error=" + error);
     return;
   }
 
   // Extract the parameter "code".
   val_or_err = ExtractParameter(query, "code");
   if (!val_or_err.has_value()) {
-    std::move(callback).Run(
-        StatusCode::kInvalidResponse,
-        base::StrCat({"Authorization Request: ", val_or_err.error()}));
+    std::move(callback).Run(StatusCode::kInvalidResponse,
+                            "Authorization Request: " + val_or_err.error());
     return;
   }
   const std::string code = std::move(val_or_err.value());
