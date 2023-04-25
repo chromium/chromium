@@ -81,7 +81,8 @@ void AddIssueToForm(PasswordForm* form,
   form->password_issues.insert_or_assign(
       type, password_manager::InsecurityMetadata(
                 base::Time::Now() - time_since_creation,
-                password_manager::IsMuted(is_muted)));
+                password_manager::IsMuted(is_muted),
+                password_manager::TriggerBackendNotification(false)));
 }
 
 class PasswordCheckupUtilsTest : public PlatformTest {

@@ -491,8 +491,9 @@ TEST_F(InsecureCredentialsManagerTest, BothWeakAndCompromisedCredentialsExist) {
 
   credentials[0].password_issues.insert(
       {password_manager::InsecureType::kWeak,
-       password_manager::InsecurityMetadata(base::Time(),
-                                            password_manager::IsMuted(false))});
+       password_manager::InsecurityMetadata(
+           base::Time(), password_manager::IsMuted(false),
+           password_manager::TriggerBackendNotification(false))});
 
   EXPECT_THAT(provider().GetInsecureCredentialEntries(),
               ElementsAreArray(credentials));
@@ -569,7 +570,8 @@ TEST_F(InsecureCredentialsManagerTest, SaveCompromisedPasswordForExistingLeak) {
   LeakCheckCredential credential = MakeLeakCredential(kUsername1, kPassword1);
 
   InsecurityMetadata insecurity_metadata(base::Time::Now() - base::Days(3),
-                                         IsMuted(true));
+                                         IsMuted(true),
+                                         TriggerBackendNotification(false));
   password_form.password_issues.insert(
       {InsecureType::kLeaked, insecurity_metadata});
 
@@ -618,7 +620,9 @@ TEST_F(InsecureCredentialsManagerTest, UnmuteCompromisedMutedCredential) {
   PasswordForm password =
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   password.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata(base::Time(), IsMuted(true))});
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
 
   store().AddLogin(password);
   RunUntilIdle();
@@ -645,7 +649,8 @@ TEST_F(InsecureCredentialsManagerTest, UnmuteCompromisedNotMutedCredential) {
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   password.password_issues.insert(
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
 
   store().AddLogin(password);
   RunUntilIdle();
@@ -672,10 +677,13 @@ TEST_F(InsecureCredentialsManagerTest,
   PasswordForm password =
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   password.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata(base::Time(), IsMuted(true))});
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
   password.password_issues.insert(
       {InsecureType::kPhished,
-       InsecurityMetadata(base::Time(), IsMuted(true))});
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
 
   store().AddLogin(password);
   RunUntilIdle();
@@ -712,14 +720,21 @@ TEST_F(InsecureCredentialsManagerTest,
   PasswordForm password =
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   password.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata(base::Time(), IsMuted(true))});
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
   password.password_issues.insert(
       {InsecureType::kPhished,
-       InsecurityMetadata(base::Time(), IsMuted(true))});
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
   password.password_issues.insert(
-      {InsecureType::kReused, InsecurityMetadata(base::Time(), IsMuted(true))});
+      {InsecureType::kReused,
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
   password.password_issues.insert(
-      {InsecureType::kWeak, InsecurityMetadata(base::Time(), IsMuted(true))});
+      {InsecureType::kWeak,
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
 
   store().AddLogin(password);
   RunUntilIdle();
@@ -765,7 +780,9 @@ TEST_F(InsecureCredentialsManagerTest, MuteCompromisedCredentialOnMutedIsNoOp) {
   PasswordForm password =
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   password.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata(base::Time(), IsMuted(true))});
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
 
   store().AddLogin(password);
   RunUntilIdle();
@@ -791,10 +808,12 @@ TEST_F(InsecureCredentialsManagerTest,
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   password.password_issues.insert(
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
   password.password_issues.insert(
       {InsecureType::kPhished,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
 
   store().AddLogin(password);
   RunUntilIdle();
@@ -828,15 +847,20 @@ TEST_F(InsecureCredentialsManagerTest, FilterThenMuteMultipleInsecurityTypes) {
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   password.password_issues.insert(
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
   password.password_issues.insert(
       {InsecureType::kPhished,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
   password.password_issues.insert(
       {InsecureType::kReused,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
   password.password_issues.insert(
-      {InsecureType::kWeak, InsecurityMetadata(base::Time(), IsMuted(false))});
+      {InsecureType::kWeak,
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
 
   store().AddLogin(password);
   RunUntilIdle();
@@ -884,7 +908,9 @@ TEST_F(InsecureCredentialsManagerTest, MuteWeakPasswordNoOp) {
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
 
   password.password_issues.insert(
-      {InsecureType::kWeak, InsecurityMetadata(base::Time(), IsMuted(false))});
+      {InsecureType::kWeak,
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
 
   store().AddLogin(password);
   RunUntilIdle();
@@ -919,7 +945,9 @@ TEST_F(InsecureCredentialsManagerTest, UnMuteWeakPasswordNoOp) {
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
 
   password.password_issues.insert(
-      {InsecureType::kWeak, InsecurityMetadata(base::Time(), IsMuted(true))});
+      {InsecureType::kWeak,
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
 
   store().AddLogin(password);
   RunUntilIdle();
@@ -956,7 +984,8 @@ TEST_F(InsecureCredentialsManagerTest, MuteReusedPasswordNoOp) {
 
   password.password_issues.insert(
       {InsecureType::kReused,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))});
 
   store().AddLogin(password);
   RunUntilIdle();
@@ -991,7 +1020,9 @@ TEST_F(InsecureCredentialsManagerTest, UnMuteReusedPasswordNoOp) {
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
 
   password.password_issues.insert(
-      {InsecureType::kReused, InsecurityMetadata(base::Time(), IsMuted(true))});
+      {InsecureType::kReused,
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
 
   store().AddLogin(password);
   RunUntilIdle();

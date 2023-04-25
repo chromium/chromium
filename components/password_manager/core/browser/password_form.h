@@ -83,14 +83,10 @@ enum class InsecureType {
 // Metadata for insecure credentials
 struct InsecurityMetadata {
   InsecurityMetadata();
-  // TODO(crbug.com/1413209): Remove the default value from the
-  // `trigger_notification_from_backend` param to ensure it's set explicitly
-  // and prevent accidentally setting it to false.
   InsecurityMetadata(
       base::Time create_time,
       IsMuted is_muted,
-      TriggerBackendNotification trigger_notification_from_backend =
-          TriggerBackendNotification(false));
+      TriggerBackendNotification trigger_notification_from_backend);
   InsecurityMetadata(const InsecurityMetadata& rhs);
   ~InsecurityMetadata();
 

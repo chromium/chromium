@@ -190,7 +190,7 @@ PasswordForm MakePasswordFormWithIssues(
     form.password_issues.insert_or_assign(
         issue_type,
         InsecurityMetadata(base::Time::FromTimeT(kIssuesCreationTime),
-                           IsMuted(false)));
+                           IsMuted(false), TriggerBackendNotification(false)));
   }
   return form;
 }

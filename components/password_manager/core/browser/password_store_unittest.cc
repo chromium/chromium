@@ -252,7 +252,8 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
       FillPasswordFormWithData(kTestCredentials[0]));
   old_form->password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time(), IsMuted(false))}};
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(false))}};
   store->AddLogin(*old_form);
   WaitForPasswordStore();
 
@@ -429,7 +430,8 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginUpdated) {
       FillPasswordFormWithData(kTestCredential));
   test_form->password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
   store->AddLogin(*test_form);
   WaitForPasswordStore();
 
@@ -471,7 +473,8 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginAdded) {
       FillPasswordFormWithData(kTestCredential));
   test_form->password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
   store->AddLogin(*test_form);
   WaitForPasswordStore();
 
@@ -519,7 +522,8 @@ TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialAdded) {
   EXPECT_CALL(mock_observer, OnLoginsChanged);
   test_form->password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
   store->UpdateLogin(*test_form);
 
   WaitForPasswordStore();
@@ -546,7 +550,8 @@ TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialRemoved) {
       FillPasswordFormWithData(kTestCredentials));
   test_form->password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
   store->AddLogin(*test_form);
   WaitForPasswordStore();
 
@@ -1481,7 +1486,8 @@ TEST_F(PasswordStoreTest, RemoveInsecureCredentialsSyncOnUpdate) {
   std::unique_ptr<PasswordForm> form(FillPasswordFormWithData(kTestCredential));
   form->password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(100), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(100), IsMuted(false),
+                          TriggerBackendNotification(false))}};
   store->AddLogin(*form);
 
   WaitForPasswordStore();

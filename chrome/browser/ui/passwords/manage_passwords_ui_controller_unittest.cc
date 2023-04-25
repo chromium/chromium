@@ -226,7 +226,9 @@ password_manager::PasswordForm BuildFormFromLoginAndURL(
 password_manager::PasswordForm CreateInsecureCredential(PasswordForm form) {
   form.password_issues.insert(
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time(), password_manager::IsMuted(false))});
+       InsecurityMetadata(
+           base::Time(), password_manager::IsMuted(false),
+           password_manager::TriggerBackendNotification(false))});
   return form;
 }
 

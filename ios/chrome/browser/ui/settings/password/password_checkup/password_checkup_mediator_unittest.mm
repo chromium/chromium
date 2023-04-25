@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -48,9 +49,9 @@ void AddIssueToForm(PasswordForm* form,
                     InsecureType insecure_type = InsecureType::kLeaked,
                     bool is_muted = false) {
   form->password_issues.insert_or_assign(
-      insecure_type,
-      password_manager::InsecurityMetadata(
-          base::Time::Now(), password_manager::IsMuted(is_muted)));
+      insecure_type, password_manager::InsecurityMetadata(
+                         base::Time::Now(), password_manager::IsMuted(is_muted),
+                         password_manager::TriggerBackendNotification(false)));
 }
 
 }  // namespace

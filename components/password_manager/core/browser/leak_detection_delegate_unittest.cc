@@ -459,7 +459,8 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
   // The expected form should have a leaked entry.
   form.password_issues.insert_or_assign(
       InsecureType::kLeaked,
-      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+      InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                         TriggerBackendNotification(false)));
   form.in_store = PasswordForm::Store::kProfileStore;
   EXPECT_CALL(*profile_store(), UpdateLogin(form, _));
   WaitForPasswordStore();

@@ -255,8 +255,9 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   example.signon_realm = example.url.spec();
   example.password_issues.insert(
       {password_manager::InsecureType::kLeaked,
-       password_manager::InsecurityMetadata(base::Time::Now(),
-                                            password_manager::IsMuted(true))});
+       password_manager::InsecurityMetadata(
+           base::Time::Now(), password_manager::IsMuted(true),
+           password_manager::TriggerBackendNotification(false))});
   return SaveToPasswordStore(example);
 }
 

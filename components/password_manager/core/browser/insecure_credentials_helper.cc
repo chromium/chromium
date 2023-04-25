@@ -92,7 +92,8 @@ void InsecureCredentialsHelper::AddPhishedCredentialsInternal(
           form->password_issues.end()) {
         form->password_issues.insert(
             {InsecureType::kPhished,
-             InsecurityMetadata(base::Time::Now(), IsMuted(false))});
+             InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                                TriggerBackendNotification(false))});
         store_->UpdateLogin(*form);
       }
     }

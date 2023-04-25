@@ -4391,7 +4391,9 @@ TEST_F(PasswordManagerTest, DontStartLeakDetectionWhenMuted) {
 
   PasswordForm form = MakeSimpleForm();
   form.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata(base::Time(), IsMuted(true))});
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
   store_->AddLogin(form);
   std::vector<FormData> observed = {form.form_data};
   manager()->OnPasswordFormsParsed(&driver_, observed);
@@ -4424,7 +4426,9 @@ TEST_F(PasswordManagerTest, StartLeakCheckWhenForUsernameNotMuted) {
 
   form.username_value = u"different_username";
   form.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata(base::Time(), IsMuted(true))});
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(true),
+                          TriggerBackendNotification(false))});
 
   store_->AddLogin(form);
   manager()->OnPasswordFormsParsed(&driver_, observed);

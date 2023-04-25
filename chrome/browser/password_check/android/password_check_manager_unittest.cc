@@ -149,7 +149,8 @@ void AddIssueToForm(PasswordForm* form,
   form->password_issues.insert_or_assign(
       type, password_manager::InsecurityMetadata(
                 base::Time::Now() - time_since_creation,
-                password_manager::IsMuted(false)));
+                password_manager::IsMuted(false),
+                password_manager::TriggerBackendNotification(false)));
 }
 
 // Creates matcher for a given compromised credential

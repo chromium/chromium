@@ -2369,10 +2369,12 @@ TEST_F(LoginDatabaseTest, RetrievesInsecureDataWithLogins) {
   std::ignore = db().AddLogin(form);
 
   base::flat_map<InsecureType, InsecurityMetadata> issues;
-  issues[InsecureType::kLeaked] =
-      InsecurityMetadata(base::Time(), IsMuted(false));
-  issues[InsecureType::kPhished] =
-      InsecurityMetadata(base::Time(), IsMuted(false));
+  // Assume that the leaked credential has been found by the proactive
+  // check and a notification still needs to be sent.
+  issues[InsecureType::kLeaked] = InsecurityMetadata(
+      base::Time(), IsMuted(false), TriggerBackendNotification(true));
+  issues[InsecureType::kPhished] = InsecurityMetadata(
+      base::Time(), IsMuted(false), TriggerBackendNotification(false));
   form.password_issues = std::move(issues);
 
   db().insecure_credentials_table().InsertOrReplace(

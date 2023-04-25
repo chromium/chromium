@@ -105,6 +105,7 @@ using password_manager::PasswordChangeSuccessTrackerFactory;
 using password_manager::PasswordForm;
 using password_manager::SavedPasswordsPresenter;
 using password_manager::TestPasswordStore;
+using password_manager::TriggerBackendNotification;
 using password_manager::prefs::kLastTimePasswordCheckCompleted;
 using signin::IdentityTestEnvironment;
 using ::testing::AllOf;
@@ -215,8 +216,9 @@ void AddIssueToForm(PasswordForm* form,
                     base::TimeDelta time_since_creation = base::TimeDelta(),
                     const bool is_muted = false) {
   form->password_issues.insert_or_assign(
-      type, InsecurityMetadata(base::Time::Now() - time_since_creation,
-                               IsMuted(is_muted)));
+      type,
+      InsecurityMetadata(base::Time::Now() - time_since_creation,
+                         IsMuted(is_muted), TriggerBackendNotification(false)));
 }
 
 std::string MakeAndroidRealm(base::StringPiece package_name) {
@@ -788,7 +790,8 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesCredential) {
 
   form.password_issues.insert_or_assign(
       InsecureType::kLeaked,
-      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+      InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                         TriggerBackendNotification(false)));
   EXPECT_THAT(store().stored_passwords(),
               ElementsAre(Pair(kExampleCom, ElementsAre(form))));
 }
@@ -827,16 +830,20 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesMultipleCredential) {
 
   form_com_username1.password_issues.insert_or_assign(
       InsecureType::kLeaked,
-      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+      InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                         TriggerBackendNotification(false)));
   form_org_username1.password_issues.insert_or_assign(
       InsecureType::kLeaked,
-      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+      InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                         TriggerBackendNotification(false)));
   form_com_username2.password_issues.insert_or_assign(
       InsecureType::kLeaked,
-      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+      InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                         TriggerBackendNotification(false)));
   form_org_username2.password_issues.insert_or_assign(
       InsecureType::kLeaked,
-      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+      InsecurityMetadata(base::Time::Now(), IsMuted(false),
+                         TriggerBackendNotification(false)));
   EXPECT_THAT(store().stored_passwords(),
               UnorderedElementsAre(
                   Pair(kExampleCom, UnorderedElementsAre(form_com_username1,

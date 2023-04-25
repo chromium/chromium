@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -174,7 +175,8 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     form.password_issues = {
         {insecure_type,
          password_manager::InsecurityMetadata(
-             base::Time::Now(), password_manager::IsMuted(muted))}};
+             base::Time::Now(), password_manager::IsMuted(muted),
+             password_manager::TriggerBackendNotification(false))}};
     form.in_store = PasswordForm::Store::kProfileStore;
     store()->AddLogin(form);
   }

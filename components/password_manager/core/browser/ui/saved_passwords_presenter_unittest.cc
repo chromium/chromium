@@ -229,7 +229,8 @@ TEST_F(SavedPasswordsPresenterTest, EditPassword) {
   // because of the password change.
   form.password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
 
   StrictMockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -279,7 +280,8 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsername) {
   // because of the username change.
   form.password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
 
   StrictMockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -322,13 +324,17 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsernameClearsPartialIssues) {
   // are cleared because of the username change.
   form.password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))},
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
       {InsecureType::kPhished,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))},
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
       {InsecureType::kReused,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))},
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
       {InsecureType::kWeak,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
 
   StrictMockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -347,9 +353,11 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsernameClearsPartialIssues) {
   updated_username.username_value = kNewUsername;
   updated_username.password_issues = {
       {InsecureType::kReused,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))},
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
       {InsecureType::kWeak,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
 
   CredentialUIEntry credential_to_edit(form);
   credential_to_edit.username = kNewUsername;
@@ -374,7 +382,8 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
   // because of the password change.
   form.password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
 
   StrictMockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -451,7 +460,8 @@ TEST_F(SavedPasswordsPresenterTest, EditingNotesShouldNotResetPasswordIssues) {
 
   form.password_issues.insert(
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time(), IsMuted(false))});
+       InsecurityMetadata(base::Time(), IsMuted(false),
+                          TriggerBackendNotification(true))});
 
   store().AddLogin(form);
   RunUntilIdle();
@@ -564,7 +574,8 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
   // because of the username and password change.
   form.password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
 
   StrictMockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -642,7 +653,8 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordWithoutChanges) {
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form.password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
 
   store().AddLogin(form);
 
@@ -678,7 +690,8 @@ TEST_F(SavedPasswordsPresenterTest, EditUpdatesDuplicates) {
   form.signon_realm = "https://example.com";
   form.password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
 
   PasswordForm duplicate_form(form);
   duplicate_form.signon_realm = "https://m.example.com";
@@ -1135,7 +1148,8 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditUsername) {
   // because of a username change.
   profile_store_form.password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
 
   PasswordForm account_store_form =
       CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/1);
@@ -1483,13 +1497,17 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditPasswordBothStores) {
   // because of the password change.
   profile_store_form.password_issues = {
       {InsecureType::kLeaked,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))},
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
       {InsecureType::kReused,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))},
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
       {InsecureType::kWeak,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))},
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
       {InsecureType::kPhished,
-       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))}};
 
   PasswordForm account_store_form = profile_store_form;
   account_store_form.in_store = PasswordForm::Store::kAccountStore;

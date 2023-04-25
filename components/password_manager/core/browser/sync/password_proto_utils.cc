@@ -117,7 +117,7 @@ InsecurityMetadata InsecurityMetadataFromProto(
   }
   return InsecurityMetadata(
       ConvertToBaseTime(issue.date_first_detection_windows_epoch_micros()),
-      IsMuted(issue.is_muted()));
+      IsMuted(issue.is_muted()), TriggerBackendNotification(false));
 }
 
 base::flat_map<InsecureType, InsecurityMetadata> PasswordIssuesMapFromProto(
