@@ -4,15 +4,17 @@
 
 #include "ui/events/ash/keyboard_capability.h"
 
+#include <linux/input-event-codes.h>
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/privacy_screen_controller.h"
+#include "ash/events/keyboard_capability_delegate_impl.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
+#include "base/files/scoped_file.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -50,6 +52,7 @@ constexpr char kKbdDefaultCustomTopRowLayout[] =
 // A tag that should fail parsing for the top row custom scan code string.
 constexpr char kKbdInvalidCustomTopRowLayout[] = "X X X";
 
+// This set of scan code mappings come from x86 internal vivaldi keyboards.
 enum CustomTopRowScanCode : uint32_t {
   kPreviousTrack = 0x90,
   kFullscreen = 0x91,
@@ -107,6 +110,52 @@ ui::InputDevice InputDeviceFromCapabilities(
       device_id, device_info.device_type(), device_info.name(),
       device_info.phys(), base::FilePath(capabilities.path),
       device_info.vendor_id(), device_info.product_id(), device_info.version());
+}
+
+absl::optional<uint32_t> GetEvdevKeyCodeForScanCode(const base::ScopedFD& fd,
+                                                    uint32_t scancode) {
+  switch (scancode) {
+    case CustomTopRowScanCode::kPreviousTrack:
+      return KEY_PREVIOUSSONG;
+    case CustomTopRowScanCode::kFullscreen:
+      return KEY_ZOOM;
+    case CustomTopRowScanCode::kOverview:
+      return KEY_SCALE;
+    case CustomTopRowScanCode::kScreenshot:
+      return KEY_SYSRQ;
+    case CustomTopRowScanCode::kScreenBrightnessDown:
+      return KEY_BRIGHTNESSDOWN;
+    case CustomTopRowScanCode::kScreenBrightnessUp:
+      return KEY_BRIGHTNESSUP;
+    case CustomTopRowScanCode::kPrivacyScreenToggle:
+      return KEY_PRIVACY_SCREEN_TOGGLE;
+    case CustomTopRowScanCode::kKeyboardBacklightDown:
+      return KEY_KBDILLUMDOWN;
+    case CustomTopRowScanCode::kKeyboardBacklightUp:
+      return KEY_KBDILLUMUP;
+    case CustomTopRowScanCode::kNextTrack:
+      return KEY_NEXTSONG;
+    case CustomTopRowScanCode::kPlayPause:
+      return KEY_PLAYPAUSE;
+    case CustomTopRowScanCode::kMicrophoneMute:
+      return KEY_MICMUTE;
+    case CustomTopRowScanCode::kKeyboardBacklightToggle:
+      return KEY_KBDILLUMTOGGLE;
+    case CustomTopRowScanCode::kVolumeMute:
+      return KEY_MUTE;
+    case CustomTopRowScanCode::kVolumeDown:
+      return KEY_VOLUMEDOWN;
+    case CustomTopRowScanCode::kVolumeUp:
+      return KEY_VOLUMEUP;
+    case CustomTopRowScanCode::kForward:
+      return KEY_FORWARD;
+    case CustomTopRowScanCode::kBack:
+      return KEY_BACK;
+    case CustomTopRowScanCode::kRefresh:
+      return KEY_REFRESH;
+  }
+
+  return absl::nullopt;
 }
 
 class FakeDeviceManager {
@@ -173,14 +222,17 @@ class TestObserver : public ui::KeyboardCapability::Observer {
 
 }  // namespace
 
-class KeyboardCapabilityTest : public AshTestBase {
+class KeyboardCapabilityTest : public NoSessionAshTestBase {
  public:
   KeyboardCapabilityTest() = default;
   ~KeyboardCapabilityTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
-    keyboard_capability_ = Shell::Get()->keyboard_capability();
+    keyboard_capability_ = std::make_unique<ui::KeyboardCapability>(
+        base::BindRepeating(&GetEvdevKeyCodeForScanCode),
+        std::make_unique<KeyboardCapabilityDelegateImpl>());
+    SimulateUserLogin(/*user_email=*/"email@google.com");
     test_observer_ = std::make_unique<TestObserver>();
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
     keyboard_capability_->AddObserver(test_observer_.get());
@@ -188,6 +240,7 @@ class KeyboardCapabilityTest : public AshTestBase {
 
   void TearDown() override {
     keyboard_capability_->RemoveObserver(test_observer_.get());
+    keyboard_capability_.reset();
     AshTestBase::TearDown();
   }
 
@@ -211,7 +264,7 @@ class KeyboardCapabilityTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<ui::KeyboardCapability, ExperimentalAsh> keyboard_capability_;
+  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   std::unique_ptr<TestObserver> test_observer_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
@@ -967,7 +1020,9 @@ class TopRowLayoutCustomTest
         return CustomTopRowScanCode::kPreviousTrack;
       case ui::TopRowActionKey::kPlayPause:
         return CustomTopRowScanCode::kPlayPause;
-      case ui::TopRowActionKey::kLauncher:
+      case ui::TopRowActionKey::kAllApplications:
+      case ui::TopRowActionKey::kEmojiPicker:
+      case ui::TopRowActionKey::kDictation:
       case ui::TopRowActionKey::kUnknown:
       case ui::TopRowActionKey::kNone:
         return 0;

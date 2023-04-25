@@ -11,6 +11,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
+#include "base/files/scoped_file.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
@@ -44,8 +45,10 @@ enum class TopRowActionKey {
   kNextTrack,
   kPreviousTrack,
   kPlayPause,
-  kLauncher,
-  kMaxValue = kLauncher,
+  kAllApplications,
+  kEmojiPicker,
+  kDictation,
+  kMaxValue = kDictation,
 };
 
 inline constexpr auto kLayout1TopRowActionKeys =
@@ -160,6 +163,9 @@ inline constexpr auto kReversedSixPackKeyToSystemKeyMap =
 // as top row key layout, existence of certain keys, what is top right key, etc.
 class KeyboardCapability : public InputDeviceEventObserver {
  public:
+  using ScanCodeToEvdevKeyConverter =
+      base::RepeatingCallback<absl::optional<uint32_t>(const base::ScopedFD& fd,
+                                                       uint32_t scancode)>;
   enum class DeviceType {
     kDeviceUnknown = 0,
     kDeviceInternalKeyboard,
@@ -235,6 +241,8 @@ class KeyboardCapability : public InputDeviceEventObserver {
   };
 
   explicit KeyboardCapability(std::unique_ptr<Delegate> delegate);
+  KeyboardCapability(ScanCodeToEvdevKeyConverter converter,
+                     std::unique_ptr<Delegate> delegate);
   KeyboardCapability(const KeyboardCapability&) = delete;
   KeyboardCapability& operator=(const KeyboardCapability&) = delete;
   ~KeyboardCapability() override;
@@ -366,6 +374,8 @@ class KeyboardCapability : public InputDeviceEventObserver {
  private:
   const KeyboardInfo* GetKeyboardInfo(const InputDevice& keyboard) const;
   void TrimKeyboardInfoMap();
+
+  ScanCodeToEvdevKeyConverter scan_code_to_evdev_key_converter_;
 
   // Stores event device info objects so they do not need to be constructed
   // multiple times. This is mutable to allow caching results from the APIs

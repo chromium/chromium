@@ -5,6 +5,7 @@
 #ifndef ASH_EVENTS_KEYBOARD_CAPABILITY_DELEGATE_IMPL_H_
 #define ASH_EVENTS_KEYBOARD_CAPABILITY_DELEGATE_IMPL_H_
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_member.h"
@@ -17,8 +18,9 @@ namespace ash {
 // KeyboardCapabilityDelegateImpl implements KeyboardCapability Delegate. It
 // provides various keyboard capability information such as if top row keys are
 // treated as function keys.
-class KeyboardCapabilityDelegateImpl : public ui::KeyboardCapability::Delegate,
-                                       public SessionObserver {
+class ASH_EXPORT KeyboardCapabilityDelegateImpl
+    : public ui::KeyboardCapability::Delegate,
+      public SessionObserver {
  public:
   KeyboardCapabilityDelegateImpl();
   KeyboardCapabilityDelegateImpl(const KeyboardCapabilityDelegateImpl&) =

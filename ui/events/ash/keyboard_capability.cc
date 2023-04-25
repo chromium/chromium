@@ -6,6 +6,8 @@
 
 #include <fcntl.h>
 #include <linux/input-event-codes.h>
+#include <linux/input.h>
+#include <cstring>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -14,6 +16,8 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
+#include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -28,6 +32,10 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/keycodes/dom_us_layout_data.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
@@ -150,6 +158,43 @@ bool GetDeviceAttributeRecursive(const base::FilePath& device_path,
 
   value = device::UdevDeviceRecursiveGetSysattrValue(device.get(), key);
   return true;
+}
+
+base::ScopedFD GetEventDeviceNameFd(const InputDevice& keyboard) {
+  const char kDevNameProperty[] = "DEVNAME";
+  std::string dev_name;
+  if (!GetDeviceProperty(keyboard.sys_path, kDevNameProperty, dev_name) ||
+      dev_name.empty()) {
+    return base::ScopedFD();
+  }
+
+  base::ScopedFD fd(open(dev_name.c_str(), O_RDONLY));
+  if (fd.get() < 0) {
+    LOG(ERROR) << "Cannot open " << dev_name.c_str() << " : " << errno;
+    return base::ScopedFD();
+  }
+
+  return fd;
+}
+
+absl::optional<uint32_t> ConvertScanCodeToEvdevKey(const base::ScopedFD& fd,
+                                                   uint32_t scancode) {
+  if (fd.get() < 0) {
+    return absl::nullopt;
+  }
+
+  struct input_keymap_entry keymap_entry {
+    .flags = 0, .len = sizeof(scancode), .keycode = 0
+  };
+  memcpy(keymap_entry.scancode, &scancode, sizeof(scancode));
+
+  int ret = ioctl(fd.get(), EVIOCGKEYCODE_V2, &keymap_entry);
+  if (ret < 0) {
+    LOG(ERROR) << "Failed EVIOCGKEYCODE_V2 syscall";
+    return absl::nullopt;
+  }
+
+  return keymap_entry.keycode;
 }
 
 bool GetCustomTopRowLayoutAttribute(const InputDevice& keyboard,
@@ -308,61 +353,40 @@ IdentifyKeyboardInfo(const InputDevice& keyboard) {
 }
 
 std::vector<TopRowActionKey> IdentifyCustomTopRowActionKeys(
+    const KeyboardCapability::ScanCodeToEvdevKeyConverter&
+        scan_code_to_evdev_key_converter,
+    const InputDevice& keyboard,
     const std::vector<uint32_t>& top_row_scan_codes) {
+  base::ScopedFD fd = GetEventDeviceNameFd(keyboard);
+
   // TODO(dpad): Handle privacy screen in scan code mapping.
-  static constexpr auto kCustomScancodeMapping =
-      base::MakeFixedFlatMap<uint32_t, TopRowActionKey>({
-          // Scan code is only `kCustomScanCodeFKeyMissing` when the FKey is
-          // absent on the keyboard.
-          {kCustomAbsentScanCode, TopRowActionKey::kNone},
-
-          // Vivaldi-specific extended Set-1 AT-style scancodes.
-          {0x90, TopRowActionKey::kPreviousTrack},
-          {0x91, TopRowActionKey::kFullscreen},
-          {0x92, TopRowActionKey::kOverview},
-          {0x93, TopRowActionKey::kScreenshot},
-          {0x94, TopRowActionKey::kScreenBrightnessDown},
-          {0x95, TopRowActionKey::kScreenBrightnessUp},
-          {0x97, TopRowActionKey::kKeyboardBacklightDown},
-          {0x98, TopRowActionKey::kKeyboardBacklightUp},
-          {0x99, TopRowActionKey::kNextTrack},
-          {0x9A, TopRowActionKey::kPlayPause},
-          {0x9B, TopRowActionKey::kMicrophoneMute},
-          {0x9E, TopRowActionKey::kKeyboardBacklightToggle},
-          {0xA0, TopRowActionKey::kVolumeMute},
-          {0xAE, TopRowActionKey::kVolumeDown},
-          {0xB0, TopRowActionKey::kVolumeUp},
-          {0xE9, TopRowActionKey::kForward},
-          {0xEA, TopRowActionKey::kBack},
-          {0xE7, TopRowActionKey::kRefresh},
-
-          // HID 32-bit usage codes
-          {0x070046, TopRowActionKey::kScreenshot},
-          {0x0B002F, TopRowActionKey::kMicrophoneMute},
-          {0x0C00E2, TopRowActionKey::kVolumeMute},
-          {0x0C00E9, TopRowActionKey::kVolumeUp},
-          {0x0C00EA, TopRowActionKey::kVolumeDown},
-          {0x0C006F, TopRowActionKey::kScreenBrightnessUp},
-          {0x0C0070, TopRowActionKey::kScreenBrightnessDown},
-          {0x0C0079, TopRowActionKey::kKeyboardBacklightUp},
-          {0x0C007A, TopRowActionKey::kKeyboardBacklightDown},
-          {0x0C007C, TopRowActionKey::kKeyboardBacklightToggle},
-          {0x0C00B5, TopRowActionKey::kNextTrack},
-          {0x0C00B6, TopRowActionKey::kPreviousTrack},
-          {0x0C00CD, TopRowActionKey::kPlayPause},
-          {0x0C0224, TopRowActionKey::kBack},
-          {0x0C0225, TopRowActionKey::kForward},
-          {0x0C0227, TopRowActionKey::kRefresh},
-          {0x0C0232, TopRowActionKey::kFullscreen},
-          {0x0C029F, TopRowActionKey::kOverview},
-      });
-
   std::vector<TopRowActionKey> top_row_action_keys;
   top_row_action_keys.reserve(top_row_scan_codes.size());
   for (const auto& scancode : top_row_scan_codes) {
-    auto* action_key = kCustomScancodeMapping.find(scancode);
-    if (action_key != kCustomScancodeMapping.end()) {
-      top_row_action_keys.push_back(action_key->second);
+    if (scancode == kCustomAbsentScanCode) {
+      top_row_action_keys.push_back(TopRowActionKey::kNone);
+      continue;
+    }
+
+    auto evdev_key_code = scan_code_to_evdev_key_converter.Run(fd, scancode);
+    if (!evdev_key_code) {
+      top_row_action_keys.push_back(TopRowActionKey::kUnknown);
+      continue;
+    }
+
+    const DomCode dom_code =
+        KeycodeConverter::EvdevCodeToDomCode(*evdev_key_code);
+    KeyboardCode action_vkey = DomCodeToUsLayoutKeyboardCode(dom_code);
+    if (action_vkey == VKEY_UNKNOWN) {
+      if (dom_code == DomCode::SHOW_ALL_WINDOWS) {
+        // Show all windows is through VKEY_MEDIA_LAUNCH_APP1.
+        action_vkey = VKEY_MEDIA_LAUNCH_APP1;
+      }
+    }
+
+    auto action_key = KeyboardCapability::ConvertToTopRowActionKey(action_vkey);
+    if (action_key) {
+      top_row_action_keys.push_back(*action_key);
     } else {
       top_row_action_keys.push_back(TopRowActionKey::kUnknown);
     }
@@ -371,6 +395,9 @@ std::vector<TopRowActionKey> IdentifyCustomTopRowActionKeys(
 }
 
 std::vector<TopRowActionKey> IdentifyTopRowActionKeys(
+    const KeyboardCapability::ScanCodeToEvdevKeyConverter&
+        scan_code_to_evdev_key_converter,
+    const InputDevice& keyboard,
     DeviceType device_type,
     KeyboardTopRowLayout layout,
     const std::vector<uint32_t>& top_row_scan_codes) {
@@ -384,7 +411,8 @@ std::vector<TopRowActionKey> IdentifyTopRowActionKeys(
       return {kLayoutWilcoDrallionTopRowActionKeys.begin(),
               kLayoutWilcoDrallionTopRowActionKeys.end()};
     case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
-      return IdentifyCustomTopRowActionKeys(top_row_scan_codes);
+      return IdentifyCustomTopRowActionKeys(scan_code_to_evdev_key_converter,
+                                            keyboard, top_row_scan_codes);
   }
 }
 
@@ -396,6 +424,17 @@ bool IsInternalKeyboard(const ui::InputDevice& keyboard) {
 
 KeyboardCapability::KeyboardCapability(std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {
+  scan_code_to_evdev_key_converter_ =
+      base::BindRepeating(&ConvertScanCodeToEvdevKey);
+  DeviceDataManager::GetInstance()->AddObserver(this);
+}
+
+KeyboardCapability::KeyboardCapability(
+    ScanCodeToEvdevKeyConverter scan_code_to_evdev_key_converter,
+    std::unique_ptr<Delegate> delegate)
+    : scan_code_to_evdev_key_converter_(
+          std::move(scan_code_to_evdev_key_converter)),
+      delegate_(std::move(delegate)) {
   DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
@@ -420,16 +459,8 @@ KeyboardCapability::CreateStubKeyboardCapability() {
 std::unique_ptr<EventDeviceInfo>
 KeyboardCapability::CreateEventDeviceInfoFromInputDevice(
     const InputDevice& keyboard) {
-  const char kDevNameProperty[] = "DEVNAME";
-  std::string dev_name;
-  if (!GetDeviceProperty(keyboard.sys_path, kDevNameProperty, dev_name) ||
-      dev_name.empty()) {
-    return nullptr;
-  }
-
-  base::ScopedFD fd(open(dev_name.c_str(), O_RDONLY));
+  base::ScopedFD fd = GetEventDeviceNameFd(keyboard);
   if (fd.get() < 0) {
-    LOG(ERROR) << "Cannot open " << dev_name.c_str() << " : " << errno;
     return nullptr;
   }
 
@@ -468,7 +499,9 @@ absl::optional<TopRowActionKey> KeyboardCapability::ConvertToTopRowActionKey(
           {VKEY_MEDIA_NEXT_TRACK, TopRowActionKey::kNextTrack},
           {VKEY_MEDIA_PREV_TRACK, TopRowActionKey::kPreviousTrack},
           {VKEY_MEDIA_PLAY_PAUSE, TopRowActionKey::kPlayPause},
-          {VKEY_ALL_APPLICATIONS, TopRowActionKey::kLauncher},
+          {VKEY_ALL_APPLICATIONS, TopRowActionKey::kAllApplications},
+          {VKEY_EMOJI_PICKER, TopRowActionKey::kEmojiPicker},
+          {VKEY_DICTATE, TopRowActionKey::kDictation},
       });
   const auto* action_key = kVKeyToTopRowActionKeyMap.find(key_code);
   return (action_key != kVKeyToTopRowActionKeyMap.end())
@@ -748,8 +781,8 @@ const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
   std::tie(keyboard_info.device_type, keyboard_info.top_row_layout,
            keyboard_info.top_row_scan_codes) = IdentifyKeyboardInfo(keyboard);
   keyboard_info.top_row_action_keys = IdentifyTopRowActionKeys(
-      keyboard_info.device_type, keyboard_info.top_row_layout,
-      keyboard_info.top_row_scan_codes);
+      scan_code_to_evdev_key_converter_, keyboard, keyboard_info.device_type,
+      keyboard_info.top_row_layout, keyboard_info.top_row_scan_codes);
   // Enable only when flag is enabled to avoid crashing while problem is
   // addressed. This issue exists the `EventDeviceInfo` objects are only allowed
   // to be created on a thread that allows blocking. See b/272960076
