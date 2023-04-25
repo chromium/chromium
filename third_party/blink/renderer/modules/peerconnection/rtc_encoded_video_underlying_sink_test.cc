@@ -159,14 +159,31 @@ TEST_F(RTCEncodedVideoUnderlyingSinkTest, WriteInvalidDataFails) {
   EXPECT_TRUE(dummy_exception_state.HadException());
 }
 
-TEST_F(RTCEncodedVideoUnderlyingSinkTest, WriteInvalidDirectionFails) {
+TEST_F(RTCEncodedVideoUnderlyingSinkTest, WritingSendFrameToReceiverSucceeds) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* sink = CreateSink(
+      script_state, webrtc::TransformableFrameInterface::Direction::kReceiver);
+
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame(_));
+
+  DummyExceptionStateForTesting dummy_exception_state;
+  sink->write(script_state,
+              CreateEncodedVideoFrameChunk(
+                  script_state,
+                  webrtc::TransformableFrameInterface::Direction::kSender),
+              nullptr, dummy_exception_state);
+  EXPECT_FALSE(dummy_exception_state.HadException());
+}
+
+TEST_F(RTCEncodedVideoUnderlyingSinkTest, WritingReceiverFrameToSenderFails) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* sink = CreateSink(
       script_state, webrtc::TransformableFrameInterface::Direction::kSender);
 
-  // Write an encoded chunk with direction set to Receiver should fail as it
-  // doesn't match the expected direction of our sink.
+  // Writing an encoded chunk with direction set to Receiver to a sink with
+  // direction Sender is not yet supported.
   DummyExceptionStateForTesting dummy_exception_state;
   sink->write(script_state,
               CreateEncodedVideoFrameChunk(
