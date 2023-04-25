@@ -44,7 +44,7 @@ constexpr int kLabelFontSize = 13;
 // If the menu was opened as a result of hovering over the frame size button,
 // moving the mouse outside the menu or size button will result in closing it
 // after 3 seconds have elapsed.
-constexpr base::TimeDelta kMouseExitMenuTimeout = base::Seconds(3);
+constexpr base::TimeDelta kMouseExitMenuTimeout = base::Milliseconds(250);
 
 // Creates multitask button with label.
 std::unique_ptr<views::View> CreateButtonContainer(
