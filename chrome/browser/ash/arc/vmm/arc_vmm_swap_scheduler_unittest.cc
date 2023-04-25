@@ -6,8 +6,10 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -30,11 +32,21 @@ class TestPeaceDurationProvider : public PeaceDurationProvider {
     return duration_;
   }
 
-  void SetDuration(absl::optional<base::TimeDelta> d) { duration_ = d; }
+  void SetDurationResetCallback(base::RepeatingClosure cb) override {
+    reset_cb_ = std::move(cb);
+  }
+
+  void SetDuration(absl::optional<base::TimeDelta> d) {
+    duration_ = d;
+    if (d == absl::nullopt && !reset_cb_.is_null()) {
+      reset_cb_.Run();
+    }
+  }
   int count() { return count_; }
 
  private:
   int count_ = 0;
+  base::RepeatingClosure reset_cb_;
   absl::optional<base::TimeDelta> duration_;
 };
 
@@ -216,6 +228,38 @@ TEST_F(ArcVmmSwapSchedulerTest, ReceiveSignalAndSave) {
   scheduler->OnVmSwapping(signal);
 
   EXPECT_NE(GetSwapOutTime(), base::Time());
+}
+
+TEST_F(ArcVmmSwapSchedulerTest, SetDisableVmStateWhenDurationReset) {
+  // Pref value will be the base::Time() if it's empty.
+  SetSwapOutTime(base::Time());
+
+  auto provider = std::make_unique<TestPeaceDurationProvider>();
+  provider->SetDuration(kCheckingPreiod * 2);
+
+  int swap_count = 0;
+  auto* provider_raw = provider.get();
+  auto scheduler = std::make_unique<ArcVmmSwapScheduler>(
+      base::BindLambdaForTesting([&](bool enabled) {
+        if (enabled) {
+          swap_count++;
+        }
+      }),
+      /* minimum_swapout_interval= */ absl::nullopt,
+      /* swappable_checking_period= */ kCheckingPreiod, std::move(provider));
+
+  provider_raw->SetDuration(base::Minutes(20));
+  task_environment_.FastForwardBy(base::Minutes(20));
+  base::RunLoop().RunUntilIdle();
+  // Expect swap enabled.
+  EXPECT_GT(swap_count, 0);
+  EXPECT_TRUE(scheduler->swappable());
+
+  task_environment_.FastForwardBy(base::Minutes(10));
+  // Set ARC activated.
+  provider_raw->SetDuration(absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(scheduler->swappable());
 }
 
 }  // namespace arc

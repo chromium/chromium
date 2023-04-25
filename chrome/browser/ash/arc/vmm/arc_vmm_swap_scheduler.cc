@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -30,6 +31,14 @@ ArcVmmSwapScheduler::ArcVmmSwapScheduler(
     absl::optional<base::TimeDelta> swappable_checking_period,
     std::unique_ptr<PeaceDurationProvider> peace_duration_provider)
     : swap_callback_(swap_callback) {
+  // Set callback to disable vmm-swap feature immdiately after the ARC get
+  // activated.
+  if (peace_duration_provider) {
+    peace_duration_provider->SetDurationResetCallback(
+        base::BindRepeating(&ArcVmmSwapScheduler::SetSwappable,
+                            weak_ptr_factory_.GetWeakPtr(), false));
+  }
+
   if (minimum_swapout_interval.has_value()) {
     SetSwapoutThrottleInterval(minimum_swapout_interval.value());
   }
@@ -49,9 +58,8 @@ void ArcVmmSwapScheduler::SetSwappable(bool swappable) {
   if (swappable == swappable_) {
     return;
   }
-
+  swappable_ = swappable;
   if (swappable) {
-    swappable_ = true;
     swap_callback_.Run(true);
   } else {
     swap_callback_.Run(false);

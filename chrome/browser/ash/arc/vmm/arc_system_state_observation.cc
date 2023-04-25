@@ -29,6 +29,9 @@ void ArcSystemStateObservation::ThrottleInstance(bool should_throttle) {
   // ARC system or app is active.
   if (!should_throttle) {
     last_peace_timestamp_.reset();
+    if (!active_callback_.is_null()) {
+      active_callback_.Run();
+    }
     return;
   }
 
@@ -41,6 +44,11 @@ absl::optional<base::TimeDelta> ArcSystemStateObservation::GetPeaceDuration() {
     return absl::nullopt;
   }
   return base::Time::Now() - *last_peace_timestamp_;
+}
+
+void ArcSystemStateObservation::SetDurationResetCallback(
+    base::RepeatingClosure cb) {
+  active_callback_ = std::move(cb);
 }
 
 base::WeakPtr<ArcSystemStateObservation>
