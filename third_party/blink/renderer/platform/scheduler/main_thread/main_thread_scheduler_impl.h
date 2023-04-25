@@ -138,12 +138,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   ~MainThreadSchedulerImpl() override;
 
   // WebThreadScheduler implementation:
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
+  scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
+      override;
   std::unique_ptr<MainThread> CreateMainThread() override;
   std::unique_ptr<WebAgentGroupScheduler> CreateWebAgentGroupScheduler()
-      override;
-  // Note: this is also shared by the ThreadScheduler interface.
-  scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override;
-  scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override;
   void SetRendererHidden(bool hidden) override;
   void SetRendererBackgrounded(bool backgrounded) override;
@@ -151,23 +150,26 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void PauseTimersForAndroidWebView() override;
   void ResumeTimersForAndroidWebView() override;
 #endif
-  bool ShouldYieldForHighPriorityWork() override;
-  void AddTaskObserver(base::TaskObserver* task_observer) override;
-  void RemoveTaskObserver(base::TaskObserver* task_observer) override;
-  void Shutdown() override;
-  void AddRAILModeObserver(RAILModeObserver* observer) override;
-  void RemoveRAILModeObserver(RAILModeObserver const* observer) override;
   void SetRendererProcessType(WebRendererProcessType type) override;
-  Vector<WebInputEventAttribution> GetPendingUserInputInfo(
-      bool include_continuous) const override;
-  blink::MainThreadScheduler* ToMainThreadScheduler() override;
+
+  // WebThreadScheduler and ThreadScheduler implementation:
+  void Shutdown() override;
 
   // MainThreadScheduler implementation:
+  scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override;
   [[nodiscard]] std::unique_ptr<MainThreadScheduler::RendererPauseHandle>
   PauseScheduler() override;
   v8::Isolate* Isolate() override;
+  AgentGroupScheduler* CreateAgentGroupScheduler() override;
+  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
+  void AddRAILModeObserver(RAILModeObserver* observer) override;
+  void RemoveRAILModeObserver(RAILModeObserver const* observer) override;
+  Vector<WebInputEventAttribution> GetPendingUserInputInfo(
+      bool include_continuous) const override;
+  void StartIdlePeriodForTesting() override;
 
   // ThreadScheduler implementation:
+  bool ShouldYieldForHighPriorityWork() override;
   void PostIdleTask(const base::Location&, Thread::IdleTask) override;
   void PostNonNestableIdleTask(const base::Location&,
                                Thread::IdleTask) override;
@@ -176,11 +178,24 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
                            Thread::IdleTask) override;
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CleanupTaskRunner() override;
-  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
-  AgentGroupScheduler* CreateAgentGroupScheduler() override;
-  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
-  void SetV8Isolate(v8::Isolate* isolate) override;
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
+  void AddTaskObserver(base::TaskObserver* task_observer) override;
+  void RemoveTaskObserver(base::TaskObserver* task_observer) override;
+  void SetV8Isolate(v8::Isolate* isolate) override;
+  TaskAttributionTracker* GetTaskAttributionTracker() override;
+  void InitializeTaskAttributionTracker(
+      std::unique_ptr<TaskAttributionTracker> tracker) override;
+  blink::MainThreadScheduler* ToMainThreadScheduler() override;
+
+  // ThreadSchedulerBase implementation:
+  scoped_refptr<base::SingleThreadTaskRunner> ControlTaskRunner() override;
+  const base::TickClock* GetTickClock() const override;
+  MainThreadSchedulerHelper& GetHelper() override { return helper_; }
+
+  // RenderWidgetSignals::Observer implementation:
+  void SetAllRenderWidgetsHidden(bool hidden) override;
+  void SetHasVisibleRenderWidgetWithTouchHandler(
+      bool has_visible_render_widget_with_touch_handler) override;
 
   scoped_refptr<WidgetScheduler> CreateWidgetScheduler();
   void WillBeginFrame(const viz::BeginFrameArgs& args);
@@ -216,36 +231,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner();
 
-  // The following functions are defined in both WebThreadScheduler and
-  // ThreadScheduler, and have the same function signatures -- see above.
-  // This class implements those functions for both base classes.
-  //
-  // void Shutdown() override;
-  //
-  // TODO(yutak): Reduce the overlaps and simplify.
-
-  // RenderWidgetSignals::Observer implementation:
-  void SetAllRenderWidgetsHidden(bool hidden) override;
-  void SetHasVisibleRenderWidgetWithTouchHandler(
-      bool has_visible_render_widget_with_touch_handler) override;
-
-  // ThreadSchedulerImpl implementation:
-  scoped_refptr<base::SingleThreadTaskRunner> ControlTaskRunner() override;
-  const base::TickClock* GetTickClock() const override;
-  MainThreadSchedulerHelper& GetHelper() override { return helper_; }
-
   scoped_refptr<SingleThreadIdleTaskRunner> IdleTaskRunner();
   base::TimeTicks NowTicks() const;
-
-  TaskAttributionTracker* GetTaskAttributionTracker() override {
-    return main_thread_only().task_attribution_tracker.get();
-  }
-
-  void InitializeTaskAttributionTracker(
-      std::unique_ptr<TaskAttributionTracker> tracker) override {
-    DCHECK(!main_thread_only().task_attribution_tracker);
-    main_thread_only().task_attribution_tracker = std::move(tracker);
-  }
 
   // Returns a new task queue created with given params.
   scoped_refptr<MainThreadTaskQueue> NewTaskQueue(
@@ -300,9 +287,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   MainThreadSchedulerHelper* GetSchedulerHelperForTesting();
   IdleTimeEstimator* GetIdleTimeEstimatorForTesting();
   base::TimeTicks CurrentIdleTaskDeadlineForTesting() const;
-  void RunIdleTasksForTesting(base::OnceClosure callback);
-  void EndIdlePeriodForTesting(base::OnceClosure callback,
-                               base::TimeTicks time_remaining);
+  void EndIdlePeriodForTesting(base::TimeTicks time_remaining);
   bool PolicyNeedsUpdateForTesting();
 
   std::unique_ptr<CPUTimeBudgetPool> CreateCPUTimeBudgetPoolForTesting(
@@ -356,7 +341,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   }
 
  protected:
-  // ThreadSchedulerImpl implementation:
+  // ThreadSchedulerBase implementation:
   WTF::Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() override;
 
   scoped_refptr<MainThreadTaskQueue> ControlTaskQueue();

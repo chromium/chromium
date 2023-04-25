@@ -78,6 +78,9 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
   v8::Isolate* Isolate() override;
   std::unique_ptr<RendererPauseHandle> PauseScheduler() override;
 
+  // Idle tasks are dropped in `PostIdleTask()` and friends, so this is a no-op.
+  void StartIdlePeriodForTesting() override;
+
  private:
   v8::Isolate* isolate_ = nullptr;
 };

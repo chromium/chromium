@@ -60,8 +60,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -70,6 +68,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -494,9 +493,9 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle) {
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
 
   bridge->SetIsInHiddenPage(true);
-  scheduler::RunIdleTasksForTesting(
-      scheduler::WebThreadScheduler::MainThreadScheduler(),
-      base::BindOnce([]() {}));
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
   platform->RunUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
@@ -541,9 +540,9 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry) {
   // chance to run.
   bridge->SetIsInHiddenPage(false);
   bridge->SetIsInHiddenPage(true);
-  scheduler::RunIdleTasksForTesting(
-      scheduler::WebThreadScheduler::MainThreadScheduler(),
-      base::BindOnce([]() {}));
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
   platform->RunUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
@@ -584,9 +583,9 @@ TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernating) {
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
   bridge->SetIsInHiddenPage(true);
-  scheduler::RunIdleTasksForTesting(
-      scheduler::WebThreadScheduler::MainThreadScheduler(),
-      base::BindOnce([]() {}));
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_FALSE(bridge->IsAccelerated());
@@ -621,9 +620,9 @@ TEST_F(Canvas2DLayerBridgeTest, SnapshotWhileHibernating) {
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
   bridge->SetIsInHiddenPage(true);
-  scheduler::RunIdleTasksForTesting(
-      scheduler::WebThreadScheduler::MainThreadScheduler(),
-      base::BindOnce([]() {}));
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_FALSE(bridge->IsAccelerated());
@@ -673,9 +672,9 @@ TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernationIsPending) {
   // HibernationAbortedDueToDestructionWhileHibernatePending event to be
   // fired, but that signal is lost in the unit test due to no longer having
   // a bridge to hold the mockLogger.
-  scheduler::RunIdleTasksForTesting(
-      scheduler::WebThreadScheduler::MainThreadScheduler(),
-      base::BindOnce([]() {}));
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
   platform->RunUntilIdle();
   // This test passes by not crashing, which proves that the WeakPtr logic
   // is sound.
@@ -706,9 +705,9 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToVisibilityChange) {
       .Times(1);
   bridge->SetIsInHiddenPage(true);
   bridge->SetIsInHiddenPage(false);
-  scheduler::RunIdleTasksForTesting(
-      scheduler::WebThreadScheduler::MainThreadScheduler(),
-      base::BindOnce([]() {}));
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_TRUE(bridge->IsAccelerated());
@@ -742,9 +741,9 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToLostContext) {
       .Times(1);
 
   bridge->SetIsInHiddenPage(true);
-  scheduler::RunIdleTasksForTesting(
-      scheduler::WebThreadScheduler::MainThreadScheduler(),
-      base::BindOnce([]() {}));
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_FALSE(bridge->IsHibernating());
@@ -770,9 +769,9 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhileHibernating) {
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
   bridge->SetIsInHiddenPage(true);
-  scheduler::RunIdleTasksForTesting(
-      scheduler::WebThreadScheduler::MainThreadScheduler(),
-      base::BindOnce([]() {}));
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
 
@@ -1107,9 +1106,9 @@ void SetIsInHiddenPage(
   bridge->SetIsInHiddenPage(hidden);
   // Make sure that idle tasks run when hidden.
   if (hidden) {
-    scheduler::RunIdleTasksForTesting(
-        scheduler::WebThreadScheduler::MainThreadScheduler(),
-        base::DoNothing());
+    ThreadScheduler::Current()
+        ->ToMainThreadScheduler()
+        ->StartIdlePeriodForTesting();
     platform->RunUntilIdle();
     EXPECT_TRUE(bridge->IsHibernating());
   }

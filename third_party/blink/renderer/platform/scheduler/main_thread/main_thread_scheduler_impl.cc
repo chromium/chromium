@@ -1082,11 +1082,9 @@ void MainThreadSchedulerImpl::EndIdlePeriod() {
 }
 
 void MainThreadSchedulerImpl::EndIdlePeriodForTesting(
-    base::OnceClosure callback,
     base::TimeTicks time_remaining) {
   main_thread_only().in_idle_period_for_testing = false;
   EndIdlePeriod();
-  std::move(callback).Run();
 }
 
 bool MainThreadSchedulerImpl::PolicyNeedsUpdateForTesting() {
@@ -1401,13 +1399,12 @@ base::TimeTicks MainThreadSchedulerImpl::CurrentIdleTaskDeadlineForTesting()
   return idle_helper_.CurrentIdleTaskDeadline();
 }
 
-void MainThreadSchedulerImpl::RunIdleTasksForTesting(
-    base::OnceClosure callback) {
+void MainThreadSchedulerImpl::StartIdlePeriodForTesting() {
   main_thread_only().in_idle_period_for_testing = true;
   IdleTaskRunner()->PostIdleTask(
       FROM_HERE,
       base::BindOnce(&MainThreadSchedulerImpl::EndIdlePeriodForTesting,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr()));
   idle_helper_.EnableLongIdlePeriod();
 }
 
@@ -2707,6 +2704,16 @@ bool MainThreadSchedulerImpl::AllPagesFrozen() const {
       return false;
   }
   return true;
+}
+
+TaskAttributionTracker* MainThreadSchedulerImpl::GetTaskAttributionTracker() {
+  return main_thread_only().task_attribution_tracker.get();
+}
+
+void MainThreadSchedulerImpl::InitializeTaskAttributionTracker(
+    std::unique_ptr<TaskAttributionTracker> tracker) {
+  DCHECK(!main_thread_only().task_attribution_tracker);
+  main_thread_only().task_attribution_tracker = std::move(tracker);
 }
 
 // static

@@ -3989,7 +3989,6 @@ crbug.com/789921 media/controls/repaint-on-resize.html [ Failure Pass ]
 crbug.com/814585 [ Linux ] fast/css3-text/css3-text-decoration/text-underline-position/text-underline-position-cjk.html [ Failure Pass ]
 
 # Sheriff failures 2018-02-22
-crbug.com/814889 idle-callback/test-runner-run-idle-tasks.html [ Crash Pass Timeout ]
 crbug.com/814953 fast/replaced/no-focus-ring-iframe.html [ Failure Pass ]
 crbug.com/814964 virtual/gpu-rasterization/images/yuv-decode-eligible/color-profile-border-radius.html [ Failure Pass ]
 
