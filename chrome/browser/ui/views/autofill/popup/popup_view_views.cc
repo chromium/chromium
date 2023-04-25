@@ -350,33 +350,15 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
     return;
   }
 
-  for (int row = 0; row < controller_->GetLineCount(); ++row) {
-    // Show the in-product-help promo anchored to this bubble.
-    // The in-product-help promo is a bubble anchored to this row item to show
-    // educational messages. The promo bubble should only be shown once in one
-    // session and has a limit for how many times it can be shown at most in a
-    // period of time.
-    if (controller_->GetSuggestionAt(row).feature_for_iph ==
-        "IPH_AutofillVirtualCardSuggestion") {
-      GetPopupRowViewAt(row).SetProperty(
-          views::kElementIdentifierKey,
-          kAutofillCreditCardSuggestionEntryElementId);
-
-      browser->window()->MaybeShowFeaturePromo(
-          feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
-    }
-
-    if (controller_->GetSuggestionAt(row).feature_for_iph ==
-        feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature
-            .name) {
-      GetPopupRowViewAt(row).SetProperty(views::kElementIdentifierKey,
-                                         kAutofillSuggestionElementId);
-
-      browser->window()->MaybeShowFeaturePromo(
-          feature_engagement::
-              kIPHAutofillExternalAccountProfileSuggestionFeature);
-    }
-  }
+  // Show the in-product-help promo anchored to this bubble.
+  // The in-product-help promo is a bubble anchored to this row item to show
+  // educational messages. The promo bubble should only be shown once in one
+  // session and has a limit for how many times it can be shown at most in a
+  // period of time.
+  browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
+  browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature);
 }
 
 bool PopupViewViews::HasPopupRowViewAt(size_t index) const {
@@ -437,8 +419,28 @@ void PopupViewViews::CreateChildViews() {
         // The default section contains all selectable rows and includes
         // autocomplete, address, credit cards and passwords.
         default:
-          rows_.push_back(body_container->AddChildView(
-              PopupRowView::Create(*this, current_line_number)));
+          PopupRowView* row_view = body_container->AddChildView(
+              PopupRowView::Create(*this, current_line_number));
+          rows_.push_back(row_view);
+
+          const std::string& feature_for_iph =
+              kSuggestions[current_line_number].feature_for_iph;
+
+          // Set appropriate element ids for IPH targets, it is important to
+          // set them earlier to make sure the elements are discoverable later
+          // during popup's visibility change and the promo bubble showing.
+          if (feature_for_iph ==
+              feature_engagement::kIPHAutofillVirtualCardSuggestionFeature
+                  .name) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillCreditCardSuggestionEntryElementId);
+          }
+          if (feature_for_iph ==
+              feature_engagement::
+                  kIPHAutofillExternalAccountProfileSuggestionFeature.name) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillSuggestionElementId);
+          }
       }
     }
 
