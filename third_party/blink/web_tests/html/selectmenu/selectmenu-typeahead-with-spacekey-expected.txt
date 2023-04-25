@@ -3,18 +3,19 @@ Two keystrokes are considered as part of one typehead session if time difference
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 1. space key as part of search string.
-PASS internals.isSelectPopupVisible(popup) is false
+PASS popup.open is false
 PASS popup.value is "United States"
 2. space key as part of search string with some delay.
-PASS internals.isSelectPopupVisible(popup) is false
+PASS popup.open is false
 PASS popup.value is "Spain"
 3. space key to open popup menu.
-PASS internals.isSelectPopupVisible(popup) is true
+PASS popup.open is true
 PASS popup.value is "United Arab Emirates"
 PASS successfullyParsed is true
 
 TEST COMPLETE
 
+Button
 Canada
 Spain
 United Arab Emirates

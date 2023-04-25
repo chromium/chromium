@@ -1308,28 +1308,6 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     ASSERT_EQ(value, std::move(value_waiter).Wait());
   }
 
-  // TODO(crbug.com/1422117): Merge with FillElementWithValueAndBlur() once
-  // typeahead support is implemented for <selectmenu>. `option_index` is the
-  // index of the option to select. Assumes that the option at index 0 is
-  // initially selected.
-  void FillSelectMenuElementWithValue(const std::string& element_id,
-                                      const std::string& value,
-                                      size_t option_index) {
-    ValueWaiter value_waiter =
-        ListenForChangeToSpecificValue(element_id, value);
-
-    SimulateKeyPress(ui::DomKey::ENTER, ui::DomCode::ENTER, /*shift=*/false);
-
-    for (size_t i = 0; i < option_index; ++i) {
-      SimulateKeyPress(ui::DomKey::ARROW_DOWN, ui::DomCode::ARROW_DOWN,
-                       /*shift=*/false);
-    }
-
-    SimulateKeyPress(ui::DomKey::ENTER, ui::DomCode::ENTER,
-                     /*shift=*/false);
-    ASSERT_EQ(value, std::move(value_waiter).Wait());
-  }
-
   void DeleteElementValue(const ElementExpr& field) {
     std::string script = base::StringPrintf("%s.value = '';", field->c_str());
     ASSERT_TRUE(content::ExecJs(GetWebContents(), script));
@@ -1616,11 +1594,7 @@ void DoModifySelectFieldAndFill(AutofillInteractiveTest* test,
   ASSERT_TRUE(FocusSelectOrSelectMenu("state", should_test_selectmenu,
                                       test->GetWebContents()));
   ASSERT_NE(kDefaultAddressValues.state_short, base::StringPiece("CA"));
-  if (should_test_selectmenu) {
-    test->FillSelectMenuElementWithValue("state", "CA", 1u);
-  } else {
-    test->FillElementWithValueAndBlur("state", "CA");
-  }
+  test->FillElementWithValueAndBlur("state", "CA");
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), test));
   EXPECT_THAT(test->GetFormValuesIgnoringSelectMenuButtonSlot(),

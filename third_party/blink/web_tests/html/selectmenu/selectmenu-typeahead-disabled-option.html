@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/js-test.js"></script>
+</head>
+<body>
+<selectmenu id="selectmenu" tabindex="0">
+     <button type="button" slot="button" behavior="button"
+             id="selectmenu-button">
+       Button
+     </button>
+    <option>Canada</option>
+    <option>Spain</option>
+    <option disabled>United Arab Emirates</option>
+    <option>United States</option>
+</selectmenu>
+<script>
+description('Typeahead does not select disabled selectmenu option');
+
+window.jsTestIsAsync = true;
+
+function keyDown(key)
+{
+    if (!window.eventSender)
+      debug("No event sender");
+    eventSender.keyDown(key);
+}
+
+var selectmenu = document.getElementById("selectmenu");
+var button = document.getElementById("selectmenu-button");
+
+button.focus();
+selectmenu.value = "Canada";
+// Should skip disabled "United Arab Emirates" <option>
+keyDown('U');
+shouldBeFalse('selectmenu.open');
+shouldBeEqualToString('selectmenu.value', 'United States');
+finishJSTest();
+</script>
+</body>

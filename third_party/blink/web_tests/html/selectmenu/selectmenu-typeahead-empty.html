@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<p>
+  Check that selectmenu does not crash on search when it's empty.
+</p>
+<selectmenu>
+ <button type="button" slot="button" behavior="button"
+         id="selectmenu-button">
+   Button
+ </button>
+</selectmenu>
+<div id="result">Cannot run interactively.</div>
+<script>
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        var button = document.getElementById("selectmenu-button");
+        button.focus();
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+    }
+</script>

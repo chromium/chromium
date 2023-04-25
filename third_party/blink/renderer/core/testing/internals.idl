@@ -284,6 +284,8 @@
     long selectPopupItemStyleFontHeight(Node select, long itemIndex);
     void resetTypeAheadSession(HTMLSelectElement select);
 
+    void resetSelectMenuTypeAheadSession(HTMLSelectMenuElement selectmenu);
+
     StaticSelection getDragCaret();
     [RaisesException] StaticSelection getSelectionInFlatTree(Window window);
     // TODO(editing-dev): We should change |visibleSelection*| to

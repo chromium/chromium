@@ -62,7 +62,8 @@ TEST_F(TypeAheadTest, HasActiveSessionAfterHandleEvent) {
     web_event.text[0] = ' ';
     auto& event = *KeyboardEvent::Create(web_event, nullptr);
     type_ahead_.HandleEvent(
-        event, TypeAhead::kMatchPrefix | TypeAhead::kCycleFirstChar);
+        event, event.charCode(),
+        TypeAhead::kMatchPrefix | TypeAhead::kCycleFirstChar);
 
     // A session should now be in progress.
     EXPECT_TRUE(type_ahead_.HasActiveSession(event));
@@ -92,7 +93,7 @@ TEST_F(TypeAheadTest, HasActiveSessionAfterResetSession) {
                              base::TimeTicks() + base::Milliseconds(500));
   web_event.text[0] = ' ';
   auto& event = *KeyboardEvent::Create(web_event, nullptr);
-  type_ahead_.HandleEvent(event,
+  type_ahead_.HandleEvent(event, event.charCode(),
                           TypeAhead::kMatchPrefix | TypeAhead::kCycleFirstChar);
 
   // A session should now be in progress.

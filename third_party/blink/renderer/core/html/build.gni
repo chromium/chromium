@@ -681,6 +681,7 @@ blink_core_tests_html = [
   "forms/html_input_element_test.cc",
   "forms/html_output_element_test.cc",
   "forms/html_select_element_test.cc",
+  "forms/html_select_menu_element_test.cc",
   "forms/html_text_area_element_test.cc",
   "forms/internal_popup_menu_test.cc",
   "forms/option_list_test.cc",

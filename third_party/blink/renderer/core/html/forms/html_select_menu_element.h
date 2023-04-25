@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
+#include "third_party/blink/renderer/core/html/forms/type_ahead.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -26,7 +27,8 @@ class Document;
 // for more details.
 class CORE_EXPORT HTMLSelectMenuElement final
     : public HTMLFormControlElementWithState,
-      public LocalFrameView::LifecycleNotificationObserver {
+      public LocalFrameView::LifecycleNotificationObserver,
+      public TypeAheadDataSource {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -34,6 +36,11 @@ class CORE_EXPORT HTMLSelectMenuElement final
 
   // LocalFrameView::LifecycleNotificationObserver
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;
+
+  // TypeAheadDataSource:
+  int IndexOfSelectedOption() const override;
+  int OptionCount() const override;
+  String OptionAtIndex(int index) const override;
 
   HTMLOptionElement* selectedOption() const;
   String value() const;
@@ -78,13 +85,13 @@ class CORE_EXPORT HTMLSelectMenuElement final
 
   // Returns list of HTMLOptionElements which are direct children of the
   // HTMLSelectMenuElement.
-  // GetListItems() does not do any caching. Do not invoke this method from
-  // frequently called functions.
   // TODO(http://crbug.com/1422027): Expose iterator similar to
   // HTMLSelectElement::GetOptionList().
-  ListItems GetListItems() const;
+  const ListItems& GetListItems() const;
 
   void ListboxWasClosed();
+
+  void ResetTypeAheadSessionForTesting();
 
  private:
   class SelectMutationCallback;
@@ -93,6 +100,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void DidMoveToNewDocument(Document& old_document) override;
   void OpenListbox();
   void CloseListbox();
+  bool TypeAheadFind(const KeyboardEvent& event, int charCode);
 
   HTMLOptionElement* FirstOptionPart() const;
   HTMLElement* FirstValidButtonPart() const;
@@ -107,6 +115,9 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void SelectNextOption();
   void SelectPreviousOption();
   void UpdateSelectedValuePartContents();
+
+  void RecalcListItems() const;
+  HTMLOptionElement* OptionAtListIndex(int list_index) const;
 
   void ButtonPartInserted(HTMLElement*);
   void ButtonPartRemoved(HTMLElement*);
@@ -161,6 +172,10 @@ class CORE_EXPORT HTMLSelectMenuElement final
       NativeEventListener::Trace(visitor);
     }
 
+    void AddEventListeners(HTMLElement* button_part);
+    void RemoveEventListeners(HTMLElement* button_part);
+    bool HandleKeyboardEvent(const KeyboardEvent& event);
+
    private:
     Member<HTMLSelectMenuElement> select_menu_element_;
   };
@@ -176,6 +191,10 @@ class CORE_EXPORT HTMLSelectMenuElement final
       NativeEventListener::Trace(visitor);
     }
 
+    void AddEventListeners(HTMLOptionElement* option_part);
+    void RemoveEventListeners(HTMLOptionElement* option_part);
+    bool HandleKeyboardEvent(const KeyboardEvent& event);
+
    private:
     Member<HTMLSelectMenuElement> select_menu_element_;
   };
@@ -184,6 +203,8 @@ class CORE_EXPORT HTMLSelectMenuElement final
   static constexpr char kSelectedValuePartName[] = "selected-value";
   static constexpr char kListboxPartName[] = "listbox";
   static constexpr char kMarkerPartName[] = "marker";
+
+  TypeAhead type_ahead_;
 
   Member<ButtonPartEventListener> button_part_listener_;
   Member<OptionPartEventListener> option_part_listener_;
@@ -201,6 +222,11 @@ class CORE_EXPORT HTMLSelectMenuElement final
   Member<HTMLOptionElement> selected_option_;
   Member<HTMLOptionElement> selected_option_when_listbox_opened_;
   bool queued_check_for_missing_parts_{false};
+
+  bool should_recalc_list_items_{true};
+
+  // Initialized lazily. Use GetListItems() to get up to date value.
+  mutable ListItems list_items_;
 };
 
 }  // namespace blink

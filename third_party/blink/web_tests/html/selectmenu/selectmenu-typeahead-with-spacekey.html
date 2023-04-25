@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../../../resources/js-test.js"></script>
+<script src="../../resources/js-test.js"></script>
 </head>
 <body>
-<select id="select">
+<selectmenu id="selectmenu" tabindex="0">
+    <button type="button" slot="button" behavior="button"
+             id="selectmenu-button">
+        Button
+    </button>
     <option>Canada</option>
     <option>Spain</option>
     <option>United Arab Emirates</option>
     <option>United States</option>
-</select>
+</selectmenu>
 <script>
 description('Two keystrokes are considered as part of one typehead session if time difference between them is less than 1 sec');
 
@@ -18,16 +22,17 @@ window.jsTestIsAsync = true;
 function keyDown(key, modifiers)
 {
     if (!window.eventSender)
-        return;
+      debug("No event sender");
     eventSender.keyDown(key, modifiers);
 }
 
-var popup = document.getElementById("select");
+var popup = document.getElementById("selectmenu");
+var button = document.getElementById("selectmenu-button");
 
 function test1() {
     debug('1. space key as part of search string.');
-    popup.focus();
-    popup.selectedIndex = 0;
+    button.focus();
+    popup.value = "Canada";
     keyDown('U');
     keyDown('n');
     keyDown('i');
@@ -36,13 +41,13 @@ function test1() {
     keyDown('d');
     keyDown(' ');
     keyDown('S');
-    shouldBeFalse('internals.isSelectPopupVisible(popup)');
+    shouldBeFalse('popup.open');
     shouldBeEqualToString('popup.value', 'United States');
-    popup.blur();
+    button.blur();
 
     debug('2. space key as part of search string with some delay.');
-    popup.focus();
-    popup.selectedIndex = 0
+    button.focus();
+    popup.value = "Canada";
     keyDown('U');
     keyDown('n');
     keyDown('i');
@@ -50,26 +55,27 @@ function test1() {
     keyDown('e');
     keyDown('d');
     keyDown(' ');
-    internals.resetTypeAheadSession(popup);
+    internals.resetSelectMenuTypeAheadSession(popup);
     keyDown('S');
-    shouldBeFalse('internals.isSelectPopupVisible(popup)');
+    shouldBeFalse('popup.open');
     shouldBeEqualToString('popup.value', 'Spain');
-    popup.blur();
+    button.blur();
 
     debug('3. space key to open popup menu.');
-    popup.focus();
-    popup.selectedIndex = 0
+    button.focus();
+    popup.value = "Canada";
     keyDown('U');
     keyDown('n');
     keyDown('i');
     keyDown('t');
     keyDown('e');
     keyDown('d');
-    internals.resetTypeAheadSession(popup);
+    internals.resetSelectMenuTypeAheadSession(popup);
     keyDown(' ');
-    shouldBeTrue('internals.isSelectPopupVisible(popup)');
+    shouldBeTrue('popup.open');
     shouldBeEqualToString('popup.value', 'United Arab Emirates');
-    popup.blur();
+    button.blur();
+
     finishJSTest();
 }
 

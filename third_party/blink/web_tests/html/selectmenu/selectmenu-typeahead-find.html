@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function recordIt()
+{
+    var selectmenu = document.getElementById("selectmenu");
+    var selectmenuButton = document.getElementById("selectmenu-button");
+    selectmenuButton.innerText = selectmenu.value;
+    var res = document.getElementById("res");
+    if (res.innerText != "FAIL")
+        res.innerText = "PASS";
+}
+
+function testIt(ch, expectedValue)
+{
+    var selectmenu = document.getElementById("selectmenu");
+    var selectmenuButton = document.getElementById("selectmenu-button");
+    selectmenuButton.focus();
+    eventSender.keyDown(ch);
+    if (selectmenu.value != expectedValue)
+        document.getElementById("res").innerText = "FAIL";
+}
+
+function test()
+{
+    if (!window.testRunner)
+        return;
+
+    testRunner.dumpAsText();
+    testIt("c", "cherry");
+}
+</script>
+</head>
+<body onload="test()">
+Verify type ahead selection fires onchange event.
+<ol>
+<li>Set focus to selectmenu element</li>
+<li>Type "c"</li>
+<li>You see "cherry" in selectmenu element and "PASS" below selectmenu element.</li>
+</ol>
+<selectmenu id="selectmenu" onchange="recordIt()">
+    <button type="button" slot="button" behavior="button"
+            id="selectmenu-button">
+        Button
+    </button>
+
+    <option>apple</option>
+    <option>banana</option>
+    <option>cherry</option>
+</selectmenu><br />
+<div id="res"></div>
+</html>
+

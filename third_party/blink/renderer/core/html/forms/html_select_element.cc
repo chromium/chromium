@@ -1148,7 +1148,8 @@ String HTMLSelectElement::OptionAtIndex(int index) const {
 
 void HTMLSelectElement::TypeAheadFind(const KeyboardEvent& event) {
   int index = type_ahead_.HandleEvent(
-      event, TypeAhead::kMatchPrefix | TypeAhead::kCycleFirstChar);
+      event, event.charCode(),
+      TypeAhead::kMatchPrefix | TypeAhead::kCycleFirstChar);
   if (index < 0)
     return;
   SelectOption(OptionAtListIndex(index), kDeselectOtherOptionsFlag |

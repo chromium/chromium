@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
 
@@ -183,7 +184,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::SlotChanged(
 }
 
 HTMLSelectMenuElement::HTMLSelectMenuElement(Document& document)
-    : HTMLFormControlElementWithState(html_names::kSelectmenuTag, document) {
+    : HTMLFormControlElementWithState(html_names::kSelectmenuTag, document),
+      type_ahead_(this) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
   DCHECK(RuntimeEnabledFeatures::RuntimeEnabledFeatures::
              HTMLPopoverAttributeEnabled(document.GetExecutionContext()));
@@ -225,15 +227,12 @@ HTMLSelectMenuElement::PartType HTMLSelectMenuElement::AssignedPartType(
   return PartType::kNone;
 }
 
-HTMLSelectMenuElement::ListItems HTMLSelectMenuElement::GetListItems() const {
-  ListItems list_items;
-  for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
-       node = SelectMenuPartTraversal::Next(*node, this)) {
-    if (IsValidOptionPart(node, /*show_warning=*/false)) {
-      list_items.push_back(To<HTMLOptionElement>(node));
-    }
+const HTMLSelectMenuElement::ListItems& HTMLSelectMenuElement::GetListItems()
+    const {
+  if (should_recalc_list_items_) {
+    RecalcListItems();
   }
-  return list_items;
+  return list_items_;
 }
 
 void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
@@ -251,10 +250,7 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   button_part_listener_ =
       MakeGarbageCollected<HTMLSelectMenuElement::ButtonPartEventListener>(
           this);
-  button_part_->addEventListener(event_type_names::kClick,
-                                 button_part_listener_, /*use_capture=*/false);
-  button_part_->addEventListener(event_type_names::kKeydown,
-                                 button_part_listener_, /*use_capture=*/false);
+  button_part_listener_->AddEventListeners(button_part_);
 
   selected_value_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
   selected_value_slot_->setAttribute(html_names::kNameAttr,
@@ -401,6 +397,28 @@ void HTMLSelectMenuElement::CloseListbox() {
   }
 }
 
+bool HTMLSelectMenuElement::TypeAheadFind(const KeyboardEvent& event,
+                                          int charCode) {
+  if (event.ctrlKey() || event.altKey() || event.metaKey() ||
+      !WTF::unicode::IsPrintableChar(charCode)) {
+    return false;
+  }
+
+  int index = type_ahead_.HandleEvent(
+      event, charCode, TypeAhead::kMatchPrefix | TypeAhead::kCycleFirstChar);
+  if (index < 0) {
+    return false;
+  }
+
+  SetSelectedOption(OptionAtListIndex(index), /*send_events=*/true);
+  if (open() && selectedOption()) {
+    selectedOption()->Focus();
+  }
+
+  selected_option_->SetDirty(true);
+  return true;
+}
+
 void HTMLSelectMenuElement::ListboxWasClosed() {
   PseudoStateChanged(CSSSelector::kPseudoClosed);
   PseudoStateChanged(CSSSelector::kPseudoOpen);
@@ -410,6 +428,10 @@ void HTMLSelectMenuElement::ListboxWasClosed() {
   if (selectedOption() != selected_option_when_listbox_opened_) {
     DispatchChangeEvent();
   }
+}
+
+void HTMLSelectMenuElement::ResetTypeAheadSessionForTesting() {
+  type_ahead_.ResetSession();
 }
 
 bool HTMLSelectMenuElement::SetListboxPart(HTMLElement* new_listbox_part) {
@@ -527,19 +549,11 @@ void HTMLSelectMenuElement::SetButtonPart(HTMLElement* new_button_part) {
     return;
 
   if (button_part_) {
-    button_part_->removeEventListener(
-        event_type_names::kClick, button_part_listener_, /*use_capture=*/false);
-    button_part_->removeEventListener(event_type_names::kKeydown,
-                                      button_part_listener_,
-                                      /*use_capture=*/false);
+    button_part_listener_->RemoveEventListeners(button_part_);
   }
 
   if (new_button_part) {
-    new_button_part->addEventListener(
-        event_type_names::kClick, button_part_listener_, /*use_capture=*/false);
-    new_button_part->addEventListener(event_type_names::kKeydown,
-                                      button_part_listener_,
-                                      /*use_capture=*/false);
+    button_part_listener_->AddEventListeners(new_button_part);
   } else {
     QueueCheckForMissingParts();
   }
@@ -717,10 +731,7 @@ void HTMLSelectMenuElement::OptionPartInserted(
   }
 
   new_option_part->OptionInsertedIntoSelectMenuElement();
-  new_option_part->addEventListener(
-      event_type_names::kClick, option_part_listener_, /*use_capture=*/false);
-  new_option_part->addEventListener(
-      event_type_names::kKeydown, option_part_listener_, /*use_capture=*/false);
+  option_part_listener_->AddEventListeners(new_option_part);
 
   // TODO(crbug.com/1191131) The option part list should match the flat tree
   // order.
@@ -730,6 +741,7 @@ void HTMLSelectMenuElement::OptionPartInserted(
     SetSelectedOption(new_option_part);
   }
   SetNeedsValidityCheck();
+  should_recalc_list_items_ = true;
 }
 
 void HTMLSelectMenuElement::OptionPartRemoved(HTMLOptionElement* option_part) {
@@ -738,16 +750,14 @@ void HTMLSelectMenuElement::OptionPartRemoved(HTMLOptionElement* option_part) {
   }
 
   option_part->OptionRemovedFromSelectMenuElement();
-  option_part->removeEventListener(
-      event_type_names::kClick, option_part_listener_, /*use_capture=*/false);
-  option_part->removeEventListener(
-      event_type_names::kKeydown, option_part_listener_, /*use_capture=*/false);
+  option_part_listener_->RemoveEventListeners(option_part);
   option_parts_.erase(option_part);
 
   if (selected_option_ == option_part) {
     ResetToDefaultSelection();
   }
   SetNeedsValidityCheck();
+  should_recalc_list_items_ = true;
 }
 
 HTMLOptionElement* HTMLSelectMenuElement::FirstOptionPart() const {
@@ -802,6 +812,30 @@ void HTMLSelectMenuElement::DidFinishLifecycleUpdate(
         "A <selectmenu>'s default listbox was removed and a new one was not "
         "provided. This <selectmenu> will not be fully functional."));
   }
+}
+
+int HTMLSelectMenuElement::IndexOfSelectedOption() const {
+  int index = 0;
+  for (const auto& item : GetListItems()) {
+    auto* option_element = DynamicTo<HTMLOptionElement>(item.Get());
+    if (option_element && option_element->Selected()) {
+      return index;
+    }
+    ++index;
+  }
+  return -1;
+}
+
+int HTMLSelectMenuElement::OptionCount() const {
+  return GetListItems().size();
+}
+
+String HTMLSelectMenuElement::OptionAtIndex(int index) const {
+  HTMLOptionElement* option = OptionAtListIndex(index);
+  if (!option || option->IsDisabledFormControl()) {
+    return String();
+  }
+  return option->DisplayLabel();
 }
 
 HTMLOptionElement* HTMLSelectMenuElement::selectedOption() const {
@@ -902,35 +936,112 @@ void HTMLSelectMenuElement::UpdateSelectedValuePartContents() {
   }
 }
 
+void HTMLSelectMenuElement::RecalcListItems() const {
+  list_items_.clear();
+  for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
+       node = SelectMenuPartTraversal::Next(*node, this)) {
+    if (IsValidOptionPart(node, /*show_warning=*/false)) {
+      list_items_.push_back(To<HTMLOptionElement>(node));
+    }
+  }
+}
+
+HTMLOptionElement* HTMLSelectMenuElement::OptionAtListIndex(
+    int list_index) const {
+  if (list_index < 0) {
+    return nullptr;
+  }
+  const ListItems& items = GetListItems();
+  if (static_cast<wtf_size_t>(list_index) >= items.size()) {
+    return nullptr;
+  }
+
+  return DynamicTo<HTMLOptionElement>(items[list_index].Get());
+}
+
 void HTMLSelectMenuElement::ButtonPartEventListener::Invoke(ExecutionContext*,
                                                             Event* event) {
   if (event->defaultPrevented())
     return;
 
   if (event->type() == event_type_names::kClick &&
-      !select_menu_element_->open() &&
       !select_menu_element_->IsDisabledFormControl()) {
-    select_menu_element_->OpenListbox();
-  } else if (event->type() == event_type_names::kKeydown) {
-    bool handled = false;
-    auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-    if (!keyboard_event)
-      return;
-    switch (keyboard_event->keyCode()) {
-      case VKEY_RETURN:
-      case VKEY_SPACE:
-        if (!select_menu_element_->open() &&
-            !select_menu_element_->IsDisabledFormControl()) {
-          select_menu_element_->OpenListbox();
-        }
-        handled = true;
-        break;
+    if (!select_menu_element_->open()) {
+      select_menu_element_->OpenListbox();
     }
-    if (handled) {
-      event->stopPropagation();
+    // TODO(crbug.com/1408838) Close list box if dialog is open.
+  } else if (event->type() == event_type_names::kBlur) {
+    select_menu_element_->type_ahead_.ResetSession();
+  } else if (event->IsKeyboardEvent()) {
+    auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+    if (!keyboard_event) {
+      return;
+    }
+
+    if (!select_menu_element_->open() &&
+        !select_menu_element_->IsDisabledFormControl() &&
+        HandleKeyboardEvent(*keyboard_event)) {
       event->SetDefaultHandled();
     }
   }
+}
+
+void HTMLSelectMenuElement::ButtonPartEventListener::AddEventListeners(
+    HTMLElement* button_part) {
+  button_part->addEventListener(event_type_names::kClick, this,
+                                /*use_capture=*/false);
+  button_part->addEventListener(event_type_names::kBlur, this,
+                                /*use_capture=*/false);
+
+  // Observe keydown and keyup in order to override default HTMLButtonElement
+  // handling in HTMLElement::HandleKeyboardActivation() for VKEY_SPACE.
+  button_part->addEventListener(event_type_names::kKeydown, this,
+                                /*use_capture=*/false);
+  button_part->addEventListener(event_type_names::kKeyup, this,
+                                /*use_capture=*/false);
+  button_part->addEventListener(event_type_names::kKeypress, this,
+                                /*use_capture=*/false);
+}
+
+void HTMLSelectMenuElement::ButtonPartEventListener::RemoveEventListeners(
+    HTMLElement* button_part) {
+  button_part->removeEventListener(event_type_names::kClick, this,
+                                   /*use_capture=*/false);
+  button_part->removeEventListener(event_type_names::kBlur, this,
+                                   /*use_capture=*/false);
+  button_part->removeEventListener(event_type_names::kKeydown, this,
+                                   /*use_capture=*/false);
+  button_part->removeEventListener(event_type_names::kKeyup, this,
+                                   /*use_capture=*/false);
+  button_part->removeEventListener(event_type_names::kKeypress, this,
+                                   /*use_capture=*/false);
+}
+
+bool HTMLSelectMenuElement::ButtonPartEventListener::HandleKeyboardEvent(
+    const KeyboardEvent& event) {
+  if (event.keyCode() == VKEY_SPACE) {
+    if (event.type() == event_type_names::kKeydown) {
+      if (select_menu_element_->type_ahead_.HasActiveSession(event)) {
+        select_menu_element_->TypeAheadFind(event, ' ');
+      } else {
+        select_menu_element_->OpenListbox();
+      }
+    }
+    // Override default HTMLButtonElement handling in
+    // HTMLElement::HandleKeyboardActivation().
+    return true;
+  }
+  if (event.keyCode() == VKEY_RETURN &&
+      event.type() == event_type_names::kKeydown) {
+    // Handle <RETURN> because not all HTML elements synthesize a click when
+    // <RETURN> is pressed.
+    select_menu_element_->OpenListbox();
+    return true;
+  }
+  // Handled in event_type_names::kKeypress event handler because
+  // KeyboardEvent::charCode() == 0 for event_type_names::kKeydown.
+  return event.type() == event_type_names::kKeypress &&
+         select_menu_element_->TypeAheadFind(event, event.charCode());
 }
 
 void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
@@ -948,15 +1059,42 @@ void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
       select_menu_element_->DispatchInputEvent();
     }
     select_menu_element_->CloseListbox();
-  } else if (event->type() == event_type_names::kKeydown) {
-    bool handled = false;
+  } else if (event->IsKeyboardEvent()) {
     auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-    if (!keyboard_event)
-      return;
-    switch (keyboard_event->keyCode()) {
+    if (keyboard_event && HandleKeyboardEvent(*keyboard_event)) {
+      event->stopPropagation();
+      event->SetDefaultHandled();
+    }
+  }
+}
+
+void HTMLSelectMenuElement::OptionPartEventListener::AddEventListeners(
+    HTMLOptionElement* option_part) {
+  option_part->addEventListener(event_type_names::kClick, this,
+                                /*use_capture=*/false);
+  option_part->addEventListener(event_type_names::kKeydown, this,
+                                /*use_capture=*/false);
+  option_part->addEventListener(event_type_names::kKeypress, this,
+                                /*use_capture=*/false);
+}
+
+void HTMLSelectMenuElement::OptionPartEventListener::RemoveEventListeners(
+    HTMLOptionElement* option_part) {
+  option_part->removeEventListener(event_type_names::kClick, this,
+                                   /*use_capture=*/false);
+  option_part->removeEventListener(event_type_names::kKeydown, this,
+                                   /*use_capture=*/false);
+  option_part->removeEventListener(event_type_names::kKeypress, this,
+                                   /*use_capture=*/false);
+}
+
+bool HTMLSelectMenuElement::OptionPartEventListener::HandleKeyboardEvent(
+    const KeyboardEvent& event) {
+  if (event.type() == event_type_names::kKeydown) {
+    switch (event.keyCode()) {
       case VKEY_RETURN: {
         auto* target_element =
-            DynamicTo<HTMLOptionElement>(event->currentTarget()->ToNode());
+            DynamicTo<HTMLOptionElement>(event.currentTarget()->ToNode());
         DCHECK(target_element);
         DCHECK(select_menu_element_->option_parts_.Contains(target_element));
         if (target_element != select_menu_element_->selectedOption()) {
@@ -964,31 +1102,30 @@ void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
           select_menu_element_->DispatchInputEvent();
         }
         select_menu_element_->CloseListbox();
-        handled = true;
-        break;
+        return true;
       }
       case VKEY_SPACE: {
+        select_menu_element_->TypeAheadFind(event, ' ');
         // Prevent the default behavior of scrolling the page on spacebar
         // that would cause the listbox to close.
-        handled = true;
-        break;
+        return true;
       }
       case VKEY_UP: {
         select_menu_element_->SelectPreviousOption();
-        handled = true;
-        break;
+        return true;
       }
       case VKEY_DOWN: {
         select_menu_element_->SelectNextOption();
-        handled = true;
-        break;
+        return true;
       }
     }
-    if (handled) {
-      event->stopPropagation();
-      event->SetDefaultHandled();
-    }
+  } else if (event.type() == event_type_names::kKeypress) {
+    // Handled in event_type_names::kKeypress event handler because
+    // KeyboardEvent::charCode() == 0 for event_type_names::kKeydown.
+    return select_menu_element_->TypeAheadFind(event, event.charCode());
   }
+
+  return false;
 }
 
 const AtomicString& HTMLSelectMenuElement::FormControlType() const {
@@ -1129,6 +1266,7 @@ void HTMLSelectMenuElement::Trace(Visitor* visitor) const {
   visitor->Trace(selected_value_slot_);
   visitor->Trace(selected_option_);
   visitor->Trace(selected_option_when_listbox_opened_);
+  visitor->Trace(list_items_);
   HTMLFormControlElementWithState::Trace(visitor);
 }
 

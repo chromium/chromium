@@ -60,6 +60,7 @@ class HTMLIFrameElement;
 class HTMLInputElement;
 class HTMLMediaElement;
 class HTMLSelectElement;
+class HTMLSelectMenuElement;
 class HTMLVideoElement;
 class HitTestLayerRectList;
 class HitTestLocation;
@@ -464,6 +465,8 @@ class Internals final : public ScriptWrappable {
   bool selectPopupItemStyleIsRtl(Node*, int);
   int selectPopupItemStyleFontHeight(Node*, int);
   void resetTypeAheadSession(HTMLSelectElement*);
+
+  void resetSelectMenuTypeAheadSession(HTMLSelectMenuElement*);
 
   StaticSelection* getDragCaret();
   StaticSelection* getSelectionInFlatTree(DOMWindow*, ExceptionState&);
