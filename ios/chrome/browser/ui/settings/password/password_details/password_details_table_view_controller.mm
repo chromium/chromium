@@ -628,8 +628,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context) {
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
-    case PasswordDetailsItemTypeNote:
-      return YES;
     case PasswordDetailsItemTypeWebsite:
     case PasswordDetailsItemTypeFederation:
     case PasswordDetailsItemTypeUsername:
@@ -638,6 +636,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context) {
     case PasswordDetailsItemTypeMoveToAccountButton:
       return !self.editing;
     case PasswordDetailsItemTypeDeleteButton:
+    case PasswordDetailsItemTypeNote:
       return self.editing;
     case PasswordDetailsItemTypeChangePasswordRecommendation:
     case PasswordDetailsItemTypeMoveToAccountRecommendation:
