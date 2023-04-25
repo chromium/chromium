@@ -4,7 +4,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/web/public/test/javascript_test.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
@@ -12,40 +13,50 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// JavaScript function to return a frame's frameId.
-const char kGetFrameIdJsFunction[] = "message.getFrameId";
-}  // namespace
-
 namespace web {
 
 // Test fixture to test message.js.
-typedef web::WebTestWithWebState MessageJsTest;
+class MessageJsTest : public web::JavascriptTest {
+ protected:
+  MessageJsTest() {}
+  ~MessageJsTest() override {}
+
+  void SetUp() override {
+    web::JavascriptTest::SetUp();
+
+    AddGCrWebScript();
+    AddCommonScript();
+    AddMessageScript();
+  }
+};
 
 // Tests that a frameId is created.
 TEST_F(MessageJsTest, FrameId) {
-  ASSERT_TRUE(LoadHtml("<p>"));
+  ASSERT_TRUE(LoadHtml(@"<p>"));
 
-  auto result = CallJavaScriptFunction(kGetFrameIdJsFunction, {});
-  // Validate frameId.
+  id result = web::test::ExecuteJavaScript(web_view(),
+                                           @"__gCrWeb.message.getFrameId()");
+
   ASSERT_TRUE(result);
-  ASSERT_TRUE(result->is_string());
-  EXPECT_GT(result->GetString().length(), 0ul);
+  ASSERT_TRUE([result isKindOfClass:[NSString class]]);
+  EXPECT_GT([result length], 0ul);
 }
 
 // Tests that the frameId is unique between two page loads.
 TEST_F(MessageJsTest, UniqueFrameID) {
-  ASSERT_TRUE(LoadHtml("<p>"));
-  auto frame_id1 = CallJavaScriptFunction(kGetFrameIdJsFunction, {});
+  ASSERT_TRUE(LoadHtml(@"<p>"));
+  id frame_id1 = web::test::ExecuteJavaScript(web_view(),
+                                              @"__gCrWeb.message.getFrameId()");
 
-  ASSERT_TRUE(LoadHtml("<p>"));
-  auto frame_id2 = CallJavaScriptFunction(kGetFrameIdJsFunction, {});
+  ASSERT_TRUE(LoadHtml(@"<p>"));
+  id frame_id2 = web::test::ExecuteJavaScript(web_view(),
+                                              @"__gCrWeb.message.getFrameId()");
   // Validate second frameId.
   ASSERT_TRUE(frame_id2);
-  ASSERT_TRUE(frame_id2->is_string());
-  EXPECT_GT(frame_id2->GetString().length(), 0ul);
+  ASSERT_TRUE([frame_id2 isKindOfClass:[NSString class]]);
+  EXPECT_GT([frame_id2 length], 0ul);
 
-  EXPECT_NE(frame_id1->GetString(), frame_id2->GetString());
+  EXPECT_NSNE(frame_id1, frame_id2);
 }
 
 }  // namespace web
