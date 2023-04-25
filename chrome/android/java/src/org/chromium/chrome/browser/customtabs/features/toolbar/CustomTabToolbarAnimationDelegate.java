@@ -93,8 +93,6 @@ class CustomTabToolbarAnimationDelegate {
 
         float oldSizePx = mUrlBar.getTextSize();
         mUrlBar.setTextSize(TypedValue.COMPLEX_UNIT_PX, newSizeSp);
-        float newSizePx = mUrlBar.getTextSize();
-        final float scale = oldSizePx / newSizePx;
 
         // View#getY() cannot be used because the boundary of the parent will change after relayout.
         final int[] oldLoc = new int[2];
@@ -110,6 +108,11 @@ class CustomTabToolbarAnimationDelegate {
 
                 int[] newLoc = new int[2];
                 mUrlBar.getLocationInWindow(newLoc);
+
+                // The size may change during the measuring pass, so we should calculate the new
+                // size here, after the layout is done.
+                float newSizePx = mUrlBar.getTextSize();
+                final float scale = oldSizePx / newSizePx;
 
                 mUrlBar.setScaleX(scale);
                 mUrlBar.setScaleY(scale);

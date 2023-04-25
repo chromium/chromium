@@ -41,7 +41,7 @@ found in the LICENSE file.
             android:visibility="invisible"
             app:tint="@color/default_icon_color_tint_list" />
         <view
-            class="org.chromium.chrome.browser.customtabs.features.toolbar.InterceptTouchLayout"
+            class="org.chromium.chrome.browser.customtabs.features.toolbar.TitleAndUrlLayout"
             android:id="@+id/title_url_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
