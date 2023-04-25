@@ -3741,6 +3741,7 @@ test("ash_pixeltests") {
     "shelf/shelf_layout_manager_pixeltest.cc",
     "system/accessibility/accessibility_detailed_view_pixeltest.cc",
     "system/bluetooth/bluetooth_detailed_view_legacy_pixeltest.cc",
+    "system/cast/cast_zero_state_view_pixeltest.cc",
     "system/channel_indicator/channel_indicator_quick_settings_view_pixeltest.cc",
     "system/message_center/ash_notification_view_pixeltest.cc",
     "system/time/calendar_unittest_utils.cc",
