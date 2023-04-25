@@ -67,8 +67,6 @@ namespace ash {
 
 namespace {
 
-const test::UIPath kErrorMessageContinueButton = {"error-message",
-                                                  "continueButton"};
 const test::UIPath kSplashScreenLaunchText = {"app-launch-splash",
                                               "launchText"};
 
@@ -292,43 +290,8 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, LaunchAppNetworkDown) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
-                       LaunchAppWithNetworkConfigAccelerator) {
-  ScopedCanConfigureNetwork can_configure_network(true, false);
-
-  // Block app loading until the welcome screen is shown.
-  BlockAppLaunch(true);
-
-  // Start app launch and wait for network connectivity timeout.
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  OobeScreenWaiter splash_waiter(AppLaunchSplashScreenView::kScreenId);
-  splash_waiter.Wait();
-
-  // A network error screen should be shown after authenticating.
-  OobeScreenWaiter error_screen_waiter(ErrorScreenView::kScreenId);
-  // Simulate Ctrl+Alt+N accelerator.
-
-  LoginDisplayHost::default_host()->HandleAccelerator(
-      LoginAcceleratorAction::kAppLaunchNetworkConfig);
-  error_screen_waiter.Wait();
-  ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
-
-  // Continue button should be visible since we are online.
-  test::OobeJS().ExpectVisiblePath(kErrorMessageContinueButton);
-
-  // Let app launching resume.
-  BlockAppLaunch(false);
-
-  // Click on [Continue] button.
-  test::OobeJS().TapOnPath(kErrorMessageContinueButton);
-
-  WaitForAppLaunchSuccess();
-}
-
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
                        LaunchAppNetworkDownConfigureNotAllowed) {
-  // Mock network could not be configured.
-  ScopedCanConfigureNetwork can_configure_network(false, true);
+  ScopedCanConfigureNetwork can_configure_network(false);
 
   // Start app launch and wait for network connectivity timeout.
   StartAppLaunchFromLoginScreen(
@@ -342,27 +305,6 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
   test::OobeJS().ExpectHiddenPath(kConfigNetwork);
 
   // Network becomes online and app launch is resumed.
-  SimulateNetworkOnline();
-  WaitForAppLaunchSuccess();
-}
-
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, LaunchAppNetworkPortal) {
-  // Mock network could be configured without the owner password.
-  ScopedCanConfigureNetwork can_configure_network(true, false);
-
-  // Start app launch with network portal state.
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
-
-  OobeScreenWaiter app_splash_waiter(AppLaunchSplashScreenView::kScreenId);
-  app_splash_waiter.set_no_assert_last_screen();
-  app_splash_waiter.Wait();
-
-  // Network error should show up automatically since this test does not
-  // require owner auth to configure network.
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-
-  ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
   SimulateNetworkOnline();
   WaitForAppLaunchSuccess();
 }

@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fake_app_launch_splash_screen_handler.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
@@ -54,6 +56,8 @@ const char kInstallUrl[] = "https://install.url";
 const char kExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char kInvalidExtensionId[] = "invalid-extension-id";
 const char kExtensionName[] = "extension_name";
+const char kTestDomain[] = "test.com";
+const char kDeviceId[] = "123";
 
 // URL of Chrome Web Store.
 const char kWebStoreExtensionUpdateUrl[] =
@@ -100,6 +104,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
       delete;
 
   void SetUp() override {
+    SetDeviceEnterpriseManaged();
     InitializeEmptyExtensionService();
     policy::BrowserPolicyConnectorBase::SetPolicyServiceForTesting(
         policy_service());
@@ -193,6 +198,11 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   }
 
  private:
+  void SetDeviceEnterpriseManaged() {
+    cros_settings_test_helper().InstallAttributes()->SetCloudManaged(
+        kTestDomain, kDeviceId);
+  }
+
   void SetUpKioskAppInAppManager() {
     std::string email = policy::GenerateDeviceLocalAccountUserId(
         kInstallUrl, policy::DeviceLocalAccount::Type::TYPE_WEB_KIOSK_APP);
@@ -220,7 +230,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
       keyboard_controller_client_;
   std::unique_ptr<WebKioskAppManager> kiosk_app_manager_;
 
-  ScopedCanConfigureNetwork can_configure_network_for_testing_{true, false};
+  ScopedCanConfigureNetwork can_configure_network_for_testing_{true};
   std::unique_ptr<base::AutoReset<bool>>
       disable_wait_timer_and_login_operations_for_testing_;
   std::unique_ptr<FakeAppLaunchSplashScreenHandler> view_;

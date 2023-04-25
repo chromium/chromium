@@ -324,8 +324,7 @@ void KioskBaseTest::WaitForAppLaunchSuccess() {
 }
 
 void KioskBaseTest::RunAppLaunchNetworkDownTest() {
-  // Mock network could be configured with owner's password.
-  ScopedCanConfigureNetwork can_configure_network(true, true);
+  ScopedCanConfigureNetwork can_configure_network(true);
 
   // Start app launch and wait for network connectivity timeout.
   StartAppLaunchFromLoginScreen(

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 
+#include "base/functional/callback.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -22,8 +23,6 @@ constexpr base::TimeDelta kKioskNetworkWaitTime = base::Seconds(10);
 base::TimeDelta g_network_wait_time = kKioskNetworkWaitTime;
 
 base::RepeatingCallback<bool()>* g_can_configure_network_callback = nullptr;
-base::RepeatingCallback<bool()>*
-    g_need_owner_auth_to_configure_network_callback = nullptr;
 
 bool IsDeviceEnterpriseManaged() {
   return g_browser_process->platform_part()
@@ -32,10 +31,6 @@ bool IsDeviceEnterpriseManaged() {
 }
 
 bool IsConsumerKiosk() {
-  if (g_need_owner_auth_to_configure_network_callback) {
-    return g_need_owner_auth_to_configure_network_callback->Run();
-  }
-
   return !IsDeviceEnterpriseManaged();
 }
 
@@ -256,12 +251,6 @@ void NetworkUiController::MaybeShowNetworkConfigureUIForConsumerKiosk() {
 void NetworkUiController::SetCanConfigureNetworkCallbackForTesting(
     base::RepeatingCallback<bool()>* callback) {
   g_can_configure_network_callback = callback;
-}
-
-// static
-void NetworkUiController::SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
-    base::RepeatingCallback<bool()>* callback) {
-  g_need_owner_auth_to_configure_network_callback = callback;
 }
 
 }  // namespace ash

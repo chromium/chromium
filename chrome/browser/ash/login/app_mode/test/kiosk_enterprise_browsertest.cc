@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
+#include "ash/public/cpp/login_accelerators.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -15,13 +16,17 @@
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/app_mode/test/test_app_data_load_waiter.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "content/public/test/browser_test.h"
@@ -29,7 +34,6 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "extensions/components/native_app_window/native_app_window_views.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -48,6 +52,17 @@ const char kTestLoginToken[] = "fake-login-token";
 const char kTestAccessToken[] = "fake-access-token";
 const char kTestClientId[] = "fake-client-id";
 const char kTestAppScope[] = "https://www.googleapis.com/auth/userinfo.profile";
+const test::UIPath kErrorMessageContinueButton = {"error-message",
+                                                  "continueButton"};
+
+void PressConfigureNetworkAccelerator() {
+  LoginDisplayHost::default_host()->HandleAccelerator(
+      LoginAcceleratorAction::kAppLaunchNetworkConfig);
+}
+
+void WaitForOobeScreen(OobeScreenId screen) {
+  OobeScreenWaiter(screen).Wait();
+}
 
 }  // namespace
 
@@ -207,6 +222,55 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, PrivateStore) {
   DCHECK_GT(private_store.GetUpdateCheckCountAndReset(), 0);
   DCHECK_EQ(0, fake_cws()->GetUpdateCheckCountAndReset());
   EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
+}
+IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest,
+                       HittingNetworkAcceleratorShouldShowNetworkScreen) {
+  ScopedCanConfigureNetwork can_configure_network(true);
+
+  // Block app loading until the welcome screen is shown.
+  BlockAppLaunch(true);
+
+  // Start app launch and wait for network connectivity timeout.
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  WaitForOobeScreen(AppLaunchSplashScreenView::kScreenId);
+
+  PressConfigureNetworkAccelerator();
+
+  // `ErrorScreenView` is the network screen
+  WaitForOobeScreen(ErrorScreenView::kScreenId);
+  ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
+
+  // Continue button should be visible since we are online.
+  EXPECT_TRUE(test::OobeJS().IsVisible(kErrorMessageContinueButton));
+
+  // Let app launching resume.
+  BlockAppLaunch(false);
+
+  // Click on [Continue] button.
+  test::OobeJS().TapOnPath(kErrorMessageContinueButton);
+
+  WaitForAppLaunchSuccess();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    KioskEnterpriseTest,
+    LaunchingAppThatRequiresNetworkWhilstOnlineShouldShowNetworkScreen) {
+  ScopedCanConfigureNetwork can_configure_network(true);
+
+  // Start app launch with network portal state.
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+
+  WaitForOobeScreen(AppLaunchSplashScreenView::kScreenId);
+
+  // Network error should show up automatically since this test does not
+  // require owner auth to configure network.
+  WaitForOobeScreen(ErrorScreenView::kScreenId);
+
+  ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
+  SimulateNetworkOnline();
+  WaitForAppLaunchSuccess();
 }
 
 class KioskEnterpriseEphemeralTest

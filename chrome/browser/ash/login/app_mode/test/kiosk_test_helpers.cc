@@ -40,25 +40,17 @@ ScopedDeviceSettings::ScopedDeviceSettings() : settings_helper_(false) {
 
 ScopedDeviceSettings::~ScopedDeviceSettings() = default;
 
-ScopedCanConfigureNetwork::ScopedCanConfigureNetwork(bool can_configure,
-                                                     bool needs_owner_auth)
+ScopedCanConfigureNetwork::ScopedCanConfigureNetwork(bool can_configure)
     : can_configure_(can_configure),
-      needs_owner_auth_(needs_owner_auth),
       can_configure_network_callback_(
           base::BindRepeating(&ScopedCanConfigureNetwork::CanConfigureNetwork,
-                              base::Unretained(this))),
-      needs_owner_auth_callback_(base::BindRepeating(
-          &ScopedCanConfigureNetwork::NeedsOwnerAuthToConfigureNetwork,
-          base::Unretained(this))) {
+                              base::Unretained(this))) {
   NetworkUiController::SetCanConfigureNetworkCallbackForTesting(
       &can_configure_network_callback_);
-  NetworkUiController::SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
-      &needs_owner_auth_callback_);
 }
+
 ScopedCanConfigureNetwork::~ScopedCanConfigureNetwork() {
   NetworkUiController::SetCanConfigureNetworkCallbackForTesting(nullptr);
-  NetworkUiController::SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
-      nullptr);
 }
 
 }  // namespace ash

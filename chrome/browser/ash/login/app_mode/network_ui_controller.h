@@ -66,8 +66,6 @@ class NetworkUiController : public AppLaunchSplashScreenView::Delegate,
 
   static void SetCanConfigureNetworkCallbackForTesting(
       base::RepeatingCallback<bool()>* callback);
-  static void SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
-      base::RepeatingCallback<bool()>* callback);
 
  private:
   void MaybeShowNetworkConfigureUI();
