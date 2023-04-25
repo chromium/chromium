@@ -250,6 +250,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
  [
+   'DevicePageFakeInputDeviceSettingsProvider',
+   'device_page/fake_input_device_settings_provider_test.js'
+ ],
+ [
    'DevicePagePerDeviceKeyboard', 'device_page/per_device_keyboard_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
@@ -296,7 +300,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
  ['FakeCrosAudioConfig', 'fake_cros_audio_config_test.js'],
- ['FakeInputDeviceSettings', 'fake_input_device_settings_provider_test.js'],
  ['FingerprintListSubpage', 'fingerprint_list_subpage_test.js'],
  ['GoogleAssistantSubpage', 'google_assistant_subpage_test.js'],
  ['GuestOsSharedPaths', 'guest_os_shared_paths_test.js'],
