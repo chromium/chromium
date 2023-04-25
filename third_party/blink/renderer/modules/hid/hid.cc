@@ -96,9 +96,9 @@ HID* HID::hid(NavigatorBase& navigator) {
 }
 
 HID::HID(NavigatorBase& navigator)
-    : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
-      Supplement<NavigatorBase>(navigator),
-      service_(navigator.GetExecutionContext()) {
+    : Supplement<NavigatorBase>(navigator),
+      service_(navigator.GetExecutionContext()),
+      receiver_(this, navigator.GetExecutionContext()) {
   auto* context = GetExecutionContext();
   if (context) {
     feature_handle_for_scheduler_ = context->GetScheduler()->RegisterFeature(
@@ -118,10 +118,6 @@ ExecutionContext* HID::GetExecutionContext() const {
 
 const AtomicString& HID::InterfaceName() const {
   return event_target_names::kHID;
-}
-
-void HID::ContextDestroyed() {
-  CloseServiceConnection();
 }
 
 void HID::AddedEventListener(const AtomicString& event_type,
@@ -323,7 +319,7 @@ void HID::EnsureServiceConnection() {
   service_.set_disconnect_handler(
       WTF::BindOnce(&HID::CloseServiceConnection, WrapWeakPersistent(this)));
   DCHECK(!receiver_.is_bound());
-  service_->RegisterClient(receiver_.BindNewEndpointAndPassRemote());
+  service_->RegisterClient(receiver_.BindNewEndpointAndPassRemote(task_runner));
 }
 
 void HID::CloseServiceConnection() {
@@ -394,8 +390,8 @@ void HID::Trace(Visitor* visitor) const {
   visitor->Trace(get_devices_promises_);
   visitor->Trace(request_device_promises_);
   visitor->Trace(device_cache_);
+  visitor->Trace(receiver_);
   EventTargetWithInlineData::Trace(visitor);
-  ExecutionContextLifecycleObserver::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
 }
 
