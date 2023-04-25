@@ -211,9 +211,7 @@ class VideoDetectorTest : public testing::Test {
     return frame_sink;
   }
 
-  raw_ptr<VideoDetector> detector_;
   TestObserver observer_;
-
   scoped_refptr<base::TestMockTimeTaskRunner> mock_task_runner_;
 
  protected:
@@ -253,6 +251,7 @@ class VideoDetectorTest : public testing::Test {
   SurfaceAggregator surface_aggregator_;
   std::unique_ptr<CompositorFrameSinkSupport> root_frame_sink_;
   std::set<CompositorFrameSinkSupport*> embedded_clients_;
+  raw_ptr<VideoDetector> detector_;
 };
 
 class VideoDetectorIncludeNonVideoTest : public VideoDetectorTest {
