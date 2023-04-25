@@ -519,9 +519,15 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone ||
           result.dynamic_pseudo == kPseudoIdNone) {
         Element* style_container_candidate =
-            pseudo_style_request_.pseudo_id == kPseudoIdNone
-                ? context_.GetElement().ParentOrShadowHostElement()
-                : &context_.GetElement();
+            style_recalc_context_.style_container;
+        if (!style_container_candidate) {
+          if (pseudo_style_request_.pseudo_id == kPseudoIdNone) {
+            style_container_candidate =
+                context_.GetElement().ParentOrShadowHostElement();
+          } else {
+            style_container_candidate = &context_.GetElement();
+          }
+        }
         if (!EvaluateAndAddContainerQueries(
                 style_container_candidate, *container_query,
                 style_recalc_context_, container_selector_cache_, result_)) {
