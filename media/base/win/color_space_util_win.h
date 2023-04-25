@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_WIN_COLOR_SPACE_UTIL_WIN_H_
 #define MEDIA_BASE_WIN_COLOR_SPACE_UTIL_WIN_H_
 
-class IMFMediaType;
+#include <mfidl.h>
 
 #include "media/base/media_export.h"
 #include "ui/gfx/color_space.h"
@@ -13,6 +13,13 @@ class IMFMediaType;
 namespace media {
 
 MEDIA_EXPORT gfx::ColorSpace GetMediaTypeColorSpace(IMFMediaType* media_type);
+
+// Converts a gfx::ColorSpace to individual MFVideo* keys.
+MEDIA_EXPORT void GetMediaTypeColorValues(const gfx::ColorSpace& color_space,
+                                          MFVideoPrimaries* out_primaries,
+                                          MFVideoTransferFunction* out_transfer,
+                                          MFVideoTransferMatrix* out_matrix,
+                                          MFNominalRange* out_range);
 
 }  // namespace media
 

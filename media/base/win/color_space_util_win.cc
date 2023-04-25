@@ -37,6 +37,29 @@ gfx::ColorSpace::PrimaryID MFPrimaryToColorSpace(uint32_t mf_primary) {
   }
 }
 
+MFVideoPrimaries ColorSpaceToMFPrimary(gfx::ColorSpace::PrimaryID color_space) {
+  switch (color_space) {
+    case gfx::ColorSpace::PrimaryID::BT709:
+      return MFVideoPrimaries_BT709;
+    case gfx::ColorSpace::PrimaryID::BT470M:
+      return MFVideoPrimaries_BT470_2_SysM;
+    case gfx::ColorSpace::PrimaryID::BT470BG:
+      return MFVideoPrimaries_BT470_2_SysBG;
+    case gfx::ColorSpace::PrimaryID::SMPTE170M:
+      return MFVideoPrimaries_SMPTE170M;
+    case gfx::ColorSpace::PrimaryID::SMPTE240M:
+      return MFVideoPrimaries_SMPTE240M;
+    case gfx::ColorSpace::PrimaryID::BT2020:
+      return MFVideoPrimaries_BT2020;
+    case gfx::ColorSpace::PrimaryID::XYZ_D50:
+      return MFVideoPrimaries_XYZ;
+    case gfx::ColorSpace::PrimaryID::P3:
+      return MFVideoPrimaries_DCI_P3;
+    default:
+      return MFVideoPrimaries_Unknown;
+  }
+}
+
 gfx::ColorSpace::TransferID MFTransferToColorSpace(uint32_t mf_transfer) {
   switch (mf_transfer) {
     case MFVideoTransFunc_18:
@@ -60,6 +83,30 @@ gfx::ColorSpace::TransferID MFTransferToColorSpace(uint32_t mf_transfer) {
   }
 }
 
+MFVideoTransferFunction ColorSpaceToMFTransfer(
+    gfx::ColorSpace::TransferID color_space) {
+  switch (color_space) {
+    case gfx::ColorSpace::TransferID::GAMMA18:
+      return MFVideoTransFunc_18;
+    case gfx::ColorSpace::TransferID::GAMMA22:
+      return MFVideoTransFunc_22;
+    case gfx::ColorSpace::TransferID::BT709:
+      return MFVideoTransFunc_709;
+    case gfx::ColorSpace::TransferID::SMPTE240M:
+      return MFVideoTransFunc_240M;
+    case gfx::ColorSpace::TransferID::SRGB:
+      return MFVideoTransFunc_sRGB;
+    case gfx::ColorSpace::TransferID::GAMMA28:
+      return MFVideoTransFunc_28;
+    case gfx::ColorSpace::TransferID::BT2020_10:
+      return MFVideoTransFunc_2020;
+    case gfx::ColorSpace::TransferID::PQ:
+      return MFVideoTransFunc_2084;
+    default:
+      return MFVideoTransFunc_Unknown;
+  }
+}
+
 gfx::ColorSpace::MatrixID MFMatrixToColorSpace(uint32_t mf_matrix) {
   switch (mf_matrix) {
     case MFVideoTransferMatrix_BT709:
@@ -77,6 +124,24 @@ gfx::ColorSpace::MatrixID MFMatrixToColorSpace(uint32_t mf_matrix) {
   }
 }
 
+MFVideoTransferMatrix ColorSpaceToMFMatrix(
+    gfx::ColorSpace::MatrixID color_space) {
+  switch (color_space) {
+    case gfx::ColorSpace::MatrixID::BT709:
+      return MFVideoTransferMatrix_BT709;
+    case gfx::ColorSpace::MatrixID::SMPTE170M:
+      return MFVideoTransferMatrix_BT601;
+    case gfx::ColorSpace::MatrixID::SMPTE240M:
+      return MFVideoTransferMatrix_SMPTE240M;
+    case gfx::ColorSpace::MatrixID::BT2020_NCL:
+      return MFVideoTransferMatrix_BT2020_10;
+    case gfx::ColorSpace::MatrixID::BT2020_CL:
+      return MFVideoTransferMatrix_BT2020_12;
+    default:
+      return MFVideoTransferMatrix_Unknown;
+  }
+}
+
 gfx::ColorSpace::RangeID MFRangeToColorSpace(uint32_t mf_range) {
   switch (mf_range) {
     case MFNominalRange_0_255:
@@ -89,6 +154,18 @@ gfx::ColorSpace::RangeID MFRangeToColorSpace(uint32_t mf_range) {
       return gfx::ColorSpace::RangeID::LIMITED;
     default:
       return gfx::ColorSpace::RangeID::INVALID;
+  }
+}
+
+MFNominalRange ColorSpaceToMFRange(gfx::ColorSpace::RangeID color_space) {
+  switch (color_space) {
+    case gfx::ColorSpace::RangeID::FULL:
+      return MFNominalRange_0_255;
+    case gfx::ColorSpace::RangeID::DERIVED:
+    case gfx::ColorSpace::RangeID::LIMITED:
+      return MFNominalRange_16_235;
+    default:
+      return MFNominalRange_Unknown;
   }
 }
 
@@ -122,6 +199,17 @@ gfx::ColorSpace GetMediaTypeColorSpace(IMFMediaType* media_type) {
   VideoColorSpace guesser = VideoColorSpace::FromGfxColorSpace(
       gfx::ColorSpace(primary, transfer, matrix, range));
   return guesser.GuessGfxColorSpace();
+}
+
+void GetMediaTypeColorValues(const gfx::ColorSpace& color_space,
+                             MFVideoPrimaries* out_primaries,
+                             MFVideoTransferFunction* out_transfer,
+                             MFVideoTransferMatrix* out_matrix,
+                             MFNominalRange* out_range) {
+  *out_primaries = ColorSpaceToMFPrimary(color_space.GetPrimaryID());
+  *out_transfer = ColorSpaceToMFTransfer(color_space.GetTransferID());
+  *out_matrix = ColorSpaceToMFMatrix(color_space.GetMatrixID());
+  *out_range = ColorSpaceToMFRange(color_space.GetRangeID());
 }
 
 }  // namespace media
