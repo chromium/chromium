@@ -1673,9 +1673,15 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       std::make_unique<BackForwardMenuModel>(
           browser(), BackForwardMenuModel::ModelType::kBackward));
   back_model->set_test_web_contents(main_contents);
+  back_model->MenuWillShow();
+  back_model->MenuWillClose();
   back_model->ActivatedAt(0);
   histogram.ExpectBucketCount(
       "Navigation.BackForward.NavigatingToEntryMarkedToBeSkipped", true, 1);
+  histogram.ExpectTotalCount(
+      "Navigation.BackForward.TimeFromOpenBackNavigationMenuToActivateItem", 1);
+  histogram.ExpectTotalCount(
+      "Navigation.BackForward.TimeFromOpenBackNavigationMenuToCloseMenu", 1);
 }
 
 // Same as above except the navigation is cross-site.

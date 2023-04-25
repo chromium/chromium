@@ -515,6 +515,34 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram
+    name="Navigation.BackForward.TimeFromOpenBackNavigationMenuToActivateItem"
+    units="ms" expires_after="2023-10-20">
+  <owner>leimy@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    The time spent between the back navigation menu model's opening and the
+    activation of a menu item. This is recorded when the back navigation menu
+    model receives signal that indicates the item from the menu is activated.
+    See `BackForwardMenuModel::MenuWillShow()` and
+    `BackForwardMenuModel::ActivatedAt()` for more details.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.BackForward.TimeFromOpenBackNavigationMenuToCloseMenu"
+    units="ms" expires_after="2023-10-20">
+  <owner>leimy@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    The time spent between the back navigation menu model's opening and the
+    closing. There might or might not be a menu item activation in between. This
+    is recorded when the back navigation menu model receives signal that
+    indicates it will be closed. See `BackForwardMenuModel::MenuWillShow()` and
+    `BackForwardMenuModel::MenuWillClose()` for details.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.BackForward.WasCached"
     enum="NavigationWasServedFromCache" expires_after="M85">
   <owner>clamy@chromium.org</owner>

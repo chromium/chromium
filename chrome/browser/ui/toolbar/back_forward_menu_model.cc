@@ -10,6 +10,7 @@
 #include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
@@ -216,6 +217,13 @@ void BackForwardMenuModel::ActivatedAt(size_t index, int event_flags) {
     base::RecordComputedAction(BuildActionName("ChapterClick", chapter_index));
   }
 
+  CHECK(menu_model_open_timestamp_.has_value());
+  base::TimeDelta time =
+      base::TimeTicks::Now() - menu_model_open_timestamp_.value();
+  base::UmaHistogramLongTimes(
+      "Navigation.BackForward.TimeFromOpenBackNavigationMenuToActivateItem",
+      time);
+
   absl::optional<size_t> controller_index = MenuIndexToNavEntryIndex(index);
   DCHECK(controller_index.has_value());
 
@@ -236,6 +244,15 @@ void BackForwardMenuModel::MenuWillShow() {
       kBackNavigationMenuIsOpenedEvent);
   requested_favicons_.clear();
   cancelable_task_tracker_.TryCancelAll();
+  menu_model_open_timestamp_ = base::TimeTicks::Now();
+}
+
+void BackForwardMenuModel::MenuWillClose() {
+  CHECK(menu_model_open_timestamp_.has_value());
+  base::TimeDelta time =
+      base::TimeTicks::Now() - menu_model_open_timestamp_.value();
+  base::UmaHistogramLongTimes(
+      "Navigation.BackForward.TimeFromOpenBackNavigationMenuToCloseMenu", time);
 }
 
 bool BackForwardMenuModel::IsSeparator(size_t index) const {
