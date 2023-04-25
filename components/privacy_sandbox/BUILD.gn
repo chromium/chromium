@@ -49,6 +49,7 @@ source_set("privacy_sandbox") {
     "//components/strings:components_strings_grit",
     "//content/public/browser",
     "//net:net",
+    "//third_party/blink/public/common",
     "//ui/base:base",
     "//url:url",
   ]

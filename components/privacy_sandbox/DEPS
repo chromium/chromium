@@ -12,4 +12,5 @@ include_rules = [
   "+net/cookies/site_for_cookies.h",
   "+content/public/test",
   "+ui/base",
+  "+third_party/blink/public/common/features.h",
 ]

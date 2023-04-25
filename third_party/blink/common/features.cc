@@ -1089,6 +1089,9 @@ const base::FeatureParam<int> kBrowsingTopicsConfigVersion{&kBrowsingTopics,
 const base::FeatureParam<int> kBrowsingTopicsTaxonomyVersion{
     &kBrowsingTopics, "taxonomy_version", 1};
 
+const base::FeatureParam<std::string> kBrowsingTopicsDisabledTopicsList{
+    &kBrowsingTopics, "browsing_topics_disabled_topics_list", ""};
+
 // Enables the deprecatedBrowsingTopics XHR attribute. For this feature to take
 // effect, the main Topics feature has to be enabled first (i.e.
 // `kBrowsingTopics` is enabled, and, either a valid Origin Trial token exists

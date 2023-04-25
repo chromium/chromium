@@ -891,6 +891,47 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicBlocked) {
   EXPECT_EQ(result.padded_top_topics_start_index(), 5u);
 }
 
+TEST_F(BrowsingTopicsCalculatorTest, TopicBlockedByFinch) {
+  base::Time begin_time = base::Time::Now();
+
+  AddHistoryEntries({kHost1, kHost2, kHost3, kHost4, kHost5, kHost6},
+                    begin_time);
+
+  AddApiUsageContextEntries(
+      {{kHost1, {}},
+       {kHost2, {}},
+       {kHost3, {HashedDomain(2)}},
+       {kHost4, {HashedDomain(3)}},
+       {kHost5, {HashedDomain(1), HashedDomain(2), HashedDomain(3)}}});
+
+  test_page_content_annotator_.UsePageTopics(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kBrowsingTopics,
+      {{"browsing_topics_disabled_topics_list", "6,4"}});
+
+  EpochTopics result = CalculateTopics();
+  ExpectResultTopicsEqual(
+      result.top_topics_and_observing_domains(),
+      {{Topic(0), {}},
+       {Topic(5), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
+       {Topic(0), {}},
+       {Topic(3), {HashedDomain(2)}},
+       {Topic(2), {}}});
+
+  EXPECT_EQ(result.padded_top_topics_start_index(), 5u);
+}
+
 TEST_F(BrowsingTopicsCalculatorTest, PaddedTopicsDoNotDuplicate) {
   base::Time begin_time = base::Time::Now();
 

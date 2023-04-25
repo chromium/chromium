@@ -13,14 +13,18 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
+
+#include "third_party/blink/public/common/features.h"
 
 namespace privacy_sandbox {
 
@@ -176,6 +180,13 @@ class PrivacySandboxSettingsTest : public testing::Test {
   PrivacySandboxSettings* privacy_sandbox_settings() {
     return privacy_sandbox_settings_.get();
   }
+  void ResetDisabledTopicsFeature(const std::string& topics_to_disable) {
+    SetUp();
+    disabled_topics_feature_list_.Reset();
+    disabled_topics_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kBrowsingTopics,
+        {{"browsing_topics_disabled_topics_list", topics_to_disable}});
+  }
   content::BrowserTaskEnvironment* task_environment() {
     return &browser_task_environment_;
   }
@@ -185,6 +196,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList disabled_topics_feature_list_;
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -909,6 +921,56 @@ TEST_F(PrivacySandboxSettingsTest, IsTopicAllowed) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(grandchild_topic));
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(unrelated_topic));
+}
+
+TEST_F(PrivacySandboxSettingsTest, IsTopicAllowed_ByFinchSettings) {
+  // Confirm that blocking topics in Finch is correctly reflected by
+  // IsTopicAllowed().
+  CanonicalTopic topic(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic child_topic(Topic(7), CanonicalTopic::AVAILABLE_TAXONOMY);
+
+  // Check that not setting the Finch setting does not cause an error or block a
+  // topic.
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic));
+
+  // Check that setting an empty list does not cause an error or block a topic.
+  ResetDisabledTopicsFeature("");
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic));
+
+  // Check that blocking a topic does not block its parent.
+  ResetDisabledTopicsFeature("7");
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
+
+  // Check that blocking a parent topic blocks the child topic.
+  ResetDisabledTopicsFeature("1");
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(child_topic));
+
+  // Try blocking a list of topics.
+  ResetDisabledTopicsFeature("1,9,44,330");
+  for (int topic_id : {1, 9, 44, 330}) {
+    CanonicalTopic canonical_topic = CanonicalTopic(Topic(topic_id), 1);
+    EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(canonical_topic));
+  }
+
+  // Try blocking a list of topics with extra whitespace.
+  ResetDisabledTopicsFeature(" 1  , 9,44, 330  ");
+  for (int topic_id : {1, 9, 44, 330}) {
+    CanonicalTopic canonical_topic = CanonicalTopic(Topic(topic_id), 1);
+    EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(canonical_topic));
+  }
+
+  // Try blocking a list of topics where some aren't real topics.
+  ResetDisabledTopicsFeature(" 0,1,9,44,330,2920");
+  for (int topic_id : {1, 9, 44, 330}) {
+    CanonicalTopic canonical_topic = CanonicalTopic(Topic(topic_id), 1);
+    EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(canonical_topic));
+  }
+
+  // Try blocking an invalid string. It should cause a CHECK to fail.
+  ResetDisabledTopicsFeature("Arts");
+  EXPECT_CHECK_DEATH(privacy_sandbox_settings()->IsTopicAllowed(topic));
 }
 
 TEST_F(PrivacySandboxSettingsTest, ClearingTopicSettings) {

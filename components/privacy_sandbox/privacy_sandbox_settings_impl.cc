@@ -4,6 +4,7 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include <cstddef>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -12,8 +13,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/common/semantic_tree.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -25,6 +29,7 @@
 #include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/site_for_cookies.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -119,6 +124,26 @@ PrivacySandboxSettingsImpl::GetM1TopicAllowedStatus() const {
   return control_status;
 }
 
+const std::vector<browsing_topics::Topic>&
+PrivacySandboxSettingsImpl::GetFinchDisabledTopics() {
+  if (finch_disabled_topics_.size() > 0) {
+    return finch_disabled_topics_;
+  }
+  std::string disabled_topics_string =
+      blink::features::kBrowsingTopicsDisabledTopicsList.Get();
+  if (disabled_topics_string.empty()) {
+    return finch_disabled_topics_;
+  }
+  std::vector<std::string> tokens = base::SplitString(
+      disabled_topics_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const std::string& token : tokens) {
+    int disabled_topic_id;
+    CHECK(base::StringToInt(token, &disabled_topic_id));
+    finch_disabled_topics_.emplace_back(disabled_topic_id);
+  }
+  return finch_disabled_topics_;
+}
+
 bool PrivacySandboxSettingsImpl::IsTopicsAllowed() const {
   // M1 specific
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
@@ -175,10 +200,15 @@ bool PrivacySandboxSettingsImpl::IsTopicAllowed(const CanonicalTopic& topic) {
       continue;
     }
 
-    if (topic.topic_id() == blocked_topic->topic_id()) {
+    if ((topic.topic_id() == blocked_topic->topic_id()) ||
+        (base::Contains(ancestor_topics, blocked_topic->topic_id()))) {
       return false;
     }
-    if (base::Contains(ancestor_topics, blocked_topic->topic_id())) {
+  }
+
+  for (browsing_topics::Topic blocked_topic_id : GetFinchDisabledTopics()) {
+    if ((topic.topic_id() == blocked_topic_id) ||
+        (base::Contains(ancestor_topics, blocked_topic_id))) {
       return false;
     }
   }

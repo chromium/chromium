@@ -1881,6 +1881,61 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopic) {
   EXPECT_EQ(result[7].topic_id(), Topic(10));
 }
 
+TEST_F(BrowsingTopicsServiceImplTest, BlockTopicWithFinch) {
+  base::Time start_time = base::Time::Now();
+
+  std::vector<EpochTopics> preexisting_epochs;
+  preexisting_epochs.push_back(CreateTestEpochTopics({{Topic(6), {}},
+                                                      {Topic(7), {}},
+                                                      {Topic(8), {}},
+                                                      {Topic(9), {}},
+                                                      {Topic(10), {}}},
+                                                     start_time - kOneTestDay));
+
+  CreateBrowsingTopicsStateFile(
+      std::move(preexisting_epochs),
+      /*next_scheduled_calculation_time=*/start_time + kOneTestDay);
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
+                                                      {Topic(2), {}},
+                                                      {Topic(3), {}},
+                                                      {Topic(4), {}},
+                                                      {Topic(5), {}}},
+                                                     kTime2));
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopics,
+        {{"time_period_per_epoch",
+          base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
+         {"browsing_topics_max_epoch_introduction_delay",
+          base::StrCat(
+              {base::NumberToString(kMaxEpochIntroductionDelay.InSeconds()),
+               "s"})},
+         {"browsing_topics_disabled_topics_list", "20,10,7"}}}},
+      /*disabled_features=*/{});
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  // Finish file loading.
+  task_environment()->FastForwardBy(2 * kCalculatorDelay + kEpoch);
+
+  std::vector<privacy_sandbox::CanonicalTopic> result =
+      browsing_topics_service_->GetTopTopicsForDisplay();
+
+  // Don't receive 7 and 10 (they are blocked by Finch) and 8 (it's blocked
+  // because it's descended from 7).
+  EXPECT_EQ(result.size(), 7u);
+  EXPECT_EQ(result[0].topic_id(), Topic(6));
+  EXPECT_EQ(result[1].topic_id(), Topic(9));
+  EXPECT_EQ(result[2].topic_id(), Topic(1));
+  EXPECT_EQ(result[3].topic_id(), Topic(2));
+  EXPECT_EQ(result[4].topic_id(), Topic(3));
+  EXPECT_EQ(result[5].topic_id(), Topic(4));
+  EXPECT_EQ(result[6].topic_id(), Topic(5));
+}
+
 TEST_F(BrowsingTopicsServiceImplTest, ClearTopicBeforeLoadFinish) {
   base::Time start_time = base::Time::Now();
 
