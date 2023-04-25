@@ -71,7 +71,9 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler =
-      SupervisedUserWebContentHandlerImpl(web_contents.get(), /*frame_id=*/0);
+      SupervisedUserWebContentHandlerImpl(web_contents.get(),
+                                          /*frame_id=*/0,
+                                          /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time,
@@ -101,11 +103,14 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
 
   base::TimeDelta elapsed_time = base::Minutes(5);
   task_environment().FastForwardBy(elapsed_time);
+
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler =
-      SupervisedUserWebContentHandlerImpl(web_contents.get(), /*frame_id=*/0);
+      SupervisedUserWebContentHandlerImpl(web_contents.get(),
+                                          /*frame_id=*/0,
+                                          /*interstitial_navigation_id=*/0);
 
   // Receive a request canceled by the parent.
   // Check that no duration metric is recorded for incomplete requests.
@@ -133,11 +138,14 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
 
   base::TimeDelta elapsed_time = base::Minutes(5);
   task_environment().FastForwardBy(elapsed_time);
+
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   SupervisedUserWebContentHandlerImpl web_content_handler =
-      SupervisedUserWebContentHandlerImpl(web_contents.get(), /*frame_id=*/0);
+      SupervisedUserWebContentHandlerImpl(web_contents.get(),
+                                          /*frame_id=*/0,
+                                          /*interstitial_navigation_id=*/0);
 
   // Receive a request accepted by the parent with a total duration of 5
   // minutes. Check that duration metric is recorded.
