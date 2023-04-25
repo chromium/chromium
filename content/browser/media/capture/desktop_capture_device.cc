@@ -105,6 +105,9 @@ int GetMaximumCpuConsumptionPercentage() {
       max_cpu_consumption_percentage = tmp_percentage;
   }
 
+  UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.MaxCpuConsumptionIsDefault",
+                        max_cpu_consumption_percentage ==
+                            kDefaultMaximumCpuConsumptionPercentage);
   return max_cpu_consumption_percentage;
 }
 
