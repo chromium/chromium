@@ -26,32 +26,28 @@ WebAppOriginAssociationParser::~WebAppOriginAssociationParser() = default;
 
 mojom::WebAppOriginAssociationPtr WebAppOriginAssociationParser::Parse(
     const std::string& data) {
-  auto parsed_data = base::JSONReader::ReadAndReturnValueWithError(data);
+  using Result = webapps::WebAppOriginAssociationMetrics::ParseResult;
+  auto result =
+      [&]() -> base::expected<mojom::WebAppOriginAssociationPtr, Result> {
+    auto parsed_data = base::JSONReader::ReadAndReturnValueWithError(data);
+    if (!parsed_data.has_value()) {
+      AddErrorInfo(parsed_data.error().message, parsed_data.error().line,
+                   parsed_data.error().column);
+      return base::unexpected(Result::kParseFailedInvalidJson);
+    };
+    if (!parsed_data->is_dict()) {
+      AddErrorInfo("No valid JSON object found.");
+      return base::unexpected(Result::kParseFailedNotADictionary);
+    }
 
-  if (!parsed_data.has_value()) {
-    AddErrorInfo(parsed_data.error().message, parsed_data.error().line,
-                 parsed_data.error().column);
-    failed_ = true;
-    webapps::WebAppOriginAssociationMetrics::RecordParseResult(
-        webapps::WebAppOriginAssociationMetrics::ParseResult::
-            kParseFailedInvalidJson);
-    return nullptr;
-  }
-  if (!parsed_data->is_dict()) {
-    AddErrorInfo("No valid JSON object found.");
-    failed_ = true;
-    webapps::WebAppOriginAssociationMetrics::RecordParseResult(
-        webapps::WebAppOriginAssociationMetrics::ParseResult::
-            kParseFailedNotADictionary);
-    return nullptr;
-  }
-
-  mojom::WebAppOriginAssociationPtr association =
-      mojom::WebAppOriginAssociation::New();
-  association->apps = ParseAssociatedWebApps(parsed_data->GetDict());
+    auto association = mojom::WebAppOriginAssociation::New();
+    association->apps = ParseAssociatedWebApps(parsed_data->GetDict());
+    return association;
+  }();
   webapps::WebAppOriginAssociationMetrics::RecordParseResult(
-      webapps::WebAppOriginAssociationMetrics::ParseResult::kParseSucceeded);
-  return association;
+      result.error_or(Result::kParseSucceeded));
+  failed_ |= !result.has_value();
+  return std::move(result).value_or(nullptr);
 }
 
 bool WebAppOriginAssociationParser::failed() const {
