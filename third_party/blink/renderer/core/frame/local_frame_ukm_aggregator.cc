@@ -376,6 +376,7 @@ void LocalFrameUkmAggregator::RecordForcedLayoutSample(
     case DocumentUpdateReason::kInput:
     case DocumentUpdateReason::kInspector:
     case DocumentUpdateReason::kPrinting:
+    case DocumentUpdateReason::kScroll:
     case DocumentUpdateReason::kSelection:
     case DocumentUpdateReason::kSpatialNavigation:
     case DocumentUpdateReason::kTapHighlight:
@@ -398,10 +399,6 @@ void LocalFrameUkmAggregator::RecordForcedLayoutSample(
     case DocumentUpdateReason::kPlugin:
     case DocumentUpdateReason::kSVGImage:
       sub_metric = kContentDocumentUpdate;
-      break;
-
-    case DocumentUpdateReason::kScroll:
-      sub_metric = kScrollDocumentUpdate;
       break;
 
     case DocumentUpdateReason::kHitTest:
@@ -609,7 +606,6 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent(int64_t source_id,
   RECORD_METRIC(UserDrivenDocumentUpdate);
   RECORD_METRIC(ServiceDocumentUpdate);
   RECORD_METRIC(ContentDocumentUpdate);
-  RECORD_METRIC(ScrollDocumentUpdate);
   RECORD_METRIC(HitTestDocumentUpdate);
   RECORD_METRIC(JavascriptDocumentUpdate);
   RECORD_METRIC(ParseStyleSheet);
@@ -667,7 +663,6 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent(
   RECORD_METRIC(UserDrivenDocumentUpdate);
   RECORD_METRIC(ServiceDocumentUpdate);
   RECORD_METRIC(ContentDocumentUpdate);
-  RECORD_METRIC(ScrollDocumentUpdate);
   RECORD_METRIC(HitTestDocumentUpdate);
   RECORD_METRIC(JavascriptDocumentUpdate);
   RECORD_METRIC(ParseStyleSheet);

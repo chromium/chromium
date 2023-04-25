@@ -510,23 +510,19 @@ TEST_F(LocalFrameUkmAggregatorTest, ForcedLayoutReasonsReportOnlyMetric) {
       LocalFrameUkmAggregator::kContentDocumentUpdate, 23u);
 
   SimulateAndVerifyForcedLayoutReason(
-      DocumentUpdateReason::kScroll,
-      LocalFrameUkmAggregator::kScrollDocumentUpdate, 24u);
-
-  SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kHitTest,
-      LocalFrameUkmAggregator::kHitTestDocumentUpdate, 25u);
+      LocalFrameUkmAggregator::kHitTestDocumentUpdate, 24u);
 
   SimulateAndVerifyForcedLayoutReason(
       DocumentUpdateReason::kJavaScript,
-      LocalFrameUkmAggregator::kJavascriptDocumentUpdate, 26u);
+      LocalFrameUkmAggregator::kJavascriptDocumentUpdate, 25u);
 
   SimulateAndVerifyForcedLayoutReason(DocumentUpdateReason::kBeginMainFrame,
-                                      LocalFrameUkmAggregator::kCount, 27u);
+                                      LocalFrameUkmAggregator::kCount, 26u);
   SimulateAndVerifyForcedLayoutReason(DocumentUpdateReason::kTest,
-                                      LocalFrameUkmAggregator::kCount, 28u);
+                                      LocalFrameUkmAggregator::kCount, 27u);
   SimulateAndVerifyForcedLayoutReason(DocumentUpdateReason::kUnknown,
-                                      LocalFrameUkmAggregator::kCount, 29u);
+                                      LocalFrameUkmAggregator::kCount, 28u);
 }
 
 TEST_F(LocalFrameUkmAggregatorTest, LatencyDataIsPopulated) {

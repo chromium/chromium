@@ -2902,32 +2902,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.ScrollDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2023-06-04">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
-
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Time spent preparing the document to ensure correct scroll behavior, such as
-    scroll chaining or other programatic scrolling. Includes time spent in style
-    update and layout.
-
-    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
-    AggregatedPreFCP metrics are only recorded if FCP is reached.
-
-    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
-
-    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
-    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
-    aggregating or comparing these histograms across the version.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Blink.ServiceDocumentUpdate.UpdateTime"
     units="microseconds" expires_after="2023-09-10">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
@@ -3576,6 +3550,8 @@ chromium-metrics-reviews@google.com.
     Time spent preparing the document to service user driven behaviors. Examples
     include inspector, selection, editing, find-in-page and focus. Includes time
     spent in style update and layout.
+
+    Note: As of 04/2023, scroll updates are included in user driven behaviors.
 
     Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
     AggregatedPreFCP metrics are only recorded if FCP is reached.
