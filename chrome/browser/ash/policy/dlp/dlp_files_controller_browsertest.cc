@@ -30,6 +30,7 @@ namespace policy {
 namespace {
 
 constexpr char kExampleUrl[] = "https://example.com";
+constexpr char kExampleUrl1[] = "https://example1.com";
 
 // A listener that compares the list of files chosen with files expected.
 class TestFileSelectListener : public content::FileSelectListener {
@@ -179,7 +180,8 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerBrowserTest,
 
 // (b/273269211): This is a test for the crash that happens upon showing a
 // warning dialog when a file is moved to Google Drive.
-IN_PROC_BROWSER_TEST_F(DlpFilesControllerBrowserTest, WarningDialog) {
+IN_PROC_BROWSER_TEST_F(DlpFilesControllerBrowserTest,
+                       WarningDialog_ComponentDestination) {
   EXPECT_CALL(*mock_rules_manager_, GetReportingManager);
   EXPECT_CALL(*mock_rules_manager_,
               IsRestrictedComponent(
@@ -193,6 +195,27 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerBrowserTest, WarningDialog) {
   EXPECT_EQ(files_controller_->GetWarnDialogForTesting(), nullptr);
   files_controller_->IsFilesTransferRestricted(
       transferred_files, DlpFileDestination(DlpRulesManager::Component::kDrive),
+      DlpFilesController::FileAction::kMove, base::DoNothing());
+  EXPECT_NE(files_controller_->GetWarnDialogForTesting(), nullptr);
+}
+
+// (b/277594200): This is a test for the crash that happens upon showing a
+// warning dialog when a file is dragged to a webpage.
+IN_PROC_BROWSER_TEST_F(DlpFilesControllerBrowserTest,
+                       WarningDialog_UrlDestination) {
+  EXPECT_CALL(*mock_rules_manager_, GetReportingManager);
+  EXPECT_CALL(*mock_rules_manager_,
+              IsRestrictedDestination(GURL(kExampleUrl), GURL(kExampleUrl1),
+                                      DlpRulesManager::Restriction::kFiles,
+                                      testing::_, testing::_, testing::_))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
+
+  std::vector<DlpFilesController::FileDaemonInfo> transferred_files;
+  transferred_files.emplace_back(1234, base::FilePath("file1.txt"),
+                                 kExampleUrl);
+  EXPECT_EQ(files_controller_->GetWarnDialogForTesting(), nullptr);
+  files_controller_->IsFilesTransferRestricted(
+      transferred_files, DlpFileDestination(kExampleUrl1),
       DlpFilesController::FileAction::kMove, base::DoNothing());
   EXPECT_NE(files_controller_->GetWarnDialogForTesting(), nullptr);
 }

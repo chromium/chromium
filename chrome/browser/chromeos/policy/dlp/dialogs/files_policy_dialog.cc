@@ -182,13 +182,11 @@ std::u16string FilesPolicyDialog::GetMessage() {
       message_id = IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE;
       break;
     case DlpFilesController::FileAction::kCopy:
-      // TODO(b/273521961): Handle urls.
-      destination_str = GetDestinationComponent(destination_);
+      destination_str = GetDestination(destination_);
       message_id = IDS_POLICY_DLP_FILES_COPY_WARN_MESSAGE;
       break;
     case DlpFilesController::FileAction::kMove:
-      // TODO(b/273521961): Handle urls.
-      destination_str = GetDestinationComponent(destination_);
+      destination_str = GetDestination(destination_);
       message_id = IDS_POLICY_DLP_FILES_MOVE_WARN_MESSAGE;
       break;
     case DlpFilesController::FileAction::kOpen:
