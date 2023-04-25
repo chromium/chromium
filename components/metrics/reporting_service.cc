@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "components/metrics/data_use_tracker.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_features.h"
@@ -191,9 +192,12 @@ void ReportingService::SendStagedLog() {
                            reporting_info_);
 }
 
-void ReportingService::OnLogUploadComplete(int response_code,
-                                           int error_code,
-                                           bool was_https) {
+void ReportingService::OnLogUploadComplete(
+    int response_code,
+    int error_code,
+    bool was_https,
+    bool force_discard,
+    base::StringPiece force_discard_reason) {
   DVLOG(1) << "OnLogUploadComplete:" << response_code;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(log_upload_in_progress_);
@@ -213,33 +217,48 @@ void ReportingService::OnLogUploadComplete(int response_code,
   if (log_store()->has_staged_log()) {
     // Provide boolean for error recovery (allow us to ignore response_code).
     bool discard_log = false;
+    base::StringPiece discard_reason;
+
     const std::string& staged_log = log_store()->staged_log();
     const size_t log_size = staged_log.length();
     if (upload_succeeded) {
       LogSuccessLogSize(log_size);
       LogSuccessMetadata(staged_log);
+      discard_log = true;
+      discard_reason = "Log upload successful.";
+    } else if (force_discard) {
+      discard_log = true;
+      discard_reason = force_discard_reason;
     } else if (log_size > max_retransmit_size_) {
       LogLargeRejection(log_size);
       discard_log = true;
+      discard_reason =
+          "Failed to upload, and log is too large. Will not attempt to "
+          "retransmit.";
     } else if (response_code == 400) {
       // Bad syntax.  Retransmission won't work.
       discard_log = true;
+      discard_reason =
+          "Failed to upload because log has bad syntax. Will not attempt to "
+          "retransmit.";
     }
 
-    if (!upload_succeeded && !discard_log && logs_event_manager_) {
-      // The log failed to upload and we did not discard it. We will try to
-      // retransmit.
+    if (!discard_log && logs_event_manager_) {
+      // The log is not discarded, meaning that it has failed to upload. We will
+      // try to retransmit it.
       logs_event_manager_->NotifyLogEvent(
           MetricsLogsEventManager::LogEvent::kLogStaged,
           log_store()->staged_log_hash(),
-          "Failed to upload. Staged again for retransmission.");
+          base::StringPrintf("Failed to upload (status code: %d, net error "
+                             "code: %d). Staged again for retransmission.",
+                             response_code, error_code));
     }
 
-    if (upload_succeeded || discard_log) {
+    if (discard_log) {
       if (upload_succeeded)
         log_store()->MarkStagedLogAsSent();
 
-      log_store()->DiscardStagedLog();
+      log_store()->DiscardStagedLog(discard_reason);
       // Store the updated list to disk now that the removed log is uploaded.
       log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
@@ -261,8 +280,14 @@ void ReportingService::OnLogUploadComplete(int response_code,
   }
 
   // Error 400 indicates a problem with the log, not with the server, so
-  // don't consider that a sign that the server is in trouble.
-  bool server_is_healthy = upload_succeeded || response_code == 400;
+  // don't consider that a sign that the server is in trouble. Similarly, if
+  // |force_discard| is true, do not delay the sending of other logs. For
+  // example, if |force_discard| is true because there are no metrics server
+  // URLs included in this build, do not indicate that the "non-existent server"
+  // is in trouble, which would delay the sending of other logs and causing the
+  // accumulation of logs on disk.
+  bool server_is_healthy =
+      upload_succeeded || response_code == 400 || force_discard;
 
   if (!log_store()->has_unsent_logs()) {
     DVLOG(1) << "Stopping upload_scheduler_.";

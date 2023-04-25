@@ -63,7 +63,8 @@ void AndroidMetricsLogUploader::UploadLog(
 }
 
 void AndroidMetricsLogUploader::OnUploadComplete(const int32_t status) {
-  on_upload_complete_.Run(status, 0, true);
+  on_upload_complete_.Run(status, /*error_code=*/0, /*was_https=*/true,
+                          /*force_discard=*/false, /*force_discard_reason=*/"");
 }
 
 }  // namespace metrics

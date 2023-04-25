@@ -116,7 +116,14 @@ class ReportingService {
   void SendStagedLog();
 
   // Called after transmission completes (either successfully or with failure).
-  void OnLogUploadComplete(int response_code, int error_code, bool was_https);
+  // If |force_discard| is true, discard the log regardless of the response or
+  // error code. For example, this is used for builds that do not include any
+  // metrics server URLs (no reason to keep re-sending to a non-existent URL).
+  void OnLogUploadComplete(int response_code,
+                           int error_code,
+                           bool was_https,
+                           bool force_discard,
+                           base::StringPiece force_discard_reason);
 
   // Used to interact with the embedder. Weak pointer; must outlive |this|
   // instance.
