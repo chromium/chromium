@@ -40,4 +40,8 @@ group("all") {
       "//ios/web_view:all_tests",
     ]
   }
+
+  # Force dependency on symupload because official builder wants to build this
+  # target. TODO(crbug.com/1439765): Investigate if still needed.
+  deps += [ "//third_party/breakpad:symupload" ]
 }
