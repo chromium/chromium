@@ -2457,19 +2457,6 @@ chromium-metrics-reviews@google.com.
   <token key="ResourceType" variants="ResourceType"/>
 </histogram>
 
-<histogram
-    name="Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite.{ResourceType}"
-    enum="RevalidationPolicy" expires_after="2021-12-26">
-  <owner>shivanisha@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
-  <summary>
-    RevalidationPolicy used for requests for each resource type. Logged only if
-    the resource is found in the memory cache and if the same top-frame site had
-    loaded this resource earlier.
-  </summary>
-  <token key="ResourceType" variants="ResourceType"/>
-</histogram>
-
 <histogram name="Blink.MemoryCache.RevalidationPolicy.Preload.{ResourceType}"
     enum="RevalidationPolicy" expires_after="2023-10-01">
   <owner>hiroshige@chromium.org</owner>
