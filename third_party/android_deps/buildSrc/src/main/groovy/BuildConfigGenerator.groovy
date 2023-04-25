@@ -933,6 +933,7 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  enable_bytecode_checks = false\n')
                 break
             case 'org_jetbrains_kotlinx_kotlinx_coroutines_android':
+            case 'org_jetbrains_kotlinx_kotlinx_coroutines_guava':
                 sb.append('requires_android = true')
                 break
             case 'org_mockito_mockito_core':

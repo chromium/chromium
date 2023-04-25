@@ -1500,6 +1500,7 @@ if (!limit_android_deps) {
       ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
       "//third_party/android_deps:guava_android_java",
     ]
+    requires_android = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
