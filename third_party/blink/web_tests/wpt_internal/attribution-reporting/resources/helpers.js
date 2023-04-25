@@ -235,11 +235,6 @@ const registerAttributionSrc = async ({
   }
 
   const url = blankURLWithHeaders(headers, reportingOrigin);
-  if (source && 'source_event_id' in source) {
-    // We add param indicating to stash the ID to be able to poll in
-    // `waitForSourceToBeRegistered` and know when a source has been processed.
-    url.searchParams.set('store-source-id', source.source_event_id);
-  }
 
   Object.entries(extraQueryParams)
       .forEach(([key, value]) => url.searchParams.set(key, value));
@@ -352,23 +347,14 @@ const pollAttributionReports = async (url, origin = location.origin) => {
   }
 };
 
-/**
- * Waits for source `sourceId` to be done registering. Resolves when it is. If
- * the source is not done registering after 2 seconds, it times out and throws
- * an error.
- */
-const waitForSourceToBeRegistered = async (sourceId) => {
-  const url = blankURL();
-  url.searchParams.set('check-source-id', sourceId);
-
-  for (let i = 0; i < 20; i++) {
-    const {status} = await fetch(url);
-    if (status !== 404) {
-      return;
-    }
-    await delay(100);
-  }
-  throw new Error(`Timeout polling source ${sourceId} registration`);
+// Verbose debug reporting must have been enabled on the source registration for this to work.
+const waitForSourceToBeRegistered = async (sourceId, reportingOrigin) => {
+  const debugReportPayload = await pollVerboseDebugReports(reportingOrigin);
+  assert_equals(debugReportPayload.reports.length, 1);
+  const debugReport = JSON.parse(debugReportPayload.reports[0].body);
+  assert_equals(debugReport.length, 1);
+  assert_equals(debugReport[0].type, 'source-success');
+  assert_equals(debugReport[0].body.source_event_id, sourceId);
 };
 
 const pollEventLevelReports = (origin) =>

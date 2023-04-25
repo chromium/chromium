@@ -18,10 +18,14 @@
 <script>
 attribution_reporting_promise_test(async t => {
   const source = {
+    debug_reporting: true,
     destination: 'https://{{host}}',
     source_event_id: generateSourceEventId(),
   };
-  await registerAttributionSrc({ source });
+  await registerAttributionSrc({
+    cookie: attributionDebugCookie,
+    source
+  });
   await waitForSourceToBeRegistered(source.source_event_id);
   await registerAttributionSrc({
     trigger: {

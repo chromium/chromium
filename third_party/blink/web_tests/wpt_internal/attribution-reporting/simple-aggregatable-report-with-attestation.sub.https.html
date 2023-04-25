@@ -10,6 +10,7 @@ attribution_reporting_promise_test(async (t) => {
   //    report to then be sent.
   const source = {
     source_event_id: generateSourceEventId(),
+    debug_reporting: true,
     destination: 'https://{{host}}',
     aggregation_keys: {
       campaignCounts: '0x159',
@@ -18,7 +19,7 @@ attribution_reporting_promise_test(async (t) => {
   };
   await registerAttributionSrc({
     source,
-    cookie: 'foo=bar;Secure;HttpOnly;Path=/',
+    cookie: attributionDebugCookie,
   });
   await waitForSourceToBeRegistered(source.source_event_id);
 

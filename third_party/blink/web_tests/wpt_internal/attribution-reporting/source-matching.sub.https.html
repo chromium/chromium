@@ -8,23 +8,21 @@
 <script>
 const source_matching_promise_test = (testCase) => {
   attribution_reporting_promise_test(async t => {
-    const source = {
-      source_event_id: generateSourceEventId(),
-      destination: testCase.sourceDestination,
-    };
-    await registerAttributionSrc({
-      source,
-      reportingOrigin: testCase.sourceReportingOrigin,
-    });
-    await waitForSourceToBeRegistered(source.source_event_id);
-
-    await registerAttributionSrc({
-      trigger: {
-        event_trigger_data: [{}],
-        debug_reporting: true,
+    registerAttributionSrcByImg(createRedirectChain([
+      {
+        reportingOrigin: testCase.sourceReportingOrigin,
+        source: {
+          destination: testCase.sourceDestination,
+        },
       },
-      cookie: attributionDebugCookie,
-    });
+      {
+        cookie: attributionDebugCookie,
+        trigger: {
+          event_trigger_data: [{}],
+          debug_reporting: true,
+        },
+      },
+    ]));
 
     if (testCase.expectMatched) {
       const payload = await pollEventLevelReports();

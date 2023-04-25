@@ -34,14 +34,7 @@ attribution_reporting_promise_test(async t => {
     cookie: attributionDebugCookie,
   });
 
-  // We wait for the source-success debug report first. This ensures that the
-  // source has been processed before registering a trigger.
-  const debugReportPayload = await pollVerboseDebugReports(reportingOrigin);
-  assert_equals(debugReportPayload.reports.length, 1);
-  const debugReport = JSON.parse(debugReportPayload.reports[0].body);
-  assert_equals(debugReport.length, 1);
-  assert_equals(debugReport[0].type, 'source-success');
-  assert_equals(debugReport[0].body.source_event_id, source.source_event_id);
+  await waitForSourceToBeRegistered(source.source_event_id, reportingOrigin);
 
   await registerAttributionSrc({
     trigger: {

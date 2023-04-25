@@ -10,21 +10,21 @@
 <script>
 const debug_key_promise_test = (testCase, forSource) =>
   attribution_reporting_promise_test(async t => {
-    const source = {
-      source_event_id: generateSourceEventId(),
-      destination: 'https://{{host}}',
-      debug_key: forSource ? testCase.debugKey : undefined,
-    };
-    await registerAttributionSrc({
-      source,
-      cookie: testCase.cookie,
-    });
-    await waitForSourceToBeRegistered(source.source_event_id);
-
-    await registerAttributionSrc({trigger: {
-      event_trigger_data: [{}],
-      debug_key: forSource ? undefined : testCase.debugKey,
-    }});
+    registerAttributionSrcByImg(createRedirectChain([
+      {
+        cookie: testCase.cookie,
+        source: {
+          debug_key: forSource ? testCase.debugKey : undefined,
+          destination: 'https://{{host}}',
+        },
+      },
+      {
+        trigger: {
+          debug_key: forSource ? undefined : testCase.debugKey,
+          event_trigger_data: [{}],
+        },
+      },
+    ]));
 
     const payload = await pollEventLevelReports();
     assert_equals(payload.reports.length, 1);
