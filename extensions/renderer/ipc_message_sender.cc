@@ -139,12 +139,16 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
                               const MessageTarget& target,
                               ChannelType channel_type,
                               const std::string& channel_name) override {
-    // TODO(https://crbug.com/1430999): Use `channel_type` in the IPC message.
     content::RenderFrame* render_frame = script_context->GetRenderFrame();
     DCHECK(render_frame);
     PortContext frame_context =
         PortContext::ForFrame(render_frame->GetRoutingID());
     const Extension* extension = script_context->extension();
+
+    // TODO(https://crbug.com/1430999): We should just avoid passing a
+    // channel name in at all for non-connect messages; we no longer need to.
+    std::string channel_name_to_use =
+        channel_type == ChannelType::kConnect ? channel_name : std::string();
 
     switch (target.type) {
       case MessageTarget::EXTENSION: {
@@ -164,7 +168,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
             "MainThreadIPCMessageSender::SendOpenMessageChannel/extension",
             *target.extension_id);
         render_thread_->Send(new ExtensionHostMsg_OpenChannelToExtension(
-            frame_context, info, channel_name, port_id));
+            frame_context, info, channel_type, channel_name_to_use, port_id));
         break;
       }
       case MessageTarget::TAB: {
@@ -177,10 +181,11 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
         if (target.document_id)
           info.document_id = *target.document_id;
         render_frame->Send(new ExtensionHostMsg_OpenChannelToTab(
-            frame_context, info, channel_name, port_id));
+            frame_context, info, channel_type, channel_name_to_use, port_id));
         break;
       }
       case MessageTarget::NATIVE_APP:
+        CHECK_EQ(ChannelType::kNative, channel_type);
         render_frame->Send(new ExtensionHostMsg_OpenChannelToNativeApp(
             frame_context, *target.native_application_name, port_id));
         break;
@@ -388,10 +393,14 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
                               const MessageTarget& target,
                               ChannelType channel_type,
                               const std::string& channel_name) override {
-    // TODO(https://crbug.com/1430999): Use `channel_type` in the IPC message.
     DCHECK(!script_context->GetRenderFrame());
     DCHECK(script_context->IsForServiceWorker());
     const Extension* extension = script_context->extension();
+
+    // TODO(https://crbug.com/1430999): We should just avoid passing a
+    // channel name in at all for non-connect messages; we no longer need to.
+    std::string channel_name_to_use =
+        channel_type == ChannelType::kConnect ? channel_name : std::string();
 
     switch (target.type) {
       case MessageTarget::EXTENSION: {
@@ -406,7 +415,8 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
             "WorkerThreadIPCMessageSender::SendOpenMessageChannel/extension",
             *target.extension_id);
         dispatcher_->Send(new ExtensionHostMsg_OpenChannelToExtension(
-            PortContextForCurrentWorker(), info, channel_name, port_id));
+            PortContextForCurrentWorker(), info, channel_type,
+            channel_name_to_use, port_id));
         break;
       }
       case MessageTarget::TAB: {
@@ -415,10 +425,12 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
         info.tab_id = *target.tab_id;
         info.frame_id = *target.frame_id;
         dispatcher_->Send(new ExtensionHostMsg_OpenChannelToTab(
-            PortContextForCurrentWorker(), info, channel_name, port_id));
+            PortContextForCurrentWorker(), info, channel_type,
+            channel_name_to_use, port_id));
         break;
       }
       case MessageTarget::NATIVE_APP:
+        CHECK_EQ(ChannelType::kNative, channel_type);
         dispatcher_->Send(new ExtensionHostMsg_OpenChannelToNativeApp(
             PortContextForCurrentWorker(), *target.native_application_name,
             port_id));

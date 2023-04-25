@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "content/public/common/common_param_traits.h"
 #include "content/public/common/socket_permission_request.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
@@ -67,6 +68,9 @@ IPC_ENUM_TRAITS_MAX_VALUE(extensions::MessagingEndpoint::Type,
 
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::SerializationFormat,
                           extensions::SerializationFormat::kLast)
+
+IPC_ENUM_TRAITS_MAX_VALUE(extensions::ChannelType,
+                          extensions::ChannelType::kLast)
 
 // Parameters structure for ExtensionHostMsg_AddAPIActionToActivityLog and
 // ExtensionHostMsg_AddEventToActivityLog.
@@ -220,6 +224,15 @@ IPC_STRUCT_BEGIN(ExtensionMsg_ResponseWorkerData)
   IPC_STRUCT_MEMBER(extensions::mojom::ExtraResponseDataPtr, extra_data)
 IPC_STRUCT_END()
 
+IPC_STRUCT_BEGIN(ExtensionMsg_OnConnectData)
+  IPC_STRUCT_MEMBER(extensions::PortId, target_port_id)
+  IPC_STRUCT_MEMBER(extensions::ChannelType, channel_type)
+  IPC_STRUCT_MEMBER(std::string, channel_name)
+  IPC_STRUCT_MEMBER(ExtensionMsg_TabConnectionInfo, tab_source)
+  IPC_STRUCT_MEMBER(ExtensionMsg_ExternalConnectionInfo,
+                    external_connection_info)
+IPC_STRUCT_END()
+
 // Singly-included section for custom IPC traits.
 #ifndef INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
 #define INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
@@ -245,14 +258,11 @@ IPC_MESSAGE_ROUTED2(ExtensionMsg_ValidateMessagePort,
                     extensions::PortId /* port_id */)
 
 // Dispatch the Port.onConnect event for message channels.
-IPC_MESSAGE_ROUTED5(ExtensionMsg_DispatchOnConnect,
+IPC_MESSAGE_ROUTED2(ExtensionMsg_DispatchOnConnect,
                     // For main thread, this is kMainThreadId.
                     // TODO(lazyboy): Can this be absl::optional<int> instead?
                     int /* worker_thread_id */,
-                    extensions::PortId /* target_port_id */,
-                    std::string /* channel_name */,
-                    ExtensionMsg_TabConnectionInfo /* source */,
-                    ExtensionMsg_ExternalConnectionInfo)
+                    ExtensionMsg_OnConnectData /* connect_data */)
 
 // Deliver a message sent with ExtensionHostMsg_PostMessage.
 IPC_MESSAGE_ROUTED3(ExtensionMsg_DeliverMessage,
@@ -276,9 +286,10 @@ IPC_MESSAGE_ROUTED1(ExtensionHostMsg_EventAck, int /* message_id */)
 // Open a channel to all listening contexts owned by the extension with
 // the given ID. This responds asynchronously with ExtensionMsg_AssignPortId.
 // If an error occurred, the opener will be notified asynchronously.
-IPC_MESSAGE_CONTROL4(ExtensionHostMsg_OpenChannelToExtension,
+IPC_MESSAGE_CONTROL5(ExtensionHostMsg_OpenChannelToExtension,
                      extensions::PortContext /* source_context */,
                      ExtensionMsg_ExternalConnectionInfo,
+                     extensions::ChannelType /* channel_type */,
                      std::string /* channel_name */,
                      extensions::PortId /* port_id */)
 
@@ -289,9 +300,10 @@ IPC_MESSAGE_CONTROL3(ExtensionHostMsg_OpenChannelToNativeApp,
 
 // Get a port handle to the given tab.  The handle can be used for sending
 // messages to the extension.
-IPC_MESSAGE_CONTROL4(ExtensionHostMsg_OpenChannelToTab,
+IPC_MESSAGE_CONTROL5(ExtensionHostMsg_OpenChannelToTab,
                      extensions::PortContext /* source_context */,
                      ExtensionMsg_TabTargetConnectionInfo,
+                     extensions::ChannelType /* channel_type */,
                      std::string /* channel_name */,
                      extensions::PortId /* port_id */)
 

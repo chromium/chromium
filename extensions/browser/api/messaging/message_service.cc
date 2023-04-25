@@ -48,6 +48,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/extension.h"
@@ -206,6 +207,7 @@ struct MessageService::OpenChannelParams {
   std::string target_extension_id;
   GURL source_url;
   absl::optional<url::Origin> source_origin;
+  ChannelType channel_type;
   std::string channel_name;
   bool include_guest_process_info;
 
@@ -220,6 +222,7 @@ struct MessageService::OpenChannelParams {
                     const std::string& target_extension_id,
                     const GURL& source_url,
                     absl::optional<url::Origin> source_origin,
+                    ChannelType channel_type,
                     const std::string& channel_name,
                     bool include_guest_process_info)
       : source(source),
@@ -232,6 +235,7 @@ struct MessageService::OpenChannelParams {
         target_extension_id(target_extension_id),
         source_url(source_url),
         source_origin(source_origin),
+        channel_type(channel_type),
         channel_name(channel_name),
         include_guest_process_info(include_guest_process_info) {}
 
@@ -239,7 +243,8 @@ struct MessageService::OpenChannelParams {
   OpenChannelParams& operator=(const OpenChannelParams&) = delete;
 
   bool is_onetime_channel() const {
-    return channel_name == "chrome.runtime.sendMessage";
+    return channel_type == ChannelType::kSendMessage ||
+           channel_type == ChannelType::kSendRequest;
   }
 };
 
@@ -278,6 +283,7 @@ void MessageService::OpenChannelToExtension(
     std::unique_ptr<MessagePort> opener_port,
     const std::string& target_extension_id,
     const GURL& source_url,
+    ChannelType channel_type,
     const std::string& channel_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(source_port_id.is_opener);
@@ -407,7 +413,8 @@ void MessageService::OpenChannelToExtension(
           source, std::move(source_tab), source_frame, nullptr,
           source_port_id.GetOppositePortId(), source_endpoint,
           std::move(opener_port), target_extension_id, source_url,
-          std::move(source_origin), channel_name, include_guest_process_info);
+          std::move(source_origin), channel_type, channel_name,
+          include_guest_process_info);
   pending_incognito_channels_[params->receiver_port_id.GetChannelId()] =
       PendingMessagesQueue();
   if (context->IsOffTheRecord() &&
@@ -545,6 +552,7 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
                                       int frame_id,
                                       const std::string& document_id,
                                       const std::string& extension_id,
+                                      ChannelType channel_type,
                                       const std::string& channel_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_GE(frame_id, -1);
@@ -606,7 +614,7 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
           std::move(opener_port), extension_id,
           GURL(),         // Source URL doesn't make sense for opening to tabs.
           url::Origin(),  // Origin URL doesn't make sense for opening to tabs.
-          channel_name,
+          channel_type, channel_name,
           false);  // Connections to tabs aren't webview guests.
   OpenChannelImpl(receiver_context, std::move(params), extension,
                   false /* did_enqueue */);
@@ -687,9 +695,10 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   // Send the connect event to the receiver.  Give it the opener's port ID (the
   // opener has the opposite port ID).
   channel->receiver->DispatchOnConnect(
-      params->channel_name, std::move(params->source_tab), params->source_frame,
-      guest_process_id, guest_render_frame_routing_id, params->source_endpoint,
-      params->target_extension_id, params->source_url, params->source_origin);
+      params->channel_type, params->channel_name, std::move(params->source_tab),
+      params->source_frame, guest_process_id, guest_render_frame_routing_id,
+      params->source_endpoint, params->target_extension_id, params->source_url,
+      params->source_origin);
 
   // Report the event to the event router, if the target is an extension.
   //

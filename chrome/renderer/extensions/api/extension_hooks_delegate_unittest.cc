@@ -198,9 +198,9 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
   // Open a receiver for the message.
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessagePort(MSG_ROUTING_NONE, port_id));
-  messaging_service()->DispatchOnConnect(script_context_set(), port_id,
-                                         kChannel, tab_connection_info,
-                                         external_connection_info, nullptr);
+  messaging_service()->DispatchOnConnect(
+      script_context_set(), port_id, ChannelType::kSendRequest, kChannel,
+      tab_connection_info, external_connection_info, nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_TRUE(
       messaging_service()->HasPortForTesting(script_context(), port_id));

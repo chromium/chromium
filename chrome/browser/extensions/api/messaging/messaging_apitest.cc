@@ -1533,8 +1533,6 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, LargeMessages) {
 // Tests that the channel name used in runtime.connect() cannot redirect the
 // message to another event (like onMessage).
 // See https://crbug.com/1430999.
-// NOTE: This is currently an anti-test -- it tests undesirable behavior that we
-// hope to change.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
   static constexpr char kManifest[] =
       R"({
@@ -1549,13 +1547,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
                  {name: 'chrome.runtime.sendMessage'});
              chrome.test.assertEq('chrome.runtime.sendMessage', port.name);
              port.onMessage.addListener((msg) => {
-               // TODO(https://crbug.com/1430999): This should be:
-               // chrome.test.assertEq('pong', msg);
-               // chrome.test.succeed();
-               // But currently the message goes to the wrong event. Verify
-               // the incorrect behavior for now by fail()ing if we get a
-               // response.
-               chrome.test.fail('Unexpected reply: ' + msg);
+               chrome.test.assertEq('pong', msg);
+               chrome.test.succeed();
              });
              port.postMessage('ping');
            }
@@ -1564,23 +1557,15 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
       R"(chrome.runtime.onConnect.addListener((port) => {
            self.port = port;
            port.onMessage.addListener((msg) => {
-             // TODO(https://crbug.com/1430999): This should be:
-             // chrome.test.assertEq(port.name, 'chrome.runtime.sendMessage');
-             // chrome.test.assertEq(msg, 'ping');
-             // port.postMessage('pong');
-             // But we don't currently get a message here because it goes to
-             // the wrong event. Verify the incorrect behavior for now by
-             // fail()ing if we get a message.
-             chrome.test.fail('Unexpected reply: ' + msg);
+             chrome.test.assertEq(port.name, 'chrome.runtime.sendMessage');
+             chrome.test.assertEq(msg, 'ping');
+             port.postMessage('pong');
            });
          });
          chrome.runtime.onMessage.addListener((msg) => {
-           // TODO(https://crbug.com/1430999): This should be:
-           // chrome.test.fail(`Unexpected onMessage received: ${msg}`);
-           // But currently the message goes here instead of the port.
-           // Verify the incorrect behavior for now.
-           chrome.test.assertEq(msg, 'ping');
-           chrome.test.succeed();
+           // We don't expect anything to hit the `onMessage` listener.
+           // See https://crbug.com/1430999.
+           chrome.test.fail(`Unexpected onMessage received: ${msg}`);
          });)";
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);

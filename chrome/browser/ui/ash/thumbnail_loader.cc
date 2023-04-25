@@ -25,6 +25,7 @@
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/api/messaging/serialization_format.h"
@@ -434,7 +435,8 @@ void ThumbnailLoader::LoadForFileWithMetadata(
       extensions::ChannelEndpoint(profile_), port_id,
       extensions::MessagingEndpoint::ForNativeApp(kNativeMessageHostName),
       std::move(native_message_port), file_manager::kImageLoaderExtensionId,
-      GURL(), std::string() /* channel_name */);
+      GURL(), extensions::ChannelType::kNative,
+      std::string() /* channel_name */);
 }
 
 void ThumbnailLoader::OnThumbnailLoaded(

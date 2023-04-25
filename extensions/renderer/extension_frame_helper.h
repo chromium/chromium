@@ -21,8 +21,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "v8/include/v8-forward.h"
 
-struct ExtensionMsg_ExternalConnectionInfo;
-struct ExtensionMsg_TabConnectionInfo;
+struct ExtensionMsg_OnConnectData;
 
 namespace extensions {
 
@@ -173,10 +172,7 @@ class ExtensionFrameHelper
   void OnExtensionValidateMessagePort(int worker_thread_id, const PortId& id);
   void OnExtensionDispatchOnConnect(
       int worker_thread_id,
-      const PortId& target_port_id,
-      const std::string& channel_name,
-      const ExtensionMsg_TabConnectionInfo& source,
-      const ExtensionMsg_ExternalConnectionInfo& info);
+      const ExtensionMsg_OnConnectData& connect_data);
   void OnExtensionDeliverMessage(int worker_thread_id,
                                  const PortId& target_port_id,
                                  const Message& message);

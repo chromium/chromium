@@ -32,8 +32,7 @@ class RenderThread;
 }
 
 class GURL;
-struct ExtensionMsg_TabConnectionInfo;
-struct ExtensionMsg_ExternalConnectionInfo;
+struct ExtensionMsg_OnConnectData;
 
 namespace extensions {
 class NativeExtensionBindingsSystem;
@@ -189,10 +188,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                         const std::string& error);
   void OnValidateMessagePort(int worker_thread_id, const PortId& id);
   void OnDispatchOnConnect(int worker_thread_id,
-                           const PortId& target_port_id,
-                           const std::string& channel_name,
-                           const ExtensionMsg_TabConnectionInfo& source,
-                           const ExtensionMsg_ExternalConnectionInfo& info);
+                           const ExtensionMsg_OnConnectData& connect_data);
   void OnDeliverMessage(int worker_thread_id,
                         const PortId& target_port_id,
                         const Message& message);

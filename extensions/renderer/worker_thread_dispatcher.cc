@@ -434,17 +434,16 @@ void WorkerThreadDispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
 }
 void WorkerThreadDispatcher::OnDispatchOnConnect(
     int worker_thread_id,
-    const PortId& target_port_id,
-    const std::string& channel_name,
-    const ExtensionMsg_TabConnectionInfo& source,
-    const ExtensionMsg_ExternalConnectionInfo& info) {
+    const ExtensionMsg_OnConnectData& connect_data) {
   DCHECK_EQ(worker_thread_id, content::WorkerThread::GetCurrentId());
   WorkerThreadDispatcher::GetBindingsSystem()
       ->messaging_service()
-      ->DispatchOnConnect(Dispatcher::GetWorkerScriptContextSet(),
-                          target_port_id, channel_name, source, info,
-                          // Render frames do not matter.
-                          nullptr);
+      ->DispatchOnConnect(
+          Dispatcher::GetWorkerScriptContextSet(), connect_data.target_port_id,
+          connect_data.channel_type, connect_data.channel_name,
+          connect_data.tab_source, connect_data.external_connection_info,
+          // Render frames do not matter.
+          nullptr);
 }
 
 void WorkerThreadDispatcher::OnValidateMessagePort(int worker_thread_id,

@@ -18,6 +18,7 @@
 #include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/trace_util.h"
@@ -408,6 +409,7 @@ bool MessagingAPIMessageFilter::OnMessageReceived(const IPC::Message& message) {
 void MessagingAPIMessageFilter::OnOpenChannelToExtension(
     const PortContext& source_context,
     const ExtensionMsg_ExternalConnectionInfo& info,
+    ChannelType channel_type,
     const std::string& channel_name,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -432,7 +434,7 @@ void MessagingAPIMessageFilter::OnOpenChannelToExtension(
   MessageService::Get(browser_context_)
       ->OpenChannelToExtension(source_endpoint, port_id, info.source_endpoint,
                                nullptr /* opener_port */, info.target_id,
-                               info.source_url, channel_name);
+                               info.source_url, channel_type, channel_name);
 }
 
 void MessagingAPIMessageFilter::OnOpenChannelToNativeApp(
@@ -462,6 +464,7 @@ void MessagingAPIMessageFilter::OnOpenChannelToNativeApp(
 void MessagingAPIMessageFilter::OnOpenChannelToTab(
     const PortContext& source_context,
     const ExtensionMsg_TabTargetConnectionInfo& info,
+    ChannelType channel_type,
     const std::string& channel_name,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -483,7 +486,8 @@ void MessagingAPIMessageFilter::OnOpenChannelToTab(
                                   source_context);
   MessageService::Get(browser_context_)
       ->OpenChannelToTab(source_endpoint, port_id, info.tab_id, info.frame_id,
-                         info.document_id, *extension_id, channel_name);
+                         info.document_id, *extension_id, channel_type,
+                         channel_name);
 }
 
 void MessagingAPIMessageFilter::OnOpenMessagePort(const PortContext& source,

@@ -81,7 +81,8 @@ class ExtensionMessagePort : public MessagePort {
   bool HasFrame(content::RenderFrameHost* rfh) const override;
   bool IsValidPort() override;
   void RevalidatePort() override;
-  void DispatchOnConnect(const std::string& channel_name,
+  void DispatchOnConnect(ChannelType channel_type,
+                         const std::string& channel_name,
                          absl::optional<base::Value::Dict> source_tab,
                          const ExtensionApiFrameIdMap::FrameData& source_frame,
                          int guest_process_id,
@@ -132,6 +133,7 @@ class ExtensionMessagePort : public MessagePort {
 
   // Builds specific IPCs for a port, with correct frame or worker identifiers.
   std::unique_ptr<IPC::Message> BuildDispatchOnConnectIPC(
+      ChannelType channel_type,
       const std::string& channel_name,
       const base::Value::Dict* source_tab,
       const ExtensionApiFrameIdMap::FrameData& source_frame,

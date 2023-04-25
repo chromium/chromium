@@ -40,8 +40,7 @@
 class ChromeRenderViewTest;
 class GURL;
 class ModuleSystem;
-struct ExtensionMsg_ExternalConnectionInfo;
-struct ExtensionMsg_TabConnectionInfo;
+struct ExtensionMsg_OnConnectData;
 
 namespace blink {
 class WebLocalFrame;
@@ -280,10 +279,7 @@ class Dispatcher : public content::RenderThreadObserver,
                         const PortId& target_port_id,
                         const Message& message);
   void OnDispatchOnConnect(int worker_thread_id,
-                           const PortId& target_port_id,
-                           const std::string& channel_name,
-                           const ExtensionMsg_TabConnectionInfo& source,
-                           const ExtensionMsg_ExternalConnectionInfo& info);
+                           const ExtensionMsg_OnConnectData& connect_data);
   void OnDispatchOnDisconnect(int worker_thread_id,
                               const PortId& port_id,
                               const std::string& error_message);

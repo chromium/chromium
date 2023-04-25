@@ -18,6 +18,7 @@
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/api/messaging/serialization_format.h"
@@ -84,7 +85,7 @@ class ExtensionIncomingNativeMessagingTest
         extensions::ChannelEndpoint(profile()), port_id,
         extensions::MessagingEndpoint::ForNativeApp(kFakeNativeAppName),
         std::move(native_message_port), extension_->id(), GURL(),
-        std::string() /* channel_name */);
+        extensions::ChannelType::kNative, std::string() /* channel_name */);
   }
 
  private:

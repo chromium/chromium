@@ -89,6 +89,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   // in that render frame will receive the message.
   void DispatchOnConnect(ScriptContextSetIterable* context_set,
                          const PortId& target_port_id,
+                         ChannelType channel_type,
                          const std::string& channel_name,
                          const ExtensionMsg_TabConnectionInfo& source,
                          const ExtensionMsg_ExternalConnectionInfo& info,
@@ -149,6 +150,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
                                     ScriptContext* script_context);
   void DispatchOnConnectToScriptContext(
       const PortId& target_port_id,
+      ChannelType channel_type,
       const std::string& channel_name,
       const ExtensionMsg_TabConnectionInfo* source,
       const ExtensionMsg_ExternalConnectionInfo& info,
@@ -177,6 +179,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
       ScriptContext* script_context,
       const PortId& target_port_id,
       const ExtensionId& target_extension_id,
+      ChannelType channel_type,
       const std::string& channel_name,
       const ExtensionMsg_TabConnectionInfo* source,
       const ExtensionMsg_ExternalConnectionInfo& info,

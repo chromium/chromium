@@ -21,6 +21,8 @@ enum class ChannelType {
   // long-lived native message channels use the same type (because they don't
   // have associated channel names).
   kNative,
+
+  kLast = kNative,
 };
 
 }  // namespace extensions

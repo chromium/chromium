@@ -28,6 +28,7 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -248,7 +249,7 @@ void LaunchNativeMessageHostFromNativeApp(const std::string& extension_id,
       extensions::ChannelEndpoint(profile), port_id,
       extensions::MessagingEndpoint::ForNativeApp(host_id),
       std::move(native_message_port), extension_id, GURL(),
-      std::string() /* channel_name */);
+      ChannelType::kNative, std::string() /* channel_name */);
 }
 
 }  // namespace extensions

@@ -115,6 +115,7 @@ void NativeRendererMessagingService::ValidateMessagePort(
 void NativeRendererMessagingService::DispatchOnConnect(
     ScriptContextSetIterable* context_set,
     const PortId& target_port_id,
+    ChannelType channel_type,
     const std::string& channel_name,
     const ExtensionMsg_TabConnectionInfo& source,
     const ExtensionMsg_ExternalConnectionInfo& info,
@@ -128,8 +129,8 @@ void NativeRendererMessagingService::DispatchOnConnect(
       info.target_id, restrict_to_render_frame,
       base::BindRepeating(
           &NativeRendererMessagingService::DispatchOnConnectToScriptContext,
-          base::Unretained(this), target_port_id, channel_name, &source, info,
-          &port_created));
+          base::Unretained(this), target_port_id, channel_type, channel_name,
+          &source, info, &port_created));
   // Note: |restrict_to_render_frame| may have been deleted at this point!
 
   IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
@@ -289,6 +290,7 @@ void NativeRendererMessagingService::ValidateMessagePortInContext(
 
 void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
     const PortId& target_port_id,
+    ChannelType channel_type,
     const std::string& channel_name,
     const ExtensionMsg_TabConnectionInfo* source,
     const ExtensionMsg_ExternalConnectionInfo& info,
@@ -309,17 +311,22 @@ void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
       relationship == MessagingEndpoint::Relationship::kExternalExtension ||
       relationship == MessagingEndpoint::Relationship::kExternalWebPage;
   std::string event_name;
-  if (info.source_endpoint.type == MessagingEndpoint::Type::kNativeApp) {
-    event_name = messaging_util::kOnConnectNativeEvent;
-  } else if (channel_name == messaging_util::kSendRequestChannel) {
-    event_name = is_external_event ? messaging_util::kOnRequestExternalEvent
-                                   : messaging_util::kOnRequestEvent;
-  } else if (channel_name == messaging_util::kSendMessageChannel) {
-    event_name = is_external_event ? messaging_util::kOnMessageExternalEvent
-                                   : messaging_util::kOnMessageEvent;
-  } else {
-    event_name = is_external_event ? messaging_util::kOnConnectExternalEvent
-                                   : messaging_util::kOnConnectEvent;
+  switch (channel_type) {
+    case ChannelType::kSendRequest:
+      event_name = is_external_event ? messaging_util::kOnRequestExternalEvent
+                                     : messaging_util::kOnRequestEvent;
+      break;
+    case ChannelType::kSendMessage:
+      event_name = is_external_event ? messaging_util::kOnMessageExternalEvent
+                                     : messaging_util::kOnMessageEvent;
+      break;
+    case ChannelType::kConnect:
+      event_name = is_external_event ? messaging_util::kOnConnectExternalEvent
+                                     : messaging_util::kOnConnectEvent;
+      break;
+    case ChannelType::kNative:
+      event_name = messaging_util::kOnConnectNativeEvent;
+      break;
   }
 
   // If there are no listeners for the given event, then we know the port won't
@@ -331,8 +338,8 @@ void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
   *port_created = true;
 
   DispatchOnConnectToListeners(script_context, target_port_id,
-                               target_extension_id, channel_name, source, info,
-                               event_name);
+                               target_extension_id, channel_type, channel_name,
+                               source, info, event_name);
 }
 
 void NativeRendererMessagingService::DeliverMessageToScriptContext(
@@ -431,6 +438,7 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
     ScriptContext* script_context,
     const PortId& target_port_id,
     const ExtensionId& target_extension_id,
+    ChannelType channel_type,
     const std::string& channel_name,
     const ExtensionMsg_TabConnectionInfo* source,
     const ExtensionMsg_ExternalConnectionInfo& info,
@@ -482,11 +490,13 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
 
   v8::Local<v8::Object> sender = sender_builder.Build();
 
-  if (channel_name == "chrome.extension.sendRequest" ||
-      channel_name == "chrome.runtime.sendMessage") {
+  if (channel_type == ChannelType::kSendRequest ||
+      channel_type == ChannelType::kSendMessage) {
     one_time_message_handler_.AddReceiver(script_context, target_port_id,
                                           sender, event_name);
   } else {
+    CHECK(channel_type == ChannelType::kConnect ||
+          channel_type == ChannelType::kNative);
     gin::Handle<GinPort> port =
         CreatePort(script_context, channel_name, target_port_id);
     port->SetSender(v8_context, sender);

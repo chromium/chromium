@@ -19,6 +19,7 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/api/messaging/serialization_format.h"
@@ -180,7 +181,7 @@ ConnectToDriveFsNativeMessageExtension(
       extensions::MessagingEndpoint::ForNativeApp(
           kDriveFsNativeMessageHostName),
       std::move(native_message_port), extension_id, GURL(),
-      /* channel name= */ std::string());
+      extensions::ChannelType::kNative, /* channel name= */ std::string());
   return drivefs::mojom::ExtensionConnectionStatus::kSuccess;
 }
 

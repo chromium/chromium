@@ -1305,15 +1305,14 @@ void Dispatcher::OnDeliverMessage(int worker_thread_id,
 
 void Dispatcher::OnDispatchOnConnect(
     int worker_thread_id,
-    const PortId& target_port_id,
-    const std::string& channel_name,
-    const ExtensionMsg_TabConnectionInfo& source,
-    const ExtensionMsg_ExternalConnectionInfo& info) {
+    const ExtensionMsg_OnConnectData& connect_data) {
   DCHECK_EQ(kMainThreadId, worker_thread_id);
-  DCHECK(!target_port_id.is_opener);
+  DCHECK(!connect_data.target_port_id.is_opener);
 
   bindings_system_->messaging_service()->DispatchOnConnect(
-      script_context_set_.get(), target_port_id, channel_name, source, info,
+      script_context_set_.get(), connect_data.target_port_id,
+      connect_data.channel_type, connect_data.channel_name,
+      connect_data.tab_source, connect_data.external_connection_info,
       nullptr);  // All render frames.
 }
 
