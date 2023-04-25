@@ -362,7 +362,7 @@ class BASE_EXPORT ThreadController {
       absl::optional<perfetto::Track> perfetto_track_;
 
       // True if tracing was enabled during the last pass of RecordTimeInPhase.
-      bool was_tracing_enabled_;
+      bool was_tracing_enabled_ = false;
 #endif
       const raw_ref<const RunLevelTracker> outer_;
     } time_keeper_{*this};

@@ -562,15 +562,7 @@ class NestedEventAnalyzer {
 
 }  // namespace
 
-// TODO(crbug.com/1434860): Re-enable this test
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_TestNativeNestedLoopWithoutDoWork \
-  DISABLED_TestNativeNestedLoopWithoutDoWork
-#else
-#define MAYBE_TestNativeNestedLoopWithoutDoWork \
-  TestNativeNestedLoopWithoutDoWork
-#endif
-TEST_F(MessagePumpGLibTest, MAYBE_TestNativeNestedLoopWithoutDoWork) {
+TEST_F(MessagePumpGLibTest, TestNativeNestedLoopWithoutDoWork) {
   // Tests that nesting is triggered correctly if a message loop is run
   // from a native event (gtk event) outside of a work item (not in a posted
   // task).
