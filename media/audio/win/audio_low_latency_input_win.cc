@@ -193,7 +193,7 @@ const char* EffectTypeToString(
       return "DynamicRangeCompression";
     case ABI::Windows::Media::Effects::AudioEffectType_FarFieldBeamForming:
       return "FarFieldBeamForming";
-    case ABI::Windows::Media::Effects::AudioEffectType_DeepNoiseSuppression
+    case ABI::Windows::Media::Effects::AudioEffectType_DeepNoiseSuppression:
       return "DeepNoise";
   }
   return "Unknown";
