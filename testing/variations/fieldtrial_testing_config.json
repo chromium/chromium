@@ -10123,21 +10123,6 @@
             ]
         }
     ],
-    "PolicyLogsPageAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PolicyLogsPageAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "PolicyLogsPageIOS": [
         {
             "platforms": [
@@ -11213,9 +11198,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_33_0_20230323",
+                    "name": "Enabled_30_0_20230127",
                     "params": {
-                        "reporter_omaha_tag": "33.0"
+                        "reporter_omaha_tag": "30.0"
                     },
                     "enable_features": [
                         "ClientSideDetectionTag"
