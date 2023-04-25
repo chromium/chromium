@@ -7,31 +7,33 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/mac/bundle_locations.h"
-#include "base/mac/scoped_nsobject.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
-base::scoped_nsobject<NSMenuItem> CreateMenuItem(NSString* title,
-                                                 SEL action,
-                                                 NSString* key_equivalent) {
-  return base::scoped_nsobject<NSMenuItem>([[NSMenuItem alloc]
-      initWithTitle:title
-             action:action
-      keyEquivalent:key_equivalent]);
+NSMenuItem* CreateMenuItem(NSString* title,
+                           SEL action,
+                           NSString* key_equivalent) {
+  return [[NSMenuItem alloc] initWithTitle:title
+                                    action:action
+                             keyEquivalent:key_equivalent];
 }
 
-// The App Menu refers to the dropdown titled "Content Shell".
-base::scoped_nsobject<NSMenu> BuildAppMenu() {
-  // The title is not used, as the title will always be the name of the App.
-  base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:@""]);
+// The App Menu refers to the menu titled "Content Shell".
+NSMenu* BuildAppMenu() {
+  // The title is not used, as the title will always be the name of the app.
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
 
-  base::scoped_nsobject<NSMenuItem> item =
+  NSMenuItem* item =
       CreateMenuItem(@"Hide Content Shell", @selector(hide:), @"h");
   [menu addItem:item];
 
   item =
       CreateMenuItem(@"Hide Others", @selector(hideOtherApplications:), @"h");
-  item.get().keyEquivalentModifierMask =
+  item.keyEquivalentModifierMask =
       NSEventModifierFlagOption | NSEventModifierFlagCommand;
   [menu addItem:item];
 
@@ -44,10 +46,9 @@ base::scoped_nsobject<NSMenu> BuildAppMenu() {
   return menu;
 }
 
-base::scoped_nsobject<NSMenu> BuildFileMenu() {
-  base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:@"File"]);
-  base::scoped_nsobject<NSMenuItem> item =
-      CreateMenuItem(@"New", @selector(newDocument:), @"n");
+NSMenu* BuildFileMenu() {
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@"File"];
+  NSMenuItem* item = CreateMenuItem(@"New", @selector(newDocument:), @"n");
   [menu addItem:item];
 
   item = CreateMenuItem(@"Close", @selector(performClose:), @"w");
@@ -55,11 +56,10 @@ base::scoped_nsobject<NSMenu> BuildFileMenu() {
   return menu;
 }
 
-base::scoped_nsobject<NSMenu> BuildEditMenu() {
-  base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:@"Edit"]);
+NSMenu* BuildEditMenu() {
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@"Edit"];
 
-  base::scoped_nsobject<NSMenuItem> item =
-      CreateMenuItem(@"Undo", @selector(undo:), @"z");
+  NSMenuItem* item = CreateMenuItem(@"Undo", @selector(undo:), @"z");
   [menu addItem:item];
 
   item = CreateMenuItem(@"Redo", @selector(redo:), @"Z");
@@ -79,25 +79,25 @@ base::scoped_nsobject<NSMenu> BuildEditMenu() {
   return menu;
 }
 
-base::scoped_nsobject<NSMenu> BuildViewMenu() {
+NSMenu* BuildViewMenu() {
   // AppKit auto-populates this menu.
-  base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:@"View"]);
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@"View"];
   return menu;
 }
 
-base::scoped_nsobject<NSMenu> BuildDebugMenu() {
-  base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:@"Debug"]);
+NSMenu* BuildDebugMenu() {
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@"Debug"];
 
-  base::scoped_nsobject<NSMenuItem> item =
+  NSMenuItem* item =
       CreateMenuItem(@"Show Developer Tools", @selector(showDevTools:), @"");
   [menu addItem:item];
   return menu;
 }
 
-base::scoped_nsobject<NSMenu> BuildWindowMenu() {
-  base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:@"Window"]);
+NSMenu* BuildWindowMenu() {
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@"Window"];
 
-  base::scoped_nsobject<NSMenuItem> item =
+  NSMenuItem* item =
       CreateMenuItem(@"Minimize", @selector(performMiniaturize:), @"m");
   [menu addItem:item];
   item = CreateMenuItem(@"Zoom", @selector(performZoom:), @"");
@@ -107,17 +107,17 @@ base::scoped_nsobject<NSMenu> BuildWindowMenu() {
   return menu;
 }
 
-base::scoped_nsobject<NSMenu> BuildMainMenu() {
-  base::scoped_nsobject<NSMenu> main_menu([[NSMenu alloc] initWithTitle:@""]);
+NSMenu* BuildMainMenu() {
+  NSMenu* main_menu = [[NSMenu alloc] initWithTitle:@""];
 
-  using Builder = base::scoped_nsobject<NSMenu> (*)();
+  using Builder = NSMenu* (*)();
   static const Builder kBuilderFuncs[] = {&BuildAppMenu,   &BuildFileMenu,
                                           &BuildEditMenu,  &BuildViewMenu,
                                           &BuildDebugMenu, &BuildWindowMenu};
   for (auto* builder : kBuilderFuncs) {
-    NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:@""
-                                                   action:NULL
-                                            keyEquivalent:@""] autorelease];
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@""
+                                                  action:nullptr
+                                           keyEquivalent:@""];
     item.submenu = builder();
     [main_menu addItem:item];
   }
@@ -129,8 +129,8 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
 namespace content {
 
 void ShellBrowserMainParts::PreCreateMainMessageLoop() {
-  base::scoped_nsobject<NSMenu> main_menu = BuildMainMenu();
-  [[NSApplication sharedApplication] setMainMenu:main_menu];
+  NSMenu* main_menu = BuildMainMenu();
+  [NSApplication.sharedApplication setMainMenu:main_menu];
 }
 
 }  // namespace content

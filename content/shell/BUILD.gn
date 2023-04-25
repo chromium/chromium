@@ -104,6 +104,7 @@ static_library("content_shell_app") {
     ]
   }
   if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
     sources += [
       "app/paths_mac.h",
       "app/paths_mac.mm",
@@ -120,7 +121,6 @@ static_library("content_shell_app") {
       "app/ios/shell_application_ios.h",
       "app/ios/shell_application_ios.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
   defines = [
     "CONTENT_SHELL_VERSION=\"$content_shell_version\"",
@@ -208,6 +208,7 @@ static_library("content_shell_lib") {
       "browser/shell_platform_delegate_mac.mm",
       "browser/shell_web_contents_view_delegate_mac.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_ios) {

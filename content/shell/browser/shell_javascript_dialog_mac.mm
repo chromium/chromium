@@ -4,20 +4,21 @@
 
 #include "content/shell/browser/shell_javascript_dialog.h"
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 
-#import "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // Helper object that receives the notification that the dialog/sheet is
 // going away. Is responsible for cleaning itself up.
 @interface ShellJavaScriptDialogHelper : NSObject<NSAlertDelegate> {
- @private
-  base::scoped_nsobject<NSAlert> _alert;
-  NSTextField* _textField;  // WEAK; owned by alert_
+  NSAlert* __strong _alert;
+  NSTextField* __weak _textField;
 
   // Copies of the fields in ShellJavaScriptDialog because they're private.
   raw_ptr<content::ShellJavaScriptDialogManager> _manager;
@@ -47,39 +48,44 @@
 }
 
 - (NSAlert*)alert {
-  _alert.reset([[NSAlert alloc] init]);
+  _alert = [[NSAlert alloc] init];
   return _alert;
 }
 
 - (NSTextField*)textField {
-  _textField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 300, 22)];
-  [[_textField cell] setLineBreakMode:NSLineBreakByTruncatingTail];
-  [_alert setAccessoryView:_textField];
-  [[_alert window] setInitialFirstResponder:_textField];
-  [_textField release];
+  NSTextField* textField =
+      [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 300, 22)];
+  textField.cell.lineBreakMode = NSLineBreakByTruncatingTail;
 
-  return _textField;
+  _alert.accessoryView = textField;
+  _alert.window.initialFirstResponder = textField;
+
+  _textField = textField;
+  return textField;
 }
 
 - (void)alertDidEndWithResult:(NSModalResponse)returnCode
                        dialog:(content::ShellJavaScriptDialog*)dialog {
-  if (returnCode == NSModalResponseStop)
+  if (returnCode == NSModalResponseStop) {
     return;
+  }
 
   bool success = returnCode == NSAlertFirstButtonReturn;
   std::u16string input;
-  if (_textField)
-    input = base::SysNSStringToUTF16([_textField stringValue]);
+  if (_textField) {
+    input = base::SysNSStringToUTF16(_textField.stringValue);
+  }
 
   std::move(_callback).Run(success, input);
   _manager->DialogClosed(dialog);
 }
 
 - (void)cancel {
-  [NSApp endSheet:[_alert window]];
-  _alert.reset();
-  if (_callback)
+  [NSApp endSheet:_alert.window];
+  _alert = nil;
+  if (_callback) {
     std::move(_callback).Run(false, std::u16string());
+  }
 }
 
 @end
@@ -105,15 +111,15 @@ ShellJavaScriptDialog::ShellJavaScriptDialog(
   NSTextField* field = nil;
   if (text_field) {
     field = [helper_ textField];
-    [field setStringValue:base::SysUTF16ToNSString(default_prompt_text)];
+    field.stringValue = base::SysUTF16ToNSString(default_prompt_text);
   }
-  [alert setDelegate:helper_];
-  [alert setInformativeText:base::SysUTF16ToNSString(message_text)];
-  [alert setMessageText:@"Javascript alert"];
+  alert.delegate = helper_;
+  alert.informativeText = base::SysUTF16ToNSString(message_text);
+  alert.messageText = @"Javascript alert";
   [alert addButtonWithTitle:@"OK"];
   if (!one_button) {
     NSButton* other = [alert addButtonWithTitle:@"Cancel"];
-    [other setKeyEquivalent:@"\e"];
+    other.keyEquivalent = @"\e";
   }
 
   [alert beginSheetModalForWindow:nil  // nil here makes it app-modal
@@ -122,9 +128,7 @@ ShellJavaScriptDialog::ShellJavaScriptDialog(
                 }];
 }
 
-ShellJavaScriptDialog::~ShellJavaScriptDialog() {
-  [helper_ release];
-}
+ShellJavaScriptDialog::~ShellJavaScriptDialog() = default;
 
 void ShellJavaScriptDialog::Cancel() {
   [helper_ cancel];

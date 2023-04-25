@@ -14,13 +14,19 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "url/gurl.h"
 
-@interface ShellCrApplication ()<NativeEventProcessor> {
-  base::ObserverList<content::NativeEventProcessorObserver>::Unchecked
-      _observers;
-}
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+@interface ShellCrApplication () <NativeEventProcessor>
 @end
 
-@implementation ShellCrApplication
+@implementation ShellCrApplication {
+  base::ObserverList<content::NativeEventProcessorObserver>::Unchecked
+      _observers;
+
+  BOOL _handlingSendEvent;
+}
 
 - (BOOL)isHandlingSendEvent {
   return _handlingSendEvent;
