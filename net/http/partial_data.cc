@@ -354,21 +354,20 @@ void PartialData::FixResponseHeaders(HttpResponseHeaders* headers,
   if (truncated_)
     return;
 
-  if (!success) {
+  if (byte_range_.IsValid() && success) {
+    headers->UpdateWithNewRange(byte_range_, resource_size_, !sparse_entry_);
+    return;
+  }
+
+  if (byte_range_.IsValid()) {
     headers->ReplaceStatusLine("HTTP/1.1 416 Requested Range Not Satisfiable");
     headers->SetHeader(
         kRangeHeader, base::StringPrintf("bytes 0-0/%" PRId64, resource_size_));
     headers->SetHeader(kLengthHeader, "0");
-    return;
-  }
-
-  if (byte_range_.IsValid() && resource_size_) {
-    headers->UpdateWithNewRange(byte_range_, resource_size_, !sparse_entry_);
   } else {
-    if (headers->response_code() == net::HTTP_PARTIAL_CONTENT) {
-      // TODO(rvargas): Is it safe to change the protocol version?
-      headers->ReplaceStatusLine("HTTP/1.1 200 OK");
-    }
+    // TODO(rvargas): Is it safe to change the protocol version?
+    headers->ReplaceStatusLine("HTTP/1.1 200 OK");
+    DCHECK_NE(resource_size_, 0);
     headers->RemoveHeader(kRangeHeader);
     headers->SetHeader(kLengthHeader,
                        base::StringPrintf("%" PRId64, resource_size_));
@@ -434,9 +433,6 @@ void PartialData::OnNetworkReadCompleted(int result) {
 }
 
 int PartialData::GetNextRangeLen() {
-  if (!resource_size_) {
-    return 0;
-  }
   int64_t range_len =
       byte_range_.HasLastBytePosition()
           ? byte_range_.last_byte_position() - current_range_start_ + 1
