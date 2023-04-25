@@ -38,16 +38,16 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     public static BookmarkItemRow buildView(Context context, boolean isVisualRefreshEnabled) {
         BookmarkItemRow row = new BookmarkItemRow(context, null);
         BookmarkRow.buildView(row, context, isVisualRefreshEnabled);
-        row.setupIconProperties(isVisualRefreshEnabled);
+
         return row;
     }
 
     /** Constructor for inflating from XML. */
     public BookmarkItemRow(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
 
-    void setupIconProperties(boolean isVisualRefreshEnabled) {
+        boolean isVisualRefreshEnabled = BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled();
+
         mMinIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mDisplayedIconSize = getResources().getDimensionPixelSize(isVisualRefreshEnabled
                         ? R.dimen.bookmark_refresh_preferred_start_icon_size

@@ -70,7 +70,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
     public static PowerBookmarkShoppingItemRow buildView(
             Context context, boolean isVisualRefreshEnabled) {
         PowerBookmarkShoppingItemRow row = new PowerBookmarkShoppingItemRow(context, null);
-        BookmarkRow.buildView(row, context, isVisualRefreshEnabled);
+        BookmarkItemRow.buildView(row, context, isVisualRefreshEnabled);
         return row;
     }
 
