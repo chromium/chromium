@@ -59,10 +59,11 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
             browser,
             browser->profile(),
             BookmarkLaunchLocation::kSidePanelContextMenu,
-            bookmarks.front()->parent(),
+            bookmarks.size() > 0 ? bookmarks.front()->parent() : nullptr,
             bookmarks))),
         shopping_list_controller_(shopping_list_controller),
         bookmarks_(bookmarks) {
+    CHECK(bookmarks.size() > 0);
     if (source == side_panel::mojom::ActionSource::kPriceTracking) {
       DCHECK(shopping_list_controller_);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
