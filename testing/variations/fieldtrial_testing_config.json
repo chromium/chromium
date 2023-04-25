@@ -3829,6 +3829,24 @@
             ]
         }
     ],
+    "DXGIWaitableSwapChain": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_MaxQueuedFrames2_20230203",
+                    "params": {
+                        "DXGIWaitableSwapChainMaxQueuedFrames": "2"
+                    },
+                    "enable_features": [
+                        "DXGIWaitableSwapChain"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultBrowserBlueDotPromo": [
         {
             "platforms": [
