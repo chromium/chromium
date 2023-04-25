@@ -133,7 +133,7 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
   // Used to accumulate glitch info to report to |source_callback_|
   AudioGlitchInfo::Accumulator glitch_info_accumulator_;
 
-  AmplitudePeakDetector peak_detector_;
+  std::unique_ptr<AmplitudePeakDetector> peak_detector_;
 };
 
 }  // namespace media
