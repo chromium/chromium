@@ -126,6 +126,9 @@ void ApplyCR2023OmniboxExpandedStateColors(
     return;
   }
 
+  // Update focus bar color.
+  mixer[kColorOmniboxResultsFocusIndicator] = {ui::kColorSysStateFocusRing};
+
   // Update omnibox popup background color.
   mixer[kColorOmniboxResultsBackground] = {ui::kColorSysBase};
 
