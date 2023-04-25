@@ -186,11 +186,12 @@ public class SiteSettingsTest {
             new String[] {"clear_browsing_data_link", "clear_browsing_divider"};
     private static final String[] ANTI_ABUSE_PREF_KEYS = {"anti_abuse_when_on_header",
             "anti_abuse_when_on_section_one", "anti_abuse_when_on_section_two",
-            "anti_abuse_things_to_consider_header", "anti_abuse_things_to_consider_section_one"};
+            "anti_abuse_when_on_section_three", "anti_abuse_things_to_consider_header",
+            "anti_abuse_things_to_consider_section_one"};
     private static final String[] BINARY_TOGGLE_WITH_ANTI_ABUSE_PREF_KEYS = {"binary_toggle",
             "anti_abuse_when_on_header", "anti_abuse_when_on_section_one",
-            "anti_abuse_when_on_section_two", "anti_abuse_things_to_consider_header",
-            "anti_abuse_things_to_consider_section_one"};
+            "anti_abuse_when_on_section_two", "anti_abuse_when_on_section_three",
+            "anti_abuse_things_to_consider_header", "anti_abuse_things_to_consider_section_one"};
 
     @Before
     public void setUp() throws TimeoutException {

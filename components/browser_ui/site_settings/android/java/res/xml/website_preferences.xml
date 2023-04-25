@@ -79,12 +79,17 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="anti_abuse_when_on_section_one"
         android:summary="@string/anti_abuse_when_on_section_one"
-        android:icon="@drawable/ic_dashboard"
+        android:icon="@drawable/ic_archive"
         app:allowDividerBelow="false" />
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="anti_abuse_when_on_section_two"
         android:summary="@string/anti_abuse_when_on_section_two"
-        android:icon="@drawable/ic_background_replace"
+        android:icon="@drawable/ic_dashboard"
+        app:allowDividerBelow="false" />
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="anti_abuse_when_on_section_three"
+        android:summary="@string/anti_abuse_when_on_section_three"
+        android:icon="@drawable/ic_timer"
         app:allowDividerBelow="false" />
     <PreferenceCategory
         android:key="anti_abuse_things_to_consider_header"
@@ -92,6 +97,6 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="anti_abuse_things_to_consider_section_one"
         android:summary="@string/anti_abuse_things_to_consider_section_one"
-        android:icon="@drawable/ic_check_circle_outline"
+        android:icon="@drawable/ic_background_replace"
         app:allowDividerBelow="false" />
 </PreferenceScreen>
