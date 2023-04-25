@@ -263,6 +263,8 @@ static_library("browser") {
     "browsing_topics/browsing_topics_service_factory.h",
     "cart/commerce_hint_service.cc",
     "cart/commerce_hint_service.h",
+    "chained_back_navigation_tracker.cc",
+    "chained_back_navigation_tracker.h",
     "child_process_host_flags.h",
     "chooser_controller/title_util.cc",
     "chooser_controller/title_util.h",
