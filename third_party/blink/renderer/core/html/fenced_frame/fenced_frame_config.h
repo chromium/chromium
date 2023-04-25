@@ -99,6 +99,11 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
     return urn_uuid_;
   }
 
+  absl::optional<gfx::Size> container_size(
+      base::PassKey<HTMLFencedFrameElement>) {
+    return container_size_;
+  }
+
   absl::optional<gfx::Size> content_size(
       base::PassKey<HTMLFencedFrameElement>) {
     return content_size_;
@@ -176,6 +181,11 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
   // non-null `urn_`, we navigate to that URN instead of the platform-provided
   // URL. This value is never exposed to the web platform.
   absl::optional<KURL> urn_uuid_;
+
+  // The intended size for the fenced frame. If <fencedframe> doesn't have a
+  // specified size, this will override the default size. If it does have a
+  // specified size, this will do nothing.
+  absl::optional<gfx::Size> container_size_;
 
   // `content_size` and `deprecated_should_freeze_initial_size` temporarily need
   // to be treated differently than other fields, because for implementation

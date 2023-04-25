@@ -24,6 +24,7 @@
 namespace blink {
 
 struct AdDescriptor;
+struct AdSize;
 
 }  // namespace blink
 
@@ -98,6 +99,7 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   blink::FencedFrame::RedactedFencedFrameConfig
   AssignFencedFrameURLAndInterestGroupInfo(
       const GURL& urn_uuid,
+      absl::optional<blink::AdSize> container_size,
       const blink::AdDescriptor& ad_descriptor,
       AdAuctionData auction_data,
       base::RepeatingClosure on_navigate_callback,

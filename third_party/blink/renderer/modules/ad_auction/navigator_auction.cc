@@ -1776,6 +1776,47 @@ bool CopyRequiredSellerSignalsFromIdlToMojo(
   return true;
 }
 
+bool CopyRequestedSizeFromIdlToMojo(const ExecutionContext& execution_context,
+                                    ExceptionState& exception_state,
+                                    const AuctionAdConfig& input,
+                                    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasRequestedSize()) {
+    return true;
+  }
+  auto [width_val, width_units] =
+      blink::ParseAdSizeString(input.requestedSize()->width().Ascii());
+  auto [height_val, height_units] =
+      blink::ParseAdSizeString(input.requestedSize()->height().Ascii());
+  if (width_units == blink::AdSize::LengthUnit::kInvalid) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "requestedSize width", input.requestedSize()->width(),
+        "must use units '', 'px', 'sw', or 'sh'."));
+    return false;
+  }
+  if (height_units == blink::AdSize::LengthUnit::kInvalid) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "requestedSize height", input.requestedSize()->height(),
+        "must use units '', 'px', 'sw', or 'sh'."));
+    return false;
+  }
+  if (width_val <= 0 || !std::isfinite(width_val)) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "requestedSize width", input.requestedSize()->width(),
+        "must be finite and positive."));
+    return false;
+  }
+  if (height_val <= 0 || !std::isfinite(height_val)) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "requestedSize height", input.requestedSize()->height(),
+        "must be finite and positive."));
+    return false;
+  }
+  output.auction_ad_config_non_shared_params->requested_size =
+      mojom::blink::AdSize::New(width_val, width_units, height_val,
+                                height_units);
+  return true;
+}
+
 // Attempts to convert the AuctionAdConfig `config`, passed in via Javascript,
 // to a `mojom::blink::AuctionAdConfig`. Throws a Javascript exception and
 // return null on failure. `auction_handle` is used for promise handling;
@@ -1839,7 +1880,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyAuctionReportBuyersFromIdlToMojo(exception_state, config,
                                             *mojo_config) ||
       !CopyRequiredSellerSignalsFromIdlToMojo(context, exception_state, config,
-                                              *mojo_config)) {
+                                              *mojo_config) ||
+      !CopyRequestedSizeFromIdlToMojo(context, exception_state, config,
+                                      *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
   }
 

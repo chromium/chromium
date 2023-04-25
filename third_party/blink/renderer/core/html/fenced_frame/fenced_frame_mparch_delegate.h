@@ -28,6 +28,7 @@ class CORE_EXPORT FencedFrameMPArchDelegate
   void AttachLayoutTree() override;
   bool SupportsFocus() override;
   void MarkFrozenFrameSizeStale() override;
+  void MarkContainerSizeStale() override;
   void DidChangeFramePolicy(const FramePolicy&) override;
 
   void Trace(Visitor* visitor) const override;

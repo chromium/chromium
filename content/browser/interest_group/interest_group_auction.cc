@@ -2146,6 +2146,10 @@ void InterestGroupAuction::GetInterestGroupsThatBidAndReportBidCounts(
   }
 }
 
+absl::optional<blink::AdSize> InterestGroupAuction::RequestedAdSize() const {
+  return config_->non_shared_params.requested_size;
+}
+
 base::StringPiece GetRejectReasonString(
     const auction_worklet::mojom::RejectReason reject_reason) {
   base::StringPiece reject_reason_str;

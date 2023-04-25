@@ -60,6 +60,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     virtual void AttachLayoutTree() {}
     virtual bool SupportsFocus() { return false; }
     virtual void MarkFrozenFrameSizeStale() {}
+    virtual void MarkContainerSizeStale() {}
     virtual void DidChangeFramePolicy(const FramePolicy& frame_policy) {}
 
    protected:
@@ -124,6 +125,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void Navigate(const KURL& url,
                 absl::optional<bool> deprecated_should_freeze_initial_size =
                     absl::nullopt,
+                absl::optional<gfx::Size> container_size = absl::nullopt,
                 absl::optional<gfx::Size> content_size = absl::nullopt,
                 String embedder_shared_storage_context = String());
 
@@ -153,6 +155,10 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void AttachLayoutTree(AttachContext& context) override;
   bool SupportsFocus() const override;
+
+  // Set the size of the fenced frame outer container. Used for container size
+  // specified by FencedFrameConfig.
+  void SetContainerSize(const gfx::Size& container_size);
 
   // Make sure that the fenced frame size is not frozen. (If it is already
   // unfrozen, this is a no-op.)

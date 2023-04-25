@@ -285,7 +285,8 @@ TEST(FencedFrameURLMappingTest,
         on_navigate_callback_invoked = true;
       });
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, blink::AdDescriptor(top_level_url),
+      urn_uuid, /*container_size=*/absl::nullopt,
+      blink::AdDescriptor(top_level_url),
       {interest_group_owner, interest_group_name}, on_navigate_callback,
       ad_component_descriptors);
 
@@ -328,7 +329,8 @@ TEST(FencedFrameURLMappingTest,
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, blink::AdDescriptor(top_level_url),
+      urn_uuid, /*container_size=*/absl::nullopt,
+      blink::AdDescriptor(top_level_url),
       {interest_group_owner, interest_group_name},
       /*on_navigate_callback=*/base::RepeatingClosure(),
       ad_component_descriptors);
@@ -373,7 +375,8 @@ TEST(FencedFrameURLMappingTest,
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, blink::AdDescriptor(top_level_url),
+      urn_uuid, /*container_size=*/absl::nullopt,
+      blink::AdDescriptor(top_level_url),
       {interest_group_owner, interest_group_name},
       /*on_navigate_callback=*/base::RepeatingClosure(),
       ad_component_descriptors);
@@ -417,7 +420,8 @@ TEST(FencedFrameURLMappingTest,
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, blink::AdDescriptor(top_level_url),
+      urn_uuid, /*container_size=*/absl::nullopt,
+      blink::AdDescriptor(top_level_url),
       {interest_group_owner, interest_group_name},
       /*on_navigate_callback=*/base::RepeatingClosure(),
       ad_component_descriptors);
@@ -458,7 +462,8 @@ TEST(FencedFrameURLMappingTest, SubstituteFencedFrameURLs) {
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, blink::AdDescriptor(top_level_url),
+      urn_uuid, /*container_size=*/absl::nullopt,
+      blink::AdDescriptor(top_level_url),
       {interest_group_owner, interest_group_name},
       /*on_navigate_callback=*/base::RepeatingClosure(),
       ad_component_descriptors);
@@ -553,7 +558,8 @@ TEST(FencedFrameURLMappingTest, ReporterSuccessWithInterestGroupInfo) {
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, blink::AdDescriptor(top_level_url),
+      urn_uuid, /*container_size=*/absl::nullopt,
+      blink::AdDescriptor(top_level_url),
       {interest_group_owner, interest_group_name},
       /*on_navigate_callback=*/base::RepeatingClosure(),
       ad_component_descriptors, fenced_frame_reporter);

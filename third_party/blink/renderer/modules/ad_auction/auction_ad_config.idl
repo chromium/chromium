@@ -53,6 +53,8 @@ dictionary AuctionAdConfig {
   record<DOMString, AuctionReportBuyersConfig> auctionReportBuyers;
   sequence<DOMString> requiredSellerCapabilities;
 
+  AuctionAdInterestGroupSize requestedSize;
+
   sequence<AuctionAdConfig> componentAuctions;
   AbortSignal? signal;
   boolean resolveToConfig;

@@ -478,6 +478,7 @@ void HTMLFencedFrameElement::CollectStyleForPresentationAttribute(
 void HTMLFencedFrameElement::Navigate(
     const KURL& url,
     absl::optional<bool> deprecated_should_freeze_initial_size,
+    absl::optional<gfx::Size> container_size,
     absl::optional<gfx::Size> content_size,
     String embedder_shared_storage_context) {
   TRACE_EVENT0("navigation", "HTMLFencedFrameElement::Navigate");
@@ -566,6 +567,11 @@ void HTMLFencedFrameElement::Navigate(
           ? FencedFrameCreationOutcome::kSuccessDefault
           : FencedFrameCreationOutcome::kSuccessOpaque);
 
+  // Inherit the container size from the FencedFrameConfig, if one is present.
+  if (container_size.has_value()) {
+    SetContainerSize(*container_size);
+  }
+
   // Handle size freezing.
   // This isn't strictly correct, because the size is frozen on navigation
   // start rather than navigation commit (i.e. if the navigation fails, the
@@ -618,7 +624,7 @@ void HTMLFencedFrameElement::NavigateToConfig() {
             ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>();
   }
   Navigate(url, config_->deprecated_should_freeze_initial_size(PassKey()),
-           config_->content_size(PassKey()),
+           config_->container_size(PassKey()), config_->content_size(PassKey()),
            config_->GetSharedStorageContext());
 }
 
@@ -830,6 +836,15 @@ void HTMLFencedFrameElement::FreezeCurrentFrameSize() {
 
   // Otherwise, we need to wait for the next layout.
   should_freeze_frame_size_on_next_layout_ = true;
+}
+
+void HTMLFencedFrameElement::SetContainerSize(const gfx::Size& size) {
+  setAttribute(html_names::kWidthAttr, String::Format("%dpx", size.width()),
+               ASSERT_NO_EXCEPTION);
+  setAttribute(html_names::kHeightAttr, String::Format("%dpx", size.height()),
+               ASSERT_NO_EXCEPTION);
+
+  frame_delegate_->MarkContainerSizeStale();
 }
 
 void HTMLFencedFrameElement::FreezeFrameSize(const PhysicalSize& size,

@@ -372,6 +372,12 @@ struct AuctionAdConfigNonSharedParams {
   // capabilities will not participate in the auction.
   SellerCapabilities required_seller_capabilities;
 
+  // The requested ad creative size for the auction (strictly optional).
+  // If specified in the auction config, it is surfaced during the auction
+  // through browser signals and stored after the auction in the winning
+  // fenced frame config as its container size.
+  AdSize? requested_size;
+
   // Nested auctions whose results will also be fed to `seller`. Only the top
   // level auction config can have component auctions.
   array<AuctionAdConfig> component_auctions;

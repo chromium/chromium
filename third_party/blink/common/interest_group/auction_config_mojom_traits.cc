@@ -170,6 +170,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadAuctionReportBuyers(&out->auction_report_buyers) ||
       !data.ReadRequiredSellerCapabilities(
           &out->required_seller_capabilities) ||
+      !data.ReadRequestedSize(&out->requested_size) ||
       !data.ReadComponentAuctions(&out->component_auctions)) {
     return false;
   }

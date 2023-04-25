@@ -306,6 +306,11 @@ struct BLINK_COMMON_EXPORT
     return params.required_seller_capabilities;
   }
 
+  static const absl::optional<blink::AdSize> requested_size(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.requested_size;
+  }
+
   static const std::vector<blink::AuctionConfig>& component_auctions(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.component_auctions;

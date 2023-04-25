@@ -72,7 +72,14 @@ void FencedFrameMPArchDelegate::MarkFrozenFrameSizeStale() {
   }
   if (auto* layout_object = GetElement().GetLayoutObject()) {
     layout_object->SetNeedsLayoutAndFullPaintInvalidation(
-        "Froze MPArch fenced frame");
+        "Froze fenced frame content size");
+  }
+}
+
+void FencedFrameMPArchDelegate::MarkContainerSizeStale() {
+  if (auto* layout_object = GetElement().GetLayoutObject()) {
+    layout_object->SetNeedsLayoutAndFullPaintInvalidation(
+        "Stored fenced frame container size");
   }
 }
 

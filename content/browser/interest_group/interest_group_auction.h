@@ -494,6 +494,11 @@ class CONTENT_EXPORT InterestGroupAuction
   void GetInterestGroupsThatBidAndReportBidCounts(
       blink::InterestGroupSet& interest_groups) const;
 
+  // Returns the requested ad size specified by the auction config. Called
+  // after the bidding and scoring phase completes, to set the container size
+  // in the fenced frame config resulting from the auction.
+  absl::optional<blink::AdSize> RequestedAdSize() const;
+
   // Retrieves any debug reporting URLs. May only be called once, since it takes
   // ownership of stored reporting URLs. This is called internally by
   // CreateReporter() so may only be called in the case an auction has no

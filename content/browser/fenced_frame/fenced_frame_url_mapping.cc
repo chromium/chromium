@@ -17,6 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
@@ -186,6 +187,7 @@ FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
 blink::FencedFrame::RedactedFencedFrameConfig
 FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     const GURL& urn_uuid,
+    absl::optional<blink::AdSize> container_size,
     const blink::AdDescriptor& ad_descriptor,
     AdAuctionData ad_auction_data,
     base::RepeatingClosure on_navigate_callback,
@@ -213,6 +215,13 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   config.mapped_url_.emplace(SubstituteSizeIntoURL(ad_descriptor),
                              VisibilityToEmbedder::kOpaque,
                              VisibilityToContent::kTransparent);
+  if (container_size.has_value() &&
+      blink::IsValidAdSize(container_size.value())) {
+    gfx::Size container_gfx_size = AdSizeToGfxSize(container_size.value());
+    config.container_size_.emplace(container_gfx_size,
+                                   VisibilityToEmbedder::kTransparent,
+                                   VisibilityToContent::kOpaque);
+  }
   if (ad_descriptor.size) {
     gfx::Size content_size = AdSizeToGfxSize(ad_descriptor.size.value());
     config.content_size_.emplace(content_size,

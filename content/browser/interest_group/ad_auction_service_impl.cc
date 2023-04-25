@@ -528,6 +528,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     AuctionRunner* auction,
     bool manually_aborted,
     absl::optional<blink::InterestGroupKey> winning_group_key,
+    absl::optional<blink::AdSize> requested_ad_size,
     absl::optional<blink::AdDescriptor> ad_descriptor,
     std::vector<blink::AdDescriptor> ad_component_descriptors,
     std::vector<std::string> errors,
@@ -599,9 +600,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
 
   blink::FencedFrame::RedactedFencedFrameConfig config =
       current_fenced_frame_urls_map.AssignFencedFrameURLAndInterestGroupInfo(
-          urn_uuid, *ad_descriptor, std::move(ad_auction_data),
-          reporter->OnNavigateToWinningAdCallback(), ad_component_descriptors,
-          reporter->fenced_frame_reporter());
+          urn_uuid, requested_ad_size, *ad_descriptor,
+          std::move(ad_auction_data), reporter->OnNavigateToWinningAdCallback(),
+          ad_component_descriptors, reporter->fenced_frame_reporter());
   std::move(callback).Run(/*manually_aborted=*/false, std::move(config));
 
   // Start the InterestGroupAuctionReporter. It will run reporting scripts, but
