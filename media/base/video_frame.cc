@@ -428,7 +428,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalData(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    uint8_t* data,
+    const uint8_t* data,
     size_t data_size,
     base::TimeDelta timestamp) {
   auto layout = GetDefaultLayout(format, coded_size);
@@ -443,7 +443,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDataWithLayout(
     const VideoFrameLayout& layout,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    uint8_t* data,
+    const uint8_t* data,
     size_t data_size,
     base::TimeDelta timestamp) {
   StorageType storage_type = STORAGE_UNOWNED_MEMORY;
@@ -477,9 +477,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
     int32_t y_stride,
     int32_t u_stride,
     int32_t v_stride,
-    uint8_t* y_data,
-    uint8_t* u_data,
-    uint8_t* v_data,
+    const uint8_t* y_data,
+    const uint8_t* u_data,
+    const uint8_t* v_data,
     base::TimeDelta timestamp) {
   auto layout = VideoFrameLayout::CreateWithStrides(
       format, coded_size, {y_stride, u_stride, v_stride});
@@ -497,9 +497,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvDataWithLayout(
     const VideoFrameLayout& layout,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    uint8_t* y_data,
-    uint8_t* u_data,
-    uint8_t* v_data,
+    const uint8_t* y_data,
+    const uint8_t* u_data,
+    const uint8_t* v_data,
     base::TimeDelta timestamp) {
   const StorageType storage = STORAGE_UNOWNED_MEMORY;
   const VideoPixelFormat format = layout.format();
@@ -534,10 +534,10 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvaData(
     int32_t u_stride,
     int32_t v_stride,
     int32_t a_stride,
-    uint8_t* y_data,
-    uint8_t* u_data,
-    uint8_t* v_data,
-    uint8_t* a_data,
+    const uint8_t* y_data,
+    const uint8_t* u_data,
+    const uint8_t* v_data,
+    const uint8_t* a_data,
     base::TimeDelta timestamp) {
   const StorageType storage = STORAGE_UNOWNED_MEMORY;
   if (!IsValidConfig(format, storage, coded_size, visible_rect, natural_size)) {
@@ -577,8 +577,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
     const gfx::Size& natural_size,
     int32_t y_stride,
     int32_t uv_stride,
-    uint8_t* y_data,
-    uint8_t* uv_data,
+    const uint8_t* y_data,
+    const uint8_t* uv_data,
     base::TimeDelta timestamp) {
   const StorageType storage = STORAGE_UNOWNED_MEMORY;
   if (!IsValidConfig(format, storage, coded_size, visible_rect, natural_size)) {
@@ -1287,11 +1287,14 @@ T VideoFrame::GetVisibleDataInternal(T data, size_t plane) const {
 }
 
 const uint8_t* VideoFrame::visible_data(size_t plane) const {
-  return GetVisibleDataInternal<const uint8_t*>(data(plane), plane);
+  return GetVisibleDataInternal(data(plane), plane);
 }
 
 uint8_t* VideoFrame::GetWritableVisibleData(size_t plane) {
-  return GetVisibleDataInternal<uint8_t*>(writable_data(plane), plane);
+  // TODO(crbug.com/1435549): Also CHECK that the storage type isn't
+  // STORAGE_UNOWNED_MEMORY once non-compliant usages are fixed.
+  CHECK_NE(storage_type_, STORAGE_SHMEM);
+  return GetVisibleDataInternal(writable_data(plane), plane);
 }
 
 const gpu::MailboxHolder& VideoFrame::mailbox_holder(
