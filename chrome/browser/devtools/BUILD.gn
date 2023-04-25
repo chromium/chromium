@@ -293,7 +293,7 @@ static_library("test_support") {
     deps += [
       ":devtools",
       "//base",
-      "//chrome/browser:browser_process",
+      "//chrome/browser",
       "//chrome/browser/ui",
       "//content/public/browser",
       "//content/test:test_support",

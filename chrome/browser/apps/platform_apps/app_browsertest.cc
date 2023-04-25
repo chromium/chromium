@@ -30,6 +30,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -969,7 +970,7 @@ void PlatformAppDevToolsBrowserTest::RunTestWithDevTools(const char* name,
   content::WebContents* web_contents = window->web_contents();
   ASSERT_TRUE(web_contents);
 
-  OpenDevToolsWindow(web_contents);
+  DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents, false);
 
   if (test_flags & RELAUNCH) {
     // Close the AppWindow, and ensure it is gone.

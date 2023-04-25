@@ -253,6 +253,13 @@ void AllowDevTools(Browser* browser) {
           policy::DeveloperToolsPolicyHandler::Availability::kAllowed));
 }
 
+scoped_refptr<DevToolsAgentHost> GetOrCreateDevToolsHostForWebContents(
+    WebContents* wc) {
+  return base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)
+             ? content::DevToolsAgentHost::GetOrCreateForTab(wc)
+             : content::DevToolsAgentHost::GetOrCreateFor(wc);
+}
+
 }  // namespace
 
 class DevToolsTest : public InProcessBrowserTest {
@@ -2263,7 +2270,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_SecondTabAfterDevTools) {
   WebContents* second = browser()->tab_strip_model()->GetActiveWebContents();
 
   scoped_refptr<content::DevToolsAgentHost> agent(
-      content::DevToolsAgentHost::GetOrCreateFor(second));
+      GetOrCreateDevToolsHostForWebContents(second));
   EXPECT_EQ("page", agent->GetType());
 
   CloseDevToolsWindow();
@@ -2360,7 +2367,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowed) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   DevToolsWindow::OpenDevToolsWindow(web_contents);
-  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
   ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
@@ -2369,7 +2376,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowedCloseConnection) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   DevToolsWindow::OpenDevToolsWindow(web_contents);
-  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
 
   // Policy change must close the connection
   DisallowDevTools(browser());
@@ -2415,7 +2422,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionForceInstallTest,
   ASSERT_NO_FATAL_FAILURE(ForceInstallExtensionAndOpen(&web_contents));
 
   DevToolsWindow::OpenDevToolsWindow(web_contents);
-  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
   ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
@@ -2427,7 +2434,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(ForceInstallExtensionAndOpen(&web_contents));
 
   DevToolsWindow::OpenDevToolsWindow(web_contents);
-  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
 
   ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 
@@ -2448,7 +2455,7 @@ IN_PROC_BROWSER_TEST_F(
   // It's possible to open DevTools for about:blank.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   DevToolsWindow::OpenDevToolsWindow(web_contents);
-  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
   ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 
   // Navigating to extension page should close DevTools.
@@ -2469,7 +2476,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   DevToolsWindow::OpenDevToolsWindow(web_contents);
-  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
   ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 
   // Policy change to must not disrupt CDP coneciton unrelated to a force
@@ -2501,7 +2508,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAllowedByCommandLineSwitch,
   ASSERT_NO_FATAL_FAILURE(ForceInstallExtensionAndOpen(&web_contents));
 
   DevToolsWindow::OpenDevToolsWindow(web_contents);
-  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 #else
@@ -2961,7 +2968,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, OpenBlockedDevTools) {
 
   WebContents* wc = browser()->tab_strip_model()->GetActiveWebContents();
   scoped_refptr<content::DevToolsAgentHost> agent(
-      content::DevToolsAgentHost::GetOrCreateFor(wc));
+      GetOrCreateDevToolsHostForWebContents(wc));
   DevToolsWindow::OpenDevToolsWindow(wc);
   DevToolsWindow* window = DevToolsWindow::FindDevToolsWindow(agent.get());
   if (window) {
