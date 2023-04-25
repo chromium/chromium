@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 
+#include "base/cfi_buildflags.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -5758,9 +5759,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 // its unload handler is able to send a postMessage to the parent frame.
 // See https://crbug.com/857274.
 // TODO(https://crbug.com/989704): Fix flake on Linux TSAN and ASAN.
+// TODO(https://crbug.com/1439710): Fix flake on Linux CFI.
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
     (BUILDFLAG(IS_LINUX) &&                                                   \
-     (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)))
+     (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) ||              \
+      BUILDFLAG(CFI_ICALL_CHECK)))
 #define MAYBE_PostMessageToParentWhenSubframeNavigates \
   DISABLED_PostMessageToParentWhenSubframeNavigates
 #else
