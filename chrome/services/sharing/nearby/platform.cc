@@ -37,6 +37,7 @@
 #include "third_party/nearby/src/internal/platform/implementation/bluetooth_classic.h"
 #include "third_party/nearby/src/internal/platform/implementation/condition_variable.h"
 #include "third_party/nearby/src/internal/platform/implementation/count_down_latch.h"
+#include "third_party/nearby/src/internal/platform/implementation/credential_storage.h"
 #include "third_party/nearby/src/internal/platform/implementation/log_message.h"
 #include "third_party/nearby/src/internal/platform/implementation/mutex.h"
 #include "third_party/nearby/src/internal/platform/implementation/scheduled_executor.h"
@@ -210,6 +211,12 @@ std::unique_ptr<BleMedium> ImplementationPlatform::CreateBleMedium(
 std::unique_ptr<ble_v2::BleMedium> ImplementationPlatform::CreateBleV2Medium(
     api::BluetoothAdapter& adapter) {
   // Do nothing. ble_v2::BleMedium is not yet supported in Chrome Nearby.
+  return nullptr;
+}
+
+// TODO(b/279611359): Wire into Chrome impl.
+std::unique_ptr<api::CredentialStorage>
+ImplementationPlatform::CreateCredentialStorage() {
   return nullptr;
 }
 
