@@ -197,6 +197,7 @@ source_set("unit_tests") {
     "//components/history/core/test",
     "//components/prefs:test_support",
     "//components/search_engines",
+    "//components/sync",
     "//components/sync:test_support",
     "//net:test_support",
     "//services/network:test_support",

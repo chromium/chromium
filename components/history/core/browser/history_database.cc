@@ -511,6 +511,10 @@ HistorySyncMetadataDatabase* HistoryDatabase::GetHistoryMetadataDB() {
   return &history_metadata_db_;
 }
 
+sql::Database& HistoryDatabase::GetDBForTesting() {
+  return db_;
+}
+
 sql::Database& HistoryDatabase::GetDB() {
   return db_;
 }

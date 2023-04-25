@@ -781,6 +781,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   static int GetForeignVisitsToDeletePerBatchForTest();
 
+  sql::Database& GetDBForTesting();
+
  protected:
   ~HistoryBackend() override;
 
@@ -902,13 +904,27 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // id and returns it. If there is none found, returns 0.
   SegmentID GetLastSegmentID(VisitID from_visit);
 
-  // Update the segment information. This is called internally when a page is
-  // added. Return the segment id of the segment that has been updated.
-  SegmentID UpdateSegments(const GURL& url,
-                           VisitID from_visit,
-                           VisitID visit_id,
-                           ui::PageTransition transition_type,
-                           const base::Time ts);
+  // Assign segment information for a new visit. This is called internally when
+  // a page is added. Return the segment id of the segment that has been
+  // assigned to `visit_id`.
+  SegmentID AssignSegmentForNewVisit(const GURL& url,
+                                     VisitID from_visit,
+                                     VisitID visit_id,
+                                     ui::PageTransition transition_type,
+                                     const base::Time ts);
+
+  // Calculates the segment ID given a URL, visit ID, and page transition
+  // type(s). If necessary, this method will create a new segment and return its
+  // ID. Returns 0 if no segment ID can be calculated, or a new segment cannot
+  // be created.
+  SegmentID CalculateSegmentID(const GURL& url,
+                               VisitID from_visit,
+                               ui::PageTransition transition_type);
+
+  // Detects if `visit_row`'s segment has changed. If so, updates
+  // `visit_row`'s `segment_id`, and ensures segment visits are not double
+  // counted across the existing and new segments.
+  void UpdateSegmentForExistingForeignVisit(VisitRow& visit_row);
 
   // Favicons ------------------------------------------------------------------
 

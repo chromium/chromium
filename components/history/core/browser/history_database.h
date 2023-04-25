@@ -199,6 +199,8 @@ class HistoryDatabase : public DownloadDatabase,
   // Returns the sub-database used for storing Sync metadata for History.
   HistorySyncMetadataDatabase* GetHistoryMetadataDB();
 
+  sql::Database& GetDBForTesting();
+
  private:
 #if BUILDFLAG(IS_ANDROID)
   // AndroidProviderBackend uses the `db_`.

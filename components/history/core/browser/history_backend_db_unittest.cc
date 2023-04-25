@@ -2858,8 +2858,8 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
       url_id2, VisitSegmentDatabase::ComputeSegmentName(url2));
   ASSERT_NE(0, segment_id2);
 
-  ASSERT_TRUE(db_->IncreaseSegmentVisitCount(segment_id1, time, visit_count1));
-  ASSERT_TRUE(db_->IncreaseSegmentVisitCount(segment_id2, time, visit_count2));
+  ASSERT_TRUE(db_->UpdateSegmentVisitCount(segment_id1, time, visit_count1));
+  ASSERT_TRUE(db_->UpdateSegmentVisitCount(segment_id2, time, visit_count2));
 
   // Without a filter, the "file://" URL should win.
   std::vector<std::unique_ptr<PageUsageData>> results =
@@ -2877,7 +2877,7 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
   EXPECT_EQ(segment_id2, results2[0]->GetID());
 }
 
-TEST_F(HistoryBackendDBTest, QuerySegmentUsageReturnsZeroScoreForZeroVisits) {
+TEST_F(HistoryBackendDBTest, QuerySegmentUsageReturnsNothingForZeroVisits) {
   CreateBackendAndDatabase();
 
   const GURL url("http://www.foo.com");
@@ -2889,14 +2889,11 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsageReturnsZeroScoreForZeroVisits) {
   SegmentID segment_id =
       db_->CreateSegment(url_id, VisitSegmentDatabase::ComputeSegmentName(url));
   ASSERT_NE(0, segment_id);
-  ASSERT_TRUE(db_->IncreaseSegmentVisitCount(segment_id, time, 0));
+  ASSERT_TRUE(db_->UpdateSegmentVisitCount(segment_id, time, 0));
 
   std::vector<std::unique_ptr<PageUsageData>> results =
       db_->QuerySegmentUsage(/*max_result_count=*/1, base::NullCallback());
-  ASSERT_EQ(1u, results.size());
-  EXPECT_EQ(url, results[0]->GetURL());
-  EXPECT_EQ(segment_id, results[0]->GetID());
-  EXPECT_EQ(0, results[0]->GetScore());
+  EXPECT_TRUE(results.empty());
 }
 
 }  // namespace
