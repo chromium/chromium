@@ -9,12 +9,13 @@
  */
 :root {
   --cros-sys-app_base: var(--grey-900);
-  --cros-sys-base_elevated: var(--grey-200);
+  --cros-sys-base_elevated: var(--grey-900);
   --cros-sys-error_container: rgba(var(--red-300-rgb), 0.3);
   --cros-sys-focus_ring: var(--blue-300);
   --cros-sys-hover_on_subtle: rgba(255, 255, 255, 0.06);
   --cros-sys-inverse_on_surface: black;
   --cros-sys-primary: var(--blue-300);
+  --cros-sys-scrim2: rgba(0, 0, 0, 0.6);
   --cros-sys-on_error_container: var(--red-300);
   --cros-sys-on_surface: var(--grey-200);
 }
@@ -74,4 +75,13 @@ body:not(.mic) #toggle-mic {
     var(--cros-sys-error_container) 18px,
     transparent 19px
   );
+}
+
+.barcode-scan-box::after {
+  border: var(--border-width) solid white;
+}
+
+.snackbar {
+  background: var(--grey-900);
+  color: var(--grey-200);
 }

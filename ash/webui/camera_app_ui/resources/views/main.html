@@ -97,11 +97,13 @@
         <div id="barcode-chip-url-container"
              class="invisible barcode-chip-container">
           <div class="barcode-chip-url">
+            <svg-wrapper name="barcode_url.svg"></svg-wrapper>
             <a href="#barcode-chip-url-container"></a>
           </div>
           <div class="circle">
             <button class="barcode-copy-button" tabindex="0"
-              i18n-label="barcode_copy_link_button"></button>
+              i18n-label="barcode_copy_link_button"
+              data-svg="barcode_copy.svg"></button>
           </div>
         </div>
         <div id="barcode-chip-text-container"
@@ -111,11 +113,17 @@
           <div class="barcode-chip-text">
             <div id="barcode-chip-text-content"></div>
             <button id="barcode-chip-text-expand"
-                    aria-expanded="false"></button>
+                    aria-expanded="false">
+              <svg-wrapper name="barcode_chevron_up.svg" class="up-icon">
+              </svg-wrapper>
+              <svg-wrapper name="barcode_chevron_down.svg" class="down-icon">
+              </svg-wrapper>
+            </button>
           </div>
           <div class="circle">
             <button class="barcode-copy-button" tabindex="0"
-              i18n-label="barcode_copy_text_button"></button>
+              i18n-label="barcode_copy_text_button"
+              data-svg="barcode_copy.svg"></button>
           </div>
         </div>
       </div>

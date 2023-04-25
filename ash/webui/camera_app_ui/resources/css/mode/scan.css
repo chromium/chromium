@@ -37,7 +37,7 @@ body.enable-scan-barcode .barcode-scan-box {
   --offset: calc(var(--border-width) + var(--border-distance));
   border-radius: var(--inner-border-radius);
   bottom: var(--offset);
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 9999px var(--cros-sys-scrim2);
   content: '';
   left: var(--offset);
   position: absolute;
@@ -49,7 +49,7 @@ body.enable-scan-barcode .barcode-scan-box {
 /* The corner borders of the scan box. */
 .barcode-scan-box::after {
   -webkit-mask: url(/images/barcode_scan_box_border_mask.svg);
-  border: var(--border-width) solid white;
+  border: var(--border-width) solid var(--cros-sys-illo-color3);
   border-radius: calc(var(--inner-border-radius) + var(--border-distance));
   box-sizing: border-box;
   content: '';
@@ -63,10 +63,10 @@ body.enable-scan-barcode .barcode-scan-box {
 /* TODO(b/172879638): Tune the position and layout after we finalized the
  * responsive window design. */
 .barcode-chip-container {
-  --chip-height: 32px;
+  --chip-height: 36px;
   --chip-max-width: 420px;
   --min-scanbox-distance: 40px;
-  --text-expand-button-height: 40px;
+  --text-expand-button-height: 48px;
   --text-line-height: 24px;
   --text-padding-vertical: 8px;
   /* Avoid collision with scan-box and preview-box */
@@ -96,29 +96,24 @@ body.enable-scan-barcode .barcode-scan-box {
 
 .barcode-chip-url {
   align-items: center;
-  background: var(--grey-900);
+  background: var(--cros-sys-base_elevated);
   border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
   display: flex;
-  font: 400 15px Roboto;
+  font: 400 13px Roboto;
   height: var(--chip-height);
-  padding: 8px;
+  justify-content: center;
+  padding: 8px 16px;
 }
 
-.barcode-chip-url::before {
-  background: url(/images/barcode_url.svg) no-repeat;
-  content: '';
-  display: inline-block;
-  flex-shrink: 0;
-  height: 20px;
-  margin-inline-end: 6px;
-  vertical-align: middle;
-  width: 20px;
+.barcode-chip-url > svg-wrapper {
+  color: var(--cros-sys-primary);
+  margin-inline-end: 10px;
 }
 
 .barcode-chip-url > a {
-  color: var(--blue-300);
+  color: var(--cros-sys-primary);
   overflow: hidden;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -130,13 +125,17 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 .barcode-copy-button:hover {
-  /* TODO(b/172879638): Tweak color according to the final UX spec */
-  background: url(/images/barcode_copy.svg) center no-repeat, rgb(50, 51, 54);
+  /* Use linear-gradient to apply multiple background colors. */
+  background: linear-gradient(
+    0deg,
+    var(--cros-sys-hover_on_subtle),
+    var(--cros-sys-hover_on_subtle)
+  ), var(--cros-sys-base_elevated);
 }
 
 .barcode-copy-button {
-  background: url(/images/barcode_copy.svg) center no-repeat, var(--grey-900);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: var(--cros-sys-base_elevated);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   height: var(--chip-height);
   inset-inline-start: calc(100% + 8px);
@@ -146,20 +145,24 @@ body.enable-scan-barcode .barcode-scan-box {
   z-index: 50;
 }
 
+.barcode-copy-button svg-wrapper {
+  color: var(--cros-sys-primary);
+}
+
 .barcode-chip-text {
   align-items: center;
-  background: var(--grey-900);
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: var(--cros-sys-base_elevated);
+  border-radius: 20px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   font: 400 15px Roboto;
-  padding: var(--text-padding-vertical) 20px;
+  padding: var(--text-padding-vertical) 16px;
 }
 
 #barcode-chip-text-content {
-  color: var(--grey-200);
+  color: var(--cros-sys-on_surface);
   line-height: var(--text-line-height);
   max-width: 100%;
   overflow: hidden;
@@ -177,23 +180,36 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 #barcode-chip-text-expand {
-  background: url(/images/barcode_chevron_down.svg) center no-repeat;
   height: var(--text-expand-button-height);
+  margin-top: 8px;
   width: 100%;
+
+  .up-icon {
+    display: none;
+  }
 }
 
 .expanded #barcode-chip-text-expand {
-  background: url(/images/barcode_chevron_up.svg) center no-repeat;
+  .up-icon {
+    display: block;
+  }
+  .down-icon {
+    display: none;
+  }
 }
 
 .snackbar {
   align-items: center;
-  background: var(--grey-900);
+  background: var(--cros-sys-inverse_surface);
   border-radius: 4px;
+  /*
+   * TODO(pihsun): Move the snackbar to the position as the design after jelly
+   * is default on.
+   */
   bottom: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
-  color: var(--grey-200);
+  color: var(--cros-sys-inverse_on_surface);
   display: flex;
   font-family: Roboto;
   font-size: 13px;
