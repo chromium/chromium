@@ -90,6 +90,8 @@ using ::payments::mojom::blink::PaymentValidationErrorsPtr;
 
 const char kHasEnrolledInstrumentDebugName[] = "hasEnrolledInstrument";
 const char kGooglePayMethod[] = "https://google.com/pay";
+const char kGooglePayAuthenticationMethod[] =
+    "https://pay.google.com/authentication";
 const char kAndroidPayMethod[] = "https://android.com/pay";
 const char kGooglePlayBillingMethod[] = "https://play.google.com/billing";
 const char kUnknownCurrency[] = "ZZZ";
@@ -431,7 +433,8 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
   // payment apps are responsible for validating and processing their method
   // data asynchronously. Do not throw exceptions here.
   if (supported_method == kGooglePayMethod ||
-      supported_method == kAndroidPayMethod) {
+      supported_method == kAndroidPayMethod ||
+      supported_method == kGooglePayAuthenticationMethod) {
     SetAndroidPayMethodData(execution_context.GetIsolate(), input, output,
                             exception_state);
     if (exception_state.HadException()) {

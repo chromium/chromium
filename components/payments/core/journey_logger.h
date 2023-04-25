@@ -155,6 +155,8 @@ class JourneyLogger {
     // requestPayerEmail, requestPayerPhone.
     kRequestShipping = 1 << 11,
 
+    // The merchent requested a Google Pay Authentication method.
+    kRequestMethodGooglePayAuthentication = 1 << 13,
     // The merchant requested a Play Billing payment method.
     kRequestMethodPlayBilling = 1 << 14,
     // The merchant requested at least one basic-card method.
@@ -221,7 +223,8 @@ class JourneyLogger {
     kPlayBilling = 2,
     kSecurePaymentConfirmation = 3,
     kOther = 4,
-    kMaxValue = kOther,
+    kGooglePayAuthentication = 5,
+    kMaxValue = kGooglePayAuthentication,
   };
 
   // Records different checkout steps for payment requests. The difference

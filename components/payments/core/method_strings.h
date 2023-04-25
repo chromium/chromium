@@ -25,6 +25,9 @@ extern const char kBasicCard[];
 // https://developers.google.com/pay/api/web/guides/tutorial
 extern const char kGooglePay[];
 
+// Google Pay Authentication method name.
+extern const char kGooglePayAuthentication[];
+
 // Google Play Billing method name.
 extern const char kGooglePlayBilling[];
 
