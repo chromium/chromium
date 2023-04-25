@@ -135,7 +135,6 @@ component("cpp") {
     "timing_allow_origin_parser.h",
     "trust_token_http_headers.cc",
     "trust_token_http_headers.h",
-    "trust_token_operation_authorization.h",
     "url_util.cc",
     "url_util.h",
     "variants_header_parser.cc",

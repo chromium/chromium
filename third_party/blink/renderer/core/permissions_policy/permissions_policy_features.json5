@@ -329,6 +329,11 @@
       depends_on: ["SharedStorageAPI", "Fledge"],
     },
     {
+      name: "PrivateStateTokenIssuance",
+      permissions_policy_name: "private-state-token-issuance",
+      depends_on: ["PrivateStateTokens"],
+    },
+    {
       name: "PublicKeyCredentialsGet",
       permissions_policy_name: "publickey-credentials-get",
     },

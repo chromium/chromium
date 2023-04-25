@@ -42306,6 +42306,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="107" label="SmartCard"/>
   <int value="108" label="SharedStorageSelectUrl"/>
   <int value="109" label="PrivateAggregation"/>
+  <int value="110" label="PrivateStateTokenIssuance"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

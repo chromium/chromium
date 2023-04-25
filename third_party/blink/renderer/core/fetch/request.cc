@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 #include "third_party/blink/renderer/core/fetch/fetch_manager.h"
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
-#include "third_party/blink/renderer/core/fetch/trust_token_issuance_authorization.h"
 #include "third_party/blink/renderer/core/fetch/trust_token_to_mojom.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -580,8 +579,9 @@ Request* Request::CreateRequestWithRequestOrString(
                       mojom::blink::WebFeature::kTrustTokenFetch);
 
     network::mojom::blink::TrustTokenParams params;
-    if (!ConvertTrustTokenToMojom(*init->privateToken(), &exception_state,
-                                  &params)) {
+    if (!ConvertTrustTokenToMojomAndCheckPermissions(
+            *init->privateToken(), execution_context, &exception_state,
+            &params)) {
       // Whenever parsing the trustToken argument fails, we expect a suitable
       // exception to be thrown.
       DCHECK(exception_state.HadException());
@@ -592,26 +592,6 @@ Request* Request::CreateRequestWithRequestOrString(
       exception_state.ThrowTypeError(
           "trustToken: TrustTokens operations are only available in secure "
           "contexts.");
-      return nullptr;
-    }
-
-    if ((params.operation == TrustTokenOperationType::kRedemption ||
-         params.operation == TrustTokenOperationType::kSigning) &&
-        !execution_context->IsFeatureEnabled(
-            mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption)) {
-      exception_state.ThrowTypeError(
-          "trustToken: Redemption ('token-redemption') and signing "
-          "('send-redemption-record') operations require that the "
-          "trust-token-redemption "
-          "Permissions Policy feature be enabled.");
-      return nullptr;
-    }
-
-    if (params.operation == TrustTokenOperationType::kIssuance &&
-        !IsTrustTokenIssuanceAvailableInExecutionContext(*execution_context)) {
-      exception_state.ThrowTypeError(
-          "trustToken: Issuance ('token-request') is disabled except in "
-          "contexts with the TrustTokens Origin Trial enabled.");
       return nullptr;
     }
 

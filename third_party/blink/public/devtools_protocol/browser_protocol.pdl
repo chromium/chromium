@@ -7228,6 +7228,7 @@ domain Page
       payment
       picture-in-picture
       private-aggregation
+      private-state-token-issuance
       private-state-token-redemption
       publickey-credentials-get
       run-ad-auction

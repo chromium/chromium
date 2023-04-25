@@ -216,7 +216,6 @@
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/cpp/trust_token_operation_authorization.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
@@ -620,19 +619,6 @@ void OnDataURLRetrieved(
   StartDownload(std::move(parameters), nullptr);
 }
 
-// Subframe navigations can optionally have associated Trust Tokens operations
-// (https://github.com/wicg/trust-token-api). If the operation's type is
-// "redemption" or "signing" (as opposed to "issuance"), the parent's frame
-// needs to have the trust-token-redemption Permissions Policy feature enabled.
-bool ParentNeedsTrustTokenPermissionsPolicy(
-    const blink::mojom::BeginNavigationParams& begin_params) {
-  if (!begin_params.trust_token_params)
-    return false;
-
-  return network::DoesTrustTokenOperationRequirePermissionsPolicy(
-      begin_params.trust_token_params->operation);
-}
-
 // Analyzes trusted sources of a frame's trust-token-redemption Permissions
 // Policy feature to see if the feature is definitely disabled or potentially
 // enabled.
@@ -645,13 +631,14 @@ bool ParentNeedsTrustTokenPermissionsPolicy(
 // A return value of kForbid denotes that the feature is disabled for the
 // frame. A return value of kPotentiallyPermit means that all trusted
 // information sources say that the policy is enabled.
-network::mojom::TrustTokenRedemptionPolicy
-DetermineWhetherToForbidTrustTokenRedemption(
+network::mojom::TrustTokenOperationPolicyVerdict
+DetermineWhetherToForbidTrustTokenOperation(
     const RenderFrameHostImpl* frame,
     const blink::mojom::CommitNavigationParams& commit_params,
     const url::Origin& subframe_origin,
     absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-        fenced_frame_mode_for_navigation) {
+        fenced_frame_mode_for_navigation,
+    const network::mojom::TrustTokenOperationType& operation) {
   std::unique_ptr<blink::PermissionsPolicy> subframe_policy;
   // TODO(https://crbug.com/1430514): Add WPT to test how TrustTokens behave in
   // a FencedFrame's subframe.
@@ -668,7 +655,8 @@ DetermineWhetherToForbidTrustTokenRedemption(
     // For main frame loads, the frame's permissions policy is determined
     // entirely by response headers, which are provided by the renderer.
     if (!frame->GetParent())
-      return network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit;
+      return network::mojom::TrustTokenOperationPolicyVerdict::
+          kPotentiallyPermit;
 
     const blink::PermissionsPolicy* parent_policy =
         frame->GetParent()->permissions_policy();
@@ -679,27 +667,56 @@ DetermineWhetherToForbidTrustTokenRedemption(
         parent_policy, container_policy, subframe_origin);
   }
 
-  if (subframe_policy->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
-    return network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit;
+  switch (operation) {
+    case network::mojom::TrustTokenOperationType::kRedemption:
+    case network::mojom::TrustTokenOperationType::kSigning:
+      if (subframe_policy->IsFeatureEnabled(
+              blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
+        return network::mojom::TrustTokenOperationPolicyVerdict::
+            kPotentiallyPermit;
+      }
+      return network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
+    case network::mojom::TrustTokenOperationType::kIssuance:
+      if (subframe_policy->IsFeatureEnabled(
+              blink::mojom::PermissionsPolicyFeature::
+                  kPrivateStateTokenIssuance)) {
+        return network::mojom::TrustTokenOperationPolicyVerdict::
+            kPotentiallyPermit;
+      }
+      return network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
   }
-  return network::mojom::TrustTokenRedemptionPolicy::kForbid;
+  return network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
 }
 
 // When a frame creates its initial subresource loaders, it needs to know
 // whether the trust-token-redemption Permissions Policy feature will be enabled
 // after the commit finishes, which is a little involved (see
-// DetermineWhetherToForbidTrustTokenRedemption). In contrast, if it needs to
+// DetermineWhetherToForbidTrustTokenOperation). In contrast, if it needs to
 // make this decision once the frame has committted---for instance, to create
 // more loaders after the network service crashes---it can directly consult the
 // current Permissions Policy state to determine whether the feature is enabled.
-network::mojom::TrustTokenRedemptionPolicy
-DetermineAfterCommitWhetherToForbidTrustTokenRedemption(
-    RenderFrameHostImpl& impl) {
-  return impl.IsFeatureEnabled(
-             blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
-             ? network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit
-             : network::mojom::TrustTokenRedemptionPolicy::kForbid;
+network::mojom::TrustTokenOperationPolicyVerdict
+DetermineAfterCommitWhetherToForbidTrustTokenOperation(
+    RenderFrameHostImpl& impl,
+    const network::mojom::TrustTokenOperationType& operation) {
+  switch (operation) {
+    case network::mojom::TrustTokenOperationType::kRedemption:
+    case network::mojom::TrustTokenOperationType::kSigning:
+      if (impl.IsFeatureEnabled(
+              blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
+        return network::mojom::TrustTokenOperationPolicyVerdict::
+            kPotentiallyPermit;
+      }
+      return network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
+    case network::mojom::TrustTokenOperationType::kIssuance:
+      if (impl.IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::
+                                    kPrivateStateTokenIssuance)) {
+        return network::mojom::TrustTokenOperationPolicyVerdict::
+            kPotentiallyPermit;
+      }
+      return network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
+  }
+  return network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
 }
 
 // Verify that |browser_side_origin| and |renderer_side_origin| match.  See also
@@ -1156,7 +1173,11 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
           result.coep_reporter_.BindNewPipeAndPassReceiver());
     }
     result.trust_token_redemption_policy_ =
-        DetermineAfterCommitWhetherToForbidTrustTokenRedemption(frame);
+        DetermineAfterCommitWhetherToForbidTrustTokenOperation(
+            frame, network::mojom::TrustTokenOperationType::kRedemption);
+    result.trust_token_issuance_policy_ =
+        DetermineAfterCommitWhetherToForbidTrustTokenOperation(
+            frame, network::mojom::TrustTokenOperationType::kIssuance);
     result.ukm_source_id_ =
         ukm::SourceIdObj::FromInt64(frame.GetPageUkmSourceId());
 
@@ -1181,12 +1202,14 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
     // NavigationRequest methods (e.g. into |isolation_info_for_subresources|
     // and/or |coep_reporter| methods).
     if (navigation_request.DidEncounterError()) {
-      // Error frames gets locked down `isolation_info_` and
-      // `trust_token_redemption_policy_` plus an empty/uninitialized
-      // `coep_reporter_`.
+      // Error frames gets locked down `isolation_info_`,
+      // `trust_token_redemption_policy_` and `trust_token_issuance_policy_`
+      // plus an empty/uninitialized `coep_reporter_`.
       result.isolation_info_ = net::IsolationInfo::CreateTransient();
       result.trust_token_redemption_policy_ =
-          network::mojom::TrustTokenRedemptionPolicy::kForbid;
+          network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
+      result.trust_token_issuance_policy_ =
+          network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
     } else {
       result.isolation_info_ =
           navigation_request.isolation_info_for_subresources();
@@ -1195,10 +1218,17 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
             result.coep_reporter_.BindNewPipeAndPassReceiver());
       }
       result.trust_token_redemption_policy_ =
-          DetermineWhetherToForbidTrustTokenRedemption(
+          DetermineWhetherToForbidTrustTokenOperation(
               navigation_request.GetRenderFrameHost(),
               navigation_request.commit_params(), result.origin(),
-              navigation_request.ComputeDeprecatedFencedFrameMode());
+              navigation_request.ComputeDeprecatedFencedFrameMode(),
+              network::mojom::TrustTokenOperationType::kRedemption);
+      result.trust_token_issuance_policy_ =
+          DetermineWhetherToForbidTrustTokenOperation(
+              navigation_request.GetRenderFrameHost(),
+              navigation_request.commit_params(), result.origin(),
+              navigation_request.ComputeDeprecatedFencedFrameMode(),
+              network::mojom::TrustTokenOperationType::kIssuance);
 
       if (navigation_request.GetIsThirdPartyCookiesUserBypassEnabled()) {
         result.cookie_setting_overrides_.Put(
@@ -1266,9 +1296,14 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
     return p;
   }
 
-  const network::mojom::TrustTokenRedemptionPolicy&
+  const network::mojom::TrustTokenOperationPolicyVerdict&
   trust_token_redemption_policy() const {
     return trust_token_redemption_policy_;
+  }
+
+  const network::mojom::TrustTokenOperationPolicyVerdict&
+  trust_token_issuance_policy() const {
+    return trust_token_issuance_policy_;
   }
 
   const ukm::SourceIdObj& ukm_source_id() const { return ukm_source_id_; }
@@ -1286,7 +1321,9 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
   network::mojom::ClientSecurityStatePtr client_security_state_;
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_;
-  network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy_;
+  network::mojom::TrustTokenOperationPolicyVerdict trust_token_issuance_policy_;
+  network::mojom::TrustTokenOperationPolicyVerdict
+      trust_token_redemption_policy_;
   ukm::SourceIdObj ukm_source_id_;
   net::CookieSettingOverrides cookie_setting_overrides_;
 };
@@ -2540,6 +2577,7 @@ RenderFrameHostImpl::CreateURLLoaderFactoriesForIsolatedWorlds(
         URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
             this, isolated_world_origin, config.origin(),
             config.isolation_info(), config.GetClientSecurityState(),
+            config.trust_token_issuance_policy(),
             config.trust_token_redemption_policy(),
             config.cookie_setting_overrides());
 
@@ -8445,8 +8483,10 @@ void RenderFrameHostImpl::BeginNavigation(
 
   // If the request is bearing Private State Tokens parameters:
   // - it must not be a main-frame navigation, and
-  // - for certain Private State Tokens operations, the frame's parent needs the
-  // trust-token-redemption Permissions Policy feature.
+  // - for redemption and signing operations, the frame's parent needs the
+  //   trust-token-redemption Permissions Policy feature,
+  // - for issue operation, the frame's parent needs the
+  //   private-state-token-issuance Permission Policy.
   if (begin_params->trust_token_params) {
     // For Fenced Frame trust_token_params shouldn't be populated since that is
     // driven by the iframe specific attribute as defined here:
@@ -8464,15 +8504,27 @@ void RenderFrameHostImpl::BeginNavigation(
           "RFHI: Private State Token params in main frame nav");
       return;
     }
-    if (ParentNeedsTrustTokenPermissionsPolicy(*begin_params)) {
-      RenderFrameHostImpl* parent = GetParent();
-      if (!parent->IsFeatureEnabled(
-              blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
-        mojo::ReportBadMessage(
-            "RFHI: Mandatory Private State Tokens Permissions Policy feature "
-            "is absent");
-        return;
-      }
+    RenderFrameHostImpl* parent = GetParent();
+    bool is_right_operation_policy_enabled = false;
+    const network::mojom::TrustTokenOperationType& operation =
+        begin_params->trust_token_params->operation;
+    switch (operation) {
+      case network::mojom::TrustTokenOperationType::kRedemption:
+      case network::mojom::TrustTokenOperationType::kSigning:
+        is_right_operation_policy_enabled = parent->IsFeatureEnabled(
+            blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption);
+        break;
+      case network::mojom::TrustTokenOperationType::kIssuance:
+        is_right_operation_policy_enabled = parent->IsFeatureEnabled(
+            blink::mojom::PermissionsPolicyFeature::kPrivateStateTokenIssuance);
+        break;
+    }
+
+    if (!is_right_operation_policy_enabled) {
+      mojo::ReportBadMessage(
+          "RFHI: Mandatory Private State Tokens Permissions Policy feature "
+          "is absent");
+      return;
     }
   }
 
@@ -10670,6 +10722,7 @@ RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
   return URLLoaderFactoryParamsHelper::CreateForFrame(
       this, config.origin(), config.isolation_info(),
       config.GetClientSecurityState(), config.GetCoepReporter(), GetProcess(),
+      config.trust_token_issuance_policy(),
       config.trust_token_redemption_policy(), config.cookie_setting_overrides(),
       debug_tag);
 }

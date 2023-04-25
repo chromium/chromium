@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/fetch/trust_token_issuance_authorization.h"
 #include "third_party/blink/renderer/core/fetch/trust_token_to_mojom.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
@@ -1453,34 +1452,10 @@ void XMLHttpRequest::setPrivateToken(const PrivateToken* trust_token,
   }
 
   auto params = network::mojom::blink::TrustTokenParams::New();
-  if (!ConvertTrustTokenToMojom(*trust_token, &exception_state, params.get())) {
+  if (!ConvertTrustTokenToMojomAndCheckPermissions(
+          *trust_token, GetExecutionContext(), &exception_state,
+          params.get())) {
     DCHECK(exception_state.HadException());
-    return;
-  }
-
-  bool operation_requires_permissions_policy =
-      params->operation ==
-          network::mojom::blink::TrustTokenOperationType::kRedemption ||
-      params->operation ==
-          network::mojom::blink::TrustTokenOperationType::kSigning;
-  if (operation_requires_permissions_policy &&
-      !GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Trust Tokens redemption and signing require the "
-        "trust-token-redemption Permissions Policy feature.");
-    return;
-  }
-
-  if (params->operation ==
-          network::mojom::blink::TrustTokenOperationType::kIssuance &&
-      !IsTrustTokenIssuanceAvailableInExecutionContext(
-          *GetExecutionContext())) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Trust Tokens issuance is disabled except in "
-        "contexts with the TrustTokens Origin Trial enabled.");
     return;
   }
 

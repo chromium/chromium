@@ -1007,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
 // An operation initiated from a secure context should succeed even if the
 // operation's associated request's initiator is opaque (e.g. from a sandboxed
-// iframe).
+// iframe with the right Permissions Policy).
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                        OperationFromSecureSubframeWithOpaqueOrigin) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});

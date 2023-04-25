@@ -39,8 +39,6 @@ blink_core_sources_fetch = [
   "request.h",
   "response.cc",
   "response.h",
-  "trust_token_issuance_authorization.cc",
-  "trust_token_issuance_authorization.h",
   "trust_token_to_mojom.cc",
   "trust_token_to_mojom.h",
 ]
