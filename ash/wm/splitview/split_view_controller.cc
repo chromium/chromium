@@ -275,8 +275,9 @@ void TriggerWMEventToSnapWindow(WindowState* window_state,
   CHECK(event_type == WM_EVENT_SNAP_PRIMARY ||
         event_type == WM_EVENT_SNAP_SECONDARY);
 
-  const WMEvent window_event(event_type, window_state->snap_ratio().value_or(
-                                             chromeos::kDefaultSnapRatio));
+  const WindowSnapWMEvent window_event(
+      event_type,
+      window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio));
   window_state->OnWMEvent(&window_event);
 }
 
@@ -866,10 +867,10 @@ void SplitViewController::SnapWindow(aura::Window* window,
                                          ->GetDisplayNearestWindow(root_window_)
                                          .id());
   }
-  const WMEvent event(snap_position == SnapPosition::kPrimary
-                          ? WM_EVENT_SNAP_PRIMARY
-                          : WM_EVENT_SNAP_SECONDARY,
-                      snap_ratio);
+  const WindowSnapWMEvent event(snap_position == SnapPosition::kPrimary
+                                    ? WM_EVENT_SNAP_PRIMARY
+                                    : WM_EVENT_SNAP_SECONDARY,
+                                snap_ratio);
   WindowState::Get(window)->OnWMEvent(&event);
 
   base::RecordAction(base::UserMetricsAction("SplitView_SnapWindow"));
@@ -877,8 +878,8 @@ void SplitViewController::SnapWindow(aura::Window* window,
 
 void SplitViewController::OnWMEvent(aura::Window* window,
                                     WMEventType event_type) {
-  DCHECK(event_type == WM_EVENT_SNAP_PRIMARY ||
-         event_type == WM_EVENT_SNAP_SECONDARY);
+  CHECK(event_type == WM_EVENT_SNAP_PRIMARY ||
+        event_type == WM_EVENT_SNAP_SECONDARY);
 
   // If split view can't be enabled at the moment, do nothing.
   if (!ShouldAllowSplitView())
@@ -2677,9 +2678,9 @@ void SplitViewController::OnWindowSnapped(
             GetPositionOfSnappedWindow(window) == SnapPosition::kPrimary
                 ? SnapPosition::kSecondary
                 : SnapPosition::kPrimary;
-        WMEvent event(snap_position == SnapPosition::kPrimary
-                          ? WM_EVENT_SNAP_PRIMARY
-                          : WM_EVENT_SNAP_SECONDARY);
+        WindowSnapWMEvent event(snap_position == SnapPosition::kPrimary
+                                    ? WM_EVENT_SNAP_PRIMARY
+                                    : WM_EVENT_SNAP_SECONDARY);
         WindowState::Get(mru_window)->OnWMEvent(&event);
         return;
       }

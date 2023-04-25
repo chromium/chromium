@@ -3140,7 +3140,7 @@ TEST_F(SplitViewControllerTest, WMSnapEvent) {
 
   // Test the functionalities in tablet mode.
   // Sending WM_EVENT_SNAP_SECONDARY to |window1| will snap to left.
-  WMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  WindowSnapWMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
   WindowState::Get(window1.get())->OnWMEvent(&wm_left_snap_event);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
@@ -3151,7 +3151,7 @@ TEST_F(SplitViewControllerTest, WMSnapEvent) {
   EXPECT_TRUE(overview_session->IsWindowInOverview(window2.get()));
 
   // Sending WM_EVENT_SNAP_SECONDARY to |window1| will snap to right.
-  WMEvent wm_right_snap_event(WM_EVENT_SNAP_SECONDARY);
+  WindowSnapWMEvent wm_right_snap_event(WM_EVENT_SNAP_SECONDARY);
   WindowState::Get(window1.get())->OnWMEvent(&wm_right_snap_event);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
@@ -3254,9 +3254,9 @@ TEST_F(SplitViewControllerTest, SnapBetweenDifferentRatios) {
 
   // Snap `window1` to primary position and `window2` to secondary position,
   // both with default snap ratios.
-  WMEvent snap_primary_default(WM_EVENT_SNAP_PRIMARY);
+  WindowSnapWMEvent snap_primary_default(WM_EVENT_SNAP_PRIMARY);
   WindowState::Get(window1.get())->OnWMEvent(&snap_primary_default);
-  WMEvent snap_secondary_default(WM_EVENT_SNAP_SECONDARY);
+  WindowSnapWMEvent snap_secondary_default(WM_EVENT_SNAP_SECONDARY);
   WindowState::Get(window2.get())->OnWMEvent(&snap_secondary_default);
 
   // Test that both window bounds are at half the work area width and that the
@@ -3278,8 +3278,8 @@ TEST_F(SplitViewControllerTest, SnapBetweenDifferentRatios) {
             window2->bounds().width() + divider_delta);
 
   // Snap `window1`, still in primary position, but with two thirds snap ratio.
-  WMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
-                                 chromeos::kTwoThirdSnapRatio);
+  WindowSnapWMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
+                                           chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
 
   // Test that the window bounds have updated to two thirds and one third of the
@@ -3305,11 +3305,11 @@ TEST_F(SplitViewControllerTest, SwapPartialWindows) {
 
   // Snap `window1` to primary with 2/3 width and `window2` to secondary with
   // 1/3 width. Verify the divider is at 2/3 of the work area.
-  WMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
-                                 chromeos::kTwoThirdSnapRatio);
+  WindowSnapWMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
+                                           chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
-  WMEvent snap_secondary_one_third(WM_EVENT_SNAP_SECONDARY,
-                                   chromeos::kOneThirdSnapRatio);
+  WindowSnapWMEvent snap_secondary_one_third(WM_EVENT_SNAP_SECONDARY,
+                                             chromeos::kOneThirdSnapRatio);
   WindowState::Get(window2.get())->OnWMEvent(&snap_secondary_one_third);
   const gfx::Rect work_area_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
@@ -3366,7 +3366,8 @@ TEST_F(SplitViewControllerTest, SnapTwoThirdPartialWindow) {
   window->SetProperty(aura::client::kAppType,
                       static_cast<int>(AppType::BROWSER));
 
-  WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY, chromeos::kTwoThirdSnapRatio);
+  WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY,
+                                 chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window.get())->OnWMEvent(&snap_primary);
   EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
 }
@@ -3394,8 +3395,8 @@ TEST_F(SplitViewControllerTest, SnapWindowWithMinSizeOpensOverview) {
 
   // Snap `window1` to 2/3. Since `window2` can't fit in 1/3, test that we open
   // Overview instead.
-  WMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
-                                 chromeos::kTwoThirdSnapRatio);
+  WindowSnapWMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
+                                           chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kPrimarySnapped);
@@ -3420,8 +3421,8 @@ TEST_F(SplitViewControllerTest, AutoSnapPartialWindows) {
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
 
   // 1. Test without min size. Snap `window1` to 2/3.
-  WMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
-                                 chromeos::kTwoThirdSnapRatio);
+  WindowSnapWMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
+                                           chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
   // Activate `window2`. Test that `window2` gets auto-snapped to 1/3.
   wm::ActivateWindow(window2.get());
@@ -3567,7 +3568,7 @@ TEST_F(SplitViewControllerTest, WMSnapEventDeviceOrientationMetricsInTablet) {
 
   // 1. Test landscape orientation.
   // Snap |window1| to the left to enter split view overview in tablet mode.
-  WMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  WindowSnapWMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
   WindowState::Get(window1.get())->OnWMEvent(&wm_left_snap_event);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   OverviewController* overview_controller = Shell::Get()->overview_controller();
@@ -3610,8 +3611,8 @@ TEST_F(SplitViewControllerTest,
   wm::ActivateWindow(window1.get());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
-  const WMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
-  const WMEvent wm_right_snap_event(WM_EVENT_SNAP_SECONDARY);
+  const WindowSnapWMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent wm_right_snap_event(WM_EVENT_SNAP_SECONDARY);
   const WMEvent fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
 
   // 1. Test portrait orientation.

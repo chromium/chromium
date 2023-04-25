@@ -1095,7 +1095,7 @@ TEST_F(ToplevelWindowEventHandlerTest, DragSnappedWindowToExternalDisplay) {
   // Snap the window to the right.
   WindowState* window_state = WindowState::Get(w1.get());
   ASSERT_TRUE(window_state->CanSnap());
-  const WMEvent event(WM_EVENT_CYCLE_SNAP_SECONDARY);
+  const WindowSnapWMEvent event(WM_EVENT_CYCLE_SNAP_SECONDARY);
   window_state->OnWMEvent(&event);
   ASSERT_TRUE(window_state->IsSnapped());
 

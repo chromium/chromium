@@ -827,7 +827,7 @@ TEST_F(PersistentWindowControllerTest, NoRestoreOnRotationForSnappedWindows) {
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
 
   // Snap the unique window in clamshell mode will not enter split view mode.
-  WMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  WindowSnapWMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
   auto* window_state = WindowState::Get(w1);
   window_state->OnWMEvent(&wm_left_snap_event);
   EXPECT_FALSE(split_view_controller->InSplitViewMode());

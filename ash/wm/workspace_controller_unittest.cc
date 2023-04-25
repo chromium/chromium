@@ -1283,7 +1283,7 @@ TEST_F(WorkspaceControllerTest, RestoreMinimizedSnappedWindow) {
 
   // Left snap |window|.
   EXPECT_FALSE(window_state->bounds_changed_by_user());
-  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
   const gfx::Rect work_area =
       display::Screen::GetScreen()
