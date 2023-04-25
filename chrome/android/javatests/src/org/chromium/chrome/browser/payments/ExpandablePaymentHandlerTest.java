@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import android.view.View;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 import androidx.test.uiautomator.UiDevice;
 
@@ -149,7 +150,7 @@ public class ExpandablePaymentHandlerTest {
 
     private void startServer(@ServerCertificate int serverCertificate) {
         mServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getContext(), serverCertificate);
+                ApplicationProvider.getApplicationContext(), serverCertificate);
     }
 
     private void startDefaultServer() {

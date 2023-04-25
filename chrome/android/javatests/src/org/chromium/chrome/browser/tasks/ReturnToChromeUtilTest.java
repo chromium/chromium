@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -187,8 +188,8 @@ public class ReturnToChromeUtilTest {
         // Instant start is not applicable since we need to create tabs and restart.
         assumeTrue(!mUseInstantStart);
 
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         String url = testServer.getURL("/chrome/test/data/android/about.html");
 
         mActivityTestRule.startMainActivityOnBlankPage();

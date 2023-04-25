@@ -15,6 +15,7 @@ import android.media.AudioManager;
 import android.os.Build;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -112,7 +113,8 @@ public class TabSuspensionTest {
             mTokenTracker = new TokenTracker(mUsageStatsBridge);
             mEventTracker = new EventTracker(mUsageStatsBridge);
         });
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mStartingUrl = mTestServer.getURLWithHostName(STARTING_FQDN, "/defaultresponse");
         mDifferentUrl = mTestServer.getURLWithHostName(DIFFERENT_FQDN, "/defaultresponse");
 

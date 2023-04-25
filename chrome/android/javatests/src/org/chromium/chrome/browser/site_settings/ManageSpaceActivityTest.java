@@ -14,6 +14,7 @@ import android.content.Intent;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.filters.MediumTest;
@@ -53,7 +54,8 @@ public class ManageSpaceActivityTest {
         if (!mActivityTestRule.getName().equals("testClearUnimporantWithoutChromeStart")) {
             mActivityTestRule.startMainActivityOnBlankPage();
         }
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
     }
 
     @After

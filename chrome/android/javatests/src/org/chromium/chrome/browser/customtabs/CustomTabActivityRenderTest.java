@@ -23,6 +23,7 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -128,7 +129,7 @@ public class CustomTabActivityRenderTest {
     private void prepareCCTIntent() {
         mUrl = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
         mIntent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getContext(), mUrl);
+                ApplicationProvider.getApplicationContext(), mUrl);
     }
 
     private void startActivityAndRenderToolbar(String renderTestId) throws IOException {
@@ -189,7 +190,7 @@ public class CustomTabActivityRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void custom_color_red() throws IOException {
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         mIntent = CustomTabsIntentTestUtils.createCustomTabIntent(
                 context, mUrl, true, builder -> { builder.setToolbarColor(Color.RED); });
 
@@ -200,7 +201,7 @@ public class CustomTabActivityRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void custom_color_black() throws IOException {
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         mIntent = CustomTabsIntentTestUtils.createCustomTabIntent(
                 context, mUrl, true, builder -> { builder.setToolbarColor(Color.BLACK); });
 

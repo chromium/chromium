@@ -38,6 +38,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -148,7 +149,7 @@ public class CustomTabActivityIncognitoTest {
 
     private Intent createMinimalIncognitoCustomTabIntent() {
         return CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
-                InstrumentationRegistry.getContext(), mTestPage);
+                ApplicationProvider.getApplicationContext(), mTestPage);
     }
 
     private static int getIncognitoThemeColor(CustomTabActivity activity) throws Exception {
@@ -282,7 +283,7 @@ public class CustomTabActivityIncognitoTest {
     @MediumTest
     public void toolbarHasRegularProfile_ForRegularCCT() {
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getContext(), "about:blank");
+                ApplicationProvider.getApplicationContext(), "about:blank");
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         CustomTabToolbar customTabToolbar =
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);

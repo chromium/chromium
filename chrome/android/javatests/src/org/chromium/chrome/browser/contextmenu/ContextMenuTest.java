@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -157,7 +158,8 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
     @Override
     public void customMainActivityStart() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mTestUrl = mTestServer.getURL(TEST_PATH);
         deleteTestFiles();
         mDownloadTestRule.startMainActivityWithURL(mTestUrl);

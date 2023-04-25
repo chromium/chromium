@@ -55,6 +55,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
@@ -186,7 +187,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Before
     public void setUp() throws ExecutionException {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         // After setUp, Chrome is launched and has one NTP.
         mActivityTestRule.startMainActivityWithURL(NTP_URL);
 

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -98,7 +98,8 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @Before
     public void setUp() throws Throwable {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mActivityTestRule.runOnUiThread((Runnable) () -> {
             mDownloader.initialize(
                     mActivityTestRule.getActivity().getCurrentWebContents(), new CSPChecker() {

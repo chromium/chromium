@@ -17,6 +17,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 import androidx.test.rule.ServiceTestRule;
 
@@ -243,7 +244,7 @@ public class TrustedWebActivityClientTest {
     @Test
     @SmallTest
     public void createLaunchIntent() {
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         String targetPackageName = mTargetContext.getPackageName();
 
         // This should return null because there are no ResolveInfos.

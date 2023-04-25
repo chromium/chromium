@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.uiautomator.UiDevice;
@@ -80,7 +81,8 @@ public class PortalsTest {
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         // Some devices have geolocation disabled, so override LocationUtils to always show
         // geolocation as enabled to prevent flakes in the permissions tests.
         LocationUtils.setFactory(() -> new LocationUtils() {

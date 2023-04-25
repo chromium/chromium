@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.webshare;
 import android.content.Intent;
 import android.net.Uri;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -96,7 +96,8 @@ public class WebShareTest {
     public void setUp() throws Exception {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
 
         mTab = sActivityTestRule.getActivity().getActivityTab();
         mUpdateWaiter = new WebShareUpdateWaiter();
@@ -234,7 +235,8 @@ public class WebShareTest {
 
     private static String getFileContents(Uri fileUri) throws Exception {
         InputStream inputStream =
-                InstrumentationRegistry.getContext().getContentResolver().openInputStream(fileUri);
+                ApplicationProvider.getApplicationContext().getContentResolver().openInputStream(
+                        fileUri);
         byte[] buffer = new byte[1024];
         int position = 0;
         int read;

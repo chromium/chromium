@@ -31,6 +31,7 @@ import android.os.Build.VERSION_CODES;
 
 import androidx.annotation.NonNull;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.GeneralClickAction;
 import androidx.test.espresso.action.GeneralLocation;
@@ -120,7 +121,8 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @Override
     public void customMainActivityStart() {
         MockitoAnnotations.initMocks(this);
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mURL = mTestServer.getURL(TEST_PAGE);
         mDownloadTestRule.startMainActivityWithURL(mURL);
     }

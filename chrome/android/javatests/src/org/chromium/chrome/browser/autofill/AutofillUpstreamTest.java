@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.autofill;
 
 import android.os.Build;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -57,7 +57,7 @@ public class AutofillUpstreamTest {
     public void setUp() {
         mActivityTestRule.setUpAccountAndEnableSyncForTesting();
         mServer = new EmbeddedTestServer();
-        mServer.initializeNative(InstrumentationRegistry.getContext(),
+        mServer.initializeNative(ApplicationProvider.getApplicationContext(),
                 EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
         mServer.addDefaultHandlers(TEST_SERVER_DIR);
         mServer.start();

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -64,8 +64,8 @@ public class ToolbarProgressBarIntegrationTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1269029")
     public void testProgressBarTraversesScreenOnce() throws TimeoutException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
 
         final WebContents webContents = mActivityTestRule.getWebContents();
 

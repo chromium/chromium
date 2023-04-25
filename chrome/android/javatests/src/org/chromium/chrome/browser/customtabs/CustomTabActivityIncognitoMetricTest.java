@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import android.content.Intent;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -61,7 +61,7 @@ public class CustomTabActivityIncognitoMetricTest {
 
     private Intent createMinimalIncognitoCustomTabIntent() {
         return CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
-                InstrumentationRegistry.getContext(), mTestPage);
+                ApplicationProvider.getApplicationContext(), mTestPage);
     }
 
     @Test

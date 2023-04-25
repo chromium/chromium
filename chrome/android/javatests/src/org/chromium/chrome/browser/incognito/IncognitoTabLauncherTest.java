@@ -13,6 +13,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.core.app.BundleCompat;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -156,7 +157,7 @@ public class IncognitoTabLauncherTest {
     private ChromeTabbedActivity launchIncognitoTab(boolean asFirstParty) throws TimeoutException {
         mIsCurrentTestFirstParty = asFirstParty;
 
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         IncognitoTabLauncher.setComponentEnabled(true);
         Intent intent = createLaunchIntent(context);
 

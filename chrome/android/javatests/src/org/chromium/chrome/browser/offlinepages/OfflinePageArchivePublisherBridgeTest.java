@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.offlinepages;
 
 import android.os.Build;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -100,7 +100,8 @@ public class OfflinePageArchivePublisherBridgeTest {
         initializeBridgeForProfile();
         Assert.assertNotNull(mOfflinePageBridge);
 
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mTestPage = mTestServer.getURL(TEST_PAGE);
     }
 

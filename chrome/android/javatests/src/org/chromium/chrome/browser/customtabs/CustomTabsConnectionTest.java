@@ -20,6 +20,7 @@ import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -600,7 +601,7 @@ public class CustomTabsConnectionTest {
     public void testWarmupNotificationIsSent() throws Exception {
         final AtomicReference<CustomTabsClient> clientReference = new AtomicReference<>(null);
         final CallbackHelper waitForConnection = new CallbackHelper();
-        CustomTabsClient.bindCustomTabsService(InstrumentationRegistry.getContext(),
+        CustomTabsClient.bindCustomTabsService(ApplicationProvider.getApplicationContext(),
                 InstrumentationRegistry.getTargetContext().getPackageName(),
                 new CustomTabsServiceConnection() {
                     @Override

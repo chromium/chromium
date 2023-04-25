@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Environment;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -62,7 +63,8 @@ public class UrlSchemeTest {
         TestContentProvider.resetResourceRequestCounts(InstrumentationRegistry.getTargetContext());
         TestContentProvider.setDataFilePath(
                 InstrumentationRegistry.getTargetContext(), UrlUtils.getTestFilePath(""));
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
     }
 
     @After
@@ -83,7 +85,7 @@ public class UrlSchemeTest {
         ensureResourceRequestCountInContentProvider(resource, 0);
         // Make a request to the content provider.
         Uri uri = Uri.parse(createContentUrl(resource));
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         InputStream inputStream = null;
         try {
             inputStream = context.getContentResolver().openInputStream(uri);

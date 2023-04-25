@@ -20,6 +20,7 @@ import android.os.Build.VERSION_CODES;
 
 import androidx.annotation.Nullable;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -102,7 +103,8 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
         mActivityTestRule.startMainActivityWithURL(NTP_URL);
 
         TabUiTestHelper.verifyTabSwitcherLayoutType(mActivityTestRule.getActivity());

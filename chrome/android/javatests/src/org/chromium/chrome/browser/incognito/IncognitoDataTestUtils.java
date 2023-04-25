@@ -13,7 +13,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.hamcrest.Matchers;
 
@@ -188,7 +188,7 @@ public class IncognitoDataTestUtils {
 
     private static Tab launchUrlInCCT(
             CustomTabActivityTestRule testRule, String url, boolean incognito) {
-        Context context = InstrumentationRegistry.getContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent intent = incognito ? createMinimalIncognitoCustomTabIntent(context, url)
                                   : createMinimalCustomTabIntent(context, url);
 

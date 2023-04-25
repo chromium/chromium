@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.equalTo;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
@@ -60,7 +61,8 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                ApplicationProvider.getApplicationContext());
 
         // Show the location dialog for the first time.
         promptDownloadLocationDialog(DownloadPromptStatus.SHOW_INITIAL);
