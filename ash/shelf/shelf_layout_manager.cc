@@ -1389,16 +1389,20 @@ void ShelfLayoutManager::OnSessionStateChanged(
   // Check transition changes to/from the add user to session and change the
   // shelf alignment accordingly
   const bool was_adding_user = state_.IsAddingSecondaryUser();
+  const bool was_locked = state_.IsScreenLocked();
   state_.session_state = state;
 
   // Animate shelf layout if the container is not animating.
-  bool animate = !IsShelfContainerAnimating();
-  MaybeUpdateShelfBackground(animate ? AnimationChangeType::ANIMATE
-                                     : AnimationChangeType::IMMEDIATE);
+  bool animate_background = !IsShelfContainerAnimating();
+  MaybeUpdateShelfBackground(animate_background
+                                 ? AnimationChangeType::ANIMATE
+                                 : AnimationChangeType::IMMEDIATE);
   HideContextualNudges();
   {
     base::AutoReset<bool> immediate_transition(
-        &state_change_animation_disabled_, !animate);
+        &state_change_animation_disabled_,
+        !animate_background || state_.IsActiveSessionState() ||
+            was_locked != state_.IsScreenLocked());
     UpdateShelfVisibilityAfterLoginUIChange();
   }
   if (was_adding_user == state_.IsAddingSecondaryUser()) {
