@@ -216,6 +216,10 @@ extern const char kDefaultBrowserIntentsShowSettingsDescription[];
 extern const char kDefaultBrowserRefactoringPromoManagerName[];
 extern const char kDefaultBrowserRefactoringPromoManagerDescription[];
 
+// Title and description for the flag to enable the default browser video promo.
+extern const char kDefaultBrowserVideoPromoName[];
+extern const char kDefaultBrowserVideoPromoDescription[];
+
 // Title and description for the flag to control if a crash report is generated
 // on main thread freeze.
 extern const char kDetectMainThreadFreezeName[];

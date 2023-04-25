@@ -54,6 +54,9 @@ BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 // the promo manager.
 BASE_DECLARE_FEATURE(kDefaultBrowserRefactoringPromoManager);
 
+// Feature flag that enables the default browser video promo.
+BASE_DECLARE_FEATURE(kDefaultBrowserVideoPromo);
+
 // Feature flag to use the new Edit menu API for browser view.
 BASE_DECLARE_FEATURE(kIOSCustomBrowserEditMenu);
 

@@ -216,6 +216,13 @@ const FeatureEntry::FeatureVariation kWhatsNewLayoutVariations[] = {
      std::size(kWhatsNewModuleLayout), nullptr},
 };
 
+const FeatureEntry::FeatureParam kDefaultBrowserVideoPromoHalfscreen[] = {
+    {"default_browser_video_promo_halfscreen", "true"}};
+const FeatureEntry::FeatureVariation kDefaultBrowserVideoPromoVariations[] = {
+    {"Show half screen ui", kDefaultBrowserVideoPromoHalfscreen,
+     std::size(kDefaultBrowserVideoPromoHalfscreen), nullptr},
+};
+
 const FeatureEntry::FeatureParam
     kAutofillUseMobileLabelDisambiguationShowAll[] = {
         {autofill::features::kAutofillUseMobileLabelDisambiguationParameterName,
@@ -1198,6 +1205,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserRefactoringPromoManagerDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDefaultBrowserRefactoringPromoManager)},
+    {"default-browser-video-promo",
+     flag_descriptions::kDefaultBrowserVideoPromoName,
+     flag_descriptions::kDefaultBrowserVideoPromoDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kDefaultBrowserVideoPromo,
+                                    kDefaultBrowserVideoPromoVariations,
+                                    "DefaultBrowserVideoPromoVariations")},
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
     {"feed-background-refresh-ios",
      flag_descriptions::kFeedBackgroundRefreshName,
