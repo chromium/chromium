@@ -65,8 +65,7 @@ bool IsCarryOverCandidateForSplitView(
 // Snap the carry over windows into splitview mode at |divider_position|.
 void DoSplitViewTransition(
     std::vector<std::pair<aura::Window*, WindowStateType>> windows,
-    int divider_position,
-    WindowSnapActionSource snap_action_source) {
+    int divider_position) {
   if (windows.empty())
     return;
 
@@ -87,7 +86,6 @@ void DoSplitViewTransition(
         /*snap_position=*/iter.second == WindowStateType::kPrimarySnapped
             ? SplitViewController::SnapPosition::kPrimary
             : SplitViewController::SnapPosition::kSecondary,
-        snap_action_source,
         /*activate_window=*/false,
         /*snap_ratio=*/snap_ratio ? *snap_ratio : chromeos::kDefaultSnapRatio);
   }
@@ -491,8 +489,7 @@ void TabletModeWindowManager::OnActiveUserSessionChanged(
         GetCarryOverWindowsInSplitView(/*clamshell_to_tablet=*/true);
     const int divider_position = CalculateCarryOverDividerPosition(
         windows_in_splitview, /*clamshell_to_tablet=*/true);
-    DoSplitViewTransition(windows_in_splitview, divider_position,
-                          WindowSnapActionSource::kSnapByDeskOrSessionChange);
+    DoSplitViewTransition(windows_in_splitview, divider_position);
     accounts_since_entering_tablet_.insert(account_id);
   } else {
     refresh_snapped_windows = true;
@@ -672,9 +669,7 @@ void TabletModeWindowManager::ArrangeWindowsForTabletMode() {
   }
 
   // Do split view mode transition.
-  DoSplitViewTransition(
-      windows_in_splitview, divider_position,
-      WindowSnapActionSource::kSnapByClamshellTabletTransition);
+  DoSplitViewTransition(windows_in_splitview, divider_position);
 }
 
 void TabletModeWindowManager::ArrangeWindowsForClamshellMode(
@@ -692,9 +687,7 @@ void TabletModeWindowManager::ArrangeWindowsForClamshellMode(
   // Since we need to keep the windows that were in splitview still be snapped
   // in clamshell mode, change its window state to the corresponding snapped
   // window state.
-  DoSplitViewTransition(
-      windows_in_splitview, divider_position,
-      WindowSnapActionSource::kSnapByClamshellTabletTransition);
+  DoSplitViewTransition(windows_in_splitview, divider_position);
 }
 
 void TabletModeWindowManager::TrackWindow(aura::Window* window,

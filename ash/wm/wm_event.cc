@@ -136,21 +136,6 @@ WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type, float snap_ratio)
   CHECK(IsSnapEvent());
 }
 
-WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type,
-                                     WindowSnapActionSource snap_action_source)
-    : WMEvent(type), snap_action_source_(snap_action_source) {
-  CHECK(IsSnapEvent());
-}
-
-WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type,
-                                     float snap_ratio,
-                                     WindowSnapActionSource snap_action_source)
-    : WMEvent(type),
-      snap_ratio_(snap_ratio),
-      snap_action_source_(snap_action_source) {
-  CHECK(IsSnapEvent());
-}
-
 WindowSnapWMEvent::~WindowSnapWMEvent() = default;
 
 const WindowSnapWMEvent* WindowSnapWMEvent::AsSnapEvent() const {

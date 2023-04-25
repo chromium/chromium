@@ -261,8 +261,9 @@ void TabDragDropDelegate::OnNewBrowserWindowCreated(
           snap_position) {
     overview_session->MergeWindowIntoOverviewForWebUITabStrip(new_window);
   } else {
+    WindowState::Get(new_window)
+        ->set_snap_action_source(WindowSnapActionSource::kDragTabToSnap);
     split_view_controller->SnapWindow(new_window, snap_position,
-                                      WindowSnapActionSource::kDragTabToSnap,
                                       /*activate_window=*/true);
   }
 
@@ -281,8 +282,9 @@ void TabDragDropDelegate::OnNewBrowserWindowCreated(
   // |source_window_| is itself a child window of the browser since it
   // hosts web content (specifically, the tab strip WebUI). Snap its
   // toplevel window which is the browser window.
-  split_view_controller->SnapWindow(source_window_, opposite_position,
-                                    WindowSnapActionSource::kDragTabToSnap);
+  WindowState::Get(new_window)
+      ->set_snap_action_source(WindowSnapActionSource::kDragTabToSnap);
+  split_view_controller->SnapWindow(source_window_, opposite_position);
 }
 
 bool TabDragDropDelegate::ShouldPreventSnapToTheEdge(

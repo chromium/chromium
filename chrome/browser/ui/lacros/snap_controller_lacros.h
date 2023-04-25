@@ -22,8 +22,7 @@ class SnapControllerLacros : public chromeos::SnapController {
                        bool allow_haptic_feedback) override;
   void CommitSnap(aura::Window* window,
                   chromeos::SnapDirection snap,
-                  float snap_ratio,
-                  SnapRequestSource snap_request_source) override;
+                  float snap_ratio) override;
 };
 
 #endif  // CHROME_BROWSER_UI_LACROS_SNAP_CONTROLLER_LACROS_H_

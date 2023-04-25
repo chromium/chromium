@@ -431,17 +431,12 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
   }
 
   if (IsSnappedWindowStateType(next_state_type)) {
-    const bool is_restoring =
-        window_state->window()->GetProperty(aura::client::kIsRestoringKey) ||
-        type == WM_EVENT_RESTORE;
-    if (is_restoring) {
-      window_state->RecordWindowSnapActionSource(
+    if (type == WM_EVENT_RESTORE) {
+      window_state->set_snap_action_source(
           WindowSnapActionSource::kSnapByWindowStateRestore);
-    } else {
-      CHECK(event->IsSnapEvent());
-      window_state->RecordWindowSnapActionSource(
-          static_cast<const WindowSnapWMEvent*>(event)->snap_action_source());
     }
+    window_state->RecordAndResetWindowSnapActionSource(current_state_type,
+                                                       next_state_type);
     EnterToNextState(window_state, next_state_type);
     return;
   }

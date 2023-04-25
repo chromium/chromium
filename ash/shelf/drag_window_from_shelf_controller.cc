@@ -528,9 +528,10 @@ void DragWindowFromShelfController::OnDragEnded(
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   if (split_view_controller->InSplitViewMode() ||
       snap_position != SplitViewController::SnapPosition::kNone) {
-    split_view_controller->OnWindowDragEnded(
-        window_, snap_position, gfx::ToRoundedPoint(location_in_screen),
+    WindowState::Get(window_)->set_snap_action_source(
         WindowSnapActionSource::kDragUpFromShelfToSnap);
+    split_view_controller->OnWindowDragEnded(
+        window_, snap_position, gfx::ToRoundedPoint(location_in_screen));
   }
 
   // Scale-in-to-show home screen if home screen should be shown after drag

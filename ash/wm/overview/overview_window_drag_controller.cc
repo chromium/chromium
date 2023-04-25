@@ -738,10 +738,10 @@ OverviewWindowDragController::CompleteNormalDrag(
     // passed parameters |snap_position_| and |location_in_screen| won't be used
     // in this function for this case, but they are passed in as placeholders.
     aura::Window* window = item_->GetWindow();
+    WindowState::Get(window)->set_snap_action_source(
+        WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap);
     SplitViewController::Get(Shell::GetPrimaryRootWindow())
-        ->OnWindowDragEnded(
-            window, snap_position_, rounded_screen_point,
-            WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap);
+        ->OnWindowDragEnded(window, snap_position_, rounded_screen_point);
 
     // Update window grid bounds and |snap_position_| in case the screen
     // orientation was changed.
@@ -926,6 +926,8 @@ void OverviewWindowDragController::SnapWindow(
   DCHECK(!SplitViewController::Get(Shell::GetPrimaryRootWindow())
               ->IsDividerAnimating());
   aura::Window* window = item_->GetWindow();
+  WindowState::Get(window)->set_snap_action_source(
+      WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap);
 
   // If `window` is currently fullscreen, snapping it will trigger a work area
   // change, which triggers `OverviewSession::OnDisplayMetricsChanged`. Display
@@ -934,10 +936,8 @@ void OverviewWindowDragController::SnapWindow(
   // See crbug.com/1330042 for more details. `item_` will be deleted after
   // SplitViewController::SnapWindow().
   item_ = nullptr;
-  split_view_controller->SnapWindow(
-      window, snap_position,
-      WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap,
-      /*activate_window=*/true);
+  split_view_controller->SnapWindow(window, snap_position,
+                                    /*activate_window=*/true);
 }
 
 OverviewGrid* OverviewWindowDragController::GetCurrentGrid() const {

@@ -347,16 +347,14 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
         case WindowStateType::kPrimarySnapped:
           if (!split_view_controller->primary_window()) {
             split_view_controller->SnapWindow(
-                window, SplitViewController::SnapPosition::kPrimary,
-                WindowSnapActionSource::kSnapByDeskOrSessionChange);
+                window, SplitViewController::SnapPosition::kPrimary);
           }
           break;
 
         case WindowStateType::kSecondarySnapped:
           if (!split_view_controller->secondary_window()) {
             split_view_controller->SnapWindow(
-                window, SplitViewController::SnapPosition::kSecondary,
-                WindowSnapActionSource::kSnapByDeskOrSessionChange);
+                window, SplitViewController::SnapPosition::kSecondary);
           }
           break;
 

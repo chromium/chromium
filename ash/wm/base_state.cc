@@ -155,16 +155,13 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
       // restrictive than |WindowState::CanSnap|.
       DCHECK(SplitViewController::Get(window)->IsWindowInSplitView(window));
       SplitViewController::Get(window)->SnapWindow(
-          window,
-          is_desired_primary_snapped
-              ? SplitViewController::SnapPosition::kPrimary
-              : SplitViewController::SnapPosition::kSecondary,
-          WindowSnapActionSource::kKeyboardShortcutToSnap);
+          window, is_desired_primary_snapped
+                      ? SplitViewController::SnapPosition::kPrimary
+                      : SplitViewController::SnapPosition::kSecondary);
     } else {
-      const WindowSnapWMEvent wm_event(
-          is_desired_primary_snapped ? WM_EVENT_SNAP_PRIMARY
-                                     : WM_EVENT_SNAP_SECONDARY,
-          WindowSnapActionSource::kKeyboardShortcutToSnap);
+      const WindowSnapWMEvent wm_event(is_desired_primary_snapped
+                                           ? WM_EVENT_SNAP_PRIMARY
+                                           : WM_EVENT_SNAP_SECONDARY);
       window_state->OnWMEvent(&wm_event);
     }
     window_state->ReadOutWindowCycleSnapAction(

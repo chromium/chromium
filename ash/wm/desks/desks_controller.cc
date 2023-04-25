@@ -1352,12 +1352,13 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
           case chromeos::WindowStateType::kPrimarySnapped:
           case chromeos::WindowStateType::kSecondarySnapped:
             if (window_state->CanSnap()) {
+              window_state->set_snap_action_source(
+                  WindowSnapActionSource::kOthers);
+
               const WindowSnapWMEvent event(
                   target_state == chromeos::WindowStateType::kPrimarySnapped
                       ? WM_EVENT_SNAP_PRIMARY
-                      : WM_EVENT_SNAP_SECONDARY,
-                  WindowSnapActionSource::
-                      kSnapByFullRestoreOrDeskTemplateOrSavedDesk);
+                      : WM_EVENT_SNAP_SECONDARY);
               window_state->OnWMEvent(&event);
             }
             break;

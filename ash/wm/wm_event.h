@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_state.h"
-#include "ash/wm/wm_metrics.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/display/display.h"
@@ -227,11 +226,6 @@ class ASH_EXPORT WindowSnapWMEvent : public WMEvent {
  public:
   explicit WindowSnapWMEvent(WMEventType type);
   WindowSnapWMEvent(WMEventType type, float snap_ratio);
-  WindowSnapWMEvent(WMEventType type,
-                    WindowSnapActionSource snap_action_source);
-  WindowSnapWMEvent(WMEventType type,
-                    float snap_ratio,
-                    WindowSnapActionSource snap_action_source);
 
   WindowSnapWMEvent(const WindowSnapWMEvent&) = delete;
   WindowSnapWMEvent& operator=(const WindowSnapWMEvent&) = delete;
@@ -242,15 +236,9 @@ class ASH_EXPORT WindowSnapWMEvent : public WMEvent {
   const WindowSnapWMEvent* AsSnapEvent() const override;
 
   float snap_ratio() const { return snap_ratio_; }
-  WindowSnapActionSource snap_action_source() const {
-    return snap_action_source_;
-  }
 
  private:
   float snap_ratio_ = chromeos::kDefaultSnapRatio;
-
-  WindowSnapActionSource snap_action_source_ =
-      WindowSnapActionSource::kNotSpecified;
 };
 
 }  // namespace ash
