@@ -42,6 +42,10 @@ class COMPONENT_EXPORT(PRINT_BACKEND) CupsOptionProvider {
   // Returns true if the `value` is supported by option `name`.
   virtual bool CheckOptionSupported(const char* name,
                                     const char* value) const = 0;
+
+  // Returns the IPP "media-col-database" attribute for this printer.
+  // ipp_attribute_t* is owned by CupsOptionProvider.
+  virtual ipp_attribute_t* GetMediaColDatabase() const = 0;
 };
 
 // Represents a CUPS printer.
@@ -50,18 +54,6 @@ class COMPONENT_EXPORT(PRINT_BACKEND) CupsOptionProvider {
 // share an http connection which the CupsConnection closes on destruction.
 class COMPONENT_EXPORT(PRINT_BACKEND) CupsPrinter : public CupsOptionProvider {
  public:
-  // Represents the margins that CUPS reports for some given media.
-  // Its members are valued in PWG units (100ths of mm).
-  // This struct approximates a cups_size_t, which is BLRT.
-  // `bottom`, `left`, `right`, and `top` express inward encroachment by
-  // margins, away from the edges of the paper.
-  struct CupsMediaMargins {
-    int bottom;
-    int left;
-    int right;
-    int top;
-  };
-
   ~CupsPrinter() override = default;
 
   // Create a printer with a connection defined by `http` and `dest`.
@@ -124,16 +116,6 @@ class COMPONENT_EXPORT(PRINT_BACKEND) CupsPrinter : public CupsOptionProvider {
   // Cancel the print job `job_id`.  Returns true if the operation succeeded.
   // Returns false if it failed for any reason.
   virtual bool CancelJob(int job_id) = 0;
-
-  // Queries CUPS for the margins of the media named by `media_id`.
-  //
-  // A `media_id` is any vendor ID known to CUPS for a given printer.
-  // Vendor IDs are exemplified by the keys of the big map in
-  // print_media_l10n.cc.
-  //
-  // Returns all zeroes if the CUPS API call fails.
-  virtual CupsMediaMargins GetMediaMarginsByName(
-      const std::string& media_id) const = 0;
 };
 
 }  // namespace printing

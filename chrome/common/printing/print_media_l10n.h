@@ -19,9 +19,9 @@ enum class MediaSizeGroup {
 };
 
 struct MediaSizeInfo {
-  std::u16string name;
+  std::string vendor_id;
+  std::u16string display_name;
   MediaSizeGroup sort_group;
-  bool registered_size;
 };
 
 struct PaperWithSizeInfo {
@@ -31,13 +31,12 @@ struct PaperWithSizeInfo {
   PrinterSemanticCapsAndDefaults::Paper paper;
 };
 
-// Maps a paper vendor ID to a localized name and sort group.  The returned name
-// will be automatically generated if the vendor ID does not have a known
-// mapping.  If the vendor ID is not a valid PWG self-describing media name,
-// the returned name will be empty.  The returned names are u16strings to
-// facilitate subsequent sorting; they need to be converted to UTF-8 before
-// updating a `Paper` object.
-MediaSizeInfo LocalizePaperDisplayName(const std::string& vendor_id);
+// Maps a paper size to a vendor ID, localized display name and sort group. The
+// returned ID and name will be automatically generated if the size does not
+// have a known mapping. The display names are u16strings to facilitate
+// subsequent sorting; they need to be converted to UTF-8 before updating a
+// `Paper` object.
+MediaSizeInfo LocalizePaperDisplayName(const gfx::Size& size_um);
 
 // Sorts a list of paper sizes in place by using the paired sort groups.
 void SortPaperDisplayNames(std::vector<PaperWithSizeInfo>& papers);
