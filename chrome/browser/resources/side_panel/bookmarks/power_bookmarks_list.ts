@@ -350,6 +350,12 @@ export class PowerBookmarksListElement extends PolymerElement {
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkMoved', getBookmarkName(bookmark),
           getBookmarkName(newParent)));
+      // If the new parent folder is visible, notify to ensure its displayed
+      // child count is updated.
+      const visibleIndex = this.visibleIndex_(newParent.id);
+      if (visibleIndex > -1) {
+        this.notifyPath(`shownBookmarks_.${visibleIndex}.children`);
+      }
     }
   }
 
