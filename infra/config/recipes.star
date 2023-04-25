@@ -87,6 +87,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:android/device_flasher",
+)
+
+build_recipe(
     name = "recipe:android/sdk_packager",
 )
 

@@ -297,3 +297,21 @@ packager_builder(
         ),
     ],
 )
+
+ci.builder(
+    name = "android-device-flasher",
+    executable = "recipe:android/device_flasher",
+    # Triggered manually through the scheduler UI
+    # https://luci-scheduler.appspot.com/jobs/chromium/android-device-flasher
+    # TODO(crbug.com/1260195): Run the build regularly once recipe fully works
+    schedule = "triggered",
+    triggered_by = [],
+    console_view_entry = consoles.console_view_entry(
+        short_name = "flash",
+    ),
+    # TODO(crbug.com/1260195): Enable the notifies once recipe fully works
+    notifies = [],
+    properties = {
+        "dry_run": True,
+    },
+)
