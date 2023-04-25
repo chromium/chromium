@@ -552,14 +552,13 @@ class PLATFORM_EXPORT ResourceRequestHead {
   }
   bool GetHasStorageAccess() const { return has_storage_access_; }
 
-  network::mojom::AttributionOsSupport GetAttributionReportingOsSupport()
-      const {
-    return attribution_reporting_os_support_;
+  network::mojom::AttributionSupport GetAttributionReportingSupport() const {
+    return attribution_reporting_support_;
   }
 
-  void SetAttributionReportingOsSupport(
-      network::mojom::AttributionOsSupport os_support) {
-    attribution_reporting_os_support_ = os_support;
+  void SetAttributionReportingSupport(
+      network::mojom::AttributionSupport attribution_support) {
+    attribution_reporting_support_ = attribution_support;
   }
 
  private:
@@ -682,8 +681,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   bool has_storage_access_ = false;
 
-  network::mojom::AttributionOsSupport attribution_reporting_os_support_ =
-      network::mojom::AttributionOsSupport::kDisabled;
+  network::mojom::AttributionSupport attribution_reporting_support_ =
+      network::mojom::AttributionSupport::kWeb;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

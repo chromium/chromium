@@ -98,7 +98,7 @@ class CORE_EXPORT AttributionSrcLoader
 
   void Trace(Visitor* visitor) const;
 
-  network::mojom::AttributionOsSupport GetOsSupport() const;
+  network::mojom::AttributionSupport GetSupport() const;
 
  private:
   class ResourceClient;
@@ -126,9 +126,6 @@ class CORE_EXPORT AttributionSrcLoader
   bool CreateAndSendRequests(Vector<KURL>,
                              HTMLElement*,
                              absl::optional<AttributionSrcToken>);
-
-  // Returns whether OS-level attribution is supported.
-  bool HasOsSupport() const;
 
   struct AttributionHeaders;
 

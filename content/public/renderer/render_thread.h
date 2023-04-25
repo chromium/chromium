@@ -113,11 +113,11 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost>
           proto) = 0;
 
-  // Returns whether OS-level support is enabled for Attribution Reporting API.
+  // Returns whether web or OS-level Attribution Reporting is supported.
   // See
   // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-  virtual network::mojom::AttributionOsSupport
-  GetOsSupportForAttributionReporting() = 0;
+  virtual network::mojom::AttributionSupport
+  GetAttributionReportingSupport() = 0;
 
  private:
   const base::AutoReset<RenderThread*> resetter_;

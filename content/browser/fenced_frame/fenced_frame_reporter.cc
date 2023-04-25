@@ -23,7 +23,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/types/pass_key.h"
-#include "components/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
@@ -49,6 +48,10 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "services/network/public/cpp/attribution_utils.h"
+#endif
 
 namespace content {
 
@@ -292,7 +295,11 @@ bool FencedFrameReporter::SendReport(
       WebContents::FromRenderFrameHost(request_initiator_frame));
   if (attribution_host &&
       request_initiator_frame->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
+          blink::mojom::PermissionsPolicyFeature::kAttributionReporting)
+#if BUILDFLAG(IS_ANDROID)
+      && network::HasAttributionSupport(AttributionManager::GetSupport())
+#endif
+  ) {
     BeaconId beacon_id(unique_id_counter.GetNext());
     attribution_reporting_data.emplace(AttributionReportingData{
         .beacon_id = beacon_id,
@@ -374,8 +381,7 @@ bool FencedFrameReporter::SendReportInternal(
                                attribution_reporting_data->is_automatic_beacon
                                    ? "navigation-source"
                                    : "event-source");
-    request->attribution_reporting_os_support =
-        AttributionManager::GetOsSupport();
+    request->attribution_reporting_support = AttributionManager::GetSupport();
   }
 
   // Create and configure `SimpleURLLoader` instance.

@@ -15,7 +15,7 @@
 #include "base/thread_annotations.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/common/content_export.h"
-#include "services/network/public/mojom/attribution.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -24,25 +24,30 @@ namespace content {
 class CONTENT_EXPORT AttributionOsLevelManagerAndroid
     : public AttributionOsLevelManager {
  public:
-  class CONTENT_EXPORT ScopedOsSupportForTesting {
-   public:
-    explicit ScopedOsSupportForTesting(network::mojom::AttributionOsSupport);
-    ~ScopedOsSupportForTesting();
+  enum class ApiState {
+    kDisabled,
+    kEnabled,
+  };
 
-    ScopedOsSupportForTesting(const ScopedOsSupportForTesting&) = delete;
-    ScopedOsSupportForTesting& operator=(const ScopedOsSupportForTesting&) =
+  class CONTENT_EXPORT ScopedApiStateForTesting {
+   public:
+    explicit ScopedApiStateForTesting(ApiState);
+    ~ScopedApiStateForTesting();
+
+    ScopedApiStateForTesting(const ScopedApiStateForTesting&) = delete;
+    ScopedApiStateForTesting& operator=(const ScopedApiStateForTesting&) =
         delete;
 
-    ScopedOsSupportForTesting(ScopedOsSupportForTesting&&) = delete;
-    ScopedOsSupportForTesting& operator=(ScopedOsSupportForTesting&&) = delete;
+    ScopedApiStateForTesting(ScopedApiStateForTesting&&) = delete;
+    ScopedApiStateForTesting& operator=(ScopedApiStateForTesting&&) = delete;
 
    private:
-    const network::mojom::AttributionOsSupport previous_;
+    const absl::optional<ApiState> previous_;
   };
 
   // Returns whether OS-level attribution is enabled. `kDisabled` is returned
   // before the result is returned from JNI.
-  static network::mojom::AttributionOsSupport GetOsSupport();
+  static ApiState GetApiState();
 
   AttributionOsLevelManagerAndroid();
   ~AttributionOsLevelManagerAndroid() override;

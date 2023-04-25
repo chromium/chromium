@@ -223,8 +223,7 @@ bool StructTraits<
   out->original_destination = data.original_destination();
   out->target_ip_address_space = data.target_ip_address_space();
   out->has_storage_access = data.has_storage_access();
-  out->attribution_reporting_os_support =
-      data.attribution_reporting_os_support();
+  out->attribution_reporting_support = data.attribution_reporting_support();
   return true;
 }
 

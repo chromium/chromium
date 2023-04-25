@@ -30,9 +30,10 @@
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_attestation.h"
-#include "services/network/public/mojom/attribution.mojom-blink.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -178,13 +179,26 @@ struct AttributionSrcLoader::AttributionHeaders {
                   /*invalid_parameter=*/os_trigger);
   }
 
+  void LogSourceIgnored(ExecutionContext* execution_context) const {
+    DCHECK(!web_source.IsNull());
+    LogAuditIssue(execution_context,
+                  AttributionReportingIssueType::kSourceIgnored,
+                  /*element=*/nullptr, request_id,
+                  /*invalid_parameter=*/web_source);
+  }
+
+  void LogTriggerIgnored(ExecutionContext* execution_context) const {
+    DCHECK(!web_trigger.IsNull());
+    LogAuditIssue(execution_context,
+                  AttributionReportingIssueType::kTriggerIgnored,
+                  /*element=*/nullptr, request_id,
+                  /*invalid_parameter=*/web_trigger);
+  }
+
   void MaybeLogAllSourceHeadersIgnored(
       ExecutionContext* execution_context) const {
     if (!web_source.IsNull()) {
-      LogAuditIssue(execution_context,
-                    AttributionReportingIssueType::kSourceIgnored,
-                    /*element=*/nullptr, request_id,
-                    /*invalid_parameter=*/web_source);
+      LogSourceIgnored(execution_context);
     }
 
     if (!os_source.IsNull()) {
@@ -195,10 +209,7 @@ struct AttributionSrcLoader::AttributionHeaders {
   void MaybeLogAllTriggerHeadersIgnored(
       ExecutionContext* execution_context) const {
     if (!web_trigger.IsNull()) {
-      LogAuditIssue(execution_context,
-                    AttributionReportingIssueType::kTriggerIgnored,
-                    /*element=*/nullptr, request_id,
-                    /*invalid_parameter=*/web_trigger);
+      LogTriggerIgnored(execution_context);
     }
 
     if (!os_trigger.IsNull()) {
@@ -501,16 +512,28 @@ bool AttributionSrcLoader::CanRegister(const KURL& url,
                                        HTMLElement* element,
                                        absl::optional<uint64_t> request_id,
                                        bool log_issues) {
-  return !!ReportingOriginForUrlIfValid(url, element, request_id, log_issues);
+  if (!ReportingOriginForUrlIfValid(url, element, request_id, log_issues)) {
+    return false;
+  }
+
+// TODO(linnan): Consider introducing helper functions to reduce #ifdef's.
+#if BUILDFLAG(IS_ANDROID)
+  if (!network::HasAttributionSupport(GetSupport())) {
+    if (log_issues) {
+      LogAuditIssue(local_frame_->DomWindow(),
+                    AttributionReportingIssueType::kNoWebOrOsSupport, element,
+                    request_id,
+                    /*invalid_parameter=*/String());
+    }
+    return false;
+  }
+#endif
+
+  return true;
 }
 
-bool AttributionSrcLoader::HasOsSupport() const {
-  return GetOsSupport() == network::mojom::AttributionOsSupport::kEnabled;
-}
-
-network::mojom::AttributionOsSupport AttributionSrcLoader::GetOsSupport()
-    const {
-  return Platform::Current()->GetOsSupportForAttributionReporting();
+network::mojom::AttributionSupport AttributionSrcLoader::GetSupport() const {
+  return Platform::Current()->GetAttributionReportingSupport();
 }
 
 bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
@@ -747,6 +770,12 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   }
 
   if (!headers.web_source.IsNull()) {
+#if BUILDFLAG(IS_ANDROID)
+    if (!network::HasAttributionWebSupport(loader_->GetSupport())) {
+      headers.LogSourceIgnored(loader_->local_frame_->DomWindow());
+      return;
+    }
+#endif
     auto source_data = attribution_reporting::SourceRegistration::Parse(
         StringUTF8Adaptor(headers.web_source).AsStringPiece());
     if (!source_data.has_value()) {
@@ -764,7 +793,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   }
 
   DCHECK(!headers.os_source.IsNull());
-  if (!loader_->HasOsSupport()) {
+  if (!network::HasAttributionOsSupport(loader_->GetSupport())) {
     headers.LogOsSourceIgnored(loader_->local_frame_->DomWindow());
     return;
   }
@@ -799,6 +828,12 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
   }
 
   if (!headers.web_trigger.IsNull()) {
+#if BUILDFLAG(IS_ANDROID)
+    if (!network::HasAttributionWebSupport(loader_->GetSupport())) {
+      headers.LogTriggerIgnored(loader_->local_frame_->DomWindow());
+      return;
+    }
+#endif
     auto trigger_data = attribution_reporting::TriggerRegistration::Parse(
         StringUTF8Adaptor(headers.web_trigger).AsStringPiece());
     if (!trigger_data.has_value()) {
@@ -818,7 +853,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
   }
 
   DCHECK(!headers.os_trigger.IsNull());
-  if (!loader_->HasOsSupport()) {
+  if (!network::HasAttributionOsSupport(loader_->GetSupport())) {
     headers.LogOsTriggerIgnored(loader_->local_frame_->DomWindow());
     return;
   }

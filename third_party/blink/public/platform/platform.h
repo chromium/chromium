@@ -773,12 +773,11 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Attribution Reporting API ------------------------------------
 
-  // Returns whether OS-level support is enabled for Attribution Reporting API.
+  // Returns whether web or OS-level Attribution Reporting is supported.
   // See
   // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-  virtual network::mojom::AttributionOsSupport
-  GetOsSupportForAttributionReporting() {
-    return network::mojom::AttributionOsSupport::kDisabled;
+  virtual network::mojom::AttributionSupport GetAttributionReportingSupport() {
+    return network::mojom::AttributionSupport::kWeb;
   }
 
 #if BUILDFLAG(IS_ANDROID)

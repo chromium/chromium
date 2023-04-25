@@ -3581,7 +3581,7 @@ chromium-metrics-reviews@google.com.
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
-    Records whether OS-level attribution is supported on the device. Only
+    Records whether web or OS-level attribution is supported on the device. Only
     recorded on Android when the AttributionReportingCrossAppWeb feature is
     enabled. Recorded once per browser session when the browser starts up.
   </summary>

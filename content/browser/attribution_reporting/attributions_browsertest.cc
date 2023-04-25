@@ -79,7 +79,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
-#include "services/network/public/mojom/attribution.mojom.h"
+#include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #endif
 
 namespace content {
@@ -991,6 +992,43 @@ IN_PROC_BROWSER_TEST_F(
   expected_report.WaitForReport();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       NavigationNoneSupported_EligibleHeaderNotSet) {
+  MockAttributionReportingContentBrowserClientBase<
+      ContentBrowserTestContentBrowserClient>
+      browser_client;
+  EXPECT_CALL(browser_client, IsWebAttributionReportingAllowed())
+      .WillRepeatedly(testing::Return(false));
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/register_source");
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  GURL register_source_url =
+      https_server()->GetURL("d.test", "/register_source");
+
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
+    createAttributionSrcAnchor({id: 'link',
+                        url: $1,
+                        attributionsrc: '',
+                        target: $2});)",
+                                               register_source_url, "_top")));
+  EXPECT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
+
+  register_response->WaitForRequest();
+  EXPECT_FALSE(base::Contains(register_response->http_request()->headers,
+                              "Attribution-Reporting-Eligible"));
+  EXPECT_FALSE(base::Contains(register_response->http_request()->headers,
+                              "Attribution-Reporting-Support"));
+}
+#endif
+
 class AttributionsPrerenderBrowserTest : public AttributionsBrowserTest {
  public:
   AttributionsPrerenderBrowserTest()
@@ -1221,8 +1259,9 @@ IN_PROC_BROWSER_TEST_F(
           https_server(), "/register_source_redirect2");
   ASSERT_TRUE(https_server()->Start());
 
-  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
+  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
+      scoped_api_state_setting(
+          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
 
   GURL impression_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/page_with_impression_creator.html");
@@ -1245,7 +1284,7 @@ IN_PROC_BROWSER_TEST_F(
   register_response1->WaitForRequest();
   EXPECT_EQ(register_response1->http_request()->headers.at(
                 "Attribution-Reporting-Support"),
-            "web, os");
+            "os, web");
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
@@ -1257,7 +1296,7 @@ IN_PROC_BROWSER_TEST_F(
   register_response2->WaitForRequest();
   ASSERT_EQ(register_response2->http_request()->headers.at(
                 "Attribution-Reporting-Support"),
-            "web, os");
+            "os, web");
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

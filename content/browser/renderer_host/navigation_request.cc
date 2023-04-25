@@ -39,6 +39,7 @@
 #include "base/types/optional_util.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browsing_topics/header_util.h"
@@ -190,6 +191,8 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_manager.h"
+#include "services/network/public/cpp/attribution_utils.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
 #endif
@@ -440,7 +443,11 @@ void AddAdditionalRequestHeaders(
     headers->SetHeader("Purpose", "prefetch");
   }
 
-  if (has_attribution_src_token) {
+  if (has_attribution_src_token
+#if BUILDFLAG(IS_ANDROID)
+      && network::HasAttributionSupport(AttributionManager::GetSupport())
+#endif
+  ) {
     headers->SetHeader("Attribution-Reporting-Eligible", "navigation-source");
   }
 }

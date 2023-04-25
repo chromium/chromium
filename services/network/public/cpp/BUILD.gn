@@ -30,6 +30,8 @@ component("cpp") {
   output_name = "network_cpp"
 
   sources = [
+    "attribution_utils.cc",
+    "attribution_utils.h",
     "client_hints.cc",
     "client_hints.h",
     "constants.cc",
@@ -514,6 +516,7 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "attribution_utils_unittest.cc",
     "client_hints_unittest.cc",
     "content_language_parser_unittest.cc",
     "content_security_policy/content_security_policy_unittest.cc",

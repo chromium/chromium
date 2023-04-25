@@ -180,17 +180,15 @@ interface Renderer {
   // |cors_exempt_header_list| sets the CORS exempt header list for sanity
   // checking (e.g. DCHECKs).
   //
-  // |attribution_os_support| sets the OS-level support for Attribution
-  // Reporting.
+  // |attribution_support| sets whether web or OS-level Attribution Reporting is supported.
   InitializeRenderer(string user_agent,
                      string full_user_agent,
                      string reduced_user_agent,
                      blink.mojom.UserAgentMetadata metadata,
                      array<string> cors_exempt_header_list,
-                     network.mojom.AttributionOsSupport attribution_os_support);
+                     network.mojom.AttributionSupport attribution_support);
 
-  // Set the OS-level support for Attribution Reporting indicating whether
-  // OS-level attribution is enabled.
+ // Set whether web or OS-level Attribution Reporting is supported.
   [EnableIf=is_android]
-  SetOsSupportForAttributionReporting(network.mojom.AttributionOsSupport os_support);
+  SetAttributionReportingSupport(network.mojom.AttributionSupport attribution_support);
 };

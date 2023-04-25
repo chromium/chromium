@@ -14,9 +14,14 @@ struct TriggerAttestation {
   string aggregatable_report_id;
 };
 
-// Indicates whether OS-level attribution is enabled.
+// Indicates whether web or OS-level Attribution Reporting is supported.
 // See https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-enum AttributionOsSupport {
-  kDisabled,
-  kEnabled,
+enum AttributionSupport {
+  kWeb,
+  [EnableIf=is_android]
+  kWebAndOs,
+  [EnableIf=is_android]
+  kOs,
+  [EnableIf=is_android]
+  kNone,
 };

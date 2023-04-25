@@ -57,7 +57,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
-#include "services/network/public/mojom/attribution.mojom.h"
+#include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #endif
 
 namespace content {
@@ -761,6 +762,47 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(trigger_data.front().event_triggers.front().data, 7u);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       ImgNoneSupported_EligibleHeaderNotSet) {
+  MockAttributionReportingContentBrowserClientBase<
+      ContentBrowserTestContentBrowserClient>
+      browser_client;
+  EXPECT_CALL(browser_client, IsWebAttributionReportingAllowed())
+      .WillRepeatedly(testing::Return(false));
+
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::RegisterDefaultHandlers(https_server.get());
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+  https_server->ServeFilesFromSourceDirectory("content/test/data");
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_source");
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url = https_server->GetURL("d.test", "/register_source");
+  ASSERT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("createAttributionEligibleImgSrc($1);", register_url)));
+
+  register_response->WaitForRequest();
+  EXPECT_FALSE(base::Contains(register_response->http_request()->headers,
+                              "Attribution-Reporting-Eligible"));
+  EXPECT_FALSE(base::Contains(register_response->http_request()->headers,
+                              "Attribution-Reporting-Support"));
+}
+#endif
+
 class AttributionSrcMultipleBackgroundRequestTest
     : public AttributionSrcBrowserTest,
       public ::testing::WithParamInterface<
@@ -1187,8 +1229,9 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledSubresourceBrowserTest,
           https_server.get(), "/register_source2");
   ASSERT_TRUE(https_server->Start());
 
-  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
+  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
+      scoped_api_state_setting(
+          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
 
   GURL page_url =
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
@@ -1202,7 +1245,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledSubresourceBrowserTest,
   register_response1->WaitForRequest();
   ASSERT_EQ(register_response1->http_request()->headers.at(
                 "Attribution-Reporting-Support"),
-            "web, os");
+            "os, web");
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
@@ -1214,7 +1257,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledSubresourceBrowserTest,
   register_response2->WaitForRequest();
   ASSERT_EQ(register_response2->http_request()->headers.at(
                 "Attribution-Reporting-Support"),
-            "web, os");
+            "os, web");
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1242,8 +1285,9 @@ IN_PROC_BROWSER_TEST_F(
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
+  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
+      scoped_api_state_setting(
+          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
 
   GURL register_url = https_server->GetURL("d.test", "/register_source1");
   ASSERT_TRUE(ExecJs(web_contents(),
@@ -1252,7 +1296,7 @@ IN_PROC_BROWSER_TEST_F(
   register_response1->WaitForRequest();
   ASSERT_EQ(register_response1->http_request()->headers.at(
                 "Attribution-Reporting-Support"),
-            "web, os");
+            "os, web");
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
@@ -1264,7 +1308,7 @@ IN_PROC_BROWSER_TEST_F(
   register_response2->WaitForRequest();
   ASSERT_EQ(register_response2->http_request()->headers.at(
                 "Attribution-Reporting-Support"),
-            "web, os");
+            "os, web");
 }
 
 struct OsRegistrationTestCase {
@@ -1324,8 +1368,9 @@ IN_PROC_BROWSER_TEST_P(
           https_server.get(), "/register");
   ASSERT_TRUE(https_server->Start());
 
-  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
+  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
+      scoped_api_state_setting(
+          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
 
   GURL page_url =
       https_server->GetURL("b.test", "/page_with_impression_creator.html");

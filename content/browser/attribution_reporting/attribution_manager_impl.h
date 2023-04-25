@@ -113,7 +113,11 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
 
-  static network::mojom::AttributionOsSupport GetOsSupport();
+  static network::mojom::AttributionSupport GetSupport();
+
+#if BUILDFLAG(IS_ANDROID)
+  static void UpdateSupportForRenderProcessHosts();
+#endif
 
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,

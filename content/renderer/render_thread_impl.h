@@ -187,8 +187,7 @@ class CONTENT_EXPORT RenderThreadImpl
   void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
       override;
-  network::mojom::AttributionOsSupport GetOsSupportForAttributionReporting()
-      override;
+  network::mojom::AttributionSupport GetAttributionReportingSupport() override;
 
   // IPC::Listener implementation via ChildThreadImpl:
   void OnAssociatedInterfaceRequest(
@@ -434,7 +433,7 @@ class CONTENT_EXPORT RenderThreadImpl
       const std::string& reduced_user_agent,
       const blink::UserAgentMetadata& user_agent_metadata,
       const std::vector<std::string>& cors_exempt_header_list,
-      network::mojom::AttributionOsSupport attribution_os_support) override;
+      network::mojom::AttributionSupport) override;
   void UpdateScrollbarTheme(
       mojom::UpdateScrollbarThemeParamsPtr params) override;
   void OnSystemColorsChanged(int32_t aqua_color_variant) override;
@@ -451,8 +450,8 @@ class CONTENT_EXPORT RenderThreadImpl
   void SetIsCrossOriginIsolated(bool value) override;
   void SetIsIsolatedContext(bool value) override;
 #if BUILDFLAG(IS_ANDROID)
-  void SetOsSupportForAttributionReporting(
-      network::mojom::AttributionOsSupport os_support) override;
+  void SetAttributionReportingSupport(
+      network::mojom::AttributionSupport) override;
 #endif
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
@@ -503,7 +502,7 @@ class CONTENT_EXPORT RenderThreadImpl
   blink::WebString reduced_user_agent_;
   blink::UserAgentMetadata user_agent_metadata_;
 
-  network::mojom::AttributionOsSupport attribution_os_support_;
+  network::mojom::AttributionSupport attribution_support_;
 
   // Sticky once true, indicates that compositing is done without Gpu, so
   // resources given to the compositor or to the viz service should be

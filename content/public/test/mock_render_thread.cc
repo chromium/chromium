@@ -327,9 +327,9 @@ void MockRenderThread::ReleaseAllWebViews() {
   page_broadcasts_.clear();
 }
 
-network::mojom::AttributionOsSupport
-MockRenderThread::GetOsSupportForAttributionReporting() {
-  return network::mojom::AttributionOsSupport::kDisabled;
+network::mojom::AttributionSupport
+MockRenderThread::GetAttributionReportingSupport() {
+  return network::mojom::AttributionSupport::kWeb;
 }
 
 }  // namespace content

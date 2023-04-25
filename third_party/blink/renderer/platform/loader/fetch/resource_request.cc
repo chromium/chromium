@@ -222,7 +222,7 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetRecursivePrefetchToken(RecursivePrefetchToken());
   request->SetFetchLikeAPI(IsFetchLikeAPI());
   request->SetFavicon(IsFavicon());
-  request->SetAttributionReportingOsSupport(GetAttributionReportingOsSupport());
+  request->SetAttributionReportingSupport(GetAttributionReportingSupport());
 
   return request;
 }

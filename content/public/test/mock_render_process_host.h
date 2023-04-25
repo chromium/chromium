@@ -288,8 +288,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const override;
 
 #if BUILDFLAG(IS_ANDROID)
-  void SetOsSupportForAttributionReporting(
-      network::mojom::AttributionOsSupport os_support) override {}
+  void SetAttributionReportingSupport(
+      network::mojom::AttributionSupport) override {}
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

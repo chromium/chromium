@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,8 +108,8 @@ struct AttributionSrcTestCase {
   const char* base_url;
   const char* input_html;
   const char* expected_eligible_header;
-  network::mojom::AttributionOsSupport os_support =
-      network::mojom::AttributionOsSupport::kDisabled;
+  network::mojom::AttributionSupport attribution_support =
+      network::mojom::AttributionSupport::kWeb;
 };
 
 class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
@@ -252,7 +254,7 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
   void AttributionSrcRequestVerification(
       Document* document,
       const char* expected_eligible_header,
-      network::mojom::AttributionOsSupport expected_os_support) {
+      network::mojom::AttributionSupport expected_support) {
     ASSERT_TRUE(preload_request_.get());
     Resource* resource = preload_request_->Start(document);
     ASSERT_TRUE(resource);
@@ -260,9 +262,8 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
     EXPECT_EQ(expected_eligible_header,
               resource->GetResourceRequest().HttpHeaderField(
                   http_names::kAttributionReportingEligible));
-    EXPECT_EQ(
-        expected_os_support,
-        resource->GetResourceRequest().GetAttributionReportingOsSupport());
+    EXPECT_EQ(expected_support,
+              resource->GetResourceRequest().GetAttributionReportingSupport());
   }
 
  protected:
@@ -440,7 +441,7 @@ class HTMLPreloadScannerTest : public PageTestBase {
     SCOPED_TRACE(test_case.input_html);
 
     ScopedTestingPlatformSupport<AttributionTestingPlatformSupport> platform;
-    platform->os_support = test_case.os_support;
+    platform->attribution_support = test_case.attribution_support;
 
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
@@ -449,19 +450,19 @@ class HTMLPreloadScannerTest : public PageTestBase {
     preloader.TakePreloadData(std::move(preload_data));
     preloader.AttributionSrcRequestVerification(
         &GetDocument(), test_case.expected_eligible_header,
-        test_case.os_support);
+        test_case.attribution_support);
   }
 
  private:
   class AttributionTestingPlatformSupport : public TestingPlatformSupport {
    public:
-    network::mojom::AttributionOsSupport GetOsSupportForAttributionReporting()
+    network::mojom::AttributionSupport GetAttributionReportingSupport()
         override {
-      return os_support;
+      return attribution_support;
     }
 
-    network::mojom::AttributionOsSupport os_support =
-        network::mojom::AttributionOsSupport::kDisabled;
+    network::mojom::AttributionSupport attribution_support =
+        network::mojom::AttributionSupport::kWeb;
   };
 
   std::unique_ptr<HTMLPreloadScanner> scanner_;
@@ -1124,33 +1125,35 @@ TEST_F(HTMLPreloadScannerTest, testAttributionSrc) {
   static constexpr char kInsecureBaseURL[] = "http://example.test";
 
   AttributionSrcTestCase test_cases[] = {
-      // Insecure context
-      {kInsecureDocumentUrl, kSecureBaseURL,
-       "<img src='/image' attributionsrc>", nullptr},
-      {kInsecureDocumentUrl, kSecureBaseURL,
-       "<script src='/script' attributionsrc></script>", nullptr},
-      // No attributionsrc attribute
-      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>", nullptr},
-      {kSecureDocumentUrl, kSecureBaseURL, "<script src='/script'></script>",
-       nullptr},
-      // Irrelevant element type
-      {kSecureDocumentUrl, kSecureBaseURL,
-       "<video poster='/image' attributionsrc>", nullptr},
-      // Not potentially trustworthy reporting origin
-      {kSecureDocumentUrl, kInsecureBaseURL,
-       "<img src='/image' attributionsrc>", nullptr},
-      {kSecureDocumentUrl, kInsecureBaseURL,
-       "<script src='/script' attributionsrc></script>", nullptr},
-      // Secure context, potentially trustworthy reporting origin,
-      // attributionsrc attribute
-      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
-       kAttributionEligibleEventSourceAndTrigger},
-      {kSecureDocumentUrl, kSecureBaseURL,
-       "<script src='/script' attributionsrc></script>",
-       kAttributionEligibleEventSourceAndTrigger},
-      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
-       kAttributionEligibleEventSourceAndTrigger,
-       network::mojom::AttributionOsSupport::kEnabled},
+    // Insecure context
+    {kInsecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
+     nullptr},
+    {kInsecureDocumentUrl, kSecureBaseURL,
+     "<script src='/script' attributionsrc></script>", nullptr},
+    // No attributionsrc attribute
+    {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>", nullptr},
+    {kSecureDocumentUrl, kSecureBaseURL, "<script src='/script'></script>",
+     nullptr},
+    // Irrelevant element type
+    {kSecureDocumentUrl, kSecureBaseURL,
+     "<video poster='/image' attributionsrc>", nullptr},
+    // Not potentially trustworthy reporting origin
+    {kSecureDocumentUrl, kInsecureBaseURL, "<img src='/image' attributionsrc>",
+     nullptr},
+    {kSecureDocumentUrl, kInsecureBaseURL,
+     "<script src='/script' attributionsrc></script>", nullptr},
+    // Secure context, potentially trustworthy reporting origin,
+    // attributionsrc attribute
+    {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
+     kAttributionEligibleEventSourceAndTrigger},
+    {kSecureDocumentUrl, kSecureBaseURL,
+     "<script src='/script' attributionsrc></script>",
+     kAttributionEligibleEventSourceAndTrigger},
+#if BUILDFLAG(IS_ANDROID)
+    {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
+     kAttributionEligibleEventSourceAndTrigger,
+     network::mojom::AttributionSupport::kWebAndOs},
+#endif
   };
 
   for (const auto& test_case : test_cases) {

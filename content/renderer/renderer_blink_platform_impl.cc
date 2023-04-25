@@ -998,13 +998,13 @@ base::PlatformThreadId RendererBlinkPlatformImpl::GetIOThreadId() const {
   return io_thread_id_;
 }
 
-network::mojom::AttributionOsSupport
-RendererBlinkPlatformImpl::GetOsSupportForAttributionReporting() {
+network::mojom::AttributionSupport
+RendererBlinkPlatformImpl::GetAttributionReportingSupport() {
   auto* render_thread = RenderThreadImpl::current();
   // RenderThreadImpl is null in some tests.
   if (!render_thread)
-    return network::mojom::AttributionOsSupport::kDisabled;
-  return render_thread->GetOsSupportForAttributionReporting();
+    return network::mojom::AttributionSupport::kWeb;
+  return render_thread->GetAttributionReportingSupport();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

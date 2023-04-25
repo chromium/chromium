@@ -47,9 +47,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/http/http_response_headers.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_attestation.h"
-#include "services/network/public/mojom/attribution.mojom.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -479,6 +480,14 @@ void AttributionDataHostManagerImpl::ParseSource(
 
   switch (header.registrar) {
     case Registrar::kWeb:
+#if BUILDFLAG(IS_ANDROID)
+      if (!network::HasAttributionWebSupport(
+              AttributionManager::GetSupport())) {
+        // TODO(crbug.com/1426450): Report a DevTools issue.
+        MaybeOnRegistrationsFinished(it);
+        break;
+      }
+#endif
       it->pending_web_decodes().emplace_back(std::move(header.header),
                                              std::move(reporting_origin));
       // Only perform the decode if it is the only one in the queue. Otherwise,
@@ -488,9 +497,8 @@ void AttributionDataHostManagerImpl::ParseSource(
       }
       break;
     case Registrar::kOs:
-      if (AttributionManager::GetOsSupport() ==
-          network::mojom::AttributionOsSupport::kDisabled) {
-        // TODO: Report a DevTools issue.
+      if (!network::HasAttributionOsSupport(AttributionManager::GetSupport())) {
+        // TODO(crbug.com/1426450): Report a DevTools issue.
         MaybeOnRegistrationsFinished(it);
         break;
       }

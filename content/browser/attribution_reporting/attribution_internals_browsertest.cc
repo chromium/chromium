@@ -64,7 +64,6 @@
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
-#include "services/network/public/mojom/attribution.mojom.h"
 #endif
 
 namespace content {
@@ -523,9 +522,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   static constexpr char kScript[] = R"(
-    const status = document.getElementById('os-support');
+    const status = document.getElementById('attribution-support');
     const setTitleIfDone = (_, obs) => {
-      if (status.innerText === 'disabled') {
+      if (status.innerText === 'web') {
         if (obs) {
           obs.disconnect();
         }
@@ -552,9 +551,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   static constexpr char kScript[] = R"(
-    const status = document.getElementById('os-support');
+    const status = document.getElementById('attribution-support');
     const setTitleIfDone = (_, obs) => {
-      if (status.innerText === 'enabled') {
+      if (status.innerText === 'os, web') {
         if (obs) {
           obs.disconnect();
         }
@@ -570,8 +569,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
-  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
+  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
+      scoped_api_state_setting(
+          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   ClickRefreshButton();

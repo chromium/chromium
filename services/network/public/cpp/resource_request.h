@@ -193,8 +193,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   mojom::IPAddressSpace target_ip_address_space =
       mojom::IPAddressSpace::kUnknown;
   bool has_storage_access = false;
-  network::mojom::AttributionOsSupport attribution_reporting_os_support =
-      network::mojom::AttributionOsSupport::kDisabled;
+  network::mojom::AttributionSupport attribution_reporting_support =
+      network::mojom::AttributionSupport::kWeb;
 };
 
 // This does not accept |kDefault| referrer policy.

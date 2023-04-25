@@ -1751,7 +1751,7 @@ bool RenderProcessHostImpl::Init() {
       GetContentClient()->browser()->GetReducedUserAgent(),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       storage_partition_impl_->cors_exempt_header_list(),
-      AttributionManager::GetOsSupport());
+      AttributionManager::GetSupport());
 
   if (run_renderer_in_process()) {
     DCHECK(g_renderer_main_thread_factory);
@@ -5483,9 +5483,9 @@ void RenderProcessHostImpl::NotifyMemoryPressureToRenderer(
   child_process_->OnMemoryPressure(level);
 }
 
-void RenderProcessHostImpl::SetOsSupportForAttributionReporting(
-    network::mojom::AttributionOsSupport os_support) {
-  GetRendererInterface()->SetOsSupportForAttributionReporting(os_support);
+void RenderProcessHostImpl::SetAttributionReportingSupport(
+    network::mojom::AttributionSupport attribution_support) {
+  GetRendererInterface()->SetAttributionReportingSupport(attribution_support);
 }
 
 #endif

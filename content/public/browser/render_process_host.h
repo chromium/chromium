@@ -701,11 +701,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  // Sets whether OS-level support is enabled for Attribution Reporting API.
-  // See
+  // Sets whether web or OS-level Attribution Reporting is supported. This may
+  // be called if the renderer process was created before the Measurement API
+  // state is returned from the underlying platform. See
   // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-  virtual void SetOsSupportForAttributionReporting(
-      network::mojom::AttributionOsSupport os_support) = 0;
+  virtual void SetAttributionReportingSupport(
+      network::mojom::AttributionSupport) = 0;
 #endif
 
   // Static management functions -----------------------------------------------

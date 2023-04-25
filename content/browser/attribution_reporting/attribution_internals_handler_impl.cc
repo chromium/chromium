@@ -51,7 +51,8 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/mojom/attribution.mojom.h"
+#include "services/network/public/cpp/attribution_utils.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -253,10 +254,10 @@ void AttributionInternalsHandlerImpl::IsAttributionReportingEnabled(
           /*destination_origin=*/nullptr, /*reporting_origin=*/nullptr);
   bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAttributionReportingDebugMode);
-  bool has_os_support = AttributionManager::GetOsSupport() ==
-                        network::mojom::AttributionOsSupport::kEnabled;
-  std::move(callback).Run(attribution_reporting_enabled, debug_mode,
-                          has_os_support);
+  std::move(callback).Run(
+      attribution_reporting_enabled, debug_mode,
+      static_cast<std::string>(network::GetAttributionSupportHeader(
+          AttributionManager::GetSupport())));
 }
 
 void AttributionInternalsHandlerImpl::GetActiveSources(

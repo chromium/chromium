@@ -326,8 +326,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->has_storage_access =
       request_info.begin_params->has_storage_access;
 
-  new_request->attribution_reporting_os_support =
-      AttributionManager::GetOsSupport();
+  new_request->attribution_reporting_support = AttributionManager::GetSupport();
 
   return new_request;
 }

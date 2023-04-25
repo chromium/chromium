@@ -69,6 +69,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -469,13 +470,34 @@ AttributionManagerImpl::CreateForTesting(
 }
 
 // static
-network::mojom::AttributionOsSupport AttributionManagerImpl::GetOsSupport() {
+network::mojom::AttributionSupport AttributionManagerImpl::GetSupport() {
 #if BUILDFLAG(IS_ANDROID)
-  return AttributionOsLevelManagerAndroid::GetOsSupport();
+  bool is_web_allowed =
+      GetContentClient()->browser()->IsWebAttributionReportingAllowed();
+  switch (AttributionOsLevelManagerAndroid::GetApiState()) {
+    case AttributionOsLevelManagerAndroid::ApiState::kDisabled:
+      return is_web_allowed ? network::mojom::AttributionSupport::kWeb
+                            : network::mojom::AttributionSupport::kNone;
+    case AttributionOsLevelManagerAndroid::ApiState::kEnabled:
+      return is_web_allowed ? network::mojom::AttributionSupport::kWebAndOs
+                            : network::mojom::AttributionSupport::kOs;
+  }
 #else
-  return network::mojom::AttributionOsSupport::kDisabled;
+  return network::mojom::AttributionSupport::kWeb;
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// static
+void AttributionManagerImpl::UpdateSupportForRenderProcessHosts() {
+  network::mojom::AttributionSupport attribution_support = GetSupport();
+
+  for (RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
+       !it.IsAtEnd(); it.Advance()) {
+    it.GetCurrentValue()->SetAttributionReportingSupport(attribution_support);
+  }
+}
+#endif
 
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,

@@ -65,7 +65,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
 #include "content/browser/attribution_reporting/os_registration.h"
-#include "services/network/public/mojom/attribution.mojom.h"
+#include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #endif
 
 namespace content {
@@ -1103,8 +1103,9 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
   scoped_feature_list.InitAndEnableFeature(
       network::features::kAttributionReportingCrossAppWeb);
 
-  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
+  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
+      scoped_api_state_setting(
+          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
 
   const auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
@@ -1135,8 +1136,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   scoped_feature_list.InitAndEnableFeature(
       network::features::kAttributionReportingCrossAppWeb);
 
-  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
+  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
+      scoped_api_state_setting(
+          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
 
   const auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
@@ -1161,8 +1163,9 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource_InOrder) {
   scoped_feature_list.InitAndEnableFeature(
       network::features::kAttributionReportingCrossAppWeb);
 
-  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
+  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
+      scoped_api_state_setting(
+          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
 
   auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   auto source_site = *SuitableOrigin::Deserialize("https://source.test");
@@ -2063,8 +2066,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   scoped_feature_list.InitAndEnableFeature(
       network::features::kAttributionReportingCrossAppWeb);
 
-  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
-      scoped_os_support_setting(network::mojom::AttributionOsSupport::kEnabled);
+  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
+      scoped_api_state_setting(
+          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
 
   auto reporting_origin = url::Origin::Create(GURL("https://report.test"));
   auto source_origin = *SuitableOrigin::Deserialize("https://source.test");
@@ -2635,6 +2639,37 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
 
   data_host_remote->OsTriggerDataAvailable(kRegistrationUrl);
   data_host_remote.FlushForTesting();
+}
+
+TEST_F(AttributionDataHostManagerImplTest, WebDisabled_SourceNotRegistered) {
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client, IsWebAttributionReportingAllowed())
+      .WillRepeatedly(testing::Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  const auto reporter = *SuitableOrigin::Deserialize("https://report.test");
+  const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
+
+  for (auto state : {AttributionOsLevelManagerAndroid::ApiState::kDisabled,
+                     AttributionOsLevelManagerAndroid::ApiState::kEnabled}) {
+    AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
+        scoped_api_state_setting(state);
+
+    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                       kRegisterSourceJson);
+
+    const blink::AttributionSrcToken attribution_src_token;
+    data_host_manager_.NotifyNavigationRegistrationData(
+        attribution_src_token, headers.get(), reporter, source_site,
+        AttributionInputEvent(), AttributionNavigationType::kAnchor,
+        /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
+        /*is_final_response=*/false);
+    // Wait for parsing to finish.
+    task_environment_.FastForwardBy(base::TimeDelta());
+  }
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

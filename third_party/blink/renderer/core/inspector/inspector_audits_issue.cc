@@ -227,6 +227,9 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kWebAndOsHeaders:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           WebAndOsHeaders;
+    case AttributionReportingIssueType::kNoWebOrOsSupport:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          NoWebOrOsSupport;
   }
 }
 

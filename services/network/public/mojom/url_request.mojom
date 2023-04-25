@@ -495,8 +495,8 @@ struct URLRequest {
   // ok.
   bool has_storage_access;
 
- // Indicates whether the OS-level attribution is enabled.
-  AttributionOsSupport attribution_reporting_os_support;
+ // Indicates whether web or OS-level Attribution Reporting is supported.
+  AttributionSupport attribution_reporting_support;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

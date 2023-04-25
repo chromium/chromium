@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_TEST_MOCK_CONTENT_BROWSER_CLIENT_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_TEST_MOCK_CONTENT_BROWSER_CLIENT_H_
 
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/test/test_content_browser_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,6 +33,10 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
                const url::Origin* destination_origin,
                const url::Origin* reporting_origin),
               (override));
+
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(bool, IsWebAttributionReportingAllowed, (), (override));
+#endif
 };
 
 using MockAttributionReportingContentBrowserClient =

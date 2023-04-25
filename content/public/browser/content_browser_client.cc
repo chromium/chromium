@@ -17,6 +17,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/webid/mdocs/mdoc_provider.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
@@ -515,6 +516,12 @@ bool ContentBrowserClient::IsAttributionReportingOperationAllowed(
     const url::Origin* reporting_origin) {
   return true;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool ContentBrowserClient::IsWebAttributionReportingAllowed() {
+  return true;
+}
+#endif
 
 bool ContentBrowserClient::IsSharedStorageAllowed(
     content::BrowserContext* browser_context,

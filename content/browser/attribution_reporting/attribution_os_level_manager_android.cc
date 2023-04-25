@@ -28,8 +28,6 @@
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
-#include "content/public/browser/render_process_host.h"
-#include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -39,10 +37,10 @@ namespace content {
 
 namespace {
 
-using ScopedOsSupportForTesting =
-    ::content::AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting;
+using ScopedApiStateForTesting =
+    ::content::AttributionOsLevelManagerAndroid::ScopedApiStateForTesting;
 
-using network::mojom::AttributionOsSupport;
+using ApiState = ::content::AttributionOsLevelManagerAndroid::ApiState;
 
 #if DCHECK_IS_ON()
 const base::SequenceChecker& GetSequenceChecker() {
@@ -54,25 +52,20 @@ const base::SequenceChecker& GetSequenceChecker() {
 // This flag is per device and can only be changed by the OS. Currently we don't
 // observe setting changes on the device and the flag is only initialized once
 // on startup. The value may vary in tests.
-absl::optional<AttributionOsSupport> g_os_support
-    GUARDED_BY_CONTEXT(GetSequenceChecker());
+absl::optional<ApiState> g_state GUARDED_BY_CONTEXT(GetSequenceChecker());
 
-void SetOsSupport(AttributionOsSupport os_support) {
+void SetApiState(absl::optional<ApiState> state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(GetSequenceChecker());
 
-  AttributionOsSupport previous =
-      AttributionOsLevelManagerAndroid::GetOsSupport();
+  ApiState previous = AttributionOsLevelManagerAndroid::GetApiState();
 
-  g_os_support = os_support;
+  g_state = state;
 
-  if (previous == os_support) {
+  if (previous == AttributionOsLevelManagerAndroid::GetApiState()) {
     return;
   }
 
-  for (RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
-       !it.IsAtEnd(); it.Advance()) {
-    it.GetCurrentValue()->SetOsSupportForAttributionReporting(os_support);
-  }
+  AttributionManagerImpl::UpdateSupportForRenderProcessHosts();
 }
 
 int GetDeletionMode(bool delete_rate_limit_data) {
@@ -101,7 +94,7 @@ int GetMatchBehavior(BrowsingDataFilterBuilder::Mode mode) {
   }
 }
 
-AttributionOsSupport ConvertToOsSupport(int value) {
+ApiState ConvertToApiState(int value) {
   // See
   // https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/measurement/MeasurementManager
   // for constant values.
@@ -110,11 +103,11 @@ AttributionOsSupport ConvertToOsSupport(int value) {
 
   switch (value) {
     case kMeasurementApiStateDisabled:
-      return AttributionOsSupport::kDisabled;
+      return ApiState::kDisabled;
     case kMeasurementApiStateEnabled:
-      return AttributionOsSupport::kEnabled;
+      return ApiState::kEnabled;
     default:
-      return AttributionOsSupport::kDisabled;
+      return ApiState::kDisabled;
   }
 }
 
@@ -123,26 +116,25 @@ AttributionOsSupport ConvertToOsSupport(int value) {
 static void JNI_AttributionOsLevelManager_OnMeasurementStateReturned(
     JNIEnv* env,
     jint state) {
-  SetOsSupport(ConvertToOsSupport(state));
+  SetApiState(ConvertToApiState(state));
 
   base::UmaHistogramEnumeration("Conversions.AttributionSupport",
-                                AttributionManagerImpl::GetOsSupport());
+                                AttributionManagerImpl::GetSupport());
 }
 
-ScopedOsSupportForTesting::ScopedOsSupportForTesting(
-    AttributionOsSupport os_support)
-    : previous_(GetOsSupport()) {
-  SetOsSupport(os_support);
+ScopedApiStateForTesting::ScopedApiStateForTesting(ApiState state)
+    : previous_(g_state) {
+  SetApiState(state);
 }
 
-ScopedOsSupportForTesting::~ScopedOsSupportForTesting() {
-  SetOsSupport(previous_);
+ScopedApiStateForTesting::~ScopedApiStateForTesting() {
+  SetApiState(previous_);
 }
 
 // static
-AttributionOsSupport AttributionOsLevelManagerAndroid::GetOsSupport() {
+ApiState AttributionOsLevelManagerAndroid::GetApiState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(GetSequenceChecker());
-  return g_os_support.value_or(AttributionOsSupport::kDisabled);
+  return g_state.value_or(ApiState::kDisabled);
 }
 
 AttributionOsLevelManagerAndroid::AttributionOsLevelManagerAndroid() {
@@ -222,12 +214,12 @@ void AttributionOsLevelManagerAndroid::ClearData(
 void AttributionOsLevelManagerAndroid::InitializeOsSupport() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(GetSequenceChecker());
 
-  if (g_os_support.has_value()) {
+  if (g_state.has_value()) {
     return;
   }
 
   // Only make the async call once.
-  g_os_support.emplace(AttributionOsSupport::kDisabled);
+  g_state.emplace(ApiState::kDisabled);
 
   Java_AttributionOsLevelManager_getMeasurementApiStatus(
       base::android::AttachCurrentThread(), jobj_);

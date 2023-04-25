@@ -30,8 +30,8 @@ AttributionManager* AttributionManager::FromBrowserContext(
 }
 
 // static
-network::mojom::AttributionOsSupport AttributionManager::GetOsSupport() {
-  return AttributionManagerImpl::GetOsSupport();
+network::mojom::AttributionSupport AttributionManager::GetSupport() {
+  return AttributionManagerImpl::GetSupport();
 }
 
 }  // namespace content

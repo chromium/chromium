@@ -22,6 +22,7 @@
 #include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/download/public/common/quarantine_connection.h"
@@ -891,6 +892,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin* source_origin,
       const url::Origin* destination_origin,
       const url::Origin* reporting_origin);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Allows the embedder to control if web attribution reporting is allowed.
+  // This method must be idempotent.
+  virtual bool IsWebAttributionReportingAllowed();
+#endif
 
   // Allows the embedder to control if Shared Storage API operations can happen
   // in a given context.

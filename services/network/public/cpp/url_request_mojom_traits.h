@@ -375,9 +375,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return request.has_storage_access;
   }
 
-  static network::mojom::AttributionOsSupport attribution_reporting_os_support(
+  static network::mojom::AttributionSupport attribution_reporting_support(
       const network::ResourceRequest& request) {
-    return request.attribution_reporting_os_support;
+    return request.attribution_reporting_support;
   }
 
   static bool Read(network::mojom::URLRequestDataView data,

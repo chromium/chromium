@@ -27,12 +27,12 @@
 #include "services/network/attribution/attribution_attestation_mediator.h"
 #include "services/network/attribution/attribution_attestation_mediator_metrics_recorder.h"
 #include "services/network/attribution/boringssl_attestation_cryptographer.h"
+#include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
-#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -68,15 +68,6 @@ bool IsNeededForRequest(const net::HttpRequestHeaders& request_headers) {
                                 &attribution_header) &&
       base::Contains(attribution_header, "trigger");
   return is_trigger_ping;
-}
-
-base::StringPiece GetSupportHeader(mojom::AttributionOsSupport os_support) {
-  switch (os_support) {
-    case mojom::AttributionOsSupport::kDisabled:
-      return "web";
-    case mojom::AttributionOsSupport::kEnabled:
-      return "web, os";
-  }
 }
 
 }  // namespace
@@ -294,7 +285,7 @@ void SetAttributionReportingHeaders(net::URLRequest& url_request,
       request.headers.HasHeader(kAttributionReportingEligibleHeader)) {
     url_request.SetExtraRequestHeaderByName(
         "Attribution-Reporting-Support",
-        GetSupportHeader(request.attribution_reporting_os_support),
+        GetAttributionSupportHeader(request.attribution_reporting_support),
         /*overwrite=*/true);
   }
 }

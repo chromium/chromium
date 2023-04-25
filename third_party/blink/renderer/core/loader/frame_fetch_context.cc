@@ -364,8 +364,8 @@ void FrameFetchContext::PrepareRequest(
 
   if (AttributionSrcLoader* attribution_src_loader =
           GetFrame()->GetAttributionSrcLoader()) {
-    request.SetAttributionReportingOsSupport(
-        attribution_src_loader->GetOsSupport());
+    request.SetAttributionReportingSupport(
+        attribution_src_loader->GetSupport());
   }
 
   GetLocalFrameClient()->DispatchWillSendRequest(request);

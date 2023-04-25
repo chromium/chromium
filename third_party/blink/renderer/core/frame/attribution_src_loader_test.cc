@@ -208,6 +208,16 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
   std::unique_ptr<MockDataHost> mock_data_host_;
 };
 
+class AttributionTestingPlatformSupport : public TestingPlatformSupport {
+ public:
+  network::mojom::AttributionSupport GetAttributionReportingSupport() override {
+    return attribution_support;
+  }
+
+  network::mojom::AttributionSupport attribution_support =
+      network::mojom::AttributionSupport::kWeb;
+};
+
 class AttributionSrcLoaderTest : public PageTestBase {
  public:
   AttributionSrcLoaderTest() = default;
@@ -239,6 +249,7 @@ class AttributionSrcLoaderTest : public PageTestBase {
   }
 
  protected:
+  ScopedTestingPlatformSupport<AttributionTestingPlatformSupport> platform_;
   Persistent<AttributionSrcLocalFrameClient> client_;
   Persistent<AttributionSrcLoader> attribution_src_loader_;
 };
@@ -542,16 +553,48 @@ TEST_F(AttributionSrcLoaderTest, EagerlyClosesRemote) {
   EXPECT_EQ(mock_data_host->disconnects(), 1u);
 }
 
-class AttributionTestingPlatformSupport : public TestingPlatformSupport {
- public:
-  network::mojom::AttributionOsSupport GetOsSupportForAttributionReporting()
-      override {
-    return os_support;
-  }
+#if BUILDFLAG(IS_ANDROID)
 
-  network::mojom::AttributionOsSupport os_support =
-      network::mojom::AttributionOsSupport::kDisabled;
-};
+TEST_F(AttributionSrcLoaderTest, NoneSupported_CannotRegister) {
+  platform_->attribution_support = network::mojom::AttributionSupport::kNone;
+
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  EXPECT_FALSE(
+      attribution_src_loader_->CanRegister(test_url, /*element=*/nullptr,
+                                           /*request_id=*/absl::nullopt));
+}
+
+TEST_F(AttributionSrcLoaderTest, WebDisabled_TriggerNotRegistered) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  for (auto attribution_support : {network::mojom::AttributionSupport::kNone,
+                                   network::mojom::AttributionSupport::kOs}) {
+    platform_->attribution_support = attribution_support;
+
+    ResourceRequest request(test_url);
+    auto* resource = MakeGarbageCollected<MockResource>(test_url);
+    ResourceResponse response(test_url);
+    response.SetHttpStatusCode(200);
+    response.SetHttpHeaderField(
+        http_names::kAttributionReportingRegisterTrigger,
+        R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+
+    MockAttributionHost host(
+        GetFrame().GetRemoteNavigationAssociatedInterfaces());
+    EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+        request, response, resource));
+    host.WaitUntilBoundAndFlush();
+
+    auto* mock_data_host = host.mock_data_host();
+    ASSERT_TRUE(mock_data_host);
+
+    mock_data_host->Flush();
+    EXPECT_THAT(mock_data_host->trigger_data(), testing::IsEmpty());
+  }
+}
+
+#endif
 
 class AttributionSrcLoaderCrossAppWebEnabledTest
     : public AttributionSrcLoaderTest {
@@ -567,7 +610,13 @@ class AttributionSrcLoaderCrossAppWebEnabledTest
 };
 
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
-  platform_->os_support = network::mojom::AttributionOsSupport::kEnabled;
+#if BUILDFLAG(IS_ANDROID)
+  auto attribution_support = network::mojom::AttributionSupport::kWebAndOs;
+#else
+  auto attribution_support = network::mojom::AttributionSupport::kWeb;
+#endif
+
+  platform_->attribution_support = attribution_support;
 
   KURL url = ToKURL(kUrl);
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
@@ -576,13 +625,19 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
 
   url_test_helpers::ServeAsynchronousRequests();
 
-  EXPECT_EQ(client_->request_head().GetAttributionReportingOsSupport(),
-            network::mojom::AttributionOsSupport::kEnabled);
+  EXPECT_EQ(client_->request_head().GetAttributionReportingSupport(),
+            attribution_support);
 }
 
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
        SupportHeader_RegisterNavigation) {
-  platform_->os_support = network::mojom::AttributionOsSupport::kEnabled;
+#if BUILDFLAG(IS_ANDROID)
+  auto attribution_support = network::mojom::AttributionSupport::kWebAndOs;
+#else
+  auto attribution_support = network::mojom::AttributionSupport::kWeb;
+#endif
+
+  platform_->attribution_support = attribution_support;
 
   KURL url = ToKURL(kUrl);
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
@@ -593,13 +648,14 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
 
   url_test_helpers::ServeAsynchronousRequests();
 
-  EXPECT_EQ(client_->request_head().GetAttributionReportingOsSupport(),
-            network::mojom::AttributionOsSupport::kEnabled);
+  EXPECT_EQ(client_->request_head().GetAttributionReportingSupport(),
+            attribution_support);
 }
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
-  platform_->os_support = network::mojom::AttributionOsSupport::kEnabled;
+  platform_->attribution_support =
+      network::mojom::AttributionSupport::kWebAndOs;
 
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
