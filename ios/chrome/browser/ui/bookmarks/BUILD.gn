@@ -151,6 +151,7 @@ source_set("unit_tests") {
     "//components/bookmarks/browser",
     "//components/sync/driver",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/bookmarks:test_support",
     "//ios/chrome/browser/browser_state:test_support",
