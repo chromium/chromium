@@ -70,7 +70,7 @@ bool QuickAppAccessModel::SetQuickApp(const std::string& app_id) {
 }
 
 void QuickAppAccessModel::SetQuickAppActivated() {
-  quick_app_activated_ = true;
+  ClearQuickApp();
   UpdateQuickAppShouldShowState();
 }
 
@@ -114,7 +114,7 @@ void QuickAppAccessModel::ItemBeingDestroyed() {
 void QuickAppAccessModel::OnAppListVisibilityChanged(bool shown,
                                                      int64_t display_id) {
   if (shown) {
-    app_list_shown_ = true;
+    ClearQuickApp();
     UpdateQuickAppShouldShowState();
   }
 }
@@ -143,14 +143,12 @@ void QuickAppAccessModel::UpdateQuickAppShouldShowState() {
 }
 
 bool QuickAppAccessModel::ShouldShowQuickApp() {
-  return !quick_app_id_.empty() && !app_list_shown_ && !quick_app_activated_ &&
+  return !quick_app_id_.empty() &&
          !GetQuickAppItem()->GetDefaultIcon().isNull();
 }
 
 void QuickAppAccessModel::ClearQuickApp() {
   quick_app_id_ = "";
-  app_list_shown_ = false;
-  quick_app_activated_ = false;
   item_observation_.Reset();
 }
 

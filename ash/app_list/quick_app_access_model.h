@@ -83,12 +83,6 @@ class QuickAppAccessModel : public AppListItemObserver,
   // values.
   void ClearQuickApp();
 
-  // Whether the app list has shown for the currently set quick app.
-  bool app_list_shown_ = false;
-
-  // Whether the currently set quick app has been activated.
-  bool quick_app_activated_ = false;
-
   base::ObserverList<Observer> observers_;
 
   base::ScopedObservation<AppListItem, AppListItemObserver> item_observation_{

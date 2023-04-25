@@ -503,6 +503,52 @@ TEST_F(HomeButtonWithQuickAppAccess, ModelChange) {
   EXPECT_TRUE(IsQuickAppVisible());
 }
 
+// Test once the quick app is hidden due to button activation, that setting
+// the same quick app again will show it.
+TEST_F(HomeButtonWithQuickAppAccess, SetSameQuickAppAfterActivation) {
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  const std::string quick_app_id = "Quick App Item";
+  GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+  EXPECT_TRUE(IsQuickAppVisible());
+
+  auto* quick_app_button = home_button()->quick_app_button_for_test();
+
+  // Activate and hide the quick app.
+  GetEventGenerator()->MoveMouseTo(
+      quick_app_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  // Set the same app as quick app and check that the button exists again.
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+  EXPECT_TRUE(IsQuickAppVisible());
+}
+
+// Test once the quick app is hidden due to app list being shown, that
+// setting the same quick app again will show it.
+TEST_F(HomeButtonWithQuickAppAccess, SetSameQuickAppAfterAppListShown) {
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  const std::string quick_app_id = "Quick App Item";
+  GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+  EXPECT_TRUE(IsQuickAppVisible());
+
+  // Open app list and expect quick app button to be hidden.
+  GetAppListTestHelper()->ShowAppList();
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  // Set the same app as quick app and check that the button exists again.
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+  EXPECT_TRUE(IsQuickAppVisible());
+}
+
 enum class TestAccessibilityFeature {
   kTabletModeShelfNavigationButtons,
   kSpokenFeedback,
