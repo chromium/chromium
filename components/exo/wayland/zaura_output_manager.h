@@ -18,7 +18,7 @@ class Display;
 
 namespace exo::wayland {
 
-inline constexpr uint32_t kZAuraOutputManagerVersion = 1;
+inline constexpr uint32_t kZAuraOutputManagerVersion = 2;
 
 void bind_aura_output_manager(wl_client* client,
                               void* data,
