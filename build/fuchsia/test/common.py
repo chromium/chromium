@@ -551,7 +551,6 @@ def boot_device(target_id: Optional[str],
         'Booting with FFX to %s did not succeed. Attempting with DM', mode)
 
     # Fallback to SSH, with no retry if we tried with ffx.:
-    _boot_device_dm(target_id, serial_num, state, mode)
     state = _reboot(
         (lambda: _boot_device_dm(target_id, serial_num, state, mode)), state)
 
