@@ -5,6 +5,7 @@
 """Implements commands for running tests E2E on a Fuchsia device."""
 
 import argparse
+import logging
 import sys
 import tempfile
 
@@ -12,8 +13,8 @@ from contextlib import ExitStack
 from typing import List
 
 from common import register_common_args, register_device_args, \
-                   register_log_args, resolve_packages, run_ffx_command, \
-                   set_ffx_isolate_dir
+                   register_log_args, resolve_packages, set_ffx_isolate_dir, \
+                   start_ffx_daemon, stop_ffx_daemon
 from compatible_utils import running_unattended
 from ffx_integration import ScopedFfxConfig, test_connection
 from flash_device import register_update_args, update
@@ -80,13 +81,27 @@ def main():
 
     with ExitStack() as stack:
         if running_unattended():
+            # Updating configurations to meet the requirement of isolate.
+            stop_ffx_daemon()
             set_ffx_isolate_dir(
                 stack.enter_context(tempfile.TemporaryDirectory()))
-        run_ffx_command(('daemon', 'stop'), check=False)
-        if running_unattended():
+            # The following two configurations are persistent, they are less
+            # problematic if ScopedFfxConfig cannot clear them correctly.
             stack.enter_context(
                 ScopedFfxConfig('repository.server.listen', '"[::]:0"'))
-        log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
+            stack.enter_context(ScopedFfxConfig('daemon.autostart', 'false'))
+            log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
+            start_ffx_daemon()
+            stack.callback(stop_ffx_daemon)
+        else:
+            if runner_args.logs_dir:
+                logging.warning(
+                    'You are using a --logs-dir, ensure the ffx '
+                    'daemon is started with the logs.dir config '
+                    'updated. We won\'t restart the daemon randomly'
+                    ' anymore.')
+            log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
+
         if runner_args.device:
             update(runner_args.system_image_dir, runner_args.os_check,
                    runner_args.target_id, runner_args.serial_num,

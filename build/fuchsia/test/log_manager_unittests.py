@@ -75,17 +75,40 @@ class LogManagerTest(unittest.TestCase):
             log.open_log_file('test_log_file')
 
     @mock.patch('log_manager.ScopedFfxConfig')
-    @mock.patch('log_manager.run_ffx_command')
-    def test_log_manager(self, mock_ffx, mock_scoped_config) -> None:
+    @mock.patch('log_manager.stop_ffx_daemon')
+    def test_log_manager(self, mock_stop_ffx_daemon,
+                         mock_scoped_config) -> None:
         """Tests LogManager as a context manager."""
 
-        context_mock = mock.Mock()
-        mock_scoped_config.return_value = context_mock
-        context_mock.__enter__ = mock.Mock(return_value=None)
-        context_mock.__exit__ = mock.Mock(return_value=None)
-        with log_manager.LogManager(_LOGS_DIR):
-            pass
-        self.assertEqual(mock_ffx.call_count, 2)
+        with mock.patch('log_manager.running_unattended', return_value=False):
+            context_mock = mock.Mock()
+            mock_scoped_config.return_value = context_mock
+            context_mock.__enter__ = mock.Mock(return_value=None)
+            context_mock.__exit__ = mock.Mock(return_value=None)
+            with log_manager.LogManager(_LOGS_DIR):
+                pass
+            self.assertEqual(mock_scoped_config.call_count, 1)
+            self.assertEqual(context_mock.__enter__.call_count, 1)
+            self.assertEqual(context_mock.__exit__.call_count, 1)
+            self.assertEqual(mock_stop_ffx_daemon.call_count, 2)
+
+    @mock.patch('log_manager.ScopedFfxConfig')
+    @mock.patch('log_manager.stop_ffx_daemon')
+    def test_log_manager_unattended_no_daemon_stop(self, mock_stop_ffx_daemon,
+                                                   mock_scoped_config) -> None:
+        """Tests LogManager as a context manager in unattended mode."""
+
+        with mock.patch('log_manager.running_unattended', return_value=True):
+            context_mock = mock.Mock()
+            mock_scoped_config.return_value = context_mock
+            context_mock.__enter__ = mock.Mock(return_value=None)
+            context_mock.__exit__ = mock.Mock(return_value=None)
+            with log_manager.LogManager(_LOGS_DIR):
+                pass
+            self.assertEqual(mock_scoped_config.call_count, 1)
+            self.assertEqual(context_mock.__enter__.call_count, 1)
+            self.assertEqual(context_mock.__exit__.call_count, 1)
+            self.assertEqual(mock_stop_ffx_daemon.call_count, 0)
 
     def test_main_exception(self) -> None:
         """Tests |main| function to throw exception on incompatible flags."""
