@@ -322,10 +322,10 @@ export class BrowsingContextProcessor {
   // eslint-disable-next-line @typescript-eslint/require-await
   async process_script_removePreloadScript(
     _params: Script.RemovePreloadScriptParameters
-  ): Promise<Script.RemovePreloadScriptResult> {
+  ): Promise<Message.EmptyResult> {
     throw new Message.UnknownErrorException('Not implemented.');
 
-    return {};
+    return {result: {}};
   }
 
   async process_script_evaluate(
@@ -380,7 +380,7 @@ export class BrowsingContextProcessor {
 
   async process_browsingContext_close(
     commandParams: BrowsingContext.CloseParameters
-  ): Promise<BrowsingContext.CloseResult> {
+  ): Promise<Message.EmptyResult> {
     const browserCdpClient = this.#cdpConnection.browserClient();
 
     const context = this.#browsingContextStorage.getContext(

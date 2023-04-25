@@ -49,7 +49,7 @@ export interface BidiParser {
   parseDisownParams(params: object): Script.DisownParameters;
   parseSendCommandParams(params: object): CDP.SendCommandParams;
   parseGetSessionParams(params: object): CDP.GetSessionParams;
-  parseSubscribeParams(params: object): Session.SubscribeParameters;
+  parseSubscribeParams(params: object): Session.SubscriptionRequest;
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters;
   parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters;
   parseCreateParams(params: object): BrowsingContext.CreateParameters;
@@ -91,8 +91,8 @@ class BidiNoOpParser implements BidiParser {
   parseGetSessionParams(params: object): CDP.GetSessionParams {
     return params as CDP.GetSessionParams;
   }
-  parseSubscribeParams(params: object): Session.SubscribeParameters {
-    return params as Session.SubscribeParameters;
+  parseSubscribeParams(params: object): Session.SubscriptionRequest {
+    return params as Session.SubscriptionRequest;
   }
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters {
     return params as BrowsingContext.NavigateParameters;
@@ -150,7 +150,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   }
 
   async #process_session_subscribe(
-    params: Session.SubscribeParameters,
+    params: Session.SubscriptionRequest,
     channel: string | null
   ): Promise<Session.SubscribeResult> {
     await this.#eventManager.subscribe(
@@ -162,7 +162,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   }
 
   async #process_session_unsubscribe(
-    params: Session.SubscribeParameters,
+    params: Session.SubscriptionRequest,
     channel: string | null
   ): Promise<Session.UnsubscribeResult> {
     await this.#eventManager.unsubscribe(
@@ -175,7 +175,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
 
   async #processCommand(
     commandData: Message.RawCommandRequest
-  ): Promise<Message.CommandResponseResult> {
+  ): Promise<Message.ResultData> {
     switch (commandData.method) {
       case 'session.status':
         return CommandProcessor.#process_session_status();

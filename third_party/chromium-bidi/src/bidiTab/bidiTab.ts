@@ -298,7 +298,7 @@ class BidiParserImpl implements BidiParser {
   parseGetSessionParams(params: object): CDP.GetSessionParams {
     return Parser.CDP.parseGetSessionParams(params);
   }
-  parseSubscribeParams(params: object): Session.SubscribeParameters {
+  parseSubscribeParams(params: object): Session.SubscriptionRequest {
     return Parser.Session.parseSubscribeParams(params);
   }
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters {

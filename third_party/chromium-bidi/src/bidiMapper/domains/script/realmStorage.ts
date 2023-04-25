@@ -31,9 +31,10 @@ type RealmFilter = {
   cdpSessionId?: string;
 };
 
+/** Container class for browsing realms. */
 export class RealmStorage {
   /** Tracks handles and their realms sent to the client. */
-  readonly #knownHandlesToRealm = new Map<string, string>();
+  readonly #knownHandlesToRealm = new Map<string, Script.Realm>();
 
   /** Map from realm ID to Realm. */
   readonly #realmMap = new Map<Script.Realm, Realm>();
@@ -46,6 +47,7 @@ export class RealmStorage {
     return this.#realmMap;
   }
 
+  /** Finds all realms that match the given filter. */
   findRealms(filter: RealmFilter): Realm[] {
     return Array.from(this.#realmMap.values()).filter((realm) => {
       if (filter.realmId !== undefined && filter.realmId !== realm.realmId) {
@@ -96,6 +98,7 @@ export class RealmStorage {
     return maybeRealms[0];
   }
 
+  /** Gets the only realm that matches the given filter, if any, otherwise throws. */
   getRealm(filter: RealmFilter): Realm {
     const maybeRealm = this.findRealm(filter);
     if (maybeRealm === undefined) {
@@ -106,12 +109,13 @@ export class RealmStorage {
     return maybeRealm;
   }
 
+  /** Deletes all realms that match the given filter. */
   deleteRealms(filter: RealmFilter) {
     this.findRealms(filter).map((realm) => {
       this.#realmMap.delete(realm.realmId);
       Array.from(this.#knownHandlesToRealm.entries())
         .filter(([, r]) => r === realm.realmId)
-        .map(([h]) => this.#knownHandlesToRealm.delete(h));
+        .map(([handle]) => this.#knownHandlesToRealm.delete(handle));
     });
   }
 }

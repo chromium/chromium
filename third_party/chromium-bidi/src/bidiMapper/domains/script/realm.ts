@@ -71,7 +71,7 @@ export class Realm {
     this.#realmStorage.realmMap.set(this.#realmId, this);
   }
 
-  async disown(handle: string): Promise<void> {
+  async disown(handle: CommonDataTypes.Handle): Promise<void> {
     // Disowning an object from different realm does nothing.
     if (this.#realmStorage.knownHandlesToRealm.get(handle) !== this.realmId) {
       return;

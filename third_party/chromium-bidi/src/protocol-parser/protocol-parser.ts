@@ -57,6 +57,7 @@ export function parseObject<T extends ZodType>(
 export namespace CommonDataTypes {
   export const SharedReferenceSchema = zod.object({
     sharedId: zod.string().min(1),
+    handle: zod.string().optional(),
   });
   export const RemoteReferenceSchema = zod.object({
     handle: zod.string().min(1),
@@ -148,12 +149,10 @@ export namespace CommonDataTypes {
   //   type: "array",
   //   value: ListLocalValue,
   // }
-  const ArrayLocalValueSchema: zod.ZodType = zod.lazy(() =>
-    zod.object({
-      type: zod.literal('array'),
-      value: ListLocalValueSchema,
-    })
-  );
+  const ArrayLocalValueSchema = zod.object({
+    type: zod.literal('array'),
+    value: ListLocalValueSchema,
+  });
 
   // DateLocalValue = {
   //   type: "date",
@@ -165,12 +164,10 @@ export namespace CommonDataTypes {
   });
 
   // MappingLocalValue = [*[(LocalValue / text), LocalValue]];
-  const MappingLocalValueSchema: zod.ZodType = zod.lazy(() =>
-    zod.tuple([
-      zod.union([zod.string(), LocalOrRemoteValueSchema]),
-      LocalOrRemoteValueSchema,
-    ])
-  );
+  const MappingLocalValueSchema = zod.tuple([
+    zod.union([zod.string(), LocalOrRemoteValueSchema]),
+    LocalOrRemoteValueSchema,
+  ]);
 
   // MapLocalValue = {
   //   type: "map",
@@ -194,15 +191,13 @@ export namespace CommonDataTypes {
   //   type: "regexp",
   //   value: RegExpValue,
   // }
-  const RegExpLocalValueSchema: zod.ZodType = zod.lazy(() =>
-    zod.object({
-      type: zod.literal('regexp'),
-      value: zod.object({
-        pattern: zod.string(),
-        flags: zod.string().optional(),
-      }),
-    })
-  );
+  const RegExpLocalValueSchema = zod.object({
+    type: zod.literal('regexp'),
+    value: zod.object({
+      pattern: zod.string(),
+      flags: zod.string().optional(),
+    }),
+  });
 
   // SetLocalValue = {
   //   type: "set",
@@ -578,7 +573,7 @@ export namespace Session {
     ...Object.values(ScriptTypes.EventNames),
   ]);
 
-  // SessionSubscribeParameters = {
+  // SessionSubscriptionRequest = {
   //   events: [*text],
   //   ?contexts: [*BrowsingContext],
   // }
@@ -589,7 +584,7 @@ export namespace Session {
 
   export function parseSubscribeParams(
     params: object
-  ): SessionTypes.SubscribeParameters {
+  ): SessionTypes.SubscriptionRequest {
     return parseObject(params, SubscriptionRequestParametersSchema);
   }
 }

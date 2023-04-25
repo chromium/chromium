@@ -69,13 +69,13 @@ export interface IEventManager {
   ): void;
 
   subscribe(
-    events: Session.SubscribeParametersEvent[],
+    events: Session.SubscriptionRequestEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void>;
 
   unsubscribe(
-    events: Session.SubscribeParametersEvent[],
+    events: Session.SubscriptionRequestEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> | void;
@@ -168,7 +168,7 @@ export class EventManager implements IEventManager {
   }
 
   async subscribe(
-    eventNames: Session.SubscribeParametersEvent[],
+    eventNames: Session.SubscriptionRequestEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
@@ -208,7 +208,7 @@ export class EventManager implements IEventManager {
    * globally.
    */
   async #handleDomains(
-    eventName: Session.SubscribeParametersEvent,
+    eventName: Session.SubscriptionRequestEvent,
     contextId: CommonDataTypes.BrowsingContext | null
   ) {
     // Enable network domain if user subscribed to any of network events.
@@ -232,7 +232,7 @@ export class EventManager implements IEventManager {
   }
 
   unsubscribe(
-    eventNames: Session.SubscribeParametersEvent[],
+    eventNames: Session.SubscriptionRequestEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ) {

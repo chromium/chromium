@@ -51,9 +51,6 @@ export type BiDiMethod =
   | 'session.unsubscribe';
 // keep-sorted end
 
-export type EmptyResult = Record<never, never>;
-export type EmptyResultWithCommandId = {id: number} | EmptyResult;
-
 export namespace Message {
   export type OutgoingMessage =
     | CommandResponse
@@ -68,17 +65,22 @@ export namespace Message {
   };
 
   export type CommandRequest = Pick<RawCommandRequest, 'id'> &
-    (BrowsingContext.Command | Script.Command | Session.Command | CDP.Command);
+    (BrowsingContext.Command | CDP.Command | Script.Command | Session.Command);
 
-  export type CommandResponse = Pick<RawCommandRequest, 'id'> &
-    CommandResponseResult;
+  export type CommandResponse = Pick<RawCommandRequest, 'id'> & ResultData;
 
-  export type CommandResponseResult =
-    | BrowsingContext.CommandResult
-    | Script.CommandResult
-    | Session.CommandResult
-    | CDP.CommandResult
-    | ErrorResult;
+  export type EmptyParams = Record<string, never>;
+  export type EmptyResult = {result: Record<string, never>};
+
+  export type ResultData =
+    | EmptyResult
+    // keep-sorted start
+    | BrowsingContext.Result
+    | CDP.Result
+    | ErrorResult
+    | Script.Result
+    | Session.Result;
+  // keep-sorted end
 
   export type EventMessage =
     // keep-sorted start
@@ -205,12 +207,22 @@ export namespace Message {
 }
 
 export namespace CommonDataTypes {
+  export type Handle = string;
+
   export type RemoteReference = {
-    handle: string;
+    handle: Handle;
   };
 
+  export type SharedId = string;
+
   export type SharedReference = {
-    sharedId: string;
+    sharedId: SharedId;
+    handle?: Handle;
+  };
+
+  export type RemoteObjectReference = {
+    handle: Handle;
+    sharedId?: SharedId;
   };
 
   // UndefinedValue = {
@@ -245,7 +257,7 @@ export namespace CommonDataTypes {
   // }
   export type NumberValue = {
     type: 'number';
-    value: SpecialNumber | number;
+    value: number | SpecialNumber;
   };
 
   // BooleanValue = {
@@ -292,10 +304,8 @@ export namespace CommonDataTypes {
     | RegExpLocalValue
     | SetLocalValue;
 
-  export type LocalOrRemoteValue = RemoteReference | LocalValue;
-
   // ListLocalValue = [*LocalValue];
-  export type ListLocalValue = LocalOrRemoteValue[];
+  export type ListLocalValue = LocalValue[];
 
   // ArrayLocalValue = {
   //   type: "array",
@@ -316,10 +326,7 @@ export namespace CommonDataTypes {
   };
 
   // MappingLocalValue = [*[(LocalValue / text), LocalValue]];
-  export type MappingLocalValue = [
-    string | LocalOrRemoteValue,
-    LocalOrRemoteValue
-  ][];
+  export type MappingLocalValue = [string | LocalValue, LocalValue][];
 
   // MapLocalValue = {
   //   type: "map",
@@ -339,16 +346,22 @@ export namespace CommonDataTypes {
     value: MappingLocalValue;
   };
 
+  // RegExpValue = {
+  //   pattern: text,
+  //   ?flags: text,
+  // }
+  export type RegExpValue = {
+    pattern: string;
+    flags?: string;
+  };
+
   // RegExpLocalValue = {
   //   type: "regexp",
   //   value: RegExpValue,
   // }
   export type RegExpLocalValue = {
     type: 'regexp';
-    value: {
-      pattern: string;
-      flags?: string;
-    };
+    value: RegExpValue;
   };
 
   // SetLocalValue = {
@@ -374,13 +387,17 @@ export namespace CommonDataTypes {
     | WeakSetRemoteValue
     | IteratorRemoteValue
     | GeneratorRemoteValue
-    | ProxyRemoteValue
     | ErrorRemoteValue
+    | ProxyRemoteValue
     | PromiseRemoteValue
     | TypedArrayRemoteValue
     | ArrayBufferRemoteValue
+    | NodeListRemoteValue
+    | HTMLCollectionRemoteValue
     | NodeRemoteValue
     | WindowProxyRemoteValue;
+
+  export type InternalId = number;
 
   export type ListRemoteValue = RemoteValue[];
 
@@ -434,12 +451,12 @@ export namespace CommonDataTypes {
     type: 'generator';
   };
 
-  export type ProxyRemoteValue = RemoteReference & {
-    type: 'proxy';
-  };
-
   export type ErrorRemoteValue = RemoteReference & {
     type: 'error';
+  };
+
+  export type ProxyRemoteValue = RemoteReference & {
+    type: 'proxy';
   };
 
   export type PromiseRemoteValue = RemoteReference & {
@@ -454,19 +471,30 @@ export namespace CommonDataTypes {
     type: 'arraybuffer';
   };
 
+  export type NodeListRemoteValue = RemoteReference & {
+    type: 'nodelist';
+    value?: ListRemoteValue;
+  };
+
+  export type HTMLCollectionRemoteValue = RemoteReference & {
+    type: 'htmlcollection';
+    value?: ListRemoteValue;
+  };
+
   export type NodeRemoteValue = RemoteReference & {
     type: 'node';
     value?: NodeProperties;
   };
 
-  export type NodeProperties = RemoteReference & {
+  export type NodeProperties = {
     nodeType: number;
-    nodeValue: string;
-    localName?: string;
-    namespaceURI?: string;
     childNodeCount: number;
-    children?: [NodeRemoteValue];
     attributes?: Record<string, string>;
+    children?: [NodeRemoteValue];
+    localName?: string;
+    mode?: 'open' | 'closed';
+    namespaceURI?: string;
+    nodeValue: string;
     shadowRoot?: NodeRemoteValue | null;
   };
 
@@ -487,13 +515,12 @@ export namespace Script {
     | DisownCommand
     | AddPreloadScriptCommand
     | RemovePreloadScriptCommand;
-  export type CommandResult =
+  export type Result =
     | EvaluateResult
     | CallFunctionResult
     | GetRealmsResult
     | DisownResult
-    | AddPreloadScriptResult
-    | RemovePreloadScriptResult;
+    | AddPreloadScriptResult;
   export type Event = MessageEvent;
 
   export type Realm = string;
@@ -646,7 +673,7 @@ export namespace Script {
 
   export type DisownParameters = {
     target: Target;
-    handles: string[];
+    handles: CommonDataTypes.Handle[];
   };
 
   export type DisownResult = {result: Record<string, unknown>};
@@ -720,8 +747,6 @@ export namespace Script {
     script: PreloadScript;
   };
 
-  export type RemovePreloadScriptResult = EmptyResultWithCommandId;
-
   export type ChannelId = string;
 
   export type ChannelProperties = {
@@ -761,24 +786,23 @@ export namespace Script {
 // https://w3c.github.io/webdriver-bidi/#module-browsingContext
 export namespace BrowsingContext {
   export type Command =
+    | CaptureScreenshotCommand
+    | CloseCommand
+    | CreateCommand
     | GetTreeCommand
     | NavigateCommand
-    | CreateCommand
-    | CloseCommand
-    | CaptureScreenshotCommand
     | PrintCommand;
-  export type CommandResult =
+  export type Result =
+    | CaptureScreenshotResult
+    | CreateResult
     | GetTreeResult
     | NavigateResult
-    | CreateResult
-    | CloseResult
-    | CaptureScreenshotResult
     | PrintResult;
   export type Event =
-    | LoadEvent
-    | DomContentLoadedEvent
     | ContextCreatedEvent
-    | ContextDestroyedEvent;
+    | ContextDestroyedEvent
+    | DomContentLoadedEvent
+    | LoadEvent;
 
   export type Navigation = string;
 
@@ -863,8 +887,6 @@ export namespace BrowsingContext {
   export type CloseParameters = {
     context: CommonDataTypes.BrowsingContext;
   };
-
-  export type CloseResult = {result: Record<string, unknown>};
 
   export type CaptureScreenshotCommand = {
     method: 'browsingContext.captureScreenshot';
@@ -1115,7 +1137,7 @@ export namespace Network {
 
 export namespace CDP {
   export type Command = SendCommandCommand | GetSessionCommand;
-  export type CommandResult = SendCommandResult | GetSessionResult;
+  export type Result = SendCommandResult | GetSessionResult;
   export type Event = EventReceivedEvent;
 
   export type SendCommandCommand = {
@@ -1164,14 +1186,11 @@ export namespace CDP {
 export namespace Session {
   export type Command = StatusCommand | SubscribeCommand | UnsubscribeCommand;
 
-  export type CommandResult =
-    | StatusResult
-    | SubscribeResult
-    | UnsubscribeResult;
+  export type Result = StatusResult | SubscribeResult | UnsubscribeResult;
 
   export type StatusCommand = {
     method: 'session.status';
-    params: Record<string, unknown>;
+    params: Message.EmptyParams;
   };
 
   export type StatusResult = {
@@ -1183,10 +1202,10 @@ export namespace Session {
 
   export type SubscribeCommand = {
     method: 'session.subscribe';
-    params: SubscribeParameters;
+    params: SubscriptionRequest;
   };
 
-  export type SubscribeParametersEvent =
+  export type SubscriptionRequestEvent =
     // keep-sorted start
     | Message.EventNames
     | typeof BrowsingContext.AllEvents
@@ -1196,21 +1215,21 @@ export namespace Session {
     | typeof Script.AllEvents;
   // keep-sorted end;
 
-  // SessionSubscribeParameters = {
+  // SessionSubscriptionRequest = {
   //   events: [*text],
   //   ?contexts: [*BrowsingContext],
   // }
-  export type SubscribeParameters = {
-    events: SubscribeParametersEvent[];
+  export type SubscriptionRequest = {
+    events: SubscriptionRequestEvent[];
     contexts?: CommonDataTypes.BrowsingContext[];
   };
 
-  export type SubscribeResult = {result: Record<string, unknown>};
+  export type SubscribeResult = Message.EmptyResult;
 
   export type UnsubscribeCommand = {
     method: 'session.unsubscribe';
-    params: SubscribeParameters;
+    params: SubscriptionRequest;
   };
 
-  export type UnsubscribeResult = {result: Record<string, unknown>};
+  export type UnsubscribeResult = Message.EmptyResult;
 }

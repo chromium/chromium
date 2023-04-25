@@ -41,9 +41,9 @@ export function cartesianProduct(...a: any[][]) {
 
 /** Expands "AllEvents" events into atomic events. */
 export function unrollEvents(
-  events: Session.SubscribeParametersEvent[]
-): Session.SubscribeParametersEvent[] {
-  const allEvents: Session.SubscribeParametersEvent[] = [];
+  events: Session.SubscriptionRequestEvent[]
+): Session.SubscriptionRequestEvent[] {
+  const allEvents: Session.SubscriptionRequestEvent[] = [];
 
   for (const event of events) {
     switch (event) {
@@ -79,7 +79,7 @@ export class SubscriptionManager {
     string | null,
     Map<
       CommonDataTypes.BrowsingContext | null,
-      Map<Session.SubscribeParametersEvent, number>
+      Map<Session.SubscriptionRequestEvent, number>
     >
   >();
   #browsingContextStorage: BrowsingContextStorage;
@@ -89,7 +89,7 @@ export class SubscriptionManager {
   }
 
   getChannelsSubscribedToEvent(
-    eventMethod: Session.SubscribeParametersEvent,
+    eventMethod: Session.SubscriptionRequestEvent,
     contextId: CommonDataTypes.BrowsingContext | null
   ): (string | null)[] {
     const prioritiesAndChannels = Array.from(
@@ -115,7 +115,7 @@ export class SubscriptionManager {
   }
 
   #getEventSubscriptionPriorityForChannel(
-    eventMethod: Session.SubscribeParametersEvent,
+    eventMethod: Session.SubscriptionRequestEvent,
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
   ): null | number {
@@ -145,7 +145,7 @@ export class SubscriptionManager {
   }
 
   subscribe(
-    event: Session.SubscribeParametersEvent,
+    event: Session.SubscriptionRequestEvent,
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
   ): void {
@@ -205,7 +205,7 @@ export class SubscriptionManager {
    * Unsubscribes atomically from all events in the given contexts and channel.
    */
   unsubscribeAll(
-    events: Session.SubscribeParametersEvent[],
+    events: Session.SubscriptionRequestEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ) {
@@ -217,7 +217,7 @@ export class SubscriptionManager {
     }
 
     const eventContextPairs: [
-      eventName: Session.SubscribeParametersEvent,
+      eventName: Session.SubscriptionRequestEvent,
       contextId: CommonDataTypes.BrowsingContext | null
     ][] = cartesianProduct(unrollEvents(events), contextIds);
 
@@ -235,7 +235,7 @@ export class SubscriptionManager {
    * Syntactic sugar for "unsubscribeAll".
    */
   unsubscribe(
-    eventName: Session.SubscribeParametersEvent,
+    eventName: Session.SubscriptionRequestEvent,
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
   ) {
@@ -243,7 +243,7 @@ export class SubscriptionManager {
   }
 
   #checkUnsubscribe(
-    event: Session.SubscribeParametersEvent,
+    event: Session.SubscriptionRequestEvent,
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
   ): () => void {
