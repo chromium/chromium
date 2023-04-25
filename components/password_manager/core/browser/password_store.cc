@@ -557,6 +557,24 @@ void PasswordStore::GetLoginsForFormAndForAffiliatedRealms(
       form, request_handler->AffiliationsClosure().Then(
                 std::move(get_logins_for_affiliations_callback)));
 
+  if (base::FeatureList::IsEnabled(
+          features::kFillingAcrossAffiliatedWebsites) &&
+      base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites)) {
+    auto branding_injection_for_group_callback =
+        base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
+                       this, request_handler->NonFormLoginsClosure());
+    auto get_logins_for_group_callback =
+        base::BindOnce(&PasswordStoreBackend::FillMatchingLoginsAsync,
+                       base::Unretained(backend_.get()),
+                       std::move(branding_injection_for_group_callback),
+                       /*include_psl=*/false);
+
+    // Retrieve the group, then retrieve logins for those realms.
+    affiliated_match_helper_->GetGroup(
+        form, request_handler->GroupClosure().Then(
+                  std::move(get_logins_for_group_callback)));
+  }
+
   // Retrieve logins for `form`. The request will be handled by the
   // `request_handler`.
   auto branding_injection_for_regular_logins_callback =
