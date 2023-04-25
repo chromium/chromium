@@ -393,6 +393,39 @@ absl::optional<mojom::RejectReason> RejectReasonStringToEnum(
   return absl::nullopt;
 }
 
+// Checks `provided_currency` against both `expected_seller_currency` and
+// `component_expect_bid_currency`, formatting an error if needed, with
+// `bid_label` identifying the bid being checked.
+// Returns true on success.
+bool VerifySellerCurrency(
+    absl::optional<blink::AdCurrency> provided_currency,
+    absl::optional<blink::AdCurrency> expected_seller_currency,
+    absl::optional<blink::AdCurrency> component_expect_bid_currency,
+    const GURL& script_url,
+    base::StringPiece bid_label,
+    std::vector<std::string>& errors_out) {
+  if (!blink::VerifyAdCurrencyCode(expected_seller_currency,
+                                   provided_currency)) {
+    errors_out.push_back(base::StrCat(
+        {script_url.spec(), " scoreAd() ", bid_label,
+         " mismatch vs own sellerCurrency, expected '",
+         blink::PrintableAdCurrency(expected_seller_currency), "' got '",
+         blink::PrintableAdCurrency(provided_currency), "'."}));
+    return false;
+  }
+  if (!blink::VerifyAdCurrencyCode(component_expect_bid_currency,
+                                   provided_currency)) {
+    errors_out.push_back(base::StrCat(
+        {script_url.spec(), " scoreAd() ", bid_label,
+         " mismatch in component auction "
+         "vs parent auction bidderCurrency, expected '",
+         blink::PrintableAdCurrency(component_expect_bid_currency), "' got '",
+         blink::PrintableAdCurrency(provided_currency), "'."}));
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 SellerWorklet::SellerWorklet(
@@ -1047,38 +1080,16 @@ void SellerWorklet::V8State::ScoreAd(
           }
         }
 
-        const absl::optional<blink::AdCurrency> expected_seller_currency =
-            auction_ad_config_non_shared_params.seller_currency;
         if (!drop_for_invalid_currency &&
-            !blink::VerifyAdCurrencyCode(
-                expected_seller_currency,
-                component_auction_modified_bid_params->bid_currency)) {
-          errors_out.push_back(base::StrCat(
-              {decision_logic_url_.spec(),
-               " scoreAd() bidCurrency mismatch vs own sellerCurrency, "
-               "expected '",
-               blink::PrintableAdCurrency(expected_seller_currency), "' got '",
-               blink::PrintableAdCurrency(
-                   component_auction_modified_bid_params->bid_currency),
-               "'."}));
+            !VerifySellerCurrency(
+                /*provided_currency=*/component_auction_modified_bid_params
+                    ->bid_currency,
+                /*expected_seller_currency=*/
+                auction_ad_config_non_shared_params.seller_currency,
+                /*component_expect_bid_currency=*/component_expect_bid_currency,
+                decision_logic_url_, "bidCurrency", errors_out)) {
           drop_for_invalid_currency = true;
         }
-        if (!drop_for_invalid_currency &&
-            !blink::VerifyAdCurrencyCode(
-                component_expect_bid_currency,
-                component_auction_modified_bid_params->bid_currency)) {
-          errors_out.push_back(base::StrCat(
-              {decision_logic_url_.spec(),
-               " scoreAd() bidCurrency mismatch in component auction "
-               "vs parent auction bidderCurrency, expected '",
-               blink::PrintableAdCurrency(component_expect_bid_currency),
-               "' got '",
-               blink::PrintableAdCurrency(
-                   component_auction_modified_bid_params->bid_currency),
-               "'."}));
-          drop_for_invalid_currency = true;
-        }
-
         if (drop_for_invalid_currency) {
           score = 0;
         }
@@ -1141,6 +1152,20 @@ void SellerWorklet::V8State::ScoreAd(
           context_recycler.private_aggregation_bindings()
               ->TakePrivateAggregationRequests());
       return;
+    }
+  } else if (browser_signals_other_seller &&
+             browser_signals_other_seller->is_top_level_seller()) {
+    // This is a component auction that did not modify the bid; e.g. it's using
+    // the bidder's bid as its own. Therefore, check it against our own
+    // currency requirements.
+    // TODO(morlovich): One of the spots we want a new reject reason.
+    if (!VerifySellerCurrency(
+            /*provided_currency=*/bid_currency,
+            /*expected_seller_currency=*/
+            auction_ad_config_non_shared_params.seller_currency,
+            /*component_expect_bid_currency=*/component_expect_bid_currency,
+            decision_logic_url_, "bid passthrough", errors_out)) {
+      score = 0;
     }
   }
 

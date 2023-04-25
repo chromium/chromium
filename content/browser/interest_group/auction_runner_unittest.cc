@@ -677,8 +677,12 @@ std::string MakeDecisionScript(
       adMetadata.fromComponentAuction = true;
 
       let convertedBid = auctionConfig.sellerCurrency ? bid * 10 : undefined;
+      // Currency-adjust the bidKey in metadata if needed.
+      if (auctionConfig.sellerCurrency && bid !== 0.0)
+        adMetadata.bidKey += "0";
       return {desirability: computeScore(convertedBid ? convertedBid : bid),
               incomingBidInSellerCurrency: convertedBid,
+              bid: convertedBid,
               // Only allow a component auction when the passed in ad is from
               // one.
               allowComponentAuction:
@@ -728,6 +732,9 @@ std::string MakeDecisionScript(
 
         if ("topLevelSellerSignals" in browserSignals)
           throw new Error("Unexpected browserSignals.topLevelSellerSignals");
+        // modifiedBid is for component sellers only.
+        if ("modifiedBid" in browserSignals)
+          throw new Error("modifiedBid unexpectedly in browserSignals");
       } else {
         // Component sellers should receive only the top-level seller.
         if (browserSignals.topLevelSeller !== topLevelSeller)
@@ -742,13 +749,19 @@ std::string MakeDecisionScript(
                 auctionConfig.seller) {
           throw new Error("Unexpected browserSignals.topLevelSellerSignals");
         }
+
+        // scoreAd() does bid modification if sellerCurrency is on.
+        if (auctionConfig.sellerCurrency) {
+          if (!browserSignals.modifiedBid)
+            throw new Error("modifiedBid missing in browserSignals");
+        } else {
+          if ("modifiedBid" in browserSignals)
+            throw new Error("modifiedBid unexpectedly in browserSignals");
+        }
       }
 
       if (browserSignals.desirability != computeScore(browserSignals.bid))
         throw new Error("wrong bid or desirability in browserSignals");
-      // The default scoreAd() script does not modify bids.
-      if ("modifiedBid" in browserSignals)
-        throw new Error("modifiedBid unexpectedly in browserSignals");
       if (browserSignals.dataVersion !== undefined)
         throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
       if (sendReportUrl) {
@@ -3989,6 +4002,70 @@ TEST_F(AuctionRunnerTest, ComponentAuctionCurrencyPassThrough) {
   RunStandardAuction();
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+}
+
+// Test of currency handling in a component auction where bid is passed
+// straight through by the component seller --- verifying it's checked against
+// sellerCurrency of the component auction.
+TEST_F(AuctionRunnerTest, ComponentAuctionCurrencyPassThroughCheck) {
+  const char kBidScript[] = R"(
+    const inBid = %d;
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      return {bid: inBid, bidCurrency: 'USD',
+              render: interestGroup.ads[0].renderUrl,
+              allowComponentAuction: true};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+    }
+  )";
+
+  const char kDecisionScript[] = R"(
+    const suffix = "%s";
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                      browserSignals) {
+      if (browserSignals.bidCurrency !== 'USD') {
+        throw 'Wrong bidCurrency in scoreAd() for ' + suffix;
+      }
+      return {desirability: bid,
+              allowComponentAuction: true,
+              ad: adMetadata};
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller1,
+                                    /*bid_from_component_auction_wins=*/true,
+                                    /*report_post_auction_signals=*/true);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder2Url,
+                                         base::StringPrintf(kBidScript, 2));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller1Url,
+      base::StringPrintf(kDecisionScript, "component"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      base::StringPrintf(kDecisionScript, "top-level"));
+  ASSERT_EQ(component_auctions_.size(), 1u);
+  component_auctions_[0].non_shared_params.seller_currency =
+      blink::AdCurrency::From("CAD");
+
+  RunStandardAuction();
+  const char kError[] =
+      "https://component.seller1.test/foo.js scoreAd() bid passthrough "
+      "mismatch "
+      "vs own sellerCurrency, expected 'CAD' got 'USD'.";
+  // Error is seen twice since it's relevant to two bids.
+  EXPECT_THAT(result_.errors, testing::ElementsAre(kError, kError));
+  EXPECT_FALSE(result_.winning_group_id.has_value());
+  EXPECT_FALSE(result_.ad_descriptor.has_value());
 }
 
 // Test a component auction where the top level seller rejects all bids. This
@@ -13616,6 +13693,12 @@ class AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest
 
   double ModeBid(double in) { return SellerCurrencyOn() ? in * 10.0 : in; }
 
+  double TopLevelModeBid(double in) {
+    // Since the component auction doesn't tag its bid as EUR, we end up doing
+    // the conversion twice (which is useful for tracking things).
+    return SellerCurrencyOn() ? in * 100.0 : in;
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -14657,20 +14740,20 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                   /*highest_scoring_other_bid_currency=*/ModeCurrency(),
                   /*made_highest_scoring_other_bid=*/false),
               /*top_level_signals=*/
-              PostAuctionSignals(/*winning_bid=*/ModeBid(2),
+              PostAuctionSignals(/*winning_bid=*/TopLevelModeBid(2),
                                  /*winning_bid_currency=*/ModeCurrency(),
                                  /*made_winning_bid=*/false),
               /*bid=*/1),
           DebugReportUrl(
               "https://top-seller-loss-reporting.test/",
               PostAuctionSignals(
-                  /*winning_bid=*/ModeBid(2),
+                  /*winning_bid=*/TopLevelModeBid(2),
                   /*winning_bid_currency=*/ModeCurrency(),
                   /*made_winning_bid=*/false,
                   /*highest_scoring_other_bid=*/0.0,
                   /*highest_scoring_other_bid_currency=*/absl::nullopt,
                   /*made_highest_scoring_other_bid=*/false),
-              /*bid=*/1)));
+              /*bid=*/ModeBid(1))));
 
   EXPECT_THAT(result_.debug_win_report_urls,
               testing::UnorderedElementsAre(
@@ -14695,19 +14778,19 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                           /*made_highest_scoring_other_bid=*/false),
                       /*top_level_signals=*/
                       PostAuctionSignals(
-                          /*winning_bid=*/ModeBid(2),
+                          /*winning_bid=*/TopLevelModeBid(2),
                           /*winning_bid_currency=*/ModeCurrency(),
                           /*made_winning_bid=*/true),
                       /*bid=*/2),
                   DebugReportUrl(
                       "https://top-seller-win-reporting.test/",
                       PostAuctionSignals(
-                          /*winning_bid=*/ModeBid(2), ModeCurrency(),
+                          /*winning_bid=*/TopLevelModeBid(2), ModeCurrency(),
                           /*made_winning_bid=*/true,
                           /*highest_scoring_other_bid=*/0.0,
                           /*highest_scoring_other_bid_currency=*/absl::nullopt,
                           /*made_highest_scoring_other_bid=*/false),
-                      /*bid=*/2)));
+                      /*bid=*/ModeBid(2))));
 }
 
 // Test debug loss reporting in an auction with no winner. Component bidder 1 is
@@ -14836,7 +14919,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                       /*bid=*/2),
                   DebugReportUrl("https://top-seller-loss-reporting.test/",
                                  PostAuctionSignals(),
-                                 /*bid=*/2)));
+                                 /*bid=*/ModeBid(2))));
 
   EXPECT_THAT(result_.debug_win_report_urls, testing::UnorderedElementsAre());
 }
@@ -14926,7 +15009,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                                  ModeCurrency(),
                                  /*made_highest_scoring_other_bid=*/true),
               /*top_level_signals=*/
-              PostAuctionSignals(/*winning_bid=*/ModeBid(1),
+              PostAuctionSignals(/*winning_bid=*/TopLevelModeBid(1),
                                  /*winning_bid_currency=*/ModeCurrency(),
                                  /*made_winning_bid=*/false),
               /*bid=*/2)));
@@ -14954,20 +15037,20 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                           /*made_highest_scoring_other_bid=*/false),
                       /*top_level_signals=*/
                       PostAuctionSignals(
-                          /*winning_bid=*/ModeBid(1),
+                          /*winning_bid=*/TopLevelModeBid(1),
                           /*winning_bid_currency=*/ModeCurrency(),
                           /*made_winning_bid=*/true),
                       /*bid=*/1),
                   DebugReportUrl(
                       "https://top-seller-win-reporting.test/",
                       PostAuctionSignals(
-                          /*winning_bid=*/ModeBid(1),
+                          /*winning_bid=*/TopLevelModeBid(1),
                           /*winning_bid_currency=*/ModeCurrency(),
                           /*made_winning_bid=*/true,
                           /*highest_scoring_other_bid=*/0.0,
                           /*highest_scoring_other_bid_currency=*/absl::nullopt,
                           /*made_highest_scoring_other_bid=*/false),
-                      /*bid=*/1)));
+                      /*bid=*/ModeBid(1))));
 }
 
 // Loss report URLs should be dropped when the seller worklet fails to load.
@@ -15338,9 +15421,13 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               testing::UnorderedElementsAre(
                   // kComponentSeller1's bidders. The first makes it to the
                   // top-level auction, the others do not.
+                  //
+                  // Note that seller 0 here is the top-level, so it gets
+                  // currency adjusted (*10) numbers if SellerCurrencyOn
                   GURL("https://bidder1.test/loss/"),
                   GURL("https://seller1.test/loss/1"),
-                  GURL("https://seller0.test/loss/1"),
+                  GURL(SellerCurrencyOn() ? "https://seller0.test/loss/10"
+                                          : "https://seller0.test/loss/1"),
                   GURL("https://bidder2.test/loss/"),
                   GURL("https://seller1.test/loss/2"),
                   GURL("https://bidder3.test/loss/"),
@@ -15349,7 +15436,8 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                   // top-level auction, the others do not.
                   GURL("https://bidder4.test/loss/"),
                   GURL("https://seller2.test/loss/4"),
-                  GURL("https://seller0.test/loss/4"),
+                  GURL(SellerCurrencyOn() ? "https://seller0.test/loss/40"
+                                          : "https://seller0.test/loss/4"),
                   GURL("https://bidder5.test/loss/"),
                   GURL("https://seller2.test/loss/5"),
                   GURL("https://bidder6.test/loss/"),
@@ -15375,9 +15463,10 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 
   EXPECT_THAT(
       result_.debug_win_report_urls,
-      testing::UnorderedElementsAre(GURL("https://bidder9.test/win/"),
-                                    GURL("https://seller3.test/win/9"),
-                                    GURL("https://seller0.test/win/9")));
+      testing::UnorderedElementsAre(
+          GURL("https://bidder9.test/win/"), GURL("https://seller3.test/win/9"),
+          GURL(SellerCurrencyOn() ? "https://seller0.test/win/90"
+                                  : "https://seller0.test/win/9")));
 }
 
 // Reject reason returned by scoreAd() for a rejected bid can be reported to the
