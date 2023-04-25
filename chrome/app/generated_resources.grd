@@ -8195,6 +8195,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Feature Engagement Tracker strings -->
+      <message name="IDS_BACK_NAVIGATION_MENU_PROMO" desc="Text shown on the In-Product Help bubble for the back navigation menu.">
+        To go back more than 1 page, click and hold Back.
+      </message>
+      <message name="IDS_BACK_NAVIGATION_MENU_PROMO_ACCESSIBLE_TEXT" is_accessibility_with_no_ui="true" desc="Accessible text shown on the In-Product Help bubble for the back navigation menu.">
+        To go back more than 1 page, click and hold the Back button.
+      </message>
       <message name="IDS_BOOKMARK_PROMO_0" desc="Text shown on promotional UI appearing next to the Bookmarks button, which encourages users to use it.">
         Bookmark this page to easily find it later
       </message>

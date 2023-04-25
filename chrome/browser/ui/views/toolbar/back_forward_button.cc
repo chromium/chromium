@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -14,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -84,6 +86,13 @@ void BackForwardButton::NotifyClick(const ui::Event& event) {
     if (!message.empty())
       GetViewAccessibility().AnnounceText(message);
   }
+
+  content::WebContents* web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  chrome::ChainedBackNavigationTracker* tracker =
+      chrome::ChainedBackNavigationTracker::FromWebContents(web_contents);
+  CHECK(tracker);
+  tracker->RecordBackButtonClickForChainedBackNavigation();
 
   // Do this last because upon activation the MenuModel gets updated, removing
   // the label for the page about to be loaded. However, the title associated

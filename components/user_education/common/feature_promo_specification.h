@@ -152,6 +152,15 @@ class FeaturePromoSpecification {
       ui::ElementIdentifier anchor_element_id,
       int body_text_string_id);
 
+  // Specifies a promo with snooze buttons, but with accessible text string id.
+  // See comments from `FeaturePromoSpecification::CreateForToastPromo()`.
+  static FeaturePromoSpecification CreateForSnoozePromo(
+      const base::Feature& feature,
+      ui::ElementIdentifier anchor_element_id,
+      int body_text_string_id,
+      int accessible_text_string_id,
+      AcceleratorInfo accessible_accelerator);
+
   // Specifies a promo that launches a tutorial.
   static FeaturePromoSpecification CreateForTutorialPromo(
       const base::Feature& feature,

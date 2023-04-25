@@ -434,6 +434,15 @@ void MaybeRegisterChromeFeaturePromos(
                     kDownloadToolbarButtonElementId, IDS_DOWNLOAD_BUBBLE_PROMO)
                     .SetBubbleArrow(HelpBubbleArrow::kTopRight)
                     .SetBubbleTitleText(IDS_DOWNLOAD_BUBBLE_PROMO_TITLE)));
+
+  // kIPHBackNavigationMenuFeature:
+  registry.RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForSnoozePromo(
+                    feature_engagement::kIPHBackNavigationMenuFeature,
+                    kBackButtonElementId, IDS_BACK_NAVIGATION_MENU_PROMO,
+                    IDS_BACK_NAVIGATION_MENU_PROMO_ACCESSIBLE_TEXT,
+                    FeaturePromoSpecification::AcceleratorInfo())
+                    .SetBubbleArrow(HelpBubbleArrow::kLeftTop)));
 }
 
 void MaybeRegisterChromeTutorials(

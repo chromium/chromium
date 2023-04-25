@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -49,6 +50,8 @@ using content::WebContents;
 const size_t BackForwardMenuModel::kMaxHistoryItems = 12;
 const size_t BackForwardMenuModel::kMaxChapterStops = 5;
 static const int kMaxBackForwardMenuWidth = 700;
+const char kBackNavigationMenuIsOpenedEvent[] =
+    "back_navigation_menu_is_opened";
 
 BackForwardMenuModel::BackForwardMenuModel(Browser* browser,
                                            ModelType model_type)
@@ -229,6 +232,8 @@ void BackForwardMenuModel::ActivatedAt(size_t index, int event_flags) {
 
 void BackForwardMenuModel::MenuWillShow() {
   base::RecordComputedAction(BuildActionName("Popup", absl::nullopt));
+  browser_->window()->NotifyFeatureEngagementEvent(
+      kBackNavigationMenuIsOpenedEvent);
   requested_favicons_.clear();
   cancelable_task_tracker_.TryCancelAll();
 }
