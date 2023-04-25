@@ -47,4 +47,5 @@ jobs:
         run: CHROME_BIN="${{ env.chromium_binary }}" npm run e2e-${{ matrix.head }}
 
 env:
+  DEBUG: bidiServer:log
   FORCE_COLOR: 3

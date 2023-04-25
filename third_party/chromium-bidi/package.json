@@ -17,8 +17,7 @@
     "prepare": "wireit",
     "prettier": "prettier --write .",
     "rollup": "wireit",
-    "server": "npm run build && npm run server-headless --",
-    "server-no-build": "npm run server-headless --",
+    "server": "npm run server-headless --",
     "server-headful": "wireit",
     "server-headless": "wireit",
     "test": "wireit",
@@ -85,10 +84,7 @@
       },
       "dependencies": [
         "build"
-      ],
-      "env": {
-        "DEBUG": "bidiServer:log"
-      }
+      ]
     },
     "server-headless": {
       "command": "node lib/cjs/bidiServer/index.js",
@@ -102,10 +98,7 @@
       },
       "dependencies": [
         "build"
-      ],
-      "env": {
-        "DEBUG": "bidiServer:log"
-      }
+      ]
     },
     "test": {
       "dependencies": [

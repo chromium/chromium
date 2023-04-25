@@ -86,4 +86,5 @@ jobs:
           path: out
 
 env:
+  DEBUG: bidiServer:log
   FORCE_COLOR: 3

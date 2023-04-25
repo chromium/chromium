@@ -93,4 +93,5 @@ jobs:
         uses: actions/deploy-pages@v2
 
 env:
+  DEBUG: bidiServer:log
   FORCE_COLOR: 3

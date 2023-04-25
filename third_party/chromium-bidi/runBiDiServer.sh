@@ -51,4 +51,4 @@ DEBUG="$DEBUG" \
 DEBUG_COLORS="$DEBUG_COLORS" \
 NODE_OPTIONS="$NODE_OPTIONS" \
 PORT="$PORT" \
-npm run server-no-build -- --channel="$CHANNEL" --headless="$HEADLESS" "$@" 2>&1 | tee -a "$LOG_FILE")
+npm run server -- --channel="$CHANNEL" --headless="$HEADLESS" "$@" 2>&1 | tee -a "$LOG_FILE")

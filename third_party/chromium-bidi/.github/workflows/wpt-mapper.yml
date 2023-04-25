@@ -106,4 +106,5 @@ jobs:
             logs
 
 env:
+  DEBUG: bidiServer:log
   FORCE_COLOR: 3

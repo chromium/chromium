@@ -34,14 +34,21 @@ readonly WPT_BROWSER_PATH="${WPT_BROWSER_PATH:-/Applications/Google Chrome Dev.a
 # The path to the WPT report file.
 readonly WPT_REPORT="${WPT_REPORT:-wptreport.json}"
 
-# The path to the WPT metadata directory.
-if [[ "$HEADLESS" == "true" ]]; then
-  readonly WPT_METADATA="wpt-metadata/mapper/headless"
-else
-  readonly WPT_METADATA="wpt-metadata/mapper/headful"
+# Only set WPT_METADATA if it's not already set.
+if [ -z ${WPT_METADATA+x} ]; then
+  # The path to the WPT metadata directory.
+  if [[ "$HEADLESS" == "true" ]]; then
+    readonly WPT_METADATA="wpt-metadata/mapper/headless"
+  else
+    readonly WPT_METADATA="wpt-metadata/mapper/headful"
+  fi
 fi
 
-log "Running WPT in headless=$HEADLESS mode..."
+if [[ "$HEADLESS" == "true" ]]; then
+  log "Running WPT in headless mode..."
+else
+  log "Running WPT in headful mode..."
+fi
 
 # Go to the project root folder.
 (cd "$(dirname "$0")/" && \
