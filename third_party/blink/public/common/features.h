@@ -1073,10 +1073,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemoryCacheStrongReference);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kMemoryCacheStrongReferenceSingleUnload);
 
-// Save strong references only for fonts, stylesheets and scripts
+// Exclude images from the saved strong references for resources.
 // See https://crbug.com/1409349.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kMemoryCacheStrongReferenceFilterImages);
+
+// Exclude scripts from the saved strong references for resources.
+// See https://crbug.com/1409349.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kMemoryCacheStrongReferenceFilterScripts);
 
 // If enabled, renderers look for cached resources from another renderer
 // that has the same process isolation policies. Note that renderers don't

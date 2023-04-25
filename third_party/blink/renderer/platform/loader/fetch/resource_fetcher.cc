@@ -190,10 +190,14 @@ bool ShouldResourceBeAddedToMemoryCache(const FetchParameters& params,
 
 bool ShouldResourceBeKeptStrongReferenceByType(Resource* resource) {
   // Image, fonts, stylesheets and scripts are the most commonly reused scripts.
-  return (resource->GetType() == ResourceType::kImage ||
-          resource->GetType() == ResourceType::kFont ||
-          resource->GetType() == ResourceType::kCSSStyleSheet ||
-          resource->GetType() == ResourceType::kScript);
+  return (resource->GetType() == ResourceType::kImage &&
+          !base::FeatureList::IsEnabled(
+              features::kMemoryCacheStrongReferenceFilterImages)) ||
+         (resource->GetType() == ResourceType::kScript &&
+          !base::FeatureList::IsEnabled(
+              features::kMemoryCacheStrongReferenceFilterScripts)) ||
+         resource->GetType() == ResourceType::kFont ||
+         resource->GetType() == ResourceType::kCSSStyleSheet;
 }
 
 bool ShouldResourceBeKeptStrongReference(Resource* resource) {
@@ -2744,16 +2748,12 @@ void ResourceFetcher::CancelWebBundleSubresourceLoadersFor(
 void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
   if (base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference) &&
       ShouldResourceBeKeptStrongReference(resource)) {
-    if (resource->GetType() != ResourceType::kImage ||
-        !base::FeatureList::IsEnabled(
-            features::kMemoryCacheStrongReferenceFilterImages)) {
-      document_resource_strong_refs_.insert(resource);
-      freezable_task_runner_->PostDelayedTask(
-          FROM_HERE,
-          WTF::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
-                        WrapWeakPersistent(this), WrapWeakPersistent(resource)),
-          GetResourceStrongReferenceTimeout(resource));
-    }
+    document_resource_strong_refs_.insert(resource);
+    freezable_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        WTF::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
+                      WrapWeakPersistent(this), WrapWeakPersistent(resource)),
+        GetResourceStrongReferenceTimeout(resource));
   }
 }
 
