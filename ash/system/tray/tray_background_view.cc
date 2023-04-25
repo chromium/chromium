@@ -271,6 +271,7 @@ TrayBackgroundView::TrayBackgroundView(
 
   // Start the tray items not visible, because visibility changes are animated.
   views::View::SetVisible(false);
+  layer()->SetOpacity(0.0f);
 }
 
 void TrayBackgroundView::AddObserver(Observer* observer) {

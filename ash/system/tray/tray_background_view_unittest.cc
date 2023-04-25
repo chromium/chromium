@@ -183,6 +183,12 @@ class TrayBackgroundViewTest : public AshTestBase,
   int num_animations_scheduled_ = 0;
 };
 
+// Tests that a `TrayBackgroundView` initially starts in a hidden state.
+TEST_F(TrayBackgroundViewTest, InitiallyHidden) {
+  EXPECT_FALSE(test_tray_background_view()->GetVisible());
+  EXPECT_EQ(test_tray_background_view()->layer()->opacity(), 0.0f);
+}
+
 TEST_F(TrayBackgroundViewTest, ShowingAnimationAbortedByHideAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
