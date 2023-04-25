@@ -192,6 +192,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Installer.Recovery.NbrDurationMinutes" units="minutes"
+    expires_after="2024-01-01">
+  <owner>yuanpengni@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The duration in minutes for the network based recovery to complete.
+
+    This is reported on reboot after a successful recovery.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
 <histogram name="Installer.Recovery.Reason" enum="ChromeOSRecoveryReason"
     expires_after="2023-10-15">
   <owner>kimjae@chromium.org</owner>
