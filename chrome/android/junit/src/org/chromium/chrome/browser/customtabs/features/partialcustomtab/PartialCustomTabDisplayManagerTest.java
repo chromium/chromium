@@ -42,6 +42,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
@@ -102,47 +103,70 @@ public class PartialCustomTabDisplayManagerTest {
 
     @Test
     public void create_FullSize_HeightNotSetWidthNotSet() {
+        int expected = PartialCustomTabType.FULL_SIZE;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 0);
         assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.FULL_SIZE should be recorded once");
     }
 
     @Test
     public void create_FullSize_WidthSetCompactDevice() {
+        int expected = PartialCustomTabType.FULL_SIZE;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         mPCCTTestRule.configCompactDevice();
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 500);
         assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.FULL_SIZE should be recorded once");
     }
 
     @Test
     public void create_SideSheet_WidthSetHeightNot_BelowBreakpoint() {
+        int expected = PartialCustomTabType.FULL_SIZE;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 800);
         assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.FULL_SIZE should be recorded once");
     }
 
     @Test
     public void create_SideSheet_WidthSetHeightNot_AboveBreakpoint() {
+        int expected = PartialCustomTabType.SIDE_SHEET;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         PartialCustomTabDisplayManager displayManager =
                 createPcctDisplayManager(0, 2000, 840, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW);
         assertEquals(
                 "Breakpoint value is incorrect", 840, displayManager.getBreakPointDpForTesting());
         assertEquals("Side-Sheet PCCT should be created", PartialCustomTabType.SIDE_SHEET,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.SIDE_SHEET should be recorded once");
     }
 
     @Test
     public void create_SideSheet_AboveBreakPoint() {
+        int expected = PartialCustomTabType.SIDE_SHEET;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         mPCCTTestRule.configLandscapeMode();
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
 
         assertEquals("Side-Sheet PCCT should be created", PartialCustomTabType.SIDE_SHEET,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.SIDE_SHEET should be recorded once");
     }
 
     @Test
     public void create_BottomSheet_HeightWidthSet_Compact() {
+        int expected = PartialCustomTabType.BOTTOM_SHEET;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         mPCCTTestRule.configCompactDevice();
         PartialCustomTabDisplayManager displayManager =
                 createPcctDisplayManager(350, 450, 400, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW);
@@ -150,13 +174,18 @@ public class PartialCustomTabDisplayManagerTest {
                 "Breakpoint value is incorrect", 600, displayManager.getBreakPointDpForTesting());
         assertEquals("Bottom-Sheet PCCT should be created", PartialCustomTabType.BOTTOM_SHEET,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.BOTTOM_SHEET should be recorded once");
     }
 
     @Test
     public void create_BottomSheet_HeightSetWidthNot() {
+        int expected = PartialCustomTabType.BOTTOM_SHEET;
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                "CustomTabs.PartialCustomTabType", expected);
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(800, 0);
         assertEquals("Bottom-Sheet PCCT should be created", PartialCustomTabType.BOTTOM_SHEET,
                 displayManager.getActiveStrategyType());
+        histogram.assertExpected("PartialCustomTabType.BOTTOM_SHEET should be recorded once");
     }
 
     @Test

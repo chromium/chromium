@@ -24595,6 +24595,13 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="6" label="Failure: Invalid referrer for the calling session"/>
 </enum>
 
+<enum name="CustomTabsPartialCustomTabType">
+  <int value="0" label="No type"/>
+  <int value="1" label="Partial Custom Tab is a bottom-sheet"/>
+  <int value="2" label="Partial Custom Tab is a side-sheet"/>
+  <int value="3" label="Partial Custom Tab is full-size"/>
+</enum>
+
 <enum name="CustomTabsResizeType">
   <obsolete>
     Obsolete as of November 2022.

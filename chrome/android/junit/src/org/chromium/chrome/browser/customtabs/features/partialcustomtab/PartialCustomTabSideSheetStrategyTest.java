@@ -52,7 +52,9 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.ResizeType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.base.LocalizationUtils;
@@ -649,6 +651,32 @@ public class PartialCustomTabSideSheetStrategyTest {
         PartialCustomTabTestRule.waitForAnimationToFinish();
         assertTrue(invoked.get());
         assertEquals(DEVICE_HEIGHT, mPCCTTestRule.getWindowAttributes().y);
+    }
+    @Test
+    public void maximizeMinimize() {
+        mPCCTTestRule.configLandscapeMode();
+        var strategy = createPcctSideSheetStrategy(700);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
+
+        int expected = ResizeType.MANUAL_EXPANSION;
+        var histogramExpansion =
+                HistogramWatcher.newSingleRecordWatcher("CustomTabs.SideSheetResizeType", expected);
+        strategy.toggleMaximize(true);
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertTrue("Should be in maximized state.", strategy.isMaximized());
+        histogramExpansion.assertExpected("ResizeType.MANUAL_EXPANSION should be recorded once.");
+
+        expected = PartialCustomTabBottomSheetStrategy.ResizeType.MANUAL_MINIMIZATION;
+        var histogramMinimization =
+                HistogramWatcher.newSingleRecordWatcher("CustomTabs.SideSheetResizeType", expected);
+        strategy.toggleMaximize(true);
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertFalse("Should be in minimized state.", strategy.isMaximized());
+        histogramMinimization.assertExpected(
+                "ResizeType.MANUAL_MINIMIZATION should be recorded once.");
     }
 
     private static void assertPosition(boolean isRightSide, boolean isRtl, int position) {
