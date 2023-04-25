@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "extensions/browser/extension_registry.h"
@@ -34,7 +35,8 @@ class Extension;
 // SidePanelEntry and creating the view to be shown are delegated to each
 // extension's ExtensionSidePanelCoordinator.
 class ExtensionSidePanelManager : public SidePanelRegistryObserver,
-                                  public extensions::ExtensionRegistryObserver,
+                                  public ExtensionRegistryObserver,
+                                  public ProfileObserver,
                                   public base::SupportsUserData::Data {
  public:
   ExtensionSidePanelManager(const ExtensionSidePanelManager&) = delete;
@@ -66,6 +68,12 @@ class ExtensionSidePanelManager : public SidePanelRegistryObserver,
 
   // SidePanelRegistryObserver implementation.
   void OnRegistryDestroying(SidePanelRegistry* registry) override;
+
+  // ProfileObserver implementation.
+  // OTR profiles for a browser window can be destroyed before the browser's
+  // UserData, so the profile may need to be reset to prevent a dangling
+  // pointer.
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
  private:
   ExtensionSidePanelManager(Profile* profile,
@@ -101,6 +109,7 @@ class ExtensionSidePanelManager : public SidePanelRegistryObserver,
       extension_registry_observation_{this};
   base::ScopedObservation<SidePanelRegistry, SidePanelRegistryObserver>
       side_panel_registry_observation_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 }  // namespace extensions

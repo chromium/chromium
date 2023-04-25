@@ -34,6 +34,7 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
       web_contents_(web_contents),
       registry_(registry) {
   side_panel_registry_observation_.Observe(registry_);
+  profile_observation_.Observe(profile);
   RegisterExtensionEntries();
 }
 
@@ -113,6 +114,16 @@ void ExtensionSidePanelManager::OnRegistryDestroying(
   coordinators_.clear();
   side_panel_registry_observation_.Reset();
   registry_ = nullptr;
+}
+
+void ExtensionSidePanelManager::OnProfileWillBeDestroyed(Profile* profile) {
+  // Destroy all coordinators, since no functionality should remain once there's
+  // no profile.
+  coordinators_.clear();
+
+  CHECK_EQ(profile_, profile);
+  profile_observation_.Reset();
+  profile_ = nullptr;
 }
 
 void ExtensionSidePanelManager::MaybeCreateExtensionSidePanelCoordinator(
