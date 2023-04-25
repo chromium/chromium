@@ -491,8 +491,8 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
 }
 
 void DownloadToolbarButtonView::OnPartialViewClosed() {
-  if (download::ShouldSuppressDownloadBubbleIph(
-          browser_->profile()->GetOriginalProfile())) {
+  if (browser_->profile() && download::ShouldSuppressDownloadBubbleIph(
+                                 browser_->profile()->GetOriginalProfile())) {
     return;
   }
   browser_->window()->MaybeShowFeaturePromo(
