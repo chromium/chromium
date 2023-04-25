@@ -390,6 +390,52 @@ TEST_F(PasswordManagerPorterTest, ContinueImportWithConflicts) {
   EXPECT_EQ(u"new_password", stored_form.password_value);
 }
 
+TEST_F(PasswordManagerPorterTest, RejectNewImportsWhenConflictsNotResolved) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kPasswordsImportM2};
+
+  password_manager::PasswordForm test_form;
+  test_form.url = GURL("https://test.com");
+  test_form.signon_realm = test_form.url.spec();
+  test_form.username_value = u"username";
+  test_form.password_value = u"old_password";
+  test_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+
+  AddPasswordForm(test_form);
+  ASSERT_EQ(1u, store().stored_passwords().size());
+
+  ASSERT_TRUE(base::WriteFile(temp_file_path(),
+                              "origin,username,password\n"
+                              "https://test.com,username,new_password\n"));
+
+  const size_t expected_displayed_entires_size = 1;
+  base::MockCallback<PasswordManagerPorter::ImportResultsCallback> callback;
+  EXPECT_CALL(
+      callback,
+      Run(AllOf(
+          ::testing::Field(&password_manager::ImportResults::status,
+                           password_manager::ImportResults::Status::CONFLICTS),
+          ::testing::Field(&password_manager::ImportResults::displayed_entries,
+                           SizeIs(expected_displayed_entires_size)))))
+      .Times(1);
+  porter().Import(web_contents(),
+                  password_manager::PasswordForm::Store::kProfileStore,
+                  callback.Get());
+  task_environment()->RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  EXPECT_CALL(
+      callback,
+      Run(::testing::Field(
+          &password_manager::ImportResults::status,
+          password_manager::ImportResults::Status::IMPORT_ALREADY_ACTIVE)))
+      .Times(1);
+  porter().Import(web_contents(),
+                  password_manager::PasswordForm::Store::kProfileStore,
+                  callback.Get());
+  task_environment()->RunUntilIdle();
+}
+
 TEST_F(PasswordManagerPorterTest, ResetImporterTriggersFileDeletion) {
   base::test::ScopedFeatureList feature_list{
       password_manager::features::kPasswordsImportM2};
