@@ -940,25 +940,25 @@
       'lacros-arm-generic-chrome-skylab': 'chromeos_arm-generic_lacros_official_skylab',
       'lacros-arm64-generic-chrome': 'chromeos_arm64-generic_lacros_official',
       'lacros-arm64-generic-chrome-skylab': 'chromeos_arm64-generic_lacros_official_skylab',
-      'linux-chrome': 'official_goma',
-      'linux-chrome-beta': 'official_goma',
-      'linux-chrome-stable': 'official_goma',
-      'linux-chromeos-chrome': 'official_goma_chromeos_include_unwind_tables',
-      'linux-chromeos-compile-chrome': 'official_goma_chromeos_include_unwind_tables',
-      'linux-finch-smoke-chrome': 'official_goma',
-      'mac-arm64-finch-smoke-chrome': 'official_goma_mac_arm',
-      'mac-chrome': 'official_goma_mac',
-      'mac-chrome-beta': 'official_goma_mac',
-      'mac-chrome-stable': 'official_goma_mac',
-      'win-branded-rel': 'chrome_branded_goma_minimal_symbols',
+      'linux-chrome': 'official_reclient',
+      'linux-chrome-beta': 'official_reclient',
+      'linux-chrome-stable': 'official_reclient',
+      'linux-chromeos-chrome': 'official_reclient_chromeos_include_unwind_tables',
+      'linux-chromeos-compile-chrome': 'official_reclient_chromeos_include_unwind_tables',
+      'linux-finch-smoke-chrome': 'official_reclient',
+      'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
+      'mac-chrome': 'official_reclient_mac',
+      'mac-chrome-beta': 'official_reclient_mac',
+      'mac-chrome-stable': 'official_reclient_mac',
+      'win-branded-compile-rel': 'chrome_branded_reclient_minimal_symbols',
       'win-celab-try-rel': 'official_celab_release_bot',
-      'win-chrome': 'official_goma_x86',
-      'win-chrome-beta': 'official_goma_x86',
-      'win-chrome-stable': 'official_goma_x86',
-      'win-finch-smoke-chrome': 'official_goma',
-      'win64-chrome': 'official_goma_x64',
-      'win64-chrome-beta': 'official_goma_x64',
-      'win64-chrome-stable': 'official_goma_x64',
+      'win-chrome': 'official_reclient_x86',
+      'win-chrome-beta': 'official_reclient_x86',
+      'win-chrome-stable': 'official_reclient_x86',
+      'win-finch-smoke-chrome': 'official_reclient',
+      'win64-chrome': 'official_reclient_x64',
+      'win64-chrome-beta': 'official_reclient_x64',
+      'win64-chrome-stable': 'official_reclient_x64',
     },
 
     'tryserver.chrome.captured-sites': {
@@ -1941,10 +1941,6 @@
 
     'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient': [
       'cfi_full', 'cfi_icall', 'cfi_diag', 'thin_lto', 'release', 'static', 'dcheck_always_on', 'reclient',
-    ],
-
-    'chrome_branded_goma_minimal_symbols': [
-      'chrome_branded', 'goma', 'minimal_symbols', 'release_bot',
     ],
 
     'chrome_branded_reclient_minimal_symbols': [
@@ -3137,20 +3133,12 @@
       'fuchsia', 'official', 'x64', 'custom_args',
     ],
 
-    'official_goma': [
-      'official', 'goma',
-    ],
-
     'official_goma_android_arm32_pgo': [
       'official', 'goma', 'android', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
     ],
 
     'official_goma_android_arm64_pgo': [
       'official', 'goma', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
-    ],
-
-    'official_goma_chromeos_include_unwind_tables': [
-      'official', 'goma', 'chromeos', 'minimal_symbols', 'include_unwind_tables',
     ],
 
     'official_goma_fuchsia_arm64_perf': [
@@ -3171,14 +3159,6 @@
 
     'official_goma_linux_pgo': [
       'official', 'goma', 'no_symbols', 'pgo_phase_1', 'release'
-    ],
-
-    'official_goma_mac': [
-      'official', 'goma', 'no_widevine_cdm_host_verification',
-    ],
-
-    'official_goma_mac_arm': [
-      'official', 'goma', 'no_widevine_cdm_host_verification', 'arm64',
     ],
 
     'official_goma_mac_arm_perf': [
@@ -3237,16 +3217,8 @@
       'official', 'goma', 'minimal_symbols',
     ],
 
-    'official_goma_x64': [
-      'official', 'goma', 'x64',
-    ],
-
     'official_goma_x64_pgo': [
       'official', 'goma', 'x64', 'no_symbols', 'pgo_phase_1', 'release'
-    ],
-
-    'official_goma_x86': [
-      'official', 'goma', 'x86',
     ],
 
     'official_goma_x86_pgo': [
