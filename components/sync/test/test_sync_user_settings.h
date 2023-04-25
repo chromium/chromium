@@ -30,6 +30,7 @@ class TestSyncUserSettings : public SyncUserSettings {
 
   bool IsSyncEverythingEnabled() const override;
   UserSelectableTypeSet GetSelectedTypes() const override;
+  bool IsTypeManagedByPolicy(UserSelectableType type) const override;
   void SetSelectedTypes(bool sync_everything,
                         UserSelectableTypeSet types) override;
   ModelTypeSet GetPreferredDataTypes() const;
@@ -38,6 +39,7 @@ class TestSyncUserSettings : public SyncUserSettings {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsSyncAllOsTypesEnabled() const override;
   UserSelectableOsTypeSet GetSelectedOsTypes() const override;
+  bool IsOsTypeManagedByPolicy(UserSelectableOsType type) const override;
   void SetSelectedOsTypes(bool sync_all_os_types,
                           UserSelectableOsTypeSet types) override;
   UserSelectableOsTypeSet GetRegisteredSelectableOsTypes() const override;

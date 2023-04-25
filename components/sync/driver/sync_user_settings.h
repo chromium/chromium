@@ -50,6 +50,7 @@ class SyncUserSettings {
   // has never enabled Sync, or if only Sync-the-transport is running.
   virtual bool IsSyncEverythingEnabled() const = 0;
   virtual UserSelectableTypeSet GetSelectedTypes() const = 0;
+  virtual bool IsTypeManagedByPolicy(UserSelectableType type) const = 0;
   virtual void SetSelectedTypes(bool sync_everything,
                                 UserSelectableTypeSet types) = 0;
   // Registered user selectable types are derived from registered model types.
@@ -61,6 +62,7 @@ class SyncUserSettings {
   // toggles in the OS Settings UI.
   virtual bool IsSyncAllOsTypesEnabled() const = 0;
   virtual UserSelectableOsTypeSet GetSelectedOsTypes() const = 0;
+  virtual bool IsOsTypeManagedByPolicy(UserSelectableOsType type) const = 0;
   virtual void SetSelectedOsTypes(bool sync_all_os_types,
                                   UserSelectableOsTypeSet types) = 0;
   virtual UserSelectableOsTypeSet GetRegisteredSelectableOsTypes() const = 0;

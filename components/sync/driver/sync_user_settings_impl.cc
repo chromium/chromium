@@ -105,6 +105,11 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
   return types;
 }
 
+bool SyncUserSettingsImpl::IsTypeManagedByPolicy(
+    UserSelectableType type) const {
+  return prefs_->IsTypeManagedByPolicy(type);
+}
+
 void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
                                             UserSelectableTypeSet types) {
   UserSelectableTypeSet registered_types = GetRegisteredSelectableTypes();
@@ -136,6 +141,11 @@ UserSelectableOsTypeSet SyncUserSettingsImpl::GetSelectedOsTypes() const {
   UserSelectableOsTypeSet types = prefs_->GetSelectedOsTypes();
   types.RetainAll(GetRegisteredSelectableOsTypes());
   return types;
+}
+
+bool SyncUserSettingsImpl::IsOsTypeManagedByPolicy(
+    UserSelectableOsType type) const {
+  return prefs_->IsOsTypeManagedByPolicy(type);
 }
 
 void SyncUserSettingsImpl::SetSelectedOsTypes(bool sync_all_os_types,

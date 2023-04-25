@@ -26,6 +26,10 @@ class SyncUserSettingsMock : public SyncUserSettings {
               (override));
   MOCK_METHOD(bool, IsSyncEverythingEnabled, (), (const override));
   MOCK_METHOD(UserSelectableTypeSet, GetSelectedTypes, (), (const override));
+  MOCK_METHOD(bool,
+              IsTypeManagedByPolicy,
+              (UserSelectableType),
+              (const override));
   MOCK_METHOD(void,
               SetSelectedTypes,
               (bool, UserSelectableTypeSet),
@@ -40,6 +44,10 @@ class SyncUserSettingsMock : public SyncUserSettings {
   MOCK_METHOD(UserSelectableOsTypeSet,
               GetSelectedOsTypes,
               (),
+              (const override));
+  MOCK_METHOD(bool,
+              IsOsTypeManagedByPolicy,
+              (UserSelectableOsType),
               (const override));
   MOCK_METHOD(void,
               SetSelectedOsTypes,

@@ -138,15 +138,20 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypes() const {
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     const char* pref_name = GetPrefNameForType(type);
     DCHECK(pref_name);
-    // If the preference is managed, |sync_all_types| is ignored for this
-    // preference.
+    // If the type is managed, |sync_all_types| is ignored for this type.
     if (pref_service_->GetBoolean(pref_name) ||
-        (sync_all_types && !pref_service_->IsManagedPreference(pref_name))) {
+        (sync_all_types && !IsTypeManagedByPolicy(type))) {
       selected_types.Put(type);
     }
   }
 
   return selected_types;
+}
+
+bool SyncPrefs::IsTypeManagedByPolicy(UserSelectableType type) const {
+  const char* pref_name = GetPrefNameForType(type);
+  CHECK(pref_name);
+  return pref_service_->IsManagedPreference(pref_name);
 }
 
 void SyncPrefs::SetSelectedTypes(bool keep_everything_synced,
@@ -180,14 +185,19 @@ UserSelectableOsTypeSet SyncPrefs::GetSelectedOsTypes() const {
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     const char* pref_name = GetPrefNameForOsType(type);
     DCHECK(pref_name);
-    // If the preference is managed, |sync_all_os_types| is ignored for this
-    // preference.
+    // If the type is managed, |sync_all_os_types| is ignored for this type.
     if (pref_service_->GetBoolean(pref_name) ||
-        (sync_all_os_types && !pref_service_->IsManagedPreference(pref_name))) {
+        (sync_all_os_types && !IsOsTypeManagedByPolicy(type))) {
       selected_types.Put(type);
     }
   }
   return selected_types;
+}
+
+bool SyncPrefs::IsOsTypeManagedByPolicy(UserSelectableOsType type) const {
+  const char* pref_name = GetPrefNameForOsType(type);
+  CHECK(pref_name);
+  return pref_service_->IsManagedPreference(pref_name);
 }
 
 void SyncPrefs::SetSelectedOsTypes(bool sync_all_os_types,

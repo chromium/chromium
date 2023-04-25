@@ -75,6 +75,11 @@ UserSelectableTypeSet TestSyncUserSettings::GetSelectedTypes() const {
   return selected_types_;
 }
 
+bool TestSyncUserSettings::IsTypeManagedByPolicy(
+    UserSelectableType type) const {
+  return false;
+}
+
 ModelTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
   ModelTypeSet types = UserSelectableTypesToModelTypes(GetSelectedTypes());
   types.PutAll(AlwaysPreferredUserTypes());
@@ -98,6 +103,11 @@ bool TestSyncUserSettings::IsSyncAllOsTypesEnabled() const {
 
 UserSelectableOsTypeSet TestSyncUserSettings::GetSelectedOsTypes() const {
   return selected_os_types_;
+}
+
+bool TestSyncUserSettings::IsOsTypeManagedByPolicy(
+    UserSelectableOsType type) const {
+  return false;
 }
 
 void TestSyncUserSettings::SetSelectedOsTypes(bool sync_all_os_types,

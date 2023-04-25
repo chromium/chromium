@@ -69,10 +69,16 @@ class SyncPrefs {
   void SetSyncRequested(bool is_requested);
   bool IsSyncRequestedSetExplicitly() const;
 
+  // Whether the "Sync everything" toggle is enabled. Note that even if this is
+  // true, some types may be disabled e.g. due to enterprise policy.
   bool HasKeepEverythingSynced() const;
 
-  // Returns UserSelectableTypeSet::All() if HasKeepEverythingSynced() is true.
+  // Returns UserSelectableTypeSet::All() if HasKeepEverythingSynced() is true
+  // (except if some types are force-disabled by policy).
   UserSelectableTypeSet GetSelectedTypes() const;
+
+  // Returns whether `type` is "managed" i.e. controlled by enterprise policy.
+  bool IsTypeManagedByPolicy(UserSelectableType type) const;
 
   // Sets the selection state for all |registered_types| and "keep everything
   // synced" flag.
@@ -92,6 +98,7 @@ class SyncPrefs {
   // including a separate "Sync All" toggle for OS types.
   bool IsSyncAllOsTypesEnabled() const;
   UserSelectableOsTypeSet GetSelectedOsTypes() const;
+  bool IsOsTypeManagedByPolicy(UserSelectableOsType type) const;
   void SetSelectedOsTypes(bool sync_all_os_types,
                           UserSelectableOsTypeSet registered_types,
                           UserSelectableOsTypeSet selected_types);
