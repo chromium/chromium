@@ -1852,6 +1852,11 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
           ConstraintSpace().FragmentainerOffset() + offset.block_offset,
           has_container_separation, &container_builder_, !is_column_,
           current_column_break_info);
+
+      if (current_column_break_info) {
+        current_column_break_info->break_after =
+            container_builder_.PreviousBreakAfter();
+      }
     }
 
     if (break_status == NGBreakStatus::kNeedsEarlierBreak) {
@@ -1975,12 +1980,11 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     intrinsic_block_size_ = std::max(item_block_end, intrinsic_block_size_);
-    container_builder_.AddResult(*layout_result, offset,
-                                 /* relative_offset */ absl::nullopt,
-                                 /* inline_container */ nullptr,
-                                 current_column_break_info
-                                     ? &current_column_break_info->break_after
-                                     : nullptr);
+    container_builder_.AddResult(*layout_result, offset);
+    if (current_column_break_info) {
+      current_column_break_info->break_after =
+          container_builder_.PreviousBreakAfter();
+    }
     baseline_accumulator.AccumulateItem(fragment, offset.block_offset,
                                         is_first_line, is_last_line);
     if (last_item_in_line) {

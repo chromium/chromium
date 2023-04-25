@@ -203,15 +203,12 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   // computed ahead of time. If so, a |relative_offset| will be passed
   // in. Otherwise, the relative offset will be calculated as normal.
   // |inline_container| is passed when adding an OOF that is contained by a
-  // non-atomic inline. If |flex_column_break_after| is supplied, we are running
-  // layout for a column flex container, in which case, we need to update the
-  // break-after value for the column itself.
+  // non-atomic inline.
   void AddResult(
       const NGLayoutResult&,
       const LogicalOffset,
       absl::optional<LogicalOffset> relative_offset = absl::nullopt,
-      const NGInlineContainer<LogicalOffset>* inline_container = nullptr,
-      EBreakBetween* flex_column_break_after = nullptr);
+      const NGInlineContainer<LogicalOffset>* inline_container = nullptr);
 
   // Add a child fragment and propagate info from it. Called by AddResult().
   // Other callers should call AddResult() instead of this when possible, since
@@ -420,6 +417,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
       initial_break_before_ = break_before;
   }
 
+  EBreakBetween PreviousBreakAfter() const { return previous_break_after_; }
   void SetPreviousBreakAfter(EBreakBetween break_after) {
     previous_break_after_ = break_after;
   }
@@ -713,10 +711,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   }
 
   // Propagate the break-before/break-after of the child (if applicable).
-  // Update the break-after value for |flex_column_break_after|, if supplied.
-  void PropagateChildBreakValues(
-      const NGLayoutResult& child_layout_result,
-      EBreakBetween* flex_column_break_after = nullptr);
+  void PropagateChildBreakValues(const NGLayoutResult& child_layout_result);
 
  private:
   // Propagate fragmentation details. This includes checking whether we have
