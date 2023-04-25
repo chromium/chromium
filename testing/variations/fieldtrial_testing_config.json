@@ -12411,27 +12411,6 @@
             ]
         }
     ],
-    "StartupProfilePickerWithoutGuest": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ObserverBasedPostProfileInit"
-                    ]
-                }
-            ]
-        }
-    ],
     "StopLoadingAnimationForHiddenWindow": [
         {
             "platforms": [
