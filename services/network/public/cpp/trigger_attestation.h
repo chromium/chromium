@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -35,15 +35,15 @@ class COMPONENT_EXPORT(NETWORK_CPP_TRIGGER_ATTESTATION) TriggerAttestation {
   TriggerAttestation& operator=(TriggerAttestation&&);
 
   const std::string& token() const { return token_; }
-  const base::GUID& aggregatable_report_id() const {
+  const base::Uuid& aggregatable_report_id() const {
     return aggregatable_report_id_;
   }
 
  private:
-  TriggerAttestation(std::string token, base::GUID aggregatable_report_id);
+  TriggerAttestation(std::string token, base::Uuid aggregatable_report_id);
 
   std::string token_;
-  base::GUID aggregatable_report_id_;
+  base::Uuid aggregatable_report_id_;
 };
 
 }  // namespace network

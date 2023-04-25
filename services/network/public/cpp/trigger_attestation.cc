@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -28,7 +28,7 @@ TriggerAttestation& TriggerAttestation::operator=(TriggerAttestation&&) =
 absl::optional<TriggerAttestation> TriggerAttestation::Create(
     std::string token,
     const std::string& aggregatable_report_id) {
-  base::GUID id = base::GUID::ParseLowercase(aggregatable_report_id);
+  base::Uuid id = base::Uuid::ParseLowercase(aggregatable_report_id);
   if (!id.is_valid() || token.empty()) {
     return absl::nullopt;
   }
@@ -37,7 +37,7 @@ absl::optional<TriggerAttestation> TriggerAttestation::Create(
 }
 
 TriggerAttestation::TriggerAttestation(std::string token,
-                                       base::GUID aggregatable_report_id)
+                                       base::Uuid aggregatable_report_id)
     : token_(std::move(token)),
       aggregatable_report_id_(std::move(aggregatable_report_id)) {
   DCHECK(aggregatable_report_id_.is_valid());
