@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
@@ -296,49 +297,40 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
   }
 
   FiltersDisjunction disjunction;
-  const auto append_if_valid =
-      [&disjunction](
-          base::Value& value) -> absl::optional<TriggerRegistrationError> {
+  const auto append_if_valid = [&disjunction](base::Value& value)
+      -> base::expected<void, TriggerRegistrationError> {
     base::Value::Dict* dict = value.GetIfDict();
     if (!dict) {
-      return TriggerRegistrationError::kFiltersWrongType;
+      return base::unexpected(TriggerRegistrationError::kFiltersWrongType);
     }
 
+    const auto map_errors = [](FilterValuesError error) {
+      if (error == FilterValuesError::kValueWrongType) {
+        return TriggerRegistrationError::kFiltersValueWrongType;
+      }
+      CHECK_EQ(FilterValuesError::kListWrongType, error);
+      return TriggerRegistrationError::kFiltersListWrongType;
+    };
     auto filter_values =
         ParseFilterValuesFromJSON(std::move(*dict), /*check_sizes=*/false);
-    if (filter_values.has_value()) {
-      if (!filter_values->empty()) {
-        disjunction.push_back(std::move(filter_values.value()));
-      }
-      return absl::nullopt;
+    if (!filter_values.has_value()) {
+      return base::unexpected(map_errors(filter_values.error()));
     }
-
-    switch (filter_values.error()) {
-      case FilterValuesError::kListWrongType:
-        return TriggerRegistrationError::kFiltersListWrongType;
-      case FilterValuesError::kValueWrongType:
-        return TriggerRegistrationError::kFiltersValueWrongType;
-      case FilterValuesError::kTooManyKeys:
-      case FilterValuesError::kKeyTooLong:
-      case FilterValuesError::kListTooLong:
-      case FilterValuesError::kValueTooLong:
-        NOTREACHED();
-        return TriggerRegistrationError::kFiltersListWrongType;
+    if (!filter_values->empty()) {
+      disjunction.push_back(std::move(filter_values.value()));
     }
+    return base::ok();
   };
 
   if (base::Value::List* list = input_value->GetIfList()) {
     disjunction.reserve(list->size());
     for (base::Value& item : *list) {
-      if (auto error = append_if_valid(item)) {
-        return base::unexpected(*error);
+      if (auto result = append_if_valid(item); !result.has_value()) {
+        return base::unexpected(result.error());
       }
     }
-    return disjunction;
-  }
-
-  if (auto error = append_if_valid(*input_value)) {
-    return base::unexpected(*error);
+  } else if (auto result = append_if_valid(*input_value); !result.has_value()) {
+    return base::unexpected(result.error());
   }
   return disjunction;
 }

@@ -84,10 +84,8 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
     TriggerRegistrationError wrong_type,
     base::FunctionRef<base::expected<T, TriggerRegistrationError>(base::Value&)>
         build_element) {
-  std::vector<T> vec;
-
   if (!input_value) {
-    return vec;
+    return {};
   }
 
   base::Value::List* list = input_value->GetIfList();
@@ -95,6 +93,7 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
     return base::unexpected(wrong_type);
   }
 
+  std::vector<T> vec;
   vec.reserve(list->size());
 
   for (auto& value : *list) {
