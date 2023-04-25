@@ -219,10 +219,20 @@ public class SelectFileDialogTest {
 
         // Force WindowAndroid#showIntent to succeed and make sure the pipeline remains open when
         // the test reruns.
-        Mockito.doAnswer((invocation) -> { return true; })
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(new Intent(Intent.ACTION_CHOOSER));
+        Mockito.doAnswer((invocation) -> {
+                   Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                   Intent getContentIntent = (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                   assertEquals("*/*", getContentIntent.getType());
+                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES));
+                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                   return true;
+               })
                 .when(windowAndroid)
-                .showIntent(
-                        (Intent) anyObject(), (WindowAndroid.IntentCallback) anyObject(), anyInt());
+                .showIntent(ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) anyObject(), anyInt());
 
         // Rerun the test. Because showIntent now reports success, the upload should still be in
         // progress.
