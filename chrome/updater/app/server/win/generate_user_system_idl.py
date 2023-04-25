@@ -14,16 +14,11 @@ Here is an example:
 ```
 BEGIN_INTERFACE(
   {
-    "user": {
-      "PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B":
-          "PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA",
-      "ICompleteStatus":"ICompleteStatusUser"
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA",
+      "system":"PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07"
     },
-    "system": {
-      "PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B":
-          "PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07",
-      "ICompleteStatus":"ICompleteStatusSystem"
-    }
+    "tokensToSuffix": ["ICompleteStatus"]
   }
 )
 [
@@ -101,9 +96,14 @@ def _GenerateIDLFile(idl_template_filename, idl_output_filename):
 
             idl_output.append(interface_text)
             for user_or_system in ['user', 'system']:
-                interface_gen = interface_text
-                for k, v in replacement_dict[user_or_system].items():
-                    interface_gen = re.sub(r'\b%s\b' % k, v, interface_gen)
+                interface_gen = re.sub(
+                    r'(uuid\().*?(\))',
+                    r'\1%s\2' % replacement_dict['uuid'][user_or_system],
+                    interface_text)
+                for k in replacement_dict['tokensToSuffix']:
+                    interface_gen = re.sub(r'\b%s\b' % k,
+                                           k + user_or_system.title(),
+                                           interface_gen)
                 idl_output.append(interface_gen)
 
             if trailer.strip():

@@ -12,16 +12,11 @@ import "ocidl.idl";
 
 BEGIN_INTERFACE(
   {
-    "user": {
-      "PLACEHOLDER-GUID-D272C794-2ACE-4584-B993-3B90C622BE65":
-          "PLACEHOLDER-GUID-618D9B82-9F51-4490-AF24-BB80489E1537",
-      "IUpdaterInternalCallback":"IUpdaterInternalCallbackUser"
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-618D9B82-9F51-4490-AF24-BB80489E1537",
+      "system":"PLACEHOLDER-GUID-7E806C73-B2A4-4BC5-BDAD-2249D87F67FC"
     },
-    "system": {
-      "PLACEHOLDER-GUID-D272C794-2ACE-4584-B993-3B90C622BE65":
-          "PLACEHOLDER-GUID-7E806C73-B2A4-4BC5-BDAD-2249D87F67FC",
-      "IUpdaterInternalCallback":"IUpdaterInternalCallbackSystem"
-    }
+    "tokensToSuffix": ["IUpdaterInternalCallback"]
   }
 )
 [
@@ -38,18 +33,11 @@ END_INTERFACE
 
 BEGIN_INTERFACE(
   {
-    "user": {
-      "PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA":
-          "PLACEHOLDER-GUID-C82AFDA3-CA76-46EE-96E9-474717BFA7BA",
-      "IUpdaterInternal":"IUpdaterInternalUser",
-      "IUpdaterInternalCallback":"IUpdaterInternalCallbackUser"
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-C82AFDA3-CA76-46EE-96E9-474717BFA7BA",
+      "system":"PLACEHOLDER-GUID-E690EB97-6E46-4361-AF8F-90A4F5496475"
     },
-    "system": {
-      "PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA":
-          "PLACEHOLDER-GUID-E690EB97-6E46-4361-AF8F-90A4F5496475",
-      "IUpdaterInternal":"IUpdaterInternalSystem",
-      "IUpdaterInternalCallback":"IUpdaterInternalCallbackSystem"
-    }
+    "tokensToSuffix": ["IUpdaterInternal", "IUpdaterInternalCallback"]
   }
 )
 [

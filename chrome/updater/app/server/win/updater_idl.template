@@ -11,16 +11,11 @@ import "ocidl.idl";
 
 BEGIN_INTERFACE(
   {
-    "user": {
-      "PLACEHOLDER-GUID-46ACF70B-AC13-406D-B53B-B2C4BF091FF6":
-          "PLACEHOLDER-GUID-C3485D9F-C684-4C43-B85B-E339EA395C29",
-      "IUpdateState":"IUpdateStateUser"
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-C3485D9F-C684-4C43-B85B-E339EA395C29",
+      "system":"PLACEHOLDER-GUID-EA6FDC05-CDC5-4EA4-AB41-CCBD1040A2B5"
     },
-    "system": {
-      "PLACEHOLDER-GUID-46ACF70B-AC13-406D-B53B-B2C4BF091FF6":
-          "PLACEHOLDER-GUID-EA6FDC05-CDC5-4EA4-AB41-CCBD1040A2B5",
-      "IUpdateState":"IUpdateStateSystem"
-    }
+    "tokensToSuffix": ["IUpdateState"]
   }
 )
 [
@@ -47,16 +42,11 @@ END_INTERFACE
 
 BEGIN_INTERFACE(
   {
-    "user": {
-      "PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B":
-          "PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA",
-      "ICompleteStatus":"ICompleteStatusUser"
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA",
+      "system":"PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07"
     },
-    "system": {
-      "PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B":
-          "PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07",
-      "ICompleteStatus":"ICompleteStatusSystem"
-    }
+    "tokensToSuffix": ["ICompleteStatus"]
   }
 )
 [
@@ -74,20 +64,11 @@ END_INTERFACE
 
 BEGIN_INTERFACE(
   {
-    "user": {
-      "PLACEHOLDER-GUID-7B416CFD-4216-4FD6-BD83-7C586054676E":
-          "PLACEHOLDER-GUID-B54493A0-65B7-408C-B650-06265D2182AC",
-      "IUpdaterObserver":"IUpdaterObserverUser",
-      "IUpdateState":"IUpdateStateUser",
-      "ICompleteStatus":"ICompleteStatusUser"
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-B54493A0-65B7-408C-B650-06265D2182AC",
+      "system":"PLACEHOLDER-GUID-057B500A-4BA2-496A-B1CD-C5DED3CCC61B"
     },
-    "system": {
-      "PLACEHOLDER-GUID-7B416CFD-4216-4FD6-BD83-7C586054676E":
-          "PLACEHOLDER-GUID-057B500A-4BA2-496A-B1CD-C5DED3CCC61B",
-      "IUpdaterObserver":"IUpdaterObserverSystem",
-      "IUpdateState":"IUpdateStateSystem",
-      "ICompleteStatus":"ICompleteStatusSystem"
-    }
+    "tokensToSuffix": ["IUpdaterObserver", "IUpdateState", "ICompleteStatus"]
   }
 )
 [
@@ -105,16 +86,11 @@ END_INTERFACE
 
 BEGIN_INTERFACE(
   {
-    "user": {
-      "PLACEHOLDER-GUID-8BAB6F84-AD67-4819-B846-CC890880FD3B":
-          "PLACEHOLDER-GUID-34ADC89D-552B-4102-8AE5-D613A691335B",
-      "IUpdaterCallback":"IUpdaterCallbackUser"
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-34ADC89D-552B-4102-8AE5-D613A691335B",
+      "system":"PLACEHOLDER-GUID-F0D6763A-0182-4136-B1FA-508E334CFFC1"
     },
-    "system": {
-      "PLACEHOLDER-GUID-8BAB6F84-AD67-4819-B846-CC890880FD3B":
-          "PLACEHOLDER-GUID-F0D6763A-0182-4136-B1FA-508E334CFFC1",
-      "IUpdaterCallback":"IUpdaterCallbackSystem"
-    }
+    "tokensToSuffix": ["IUpdaterCallback"]
   }
 )
 [
@@ -131,20 +107,11 @@ END_INTERFACE
 
 BEGIN_INTERFACE(
   {
-    "user": {
-      "PLACEHOLDER-GUID-63B8FFB1-5314-48C9-9C57-93EC8BC6184B":
-          "PLACEHOLDER-GUID-02AFCB67-0899-4676-91A9-67D92B3B7918",
-      "IUpdater":"IUpdaterUser",
-      "IUpdaterCallback":"IUpdaterCallbackUser",
-      "IUpdaterObserver":"IUpdaterObserverUser"
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-02AFCB67-0899-4676-91A9-67D92B3B7918",
+      "system":"PLACEHOLDER-GUID-FCE335F3-A55C-496E-814F-85971C9FA6F1"
     },
-    "system": {
-      "PLACEHOLDER-GUID-63B8FFB1-5314-48C9-9C57-93EC8BC6184B":
-          "PLACEHOLDER-GUID-FCE335F3-A55C-496E-814F-85971C9FA6F1",
-      "IUpdater":"IUpdaterSystem",
-      "IUpdaterCallback":"IUpdaterCallbackSystem",
-      "IUpdaterObserver":"IUpdaterObserverSystem"
-    }
+    "tokensToSuffix": ["IUpdater", "IUpdaterCallback", "IUpdaterObserver"]
   }
 )
 [
