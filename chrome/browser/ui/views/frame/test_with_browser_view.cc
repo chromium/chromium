@@ -86,8 +86,7 @@ void TestWithBrowserView::TearDown() {
   browser_view_->browser()->tab_strip_model()->CloseAllTabs();
   // Ensure the Browser is reset before BrowserWithTestWindowTest cleans up
   // the Profile.
-  browser_view_->GetWidget()->CloseNow();
-  browser_view_ = nullptr;
+  browser_view_.ExtractAsDangling()->GetWidget()->CloseNow();
   content::RunAllTasksUntilIdle();
   BrowserWithTestWindowTest::TearDown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
