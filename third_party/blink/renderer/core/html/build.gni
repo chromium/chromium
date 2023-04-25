@@ -51,6 +51,8 @@ blink_core_sources_html = [
   "cross_origin_attribute.h",
   "custom/ce_reactions_scope.cc",
   "custom/ce_reactions_scope.h",
+  "custom/custom_element_construction_stack.cc",
+  "custom/custom_element_construction_stack.h",
   "custom/custom_element_definition.cc",
   "custom/custom_element_definition.h",
   "custom/custom_element_definition_builder.h",

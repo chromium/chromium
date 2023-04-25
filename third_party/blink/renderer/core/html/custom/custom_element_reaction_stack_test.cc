@@ -17,6 +17,7 @@ namespace blink {
 
 TEST(CustomElementReactionStackTest, one) {
   Vector<char> log;
+  CustomElementTestingScope testing_scope;
   ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
@@ -36,6 +37,7 @@ TEST(CustomElementReactionStackTest, one) {
 
 TEST(CustomElementReactionStackTest, multipleElements) {
   Vector<char> log;
+  CustomElementTestingScope testing_scope;
   ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
@@ -64,6 +66,7 @@ TEST(CustomElementReactionStackTest, multipleElements) {
 
 TEST(CustomElementReactionStackTest, popTopEmpty) {
   Vector<char> log;
+  CustomElementTestingScope testing_scope;
   ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
@@ -84,6 +87,7 @@ TEST(CustomElementReactionStackTest, popTopEmpty) {
 
 TEST(CustomElementReactionStackTest, popTop) {
   Vector<char> log;
+  CustomElementTestingScope testing_scope;
   ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
@@ -113,6 +117,7 @@ TEST(CustomElementReactionStackTest, popTop) {
 
 TEST(CustomElementReactionStackTest, requeueingDoesNotReorderElements) {
   Vector<char> log;
+  CustomElementTestingScope testing_scope;
 
   Element& element = *CreateElement("a");
   ScopedNullExecutionContext execution_context;
@@ -148,6 +153,7 @@ TEST(CustomElementReactionStackTest, requeueingDoesNotReorderElements) {
 
 TEST(CustomElementReactionStackTest, oneReactionQueuePerElement) {
   Vector<char> log;
+  CustomElementTestingScope testing_scope;
 
   Element& element = *CreateElement("a");
 
@@ -221,6 +227,7 @@ class EnqueueToStack : public Command {
 
 TEST(CustomElementReactionStackTest, enqueueFromReaction) {
   Vector<char> log;
+  CustomElementTestingScope testing_scope;
 
   Element& element = *CreateElement("a");
   ScopedNullExecutionContext execution_context;

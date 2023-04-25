@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_construction_stack.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -59,8 +60,9 @@ void V8HTMLConstructor::HtmlConstructor(
   // NewTarget.
   // If there is no such definition, then throw a TypeError and abort these
   // steps.
+  v8::Local<v8::Object> constructor = new_target.As<v8::Object>();
   CustomElementDefinition* definition =
-      registry->DefinitionForConstructor(new_target.As<v8::Object>());
+      registry->DefinitionForConstructor(constructor);
   if (!definition) {
     V8ThrowException::ThrowTypeError(isolate, "Illegal constructor");
     return;
@@ -115,14 +117,16 @@ void V8HTMLConstructor::HtmlConstructor(
 
   // 8. If definition's construction stack is empty...
   Element* element;
-  if (definition->GetConstructionStack().empty()) {
+  CustomElementConstructionStack* construction_stack =
+      GetCustomElementConstructionStack(window, constructor);
+  if (!construction_stack || construction_stack->empty()) {
     // This is an element being created with 'new' from script
     element = definition->CreateElementForConstructor(*window->document());
   } else {
-    element = definition->GetConstructionStack().back();
+    element = construction_stack->back();
     if (element) {
       // This is an element being upgraded that has called super
-      definition->GetConstructionStack().back().Clear();
+      construction_stack->back().Clear();
     } else {
       // During upgrade an element has invoked the same constructor
       // before calling 'super' and that invocation has poached the

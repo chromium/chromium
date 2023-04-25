@@ -209,7 +209,7 @@ TEST(CustomElementTest, StateByCreateElement) {
 
 TEST(CustomElementTest,
      CreateElement_TagNameCaseHandlingCreatingCustomElement) {
-  V8TestingScope scope;
+  CustomElementTestingScope scope;
   // register a definition
   ScriptState* script_state = scope.GetScriptState();
   CustomElementRegistry* registry =
@@ -217,7 +217,7 @@ TEST(CustomElementTest,
   NonThrowableExceptionState should_not_throw;
   {
     CEReactionsScope reactions;
-    TestCustomElementDefinitionBuilder builder(script_state);
+    TestCustomElementDefinitionBuilder builder;
     registry->DefineInternal(script_state, "a-a", builder,
                              ElementDefinitionOptions::Create(),
                              should_not_throw);
