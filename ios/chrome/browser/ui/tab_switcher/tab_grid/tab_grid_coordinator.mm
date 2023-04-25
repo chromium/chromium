@@ -1147,8 +1147,6 @@
 - (void)inactiveTabsCoordinator:
             (InactiveTabsCoordinator*)inactiveTabsCoordinator
             didSelectItemWithID:(NSString*)itemID {
-  // TODO(crbug.com/1418021): Add metrics when the user activate back an
-  // inactive tab and bring it back to the active tab list.
   WebStateList* regularWebStateList = self.regularBrowser->GetWebStateList();
   int toInsertIndex = regularWebStateList->count();
 

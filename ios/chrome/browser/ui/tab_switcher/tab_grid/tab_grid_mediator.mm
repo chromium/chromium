@@ -508,6 +508,8 @@ void RecordTabGridCloseTabsCount(int count) {
     }
 
     if (browser->IsInactive()) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileTabGridOpenInactiveTabSearchResult"));
       index = itemWebStateList->count();
       MoveTabToBrowser(itemID, self.browser, index);
     } else {

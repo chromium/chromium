@@ -21539,6 +21539,25 @@ should be able to be added at any place in this file.
   <description>User adds one new bookmark, in the iOS tab grid.</description>
 </action>
 
+<action name="MobileTabGridOpenInactiveTab">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid opened an inactive tab by tapping on it.
+  </description>
+</action>
+
+<action name="MobileTabGridOpenInactiveTabSearchResult">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid opened an inactive tab by tapping on it from search
+    results.
+  </description>
+</action>
+
 <action name="MobileTabGridOpenIncognitoTab">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
