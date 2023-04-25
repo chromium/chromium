@@ -1,101 +1,66 @@
 <!doctype html>
 <meta charset=utf-8>
 <meta name=timeout content=long>
-<meta name=variant content="?include=source">
-<meta name=variant content="?include=trigger">
+<meta name="variant" content="?input=valid_cookie&source">
+<meta name="variant" content="?input=valid_cookie">
+<meta name="variant" content="?input=missing_cookie&source">
+<meta name="variant" content="?input=missing_cookie">
+<meta name="variant" content="?input=cookie_without_secure&source">
+<meta name="variant" content="?input=cookie_without_secure">
+<meta name="variant" content="?input=cookie_without_httponly&source">
+<meta name="variant" content="?input=cookie_without_httponly">
+<meta name="variant" content="?input=cookie_without_samesite&source">
+<meta name="variant" content="?input=cookie_without_samesite">
+<meta name="variant" content="?input=cookie_with_narrow_path&source">
+<meta name="variant" content="?input=cookie_with_narrow_path">
+<meta name="variant" content="?input=field_with_wrong_type&source">
+<meta name="variant" content="?input=field_with_wrong_type">
+<meta name="variant" content="?input=field_with_invalid_format&source">
+<meta name="variant" content="?input=field_with_invalid_format">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/subset-tests-by-key.js"></script>
 <script src="resources/helpers.js"></script>
 <script>
-const debug_key_promise_test = (testCase, forSource) =>
-  attribution_reporting_promise_test(async t => {
-    registerAttributionSrcByImg(createRedirectChain([
-      {
-        cookie: testCase.cookie,
-        source: {
-          debug_key: forSource ? testCase.debugKey : undefined,
-          destination: 'https://{{host}}',
-        },
+attribution_reporting_promise_test(async t => {
+  const searchParams = new URLSearchParams(location.search);
+  const input = searchParams.get('input');
+  const inputJSON =
+      await fetch(`resources/debug_key/${input}.json`)
+                .then((response) => response.json());
+  const forSource = searchParams.get('source') !== null;
+
+  registerAttributionSrcByImg(createRedirectChain([
+    {
+      cookie: inputJSON.cookie,
+      source: {
+        debug_key: forSource ? inputJSON.debug_key : undefined,
+        destination: 'https://{{host}}',
       },
-      {
-        trigger: {
-          debug_key: forSource ? undefined : testCase.debugKey,
-          event_trigger_data: [{}],
-        },
+    },
+    {
+      trigger: {
+        debug_key: forSource ? undefined : inputJSON.debug_key,
+        event_trigger_data: [{}],
       },
-    ]));
+    },
+  ]));
 
-    const payload = await pollEventLevelReports();
-    assert_equals(payload.reports.length, 1);
-    const report = JSON.parse(payload.reports[0].body);
+  const payload = await pollEventLevelReports();
+  assert_equals(payload.reports.length, 1);
+  const report = JSON.parse(payload.reports[0].body);
 
-    let keyUnderTest = 'trigger_debug_key';
-    let otherKey = 'source_debug_key';
-    if (forSource) {
-      [keyUnderTest, otherKey] = [otherKey, keyUnderTest];
-    }
+  let keyUnderTest = 'trigger_debug_key';
+  let otherKey = 'source_debug_key';
+  if (forSource) {
+    [keyUnderTest, otherKey] = [otherKey, keyUnderTest];
+  }
 
-    if (testCase.keyExpected) {
-      assert_equals(report[keyUnderTest], testCase.debugKey);
-    } else {
-      assert_not_own_property(report, keyUnderTest);
-    }
+  if (inputJSON.key_expected) {
+    assert_equals(report[keyUnderTest], inputJSON.debug_key);
+  } else {
+    assert_not_own_property(report, keyUnderTest);
+  }
 
-    assert_not_own_property(report, otherKey);
-  }, testCase.testName);
-
-[
-  {
-    testName: 'Valid cookie propagates debug key.',
-    debugKey: '246',
-    cookie: attributionDebugCookie,
-    keyExpected: true,
-  },
-  {
-    testName: 'Missing cookie clears debug key.',
-    debugKey: '246',
-    cookie: 'foo=1;Secure;HttpOnly;SameSite=None;Path=/',
-    keyExpected: false,
-  },
-  {
-    testName: 'Cookie without Secure clears debug key.',
-    debugKey: '246',
-    cookie: 'ar_debug=1;HttpOnly;SameSite=None;Path=/',
-    keyExpected: false,
-  },
-  {
-    testName: 'Cookie without HttpOnly clears debug key.',
-    debugKey: '246',
-    cookie: 'ar_debug=1;Secure;SameSite=None;Path=/',
-    keyExpected: false,
-  },
-  {
-    testName: 'Cookie without SameSite=None clears debug key.',
-    debugKey: '246',
-    cookie: 'ar_debug=1;Secure;HttpOnly;Path=/',
-    keyExpected: false,
-  },
-  {
-    testName: 'Cookie with narrow Path clears debug key.',
-    debugKey: '246',
-    cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None',
-    keyExpected: false,
-  },
-  {
-    testName: 'Field with wrong type is ignored.',
-    debugKey: 246,
-    cookie: attributionDebugCookie,
-    keyExpected: false,
-  },
-  {
-    testName: 'Field with invalid format is ignored.',
-    debugKey: '-246',
-    cookie: attributionDebugCookie,
-    keyExpected: false,
-  },
-].forEach(testCase => {
-  subsetTestByKey('source', debug_key_promise_test, testCase, /*forSource=*/true);
-  subsetTestByKey('trigger', debug_key_promise_test, testCase, /*forSource=*/false);
-});
+  assert_not_own_property(report, otherKey);
+}, 'Debug keys');
 </script>
