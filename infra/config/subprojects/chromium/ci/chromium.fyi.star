@@ -1511,9 +1511,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 
 def build_perf_builder(**kwargs):
     kwargs.setdefault("executable", "recipe:chrome_build/build_perf")
+    kwargs.setdefault("reclient_jobs", reclient.jobs.HIGH_JOBS_FOR_CQ)
+    kwargs.setdefault("use_clang_coverage", True)
     return ci.builder(
         reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-        reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
         service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
         # rely on the builder dimension for the bot selection.
         builderless = False,
@@ -1521,7 +1522,6 @@ def build_perf_builder(**kwargs):
         siso_enable_cloud_profiler = True,
         siso_enable_cloud_trace = True,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
-        use_clang_coverage = True,
         notifies = ["chrome-build-perf"],
         **kwargs
     )
@@ -1597,6 +1597,42 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
 )
 
 build_perf_builder(
+    name = "android-build-perf-developer",
+    description_html = """\
+This builder measures build performance for Android developer builds, by simulating developer build scenarios on a high spec bot.\
+""",
+    executable = "recipe:chrome_build/build_perf_developer",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "checkout_siso",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder",
+        ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "buildperf",
+        short_name = "anddev",
+    ),
+    reclient_jobs = 5120,
+    use_clang_coverage = None,
+)
+
+build_perf_builder(
     name = "build-perf-linux",
     description_html = """\
 This builder measures Linux build performance with and without remote caches.<br/>\
@@ -1653,6 +1689,35 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
 )
 
 build_perf_builder(
+    name = "linux-build-perf-developer",
+    description_html = """\
+This builder measures build performance for Linux developer builds, by simulating developer build scenarios on a high spec bot.\
+""",
+    executable = "recipe:chrome_build/build_perf_developer",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "checkout_siso",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+        ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "buildperf",
+        short_name = "lnxdev",
+    ),
+    reclient_jobs = 5120,
+    use_clang_coverage = None,
+)
+
+build_perf_builder(
     name = "build-perf-windows",
     description_html = """\
 This builder measures Windows build performance with and without remote caches.<br/>\
@@ -1706,6 +1771,35 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "winss",
     ),
+)
+
+build_perf_builder(
+    name = "win-build-perf-developer",
+    description_html = """\
+This builder measures build performance for Windows developer builds, by simulating developer build scenarios on a high spec bot.\
+""",
+    executable = "recipe:chrome_build/build_perf_developer",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "checkout_siso",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+        ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "buildperf",
+        short_name = "windev",
+    ),
+    reclient_jobs = 1000,
+    use_clang_coverage = None,
 )
 
 ci.builder(

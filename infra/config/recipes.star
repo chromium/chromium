@@ -128,6 +128,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chrome_build/build_perf_developer",
+)
+
+build_recipe(
     name = "recipe:celab",
 )
 
