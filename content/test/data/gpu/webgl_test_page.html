@@ -1,0 +1,21 @@
+<!--
+Test page used for running WebGL 1 and 2 conformance tests.
+
+Actual test pages are loaded into the iframe. This is so that we can guarantee
+that our asynchronous test setup is complete before the test starts.
+-->
+<div id="current_test">No test running.</div>
+<iframe id="test_iframe" style="width: 1024px; height: 768px; border: 0;"></iframe>
+<script>
+var currentTestDiv = document.getElementById('current_test');
+var testIframe = document.getElementById('test_iframe');
+var testIframeLoaded = false;
+function runTest(url) {
+  currentTestDiv.innerHTML = 'Current test: ' + url;
+  testIframeLoaded = false;
+  testHarness.reset();
+  wrapper.sendTestStarted();
+  testIframe.onload = (_) => { testIframeLoaded = true; };
+  testIframe.src = url;
+}
+</script>

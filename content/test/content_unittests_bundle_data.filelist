@@ -807,6 +807,7 @@ data/gpu/webgl2-unpack-image-height.html
 data/gpu/webgl2_conformance_tests_output.json
 data/gpu/webgl_conformance_tests_output.json
 data/gpu/webgl_extension_test.html
+data/gpu/webgl_test_page.html
 data/gpu/webgl_with_select_element.html
 data/gpu/webgpu-caching.html
 data/gpu/webgpu-context-lost.html
