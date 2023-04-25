@@ -2577,11 +2577,11 @@ extern const char kEnableWebHidOnExtensionServiceWorkerDescription[];
 extern const char kGlobalMediaControlsCastStartStopName[];
 extern const char kGlobalMediaControlsCastStartStopDescription[];
 
-extern const char kHighEfficiencyModeAvailableName[];
-extern const char kHighEfficiencyModeAvailableDescription[];
-
 extern const char kHeuristicMemorySaverName[];
 extern const char kHeuristicMemorySaverDescription[];
+
+extern const char kHighEfficiencySavingsReportingImprovementsName[];
+extern const char kHighEfficiencySavingsReportingImprovementsDescription[];
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kIOSPromoPasswordBubbleName[];

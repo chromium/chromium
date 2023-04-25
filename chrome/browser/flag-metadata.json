@@ -760,11 +760,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "battery-saver-mode-available",
-    "owners": [ "chrome-performance-ui-team@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "binding-manager-connection-limit",
     "owners": ["ckitagawa", "yfriedman"],
     "expiry_milestone": 115
@@ -4380,11 +4375,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "high-efficiency-mode-available",
-    "owners": [ "chrome-performance-ui-team@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "highlight-managed-pref-disclaimer-android",
     "owners": [ "ftirelo" ],
     "expiry_milestone": 115
@@ -5037,6 +5027,11 @@
     // capture a memlog without disturbing the situation under test by
     // restarting to apply a switch. It should not be removed.
     "expiry_milestone": -1
+  },
+  {
+    "name": "memory-saver-savings-reporting-improvements",
+    "owners": [ "chrome-performance-ui-team@google.com" ],
+    "expiry_milestone": 117
   },
   {
     "name": "messages-for-android-ads-blocked",

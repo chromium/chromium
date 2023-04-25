@@ -4503,18 +4503,18 @@ const char kGlobalMediaControlsCastStartStopDescription[] =
     "Allows global media controls to control when a Cast session is started "
     "or stopped instead of relying on the Cast dialog.";
 
-extern const char kHighEfficiencyModeAvailableName[] =
-    "Enable the high efficiency mode feature in the settings";
-extern const char kHighEfficiencyModeAvailableDescription[] =
-    "When enabled, shows the performance section in the performance settings "
-    "page";
-
 extern const char kHeuristicMemorySaverName[] =
     "Enable the heuristics-based policy for Memory Saver Mode.";
 extern const char kHeuristicMemorySaverDescription[] =
     "When enabled, Memory Saver will take multiple signals into account before "
     "discarding a tab rather than doing it after a fixed amount of time in the "
     "background.";
+
+extern const char kHighEfficiencySavingsReportingImprovementsName[] =
+    "Enable improvements to how memory savings are reported.";
+extern const char kHighEfficiencySavingsReportingImprovementsDescription[] =
+    "When enabled, the Memory Saver page action chip and dialog will be used "
+    "to highlight memory savings.";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kIOSPromoPasswordBubbleName[] =

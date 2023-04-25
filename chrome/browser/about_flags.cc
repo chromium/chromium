@@ -9623,6 +9623,14 @@ const FeatureEntry kFeatureEntries[] = {
          performance_manager::features::kHeuristicMemorySaver,
          kHeuristicMemorySaverVariations,
          "HeuristicMemorySaver")},
+
+    {"memory-saver-savings-reporting-improvements",
+     flag_descriptions::kHighEfficiencySavingsReportingImprovementsName,
+     flag_descriptions::kHighEfficiencySavingsReportingImprovementsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         performance_manager::features::kMemorySavingsReportingImprovements)},
+
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
