@@ -276,13 +276,14 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   }
 
   void SetIsTableCell(bool is_table_cell) {
-    space_.bitfields_.is_table_cell = is_table_cell;
+    space_.EnsureRareData()->SetIsTableCell();
   }
 
   void SetIsRestrictedBlockSizeTableCell(bool b) {
-    DCHECK(space_.bitfields_.is_table_cell);
-    if (!b && !space_.rare_data_)
+    DCHECK(space_.IsTableCell());
+    if (!b && !space_.rare_data_) {
       return;
+    }
     space_.EnsureRareData()->is_restricted_block_size_table_cell = b;
   }
 

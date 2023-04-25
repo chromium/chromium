@@ -424,7 +424,11 @@ class CORE_EXPORT NGConstraintSpace final {
   }
 
   // Whether the current node is a table-cell.
-  bool IsTableCell() const { return bitfields_.is_table_cell; }
+  bool IsTableCell() const {
+    return HasRareData() &&
+           rare_data_->data_union_type ==
+               static_cast<unsigned>(RareData::DataUnionType::kTableCellData);
+  }
 
   // Whether the table-cell fragment should be hidden (not painted) if it has
   // no children.
@@ -1144,6 +1148,8 @@ class CORE_EXPORT NGConstraintSpace final {
       EnsureBlockData()->lines_until_clamp = value;
     }
 
+    void SetIsTableCell() { EnsureTableCellData(); }
+
     NGBoxStrut TableCellBorders() const {
       return GetDataUnionType() == DataUnionType::kTableCellData
                  ? table_cell_data_.table_cell_borders
@@ -1528,7 +1534,6 @@ class CORE_EXPORT NGConstraintSpace final {
           writing_mode(
               static_cast<unsigned>(writing_direction.GetWritingMode())),
           direction(static_cast<unsigned>(writing_direction.Direction())),
-          is_table_cell(false),
           is_anonymous(false),
           is_new_formatting_context(false),
           is_orthogonal_writing_mode_root(false),
@@ -1555,7 +1560,6 @@ class CORE_EXPORT NGConstraintSpace final {
       return adjoining_object_types == other.adjoining_object_types &&
              writing_mode == other.writing_mode &&
              direction == other.direction &&
-             is_table_cell == other.is_table_cell &&
              is_anonymous == other.is_anonymous &&
              is_new_formatting_context == other.is_new_formatting_context &&
              is_orthogonal_writing_mode_root ==
@@ -1585,8 +1589,6 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned adjoining_object_types : 3;  // NGAdjoiningObjectTypes
     unsigned writing_mode : 3;
     unsigned direction : 1;
-
-    unsigned is_table_cell : 1;
 
     unsigned is_anonymous : 1;
     unsigned is_new_formatting_context : 1;
