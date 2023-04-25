@@ -18,7 +18,7 @@ found in the LICENSE file.
         <item name="buttonTextColor">?attr/globalFilledButtonTextColor</item>
         <item name="buttonColor">?attr/globalFilledButtonBgColor</item>
         <item name="rippleColor">@color/filled_button_ripple_color</item>
-        <item name="buttonRaised">true</item>
+        <item name="buttonRaised">false</item>
     </style>
     <style name="FollowReverseButton" parent="ButtonCompatBase">
         <item name="android:textAppearance">@style/TextAppearance.TextAccentMediumThick</item>
@@ -27,7 +27,7 @@ found in the LICENSE file.
         <item name="rippleColor">@color/text_button_ripple_color_list</item>
         <item name="borderWidth">@dimen/button_outlined_border_width</item>
         <item name="borderColor">?attr/globalOutlinedButtonBorderColor</item>
-        <item name="buttonRaised">true</item>
+        <item name="buttonRaised">false</item>
     </style>
     
     <!-- Profile Follow Buttons -->
