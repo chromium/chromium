@@ -1575,6 +1575,12 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForSubresource(
               GetThread()->GetTaskRunner(TaskType::kNetworking));
   fetch_response_callbacks_.Set(event_id, WrapDisallowNew(std::move(remote)));
 
+  if (params->did_start_race_network_request) {
+    UseCounter::Count(
+        this, WebFeature::
+                  kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest);
+  }
+
   if (RequestedTermination()) {
     event_queue_->EnqueuePending(
         event_id,

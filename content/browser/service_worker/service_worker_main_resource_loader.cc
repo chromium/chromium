@@ -35,6 +35,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
 namespace content {
 
@@ -274,6 +275,10 @@ bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
   race_network_request_url_loader_ = std::move(url_loader);
   race_network_request_loader_client_ =
       std::move(race_network_request_url_loader_client);
+
+  version->CountFeature(
+      blink::mojom::WebFeature::
+          kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest);
 
   return true;
 }
