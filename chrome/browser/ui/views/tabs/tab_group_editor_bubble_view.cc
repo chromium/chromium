@@ -654,6 +654,10 @@ const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() {
   SavedTabGroupKeyedService* const saved_tab_group_service =
       SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
 
+  if (!saved_tab_group_service) {
+    return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
+  }
+
   return saved_tab_group_service->model()->Contains(group_)
              ? l10n_util::GetStringUTF16(
                    IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP)
