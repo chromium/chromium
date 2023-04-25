@@ -60,6 +60,7 @@
       <include name="IDR_SCANNING_APP_NO_SCANNERS_ILLO_SVG" file="svg/illo_no_scanner.svg" type="BINDATA" />
       <include name="IDR_SCANNING_APP_NO_SCANNERS_SVG" file="svg/no_scanners.svg" type="BINDATA" />
       <include name="IDR_SCANNING_APP_NO_SCANNERS_DARK_SVG" file="svg/no_scanners_dark.svg" type="BINDATA" />
+      <include name="IDR_SCANNING_APP_READY_TO_SCAN_ILLO_SVG" file="svg/illo_ready_to_scan.svg" type="BINDATA" />
       <include name="IDR_SCANNING_APP_READY_TO_SCAN_SVG" file="svg/ready_to_scan.svg" type="BINDATA" />
       <include name="IDR_SCANNING_APP_READY_TO_SCAN_DARK_SVG" file="svg/ready_to_scan_dark.svg" type="BINDATA" />
       <include name="IDR_SCANNING_APP_REMOVE_PAGE_SVG" file="svg/remove_page.svg" type="BINDATA" />
