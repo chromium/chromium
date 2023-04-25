@@ -128,11 +128,6 @@ mojom("stable_video_decoder") {
           cpp = "::media::VideoDecoderType"
         },
         {
-          mojom = "media.stable.mojom.VideoFrame"
-          cpp = "::scoped_refptr<::media::VideoFrame>"
-          nullable_is_same_type = true
-        },
-        {
           mojom = "media.stable.mojom.VideoFrameMetadata"
           cpp = "::media::VideoFrameMetadata"
         },
@@ -147,15 +142,12 @@ mojom("stable_video_decoder") {
       ]
       traits_headers = [ "stable_video_decoder_types_mojom_traits.h" ]
       traits_sources = [ "stable_video_decoder_types_mojom_traits.cc" ]
-      traits_deps = [
-        "//gpu/ipc/common",
-        "//media/gpu:buffer_validation",
-      ]
+      traits_public_deps = [ "//media" ]
 
       if (use_vaapi) {
-        traits_deps += [ "//media/gpu/vaapi:vaapi_status" ]
+        traits_deps = [ "//media/gpu/vaapi:vaapi_status" ]
       } else if (use_v4l2_codec) {
-        traits_deps += [ "//media/gpu/v4l2:v4l2_status" ]
+        traits_deps = [ "//media/gpu/v4l2:v4l2_status" ]
       }
     },
   ]

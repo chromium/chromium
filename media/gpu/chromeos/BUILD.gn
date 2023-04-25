@@ -31,6 +31,7 @@ source_set("chromeos") {
     "//base",
     "//build/config/linux/libdrm",
     "//media",
+    "//media/gpu:buffer_validation",
     "//media/gpu:buildflags",
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",

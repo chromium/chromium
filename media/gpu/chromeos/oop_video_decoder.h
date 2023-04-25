@@ -86,7 +86,7 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   bool NeedsTranscryption() override;
 
   // stable::mojom::VideoDecoderClient implementation.
-  void OnVideoFrameDecoded(const scoped_refptr<VideoFrame>& frame,
+  void OnVideoFrameDecoded(stable::mojom::VideoFramePtr frame,
                            bool can_read_without_stalling,
                            const base::UnguessableToken& release_token) final;
   void OnWaiting(WaitingReason reason) final;

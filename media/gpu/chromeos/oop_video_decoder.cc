@@ -9,6 +9,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/components/cdm_factory_daemon/stable_cdm_context_impl.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "media/base/format_utils.h"
+#include "media/gpu/buffer_validation.h"
 #include "media/gpu/macros.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -80,6 +83,60 @@ namespace {
 // Size of the timestamp cache. We don't want the cache to grow without bounds.
 // The maximum size is chosen to be the same as in the VaapiVideoDecoder.
 constexpr size_t kTimestampCacheSize = 128;
+
+// Converts |mojo_frame| to a media::VideoFrame after performing some
+// validation. The reason we do validation/conversion here and not in mojo
+// traits is that we don't want every incoming stable::mojom::VideoFrame to
+// result in a media::VideoFrame: we'd like to re-use buffers based on the
+// incoming |mojo_frame|->gpu_memory_buffer_handle.id; if that incoming
+// |mojo_frame| is a frame that we already know about, we can reduce the
+// underlying buffer without creating a media::VideoFrame.
+//
+// TODO(b/277832201): actually re-use buffers.
+scoped_refptr<VideoFrame> MojoVideoFrameToMediaVideoFrame(
+    stable::mojom::VideoFramePtr mojo_frame) {
+  if (!VerifyGpuMemoryBufferHandle(mojo_frame->format, mojo_frame->coded_size,
+                                   mojo_frame->gpu_memory_buffer_handle)) {
+    VLOGF(2) << "Received an invalid GpuMemoryBufferHandle";
+    return nullptr;
+  }
+
+  absl::optional<gfx::BufferFormat> buffer_format =
+      VideoPixelFormatToGfxBufferFormat(mojo_frame->format);
+  if (!buffer_format) {
+    VLOGF(2) << "Could not convert the incoming frame's format to a "
+                "gfx::BufferFormat";
+    return nullptr;
+  }
+
+  gpu::GpuMemoryBufferSupport support;
+  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
+      support.CreateGpuMemoryBufferImplFromHandle(
+          std::move(mojo_frame->gpu_memory_buffer_handle),
+          mojo_frame->coded_size, *buffer_format,
+          gfx::BufferUsage::SCANOUT_VDA_WRITE, base::NullCallback());
+  if (!gpu_memory_buffer) {
+    VLOGF(2) << "Could not create a GpuMemoryBuffer for the incoming frame";
+    return nullptr;
+  }
+
+  gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];
+  scoped_refptr<media::VideoFrame> gmb_frame =
+      media::VideoFrame::WrapExternalGpuMemoryBuffer(
+          mojo_frame->visible_rect, mojo_frame->natural_size,
+          std::move(gpu_memory_buffer), dummy_mailbox, base::NullCallback(),
+          mojo_frame->timestamp);
+  if (!gmb_frame) {
+    VLOGF(2) << "Could not create a GpuMemoryBuffer-backed VideoFrame";
+    return nullptr;
+  }
+
+  gmb_frame->set_metadata(mojo_frame->metadata);
+  gmb_frame->set_color_space(mojo_frame->color_space);
+  gmb_frame->set_hdr_metadata(mojo_frame->hdr_metadata);
+
+  return gmb_frame;
+}
 
 // A singleton helper class that makes it easy to manage requests to wait until
 // the supported video decoder configurations are known and cache those
@@ -755,7 +812,7 @@ bool OOPVideoDecoder::NeedsTranscryption() {
 }
 
 void OOPVideoDecoder::OnVideoFrameDecoded(
-    const scoped_refptr<VideoFrame>& frame,
+    stable::mojom::VideoFramePtr frame,
     bool can_read_without_stalling,
     const base::UnguessableToken& release_token) {
   DVLOGF(4);
@@ -769,48 +826,62 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
     return;
   }
 
-  base::TimeDelta timestamp = frame->timestamp();
-  auto it = fake_timestamp_to_real_timestamp_cache_.Get(timestamp);
+  // According to the media::VideoDecoder API, |output_cb_| should not be
+  // supplied with EOS frames. The mojo traits guarantee this DCHECK.
+  DCHECK(!frame->metadata.end_of_stream);
+
+  if (!gfx::Rect(frame->coded_size).Contains(frame->visible_rect)) {
+    VLOGF(2) << "Received a frame with inconsistent coded size and visible "
+                "rectangle";
+    Stop();
+    return;
+  }
+
+  const base::TimeDelta fake_timestamp = frame->timestamp;
+  auto it = fake_timestamp_to_real_timestamp_cache_.Get(fake_timestamp);
   if (it == fake_timestamp_to_real_timestamp_cache_.end()) {
     // The remote decoder is misbehaving.
     VLOGF(2) << "Received an unexpected decoded frame";
     Stop();
     return;
   }
-  frame->set_timestamp(it->second);
+  const base::TimeDelta real_timestamp = it->second;
 
   // Validate protected content metadata.
   if (!initialized_for_protected_content_ &&
-      (frame->metadata().protected_video || frame->metadata().hw_protected)) {
+      (frame->metadata.protected_video || frame->metadata.hw_protected)) {
     VLOGF(2) << "Received a frame with unexpected metadata from a decoder that "
                 "was not configured for protected content";
     Stop();
     return;
   }
   if (initialized_for_protected_content_ &&
-      (!frame->metadata().protected_video || !frame->metadata().hw_protected)) {
+      (!frame->metadata.protected_video || !frame->metadata.hw_protected)) {
     VLOGF(2) << "Received a frame with unexpected metadata from a decoder that "
                 "was configured for protected content";
     Stop();
     return;
   }
 
+  scoped_refptr<VideoFrame> gmb_frame =
+      MojoVideoFrameToMediaVideoFrame(std::move(frame));
+  if (!gmb_frame) {
+    Stop();
+    return;
+  }
+  gmb_frame->set_timestamp(real_timestamp);
+
   // The destruction observer will be called after the client releases the
   // video frame. base::BindPostTaskToCurrentDefault() is used to make sure that
   // the WeakPtr is dereferenced on the correct sequence.
-  frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
+  gmb_frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
       base::BindOnce(&OOPVideoDecoder::ReleaseVideoFrame,
                      weak_this_factory_.GetWeakPtr(), release_token)));
 
-  // According to the media::VideoDecoder API, |output_cb_| should not be
-  // supplied with EOS frames. The mojo traits guarantee this DCHECK.
-  DCHECK(!frame->metadata().end_of_stream);
-
   can_read_without_stalling_ = can_read_without_stalling;
 
-  // TODO(b/220915557): validate |frame|.
   if (output_cb_)
-    output_cb_.Run(frame);
+    output_cb_.Run(std::move(gmb_frame));
 }
 
 void OOPVideoDecoder::OnWaiting(WaitingReason reason) {
