@@ -2613,38 +2613,6 @@ enum HeaderBehaviour {
   [self updateContentPaddingForTopToolbarHeight:top bottomToolbarHeight:bottom];
 }
 
-// Updates the frame of the web view so that it's `offset` from the bottom of
-// the container view.
-- (void)updateWebViewFrameForBottomOffset:(CGFloat)offset {
-  if (!self.currentWebState)
-    return;
-
-  // Move the frame of the container view such that the bottom is aligned with
-  // the top of the bottom toolbar.
-  id<CRWWebViewProxy> webViewProxy = self.currentWebState->GetWebViewProxy();
-  CGRect webViewFrame = webViewProxy.frame;
-  CGFloat oldOriginY = CGRectGetMinY(webViewFrame);
-  webViewProxy.contentOffset = CGPointMake(0.0, -offset);
-  // Update the contentOffset so that the scroll position is maintained
-  // relative to the screen.
-  CRWWebViewScrollViewProxy* scrollViewProxy = webViewProxy.scrollViewProxy;
-  CGFloat originDelta = CGRectGetMinY(webViewProxy.frame) - oldOriginY;
-  CGPoint contentOffset = scrollViewProxy.contentOffset;
-  contentOffset.y += originDelta;
-  scrollViewProxy.contentOffset = contentOffset;
-}
-
-// Updates the web view's viewport by changing the safe area insets.
-- (void)updateBrowserSafeAreaForTopToolbarHeight:(CGFloat)topToolbarHeight
-                             bottomToolbarHeight:(CGFloat)bottomToolbarHeight {
-  UIViewController* containerViewController =
-      self.browserContainerViewController;
-  containerViewController.additionalSafeAreaInsets = UIEdgeInsetsMake(
-      topToolbarHeight - self.rootSafeAreaInsets.top -
-          self.currentWebState->GetWebViewProxy().contentOffset.y,
-      0, 0, 0);
-}
-
 // Updates the padding of the web view proxy. This either resets the frame of
 // the WKWebView or the contentInsets of the WKWebView's UIScrollView, depending
 // on the the proxy's `shouldUseViewContentInset` property.
