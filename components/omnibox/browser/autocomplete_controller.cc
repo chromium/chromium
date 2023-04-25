@@ -994,9 +994,9 @@ void AutocompleteController::UpdateResult(
   }
 
   // Conditionally preserve the default match.
-  const AutocompleteMatch* preserve_default_match = nullptr;
+  const AutocompleteMatch* default_match_to_preserve = nullptr;
   if (last_default_match && ShouldPreserveDefault(sync_pass_done_, input_)) {
-    preserve_default_match = &last_default_match.value();
+    default_match_to_preserve = &last_default_match.value();
   }
 
   if (!done_) {
@@ -1006,7 +1006,8 @@ void AutocompleteController::UpdateResult(
         base::FeatureList::IsEnabled(omnibox::kSingleSortAndCullPass);
     if (!single_sort_and_cull_pass) {
       result_.SortAndCull(input_, template_url_service_,
-                          triggered_feature_service_, preserve_default_match);
+                          triggered_feature_service_,
+                          default_match_to_preserve);
     }
     // If not all providers are done, merge the old and new matches before
     // sorting.
@@ -1014,38 +1015,45 @@ void AutocompleteController::UpdateResult(
     static bool preserve_default_after_transfer =
         OmniboxFieldTrial::kAutocompleteStabilityPreserveDefaultAfterTransfer
             .Get();
-    // Sort the matches and trim them to a small number of "best" matches.
-    result_.SortAndCull(
-        input_, template_url_service_, triggered_feature_service_,
-        preserve_default_after_transfer ? preserve_default_match : nullptr);
+
+    if (!preserve_default_after_transfer) {
+      default_match_to_preserve = nullptr;
+    }
+
   } else if (OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
     // The async scoring model is only run once all the providers are done. Use
     // a WeakPtr since the model is not owned and `this` may no longer be alive.
-    // `AnnotateResultAndNotifyChanged()` is called when the model is done.
+    // `SortCullAndAnnotateResult()` is called when the model is done.
     // TODO(crbug.com/1405555): Deduplicate the matches before running the
     //  model in order to combine the signals. Optionally also trim the matches
     //  prior to running the model.
-    // TODO(crbug.com/1405555): Investigate preserving the default match when
-    //  reranking the matches using the model.
+    // TODO(crbug.com/1405555): Investigate preserving the would-be default
+    //  match from the legacy system when reranking the matches using the model.
     RunUrlScoringModel(base::BindOnce(
-        &AutocompleteController::AnnotateResultAndNotifyChanged,
+        &AutocompleteController::SortCullAndAnnotateResult,
         weak_ptr_factory_.GetWeakPtr(), last_default_match,
-        last_default_associated_keyword, force_notify_default_match_changed));
+        last_default_associated_keyword, force_notify_default_match_changed,
+        default_match_to_preserve));
     return;
-  } else {
-    // Sort the matches and trim them to a small number of "best" matches.
-    result_.SortAndCull(input_, template_url_service_,
-                        triggered_feature_service_, preserve_default_match);
   }
-  AnnotateResultAndNotifyChanged(last_default_match,
-                                 last_default_associated_keyword,
-                                 force_notify_default_match_changed);
+
+  // The final call to `SortAndCull()` happens inside
+  // `SortCullAndAnnotateResult()`. Here, the result is sorted, trimmed to a
+  // small number of "best" matches, and annotated with relevant information
+  // before notifying listeners that the result is ready.
+  SortCullAndAnnotateResult(last_default_match, last_default_associated_keyword,
+                            force_notify_default_match_changed,
+                            default_match_to_preserve);
 }
 
-void AutocompleteController::AnnotateResultAndNotifyChanged(
+void AutocompleteController::SortCullAndAnnotateResult(
     const absl::optional<AutocompleteMatch>& last_default_match,
     const std::u16string& last_default_associated_keyword,
-    bool force_notify_default_match_changed) {
+    bool force_notify_default_match_changed,
+    const AutocompleteMatch* default_match_to_preserve) {
+  result_.SortAndCull(input_, template_url_service_, triggered_feature_service_,
+                      default_match_to_preserve);
+
 #if DCHECK_IS_ON()
   result_.Validate();
 #endif  // DCHECK_IS_ON()
@@ -1531,8 +1539,8 @@ void AutocompleteController::RunUrlScoringModel(
       base::BarrierCallback<std::tuple<absl::optional<float>, size_t, GURL>>(
           result_.size(),
           base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
-                         weak_ptr_factory_.GetWeakPtr(), input_,
-                         base::ElapsedTimer(), std::move(completion_callback)));
+                         weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
+                         std::move(completion_callback)));
 
   for (size_t match_index = 0; match_index < result_.matches_.size();
        match_index++) {
@@ -1559,7 +1567,6 @@ void AutocompleteController::CancelUrlScoringModel() {
 }
 
 void AutocompleteController::OnUrlScoringModelDone(
-    AutocompleteInput input,
     const base::ElapsedTimer elapsed_timer,
     base::OnceClosure completion_callback,
     std::vector<std::tuple<absl::optional<float>, size_t, GURL>>
@@ -1608,26 +1615,21 @@ void AutocompleteController::OnUrlScoringModelDone(
                             elapsed_timer.Elapsed());
   }
 
-  // Do not assign new relevance scores to the URL suggestions and do not rerank
-  // them in the counterfactual arm.
-  if (!OmniboxFieldTrial::IsMlUrlScoringCounterfactual()) {
-    while (!relevance_heap.empty()) {
-      // Assign the match with the highest respective model output with the
-      // highest relevance score.
-      auto match_index = output_and_match_index_heap.top().second;
-      auto* match = result_.match_at(match_index);
+  while (!relevance_heap.empty()) {
+    // Assign the match with the highest respective model output with the
+    // highest relevance score.
+    auto match_index = output_and_match_index_heap.top().second;
+    auto* match = result_.match_at(match_index);
 
+    // Do not assign new relevance scores to the URL suggestions and do not
+    // rerank them in the counterfactual arm.
+    if (!OmniboxFieldTrial::IsMlUrlScoringCounterfactual()) {
       match->RecordAdditionalInfo("legacy_relevance", match->relevance);
       match->relevance = relevance_heap.top();
-
-      relevance_heap.pop();
-      output_and_match_index_heap.pop();
     }
 
-    result_.SortAndCull(input, template_url_service_,
-                        triggered_feature_service_,
-                        /*preserve_default_match=*/nullptr);
+    relevance_heap.pop();
+    output_and_match_index_heap.pop();
   }
-
   std::move(completion_callback).Run();
 }

@@ -269,7 +269,7 @@ void AutocompleteResult::SortAndCull(
     const AutocompleteInput& input,
     TemplateURLService* template_url_service,
     OmniboxTriggeredFeatureService* triggered_feature_service,
-    const AutocompleteMatch* preserve_default_match) {
+    const AutocompleteMatch* default_match_to_preserve) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Omnibox.AutocompletionTime.UpdateResult.SortAndCull");
 
@@ -301,9 +301,9 @@ void AutocompleteResult::SortAndCull(
     //  by the grouping framework.
     // If we are trying to keep a default match from a previous pass stable,
     // search the current results for it, and if found, make it the top match.
-    if (preserve_default_match) {
+    if (default_match_to_preserve) {
       const auto default_match_fields =
-          GetMatchComparisonFields(*preserve_default_match);
+          GetMatchComparisonFields(*default_match_to_preserve);
       top_match =
           base::ranges::find_if(matches_, [&](const AutocompleteMatch& match) {
             // Find a match that is a duplicate AND has the same fill_into_edit.
@@ -313,7 +313,7 @@ void AutocompleteResult::SortAndCull(
                 OmniboxFieldTrial::
                     kAutocompleteStabilityPreventDefaultPreviousMatches.Get();
             return default_match_fields == GetMatchComparisonFields(match) &&
-                   preserve_default_match->fill_into_edit ==
+                   default_match_to_preserve->fill_into_edit ==
                        match.fill_into_edit &&
                    (!prevent_default_previous_matches ||
                     match.allowed_to_be_default_match);

@@ -299,13 +299,14 @@ class AutocompleteController : public AutocompleteProviderListener,
   void UpdateResult(bool regenerate_result,
                     bool force_notify_default_match_changed);
 
-  // Annotates the final set of suggestions (with open tab match, pedals,
-  // keyword info, etc.), and notifies the listeners that the result and
-  // potentially the default match has changed.
-  void AnnotateResultAndNotifyChanged(
+  // Calls `SortAndCull()`, then annotates the final set of suggestions (with
+  // open tab match, pedals, keyword info, etc.). Upon completion, notifies the
+  // listeners that the result and potentially the default match has changed.
+  void SortCullAndAnnotateResult(
       const absl::optional<AutocompleteMatch>& last_default_match,
       const std::u16string& last_default_associated_keyword,
-      bool force_notify_default_match_changed);
+      bool force_notify_default_match_changed,
+      const AutocompleteMatch* default_match_to_preserve = nullptr);
 
   // Updates `result` to populate each match's `associated_keyword` if that
   // match can show a keyword hint. `result` should be sorted by relevance
@@ -382,7 +383,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   // highest output value, and vice versa), re-sorts and trims the matches, and
   // calls `completion_callback`.
   void OnUrlScoringModelDone(
-      AutocompleteInput input,
       const base::ElapsedTimer elapsed_timer,
       base::OnceClosure completion_callback,
       std::vector<std::tuple<absl::optional<float>, size_t, GURL>>
