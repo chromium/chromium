@@ -209,7 +209,7 @@ absl::optional<std::vector<T>> DataModelsFromJSON(
                                               const FieldTypeLookupTable&)>
         to_data_model) {
   if (!json_array) {
-    return {};
+    return std::vector<T>{};
   }
   const auto lookup_table = MakeFieldTypeLookupTable();
   std::vector<T> data_models;
@@ -225,7 +225,8 @@ absl::optional<std::vector<T>> DataModelsFromJSON(
     }
     data_models.push_back(std::move(*data_model));
   }
-  return data_models;
+  // Move due to implicit type conversion.
+  return std::move(data_models);
 }
 
 // Parses AutofillProfiles from the JSON `content` string.
