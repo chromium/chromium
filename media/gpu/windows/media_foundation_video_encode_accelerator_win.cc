@@ -1657,31 +1657,42 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
         base::Microseconds(sample_time / kOneMicrosecondInMFSampleTimeUnits);
   }
 
-  // For HMFT that continuously reports valid QP, update encoder info so that
-  // WebRTC will not use bandwidth quality scaler for resolution adaptation.
-  uint64_t frame_qp = 0xfffful;
+  // If `frame_qp` is set here, it will be plumbed down to WebRTC.
+  // If not set, the QP may be parsed by WebRTC from the bitstream but only if
+  // the QP is trusted (`encoder_info_.reports_average_qp` is true, which it is
+  // by default).
+  absl::optional<int32_t> frame_qp;
   bool should_notify_encoder_info_change = false;
-  hr = output_data_buffer.pSample->GetUINT64(MFSampleExtension_VideoEncodeQP,
-                                             &frame_qp);
-  if (vendor_ == DriverVendor::kIntel) {
-    if (codec_ == VideoCodec::kH264) {
-      if ((FAILED(hr) || !IsValidQp(codec_, frame_qp)) &&
-          encoder_info_.reports_average_qp) {
-        should_notify_encoder_info_change = true;
-        encoder_info_.reports_average_qp = false;
+  // In the case of VP9, `frame_qp_from_sample` is always 0 here
+  // (https://crbug.com/1434633) so we prefer WebRTC to parse the bitstream for
+  // us by leaving `frame_qp` unset.
+  if (codec_ != VideoCodec::kVP9) {
+    // For HMFT that continuously reports valid QP, update encoder info so that
+    // WebRTC will not use bandwidth quality scaler for resolution adaptation.
+    uint64_t frame_qp_from_sample = 0xfffful;
+    hr = output_data_buffer.pSample->GetUINT64(MFSampleExtension_VideoEncodeQP,
+                                               &frame_qp_from_sample);
+    if (vendor_ == DriverVendor::kIntel) {
+      if (codec_ == VideoCodec::kH264) {
+        if ((FAILED(hr) || !IsValidQp(codec_, frame_qp_from_sample)) &&
+            encoder_info_.reports_average_qp) {
+          should_notify_encoder_info_change = true;
+          encoder_info_.reports_average_qp = false;
+        }
+      } else if (codec_ == VideoCodec::kAV1) {
+        if (!rate_ctrl_) {
+          encoder_info_.reports_average_qp = false;
+        }
       }
-    } else if (codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) {
-      if (!rate_ctrl_)
-        encoder_info_.reports_average_qp = false;
+    }
+    // Bits 0-15: Default QP.
+    if (SUCCEEDED(hr)) {
+      frame_qp = frame_qp_from_sample & 0xfffful;
     }
   }
   if (!encoder_info_sent_ || should_notify_encoder_info_change) {
     client_->NotifyEncoderInfoChange(encoder_info_);
     encoder_info_sent_ = true;
-  }
-  // Bits 0-15: Default QP.
-  if (SUCCEEDED(hr)) {
-    frame_qp = frame_qp & 0xfffful;
   }
 
   const bool keyframe = MFGetAttributeUINT32(
@@ -1717,8 +1728,8 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     {
       MediaBufferScopedPointer scoped_buffer(output_buffer.Get());
       memcpy(encode_output->memory(), scoped_buffer.get(), size);
-      if (IsValidQp(codec_, frame_qp)) {
-        encode_output->SetQp(frame_qp);
+      if (frame_qp.has_value() && IsValidQp(codec_, *frame_qp)) {
+        encode_output->SetQp(*frame_qp);
       }
     }
     encoder_output_queue_.push_back(std::move(encode_output));
@@ -1745,8 +1756,8 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   output_data_buffer.pSample = nullptr;
 
   BitstreamBufferMetadata md(size, keyframe, timestamp);
-  if (IsValidQp(codec_, frame_qp)) {
-    md.qp = static_cast<int32_t>(frame_qp);
+  if (frame_qp.has_value() && IsValidQp(codec_, *frame_qp)) {
+    md.qp = *frame_qp;
   }
 
   if (temporal_scalable_coding()) {
