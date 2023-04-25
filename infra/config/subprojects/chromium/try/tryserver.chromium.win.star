@@ -156,7 +156,7 @@ try_.builder(
 
 try_.builder(
     name = "win_upload_clang",
-    executable = "recipe:chromium_upload_clang",
+    executable = "recipe:chromium_toolchain/package_clang",
     builderless = False,
     cores = 32,
     os = os.WINDOWS_ANY,
@@ -166,7 +166,7 @@ try_.builder(
 
 try_.builder(
     name = "win_upload_rust",
-    executable = "recipe:chromium_upload_rust",
+    executable = "recipe:chromium_toolchain/package_rust",
     builderless = False,
     cores = 32,
     os = os.WINDOWS_ANY,

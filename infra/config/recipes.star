@@ -210,11 +210,11 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:chromium_upload_clang",
+    name = "recipe:chromium_toolchain/package_clang",
 )
 
 build_recipe(
-    name = "recipe:chromium_upload_rust",
+    name = "recipe:chromium_toolchain/package_rust",
 )
 
 build_recipe(

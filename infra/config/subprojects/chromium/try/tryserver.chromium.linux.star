@@ -588,7 +588,7 @@ try_.builder(
 
 try_.builder(
     name = "linux_upload_clang",
-    executable = "recipe:chromium_upload_clang",
+    executable = "recipe:chromium_toolchain/package_clang",
     builderless = True,
     cores = 32,
     # This builder produces the clang binaries used on all builders. Since it
@@ -601,7 +601,7 @@ try_.builder(
 
 try_.builder(
     name = "linux_upload_rust",
-    executable = "recipe:chromium_upload_rust",
+    executable = "recipe:chromium_toolchain/package_rust",
     builderless = True,
     cores = 32,
     # This builder produces the rustc binaries used on all builders. Since it
