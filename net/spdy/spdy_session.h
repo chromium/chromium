@@ -397,7 +397,7 @@ class NET_EXPORT SpdySession
   int GetPushedStream(const GURL& url,
                       spdy::SpdyStreamId pushed_stream_id,
                       RequestPriority priority,
-                      SpdyStream** spdy_stream);
+                      raw_ptr<SpdyStream>* spdy_stream);
 
   // Called when the pushed stream should be cancelled. If the pushed stream is
   // not claimed and active, sends RST to the server to cancel the stream.

@@ -1002,7 +1002,7 @@ SpdySession::~SpdySession() {
 int SpdySession::GetPushedStream(const GURL& url,
                                  spdy::SpdyStreamId pushed_stream_id,
                                  RequestPriority priority,
-                                 SpdyStream** stream) {
+                                 raw_ptr<SpdyStream>* stream) {
   CHECK(!in_io_loop_);
   // |pushed_stream_id| must be valid.
   DCHECK_NE(pushed_stream_id, kNoPushedStreamFound);
