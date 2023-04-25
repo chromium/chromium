@@ -110,6 +110,10 @@ public class IncognitoHistoryLeakageTest {
         return historyObserver.getHistoryQueryResults();
     }
 
+    /**
+     * A general class providing test parameters encapsulating different Activity type pairs
+     * spliced on Regular and Incognito mode between whom we want to test leakage.
+     */
     public static class AllTypesToAllTypes implements ParameterProvider {
         @Override
         public List<ParameterSet> getParameters() {

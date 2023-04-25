@@ -97,6 +97,10 @@ public class IncognitoCookieLeakageTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * A class to provide the list of test parameters encapsulating Activity pairs, spliced on
+     * regular and Incognito mode, where cookie shouldn't leak.
+     */
     public static class IsolatedFlowsParams implements ParameterProvider {
         @Override
         public List<ParameterSet> getParameters() {

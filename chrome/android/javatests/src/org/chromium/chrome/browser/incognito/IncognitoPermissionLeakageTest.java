@@ -130,6 +130,10 @@ public class IncognitoPermissionLeakageTest {
         Espresso.onView(withText(containsString("Block"))).perform(click());
     }
 
+    /**
+     * A class providing test parameters encapsulating different Activity type pairs spliced on
+     * Regular and Incognito mode.
+     */
     public static class RegularAndIncognito implements ParameterProvider {
         @Override
         public List<ParameterSet> getParameters() {
