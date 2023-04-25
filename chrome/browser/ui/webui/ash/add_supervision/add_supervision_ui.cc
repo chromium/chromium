@@ -21,6 +21,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/supervision_resources.h"
+#include "chrome/grit/supervision_resources_map.h"
 #include "components/google/core/common/google_util.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -204,16 +206,19 @@ void AddSupervisionUI::SetUpResources() {
   source->AddResourcePath("add_supervision_api_server.js",
                           IDR_ADD_SUPERVISION_API_SERVER_JS);
   source->AddResourcePath("add_supervision_ui.js", IDR_ADD_SUPERVISION_UI_JS);
-  source->AddResourcePath("images/network_unavailable.svg",
-                          IDR_ADD_SUPERVISION_NETWORK_UNAVAILABLE_SVG);
+  source->AddResourcePath("add_supervision_app.js", IDR_ADD_SUPERVISION_APP_JS);
+  source->AddResourcePaths(
+      base::make_span(kSupervisionResources, kSupervisionResourcesSize));
 
   source->AddLocalizedString("pageTitle", IDS_ADD_SUPERVISION_PAGE_TITLE);
-  source->AddLocalizedString("networkDownHeading",
-                             IDS_ADD_SUPERVISION_NETWORK_DOWN_HEADING);
-  source->AddLocalizedString("networkDownDescription",
-                             IDS_ADD_SUPERVISION_NETWORK_DOWN_DESCRIPTION);
-  source->AddLocalizedString("networkDownButtonLabel",
-                             IDS_ADD_SUPERVISION_NETWORK_DOWN_BUTTON_LABEL);
+  source->AddLocalizedString("supervisedUserErrorDescription",
+                             IDS_SUPERVISED_USER_ERROR_DESCRIPTION);
+  source->AddLocalizedString("supervisedUserErrorTitle",
+                             IDS_SUPERVISED_USER_ERROR_TITLE);
+  source->AddLocalizedString("supervisedUserOfflineDescription",
+                             IDS_SUPERVISED_USER_OFFLINE_DESCRIPTION);
+  source->AddLocalizedString("supervisedUserOfflineTitle",
+                             IDS_SUPERVISED_USER_OFFLINE_TITLE);
 
   // Full paths (relative to src) are important for Mojom generated files.
   source->AddResourcePath(

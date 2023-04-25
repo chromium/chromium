@@ -6161,15 +6161,6 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_ADD_SUPERVISION_PAGE_TITLE" desc="Title for the ChromeOS Add Supervision screen. Since the title bar is not visible, this string is only used by screen readers.">
     Set Up Parental Controls
   </message>
-  <message name="IDS_ADD_SUPERVISION_NETWORK_DOWN_HEADING" desc="Heading string shown in the Add Supervision page when the network is not available.">
-    Can’t connect to the internet
-  </message>
-  <message name="IDS_ADD_SUPERVISION_NETWORK_DOWN_DESCRIPTION" desc="Description shown in the Add Supervision page when the network is not available.">
-    Check your internet connection
-  </message>
-  <message name="IDS_ADD_SUPERVISION_NETWORK_DOWN_BUTTON_LABEL" desc="Label of the button shown on the Add Supervision page when the network is not available.">
-    Close
-  </message>
   <message name="IDS_ADD_SUPERVISION_EXIT_DIALOG_TITLE" desc="Title for the dialog shown when attempting to exit the Add Supervision screen.">
     Are you sure you want to exit?
   </message>

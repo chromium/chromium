@@ -35,19 +35,34 @@ const ALLOWED_HOSTS = [
 const INITIAL_FOCUS_DELAY_MS = 50;
 
 /**
- * Returns whether the provided request should be allowed, based on whether
- * its URL matches the list of allowed hosts.
+ * Returns true if the URL references an HTTP request to localhost.
+ * @param {URL} url
+ * @return {boolean}
+ */
+export function isLocalHostForTesting(url) {
+  return url.protocol == 'http:' && url.hostname == '127.0.0.1';
+}
+
+/**
+ * Returns true if the URL references one of the allowed hosts.
+ * @param {URL} url
+ * @return {boolean}
+ */
+function isAllowedHost(url) {
+  return url.protocol == 'https:' &&
+      ALLOWED_HOSTS.some(
+          (allowedHost) =>
+              url.host == allowedHost || url.host.endsWith('.' + allowedHost));
+}
+
+/**
+ * Returns true if the request should be allowed.
  * @param {!{url: string}} requestDetails Request that is issued by the webview.
- * @return {boolean} Whether the request should be allowed.
+ * @return {boolean}
  */
 function isAllowedRequest(requestDetails) {
   const requestUrl = new URL(requestDetails.url);
-
-  // Only allow HTTPS and hosts that are in the list (or subdomains).
-  return requestUrl.protocol == 'https:' &&
-      ALLOWED_HOSTS.some(
-          (allowedHost) => requestUrl.host == allowedHost ||
-              requestUrl.host.endsWith('.' + allowedHost));
+  return isLocalHostForTesting(requestUrl) || isAllowedHost(requestUrl);
 }
 
 const addSupervisionHandler =
@@ -58,31 +73,28 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  /** Attempts to close the dialog */
+  /** Attempts to close the dialog. */
   closeDialog_() {
     this.server.requestClose();
   },
 
+  /** Triggers the error page. */
+  showErrorPage() {
+    this.dispatchEvent(new CustomEvent('show-error', {
+      bubbles: true,
+      composed: true,
+    }));
+  },
+
   /** @override */
   ready() {
-    // Initialize and listen for online/offline state.
-    this.webviewDiv = this.$.webviewDiv;
-    this.webviewDiv.hidden = !navigator.onLine;
-
-    this.offlineContentDiv = this.$.offlineContentDiv;
-    this.offlineContentDiv.hidden = navigator.onLine;
-
-    window.addEventListener('online', () => {
-      this.webviewDiv.hidden = false;
-      this.offlineContentDiv.hidden = true;
-    });
-
-    window.addEventListener('offline', () => {
-      this.webviewDiv.hidden = true;
-      this.offlineContentDiv.hidden = false;
-    });
-
     addSupervisionHandler.getOAuthToken().then((result) => {
+      // Setup should terminate early if OAuth Token fetching fails.
+      if (result.status === addSupervision.mojom.OAuthTokenFetchStatus.ERROR) {
+        this.showErrorPage();
+        return;
+      }
+
       const webviewUrl = loadTimeData.getString('webviewUrl');
       const eventOriginFilter = loadTimeData.getString('eventOriginFilter');
       const webview =
@@ -116,6 +128,10 @@ Polymer({
         setTimeout(() => webview.focus(), INITIAL_FOCUS_DELAY_MS);
       });
 
+      webview.addEventListener('loadabort', () => {
+        this.showErrorPage();
+      });
+
       // Block any requests to URLs other than one specified
       // by eventOriginFilter.
       webview.request.onBeforeRequest.addListener(function(details) {
@@ -126,7 +142,7 @@ Polymer({
 
       // Set up the server.
       this.server =
-          new AddSupervisionAPIServer(webview, url, eventOriginFilter);
+          new AddSupervisionAPIServer(this, webview, url, eventOriginFilter);
     });
   },
 });
