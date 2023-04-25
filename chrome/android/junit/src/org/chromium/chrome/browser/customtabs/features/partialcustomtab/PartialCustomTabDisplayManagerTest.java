@@ -19,8 +19,8 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
@@ -73,7 +73,7 @@ public class PartialCustomTabDisplayManagerTest {
     private PartialCustomTabDisplayManager createPcctDisplayManager(
             @Px int heightPx, @Px int widthPx) {
         return createPcctDisplayManager(
-                heightPx, widthPx, 1850, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT);
+                heightPx, widthPx, 1850, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW);
     }
 
     private PartialCustomTabDisplayManager createPcctDisplayManager(
@@ -125,7 +125,7 @@ public class PartialCustomTabDisplayManagerTest {
     @Test
     public void create_SideSheet_WidthSetHeightNot_AboveBreakpoint() {
         PartialCustomTabDisplayManager displayManager =
-                createPcctDisplayManager(0, 2000, 840, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT);
+                createPcctDisplayManager(0, 2000, 840, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW);
         assertEquals(
                 "Breakpoint value is incorrect", 840, displayManager.getBreakPointDpForTesting());
         assertEquals("Side-Sheet PCCT should be created", PartialCustomTabType.SIDE_SHEET,
@@ -144,8 +144,8 @@ public class PartialCustomTabDisplayManagerTest {
     @Test
     public void create_BottomSheet_HeightWidthSet_Compact() {
         mPCCTTestRule.configCompactDevice();
-        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(
-                350, 450, 400, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT);
+        PartialCustomTabDisplayManager displayManager =
+                createPcctDisplayManager(350, 450, 400, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW);
         assertEquals(
                 "Breakpoint value is incorrect", 600, displayManager.getBreakPointDpForTesting());
         assertEquals("Bottom-Sheet PCCT should be created", PartialCustomTabType.BOTTOM_SHEET,

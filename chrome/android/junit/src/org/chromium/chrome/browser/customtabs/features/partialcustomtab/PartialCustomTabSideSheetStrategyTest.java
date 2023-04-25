@@ -19,16 +19,15 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_START;
-import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT_LANDSCAPE;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
@@ -81,21 +80,21 @@ public class PartialCustomTabSideSheetStrategyTest {
     public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
     private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(@Px int widthPx) {
-        return createPcctSideSheetStrategy(widthPx, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT,
-                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT,
+        return createPcctSideSheetStrategy(widthPx, ACTIVITY_SIDE_SHEET_POSITION_END,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                 ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
     }
 
     private PartialCustomTabSideSheetStrategy createLeftPcctSideSheetStrategy(
             @Px int widthPx, int roundedCornersPosition) {
         return createPcctSideSheetStrategy(widthPx, ACTIVITY_SIDE_SHEET_POSITION_START,
-                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT, roundedCornersPosition);
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW, roundedCornersPosition);
     }
 
     private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(
             @Px int widthPx, int position) {
         return createPcctSideSheetStrategy(widthPx, position,
-                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                 ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
     }
 
@@ -105,7 +104,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                 mPCCTTestRule.mActivity, widthPx, mPCCTTestRule.mOnResizedCallback,
                 mPCCTTestRule.mOnActivityLayoutCallback, mPCCTTestRule.mFullscreenManager, false,
                 true, /*showMaximizedButton=*/true,
-                /*startMaximized=*/false, position, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT,
+                /*startMaximized=*/false, position, ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE,
                 mPCCTTestRule.mHandleStrategyFactory, decorationType, roundedCornersPosition);
         pcct.setMockViewForTesting(mPCCTTestRule.mCoordinatorLayout, mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator);
@@ -236,6 +235,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.topMargin);
     }
 
+    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     public void leftShadowIsVisible() {
         doReturn(47)
@@ -255,6 +255,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.rightMargin);
     }
 
+    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     public void rightShadowIsVisible() {
         doReturn(47)
@@ -281,7 +282,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                 .getDimensionPixelSize(eq(R.dimen.custom_tabs_handle_height));
         mPCCTTestRule.configLandscapeMode();
         var strategy = createPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_POSITION_END,
-                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                 ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
         strategy.onToolbarInitialized(
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
@@ -353,7 +354,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                 .when(mPCCTTestRule.mResources)
                 .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
         mPCCTTestRule.configLandscapeMode();
-        var strategy = createPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT,
+        var strategy = createPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE,
                 ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER,
                 ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
         strategy.onToolbarInitialized(
@@ -376,7 +377,7 @@ public class PartialCustomTabSideSheetStrategyTest {
         mPCCTTestRule.configLandscapeMode();
         // Only override instead of shadow. If they set to no decoration, we don't override with
         // divider line
-        var strategy = createPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT,
+        var strategy = createPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE,
                 ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                 ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
         strategy.onToolbarInitialized(
@@ -396,7 +397,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                 .when(mPCCTTestRule.mResources)
                 .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
         mPCCTTestRule.configLandscapeMode();
-        var strategy = createPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT,
+        var strategy = createPcctSideSheetStrategy(2000, ACTIVITY_SIDE_SHEET_POSITION_END,
                 ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE, ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
         strategy.onToolbarInitialized(
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
@@ -409,6 +410,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.leftMargin);
     }
 
+    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     public void enterAndExitHtmlFullscreen() {
         doReturn(47)
@@ -454,7 +456,7 @@ public class PartialCustomTabSideSheetStrategyTest {
 
     @Test
     public void enterAndExitHtmlFullscreen_useDivider() {
-        var strategy = createPcctSideSheetStrategy(800, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT,
+        var strategy = createPcctSideSheetStrategy(800, ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE,
                 ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER,
                 ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
         strategy.onToolbarInitialized(

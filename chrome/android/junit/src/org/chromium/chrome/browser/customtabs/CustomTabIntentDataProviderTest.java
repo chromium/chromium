@@ -708,7 +708,7 @@ public class CustomTabIntentDataProviderTest {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals("Decoration types do not match",
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                 dataProvider.getActivitySideSheetDecorationType());
 
         // Decoration set higher than max
@@ -716,7 +716,7 @@ public class CustomTabIntentDataProviderTest {
                 CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_MAX + 1);
         var dataProvider2 = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals("Decoration types do not match",
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                 dataProvider2.getActivitySideSheetDecorationType());
     }
 

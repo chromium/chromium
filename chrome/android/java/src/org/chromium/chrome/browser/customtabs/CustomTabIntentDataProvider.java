@@ -504,8 +504,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int decorationType =
                 IntentUtils.safeGetIntExtra(intent, EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT);
-        return decorationType < 0 || decorationType > ACTIVITY_SIDE_SHEET_DECORATION_TYPE_MAX
-                ? ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT
+        return decorationType == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT || decorationType < 0
+                        || decorationType > ACTIVITY_SIDE_SHEET_DECORATION_TYPE_MAX
+                ? ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW
                 : decorationType;
     }
 

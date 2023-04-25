@@ -640,7 +640,7 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return An int representing the side sheet decoration type for the Activity.
      */
     public int getActivitySideSheetDecorationType() {
-        return ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT;
+        return ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
     }
 
     /**
@@ -694,11 +694,11 @@ public abstract class BrowserServicesIntentDataProvider {
 
     /** Return the default behavior. */
     public int getSideSheetSlideInBehavior() {
-        return ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT;
+        return ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
     }
 
     /** Return the default position. */
     public int getSideSheetPosition() {
-        return ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
+        return ACTIVITY_SIDE_SHEET_POSITION_END;
     }
 }
