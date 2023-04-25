@@ -23,9 +23,12 @@
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -50,7 +53,8 @@ namespace ash {
 
 class VideoConferenceTrayTest : public AshTestBase {
  public:
-  VideoConferenceTrayTest() = default;
+  VideoConferenceTrayTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   VideoConferenceTrayTest(const VideoConferenceTrayTest&) = delete;
   VideoConferenceTrayTest& operator=(const VideoConferenceTrayTest&) = delete;
   ~VideoConferenceTrayTest() override = default;
@@ -79,6 +83,41 @@ class VideoConferenceTrayTest : public AshTestBase {
         Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
             ->shelf();
     return shelf->status_area_widget()->video_conference_tray();
+  }
+
+  // Convenience function to create `num_apps` media apps.
+  void CreateMediaApps(int num_apps, bool clear_existing_apps = true) {
+    if (clear_existing_apps) {
+      controller()->ClearMediaApps();
+    }
+
+    auto* title = u"Meet";
+    const std::string kMeetTestUrl = "https://meet.google.com/abc-xyz/ab-123";
+    for (int i = 0; i < num_apps; i++) {
+      controller()->AddMediaApp(
+          crosapi::mojom::VideoConferenceMediaAppInfo::New(
+              /*id=*/base::UnguessableToken::Create(),
+              /*last_activity_time=*/base::Time::Now(),
+              /*is_capturing_camera=*/true,
+              /*is_capturing_microphone=*/true, /*is_capturing_screen=*/true,
+              title,
+              /*url=*/GURL(kMeetTestUrl)));
+    }
+  }
+
+  // Sets shelf autohide behavior and creates a window to hide the shelf.
+  // Destroying `widget` will result in the shelf showing.
+  std::unique_ptr<views::Widget> ForceShelfToAutoHideOnPrimaryDisplay() {
+    Shelf* shelf = Shell::GetPrimaryRootWindowController()->shelf();
+    shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+    // Create a normal unmaximized window; the shelf should then hide.
+    std::unique_ptr<views::Widget> widget = CreateTestWidget();
+    widget->SetBounds(gfx::Rect(0, 0, 100, 100));
+
+    EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+    EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+    return widget;
   }
 
   VideoConferenceTray* video_conference_tray() {
@@ -442,6 +481,238 @@ TEST_F(VideoConferenceTrayTest, MicrophoneIconPrivacyIndicatorOnToggled) {
   // Privacy indicator should not be shown when audio button is toggled.
   LeftClickOn(audio_icon());
   EXPECT_FALSE(audio_icon()->show_privacy_indicator());
+}
+
+// Tests that an autohidden shelf is shown after a new app begins capturing.
+TEST_F(VideoConferenceTrayTest, AutoHiddenShelfShownSingleDisplay) {
+  auto widget = ForceShelfToAutoHideOnPrimaryDisplay();
+  // Update the list of media apps in the mock controller so the
+  // VideoConferenceTray sees that a new app has begun capturing.
+  CreateMediaApps(/*num_apps=*/1, /*clear_existing_apps=*/true);
+
+  // Update the `VideoConferenceMediaState` to force the `VideoConferenceTray`
+  // to show. The shelf should also show, since the number of apps capturing has
+  // increased.
+  SetTrayAndButtonsVisible();
+
+  auto* shelf = Shell::GetPrimaryRootWindowController()->shelf();
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  auto& disable_shelf_autohide_timer =
+      controller()->GetShelfAutoHideTimerForTest();
+  EXPECT_TRUE(disable_shelf_autohide_timer.IsRunning());
+
+  // Fast forward so the timer expires.
+  task_environment()->FastForwardBy(base::Seconds(7));
+
+  ASSERT_FALSE(disable_shelf_autohide_timer.IsRunning());
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+}
+
+// Tests that an autohidden shelf is re-shown after a new app begins capturing.
+TEST_F(VideoConferenceTrayTest, AutoHiddenShelfReShown) {
+  auto widget = ForceShelfToAutoHideOnPrimaryDisplay();
+  // Update the list of media apps in the mock controller so the
+  // VideoConferenceTray sees that a new app has begun capturing.
+  CreateMediaApps(/*num_apps=*/1, /*clear_existing_apps=*/true);
+
+  // Update the `VideoConferenceMediaState` to force the `VideoConferenceTray`
+  // to show. The shelf should also show, since the number of apps capturing has
+  // increased.
+  auto state = SetTrayAndButtonsVisible();
+
+  auto& disable_shelf_autohide_timer =
+      controller()->GetShelfAutoHideTimerForTest();
+  // Fast forward so the timer expires.
+  task_environment()->FastForwardBy(base::Seconds(7));
+
+  auto* shelf = Shell::GetPrimaryRootWindowController()->shelf();
+  ASSERT_FALSE(disable_shelf_autohide_timer.IsRunning());
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Add a second app, the shelf should re-show.
+  CreateMediaApps(/*num_apps=*/1, /*clear_existing_apps=*/false);
+  controller()->UpdateWithMediaState(state);
+
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  EXPECT_TRUE(disable_shelf_autohide_timer.IsRunning());
+
+  // Fast forward so the timer expires. The shelf should re hide.
+  task_environment()->FastForwardBy(base::Seconds(7));
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+}
+
+// Tests that the shelf is shown for at least 6s after the most recent app
+// starts capturing.
+TEST_F(VideoConferenceTrayTest, AutoHiddenShelfTimerRestarted) {
+  auto widget = ForceShelfToAutoHideOnPrimaryDisplay();
+  // Update the list of media apps in the mock controller so the
+  // VideoConferenceTray sees that a new app has begun capturing.
+  CreateMediaApps(/*num_apps=*/1, /*clear_existing_apps=*/true);
+  // Update the `VideoConferenceMediaState` to force the `VideoConferenceTray`
+  // to show. The shelf should also show, since the number of apps capturing has
+  // increased.
+  auto state = SetTrayAndButtonsVisible();
+
+  // Fast forward for 2/3rds of the timer duration, then simulate a second app
+  // capturing. The timer should extend for another 6s.
+  task_environment()->FastForwardBy(base::Seconds(4));
+  CreateMediaApps(/*num_apps=*/1, /*clear_existing_apps=*/false);
+  controller()->UpdateWithMediaState(state);
+
+  auto* shelf = Shell::GetPrimaryRootWindowController()->shelf();
+  ASSERT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Fast forward for 2/3rds of the timer duration again. The timer should have
+  // been restarted, and it should still be running.
+  task_environment()->FastForwardBy(base::Seconds(4));
+  auto& disable_shelf_autohide_timer =
+      controller()->GetShelfAutoHideTimerForTest();
+  EXPECT_TRUE(disable_shelf_autohide_timer.IsRunning());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Fast forward a final 2/3rds, the shelf should be hidden.
+  task_environment()->FastForwardBy(base::Seconds(4));
+  EXPECT_FALSE(disable_shelf_autohide_timer.IsRunning());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+}
+
+// Tests that a decreased app count does not show the shelf.
+TEST_F(VideoConferenceTrayTest, DecreasedAppCountDoesNotShowShelf) {
+  auto widget = ForceShelfToAutoHideOnPrimaryDisplay();
+  // Update the list of media apps in the mock controller so the
+  // VideoConferenceTray sees that a new app has begun capturing.
+  CreateMediaApps(/*num_apps=*/1, /*clear_existing_apps=*/true);
+  // Update the `VideoConferenceMediaState` to force the `VideoConferenceTray`
+  // to show. The shelf should also show, since the number of apps capturing has
+  // increased.
+  SetTrayAndButtonsVisible();
+  // Fast forward to fire the timer and hide the shelf.
+  task_environment()->FastForwardBy(base::Seconds(7));
+  auto* shelf = Shell::GetPrimaryRootWindowController()->shelf();
+  ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Simulate a decrease in number of apps capturing, the shelf should still be
+  // hidden.
+  controller()->ClearMediaApps();
+  controller()->UpdateWithMediaState(VideoConferenceMediaState());
+
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+  EXPECT_FALSE(controller()->GetShelfAutoHideTimerForTest().IsRunning());
+}
+
+// Tests that a decreased app count has no effect on a running timer if another
+// app is capturing.
+TEST_F(VideoConferenceTrayTest, DecreasedAppCountDoesNotHideShelf) {
+  auto widget = ForceShelfToAutoHideOnPrimaryDisplay();
+  // Update the list of media apps in the mock controller so the
+  // VideoConferenceTray sees that a new app has begun capturing.
+  CreateMediaApps(/*num_apps=*/2, /*clear_existing_apps=*/true);
+  // Update the `VideoConferenceMediaState` to force the `VideoConferenceTray`
+  // to show. The shelf should also show, since the number of apps capturing has
+  // increased.
+  auto state = SetTrayAndButtonsVisible();
+  // Fast forward the timer by 1/3rd, the shelf should still be shown.
+  task_environment()->FastForwardBy(base::Seconds(2));
+  auto* shelf = Shell::GetPrimaryRootWindowController()->shelf();
+  ASSERT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Simulate a decrease in number of apps capturing, the shelf should still be
+  // shown.
+  CreateMediaApps(/*num_apps=*/1, /*clear_existing_apps=*/true);
+  controller()->UpdateWithMediaState(state);
+  // Fast forward the timer to 2/3rds, the shelf should still be shown.
+  task_environment()->FastForwardBy(base::Seconds(2));
+
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  EXPECT_TRUE(controller()->GetShelfAutoHideTimerForTest().IsRunning());
+}
+
+// Tests that the shelf hides when the number of apps drops to 0.
+TEST_F(VideoConferenceTrayTest, AppCountFromOneToZero) {
+  auto widget = ForceShelfToAutoHideOnPrimaryDisplay();
+  // Update the list of media apps in the mock controller so the
+  // VideoConferenceTray sees that a new app has begun capturing.
+  CreateMediaApps(/*num_apps=*/1, /*clear_existing_apps=*/true);
+  // Update the `VideoConferenceMediaState` to force the `VideoConferenceTray`
+  // to show. The shelf should also show, since the number of apps capturing has
+  // increased.
+  SetTrayAndButtonsVisible();
+  // Fast forward 1/3rd of the timer length, the shelf should still be shown.
+  task_environment()->FastForwardBy(base::Seconds(2));
+  auto* shelf = Shell::GetPrimaryRootWindowController()->shelf();
+  ASSERT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Simulate that no more apps are capturing. The shelf should hide.
+  controller()->ClearMediaApps();
+  controller()->UpdateWithMediaState(VideoConferenceMediaState());
+
+  // To prevent flakiness, wait for the async call to fetch media apps to
+  // finish, and the shelf to update states.
+  do {
+    task_environment()->RunUntilIdle();
+  } while (shelf->GetAutoHideState() != SHELF_AUTO_HIDE_HIDDEN);
+
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+  EXPECT_FALSE(controller()->GetShelfAutoHideTimerForTest().IsRunning());
+}
+
+// Tests that disconnecting a monitor while the disable shelf autohide timer is
+// running does not crash.
+TEST_F(VideoConferenceTrayTest, AutoHiddenShelfTwoDisplays) {
+  UpdateDisplay("800x700,800x700");
+
+  for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
+    Shelf* shelf = root_window_controller->shelf();
+    shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  }
+
+  auto widget = ForceShelfToAutoHideOnPrimaryDisplay();
+
+  // Create a second window on the secondary display, the shelf should hide on
+  // the secondary display as well.
+  auto secondary_display_window = CreateTestWidget();
+  secondary_display_window->SetBounds(gfx::Rect(900, 0, 100, 100));
+
+  auto* secondary_shelf =
+      Shell::Get()
+          ->GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
+          ->shelf();
+  ASSERT_EQ(SHELF_AUTO_HIDE, secondary_shelf->GetVisibilityState());
+  ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, secondary_shelf->GetAutoHideState());
+
+  // Update the list of media apps in the mock controller so the
+  // VideoConferenceTray sees that a new app has begun capturing.
+  CreateMediaApps(/*num_apps=*/1, /*clear_existing_apps=*/true);
+
+  // Update the `VideoConferenceMediaState` to force the `VideoConferenceTray`
+  // to show. The shelf should also show, since the number of apps capturing has
+  // increased.
+  SetTrayAndButtonsVisible();
+
+  auto* primary_shelf = Shell::GetPrimaryRootWindowController()->shelf();
+  EXPECT_EQ(SHELF_AUTO_HIDE, primary_shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, primary_shelf->GetAutoHideState());
+  EXPECT_EQ(SHELF_AUTO_HIDE, secondary_shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, secondary_shelf->GetAutoHideState());
+
+  // Simulate disconnecting the second display, there should be no crash.
+  UpdateDisplay("800x700");
+  // Re-set the autohide behavior.
+  primary_shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+
+  auto& disable_shelf_autohide_timer =
+      controller()->GetShelfAutoHideTimerForTest();
+  ASSERT_TRUE(disable_shelf_autohide_timer.IsRunning());
+
+  disable_shelf_autohide_timer.FireNow();
+
+  EXPECT_EQ(SHELF_AUTO_HIDE, primary_shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, primary_shelf->GetAutoHideState());
 }
 
 // Tests that the `VideoConferenceTray` is visible when a display is connected

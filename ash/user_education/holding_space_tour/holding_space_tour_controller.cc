@@ -156,7 +156,7 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     // Ensure the shelf is visible on the active display while the observed
     // drag-and-drop sequence is in progress.
     if (!disable_shelf_auto_hide_ ||
-        disable_shelf_auto_hide_->shelf() != shelf) {
+        (disable_shelf_auto_hide_->weak_shelf() != shelf)) {
       disable_shelf_auto_hide_ =
           std::make_unique<Shelf::ScopedDisableAutoHide>(shelf);
     }

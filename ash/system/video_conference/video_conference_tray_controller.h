@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_TRAY_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/shelf/shelf.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/video_conference_common.h"
 #include "base/observer_list_types.h"
@@ -142,6 +143,9 @@ class ASH_EXPORT VideoConferenceTrayController
   // Pop up a toast when speaking on mute is detected.
   void OnSpeakOnMuteDetected() override;
 
+  // Gets `disable_shelf_autohide_timer_`, used for testing.
+  base::OneShotTimer& GetShelfAutoHideTimerForTest();
+
   VideoConferenceTrayEffectsManager& effects_manager() {
     return effects_manager_;
   }
@@ -156,8 +160,15 @@ class ASH_EXPORT VideoConferenceTrayController
   bool initialized() const { return initialized_; }
 
  private:
-  // Update the state of the camera icons across all `VideoConferenceTray`.
+  // Updates the state of the camera icons across all `VideoConferenceTray`.
   void UpdateCameraIcons();
+
+  // Callback passed to `VideoConferenceManagerAsh` which reacts to the number
+  // of active `MediaApp`'s to force the shelf to show or hide.
+  void UpdateShelfAutoHide(MediaApps apps);
+
+  // The number of capturing apps, fetched from `VideoConferenceManagerAsh`.
+  int capturing_apps_ = 0;
 
   // This keeps track the current VC media state. The state is being updated by
   // `UpdateWithMediaState()`, calling from `VideoConferenceManagerAsh`.
@@ -174,6 +185,13 @@ class ASH_EXPORT VideoConferenceTrayController
   // is muted through software. If the microphone is not muted, disregards this
   // value.
   bool microphone_muted_by_hardware_switch_ = false;
+
+  // Timer responsible for hiding the shelf after it has been shown to alert the
+  // user of a new app accessing the sensors.
+  base::OneShotTimer disable_shelf_autohide_timer_;
+
+  // List of locks which force the shelf to show, if the shelf is autohidden.
+  std::list<Shelf::ScopedDisableAutoHide> disable_shelf_autohide_locks_;
 
   // Used by the views to construct and lay out effects in the bubble.
   VideoConferenceTrayEffectsManager effects_manager_;

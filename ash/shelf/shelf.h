@@ -13,6 +13,7 @@
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "ash/shelf/shelf_locking_manager.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 
 namespace aura {
@@ -111,28 +112,17 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // in all cases.
   class ScopedDisableAutoHide {
    public:
-    explicit ScopedDisableAutoHide(Shelf* shelf) : shelf_(shelf) {
-      ++shelf_->disable_auto_hide_;
-      if (shelf_->disable_auto_hide_ == 1) {
-        shelf_->UpdateVisibilityState();
-      }
-    }
-
+    explicit ScopedDisableAutoHide(Shelf* shelf);
     ScopedDisableAutoHide(const ScopedDisableAutoHide&) = delete;
     ScopedDisableAutoHide& operator=(const ScopedDisableAutoHide&) = delete;
+    ~ScopedDisableAutoHide();
 
-    ~ScopedDisableAutoHide() {
-      --shelf_->disable_auto_hide_;
-      CHECK_GE(shelf_->disable_auto_hide_, 0);
-      if (shelf_->disable_auto_hide_ == 0) {
-        shelf_->UpdateVisibilityState();
-      }
-    }
-
-    Shelf* shelf() { return shelf_; }
+    Shelf* weak_shelf() { return shelf_.get(); }
 
    private:
-    const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+    // Save a `base::WeakPtr` to avoid a crash if `shelf_` is deallocated due to
+    // monitor disconnect.
+    base::WeakPtr<Shelf> const shelf_;
   };
 
   Shelf();
@@ -339,6 +329,8 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // Returns work area insets object for the window with this shelf.
   WorkAreaInsets* GetWorkAreaInsets() const;
 
+  base::WeakPtr<Shelf> GetWeakPtr();
+
   // Layout manager for the shelf container window. Instances are constructed by
   // ShelfWidget and lifetimes are managed by the container windows themselves.
   raw_ptr<ShelfLayoutManager, ExperimentalAsh> shelf_layout_manager_ = nullptr;
@@ -402,6 +394,8 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   int disable_auto_hide_ = 0;
 
   std::unique_ptr<ShelfTooltipManager> tooltip_;
+
+  base::WeakPtrFactory<Shelf> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

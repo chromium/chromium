@@ -334,6 +334,30 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
   const base::TimeDelta kDimDelay = base::Seconds(5);
 };
 
+// Shelf::ScopedDisableAutoHide ----------------------------------------------
+
+Shelf::ScopedDisableAutoHide::ScopedDisableAutoHide(Shelf* shelf)
+    : shelf_(shelf->GetWeakPtr()) {
+  CHECK(shelf);
+
+  ++shelf_->disable_auto_hide_;
+  if (shelf_->disable_auto_hide_ == 1) {
+    shelf_->UpdateVisibilityState();
+  }
+}
+
+Shelf::ScopedDisableAutoHide::~ScopedDisableAutoHide() {
+  if (!shelf_) {
+    return;
+  }
+
+  --shelf_->disable_auto_hide_;
+  CHECK_GE(shelf_->disable_auto_hide_, 0);
+  if (shelf_->disable_auto_hide_ == 0) {
+    shelf_->UpdateVisibilityState();
+  }
+}
+
 // Shelf ---------------------------------------------------------------------
 
 Shelf::Shelf()
@@ -790,6 +814,10 @@ WorkAreaInsets* Shelf::GetWorkAreaInsets() const {
   const aura::Window* window = GetWindow();
   DCHECK(window);
   return WorkAreaInsets::ForWindow(window->GetRootWindow());
+}
+
+base::WeakPtr<Shelf> Shelf::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace ash
