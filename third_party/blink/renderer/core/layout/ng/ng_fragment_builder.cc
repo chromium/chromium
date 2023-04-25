@@ -2,17 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/ng_container_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
 
 #include "base/containers/contains.h"
-#include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
-#include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
 
@@ -59,21 +53,20 @@ NGLogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
 
 }  // namespace
 
-void NGContainerFragmentBuilder::ReplaceChild(
-    wtf_size_t index,
-    const NGPhysicalFragment& new_child,
-    const LogicalOffset offset) {
+void NGFragmentBuilder::ReplaceChild(wtf_size_t index,
+                                     const NGPhysicalFragment& new_child,
+                                     const LogicalOffset offset) {
   DCHECK_LT(index, children_.size());
   children_[index] = NGLogicalLink{std::move(&new_child), offset};
 }
 
-NGLogicalAnchorQuery& NGContainerFragmentBuilder::EnsureAnchorQuery() {
+NGLogicalAnchorQuery& NGFragmentBuilder::EnsureAnchorQuery() {
   if (!anchor_query_)
     anchor_query_ = MakeGarbageCollected<NGLogicalAnchorQuery>();
   return *anchor_query_;
 }
 
-void NGContainerFragmentBuilder::PropagateChildAnchors(
+void NGFragmentBuilder::PropagateChildAnchors(
     const NGPhysicalFragment& child,
     const LogicalOffset& child_offset) {
   absl::optional<NGLogicalAnchorQuery::SetOptions> options;
@@ -108,7 +101,7 @@ void NGContainerFragmentBuilder::PropagateChildAnchors(
 
 // Propagate data in |child| to this fragment. The |child| will then be added as
 // a child fragment or a child fragment item.
-void NGContainerFragmentBuilder::PropagateChildData(
+void NGFragmentBuilder::PropagateChildData(
     const NGPhysicalFragment& child,
     LogicalOffset child_offset,
     LogicalOffset relative_offset,
@@ -229,9 +222,8 @@ void NGContainerFragmentBuilder::PropagateChildData(
   }
 }
 
-void NGContainerFragmentBuilder::AddChildInternal(
-    const NGPhysicalFragment* child,
-    const LogicalOffset& child_offset) {
+void NGFragmentBuilder::AddChildInternal(const NGPhysicalFragment* child,
+                                         const LogicalOffset& child_offset) {
   // In order to know where list-markers are within the children list (for the
   // |NGSimplifiedLayoutAlgorithm|) we always place them as the first child.
   if (child->IsListMarker()) {
@@ -252,7 +244,7 @@ void NGContainerFragmentBuilder::AddChildInternal(
   children_.push_back(NGLogicalLink{std::move(child), child_offset});
 }
 
-void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
+void NGFragmentBuilder::AddOutOfFlowChildCandidate(
     NGBlockNode child,
     const LogicalOffset& child_offset,
     NGLogicalStaticPosition::InlineEdge inline_edge,
@@ -263,12 +255,12 @@ void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
       NGInlineContainer<LogicalOffset>());
 }
 
-void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
+void NGFragmentBuilder::AddOutOfFlowChildCandidate(
     const NGLogicalOutOfFlowPositionedNode& candidate) {
   oof_positioned_candidates_.emplace_back(candidate);
 }
 
-void NGContainerFragmentBuilder::AddOutOfFlowInlineChildCandidate(
+void NGFragmentBuilder::AddOutOfFlowInlineChildCandidate(
     NGBlockNode child,
     const LogicalOffset& child_offset,
     TextDirection inline_container_direction) {
@@ -284,30 +276,30 @@ void NGContainerFragmentBuilder::AddOutOfFlowInlineChildCandidate(
                              NGLogicalStaticPosition::kBlockStart);
 }
 
-void NGContainerFragmentBuilder::AddOutOfFlowFragmentainerDescendant(
+void NGFragmentBuilder::AddOutOfFlowFragmentainerDescendant(
     const NGLogicalOOFNodeForFragmentation& descendant) {
   oof_positioned_fragmentainer_descendants_.push_back(descendant);
 }
 
-void NGContainerFragmentBuilder::AddOutOfFlowFragmentainerDescendant(
+void NGFragmentBuilder::AddOutOfFlowFragmentainerDescendant(
     const NGLogicalOutOfFlowPositionedNode& descendant) {
   DCHECK(!descendant.is_for_fragmentation);
   NGLogicalOOFNodeForFragmentation fragmentainer_descendant(descendant);
   AddOutOfFlowFragmentainerDescendant(fragmentainer_descendant);
 }
 
-void NGContainerFragmentBuilder::AddOutOfFlowDescendant(
+void NGFragmentBuilder::AddOutOfFlowDescendant(
     const NGLogicalOutOfFlowPositionedNode& descendant) {
   oof_positioned_descendants_.push_back(descendant);
 }
 
-void NGContainerFragmentBuilder::SwapOutOfFlowPositionedCandidates(
+void NGFragmentBuilder::SwapOutOfFlowPositionedCandidates(
     HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates) {
   DCHECK(candidates->empty());
   std::swap(oof_positioned_candidates_, *candidates);
 }
 
-void NGContainerFragmentBuilder::AddMulticolWithPendingOOFs(
+void NGFragmentBuilder::AddMulticolWithPendingOOFs(
     const NGBlockNode& multicol,
     NGMulticolWithPendingOOFs<LogicalOffset>* multicol_info) {
   DCHECK(To<LayoutBlockFlow>(multicol.GetLayoutBox())->MultiColumnFlowThread());
@@ -317,20 +309,20 @@ void NGContainerFragmentBuilder::AddMulticolWithPendingOOFs(
   multicols_with_pending_oofs_.insert(multicol.GetLayoutBox(), multicol_info);
 }
 
-void NGContainerFragmentBuilder::SwapMulticolsWithPendingOOFs(
+void NGFragmentBuilder::SwapMulticolsWithPendingOOFs(
     MulticolCollection* multicols_with_pending_oofs) {
   DCHECK(multicols_with_pending_oofs->empty());
   std::swap(multicols_with_pending_oofs_, *multicols_with_pending_oofs);
 }
 
-void NGContainerFragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
+void NGFragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
     HeapVector<NGLogicalOOFNodeForFragmentation>* descendants) {
   DCHECK(descendants->empty());
   std::swap(oof_positioned_fragmentainer_descendants_, *descendants);
 }
 
-void NGContainerFragmentBuilder::TransferOutOfFlowCandidates(
-    NGContainerFragmentBuilder* destination_builder,
+void NGFragmentBuilder::TransferOutOfFlowCandidates(
+    NGFragmentBuilder* destination_builder,
     LogicalOffset additional_offset,
     const NGMulticolWithPendingOOFs<LogicalOffset>* multicol) {
   for (auto& candidate : oof_positioned_candidates_) {
@@ -353,8 +345,7 @@ void NGContainerFragmentBuilder::TransferOutOfFlowCandidates(
   oof_positioned_candidates_.clear();
 }
 
-void NGContainerFragmentBuilder::
-    MoveOutOfFlowDescendantCandidatesToDescendants() {
+void NGFragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants() {
   DCHECK(oof_positioned_descendants_.empty());
   std::swap(oof_positioned_candidates_, oof_positioned_descendants_);
 
@@ -377,7 +368,7 @@ void NGContainerFragmentBuilder::
   }
 }
 
-void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
+void NGFragmentBuilder::PropagateOOFPositionedInfo(
     const NGPhysicalFragment& fragment,
     LogicalOffset offset,
     LogicalOffset relative_offset,
@@ -555,7 +546,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       containing_block, fixedpos_containing_block);
 }
 
-void NGContainerFragmentBuilder::PropagateOOFFragmentainerDescendants(
+void NGFragmentBuilder::PropagateOOFFragmentainerDescendants(
     const NGPhysicalFragment& fragment,
     LogicalOffset offset,
     LogicalOffset relative_offset,
@@ -753,7 +744,7 @@ void NGContainerFragmentBuilder::PropagateOOFFragmentainerDescendants(
   }
 }
 
-void NGContainerFragmentBuilder::AdjustFixedposContainerInfo(
+void NGFragmentBuilder::AdjustFixedposContainerInfo(
     const NGPhysicalFragment* box_fragment,
     LogicalOffset relative_offset,
     NGInlineContainer<LogicalOffset>* fixedpos_inline_container,
@@ -788,17 +779,16 @@ void NGContainerFragmentBuilder::AdjustFixedposContainerInfo(
   }
 }
 
-const NGLayoutResult* NGContainerFragmentBuilder::Abort(
-    NGLayoutResult::EStatus status) {
+const NGLayoutResult* NGFragmentBuilder::Abort(NGLayoutResult::EStatus status) {
   return MakeGarbageCollected<NGLayoutResult>(
-      NGLayoutResult::NGContainerFragmentBuilderPassKey(), status, this);
+      NGLayoutResult::NGFragmentBuilderPassKey(), status, this);
 }
 
 #if DCHECK_IS_ON()
 
-String NGContainerFragmentBuilder::ToString() const {
+String NGFragmentBuilder::ToString() const {
   StringBuilder builder;
-  builder.AppendFormat("ContainerFragment %.2fx%.2f, Children %u\n",
+  builder.AppendFormat("NGFragmentBuilder %.2fx%.2f, Children %u\n",
                        InlineSize().ToFloat(), BlockSize().ToFloat(),
                        children_.size());
   for (auto& child : children_) {

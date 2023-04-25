@@ -206,7 +206,7 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
 };
 
 // The logical version of above. It is used within a an algorithm pass (within
-// an |NGContainerFragmentBuilder|), and its logical coordinate system is wrt.
+// an |NGFragmentBuilder|), and its logical coordinate system is wrt.
 // the container builder's writing-mode.
 //
 // It is *only* used within an algorithm pass, (it is temporary, and should not
@@ -289,7 +289,7 @@ struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
 };
 
 // The logical version of the above. It is used within a an algorithm pass
-// (within an |NGContainerFragmentBuilder|), and its logical coordinate system
+// (within an |NGFragmentBuilder|), and its logical coordinate system
 // is wrt. the container builder's writing-mode.
 //
 // It is *only* used within an algorithm pass, (it is temporary, and should not

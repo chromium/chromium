@@ -32,8 +32,8 @@ namespace blink {
 
 class NGBoxFragmentBuilder;
 class NGColumnSpannerPath;
-class NGContainerFragmentBuilder;
 class NGExclusionSpace;
+class NGFragmentBuilder;
 class NGLineBoxFragmentBuilder;
 
 // The NGLayoutResult stores the resulting data from layout. This includes
@@ -89,7 +89,7 @@ class CORE_EXPORT NGLayoutResult final
 
   // Delegate constructor that sets up what it can, based on the builder.
   NGLayoutResult(const NGPhysicalFragment* physical_fragment,
-                 NGContainerFragmentBuilder* builder);
+                 NGFragmentBuilder* builder);
 
   // We don't need the copy constructor, move constructor, copy
   // assigmnment-operator, or move assignment-operator today.
@@ -525,12 +525,9 @@ class CORE_EXPORT NGLayoutResult final
                                     bool check_no_fragmentation = true) const;
 #endif
 
-  using NGContainerFragmentBuilderPassKey =
-      base::PassKey<NGContainerFragmentBuilder>;
+  using NGFragmentBuilderPassKey = base::PassKey<NGFragmentBuilder>;
   // This constructor is for a non-success status.
-  NGLayoutResult(NGContainerFragmentBuilderPassKey,
-                 EStatus,
-                 NGContainerFragmentBuilder*);
+  NGLayoutResult(NGFragmentBuilderPassKey, EStatus, NGFragmentBuilder*);
 
   // This constructor requires a non-null fragment and sets a success status.
   using NGBoxFragmentBuilderPassKey = base::PassKey<NGBoxFragmentBuilder>;

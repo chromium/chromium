@@ -94,7 +94,7 @@ void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
 }
 
 NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
-    NGContainerFragmentBuilder* builder,
+    NGFragmentBuilder* builder,
     PhysicalSize outer_size,
     PhysicalSize inner_size,
     const NGContainingBlock<LogicalOffset>& containing_block) {
@@ -110,7 +110,7 @@ NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
 }
 
 NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
-    NGContainerFragmentBuilder* builder,
+    NGFragmentBuilder* builder,
     PhysicalSize size,
     const NGContainingBlock<LogicalOffset>& containing_block) {
   PhysicalSize containing_block_size =
@@ -515,7 +515,7 @@ void NGPhysicalBoxFragment::Dispose() {
 // TODO(kojii): Move to ng_physical_fragment.cc
 NGPhysicalFragment::OutOfFlowData*
 NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
-    NGContainerFragmentBuilder* builder) {
+    NGFragmentBuilder* builder) {
   DCHECK(has_fragmented_out_of_flow_data_);
   DCHECK_EQ(has_fragmented_out_of_flow_data_,
             !builder->oof_positioned_fragmentainer_descendants_.empty() ||

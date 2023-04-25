@@ -31,7 +31,7 @@ namespace blink {
 class ComputedStyle;
 class FragmentData;
 class Node;
-class NGContainerFragmentBuilder;
+class NGFragmentBuilder;
 class NGFragmentItem;
 class PaintLayer;
 struct LogicalRect;
@@ -82,7 +82,7 @@ class CORE_EXPORT NGPhysicalFragment
     kMinimumFormattingContextRoot = kAtomicInline
   };
 
-  NGPhysicalFragment(NGContainerFragmentBuilder* builder,
+  NGPhysicalFragment(NGFragmentBuilder* builder,
                      WritingMode block_or_line_writing_mode,
                      NGFragmentType type,
                      unsigned sub_type);
@@ -715,11 +715,10 @@ class CORE_EXPORT NGPhysicalFragment
       NGOutlineType outline_type,
       const LayoutBoxModelObject* containing_block) const;
 
-  static bool DependsOnPercentageBlockSize(const NGContainerFragmentBuilder&);
+  static bool DependsOnPercentageBlockSize(const NGFragmentBuilder&);
 
-  OutOfFlowData* OutOfFlowDataFromBuilder(NGContainerFragmentBuilder*);
-  OutOfFlowData* FragmentedOutOfFlowDataFromBuilder(
-      NGContainerFragmentBuilder*);
+  OutOfFlowData* OutOfFlowDataFromBuilder(NGFragmentBuilder*);
+  OutOfFlowData* FragmentedOutOfFlowDataFromBuilder(NGFragmentBuilder*);
   void ClearOutOfFlowData();
   OutOfFlowData* CloneOutOfFlowData() const;
 

@@ -771,7 +771,7 @@ void NGOutOfFlowLayoutPart::HandleMulticolsWithPendingOOFs(
   if (!container_builder->HasMulticolsWithPendingOOFs())
     return;
 
-  NGContainerFragmentBuilder::MulticolCollection multicols_with_pending_oofs;
+  NGFragmentBuilder::MulticolCollection multicols_with_pending_oofs;
   container_builder->SwapMulticolsWithPendingOOFs(&multicols_with_pending_oofs);
   DCHECK(!multicols_with_pending_oofs.empty());
 

@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_container_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_overflow_calculator.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
@@ -34,8 +34,7 @@ namespace blink {
 
 class NGPhysicalFragment;
 
-class CORE_EXPORT NGBoxFragmentBuilder final
-    : public NGContainerFragmentBuilder {
+class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   STACK_ALLOCATED();
 
  public:
@@ -43,10 +42,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
                        scoped_refptr<const ComputedStyle> style,
                        const NGConstraintSpace& space,
                        WritingDirectionMode writing_direction)
-      : NGContainerFragmentBuilder(node,
-                                   std::move(style),
-                                   space,
-                                   writing_direction),
+      : NGFragmentBuilder(node, std::move(style), space, writing_direction),
         box_type_(NGPhysicalFragment::NGBoxType::kNormalBox),
         is_inline_formatting_context_(node.IsInline()) {}
 
@@ -56,10 +52,10 @@ class CORE_EXPORT NGBoxFragmentBuilder final
                        scoped_refptr<const ComputedStyle> style,
                        const NGConstraintSpace& space,
                        WritingDirectionMode writing_direction)
-      : NGContainerFragmentBuilder(/* node */ nullptr,
-                                   std::move(style),
-                                   space,
-                                   writing_direction),
+      : NGFragmentBuilder(/* node */ nullptr,
+                          std::move(style),
+                          space,
+                          writing_direction),
         box_type_(NGPhysicalFragment::NGBoxType::kNormalBox),
         is_inline_formatting_context_(true) {
     layout_object_ = layout_object;

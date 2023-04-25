@@ -2110,7 +2110,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
   }
 
   // The button should have at most one child.
-  const NGContainerFragmentBuilder::ChildrenVector& children =
+  const NGFragmentBuilder::ChildrenVector& children =
       container_builder_.Children();
   if (children.size() < 1) {
     const LayoutBlock* layout_block = To<LayoutBlock>(Node().GetLayoutBox());
