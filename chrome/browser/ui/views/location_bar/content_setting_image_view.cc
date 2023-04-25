@@ -132,12 +132,14 @@ void ContentSettingImageView::Update() {
 
   if (!content_setting_image_model_->is_visible()) {
     SetVisible(false);
+    GetViewAccessibility().OverrideIsIgnored(true);
     critical_promo_bubble_.reset();
     return;
   }
   DCHECK(web_contents);
   UpdateImage();
   SetVisible(true);
+  GetViewAccessibility().OverrideIsIgnored(false);
 
   if (content_setting_image_model_->ShouldNotifyAccessibility(web_contents)) {
     auto name = l10n_util::GetStringUTF16(
