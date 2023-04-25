@@ -285,14 +285,12 @@ void WebContentsAccessibilityAndroid::DisableRendererAccessibility(
   DCHECK(root_manager);
   root_manager->ResetWebContentsAccessibility();
 
-  // The local cache of Java strings can be cleared, and we should clear the web
-  // contents reference since the web contents can be different by the time the
-  // Java-side code decides to re-enable renderer accessibility (if ever), and
-  // it can provide the web contents object again, as is done for construction.
-  // The Connector should continue to live, since we want the RFHI to still
-  // have access to this object for possible re-enables, or frame notifications.
+  // The local cache of Java strings can be cleared, and we should reset any
+  // local state variables. The Connector should continue to live, since we want
+  // the RFHI to still have access to this object for possible re-enables,
+  // or frame notifications.
   common_string_cache_.clear();
-  web_contents_ = nullptr;
+  ResetContentChangedEventsCounter();
 }
 
 void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
@@ -311,8 +309,8 @@ void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
 
   // A request to re-enable renderer accessibility implies AT use on the
   // Java-side, so we need to set the root manager's reference to |this| to
-  // rebuild the C++ -> Java bridge.
-  DCHECK(!web_contents_);
+  // rebuild the C++ -> Java bridge. The web contents may have changed, so
+  // update the reference just in case.
   web_contents_ = static_cast<WebContentsImpl*>(web_contents);
 
   BrowserAccessibilityManagerAndroid* root_manager =
