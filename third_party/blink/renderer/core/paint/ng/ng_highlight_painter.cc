@@ -989,7 +989,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
           document, originating_style_, node_, layer.text_style.current_color,
           layer.id.PseudoId(), layer.id.PseudoArgument());
 
-      // TODO(dazabani@igalia.com) paint rects pixel-snapped in physical space,
+      // TODO(crbug.com/1434114) paint rects pixel-snapped in physical space,
       // not writing-mode space (SelectionPaintState::PaintSelectionBackground)
       PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
                 fragment_item_.LocalRect(text, clamped_start, clamped_end),
@@ -1007,7 +1007,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
   }
 
   // Paint ::selection background.
-  // TODO(dazabani@igalia.com) generalise ::selection painting logic to support
+  // TODO(crbug.com/1434114) generalise ::selection painting logic to support
   // all highlights, then merge this branch into the loop above
   if (UNLIKELY(selection_)) {
     if (paint_marker_backgrounds) {
@@ -1027,7 +1027,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
       if (part.layer != layer.id)
         continue;
 
-      // TODO(dazabani@igalia.com) expand range to include partial glyphs, then
+      // TODO(crbug.com/1434114) expand range to include partial glyphs, then
       // paint with clipping (NGTextPainter::PaintSelectedText)
 
       PaintDecorationsExceptLineThrough(part);
@@ -1041,7 +1041,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
   }
 
   // Paint ::selection foreground, including its shadows.
-  // TODO(dazabani@igalia.com) generalise ::selection painting logic to support
+  // TODO(crbug.com/1434114) generalise ::selection painting logic to support
   // all highlights, then merge this branch into the loop above
   if (UNLIKELY(selection_)) {
     for (const HighlightPart& part : parts_) {
@@ -1081,7 +1081,7 @@ void NGHighlightPainter::ClipToPartDecorations(const PhysicalRect& part_rect) {
   // let’s clip to selection rect plus its height both above and below. This
   // should be enough to avoid clipping most decorations in the wild.
   //
-  // TODO(dazabani@igalia.com): take text-underline-offset and other
+  // TODO(crbug.com/1433400): take text-underline-offset and other
   // text-decoration properties into account?
   clip_rect.set_y(clip_rect.y() - clip_rect.height());
   clip_rect.set_height(3.0 * clip_rect.height());
