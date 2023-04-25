@@ -45,6 +45,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/mock_drag_controller.h"
+#include "ui/views/test/mock_native_widget.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/test_widget_observer.h"
@@ -56,6 +57,7 @@
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_deletion_observer.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
 #include "ui/views/widget/widget_removals_observer.h"
@@ -5280,6 +5282,88 @@ TEST_F(WidgetTest, ShouldSaveWindowPlacement) {
     EXPECT_EQ(save ? 1 : 0, widget_delegate.save_window_placement_count());
   }
 }
+
+// Parameterized test that verifies the behavior of SetAspectRatio with respect
+// to the excluded margin.
+class WidgetSetAspectRatioTest
+    : public ViewsTestBase,
+      public testing::WithParamInterface<gfx::Size /* margin */> {
+ public:
+  WidgetSetAspectRatioTest() : margin_(GetParam()) {}
+
+  WidgetSetAspectRatioTest(const WidgetSetAspectRatioTest&) = delete;
+  WidgetSetAspectRatioTest& operator=(const WidgetSetAspectRatioTest&) = delete;
+
+  ~WidgetSetAspectRatioTest() override = default;
+
+  // ViewsTestBase:
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+    widget_ = std::make_unique<Widget>();
+    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    native_widget_ = std::make_unique<MockNativeWidget>(widget());
+    ON_CALL(*native_widget(), CreateNonClientFrameView).WillByDefault([this]() {
+      return std::make_unique<NonClientFrameViewWithFixedMargin>(margin());
+    });
+    params.native_widget = native_widget();
+    widget()->Init(std::move(params));
+    task_environment()->RunUntilIdle();
+  }
+
+  void TearDown() override {
+    native_widget_.reset();
+    widget()->Close();
+    widget_.reset();
+    ViewsTestBase::TearDown();
+  }
+
+  const gfx::Size& margin() const { return margin_; }
+  Widget* widget() { return widget_.get(); }
+  MockNativeWidget* native_widget() { return native_widget_.get(); }
+
+ private:
+  // Margin around the client view that should be excluded.
+  const gfx::Size margin_;
+  std::unique_ptr<Widget> widget_;
+  std::unique_ptr<MockNativeWidget> native_widget_;
+
+  // `NonClientFrameView` that pads the client view with a fixed-size margin,
+  // to leave room for drawing that's not included in the aspect ratio.
+  class NonClientFrameViewWithFixedMargin : public NonClientFrameView {
+   public:
+    // `margin` is the margin that we'll provide to our client view.
+    explicit NonClientFrameViewWithFixedMargin(const gfx::Size& margin)
+        : margin_(margin) {}
+
+    // NonClientFrameView
+    gfx::Rect GetBoundsForClientView() const override {
+      gfx::Rect r = bounds();
+      return gfx::Rect(r.x(), r.y(), r.width() - margin_.width(),
+                       r.height() - margin_.height());
+    }
+
+    const gfx::Size margin_;
+  };
+};
+
+TEST_P(WidgetSetAspectRatioTest, SetAspectRatioIncludesMargin) {
+  // Provide a nonzero size.  It doesn't particularly matter what, as long as
+  // it's larger than our margin.
+  const gfx::Rect root_view_bounds(0, 0, 100, 200);
+  ASSERT_GT(root_view_bounds.width(), margin().width());
+  ASSERT_GT(root_view_bounds.height(), margin().height());
+  widget()->non_client_view()->SetBoundsRect(root_view_bounds);
+
+  // Verify that the excluded margin matches the margin that our custom
+  // non-client frame provides.
+  const gfx::SizeF aspect_ratio(1.5f, 1.0f);
+  EXPECT_CALL(*native_widget(), SetAspectRatio(aspect_ratio, margin()));
+  widget()->SetAspectRatio(aspect_ratio);
+}
+
+INSTANTIATE_TEST_SUITE_P(WidgetSetAspectRatioTestInstantiation,
+                         WidgetSetAspectRatioTest,
+                         ::testing::Values(gfx::Size(15, 20), gfx::Size(0, 0)));
 
 class WidgetShadowTest : public WidgetTest {
  public:

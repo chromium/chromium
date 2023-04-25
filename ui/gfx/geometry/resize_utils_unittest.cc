@@ -75,6 +75,29 @@ TEST_P(ResizeUtilsTest, SizeRectToAspectRatio) {
   EXPECT_EQ(rect, GetParam().expected_output_rect) << GetParam().ToString();
 }
 
+TEST_P(ResizeUtilsTest, SizeRectToAspectRatioWithExcludedMargin) {
+  Rect rect = GetParam().input_rect;
+  gfx::Size excluded_margin(2, 4);
+  SizeRectToAspectRatioWithExcludedMargin(
+      GetParam().resize_edge, GetParam().aspect_ratio, GetParam().min_size,
+      GetParam().max_size, excluded_margin, rect);
+  // With excluded margin, size should have the same aspect ratio once we remove
+  // the margin.
+  gfx::Size adjusted_size = rect.size() - excluded_margin;
+  const double actual_ratio =
+      static_cast<double>(adjusted_size.width()) / adjusted_size.height();
+  // Note that all of the aspect ratios are exactly representable, so `EQ` is
+  // really expected.
+  EXPECT_EQ(actual_ratio, GetParam().aspect_ratio) << GetParam().ToString();
+  // Also verify min / max.
+  EXPECT_GE(rect.size().width(), GetParam().min_size.width());
+  EXPECT_GE(rect.size().height(), GetParam().min_size.height());
+  if (GetParam().max_size) {
+    EXPECT_LE(rect.size().width(), GetParam().max_size->width());
+    EXPECT_LE(rect.size().height(), GetParam().max_size->height());
+  }
+}
+
 const SizingParams kSizeRectToSquareAspectRatioTestCases[] = {
     // Dragging the top resizer up.
     {ResizeEdge::kTop, kAspectRatioSquare, kMinSizeHorizontal,

@@ -1506,10 +1506,11 @@ void NativeWidgetNSWindowBridge::SetWindowLevel(int32_t level) {
 }
 
 void NativeWidgetNSWindowBridge::SetAspectRatio(
-    const gfx::SizeF& aspect_ratio) {
+    const gfx::SizeF& aspect_ratio,
+    const gfx::Size& excluded_margin) {
   DCHECK(!aspect_ratio.IsEmpty());
-  [window_delegate_
-      setAspectRatio:aspect_ratio.width() / aspect_ratio.height()];
+  [window_delegate_ setAspectRatio:aspect_ratio.width() / aspect_ratio.height()
+                    excludedMargin:excluded_margin];
 }
 
 void NativeWidgetNSWindowBridge::SetCALayerParams(

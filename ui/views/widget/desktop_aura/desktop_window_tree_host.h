@@ -175,7 +175,10 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
 
   virtual void SetOpacity(float opacity) = 0;
 
-  virtual void SetAspectRatio(const gfx::SizeF& aspect_ratio) = 0;
+  // See NativeWidgetPrivate::SetAspectRatio for more information about what
+  // `excluded_margin` does.
+  virtual void SetAspectRatio(const gfx::SizeF& aspect_ratio,
+                              const gfx::Size& excluded_margin) = 0;
 
   virtual void SetWindowIcons(const gfx::ImageSkia& window_icon,
                               const gfx::ImageSkia& app_icon) = 0;

@@ -1174,7 +1174,8 @@ void VideoOverlayWindowViews::ShowInactive() {
   // At this point, the aura surface will be created so we can set it to pip and
   // its aspect ratio. Let Exo handle adding a rounded corner decorartor.
   desktop_window_tree_host->GetWaylandExtension()->SetPip();
-  desktop_window_tree_host->SetAspectRatio(gfx::SizeF(natural_size_));
+  desktop_window_tree_host->SetAspectRatio(gfx::SizeF(natural_size_),
+                                           /*excluded_margin=*/gfx::Size());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

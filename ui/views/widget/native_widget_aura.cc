@@ -787,11 +787,16 @@ void NativeWidgetAura::SetOpacity(float opacity) {
     window_->layer()->SetOpacity(opacity);
 }
 
-void NativeWidgetAura::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
+void NativeWidgetAura::SetAspectRatio(const gfx::SizeF& aspect_ratio,
+                                      const gfx::Size& excluded_margin) {
   DCHECK(!aspect_ratio.IsEmpty());
+  if (excluded_margin.width() > 0 || excluded_margin.height() > 0) {
+    NOTIMPLEMENTED_LOG_ONCE();
+  }
   if (window_) {
     // aura::client::kAspectRatio is owned, which allows for passing by value.
-    window_->SetProperty(aura::client::kAspectRatio, gfx::SizeF(aspect_ratio));
+    window_->SetProperty(aura::client::kAspectRatio, aspect_ratio);
+    // TODO(crbug.com/1407629): send `excluded_margin`.
   }
 }
 

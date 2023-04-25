@@ -954,8 +954,19 @@ void Widget::SetOpacity(float opacity) {
 }
 
 void Widget::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
-  if (native_widget_)
-    native_widget_->SetAspectRatio(aspect_ratio);
+  if (!native_widget_) {
+    return;
+  }
+
+  // The aspect ratio affects the client view only, so figure out how much of
+  // the widget isn't taken up by the client view.
+  gfx::Size excluded_margin;
+  if (non_client_view() && non_client_view()->frame_view()) {
+    excluded_margin =
+        non_client_view()->bounds().size() -
+        non_client_view()->frame_view()->GetBoundsForClientView().size();
+  }
+  native_widget_->SetAspectRatio(aspect_ratio, excluded_margin);
 }
 
 void Widget::FlashFrame(bool flash) {

@@ -35,6 +35,21 @@ void GEOMETRY_EXPORT SizeRectToAspectRatio(ResizeEdge resize_edge,
                                            absl::optional<Size> max_window_size,
                                            Rect* rect);
 
+// As above, but computes a size for `rect` such that it has the right aspect
+// ratio after subtracting `excluded_margin` from it.  This lets the aspect
+// ratio ignore fixed borders, like a title bar.  For example, if
+// `excluded_margin` is (10, 5) and `aspect_ratio` is 1.0f, then the resulting
+// rectangle might have a size of (30, 25) or (40, 35).  One could use the
+// margin for drawing in the edges, and the part that's left over would have the
+// proper aspect ratio: 20/20 or 30/30, respectively.
+void GEOMETRY_EXPORT
+SizeRectToAspectRatioWithExcludedMargin(ResizeEdge resize_edge,
+                                        float aspect_ratio,
+                                        const Size& min_window_size,
+                                        absl::optional<Size> max_window_size,
+                                        const Size& excluded_margin,
+                                        Rect& rect);
+
 }  // namespace gfx
 
 #endif  // UI_GFX_GEOMETRY_RESIZE_UTILS_H_

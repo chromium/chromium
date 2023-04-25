@@ -204,7 +204,16 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual void SetCanAppearInExistingFullscreenSpaces(
       bool can_appear_in_existing_fullscreen_spaces) = 0;
   virtual void SetOpacity(float opacity) = 0;
-  virtual void SetAspectRatio(const gfx::SizeF& aspect_ratio) = 0;
+  // The size of the widget will be set such that it is in the same proportion
+  // as `aspect_ratio` after subtracting `excluded_margin` from the widget size.
+  //
+  // This allows the aspect ratio to refer to just a subrectangle of the widget,
+  // to leave room for, e.g., a client-drawn title bar or window decorations.
+  // System-drawn decorations are excluded automatically, but the system has no
+  // idea if we decide to draw our own.  By setting `excluded_margin` to our
+  // custom-drawn decorations, we can maintain the same behavior.
+  virtual void SetAspectRatio(const gfx::SizeF& aspect_ratio,
+                              const gfx::Size& excluded_margin) = 0;
   virtual void FlashFrame(bool flash) = 0;
   virtual void RunShellDrag(View* view,
                             std::unique_ptr<ui::OSExchangeData> data,

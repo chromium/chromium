@@ -214,8 +214,23 @@ interface NativeWidgetNSWindow {
   // Set the window level of the NSWindow.
   SetWindowLevel(int32 level);
 
-  // Set the aspect ratio of the NSWindow. |aspect_ratio| must not be empty.
-  SetAspectRatio(gfx.mojom.SizeF aspect_ratio);
+  // Set the aspect ratio of the NSWindow. `aspect_ratio` must not be empty.
+  // The aspect ratio refers to the client area only; system-drawn window
+  // decorations like a title bar are not considered in the aspect ratio.
+  //
+  // `excluded_margin` is the amount of client area to ignore when computing
+  // the aspect ratio.  This allows for client-drawn window decorations to be
+  // excluded from the aspect-ratio-constrained size, similar to how system-
+  // drawn decorations are excluded.  If no adjustment is needed, such as if
+  // there are no client-drawn window decorations, then set `excluded_margin`
+  // to (0, 0).
+  //
+  // For example, `aspect_ratio` == 1.f, and `excluded_margin` == (10, 15)
+  // would allow a client area size of (40, 45), since (40-10)/(45-15) == 1.
+  // Presumably, (10, 15) of this area would be used to draw client-drawn
+  // decorations, while the remaining (30, 30) would be used for whatever
+  // content is supposed to have a 1.f aspect-ratio.
+  SetAspectRatio(gfx.mojom.SizeF aspect_ratio, gfx.mojom.Size excluded_margin);
 
   // Specify the content to draw in the NSView.
   SetCALayerParams(gfx.mojom.CALayerParams ca_layer_params);

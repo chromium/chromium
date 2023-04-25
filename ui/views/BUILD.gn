@@ -1014,6 +1014,8 @@ source_set("test_support") {
     "test/mock_drag_controller.h",
     "test/mock_input_event_activation_protector.cc",
     "test/mock_input_event_activation_protector.h",
+    "test/mock_native_widget.cc",
+    "test/mock_native_widget.h",
     "test/native_widget_factory.cc",
     "test/native_widget_factory.h",
     "test/scoped_views_test_helper.cc",

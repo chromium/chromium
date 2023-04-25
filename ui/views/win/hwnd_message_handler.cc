@@ -1133,11 +1133,16 @@ void HWNDMessageHandler::SetFullscreen(bool fullscreen,
     PerformDwmTransition();
 }
 
-void HWNDMessageHandler::SetAspectRatio(float aspect_ratio) {
+void HWNDMessageHandler::SetAspectRatio(float aspect_ratio,
+                                        const gfx::Size& excluded_margin) {
   // If the aspect ratio is not in the valid range, do nothing.
   DCHECK_GT(aspect_ratio, 0.0f);
 
   aspect_ratio_ = aspect_ratio;
+
+  // Convert to pixels.
+  excluded_margin_ =
+      display::win::ScreenWin::DIPToScreenSize(hwnd(), excluded_margin);
 
   // When the aspect ratio is set, size the window to adhere to it. This keeps
   // the same origin point as the original window.
@@ -3797,8 +3802,9 @@ void HWNDMessageHandler::SizeWindowToAspectRatio(UINT param,
   if (!max_window_size.IsEmpty())
     max_size_param = max_window_size;
 
-  gfx::SizeRectToAspectRatio(GetWindowResizeEdge(param), aspect_ratio_.value(),
-                             min_window_size, max_size_param, window_rect);
+  gfx::SizeRectToAspectRatioWithExcludedMargin(
+      GetWindowResizeEdge(param), aspect_ratio_.value(), min_window_size,
+      max_size_param, excluded_margin_, *window_rect);
 }
 
 POINT HWNDMessageHandler::GetCursorPos() const {
