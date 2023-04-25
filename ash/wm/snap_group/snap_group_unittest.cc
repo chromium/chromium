@@ -156,10 +156,10 @@ class SnapGroupTest : public AshTestBase {
                          chromeos::WindowStateType state_type) {
     UpdateDisplay("800x600");
     WindowState* window_state = WindowState::Get(window);
-    const WindowSnapWMEvent snap_type(
-        state_type == chromeos::WindowStateType::kPrimarySnapped
-            ? WM_EVENT_SNAP_PRIMARY
-            : WM_EVENT_SNAP_SECONDARY);
+    const WMEvent snap_type(state_type ==
+                                    chromeos::WindowStateType::kPrimarySnapped
+                                ? WM_EVENT_SNAP_PRIMARY
+                                : WM_EVENT_SNAP_SECONDARY);
     window_state->OnWMEvent(&snap_type);
     EXPECT_EQ(state_type, window_state->GetStateType());
   }
@@ -921,13 +921,13 @@ class SnapGroupEntryPointArm2Test : public SnapGroupTest {
     UpdateDisplay("800x700");
 
     WindowState* primary_window_state = WindowState::Get(primary_window);
-    const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+    const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
     primary_window_state->OnWMEvent(&snap_primary);
     EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
               primary_window_state->GetStateType());
 
     WindowState* secondary_window_state = WindowState::Get(secondary_window);
-    const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+    const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
     secondary_window_state->OnWMEvent(&snap_secondary);
     EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
               secondary_window_state->GetStateType());

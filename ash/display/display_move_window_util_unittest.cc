@@ -131,7 +131,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowState) {
 
   // Set window to left snapped state.
   PerformMoveWindowAccel();
-  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
             screen->GetDisplayNearestWindow(window).id());

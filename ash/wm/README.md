@@ -45,7 +45,7 @@ Helpers exist for common state changes, less common state changes can be sent
 #include "ash/wm/window_state.h"
 
 WindowState* window_state = WindowState::Get(window);
-WindowSnapWMEvent wm_event(WM_EVENT_SNAP_PRIMARY);
+WMEvent wm_event(WM_EVENT_SNAP_PRIMARY);
 window_state->OnWMEvent(&wm_event);
 // WindowState will compute the animation and target bounds and animate the
 // window to the left half.

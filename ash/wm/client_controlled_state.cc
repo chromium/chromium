@@ -367,9 +367,8 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
         next_snap_ratio =
             window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
       } else {
-        CHECK(event->IsSnapEvent());
-        CHECK(event->AsSnapEvent());
-        next_snap_ratio = event->AsSnapEvent()->snap_ratio();
+        DCHECK(event->IsSnapEvent());
+        next_snap_ratio = event->snap_ratio();
       }
       gfx::Rect bounds = GetSnappedWindowBoundsInParent(window, next_state_type,
                                                         next_snap_ratio);

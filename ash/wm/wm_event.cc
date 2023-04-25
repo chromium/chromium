@@ -9,8 +9,13 @@
 namespace ash {
 
 WMEvent::WMEvent(WMEventType type) : type_(type) {
-  CHECK(IsWorkspaceEvent() || IsCompoundEvent() || IsBoundsEvent() ||
-        IsTransitionEvent());
+  DCHECK(IsWorkspaceEvent() || IsCompoundEvent() || IsBoundsEvent() ||
+         IsTransitionEvent());
+}
+
+WMEvent::WMEvent(WMEventType type, float snap_ratio)
+    : type_(type), snap_ratio_(snap_ratio) {
+  DCHECK(IsSnapEvent());
 }
 
 WMEvent::~WMEvent() = default;
@@ -100,10 +105,6 @@ bool WMEvent::IsSnapEvent() const {
   return false;
 }
 
-const WindowSnapWMEvent* WMEvent::AsSnapEvent() const {
-  return nullptr;
-}
-
 const DisplayMetricsChangedWMEvent* WMEvent::AsDisplayMetricsChangedWMEvent()
     const {
   DCHECK_EQ(type(), WM_EVENT_DISPLAY_BOUNDS_CHANGED);
@@ -126,21 +127,6 @@ SetBoundsWMEvent::SetBoundsWMEvent(const gfx::Rect& requested_bounds,
       animate_(false) {}
 
 SetBoundsWMEvent::~SetBoundsWMEvent() = default;
-
-WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type) : WMEvent(type) {
-  CHECK(IsSnapEvent());
-}
-
-WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type, float snap_ratio)
-    : WMEvent(type), snap_ratio_(snap_ratio) {
-  CHECK(IsSnapEvent());
-}
-
-WindowSnapWMEvent::~WindowSnapWMEvent() = default;
-
-const WindowSnapWMEvent* WindowSnapWMEvent::AsSnapEvent() const {
-  return this;
-}
 
 DisplayMetricsChangedWMEvent::DisplayMetricsChangedWMEvent(int changed_metrics)
     : WMEvent(WM_EVENT_DISPLAY_BOUNDS_CHANGED),

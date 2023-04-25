@@ -1633,9 +1633,10 @@ void WindowSnap(AcceleratorAction action) {
           WindowSnapAcceleratorAction::kCycleRightSnapInClamshellNoOverview);
     }
   }
-  const WindowSnapWMEvent event(action == WINDOW_CYCLE_SNAP_LEFT
-                                    ? WM_EVENT_CYCLE_SNAP_PRIMARY
-                                    : WM_EVENT_CYCLE_SNAP_SECONDARY);
+
+  const WMEvent event(action == WINDOW_CYCLE_SNAP_LEFT
+                          ? WM_EVENT_CYCLE_SNAP_PRIMARY
+                          : WM_EVENT_CYCLE_SNAP_SECONDARY);
   aura::Window* window = GetTargetWindow();
   DCHECK(window);
 

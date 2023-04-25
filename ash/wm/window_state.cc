@@ -537,8 +537,7 @@ void WindowState::OnWMEvent(const WMEvent* event) {
 
   if (event->IsSnapEvent()) {
     // Save `event` requested snap ratio.
-    CHECK(event->AsSnapEvent());
-    const float target_snap_ratio = event->AsSnapEvent()->snap_ratio();
+    const float target_snap_ratio = event->snap_ratio();
     snap_ratio_ = absl::make_optional(target_snap_ratio);
     if (IsPartial(target_snap_ratio)) {
       partial_start_time_ = base::TimeTicks::Now();

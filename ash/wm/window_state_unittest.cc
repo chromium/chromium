@@ -95,7 +95,7 @@ TEST_F(WindowStateTest, SnapWindowBasic) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
   WindowState* window_state = WindowState::Get(window.get());
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
   gfx::Rect expected = gfx::Rect(kPrimaryDisplayWorkAreaBounds.x(),
                                  kPrimaryDisplayWorkAreaBounds.y(),
@@ -103,7 +103,7 @@ TEST_F(WindowStateTest, SnapWindowBasic) {
                                  kPrimaryDisplayWorkAreaBounds.height());
   EXPECT_EQ(expected.ToString(), window->GetBoundsInScreen().ToString());
 
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_secondary);
   expected.set_x(kPrimaryDisplayWorkAreaBounds.right() - expected.width());
   EXPECT_EQ(expected.ToString(), window->GetBoundsInScreen().ToString());
@@ -139,8 +139,8 @@ TEST_F(WindowStateTest, SnapWindowOddWorkAreaLength) {
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
   std::unique_ptr<aura::Window> right_window(
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   WindowState::Get(left_window.get())->OnWMEvent(&snap_primary);
   WindowState::Get(right_window.get())->OnWMEvent(&snap_secondary);
   EXPECT_EQ(gfx::Rect(0, work_area.y(), 758, work_area.bottom()),
@@ -165,7 +165,7 @@ TEST_F(WindowStateTest, SnapWindowMinimumSizeLandscape) {
   delegate.set_minimum_size(gfx::Size(kMinimumWidth, 0));
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->CanSnap());
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_secondary);
   // Expect right snap with the minimum width.
   const gfx::Rect expected_right_snap(kWorkAreaBounds.width() - kMinimumWidth,
@@ -501,7 +501,7 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
       &delegate, -1, gfx::Rect(100, 100, 100, 100)));
   delegate.set_window_component(HTRIGHT);
   WindowState* window_state = WindowState::Get(window.get());
-  const WindowSnapWMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state->OnWMEvent(&cycle_snap_primary);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   gfx::Rect expected =
@@ -553,7 +553,7 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
           .Build();
   delegate.set_window_component(HTCAPTION);
   WindowState* window_state = WindowState::Get(window.get());
-  const WindowSnapWMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state->OnWMEvent(&cycle_snap_primary);
 
   // Snap window to primary position (left).
@@ -598,9 +598,9 @@ TEST_F(WindowStateTest, RestoreBounds) {
   gfx::Rect restore_bounds = window->GetBoundsInScreen();
   restore_bounds.set_width(restore_bounds.width() + 1);
   window_state->SetRestoreBoundsInScreen(restore_bounds);
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_secondary);
   EXPECT_NE(restore_bounds.ToString(), window->GetBoundsInScreen().ToString());
   EXPECT_EQ(restore_bounds.ToString(),
@@ -637,7 +637,7 @@ TEST_F(WindowStateTest, AutoManaged) {
   window->Show();
 
   window_state->Maximize();
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_secondary);
 
   const gfx::Rect kWorkAreaBounds =
@@ -928,7 +928,7 @@ TEST_F(WindowStateTest, FullscreenToAnotherDisplayFromOtherStates) {
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_FALSE(window_state->IsFullscreen());
 
-  const WindowSnapWMEvent snap_right_event(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_right_event(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_right_event);
   EXPECT_TRUE(window_state->IsSnapped());
   EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
@@ -1249,14 +1249,14 @@ TEST_F(WindowStateTest, OpacityChange) {
   EXPECT_TRUE(window_state->IsNormalStateType());
   EXPECT_TRUE(window->GetTransparent());
 
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
   EXPECT_FALSE(window->GetTransparent());
 
   window_state->Restore();
   EXPECT_TRUE(window->GetTransparent());
 
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_primary);
   EXPECT_FALSE(window->GetTransparent());
 
@@ -1286,7 +1286,7 @@ TEST_F(WindowStateTest, WindowStateRestoreHistoryBasicFunctionalites) {
   EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), gfx::Rect());
 
   // Transition to kPrimarySnapped window state.
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
   EXPECT_EQ(window->GetBoundsInScreen(), gfx::Rect(snap_window_size));
   ASSERT_EQ(restore_stack.size(), 1u);
@@ -1415,7 +1415,7 @@ TEST_F(WindowStateTest, TransitionFromHighToLowerLayerEraseRestoreHistory) {
   EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), gfx::Rect());
 
   // Transition to kPrimarySnapped window state.
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
 
   // Then transition to kMaximized window state.
@@ -1471,7 +1471,7 @@ TEST_F(WindowStateTest, TransitionInTheSameLayerKeepSameRestoreHistory) {
 
   // Test kPrimarySnapped & kSecondarySnapped.
   // Transition to kPrimarySnapped window state.
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
   ASSERT_EQ(restore_stack.size(), 1u);
   EXPECT_EQ(restore_stack[0].window_state_type, WindowStateType::kNormal);
@@ -1481,7 +1481,7 @@ TEST_F(WindowStateTest, TransitionInTheSameLayerKeepSameRestoreHistory) {
   // Transition to kSecondarySnapped window state. Since it's on the same layer
   // as kPrimarySnapped, kPrimarySnapped won't be pushed into the restore
   // history stack.
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_secondary);
   ASSERT_EQ(restore_stack.size(), 1u);
   EXPECT_EQ(restore_stack[0].window_state_type, WindowStateType::kNormal);
@@ -1533,7 +1533,7 @@ TEST_F(WindowStateTest, PinnedRestoreTest) {
   EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), gfx::Rect());
 
   // Transition to kPrimarySnapped window state.
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
 
   // Then transition to kMaximized window state.
@@ -1774,7 +1774,7 @@ TEST_F(WindowStateTest, SnapThenResize) {
   window->SetBounds(moved_bounds);
   window_state->SetRestoreBoundsInScreen(default_bounds);
 
-  const WindowSnapWMEvent snap_left_event(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_left_event(WM_EVENT_SNAP_PRIMARY);
   const gfx::Rect snapped_left_bounds(0, 0, work_area_bounds.width() / 2,
                                       work_area_bounds.height());
   window_state->OnWMEvent(&snap_left_event);
@@ -1824,7 +1824,7 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   WindowState* window_state = WindowState::Get(window.get());
 
   // Use WMEvent to directly snap the window.
-  WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
                                WindowSnapActionSource::kOthers, 1);
@@ -1938,7 +1938,7 @@ TEST_F(WindowStateTest, SnapWindowMinimumSizePortrait) {
   delegate.set_minimum_size(kMinimumSize);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->CanSnap());
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_secondary);
   // Expect right snap for horizontal snap layout with the minimum width and
   // bottom snap for vertical snap layout with the minimum height.
@@ -1972,8 +1972,7 @@ TEST_F(WindowStateMetricsTest, PartialSplitDuration) {
 
   // Partial split for 30 seconds, then maximize. Test that it records 0 since
   // it has been less than 1 minute.
-  WindowSnapWMEvent partial_event(WM_EVENT_SNAP_PRIMARY,
-                                  chromeos::kTwoThirdSnapRatio);
+  WMEvent partial_event(WM_EVENT_SNAP_PRIMARY, chromeos::kTwoThirdSnapRatio);
   window_state->OnWMEvent(&partial_event);
   AdvanceClock(base::Seconds(30));
   window_state->Maximize();
@@ -1989,7 +1988,7 @@ TEST_F(WindowStateMetricsTest, PartialSplitDuration) {
   // in the 180 minute bucket.
   window_state->OnWMEvent(&partial_event);
   AdvanceClock(base::Hours(3));
-  WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   histogram_tester.ExpectBucketCount(kHistogramName, 180, 1);
 
@@ -2030,8 +2029,8 @@ TEST_F(WindowStateMetricsTest, PartialSplitDuration) {
   ActivateDesk(desks_controller->desks()[1].get());
   AdvanceClock(base::Minutes(1));
   std::unique_ptr<aura::Window> window2(CreateAppWindow());
-  WindowSnapWMEvent partial_secondary(WM_EVENT_SNAP_SECONDARY,
-                                      chromeos::kOneThirdSnapRatio);
+  WMEvent partial_secondary(WM_EVENT_SNAP_SECONDARY,
+                            chromeos::kOneThirdSnapRatio);
   WindowState::Get(window2.get())->OnWMEvent(&partial_secondary);
   AdvanceClock(base::Minutes(1));
   window.reset();

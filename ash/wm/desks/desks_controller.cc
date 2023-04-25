@@ -1355,7 +1355,7 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
               window_state->set_snap_action_source(
                   WindowSnapActionSource::kOthers);
 
-              const WindowSnapWMEvent event(
+              const WMEvent event(
                   target_state == chromeos::WindowStateType::kPrimarySnapped
                       ? WM_EVENT_SNAP_PRIMARY
                       : WM_EVENT_SNAP_SECONDARY);

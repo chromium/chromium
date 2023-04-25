@@ -350,9 +350,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       break;
     case WM_EVENT_SNAP_PRIMARY:
     case WM_EVENT_SNAP_SECONDARY:
-      CHECK(event->AsSnapEvent());
-      DoTabletSnap(window_state, event->type(),
-                   event->AsSnapEvent()->snap_ratio());
+      DoTabletSnap(window_state, event->type(), event->snap_ratio());
       return;
     case WM_EVENT_CYCLE_SNAP_PRIMARY:
       CycleTabletSnap(window_state,
