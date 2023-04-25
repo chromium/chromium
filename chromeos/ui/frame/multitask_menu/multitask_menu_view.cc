@@ -100,7 +100,7 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
         exit_timer_.Stop();
       } else if (g_skip_mouse_out_delay_for_testing) {
         OnExitTimerFinished();
-      } else {
+      } else if (!exit_timer_.IsRunning()) {
         exit_timer_.Start(FROM_HERE, kMouseExitMenuTimeout, this,
                           &MenuPreTargetHandler::OnExitTimerFinished);
       }
