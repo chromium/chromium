@@ -429,6 +429,10 @@
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
 #endif
 
+#if BUILDFLAG(USE_NSS_CERTS)
+#include "chrome/browser/net/nss_service_factory.h"
+#endif
+
 namespace chrome {
 
 void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts) {
@@ -743,6 +747,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   NotificationPermissionsReviewServiceFactory::GetInstance();
   NotificationsEngagementServiceFactory::GetInstance();
   NotifierStateTrackerFactory::GetInstance();
+#if BUILDFLAG(USE_NSS_CERTS)
+  NssServiceFactory::GetInstance();
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   NTPResourceCacheFactory::GetInstance();
   NtpBackgroundServiceFactory::GetInstance();
