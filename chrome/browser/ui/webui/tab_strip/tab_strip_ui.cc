@@ -58,9 +58,7 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
 
   html_source->AddString("tabIdDataType", kWebUITabIdDataType);
   html_source->AddString("tabGroupIdDataType", kWebUITabGroupIdDataType);
-  html_source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(html_source);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"tabListTitle", IDS_ACCNAME_TAB_LIST},

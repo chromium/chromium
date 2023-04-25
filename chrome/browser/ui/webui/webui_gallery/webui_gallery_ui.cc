@@ -33,9 +33,7 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
       network::mojom::CSPDirectiveName::FrameAncestors,
       "frame-ancestors 'self';");
 
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(source);
 
   // TODO(colehorvitz): Promote to a place where it can be easily registered
   // by many WebUIs.

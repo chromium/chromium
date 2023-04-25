@@ -82,9 +82,7 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
       "isTangibleSyncStyleEnabled",
       base::FeatureList::IsEnabled(kEnterpriseWelcomeTangibleSyncStyle) &&
           base::FeatureList::IsEnabled(switches::kTangibleSync));
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(source);
 }
 
 EnterpriseProfileWelcomeUI::~EnterpriseProfileWelcomeUI() = default;

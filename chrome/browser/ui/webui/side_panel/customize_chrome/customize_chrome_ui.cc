@@ -97,9 +97,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       "modulesEnabled",
       ntp::HasModulesEnabled(module_id_names_,
                              IdentityManagerFactory::GetForProfile(profile_)));
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(source);
 
   webui::SetupWebUIDataSource(
       source,

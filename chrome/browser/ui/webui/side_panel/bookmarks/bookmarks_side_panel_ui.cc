@@ -196,9 +196,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
                         ? base::NumberToString(managed->managed_node()->id())
                         : "");
 
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(source);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

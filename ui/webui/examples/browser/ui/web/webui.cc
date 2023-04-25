@@ -47,7 +47,7 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
   EnableTrustedTypesCSP(source);
   source->AddString(
       "chromeRefresh2023Attribute",
-      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+      features::IsChromeWebuiRefresh2023() ? "chrome-refresh-2023" : "");
   source->AddResourcePaths(resources);
   source->AddResourcePath("", default_resource);
 }

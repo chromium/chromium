@@ -332,9 +332,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
                         IDS_PRINT_PREVIEW_SYSTEM_DIALOG_OPTION, shortcut_text));
 #endif
 
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      ::features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+  webui::SetupChromeRefresh2023(source);
 
   // Register strings for the PDF viewer, so that $i18n{} replacements work.
   base::Value::Dict pdf_strings;
