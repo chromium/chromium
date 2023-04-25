@@ -35,14 +35,17 @@ class FlashDeviceTest(unittest.TestCase):
         swarming_patcher = mock.patch('flash_device.running_unattended',
                                       return_value=False)
         check_patcher = mock.patch('flash_device.check_ssh_config_file')
+        time_sleep = mock.patch('time.sleep')
         self._ffx_mock = ffx_patcher.start()
         self._sdk_hash_mock = sdk_hash_patcher.start()
         self._check_patcher_mock = check_patcher.start()
         self._swarming_mock = swarming_patcher.start()
+        self._time_sleep = time_sleep.start()
         self.addCleanup(self._ffx_mock.stop)
         self.addCleanup(self._sdk_hash_mock.stop)
         self.addCleanup(self._check_patcher_mock.stop)
         self.addCleanup(self._swarming_mock.stop)
+        self.addCleanup(self._time_sleep.stop)
 
     def test_update_required_on_ignore_returns_immediately(self) -> None:
         """Test |os_check|='ignore' skips all checks."""
@@ -136,7 +139,7 @@ class FlashDeviceTest(unittest.TestCase):
             # Regular boot is to check the versions.
             mock_boot.assert_called_once_with(mock.ANY,
                                               common.BootMode.REGULAR, None)
-            self.assertEqual(self._ffx_mock.call_count, 1)
+            self.assertEqual(self._ffx_mock.call_count, 0)
 
             # get_system_info should not even be called due to early exit.
             mock_sys_info.assert_not_called()
@@ -160,7 +163,7 @@ class FlashDeviceTest(unittest.TestCase):
             # Regular boot is to check the versions.
             mock_boot.assert_called_once_with(mock.ANY,
                                               common.BootMode.REGULAR, None)
-            self.assertEqual(self._ffx_mock.call_count, 3)
+            self.assertEqual(self._ffx_mock.call_count, 2)
 
     def test_update_system_info_mismatch_adds_exec_to_flash_binaries(self
                                                                      ) -> None:
@@ -220,7 +223,7 @@ class FlashDeviceTest(unittest.TestCase):
                                 'check',
                                 None,
                                 should_pave=False)
-            self.assertEqual(self._ffx_mock.call_count, 3)
+            self.assertEqual(self._ffx_mock.call_count, 2)
 
     def test_update_with_serial_num(self) -> None:
         """Test update when |serial_num| is specified."""
@@ -237,7 +240,7 @@ class FlashDeviceTest(unittest.TestCase):
             mock_boot.assert_called_once_with(mock.ANY,
                                               common.BootMode.BOOTLOADER,
                                               'test_serial')
-        self.assertEqual(self._ffx_mock.call_count, 3)
+        self.assertEqual(self._ffx_mock.call_count, 2)
 
     def test_reboot_failure(self) -> None:
         """Test update when |serial_num| is specified."""
@@ -303,7 +306,7 @@ class FlashDeviceTest(unittest.TestCase):
             mock_boot.assert_called_once_with(mock.ANY,
                                               common.BootMode.BOOTLOADER,
                                               'test_serial')
-        self.assertEqual(self._ffx_mock.call_count, 2)
+        self.assertEqual(self._ffx_mock.call_count, 1)
 
     # pylint: disable=no-self-use
     def test_update_with_pave_timeout_defaults_to_flash(self) -> None:

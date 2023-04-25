@@ -147,7 +147,6 @@ def flash(system_image_dir: str,
             _run_flash_command(system_image_dir, serial_num)
         else:
             _run_flash_command(system_image_dir, target)
-    common.run_ffx_command(('target', 'wait'), target)
 
 
 def update(system_image_dir: str,
@@ -181,7 +180,6 @@ def update(system_image_dir: str,
                 boot_device(target, BootMode.RECOVERY, serial_num)
             try:
                 pave(system_image_dir, target)
-                time.sleep(180)
             except subprocess.TimeoutExpired:
                 # Fallback to flashing, just in case it might work.
                 # This could recover the device and make it usable.
@@ -190,6 +188,8 @@ def update(system_image_dir: str,
                 flash(system_image_dir, target, serial_num)
         else:
             flash(system_image_dir, target, serial_num)
+        # Always sleep after all updates.
+        time.sleep(180)
 
 
 def register_update_args(arg_parser: argparse.ArgumentParser,
