@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/fence.h"
 
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -98,12 +99,14 @@ void Fence::reportEvent(ScriptState* script_state,
     return;
   }
 
-  for (const V8FenceReportingDestination& web_destination :
-       event->destination()) {
-    frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeacon(
-        event->getEventDataOr(String{""}), event->eventType(),
-        ToPublicDestination(web_destination));
-  }
+  WTF::Vector<blink::FencedFrame::ReportingDestination> destinations;
+  destinations.reserve(event->destination().size());
+  base::ranges::transform(event->destination(),
+                          std::back_inserter(destinations),
+                          ToPublicDestination);
+
+  frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeacon(
+      event->getEventDataOr(String{""}), event->eventType(), destinations);
 }
 
 void Fence::setReportEventDataForAutomaticBeacons(
@@ -140,13 +143,15 @@ void Fence::setReportEventDataForAutomaticBeacons(
     AddConsoleMessage("This frame did not register reporting metadata.");
     return;
   }
-  WTF::Vector<blink::FencedFrame::ReportingDestination> destination_vector;
-  for (const V8FenceReportingDestination& web_destination :
-       event->destination()) {
-    destination_vector.push_back(ToPublicDestination(web_destination));
-  }
+
+  WTF::Vector<blink::FencedFrame::ReportingDestination> destinations;
+  destinations.reserve(event->destination().size());
+  base::ranges::transform(event->destination(),
+                          std::back_inserter(destinations),
+                          ToPublicDestination);
+
   frame->GetLocalFrameHostRemote().SetFencedFrameAutomaticBeaconReportEventData(
-      event->getEventDataOr(String{""}), destination_vector);
+      event->getEventDataOr(String{""}), destinations);
 }
 
 HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(

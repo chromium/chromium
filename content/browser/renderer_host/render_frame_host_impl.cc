@@ -8146,9 +8146,12 @@ void RenderFrameHostImpl::CreateFencedFrame(
 void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
     const std::string& event_data,
     const std::string& event_type,
-    blink::FencedFrame::ReportingDestination destination) {
-  SendFencedFrameReportingBeaconInternal(event_data, event_type, destination,
-                                         /*from_renderer=*/true);
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations) {
+  for (const blink::FencedFrame::ReportingDestination& destination :
+       destinations) {
+    SendFencedFrameReportingBeaconInternal(event_data, event_type, destination,
+                                           /*from_renderer=*/true);
+  }
 }
 
 void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
@@ -8206,7 +8209,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
   }
 
   for (blink::FencedFrame::ReportingDestination destination :
-       info->destination) {
+       info->destinations) {
     initiator_rfh->SendFencedFrameReportingBeaconInternal(
         info->data, blink::kFencedFrameTopNavigationBeaconType, destination,
         /*from_renderer=*/false, navigation_request.GetNavigationId());
@@ -8283,7 +8286,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
 
 void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
     const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations) {
   if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
     mojo::ReportBadMessage(
         "The data provided to SetFencedFrameAutomaticBeaconReportEventData() "
@@ -8303,7 +8306,8 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
   }
   CHECK(owner_);  // See `owner_` invariants about `IsActive()`.
 
-  owner_->SetFencedFrameAutomaticBeaconReportEventData(event_data, destination);
+  owner_->SetFencedFrameAutomaticBeaconReportEventData(event_data,
+                                                       destinations);
 }
 
 void RenderFrameHostImpl::OnViewTransitionOptInChanged(

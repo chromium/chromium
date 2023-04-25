@@ -571,7 +571,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // `Fence.setReportEventDataForAutomaticBeacons` JS API.
   void SetFencedFrameAutomaticBeaconReportEventData(
       const std::string& event_data,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destination)
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations)
       override;
 
   // Returns the number of fenced frame boundaries above this frame. The

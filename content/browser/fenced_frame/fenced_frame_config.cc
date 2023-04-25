@@ -297,10 +297,10 @@ void FencedFrameProperties::UpdateMappedURL(GURL url) {
 
 void FencedFrameProperties::UpdateAutomaticBeaconData(
     const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations) {
   // For an ad component, the event data from its automatic beacon is ignored.
   automatic_beacon_info_.emplace(is_ad_component_ ? std::string{} : event_data,
-                                 destination);
+                                 destinations);
 }
 
 }  // namespace content

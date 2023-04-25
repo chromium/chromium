@@ -253,11 +253,13 @@ void FakeLocalFrameHost::ReceivedDelegatedCapability(
 void FakeLocalFrameHost::SendFencedFrameReportingBeacon(
     const WTF::String& event_data,
     const WTF::String& event_type,
-    blink::FencedFrame::ReportingDestination destination) {}
+    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations) {
+}
 
 void FakeLocalFrameHost::SetFencedFrameAutomaticBeaconReportEventData(
     const WTF::String& event_data,
-    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destination) {}
+    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations) {
+}
 
 void FakeLocalFrameHost::SendPrivateAggregationRequestsForFencedFrameEvent(
     const WTF::String& event_type) {}

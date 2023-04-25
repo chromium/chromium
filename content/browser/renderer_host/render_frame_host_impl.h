@@ -2400,10 +2400,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SendFencedFrameReportingBeacon(
       const std::string& event_data,
       const std::string& event_type,
-      blink::FencedFrame::ReportingDestination destination) override;
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations)
+      override;
   void SetFencedFrameAutomaticBeaconReportEventData(
       const std::string& event_data,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destination)
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations)
       override;
   void SendPrivateAggregationRequestsForFencedFrameEvent(
       const std::string& event_type) override;

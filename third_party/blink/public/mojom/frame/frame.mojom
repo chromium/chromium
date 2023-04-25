@@ -597,20 +597,27 @@ interface LocalFrameHost {
   //
   // A document in a fenced frame can invoke the reportEvent API to request the
   // browser to send `eventData` in a beacon toward the URL registered against
-  // `eventType` by the worklet in registerAdBeacon. Please see enum
-  // `ReportingDestination` for egilible reporting entities.
+  // `eventType` by the worklet in registerAdBeacon. Depending on the declared
+  // `destination`, the beacon is sent to the reporting destination's
+  // registered URL.
+  // Note the `destination` above is a WebIDL sequence, which means it may
+  // contain multiple destinations. It is forwarded as a collection in a single
+  // IPC call, instead of making an IPC call for each destination.
+  // For the list of available reporting destinations, see enum
+  // ReportingDestination defined in:
+  // third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom
   SendFencedFrameReportingBeacon(string event_data,
                                  string event_type,
-                                 ReportingDestination destination);
+                                 array<ReportingDestination> destinations);
 
   // Fenced frames can send beacons automatically when an event happens.
   //
   // For now, only "reserved.top_navigation" is supported. The `event_data` is
-  // installed in the RenderFrameHost and will be sent toward `destination` on
+  // installed in the RenderFrameHost and will be sent toward `destinations` on
   // the next cross-document top-frame navigation.
   SetFencedFrameAutomaticBeaconReportEventData(
       string event_data,
-      array<ReportingDestination> destination);
+      array<ReportingDestination> destinations);
 
   // See:
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md

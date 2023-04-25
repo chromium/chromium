@@ -175,10 +175,11 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void SendFencedFrameReportingBeacon(
       const WTF::String& event_data,
       const WTF::String& event_type,
-      blink::FencedFrame::ReportingDestination destination) override;
+      const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations)
+      override;
   void SetFencedFrameAutomaticBeaconReportEventData(
       const WTF::String& event_data,
-      const WTF::Vector<blink::FencedFrame::ReportingDestination>& destination)
+      const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations)
       override;
   void SendPrivateAggregationRequestsForFencedFrameEvent(
       const WTF::String& event_type) override;

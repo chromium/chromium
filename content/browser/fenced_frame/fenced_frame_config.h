@@ -97,7 +97,8 @@ using SharedStorageBudgetMetadata =
 struct CONTENT_EXPORT AutomaticBeaconInfo {
   AutomaticBeaconInfo(
       const std::string& data,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destination);
+      const std::vector<blink::FencedFrame::ReportingDestination>&
+          destinations);
 
   AutomaticBeaconInfo(const AutomaticBeaconInfo&);
   AutomaticBeaconInfo(AutomaticBeaconInfo&&);
@@ -108,7 +109,7 @@ struct CONTENT_EXPORT AutomaticBeaconInfo {
   ~AutomaticBeaconInfo();
 
   std::string data;
-  std::vector<blink::FencedFrame::ReportingDestination> destination;
+  std::vector<blink::FencedFrame::ReportingDestination> destinations;
 };
 
 // Different kinds of entities (renderers) that should receive different
@@ -348,7 +349,8 @@ struct CONTENT_EXPORT FencedFrameProperties {
   // `reserved.top_navigation` automatic beacon.
   void UpdateAutomaticBeaconData(
       const std::string& event_data,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destination);
+      const std::vector<blink::FencedFrame::ReportingDestination>&
+          destinations);
 
   const absl::optional<AutomaticBeaconInfo>& automatic_beacon_info() const {
     return automatic_beacon_info_;

@@ -120,8 +120,8 @@ base::StringPiece ReportingDestinationAsString(
 
 AutomaticBeaconInfo::AutomaticBeaconInfo(
     const std::string& data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destination)
-    : data(data), destination(destination) {}
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations)
+    : data(data), destinations(destinations) {}
 
 AutomaticBeaconInfo::AutomaticBeaconInfo(const AutomaticBeaconInfo&) = default;
 

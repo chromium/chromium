@@ -127,7 +127,7 @@ class RenderFrameHostOwner {
   virtual void SetFencedFrameAutomaticBeaconReportEventData(
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>&
-          destination) = 0;
+          destinations) = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
   virtual void GetVirtualAuthenticatorManager(
