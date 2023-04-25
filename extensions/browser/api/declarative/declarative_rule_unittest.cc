@@ -27,11 +27,10 @@ namespace extensions {
 namespace {
 
 base::Value::Dict SimpleManifest() {
-  return DictionaryBuilder()
+  return base::Value::Dict()
       .Set("name", "extension")
       .Set("manifest_version", 2)
-      .Set("version", "1.0")
-      .Build();
+      .Set("version", "1.0");
 }
 
 }  // namespace

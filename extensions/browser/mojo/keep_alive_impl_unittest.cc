@@ -31,20 +31,15 @@ class KeepAliveTest : public ExtensionsTest {
     extension_ =
         ExtensionBuilder()
             .SetManifest(
-                DictionaryBuilder()
+                base::Value::Dict()
                     .Set("name", "app")
                     .Set("version", "1")
                     .Set("manifest_version", 2)
-                    .Set("app", DictionaryBuilder()
-                                    .Set("background",
-                                         DictionaryBuilder()
-                                             .Set("scripts",
-                                                  ListBuilder()
-                                                      .Append("background.js")
-                                                      .Build())
-                                             .Build())
-                                    .Build())
-                    .Build())
+                    .Set("app", base::Value::Dict().Set(
+                                    "background",
+                                    base::Value::Dict().Set(
+                                        "scripts", base::Value::List().Append(
+                                                       "background.js")))))
             .SetID("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
             .Build();
   }
@@ -124,20 +119,15 @@ TEST_F(KeepAliveTest, UnloadExtension) {
   scoped_refptr<const Extension> other_extension =
       ExtensionBuilder()
           .SetManifest(
-              DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", "app")
                   .Set("version", "1")
                   .Set("manifest_version", 2)
-                  .Set("app",
-                       DictionaryBuilder()
-                           .Set("background",
-                                DictionaryBuilder()
-                                    .Set("scripts", ListBuilder()
-                                                        .Append("background.js")
-                                                        .Build())
-                                    .Build())
-                           .Build())
-                  .Build())
+                  .Set("app", base::Value::Dict().Set(
+                                  "background",
+                                  base::Value::Dict().Set(
+                                      "scripts", base::Value::List().Append(
+                                                     "background.js")))))
           .SetID("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
           .Build();
 

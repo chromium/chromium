@@ -7,13 +7,13 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,10 +59,9 @@ TEST_P(ExtensionActionManagerTest, TestPopulateMissingValues_Icons) {
   // replaced because "128" can always be used in its place.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Test Extension")
-          .SetManifestKey("icons", DictionaryBuilder()
+          .SetManifestKey("icons", base::Value::Dict()
                                        .Set("48", "icon48.png")
-                                       .Set("128", "icon128.png")
-                                       .Build())
+                                       .Set("128", "icon128.png"))
           .SetManifestKey(ActionInfo::GetManifestKeyForActionType(GetParam()),
                           base::Value::Dict())
           .Build();
@@ -102,15 +101,12 @@ TEST_P(ExtensionActionManagerTest, TestPopulateMissingValues_Title) {
 TEST_P(ExtensionActionManagerTest, TestDontOverrideIfDefaultsProvided) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Test Extension")
-          .SetManifestKey("icons",
-                          DictionaryBuilder().Set("24", "icon24.png").Build())
-          .SetManifestKey(
-              ActionInfo::GetManifestKeyForActionType(GetParam()),
-              DictionaryBuilder()
-                  .Set("default_icon",
-                       DictionaryBuilder().Set("19", "icon19.png").Build())
-                  .Set("default_title", "Action!")
-                  .Build())
+          .SetManifestKey("icons", base::Value::Dict().Set("24", "icon24.png"))
+          .SetManifestKey(ActionInfo::GetManifestKeyForActionType(GetParam()),
+                          base::Value::Dict()
+                              .Set("default_icon",
+                                   base::Value::Dict().Set("19", "icon19.png"))
+                              .Set("default_title", "Action!"))
           .Build();
 
   ASSERT_TRUE(extension);

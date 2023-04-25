@@ -9,7 +9,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -19,43 +18,37 @@ enum class TypeToCreate { kExtension, kHostedApp, kPlatformApp };
 
 scoped_refptr<const Extension> CreateExtensionWithFlags(TypeToCreate type,
                                                         const std::string& id) {
-  DictionaryBuilder manifest_builder;
-  manifest_builder.Set("name", "Test extension")
-      .Set("version", "1.0")
-      .Set("manifest_version", 2);
+  auto manifest_builder = base::Value::Dict()
+                              .Set("name", "Test extension")
+                              .Set("version", "1.0")
+                              .Set("manifest_version", 2);
 
   switch (type) {
     case TypeToCreate::kExtension:
       manifest_builder.Set(
           "background",
-          DictionaryBuilder()
-              .Set("scripts", ListBuilder().Append("background.js").Build())
-              .Build());
+          base::Value::Dict().Set("scripts",
+                                  base::Value::List().Append("background.js")));
       break;
     case TypeToCreate::kHostedApp:
       manifest_builder.Set(
-          "app", DictionaryBuilder()
-                     .Set("launch", DictionaryBuilder()
-                                        .Set("web_url", "https://www.foo.bar")
-                                        .Build())
-                     .Build());
+          "app", base::Value::Dict().Set(
+                     "launch", base::Value::Dict().Set("web_url",
+                                                       "https://www.foo.bar")));
       break;
     case TypeToCreate::kPlatformApp:
       manifest_builder.Set(
           "app",
-          DictionaryBuilder()
-              .Set("background",
-                   DictionaryBuilder()
-                       .Set("scripts",
-                            ListBuilder().Append("background.js").Build())
-                       .Build())
-              .Build());
+          base::Value::Dict().Set(
+              "background",
+              base::Value::Dict().Set(
+                  "scripts", base::Value::List().Append("background.js"))));
       break;
   }
 
   return ExtensionBuilder()
       .SetID(id)
-      .SetManifest(manifest_builder.Build())
+      .SetManifest(std::move(manifest_builder))
       .Build();
 }
 

@@ -169,29 +169,26 @@ class DataItemTest : public testing::Test {
 
   scoped_refptr<const Extension> CreateTestExtension(
       const std::string& extension_id) {
-    DictionaryBuilder app_builder;
+    base::Value::Dict app_builder;
     app_builder.Set("background",
-                    DictionaryBuilder()
-                        .Set("scripts", ListBuilder().Append("script").Build())
-                        .Build());
-    ListBuilder app_handlers_builder;
-    app_handlers_builder.Append(DictionaryBuilder()
+                    base::Value::Dict().Set(
+                        "scripts", base::Value::List().Append("script")));
+    base::Value::List app_handlers_builder;
+    app_handlers_builder.Append(base::Value::Dict()
                                     .Set("action", "new_note")
-                                    .Set("enabled_on_lock_screen", true)
-                                    .Build());
+                                    .Set("enabled_on_lock_screen", true));
     scoped_refptr<const Extension> extension =
         ExtensionBuilder()
             .SetID(extension_id)
             .SetManifest(
-                DictionaryBuilder()
+                base::Value::Dict()
                     .Set("name", "Test app")
                     .Set("version", "1.0")
                     .Set("manifest_version", 2)
-                    .Set("app", app_builder.Build())
-                    .Set("action_handlers", app_handlers_builder.Build())
+                    .Set("app", std::move(app_builder))
+                    .Set("action_handlers", std::move(app_handlers_builder))
                     .Set("permissions",
-                         ListBuilder().Append("lockScreen").Build())
-                    .Build())
+                         base::Value::List().Append("lockScreen")))
             .Build();
     ExtensionRegistry::Get(context_.get())->AddEnabled(extension);
     return extension;

@@ -87,11 +87,10 @@ TEST_F(BluetoothEventRouterTest, MultipleBluetoothEventListeners) {
 TEST_F(BluetoothEventRouterTest, UnloadExtension) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "BT event router test")
                            .Set("version", "1.0")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .SetID(kTestExtensionId)
           .Build();
 

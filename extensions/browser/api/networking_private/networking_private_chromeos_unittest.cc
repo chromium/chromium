@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -24,7 +25,6 @@
 #include "components/onc/onc_constants.h"
 #include "extensions/browser/api/networking_private/networking_private_api.h"
 #include "extensions/browser/api_unittest.h"
-#include "extensions/common/value_builder.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace extensions {
@@ -136,43 +136,33 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
         ash::NetworkHandler::Get()->managed_network_configuration_handler();
 
     const std::string user_policy_ssid = kManagedUserWifiSsid;
-    base::Value::List user_policy_onc =
-        ListBuilder()
-            .Append(DictionaryBuilder()
-                        .Set("GUID", kManagedUserWifiGuid)
-                        .Set("Type", "WiFi")
-                        .Set("WiFi",
-                             DictionaryBuilder()
-                                 .Set("Passphrase", "fake")
-                                 .Set("SSID", user_policy_ssid)
-                                 .Set("HexSSID",
-                                      base::HexEncode(user_policy_ssid.c_str(),
-                                                      user_policy_ssid.size()))
-                                 .Set("Security", "WPA-PSK")
-                                 .Build())
-                        .Build())
-            .Build();
+    base::Value::List user_policy_onc = base::Value::List().Append(
+        base::Value::Dict()
+            .Set("GUID", kManagedUserWifiGuid)
+            .Set("Type", "WiFi")
+            .Set("WiFi",
+                 base::Value::Dict()
+                     .Set("Passphrase", "fake")
+                     .Set("SSID", user_policy_ssid)
+                     .Set("HexSSID", base::HexEncode(user_policy_ssid.c_str(),
+                                                     user_policy_ssid.size()))
+                     .Set("Security", "WPA-PSK")));
 
     config_handler->SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUserHash,
                               user_policy_onc,
                               /*global_network_config=*/base::Value::Dict());
 
     const std::string device_policy_ssid = kManagedDeviceWifiSsid;
-    base::Value::List device_policy_onc =
-        ListBuilder()
-            .Append(DictionaryBuilder()
-                        .Set("GUID", kManagedDeviceWifiGuid)
-                        .Set("Type", "WiFi")
-                        .Set("WiFi",
-                             DictionaryBuilder()
-                                 .Set("SSID", device_policy_ssid)
-                                 .Set("HexSSID", base::HexEncode(
-                                                     device_policy_ssid.c_str(),
+    base::Value::List device_policy_onc = base::Value::List().Append(
+        base::Value::Dict()
+            .Set("GUID", kManagedDeviceWifiGuid)
+            .Set("Type", "WiFi")
+            .Set("WiFi",
+                 base::Value::Dict()
+                     .Set("SSID", device_policy_ssid)
+                     .Set("HexSSID", base::HexEncode(device_policy_ssid.c_str(),
                                                      device_policy_ssid.size()))
-                                 .Set("Security", "None")
-                                 .Build())
-                        .Build())
-            .Build();
+                     .Set("Security", "None")));
     config_handler->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, "",
                               device_policy_onc,
                               /*global_network_config=*/base::Value::Dict());
@@ -214,12 +204,11 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                       base::Value("test_min"));
     SetDeviceProperty(kCellularDevicePath, shill::kModelIdProperty,
                       base::Value("test_model_id"));
-    base::Value apn(DictionaryBuilder()
+    base::Value apn(base::Value::Dict()
                         .Set(shill::kApnProperty, "test-apn")
                         .Set(shill::kApnUsernameProperty, "test-user")
                         .Set(shill::kApnPasswordProperty, "test-password")
-                        .Set(shill::kApnAuthenticationProperty, "chap")
-                        .Build());
+                        .Set(shill::kApnAuthenticationProperty, "chap"));
     base::Value apn_list(base::Value::Type::LIST);
     apn_list.GetList().Append(apn.Clone());
     SetDeviceProperty(kCellularDevicePath, shill::kCellularApnListProperty,
@@ -1083,22 +1072,20 @@ TEST_F(NetworkingPrivateApiTest, GetCellularProperties) {
   ASSERT_TRUE(result);
 
   base::Value::Dict expected_result =
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("Cellular",
-               DictionaryBuilder()
+               base::Value::Dict()
                    .Set("AllowRoaming", false)
                    .Set("AutoConnect", true)
                    .Set("Family", "GSM")
-                   .Set("HomeProvider", DictionaryBuilder()
+                   .Set("HomeProvider", base::Value::Dict()
                                             .Set("Code", "000000")
                                             .Set("Country", "us")
-                                            .Set("Name", "Cellular1_Provider")
-                                            .Build())
+                                            .Set("Name", "Cellular1_Provider"))
                    .Set("ModelID", "test_model_id")
                    .Set("NetworkTechnology", "GSM")
                    .Set("RoamingState", "Home")
-                   .Set("Scanning", false)
-                   .Build())
+                   .Set("Scanning", false))
           .Set("ConnectionState", "Connected")
           .Set("GUID", "cellular_guid")
           .Set("IPAddressConfigType", "DHCP")
@@ -1106,8 +1093,7 @@ TEST_F(NetworkingPrivateApiTest, GetCellularProperties) {
           .Set("Name", "cellular")
           .Set("NameServersConfigType", "DHCP")
           .Set("Source", "User")
-          .Set("Type", "Cellular")
-          .Build();
+          .Set("Type", "Cellular");
 
   EXPECT_EQ(base::Value(std::move(expected_result)), *result);
 }
@@ -1125,25 +1111,23 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
 
   ASSERT_TRUE(result);
 
-  base::Value::Dict expected_apn = DictionaryBuilder()
+  base::Value::Dict expected_apn = base::Value::Dict()
                                        .Set("AccessPointName", "test-apn")
                                        .Set("Username", "test-user")
                                        .Set("Password", "test-password")
-                                       .Set("Authentication", "CHAP")
-                                       .Build();
+                                       .Set("Authentication", "CHAP");
   base::Value::Dict expected_result =
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set("Cellular",
-               DictionaryBuilder()
+               base::Value::Dict()
                    .Set("AllowRoaming", false)
                    .Set("AutoConnect", true)
                    .Set("ESN", "test_esn")
                    .Set("Family", "GSM")
-                   .Set("HomeProvider", DictionaryBuilder()
+                   .Set("HomeProvider", base::Value::Dict()
                                             .Set("Code", "000000")
                                             .Set("Country", "us")
-                                            .Set("Name", "Cellular1_Provider")
-                                            .Build())
+                                            .Set("Name", "Cellular1_Provider"))
                    .Set("ModelID", "test_model_id")
                    .Set("ICCID", "test_iccid")
                    .Set("IMEI", "test_imei")
@@ -1155,10 +1139,9 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
                    .Set("RoamingState", "Home")
                    .Set("Scanning", false)
                    .Set("APNList",
-                        ListBuilder().Append(expected_apn.Clone()).Build())
+                        base::Value::List().Append(expected_apn.Clone()))
                    .Set("APN", expected_apn.Clone())
-                   .Set("LastGoodAPN", expected_apn.Clone())
-                   .Build())
+                   .Set("LastGoodAPN", expected_apn.Clone()))
           .Set("ConnectionState", "Connected")
           .Set("GUID", "cellular_guid")
           .Set("IPAddressConfigType", "DHCP")
@@ -1166,8 +1149,7 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
           .Set("Name", "cellular")
           .Set("NameServersConfigType", "DHCP")
           .Set("Source", "User")
-          .Set("Type", "Cellular")
-          .Build();
+          .Set("Type", "Cellular");
 
   EXPECT_EQ(base::Value(std::move(expected_result)), *result);
 }

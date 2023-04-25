@@ -117,10 +117,10 @@ std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
 scoped_refptr<const Extension> CreateExtension(bool component,
                                                bool persistent) {
   ExtensionBuilder builder;
-  base::Value::Dict manifest;
-  manifest.Set("name", "foo");
-  manifest.Set("version", "1.0.0");
-  manifest.Set("manifest_version", 2);
+  auto manifest = base::Value::Dict()
+                      .Set("name", "foo")
+                      .Set("version", "1.0.0")
+                      .Set("manifest_version", 2);
   manifest.SetByDottedPath("background.page", "background.html");
   manifest.SetByDottedPath("background.persistent", persistent);
   builder.SetManifest(std::move(manifest));
@@ -132,10 +132,10 @@ scoped_refptr<const Extension> CreateExtension(bool component,
 
 scoped_refptr<const Extension> CreateServiceWorkerExtension() {
   ExtensionBuilder builder;
-  base::Value::Dict manifest;
-  manifest.Set("name", "foo");
-  manifest.Set("version", "1.0.0");
-  manifest.Set("manifest_version", 2);
+  auto manifest = base::Value::Dict()
+                      .Set("name", "foo")
+                      .Set("version", "1.0.0")
+                      .Set("manifest_version", 2);
   manifest.SetByDottedPath("background.service_worker", "worker.js");
   builder.SetManifest(std::move(manifest));
   return builder.Build();
@@ -601,11 +601,10 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder()
             .SetID(id)
-            .SetManifest(DictionaryBuilder()
+            .SetManifest(base::Value::Dict()
                              .Set("name", "Test app")
                              .Set("version", "1.0")
-                             .Set("manifest_version", 2)
-                             .Build())
+                             .Set("manifest_version", 2))
             .Build();
     ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
   };

@@ -95,9 +95,8 @@ PermissionsManagerUnittest::AddExtensionWithHostPermission(
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
           .SetManifestVersion(3)
-          .SetManifestKey(
-              "host_permissions",
-              extensions::ListBuilder().Append(host_permission).Build())
+          .SetManifestKey("host_permissions",
+                          base::Value::List().Append(host_permission))
           .Build();
 
   ExtensionRegistryFactory::GetForBrowserContext(browser_context())
