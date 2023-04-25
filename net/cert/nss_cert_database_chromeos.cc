@@ -49,13 +49,15 @@ void NSSCertDatabaseChromeOS::ListCerts(
       std::move(callback));
 }
 
-void NSSCertDatabaseChromeOS::ListCertsInfo(ListCertsInfoCallback callback) {
+void NSSCertDatabaseChromeOS::ListCertsInfo(
+    ListCertsInfoCallback callback,
+    NSSRootsHandling nss_roots_handling) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&NSSCertDatabaseChromeOS::ListCertsInfoImpl,
                      profile_filter_, /*slot=*/GetSystemSlot(),
-                     /*add_certs_info=*/true),
+                     /*add_certs_info=*/true, nss_roots_handling),
       std::move(callback));
 }
 
@@ -104,8 +106,9 @@ bool NSSCertDatabaseChromeOS::SetCertTrust(CERTCertificate* cert,
 // static
 ScopedCERTCertificateList NSSCertDatabaseChromeOS::ListCertsImpl(
     const NSSProfileFilterChromeOS& profile_filter) {
-  CertInfoList certs_info = ListCertsInfoImpl(
-      profile_filter, crypto::ScopedPK11Slot(), /*add_certs_info=*/false);
+  CertInfoList certs_info =
+      ListCertsInfoImpl(profile_filter, crypto::ScopedPK11Slot(),
+                        /*add_certs_info=*/false, NSSRootsHandling::kInclude);
 
   return ExtractCertificates(std::move(certs_info));
 }
@@ -114,7 +117,8 @@ ScopedCERTCertificateList NSSCertDatabaseChromeOS::ListCertsImpl(
 NSSCertDatabase::CertInfoList NSSCertDatabaseChromeOS::ListCertsInfoImpl(
     const NSSProfileFilterChromeOS& profile_filter,
     crypto::ScopedPK11Slot system_slot,
-    bool add_certs_info) {
+    bool add_certs_info,
+    NSSRootsHandling nss_roots_handling) {
   // This method may acquire the NSS lock or reenter this code via extension
   // hooks (such as smart card UI). To ensure threads are not starved or
   // deadlocked, the base::ScopedBlockingCall below increments the thread pool
@@ -123,7 +127,7 @@ NSSCertDatabase::CertInfoList NSSCertDatabaseChromeOS::ListCertsInfoImpl(
                                                 base::BlockingType::MAY_BLOCK);
 
   CertInfoList certs_info(NSSCertDatabase::ListCertsInfoImpl(
-      crypto::ScopedPK11Slot(), add_certs_info));
+      crypto::ScopedPK11Slot(), add_certs_info, nss_roots_handling));
 
   // Filter certificate information according to user profile.
   base::EraseIf(certs_info, [&profile_filter](CertInfo& cert_info) {

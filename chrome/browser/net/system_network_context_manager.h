@@ -174,7 +174,7 @@ class SystemNetworkContextManager {
   }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  bool IsUsingChromeRootStore();
+  static bool IsUsingChromeRootStore();
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
  private:
@@ -197,6 +197,10 @@ class SystemNetworkContextManager {
   // Send the current value of the net.explicitly_allowed_network_ports pref to
   // the network process.
   void UpdateExplicitlyAllowedNetworkPorts();
+
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  static bool IsUsingChromeRootStoreImpl(PrefService* local_state);
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
   void UpdateChromeRootStoreEnabled();

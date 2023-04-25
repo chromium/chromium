@@ -85,9 +85,8 @@ class CertVerifierServiceChromeRootStoreFeaturePolicyTest
 IN_PROC_BROWSER_TEST_P(CertVerifierServiceChromeRootStoreFeaturePolicyTest,
                        Test) {
   // IsUsingChromeRootStore return value should match the expected state.
-  EXPECT_EQ(
-      expected_use_chrome_root_store(),
-      SystemNetworkContextManager::GetInstance()->IsUsingChromeRootStore());
+  EXPECT_EQ(expected_use_chrome_root_store(),
+            SystemNetworkContextManager::IsUsingChromeRootStore());
 
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
@@ -142,9 +141,8 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceChromeRootStoreFeaturePolicyTest,
   SetPolicyValue(new_expected_use_chrome_root_store);
 
   // IsUsingChromeRootStore return value should match the new policy setting.
-  EXPECT_EQ(
-      new_expected_use_chrome_root_store,
-      SystemNetworkContextManager::GetInstance()->IsUsingChromeRootStore());
+  EXPECT_EQ(new_expected_use_chrome_root_store,
+            SystemNetworkContextManager::IsUsingChromeRootStore());
 
   // The SetUseChromeRootStore message should have been dispatched to the
   // CertVerifierServiceFactory but may not have actually been processed yet.

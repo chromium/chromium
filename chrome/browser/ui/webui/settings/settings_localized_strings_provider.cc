@@ -1898,12 +1898,11 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(features::kHttpsOnlyMode));
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  html_source->AddBoolean(
-      "showChromeRootStoreCertificates",
+  html_source->AddBoolean("showChromeRootStoreCertificates",
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-      SystemNetworkContextManager::GetInstance()->IsUsingChromeRootStore()
+                          SystemNetworkContextManager::IsUsingChromeRootStore()
 #else
-      true
+                          true
 #endif
   );
 
