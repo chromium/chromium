@@ -100,6 +100,7 @@ found in the LICENSE file.
         android:layout_marginTop="20dp"
         android:layout_below="@+id/nickname_input_layout"
         android:layout_marginStart="@dimen/dialog_padding_sides"
+        android:breakStrategy="balanced"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
         tools:text="@string/autofill_save_in_account_prompt_address_source_notice" />
   </RelativeLayout>

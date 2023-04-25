@@ -115,5 +115,6 @@ found in the LICENSE file.
       android:layout_marginTop="12dp"
       android:layout_marginStart="@dimen/dialog_padding_sides"
       android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+      android:breakStrategy="balanced"
       tools:text="@string/autofill_save_in_account_prompt_address_source_notice" />
 </LinearLayout>
