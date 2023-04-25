@@ -223,20 +223,17 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
   }
 
   void ToggleBatterySaverMode() override {
-    if (base::FeatureList::IsEnabled(
-            performance_manager::features::kBatterySaverModeAvailable)) {
-      performance_manager::user_tuning::prefs::BatterySaverModeState state =
-          performance_manager::user_tuning::prefs::
-              GetCurrentBatterySaverModeState(g_browser_process->local_state());
-      g_browser_process->local_state()->SetInteger(
-          performance_manager::user_tuning::prefs::kBatterySaverModeState,
-          static_cast<int>(state == performance_manager::user_tuning::prefs::
-                                        BatterySaverModeState::kDisabled
-                               ? performance_manager::user_tuning::prefs::
-                                     BatterySaverModeState::kEnabled
-                               : performance_manager::user_tuning::prefs::
-                                     BatterySaverModeState::kDisabled));
-    }
+    performance_manager::user_tuning::prefs::BatterySaverModeState state =
+        performance_manager::user_tuning::prefs::
+            GetCurrentBatterySaverModeState(g_browser_process->local_state());
+    g_browser_process->local_state()->SetInteger(
+        performance_manager::user_tuning::prefs::kBatterySaverModeState,
+        static_cast<int>(state == performance_manager::user_tuning::prefs::
+                                      BatterySaverModeState::kDisabled
+                             ? performance_manager::user_tuning::prefs::
+                                   BatterySaverModeState::kEnabled
+                             : performance_manager::user_tuning::prefs::
+                                   BatterySaverModeState::kDisabled));
   }
 
  private:

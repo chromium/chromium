@@ -19,7 +19,7 @@ import '../settings_shared.css.js';
 import {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PageVisibility} from '../page_visibility.js';
 import {Route, RouteObserverMixin, Router, SettingsRoutes} from '../router.js';
@@ -51,19 +51,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
        * Dictionary defining page visibility.
        */
       pageVisibility: Object,
-
-      performanceFeaturesAvailable_: {
-        type: Boolean,
-        value: function() {
-          return loadTimeData.getBoolean('highEfficiencyModeAvailable') ||
-              loadTimeData.getBoolean('batterySaverModeAvailable');
-        },
-      },
     };
   }
 
   pageVisibility: PageVisibility;
-  private performanceFeaturesAvailable_: boolean;
   private routes_: SettingsRoutes;
 
   override ready() {
@@ -72,22 +63,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   override currentRouteChanged(newRoute: Route) {
-    if (this.performanceFeaturesAvailable_ &&
-        newRoute === this.routes_.PERFORMANCE) {
-      // Add special handling for the Performance section, since the
-      // corresponding menu entry resides in a dom-if and is normally not
-      // present in the DOM during initial load. Force-render the dom-if
-      // instead.
-      const anchor = this.shadowRoot!.querySelector('#performance');
-      if (anchor === null) {
-        const domIf =
-            this.shadowRoot!.querySelector<DomIf>('#performanceDomIf');
-        assert(domIf);
-        assert(domIf.if);
-        domIf.render();
-      }
-    }
-
     // <if expr="_google_chrome">
     if (loadTimeData.getBoolean('showGetTheMostOutOfChromeSection') &&
         newRoute === this.routes_.GET_MOST_CHROME) {

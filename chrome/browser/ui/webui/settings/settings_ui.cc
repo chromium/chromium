@@ -506,12 +506,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
-  // TODO(crbug.com/1430884): Remove this when the WebUI doesn't look for it.
-  html_source->AddBoolean("highEfficiencyModeAvailable", true);
-  html_source->AddBoolean(
-      "batterySaverModeAvailable",
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kBatterySaverModeAvailable));
 
   TryShowHatsSurveyWithTimeout();
 }

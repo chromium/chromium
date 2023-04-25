@@ -464,24 +464,18 @@ suite('SettingsBasicPagePerformance', () => {
     assertTrue(sections.length > 1);
   }
 
-  test('performanceVisibilityTestFeaturesNotAvailable', async function() {
-    loadTimeData.overrideValues({
-      highEfficiencyModeAvailable: false,
-      batterySaverModeAvailable: false,
-    });
+  test('performanceVisibilityTestFeaturesAvailable', async function() {
     await createNewBasicPage();
     // Set the visibility of the pages under test to their default value.
     page.pageVisibility = pageVisibility;
     flush();
 
-    assertFalse(
+    assertTrue(
         !!queryBatterySettingsSection(),
-        'Battery section should not exist with default page visibility ' +
-            'if feature flags are off');
-    assertFalse(
+        'Battery section should exist with default page visibility');
+    assertTrue(
         !!queryPerformanceSettingsSection(),
-        'Performance section should not exist with default page ' +
-            'visibility if feature flags are off');
+        'Performance section should exist with default page visibility');
 
     // Set the visibility of the pages under test to "false".
     page.pageVisibility = Object.assign(pageVisibility || {}, {
@@ -497,43 +491,7 @@ suite('SettingsBasicPagePerformance', () => {
         'Performance section should not exist when visibility is false');
   });
 
-  test('performanceVisibilityTestFeaturesAvailable', async function() {
-    loadTimeData.overrideValues({
-      highEfficiencyModeAvailable: true,
-      batterySaverModeAvailable: true,
-    });
-    await createNewBasicPage();
-    // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility;
-    flush();
-
-    assertTrue(
-        !!queryBatterySettingsSection(),
-        'Battery section should exist with default page visibility if ' +
-            'feature flags are on');
-    assertTrue(
-        !!queryPerformanceSettingsSection(),
-        'Performance section should exist with default page visibility ' +
-            'if feature flags are on');
-
-    // Set the visibility of the pages under test to "false".
-    page.pageVisibility = Object.assign(pageVisibility || {}, {
-      performance: false,
-    });
-    flush();
-
-    assertFalse(
-        !!queryBatterySettingsSection(),
-        'Battery section should not exist when visibility is false');
-    assertFalse(
-        !!queryPerformanceSettingsSection(),
-        'Performance section should not exist when visibility is false');
-  });
-
-  test('performanceVisibilityTestFeaturesAvailable', async function() {
-    loadTimeData.overrideValues({
-      batterySaverModeAvailable: true,
-    });
+  test('performanceVisibilityTestDeviceHasBattery', async function() {
     await createNewBasicPage();
     page.pageVisibility = pageVisibility;
     flush();

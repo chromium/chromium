@@ -213,13 +213,11 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    if (loadTimeData.getBoolean('batterySaverModeAvailable')) {
-      this.addWebUiListener(
-          'device-has-battery-changed',
-          this.onDeviceHasBatteryChanged_.bind(this));
-      this.performanceBrowserProxy_.getDeviceHasBattery().then(
-          this.onDeviceHasBatteryChanged_.bind(this));
-    }
+    this.addWebUiListener(
+        'device-has-battery-changed',
+        this.onDeviceHasBatteryChanged_.bind(this));
+    this.performanceBrowserProxy_.getDeviceHasBattery().then(
+        this.onDeviceHasBatteryChanged_.bind(this));
 
     this.currentRoute_ = Router.getInstance().getCurrentRoute();
   }
@@ -385,13 +383,11 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   private showPerformancePage_(visibility?: boolean): boolean {
-    return visibility !== false &&
-        loadTimeData.getBoolean('highEfficiencyModeAvailable');
+    return visibility !== false;
   }
 
   private showBatteryPage_(visibility?: boolean): boolean {
-    return visibility !== false &&
-        loadTimeData.getBoolean('batterySaverModeAvailable');
+    return visibility !== false;
   }
 
   // <if expr="_google_chrome">
