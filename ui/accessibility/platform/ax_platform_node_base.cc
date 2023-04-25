@@ -1262,10 +1262,11 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
         break;
       case ax::mojom::DescriptionFrom::kNone:
       case ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty:
-        NOTREACHED();
+        break;
     }
-    DCHECK(!from.empty());
-    AddAttributeToList("description-from", from, attributes);
+    if (!from.empty()) {
+      AddAttributeToList("description-from", from, attributes);
+    }
   }
 
   AddAttributeToList(ax::mojom::StringAttribute::kAriaBrailleLabel,
