@@ -169,9 +169,9 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead(
   if (!error_and_status.has_value()) {
     if (auto error_message = validator_->ValidateMetadata(
             web_bundle_id, reader->GetPrimaryURL(), reader->GetEntries());
-        error_message.has_value()) {
+        !error_message.has_value()) {
       error_and_status = std::make_pair(
-          MetadataError(*error_message),
+          MetadataError(error_message.error()),
           ReadIntegrityBlockAndMetadataStatus::kMetadataValidationError);
     }
   }

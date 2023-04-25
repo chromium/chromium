@@ -182,7 +182,7 @@ void InstallIsolatedWebAppCommand::StartWithLock(
             }
             // Dev mode proxy mode does not use Web Bundles, hence there is no
             // bundle to validate / trust and no signatures to check.
-            OnTrustAndSignaturesChecked(absl::nullopt);
+            OnTrustAndSignaturesChecked(base::ok());
           }},
       location_);
 }
@@ -205,16 +205,12 @@ void InstallIsolatedWebAppCommand::CheckTrustAndSignaturesOfBundle(
       base::BindOnce(
           [](base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
                             IsolatedWebAppResponseReaderFactory::Error> reader)
-              -> absl::optional<IsolatedWebAppResponseReaderFactory::Error> {
-            // Convert expected<Reader,Error> into optional<Error> to match the
-            // signature of `OnTrustAndSignaturesChecked`. This is necessary for
-            // compatibility with the dev mode proxy case, where
-            // `OnTrustAndSignaturesChecked` is called with `absl::nullopt` to
-            // indicate success.
+              -> base::expected<void,
+                                IsolatedWebAppResponseReaderFactory::Error> {
             if (!reader.has_value()) {
-              return std::move(reader.error());
+              return base::unexpected(std::move(reader.error()));
             }
-            return absl::nullopt;
+            return base::ok();
           })
           .Then(base::BindOnce(
               &InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked,
@@ -222,9 +218,10 @@ void InstallIsolatedWebAppCommand::CheckTrustAndSignaturesOfBundle(
 }
 
 void InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked(
-    absl::optional<IsolatedWebAppResponseReaderFactory::Error> error) {
-  if (error) {
-    ReportFailure(IsolatedWebAppResponseReaderFactory::ErrorToString(*error));
+    base::expected<void, IsolatedWebAppResponseReaderFactory::Error> result) {
+  if (!result.has_value()) {
+    ReportFailure(
+        IsolatedWebAppResponseReaderFactory::ErrorToString(result.error()));
     return;
   }
 
@@ -292,8 +289,8 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
   // apps we have the opportunity to report this error.
   absl::optional<std::string> encoded_id = UTF16ToUTF8(*manifest.id);
   if (!encoded_id.has_value()) {
-    return base::unexpected{
-        "Failed to convert manifest `id` from UTF16 to UTF8."};
+    return base::unexpected(
+        "Failed to convert manifest `id` from UTF16 to UTF8.");
   }
 
   if (!encoded_id->empty()) {
@@ -312,10 +309,10 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
 
   url::Origin origin = url_info_.origin();
   if (manifest.scope != origin.GetURL()) {
-    return base::unexpected{
+    return base::unexpected(
         base::StrCat({"Scope should resolve to the origin. scope: ",
                       manifest.scope.possibly_invalid_spec(),
-                      ", origin: ", origin.Serialize()})};
+                      ", origin: ", origin.Serialize()}));
   }
 
   if (info.title.empty()) {
@@ -444,8 +441,8 @@ void InstallIsolatedWebAppCommand::ReportFailure(base::StringPiece message) {
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
       base::BindOnce(std::move(callback_),
-                     base::unexpected{InstallIsolatedWebAppCommandError{
-                         .message = std::string{message}}}));
+                     base::unexpected(InstallIsolatedWebAppCommandError{
+                         .message = std::string(message)})));
 }
 
 void InstallIsolatedWebAppCommand::ReportSuccess() {

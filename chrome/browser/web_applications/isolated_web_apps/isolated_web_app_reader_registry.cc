@@ -202,12 +202,10 @@ void IsolatedWebAppReaderRegistry::OnResponseRead(
                                     ? ReadResponseHeadStatus::kSuccess
                                     : GetStatusFromError(response.error()));
 
-  if (!response.has_value()) {
-    std::move(callback).Run(
-        base::unexpected(ReadResponseError::ForError(response.error())));
-    return;
-  }
-  std::move(callback).Run(std::move(*response));
+  std::move(callback).Run(std::move(response).transform_error(
+      static_cast<ReadResponseError (*)(
+          const IsolatedWebAppResponseReader::Error&)>(
+          &ReadResponseError::ForError)));
 }
 
 IsolatedWebAppReaderRegistry::ReadResponseHeadStatus

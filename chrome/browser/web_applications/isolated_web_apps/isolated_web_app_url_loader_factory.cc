@@ -172,13 +172,13 @@ FindIsolatedWebApp(Profile* profile, const IsolatedWebAppUrlInfo& url_info) {
   const WebApp* iwa = registrar.GetAppById(url_info.app_id());
 
   if (iwa == nullptr || !iwa->is_locally_installed()) {
-    return base::unexpected(base::StrCat(
-        {"Isolated Web App not installed: ", url_info.origin().Serialize()}));
+    return base::unexpected("Isolated Web App not installed: " +
+                            url_info.origin().Serialize());
   }
 
   if (!iwa->isolation_data().has_value()) {
-    return base::unexpected(base::StrCat(
-        {"App is not an Isolated Web App: ", url_info.origin().Serialize()}));
+    return base::unexpected("App is not an Isolated Web App: " +
+                            url_info.origin().Serialize());
   }
 
   return *iwa;
@@ -219,9 +219,8 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
     if (!response.has_value()) {
       LogErrorMessageToConsole(
           frame_tree_node_id_,
-          base::StringPrintf(
-              "Failed to read response from Signed Web Bundle: %s",
-              response.error().message.c_str()));
+          "Failed to read response from Signed Web Bundle: " +
+              response.error().message);
       switch (response.error().type) {
         case IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError:
           loader_client_->OnComplete(
@@ -505,8 +504,8 @@ void IsolatedWebAppURLLoaderFactory::HandleDevModeProxy(
   content::StoragePartition* storage_partition = profile_->GetStoragePartition(
       url_info.storage_partition_config(profile_), /*can_create=*/false);
   if (storage_partition == nullptr) {
-    LogErrorAndFail(base::StrCat({"Storage not found for Isolated Web App: ",
-                                  resource_request.url.spec()}),
+    LogErrorAndFail("Storage not found for Isolated Web App: " +
+                        resource_request.url.spec(),
                     std::move(loader_client));
     return;
   }

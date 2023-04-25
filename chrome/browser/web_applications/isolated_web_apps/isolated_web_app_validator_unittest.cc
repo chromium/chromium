@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 
 #include <memory>
+#include <string>
 #include <tuple>
 
 #include "base/containers/span.h"
@@ -159,7 +160,7 @@ class IsolatedWebAppValidatorMetadataTest
       public ::testing::WithParamInterface<
           std::tuple<absl::optional<std::string>,
                      std::vector<std::string>,
-                     absl::optional<std::string>>> {
+                     std::string>> {
  public:
   IsolatedWebAppValidatorMetadataTest()
       : primary_url_(std::get<0>(GetParam())),
@@ -172,7 +173,7 @@ class IsolatedWebAppValidatorMetadataTest
  protected:
   absl::optional<GURL> primary_url_;
   std::vector<GURL> entries_;
-  absl::optional<std::string> error_message_;
+  std::string error_message_;
 };
 
 TEST_P(IsolatedWebAppValidatorMetadataTest, Validate) {
@@ -183,7 +184,8 @@ TEST_P(IsolatedWebAppValidatorMetadataTest, Validate) {
   auto isolated_web_app_trust_checker =
       std::make_unique<MockIsolatedWebAppTrustChecker>();
   IsolatedWebAppValidator validator(std::move(isolated_web_app_trust_checker));
-  EXPECT_EQ(validator.ValidateMetadata(*web_bundle_id, primary_url_, entries_),
+  EXPECT_EQ(validator.ValidateMetadata(*web_bundle_id, primary_url_, entries_)
+                .error_or(std::string()),
             error_message_);
 }
 
@@ -193,7 +195,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         std::make_tuple(absl::nullopt,
                         std::vector<std::string>({kUrl}),
-                        absl::nullopt),
+                        std::string()),
         std::make_tuple(absl::nullopt,
                         std::vector<std::string>({kUrl, kUrl + "/foo#bar"}),
                         "The URL of an exchange is invalid: URLs must not have "

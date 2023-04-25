@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 
-#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
@@ -58,8 +57,8 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
       web_bundle_id =
           web_package::SignedWebBundleId::Create(*web_bundle_id_raw);
   if (!web_bundle_id.has_value()) {
-    return base::unexpected(base::StringPrintf("Wrong Web Bundle ID value: %s",
-                                               web_bundle_id.error().c_str()));
+    return base::unexpected("Wrong Web Bundle ID value: " +
+                            web_bundle_id.error());
   }
 
   if (web_bundle_id->type() !=

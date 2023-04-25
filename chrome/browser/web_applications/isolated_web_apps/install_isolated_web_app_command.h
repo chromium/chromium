@@ -132,7 +132,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
 
   void CheckTrustAndSignaturesOfBundle(const base::FilePath& path);
   void OnTrustAndSignaturesChecked(
-      absl::optional<IsolatedWebAppResponseReaderFactory::Error> error);
+      base::expected<void, IsolatedWebAppResponseReaderFactory::Error> result);
 
   void CreateStoragePartition();
 

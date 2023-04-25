@@ -4,12 +4,13 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
@@ -74,9 +75,9 @@ void GetSignedWebBundleIdByPath(
           // reachable.
           DCHECK(error_ptr);
 
-          std::move(callback).Run(base::unexpected(base::StrCat(
-              {"Failed to read the integrity block of the signed web bundle: ",
-               (*error_ptr)->message})));
+          std::move(callback).Run(base::unexpected(
+              "Failed to read the integrity block of the signed web bundle: " +
+              (*error_ptr)->message));
         }
       },
       std::move(reader), std::move(callback_second));
@@ -96,8 +97,8 @@ IsolatedWebAppUrlInfo::Create(const GURL& url) {
   }
   if (!url.SchemeIs(chrome::kIsolatedAppScheme)) {
     return base::unexpected(
-        base::StringPrintf("The URL scheme must be %s, but was %s",
-                           chrome::kIsolatedAppScheme, url.scheme().c_str()));
+        base::StrCat({"The URL scheme must be ", chrome::kIsolatedAppScheme,
+                      ", but was ", url.scheme()}));
   }
 
   // Valid isolated-app:// `GURL`s can never include credentials or ports, since
@@ -110,9 +111,9 @@ IsolatedWebAppUrlInfo::Create(const GURL& url) {
   auto web_bundle_id = web_package::SignedWebBundleId::Create(url.host());
   if (!web_bundle_id.has_value()) {
     return base::unexpected(
-        base::StringPrintf("The host of isolated-app:// URLs must be a valid "
-                           "Signed Web Bundle ID (got %s): %s",
-                           url.host().c_str(), web_bundle_id.error().c_str()));
+        base::StrCat({"The host of isolated-app:// URLs must be a valid Signed "
+                      "Web Bundle ID (got ",
+                      url.host(), "): ", web_bundle_id.error()}));
   }
 
   return IsolatedWebAppUrlInfo(*web_bundle_id);

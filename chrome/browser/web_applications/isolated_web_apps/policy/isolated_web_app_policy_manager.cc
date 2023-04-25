@@ -359,12 +359,11 @@ void IsolatedWebAppPolicyManager::OnIwaInstalled(
   if (!result.has_value()) {
     LOG(ERROR) << "Could not install the IWA "
                << current_app_->web_bundle_id().id();
-    SetResultAndContinue(
-        EphemeralAppInstallResult::kErrorCantInstallFromWebBundle);
-    return;
   }
-
-  SetResultAndContinue(EphemeralAppInstallResult::kSuccess);
+  SetResultAndContinue(
+      result.has_value()
+          ? EphemeralAppInstallResult::kSuccess
+          : EphemeralAppInstallResult::kErrorCantInstallFromWebBundle);
 }
 
 void IsolatedWebAppPolicyManager::WipeCurrentIwaDirectory() {

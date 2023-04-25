@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -36,8 +37,7 @@ void ReportInstallationResult(
     base::expected<InstallIsolatedWebAppCommandSuccess,
                    InstallIsolatedWebAppCommandError> result) {
   if (!result.has_value()) {
-    LOG(ERROR) << "Isolated web app auto installation "
-                  "failed. Error: "
+    LOG(ERROR) << "Isolated web app auto installation failed. Error: "
                << result.error();
   }
 }
@@ -100,8 +100,7 @@ void OnGetIsolatedWebAppUrlInfo(
     const IsolatedWebAppLocation& location,
     base::expected<IsolatedWebAppUrlInfo, std::string> url_info) {
   if (!url_info.has_value()) {
-    LOG(ERROR) << base::StrCat(
-        {"Failed to get IsolationInfo: ", url_info.error()});
+    LOG(ERROR) << "Failed to get IsolationInfo: " << url_info.error();
     return;
   }
 
