@@ -604,6 +604,12 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
 
   DCHECK(error_message.empty());
 
+  if (!ScriptController()) {
+    std::move(add_module_finished_callback)
+        .Run(false, /*error_message=*/"Worklet is being destroyed.");
+    return;
+  }
+
   ScriptState* script_state = ScriptController()->GetScriptState();
   DCHECK(script_state);
 
