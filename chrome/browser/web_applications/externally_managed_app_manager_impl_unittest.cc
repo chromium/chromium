@@ -872,27 +872,23 @@ TEST_P(ExternallyManagedAppManagerImplTest,
             foo_run_loop.Quit();
           }));
 
-  base::RunLoop().RunUntilIdle();
-  externally_managed_app_manager_impl().SetNextInstallationTaskResult(
-      kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
+  foo_run_loop.Run();
 
   externally_managed_app_manager_impl().Install(
       GetInstallOptionsWithWebAppInfo(kFooWebAppUrl),
       base::BindLambdaForTesting(
           [&](const GURL& url,
               ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
                       result.code);
             EXPECT_EQ(kFooWebAppUrl, url);
 
-            EXPECT_EQ(2u, install_run_count());
+            EXPECT_EQ(1u, install_run_count());
             EXPECT_EQ(GetInstallOptionsWithWebAppInfo(kFooWebAppUrl),
                       last_install_options());
 
             bar_run_loop.Quit();
           }));
-  foo_run_loop.Run();
-  base::RunLoop().RunUntilIdle();
   bar_run_loop.Run();
 }
 
@@ -1011,15 +1007,13 @@ TEST_P(ExternallyManagedAppManagerImplTest, Install_SerialCallsSameApp) {
   }
 
   {
-    externally_managed_app_manager_impl().SetNextInstallationTaskResult(
-        kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
     auto [url, code] = InstallAndWait(&externally_managed_app_manager_impl(),
                                       GetInstallOptions(kFooWebAppUrl));
 
-    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled, code);
     EXPECT_EQ(kFooWebAppUrl, url);
 
-    EXPECT_EQ(2u, install_run_count());
+    EXPECT_EQ(1u, install_run_count());
   }
 }
 
@@ -1038,13 +1032,12 @@ TEST_P(ExternallyManagedAppManagerImplTest, Install_ConcurrentCallsSameApp) {
       base::BindLambdaForTesting(
           [&](const GURL& url,
               ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
                       result.code);
             EXPECT_EQ(kFooWebAppUrl, url);
 
-            // Both installation tasks run if the install was triggered
-            // by policy.
-            EXPECT_EQ(2u, install_run_count());
+            // Only the first installation task runs
+            EXPECT_EQ(1u, install_run_count());
             EXPECT_TRUE(first_callback_ran);
             run_loop.Quit();
           }));
@@ -1060,12 +1053,10 @@ TEST_P(ExternallyManagedAppManagerImplTest, Install_ConcurrentCallsSameApp) {
             EXPECT_EQ(1u, install_run_count());
             EXPECT_EQ(GetInstallOptions(kFooWebAppUrl), last_install_options());
             first_callback_ran = true;
-            externally_managed_app_manager_impl().SetNextInstallationTaskResult(
-                kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
           }));
   run_loop.Run();
 
-  EXPECT_EQ(2u, install_run_count());
+  EXPECT_EQ(1u, install_run_count());
   EXPECT_EQ(GetInstallOptions(kFooWebAppUrl), last_install_options());
 }
 

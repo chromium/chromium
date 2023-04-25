@@ -647,6 +647,57 @@ TEST_F(ExternallyAppManagerTest, InstallUrlChanges) {
                                              /*additional_policy_ids=*/{}))));
 }
 
+TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
+  const GURL kStartUrl = GURL("https://www.example.com/index.html");
+  const GURL kInstallUrl =
+      GURL("https://www.example.com/nested/install_url.html");
+  const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
+
+  AppId app_id = PopulateBasicInstallPageWithManifest(kInstallUrl, kManifestUrl,
+                                                      kStartUrl);
+
+  {
+    // Install user app
+    auto& install_page_state =
+        web_contents_manager().GetOrCreatePageState(kInstallUrl);
+    install_page_state.opt_manifest->short_name = u"Test user app";
+
+    auto install_info = std::make_unique<WebAppInstallInfo>();
+    install_info->start_url = kStartUrl;
+    install_info->title = u"Test user app";
+    absl::optional<AppId> user_app_id =
+        test::InstallWebApp(profile(), std::move(install_info));
+
+    ASSERT_TRUE(user_app_id.has_value());
+    ASSERT_EQ(user_app_id.value(), app_id);
+    ASSERT_TRUE(app_registrar().WasInstalledByUser(app_id));
+    ASSERT_FALSE(app_registrar().HasExternalApp(app_id));
+    ASSERT_EQ("Test user app", app_registrar().GetAppShortName(app_id));
+  }
+  {
+    // Install policy app
+    auto& install_page_state =
+        web_contents_manager().GetOrCreatePageState(kInstallUrl);
+    install_page_state.opt_manifest->short_name = u"Test policy app";
+
+    SynchronizeFuture result;
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+        CreateExternalInstallOptionsFromTemplate(
+            {kInstallUrl}, ExternalInstallSource::kExternalPolicy),
+        ExternalInstallSource::kExternalPolicy, result.GetCallback());
+    ASSERT_TRUE(result.Wait());
+    std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results =
+        result.Get<InstallResults>();
+    EXPECT_THAT(
+        install_results,
+        ElementsAre(std::make_pair(
+            kInstallUrl,
+            ExternallyManagedAppManager::InstallResult(
+                webapps::InstallResultCode::kSuccessNewInstall, app_id))));
+    ASSERT_EQ("Test policy app", app_registrar().GetAppShortName(app_id));
+  }
+}
+
 TEST_F(ExternallyAppManagerTest, NoNetworkWithPlaceholder) {
   const GURL kInstallUrl = GURL("https://www.example.com/install_url.html");
   ExternalInstallOptions template_options(

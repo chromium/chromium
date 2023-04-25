@@ -426,6 +426,35 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+                       PolicyAppOverridesUserInstalledApp) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  absl::optional<AppId> app_id;
+  {
+    // Install user app
+    auto install_info = std::make_unique<WebAppInstallInfo>();
+    GURL url(
+        embedded_test_server()->GetURL("/banners/"
+                                       "manifest_test_page.html"));
+    install_info->start_url = url;
+    install_info->title = u"Test user app";
+    app_id = test::InstallWebApp(profile(), std::move(install_info));
+    ASSERT_TRUE(app_id.has_value());
+    ASSERT_TRUE(registrar().WasInstalledByUser(app_id.value()));
+    ASSERT_FALSE(registrar().HasExternalApp(app_id.value()));
+    ASSERT_EQ("Test user app", registrar().GetAppShortName(app_id.value()));
+  }
+  {
+    // Install policy app
+    GURL url(
+        embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
+    absl::optional<AppId> policy_app_id = ForceInstallWebApp(profile(), url);
+    ASSERT_EQ(policy_app_id, app_id);
+    ASSERT_EQ("Manifest test app",
+              registrar().GetAppShortName(policy_app_id.value()));
+  }
+}
+
 // Test that adding a manifest that points to a chrome:// URL does not actually
 // install a web app that points to a chrome:// URL.
 IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,

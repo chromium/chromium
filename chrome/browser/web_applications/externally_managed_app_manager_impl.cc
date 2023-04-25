@@ -245,8 +245,11 @@ void ExternallyManagedAppManagerImpl::MaybeStartNextOnLockAcquired(
 
       // TODO(crbug.com/1300321): Investigate re-install of the app for all
       // WebAppManagement sources.
-      if (ConvertExternalInstallSourceToSource(
-              install_options.install_source) == WebAppManagement::kPolicy) {
+      if ((ConvertExternalInstallSourceToSource(
+               install_options.install_source) == WebAppManagement::kPolicy) &&
+          (!lock.registrar()
+                .GetAppById(app_id.value())
+                ->IsPolicyInstalledApp())) {
         StartInstallationTask(std::move(front));
         return;
       } else {
