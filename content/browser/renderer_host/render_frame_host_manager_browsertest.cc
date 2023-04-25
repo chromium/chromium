@@ -5758,20 +5758,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 // Verify that when an OOPIF with an unload handler navigates cross-process,
 // its unload handler is able to send a postMessage to the parent frame.
 // See https://crbug.com/857274.
-// TODO(https://crbug.com/989704): Fix flake on Linux TSAN and ASAN.
-// TODO(https://crbug.com/1439710): Fix flake on Linux CFI.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
-    (BUILDFLAG(IS_LINUX) &&                                                   \
-     (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) ||              \
-      BUILDFLAG(CFI_ICALL_CHECK)))
-#define MAYBE_PostMessageToParentWhenSubframeNavigates \
-  DISABLED_PostMessageToParentWhenSubframeNavigates
-#else
-#define MAYBE_PostMessageToParentWhenSubframeNavigates \
-  PostMessageToParentWhenSubframeNavigates
-#endif
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
-                       MAYBE_PostMessageToParentWhenSubframeNavigates) {
+                       PostMessageToParentWhenSubframeNavigates) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -5790,6 +5778,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   // parent frame.
   AddUnloadEventHandler(child->current_frame_host(), "unload", "window",
                         "parent.postMessage('foo', '*')");
+  child->current_frame_host()->DisableUnloadTimerForTesting();
 
   // Navigate the subframe cross-site to c.com and wait for the message.
   GURL c_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
@@ -5805,6 +5794,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   // subframe back to a.com.
   AddUnloadEventHandler(child->current_frame_host(), "unload", "window",
                         "parent.postMessage('bar', '*')");
+  child->current_frame_host()->DisableUnloadTimerForTesting();
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
   EXPECT_TRUE(ExecuteScriptAndExtractString(
       root,
