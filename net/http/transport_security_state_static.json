@@ -562,16 +562,9 @@
     { "name": "messenger.com", "policy": "custom", "mode": "force-https" },
     { "name": "www.messenger.com", "policy": "custom", "mode": "force-https", "include_subdomains": true },
 
-    // Enforce HSTS and public key pins for Twitter domains.
+    // Enforce HSTS for Twitter domains.
     { "name": "twitter.com", "policy": "custom", "mode": "force-https" },
     { "name": "www.twitter.com", "policy": "custom", "mode": "force-https", "include_subdomains": true },
-    { "name": "api.twitter.com", "policy": "custom", "include_subdomains": true },
-    { "name": "oauth.twitter.com", "policy": "custom", "include_subdomains": true },
-    { "name": "mobile.twitter.com", "policy": "custom", "include_subdomains": true },
-    { "name": "dev.twitter.com", "policy": "custom", "include_subdomains": true },
-    { "name": "business.twitter.com", "policy": "custom", "include_subdomains": true },
-    { "name": "platform.twitter.com", "policy": "custom", "include_subdomains": true },
-    { "name": "twimg.com", "policy": "custom", "include_subdomains": true },
 
     // START OF LEGACY MANUAL CUSTOM ENTRIES
     { "name": "www.paypal.com", "policy": "custom", "mode": "force-https" },
@@ -703,8 +696,6 @@
       "name": "www.dropbox.com", "policy": "custom",
       "mode": "force-https", "include_subdomains": true
     },
-    { "name": "dropboxstatic.com", "policy": "custom" },
-    { "name": "dropboxusercontent.com", "policy": "custom" },
     { "name": "jackyyf.com", "policy": "custom", "mode": "force-https" },
     { "name": "gamesdepartment.co.uk", "policy": "custom", "mode": "force-https" },
     { "name": "gparent.org", "policy": "custom", "mode": "force-https" },
