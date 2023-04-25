@@ -625,15 +625,9 @@ void PageContentAnnotationsService::OnURLQueried(
     return;
   }
 
-  base::TimeDelta min_magnitude_between_visits = base::TimeDelta::Max();
   bool did_store_content_annotations = false;
   for (const auto& visit_for_url : base::Reversed(url_result.visits)) {
     if (visit.nav_entry_timestamp != visit_for_url.visit_time) {
-      base::TimeDelta magnitude_between_visits =
-          (visit.nav_entry_timestamp - visit_for_url.visit_time).magnitude();
-      if (magnitude_between_visits < min_magnitude_between_visits) {
-        min_magnitude_between_visits = magnitude_between_visits;
-      }
       continue;
     }
 
@@ -645,19 +639,6 @@ void PageContentAnnotationsService::OnURLQueried(
   LogPageContentAnnotationsStorageStatus(
       did_store_content_annotations ? kSuccess : kSpecificVisitForUrlNotFound,
       annotation_type);
-  if (!did_store_content_annotations) {
-    DCHECK_NE(min_magnitude_between_visits, base::TimeDelta::Max());
-    base::UmaHistogramTimes(
-        "OptimizationGuide.PageContentAnnotationsService."
-        "ContentAnnotationsStorageMinMagnitudeForVisitNotFound",
-        min_magnitude_between_visits);
-
-    base::UmaHistogramTimes(
-        "OptimizationGuide.PageContentAnnotationsService."
-        "ContentAnnotationsStorageMinMagnitudeForVisitNotFound." +
-            PageContentAnnotationsTypeToString(annotation_type),
-        min_magnitude_between_visits);
-  }
 }
 
 void PageContentAnnotationsService::GetMetadataForEntityId(
