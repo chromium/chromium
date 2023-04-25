@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/gdi_util.h"
+#include "ui/gl/direct_composition_support.h"
 #endif
 
 namespace gl {
@@ -113,6 +114,16 @@ SkColor GLTestHelper::GetColorAtPoint(const SkBitmap& bitmap,
 
 // static
 SkBitmap GLTestHelper::ReadBackWindow(HWND window, const gfx::Size& size) {
+  {
+    // Ensure that the previous commit has been processed before trying to read
+    // back the window contents.
+    Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device =
+        GetDirectCompositionDevice();
+    if (dcomp_device) {
+      CHECK_EQ(S_OK, dcomp_device->WaitForCommitCompletion());
+    }
+  }
+
   base::win::ScopedCreateDC mem_hdc(::CreateCompatibleDC(nullptr));
   DCHECK(mem_hdc.IsValid());
 
