@@ -320,12 +320,8 @@ ParseStatus GetParsingError(
   if (!result.has_value())
     return ParseStatus::kInvalidResponseError;
 
-  const base::Value::Dict* response = result->GetIfDict();
-  if (!response) {
-    return ParseStatus::kInvalidResponseError;
-  }
-
-  return ParseStatus::kSuccess;
+  return result->GetIfDict() ? ParseStatus::kSuccess
+                             : ParseStatus::kInvalidResponseError;
 }
 
 void OnJsonParsed(

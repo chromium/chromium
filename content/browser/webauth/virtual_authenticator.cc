@@ -269,15 +269,13 @@ void VirtualAuthenticator::OnLargeBlobCompressed(
     std::move(callback).Run(false);
     return;
   }
-  if (!result.has_value()) {
-    std::move(callback).Run(false);
-    return;
+  if (result.has_value()) {
+    state_->InjectLargeBlob(
+        &registration->second,
+        device::LargeBlob(device::fido_parsing_utils::Materialize(*result),
+                          original_size));
   }
-  state_->InjectLargeBlob(
-      &registration->second,
-      device::LargeBlob(device::fido_parsing_utils::Materialize(*result),
-                        original_size));
-  std::move(callback).Run(true);
+  std::move(callback).Run(result.has_value());
 }
 
 }  // namespace content

@@ -214,14 +214,8 @@ void BucketHost::DidGetBucket(
     storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!bucket_info.has_value()) {
-    bucket_info_ = {};
-    std::move(callback).Run(false);
-    return;
-  }
-
-  bucket_info_ = bucket_info.value();
-  std::move(callback).Run(true);
+  bucket_info_ = bucket_info.value_or(storage::BucketInfo());
+  std::move(callback).Run(bucket_info.has_value());
 }
 
 void BucketHost::DidGetUsageAndQuota(EstimateCallback callback,

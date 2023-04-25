@@ -817,24 +817,24 @@ void AttributionDataHostManagerImpl::OnWebSourceParsed(
       source_type = SourceType::kEvent;
     }
 
-    base::expected<StorableSource, SourceRegistrationError> source =
-        base::unexpected(SourceRegistrationError::kInvalidJson);
-    if (result.has_value()) {
-      if (result->is_dict()) {
-        auto registration = attribution_reporting::SourceRegistration::Parse(
-            std::move(*result).TakeDict());
-        if (registration.has_value()) {
-          source.emplace(
-              pending_decode.reporting_origin, std::move(*registration),
-              /*source_time=*/base::Time::Now(), registrations->source_origin(),
-              source_type, registrations->is_within_fenced_frame());
-        } else {
-          source = base::unexpected(registration.error());
-        }
-      } else {
-        source = base::unexpected(SourceRegistrationError::kRootWrongType);
+    auto source =
+        [&]() -> base::expected<StorableSource, SourceRegistrationError> {
+      if (!result.has_value()) {
+        return base::unexpected(SourceRegistrationError::kInvalidJson);
       }
-    }
+      if (!result->is_dict()) {
+        return base::unexpected(SourceRegistrationError::kRootWrongType);
+      }
+      auto registration = attribution_reporting::SourceRegistration::Parse(
+          std::move(*result).TakeDict());
+      if (!registration.has_value()) {
+        return base::unexpected(registration.error());
+      }
+      return StorableSource(
+          pending_decode.reporting_origin, std::move(*registration),
+          /*source_time=*/base::Time::Now(), registrations->source_origin(),
+          source_type, registrations->is_within_fenced_frame());
+    }();
 
     if (source.has_value()) {
       attribution_manager_->HandleSource(std::move(*source),
