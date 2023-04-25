@@ -816,6 +816,11 @@ Document::Document(const DocumentInit& initializer,
               ? MakeGarbageCollected<RenderBlockingResourceManager>(*this)
               : nullptr),
       data_(MakeGarbageCollected<DocumentData>(GetExecutionContext())) {
+  // Documents are registered so that we can test the validity of document
+  // pointers while replaying to avoid crashes.
+  // See V8Window::NamedPropertyGetterCustom
+  recordreplay::RegisterPointer("Document", this);
+
   if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution))
     script_runner_delayer_->Activate();
 
@@ -893,6 +898,8 @@ Document::Document(const DocumentInit& initializer,
 }
 
 Document::~Document() {
+  recordreplay::UnregisterPointer(this);
+
   DCHECK(!GetLayoutView());
   DCHECK(!ParentTreeScope());
   // If a top document with a cache, verify that it was comprehensively
