@@ -601,7 +601,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
   // Populate the output mailbox and callback.
   {
     *out_resource = viz::TransferableResource::MakeGpu(
-        color_buffer_for_mailbox->mailbox, GL_LINEAR,
+        color_buffer_for_mailbox->mailbox,
         color_buffer_for_mailbox->texture_target,
         color_buffer_for_mailbox->produce_sync_token, size_,
         color_buffer_for_mailbox->format,

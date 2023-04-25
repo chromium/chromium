@@ -210,8 +210,8 @@ bool CanvasResource::PrepareAcceleratedTransferableResource(
     return false;
 
   *out_resource = viz::TransferableResource::MakeGpu(
-      mailbox, GLFilter(), TextureTarget(), GetSyncToken(), Size(),
-      GetSharedImageFormat(), IsOverlayCandidate());
+      mailbox, TextureTarget(), GetSyncToken(), Size(), GetSharedImageFormat(),
+      IsOverlayCandidate());
 
   out_resource->color_space = GetColorSpace();
   if (NeedsReadLockFences()) {
@@ -251,11 +251,6 @@ GrDirectContext* CanvasResource::GetGrContext() const {
 SkImageInfo CanvasResource::CreateSkImageInfo() const {
   return SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
                            info_);
-}
-
-GLenum CanvasResource::GLFilter() const {
-  return filter_quality_ == cc::PaintFlags::FilterQuality::kNone ? GL_NEAREST
-                                                                 : GL_LINEAR;
 }
 
 viz::SharedImageFormat CanvasResource::GetSharedImageFormat() const {

@@ -350,7 +350,7 @@ int32_t PPB_Graphics3D_Impl::DoSwapBuffers(const gpu::SyncToken& sync_token,
       target = GL_TEXTURE_RECTANGLE_ARB;
 #endif
     viz::TransferableResource resource = viz::TransferableResource::MakeGpu(
-        taken_front_buffer_, GL_LINEAR, target, sync_token, size,
+        taken_front_buffer_, target, sync_token, size,
         viz::SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
     HostGlobals::Get()
         ->GetInstance(pp_instance())
@@ -593,7 +593,7 @@ int32_t PPB_Graphics3D_Impl::DoPresent(const gpu::SyncToken& sync_token,
     constexpr uint32_t target = GL_TEXTURE_2D;
     auto mailbox = current_color_buffer_->Export();
     viz::TransferableResource resource = viz::TransferableResource::MakeGpu(
-        mailbox, GL_LINEAR, target, sync_token, current_color_buffer_->size(),
+        mailbox, target, sync_token, current_color_buffer_->size(),
         viz::SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
     HostGlobals::Get()
         ->GetInstance(pp_instance())

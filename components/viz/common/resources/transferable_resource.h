@@ -52,14 +52,6 @@ struct VIZ_COMMON_EXPORT TransferableResource {
                                       const gfx::Size& size,
                                       SharedImageFormat format,
                                       bool is_overlay_candidate);
-  // TODO(kylechar): Delete after all callers are updated to not pass filter.
-  static TransferableResource MakeGpu(const gpu::Mailbox& mailbox,
-                                      uint32_t filter,
-                                      uint32_t texture_target,
-                                      const gpu::SyncToken& sync_token,
-                                      const gfx::Size& size,
-                                      SharedImageFormat format,
-                                      bool is_overlay_candidate);
 
   TransferableResource();
   ~TransferableResource();

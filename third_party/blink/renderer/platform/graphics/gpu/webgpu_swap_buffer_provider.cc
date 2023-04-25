@@ -290,7 +290,7 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
 
   // Populate the output resource
   *out_resource = viz::TransferableResource::MakeGpu(
-      current_swap_buffer_->mailbox, GL_LINEAR, GetTextureTarget(),
+      current_swap_buffer_->mailbox, GetTextureTarget(),
       current_swap_buffer_->access_finished_token, current_swap_buffer_->size,
       Format(), IsOverlayCandidate());
   out_resource->color_space = PredefinedColorSpaceToGfxColorSpace(color_space_);

@@ -237,7 +237,6 @@ class PLATFORM_EXPORT CanvasResource
   gpu::gles2::GLES2Interface* ContextGL() const;
   gpu::raster::RasterInterface* RasterInterface() const;
   gpu::webgpu::WebGPUInterface* WebGPUInterface() const;
-  GLenum GLFilter() const;
   viz::SharedImageFormat GetSharedImageFormat() const;
   gfx::BufferFormat GetBufferFormat() const;
   gfx::ColorSpace GetColorSpace() const;
