@@ -3391,10 +3391,10 @@ public class AwSettingsTest {
         mOverridenFactory = null;
     }
 
-    private static class EmptyDocumentPeristenceTestDependencyFactory
+    private static class EmptyDocumentPersistenceTestDependencyFactory
             extends TestDependencyFactory {
         private boolean mAllow;
-        public EmptyDocumentPeristenceTestDependencyFactory(boolean allow) {
+        public EmptyDocumentPersistenceTestDependencyFactory(boolean allow) {
             mAllow = allow;
         }
 
@@ -3407,7 +3407,7 @@ public class AwSettingsTest {
     }
 
     private void doAllowEmptyDocumentPersistenceTest(boolean allow) throws Throwable {
-        mOverridenFactory = new EmptyDocumentPeristenceTestDependencyFactory(allow);
+        mOverridenFactory = new EmptyDocumentPersistenceTestDependencyFactory(allow);
 
         final TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView mContainerView =
