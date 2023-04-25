@@ -2837,17 +2837,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     // back/forward entries. Session history may have changed while the context
     // menu was open. So we need to check `CanGoBack`/`CanGoForward` again.
     case IDC_BACK:
-      if (auto& controller = embedder_web_contents_->GetController();
-          controller.CanGoBack()) {
-        controller.GoBack();
-      }
+      chrome::GoBack(embedder_web_contents_);
       break;
 
     case IDC_FORWARD:
-      if (auto& controller = embedder_web_contents_->GetController();
-          controller.CanGoForward()) {
-        controller.GoForward();
-      }
+      chrome::GoForward(embedder_web_contents_);
       break;
 
     case IDC_SAVE_PAGE:
