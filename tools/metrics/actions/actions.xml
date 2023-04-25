@@ -11888,6 +11888,75 @@ should be able to be added at any place in this file.
   <description>The user toogled a media permission state.</description>
 </action>
 
+<action name="IOS.PhoneNumberExperience.LongPress.AddCountryCode">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the Add Country Code button after long-pressing on a phone
+    number.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.AddToContacts">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the add to contacts button after long-pressing on a phone
+    number.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.Call">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the Call button after long-pressing on a phone number.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.Copy">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the Copy button after long-pressing on a phone number.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.Display">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    The user long pressed a phone number and the phone number experience context
+    menu was displayed.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.Facetime">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the facetime button after long-pressing on a phone number.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.LongPress.SendMessage">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    User tapped on the send message button after long-pressing on a phone
+    number.
+  </description>
+</action>
+
+<action name="IOS.PhoneNumberExperience.OneTap.Call">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    The number of times the user tapped on an underlined phone number and was
+    prompted to make a phone call.
+  </description>
+</action>
+
 <action name="IOS.SearchEngines.RecentlyViewed.Delete">
   <owner>sczs@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
