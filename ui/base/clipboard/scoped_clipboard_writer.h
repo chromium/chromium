@@ -44,6 +44,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // Sets the clipboard's source metadata.
   void SetDataSource(std::unique_ptr<DataTransferEndpoint> data_src);
 
+  // Set the clipboards source URL.
+  // Typically used for attributing content originally copied from a web page.
+  void SetDataSourceURL(const GURL& main_frame, const GURL& frame);
+
   // Converts |text| to UTF-8 and adds it to the clipboard.
   void WriteText(const std::u16string& text);
 
@@ -122,6 +126,12 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // not set, or the source of the data can't be represented by
   // DataTransferEndpoint.
   std::unique_ptr<DataTransferEndpoint> data_src_;
+
+  // The URL of the mainframe the contents are from.
+  GURL main_frame_url_;
+
+  // The URL of the frame the contents are from.
+  GURL frame_url_;
 };
 
 }  // namespace ui

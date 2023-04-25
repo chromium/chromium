@@ -372,6 +372,10 @@ class RenderViewContextMenu
   // a text selection.
   GURL selection_navigation_url_;
 
+  // URL of current page and current main frame url
+  GURL current_url_;
+  GURL main_frame_url_;
+
   ui::SimpleMenuModel profile_link_submenu_model_;
   std::vector<base::FilePath> profile_link_paths_;
   bool multiple_profiles_open_;

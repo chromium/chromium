@@ -16,7 +16,9 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/observer_list.h"
 #include "base/process/process.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
@@ -66,6 +68,18 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   using ReadBookmarkCallback =
       base::OnceCallback<void(std::u16string title, GURL url)>;
   using ReadDataCallback = base::OnceCallback<void(std::string result)>;
+
+  // An observer interface for content copied to the clipboard.
+  class ClipboardWriteObserver : public base::CheckedObserver {
+   public:
+    ~ClipboardWriteObserver() override = default;
+
+    // Notifies observers when a valid URL is copied to the clipboard with a
+    // valid source URL
+    virtual void OnCopyURL(const GURL& url,
+                           const GURL& source_frame_url,
+                           const GURL& source_main_frame_url) = 0;
+  };
 
   Clipboard(const Clipboard&) = delete;
   Clipboard& operator=(const Clipboard&) = delete;
@@ -274,6 +288,18 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
       ClipboardBuffer buffer,
       const DataTransferEndpoint* data_dst) const;
 
+  // Add an observer for text pasted to clipboard with a URL source.
+  void AddObserver(ClipboardWriteObserver* observer);
+
+  // Remove an observer for text pasted to clipboard with a URL source.
+  void RemoveObserver(ClipboardWriteObserver* observer);
+
+  // Notify all subscribers of new text pasted to the clipboard when there is a
+  // source URL.
+  void NotifyCopyWithUrl(const base::StringPiece text,
+                         const GURL& frame,
+                         const GURL& main_frame);
+
  protected:
   // PortableFormat designates the type of data to be stored in the clipboard.
   // This designation is shared across all OSes. The system-specific designation
@@ -439,6 +465,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
 
   // Mutex that controls access to |g_clipboard_map|.
   static base::Lock& ClipboardMapLock();
+
+  base::ObserverList<ClipboardWriteObserver> write_observers_;
 };
 
 }  // namespace ui

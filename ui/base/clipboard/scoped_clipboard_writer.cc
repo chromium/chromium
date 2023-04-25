@@ -43,6 +43,17 @@ ScopedClipboardWriter::~ScopedClipboardWriter() {
         Clipboard::ObjectMapParams(std::move(parameters),
                                    ClipboardContentType::kUnsanitized);
   }
+
+  if (main_frame_url_.is_valid() || frame_url_.is_valid()) {
+    auto it = objects_.find(Clipboard::PortableFormat::kText);
+    if (it != objects_.end()) {
+      auto current = *(it->second.data.begin());
+      base::StringPiece text(current.data(), current.size());
+      Clipboard::GetForCurrentThread()->NotifyCopyWithUrl(text, frame_url_,
+                                                          main_frame_url_);
+    }
+  }
+
   if (!objects_.empty() || !platform_representations_.empty()) {
     Clipboard::GetForCurrentThread()->WritePortableAndPlatformRepresentations(
         buffer_, objects_, std::move(platform_representations_),
@@ -56,6 +67,12 @@ ScopedClipboardWriter::~ScopedClipboardWriter() {
 void ScopedClipboardWriter::SetDataSource(
     std::unique_ptr<DataTransferEndpoint> data_src) {
   data_src_ = std::move(data_src);
+}
+
+void ScopedClipboardWriter::SetDataSourceURL(const GURL& main_frame,
+                                             const GURL& frame_url) {
+  main_frame_url_ = main_frame;
+  frame_url_ = frame_url;
 }
 
 void ScopedClipboardWriter::WriteText(const std::u16string& text) {

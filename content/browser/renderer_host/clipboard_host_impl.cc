@@ -705,6 +705,10 @@ void ClipboardHostImpl::CopyIfAllowed(size_t data_size_in_bytes,
           render_frame_host().GetBrowserContext(),
           render_frame_host().GetLastCommittedURL(), data_size_in_bytes,
           replacement_data)) {
+    // Set the source of the clipboard text/html
+    clipboard_writer_->SetDataSourceURL(
+        render_frame_host().GetMainFrame()->GetLastCommittedURL(),
+        render_frame_host().GetLastCommittedURL());
     std::move(callback).Run();
   } else {
     clipboard_writer_->WriteText(replacement_data);

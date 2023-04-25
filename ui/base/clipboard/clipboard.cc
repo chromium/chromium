@@ -338,6 +338,25 @@ base::PlatformThreadId Clipboard::GetAndValidateThreadID() {
   return id;
 }
 
+void Clipboard::AddObserver(ClipboardWriteObserver* observer) {
+  write_observers_.AddObserver(observer);
+}
+
+void Clipboard::RemoveObserver(ClipboardWriteObserver* observer) {
+  write_observers_.RemoveObserver(observer);
+}
+
+void Clipboard::NotifyCopyWithUrl(const base::StringPiece text,
+                                  const GURL& frame,
+                                  const GURL& main_frame) {
+  GURL text_url(text);
+  if (text_url.is_valid()) {
+    for (ClipboardWriteObserver& obs : write_observers_) {
+      obs.OnCopyURL(text_url, frame, main_frame);
+    }
+  }
+}
+
 // static
 std::vector<base::PlatformThreadId>& Clipboard::AllowedThreads() {
   static base::NoDestructor<std::vector<base::PlatformThreadId>>

@@ -754,6 +754,8 @@ RenderViewContextMenu::RenderViewContextMenu(
                        this,
                        &menu_model_,
                        base::BindRepeating(MenuItemMatchesParams, params_)),
+      current_url_(render_frame_host.GetLastCommittedURL()),
+      main_frame_url_(render_frame_host.GetMainFrame()->GetLastCommittedURL()),
       profile_link_submenu_model_(this),
       multiple_profiles_open_(false),
       protocol_handler_submenu_model_(this),
@@ -969,6 +971,7 @@ void RenderViewContextMenu::WriteURLToClipboard(const GURL& url) {
   ui::ScopedClipboardWriter scw(
       ui::ClipboardBuffer::kCopyPaste,
       CreateDataEndpoint(/*notify_if_restricted=*/true));
+  scw.SetDataSourceURL(main_frame_url_, current_url_);
   scw.WriteText(FormatURLForClipboard(url));
 }
 
@@ -3721,6 +3724,7 @@ void RenderViewContextMenu::ExecCopyLinkText() {
   ui::ScopedClipboardWriter scw(
       ui::ClipboardBuffer::kCopyPaste,
       CreateDataEndpoint(/*notify_if_restricted=*/true));
+  scw.SetDataSourceURL(main_frame_url_, current_url_);
   scw.WriteText(params_.link_text);
 }
 
