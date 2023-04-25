@@ -38,7 +38,7 @@ MediaRouterBase::MediaRouterBase() = default;
 
 // static
 std::string MediaRouterBase::CreatePresentationId() {
-  return "mr_" + base::GenerateUuid();
+  return "mr_" + base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
 void MediaRouterBase::NotifyPresentationConnectionStateChange(
