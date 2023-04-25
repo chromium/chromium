@@ -13,7 +13,7 @@ import optparse
 import pathlib
 import textwrap
 import urllib.parse
-from typing import Collection, Hashable, List, Optional, Set, Tuple, Type, Union
+from typing import Hashable, List, Optional, Set, Tuple, Type, Union
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
@@ -290,8 +290,6 @@ class LintWPT(Command):
         parser.add_argument('--github-checks-text-file',
                             help=argparse.SUPPRESS)
         parameters = parser.parse_args(args)
-        # TODO(crbug.com/1406669): Find a way to lint `wpt_internal/` files too
-        # so that they can be upstreamed easily.
         if not parameters.repo_root:
             parameters.repo_root = self._finder.path_from_wpt_tests()
         return optparse.Values(vars(parameters)), []
@@ -314,20 +312,19 @@ class LintWPT(Command):
         wptlint.regexps.append(WebPlatformTestRegexp(self._fs))
         wptlint.file_lints.append(self.check_metadata)
         exit_code = wptlint.main(**vars(options))
-        self._log_errors(errors, [self._manifest(options.repo_root)])
+        self._log_errors(errors, options.repo_root)
         return exit_code
 
-    def _log_errors(self, errors: List[LintError],
-                    manifests: Collection[WPTManifest]):
+    def _log_errors(self, errors: List[LintError], repo_root: str):
         if not errors:
             _log.info('All files OK.')
             return
+        manifest = self._manifest(repo_root)
         wptlint.output_errors_text(_log.error, errors)
         test_file_errors, metadata_file_errors = [], []
         for error in errors:
             _, _, path, _ = error
-            if self._is_dir_metadata(path) or any(
-                    self._test_path(manifest, path) for manifest in manifests):
+            if self._is_dir_metadata(path) or self._test_path(manifest, path):
                 metadata_file_errors.append(error)
             else:
                 test_file_errors.append(error)
@@ -341,10 +338,12 @@ class LintWPT(Command):
         if test_file_errors:
             error, _, path, _ = test_file_errors[-1]
             context = {'error': error, 'path': path}
+            ignorelist_path = self._fs.abspath(
+                self._fs.join(repo_root, 'lint.ignore'))
             paragraphs.append(
                 "However, for errors in test files, it's sometimes OK to add "
-                'lines to `web_tests/external/wpt/lint.ignore` to ignore them.'
-            )
+                'lines to `%s` to ignore them.' % self._fs.relpath(
+                    ignorelist_path, self._finder.path_from_web_tests()))
             paragraphs.append(
                 "For example, to make the lint tool ignore all '%(error)s' "
                 'errors in the %(path)s file, you could add the following '

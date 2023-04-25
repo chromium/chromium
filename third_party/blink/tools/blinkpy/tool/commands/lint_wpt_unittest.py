@@ -131,7 +131,7 @@ class LintWPTTest(LoggingTestCase):
             'INFO: \n',
             "INFO: However, for errors in test files, it's sometimes OK "
             'to add lines to\n',
-            'INFO: `web_tests/external/wpt/lint.ignore` to ignore them.\n',
+            'INFO: `external/wpt/lint.ignore` to ignore them.\n',
             'INFO: \n',
             'INFO: For example, to make the lint tool ignore all '
             "'PARSE-FAILED' errors in\n",

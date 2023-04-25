@@ -2,7 +2,7 @@
 
 These standalone wpt_internal web_tests are similar to their WebGPU CTS counterparts under `src/webgpu/web_platform/canvas` but test Chromium specific behaviors. These tests are also easier to test different combinations of canvas type, how HTML update rendering happens, in main thread or worker etc.
 
-* canvas-get-current-texture-expiry-*.https.html: mostly testing the same things as the CTS tests at https://github.com/gpuweb/cts/pull/2386 with some variations to reflect Chromium specific behavior. So that we can have stricter requirement for how Chromium getCurrentTexture behaves. 
+* canvas-get-current-texture-expiry-*.https.html: mostly testing the same things as the CTS tests at https://github.com/gpuweb/cts/pull/2386 with some variations to reflect Chromium specific behavior. So that we can have stricter requirement for how Chromium getCurrentTexture behaves.
   - TODO:
     - if on a different thread, expiry happens when the worker updates its rendering (worker "rPAF") OR transferToImageBitmap is called
     - [draw, transferControlToOffscreen, then canvas is displayed] on either {main thread, or transferred to worker}
