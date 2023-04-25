@@ -54220,6 +54220,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="5" label="Lockscreen launcher widget - Incognito"/>
   <int value="6" label="Lockscreen launcher widget - Voice Search"/>
   <int value="7" label="Lockscreen launcher widget - Dino Game"/>
+  <int value="8" label="Shortcuts widget"/>
 </enum>
 
 <enum name="IOSWKWebViewLinkPreviewAction">
