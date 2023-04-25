@@ -76,6 +76,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SearchUser"/>
   <variant name="ShoppingUser"/>
   <variant name="TabletProductivityUser"/>
+  <variant name="WebAppInstallationPromo"/>
 </variants>
 
 <variants name="SegmentationModel">
@@ -101,6 +102,7 @@ chromium-metrics-reviews@google.com.
   <variant name="TabletProductivityUser"/>
   <variant name="Unknown"/>
   <variant name="Voice"/>
+  <variant name="WebAppInstallationPromo"/>
 </variants>
 
 <variants name="SignalType">

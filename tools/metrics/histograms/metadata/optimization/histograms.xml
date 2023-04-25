@@ -70,6 +70,8 @@ chromium-metrics-reviews@google.com.
       summary="Segmentation: Tablet Productivity user"/>
   <variant name="SegmentationVoice" summary="Segmentation: Voice user"/>
   <variant name="TextClassifier" summary="Smart text selection"/>
+  <variant name="WebAppInstallationPromo"
+      summary="PWA: Show web app installation promotion"/>
 </variants>
 
 <variants name="OptimizationType">

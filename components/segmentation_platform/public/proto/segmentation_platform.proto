@@ -18,7 +18,7 @@ package segmentation_platform.proto;
 enum SegmentId {
   // Reserved fields are `OptimizationTarget`s that are not usde by segmentation
   // to prevent accidental misuse.
-  reserved 1, 2, 3, 7, 8, 9, 13, 14, 15, 19, 20, 24, 25, 26;
+  reserved 1, 2, 3, 7, 8, 9, 13, 14, 15, 19, 20, 24, 25, 26, 30, 31;
 
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Target for segmentation: New tab page user.
@@ -51,6 +51,8 @@ enum SegmentId {
   OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR = 28;
   // Target for segmentation: Determine users who are tabletproductivity users.
   OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER = 29;
+  // Target for web app install promotion.
+  OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO = 32;
   // Add new entries to OptimizationTarget proto.
 
   // New entries should start from a 1000 if OptimizationTarget does not

@@ -112,6 +112,16 @@ std::unique_ptr<Config> GetConfigForContextualPageActions(
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+std::unique_ptr<Config> GetConfigForWebAppInstallationPromo() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kWebAppInstallationPromoKey;
+  config->segmentation_uma_name = kWebAppInstallationPromoUmaName;
+  config->AddSegmentId(
+      SegmentId::OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO);
+  config->on_demand_execution = true;
+  return config;
+}
+
 }  // namespace
 
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
@@ -143,6 +153,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(CrossDeviceUserSegment::GetConfig());
   configs.emplace_back(ResumeHeavyUserModel::GetConfig());
   configs.emplace_back(DeviceSwitcherModel::GetConfig());
+  configs.emplace_back(GetConfigForWebAppInstallationPromo());
 
   base::EraseIf(configs, [](const auto& config) { return !config.get(); });
 

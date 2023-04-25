@@ -186,6 +186,8 @@ enum OptimizationTarget {
   // Target for ranking clusters that have passed minimal filtering for the New
   // Tab Page History Clusters module.
   OPTIMIZATION_TARGET_NEW_TAB_PAGE_HISTORY_CLUSTERS_MODULE_RANKING = 31;
+  // Target for web app install promotion.
+  OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO = 32;
 }
 
 // The model engine versions that can be used to do model inference.

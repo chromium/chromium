@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
 
@@ -46,6 +47,8 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
     return kDeviceSwitcherUmaName;
   } else if (segmentation_key == kTabletProductivityUserKey) {
     return kTabletProductivityUserUmaName;
+  } else if (segmentation_key == kWebAppInstallationPromoKey) {
+    return kWebAppInstallationPromoUmaName;
   } else if (segmentation_key == kDeviceTierKey) {
     return kDeviceTierUmaName;
   } else if (base::StartsWith(segmentation_key, "test_key")) {
@@ -106,6 +109,8 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
     case proto::SegmentId::
         OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER:
       return "TabletProductivityUserSegment";
+    case proto::SegmentId::OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO:
+      return "WebAppInstallationPromo";
     case proto::SegmentId::DEVICE_TIER_SEGMENT:
       return "DeviceTierSegment";
     default:

@@ -99,6 +99,8 @@ std::string GetStringNameForOptimizationTarget(
     case proto::
         OPTIMIZATION_TARGET_NEW_TAB_PAGE_HISTORY_CLUSTERS_MODULE_RANKING:
       return "NewTabPageHistoryClustersModuleRanking";
+    case proto::OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO:
+      return "WebAppInstallationPromo";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
