@@ -257,8 +257,7 @@ class InMenuButton : public LabelButton {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
-    SetBackground(std::make_unique<InMenuButtonBackground>(
-        InMenuButtonBackground::ButtonType::kNoBorder));
+    SetBackground(std::make_unique<InMenuButtonBackground>(type));
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, kHorizontalPadding, 0, kHorizontalPadding)));
     label()->SetFontList(MenuConfig::instance().font_list);
