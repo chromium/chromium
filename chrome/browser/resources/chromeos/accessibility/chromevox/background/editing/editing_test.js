@@ -2361,9 +2361,8 @@ AX_TEST_F(
     });
 
 // Regression test that large text areas produce output.
-// Flaky test: https://crbug.com/1430387
 AX_TEST_F(
-    'ChromeVoxEditingTest', 'DISABLED_GiantTextAreaPerformance',
+    'ChromeVoxEditingTest', 'GiantTextAreaPerformance',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
