@@ -1694,7 +1694,8 @@ bool CanonicalCookie::IsCookiePartitionedValid(const GURL& url,
     return true;
   if (partition_has_nonce)
     return true;
-  bool result = url.SchemeIsCryptographic() && secure;
+  CookieAccessScheme scheme = cookie_util::ProvisionalAccessScheme(url);
+  bool result = (scheme != CookieAccessScheme::kNonCryptographic) && secure;
   DLOG_IF(WARNING, !result)
       << "CanonicalCookie has invalid Partitioned attribute";
   return result;

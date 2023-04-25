@@ -302,4 +302,17 @@ TEST_P(CookiePartitionKeyTest, Equality_WithNonce) {
   EXPECT_NE(key1, unnonced_key);
 }
 
+TEST_P(CookiePartitionKeyTest, Localhost) {
+  SchemefulSite top_level_site(GURL("https://localhost:8000"));
+
+  auto key = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, top_level_site));
+  EXPECT_EQ(PartitionedCookiesEnabled(), key.has_value());
+
+  SchemefulSite frame_site(GURL("https://cookiesite.com"));
+  key = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, frame_site));
+  EXPECT_EQ(PartitionedCookiesEnabled(), key.has_value());
+}
+
 }  // namespace net

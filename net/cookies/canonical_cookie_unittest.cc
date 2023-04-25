@@ -797,6 +797,25 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   EXPECT_EQ(partition_key_with_nonce, cookie->PartitionKey());
 }
 
+TEST(CanonicalCookieTest, CreateWithPartitioned_Localhost) {
+  GURL url("http://localhost:8000/foo/bar.html");
+  base::Time creation_time = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+  auto partition_key =
+      CookiePartitionKey::FromURLForTesting(GURL("http://localhost:8000"));
+  CookieInclusionStatus status;
+
+  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
+      url, "foo=bar; Path=/; Secure; Partitioned", creation_time, server_time,
+      partition_key, &status);
+  ASSERT_TRUE(cookie.get());
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(cookie->IsSecure());
+  EXPECT_TRUE(cookie->IsPartitioned());
+  EXPECT_EQ(partition_key, cookie->PartitionKey());
+  EXPECT_EQ(CookieSameSite::UNSPECIFIED, cookie->SameSite());
+}
+
 TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time creation_time = base::Time::Now();
