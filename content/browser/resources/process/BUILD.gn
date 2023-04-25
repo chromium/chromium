@@ -2,7 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//tools/grit/grit_rule.gni")
 import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generated_grd = "$target_gen_dir/resources.grd"
 
 # Copy (via creating sym links) all the other files into the same folder for
 # ts_library.
@@ -28,4 +32,33 @@ ts_library("build_ts") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   extra_deps = [ ":copy_files" ]
+}
+
+generate_grd("build_grd") {
+  out_grd = generated_grd
+  grd_prefix = "process"
+
+  input_files = [
+    "process_internals.css",
+    "process_internals.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+}
+
+grit("resources") {
+  source = generated_grd
+  enable_input_discovery_for_gn_analyze = false
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/process_resources.h",
+    "grit/process_resources_map.cc",
+    "grit/process_resources_map.h",
+    "process_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/content"
 }

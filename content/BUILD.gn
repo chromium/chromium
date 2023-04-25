@@ -113,10 +113,7 @@ grit("dev_ui_content_resources") {
     "grit/dev_ui_content_resources.h",
     "dev_ui_content_resources.pak",
   ]
-  deps = [
-    "//content/browser/resources/gpu:html_wrapper_files",
-    "//content/browser/resources/process:build_ts",
-  ]
+  deps = [ "//content/browser/resources/gpu:html_wrapper_files" ]
 }
 
 # This target exists to "hold" the content_export header so we can do proper
