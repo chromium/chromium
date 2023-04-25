@@ -14,8 +14,21 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 
-#include "base/logging.h"
+class ScopedAXModeSetter {
+ public:
+  explicit ScopedAXModeSetter(ui::AXMode new_mode) {
+    previous_mode_ = ui::AXPlatformNode::GetAccessibilityMode();
+    ui::AXPlatformNode::SetAXMode(new_mode);
+  }
+  ~ScopedAXModeSetter() {
+    ui::AXPlatformNode::SetAXMode(previous_mode_.flags());
+  }
+
+ private:
+  ui::AXMode previous_mode_;
+};
 
 class FakeHighEfficiencyModeToggleDelegate
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
@@ -219,4 +232,46 @@ TEST_F(PerformanceManagerMetricsProviderTest,
         tester,
         performance_manager::MetricsProvider::EfficiencyMode::kBatterySaver);
   }
+}
+
+TEST_F(PerformanceManagerMetricsProviderTest, A11yModeOff) {
+  InitProvider();
+
+  base::HistogramTester tester;
+  provider()->ProvideCurrentSessionData(nullptr);
+  tester.ExpectUniqueSample(
+      "PerformanceManager.Experimental.HasAccessibilityModeFlag", false, 1);
+}
+
+TEST_F(PerformanceManagerMetricsProviderTest, A11yModeOn) {
+  InitProvider();
+
+  ScopedAXModeSetter scoped_setter(ui::AXMode::kWebContents);
+
+  base::HistogramTester tester;
+  provider()->ProvideCurrentSessionData(nullptr);
+  tester.ExpectUniqueSample(
+      "PerformanceManager.Experimental.HasAccessibilityModeFlag", true, 1);
+  tester.ExpectUniqueSample(
+      "PerformanceManager.Experimental.AccessibilityModeFlag",
+      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS, 1);
+}
+
+TEST_F(PerformanceManagerMetricsProviderTest, MultipleA11yModeFlags) {
+  InitProvider();
+
+  ScopedAXModeSetter scoped_setter(ui::AXMode::kWebContents |
+                                   ui::AXMode::kHTML);
+
+  base::HistogramTester tester;
+  provider()->ProvideCurrentSessionData(nullptr);
+  tester.ExpectUniqueSample(
+      "PerformanceManager.Experimental.HasAccessibilityModeFlag", true, 1);
+  // Each mode flag gets recorded in its own bucket
+  tester.ExpectBucketCount(
+      "PerformanceManager.Experimental.AccessibilityModeFlag",
+      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS, 1);
+  tester.ExpectBucketCount(
+      "PerformanceManager.Experimental.AccessibilityModeFlag",
+      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML, 1);
 }

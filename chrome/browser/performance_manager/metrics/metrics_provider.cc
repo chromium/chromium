@@ -5,12 +5,15 @@
 #include "chrome/browser/performance_manager/metrics/metrics_provider.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 
 namespace performance_manager {
 
@@ -23,7 +26,44 @@ uint64_t kBytesPerMb = 1024 * 1024;
 #if BUILDFLAG(IS_MAC)
 uint64_t kKilobytesPerMb = 1024;
 #endif
+
+ui::AXMode::ModeFlagHistogramValue ModeFlagsToEnum(uint32_t mode_flags) {
+  switch (mode_flags) {
+    case ui::AXMode::kNativeAPIs:
+      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_NATIVE_APIS;
+    case ui::AXMode::kWebContents:
+      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS;
+    case ui::AXMode::kInlineTextBoxes:
+      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_INLINE_TEXT_BOXES;
+    case ui::AXMode::kScreenReader:
+      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER;
+    case ui::AXMode::kHTML:
+      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML;
+    case ui::AXMode::kHTMLMetadata:
+      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML_METADATA;
+    case ui::AXMode::kLabelImages:
+      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_LABEL_IMAGES;
+    case ui::AXMode::kPDF:
+      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF;
+    case ui::AXMode::kPDFOcr:
+      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF_OCR;
+    default:
+      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX;
+  }
 }
+
+void MaybeRecordAccessibilityModeFlags(const ui::AXMode& mode,
+                                       uint32_t mode_flags) {
+  if (mode.has_mode(mode_flags)) {
+    ui::AXMode::ModeFlagHistogramValue mode_enum = ModeFlagsToEnum(mode_flags);
+    if (mode_enum != ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX) {
+      UMA_HISTOGRAM_ENUMERATION(
+          "PerformanceManager.Experimental.AccessibilityModeFlag", mode_enum,
+          ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX);
+    }
+  }
+}
+}  // namespace
 
 // static
 MetricsProvider* MetricsProvider::GetInstance() {
@@ -54,6 +94,26 @@ void MetricsProvider::Initialize() {
   current_mode_ = ComputeCurrentMode();
 }
 
+void MetricsProvider::RecordA11yFlags() {
+  ui::AXMode mode = ui::AXPlatformNode::GetAccessibilityMode();
+  bool is_mode_on = !mode.is_mode_off();
+
+  UMA_HISTOGRAM_BOOLEAN(
+      "PerformanceManager.Experimental.HasAccessibilityModeFlag", is_mode_on);
+
+  if (is_mode_on) {
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kNativeAPIs);
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kWebContents);
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kInlineTextBoxes);
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kScreenReader);
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTML);
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTMLMetadata);
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kLabelImages);
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDF);
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDFOcr);
+  }
+}
+
 void MetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   // It's valid for this to be called when `initialized_` is false if the finch
@@ -67,6 +127,8 @@ void MetricsProvider::ProvideCurrentSessionData(
   // that this mode is what is adequately reported at the next report, unless it
   // changes in the meantime.
   current_mode_ = ComputeCurrentMode();
+
+  RecordA11yFlags();
 }
 
 MetricsProvider::MetricsProvider(PrefService* local_state)

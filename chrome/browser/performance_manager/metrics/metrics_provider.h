@@ -62,6 +62,8 @@ class MetricsProvider : public ::metrics::MetricsProvider,
 
   void RecordAvailableMemoryMetrics();
 
+  void RecordA11yFlags();
+
   PrefChangeRegistrar pref_change_registrar_;
   const raw_ptr<PrefService> local_state_;
   EfficiencyMode current_mode_ = EfficiencyMode::kNormal;

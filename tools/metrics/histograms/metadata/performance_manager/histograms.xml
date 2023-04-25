@@ -14,6 +14,26 @@ each histogram.
 
 <histograms>
 
+<histogram name="PerformanceManager.Experimental.AccessibilityModeFlag"
+    enum="AccessibilityModeFlagEnum" expires_after="2023-10-21">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Whether individual accessibility mode flags are set. Recorded with every UMA
+    report to attempt to slice other metrics based on which a11y flags are set.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.Experimental.HasAccessibilityModeFlag"
+    enum="Boolean" expires_after="2023-10-21">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Whether any accessibility mode flags are set. Recorded with every UMA report
+    to attempt to slice other metrics based on whether a11y is active.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.UserTuning.EfficiencyMode"
     enum="EfficiencyMode" expires_after="2023-09-10">
   <owner>anthonyvd@chromium.org</owner>
