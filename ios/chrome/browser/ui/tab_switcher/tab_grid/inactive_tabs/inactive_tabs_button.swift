@@ -130,12 +130,12 @@ struct InactiveTabsButton: View {
   private struct InactiveTabsButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
       configuration.label
-        .padding([.top, .bottom], 10)
-        .padding([.leading, .trailing], 16)
+        .padding([.top, .bottom], Dimensions.verticalPadding)
+        .padding([.leading, .trailing], Dimensions.horizontalPadding)
         .background(
           configuration.isPressed ? Color(.systemGray4) : Color.groupedSecondaryBackground
         )
-        .cornerRadius(10)
+        .cornerRadius(Dimensions.cornerRadius)
         .environment(\.colorScheme, .dark)
     }
   }
