@@ -368,10 +368,18 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
         kIdpETLDPlusOne, content::IdentityProviderMetadata());
 
     const std::vector<views::View*> children = dialog()->children();
-    ASSERT_EQ(children.size(), 1u);
+    ASSERT_EQ(children.size(), 2u);
 
     PerformHeaderChecks(children[0], expected_title, expected_subtitle,
                         expect_idp_brand_icon_in_header);
+
+    // Check the "Continue" button.
+    views::MdTextButton* button =
+        static_cast<views::MdTextButton*>(children[1]->children()[0]);
+    ASSERT_TRUE(button);
+    EXPECT_EQ(button->GetText(),
+              l10n_util::GetStringUTF16(
+                  IDS_IDP_SIGNIN_STATUS_FAILURE_DIALOG_CONTINUE));
   }
 
   // Checks the account rows starting at `accounts[accounts_index]`. Updates

@@ -351,6 +351,11 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
+void FedCmAccountSelectionView::ShowModalDialogView(const GURL& url) {
+  // TODO(crbug.com/1430830): Modal dialog implementation will come in a later
+  // patch.
+}
+
 void FedCmAccountSelectionView::ShowVerifyingSheet(
     const Account& account,
     const IdentityProviderDisplayData& idp_display_data) {

@@ -191,12 +191,15 @@ class ContinueButton : public views::MdTextButton {
   ContinueButton(views::MdTextButton::PressedCallback callback,
                  const std::u16string& text,
                  AccountSelectionBubbleView* bubble_view,
-                 absl::optional<SkColor> brand_background_color,
-                 absl::optional<SkColor> brand_text_color)
+                 const content::IdentityProviderMetadata& idp_metadata)
       : views::MdTextButton(callback, text),
         bubble_view_(bubble_view),
-        brand_background_color_(brand_background_color),
-        brand_text_color_(brand_text_color) {}
+        brand_background_color_(idp_metadata.brand_background_color),
+        brand_text_color_(idp_metadata.brand_text_color) {
+    SetCornerRadius(kButtonRadius);
+    SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+    SetProminent(true);
+  }
 
   ContinueButton(const ContinueButton&) = delete;
   ContinueButton& operator=(const ContinueButton&) = delete;
@@ -577,8 +580,9 @@ void AccountSelectionBubbleView::ShowFailureDialog(
 
   std::u16string frame_in_title =
       iframe_for_display.value_or(top_frame_for_display);
-  const std::u16string title = l10n_util::GetStringFUTF16(
-      IDS_FAILURE_DIALOG_TITLE, frame_in_title, idp_for_display);
+  const std::u16string title =
+      l10n_util::GetStringFUTF16(IDS_IDP_SIGNIN_STATUS_FAILURE_DIALOG_TITLE,
+                                 frame_in_title, idp_for_display);
   title_label_->SetText(title);
 
   if (subtitle_label_) {
@@ -588,8 +592,24 @@ void AccountSelectionBubbleView::ShowFailureDialog(
                           kTopBottomPadding, kLeftRightPadding)));
   }
 
+  RemoveNonHeaderChildViews();
+  auto row = std::make_unique<views::View>();
+  row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::VH(kTopBottomPadding, kLeftRightPadding)));
+  auto button = std::make_unique<ContinueButton>(
+      base::BindRepeating(&Observer::ShowModalDialogView,
+                          base::Unretained(observer_),
+                          idp_metadata.idp_signin_url),
+      l10n_util::GetStringUTF16(IDS_IDP_SIGNIN_STATUS_FAILURE_DIALOG_CONTINUE),
+      this, idp_metadata);
+  signin_to_idp_button_ = row->AddChildView(std::move(button));
+  AddChildView(std::move(row));
+
   SizeToContents();
   PreferredSizeChanged();
+
+  has_sheet_ = true;
 }
 
 void AccountSelectionBubbleView::AddIdpImage(const GURL& image_url,
@@ -744,10 +764,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
                           std::cref(idp_display_data)),
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
                                  base::UTF8ToUTF16(display_name)),
-      this, idp_metadata.brand_background_color, idp_metadata.brand_text_color);
-  button->SetCornerRadius(kButtonRadius);
-  button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-  button->SetProminent(true);
+      this, idp_metadata);
   continue_button_ = row->AddChildView(std::move(button));
 
   if (show_auto_reauthn_checkbox_) {
