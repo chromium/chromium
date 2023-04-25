@@ -9,10 +9,12 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -25,6 +27,8 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace safe_browsing {
@@ -95,6 +99,17 @@ TailoredSecurityUnconsentedModal::TailoredSecurityUnconsentedModal(
   SetModalType(ui::MODAL_TYPE_CHILD);
 
   SetTitle(IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_TITLE);
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityUpdatedMessages)) {
+    // TODO(crbug.com/1439615) Update the modal width to match the mocks.
+    AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+        IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_BODY)));
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical,
+        ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG),
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+  }
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(
                      IDS_TAILORED_SECURITY_UNCONSENTED_ACCEPT_BUTTON));
