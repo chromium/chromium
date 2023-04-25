@@ -2923,8 +2923,6 @@ if (current_toolchain == default_toolchain) {
 
   template("chrome_bundle_tmpl") {
     _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
-    _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
-    assert(_is_monochrome || _is_trichrome, "TODO: https://crbug.com/1426950")
 
     _base_module_target_name = "${invoker.target_name}__base_bundle_module"
     chrome_public_apk_or_module_tmpl(_base_module_target_name) {
@@ -2956,6 +2954,7 @@ if (current_toolchain == default_toolchain) {
                              [
                                "add_view_trace_events",
                                "baseline_profile_path",
+                               "bundle_name",
                                "enable_lint",
                                "include_32_bit_webview",
                                "include_64_bit_webview",
@@ -2972,20 +2971,12 @@ if (current_toolchain == default_toolchain) {
                              ])
       base_module_target = ":$_base_module_target_name"
       manifest_package = chrome_public_manifest_package
-      if (_is_trichrome) {
-        bundle_name = "TrichromeChrome${invoker.bundle_suffix}"
-        module_descs = chrome_module_descs
-      } else if (_is_monochrome) {
-        bundle_name = "MonochromePublic${invoker.bundle_suffix}"
+      if (_is_monochrome) {
         module_descs = monochrome_module_descs
+      } else {
+        module_descs = chrome_module_descs
       }
       chrome_deps = [ ":delegate_public_impl_java" ]
-      if (!_is_trichrome) {
-        chrome_deps += [ "//chrome/android:monochrome_java" ]
-      }
-      if (!is_java_debug) {
-        proguard_android_sdk_dep = webview_framework_dep
-      }
     }
   }
 
@@ -3013,6 +3004,7 @@ if (current_toolchain == default_toolchain) {
     # https://crbug.com/1000763
     chrome_bundle_tmpl("monochrome_public_bundle") {
       is_monochrome = true
+      bundle_name = "MonochromePublic"
 
       # Monochrome bundle is used as our unified lint target, so it needs to set the
       # lowest shipping minSdkVersion to catch all potential NewApi errors.
@@ -3022,7 +3014,6 @@ if (current_toolchain == default_toolchain) {
       lint_suppressions_file = "expectations/lint-suppressions.xml"
       add_view_trace_events = true
 
-      bundle_suffix = ""
       if (android_64bit_target_cpu) {
         is_64_bit_browser = false
         include_64_bit_webview = true
@@ -3054,8 +3045,8 @@ if (current_toolchain == default_toolchain) {
     }
 
     chrome_bundle_tmpl("trichrome_chrome_bundle") {
-      bundle_suffix = ""
       is_trichrome = true
+      bundle_name = "TrichromeChrome"
       static_library_provider = ":trichrome_library_apk"
       add_view_trace_events = true
       baseline_profile_path = "//chrome/android/baseline_profiles/profile.txt"
@@ -3169,14 +3160,14 @@ if (current_toolchain == default_toolchain) {
   if (android_64bit_target_cpu) {
     chrome_bundle_tmpl("monochrome_64_public_bundle") {
       is_monochrome = true
-      bundle_suffix = "64"
+      bundle_name = "MonochromePublic64"
       is_64_bit_browser = true
       include_32_bit_webview = false
     }
 
     chrome_bundle_tmpl("trichrome_chrome_64_bundle") {
       is_trichrome = true
-      bundle_suffix = "64"
+      bundle_name = "TrichromeChrome64"
       is_64_bit_browser = true
       include_32_bit_webview = false
       static_library_provider = ":trichrome_library_64_apk"
@@ -3189,21 +3180,21 @@ if (current_toolchain == default_toolchain) {
     if (!skip_secondary_abi_for_cq) {
       chrome_bundle_tmpl("monochrome_32_public_bundle") {
         is_monochrome = true
-        bundle_suffix = "32"
+        bundle_name = "MonochromePublic32"
         is_64_bit_browser = false
         include_64_bit_webview = false
       }
 
       chrome_bundle_tmpl("monochrome_64_32_public_bundle") {
         is_monochrome = true
-        bundle_suffix = "6432"
+        bundle_name = "MonochromePublic6432"
         is_64_bit_browser = true
         include_32_bit_webview = true
       }
 
       chrome_bundle_tmpl("trichrome_chrome_64_32_bundle") {
         is_trichrome = true
-        bundle_suffix = "6432"
+        bundle_name = "TrichromeChrome6432"
         is_64_bit_browser = true
         include_32_bit_webview = true
         static_library_provider = ":trichrome_library_64_32_apk"
@@ -3214,7 +3205,7 @@ if (current_toolchain == default_toolchain) {
       }
       chrome_bundle_tmpl("trichrome_chrome_32_bundle") {
         is_trichrome = true
-        bundle_suffix = "32"
+        bundle_name = "TrichromeChrome32"
         is_64_bit_browser = false
         include_64_bit_webview = false
         static_library_provider = ":trichrome_library_32_apk"
