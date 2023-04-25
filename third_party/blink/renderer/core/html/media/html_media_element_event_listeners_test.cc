@@ -589,10 +589,10 @@ class CueEventListener final : public NativeEventListener {
 
   void ExpectAllEventsFiredWithinMargin(base::TimeDelta margin) const {
     for (auto const& delta : cue_event_deltas_) {
-      EXPECT_TRUE(delta.enter_time_delta.has_value());
+      ASSERT_TRUE(delta.enter_time_delta.has_value());
       EXPECT_LE(delta.enter_time_delta.value(), margin);
       EXPECT_GE(delta.enter_time_delta.value(), base::TimeDelta());
-      EXPECT_TRUE(delta.exit_time_delta.has_value());
+      ASSERT_TRUE(delta.exit_time_delta.has_value());
       EXPECT_GE(delta.exit_time_delta.value(), base::TimeDelta());
       EXPECT_LE(delta.exit_time_delta.value(), margin);
     }
