@@ -30,7 +30,9 @@ bool IsWellKnownChangePasswordUrl(const GURL& url) {
 }
 
 GURL CreateChangePasswordUrl(const GURL& url) {
-  DCHECK(url.is_valid());
+  if (!url.is_valid()) {
+    return url;
+  }
   GURL::Replacements replacements;
   replacements.SetPathStr(password_manager::kWellKnownChangePasswordPath);
   return url.DeprecatedGetOriginAsURL().ReplaceComponents(replacements);
