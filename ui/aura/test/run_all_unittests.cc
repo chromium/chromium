@@ -8,14 +8,17 @@
 #include "mojo/core/embedder/embedder.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_suite.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
 class AuraTestSuite;
 
 namespace {
+
 AuraTestSuite* g_test_suite = nullptr;
-}
+
+}  // namespace
 
 class AuraTestSuite : public base::TestSuite {
  public:
@@ -34,6 +37,10 @@ class AuraTestSuite : public base::TestSuite {
     base::TestSuite::Initialize();
     gl::GLSurfaceTestSupport::InitializeOneOff();
     env_ = aura::Env::CreateInstance();
+
+    ui::ResourceBundle::InitSharedInstanceWithLocale(
+        "en-US", /*delegate=*/nullptr,
+        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
   }
 
   void Shutdown() override {

@@ -10,6 +10,7 @@
 #include <cmath>
 #include <limits>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "ui/base/pointer/pointer_device.h"
@@ -27,8 +28,11 @@ std::vector<ResourceScaleFactor>* g_supported_resource_scale_factors = nullptr;
 
 void SetSupportedResourceScaleFactors(
     const std::vector<ResourceScaleFactor>& scale_factors) {
-  if (g_supported_resource_scale_factors != nullptr)
+  CHECK(!scale_factors.empty());
+
+  if (g_supported_resource_scale_factors != nullptr) {
     delete g_supported_resource_scale_factors;
+  }
 
   g_supported_resource_scale_factors =
       new std::vector<ResourceScaleFactor>(scale_factors);
@@ -50,29 +54,48 @@ void SetSupportedResourceScaleFactors(
 }
 
 const std::vector<ResourceScaleFactor>& GetSupportedResourceScaleFactors() {
-  DCHECK(g_supported_resource_scale_factors != nullptr);
+  CHECK_NE(g_supported_resource_scale_factors, nullptr)
+      << "ResourceBundle needs to be intialized.";
+
   return *g_supported_resource_scale_factors;
 }
 
 ResourceScaleFactor GetSupportedResourceScaleFactor(float scale) {
-  DCHECK(g_supported_resource_scale_factors != nullptr);
+  CHECK_NE(g_supported_resource_scale_factors, nullptr)
+      << "ResourceBundle needs to be intialized.";
+
   ResourceScaleFactor closest_match = k100Percent;
-  float smallest_diff =  std::numeric_limits<float>::max();
-  for (auto scale_factor : *g_supported_resource_scale_factors) {
-    float diff = std::abs(GetScaleForResourceScaleFactor(scale_factor) - scale);
+  float smallest_diff = std::numeric_limits<float>::max();
+  for (const auto scale_factor : *g_supported_resource_scale_factors) {
+    const float diff =
+        std::abs(GetScaleForResourceScaleFactor(scale_factor) - scale);
     if (diff < smallest_diff) {
       closest_match = scale_factor;
       smallest_diff = diff;
+    } else {
+      break;
     }
   }
-  DCHECK_NE(closest_match, kScaleFactorNone);
+
+  CHECK_NE(closest_match, kScaleFactorNone);
   return closest_match;
 }
 
+ResourceScaleFactor GetMaxSupportedResourceScaleFactor() {
+  CHECK_NE(g_supported_resource_scale_factors, nullptr)
+      << "ResourceBundle needs to be intialized.";
+
+  return g_supported_resource_scale_factors->back();
+}
+
 bool IsSupportedScale(float scale) {
-  for (auto scale_factor_idx : *g_supported_resource_scale_factors) {
-    if (GetScaleForResourceScaleFactor(scale_factor_idx) == scale)
+  CHECK_NE(g_supported_resource_scale_factors, nullptr)
+      << "ResourceBundle needs to be intialized.";
+
+  for (const auto scale_factor_idx : *g_supported_resource_scale_factors) {
+    if (GetScaleForResourceScaleFactor(scale_factor_idx) == scale) {
       return true;
+    }
   }
   return false;
 }

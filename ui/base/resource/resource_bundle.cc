@@ -888,7 +888,7 @@ ResourceScaleFactor ResourceBundle::GetMaxResourceScaleFactor() const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return max_scale_factor_;
 #else
-  return GetSupportedResourceScaleFactors().back();
+  return GetMaxSupportedResourceScaleFactor();
 #endif
 }
 

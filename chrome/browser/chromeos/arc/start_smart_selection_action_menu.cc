@@ -103,7 +103,7 @@ void StartSmartSelectionActionMenu::InitMenu(
   }
 
   if (!delegate_->RequestTextSelectionActions(
-          converted_text, ui::GetSupportedResourceScaleFactors().back(),
+          converted_text, ui::GetMaxSupportedResourceScaleFactor(),
           base::BindOnce(
               &StartSmartSelectionActionMenu::HandleTextSelectionActions,
               weak_ptr_factory_.GetWeakPtr()))) {

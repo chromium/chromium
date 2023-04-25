@@ -28,10 +28,12 @@ COMPONENT_EXPORT(UI_BASE)
 const std::vector<ResourceScaleFactor>& GetSupportedResourceScaleFactors();
 
 // Returns the supported ResourceScaleFactor which most closely matches |scale|.
-// Converting from float to ResourceScaleFactor is inefficient and should be
-// done as little as possible.
 COMPONENT_EXPORT(UI_BASE)
 ResourceScaleFactor GetSupportedResourceScaleFactor(float image_scale);
+
+// Returns the maximum supported ResourceScaleFactor.
+COMPONENT_EXPORT(UI_BASE)
+ResourceScaleFactor GetMaxSupportedResourceScaleFactor();
 
 // Returns the ResourceScaleFactor used by |view|.
 COMPONENT_EXPORT(UI_BASE)

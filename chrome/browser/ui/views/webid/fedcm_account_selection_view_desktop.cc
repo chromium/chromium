@@ -33,7 +33,7 @@ int AccountSelectionView::GetBrandIconIdealSize() {
   // different screen densities, make the ideal size be the size which works
   // with a high density display (if the OS supports high density displays).
   float max_supported_scale = ui::GetScaleForResourceScaleFactor(
-      ui::GetSupportedResourceScaleFactors().back());
+      ui::GetMaxSupportedResourceScaleFactor());
   return round(GetBrandIconMinimumSize() * max_supported_scale);
 }
 
