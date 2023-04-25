@@ -501,13 +501,6 @@ BASE_FEATURE(kAutofillSplitCreditCardNumbersCautiously,
              "AutofillSplitCreditCardNumbersCautiously",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables support for artificial placeholders, implemented by placing text on
-// top of the input field using CSS.
-// TODO(crbug.com/1396374): Remove when launched.
-BASE_FEATURE(kAutofillSupportPoorMansPlaceholder,
-             "AutofillSupportPoorMansPlaceholder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether Autofill should search prefixes of all words/tokens when
 // filtering profiles, or only on prefixes of the whole string.
 BASE_FEATURE(kAutofillTokenPrefixMatching,

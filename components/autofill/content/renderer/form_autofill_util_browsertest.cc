@@ -51,8 +51,7 @@ using blink::WebVector;
 using ::testing::ElementsAre;
 using ::testing::Values;
 
-namespace autofill {
-namespace form_util {
+namespace autofill::form_util {
 namespace {
 
 struct AutofillFieldUtilCase {
@@ -233,9 +232,6 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
 }
 
 TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kAutofillSupportPoorMansPlaceholder);
-
   static const AutofillFieldUtilCase test_cases[] = {
       {"DIV table test 1", R"(
        <div>
@@ -298,9 +294,6 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
 }
 
 TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kAutofillSupportPoorMansPlaceholder);
-
   struct AutofillFieldLabelSourceCase {
     const char* html;
     const FormFieldData::LabelSource label_source;
@@ -1760,5 +1753,4 @@ TEST_F(FormAutofillUtilsTest, FillAndResetAndFillAgainForm) {
 }
 
 }  // namespace
-}  // namespace form_util
-}  // namespace autofill
+}  // namespace autofill::form_util

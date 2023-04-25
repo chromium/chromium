@@ -493,11 +493,6 @@ std::u16string InferLabelFromPlaceholder(const WebFormControlElement& element) {
 // </div>
 std::u16string InferLabelFromOverlayingSuccessor(
     const WebFormControlElement& element) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillSupportPoorMansPlaceholder)) {
-    return std::u16string();
-  }
-
   WebNode next = element.NextSibling();
   while (!next.IsNull() && !next.IsElementNode())
     next = next.NextSibling();
