@@ -29,15 +29,22 @@ namespace ranges = base::ranges;
 
 namespace {
 
-ui::AXNodeID next_node_id{1};
+// A negative ID for ui::AXNodeID needs to start from -2 as using -1 for this
+// node id is still incorrectly treated as invalid.
+// TODO(crbug.com/1439285): fix code treating -1 as invalid for ui::AXNodeID.
+constexpr int kFirstValidNegativeId = -2;
+
+ui::AXNodeID next_negative_node_id{kFirstValidNegativeId};
 
 // TODO(crbug.com/1278249): Check if this max count will cover different cases.
 constexpr int kUmaMaxNodesCount = 500;
 
-// Returns the next valid ID that can be used for identifying `AXNode`s in the
-// accessibility tree.
-ui::AXNodeID GetNextNodeID() {
-  return next_node_id++;
+// Returns the next valid negative ID that can be used for identifying
+// `AXNode`s in the accessibility tree. Using negative IDs here enables
+// adding nodes built from OCR results to PDF accessibility tree in PDF
+// renderer without updating their IDs.
+ui::AXNodeID GetNextNegativeNodeID() {
+  return next_negative_node_id--;
 }
 
 bool HaveIdenticalFormattingStyle(const chrome_screen_ai::WordBox& word_1,
@@ -293,7 +300,7 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
   ui::AXNodeData& inline_text_box_node = node_data[node_index];
   DCHECK_EQ(inline_text_box_node.role, ax::mojom::Role::kUnknown);
   inline_text_box_node.role = ax::mojom::Role::kInlineTextBox;
-  inline_text_box_node.id = GetNextNodeID();
+  inline_text_box_node.id = GetNextNegativeNodeID();
   // The union of the bounding boxes in this formatting context is set as the
   // bounding box of `inline_text_box_node`.
   DCHECK(inline_text_box_node.relative_bounds.bounds.IsEmpty());
@@ -339,7 +346,7 @@ void SerializeUIComponent(const chrome_screen_ai::UIComponent& ui_component,
   ui::AXNodeData& current_node = node_data[index];
   if (!SerializePredictedType(ui_component.predicted_type(), current_node))
     return;
-  current_node.id = GetNextNodeID();
+  current_node.id = GetNextNegativeNodeID();
   SerializeBoundingBox(ui_component.bounding_box(), parent_node.id,
                        current_node);
   parent_node.child_ids.push_back(current_node.id);
@@ -359,7 +366,7 @@ size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
   DCHECK_EQ(line_box_node.role, ax::mojom::Role::kUnknown);
 
   SerializeContentType(line_box.content_type(), line_box_node);
-  line_box_node.id = GetNextNodeID();
+  line_box_node.id = GetNextNegativeNodeID();
   SerializeBoundingBox(line_box.bounding_box(), parent_node.id, line_box_node);
   // `ax::mojom::NameFrom` should be set to the correct value based on the
   // role.
@@ -385,7 +392,7 @@ size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
 namespace screen_ai {
 
 void ResetNodeIDForTesting() {
-  next_node_id = 1;
+  next_negative_node_id = kFirstValidNegativeId;
 }
 
 // TODO(nektar): Change return value to `std::vector<ui::AXNodeData>` as other
@@ -456,7 +463,7 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
   if (!visual_annotation.ui_component().empty()) {
     ui::AXNodeData& rootnode = nodes[index++];
     rootnode.role = ax::mojom::Role::kDialog;
-    rootnode.id = GetNextNodeID();
+    rootnode.id = GetNextNegativeNodeID();
     rootnode.relative_bounds.bounds = gfx::RectF(image_rect);
     for (const auto& ui_component : visual_annotation.ui_component())
       SerializeUIComponent(ui_component, index++, rootnode, nodes);
@@ -466,7 +473,8 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
     // We assume that OCR is performed on a page-by-page basis.
     ui::AXNodeData& page_node = nodes[index++];
     page_node.role = ax::mojom::Role::kRegion;
-    page_node.id = GetNextNodeID();
+    page_node.id = GetNextNegativeNodeID();
+    update.root_id = page_node.id;
     page_node.AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
                                true);
     page_node.relative_bounds.bounds = gfx::RectF(image_rect);

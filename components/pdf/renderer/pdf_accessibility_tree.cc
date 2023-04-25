@@ -54,9 +54,7 @@ namespace ranges = base::ranges;
 // images.
 class PdfOcrService final {
  public:
-  PdfOcrService(const ui::AXTreeID& parent_tree_id,
-                content::RenderFrame& render_frame)
-      : parent_tree_id_(parent_tree_id) {
+  explicit PdfOcrService(content::RenderFrame& render_frame) {
     if (features::IsPdfOcrEnabled()) {
       render_frame.GetBrowserInterfaceBroker()->GetInterface(
           screen_ai_annotator_.BindNewPipeAndPassReceiver());
@@ -70,17 +68,17 @@ class PdfOcrService final {
   // Sends the given image to the Screen AIService for processing.
   bool ScheduleImageProcessing(
       const chrome_pdf::AccessibilityImageInfo& image,
-      screen_ai::mojom::ScreenAIAnnotator::PerformOcrCallback callback) {
+      screen_ai::mojom::ScreenAIAnnotator::
+          PerformOcrAndReturnAXTreeUpdateCallback callback) {
     if (!screen_ai_annotator_.is_bound())
       return false;
-    screen_ai_annotator_->PerformOcr(image.image_data, parent_tree_id_,
-                                     std::move(callback));
+    screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(image.image_data,
+                                                          std::move(callback));
     return true;
   }
 
  private:
   mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
-  const ui::AXTreeID parent_tree_id_;
 };
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -425,25 +423,22 @@ ui::AXNodeData* CreateStatusNode(
   return node_ptr;
 }
 
-std::unique_ptr<gfx::Transform> MakeTransformForImage(
+gfx::Transform MakeTransformForImage(
     const chrome_pdf::AccessibilityImageInfo& image) {
   // Nodes created with OCR results from the image will be misaligned on screen
   // if `image_screen_size` is different from `image_pixel_size`. To address
-  // this misalignment issue, an additional transform needs to be created. This
-  // transform will be applied to a leaf node pointing to a child tree that
-  // contains nodes created from OCR results. Once it's applied to that node,
-  // this transform will be applied to all nodes within the child tree.
+  // this misalignment issue, an additional transform needs to be created.
   const gfx::RectF& image_screen_size = image.bounds;
   const gfx::RectF image_pixel_size =
       gfx::RectF(image.image_data.width(), image.image_data.height());
   CHECK(!image_pixel_size.IsEmpty());
 
-  auto transform = std::make_unique<gfx::Transform>();
+  gfx::Transform transform;
   float width_scale_factor =
       image_screen_size.width() / image_pixel_size.width();
   float height_scale_factor =
       image_screen_size.height() / image_pixel_size.height();
-  transform->Scale(width_scale_factor, height_scale_factor);
+  transform.Scale(width_scale_factor, height_scale_factor);
 
   return transform;
 }
@@ -1299,8 +1294,7 @@ PdfAccessibilityTree::PdfAccessibilityTree(
     if (render_accessibility &&
         render_accessibility->GetAXMode().has_mode(ui::AXMode::kPDFOcr)) {
       VLOG(2) << "Creating OCR service.";
-      ocr_service_ = std::make_unique<PdfOcrService>(
-          render_accessibility->GetTreeIDForPluginHost(), *render_frame);
+      ocr_service_ = std::make_unique<PdfOcrService>(*render_frame);
     }
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -1902,7 +1896,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     const ui::AXNodeID& image_node_id,
     const chrome_pdf::AccessibilityImageInfo& image,
     const ui::AXNodeID& parent_node_id,
-    const ui::AXTreeID& child_tree_id) {
+    const ui::AXTreeUpdate& tree_update) {
   // TODO(accessibility): Following the convensions in this file, this method
   // manipulates the collection of `ui::AXNodeData` stored in the `nodes_` field
   // and then updates the `tree_` using the unserialize mechanism. It would be
@@ -1920,12 +1914,18 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     SetOcrCompleteStatus();
   }
 
-  if (child_tree_id == ui::AXTreeIDUnknown()) {
+  if (tree_update.nodes.empty()) {
     VLOG(1) << "Empty OCR data received.";
     return;
   }
 
-  VLOG(1) << "OCR data received: " << child_tree_id.ToString();
+  VLOG(1) << "OCR data received with a child tree update's root id: "
+          << tree_update.root_id;
+  // `tree_update` encodes a subtree that is going to be added to the PDF
+  // accessibility tree directly. Thus, `tree_update.root_id` isn't the root of
+  // the PDF accessibility tree, but the root of the subtree being added.
+  const ui::AXNodeID& page_node_id = tree_update.root_id;
+  DCHECK_NE(page_node_id, ui::kInvalidAXNodeID);
 
   const gfx::RectF& image_bounds = image.bounds;
   DCHECK_NE(image_node_id, ui::kInvalidAXNodeID);
@@ -1941,23 +1941,41 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   if (!render_accessibility)
     return;
 
-  ui::AXNodeData* page_node = CreateAndAppendNode(
-      ax::mojom::Role::kRegion, ax::mojom::Restriction::kReadOnly,
-      render_accessibility, &nodes_);
-  page_node->AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
-                              true);
-  // TODO(crbug.com/1278249): add an attribute to indicate that this node is
-  // auto-generated.
-  // page_node->AddBoolAttribute(ax::mojom::BoolAttribute::kIsAutoGenerated,
-  // true);
-  page_node->relative_bounds.bounds = image_bounds;
   // Create a Transform to position OCR results on PDF. Without this transform,
   // nodes created from OCR results will have misaligned bounding boxes. This
-  // transform will be applied to all nodes within a child tree pointed by
-  // `child_tree_id`.
-  page_node->relative_bounds.transform = MakeTransformForImage(image);
-  page_node->AddChildTreeId(child_tree_id);
+  // transform will be applied to all nodes from OCR results below.
+  gfx::Transform transform = MakeTransformForImage(image);
 
+  // `nodes_` cannot be empty. The root node and the image node must be there.
+  CHECK(!nodes_.empty());
+  // Update all new nodes' relative_bounds. PDF accessibility tree assumes that
+  // all nodes have bounds relative to its root node.
+  ui::AXNodeData* root_node = nodes_[0].get();
+  // Copy each node from AXTreeUpdate from OCR results to create a new node for
+  // PDF accessibility tree.
+  // TODO(crbug.com/1278249): add an attribute to indicate that these nodes
+  // are auto-generated and have a way to notify the user of that.
+  for (const auto& node_from_ocr : tree_update.nodes) {
+    std::unique_ptr<ui::AXNodeData> new_node =
+        std::make_unique<ui::AXNodeData>(node_from_ocr);
+    if (new_node->id == page_node_id) {
+      // This page node will be replaced with the image node, so it needs to
+      // have the image node's bounds.
+      new_node->relative_bounds.bounds = image_bounds;
+    } else {
+      new_node->relative_bounds.bounds =
+          transform.MapRect(new_node->relative_bounds.bounds);
+      // Make all the other nodes relative to the page node.
+      new_node->relative_bounds.bounds.Offset(image_bounds.x(),
+                                              image_bounds.y());
+    }
+    // Make all nodes relative to the root node.
+    new_node->relative_bounds.offset_container_id = root_node->id;
+    // Move to `nodes_` for later unserialization in UnserializeNodes().
+    nodes_.push_back(std::move(new_node));
+  }
+
+  // Replace the image node with the page node and its subtree built above.
   int num_erased = base::EraseIf(nodes_, [&image_node_id](const auto& node) {
     return node->id == image_node_id;
   });
@@ -1969,7 +1987,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   DCHECK(parent_node_iter != ranges::end(nodes_));
   num_erased = base::Erase((*parent_node_iter)->child_ids, image_node_id);
   DCHECK_EQ(num_erased, 1);
-  (*parent_node_iter)->child_ids.push_back(page_node->id);
+  (*parent_node_iter)->child_ids.push_back(page_node_id);
 
   if (!did_unserialize_nodes_once_) {
     return;
@@ -1982,7 +2000,16 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   update.node_id_to_clear = image_node_id;
   update.root_id = doc_node_->id;
   update.nodes.push_back(**parent_node_iter);
-  update.nodes.push_back(*page_node);
+  // Move new nodes from `nodes_` to `update.nodes` and then remove their empty
+  // placeholders from `nodes_`.
+  auto page_node_iter = ranges::find_if(
+      nodes_,
+      [&page_node_id](const auto& node) { return node->id == page_node_id; });
+  CHECK(page_node_iter != ranges::end(nodes_));
+  ranges::for_each(page_node_iter, nodes_.end(), [&update](const auto& node) {
+    update.nodes.push_back(std::move(*node));
+  });
+  nodes_.erase(page_node_iter, ranges::end(nodes_));
 
   if (!tree_.Unserialize(update)) {
     LOG(FATAL) << tree_.error();

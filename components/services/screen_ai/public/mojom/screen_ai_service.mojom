@@ -26,11 +26,11 @@ interface ScreenAIAnnotator {
   // Receives an image, such as a screenshot or a page from a PDF file, as well
   // as the ID of the accessibility tree that contains the image
   // (`parent_tree_id`). It then asks the Screen AI library to perform OCR on
-  // the image. It returns the ID of the accessibility tree which would be
-  // created by the Service containing the output of the library.
-  PerformOcr(skia.mojom.BitmapN32 image,
-    ax.mojom.AXTreeID parent_tree_id) =>
-    (ax.mojom.AXTreeID child_tree_id);
+  // the image. It returns an AXTreeUpdate with nodes built from OCR results.
+  // The returned AXTreeUpdate is not a properly serialized update and is only
+  // a container for the root id of a subtree and nodes built from OCR results.
+  PerformOcrAndReturnAXTreeUpdate(skia.mojom.BitmapN32 image) =>
+    (ax.mojom.AXTreeUpdate update);
 };
 
 // This interface sends accessibility messages from the Screen AI Service to

@@ -128,12 +128,14 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Removes the image node in the accessibility tree with the specified ID, and
-  // adds a page node hosting a child tree containing the page contents which
-  // will later be provided by the OCR Service.
+  // adds a page node and its child nodes built from OCR results. OCR results
+  // are provided in the format of AXTreeUpdate, which is used for storing both
+  // the page id and the new nodes built from OCR results; this AXTreeUpdate
+  // shouldn't be unserialized directly.
   void OnOcrDataReceived(const ui::AXNodeID& image_node_id,
                          const chrome_pdf::AccessibilityImageInfo& image,
                          const ui::AXNodeID& parent_node_id,
-                         const ui::AXTreeID& child_tree_id);
+                         const ui::AXTreeUpdate& tree_update);
 
   // Increment the number of remaining OCR requests by one. This function will
   // be called whenever PdfAccessibilityTreeBuilder is about to send an OCR

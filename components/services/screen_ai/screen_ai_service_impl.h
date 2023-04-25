@@ -60,12 +60,12 @@ class ScreenAIService : public mojom::ScreenAIService,
   // mojom::ScreenAIAnnotator:
   void ExtractSemanticLayout(const SkBitmap& image,
                              const ui::AXTreeID& parent_tree_id,
-                             PerformOcrCallback callback) override;
+                             ExtractSemanticLayoutCallback callback) override;
 
   // mojom::ScreenAIAnnotator:
-  void PerformOcr(const SkBitmap& image,
-                  const ui::AXTreeID& parent_tree_id,
-                  PerformOcrCallback callback) override;
+  void PerformOcrAndReturnAXTreeUpdate(
+      const SkBitmap& image,
+      PerformOcrAndReturnAXTreeUpdateCallback callback) override;
 
   // mojom::Screen2xMainContentExtractor:
   void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
@@ -92,16 +92,8 @@ class ScreenAIService : public mojom::ScreenAIService,
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
 
-  // Common section of PerformOcr and ExtractSemanticLayout functions.
-  void PerformVisualAnnotation(const SkBitmap& image,
-                               const ui::AXTreeID& parent_tree_id,
-                               PerformOcrCallback callback,
-                               bool run_ocr,
-                               bool run_layout_extraction);
-
   // Wrapper functions for task scheduler.
   void VisualAnnotationInternal(const SkBitmap& image,
-                                const ui::AXTreeID& parent_tree_id,
                                 bool run_ocr,
                                 bool run_layout_extraction,
                                 ui::AXTreeUpdate* annotation);

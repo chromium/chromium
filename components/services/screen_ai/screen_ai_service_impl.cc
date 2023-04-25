@@ -169,66 +169,82 @@ void ScreenAIService::BindMainContentExtractor(
                                          std::move(main_content_extractor));
 }
 
-void ScreenAIService::PerformVisualAnnotation(
+void ScreenAIService::ExtractSemanticLayout(
     const SkBitmap& image,
     const ui::AXTreeID& parent_tree_id,
-    PerformOcrCallback callback,
-    bool run_ocr,
-    bool run_layout_extraction) {
+    ExtractSemanticLayoutCallback callback) {
   std::unique_ptr<ui::AXTreeUpdate> annotation =
       std::make_unique<ui::AXTreeUpdate>();
   ui::AXTreeUpdate* annotation_ptr = annotation.get();
 
-  // Ownership of |annotation| is passed to the reply function, and hence it is
-  // destroyed after the task function is called, or both functions get
-  // cancelled, so it's safe to pass |annotation_ptr| unretained.
   // We need to get the pointer beforehand since compiler optimizations may
-  // result in binding the reply function (and moving |annotation|) before
+  // result in binding the reply function (and moving `annotation`) before
   // binding the task.
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&ScreenAIService::VisualAnnotationInternal,
                      weak_ptr_factory_.GetWeakPtr(), std::move(image),
-                     std::move(parent_tree_id), run_ocr, run_layout_extraction,
-                     base::Unretained(annotation_ptr)),
+                     /*run_ocr=*/false, /*run_layout_extraction=*/true,
+                     annotation_ptr),
       base::BindOnce(
           [](mojo::Remote<mojom::ScreenAIAnnotatorClient>* client,
-             PerformOcrCallback callback,
+             const ui::AXTreeID& parent_tree_id,
+             ExtractSemanticLayoutCallback callback,
              std::unique_ptr<ui::AXTreeUpdate> update) {
             // The original caller is always replied to, and an AXTreeIDUnknown
             // is sent to tell it that the annotation function was not
             // successful. However the client is only contacted for successful
             // runs and when we have an update.
+            ScreenAIAXTreeSerializer serializer(parent_tree_id,
+                                                std::move(update->nodes));
+            *update = serializer.Serialize();
+            // `ScreenAIAXTreeSerializer` should have assigned a new tree ID to
+            // `update`. Thereby, it should never be an unknown tree ID,
+            // otherwise there has been an unexpected serialization bug.
+            DCHECK_NE(update->tree_data.tree_id, ui::AXTreeIDUnknown())
+                << "Invalid serialization.\n"
+                << update->ToString();
             std::move(callback).Run(update->tree_data.tree_id);
             if (update->tree_data.tree_id != ui::AXTreeIDUnknown())
               (*client)->HandleAXTreeUpdate(*update);
           },
-          &screen_ai_annotator_client_, std::move(callback),
-          std::move(annotation)));
+          &screen_ai_annotator_client_, std::move(parent_tree_id),
+          std::move(callback), std::move(annotation)));
 }
 
-void ScreenAIService::ExtractSemanticLayout(const SkBitmap& image,
-                                            const ui::AXTreeID& parent_tree_id,
-                                            PerformOcrCallback callback) {
-  PerformVisualAnnotation(std::move(image), parent_tree_id, std::move(callback),
-                          /*run_ocr=*/false,
-                          /*run_layout_extraction=*/true);
-}
-
-void ScreenAIService::PerformOcr(const SkBitmap& image,
-                                 const ui::AXTreeID& parent_tree_id,
-                                 PerformOcrCallback callback) {
-  PerformVisualAnnotation(std::move(image), parent_tree_id, std::move(callback),
-                          /*run_ocr=*/true,
-                          /*run_layout_extraction=*/false);
-}
-
-void ScreenAIService::VisualAnnotationInternal(
+void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
     const SkBitmap& image,
-    const ui::AXTreeID& parent_tree_id,
-    bool run_ocr,
-    bool run_layout_extraction,
-    ui::AXTreeUpdate* annotation) {
+    PerformOcrAndReturnAXTreeUpdateCallback callback) {
+  std::unique_ptr<ui::AXTreeUpdate> annotation =
+      std::make_unique<ui::AXTreeUpdate>();
+  ui::AXTreeUpdate* annotation_ptr = annotation.get();
+
+  // We need to get the pointer beforehand since compiler optimizations may
+  // result in binding the reply function (and moving `annotation`) before
+  // binding the task.
+  task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&ScreenAIService::VisualAnnotationInternal,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(image),
+                     /*run_ocr=*/true, /*run_layout_extraction=*/false,
+                     annotation_ptr),
+      base::BindOnce(
+          [](PerformOcrAndReturnAXTreeUpdateCallback callback,
+             std::unique_ptr<ui::AXTreeUpdate> update) {
+            // The original caller is always replied to, and an empty
+            // AXTreeUpdate tells that the annotation function was not
+            // successful.
+            std::move(callback).Run(*update);
+            // TODO(crbug.com/1434701): Send the AXTreeUpdate to the browser
+            // side client for Backlight.
+          },
+          std::move(callback), std::move(annotation)));
+}
+
+void ScreenAIService::VisualAnnotationInternal(const SkBitmap& image,
+                                               bool run_ocr,
+                                               bool run_layout_extraction,
+                                               ui::AXTreeUpdate* annotation) {
   // Currently we only support either of OCR or LayoutExtraction features.
   DCHECK_NE(run_ocr, run_layout_extraction);
   DCHECK(screen_ai_annotator_client_.is_bound());
@@ -250,16 +266,6 @@ void ScreenAIService::VisualAnnotationInternal(
 
   gfx::Rect image_rect(image.width(), image.height());
   *annotation = VisualAnnotationToAXTreeUpdate(annotation_proto, image_rect);
-  ScreenAIAXTreeSerializer serializer(parent_tree_id,
-                                      std::move(annotation->nodes));
-  *annotation = serializer.Serialize();
-
-  // `ScreenAIAXTreeSerializer` should have assigned a new tree ID to `update`.
-  // Thereby, it should never be an unknown tree ID, otherwise there has been an
-  // unexpected serialization bug.
-  DCHECK_NE(annotation->tree_data.tree_id, ui::AXTreeIDUnknown())
-      << "Invalid serialization.\n"
-      << annotation->ToString();
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
