@@ -46,12 +46,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoNoScript) {
   WebContents* tab = otr_browser->tab_strip_model()->GetActiveWebContents();
 
   // Verify the script didn't run.
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      tab,
-      "window.domAutomationController.send(document.title == 'Unmodified')",
-      &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(tab, "document.title == 'Unmodified'"));
 }
 
 IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoYesScript) {
@@ -79,12 +74,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoYesScript) {
   WebContents* tab = otr_browser->tab_strip_model()->GetActiveWebContents();
 
   // Verify the script ran.
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      tab,
-      "window.domAutomationController.send(document.title == 'modified')",
-      &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(tab, "document.title == 'modified'"));
 }
 
 // Tests that an extension which is enabled for incognito mode doesn't

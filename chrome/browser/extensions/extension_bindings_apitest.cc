@@ -346,10 +346,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, ValidationInterception) {
           "/extensions/api_test/bindings/validation_interception.html")));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   ASSERT_FALSE(web_contents->IsCrashed());
-  bool caught = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, "domAutomationController.send(caught)", &caught));
-  EXPECT_TRUE(caught);
+  EXPECT_EQ(true, content::EvalJs(web_contents, "caught"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, UncaughtExceptionLogging) {
@@ -428,10 +425,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   EXPECT_FALSE(tab->IsCrashed());
   EXPECT_EQ(main_frame_url, main_frame->GetLastCommittedURL());
   EXPECT_EQ(main_frame_process, main_frame->GetProcess());
-  bool renderer_valid = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      main_frame, "domAutomationController.send(true);", &renderer_valid));
-  EXPECT_TRUE(renderer_valid);
+  EXPECT_EQ(true, content::EvalJs(main_frame, "true;"));
   EXPECT_FALSE(failure_listener.was_satisfied());
 }
 

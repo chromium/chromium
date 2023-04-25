@@ -352,25 +352,17 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
 
   // Test that a script that matches two separate, yet overlapping match
   // patterns is only injected once.
-  bool scripts_injected_once = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send("
-      "document.getElementsByClassName('injected-once')"
-      ".length == 1)",
-      &scripts_injected_once));
-  ASSERT_TRUE(scripts_injected_once);
+  ASSERT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementsByClassName('injected-once')"
+                      ".length == 1"));
 
   // Test that a script injected at two different load process times, document
   // idle and document end, is injected exactly twice.
-  bool scripts_injected_twice = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send("
-      "document.getElementsByClassName('injected-twice')"
-      ".length == 2)",
-      &scripts_injected_twice));
-  ASSERT_TRUE(scripts_injected_twice);
+  ASSERT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementsByClassName('injected-twice')"
+                      ".length == 2"));
 }
 
 // Tests that content scripts detaching its Window during evaluation shouldn't
@@ -387,31 +379,20 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, DetachDuringEvaluation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // The iframe is removed by `detach.js`.
-  bool iframe_removed = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send("
-      "document.getElementById('injected') === null)",
-      &iframe_removed));
-  EXPECT_TRUE(iframe_removed);
+  EXPECT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('injected') === null"));
 
   // `detach.js` is evaluated, and detaches the iframe.
-  bool detach_evaluated = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send("
-      "document.getElementById('detach-evaluated') !== null)",
-      &detach_evaluated));
-  EXPECT_TRUE(detach_evaluated);
+  EXPECT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('detach-evaluated') !== null"));
 
   // `detach2.js` isn't evaluated because the iframe is detached.
-  bool detach2_evaluated = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send("
-      "document.getElementById('detach2-evaluated') !== null)",
-      &detach2_evaluated));
-  EXPECT_FALSE(detach2_evaluated);
+  EXPECT_EQ(
+      false,
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('detach2-evaluated') !== null"));
 }
 
 // Tests that fetches made by content scripts are exempt from the page's CSP.
@@ -1024,12 +1005,8 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
   ASSERT_TRUE(test_listener.WaitUntilSatisfied());
 
   auto did_script_inject = [](content::WebContents* web_contents) {
-    bool did_inject = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents,
-        "domAutomationController.send(document.title === 'injected');",
-        &did_inject));
-    return did_inject;
+    return content::EvalJs(web_contents, "document.title === 'injected';")
+        .ExtractBool();
   };
 
   // First, test the executeScript() method.
@@ -2091,12 +2068,7 @@ IN_PROC_BROWSER_TEST_P(NTPInterceptionTest, ContentScript) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(search::IsInstantNTP(web_contents));
 
-  bool script_injected_in_ntp = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents,
-      "window.domAutomationController.send(document.title !== 'Fake NTP');",
-      &script_injected_in_ntp));
-  EXPECT_FALSE(script_injected_in_ntp);
+  EXPECT_EQ(false, EvalJs(web_contents, "document.title !== 'Fake NTP';"));
 }
 
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CoepFrameTest) {

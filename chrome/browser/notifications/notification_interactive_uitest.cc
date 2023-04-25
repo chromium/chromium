@@ -129,11 +129,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, DISABLED_TestUserGestureInfobar) {
 
   // Request permission by calling request() while eval'ing an inline script;
   // That's considered a user gesture to webkit, and should produce an infobar.
-  bool result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetActiveWebContents(browser()),
-      "window.domAutomationController.send(request());", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true,
+            content::EvalJs(GetActiveWebContents(browser()), "request();"));
 
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(

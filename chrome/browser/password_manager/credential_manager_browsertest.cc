@@ -73,14 +73,11 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
   void TriggerNavigatorGetPasswordCredentialsAndExpectHasResult(
       content::WebContents* web_contents,
       bool expect_has_results) {
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents,
-        "navigator.credentials.get({password: true}).then(c => {"
-        "  window.domAutomationController.send(!!c);"
-        "});",
-        &result));
-    ASSERT_EQ(expect_has_results, result);
+    ASSERT_EQ(
+        expect_has_results,
+        content::EvalJs(
+            web_contents,
+            "navigator.credentials.get({password: true}).then(c => !!c);"));
   }
 
   // Schedules a call to be made to navigator.credentials.store() in the

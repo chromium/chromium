@@ -243,15 +243,10 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   bool ExtensionFrameIsSandboxed(content::RenderFrameHost* frame) {
     EXPECT_TRUE(frame->GetLastCommittedURL().SchemeIs(kExtensionScheme));
 
-    bool is_sandboxed = false;
     // Note: it's okay for `chrome` to be defined; it has various
     // unstandardized, non-extension-process stuff (like chrome.csi). We just
     // require the special APIs to be undefined.
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        frame, "domAutomationController.send(!chrome || !chrome.tabs);",
-        &is_sandboxed))
-        << "Failed to execute script";
-    return is_sandboxed;
+    return content::EvalJs(frame, "!chrome || !chrome.tabs;").ExtractBool();
   }
 
   // Iterates over every context type and checks if it could be hosted given the

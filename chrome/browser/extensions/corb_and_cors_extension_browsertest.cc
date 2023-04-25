@@ -1727,16 +1727,15 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   {
     PermissionsRequestFunction::SetAutoConfirmForTests(true);
     const char kPermissionGrantingScriptTemplate[] = R"(
-        chrome.permissions.request(
+        new Promise(resolve => {
+          chrome.permissions.request(
             { origins: [$1] },
-            granted => { domAutomationController.send(granted); });
+            granted => { resolve(granted); });
+        });
     )";
-    bool has_permission_been_granted = false;
     std::string script = content::JsReplace(kPermissionGrantingScriptTemplate,
                                             cross_site_origin.GetURL());
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        test_frame, script, &has_permission_been_granted));
-    ASSERT_TRUE(has_permission_been_granted);
+    ASSERT_EQ(true, content::EvalJs(test_frame, script));
     PermissionsRequestFunction::SetAutoConfirmForTests(false);
   }
 
@@ -1957,12 +1956,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       active_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Verify that the service worker controls the fetches.
-  bool is_controlled_by_service_worker = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      active_web_contents(),
-      "domAutomationController.send(!!navigator.serviceWorker.controller)",
-      &is_controlled_by_service_worker));
-  ASSERT_TRUE(is_controlled_by_service_worker);
+  ASSERT_EQ(true, EvalJs(active_web_contents(),
+                         "!!navigator.serviceWorker.controller"));
 
   // Test case #1: Network fetch initiated by the service worker.
   //
@@ -2196,14 +2191,10 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Check if the injection above succeeded (it shouldn't have, because of
   // renderer-side checks).
-  const char kInjectionVerificationScript[] = R"(
-      domAutomationController.send(
-          !!document.getElementById('content-script-injection-result')); )";
-  bool has_content_script_run = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(active_web_contents(),
-                                                   kInjectionVerificationScript,
-                                                   &has_content_script_run));
-  EXPECT_FALSE(has_content_script_run);
+  const char kInjectionVerificationScript[] =
+      "!!document.getElementById('content-script-injection-result');";
+  EXPECT_EQ(false, content::EvalJs(active_web_contents(),
+                                   kInjectionVerificationScript));
 
   // Try to fetch a WebUI resource (i.e. verify that the unsucessful content
   // script injection above didn't clobber the WebUI-specific URLLoaderFactory).

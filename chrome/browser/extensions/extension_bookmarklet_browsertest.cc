@@ -49,10 +49,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
                                WindowOpenDisposition::CURRENT_TAB,
                                ui_test_utils::BROWSER_TEST_NONE);
   // Force serialization with the renderer by executing a no-op script.
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, "domAutomationController.send(true)", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(web_contents, "true"));
 
   // Expect the title hasn't changed since the javascript URL was blocked
   // from executing.

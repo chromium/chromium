@@ -307,12 +307,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, ManifestBackgroundPage) {
   // creating the background page through the manifest (not through
   // window.open).
   EXPECT_FALSE(background_contents->web_contents()->GetOpener());
-  bool window_opener_null_in_js;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      background_contents->web_contents(),
-      "domAutomationController.send(window.opener == null);",
-      &window_opener_null_in_js));
-  EXPECT_TRUE(window_opener_null_in_js);
+  EXPECT_EQ(true, content::EvalJs(background_contents->web_contents(),
+                                  "window.opener == null;"));
 
   UnloadExtension(extension->id());
 }
@@ -364,12 +360,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, NoJsBackgroundPage) {
   // Verify that window.opener in the background contents is not set when
   // allow_js_access=false.
   EXPECT_FALSE(background_contents->web_contents()->GetOpener());
-  bool window_opener_null_in_js;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      background_contents->web_contents(),
-      "domAutomationController.send(window.opener == null);",
-      &window_opener_null_in_js));
-  EXPECT_TRUE(window_opener_null_in_js);
+  EXPECT_EQ(true, content::EvalJs(background_contents->web_contents(),
+                                  "window.opener == null;"));
 
   // Verify multiple BackgroundContents don't get opened despite multiple
   // window.open calls.
@@ -415,12 +407,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, NoJsManifestBackgroundPage) {
   // creating the background page through the manifest (not through
   // window.open).
   EXPECT_FALSE(background_contents->web_contents()->GetOpener());
-  bool window_opener_null_in_js;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      background_contents->web_contents(),
-      "domAutomationController.send(window.opener == null);",
-      &window_opener_null_in_js));
-  EXPECT_TRUE(window_opener_null_in_js);
+  EXPECT_EQ(true, content::EvalJs(background_contents->web_contents(),
+                                  "window.opener == null;"));
 
   // window.open should return null.
   ASSERT_TRUE(RunExtensionTest("app_background_page/no_js_manifest")) <<
@@ -428,11 +416,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, NoJsManifestBackgroundPage) {
 
   // Verify that window.opener in the background contents is still not set.
   EXPECT_FALSE(background_contents->web_contents()->GetOpener());
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      background_contents->web_contents(),
-      "domAutomationController.send(window.opener == null);",
-      &window_opener_null_in_js));
-  EXPECT_TRUE(window_opener_null_in_js);
+  EXPECT_EQ(true, content::EvalJs(background_contents->web_contents(),
+                                  "window.opener == null;"));
 
   UnloadExtension(extension->id());
 }

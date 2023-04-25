@@ -241,21 +241,17 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), net::FilePathToFileURL(test_file)));
 
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        "window.domAutomationController.send("
-        "    document.defaultView.getComputedStyle(document.body, null)."
-        "    getPropertyValue('background-color') == 'rgb(245, 245, 220)')",
-        &result));
-    EXPECT_EQ(expect_css, result);
+    EXPECT_EQ(
+        expect_css,
+        content::EvalJs(
+            browser()->tab_strip_model()->GetActiveWebContents(),
+            "document.defaultView.getComputedStyle(document.body, null)."
+            "getPropertyValue('background-color') == 'rgb(245, 245, 220)'"));
 
-    result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        "window.domAutomationController.send(document.title == 'Modified')",
-        &result));
-    EXPECT_EQ(expect_script, result);
+    EXPECT_EQ(
+        expect_script,
+        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        "document.title == 'Modified'"));
   }
 
   base::FilePath preferences_file_;

@@ -24,10 +24,7 @@ namespace {
 bool WasFrameWithScriptLoaded(content::RenderFrameHost* rfh) {
   if (!rfh)
     return false;
-  bool loaded = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      rfh, "domAutomationController.send(!!window.scriptExecuted)", &loaded));
-  return loaded;
+  return content::EvalJs(rfh, "!!window.scriptExecuted").ExtractBool();
 }
 
 class ExtensionCSPBypassTest : public ExtensionBrowserTest {
@@ -101,12 +98,10 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
           // Not blocked by CSP.
           return true;
         }
-        window.domAutomationController.send(canLoadScript());
+        canLoadScript();
         )",
         extension->GetResourceURL("script.js").spec().c_str());
-    bool script_loaded = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(rfh, code, &script_loaded));
-    return script_loaded;
+    return EvalJs(rfh, code).ExtractBool();
   }
 
   content::RenderFrameHost* GetFrameByName(const std::string& name) {

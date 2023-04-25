@@ -177,13 +177,9 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     RunEncryptedMediaTest(kDefaultEmePlayer, media_file, key_system, src_type,
                           kNoSessionToLoad, false, play_count, expected_title);
     // Check KeyMessage received for all key systems.
-    bool receivedKeyMessage = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        "window.domAutomationController.send("
-        "document.querySelector('video').receivedKeyMessage);",
-        &receivedKeyMessage));
-    EXPECT_TRUE(receivedKeyMessage);
+    EXPECT_EQ(true, content::EvalJs(
+                        browser()->tab_strip_model()->GetActiveWebContents(),
+                        "document.querySelector('video').receivedKeyMessage;"));
   }
 
   void RunEncryptedMediaMultipleFileTest(const std::string& key_system,

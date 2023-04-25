@@ -2247,11 +2247,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_NoOpener) {
                        new_contents->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // Verify that the |new_contents| doesn't have |window.opener| set.
-  bool opener_as_bool = true;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      new_contents, "window.domAutomationController.send(!!window.opener)",
-      &opener_as_bool));
-  EXPECT_FALSE(opener_as_bool);
+  EXPECT_EQ(false, EvalJs(new_contents, "!!window.opener"));
 
   // TODO(lukasza): http://crbug.com/786411: Verify that |new_contents| can NOT
   // find |old_contents| using window.open/name.  This is currently broken,

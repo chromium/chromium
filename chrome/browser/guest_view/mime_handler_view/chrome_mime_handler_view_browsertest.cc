@@ -365,15 +365,13 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame();
   auto url_with_beforeunload =
       embedded_test_server()->GetURL("b.com", "/test_page.html?beforeunload");
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      main_frame,
-      base::StringPrintf(
-          "object.data = '%s';"
-          " object.onload = () => window.domAutomationController.send(true);",
-          url_with_beforeunload.spec().c_str()),
-      &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, content::EvalJs(main_frame,
+                                  base::StringPrintf(
+                                      "object.data = '%s';"
+                                      "new Promise(resolve => {"
+                                      "  object.onload = () => resolve(true);"
+                                      "});",
+                                      url_with_beforeunload.spec().c_str())));
   // Give user gesture to the frame, set the <object> to text/csv resource and
   // handle the "beforeunload" dialog.
   content::PrepContentsForBeforeUnloadTest(

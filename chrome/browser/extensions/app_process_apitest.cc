@@ -264,12 +264,9 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, AppProcess) {
                 ->GetWebContentsAt(6)
                 ->GetPrimaryMainFrame()
                 ->GetProcess());
-  bool windowOpenerValid = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetWebContentsAt(6),
-      "window.domAutomationController.send(window.opener != null)",
-      &windowOpenerValid));
-  ASSERT_TRUE(windowOpenerValid);
+  ASSERT_EQ(true,
+            content::EvalJs(browser()->tab_strip_model()->GetWebContentsAt(6),
+                            "window.opener != null"));
 }
 
 // Test that hosted apps without the background permission use a process per app
@@ -547,12 +544,9 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ServerRedirectToAppFromExtension) {
   test_navigation_observer.Wait();
 
   // App has loaded, and chrome.app.isInstalled should be true.
-  bool is_installed = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send(chrome.app.isInstalled)",
-      &is_installed));
-  ASSERT_TRUE(is_installed);
+  ASSERT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "chrome.app.isInstalled"));
 }
 
 // Tests that if an extension launches an app via chrome.tabs.create with an URL
@@ -580,12 +574,9 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ClientRedirectToAppFromExtension) {
   test_navigation_observer.Wait();
 
   // App has loaded, and chrome.app.isInstalled should be true.
-  bool is_installed = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send(chrome.app.isInstalled)",
-      &is_installed));
-  ASSERT_TRUE(is_installed);
+  ASSERT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "chrome.app.isInstalled"));
 }
 
 // Tests that if we have an app process (path1/container.html) with a non-app
@@ -642,12 +633,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadAppAfterCrash) {
   WebContents* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_TRUE(process_map->Contains(
       contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
-  bool is_installed = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents,
-      "window.domAutomationController.send(chrome.app.isInstalled)",
-      &is_installed));
-  ASSERT_TRUE(is_installed);
+  ASSERT_EQ(true, content::EvalJs(contents, "chrome.app.isInstalled"));
 
   // Crash the tab and reload it, chrome.app.isInstalled should still be true.
   content::CrashTab(browser()->tab_strip_model()->GetActiveWebContents());
@@ -655,11 +641,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadAppAfterCrash) {
       browser()->tab_strip_model()->GetActiveWebContents());
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   observer.Wait();
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents,
-      "window.domAutomationController.send(chrome.app.isInstalled)",
-      &is_installed));
-  ASSERT_TRUE(is_installed);
+  ASSERT_EQ(true, content::EvalJs(contents, "chrome.app.isInstalled"));
 }
 
 // Test that a cross-site renderer-initiated navigation away from a hosted app

@@ -128,13 +128,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
   content::RenderFrameHost* tab1_popup = nullptr;
   {
     content::WebContentsAddedObserver new_window_observer;
-    bool did_create_popup = false;
-    ASSERT_TRUE(ExecuteScriptAndExtractBool(
-        tab1,
-        "window.domAutomationController.send("
-        "    !!window.open('about:blank', 'new_popup'));",
-        &did_create_popup));
-    ASSERT_TRUE(did_create_popup);
+    ASSERT_EQ(true, EvalJs(tab1, "!!window.open('about:blank', 'new_popup');"));
     content::WebContents* popup_window = new_window_observer.GetWebContents();
     EXPECT_TRUE(WaitForLoadStop(popup_window));
     tab1_popup = popup_window->GetPrimaryMainFrame();

@@ -83,13 +83,11 @@ class HistoryClustersMetricsBrowserTest : public InProcessBrowserTest {
             const tab = )" +
                       tab_string + R"(;
             historyApp.shadowRoot.querySelector('cr-tabs').selected = tab;
-            window.domAutomationController.send(true);
+            return true;
           });)";
-    bool result = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(), execute_string,
-        &result));
-    EXPECT_TRUE(result);
+    EXPECT_EQ(true, content::EvalJs(
+                        browser()->tab_strip_model()->GetActiveWebContents(),
+                        execute_string));
   }
 
   // Creates and follows an anchor link. Since we can't differentiate between
@@ -105,13 +103,11 @@ class HistoryClustersMetricsBrowserTest : public InProcessBrowserTest {
             let link = document.createElement('a');
             link.href = 'https://google.com';
             link.click();
-            window.domAutomationController.send(true);
+            return true;
           });)";
-    bool result = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(), execute_string,
-        &result));
-    EXPECT_TRUE(result);
+    EXPECT_EQ(true, content::EvalJs(
+                        browser()->tab_strip_model()->GetActiveWebContents(),
+                        execute_string));
   }
 
   // Navigates to the history clusters UI with `PAGE_TRANSITION_RELOAD`. Assumes

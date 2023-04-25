@@ -199,16 +199,18 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
         "xhr.open('GET', '");
     script += url.spec() +
               "', true);"
-              "xhr.onload = function (e) {"
-              "  if (xhr.readyState === 4) {"
-              "    window.domAutomationController.send(xhr.status === 200);"
-              "  }"
-              "};"
-              "xhr.onerror = function () {"
-              "  window.domAutomationController.send(false);"
-              "};"
-              "xhr.send(null)";
-    return ExecuteScript(browser, script);
+              "new Promise(resolve => {"
+              "  xhr.onload = function (e) {"
+              "    if (xhr.readyState === 4) {"
+              "      resolve(xhr.status === 200);"
+              "    }"
+              "  };"
+              "  xhr.onerror = function () {"
+              "    resolve(false);"
+              "  };"
+              "  xhr.send(null)"
+              "});";
+    return EvalJs(GetWebContents(browser), script).ExtractBool();
   }
 
   content::WebContents* GetWebContents() { return GetWebContents(browser()); }
@@ -307,14 +309,6 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  bool ExecuteScript(Browser* browser, const std::string& script) {
-    bool xhr_result = false;
-    // The JS call will fail if disallowed because the process will be killed.
-    bool execute_result = ExecuteScriptAndExtractBool(GetWebContents(browser),
-                                                      script, &xhr_result);
-    return xhr_result && execute_result;
-  }
-
   // Custom request handler that record request headers and simulates a redirect
   // from google.com to example.com.
   std::unique_ptr<net::test_server::HttpResponse> RequestHandler(

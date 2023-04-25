@@ -145,17 +145,17 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
     const char kAppendFrameScriptTemplate[] = R"(
         var f = document.createElement('iframe');
         f.src = $1;
-        f.onload = function(e) {
-            window.domAutomationController.send(true);
-            f.onload = undefined;
-        }
-        document.body.appendChild(f); )";
+        new Promise(resolve => {
+          f.onload = function(e) {
+              resolve(true);
+              f.onload = undefined;
+          }
+          document.body.appendChild(f);
+        });
+        )";
     std::string append_frame_script =
         content::JsReplace(kAppendFrameScriptTemplate, url.spec());
-    bool loaded = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(frame, append_frame_script,
-                                                     &loaded));
-    EXPECT_TRUE(loaded);
+    EXPECT_EQ(true, content::EvalJs(frame, append_frame_script));
     content::RenderFrameHost* child_frame = content::ChildFrameAt(frame, 0);
     EXPECT_EQ(url, child_frame->GetLastCommittedURL());
     return child_frame;

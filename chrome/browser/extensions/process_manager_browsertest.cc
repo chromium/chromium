@@ -1566,11 +1566,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
             main_frame->GetProcess());
 
   // Ensure the popup's window.opener is defined.
-  bool is_opener_defined = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      popup, "window.domAutomationController.send(!!window.opener)",
-      &is_opener_defined));
-  EXPECT_TRUE(is_opener_defined);
+  EXPECT_EQ(true, EvalJs(popup, "!!window.opener"));
 
   // Verify that postMessage to window.opener works.
   VerifyPostMessageToOpener(popup->GetPrimaryMainFrame(), main_frame);
@@ -1617,11 +1613,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
             main_frame->GetProcess());
 
   // Ensure the popup's window.opener is defined.
-  bool is_opener_defined = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      popup, "window.domAutomationController.send(!!window.opener)",
-      &is_opener_defined));
-  EXPECT_TRUE(is_opener_defined);
+  EXPECT_EQ(true, EvalJs(popup, "!!window.opener"));
 
   // Verify that postMessage to window.opener works.
   VerifyPostMessageToOpener(popup->GetPrimaryMainFrame(), extension_frame);

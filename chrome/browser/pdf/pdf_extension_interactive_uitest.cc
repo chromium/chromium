@@ -201,22 +201,14 @@ views::Widget* TouchSelectText(content::WebContents* contents,
                                        "TouchSelectionMenuViews");
   content::SimulateTouchEventAt(contents, ui::ET_TOUCH_PRESSED, screen_pos);
 
-  bool success = false;
-  if (!content::ExecuteScriptAndExtractBool(
-          contents,
-          "window.addEventListener('message', function(event) {"
-          "  if (event.data.type == 'touchSelectionOccurred')"
-          "    window.domAutomationController.send(true);"
-          "});",
-          &success)) {
-    ADD_FAILURE() << "Failed to add message event listener";
-    return nullptr;
-  }
-
-  if (!success) {
-    ADD_FAILURE() << "Failed to receive message";
-    return nullptr;
-  }
+  EXPECT_EQ(true, content::EvalJs(
+                      contents,
+                      "new Promise(resolve => {"
+                      "  window.addEventListener('message', function(event) {"
+                      "    if (event.data.type == 'touchSelectionOccurred')"
+                      "      resolve(true);"
+                      "  });"
+                      "});"));
 
   content::SimulateTouchEventAt(contents, ui::ET_TOUCH_RELEASED, screen_pos);
   return waiter.WaitIfNeededAndGet();

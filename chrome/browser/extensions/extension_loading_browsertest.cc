@@ -329,10 +329,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
   ASSERT_TRUE(bg_contents);
 
   // Now check whether the extension runtime is valid (see kTargetJs).
-  bool is_valid = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      bg_contents, "domAutomationController.send(is_valid);", &is_valid));
-  EXPECT_TRUE(is_valid);
+  EXPECT_EQ(true, content::EvalJs(bg_contents, "is_valid;"));
 
   // Tidy up.
   scoped_refptr<content::DevToolsAgentHost> agent_host(

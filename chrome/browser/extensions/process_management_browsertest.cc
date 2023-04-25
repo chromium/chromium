@@ -402,23 +402,24 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
   content::RenderProcessHost* old_process_host =
       web_contents->GetPrimaryMainFrame()->GetProcess();
 
-  // Note that the |setTimeout| call below is needed to make sure
-  // ExecuteScriptAndExtractBool returns *after* a scheduled navigation has
-  // already started.
+  // Note that the |setTimeout| call below is needed to make sure EvalJs returns
+  // *after* a scheduled navigation has already started.
   GURL web_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   std::string navigation_starting_script =
       "var form = document.getElementById('form');\n"
-      "form.action = '" + web_url.spec() + "';\n"
+      "form.action = '" +
+      web_url.spec() +
+      "';\n"
       "form.submit();\n"
-      "setTimeout(\n"
-      "    function() { window.domAutomationController.send(true); },\n"
-      "    0);\n";
+      "new Promise(resolve => {\n"
+      "  setTimeout(\n"
+      "      function() { resolve(true); },\n"
+      "      0);\n"
+      "});";
 
   // Try to trigger navigation to a webpage from within the tab.
-  bool ignored_script_result = false;
   content::TestNavigationObserver nav_observer(web_contents, 1);
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, navigation_starting_script, &ignored_script_result));
+  EXPECT_TRUE(content::ExecJs(web_contents, navigation_starting_script));
 
   // Verify that the navigation succeeded.
   nav_observer.Wait();
@@ -493,23 +494,23 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreProcessTest,
 
   GURL cws_web_url = GetWebstorePage();
 
-  // Note that the |setTimeout| call below is needed to make sure
-  // ExecuteScriptAndExtractBool returns *after* a scheduled navigation has
-  // already started.
+  // Note that the |setTimeout| call below is needed to make sure EvalJs returns
+  // *after* a scheduled navigation has already started.
   std::string navigation_starting_script = R"(
       var form = document.getElementById('form');
       form.action = $1;
       form.submit();
-      setTimeout(() => { window.domAutomationController.send(true); }, 0);)";
+      new Promise(resolve => {
+        setTimeout(() => { resolve(true); }, 0);
+      });)";
 
   // Trigger a renderer-initiated POST navigation (via the form) to a Chrome
   // Webstore URL.
-  bool ignored_script_result = false;
   content::TestNavigationObserver nav_observer(web_contents, 1);
 
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, content::JsReplace(navigation_starting_script, cws_web_url),
-      &ignored_script_result));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      content::JsReplace(navigation_starting_script, cws_web_url)));
 
   // The expectation is that the store will be properly put in its own process,
   // otherwise the renderer process is going to be terminated.
@@ -673,7 +674,6 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto can_access_window = [this, web_contents](const GURL& url) {
-    bool can_access = false;
     const char kOpenNewWindow[] = "window.newWin = window.open('%s');";
     const char kGetAccess[] =
         R"(
@@ -686,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(
               canAccess = false;
             }
             window.newWin.close();
-            window.domAutomationController.send(canAccess);
+            canAccess;
          }
        )";
     EXPECT_TRUE(content::ExecuteScript(
@@ -697,10 +697,7 @@ IN_PROC_BROWSER_TEST_F(
     std::ignore = content::WaitForLoadStop(
         browser()->tab_strip_model()->GetActiveWebContents());
 
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(web_contents, kGetAccess,
-                                                     &can_access));
-
-    return can_access;
+    return content::EvalJs(web_contents, kGetAccess).ExtractBool();
   };
 
   bool can_access_installed = can_access_window(installed_extension);

@@ -295,13 +295,9 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, WebUIBindings) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto api_exists = [web_contents](const std::string& api_name) {
-    bool exists = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents,
-        base::StringPrintf("window.domAutomationController.send(!!%s);",
-                           api_name.c_str()),
-        &exists));
-    return exists;
+    return content::EvalJs(web_contents,
+                           base::StringPrintf("!!%s;", api_name.c_str()))
+        .ExtractBool();
   };
 
   EXPECT_TRUE(api_exists("chrome.developerPrivate"));
