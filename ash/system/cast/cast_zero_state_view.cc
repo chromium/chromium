@@ -33,7 +33,7 @@ CastZeroStateView::CastZeroStateView() {
 
   // The zero-state view are inside a rounded container.
   auto* container = AddChildView(std::make_unique<RoundedContainer>());
-  container->SetBorderInsets(gfx::Insets::VH(0, 32));
+  container->SetBorderInsets(gfx::Insets::VH(0, 16));
 
   // The views are centered vertically.
   std::unique_ptr<BoxLayout> layout =
@@ -53,6 +53,7 @@ CastZeroStateView::CastZeroStateView() {
 
   Label* title = container->AddChildView(std::make_unique<Label>(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_ZERO_STATE_TITLE)));
+  title->SetMultiLine(true);
   bubble_utils::ApplyStyle(title, TypographyToken::kCrosTitle1);
   title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   title->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(32, 0, 0, 0));
