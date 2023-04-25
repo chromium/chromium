@@ -201,6 +201,20 @@ TEST_F(UrlIdentityTest, IsolatedWebAppsOptionsTest) {
            .type = Type::kIsolatedWebApp,
            .name = u"Test IWA Name",
        }},
+      {GURL("isolated-app://unknown"),
+       {Type::kIsolatedWebApp},
+       {},
+       {
+           .type = Type::kDefault,
+           .name = u"isolated-app://unknown",
+       }},
+      {GURL("isolated-app://unknown"),
+       {Type::kIsolatedWebApp},
+       {.default_options = {DefaultFormatOptions::kHostname}},
+       {
+           .type = Type::kDefault,
+           .name = u"unknown",
+       }},
   };
 
   for (const auto& test_case : test_cases) {
@@ -209,6 +223,19 @@ TEST_F(UrlIdentityTest, IsolatedWebAppsOptionsTest) {
     EXPECT_EQ(result.name, test_case.expected_result.name);
     EXPECT_EQ(result.type, test_case.expected_result.type);
   }
+}
+
+TEST_F(UrlIdentityTest, IsolatedWebAppFallsBackIfNoWebAppProvider) {
+  TestingProfile no_provider_profile;
+
+  UrlIdentity result = UrlIdentity::CreateFromUrl(&no_provider_profile,
+                                                  GURL(kTestIsolatedWebAppUrl),
+                                                  {Type::kIsolatedWebApp}, {});
+
+  EXPECT_EQ(result.type, Type::kDefault);
+  EXPECT_EQ(result.name,
+            u"isolated-app://"
+            u"berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
