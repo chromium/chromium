@@ -3953,6 +3953,11 @@
           '--top-chrome-touch-ui=disabled',
         ],
       },
+      'win10-code-coverage': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
     },
   },
   'vaapi_unittest eve': {
