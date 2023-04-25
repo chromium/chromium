@@ -386,8 +386,11 @@ class ClientSession : public protocol::HostStub,
   // Set to true after all data channels have been connected.
   bool channels_connected_ = false;
 
-  // Used to store video channel pause parameter.
+  // Used to store the video channel pause parameter.
   bool pause_video_ = false;
+
+  // Used to store the target framerate control parameter.
+  int target_framerate_ = kTargetFrameRate;
 
   // VideoLayout is sent only after the control channel is connected. Until
   // then it's stored in |pending_video_layout_message_|.

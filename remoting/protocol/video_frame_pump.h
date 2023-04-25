@@ -91,6 +91,7 @@ class VideoFramePump : public VideoStream,
   void SetMouseCursor(
       std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
   void SetMouseCursorPosition(const webrtc::DesktopVector& position) override;
+  void SetTargetFramerate(int framerate) override;
 
   protocol::VideoFeedbackStub* video_feedback_stub() {
     return &capture_scheduler_;

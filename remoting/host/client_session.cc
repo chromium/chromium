@@ -181,6 +181,14 @@ void ClientSession::ControlVideo(const protocol::VideoControl& video_control) {
     }
   }
 
+  if (video_control.has_target_framerate()) {
+    target_framerate_ = video_control.target_framerate();
+    LOG(INFO) << "Received target framerate: " << target_framerate_;
+    for (const auto& [_, video_stream] : video_streams_) {
+      video_stream->SetTargetFramerate(target_framerate_);
+    }
+  }
+
   if (video_control.has_framerate_boost()) {
     auto framerate_boost = video_control.framerate_boost();
     DCHECK(framerate_boost.has_enabled());
@@ -573,6 +581,9 @@ void ClientSession::CreateMediaStreams() {
   // Pause capturing if necessary.
   video_stream->Pause(pause_video_);
 
+  // Set the current target framerate.
+  video_stream->SetTargetFramerate(target_framerate_);
+
   if (event_timestamp_source_for_tests_) {
     video_stream->SetEventTimestampsSource(event_timestamp_source_for_tests_);
   }
@@ -609,6 +620,9 @@ void ClientSession::CreatePerMonitorVideoStreams() {
 
     // Pause capturing if necessary.
     video_stream->Pause(pause_video_);
+
+    // Set the current target framerate.
+    video_stream->SetTargetFramerate(target_framerate_);
 
     if (event_timestamp_source_for_tests_) {
       video_stream->SetEventTimestampsSource(event_timestamp_source_for_tests_);

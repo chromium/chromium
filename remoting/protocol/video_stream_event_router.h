@@ -24,7 +24,6 @@ class VideoStreamEventRouter {
 
   // Mirrors the VideoChannelStateObserver interface with an additional
   // |screen_id| param used to route the value to the appropriate video stream.
-  void OnTargetFramerateChanged(webrtc::ScreenId screen_id, int framerate);
   void OnEncodedFrameSent(webrtc::ScreenId screen_id,
                           webrtc::EncodedImageCallback::Result result,
                           const WebrtcVideoEncoder::EncodedFrame& frame);

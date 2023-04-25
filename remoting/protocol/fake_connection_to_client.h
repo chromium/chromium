@@ -39,6 +39,7 @@ class FakeVideoStream : public protocol::VideoStream {
   void SetMouseCursor(
       std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
   void SetMouseCursorPosition(const webrtc::DesktopVector& position) override;
+  void SetTargetFramerate(int framerate) override;
 
   webrtc::ScreenId selected_source() const;
 

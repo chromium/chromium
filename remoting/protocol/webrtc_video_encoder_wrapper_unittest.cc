@@ -46,6 +46,9 @@ constexpr int kInputFrameHeight = 600;
 constexpr int kBitrateBps = 8000000;
 constexpr int kTestScreenId = 16;
 
+// Used for a +/- 5ms fudge factor when checking frame durations.
+constexpr int kDurationMsFudgeFactor = 5;
+
 const VideoEncoder::Capabilities kVideoEncoderCapabilities(
     /*loss_notification*/ false);
 const VideoEncoder::Settings kVideoEncoderSettings(kVideoEncoderCapabilities,
@@ -119,7 +122,6 @@ class MockVideoChannelStateObserver : public VideoChannelStateObserver {
   MockVideoChannelStateObserver() = default;
   ~MockVideoChannelStateObserver() override = default;
 
-  MOCK_METHOD(void, OnTargetFramerateChanged, (int framerate), (override));
   MOCK_METHOD(void,
               OnEncodedFrameSent,
               (EncodedImageCallback::Result result,
@@ -155,7 +157,7 @@ class MockVideoEncoder : public WebrtcVideoEncoder {
   MOCK_METHOD(void,
               Encode,
               (std::unique_ptr<webrtc::DesktopFrame> frame,
-               const FrameParams& param,
+               const FrameParams& frame_params,
                EncodeCallback done),
               (override));
 };
@@ -168,17 +170,25 @@ class WebrtcVideoEncoderWrapperTest : public testing::Test {
     // Configure the mock encoder's default behavior to mimic a real encoder.
     mock_video_encoder_ = std::make_unique<NiceMock<MockVideoEncoder>>();
     ON_CALL(*mock_video_encoder_, Encode)
-        .WillByDefault([](std::unique_ptr<webrtc::DesktopFrame> frame,
-                          const WebrtcVideoEncoder::FrameParams& param,
-                          WebrtcVideoEncoder::EncodeCallback done) {
+        .WillByDefault([&](std::unique_ptr<webrtc::DesktopFrame> frame,
+                           const WebrtcVideoEncoder::FrameParams& frame_params,
+                           WebrtcVideoEncoder::EncodeCallback done) {
           auto encoded_frame =
               std::make_unique<WebrtcVideoEncoder::EncodedFrame>();
           encoded_frame->dimensions = frame->size();
           encoded_frame->data = webrtc::EncodedImageBuffer::Create(
               frame->size().width() * frame->size().height());
-          encoded_frame->key_frame = param.key_frame;
-          encoded_frame->quantizer = param.vpx_min_quantizer;
+          encoded_frame->key_frame = frame_params.key_frame;
+          encoded_frame->quantizer = frame_params.vpx_min_quantizer;
           encoded_frame->codec = kVideoCodecVP9;
+
+          auto expected_framerate = get_expected_framerate();
+          if (expected_framerate.has_value()) {
+            EXPECT_EQ(frame_params.fps, *expected_framerate);
+            EXPECT_NEAR(frame_params.duration.InMilliseconds(),
+                        base::Hertz(*expected_framerate).InMilliseconds(),
+                        kDurationMsFudgeFactor);
+          }
           std::move(done).Run(WebrtcVideoEncoder::EncodeResult::SUCCEEDED,
                               std::move(encoded_frame));
         });
@@ -206,10 +216,20 @@ class WebrtcVideoEncoderWrapperTest : public testing::Test {
   }
 
  protected:
+  void set_expected_framerate(int framerate) {
+    expected_framerate_ = framerate;
+  }
+
+  const absl::optional<int>& get_expected_framerate() const {
+    return expected_framerate_;
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::RunLoop run_loop_;
+
+  absl::optional<int> expected_framerate_;
 
   VideoStreamEventRouter video_stream_event_router_;
   NiceMock<MockVideoChannelStateObserver> observer_;
@@ -236,77 +256,6 @@ TEST_F(WebrtcVideoEncoderWrapperTest, ReturnsVP9EncodedFrames) {
 
   auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
   std::vector<VideoFrameType> frame_types;
-  encoder->Encode(MakeVideoFrame(), &frame_types);
-
-  PostQuitAndRun();
-}
-
-TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesOnFramerateChanged) {
-  EXPECT_CALL(observer_, OnTargetFramerateChanged(42));
-  EXPECT_CALL(callback_, OnEncodedImage(_, Field(&CodecSpecificInfo::codecType,
-                                                 kVideoCodecVP9)))
-      .WillOnce(Return(kResultOk));
-
-  auto sdp_format = GetVp9Format();
-  sdp_format.parameters.emplace("max-fr", "42");
-  auto encoder = InitEncoder(std::move(sdp_format), GetVp9Codec());
-  std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameKey};
-  encoder->Encode(MakeVideoFrame(), &frame_types);
-
-  PostQuitAndRun();
-}
-
-TEST_F(WebrtcVideoEncoderWrapperTest,
-       NotifiesOnFramerateChangedInMultiStreamMode) {
-  EXPECT_CALL(observer_, OnTargetFramerateChanged(42));
-  EXPECT_CALL(callback_, OnEncodedImage(_, Field(&CodecSpecificInfo::codecType,
-                                                 kVideoCodecVP9)))
-      .WillOnce(Return(kResultOk));
-
-  // Register a multi-stream observer for |kTestScreenId|.
-  video_stream_event_router_.SetVideoChannelStateObserver(
-      "screen_stream_16", observer_.GetWeakPtr());
-
-  // Also set up a strict mock observer for another screen id to ensure the
-  // proper observer is called.
-  StrictMock<MockVideoChannelStateObserver> observer;
-  video_stream_event_router_.SetVideoChannelStateObserver(
-      "screen_stream_17", observer.GetWeakPtr());
-
-  auto sdp_format = GetVp9Format();
-  sdp_format.parameters.emplace("max-fr", "42");
-  auto encoder = InitEncoder(std::move(sdp_format), GetVp9Codec());
-  std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameKey};
-  encoder->Encode(MakeVideoFrame(), &frame_types);
-
-  PostQuitAndRun();
-}
-
-TEST_F(WebrtcVideoEncoderWrapperTest, FramerateClampedToLowerBound) {
-  EXPECT_CALL(observer_, OnTargetFramerateChanged(1));
-  EXPECT_CALL(callback_, OnEncodedImage(_, Field(&CodecSpecificInfo::codecType,
-                                                 kVideoCodecVP9)))
-      .WillOnce(Return(kResultOk));
-
-  auto sdp_format = GetVp9Format();
-  sdp_format.parameters.emplace("max-fr", "0");
-  auto encoder = InitEncoder(std::move(sdp_format), GetVp9Codec());
-  std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameKey};
-  encoder->Encode(MakeVideoFrame(), &frame_types);
-
-  PostQuitAndRun();
-}
-
-TEST_F(WebrtcVideoEncoderWrapperTest, FramerateClampedToUpperBound) {
-  EXPECT_CALL(observer_, OnTargetFramerateChanged(1000));
-  EXPECT_CALL(callback_, OnEncodedImage(_, Field(&CodecSpecificInfo::codecType,
-                                                 kVideoCodecVP9)))
-      .WillOnce(Return(kResultOk));
-
-  auto sdp_format = GetVp9Format();
-  sdp_format.parameters.emplace("max-fr", "1001");
-  auto encoder = InitEncoder(std::move(sdp_format), GetVp9Codec());
-  std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameKey};
   encoder->Encode(MakeVideoFrame(), &frame_types);
 
   PostQuitAndRun();
@@ -534,6 +483,26 @@ TEST_F(WebrtcVideoEncoderWrapperTest,
   sdp_format.parameters.emplace("max-fr", "42");
   auto encoder = InitEncoder(std::move(sdp_format), GetVp9Codec());
   std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameKey};
+  encoder->Encode(MakeVideoFrame(), &frame_types);
+
+  PostQuitAndRun();
+}
+
+TEST_F(WebrtcVideoEncoderWrapperTest, FrameDurationAndFpsCalculated) {
+  EXPECT_CALL(callback_, OnEncodedImage(_, _))
+      .Times(3)
+      .WillRepeatedly(Return(kResultOk));
+
+  set_expected_framerate(kTargetFrameRate);
+
+  auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
+  encoder->SetEncoderForTest(std::move(mock_video_encoder_));
+
+  std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameKey};
+  encoder->Encode(MakeVideoFrame(), &frame_types);
+  task_environment_.FastForwardBy(base::Hertz(kTargetFrameRate));
+  encoder->Encode(MakeVideoFrame(), &frame_types);
+  task_environment_.FastForwardBy(base::Hertz(kTargetFrameRate));
   encoder->Encode(MakeVideoFrame(), &frame_types);
 
   PostQuitAndRun();

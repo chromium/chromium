@@ -60,6 +60,12 @@ message VideoControl {
   }
   optional FramerateBoost framerate_boost = 4;
 
+  // Sets the target framerate for the host. Note that the actual framerate is
+  // variable so this value will update the rate at which frames are captured
+  // but the framerate will be lower if there aren't enough changes on the
+  // screen or the host is not capable of generating frames quickly enough.
+  optional uint32 target_framerate = 5;
+
   // Lossless encode and color settings are no longer set via this message.
   reserved 2, 3;
   reserved "lossless_encode", "lossless_color";

@@ -51,6 +51,12 @@ class VideoStream {
   // Selects the current desktop display (if multiple displays).
   virtual void SelectSource(webrtc::ScreenId id) = 0;
 
+  // Sets the target/max video framerate for the host. The actual framerate is
+  // variable and determined by the number of changes on the screen and the rate
+  // at which the host is able to generate frames. Also WebRTC will adjust this
+  // value based on network conditions.
+  virtual void SetTargetFramerate(int framerate) = 0;
+
   // Allows the owner of the stream to request a different |capture_interval|
   // (usually a higher frequency) for the specified |boost_duration|. After
   // |boost_duration| has elapsed, the capture rate will return to normal.

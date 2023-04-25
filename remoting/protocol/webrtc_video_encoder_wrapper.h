@@ -164,10 +164,11 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   // TaskRunner used for scheduling encoding tasks.
   scoped_refptr<base::SingleThreadTaskRunner> encode_task_runner_;
 
-  // Stores the target frame rate used for capture and encode scheduling. May be
-  // changed by the client using SDP format parameters for the selected codec.
-  int target_frame_rate_ = kTargetFrameRate;
-  base::TimeDelta target_frame_interval_;
+  // Stores the current frame interval, updated for each frame received.
+  base::TimeDelta current_frame_interval_ = base::Hertz(kTargetFrameRate);
+
+  // Stores the timestamp of the last frame that was sent for encoding.
+  base::TimeDelta last_frame_received_timestamp_;
 
   // Represents the screen which is being encoded by this instance. Initialized
   // after the first captured frame has been received.

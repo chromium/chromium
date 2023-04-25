@@ -39,6 +39,8 @@ void FakeVideoStream::SetMouseCursor(
 void FakeVideoStream::SetMouseCursorPosition(
     const webrtc::DesktopVector& position) {}
 
+void FakeVideoStream::SetTargetFramerate(int framerate) {}
+
 webrtc::ScreenId FakeVideoStream::selected_source() const {
   return selected_source_;
 }
