@@ -29,8 +29,9 @@ class MessageSenderImplTest : public testing::Test {
   void SetUp() override {
     fake_connection_manager_ =
         std::make_unique<secure_channel::FakeConnectionManager>();
-    message_sender_ =
-        std::make_unique<MessageSenderImpl>(fake_connection_manager_.get());
+    cros_state_message_recorder_ = std::make_unique<CrosStateMessageRecorder>();
+    message_sender_ = std::make_unique<MessageSenderImpl>(
+        fake_connection_manager_.get(), cros_state_message_recorder_.get());
   }
 
   void VerifyMessage(proto::MessageType expected_message_type,
@@ -58,6 +59,7 @@ class MessageSenderImplTest : public testing::Test {
 
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
+  std::unique_ptr<CrosStateMessageRecorder> cros_state_message_recorder_;
   std::unique_ptr<MessageSenderImpl> message_sender_;
 };
 

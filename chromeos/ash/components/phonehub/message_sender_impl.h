@@ -5,12 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_MESSAGE_SENDER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_MESSAGE_SENDER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/message_sender.h"
 
 #include <stdint.h>
 #include <string>
+#include "base/memory/raw_ptr.h"
 
+#include "chromeos/ash/components/phonehub/cros_state_message_recorder.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 
 namespace ash {
@@ -23,8 +24,8 @@ namespace phonehub {
 
 class MessageSenderImpl : public MessageSender {
  public:
-  explicit MessageSenderImpl(
-      secure_channel::ConnectionManager* connection_manager);
+  MessageSenderImpl(secure_channel::ConnectionManager* connection_manager,
+                    CrosStateMessageRecorder* cros_state_message_recorder);
   ~MessageSenderImpl() override;
 
   // MessageSender:
@@ -55,6 +56,8 @@ class MessageSenderImpl : public MessageSender {
 
   raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
       connection_manager_;
+  raw_ptr<CrosStateMessageRecorder, ExperimentalAsh>
+      cros_state_message_recorder_;
 };
 
 }  // namespace phonehub
