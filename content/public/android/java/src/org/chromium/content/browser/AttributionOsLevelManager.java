@@ -4,8 +4,10 @@
 
 package org.chromium.content.browser;
 
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Process;
 import android.view.MotionEvent;
 
 import androidx.privacysandbox.ads.adservices.java.measurement.MeasurementManagerFutures;
@@ -37,6 +39,9 @@ import java.util.Arrays;
 @JNINamespace("content")
 public class AttributionOsLevelManager {
     private static final String TAG = "AttributionManager";
+    // TODO: replace with constant in android.Manifest.permission once it becomes available in U.
+    private static final String PERMISSION_ACCESS_ADSERVICES_ATTRIBUTION =
+            "android.permission.ACCESS_ADSERVICES_ATTRIBUTION";
     private long mNativePtr;
     private MeasurementManagerFutures mManager;
 
@@ -183,6 +188,17 @@ public class AttributionOsLevelManager {
     @CalledByNative
     private void getMeasurementApiStatus() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
+            return;
+        }
+        if (ContextUtils.getApplicationContext().checkPermission(
+                    PERMISSION_ACCESS_ADSERVICES_ATTRIBUTION, Process.myPid(), Process.myUid())
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission may not be granted when embedded as WebView.
+            Log.i(TAG,
+                    "OS-provided attribution support is disabled. Needs "
+                            + PERMISSION_ACCESS_ADSERVICES_ATTRIBUTION + " permission. "
+                            + "See https://developer.android.com/design-for-safety/privacy-sandbox/setup-api-access");
             AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
             return;
         }
