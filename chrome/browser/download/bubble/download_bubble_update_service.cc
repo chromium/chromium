@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/content_index/content_index_provider_impl.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_crx_util.h"
@@ -166,19 +167,11 @@ bool DownloadBubbleUpdateService::ItemSortKey::operator>(
 
 DownloadBubbleUpdateService::DownloadBubbleUpdateService(Profile* profile)
     : profile_(profile),
-      original_profile_(
-          profile->IsOffTheRecord() ? profile_->GetOriginalProfile() : nullptr),
-      download_item_notifier_(profile->GetDownloadManager(), this),
-      original_download_item_notifier_(
-          profile->IsOffTheRecord()
-              ? absl::make_optional<download::AllDownloadItemNotifier>(
-                    original_profile_->GetDownloadManager(),
-                    this)
-              : absl::nullopt) {
+      original_profile_(profile->IsOffTheRecord()
+                            ? profile_->GetOriginalProfile()
+                            : nullptr) {
   offline_content_provider_observation_.Observe(
       OfflineContentAggregatorFactory::GetForKey(profile_->GetProfileKey()));
-  InitializeDownloadItemsCache();
-  StartInitializeOfflineItemsCache();
 }
 
 DownloadBubbleUpdateService::~DownloadBubbleUpdateService() = default;
@@ -204,6 +197,72 @@ template <typename Item>
 bool DownloadBubbleUpdateService::IsCacheAtMax(const SortedItems<Item>& cache) {
   CHECK(cache.size() <= GetNumItemsToCache());
   return cache.size() == GetNumItemsToCache();
+}
+
+void DownloadBubbleUpdateService::Initialize(
+    content::DownloadManager* manager) {
+  CHECK(manager);
+  CHECK(!download_item_notifier_);
+
+  // Assume we have an original profile and it has an OTR profile.
+  // If the original profile's DownloadBubbleUpdateService is Initialize()'d
+  // already when this function is invoked on the OTR profile's
+  // DownloadBubbleUpdateService, we set the OTR profile's
+  // DownloadBubbleUpdateService's |original_download_item_notifier_| in the
+  // 'if' block below. If the original profile's DownloadBubbleUpdateService is
+  // not yet initialized when this function is invoked on the OTR profile's
+  // DownloadBubbleUpdateService, we will set the OTR profile's
+  // DownloadBubbleUpdateService's |original_download_item_notifier_| when the
+  // original profile's DownloadBubbleUpdateService does become Initialize()'d,
+  // in the 'else' block below (which will trigger re-intialization of the
+  // download item cache).
+  if (profile_->IsOffTheRecord()) {
+    DownloadBubbleUpdateService* original_update_service =
+        DownloadBubbleUpdateServiceFactory::GetForProfile(original_profile_);
+    content::DownloadManager* original_download_manager =
+        original_update_service ? original_update_service->GetDownloadManager()
+                                : nullptr;
+    if (original_download_manager) {
+      InitializeOriginalNotifier(original_download_manager);
+    }
+  } else {
+    for (Profile* otr_profile : profile_->GetAllOffTheRecordProfiles()) {
+      DownloadBubbleUpdateServiceFactory::GetForProfile(otr_profile)
+          ->InitializeOriginalNotifier(manager);
+    }
+  }
+  download_item_notifier_ =
+      std::make_unique<download::AllDownloadItemNotifier>(manager, this);
+  // As long as we have a notifier for this profile, we can initialize the cache
+  // with the current profile's downloads. If we get an original manager in the
+  // future, we will initialize from scratch at that time.
+  InitializeDownloadItemsCache();
+  StartInitializeOfflineItemsCache();
+}
+
+void DownloadBubbleUpdateService::InitializeOriginalNotifier(
+    content::DownloadManager* manager) {
+  CHECK(profile_->IsOffTheRecord());
+  CHECK(manager);
+  if (original_download_item_notifier_) {
+    return;
+  }
+  original_download_item_notifier_ =
+      std::make_unique<download::AllDownloadItemNotifier>(manager, this);
+  // Reset the download items cache, now that we have an original
+  // DownloadManager to pull from.
+  if (download_item_notifier_) {
+    InitializeDownloadItemsCache();
+  }
+}
+
+content::DownloadManager* DownloadBubbleUpdateService::GetDownloadManager() {
+  return download_item_notifier_ ? download_item_notifier_->GetManager()
+                                 : nullptr;
+}
+
+bool DownloadBubbleUpdateService::IsInitialized() const {
+  return download_item_notifier_ && offline_items_initialized_;
 }
 
 bool DownloadBubbleUpdateService::GetAllModelsToDisplay(
@@ -343,7 +402,8 @@ ProgressInfo DownloadBubbleUpdateService::GetProgressInfo() const {
 void DownloadBubbleUpdateService::OnDownloadCreated(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
-  if (download_manager_shut_down_) {
+  CHECK(download_item_notifier_ || original_download_item_notifier_);
+  if (!download_item_notifier_) {
     return;
   }
   if (download_crx_util::IsExtensionDownload(*item) &&
@@ -364,13 +424,14 @@ void DownloadBubbleUpdateService::OnDownloadCreated(
 
 void DownloadBubbleUpdateService::OnDelayedCrxDownloadCreated(
     const std::string& guid) {
-  if (download_manager_shut_down_) {
+  CHECK(download_item_notifier_ || original_download_item_notifier_);
+  if (!download_item_notifier_) {
     return;
   }
   // This assumes that for extension/theme downloads, the DownloadItem is
   // removed from the DownloadManager upon completion.
   download::DownloadItem* item =
-      download_item_notifier_.GetManager()->GetDownloadByGuid(guid);
+      download_item_notifier_->GetManager()->GetDownloadByGuid(guid);
   if (item && !item->IsDone()) {
     MaybeAddDownloadItemToCache(item, /*is_new=*/true);
 
@@ -391,7 +452,8 @@ void DownloadBubbleUpdateService::OnDelayedCrxDownloadCreated(
 void DownloadBubbleUpdateService::OnDownloadUpdated(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
-  if (download_manager_shut_down_) {
+  CHECK(download_item_notifier_ || original_download_item_notifier_);
+  if (!download_item_notifier_) {
     return;
   }
   // If the item is an extension or theme download waiting out its 2-second
@@ -421,7 +483,8 @@ void DownloadBubbleUpdateService::OnDownloadUpdated(
 void DownloadBubbleUpdateService::OnDownloadRemoved(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
-  if (download_manager_shut_down_) {
+  CHECK(download_item_notifier_ || original_download_item_notifier_);
+  if (!download_item_notifier_) {
     return;
   }
   bool cache_was_at_max = IsCacheAtMax(download_items_);
@@ -442,21 +505,15 @@ void DownloadBubbleUpdateService::OnDownloadRemoved(
 
 void DownloadBubbleUpdateService::OnManagerGoingDown(
     content::DownloadManager* manager) {
+  CHECK(download_item_notifier_ || original_download_item_notifier_);
   // Assume that the original manager (if this is an OTR profile) may or may not
   // have shut down, but we still want to cease all operations when this
   // profile's manager shuts down.
-  if (manager == profile_->GetDownloadManager()) {
-    download_manager_shut_down_ = true;
+  if (download_item_notifier_ &&
+      (manager == download_item_notifier_->GetManager())) {
     download_items_.clear();
     download_items_iter_map_.clear();
-    for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
-      if (browser->window() &&
-          browser->window()->GetDownloadBubbleUIController()) {
-        browser->window()
-            ->GetDownloadBubbleUIController()
-            ->OnDownloadManagerGoingDown();
-      }
-    }
+    download_item_notifier_.reset();
   }
 }
 
@@ -677,7 +734,7 @@ void DownloadBubbleUpdateService::StartBackfillDownloadItems(
 
 void DownloadBubbleUpdateService::BackfillDownloadItems(
     const ItemSortKey& last_key) {
-  if (download_manager_shut_down_) {
+  if (!download_item_notifier_) {
     return;
   }
   BackfillItemsImpl(last_key, GetAllDownloadItems(), download_items_,
@@ -721,6 +778,7 @@ void DownloadBubbleUpdateService::BackfillItemsImpl(
 }
 
 void DownloadBubbleUpdateService::InitializeDownloadItemsCache() {
+  CHECK(download_item_notifier_);
   download_items_.clear();
   download_items_iter_map_.clear();
   for (download::DownloadItem* item : GetAllDownloadItems()) {
@@ -729,6 +787,9 @@ void DownloadBubbleUpdateService::InitializeDownloadItemsCache() {
 }
 
 void DownloadBubbleUpdateService::StartInitializeOfflineItemsCache() {
+  if (offline_items_initialized_) {
+    return;
+  }
   offline_items_collection::OfflineContentProvider* provider =
       OfflineContentAggregatorFactory::GetForKey(profile_->GetProfileKey());
   provider->GetAllItems(
@@ -753,17 +814,11 @@ void DownloadBubbleUpdateService::InitializeOfflineItemsCache(
 std::vector<download::DownloadItem*>
 DownloadBubbleUpdateService::GetAllDownloadItems() {
   std::vector<download::DownloadItem*> all_items;
-  content::DownloadManager* manager = download_item_notifier_.GetManager();
-  if (!manager) {
-    return all_items;
+  if (download_item_notifier_) {
+    download_item_notifier_->GetManager()->GetAllDownloads(&all_items);
   }
-  manager->GetAllDownloads(&all_items);
   if (original_download_item_notifier_) {
-    content::DownloadManager* original_manager =
-        original_download_item_notifier_->GetManager();
-    if (original_manager) {
-      original_manager->GetAllDownloads(&all_items);
-    }
+    original_download_item_notifier_->GetManager()->GetAllDownloads(&all_items);
   }
   return all_items;
 }

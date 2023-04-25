@@ -101,7 +101,6 @@ DownloadDisplayController::DownloadDisplayController(
     DownloadBubbleUIController* bubble_controller)
     : display_(display),
       browser_(browser),
-      download_manager_(browser_->profile()->GetDownloadManager()),
       bubble_controller_(bubble_controller) {
   bubble_controller_->SetDownloadDisplayController(this);
   // |display| can be null in tests.
@@ -288,8 +287,12 @@ void DownloadDisplayController::UpdateDownloadIconToInactive() {
 std::vector<DownloadUIModelPtr>
 DownloadDisplayController::UpdateButtonStateFromAllModels(bool may_retry) {
   std::vector<std::unique_ptr<DownloadUIModel>> all_models;
-  bool results_complete =
-      bubble_controller_->update_service()->GetAllModelsToDisplay(all_models);
+  DownloadBubbleUpdateService* update_service =
+      bubble_controller_->update_service();
+  if (!update_service->IsInitialized()) {
+    return all_models;
+  }
+  bool results_complete = update_service->GetAllModelsToDisplay(all_models);
   UpdateToolbarButtonState(all_models);
   if (!results_complete && may_retry) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -319,7 +322,7 @@ void DownloadDisplayController::ScheduleToolbarInactive(
 
 base::Time DownloadDisplayController::GetLastCompleteTime(
     const std::vector<std::unique_ptr<DownloadUIModel>>& all_models) {
-  base::Time last_time = DownloadPrefs::FromDownloadManager(download_manager_)
+  base::Time last_time = DownloadPrefs::FromBrowserContext(browser_->profile())
                              ->GetLastCompleteTime();
   for (const auto& model : all_models) {
     if (last_time < model->GetEndTime()) {

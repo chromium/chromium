@@ -15,10 +15,6 @@
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 
-namespace content {
-class DownloadManager;
-}  // namespace content
-
 class DownloadBubbleUIController;
 
 namespace base {
@@ -115,10 +111,6 @@ class DownloadDisplayController : public FullscreenObserver,
   // Returns the DownloadDisplay. Should always return a valid display.
   DownloadDisplay* download_display_for_testing() { return display_; }
 
-  void set_manager_for_testing(content::DownloadManager* manager) {
-    download_manager_ = manager;
-  }
-
  private:
   friend class DownloadDisplayControllerTest;
 
@@ -141,8 +133,7 @@ class DownloadDisplayController : public FullscreenObserver,
   // button is already showing.
   void ShowToolbarButton();
 
-  // Based on the information from `download_manager_`, updates the icon state
-  // of the `display_`.
+  // Updates the icon state of the `display_`.
   void UpdateToolbarButtonState(
       std::vector<std::unique_ptr<DownloadUIModel>>& all_models);
   // Asks `display_` to make the download icon inactive.
@@ -162,7 +153,6 @@ class DownloadDisplayController : public FullscreenObserver,
   raw_ptr<Browser> browser_;
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       observation_{this};
-  raw_ptr<content::DownloadManager> download_manager_;
   base::OneShotTimer icon_disappearance_timer_;
   base::OneShotTimer icon_inactive_timer_;
   IconInfo icon_info_;

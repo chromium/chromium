@@ -41,7 +41,6 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::ReturnRefOfCopy;
-using ::testing::SetArgPointee;
 using ::testing::StrictMock;
 using StrictMockDownloadItem = StrictMock<download::MockDownloadItem>;
 using DownloadIconState = download::DownloadIconState;
@@ -169,6 +168,8 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
     }
   }
 
+  bool IsInitialized() const override { return true; }
+
   MOCK_METHOD(DownloadDisplayController::ProgressInfo,
               GetProgressInfo,
               (),
@@ -207,8 +208,7 @@ std::unique_ptr<KeyedService> BuildMockDownloadCoreService(
 class DownloadDisplayControllerTest : public testing::Test {
  public:
   DownloadDisplayControllerTest()
-      : manager_(std::make_unique<NiceMock<content::MockDownloadManager>>()),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
   }
   DownloadDisplayControllerTest(const DownloadDisplayControllerTest&) = delete;
@@ -219,8 +219,6 @@ class DownloadDisplayControllerTest : public testing::Test {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
 
     profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");
-    EXPECT_CALL(*manager_.get(), GetBrowserContext())
-        .WillRepeatedly(Return(profile_.get()));
 
     DownloadCoreServiceFactory::GetInstance()->SetTestingFactory(
         profile_, base::BindRepeating(&BuildMockDownloadCoreService));
@@ -243,10 +241,8 @@ class DownloadDisplayControllerTest : public testing::Test {
     browser_ = std::unique_ptr<Browser>(Browser::Create(params));
     bubble_controller_ = std::make_unique<DownloadBubbleUIController>(
         browser_.get(), mock_update_service_.get());
-    bubble_controller_->set_manager_for_testing(manager_.get());
     controller_ = std::make_unique<DownloadDisplayController>(
         display_.get(), browser_.get(), bubble_controller_.get());
-    controller_->set_manager_for_testing(manager_.get());
     display_->SetController(controller_.get());
   }
 
@@ -260,7 +256,6 @@ class DownloadDisplayControllerTest : public testing::Test {
   Browser* browser() { return browser_.get(); }
 
  protected:
-  NiceMock<content::MockDownloadManager>& manager() { return *manager_.get(); }
   download::MockDownloadItem& item(size_t index) { return *items_[index]; }
   FakeDownloadDisplay& display() { return *display_; }
   DownloadDisplayController& controller() { return *controller_; }
@@ -308,8 +303,6 @@ class DownloadDisplayControllerTest : public testing::Test {
     if (state == DownloadState::IN_PROGRESS) {
       in_progress_count_++;
     }
-    EXPECT_CALL(manager(), InProgressCount())
-        .WillRepeatedly(Return(in_progress_count_));
     // Set actioned_on to false (it defaults to true) because the controller
     // will generally set this to false in OnNewItem().
     DownloadItemModel(&item(index)).SetActionedOn(false);
@@ -318,8 +311,6 @@ class DownloadDisplayControllerTest : public testing::Test {
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
     }
-    EXPECT_CALL(*manager_.get(), GetAllDownloads(_))
-        .WillRepeatedly(SetArgPointee<0>(items));
     content::DownloadItemUtils::AttachInfoForTesting(&(item(index)), profile_,
                                                      nullptr);
     mock_update_service_->AddModel(
@@ -372,10 +363,8 @@ class DownloadDisplayControllerTest : public testing::Test {
     if (state == DownloadState::COMPLETE) {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(true));
       in_progress_count_--;
-      EXPECT_CALL(manager(), InProgressCount())
-          .WillRepeatedly(Return(in_progress_count_));
-      DownloadPrefs::FromDownloadManager(&manager())
-          ->SetLastCompleteTime(base::Time::Now());
+      DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
+          base::Time::Now());
     } else {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(false));
     }
@@ -393,8 +382,6 @@ class DownloadDisplayControllerTest : public testing::Test {
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
     }
-    EXPECT_CALL(*manager_.get(), GetAllDownloads(_))
-        .WillRepeatedly(SetArgPointee<0>(items));
     mock_update_service_->RemoveLastDownload();
   }
 
@@ -438,7 +425,6 @@ class DownloadDisplayControllerTest : public testing::Test {
   std::unique_ptr<FakeDownloadDisplay> display_;
   std::vector<std::unique_ptr<StrictMockDownloadItem>> items_;
   std::vector<OfflineItem> offline_items_;
-  std::unique_ptr<NiceMock<content::MockDownloadManager>> manager_;
   std::unique_ptr<StrictMock<MockDownloadBubbleUpdateService>>
       mock_update_service_;
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
@@ -831,8 +817,8 @@ TEST_F(DownloadDisplayControllerTest, InitialState_OldLastDownload) {
                    download::DownloadItem::COMPLETE);
   base::Time current_time = base::Time::Now();
   // Set the last complete time to more than 1 hour ago.
-  DownloadPrefs::FromDownloadManager(&manager())
-      ->SetLastCompleteTime(current_time - base::Minutes(61));
+  DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
+      current_time - base::Minutes(61));
 
   DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());
@@ -846,8 +832,8 @@ TEST_F(DownloadDisplayControllerTest, InitialState_NewLastDownload) {
                    download::DownloadItem::COMPLETE);
   base::Time current_time = base::Time::Now();
   // Set the last complete time to less than 1 hour ago.
-  DownloadPrefs::FromDownloadManager(&manager())
-      ->SetLastCompleteTime(current_time - base::Minutes(59));
+  DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
+      current_time - base::Minutes(59));
 
   DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());
@@ -881,8 +867,8 @@ TEST_F(DownloadDisplayControllerTest,
        InitialState_NewLastDownloadWithEmptyItem) {
   base::Time current_time = base::Time::Now();
   // Set the last complete time to less than 1 hour ago.
-  DownloadPrefs::FromDownloadManager(&manager())
-      ->SetLastCompleteTime(current_time - base::Minutes(59));
+  DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
+      current_time - base::Minutes(59));
 
   DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());

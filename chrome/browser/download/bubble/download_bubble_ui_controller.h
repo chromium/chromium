@@ -14,7 +14,6 @@
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
-#include "content/public/browser/download_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -47,7 +46,6 @@ class DownloadBubbleUIController {
                            bool may_show_animation);
   void OnDownloadItemUpdated(download::DownloadItem* item);
   void OnDownloadItemRemoved(download::DownloadItem* item);
-  void OnDownloadManagerGoingDown();
   void OnOfflineItemsAdded(
       const OfflineContentProvider::OfflineItemList& items);
   void OnOfflineItemUpdated(const OfflineItem& item);
@@ -102,10 +100,6 @@ class DownloadBubbleUIController {
 
   DownloadBubbleUpdateService* update_service() { return update_service_; }
 
-  void set_manager_for_testing(content::DownloadManager* manager) {
-    download_manager_ = manager;
-  }
-
  private:
   friend class DownloadBubbleUIControllerTest;
   friend class DownloadBubbleUIControllerIncognitoTest;
@@ -120,7 +114,6 @@ class DownloadBubbleUIController {
   raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<DownloadBubbleUpdateService> update_service_;
-  raw_ptr<content::DownloadManager, DanglingUntriaged> download_manager_;
   raw_ptr<OfflineItemModelManager, DanglingUntriaged> offline_manager_;
 
   // DownloadDisplayController and DownloadBubbleUIController have the same
