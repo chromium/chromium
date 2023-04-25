@@ -223,7 +223,7 @@ void BruschettaInstallerImpl::DownloadStarted(
 }
 
 void BruschettaInstallerImpl::DownloadFailed() {
-  download_guid_ = base::GUID();
+  download_guid_ = base::Uuid();
   download_callback_.Reset();
 
   if (MaybeClose()) {
@@ -236,7 +236,7 @@ void BruschettaInstallerImpl::DownloadFailed() {
 
 void BruschettaInstallerImpl::DownloadSucceeded(
     const download::CompletionInfo& completion_info) {
-  download_guid_ = base::GUID();
+  download_guid_ = base::Uuid();
   std::move(download_callback_).Run(completion_info);
 }
 
@@ -244,7 +244,7 @@ void BruschettaInstallerImpl::DownloadFirmware() {
   VLOG(2) << "Downloading firmware";
   // We need to generate the download GUID before notifying because the tests
   // need it to set the response.
-  download_guid_ = base::GUID::GenerateRandomV4();
+  download_guid_ = base::Uuid::GenerateRandomV4();
   NotifyObserver(State::kFirmwareDownload);
 
   const std::string* url =
@@ -279,9 +279,9 @@ void BruschettaInstallerImpl::OnFirmwareDownloaded(
 
 void BruschettaInstallerImpl::DownloadBootDisk() {
   VLOG(2) << "Downloading boot disk";
-  // We need to generate the download GUID before notifying because the tests
+  // We need to generate the download UUID before notifying because the tests
   // need it to set the response.
-  download_guid_ = base::GUID::GenerateRandomV4();
+  download_guid_ = base::Uuid::GenerateRandomV4();
   NotifyObserver(State::kBootDiskDownload);
 
   const std::string* url = config_.FindDict(prefs::kPolicyImageKey)
@@ -316,9 +316,9 @@ void BruschettaInstallerImpl::OnBootDiskDownloaded(
 
 void BruschettaInstallerImpl::DownloadPflash() {
   VLOG(2) << "Downloading pflash";
-  // We need to generate the download GUID before notifying because the tests
+  // We need to generate the download UUID before notifying because the tests
   // need it to set the response.
-  download_guid_ = base::GUID::GenerateRandomV4();
+  download_guid_ = base::Uuid::GenerateRandomV4();
   NotifyObserver(State::kPflashDownload);
 
   const base::Value::Dict* pflash = config_.FindDict(prefs::kPolicyPflashKey);
@@ -647,7 +647,7 @@ void BruschettaInstallerImpl::Error(BruschettaInstallResult error) {
   }
 }
 
-const base::GUID& BruschettaInstallerImpl::GetDownloadGuid() const {
+const base::Uuid& BruschettaInstallerImpl::GetDownloadGuid() const {
   return download_guid_;
 }
 

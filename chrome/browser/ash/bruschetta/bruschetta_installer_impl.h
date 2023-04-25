@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -36,7 +36,7 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   void Cancel() override;
   void Install(std::string vm_name, std::string config_id) override;
 
-  const base::GUID& GetDownloadGuid() const override;
+  const base::Uuid& GetDownloadGuid() const override;
 
   void DownloadStarted(const std::string& guid,
                        download::DownloadParams::StartResult result) override;
@@ -86,7 +86,7 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   std::string config_id_;
   base::Value::Dict config_;
 
-  base::GUID download_guid_;
+  base::Uuid download_guid_;
   DownloadCallback download_callback_;
 
   base::FilePath firmware_path_;
