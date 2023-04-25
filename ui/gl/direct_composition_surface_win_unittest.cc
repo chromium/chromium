@@ -986,7 +986,7 @@ TEST_F(DirectCompositionPixelTest, NonZeroBoundsOffset) {
   for (const auto& test_case : test_cases) {
     const auto& point = test_case.point;
     const auto& expected_color = test_case.expected_color;
-    SkColor actual_color = pixels.GetPixel(point);
+    SkColor actual_color = GLTestHelper::GetColorAtPoint(pixels, point);
     EXPECT_TRUE(AreColorsSimilar(expected_color, actual_color))
         << std::hex << "Expected " << expected_color << " Actual "
         << actual_color << " at " << point.ToString();

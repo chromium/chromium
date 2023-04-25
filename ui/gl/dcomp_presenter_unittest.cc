@@ -610,13 +610,16 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     presenter_->ScheduleDCLayer(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
-    GLTestHelper::WindowPixels pixels =
-        GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
+    SkBitmap pixels = GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
 
-    EXPECT_SKCOLOR_CLOSE(SK_ColorRED, pixels.GetPixel(gfx::Point(49, 49)), 0);
-    EXPECT_SKCOLOR_CLOSE(SK_ColorGREEN, pixels.GetPixel(gfx::Point(51, 49)), 0);
-    EXPECT_SKCOLOR_CLOSE(SK_ColorBLUE, pixels.GetPixel(gfx::Point(49, 51)), 0);
-    EXPECT_SKCOLOR_CLOSE(SK_ColorBLACK, pixels.GetPixel(gfx::Point(51, 51)), 0);
+    EXPECT_SKCOLOR_EQ(
+        SK_ColorRED, GLTestHelper::GetColorAtPoint(pixels, gfx::Point(49, 49)));
+    EXPECT_SKCOLOR_EQ(SK_ColorGREEN, GLTestHelper::GetColorAtPoint(
+                                         pixels, gfx::Point(51, 49)));
+    EXPECT_SKCOLOR_EQ(SK_ColorBLUE, GLTestHelper::GetColorAtPoint(
+                                        pixels, gfx::Point(49, 51)));
+    EXPECT_SKCOLOR_EQ(SK_ColorBLACK, GLTestHelper::GetColorAtPoint(
+                                         pixels, gfx::Point(51, 51)));
   }
 
   // These colors are used for |CheckOverlayExactlyFillsHole|.
@@ -676,7 +679,7 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
       for (int x = 0; x < window_size.width(); x++) {
         gfx::Point location(x, y);
         bool in_hole = root_surface_hole.Contains(location);
-        SkColor actual_color = pixels.GetPixel(location);
+        SkColor actual_color = GLTestHelper::GetColorAtPoint(pixels, location);
         SkColor expected_color =
             (in_hole ? kOverlayExpectedColor : kRootSurfaceInitialColor)
                 .toSkColor();
@@ -982,7 +985,8 @@ TEST_F(DCompPresenterPixelTest, NonZeroBoundsOffset) {
   for (const auto& test_case : test_cases) {
     const auto& point = test_case.point;
     const auto& expected_color = test_case.expected_color;
-    EXPECT_SKCOLOR_CLOSE(expected_color, pixels.GetPixel(point),
+    EXPECT_SKCOLOR_CLOSE(expected_color,
+                         GLTestHelper::GetColorAtPoint(pixels, point),
                          kMaxColorChannelDeviation)
         << " at " << point.ToString();
   }
@@ -1303,12 +1307,12 @@ TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
   // to composite it.
   const gfx::Rect mapped_quad_rect = quad_to_root_transform.MapRect(quad_rect);
 
-  GLTestHelper::WindowPixels pixels =
-      GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
+  SkBitmap pixels = GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
 
   // Check the top edge of the scaled overlay
   EXPECT_SKCOLOR_CLOSE(SK_ColorBLACK,
-                       pixels.GetPixel(gfx::Point(0, mapped_quad_rect.y() - 1)),
+                       GLTestHelper::GetColorAtPoint(
+                           pixels, gfx::Point(0, mapped_quad_rect.y() - 1)),
                        kMaxColorChannelDeviation);
   EXPECT_SKCOLOR_CLOSE(SK_ColorRED,
                        GLTestHelper::ReadBackWindowPixel(
@@ -1318,10 +1322,14 @@ TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
   // Check the bottom edge of the scaled overlay
   EXPECT_SKCOLOR_CLOSE(
       SK_ColorRED,
-      pixels.GetPixel(gfx::Point(0, mapped_quad_rect.bottom() - 1)),
+      GLTestHelper::GetColorAtPoint(
+          pixels, gfx::Point(0, mapped_quad_rect.bottom() - 1)),
       kMaxColorChannelDeviation);
   EXPECT_SKCOLOR_CLOSE(
-      SK_ColorBLACK, pixels.GetPixel(gfx::Point(0, mapped_quad_rect.bottom())),
+
+      SK_ColorBLACK,
+      GLTestHelper::GetColorAtPoint(pixels,
+                                    gfx::Point(0, mapped_quad_rect.bottom())),
       kMaxColorChannelDeviation);
 }
 
