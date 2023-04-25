@@ -7,7 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "content/public/browser/document_user_data.h"
+#include "content/public/browser/render_frame_host.h"
 
 // Tracks anchor information in content::NavigationPredictor to report gathered
 // data on navigating out the page. Ideally this should be managed by
@@ -19,7 +20,7 @@ class PageAnchorsMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   class UserInteractionsData
-      : public content::WebContentsUserData<UserInteractionsData> {
+      : public content::DocumentUserData<UserInteractionsData> {
    public:
     UserInteractionsData(const UserInteractionsData&) = delete;
     ~UserInteractionsData() override;
@@ -67,6 +68,20 @@ class PageAnchorsMetricsObserver
         ukm::SourceId ukm_source_id,
         absl::optional<base::TimeDelta> navigation_start_to_now);
 
+    // Clear the user interactions data.
+    void Clear();
+
+    // Since the `UserInteractionsData` data is updated by
+    // `NavigationPredictor` and is recorded to UKM by
+    // `PageAnchorMetricsObserver`, it is important to make sure the two are in
+    // sync. `NavigationPredictor` should only update the
+    // `UserInteractionsData` if `IsValidUkmSourceId` returns true.
+    bool IsValidUkmSourceId(ukm::SourceId ukm_source_id);
+
+    void SetUkmSourceIdForTesting(ukm::SourceId ukm_source_id) {
+      ukm_source_id_ = ukm_source_id;
+    }
+
     // User interaction data for the tracked anchor index.
     std::unordered_map<int, UserInteractions> user_interactions_;
 
@@ -75,12 +90,13 @@ class PageAnchorsMetricsObserver
     absl::optional<base::TimeDelta> navigation_start_to_click_;
 
    private:
-    friend class content::WebContentsUserData<UserInteractionsData>;
-    explicit UserInteractionsData(content::WebContents* contents);
-    WEB_CONTENTS_USER_DATA_KEY_DECL();
+    friend class DocumentUserData<UserInteractionsData>;
+    explicit UserInteractionsData(content::RenderFrameHost* render_frame_host);
+    ukm::SourceId ukm_source_id_;
+    DOCUMENT_USER_DATA_KEY_DECL();
   };
 
-  class AnchorsData : public content::WebContentsUserData<AnchorsData> {
+  class AnchorsData : public content::DocumentUserData<AnchorsData> {
    public:
     AnchorsData(const AnchorsData&) = delete;
     ~AnchorsData() override;
@@ -101,14 +117,13 @@ class PageAnchorsMetricsObserver
     std::vector<int> link_locations_;
 
    private:
-    friend class content::WebContentsUserData<AnchorsData>;
-    explicit AnchorsData(content::WebContents* contents);
-    WEB_CONTENTS_USER_DATA_KEY_DECL();
+    friend class content::DocumentUserData<AnchorsData>;
+    explicit AnchorsData(content::RenderFrameHost* render_frame_host);
+    DOCUMENT_USER_DATA_KEY_DECL();
   };
 
   PageAnchorsMetricsObserver(const PageAnchorsMetricsObserver&) = delete;
-  explicit PageAnchorsMetricsObserver(content::WebContents* web_contents)
-      : web_contents_(web_contents) {}
+  explicit PageAnchorsMetricsObserver(content::WebContents* web_contents) {}
   PageAnchorsMetricsObserver& operator=(const PageAnchorsMetricsObserver&) =
       delete;
 
@@ -125,6 +140,15 @@ class PageAnchorsMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void DidActivatePrerenderedPage(
       content::NavigationHandle* navigation_handle) override;
+  page_load_metrics::PageLoadMetricsObserver::ObservePolicy OnCommit(
+      content::NavigationHandle* navigation_handle) override;
+  void OnRenderFrameDeleted(content::RenderFrameHost* rfh) override;
+  page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+  OnEnterBackForwardCache(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnRestoreFromBackForwardCache(
+      const page_load_metrics::mojom::PageLoadTiming& timing,
+      content::NavigationHandle* navigation_handle) override;
 
  private:
   void RecordAnchorDataToUkm();
@@ -132,7 +156,8 @@ class PageAnchorsMetricsObserver
 
   bool is_in_prerendered_page_ = false;
 
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  ukm::SourceId ukm_source_id_;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PAGE_ANCHORS_METRICS_OBSERVER_H_
