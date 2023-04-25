@@ -13,10 +13,10 @@ import re
 import urllib.request
 
 _REPO_URL = 'https://repo.maven.apache.org/maven2'
-_GROUP_NAME = 'com/google/errorprone'
-_MODULE_NAME = 'error_prone_annotations'
+_GROUP_NAME = 'org/jetbrains/kotlinx'
+_MODULE_NAME = 'kotlinx-coroutines-guava'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '2.14.0'
+_OVERRIDE_LATEST = '1.6.4'
 _PATCH_VERSION = 'cr1'
 
 

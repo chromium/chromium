@@ -255,6 +255,9 @@ class ChromiumDepGraph {
             resolveVersion: '1.6.4'),
         org_jetbrains_kotlinx_kotlinx_coroutines_android: new PropertyOverride(
             resolveVersion: '1.6.4'),
+        org_jetbrains_kotlinx_kotlinx_coroutines_guava: new PropertyOverride(
+            resolveVersion: '1.6.4',
+            overrideLatest: true),
         org_jetbrains_kotlin_kotlin_stdlib_jdk8: new PropertyOverride(
             resolveVersion: '1.8.20'),
         org_jetbrains_kotlin_kotlin_stdlib_jdk7: new PropertyOverride(
