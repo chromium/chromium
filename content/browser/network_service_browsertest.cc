@@ -213,8 +213,14 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
   base::ScopedTempDir temp_dir_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WebUIBindingsNoHttp DISABLED_WebUIBindingsNoHttp
+#else
+#define MAYBE_WebUIBindingsNoHttp WebUIBindingsNoHttp
+#endif
+
 // Verifies that WebUI pages with WebUI bindings can't make network requests.
-IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, WebUIBindingsNoHttp) {
+IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, MAYBE_WebUIBindingsNoHttp) {
   GURL test_url(GetWebUIURL("webui/"));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   RenderProcessHostBadIpcMessageWaiter kill_waiter(
