@@ -322,7 +322,6 @@ if (is_android) {
       "$java_src_dir/org/chromium/chromecast/base/OwnedScope.java",
       "$java_src_dir/org/chromium/chromecast/base/Scope.java",
       "$java_src_dir/org/chromium/chromecast/base/Sequencer.java",
-      "$java_src_dir/org/chromium/chromecast/base/Subscription.java",
       "$java_src_dir/org/chromium/chromecast/base/Unit.java",
 
       # TODO(sanfin): Move these files to another target.

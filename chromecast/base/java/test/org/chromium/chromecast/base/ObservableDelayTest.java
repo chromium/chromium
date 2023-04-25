@@ -124,8 +124,8 @@ public class ObservableDelayTest {
     @Test
     public void testDelayHigherCardinalityObservable() {
         FakeScheduler scheduler = new FakeScheduler();
-        Observable<Integer> src = Observable.make(
-                observer -> observer.open(10).and(observer.open(20)).and(observer.open(30)));
+        Observable<Integer> src =
+                observer -> observer.open(10).and(observer.open(20)).and(observer.open(30));
         ReactiveRecorder recorder = ReactiveRecorder.record(src.delay(scheduler, 100));
         recorder.verify().end();
         scheduler.fastForwardBy(100);

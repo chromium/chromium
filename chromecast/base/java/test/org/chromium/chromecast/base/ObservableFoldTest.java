@@ -66,8 +66,8 @@ public class ObservableFoldTest {
 
     @Test
     public void multipleIntegers() {
-        ReactiveRecorder r = ReactiveRecorder.record(sum(Observable.make(
-                observer -> observer.open(1).and(observer.open(2)).and(observer.open(3)))));
+        ReactiveRecorder r = ReactiveRecorder.record(sum(
+                observer -> observer.open(1).and(observer.open(2)).and(observer.open(3))));
         r.verify().opened(6).end();
         r.unsubscribe();
         r.verify().closed(6).end();
@@ -75,8 +75,8 @@ public class ObservableFoldTest {
 
     @Test
     public void multipleStrings() {
-        ReactiveRecorder r = ReactiveRecorder.record(transitionString(Observable.make(
-                observer -> observer.open("a").and(observer.open("b")).and(observer.open("c")))));
+        ReactiveRecorder r = ReactiveRecorder.record(transitionString(
+                observer -> observer.open("a").and(observer.open("b")).and(observer.open("c"))));
         r.verify().opened("+a+b+c").end();
         r.unsubscribe();
         r.verify().closed("+a+b+c").end();

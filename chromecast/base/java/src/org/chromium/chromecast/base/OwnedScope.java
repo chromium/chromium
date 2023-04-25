@@ -19,7 +19,7 @@ package org.chromium.chromecast.base;
  *
  *   // A static method on a Service implementation like this can provide an easy connection API.
  *   public static Observable<IFoo> connect(Context context) {
- *       return Observable.make(observer -> {
+ *       return observer -> {
  *           // Use an OwnedScope to avoid a null check in onServiceDisconnected().
  *           OwnedScope subscription = new OwnedScope();
  *           ServiceConnection connection = new ServiceConnection() {
@@ -37,7 +37,7 @@ package org.chromium.chromecast.base;
  *           };
  *           context.bindService(new Intent(context, FooService.class), connection);
  *           return subscription.and(() -> context.unbindService(connection));
- *       });
+ *       };
  *   }
  *
  * An OwnedScope can also be useful for cleanup in clients for such APIs:
