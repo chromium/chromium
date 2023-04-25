@@ -1149,9 +1149,6 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 
 .menu-header,
 .menu-item {
-  --hover-color: rgba(255, 255, 255, 0.06);
-  --toggled-color: rgb(140, 180, 245);
-
   align-items: center;
   color: var(--grey-100);
   display: flex;
@@ -1163,7 +1160,7 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 
 button.menu-item:hover,
 label.menu-item:hover {
-  background-color: var(--hover-color);
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
 .settings .menu-item {
@@ -1203,7 +1200,7 @@ body:not(.has-front-camera):not(.has-back-camera) #builtin-video-header {
 
 .menu-item input::before {
   bottom: 13px;
-  box-shadow: 0 0 0 2px var(--grey-100);
+  box-shadow: 0 0 0 2px var(--cros-sys-on_surface);
   content: '';
   left: 13px;
   position: absolute;
@@ -1217,10 +1214,10 @@ body:not(.has-front-camera):not(.has-back-camera) #builtin-video-header {
 
 .menu-item input:checked::before {
   background-clip: padding-box;
-  background-color: var(--toggled-color);
+  background-color: var(--cros-sys-primary);
   border: 4px solid transparent;
   bottom: 12px;
-  box-shadow: 0 0 0 1px var(--toggled-color);
+  box-shadow: 0 0 0 1px var(--cros-sys-primary);
   left: 12px;
   right: 12px;
   top: 12px;
@@ -1242,7 +1239,7 @@ html[dir=rtl] .menu-header .icon {
 }
 
 .menu-header .icon:hover {
-  background-color: var(--hover-color);
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
 #settings-gridtype .icon {
@@ -1429,7 +1426,7 @@ body:not(.mode-switching):not(.streaming).view-expert-settings .spinner {
 }
 
 #options-container .menu-item span {
-  color: var(--grey-100);
+  color: var(--cros-sys-on_surface);
   margin-inline-start: 4px;
 }
 
