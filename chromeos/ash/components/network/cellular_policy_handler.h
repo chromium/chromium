@@ -71,8 +71,32 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   // reason for retrying is.
   enum class InstallRetryReason {
     kMissingNonCellularConnectivity = 0,
-    kOther,
+    kInternalError = 1,
+    kUserError = 2,
+    kOther
   };
+
+  // HermesUserErrorCodes indicate errors made by the user. These can be due
+  // to bad input or a valid input that has already been successfully processed.
+  // In such errors, we do not attempt to retry.
+  const std::array<HermesResponseStatus, 4> kHermesUserErrorCodes = {
+      HermesResponseStatus::kErrorAlreadyDisabled,
+      HermesResponseStatus::kErrorAlreadyEnabled,
+      HermesResponseStatus::kErrorInvalidActivationCode,
+      HermesResponseStatus::kErrorInvalidIccid};
+
+  // HermesInternalErrorCodes indicate system failure during the installation
+  // process. These error can happen due to code bugs or reasons unrelated to
+  // user input. In these cases, we retry using an exponental backoff policy to
+  // attempt the installation again.
+  const std::array<HermesResponseStatus, 7> kHermesInternalErrorCodes = {
+      HermesResponseStatus::kErrorUnknown,
+      HermesResponseStatus::kErrorInternalLpaFailure,
+      HermesResponseStatus::kErrorWrongState,
+      HermesResponseStatus::kErrorSendApduFailure,
+      HermesResponseStatus::kErrorUnexpectedModemManagerState,
+      HermesResponseStatus::kErrorModemMessageProcessing,
+      HermesResponseStatus::kErrorPendingProfile};
 
   friend class CellularPolicyHandlerTest;
 
