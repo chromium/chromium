@@ -1717,6 +1717,43 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       DismissalAllowsFuturePrompts) {
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DISMISS);
+
+  {
+    // The first request should show a prompt, which is dismissed.
+    permissions::PermissionRequestObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    EXPECT_FALSE(
+        content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
+    ASSERT_TRUE(observer.request_shown());
+    EXPECT_EQ(false,
+              content::EvalJs(GetFrame(), "document.hasStorageAccess()"));
+    ASSERT_EQ(prompt_factory()->TotalRequestCount(), 1);
+  }
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  {
+    // However, subsequent requests should be able to re-prompt.
+    permissions::PermissionRequestObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+
+    EXPECT_TRUE(
+        storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+    // Verify a prompt was shown.
+    EXPECT_TRUE(observer.request_shown());
+    EXPECT_EQ(prompt_factory()->TotalRequestCount(), 2);
+  }
+}
+
 class StorageAccessAPIWithImplicitGrantsBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
