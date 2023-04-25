@@ -95,6 +95,11 @@ class RendererStartupHelper : public KeyedService,
   // Sends a message to all renderers to update the developer mode.
   void OnDeveloperModeChanged(bool in_developer_mode);
 
+  // Sets the user script world CSP for the given `extension` in all applicable
+  // renderers.
+  void SetUserScriptWorldCsp(const Extension& extension,
+                             const std::string& csp);
+
   // Returns mojom::Renderer* corresponding to |process|. This would return
   // nullptr when it's called before |process| is inserted to
   // |process_mojo_map_| or after it's deleted. Note that the callers should

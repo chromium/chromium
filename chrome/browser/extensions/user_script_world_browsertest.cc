@@ -13,6 +13,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
@@ -169,6 +170,71 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
                            "sendMessage"]
          })";
   EXPECT_THAT(script_result, base::test::IsJson(kExpectedJson));
+}
+
+// Tests that, by default, the user script world's CSP is the same as the
+// extension's CSP.
+IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
+                       DefaultCspIsExtensionDefault) {
+  // Load a simple extension with permission to example.com and navigate a new
+  // tab to example.com.
+  const Extension* extension =
+      LoadExtensionWithHostPermission("http://example.com/*");
+
+  NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  // Execute a script that attempts to eval() some code. This should fail, since
+  // by default the user script world CSP is the same as the extension's CSP
+  // (which prevents eval).
+  static constexpr char kScriptSource[] =
+      R"(var result;
+         try {
+           eval('result = "allowed eval"');
+         } catch (e) {
+           result = 'disallowed eval';
+         }
+         result;)";
+  base::Value script_result =
+      ExecuteScriptInUserScriptWorld(kScriptSource, *extension);
+
+  EXPECT_EQ(script_result, "disallowed eval");
+}
+
+// Tests that the user script world CSP can be updated to allow unsafe
+// directives, like `unsafe-eval`.
+// TODO(https://crbug.com/1429408): This is currently a separate test than the
+// above because re-setting the isolated world CSP in blink doesn't work. This
+// is due to the caching code here [1], which prevents a lookup if a world has
+// already been created. We'll need to fix this, since otherwise isolated world
+// CSP would be sticky per renderer process.
+// [1]:
+// https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/frame/local_dom_window.cc;l=374-391;drc=8ce14ef97f8607b1b57f8d02da575ed5150eea9e
+IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest, CanSetCustomCsp) {
+  // Load a simple extension with permission to example.com and navigate a new
+  // tab to example.com.
+  const Extension* extension =
+      LoadExtensionWithHostPermission("http://example.com/*");
+
+  NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  // Update the user script world CSP to allow unsafe eval.
+  RendererStartupHelperFactory::GetForBrowserContext(profile())
+      ->SetUserScriptWorldCsp(*extension, "script-src 'unsafe-eval'");
+
+  // Execute a script that attempts to eval() some code. This should succeed,
+  // since the CSP has been updated.
+  static constexpr char kScriptSource[] =
+      R"(var result;
+         try {
+           eval('result = "allowed eval"');
+         } catch (e) {
+           result = 'disallowed eval';
+         }
+         result;)";
+  base::Value script_result =
+      ExecuteScriptInUserScriptWorld(kScriptSource, *extension);
+
+  EXPECT_EQ(script_result, "allowed eval");
 }
 
 }  // namespace extensions

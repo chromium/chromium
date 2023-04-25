@@ -337,6 +337,26 @@ void RendererStartupHelper::OnDeveloperModeChanged(bool in_developer_mode) {
   }
 }
 
+void RendererStartupHelper::SetUserScriptWorldCsp(const Extension& extension,
+                                                  const std::string& csp) {
+  mojom::UserScriptWorldInfoPtr info =
+      mojom::UserScriptWorldInfo::New(extension.id(), csp);
+  for (auto& process_entry : process_mojo_map_) {
+    content::RenderProcessHost* process = process_entry.first;
+    mojom::Renderer* renderer = GetRenderer(process);
+    if (!renderer) {
+      continue;
+    }
+
+    if (!util::IsExtensionVisibleToContext(extension,
+                                           process->GetBrowserContext())) {
+      continue;
+    }
+
+    renderer->UpdateUserScriptWorld(info.Clone());
+  }
+}
+
 mojo::PendingAssociatedRemote<mojom::Renderer>
 RendererStartupHelper::BindNewRendererRemote(
     content::RenderProcessHost* process) {

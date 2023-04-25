@@ -55,6 +55,15 @@ struct ExtensionLoadedParams {
   string guid;
 };
 
+// Settings for a given user script world.
+struct UserScriptWorldInfo {
+  // The corresponding extension ID.
+  string extension_id;
+
+  // A custom CSP for the user script world.
+  string csp;
+};
+
 // This should be used for implementing browser-to-renderer control messages
 // which need to retain FIFO with respect to other mojo interfaces like
 // content.mojom.Renderer.
@@ -102,6 +111,9 @@ interface Renderer {
   // Updates the scripting allowlist for extensions in the render process. This
   // is only used for testing.
   SetScriptingAllowlist(array<string> extension_ids);
+
+  // Updates the user script world accordiging to `info`.
+  UpdateUserScriptWorld(UserScriptWorldInfo info);
 
   // Asks the lazy background page if it is ready to be suspended and replies
   // back to the browser. This is sent when the page is considered idle.

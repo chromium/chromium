@@ -1238,6 +1238,11 @@ void Dispatcher::UpdateDefaultPolicyHostRestrictions(
   UpdateAllBindings();
 }
 
+void Dispatcher::UpdateUserScriptWorld(mojom::UserScriptWorldInfoPtr info) {
+  IsolatedWorldManager::GetInstance().SetUserScriptWorldCsp(info->extension_id,
+                                                            info->csp);
+}
+
 void Dispatcher::UpdateUserHostRestrictions(URLPatternSet user_blocked_hosts,
                                             URLPatternSet user_allowed_hosts) {
   PermissionsData::SetUserHostRestrictions(kRendererProfileId,

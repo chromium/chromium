@@ -52,6 +52,11 @@ void IsolatedWorldManager::RemoveIsolatedWorlds(const std::string& host_id) {
   });
 }
 
+void IsolatedWorldManager::SetUserScriptWorldCsp(std::string host_id,
+                                                 std::string csp) {
+  user_script_world_csps_.emplace(std::move(host_id), std::move(csp));
+}
+
 int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
     const InjectionHost& injection_host,
     mojom::ExecutionWorld execution_world) {
@@ -92,7 +97,22 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
   info.human_readable_name = blink::WebString::FromUTF8(injection_host.name());
   info.stable_id = blink::WebString::FromUTF8(host_id);
 
-  const std::string* csp = injection_host.GetContentSecurityPolicy();
+  // Initialize CSP for the new world. First, check if we have a dedicated
+  // user script CSP.
+  const std::string* csp = nullptr;
+  if (execution_world == mojom::ExecutionWorld::kUserScript) {
+    auto user_script_iter = user_script_world_csps_.find(host_id);
+    if (user_script_iter != user_script_world_csps_.end()) {
+      csp = &user_script_iter->second;
+    }
+  }
+
+  // If not, check the injection host's default CSP.
+  if (!csp) {
+    csp = injection_host.GetContentSecurityPolicy();
+  }
+
+  // If we found a CSP, apply it to the world.
   if (csp) {
     info.content_security_policy = blink::WebString::FromUTF8(*csp);
   }
@@ -100,6 +120,8 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
   // Even though there may be an existing world for this `injection_host`'s id,
   // the properties may have changed (e.g. due to an extension update).
   // Overwrite any existing entries.
+  // TODO(https://crbug.com/1429408): This doesn't work for CSP. See comment in
+  // //chrome/browser/extensions/user_script_world_browsertest.cc.
   blink::SetIsolatedWorldInfo(world_id, info);
 
   return world_id;
