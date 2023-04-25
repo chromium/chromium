@@ -95,7 +95,7 @@ TransferableResourceTracker::ImportResource(
     DCHECK(output_copy.bitmap.drawsNothing());
 
     resource = TransferableResource::MakeGpu(
-        output_copy.mailbox, GL_LINEAR, GL_TEXTURE_2D, output_copy.sync_token,
+        output_copy.mailbox, GL_TEXTURE_2D, output_copy.sync_token,
         output_copy.draw_data.size, SinglePlaneFormat::kRGBA_8888,
         /*is_overlay_candidate=*/false);
     resource.color_space = output_copy.color_space;

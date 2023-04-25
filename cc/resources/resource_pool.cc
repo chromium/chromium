@@ -340,7 +340,7 @@ bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
       return false;
     }
     transferable = viz::TransferableResource::MakeGpu(
-        gpu_backing->mailbox, GL_LINEAR, gpu_backing->texture_target,
+        gpu_backing->mailbox, gpu_backing->texture_target,
         gpu_backing->mailbox_sync_token, resource->size(), resource->format(),
         gpu_backing->overlay_candidate);
     if (gpu_backing->wait_on_fence_required)

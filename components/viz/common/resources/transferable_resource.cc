@@ -7,6 +7,51 @@
 
 namespace viz {
 
+// static
+TransferableResource TransferableResource::MakeSoftware(
+    const SharedBitmapId& id,
+    const gfx::Size& size,
+    SharedImageFormat format) {
+  TransferableResource r;
+  r.is_software = true;
+  r.mailbox_holder.mailbox = id;
+  r.size = size;
+  r.format = format;
+  return r;
+}
+
+// static
+TransferableResource TransferableResource::MakeGpu(
+    const gpu::Mailbox& mailbox,
+    uint32_t filter,
+    uint32_t texture_target,
+    const gpu::SyncToken& sync_token,
+    const gfx::Size& size,
+    SharedImageFormat format,
+    bool is_overlay_candidate) {
+  return MakeGpu(mailbox, texture_target, sync_token, size, format,
+                 is_overlay_candidate);
+}
+
+// static
+TransferableResource TransferableResource::MakeGpu(
+    const gpu::Mailbox& mailbox,
+    uint32_t texture_target,
+    const gpu::SyncToken& sync_token,
+    const gfx::Size& size,
+    SharedImageFormat format,
+    bool is_overlay_candidate) {
+  TransferableResource r;
+  r.is_software = false;
+  r.mailbox_holder.mailbox = mailbox;
+  r.mailbox_holder.texture_target = texture_target;
+  r.mailbox_holder.sync_token = sync_token;
+  r.size = size;
+  r.format = format;
+  r.is_overlay_candidate = is_overlay_candidate;
+  return r;
+}
+
 TransferableResource::TransferableResource() = default;
 TransferableResource::~TransferableResource() = default;
 

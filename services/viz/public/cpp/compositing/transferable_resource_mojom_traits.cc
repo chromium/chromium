@@ -69,7 +69,6 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
     return false;
   }
   out->id = id;
-  out->filter = data.filter();
   out->is_software = data.is_software();
   out->is_overlay_candidate = data.is_overlay_candidate();
 

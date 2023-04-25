@@ -472,7 +472,6 @@ bool Buffer::ProduceTransferableResource(
 
   resource->id = resource_manager->AllocateResourceId();
   resource->format = viz::SinglePlaneFormat::kRGBA_8888;
-  resource->filter = GL_LINEAR;
   resource->size = gpu_memory_buffer_->GetSize();
 
   // Create a new image texture for |gpu_memory_buffer_| with |texture_target_|

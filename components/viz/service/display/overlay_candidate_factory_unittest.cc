@@ -61,9 +61,8 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
     child_context_provider->BindToCurrentSequence();
 
     auto resource = TransferableResource::MakeGpu(
-        gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,
-        gpu::SyncToken(), gfx::Size(1, 1), SinglePlaneFormat::kRGBA_8888,
-        is_overlay_candidate);
+        gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
+        gfx::Size(1, 1), SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
 
     ResourceId resource_id =
         child_resource_provider_.ImportResource(resource, base::DoNothing());

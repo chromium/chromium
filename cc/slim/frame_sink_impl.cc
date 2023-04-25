@@ -169,7 +169,7 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
       gfx::BufferUsage::SCANOUT, BufferFormat(format.resource_format()), caps);
   uploaded_resource.viz_resource_id = resource_provider_.ImportResource(
       viz::TransferableResource::MakeGpu(
-          uploaded_resource.mailbox, GL_LINEAR, texture_target, sync_token,
+          uploaded_resource.mailbox, texture_target, sync_token,
           resource_bitmap.GetSize(), format, /*is_overlay_candidate=*/false),
       base::BindOnce(&FrameSinkImpl::UIResourceReleased, base::Unretained(this),
                      resource_id));
