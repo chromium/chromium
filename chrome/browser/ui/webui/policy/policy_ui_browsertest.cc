@@ -674,18 +674,21 @@ bool PolicyUIStatusTest::ReloadPolicies() {
       // Wait until reload button becomes enabled again, i.e. policies reloaded.
       function waitForPoliciesToReload() {
         if (reloadPoliciesBtn.disabled) {
-          window.requestIdleCallback(waitForPoliciesToReload);
+          return new Promise(resolve => {
+            window.requestIdleCallback(resolve);
+          }).then(waitForPoliciesToReload);
         } else {
-          domAutomationController.send(true);
+          return true;
         }
       }
-      window.requestIdleCallback(waitForPoliciesToReload);
+      return new Promise(resolve => {
+        window.requestIdleCallback(resolve);
+      }).then(waitForPoliciesToReload);
     })();
   )JS";
   content::WebContents* contents =
       chrome_test_utils::GetActiveWebContents(this);
-  bool ignored;
-  return content::ExecuteScriptAndExtractBool(contents, javascript, &ignored);
+  return content::ExecJs(contents, javascript);
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest,

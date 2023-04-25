@@ -141,19 +141,19 @@ void PDFExtensionTestBase::TestGetSelectedTextReply(const GURL& url,
   // Add an event listener for flush messages and request the selected text.
   // If we get a flush message without receiving getSelectedText we know that
   // the message didn't come through.
-  bool success = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetActiveWebContents(),
-      "window.addEventListener('message', function(event) {"
-      "  if (event.data == 'flush')"
-      "    window.domAutomationController.send(false);"
-      "  if (event.data.type == 'getSelectedTextReply')"
-      "    window.domAutomationController.send(true);"
-      "});"
-      "document.getElementsByTagName('embed')[0].postMessage("
-      "    {type: 'getSelectedText'});",
-      &success));
-  ASSERT_EQ(expect_success, success);
+  ASSERT_EQ(
+      expect_success,
+      content::EvalJs(GetActiveWebContents(),
+                      "new Promise(resolve => {"
+                      "  window.addEventListener('message', function(event) {"
+                      "    if (event.data == 'flush')"
+                      "      resolve(false);"
+                      "    if (event.data.type == 'getSelectedTextReply')"
+                      "      resolve(true);"
+                      "  });"
+                      "  document.getElementsByTagName('embed')[0].postMessage("
+                      "      {type: 'getSelectedText'});"
+                      "});"));
 }
 
 WebContents* PDFExtensionTestBase::GetActiveWebContents() {

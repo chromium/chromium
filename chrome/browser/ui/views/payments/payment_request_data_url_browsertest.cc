@@ -26,12 +26,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestDataUrlTest, SecurityError) {
       "Test</button><div id='result'></div></body></html>");
 
   // PaymentRequest should not be defined in non-secure context.
-  bool result = true;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetActiveWebContents(),
-      "window.domAutomationController.send('PaymentRequest' in window);",
-      &result));
-  ASSERT_FALSE(result);
+  ASSERT_EQ(false, content::EvalJs(GetActiveWebContents(),
+                                   "'PaymentRequest' in window;"));
 
   ASSERT_TRUE(content::ExecuteScript(
       GetActiveWebContents(),

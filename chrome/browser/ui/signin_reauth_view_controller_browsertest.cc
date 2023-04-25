@@ -667,13 +667,10 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerDarkModeBrowserTest,
       confirmation_dialog_contents);
   navigation_observer.WaitForNavigationFinished();
 
-  bool prefers_dark_mode = true;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      confirmation_dialog_contents,
-      "window.domAutomationController.send("
-      "window.matchMedia('(prefers-color-scheme: dark)').matches)",
-      &prefers_dark_mode));
-  EXPECT_EQ(prefers_dark_mode, false);
+  EXPECT_EQ(content::EvalJs(
+                confirmation_dialog_contents,
+                "window.matchMedia('(prefers-color-scheme: dark)').matches"),
+            false);
 }
 
 class SigninReauthViewControllerFencedFrameBrowserTest

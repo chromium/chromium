@@ -32,15 +32,14 @@ namespace {
 // TODO(crbug.com/680809): These checks can be removed once the blink flag for
 // the API is removed.
 constexpr char kKeyboardLockMethodExistanceCheck[] =
-    "window.domAutomationController.send("
-    "  (navigator.keyboard != undefined) &&"
-    "  (navigator.keyboard.lock != undefined));";
+    "(navigator.keyboard != undefined) &&"
+    "(navigator.keyboard.lock != undefined);";
 
 // Javascript snippet used to request that all keys be locked.
 constexpr char kKeyboardLockMethodCallWithAllKeys[] =
     "navigator.keyboard.lock().then("
-    "  () => { window.domAutomationController.send(true); },"
-    "  () => { window.domAutomationController.send(false); },"
+    "  () => true,"
+    "  () => false,"
     ");";
 
 // Javascript snippet used to request that the 'T' key be locked.  This means
@@ -48,8 +47,8 @@ constexpr char kKeyboardLockMethodCallWithAllKeys[] =
 // continue to function.
 constexpr char kKeyboardLockMethodCallWithSomeKeys[] =
     "navigator.keyboard.lock(['KeyT']).then("
-    "  () => { window.domAutomationController.send(true); },"
-    "  () => { window.domAutomationController.send(false); },"
+    "  () => true,"
+    "  () => false,"
     ");";
 
 // Javascript snippet used to request that the 'escape' key be locked.  This
@@ -57,8 +56,8 @@ constexpr char kKeyboardLockMethodCallWithSomeKeys[] =
 // need to press and hold escape to exit tab-initiated fullscreen.
 constexpr char kKeyboardLockMethodCallWithEscapeKey[] =
     "navigator.keyboard.lock(['Escape']).then("
-    "  () => { window.domAutomationController.send(true); },"
-    "  () => { window.domAutomationController.send(false); },"
+    "  () => true,"
+    "  () => false,"
     ");";
 
 // Javascript snippet used to release all locked keys.
@@ -157,10 +156,8 @@ KeyboardLockInteractiveBrowserTest::GetEmbeddedTestServer() {
 }
 
 bool KeyboardLockInteractiveBrowserTest::KeyboardLockApiExists() {
-  bool api_exists = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      GetActiveWebContents(), kKeyboardLockMethodExistanceCheck, &api_exists));
-  return api_exists;
+  return EvalJs(GetActiveWebContents(), kKeyboardLockMethodExistanceCheck)
+      .ExtractBool();
 }
 
 bool KeyboardLockInteractiveBrowserTest::IsKeyboardLockActive() {
@@ -173,15 +170,11 @@ bool KeyboardLockInteractiveBrowserTest::IsKeyboardLockRequestRegistered() {
 
 bool KeyboardLockInteractiveBrowserTest::RequestKeyboardLock(
     bool lock_all_keys /*=true*/) {
-  bool result = false;
   // keyboard.lock() is an async call which requires a promise handling dance.
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      GetActiveWebContents(),
-      lock_all_keys ? kKeyboardLockMethodCallWithAllKeys
-                    : kKeyboardLockMethodCallWithSomeKeys,
-      &result));
-
-  return result;
+  return EvalJs(GetActiveWebContents(),
+                lock_all_keys ? kKeyboardLockMethodCallWithAllKeys
+                              : kKeyboardLockMethodCallWithSomeKeys)
+      .ExtractBool();
 }
 
 bool KeyboardLockInteractiveBrowserTest::CancelKeyboardLock() {
@@ -319,10 +312,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_NO_FATAL_FAILURE(SendShortcutsAndExpectPrevented());
 
   // Now, Only lock the escape key.
-  bool result = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      GetActiveWebContents(), kKeyboardLockMethodCallWithEscapeKey, &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, EvalJs(GetActiveWebContents(),
+                         kKeyboardLockMethodCallWithEscapeKey));
   ASSERT_TRUE(IsKeyboardLockActive());
 
   // Single escape key press does not exit fullscreen.

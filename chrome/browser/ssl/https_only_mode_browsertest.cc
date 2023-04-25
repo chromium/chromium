@@ -733,16 +733,17 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, BadHttpsFollowedByGoodHttps) {
 
   // Load "logo.gif" as an image on the page.
   GURL image = https_server()->GetURL("foo.test", "/ssl/google_files/logo.gif");
-  bool result = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      tab,
-      std::string("var img = document.createElement('img');img.src ='") +
-          image.spec() +
-          "';img.onload=function() { "
-          "window.domAutomationController.send(true); };"
-          "document.body.appendChild(img);",
-      &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(
+      true,
+      EvalJs(tab,
+             std::string("var img = document.createElement('img');img.src ='") +
+                 image.spec() +
+                 "';"
+                 "new Promise(resolve => {"
+                 "  img.onload=function() { "
+                 "    resolve(true); };"
+                 "  document.body.appendChild(img);"
+                 "});"));
 
   EXPECT_FALSE(state->HasAllowException(
       http_url.host(), tab->GetPrimaryMainFrame()->GetStoragePartition()));

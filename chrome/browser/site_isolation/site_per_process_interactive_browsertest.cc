@@ -154,11 +154,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest, DocumentHasFocus) {
 
   // Helper function to check document.hasFocus() for a given frame.
   auto document_has_focus = [](content::RenderFrameHost* rfh) -> bool {
-    bool has_focus = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        rfh, "window.domAutomationController.send(document.hasFocus())",
-        &has_focus));
-    return has_focus;
+    return EvalJs(rfh, "document.hasFocus()").ExtractBool();
   };
 
   // The main frame should be focused to start with.
@@ -664,27 +660,21 @@ std::string GetFullscreenElementId(content::RenderFrameHost* frame) {
 // :-webkit-full-screen style.
 bool ElementHasFullscreenStyle(content::RenderFrameHost* frame,
                                const std::string& element_id) {
-  bool has_style = false;
   std::string script = base::StringPrintf(
-      "domAutomationController.send("
-      "    document.querySelectorAll('#%s:-webkit-full-screen').length == 1)",
+      "document.querySelectorAll('#%s:-webkit-full-screen').length == 1",
       element_id.c_str());
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(frame, script, &has_style));
-  return has_style;
+  return EvalJs(frame, script).ExtractBool();
 }
 
 // Helper to check if an element with ID |element_id| has the
 // :-webkit-full-screen-ancestor style.
 bool ElementHasFullscreenAncestorStyle(content::RenderFrameHost* host,
                                        const std::string& element_id) {
-  bool has_style = false;
   std::string script = base::StringPrintf(
-      "domAutomationController.send("
-      "    document.querySelectorAll("
-      "        '#%s:-webkit-full-screen-ancestor').length == 1)",
+      "document.querySelectorAll("
+      "    '#%s:-webkit-full-screen-ancestor').length == 1",
       element_id.c_str());
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(host, script, &has_style));
-  return has_style;
+  return EvalJs(host, script).ExtractBool();
 }
 
 // Add a listener that will send back a message whenever the (prefixed)
@@ -1121,13 +1111,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   content::RenderFrameHost* child = ChildFrameAt(main_frame, 0);
 
   EXPECT_TRUE(ExecuteScript(child, "document.body.requestPointerLock()"));
-  bool mouse_locked = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(child,
-                                          "window.domAutomationController.send("
-                                          "document.body == "
-                                          "document.pointerLockElement)",
-                                          &mouse_locked));
-  EXPECT_TRUE(mouse_locked);
+  EXPECT_EQ(true,
+            EvalJs(child, "document.body == document.pointerLockElement"));
   EXPECT_TRUE(main_frame->GetView()->IsMouseLocked());
 
   EXPECT_TRUE(ExecuteScript(main_frame,

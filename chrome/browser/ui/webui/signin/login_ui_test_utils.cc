@@ -176,11 +176,7 @@ void WaitUntilCondition(const base::RepeatingCallback<bool()>& condition,
 // Evaluates a boolean script expression in the signin frame.
 bool EvaluateBooleanScriptInSigninFrame(content::WebContents* web_contents,
                                         const std::string& script) {
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetSigninFrame(web_contents),
-      "window.domAutomationController.send(" + script + ");", &result));
-  return result;
+  return content::EvalJs(GetSigninFrame(web_contents), script).ExtractBool();
 }
 
 // Returns whether an element with id |element_id| exists in the signin page.

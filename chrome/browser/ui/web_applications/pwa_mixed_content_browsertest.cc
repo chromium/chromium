@@ -54,14 +54,14 @@ bool TryToLoadImage(const content::ToRenderFrameHost& adapter,
   const std::string script = base::StringPrintf(
       "let i = document.createElement('img');"
       "document.body.appendChild(i);"
-      "i.addEventListener('load', () => domAutomationController.send(true));"
-      "i.addEventListener('error', () => domAutomationController.send(false));"
-      "i.src = '%s';",
+      "new Promise(resolve => {"
+      "  i.addEventListener('load', () => resolve(true));"
+      "  i.addEventListener('error', () => resolve(false));"
+      "  i.src = '%s';"
+      "});",
       image_url.spec().c_str());
 
-  bool image_loaded;
-  CHECK(content::ExecuteScriptAndExtractBool(adapter, script, &image_loaded));
-  return image_loaded;
+  return content::EvalJs(adapter, script).ExtractBool();
 }
 
 }  // anonymous namespace

@@ -118,13 +118,12 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
   EXPECT_NE(nullptr, frame_2);
 
   // Request permission from the first iframe.
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      frame_1,
-      "navigator.geolocation.getCurrentPosition(function(){ "
-      "domAutomationController.send(true); });",
-      &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(
+                      frame_1,
+                      "new Promise(resolve => {"
+                      "  navigator.geolocation.getCurrentPosition(function(){ "
+                      "    resolve(true); });"
+                      "});"));
 
   // A prompt should have been shown with the top level origin rather than the
   // iframe origin.
@@ -139,21 +138,21 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
   // Request permission from the second iframe. Because it was granted to the
   // top level frame, it should also be granted to this iframe and there should
   // be no prompt.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      frame_2,
-      "navigator.geolocation.getCurrentPosition(function(){ "
-      "domAutomationController.send(true); });",
-      &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(
+                      frame_2,
+                      "new Promise(resolve => {"
+                      "  navigator.geolocation.getCurrentPosition(function(){ "
+                      "    resolve(true); });"
+                      "});"));
   EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
 
   // Request permission from the top level frame. It should already be granted
   // to this iframe and there should be no prompt.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      main_frame,
-      "navigator.geolocation.getCurrentPosition(function(){ "
-      "domAutomationController.send(true); });",
-      &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(
+                      main_frame,
+                      "new Promise(resolve => {"
+                      "  navigator.geolocation.getCurrentPosition(function(){ "
+                      "    resolve(true); });"
+                      "});"));
   EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
 }

@@ -139,10 +139,7 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
   // WebContents to process outstanding IPC messages by running some JavaScript
   // and waiting for the result.
   void WaitForMessageProcessing(WebContents* wc) {
-    bool result = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        wc, "window.domAutomationController.send(true);", &result));
-    ASSERT_TRUE(result);
+    ASSERT_EQ(true, content::EvalJs(wc, "true;"));
   }
 
   // When we hit the max number of renderers, verify that the way we do process

@@ -2489,10 +2489,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContents) {
     // The actual image (Google logo) is 276 pixels wide.
     EXPECT_EQ(276, content::EvalJs(tab, "ImageWidth();"));
     // Check that variable |foo| is set.
-    bool js_result = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(IsFooSet());", &js_result));
-    EXPECT_TRUE(js_result);
+    EXPECT_EQ(true, content::EvalJs(tab, "IsFooSet();"));
   }
   {
     // Now visit the page with its iframe and subresources served over bad
@@ -2512,10 +2509,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContents) {
     // The broken image width is zero.
     EXPECT_EQ(16, content::EvalJs(tab, "ImageWidth();"));
     // Check that variable |foo| is not set.
-    bool js_result = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(IsFooSet());", &js_result));
-    EXPECT_FALSE(js_result);
+    EXPECT_EQ(false, content::EvalJs(tab, "IsFooSet();"));
   }
 }
 
@@ -3072,16 +3066,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestGoodFrameNavigation) {
 
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
 
-  bool success = false;
   // Now navigate inside the frame.
   {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(&tab->GetController()));
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(clickLink('goodHTTPSLink'));",
-        &success));
-    ASSERT_TRUE(success);
+    ASSERT_EQ(true, content::EvalJs(tab, "clickLink('goodHTTPSLink');"));
     observer.Wait();
   }
 
@@ -3093,10 +3083,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestGoodFrameNavigation) {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(&tab->GetController()));
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(clickLink('badHTTPSLink'));",
-        &success));
-    ASSERT_TRUE(success);
+    ASSERT_EQ(true, content::EvalJs(tab, "clickLink('badHTTPSLink');"));
     observer.Wait();
   }
 
@@ -3104,16 +3091,11 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestGoodFrameNavigation) {
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
 
   // And the frame should be blocked.
-  bool is_content_evil = true;
   content::RenderFrameHost* content_frame = content::FrameMatchingPredicate(
       tab->GetPrimaryPage(),
       base::BindRepeating(&content::FrameMatchesName, "contentFrame"));
-  std::string is_evil_js(
-      "window.domAutomationController.send("
-      "document.getElementById('evilDiv') != null);");
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(content_frame, is_evil_js,
-                                                   &is_content_evil));
-  EXPECT_FALSE(is_content_evil);
+  std::string is_evil_js("document.getElementById('evilDiv') != null;");
+  EXPECT_EQ(false, content::EvalJs(content_frame, is_evil_js));
 
   // Now go back, our state should still be OK.
   {
@@ -3130,10 +3112,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestGoodFrameNavigation) {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(&tab->GetController()));
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(clickLink('HTTPLink'));",
-        &success));
-    ASSERT_TRUE(success);
+    ASSERT_EQ(true, content::EvalJs(tab, "clickLink('HTTPLink');"));
     observer.Wait();
   }
 
@@ -3178,14 +3157,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBadFrameNavigation) {
   ProceedThroughInterstitial(tab);
 
   // Navigate to a good frame.
-  bool success = false;
   content::WindowedNotificationObserver observer(
       content::NOTIFICATION_LOAD_STOP,
       content::Source<content::NavigationController>(&tab->GetController()));
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      tab, "window.domAutomationController.send(clickLink('goodHTTPSLink'));",
-      &success));
-  ASSERT_TRUE(success);
+  ASSERT_EQ(true, content::EvalJs(tab, "clickLink('goodHTTPSLink');"));
   observer.Wait();
 
   // We should still be authentication broken.
@@ -3210,14 +3185,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnauthenticatedFrameNavigation) {
 
   // Now navigate inside the frame to a secure HTTPS frame.
   {
-    bool success = false;
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(&tab->GetController()));
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(clickLink('goodHTTPSLink'));",
-        &success));
-    ASSERT_TRUE(success);
+    ASSERT_EQ(true, content::EvalJs(tab, "clickLink('goodHTTPSLink');"));
     observer.Wait();
   }
 
@@ -3226,14 +3197,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnauthenticatedFrameNavigation) {
 
   // Now navigate to a bad HTTPS frame.
   {
-    bool success = false;
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(&tab->GetController()));
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        tab, "window.domAutomationController.send(clickLink('badHTTPSLink'));",
-        &success));
-    ASSERT_TRUE(success);
+    ASSERT_EQ(true, content::EvalJs(tab, "clickLink('badHTTPSLink');"));
     observer.Wait();
   }
 
@@ -3241,16 +3208,11 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnauthenticatedFrameNavigation) {
   ssl_test_util::CheckUnauthenticatedState(tab, AuthState::NONE);
 
   // And the frame should have been blocked (see bug #2316).
-  bool is_content_evil = true;
   content::RenderFrameHost* content_frame = content::FrameMatchingPredicate(
       tab->GetPrimaryPage(),
       base::BindRepeating(&content::FrameMatchesName, "contentFrame"));
-  std::string is_evil_js(
-      "window.domAutomationController.send("
-      "document.getElementById('evilDiv') != null);");
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(content_frame, is_evil_js,
-                                                   &is_content_evil));
-  EXPECT_FALSE(is_content_evil);
+  std::string is_evil_js("document.getElementById('evilDiv') != null;");
+  EXPECT_EQ(false, content::EvalJs(content_frame, is_evil_js));
 }
 
 enum class OffMainThreadFetchMode { kEnabled, kDisabled };
@@ -3804,10 +3766,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContentsWithUserException) {
   // image is greater than 100.
   EXPECT_GT(content::EvalJs(tab, "ImageWidth();"), 100);
 
-  bool js_result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      tab, "window.domAutomationController.send(IsFooSet());", &js_result));
-  EXPECT_TRUE(js_result);
+  EXPECT_EQ(true, content::EvalJs(tab, "IsFooSet();"));
 
   // Test that active subresources with the same certificate errors as
   // the main resources also get noted in |content_with_cert_errors_status|.
@@ -3816,10 +3775,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContentsWithUserException) {
       https_server_mismatched_.host_port_pair());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_mismatched_.GetURL(replacement_path)));
-  js_result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      tab, "window.domAutomationController.send(IsFooSet());", &js_result));
-  EXPECT_TRUE(js_result);
+  EXPECT_EQ(true, content::EvalJs(tab, "IsFooSet();"));
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_COMMON_NAME_INVALID, AuthState::NONE);
 
@@ -4283,16 +4239,17 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByGoodCertSubresource) {
       https_server_host, tab->GetPrimaryMainFrame()->GetStoragePartition()));
 
   GURL image = https_server_.GetURL("/ssl/google_files/logo.gif");
-  bool result = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      tab,
-      std::string("var img = document.createElement('img');img.src ='") +
-          image.spec() +
-          "';img.onload=function() { "
-          "window.domAutomationController.send(true); };"
-          "document.body.appendChild(img);",
-      &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(
+      true,
+      EvalJs(tab,
+             std::string("var img = document.createElement('img');img.src ='") +
+                 image.spec() +
+                 "';"
+                 "new Promise(resolve => {"
+                 "  img.onload=function() { "
+                 "    resolve(true); };"
+                 "  document.body.appendChild(img);"
+                 "});"));
   EXPECT_FALSE(state->HasAllowException(
       https_server_host, tab->GetPrimaryMainFrame()->GetStoragePartition()));
 }

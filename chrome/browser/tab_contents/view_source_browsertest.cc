@@ -241,12 +241,9 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   // Check whether the page is in view-source mode or not by checking if an
   // expected element on the page exists or not. In view-source mode it
   // should not be found.
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "domAutomationController.send(document.getElementById('bar') === null);",
-      &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('bar') === null;"));
   EXPECT_FALSE(chrome::CanViewSource(browser()));
 }
 

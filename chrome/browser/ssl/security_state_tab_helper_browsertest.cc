@@ -153,10 +153,7 @@ void InjectScript(content::WebContents* contents) {
   // sent.
   contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [](content::RenderFrameHost* frame) {
-        bool js_result = false;
-        EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-            frame, "window.domAutomationController.send(true);", &js_result));
-        EXPECT_TRUE(js_result);
+        EXPECT_EQ(true, content::EvalJs(frame, "true;"));
       });
 }
 

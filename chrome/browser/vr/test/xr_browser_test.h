@@ -93,15 +93,11 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   void RunJavaScriptOrFail(const std::string& js_expression,
                            content::WebContents* web_contents);
 
-  // Convenience function for ensuring ExecuteScriptAndExtractBool runs
-  // successfully and for directly getting the result instead of needing to pass
-  // a pointer to be filled.
+  // Convenience function for ensuring EvalJs runs successfully.
   bool RunJavaScriptAndExtractBoolOrFail(const std::string& js_expression,
                                          content::WebContents* web_contents);
 
-  // Convenience function for ensuring ExecuteScripteAndExtractString runs
-  // successfully and for directly getting the result instead of needing to pass
-  // a pointer to be filled.
+  // Convenience function for ensuring EvalJs runs successfully.
   std::string RunJavaScriptAndExtractStringOrFail(
       const std::string& js_expression,
       content::WebContents* web_contents);

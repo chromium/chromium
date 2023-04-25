@@ -218,13 +218,8 @@ bool XrBrowserTestBase::RunJavaScriptAndExtractBoolOrFail(
     return false;
   }
 
-  bool result = false;
   DLOG(INFO) << "Run JavaScript: " << js_expression;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents,
-      "window.domAutomationController.send(" + js_expression + ")", &result))
-      << "Failed to run given JavaScript for bool: " << js_expression;
-  return result;
+  return content::EvalJs(web_contents, js_expression).ExtractBool();
 }
 
 std::string XrBrowserTestBase::RunJavaScriptAndExtractStringOrFail(

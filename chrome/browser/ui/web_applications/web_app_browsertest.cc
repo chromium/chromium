@@ -226,14 +226,11 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
     EXPECT_TRUE(WaitForLoadStop(web_contents));
     EXPECT_EQ(app_url, web_contents->GetVisibleURL());
 
-    bool matches;
     const bool result = app_browser->app_controller()->HasMinimalUiButtons();
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        web_contents,
-        "window.domAutomationController.send(window.matchMedia('(display-mode: "
-        "minimal-ui)').matches)",
-        &matches));
-    EXPECT_EQ(result, matches);
+    EXPECT_EQ(
+        result,
+        EvalJs(web_contents,
+               "window.matchMedia('(display-mode: minimal-ui)').matches"));
     CloseAndWait(app_browser);
 
     return result;
