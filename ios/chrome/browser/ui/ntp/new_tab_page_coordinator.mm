@@ -26,7 +26,6 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
@@ -640,14 +639,22 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     if ([self isFollowingFeedAvailable]) {
       switch (self.selectedFeed) {
         case FeedTypeDiscover:
-          self.feedViewController = [self discoverFeed];
+          self.feedViewController = [self.componentFactory
+                   discoverFeedForBrowser:self.browser
+              viewControllerConfiguration:[self
+                                              feedViewControllerConfiguration]];
           break;
         case FeedTypeFollowing:
-          self.feedViewController = [self followingFeed];
+          self.feedViewController = [self.componentFactory
+                  followingFeedForBrowser:self.browser
+              viewControllerConfiguration:[self feedViewControllerConfiguration]
+                                 sortType:self.followingFeedSortType];
           break;
       }
     } else {
-      self.feedViewController = [self discoverFeed];
+      self.feedViewController = [self.componentFactory
+               discoverFeedForBrowser:self.browser
+          viewControllerConfiguration:[self feedViewControllerConfiguration]];
     }
   }
 
@@ -721,9 +728,9 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   self.NTPViewController.panGestureHandler = self.panGestureHandler;
   self.NTPViewController.feedVisible = [self isFeedVisible];
 
-  self.feedWrapperViewController = [[FeedWrapperViewController alloc]
-        initWithDelegate:self
-      feedViewController:self.feedViewController];
+  self.feedWrapperViewController = [self.componentFactory
+      feedWrapperViewControllerWithDelegate:self
+                         feedViewController:self.feedViewController];
 
   if ([self isFeedTopSectionVisible]) {
     self.NTPViewController.feedTopSectionViewController =
@@ -1568,38 +1575,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   return IsDiscoverFeedTopSyncPromoEnabled() && [self isFeedVisible] &&
          self.authService &&
          !self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-}
-
-// Creates, configures and returns a Discover feed view controller.
-- (UIViewController*)discoverFeed {
-  if (tests_hook::DisableDiscoverFeed()) {
-    return nil;
-  }
-
-  FeedModelConfiguration* discoverFeedConfiguration =
-      [FeedModelConfiguration discoverFeedModelConfiguration];
-  self.discoverFeedService->CreateFeedModel(discoverFeedConfiguration);
-
-  UIViewController* discoverFeed =
-      self.discoverFeedService->NewDiscoverFeedViewControllerWithConfiguration(
-          [self feedViewControllerConfiguration]);
-  return discoverFeed;
-}
-
-// Creates, configures and returns a Following feed view controller.
-- (UIViewController*)followingFeed {
-  if (tests_hook::DisableDiscoverFeed()) {
-    return nil;
-  }
-
-  FeedModelConfiguration* followingFeedConfiguration = [FeedModelConfiguration
-      followingModelConfigurationWithSortType:self.followingFeedSortType];
-  self.discoverFeedService->CreateFeedModel(followingFeedConfiguration);
-
-  UIViewController* followingFeed =
-      self.discoverFeedService->NewFollowingFeedViewControllerWithConfiguration(
-          [self feedViewControllerConfiguration]);
-  return followingFeed;
 }
 
 // Creates, configures and returns a feed view controller configuration.
