@@ -432,6 +432,16 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Result updated in ImageRequestCallback().
   RequestHandlerResult image_request_result_;
 
+  // Indicate that `callback_` is currently being called. This is almost always
+  // false, but in some cases UI thread tasks can run while `callback_` is not
+  // over due showing UI, such as during native print dialogs.
+  bool callback_running_ = false;
+
+  // Indicates that `this` can be deleted right away. This is used with
+  // `callback_running_` to handle race conditions where non-blocking scans
+  // should wait before deleting `this`.
+  bool all_work_done_ = false;
+
   base::TimeTicks upload_start_time_;
 
   base::WeakPtrFactory<ContentAnalysisDelegate> weak_ptr_factory_{this};

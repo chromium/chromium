@@ -236,26 +236,33 @@ const std::set<std::string>* TextMimeTypes() {
 class MinimalFakeContentAnalysisDelegate : public ContentAnalysisDelegate {
  public:
   MinimalFakeContentAnalysisDelegate(
+      base::RepeatingClosure quit_closure,
       content::WebContents* web_contents,
       ContentAnalysisDelegate::Data data,
       ContentAnalysisDelegate::CompletionCallback callback)
       : ContentAnalysisDelegate(web_contents,
                                 std::move(data),
                                 std::move(callback),
-                                safe_browsing::DeepScanAccessPoint::UPLOAD) {}
+                                safe_browsing::DeepScanAccessPoint::UPLOAD),
+        quit_closure_(quit_closure) {}
+
+  ~MinimalFakeContentAnalysisDelegate() override { quit_closure_.Run(); }
 
   static std::unique_ptr<ContentAnalysisDelegate> Create(
+      base::RepeatingClosure quit_closure,
       content::WebContents* web_contents,
       ContentAnalysisDelegate::Data data,
       ContentAnalysisDelegate::CompletionCallback callback) {
     return std::make_unique<MinimalFakeContentAnalysisDelegate>(
-        web_contents, std::move(data), std::move(callback));
+        quit_closure, web_contents, std::move(data), std::move(callback));
   }
 
  private:
   BinaryUploadService* GetBinaryUploadService() override {
     return FakeBinaryUploadServiceStorage();
   }
+
+  base::RepeatingClosure quit_closure_;
 };
 
 constexpr char kBrowserDMToken[] = "browser_dm_token";
@@ -393,8 +400,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Unauthorized) {
 
   EnableUploadsScanningAndReporting();
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthorized(false);
   // This causes the DM Token to be rejected, and unauthorized for 24 hours.
@@ -437,6 +446,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Unauthorized) {
   // 1 request to authenticate for upload.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 1);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
@@ -445,8 +457,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthorized(true);
   FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
@@ -530,6 +544,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
   // authentication.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
@@ -540,8 +557,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthorized(true);
 
@@ -621,6 +640,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
   // 1 for authentication of the scanning request.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 1);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, AllowTextAndImage) {
@@ -629,8 +651,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, AllowTextAndImage) {
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthorized(true);
 
@@ -689,6 +713,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, AllowTextAndImage) {
   // 1 for authentication of the scanning request.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
@@ -698,8 +725,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthorized(true);
 
@@ -767,6 +796,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
   // 1 for authentication of the scanning request.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
@@ -776,8 +808,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthorized(true);
 
@@ -845,6 +879,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
   // 1 for authentication of the scanning request.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
@@ -853,8 +890,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
   // Set up delegate and upload service.
   EnableUploadsScanningAndReporting();
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthorized(true);
   FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
@@ -932,6 +971,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
   // authentication.  There were no successful requests so no acks.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 // This class tests each of the blocking settings used in Connector policies:
@@ -991,8 +1033,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       base::StringPrintf(kPasswordProtectedPref, bool_setting_value()),
       machine_scope());
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthorized(true);
   FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
@@ -1047,6 +1091,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   EXPECT_TRUE(called);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
@@ -1071,8 +1118,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       base::StringPrintf(kBlockLargeFilesPref, bool_setting_value()),
       machine_scope());
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthorized(true);
   FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
@@ -1134,6 +1183,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   run_loop.Run();
   EXPECT_TRUE(called);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
@@ -1158,8 +1210,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       base::StringPrintf(kBlockLargePagesPref, bool_setting_value()),
       machine_scope());
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthorized(true);
 
@@ -1196,6 +1250,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   run_loop.Run();
   EXPECT_TRUE(called);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
@@ -1219,8 +1276,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       base::StringPrintf(kBlockUntilVerdictPref, int_setting_value()),
       machine_scope());
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthorized(true);
   FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
@@ -1314,6 +1373,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   // file in all cases.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 1);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 // This class tests that ContentAnalysisDelegate is handled correctly when the
@@ -1406,8 +1468,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Paste) {
 
   SetUpScanning(/*file_scan*/ false);
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthForTesting(dm_token(), false);
 
@@ -1439,6 +1503,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Paste) {
   // No requests should be made since the DM token is unauthorized.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
@@ -1446,8 +1513,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
 
   SetUpScanning(/*file_scan*/ true);
 
+  base::RunLoop content_analysis_run_loop;
   ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthForTesting(dm_token(), false);
 
@@ -1491,6 +1560,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
   // No requests should be made since the DM token is unauthorized.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 }  // namespace enterprise_connectors

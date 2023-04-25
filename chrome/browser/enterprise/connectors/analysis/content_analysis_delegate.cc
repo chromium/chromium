@@ -312,9 +312,16 @@ void ContentAnalysisDelegate::CreateForWebContents(
     delegate->RunCallback();
   }
 
-  // Upload service callback will delete the delegate.
-  if (work_being_done)
+  // If all requests are already done, just let `delegate` go out of scope.
+  if (delegate->all_work_done_) {
+    return;
+  }
+
+  // ... otherwise, let the last response from the upload service callback
+  // delete the delegate when there is no more work.
+  if (work_being_done) {
     delegate.release();
+  }
 }
 
 // static
@@ -721,6 +728,15 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
 
   AckAllRequests();
 
+  if (callback_running_ && !dialog_ && *UIEnabledStorage()) {
+    // This code path implies that RunCallback has already been called,
+    // and that we are racing against a non-blocking scan. In such a
+    // case, we let the other caller handle deletion of `this`, and let
+    // them know no more work is needed.
+    all_work_done_ = true;
+    return;
+  }
+
   if (!UpdateDialog() && data_uploaded_) {
     // No UI was shown.  Delete |this| to cleanup, unless UploadData isn't done
     // yet.
@@ -729,10 +745,14 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
 }
 
 void ContentAnalysisDelegate::RunCallback() {
-  if (callback_.is_null())
+  DCHECK(!callback_running_);
+  if (callback_.is_null()) {
     return;
+  }
 
+  callback_running_ = true;
   std::move(callback_).Run(data_, result_);
+  callback_running_ = false;
 
   // Since `result_` might have been tweaked by `callback_`, `final_actions_`
   // need to be updated before Acks are sent.
