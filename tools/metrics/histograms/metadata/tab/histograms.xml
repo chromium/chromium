@@ -485,38 +485,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.TabUnder.PopupToTabUnderTime" units="ms"
-    expires_after="M85">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Measures the time from when a tab opens a popup to when it performs a
-    tab-under (i.e. navigates cross origin, in the background without a user
-    gesture).
-  </summary>
-</histogram>
-
-<histogram name="Tab.TabUnder.VisibleTime" units="ms" expires_after="M77">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Measures the total time a tab is visible after it navigates itself
-    cross-origin in the background, without a user gesture. The tab must have
-    opened a popup since the last user gesture in the tab. Measured at
-    WebContents destruction. The total visible time for the tab is the sum of
-    this metric and Tab.TabUnder.VisibleTimeBefore.
-  </summary>
-</histogram>
-
-<histogram name="Tab.TabUnder.VisibleTimeBefore" units="ms" expires_after="M85">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Measures the total time a tab is visible before it navigates itself
-    cross-origin in the background, without a user gesture. The tab must have
-    opened a popup since the last user gesture in the tab. Measured at
-    WebContents destruction. The total visible time for the tab is the sum of
-    this metric and Tab.TabUnder.VisibleTime.
-  </summary>
-</histogram>
-
 <histogram name="Tab.TotalTabCount.BeforeLeavingApp" units="tabs"
     expires_after="M85">
   <owner>tedchoc@chromium.org</owner>
@@ -525,15 +493,6 @@ chromium-metrics-reviews@google.com.
     [Android] The total count of tabs which were kept while Chrome process is in
     the foreground. This is recorded only for Android right before Chrome
     process goes into the background.
-  </summary>
-</histogram>
-
-<histogram name="Tab.VisibleTime" units="ms" expires_after="M77">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Measures the total time a tab is visible. Measured at the WebContents layer
-    so this metric does not attempt to account for things like session restore.
-    Logged at WebContents destruction.
   </summary>
 </histogram>
 

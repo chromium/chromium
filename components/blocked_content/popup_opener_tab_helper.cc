@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/tick_clock.h"
 #include "components/blocked_content/popup_tracker.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -22,38 +21,11 @@
 
 namespace blocked_content {
 
-PopupOpenerTabHelper::~PopupOpenerTabHelper() {
-  DCHECK(visibility_tracker_);
-  base::TimeDelta total_visible_time =
-      visibility_tracker_->GetForegroundDuration();
-  if (did_tab_under()) {
-    UMA_HISTOGRAM_LONG_TIMES(
-        "Tab.TabUnder.VisibleTime",
-        total_visible_time - visible_time_before_tab_under_.value());
-    UMA_HISTOGRAM_LONG_TIMES("Tab.TabUnder.VisibleTimeBefore",
-                             visible_time_before_tab_under_.value());
-  }
-  UMA_HISTOGRAM_LONG_TIMES("Tab.VisibleTime", total_visible_time);
-}
+PopupOpenerTabHelper::~PopupOpenerTabHelper() = default;
 
 void PopupOpenerTabHelper::OnOpenedPopup(PopupTracker* popup_tracker) {
   has_opened_popup_since_last_user_gesture_ = true;
   MaybeLogPagePopupContentSettings();
-
-  last_popup_open_time_ = tick_clock_->NowTicks();
-}
-
-void PopupOpenerTabHelper::OnDidTabUnder() {
-  // The tab already did a tab-under.
-  if (did_tab_under())
-    return;
-
-  // Tab-under requires a popup, so this better not be null.
-  DCHECK(!last_popup_open_time_.is_null());
-  UMA_HISTOGRAM_LONG_TIMES("Tab.TabUnder.PopupToTabUnderTime",
-                           tick_clock_->NowTicks() - last_popup_open_time_);
-
-  visible_time_before_tab_under_ = visibility_tracker_->GetForegroundDuration();
 }
 
 PopupOpenerTabHelper::PopupOpenerTabHelper(content::WebContents* web_contents,

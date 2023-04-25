@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
-#include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -42,14 +41,9 @@ class PopupOpenerTabHelper
   ~PopupOpenerTabHelper() override;
 
   void OnOpenedPopup(PopupTracker* popup_tracker);
-  void OnDidTabUnder();
 
   bool has_opened_popup_since_last_user_gesture() const {
     return has_opened_popup_since_last_user_gesture_;
-  }
-
-  bool did_tab_under() const {
-    return visible_time_before_tab_under_.has_value();
   }
 
  private:
@@ -73,19 +67,11 @@ class PopupOpenerTabHelper
   // web contents at the time the function is called.
   void MaybeLogPagePopupContentSettings();
 
-  // Visible time for this tab until a tab-under is detected. At which point it
-  // gets the visible time from the |visibility_tracker_|. Will be unset until a
-  // tab-under is detected.
-  absl::optional<base::TimeDelta> visible_time_before_tab_under_;
-
   // The clock which is used by the visibility trackers.
   raw_ptr<const base::TickClock> tick_clock_;
 
   // Keeps track of the total foreground time for this tab.
   std::unique_ptr<ui::ScopedVisibilityTracker> visibility_tracker_;
-
-  // Measures the time this WebContents opened a popup.
-  base::TimeTicks last_popup_open_time_;
 
   bool has_opened_popup_since_last_user_gesture_ = false;
 
