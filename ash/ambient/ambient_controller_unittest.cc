@@ -426,6 +426,20 @@ TEST_P(AmbientControllerTestForAnyUiSettings, ShouldReturnCachedAccessToken) {
   CloseAmbientScreen();
 }
 
+// The test body intentionally does not have any actual test expectations. The
+// test just has to run without crashing on tear down.
+// http://crbug.com/1428481
+TEST_P(AmbientControllerTestForAnyUiSettings,
+       ShutsDownWithoutCrashingWhileAmbientSessionActive) {
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+  // Simulates what happens in a real shutdown scenario. The crash bug above
+  // cannot be reproduced without this.
+  ClearLogin();
+}
+
 TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
