@@ -653,7 +653,9 @@ DetermineWhetherToForbidTrustTokenRedemption(
     absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
         fenced_frame_mode_for_navigation) {
   std::unique_ptr<blink::PermissionsPolicy> subframe_policy;
-  if (frame->IsNestedWithinFencedFrame()) {
+  // TODO(https://crbug.com/1430514): Add WPT to test how TrustTokens behave in
+  // a FencedFrame's subframe.
+  if (frame->IsFencedFrameRoot()) {
     // Fenced frames have a list of required permission policies to load and
     // can't be granted extra policies, so use the required policies instead of
     // inheriting from its parent. Note that the parent policies must allow the
@@ -10961,7 +10963,7 @@ void RenderFrameHostImpl::CreateWebUsbService(
 }
 
 void RenderFrameHostImpl::ResetPermissionsPolicy() {
-  if (IsNestedWithinFencedFrame()) {
+  if (IsFencedFrameRoot()) {
     const absl::optional<FencedFrameProperties>& properties =
         frame_tree_node()->GetFencedFrameProperties();
     // Fenced frames have a list of required permission policies to load and

@@ -516,12 +516,11 @@ const std::string SerializeHeaderString(const T& value) {
 //
 // TODO(crbug.com/1258063): Remove when the UserAgentReduction and
 // SendFullUserAgentAfterReduction Origin Trial is finished.
-bool IsOriginTrialHintEnabledForFrame(
-    const url::Origin& origin,
-    const url::Origin& outermost_main_frame_origin,
-    FrameTreeNode* frame_tree_node,
-    ClientHintsControllerDelegate* delegate,
-    WebClientHintsType hint_type) {
+bool IsOriginTrialHintEnabledForFrame(const url::Origin& origin,
+                                      const url::Origin& main_frame_origin,
+                                      FrameTreeNode* frame_tree_node,
+                                      ClientHintsControllerDelegate* delegate,
+                                      WebClientHintsType hint_type) {
   // TODO(crbug.com/1300194): Refactor away from the use of FrameTreeNode
   RenderFrameHostImpl* current = frame_tree_node->current_frame_host();
   while (current) {
@@ -533,7 +532,7 @@ bool IsOriginTrialHintEnabledForFrame(
     // Don't use Sec-CH-UA-Reduced or Sec-CH-UA-Full from third-party origins if
     // third-party cookies are blocked, so that we don't reveal any more user
     // data than is allowed by the cookie settings.
-    if (outermost_main_frame_origin.IsSameOriginWith(current_origin) ||
+    if (main_frame_origin.IsSameOriginWith(current_origin) ||
         !delegate->AreThirdPartyCookiesBlocked(current_origin.GetURL(),
                                                current)) {
       blink::EnabledClientHints current_url_hints;
@@ -557,7 +556,7 @@ void RemoveAllClientHintsExceptOriginTrialHints(
     std::vector<WebClientHintsType>* accept_ch,
     url::Origin* outermost_main_frame_origin,
     absl::optional<url::Origin>* third_party_origin) {
-  RenderFrameHostImpl* outermost_main_frame =
+  RenderFrameHostImpl* main_frame =
       frame_tree_node->frame_tree().GetMainFrame()->GetOutermostMainFrame();
 
   for (auto it = accept_ch->begin(); it != accept_ch->end();) {
@@ -569,8 +568,7 @@ void RemoveAllClientHintsExceptOriginTrialHints(
     }
   }
 
-  if (!outermost_main_frame->GetLastCommittedOrigin().IsSameOriginWith(
-          origin)) {
+  if (!main_frame->GetLastCommittedOrigin().IsSameOriginWith(origin)) {
     // If third-party cookeis are blocked, we will not persist the
     // Sec-CH-UA-Reduced client hint in a third-party context.
     if (delegate->AreThirdPartyCookiesBlocked(
@@ -580,8 +578,7 @@ void RemoveAllClientHintsExceptOriginTrialHints(
     }
     // Third-party contexts need the correct main frame URL and third-party
     // URL in order to validate the Origin Trial token correctly, if present.
-    *outermost_main_frame_origin =
-        outermost_main_frame->GetLastCommittedOrigin();
+    *outermost_main_frame_origin = main_frame->GetLastCommittedOrigin();
     *third_party_origin = absl::make_optional(origin);
   }
 }
@@ -602,25 +599,26 @@ struct ClientHintsExtendedData {
     is_outermost_main_frame =
         !frame_tree_node || frame_tree_node->IsOutermostMainFrame();
     if (is_outermost_main_frame) {
-      outermost_main_frame_origin = resource_origin;
+      main_frame_origin = resource_origin;
     } else if (frame_tree_node->IsInFencedFrameTree()) {
+      // TODO(https://crbug.com/1430508) Add WPT tests and specify the behavior
+      // of client hints delegation for subframes inside
+      // FencedFrames/Portals/etc...
       permissions_policy = blink::PermissionsPolicy::CreateForFencedFrame(
           resource_origin,
           /*is_opaque_ads_mode=*/frame_tree_node
                   ->GetDeprecatedFencedFrameMode() ==
               blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
     } else {
-      RenderFrameHostImpl* outermost_main_frame =
-          frame_tree_node->frame_tree().GetMainFrame()->GetOutermostMainFrame();
-      outermost_main_frame_origin =
-          outermost_main_frame->GetLastCommittedOrigin();
+      RenderFrameHostImpl* main_frame =
+          frame_tree_node->frame_tree().GetMainFrame();
+      main_frame_origin = main_frame->GetLastCommittedOrigin();
       permissions_policy = blink::PermissionsPolicy::CopyStateFrom(
-          outermost_main_frame->permissions_policy());
+          main_frame->permissions_policy());
     }
 
     const base::TimeTicks start_time = base::TimeTicks::Now();
-    delegate->GetAllowedClientHintsFromSource(outermost_main_frame_origin,
-                                              &hints);
+    delegate->GetAllowedClientHintsFromSource(main_frame_origin, &hints);
     const base::TimeTicks pref_read_time = base::TimeTicks::Now();
 
     // If this is a prerender tree, also capture prerender local setting. The
@@ -631,7 +629,7 @@ struct ClientHintsExtendedData {
       // the host will be discarded soon, so we do not need to continue.
       if (auto* host = PrerenderHost::GetPrerenderHostFromFrameTreeNode(
               *frame_tree_node))
-        host->GetAllowedClientHintsOnPage(outermost_main_frame_origin, &hints);
+        host->GetAllowedClientHintsOnPage(main_frame_origin, &hints);
     }
     const base::TimeTicks prerender_host_time = base::TimeTicks::Now();
 
@@ -645,10 +643,10 @@ struct ClientHintsExtendedData {
                             : origin;
 
       is_embedder_ua_reduced = IsOriginTrialHintEnabledForFrame(
-          trial_origin, outermost_main_frame_origin, frame_tree_node, delegate,
+          trial_origin, main_frame_origin, frame_tree_node, delegate,
           WebClientHintsType::kUAReduced);
       is_embedder_ua_full = IsOriginTrialHintEnabledForFrame(
-          trial_origin, outermost_main_frame_origin, frame_tree_node, delegate,
+          trial_origin, main_frame_origin, frame_tree_node, delegate,
           WebClientHintsType::kFullUserAgent);
     }
 
@@ -685,7 +683,7 @@ struct ClientHintsExtendedData {
   bool is_embedder_ua_full = false;
   url::Origin resource_origin;
   bool is_outermost_main_frame = false;
-  url::Origin outermost_main_frame_origin;
+  url::Origin main_frame_origin;
   std::unique_ptr<blink::PermissionsPolicy> permissions_policy;
 };
 
@@ -755,7 +753,7 @@ void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
       for (const auto& origin_with_possible_wildcards :
            container_policy_item.allowed_origins) {
         if (origin_with_possible_wildcards.DoesMatchOrigin(
-                data.outermost_main_frame_origin)) {
+                data.main_frame_origin)) {
           for (const auto& hint : it->second) {
             data.hints.SetIsEnabled(hint, /*should_send*/ true);
           }
@@ -1123,6 +1121,8 @@ ParseAndPersistAcceptCHForNavigation(
   //
   // TODO(crbug.com/1258063): Delete this call when the UserAgentReduction
   // Origin Trial is finished.
+  // TODO(crbug.com/1433353): fix this caller to actually send the outermost
+  // frame.
   if (!frame_tree_node->IsMainFrame()) {
     RemoveAllClientHintsExceptOriginTrialHints(
         origin, frame_tree_node, delegate, &accept_ch, &main_frame_origin,

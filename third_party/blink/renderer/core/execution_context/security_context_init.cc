@@ -200,7 +200,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
         std::move(permissions_policy));
   } else {
     std::unique_ptr<PermissionsPolicy> permissions_policy;
-    if (frame.IsInFencedFrameTree()) {
+    if (frame.IsFencedFrameRoot()) {
       // Fenced frames have a list of required permission policies to load and
       // can't be granted extra policies, so use the required policies instead
       // of inheriting from its parent. Note that the parent policies must allow
