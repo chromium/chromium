@@ -118,8 +118,6 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 - (UIBackgroundFetchResult)applicationWillProcessIncomingRemoteNotification:
     (NSDictionary*)userInfo {
   double incomingNotificationTime = base::Time::Now().ToDoubleT();
-  base::UmaHistogramBoolean("IOS.PushNotification.APNSDeviceRegistration",
-                            true);
   auto* clientManager = GetApplicationContext()
                             ->GetPushNotificationService()
                             ->GetPushNotificationClientManager();

@@ -241,6 +241,8 @@ const int kMainIntentCheckDelay = 1;
   // This method is invoked by iOS on the successful registration of the app to
   // APNS and retrieval of the device's APNS token.
   _didRegisterDeviceWithAPNS = YES;
+  base::UmaHistogramBoolean("IOS.PushNotification.APNSDeviceRegistration",
+                            true);
   [_pushNotificationDelegate applicationDidRegisterWithAPNS:deviceToken];
 }
 
