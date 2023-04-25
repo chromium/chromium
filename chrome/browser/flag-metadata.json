@@ -2011,6 +2011,11 @@
     "expiry_milestone":120
   },
   {
+    "name": "enable-cct-text-fragment-lookup-api",
+    "owners": [ "tbansal", "chrome-intelligence-core"],
+    "expiry_milestone":120
+  },
+  {
     "name": "enable-check-visibility-on-attention-log-start",
     "owners": [ "sczs", "tinazwang" ],
     "expiry_milestone": 120

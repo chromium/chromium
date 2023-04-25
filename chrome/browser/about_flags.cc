@@ -10160,6 +10160,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kConvertTrackpadEventsToMouseName,
      flag_descriptions::kConvertTrackpadEventsToMouseDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(ui::kConvertTrackpadEventsToMouse)},
+    {"enable-cct-text-fragment-lookup-api",
+     flag_descriptions::kCCTTextFragmentLookupApiEnabledName,
+     flag_descriptions::kCCTTextFragmentLookupApiEnabledDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTTextFragmentLookupApiEnabled)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

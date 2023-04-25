@@ -62361,6 +62361,7 @@ from previous Chrome versions.
   <int value="83893372" label="SigninInterceptBubbleV2:disabled"/>
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>
   <int value="86233339" label="MessagesForAndroidOfferNotification:disabled"/>
+  <int value="86563978" label="CCTTextFragmentLookupApiEnabled:enabled"/>
   <int value="86900696" label="SanitizerAPIv0:enabled"/>
   <int value="87306743" label="VariationsFakeCrashAfterStartup:disabled"/>
   <int value="88437020" label="FeaturePolicy:enabled"/>
@@ -65153,6 +65154,7 @@ from previous Chrome versions.
   <int value="1622672308" label="ReaderMode:enabled"/>
   <int value="1623345369" label="OmniboxAdaptNarrowTabletWindows:enabled"/>
   <int value="1625988511" label="DurableClientHintsCache:enabled"/>
+  <int value="1626795933" label="CCTTextFragmentLookupApiEnabled:disabled"/>
   <int value="1626824478" label="ExperimentalAppBanners:disabled"/>
   <int value="1627416551" label="ImeInputLogicMozc:disabled"/>
   <int value="1627666567" label="ChromeOSAmbientMode:disabled"/>

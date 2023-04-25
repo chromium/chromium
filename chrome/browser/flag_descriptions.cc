@@ -3762,6 +3762,11 @@ const char kCCTRealTimeEngagementSignalsAlternativeImplDescription[] =
     "Enables an alternative implementation for sending real-time engagement "
     "signals (e.g. scroll) through CustomTabsCallback.";
 
+const char kCCTTextFragmentLookupApiEnabledName[] =
+    "Enable CCT API to lookup text fragments";
+const char kCCTTextFragmentLookupApiEnabledDescription[] =
+    "Enable CCT API to lookup text fragments";
+
 const char kChimeAlwaysShowNotificationDescription[] =
     "A debug flag to always show Chime notification after receiving a payload.";
 const char kChimeAlwaysShowNotificationName[] =
