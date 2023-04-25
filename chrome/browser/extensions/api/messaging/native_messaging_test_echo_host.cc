@@ -10,6 +10,14 @@
 #include "base/files/file.h"
 
 int main(int argc, char* argv[]) {
+  // Ensure stderr isn't pointed at INVALID_HANDLE_VALUE. crbug.com/1433711
+  {
+    HANDLE hStdError = GetStdHandle(STD_ERROR_HANDLE);
+    if (INVALID_HANDLE_VALUE == hStdError) {
+      return -1;
+    }
+  }
+
   base::File read_stream = base::File(GetStdHandle(STD_INPUT_HANDLE));
   base::File write_stream = base::File(GetStdHandle(STD_OUTPUT_HANDLE));
 

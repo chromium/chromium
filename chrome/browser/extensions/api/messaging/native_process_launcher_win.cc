@@ -112,16 +112,14 @@ base::Process LaunchNativeExeDirectly(const std::wstring& command,
 
   options.stdin_handle = stdin_file.Get();
   options.stdout_handle = stdout_file.Get();
-  options.handles_to_inherit.push_back(stdin_file.Get());
-  options.handles_to_inherit.push_back(stdout_file.Get());
+  options.stderr_handle = ::GetStdHandle(STD_ERROR_HANDLE);
+  options.handles_to_inherit.push_back(options.stdin_handle);
+  options.handles_to_inherit.push_back(options.stdout_handle);
 
-  // If Chrome was launched with |stderr| attached, inherit it into
-  // the Native Host.
-  options.stderr_handle = GetStdHandle(STD_ERROR_HANDLE);
-  if (options.stderr_handle) {
+  // Inherit Chrome's STD_ERROR_HANDLE, if set, into the Native Host. If Chrome
+  // was not started with standard error redirected, this value will be null.
+  if (options.stderr_handle != NULL) {
     options.handles_to_inherit.push_back(options.stderr_handle);
-  } else {
-    options.stderr_handle = INVALID_HANDLE_VALUE;
   }
 
   return base::LaunchProcess(command, options);

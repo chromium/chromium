@@ -28,6 +28,10 @@
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/result_catcher.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
+
 namespace extensions {
 namespace {
 
@@ -68,6 +72,23 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase, SendNativeMessageWinExe) {
   constexpr bool kUserLevel = false;
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(kUserLevel));
   ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
+}
+
+// Ensure that the Native Host can still use StdErr, even if StdErr is pointed
+// at NULL (the default unless chrome.exe was started with stderr redirected).
+IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase,
+                       SendNativeMessageWinExeWithNullStdErr) {
+  constexpr bool kUserLevel = false;
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(kUserLevel));
+
+  // By default, gtest runs with stderr redirection, which interferes with what
+  // we are trying to test. Temporarily detach it.
+  HANDLE old_std_err = GetStdHandle(STD_ERROR_HANDLE);
+  SetStdHandle(STD_ERROR_HANDLE, NULL);
+  bool result = RunExtensionTest("native_messaging_send_native_message_exe");
+  // Reattach to the test framework's stderr.
+  SetStdHandle(STD_ERROR_HANDLE, old_std_err);
+  ASSERT_TRUE(result);
 }
 
 IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase,

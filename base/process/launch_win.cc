@@ -336,9 +336,13 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
 
   if (options.stdin_handle || options.stdout_handle || options.stderr_handle) {
     DCHECK(inherit_handles);
-    DCHECK(options.stdin_handle);
-    DCHECK(options.stdout_handle);
-    DCHECK(options.stderr_handle);
+    // If an explicit handle inheritance list is not set, require that all
+    // stdio handle values be explicitly specified.
+    if (options.handles_to_inherit.empty()) {
+      CHECK(options.stdin_handle);
+      CHECK(options.stdout_handle);
+      CHECK(options.stderr_handle);
+    }
     startup_info->dwFlags |= STARTF_USESTDHANDLES;
     startup_info->hStdInput = options.stdin_handle;
     startup_info->hStdOutput = options.stdout_handle;
