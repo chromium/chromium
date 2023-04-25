@@ -29,8 +29,8 @@ class DeveloperToolsPolicyHandler : public ConfigurationPolicyHandler {
   // Developer tools availability as set by policy. The values must match the
   // 'DeveloperToolsAvailability' policy definition.
   enum class Availability {
-    // Default: Developer tools are allowed, except for
-    // force-installed extensions.
+    // Default: Developer tools are allowed, except for policy-installed
+    // extensions and, if this is a managed profile, component extensions.
     kDisallowedForForceInstalledExtensions = 0,
     // Developer tools allowed in all contexts.
     kAllowed = 1,
