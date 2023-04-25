@@ -38,11 +38,11 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r tests/requirements.txt
       - name: Run E2E tests
-        if: runner.os == 'Linux'
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headful' }}
         timeout-minutes: 15
         run: CHROME_BIN="${{ env.chromium_binary }}" xvfb-run --auto-servernum npm run e2e-${{ matrix.head }}
       - name: Run E2E tests
-        if: runner.os == 'macOS'
+        if: ${{ matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless') }}
         timeout-minutes: 15
         run: CHROME_BIN="${{ env.chromium_binary }}" npm run e2e-${{ matrix.head }}
 
