@@ -84,6 +84,7 @@ enum AppMenuAction {
   // Only used by ExtensionsMenuModel sub menu.
   MENU_ACTION_VISIT_CHROME_WEB_STORE = 57,
   MENU_ACTION_PASSWORD_MANAGER = 58,
+  MENU_ACTION_TRANSLATE_PAGE = 59,
   LIMIT_MENU_ACTION
 };
 

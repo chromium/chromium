@@ -657,6 +657,14 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_PRINT);
       break;
 
+    case IDC_TRANSLATE_PAGE:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.TranslatePage",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_TRANSLATE_PAGE);
+      break;
+
     case IDC_ROUTE_MEDIA:
       if (!uma_action_recorded_)
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Cast", delta);
@@ -1088,6 +1096,11 @@ void AppMenuModel::Build() {
   if (media_router::MediaRouterEnabled(browser()->profile()))
     AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
 
+  // TODO(josephjoopark): Update translate string with StringId when finalized.
+  if (features::IsChromeRefresh2023()) {
+    AddItem(IDC_TRANSLATE_PAGE, u"Google Translate");
+  }
+
   if (features::IsChromeRefresh2023()) {
     sub_menus_.push_back(
         std::make_unique<FindAndEditSubMenuModel>(this, browser_));
@@ -1240,6 +1253,7 @@ void AppMenuModel::Build() {
     set_icon(IDC_BOOKMARKS_MENU, kBookmarksListsMenuIcon);
     set_icon(IDC_ZOOM_MENU, kZoomInIcon);
     set_icon(IDC_PRINT, kPrintMenuIcon);
+    set_icon(IDC_TRANSLATE_PAGE, kTranslateChromeRefreshIcon);
     set_icon(IDC_ROUTE_MEDIA, kCastMenuIcon);
     set_icon(IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
     set_icon(IDC_AUTOFILL_MENU, kKeyChromeRefreshIcon);
