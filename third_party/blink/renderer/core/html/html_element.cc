@@ -1694,10 +1694,15 @@ void HTMLElement::HidePopoverInternal(
   if (PopoverType() == PopoverValueType::kAuto ||
       PopoverType() == PopoverValueType::kHint) {
     auto& stack = document.PopoverStack();
+    bool repeating_hide = false;
     do {
-      // Hide any popovers above us in the stack.
-      HideAllPopoversUntil(this, document, focus_behavior, transition_behavior,
-                           HidePopoverIndependence::kLeaveUnrelated);
+      // Hide any popovers above us in the stack. Fire events only the first
+      // time through the while loop.
+      HideAllPopoversUntil(
+          this, document, focus_behavior,
+          repeating_hide ? HidePopoverTransitionBehavior::kNoEventsNoWaiting
+                         : transition_behavior,
+          HidePopoverIndependence::kLeaveUnrelated);
       // The 'beforetoggle' event handlers could have changed this popover, e.g.
       // by changing its type, removing it from the document, or calling
       // hidePopover().
@@ -1705,9 +1710,17 @@ void HTMLElement::HidePopoverInternal(
                           /*include_event_handler_text=*/true, &document)) {
         return;
       }
-    } while (PopoverType() == PopoverValueType::kAuto
-                 ? (!stack.empty() && stack.back() != this)
-                 : (document.TopmostPopoverOrHint() != this));
+      repeating_hide = PopoverType() == PopoverValueType::kAuto
+                           ? (!stack.empty() && stack.back() != this)
+                           : (document.TopmostPopoverOrHint() != this);
+      if (repeating_hide) {
+        document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "The `beforetoggle` event handler for a popover triggered another "
+            "popover to be shown. This is not recommended."));
+      }
+    } while (repeating_hide);
   }
 
   MarkPopoverInvokersDirty(*this);
