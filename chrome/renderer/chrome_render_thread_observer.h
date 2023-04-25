@@ -118,7 +118,9 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
       mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
           chromeos_listener_receiver,
       mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
-          content_settings_manager) override;
+          content_settings_manager,
+      mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledListener>
+          bound_session_request_throttled_listener) override;
   void SetConfiguration(chrome::mojom::DynamicParamsPtr params) override;
   void OnRendererConfigurationAssociatedRequest(
       mojo::PendingAssociatedReceiver<chrome::mojom::RendererConfiguration>

@@ -14,6 +14,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 class SigninClient;
 
@@ -31,8 +32,13 @@ class BoundSessionCookieRefreshServiceImpl
   void Initialize() override;
   bool IsBoundSession() const override;
   chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams() const override;
+  void AddBoundSessionRequestThrottledListenerReceiver(
+      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledListener>
+          receiver) override;
+
+  // chrome::mojom::BoundSessionRequestThrottledListener:
   void OnRequestBlockedOnCookie(
-      base::OnceClosure resume_blocked_request) override;
+      OnRequestBlockedOnCookieCallback resume_blocked_request) override;
 
   base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override;
 
@@ -77,6 +83,10 @@ class BoundSessionCookieRefreshServiceImpl
 
   std::unique_ptr<BoundSessionStateTracker> bound_session_tracker_;
   std::unique_ptr<BoundSessionCookieController> cookie_controller_;
+
+  mojo::ReceiverSet<chrome::mojom::BoundSessionRequestThrottledListener>
+      renderer_request_throttled_listener_;
+
   base::WeakPtrFactory<BoundSessionCookieRefreshService> weak_ptr_factory_{
       this};
 };

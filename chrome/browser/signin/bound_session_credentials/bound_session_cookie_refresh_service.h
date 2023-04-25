@@ -7,8 +7,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/common/renderer_configuration.mojom-forward.h"
+#include "chrome/common/renderer_configuration.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 // BoundSessionCookieRefreshService is responsible for maintaining cookies
 // associated with bound sessions. This class does the following:
@@ -16,7 +17,9 @@
 // - Provides bound session params to renderers
 // - Monitors cookie changes and update renderers
 // - Preemptively refreshes bound session cookies
-class BoundSessionCookieRefreshService : public KeyedService {
+class BoundSessionCookieRefreshService
+    : public KeyedService,
+      public chrome::mojom::BoundSessionRequestThrottledListener {
  public:
   using RendererBoundSessionParamsUpdaterDelegate = base::RepeatingClosure;
 
@@ -36,14 +39,6 @@ class BoundSessionCookieRefreshService : public KeyedService {
   virtual chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams()
       const = 0;
 
-  // Called when a network request requires a fresh SIDTS cookie. This function
-  // is intended to be called by network requests throttlers.
-  // The callback will be called once the cookie is fresh or the session is
-  // terminated. Note: The callback might be called synchronously if the
-  // previous conditions apply.
-  virtual void OnRequestBlockedOnCookie(
-      base::OnceClosure resume_blocked_request) = 0;
-
   virtual base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() = 0;
 
  private:
@@ -53,6 +48,12 @@ class BoundSessionCookieRefreshService : public KeyedService {
   // renderers calls this setter to subscribe for bound session params updates.
   virtual void SetRendererBoundSessionParamsUpdaterDelegate(
       RendererBoundSessionParamsUpdaterDelegate renderer_updater) = 0;
+
+  // Adds a Receiver to `BoundSessionCookieRefreshService` to receive
+  // notification when a request is throttled and requires a fresh cookie.
+  virtual void AddBoundSessionRequestThrottledListenerReceiver(
+      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledListener>
+          receiver) {}
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_

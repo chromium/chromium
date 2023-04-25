@@ -205,8 +205,15 @@ void BoundSessionCookieRefreshServiceImpl::
   renderer_updater_ = renderer_updater;
 }
 
+void BoundSessionCookieRefreshServiceImpl::
+    AddBoundSessionRequestThrottledListenerReceiver(
+        mojo::PendingReceiver<
+            chrome::mojom::BoundSessionRequestThrottledListener> receiver) {
+  renderer_request_throttled_listener_.Add(this, std::move(receiver));
+}
+
 void BoundSessionCookieRefreshServiceImpl::OnRequestBlockedOnCookie(
-    base::OnceClosure resume_blocked_request) {
+    OnRequestBlockedOnCookieCallback resume_blocked_request) {
   if (!IsBoundSession()) {
     // Session has been terminated.
     std::move(resume_blocked_request).Run();
