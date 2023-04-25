@@ -101,13 +101,17 @@ void WebAuthnRequestDelegateAndroid::CancelWebAuthnRequest(
   }
 
   conditional_request_in_progress_ = false;
-  std::move(webauthn_account_selection_callback_).Run(std::vector<uint8_t>());
+  if (webauthn_account_selection_callback_) {
+    std::move(webauthn_account_selection_callback_).Run(std::vector<uint8_t>());
+  }
 }
 
 void WebAuthnRequestDelegateAndroid::OnWebAuthnAccountSelected(
     const std::vector<uint8_t>& user_id) {
   conditional_request_in_progress_ = false;
-  std::move(webauthn_account_selection_callback_).Run(user_id);
+  if (webauthn_account_selection_callback_) {
+    std::move(webauthn_account_selection_callback_).Run(user_id);
+  }
 }
 
 content::WebContents* WebAuthnRequestDelegateAndroid::web_contents() {
