@@ -141779,6 +141779,21 @@
         {}
        ]
       ]
+     },
+     "text-box-trim": {
+      "text-box-trim-half-leading-inline-box-001.html": [
+       "4316301bd1bff7e58862700c6b7511914d14d21f",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
      }
     },
     "css-layout-api": {
@@ -270081,11 +270096,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "2ad079ea1bbedfaa41e9d38a31e6e06cbc59b0b3",
+     "b6c6723d74a09940f307aad5bbfaf6b0edb6ed1d",
      []
     ],
     "mtime.json": [
-     "511d51003e6d595a1b207d02e8897149734895a4",
+     "df3af1930a36eb92e19135aeaf121f5d55a6220b",
      []
     ]
    },
@@ -285153,7 +285168,7 @@
      ],
      "mix-blend-mode": {
       "mix-blend-mode-animation.html.ini": [
-       "38a37baa050c2767293e2bcda497ad6b8bf22abb",
+       "d1016bd6de1d1046970b5ccf84776df0fa026dc9",
        []
       ],
       "mix-blend-mode-blended-element-overflow-scroll.html.ini": [
@@ -289364,11 +289379,11 @@
       []
      ],
      "import-conditions-expected.txt": [
-      "cdcdc59bba332c229c883a9461e6bce7ca0fa372",
+      "41edfce511dcb37f82353965c567782fc69942c8",
       []
      ],
      "import-conditions.html.ini": [
-      "5fe16a522e9d0df2672ec4d1b99c99bb08f64e6d",
+      "0803ac9d3b96f1dacb9671642bd59c60d0beec06",
       []
      ],
      "important-prop-ref.html": [
@@ -307406,6 +307421,16 @@
        "e731bc3dfb5e6c5a4e89bcd443729069936545cd",
        []
       ]
+     },
+     "text-box-trim": {
+      "text-box-trim-half-leading-inline-box-001-ref.html": [
+       "4824309291df136db30d79b4a9dddc115f48b117",
+       []
+      ],
+      "text-box-trim-half-leading-inline-box-001.html.ini": [
+       "8cf8c09698c9bb5e5335e29c4038394136beb29a",
+       []
+      ]
      }
     },
     "css-layout-api": {
@@ -308675,7 +308700,7 @@
        []
       ],
       "clip-path-filter-order.html.ini": [
-       "89641752a57a657adbcb0e5995559f949a2c1554",
+       "e376dae045e67471da622f7876f2f40c7aa5bd37",
        []
       ],
       "clip-path-fixed-nested-ref.html": [
@@ -316487,6 +316512,10 @@
      ],
      "max-content-input-001.html.ini": [
       "a329e3b09595074f066a04f873920f82073c4b84",
+      []
+     ],
+     "min-content-negative-margin-crash.html.ini": [
+      "4b10df0223c3040ef26aa6cb11a12189e5ade033",
       []
      ],
      "nested-flexbox-image-percentage-max-height-computes-as-none-ref.html": [
@@ -326908,6 +326937,10 @@
        "a99265efc1f46bdb74c46fab4e8aeaae7f49ad78",
        []
       ],
+      "kind-of-widget-fallback-input-reset-border-bottom-style-001.html.ini": [
+       "db28982f742486b0488287998c23342e2f3b557a",
+       []
+      ],
       "kind-of-widget-fallback-input-reset-border-end-end-radius-001.html.ini": [
        "0d57390a693bd6e3996478bca6da9c10e6b64d75",
        []
@@ -327180,12 +327213,16 @@
        "0a103751c35f49aefdaf0284d14ae70ecf9c3907",
        []
       ],
+      "kind-of-widget-fallback-input-submit-border-image-outset-001.html.ini": [
+       "e15d63511d3c68f7c6bf64d1675f8fe559e5cfb9",
+       []
+      ],
       "kind-of-widget-fallback-input-submit-border-image-repeat-001.html.ini": [
        "8231ecbb222b79927cb28b3b18a1a29ed1bff0b5",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-image-slice-001.html.ini": [
-       "0c26f7d54b41705a6994f5d340ea8c490861273b",
+       "0657ff19abb69b9c13e25f146ebc33b0c1ccdc26",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-image-source-001.html.ini": [
@@ -327704,7 +327741,7 @@
       []
      ],
      "outline-027.html.ini": [
-      "1ffe61f735d5d4c6efe39284c5517cff89b20b04",
+      "149e9affa3f9fecd02beab8f160d22c00d4930b2",
       []
      ],
      "outline-auto-dynamic-change-ref.html": [
@@ -334226,7 +334263,7 @@
       []
      ],
      "backdrop-filters-brightness.html.ini": [
-      "3fb8d11144d59cc6c49d68d17a101d7dd7931582",
+      "f370173739f059320d7dac71d68b93278922f9e8",
       []
      ],
      "backdrop-filters-contrast-ref.html": [
@@ -342553,6 +342590,22 @@
      ],
      "default-enabled-features-redirect.https.html.headers": [
       "1b63235b7cdffe9ebb43bfac3a01d5220e1519fb",
+      []
+     ],
+     "default-enabled-features-subframe-fencedframe.https.html": [
+      "e0987365285b72889ac8d51a842d0eb5d7b3436d",
+      []
+     ],
+     "default-enabled-features-subframe-fencedframe.https.html.headers": [
+      "e52511f18abb8f8321895170f94d7a52ac49a108",
+      []
+     ],
+     "default-enabled-features-subframe-iframe.https.html": [
+      "a3ab056944dac17db17126ff04993b79c7113071",
+      []
+     ],
+     "default-enabled-features-subframe-iframe.https.html.headers": [
+      "6247f6d63211cd39dffca9fc507aefcdee586eba",
       []
      ],
      "download-helper.js": [
@@ -362470,7 +362523,7 @@
         ]
        },
        "text-plain.window.js.ini": [
-        "367ff8954751da7da33e8ae1d2de5f268d3507bd",
+        "df58d5551529362f6621ea7a92a73dfe7901942f",
         []
        ],
        "urlencoded2.window.js.ini": [
@@ -392049,6 +392102,10 @@
      ],
      "020.html.ini": [
       "0a16a392a2613129aa07950c9344517abbfbca22",
+      []
+     ],
+     "021.html.ini": [
+      "df8ef43ccfb465108a1afdb72b2dbf3279ac7032",
       []
      ],
      "025-1.js": [
@@ -438530,7 +438587,7 @@
       ]
      ],
      "import-conditions.html": [
-      "e5e1c685a9e214af6f0cd4a9eefa4f67056665e8",
+      "9c1e5c6e8768eecc881414c281fec2b971fb84d9",
       [
        null,
        {}
@@ -493354,6 +493411,13 @@
     ],
     "default-enabled-features-attribution-disabled.https.html": [
      "7683b35a69942044f95c35f4861e520eaae9e7ba",
+     [
+      null,
+      {}
+     ]
+    ],
+    "default-enabled-features-subframe.https.html": [
+     "a86a02b00a83ac8e04665b7deaacbd01c70ba531",
      [
       null,
       {}
@@ -552376,6 +552440,13 @@
       ],
       "popover-beforetoggle-opening-event.html": [
        "41bb9aa82c51ad601cb168faf105b6f5ba50b76b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "popover-dialog-initial-focus.html": [
+       "47b2252bf5f26bc5bd122b9e57035992da65855a",
        [
         null,
         {}
@@ -673596,7 +673667,7 @@
      },
      "back": {
       "back.py": [
-       "62434323e0ad5339a861d0752d29f7d1f95c81cc",
+       "21e8498ccd57da9b101055f39fedab02ef2f2fcb",
        [
         null,
         {}
@@ -673732,7 +673803,7 @@
        ]
       ],
       "navigate.py": [
-       "492718292a178e5bfe242d75acad4b6efc3cbf71",
+       "bada57942b4807e4b151f80514bf8598ac359262",
        [
         null,
         {}
@@ -674038,7 +674109,7 @@
      },
      "forward": {
       "forward.py": [
-       "f27be403f9e95bd2359d5ae6224f6ae2708ff7c8",
+       "61c66e201b9e9898cec78c86c37fbf894b48c457",
        [
         null,
         {}
@@ -674520,7 +674591,7 @@
        ]
       ],
       "navigate.py": [
-       "d61377af275902c48083d3d84b35c3bba30bc34e",
+       "a367fc105e126aba603a2c426f2bfe823ccad950",
        [
         null,
         {}

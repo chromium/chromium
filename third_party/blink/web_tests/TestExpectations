@@ -2939,6 +2939,9 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 crbug.com/626703 external/wpt/css/css-multicol/file-control-crash.html [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-001.html [ Failure ]
+crbug.com/626703 [ Linux ] virtual/threaded/external/wpt/css/css-transforms/individual-transform/animation/individual-transform-ordering.html [ Failure ]
+crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/css/css-transforms/individual-transform/animation/individual-transform-ordering.html [ Failure ]
 crbug.com/626703 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unfenced-top.https.html [ Skip Timeout ]
 crbug.com/626703 [ Win11 ] external/wpt/fetch/api/body/mime-type.any.worker.html [ Failure Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/web-lock.tentative.https.window.html [ Timeout ]
