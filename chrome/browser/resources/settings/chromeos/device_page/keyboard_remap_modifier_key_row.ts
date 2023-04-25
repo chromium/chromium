@@ -33,7 +33,7 @@ enum KeyState {
   MODIFIER_REMAPPED = 'modifier-remapped',
 }
 
-type MetaKeyIcon = 'cr:search'|'os-settings:launcher'|'';
+type KeyIcon = 'cr:search'|'os-settings:launcher'|'os-settings:assistant'|'';
 const KeyboardRemapModifierKeyRowElementBase = I18nMixin(PolymerElement);
 
 export class KeyboardRemapModifierKeyRowElement extends
@@ -69,7 +69,6 @@ export class KeyboardRemapModifierKeyRowElement extends
 
       metaKey: {
         type: Number,
-        observer: 'onMetaKeyChanged',
       },
 
       key: {
@@ -84,9 +83,10 @@ export class KeyboardRemapModifierKeyRowElement extends
         type: Object,
       },
 
-      metaKeyIcon: {
+      keyIcon: {
         type: String,
         value: '',
+        computed: 'getKeyIcon(key, metaKey)',
       },
     };
   }
@@ -94,12 +94,18 @@ export class KeyboardRemapModifierKeyRowElement extends
   protected keyLabel: string;
   private metaKeyLabel: string;
   private keyMapTargets: DropdownMenuOptionList;
-  private metaKeyIcon: MetaKeyIcon;
+  private keyIcon: KeyIcon;
   keyState: KeyState;
   pref: chrome.settingsPrivate.PrefObject;
   metaKey: MetaKey;
   key: ModifierKey;
   defaultRemappings: {[key: number]: ModifierKey};
+
+  override ready() {
+    super.ready();
+
+    this.setUpKeyMapTargets();
+  }
 
   static get template(): HTMLTemplateElement {
     return getTemplate();
@@ -113,13 +119,6 @@ export class KeyboardRemapModifierKeyRowElement extends
     return this.defaultRemappings[this.key] === this.pref.value ?
         KeyState.DEFAULT_REMAPPING :
         KeyState.MODIFIER_REMAPPED;
-  }
-
-  private onMetaKeyChanged(): void {
-    if (this.key === ModifierKey.kMeta) {
-      this.metaKeyIcon = this.getMetaKeyIcon();
-    }
-    this.setUpKeyMapTargets();
   }
 
   /**
@@ -209,13 +208,18 @@ export class KeyboardRemapModifierKeyRowElement extends
     ];
   }
 
-  private getMetaKeyIcon(): MetaKeyIcon {
-    if (this.metaKey === MetaKey.kSearch) {
-      return 'cr:search';
+  private getKeyIcon(): KeyIcon {
+    if (this.key === ModifierKey.kMeta) {
+      if (this.metaKey === MetaKey.kSearch) {
+        return 'cr:search';
+      }
+      if (this.metaKey === MetaKey.kLauncher) {
+        return 'os-settings:launcher';
+      }
+    } else if (this.key === ModifierKey.kAssistant) {
+      return 'os-settings:assistant';
     }
-    if (this.metaKey === MetaKey.kLauncher) {
-      return 'os-settings:launcher';
-    }
+
     return '';
   }
 }

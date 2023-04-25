@@ -56,6 +56,7 @@ export const fakeKeyboards: Keyboard[] = [
     metaKey: MetaKey.kLauncher,
     modifierKeys: [
       ModifierKey.kAlt,
+      ModifierKey.kAssistant,
       ModifierKey.kBackspace,
       ModifierKey.kCapsLock,
       ModifierKey.kControl,

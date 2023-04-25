@@ -163,11 +163,23 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
             '#metaKey');
     assert(metaKeyRow);
     assertEquals('', metaKeyRow.get('keyLabel'));
-    assertEquals('os-settings:launcher', metaKeyRow.get('metaKeyIcon'));
+    assertEquals('os-settings:launcher', metaKeyRow.get('keyIcon'));
 
     const launcherKeyIcon = metaKeyRow.shadowRoot!.querySelector('iron-icon');
     assert(launcherKeyIcon);
     assertEquals('os-settings:launcher', launcherKeyIcon.icon);
+
+    // Verify that the label for assistant key is displayed as icon.
+    const assistantKeyRow =
+        page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
+            '#assistantKey');
+    assert(assistantKeyRow);
+    assertEquals('assistant', assistantKeyRow.get('keyLabel'));
+
+    const assistantKeyIcon =
+        assistantKeyRow.shadowRoot!.querySelector('iron-icon');
+    assert(assistantKeyIcon);
+    assertEquals('os-settings:assistant', assistantKeyIcon.icon);
   });
 
   /**
