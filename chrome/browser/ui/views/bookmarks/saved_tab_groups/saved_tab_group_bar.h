@@ -143,6 +143,18 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Reorders the dragged group to its new index.
   void HandleDrop();
 
+  // Paints the drop indicator, if one should be shown.
+  void MaybePaintDropIndicatorInBar(gfx::Canvas* canvas);
+
+  // Calculates the index in the saved tab groups bar at which we should show a
+  // drop indicator, or nullopt if we should not show an indicator in the bar.
+  absl::optional<int> CalculateDropIndicatorIndexInBar() const;
+
+  // Calculates the index (in saved tab group model space, so across the bar and
+  // the overflow menu) at which we should show a drop indicator, or nullopt if
+  // we should not show an indicator anywhere at all.
+  absl::optional<int> CalculateDropIndicatorIndexInCombinedSpace() const;
+
   // Provides a callback that returns the page navigator
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
 

@@ -12,6 +12,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
@@ -40,6 +41,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 namespace {
@@ -51,6 +53,9 @@ const int kOverflowMenuButtonPadding = 8;
 // The padding at the top and bottom of the bar used to center all displayed
 // buttons.
 constexpr int kButtonPadding = 2;
+
+// The thickness, in dips, of the drop indicators during drop sessions.
+constexpr int kDropIndicatorThicknessDips = 2;
 
 SavedTabGroupModel* GetSavedTabGroupModelFromBrowser(Browser* browser) {
   DCHECK(browser);
@@ -115,7 +120,56 @@ class SavedTabGroupBar::OverflowMenu : public views::View {
   void OnPaint(gfx::Canvas* canvas) override {
     views::View::OnPaint(canvas);
 
-    // TODO(crbug/1426200): paint a drop indicator
+    MaybePaintDropIndicatorInOverflow(canvas);
+  }
+
+  void MaybePaintDropIndicatorInOverflow(gfx::Canvas* canvas) {
+    const absl::optional<int> overflow_menu_indicator_index =
+        CalculateDropIndicatorIndexInOverflow();
+    if (!overflow_menu_indicator_index.has_value()) {
+      return;
+    }
+
+    const int y = overflow_menu_indicator_index.value() > 0
+                      ? children()[overflow_menu_indicator_index.value() - 1]
+                                ->bounds()
+                                .bottom() +
+                            kOverflowMenuButtonPadding / 2
+                      : kDropIndicatorThicknessDips / 2;
+
+    const gfx::Rect drop_indicator_bounds =
+        gfx::Rect(0, y - kDropIndicatorThicknessDips / 2, width(),
+                  kDropIndicatorThicknessDips);
+    canvas->FillRect(drop_indicator_bounds,
+                     GetColorProvider()->GetColor(kColorBookmarkBarForeground));
+  }
+
+  // Returns the index within the overflow menu the drop indicator should be
+  // painted at, or nullopt if no indicator should be painted.
+  absl::optional<int> CalculateDropIndicatorIndexInOverflow() {
+    const absl::optional<int> indicator_index =
+        parent_bar_->CalculateDropIndicatorIndexInCombinedSpace();
+    if (!indicator_index.has_value()) {
+      return absl::nullopt;
+    }
+
+    const int overflow_menu_indicator_index =
+        indicator_index.value() - kMaxVisibleButtons;
+    if (overflow_menu_indicator_index < 0) {
+      // The drop index is not in the overflow menu. No drop indicator.
+      return absl::nullopt;
+    }
+
+    const bool came_from_bar = parent_bar_->saved_tab_group_model_
+                                   ->GetIndexOf(parent_bar_->drag_data_->guid())
+                                   .value() < kMaxVisibleButtons;
+    if (overflow_menu_indicator_index == 0 && came_from_bar) {
+      // The drop index is on the border between the overflow menu and the bar,
+      // and because the group came from the bar, it will stay in the bar.
+      return absl::nullopt;
+    }
+
+    return overflow_menu_indicator_index;
   }
 
  private:
@@ -131,6 +185,8 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
     : saved_tab_group_model_(saved_tab_group_model),
       browser_(browser),
       animations_enabled_(animations_enabled) {
+  SetProperty(views::kElementIdentifierKey, kSavedTabGroupBarElementId);
+
   std::unique_ptr<views::LayoutManager> layout_manager =
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
@@ -237,6 +293,9 @@ void SavedTabGroupBar::UpdateDropIndex() {
 
   drag_data_->SetInsertionIndex(drop_index);
   SchedulePaint();
+  if (overflow_menu_) {
+    overflow_menu_->SchedulePaint();
+  }
 }
 
 void SavedTabGroupBar::HandleDrop() {
@@ -279,8 +338,12 @@ int SavedTabGroupBar::OnDragUpdated(const ui::DropTargetEvent& event) {
   drag_data_->SetLocation(event.location());
   UpdateDropIndex();
 
-  // Show the overflow menu when dragging over the overflow button.
-  if (event.location().x() >= overflow_button_->bounds().x()) {
+  const bool dragging_over_button =
+      event.location().x() >= overflow_button_->bounds().x();
+  const bool would_drop_into_overflow =
+      drag_data_->insertion_index() >= static_cast<size_t>(kMaxVisibleButtons);
+
+  if (dragging_over_button || would_drop_into_overflow) {
     MaybeShowOverflowMenu();
   } else if (event.location().y() < bounds().bottom()) {
     // Hide the overflow menu if dragging in the bar but not over the button.
@@ -315,35 +378,7 @@ views::View::DropCallback SavedTabGroupBar::GetDropCallback(
 void SavedTabGroupBar::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
 
-  if (drag_data_ && drag_data_->insertion_index().has_value()) {
-    const int insertion_index = drag_data_->insertion_index().value();
-    const int current_index =
-        saved_tab_group_model_->GetIndexOf(drag_data_->guid()).value();
-
-    absl::optional<int> indicator_index = insertion_index;
-    if (insertion_index > current_index) {
-      // `insertion_index` doesn't include `current_index`, add it back in if
-      // needed.
-      indicator_index = insertion_index + 1;
-    } else if (insertion_index == current_index) {
-      // Hide the indicator when the drop wouldn't reorder anything.
-      indicator_index = absl::nullopt;
-    }
-
-    if (indicator_index.has_value()) {
-      constexpr int kDropIndicatorWidth = 2;
-      const int x =
-          indicator_index > 0
-              ? children()[indicator_index.value() - 1]->bounds().right() +
-                    GetLayoutConstant(TOOLBAR_ELEMENT_PADDING) / 2
-              : kDropIndicatorWidth / 2;
-
-      const gfx::Rect drop_indicator_bounds = gfx::Rect(
-          x - kDropIndicatorWidth / 2, 0, kDropIndicatorWidth, height());
-      canvas->FillRect(drop_indicator_bounds, GetColorProvider()->GetColor(
-                                                  kColorBookmarkBarForeground));
-    }
-  }
+  MaybePaintDropIndicatorInBar(canvas);
 }
 
 void SavedTabGroupBar::SavedTabGroupAddedLocally(const base::Uuid& guid) {
@@ -636,4 +671,73 @@ void SavedTabGroupBar::HideOverflowButton() {
 
 void SavedTabGroupBar::ShowOverflowButton() {
   overflow_button_->SetVisible(true);
+}
+
+void SavedTabGroupBar::MaybePaintDropIndicatorInBar(gfx::Canvas* canvas) {
+  const absl::optional<int> indicator_index =
+      CalculateDropIndicatorIndexInBar();
+  if (!indicator_index.has_value()) {
+    return;
+  }
+
+  const int x =
+      indicator_index.value() > 0
+          ? children()[indicator_index.value() - 1]->bounds().right() +
+                GetLayoutConstant(TOOLBAR_ELEMENT_PADDING) / 2
+          : kDropIndicatorThicknessDips / 2;
+
+  const gfx::Rect drop_indicator_bounds =
+      gfx::Rect(x - kDropIndicatorThicknessDips / 2, 0,
+                kDropIndicatorThicknessDips, height());
+  canvas->FillRect(drop_indicator_bounds,
+                   GetColorProvider()->GetColor(kColorBookmarkBarForeground));
+}
+
+absl::optional<int> SavedTabGroupBar::CalculateDropIndicatorIndexInBar() const {
+  const absl::optional<int> indicator_index =
+      CalculateDropIndicatorIndexInCombinedSpace();
+  if (!indicator_index.has_value()) {
+    return absl::nullopt;
+  }
+
+  if (indicator_index.value() > kMaxVisibleButtons) {
+    // The drop index is not in the bar.
+    return absl::nullopt;
+  }
+
+  const bool came_from_overflow_menu =
+      saved_tab_group_model_->GetIndexOf(drag_data_->guid()).value() >=
+      kMaxVisibleButtons;
+  if (indicator_index.value() == kMaxVisibleButtons &&
+      came_from_overflow_menu) {
+    // The drop index is on the border between the overflow menu and the bar,
+    // and because the group came from the overflow menu, it will stay in the
+    // overflow menu.
+    return absl::nullopt;
+  }
+
+  return indicator_index;
+}
+
+absl::optional<int>
+SavedTabGroupBar::CalculateDropIndicatorIndexInCombinedSpace() const {
+  if (!drag_data_ || !drag_data_->insertion_index().has_value()) {
+    return absl::nullopt;
+  }
+
+  const int insertion_index = drag_data_->insertion_index().value();
+  const int current_index =
+      saved_tab_group_model_->GetIndexOf(drag_data_->guid()).value();
+
+  if (insertion_index > current_index) {
+    // `insertion_index` doesn't include `current_index`, add it back in if
+    // needed.
+    return insertion_index + 1;
+  } else if (insertion_index == current_index) {
+    // Hide the indicator when the drop wouldn't reorder anything.
+    return absl::nullopt;
+  }
+
+  // Otherwise we can show an indicator at the actual drop index.
+  return insertion_index;
 }
