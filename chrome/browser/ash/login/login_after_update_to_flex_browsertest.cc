@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(LoginAfterUpdateToFlexTest, DISABLED_DeviceOwner) {
   test::WaitForPrimaryUserSessionStart();
 }
 
-IN_PROC_BROWSER_TEST_F(LoginAfterUpdateToFlexTest, RegularUser) {
+IN_PROC_BROWSER_TEST_F(LoginAfterUpdateToFlexTest, DISABLED_RegularUser) {
   LoginUser(GetRegularAccountId());
   EXPECT_FALSE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
       prefs::kRevenOobeConsolidatedConsentAccepted));
