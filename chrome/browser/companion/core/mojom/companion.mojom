@@ -10,18 +10,24 @@ import "url/mojom/url.mojom";
 // TODO(b/274618365): Link documentation for server side counterpart that must
 // be kept in sync.
 enum MethodType {
-  // Method called in response to a user action in a promo.
+  // Method corresponding to `CompanionPageHandler.OnPromoAction`.
   kOnPromoAction = 1,
 
-  // Method called in response to user clicking on the region search button.
+  // Method corresponding to `CompanionPageHandler.OnRegionSearchClicked`.
   kOnRegionSearchClicked = 2,
 
-  // Method called when user's experience opt-in status is available.
+  // Method corresponding to `CompanionPageHandler.OnExpsOptInStatusAvailable`.
   kOnExpsOptInStatusAvailable = 3,
 
-  // Method called when the url used for the 'open in new tab' button in the
-  // side panel header should be updated.
+  // Method corresponding to
+  // `CompanionPageHandler.OnOpenInNewTabButtonURLChanged`.
   kOnOpenInNewTabButtonURLChanged = 4,
+
+  // Method corresponding to `CompanionPageHandler.RecordUiSurfaceShown`.
+  kRecordUiSurfaceShown = 5,
+
+  // Method corresponding to `CompanionPageHandler.RecordUiSurfaceClicked`.
+  kRecordUiSurfaceClicked = 6,
 };
 
 // Types of promos shown in the companion UI.
@@ -72,6 +78,14 @@ struct ImageQuery {
   uint32 downscaled_width;
 };
 
+// Various UI surfaces on the companion page.
+enum UiSurface {
+  kUnknown = 0,
+  kPH = 1,
+  kCQ = 2,
+  kRegionSearch = 3,
+};
+
 // Factory method for creating a new WebUI page handler.
 interface CompanionPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -99,6 +113,17 @@ interface CompanionPageHandler {
   // button in the side panel header should be updated. If the url is empty
   // the button would be hidden.
   OnOpenInNewTabButtonURLChanged(url.mojom.Url url_to_open);
+
+  // For metrics only. Called to record that a certain UI surface was shown on
+  // the companion page. Additionally indicates the number of child elements
+  // shown within the surface, e.g. the number of related queries shown in
+  // the related queries component.
+  RecordUiSurfaceShown(UiSurface ui_surface, uint32 child_element_count);
+
+  // For metrics only. Called to record that the user clicked on the given UI
+  // surface on the companion page. These clicks are actual clicks on the
+  // surface which exclude clicks on the feedback elements.
+  RecordUiSurfaceClicked(UiSurface ui_surface);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

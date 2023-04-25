@@ -57,6 +57,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/chromeos_hps/histograms.xml",
       "//tools/metrics/histograms/metadata/chromeos_settings/histograms.xml",
       "//tools/metrics/histograms/metadata/commerce/histograms.xml",
+      "//tools/metrics/histograms/metadata/companion/histograms.xml",
       "//tools/metrics/histograms/metadata/compositing/histograms.xml",
       "//tools/metrics/histograms/metadata/content/histograms.xml",
       "//tools/metrics/histograms/metadata/content_creation/histograms.xml",

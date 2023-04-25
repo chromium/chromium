@@ -6475,6 +6475,43 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Companion.PageView">
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records metrics for the companion side panel. The events correspond to a
+    single page load in the main frame and the metrics are flushed when the page
+    navigates away. For most of the UI surfaces, only the last event (e.g.
+    displayed or clicked) is recorded.
+  </summary>
+  <metric name="CQ.ChildElementCount">
+    <summary>
+      The number of child elements shown within the CQ suface, e.g. the number
+      of related queries in the related queries component. Clamped to a max
+      value of 10.
+    </summary>
+  </metric>
+  <metric name="CQ.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the CQ surface.
+    </summary>
+  </metric>
+  <metric name="PH.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the PH surface.
+    </summary>
+  </metric>
+  <metric name="PromoEvent" enum="Companion.PromoEvent">
+    <summary>
+      The last event on the promo surface.
+    </summary>
+  </metric>
+  <metric name="RegionSearch.ClickCount">
+    <summary>
+      The number of times region search in the multimodal box was clicked.
+    </summary>
+  </metric>
+</event>
+
 <event name="Compositor.Rendering">
   <owner>khushalsagar@chromium.org</owner>
   <summary>

@@ -36,7 +36,13 @@ enum ParamType {
   // Arguments for MethodType.kOnOpenInNewTabButtonURLChanged.
   URL_FOR_OPEN_IN_NEW_TAB = 'urlForOpenInNewTab',
 
-  // Arguments for browser -> iframe communcation.
+  // Arguments for MethodType.kRecordUiSurfaceShown.
+  UI_SURFACE = 'ui_surface',
+
+  // Arguments for MethodType.kRecordUiSurfaceShown.
+  CHILD_ELEMENT_COUNT = 'child_element_count',
+
+  // Arguments for browser -> iframe communication.
   COMPANION_UPDATE_PARAMS = 'companion_update_params',
 }
 
@@ -154,6 +160,11 @@ function onCompanionMessageEvent(event: MessageEvent) {
     const openInNewTabUrl = new Url();
     openInNewTabUrl.url = data[ParamType.URL_FOR_OPEN_IN_NEW_TAB];
     companionProxy.handler.onOpenInNewTabButtonURLChanged(openInNewTabUrl);
+  } else if (methodType === MethodType.kRecordUiSurfaceShown) {
+    companionProxy.handler.recordUiSurfaceShown(
+        data[ParamType.UI_SURFACE], data[ParamType.CHILD_ELEMENT_COUNT]);
+  } else if (methodType === MethodType.kRecordUiSurfaceClicked) {
+    companionProxy.handler.recordUiSurfaceClicked(data[ParamType.UI_SURFACE]);
   }
 }
 

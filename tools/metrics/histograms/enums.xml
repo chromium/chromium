@@ -18089,6 +18089,25 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Header set by client code"/>
 </enum>
 
+<enum name="Companion.PromoEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="SignIn.Shown"/>
+  <int value="2" label="SignIn.Accepted"/>
+  <int value="3" label="SignIn.Rejected"/>
+  <int value="4" label="Msbb.Shown"/>
+  <int value="5" label="Msbb.Accepted"/>
+  <int value="6" label="Msbb.Rejected"/>
+  <int value="7" label="Exps.Shown"/>
+  <int value="8" label="Exps.Accepted"/>
+  <int value="9" label="Exps.Rejected"/>
+</enum>
+
+<enum name="Companion.UiEvent">
+  <int value="1" label="Not vailable"/>
+  <int value="2" label="Shown"/>
+  <int value="3" label="Clicked"/>
+</enum>
+
 <enum name="CompanionLibraryApisList">
 <!-- Value from components/arc/mojom/metrics.mojom -->
 

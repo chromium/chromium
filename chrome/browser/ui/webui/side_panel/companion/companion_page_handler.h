@@ -22,6 +22,7 @@ class CompanionSidePanelUntrustedUI;
 class Profile;
 
 namespace companion {
+class CompanionMetricsLogger;
 class CompanionUrlBuilder;
 class PromoHandler;
 class SigninDelegate;
@@ -45,6 +46,9 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   void OnRegionSearchClicked() override;
   void OnExpsOptInStatusAvailable(bool is_exps_opted_in) override;
   void OnOpenInNewTabButtonURLChanged(const ::GURL& url_to_open) override;
+  void RecordUiSurfaceShown(side_panel::mojom::UiSurface ui_surface,
+                            uint32_t child_element_count) override;
+  void RecordUiSurfaceClicked(side_panel::mojom::UiSurface ui_surface) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
@@ -81,6 +85,9 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
   std::unique_ptr<PromoHandler> promo_handler_;
   GURL open_in_new_tab_url_;
+
+  // Logs metrics for companion page. Reset when there is a new navigation.
+  std::unique_ptr<CompanionMetricsLogger> metrics_logger_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};
 };

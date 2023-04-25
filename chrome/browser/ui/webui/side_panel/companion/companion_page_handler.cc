@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/companion/core/companion_permission_utils.h"
 #include "chrome/browser/companion/core/companion_url_builder.h"
 #include "chrome/browser/companion/core/promo_handler.h"
@@ -26,6 +27,7 @@
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace companion {
@@ -48,6 +50,10 @@ CompanionPageHandler::CompanionPageHandler(
 CompanionPageHandler::~CompanionPageHandler() = default;
 
 void CompanionPageHandler::PrimaryPageChanged(content::Page& page) {
+  ukm::SourceId ukm_source_id =
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  metrics_logger_ = std::make_unique<CompanionMetricsLogger>(ukm_source_id);
+
   // Only notify the companion UI the page changed if we can share
   // information about the page by user consent.
   if (!IsUserPermittedToSharePageInfoWithCompanion(GetProfile()->GetPrefs())) {
@@ -66,6 +72,9 @@ void CompanionPageHandler::ShowUI() {
     auto* active_web_contents =
         GetBrowser()->tab_strip_model()->GetActiveWebContents();
     Observe(active_web_contents);
+    ukm::SourceId ukm_source_id =
+        web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    metrics_logger_ = std::make_unique<CompanionMetricsLogger>(ukm_source_id);
     auto* helper =
         companion::CompanionTabHelper::FromWebContents(active_web_contents);
     helper->SetCompanionPageHandler(weak_ptr_factory_.GetWeakPtr());
@@ -127,6 +136,7 @@ void CompanionPageHandler::OnPromoAction(
     side_panel::mojom::PromoType promo_type,
     side_panel::mojom::PromoAction promo_action) {
   promo_handler_->OnPromoAction(promo_type, promo_action);
+  metrics_logger_->OnPromoAction(promo_type, promo_action);
 }
 
 void CompanionPageHandler::OnRegionSearchClicked() {
@@ -150,6 +160,17 @@ void CompanionPageHandler::OnOpenInNewTabButtonURLChanged(
   DCHECK(companion_helper);
   open_in_new_tab_url_ = url_to_open;
   companion_helper->UpdateNewTabButtonState();
+}
+
+void CompanionPageHandler::RecordUiSurfaceShown(
+    side_panel::mojom::UiSurface ui_surface,
+    uint32_t child_element_count) {
+  metrics_logger_->RecordUiSurfaceShown(ui_surface, child_element_count);
+}
+
+void CompanionPageHandler::RecordUiSurfaceClicked(
+    side_panel::mojom::UiSurface ui_surface) {
+  metrics_logger_->RecordUiSurfaceClicked(ui_surface);
 }
 
 void CompanionPageHandler::EnableMsbb(bool enable_msbb) {
