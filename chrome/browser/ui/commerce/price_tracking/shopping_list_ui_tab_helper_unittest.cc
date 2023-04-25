@@ -78,6 +78,7 @@ class ShoppingListUiTabHelperTest : public testing::Test {
 
   void TearDown() override {
     // Make sure the tab helper id destroyed before any of its dependencies are.
+    tab_helper_ = nullptr;
     web_contents_->RemoveUserData(ShoppingListUiTabHelper::UserDataKey());
   }
 
@@ -138,12 +139,16 @@ class ShoppingListUiTabHelperTest : public testing::Test {
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
-  base::raw_ptr<content::WebContents> web_contents_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+
+  // Must outlive `web_contents_`.
   content::TestWebContentsFactory test_web_contents_factory_;
+
+ protected:
+  base::raw_ptr<content::WebContents> web_contents_;
 };
 
 TEST_F(ShoppingListUiTabHelperTest, TestSubscriptionEventsUpdateState) {
