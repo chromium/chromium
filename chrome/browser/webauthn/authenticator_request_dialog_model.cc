@@ -129,23 +129,26 @@ constexpr const gfx::VectorIcon& GetTransportIcon(
   }
 }
 
-// Returns the resource identifier for the label describing the platform
-// authenticator, e.g. "Use TouchID".
-int GetPlatformAuthenticatorLabel() {
-#if BUILDFLAG(IS_WIN)
-  return IDS_PASSWORD_MANAGER_USE_WINDOWS_HELLO;
-#elif BUILDFLAG(IS_MAC)
-  return IDS_PASSWORD_MANAGER_USE_TOUCH_ID;
-#else
-  return IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
-#endif
-}
-
 // Whether to show Step::kCreatePasskey, which prompts the user before platform
 // authenticator dispatch during MakeCredential. This is currently only shown on
 // MacOS, because that is the only desktop platform authenticator without a
 // "native" WebAuthn UI.
 constexpr bool kShowCreatePlatformPasskeyStep = BUILDFLAG(IS_MAC);
+
+password_manager::PasskeyCredential::Source ToPasswordManagerSource(
+    device::AuthenticatorType type) {
+  switch (type) {
+    case device::AuthenticatorType::kWinNative:
+      return password_manager::PasskeyCredential::Source::kWindowsHello;
+    case device::AuthenticatorType::kTouchID:
+      return password_manager::PasskeyCredential::Source::kTouchId;
+    case device::AuthenticatorType::kPhone:
+      return password_manager::PasskeyCredential::Source::kAndroidPhone;
+    case device::AuthenticatorType::kChromeOS:
+    case device::AuthenticatorType::kOther:
+      return password_manager::PasskeyCredential::Source::kOther;
+  }
+}
 
 }  // namespace
 
@@ -1063,12 +1066,10 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
         ephemeral_state_.creds_, std::back_inserter(credentials),
         [](const auto& credential) {
           return password_manager::PasskeyCredential(
-              password_manager::PasskeyCredential::Username(
-                  credential.user.name),
-              password_manager::PasskeyCredential::DeviceName(
-                  l10n_util::GetStringUTF16(GetPlatformAuthenticatorLabel())),
-              password_manager::PasskeyCredential::BackendId(
-                  base::Base64Encode(credential.cred_id)));
+              ToPasswordManagerSource(credential.source), credential.rp_id,
+              credential.cred_id, credential.user.id,
+              credential.user.name.value_or(""),
+              credential.user.display_name.value_or(""));
         });
     ReportConditionalUiPasskeyCount(credentials.size());
     ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)

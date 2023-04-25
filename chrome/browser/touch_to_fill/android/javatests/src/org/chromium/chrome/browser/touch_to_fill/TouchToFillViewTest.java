@@ -87,7 +87,8 @@ public class TouchToFillViewTest {
             new Credential("", "***", "No Username", "m.example.xyz", true, false, 0);
     private static final Credential BOB =
             new Credential("Bob", "***", "Bob", "mobile.example.xyz", true, false, 0);
-    private static final WebAuthnCredential CAM = new WebAuthnCredential("Cam", "12345");
+    private static final WebAuthnCredential CAM =
+            new WebAuthnCredential("example.net", new byte[] {1}, new byte[] {2}, "Cam");
     private static final Credential NIK =
             new Credential("Nik", "***", "Nik", "group.xyz", false, true, 0);
     private final AtomicBoolean mManageButtonClicked = new AtomicBoolean(false);

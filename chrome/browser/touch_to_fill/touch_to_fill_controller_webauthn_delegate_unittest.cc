@@ -31,32 +31,20 @@ using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 
+constexpr char kRpId[] = "example.com";
 constexpr char kExampleCom[] = "https://example.com/";
-constexpr uint8_t kUserId1[] = {'1', '2', '3', '4'};
-constexpr uint8_t kUserId2[] = {'5', '6', '7', '8'};
+const std::vector<uint8_t> kCredentialId1 = {'a', 'b', 'c', 'd'};
+const std::vector<uint8_t> kCredentialId2 = {'e', 'f', 'g', 'h'};
+const std::vector<uint8_t> kUserId1 = {'1', '2', '3', '4'};
 constexpr char kUserName1[] = "John.Doe@example.com";
-constexpr char kUserName2[] = "Jane.Doe@example.com";
 
-std::vector<uint8_t> UserId1AsVector() {
-  return std::vector<uint8_t>(std::begin(kUserId1), std::end(kUserId1));
-}
-std::vector<uint8_t> UserId2AsVector() {
-  return std::vector<uint8_t>(std::begin(kUserId2), std::end(kUserId2));
-}
-std::string UserId1AsString() {
-  return base::Base64Encode(kUserId1);
-}
-std::string UserId2AsString() {
-  return base::Base64Encode(kUserId2);
-}
-std::string UserName1() {
-  return std::string(kUserName1);
-}
-std::string UserName2() {
-  return std::string(kUserName2);
-}
-std::u16string DeviceName() {
-  return u"Use your lock screen";
+PasskeyCredential CreatePasskey(
+    std::vector<uint8_t> credential_id = kCredentialId1,
+    std::vector<uint8_t> user_id = kUserId1,
+    std::string username = kUserName1) {
+  return PasskeyCredential(PasskeyCredential::Source::kAndroidPhone, kRpId,
+                           std::move(credential_id), std::move(user_id),
+                           std::move(username));
 }
 
 class MockWebAuthnRequestDelegateAndroid
@@ -145,10 +133,7 @@ class TouchToFillControllerWebAuthnTest
 };
 
 TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectCredential) {
-  PasskeyCredential credential((PasskeyCredential::Username(UserName1())),
-                               PasskeyCredential::DeviceName(DeviceName()),
-                               PasskeyCredential::BackendId(UserId1AsString()));
-  std::vector<PasskeyCredential> credentials({credential});
+  std::vector<PasskeyCredential> credentials{CreatePasskey()};
 
   EXPECT_CALL(view(),
               Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
@@ -159,21 +144,13 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectCredential) {
   touch_to_fill_controller().Show({}, credentials,
                                   MakeTouchToFillControllerDelegate());
 
-  EXPECT_CALL(request_delegate(), OnWebAuthnAccountSelected(UserId1AsVector()));
+  EXPECT_CALL(request_delegate(), OnWebAuthnAccountSelected(kCredentialId1));
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[0]);
 }
 
 TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectWithMultipleCredential) {
-  PasskeyCredential credential1(
-      (PasskeyCredential::Username(UserName1())),
-      PasskeyCredential::DeviceName(DeviceName()),
-      PasskeyCredential::BackendId(UserId1AsString()));
-
-  PasskeyCredential credential2(
-      (PasskeyCredential::Username(UserName2())),
-      PasskeyCredential::DeviceName(DeviceName()),
-      PasskeyCredential::BackendId(UserId2AsString()));
-  std::vector<PasskeyCredential> credentials({credential1, credential2});
+  std::vector<PasskeyCredential> credentials(
+      {CreatePasskey(kCredentialId1), CreatePasskey(kCredentialId2)});
 
   EXPECT_CALL(view(),
               Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
@@ -184,15 +161,12 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectWithMultipleCredential) {
   touch_to_fill_controller().Show({}, credentials,
                                   MakeTouchToFillControllerDelegate());
 
-  EXPECT_CALL(request_delegate(), OnWebAuthnAccountSelected(UserId2AsVector()));
+  EXPECT_CALL(request_delegate(), OnWebAuthnAccountSelected(kCredentialId2));
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[1]);
 }
 
 TEST_F(TouchToFillControllerWebAuthnTest, ShowAndCancel) {
-  PasskeyCredential credential((PasskeyCredential::Username(UserName1())),
-                               PasskeyCredential::DeviceName(DeviceName()),
-                               PasskeyCredential::BackendId(UserId1AsString()));
-  std::vector<PasskeyCredential> credentials({credential});
+  std::vector<PasskeyCredential> credentials({CreatePasskey()});
 
   EXPECT_CALL(view(),
               Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),

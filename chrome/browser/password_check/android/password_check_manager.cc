@@ -24,18 +24,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace {
-
 using password_manager::PasswordForm;
-
-std::u16string GetDisplayUsername(const std::u16string& username) {
-  return username.empty()
-             ? l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)
-             : username;
-}
-
-}  // namespace
-
 using PasswordCheckUIStatus = password_manager::PasswordCheckUIStatus;
 using State = password_manager::BulkLeakCheckService::State;
 using SyncState = password_manager::SyncState;
@@ -284,7 +273,8 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
         password_manager::CreateChangePasswordUrl(credential_facet.url).spec();
   }
 
-  ui_credential.display_username = GetDisplayUsername(credential.username);
+  ui_credential.display_username =
+      password_manager::ToUsernameString(credential.username);
 
   credential_facets.push_back(std::move(credential_facet));
   ui_credential.facets = std::move(credential_facets);

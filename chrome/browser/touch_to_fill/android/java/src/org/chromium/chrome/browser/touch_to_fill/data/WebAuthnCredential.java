@@ -11,25 +11,41 @@ import org.chromium.base.annotations.CalledByNative;
  * Touch To Fill sheet.
  */
 public class WebAuthnCredential {
+    private final String mRpId;
+    private final byte[] mCredentialId;
+    private final byte[] mUserId;
     private final String mUsername;
-    private final String mId;
 
     /**
+     * @param rpId Relying party identifier
+     * @param credentialId Unique identifier for the credential
+     * @param userId User handle
      * @param username Username shown to the user.
-     * @param id Unique identifier for the credential.
      */
-    public WebAuthnCredential(String username, String id) {
+    public WebAuthnCredential(String rpId, byte[] credentialId, byte[] userId, String username) {
+        mRpId = rpId;
+        mCredentialId = credentialId;
+        mUserId = userId;
         mUsername = username;
-        mId = id;
+    }
+
+    @CalledByNative
+    public String getRpId() {
+        return mRpId;
+    }
+
+    @CalledByNative
+    public byte[] getCredentialId() {
+        return mCredentialId;
+    }
+
+    @CalledByNative
+    public byte[] getUserId() {
+        return mUserId;
     }
 
     @CalledByNative
     public String getUsername() {
         return mUsername;
-    }
-
-    @CalledByNative
-    public String getId() {
-        return mId;
     }
 }

@@ -6,6 +6,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_request_handler_base.h"
+#include "device/fido/fido_types.h"
 
 namespace device {
 

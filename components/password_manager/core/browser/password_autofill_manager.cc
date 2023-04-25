@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -728,13 +729,14 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
     base::ranges::transform(
         *delegate->GetPasskeys(), std::back_inserter(suggestions),
         [this](const auto& passkey) {
-          autofill::Suggestion suggestion(passkey.username());
+          autofill::Suggestion suggestion(ToUsernameString(passkey.username()));
           suggestion.icon = "globeIcon";
           suggestion.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
           suggestion.custom_icon = page_favicon_;
-          suggestion.payload = autofill::Suggestion::BackendId(passkey.id());
-          suggestion.labels = {
-              {autofill::Suggestion::Text(passkey.device_name())}};
+          suggestion.payload = autofill::Suggestion::BackendId(
+              base::Base64Encode(passkey.credential_id()));
+          suggestion.labels = {{autofill::Suggestion::Text(
+              l10n_util::GetStringUTF16(passkey.GetAuthenticatorLabel()))}};
           return suggestion;
         });
   }

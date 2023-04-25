@@ -59,16 +59,15 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
   webauthn_account_selection_callback_ = std::move(callback);
 
   std::vector<PasskeyCredential> display_credentials;
-  base::ranges::transform(
-      credentials, std::back_inserter(display_credentials),
-      [](const auto& credential) {
-        return PasskeyCredential(
-            PasskeyCredential::Username(credential.user.name),
-            PasskeyCredential::DeviceName(l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK)),
-            PasskeyCredential::BackendId(
-                base::Base64Encode(credential.cred_id)));
-      });
+  base::ranges::transform(credentials, std::back_inserter(display_credentials),
+                          [](const auto& credential) {
+                            return PasskeyCredential(
+                                PasskeyCredential::Source::kAndroidPhone,
+                                credential.rp_id, credential.cred_id,
+                                credential.user.id,
+                                credential.user.name.value_or(""),
+                                credential.user.display_name.value_or(""));
+                          });
 
   if (is_conditional_request) {
     conditional_request_in_progress_ = true;
