@@ -53,6 +53,10 @@ using TokenStatus = content::FedCmRequestIdTokenStatus;
 using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
+using CompleteRequestWithErrorCallback =
+    base::OnceCallback<void(blink::mojom::FederatedAuthRequestResult,
+                            absl::optional<content::FedCmRequestIdTokenStatus>,
+                            bool)>;
 
 namespace content {
 
@@ -304,6 +308,36 @@ std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
     bool is_disabled) {
   return std::make_unique<FedCmMetrics>(provider_config_url, source_id,
                                         base::RandInt(1, 1 << 30), is_disabled);
+}
+
+std::string GetTopFrameOriginForDisplay(const url::Origin& top_frame_origin) {
+  return FormatOriginForDisplay(top_frame_origin);
+}
+
+absl::optional<std::string> GetIframeOriginForDisplay(
+    const url::Origin& top_frame_origin,
+    const url::Origin& iframe_origin,
+    CompleteRequestWithErrorCallback callback) {
+  // TODO(crbug.com/1418719): Replace exclude_iframe based on client metadata
+  // response.
+  bool exclude_iframe = net::registry_controlled_domains::SameDomainOrHost(
+      top_frame_origin, iframe_origin,
+      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  absl::optional<std::string> iframe_for_display = absl::nullopt;
+
+  if (!exclude_iframe) {
+    iframe_for_display = FormatOriginForDisplay(iframe_origin);
+
+    // TODO(crbug.com/1422040): Decide what to do if we want to include iframe
+    // domain in the dialog but iframe_for_display is opaque.
+    if (iframe_origin.opaque()) {
+      std::move(callback).Run(FederatedAuthRequestResult::kError,
+                              /*token_status=*/absl::nullopt,
+                              /*should_delay_callback=*/false);
+    }
+  }
+
+  return iframe_for_display;
 }
 
 }  // namespace
@@ -1030,28 +1064,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   fetch_data_ = FetchData();
 
-  // TODO(crbug.com/1418719): Replace exclude_iframe based on client metadata
-  // response.
-  bool exclude_iframe = net::registry_controlled_domains::SameDomainOrHost(
-      GetEmbeddingOrigin(), origin(),
-      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  absl::optional<std::string> iframe_url_for_display = absl::nullopt;
-  std::string top_frame_url_for_display =
-      FormatOriginForDisplay(GetEmbeddingOrigin());
-
-  if (!exclude_iframe) {
-    iframe_url_for_display = FormatOriginForDisplay(origin());
-
-    // TODO(crbug.com/1422040): Decide what to do if we want to include iframe
-    // domain in the dialog but iframe_url_for_display is nullopt.
-    if (iframe_url_for_display->empty()) {
-      CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                               /*token_status=*/absl::nullopt,
-                               /*should_delay_callback=*/false);
-      return;
-    }
-  }
-
   DCHECK(idp_data_for_display_.empty());
 
   // TODO(crbug.com/1383384): Handle auto_reauthn for multi IDP.
@@ -1133,11 +1145,18 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   if (intercept) {
     request_dialog_controller_->SetIsInterceptionEnabled(intercept);
   }
+
+  absl::optional<std::string> iframe_for_display = GetIframeOriginForDisplay(
+      GetEmbeddingOrigin(), origin(),
+      base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
   request_dialog_controller_->ShowAccountsDialog(
       WebContents::FromRenderFrameHost(&render_frame_host()),
-      top_frame_url_for_display, iframe_url_for_display, idp_data_for_display_,
+      GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
+      idp_data_for_display_,
       auto_reauthn ? SignInMode::kAuto : SignInMode::kExplicit,
       show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
@@ -1196,12 +1215,18 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   fetch_data_ = FetchData();
   permission_delegate_->AddIdpSigninStatusObserver(this);
 
+  absl::optional<std::string> iframe_for_display = GetIframeOriginForDisplay(
+      GetEmbeddingOrigin(), origin(),
+      base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   // If IdP sign-in status mismatch dialog is already visible, calling
   // ShowFailureDialog() a 2nd time should notify the user that sign-in
   // failed.
   request_dialog_controller_->ShowFailureDialog(
-      rp_web_contents, FormatOriginForDisplay(GetEmbeddingOrigin()),
-      FormatOriginForDisplay(idp_origin), idp_info->metadata,
+      rp_web_contents, GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
+      iframe_for_display, FormatOriginForDisplay(idp_origin),
+      idp_info->metadata,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
                      weak_ptr_factory_.GetWeakPtr(),
                      FederatedAuthRequestResult::kError,

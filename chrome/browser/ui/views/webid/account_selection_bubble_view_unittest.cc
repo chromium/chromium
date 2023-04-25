@@ -196,15 +196,31 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     EXPECT_EQ(email_view->GetText(), base::UTF8ToUTF16(expected_email));
   }
 
-  void PerformHeaderChecks(views::View* header,
-                           const std::u16string& expected_title,
-                           bool expect_idp_brand_icon_in_header) {
+  void PerformHeaderChecks(
+      views::View* header,
+      const std::u16string& expected_title,
+      const absl::optional<std::u16string>& expected_subtitle,
+      bool expect_idp_brand_icon_in_header) {
     // Perform some basic dialog checks.
     EXPECT_FALSE(dialog()->ShouldShowCloseButton());
     EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
 
     EXPECT_FALSE(dialog()->GetOkButton());
     EXPECT_FALSE(dialog()->GetCancelButton());
+
+    if (expected_subtitle.has_value()) {
+      EXPECT_THAT(GetChildClassNames(header),
+                  testing::ElementsAreArray({"View", "Label"}));
+      ASSERT_EQ(header->children().size(), 2u);
+
+      // Check subtitle text.
+      views::Label* subtitle_view =
+          static_cast<views::Label*>(header->children()[1]);
+      ASSERT_TRUE(subtitle_view);
+      EXPECT_EQ(subtitle_view->GetText(), expected_subtitle.value());
+
+      header = header->children()[0];
+    }
 
     // Order: Potentially hidden IDP brand icon, potentially hidden back button,
     // title, close button.
@@ -244,6 +260,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   }
 
   void TestSingleAccount(const std::u16string expected_title,
+                         const absl::optional<std::u16string> expected_subtitle,
                          bool expect_idp_brand_icon_in_header) {
     const std::string kAccountSuffix = "suffix";
     content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
@@ -253,7 +270,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
 
     std::vector<views::View*> children = dialog()->children();
     ASSERT_EQ(children.size(), 3u);
-    PerformHeaderChecks(children[0], expected_title,
+    PerformHeaderChecks(children[0], expected_title, expected_subtitle,
                         expect_idp_brand_icon_in_header);
 
     views::View* single_account_chooser = children[2];
@@ -278,9 +295,11 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
               u"privacy policy and terms of service.");
   }
 
-  void TestMultipleAccounts(const std::u16string& expected_title,
-                            bool expect_idp_brand_icon_in_header,
-                            bool expect_idp_row) {
+  void TestMultipleAccounts(
+      const std::u16string& expected_title,
+      const absl::optional<std::u16string>& expected_subtitle,
+      bool expect_idp_brand_icon_in_header,
+      bool expect_idp_row) {
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
 
     {
@@ -302,7 +321,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
 
     std::vector<views::View*> children = dialog()->children();
     ASSERT_EQ(children.size(), 3u);
-    PerformHeaderChecks(children[0], expected_title,
+    PerformHeaderChecks(children[0], expected_title, expected_subtitle,
                         expect_idp_brand_icon_in_header);
 
     views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
@@ -328,6 +347,31 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     // Check the text shown.
     CheckAccountRows(accounts, kAccountSuffixes, accounts_index);
     EXPECT_EQ(accounts_index, accounts.size());
+  }
+
+  void TestFailureDialog(const std::u16string expected_title,
+                         const absl::optional<std::u16string> expected_subtitle,
+                         bool expect_idp_brand_icon_in_header) {
+    const std::string kAccountSuffix = "suffix";
+    content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
+        kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
+
+    CreateAccountSelectionBubble(
+        /*exclude_title=*/false,
+        /*exclude_iframe=*/!expected_subtitle.has_value(),
+        /*show_auto_reauthn_checkbox=*/false);
+    dialog_->ShowFailureDialog(
+        kTopFrameETLDPlusOne,
+        expected_subtitle.has_value()
+            ? absl::make_optional<std::u16string>(kIframeETLDPlusOne)
+            : absl::nullopt,
+        kIdpETLDPlusOne, content::IdentityProviderMetadata());
+
+    const std::vector<views::View*> children = dialog()->children();
+    ASSERT_EQ(children.size(), 1u);
+
+    PerformHeaderChecks(children[0], expected_title, expected_subtitle,
+                        expect_idp_brand_icon_in_header);
   }
 
   // Checks the account rows starting at `accounts[accounts_index]`. Updates
@@ -411,7 +455,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
-  TestSingleAccount(kTitleSignIn, /* expect_idp_brand_icon_in_header=*/true);
+  TestSingleAccount(kTitleSignIn, /*expected_subtitle=*/absl::nullopt,
+                    /*expect_idp_brand_icon_in_header=*/true);
 }
 
 TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
@@ -424,6 +469,7 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
   PerformHeaderChecks(children[0], kTitleSignIn,
+                      /*expected_subtitle=*/absl::nullopt,
                       /*expect_idp_brand_icon_in_header=*/true);
 
   views::View* single_account_chooser = children[2];
@@ -447,7 +493,7 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
 }
 
 TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
-  TestMultipleAccounts(kTitleSignIn,
+  TestMultipleAccounts(kTitleSignIn, /*expected_subtitle=*/absl::nullopt,
                        /*expect_idp_brand_icon_in_header=*/true,
                        /*expect_idp_row=*/false);
 }
@@ -462,6 +508,7 @@ TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
   PerformHeaderChecks(children[0], kTitleSignIn,
+                      /*expected_subtitle=*/absl::nullopt,
                       /*expect_idp_brand_icon_in_header=*/true);
 
   views::View* single_account_chooser = children[2];
@@ -497,6 +544,7 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
   const std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
   PerformHeaderChecks(children[0], kTitleSigningIn,
+                      /*expected_subtitle=*/absl::nullopt,
                       /*expect_idp_brand_icon_in_header=*/true);
 
   views::View* row_container = dialog()->children()[2];
@@ -522,6 +570,7 @@ TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoReauthn) {
   const std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
   PerformHeaderChecks(children[0], kTitleSigningInWithAutoReauthn,
+                      /*expected_subtitle=*/absl::nullopt,
                       /*expect_idp_brand_icon_in_header=*/true);
 
   views::View* row_container = dialog()->children()[2];
@@ -540,6 +589,7 @@ TEST_F(AccountSelectionBubbleViewTest, AutoReauthnCheckboxDisplayed) {
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
   PerformHeaderChecks(children[0], kTitleSignIn,
+                      /*expected_subtitle=*/absl::nullopt,
                       /*expect_idp_brand_icon_in_header=*/true);
 
   views::View* single_account_chooser = children[2];
@@ -560,9 +610,16 @@ TEST_F(AccountSelectionBubbleViewTest, AutoReauthnCheckboxDisplayed) {
   ASSERT_TRUE(checkbox->GetEnabled());
 }
 
+TEST_F(AccountSelectionBubbleViewTest, Failure) {
+  TestFailureDialog(
+      u"Failed signing in to top-frame-example.com with idp-example.com",
+      /*expected_subtitle=*/absl::nullopt,
+      /*expect_idp_brand_icon_in_header=*/true);
+}
+
 // Tests that when an iframe URL is provided, it is appropriately added to the
-// header.
-TEST_F(AccountSelectionBubbleViewTest, IframeSubtitleInHeader) {
+// header of an account picker.
+TEST_F(AccountSelectionBubbleViewTest, SuccessIframeSubtitleInHeader) {
   const std::string kAccountSuffix = "suffix";
   content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
       {kAccountSuffix}, content::IdentityRequestAccount::LoginState::kSignUp);
@@ -573,37 +630,18 @@ TEST_F(AccountSelectionBubbleViewTest, IframeSubtitleInHeader) {
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
 
-  // Perform some basic dialog checks.
-  EXPECT_FALSE(dialog()->ShouldShowCloseButton());
-  EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
+  PerformHeaderChecks(
+      children[0], u"Sign in to iframe-example.com with idp-example.com",
+      u"on top-frame-example.com", /*expect_idp_brand_icon_in_header=*/true);
+}
 
-  EXPECT_FALSE(dialog()->GetOkButton());
-  EXPECT_FALSE(dialog()->GetCancelButton());
-
-  views::View* header = children[0];
-  EXPECT_THAT(GetChildClassNames(header),
-              testing::ElementsAreArray({"View", "Label"}));
-  ASSERT_EQ(header->children().size(), 2u);
-  // Order: Potentially hidden IDP brand icon, potentially hidden back button,
-  // title, close button.
-  views::View* inner_header = header->children()[0];
-  std::vector<std::string> expected_class_names = {"ImageView", "ImageButton",
-                                                   "Label", "ImageButton"};
-  EXPECT_THAT(GetChildClassNames(inner_header),
-              testing::ElementsAreArray(expected_class_names));
-
-  // Check title text.
-  views::Label* title_view =
-      static_cast<views::Label*>(GetViewWithClassName(inner_header, "Label"));
-  ASSERT_TRUE(title_view);
-  EXPECT_EQ(title_view->GetText(),
-            u"Sign in to iframe-example.com with idp-example.com");
-
-  // Check subtitle text.
-  views::Label* subtitle_view =
-      static_cast<views::Label*>(header->children()[1]);
-  ASSERT_TRUE(subtitle_view);
-  EXPECT_EQ(subtitle_view->GetText(), u"on top-frame-example.com");
+// Tests that when an iframe URL is provided, it is appropriately added to the
+// header of a failure dialog.
+TEST_F(AccountSelectionBubbleViewTest, FailureIframeSubtitleInHeader) {
+  TestFailureDialog(
+      u"Failed signing in to iframe-example.com with idp-example.com",
+      u"on top-frame-example.com",
+      /*expect_idp_brand_icon_in_header=*/true);
 }
 
 class MultipleIdpAccountSelectionBubbleViewTest
@@ -626,14 +664,15 @@ class MultipleIdpAccountSelectionBubbleViewTest
 // features::kFedCmMultipleIdentityProviders enabled. See
 // AccountSelectionBubbleViewTest's SingleAccount test.
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, SingleAccount) {
-  TestSingleAccount(kTitleSignIn, /*expect_idp_brand_icon_in_header=*/true);
+  TestSingleAccount(kTitleSignIn, /*expected_subtitle=*/absl::nullopt,
+                    /*expect_idp_brand_icon_in_header=*/true);
 }
 
 // Tests that when there is multiple accounts but only one IDP, the UI is
 // exactly the same with features::kFedCmMultipleIdentityProviders enabled (see
 // AccountSelectionBubbleViewTest's MultipleAccounts test).
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultipleAccountsSingleIdp) {
-  TestMultipleAccounts(kTitleSignIn,
+  TestMultipleAccounts(kTitleSignIn, /*expected_subtitle=*/absl::nullopt,
                        /*expect_idp_brand_icon_in_header=*/true,
                        /*expect_idp_row=*/false);
 }
@@ -663,6 +702,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
   PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
+                      /*expected_subtitle=*/absl::nullopt,
                       /*expect_idp_brand_icon_in_header=*/false);
 
   views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);

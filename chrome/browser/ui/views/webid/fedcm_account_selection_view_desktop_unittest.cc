@@ -75,6 +75,7 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
 
   void ShowFailureDialog(
       const std::u16string& top_frame_for_display,
+      const absl::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) override {
     sheet_type_ = SheetType::kFailure;
@@ -322,7 +323,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
-  controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIdpEtldPlusOne,
+  controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIframeEtldPlusOne,
+                                kIdpEtldPlusOne,
                                 content::IdentityProviderMetadata());
   EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
 
@@ -352,7 +354,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
-  controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIdpEtldPlusOne,
+  controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIframeEtldPlusOne,
+                                kIdpEtldPlusOne,
                                 content::IdentityProviderMetadata());
   EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
 

@@ -21,12 +21,13 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   // AccountSelectionView:
   void Show(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_url_for_display,
+      const absl::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox) override;
   void ShowFailureDialog(
       const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) override;
   std::string GetTitle() const override;

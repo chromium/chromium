@@ -126,7 +126,7 @@ class TestDialogController
   struct State {
     bool did_show_accounts_dialog{false};
     std::string top_frame_for_display;
-    absl::optional<std::string> iframe_url_for_display;
+    absl::optional<std::string> iframe_for_display;
   };
 
   enum class AccountsDialogAction {
@@ -146,7 +146,7 @@ class TestDialogController
   void ShowAccountsDialog(
       WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_url_for_display,
+      const absl::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
@@ -155,7 +155,7 @@ class TestDialogController
       override {
     state_->did_show_accounts_dialog = true;
     state_->top_frame_for_display = top_frame_for_display;
-    state_->iframe_url_for_display = iframe_url_for_display;
+    state_->iframe_for_display = iframe_for_display;
     if (accounts_dialog_action_ == AccountsDialogAction::kSelectAccount) {
       std::move(on_selected)
           .Run(GURL(kProviderUrlFull), kAccountId, /*is_sign_in=*/true);
@@ -332,7 +332,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameOriginIframe) {
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
   EXPECT_EQ("top-frame.example", iframe_dialog_state.top_frame_for_display);
-  EXPECT_EQ(absl::nullopt, iframe_dialog_state.iframe_url_for_display);
+  EXPECT_EQ(absl::nullopt, iframe_dialog_state.iframe_for_display);
 }
 
 // Test that only top frame URL is available for display when FedCM is called
@@ -358,7 +358,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameSiteIframe) {
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
   EXPECT_EQ("top-frame.example", iframe_dialog_state.top_frame_for_display);
-  EXPECT_EQ(absl::nullopt, iframe_dialog_state.iframe_url_for_display);
+  EXPECT_EQ(absl::nullopt, iframe_dialog_state.iframe_for_display);
 }
 
 // Test that both top frame and iframe URLs are available for display when FedCM
@@ -383,7 +383,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, CrossSiteIframe) {
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
   EXPECT_EQ("top-frame.example", iframe_dialog_state.top_frame_for_display);
-  EXPECT_EQ("cross-site.example", iframe_dialog_state.iframe_url_for_display);
+  EXPECT_EQ("cross-site.example", iframe_dialog_state.iframe_for_display);
 }
 
 }  // namespace content

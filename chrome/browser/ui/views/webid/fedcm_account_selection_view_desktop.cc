@@ -130,19 +130,24 @@ void FedCmAccountSelectionView::Show(
 
 void FedCmAccountSelectionView::ShowFailureDialog(
     const std::string& top_frame_etld_plus_one,
+    const absl::optional<std::string>& iframe_etld_plus_one,
     const std::string& idp_etld_plus_one,
     const content::IdentityProviderMetadata& idp_metadata) {
   state_ = State::IDP_SIGNIN_STATUS_MISMATCH;
+  absl::optional<std::u16string> iframe_etld_plus_one_u16 =
+      iframe_etld_plus_one ? absl::make_optional<std::u16string>(
+                                 base::UTF8ToUTF16(*iframe_etld_plus_one))
+                           : absl::nullopt;
 
   bool create_bubble = !bubble_widget_;
   if (create_bubble) {
-    bubble_widget_ = CreateBubbleWithAccessibleTitle(
-                         base::UTF8ToUTF16(top_frame_etld_plus_one),
-                         /*iframe_etld_plus_one=*/absl::nullopt,
-                         base::UTF8ToUTF16(idp_etld_plus_one),
-                         blink::mojom::RpContext::kSignIn,
-                         /*show_auto_reauthn_checkbox=*/false)
-                         ->GetWeakPtr();
+    bubble_widget_ =
+        CreateBubbleWithAccessibleTitle(
+            base::UTF8ToUTF16(top_frame_etld_plus_one),
+            iframe_etld_plus_one_u16, base::UTF8ToUTF16(idp_etld_plus_one),
+            blink::mojom::RpContext::kSignIn,
+            /*show_auto_reauthn_checkbox=*/false)
+            ->GetWeakPtr();
 
     // Initialize InputEventActivationProtector to handle potentially unintended
     // input events. Do not override `input_protector_` set by
@@ -153,9 +158,9 @@ void FedCmAccountSelectionView::ShowFailureDialog(
     }
   }
 
-  GetBubbleView()->ShowFailureDialog(base::UTF8ToUTF16(top_frame_etld_plus_one),
-                                     base::UTF8ToUTF16(idp_etld_plus_one),
-                                     idp_metadata);
+  GetBubbleView()->ShowFailureDialog(
+      base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
+      base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
 
   if (create_bubble) {
     bubble_widget_->Show();

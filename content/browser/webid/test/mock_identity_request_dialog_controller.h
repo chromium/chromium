@@ -33,9 +33,10 @@ class MockIdentityRequestDialogController
                     AccountSelectionCallback,
                     DismissCallback));
   MOCK_METHOD0(DestructorCalled, void());
-  MOCK_METHOD5(ShowFailureDialog,
+  MOCK_METHOD6(ShowFailureDialog,
                void(WebContents*,
                     const std::string&,
+                    const absl::optional<std::string>&,
                     const std::string&,
                     const content::IdentityProviderMetadata&,
                     DismissCallback));

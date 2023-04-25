@@ -566,11 +566,27 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
 
 void AccountSelectionBubbleView::ShowFailureDialog(
     const std::u16string& top_frame_for_display,
+    const absl::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
+  int subtitleLeftPadding = 2 * kLeftRightPadding;
+  if (header_icon_view_) {
+    ConfigureIdpBrandImageView(header_icon_view_, idp_metadata);
+    subtitleLeftPadding += kDesiredIdpIconSize;
+  }
+
+  std::u16string frame_in_title =
+      iframe_for_display.value_or(top_frame_for_display);
   const std::u16string title = l10n_util::GetStringFUTF16(
-      IDS_FAILURE_DIALOG_TITLE, top_frame_for_display, idp_for_display);
+      IDS_FAILURE_DIALOG_TITLE, frame_in_title, idp_for_display);
   title_label_->SetText(title);
+
+  if (subtitle_label_) {
+    subtitle_label_->SetText(subtitle_);
+    subtitle_label_->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(-kTopBottomPadding, subtitleLeftPadding,
+                          kTopBottomPadding, kLeftRightPadding)));
+  }
 
   SizeToContents();
   PreferredSizeChanged();

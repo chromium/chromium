@@ -115,7 +115,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   virtual void ShowAccountsDialog(
       WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_url_for_display,
+      const absl::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
@@ -125,11 +125,13 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Shows a failure UI when the accounts fetch is failed such that it is
   // observable by users. This could happen when an IDP claims that the user is
   // signed in but not respond with any user account during browser fetches.
-  virtual void ShowFailureDialog(WebContents* rp_web_contents,
-                                 const std::string& top_frame_for_display,
-                                 const std::string& idp_for_display,
-                                 const IdentityProviderMetadata& idp_metadata,
-                                 DismissCallback dismiss_callback);
+  virtual void ShowFailureDialog(
+      WebContents* rp_web_contents,
+      const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_for_display,
+      const std::string& idp_for_display,
+      const IdentityProviderMetadata& idp_metadata,
+      DismissCallback dismiss_callback);
 
   // Only to be called after a dialog is shown.
   virtual std::string GetTitle() const;

@@ -140,7 +140,7 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
 
 void AccountSelectionViewAndroid::Show(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_url_for_display,
+    const absl::optional<std::string>& iframe_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     Account::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox) {
@@ -170,7 +170,7 @@ void AccountSelectionViewAndroid::Show(
   Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_,
       ConvertUTF8ToJavaString(env, top_frame_for_display),
-      ConvertUTF8ToJavaString(env, iframe_url_for_display.value_or("")),
+      ConvertUTF8ToJavaString(env, iframe_for_display.value_or("")),
       ConvertUTF8ToJavaString(env, identity_provider_data[0].idp_for_display),
       accounts_obj, idp_metadata_obj, client_id_metadata_obj,
       sign_in_mode == Account::SignInMode::kAuto,
@@ -179,6 +179,7 @@ void AccountSelectionViewAndroid::Show(
 
 void AccountSelectionViewAndroid::ShowFailureDialog(
     const std::string& top_frame_for_display,
+    const absl::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
   // TODO(crbug.com/1357790): add support on Android.

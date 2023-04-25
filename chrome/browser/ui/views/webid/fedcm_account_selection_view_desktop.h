@@ -55,6 +55,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       bool show_auto_reauthn_checkbox) override;
   void ShowFailureDialog(
       const std::string& top_frame_etld_plus_one,
+      const absl::optional<std::string>& iframe_etld_plus_one,
       const std::string& idp_etld_plus_one,
       const content::IdentityProviderMetadata& idp_metadata) override;
   std::string GetTitle() const override;
