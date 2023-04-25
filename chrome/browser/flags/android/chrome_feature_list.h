@@ -192,6 +192,7 @@ BASE_DECLARE_FEATURE(kReduceToolbarUpdatesForSameDocNavigations);
 BASE_DECLARE_FEATURE(kSpareTab);
 BASE_DECLARE_FEATURE(kStartSurfaceAndroid);
 BASE_DECLARE_FEATURE(kStartSurfaceOnTablet);
+BASE_DECLARE_FEATURE(kStartSurfaceSpareTab);
 BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);
 BASE_DECLARE_FEATURE(kStartSurfaceRefactor);
 BASE_DECLARE_FEATURE(kStartSurfaceDisabledFeedImprovement);

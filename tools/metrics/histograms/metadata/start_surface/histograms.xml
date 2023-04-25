@@ -70,6 +70,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="StartSurface.SpareTab.TimeBetweenShowAndCreate" units="ms"
+    expires_after="2023-09-10">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>hanxi@chromium.org</owner>
+  <summary>
+    Records the time between showing the start surface and starting the spare
+    tab creation. It does not include the time spent creating the spare tab.
+    Every time a spare tab is created for the start surface, this is recorded.
+  </summary>
+</histogram>
+
 <histogram name="StartSurface.TimeSpent" units="ms" expires_after="2023-09-10">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>

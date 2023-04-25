@@ -357,7 +357,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mTabSwitcherModule, mTabModelSelector, mPropertyModel,
                 mTasksSurface != null ? this::initializeSecondaryTasksSurface : null,
                 mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
-                this::isActivityFinishingOrDestroyed, excludeQueryTiles,
+                this::isActivityFinishingOrDestroyed, mTabCreatorManager, excludeQueryTiles,
                 startSurfaceOneshotSupplier, hadWarmStart, initializeMVTilesRunnable,
                 mParentTabSupplier, logoContainerView,
                 mGridTabSwitcher == null ? backPressManager : null, feedPlaceholderParentView,

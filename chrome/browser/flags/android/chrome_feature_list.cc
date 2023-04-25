@@ -331,6 +331,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kStartSurfaceOnTablet,
     &kStartSurfaceReturnTime,
     &kStartSurfaceRefactor,
+    &kStartSurfaceSpareTab,
     &kStartSurfaceDisabledFeedImprovement,
     &kStartSurfaceWithAccessibility,
     &kUmaBackgroundSessions,
@@ -1117,6 +1118,10 @@ BASE_FEATURE(kShouldIgnoreIntentSkipInternalCheck,
 
 BASE_FEATURE(kStartSurfaceOnTablet,
              "StartSurfaceOnTablet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kStartSurfaceSpareTab,
+             "StartSurfaceSpareTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStartSurfaceReturnTime,
