@@ -4,6 +4,7 @@
 
 #include "ui/base/test/skia_gold_pixel_diff.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -92,30 +93,66 @@ void AppendArgsJustAfterProgram(base::CommandLine& cmd,
   argv.insert(argv.begin() + 1, args.begin(), args.end());
 }
 
-void FillInSystemEnvironment(base::Value::Dict& ds) {
-  std::string processor = "unknown";
-#if defined(ARCH_CPU_X86)
-  processor = "x86";
-#elif defined(ARCH_CPU_X86_64)
-  processor = "x86_64";
-#elif defined(ARCH_CPU_ARM64)
-  processor = "Arm64";
-#else
-  LOG(WARNING) << "Unknown Processor.";
+const char* GetPlatformName() {
+#if BUILDFLAG(IS_WIN)
+  return "windows";
+#elif BUILDFLAG(IS_APPLE)
+  return "macOS";
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#elif BUILDFLAG(IS_LINUX)
+  return "linux";
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return "lacros";
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return "ash";
 #endif
-
-  ds.Set("system", SkiaGoldPixelDiff::GetPlatform());
-  ds.Set("processor", processor);
 }
 
-// Fill in test environment to the keys_file. The format is json.
-// We need the system information to determine whether a new screenshot
-// is good or not. All the information that can affect the output of pixels
-// should be filled in. Eg: operating system, graphics card, processor
-// architecture, screen resolution, etc.
-bool FillInTestEnvironment(const base::FilePath& keys_file) {
+const char* GetArchName() {
+#if defined(ARCH_CPU_X86)
+  return "x86";
+#elif defined(ARCH_CPU_X86_64)
+  return "x86_64";
+#elif defined(ARCH_CPU_ARM64)
+  return "Arm64";
+#else
+  LOG(WARNING) << "Unknown Processor.";
+  return "unknown";
+#endif
+}
+
+void FillInSystemEnvironment(TestEnvironmentMap& test_environment) {
+  // Fill in a default key and assert it was not already filled in.
+  auto CheckInsertDefaultKey = [&test_environment](TestEnvironmentKey key,
+                                                   std::string value) {
+    bool did_insert = false;
+    std::tie(std::ignore, did_insert) = test_environment.insert({key, value});
+    CHECK(did_insert);
+  };
+
+  CheckInsertDefaultKey(TestEnvironmentKey::kSystem, GetPlatformName());
+  CheckInsertDefaultKey(TestEnvironmentKey::kProcessor, GetArchName());
+}
+
+const char* TestEnvironmentKeyToString(TestEnvironmentKey key) {
+  switch (key) {
+    case TestEnvironmentKey::kSystem:
+      return "system";
+    case TestEnvironmentKey::kProcessor:
+      return "processor";
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+bool WriteTestEnvironmentToFile(TestEnvironmentMap test_environment,
+                                const base::FilePath& keys_file) {
   base::Value::Dict ds;
-  FillInSystemEnvironment(ds);
+  for (auto& [key, value] : test_environment) {
+    ds.Set(TestEnvironmentKeyToString(key), value);
+  }
+
   base::Value root(std::move(ds));
   std::string content;
   base::JSONWriter::Write(root, &content);
@@ -147,19 +184,7 @@ SkiaGoldPixelDiff::~SkiaGoldPixelDiff() = default;
 
 // static
 std::string SkiaGoldPixelDiff::GetPlatform() {
-#if BUILDFLAG(IS_WIN)
-  return "windows";
-#elif BUILDFLAG(IS_APPLE)
-  return "macOS";
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif BUILDFLAG(IS_LINUX)
-  return "linux";
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return "lacros";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return "ash";
-#endif
+  return GetPlatformName();
 }
 
 int SkiaGoldPixelDiff::LaunchProcess(const base::CommandLine& cmdline) const {
@@ -174,7 +199,7 @@ int SkiaGoldPixelDiff::LaunchProcess(const base::CommandLine& cmdline) const {
   return exit_code;
 }
 
-void SkiaGoldPixelDiff::InitSkiaGold() {
+void SkiaGoldPixelDiff::InitSkiaGold(TestEnvironmentMap test_environment) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kBypassSkiaGoldFunctionality)) {
     LOG(WARNING) << "Bypassing Skia Gold initialization due to "
@@ -193,9 +218,12 @@ void SkiaGoldPixelDiff::InitSkiaGold() {
   int exit_code = LaunchProcess(cmd);
   ASSERT_EQ(exit_code, 0);
 
+  FillInSystemEnvironment(test_environment);
+
   base::FilePath json_temp_file =
       working_dir_.Append(FILE_PATH_LITERAL("keys_file.txt"));
-  FillInTestEnvironment(json_temp_file);
+  ASSERT_TRUE(
+      WriteTestEnvironmentToFile(std::move(test_environment), json_temp_file));
   base::FilePath failure_temp_file =
       working_dir_.Append(FILE_PATH_LITERAL("failure.log"));
   cmd = base::CommandLine(GetAbsoluteSrcRelativePath(kSkiaGoldCtl));
@@ -223,7 +251,8 @@ void SkiaGoldPixelDiff::InitSkiaGold() {
 }
 
 void SkiaGoldPixelDiff::Init(const std::string& screenshot_prefix,
-                             const std::string& corpus) {
+                             const std::string& corpus,
+                             TestEnvironmentMap test_environment) {
   auto* cmd_line = base::CommandLine::ForCurrentProcess();
   if (!BotModeEnabled(base::CommandLine::ForCurrentProcess())) {
     cmd_line->AppendSwitch(kDryRun);
@@ -265,7 +294,7 @@ void SkiaGoldPixelDiff::Init(const std::string& screenshot_prefix,
   base::CreateNewTempDirectory(FILE_PATH_LITERAL("SkiaGoldTemp"),
                                &working_dir_);
 
-  InitSkiaGold();
+  InitSkiaGold(std::move(test_environment));
 }
 
 bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
