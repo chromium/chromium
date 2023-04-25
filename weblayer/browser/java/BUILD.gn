@@ -9,15 +9,6 @@ import("//device/vr/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//weblayer/variables.gni")
 
-_bundle_utils_output =
-    "$target_gen_dir/org/chromium/weblayer_private/WebLayerBundleUtils.java"
-
-jinja_template("weblayer_bundle_utils") {
-  input = "WebLayerBundleUtils.java.jinja2"
-  output = _bundle_utils_output
-  variables = "weblayer_in_split=$weblayer_in_split"
-}
-
 android_resources("weblayer_resources") {
   sources = [
     "res/drawable/weblayer_tab_indicator.xml",
@@ -188,7 +179,6 @@ android_library("java") {
     "org/chromium/weblayer_private/resources/ResourceMapper.java",
     "org/chromium/weblayer_private/settings/WebLayerAccessibilitySettingsDelegate.java",
     "org/chromium/weblayer_private/settings/WebLayerSiteSettingsDelegate.java",
-    _bundle_utils_output,
   ]
   resources_package = "org.chromium.weblayer_private"
 
@@ -197,7 +187,6 @@ android_library("java") {
     ":base_module_java",
     ":gms_bridge_java",
     ":interfaces_java",
-    ":weblayer_bundle_utils",
     ":weblayer_resources",
     "//base:base_java",
     "//base:jni_java",

@@ -22,7 +22,7 @@ template("system_webview_bundle") {
 
   assert(_is_trichrome == defined(invoker.static_library_provider))
 
-  if (webview_includes_weblayer && weblayer_in_split) {
+  if (webview_includes_weblayer) {
     # TODO(crbug.com/1105096): If WebView starts using
     # //components/module_installer, it will probably make sense to refactor
     # chrome_feature_module() to be used here.
@@ -95,7 +95,7 @@ template("system_webview_bundle") {
     } else {
       compress_shared_libraries = true
     }
-    if (webview_includes_weblayer && weblayer_in_split) {
+    if (webview_includes_weblayer) {
       extra_modules = [ _weblayer_module_desc ]
     }
     system_image_locale_allowlist = platform_pak_locales

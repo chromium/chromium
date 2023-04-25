@@ -7,9 +7,6 @@ import("//build/config/android/channel.gni")
 declare_args() {
   # Include the //weblayer code in WebView implementation APKs.
   webview_includes_weblayer = true
-
-  # Whether WebLayer will be included as a DFM.
-  weblayer_in_split = true
 }
 
 weblayer_product_config_java_package = "org.chromium.weblayer_private"
