@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/disabled_tab_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
@@ -346,11 +345,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return UIStatusBarStyleLightContent;
 }
 
-- (void)didReceiveMemoryWarning {
-  [self.regularTabsImageDataSource clearPreloadedSnapshots];
-  [self.incognitoTabsImageDataSource clearPreloadedSnapshots];
-}
-
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   [self.traitCollectionObserver viewController:self
@@ -488,28 +482,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - Public Methods
 
 - (void)prepareForAppearance {
-  NSSet<NSString*>* visibleGridItems = [self visibleGridItemsForActivePage];
-
-  switch (self.activePage) {
-    case TabGridPageIncognitoTabs:
-      [self.incognitoTabsImageDataSource
-          preloadSnapshotsForVisibleGridItems:visibleGridItems];
-      break;
-    case TabGridPageRegularTabs:
-      [self.regularTabsImageDataSource
-          preloadSnapshotsForVisibleGridItems:visibleGridItems];
-      break;
-    case TabGridPageRemoteTabs:
-      // Nothing to do.
-      break;
-  }
-}
-
-- (NSSet<NSString*>*)visibleGridItemsForActivePage {
-  GridViewController* activeGridViewController =
-      [self gridViewControllerForPage:self.activePage];
-
-  return [activeGridViewController visibleGridItems];
+  [[self gridViewControllerForPage:self.activePage] prepareForAppearance];
 }
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
@@ -545,9 +518,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self setInsetForRemoteTabs];
   }
 
-  // Let image sources know the initial appearance is done.
-  [self.regularTabsImageDataSource clearPreloadedSnapshots];
-  [self.incognitoTabsImageDataSource clearPreloadedSnapshots];
+  // Let the active grid view know the initial appearance is done.
+  [[self gridViewControllerForPage:self.activePage] contentDidAppear];
 }
 
 - (void)contentWillDisappearAnimated:(BOOL)animated {
@@ -630,12 +602,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return self.regularTabsViewController;
 }
 
-- (void)setRegularTabsImageDataSource:
-    (id<GridImageDataSource>)regularTabsImageDataSource {
-  self.regularTabsViewController.imageDataSource = regularTabsImageDataSource;
-  _regularTabsImageDataSource = regularTabsImageDataSource;
-}
-
 - (void)setPriceCardDataSource:(id<PriceCardDataSource>)priceCardDataSource {
   self.regularTabsViewController.priceCardDataSource = priceCardDataSource;
   _priceCardDataSource = priceCardDataSource;
@@ -647,13 +613,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (id<TabCollectionConsumer>)incognitoTabsConsumer {
   return self.incognitoTabsViewController;
-}
-
-- (void)setIncognitoTabsImageDataSource:
-    (id<GridImageDataSource>)incognitoTabsImageDataSource {
-  self.incognitoTabsViewController.imageDataSource =
-      incognitoTabsImageDataSource;
-  _incognitoTabsImageDataSource = incognitoTabsImageDataSource;
 }
 
 - (id<RecentTabsConsumer>)remoteTabsConsumer {

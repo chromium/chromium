@@ -33,4 +33,12 @@
   completion(self, nil);
 }
 
+- (void)prefetchSnapshot {
+  // Subclasses should override this method. It is OK not to call super.
+}
+
+- (void)clearPrefetchedSnapshot {
+  // Subclasses should override this method. It is OK not to call super.
+}
+
 @end

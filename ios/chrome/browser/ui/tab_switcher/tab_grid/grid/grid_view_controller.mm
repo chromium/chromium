@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_header.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller+private.h"
@@ -336,10 +335,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return self.items.count == 0;
 }
 
-- (NSSet<NSString*>*)visibleGridItems {
+// Returns the items whose associated cell is visible.
+- (NSSet<TabSwitcherItem*>*)visibleGridItems {
   NSArray<NSIndexPath*>* visibleItemsIndexPaths =
       [self.collectionView indexPathsForVisibleItems];
-  return [self itemIdentifiersFromIndexPaths:visibleItemsIndexPaths];
+  return [self itemsFromIndexPaths:visibleItemsIndexPaths];
 }
 
 - (void)setMode:(TabGridMode)mode {
@@ -483,10 +483,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                          selectionItem:selectionItem];
 }
 
-- (void)prepareForDismissal {
-  // Stop animating the collection view to prevent the insertion animation from
-  // interfering with the tab presentation animation.
-  self.currentLayout.animatesItemUpdates = NO;
+- (void)prepareForAppearance {
+  for (TabSwitcherItem* item in [self visibleGridItems]) {
+    [item prefetchSnapshot];
+  }
 }
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
@@ -507,7 +507,19 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   self.lastInsertedItemID = nil;
 }
 
+- (void)contentDidAppear {
+  for (TabSwitcherItem* item in self.items) {
+    [item clearPrefetchedSnapshot];
+  }
+}
+
 - (void)contentWillDisappear {
+}
+
+- (void)prepareForDismissal {
+  // Stop animating the collection view to prevent the insertion animation from
+  // interfering with the tab presentation animation.
+  self.currentLayout.animatesItemUpdates = NO;
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -1724,28 +1736,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }];
 
   __weak __typeof(self) weakSelf = self;
-  TabSwitcherImageFetchingCompletionBlock completion =
-      ^(TabSwitcherItem* innerItem, UIImage* snapshot) {
-        // Only update the icon if the cell is not already reused for another
-        // item.
-        if ([cell hasIdentifier:innerItem.identifier]) {
-          if (weakSelf.thumbStripEnabled) {
-            [cell fadeInSnapshot:snapshot];
-          } else {
-            cell.snapshot = snapshot;
-          }
-        }
-      };
-  if (_mode == TabGridModeInactive) {
-    [item fetchSnapshot:completion];
-  } else {
-    // TODO(crbug.com/1421321): Migrate to using
-    // `-[TabSwitcherItem fetchSnapshot:]`.
-    [self.imageDataSource snapshotForIdentifier:item.identifier
-                                     completion:^(UIImage* snapshot) {
-                                       completion(item, snapshot);
-                                     }];
-  }
+  [item fetchSnapshot:^(TabSwitcherItem* innerItem, UIImage* snapshot) {
+    // Only update the icon if the cell is not already reused for another item.
+    if ([cell hasIdentifier:innerItem.identifier]) {
+      if (weakSelf.thumbStripEnabled) {
+        [cell fadeInSnapshot:snapshot];
+      } else {
+        cell.snapshot = snapshot;
+      }
+    }
+  }];
 
   NSString* itemIdentifier = item.identifier;
   [self.priceCardDataSource
@@ -1955,20 +1955,20 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                               base::SysNSStringToUTF16(resultsCount));
 }
 
-// Converts `indexPaths` into corresponding item identifiers.
-- (NSSet<NSString*>*)itemIdentifiersFromIndexPaths:
+// Returns the items at the given index paths.
+- (NSSet<TabSwitcherItem*>*)itemsFromIndexPaths:
     (NSArray<NSIndexPath*>*)indexPaths {
-  NSMutableSet<NSString*>* itemIdentifiers = [NSMutableSet set];
+  NSMutableSet<TabSwitcherItem*>* items = [[NSMutableSet alloc] init];
 
   [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath* indexPath,
                                            NSUInteger index, BOOL* stop) {
     NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
     if (itemIndex < self.items.count) {
-      [itemIdentifiers addObject:self.items[itemIndex].identifier];
+      [items addObject:self.items[itemIndex]];
     }
   }];
 
-  return [itemIdentifiers copy];
+  return items;
 }
 
 // Returns the size that should be dedicated the the Inactive Tabs button

@@ -183,9 +183,6 @@ void RecordTabGridCloseTabsCount(int count) {
 // The number of tabs in `closedSessionWindow` that are synced by
 // TabRestoreService.
 @property(nonatomic, assign) int syncedClosedTabsCount;
-// Short-term cache for grid thumbnails.
-@property(nonatomic, strong)
-    NSMutableDictionary<NSString*, UIImage*>* appearanceCache;
 @end
 
 @implementation TabGridMediator {
@@ -219,7 +216,6 @@ void RecordTabGridCloseTabsCount(int count) {
         std::make_unique<base::ScopedMultiSourceObservation<
             web::WebState, web::WebStateObserver>>(
             _webStateObserverBridge.get());
-    _appearanceCache = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
@@ -447,7 +443,6 @@ void RecordTabGridCloseTabsCount(int count) {
 
 - (void)snapshotCache:(SnapshotCache*)snapshotCache
     didUpdateSnapshotForIdentifier:(NSString*)identifier {
-  [self.appearanceCache removeObjectForKey:identifier];
   web::WebState* webState = GetWebState(
       self.webStateList, WebStateSearchCriteria{
                              .identifier = identifier,
@@ -1000,53 +995,6 @@ void RecordTabGridCloseTabsCount(int count) {
     });
   };
   [itemProvider loadObjectOfClass:[NSURL class] completionHandler:loadHandler];
-}
-
-#pragma mark - GridImageDataSource
-
-- (void)snapshotForIdentifier:(NSString*)identifier
-                   completion:(void (^)(UIImage*))completion {
-  if (self.appearanceCache[identifier]) {
-    completion(self.appearanceCache[identifier]);
-    return;
-  }
-  web::WebState* webState =
-      GetWebState(self.webStateList, WebStateSearchCriteria{
-                                         .identifier = identifier,
-                                     });
-  if (webState) {
-    SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
-        ^(UIImage* image) {
-          completion(image);
-        });
-  }
-}
-
-- (void)preloadSnapshotsForVisibleGridItems:
-    (NSSet<NSString*>*)visibleGridItems {
-  int startIndex = self.webStateList->GetIndexOfFirstNonPinnedWebState();
-  int endIndex = self.webStateList->count() - 1;
-
-  for (int i = startIndex; i <= endIndex; i++) {
-    web::WebState* web_state = self.webStateList->GetWebStateAt(i);
-    NSString* identifier = web_state->GetStableIdentifier();
-
-    BOOL isWebStateHidden = ![visibleGridItems containsObject:identifier];
-    if (isWebStateHidden) {
-      continue;
-    }
-
-    __weak __typeof(self) weakSelf = self;
-    auto cacheImage = ^(UIImage* image) {
-      weakSelf.appearanceCache[identifier] = image;
-    };
-
-    [self snapshotForIdentifier:identifier completion:cacheImage];
-  }
-}
-
-- (void)clearPreloadedSnapshots {
-  [self.appearanceCache removeAllObjects];
 }
 
 #pragma mark - GridShareableItemsProvider

@@ -20,7 +20,6 @@ source_set("grid_ui") {
     "grid_empty_view.h",
     "grid_header.h",
     "grid_header.mm",
-    "grid_image_data_source.h",
     "grid_layout.h",
     "grid_layout.mm",
     "grid_shareable_items_provider.h",

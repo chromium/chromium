@@ -780,9 +780,7 @@
     baseViewController.pinnedTabsDragDropHandler = self.pinnedTabsMediator;
   }
 
-  baseViewController.regularTabsImageDataSource = self.regularTabsMediator;
   baseViewController.priceCardDataSource = self.priceCardMediator;
-  baseViewController.incognitoTabsImageDataSource = self.incognitoTabsMediator;
 
   baseViewController.regularTabsShareableItemsProvider =
       self.regularTabsMediator;

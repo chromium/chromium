@@ -17,7 +17,10 @@
 #endif
 
 @implementation WebStateTabSwitcherItem {
+  // The web state represented by this item.
   base::WeakPtr<web::WebState> _webState;
+  // The potentially prefetched snapshot for the web state.
+  UIImage* _prefetchedSnapshot;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState {
@@ -32,6 +35,12 @@
     }
     self.title = tab_util::GetTabTitle(webState);
     self.showsActivity = webState->IsLoading();
+
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(lowMemoryWarningReceived:)
+               name:UIApplicationDidReceiveMemoryWarningNotification
+             object:nil];
   }
   return self;
 }
@@ -77,6 +86,11 @@
     return;
   }
 
+  if (_prefetchedSnapshot) {
+    completion(self, _prefetchedSnapshot);
+    return;
+  }
+
   __weak __typeof(self) weakSelf = self;
   SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
       ^(UIImage* snapshot) {
@@ -99,6 +113,33 @@
 - (UIImage*)NTPFavicon {
   // By default NTP tabs gets no favicon.
   return nil;
+}
+
+- (void)prefetchSnapshot {
+  web::WebState* webState = _webState.get();
+  if (!webState) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
+      ^(UIImage* snapshot) {
+        WebStateTabSwitcherItem* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        strongSelf->_prefetchedSnapshot = snapshot;
+      });
+}
+
+- (void)clearPrefetchedSnapshot {
+  _prefetchedSnapshot = nil;
+}
+
+#pragma mark - Private
+
+- (void)lowMemoryWarningReceived:(NSNotification*)notification {
+  [self clearPrefetchedSnapshot];
 }
 
 @end
