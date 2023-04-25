@@ -49,7 +49,8 @@ NSArray<PasswordIssue*>* GetSortedPasswordIssues(
 
   BOOL enable_compromised_description =
       IsPasswordCheckupEnabled() &&
-      warning_type == WarningType::kCompromisedPasswordsWarning;
+      (warning_type == WarningType::kCompromisedPasswordsWarning ||
+       warning_type == WarningType::kDismissedWarningsWarning);
 
   for (auto credential : insecure_credentials) {
     [passwords addObject:[[PasswordIssue alloc] initWithCredential:credential
