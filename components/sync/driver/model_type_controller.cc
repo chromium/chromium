@@ -102,9 +102,14 @@ void ModelTypeController::InitModelTypeController(
     //   or replaced by CONTACT_INFO.
     // * AUTOFILL_WALLET_DATA: Can be removed from here once the corresponding
     //   feature flag has been cleaned up (crbug.com/1413724).
+    //
+    // Note on ChromeOS-Ash: On this platform, the sync machinery always runs in
+    // full-sync mode, never transport-mode. So for data types that only exist
+    // on this platform, it doesn't matter if they support transport mode or not
+    // (this includes PRINTERS, WIFI_CONFIGURATIONS, OS_PREFERENCES,
+    // OS_PRIORITY_PREFERENCES, WORKSPACE_DESK, PRINTERS_AUTHORIZATION_SERVERS).
+    //
     // All other data types listed here will likely have to be migrated.
-    // TODO(crbug.com/1430471): PRINTERS_AUTHORIZATION_SERVERS should probably
-    // just support transport mode, since PRINTERS also supports it.
     static constexpr ModelTypeSet kLegacyTypes(
         BOOKMARKS, PREFERENCES, PASSWORDS, AUTOFILL_PROFILE, AUTOFILL,
         AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
