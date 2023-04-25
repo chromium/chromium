@@ -12,6 +12,7 @@
 
 namespace cast_streaming {
 
+class StreamTimestampOffsetTracker;
 class FrameInjectingAudioDemuxerStream;
 class FrameInjectingVideoDemuxerStream;
 class DemuxerConnector;
@@ -78,6 +79,8 @@ class FrameInjectingDemuxer final : public media::Demuxer {
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> original_task_runner_;
   media::DemuxerHost* host_ = nullptr;
+
+  scoped_refptr<StreamTimestampOffsetTracker> timestamp_tracker_;
   std::unique_ptr<FrameInjectingAudioDemuxerStream> audio_stream_;
   std::unique_ptr<FrameInjectingVideoDemuxerStream> video_stream_;
 

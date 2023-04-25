@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "components/cast_streaming/common/frame/demuxer_stream_traits.h"
 #include "components/cast_streaming/renderer/common/buffer_requester.h"
 #include "components/cast_streaming/renderer/frame/demuxer_connector.h"
@@ -23,6 +25,42 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace cast_streaming {
+
+class StreamTimestampOffsetTracker
+    : public base::RefCountedThreadSafe<StreamTimestampOffsetTracker> {
+ public:
+  StreamTimestampOffsetTracker() = default;
+
+  void ProcessAudioPacket(media::DecoderBuffer& buffer) {
+    if (!audio_position_.is_zero() &&
+        audio_position_ + base::Milliseconds(100) < buffer.timestamp()) {
+      offset_ += buffer.timestamp() - audio_position_;
+    }
+
+    audio_position_ =
+        buffer.timestamp() + ((buffer.duration() == media::kNoTimestamp)
+                                  ? base::Milliseconds(20)
+                                  : buffer.duration());
+  }
+
+  void UpdateOffset(media::DecoderBuffer& buffer) {
+    buffer.set_timestamp(buffer.timestamp() - offset_);
+  }
+
+  void ResetPosition() {
+    audio_position_ = {};
+    offset_ = {};
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<StreamTimestampOffsetTracker>;
+  ~StreamTimestampOffsetTracker() = default;
+
+  base::TimeDelta audio_position_ = {};
+  base::TimeDelta offset_ = {};
+  media::DemuxerHost* demuxer_host_ = nullptr;
+};
+
 namespace {
 
 // media::DemuxerStream implementation used for audio and video streaming.
@@ -46,10 +84,12 @@ class FrameInjectingDemuxerStream
       mojo::PendingRemote<TMojoRemoteType> pending_remote,
       typename Traits::StreamInfoType stream_initialization_info,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::OnceClosure on_initialization_complete_cb)
+      base::OnceClosure on_initialization_complete_cb,
+      scoped_refptr<StreamTimestampOffsetTracker> timestamp_tracker)
       : on_initialization_complete_cb_(
             std::move(on_initialization_complete_cb)),
         decoder_config_(stream_initialization_info->decoder_config),
+        timestamp_tracker_(std::move(timestamp_tracker)),
         buffer_requester_(std::make_unique<BufferRequester<TMojoRemoteType>>(
             this,
             stream_initialization_info->decoder_config,
@@ -103,6 +143,10 @@ class FrameInjectingDemuxerStream
     } else if (buffer->end_of_stream()) {
       std::move(pending_read_cb_).Run(Status::kError, {});
     } else {
+      if (type() == Type::AUDIO) {
+        timestamp_tracker_->ProcessAudioPacket(*buffer);
+      }
+      timestamp_tracker_->UpdateOffset(*buffer);
       std::move(pending_read_cb_).Run(Status::kOk, {std::move(buffer)});
     }
   }
@@ -127,6 +171,10 @@ class FrameInjectingDemuxerStream
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     current_buffer_provider_ = std::move(ptr);
+
+    if (type() == Type::AUDIO) {
+      timestamp_tracker_->ResetPosition();
+    }
 
     // During initialization, the config is set from the instance provided to
     // the ctor.
@@ -213,6 +261,8 @@ class FrameInjectingDemuxerStream
   // Currently processing DemuxerStream::Read call's callback, if one is in
   // process.
   ReadCB pending_read_cb_;
+
+  scoped_refptr<StreamTimestampOffsetTracker> timestamp_tracker_;
 
   // True when this stream is undergoing a decoder configuration change.
   bool pending_config_change_ = false;
@@ -316,19 +366,23 @@ void FrameInjectingDemuxer::OnStreamsInitializedOnMediaThread(
   auto initialization_complete_cb_ = base::BindRepeating(
       &FrameInjectingDemuxer::OnStreamInitializationComplete,
       weak_factory_.GetWeakPtr());
+
+  timestamp_tracker_ = base::MakeRefCounted<StreamTimestampOffsetTracker>();
+
   if (audio_stream_info) {
     pending_stream_initialization_callbacks_++;
     audio_stream_ = std::make_unique<FrameInjectingAudioDemuxerStream>(
         std::move(audio_stream_info->buffer_requester),
         std::move(audio_stream_info->stream_initialization_info),
-        media_task_runner_, initialization_complete_cb_);
+        media_task_runner_, initialization_complete_cb_, timestamp_tracker_);
   }
   if (video_stream_info) {
     pending_stream_initialization_callbacks_++;
     video_stream_ = std::make_unique<FrameInjectingVideoDemuxerStream>(
         std::move(video_stream_info->buffer_requester),
         std::move(video_stream_info->stream_initialization_info),
-        media_task_runner_, std::move(initialization_complete_cb_));
+        media_task_runner_, std::move(initialization_complete_cb_),
+        timestamp_tracker_);
   }
 }
 
@@ -388,6 +442,8 @@ void FrameInjectingDemuxer::AbortPendingReads() {
   DVLOG(2) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
+  timestamp_tracker_->ResetPosition();
+
   if (audio_stream_) {
     audio_stream_->AbortPendingRead();
   }
@@ -405,6 +461,7 @@ void FrameInjectingDemuxer::CancelPendingSeek(base::TimeDelta seek_time) {}
 // Not supported.
 void FrameInjectingDemuxer::Seek(base::TimeDelta time,
                                  media::PipelineStatusCallback status_cb) {
+  timestamp_tracker_->ResetPosition();
   std::move(status_cb).Run(media::PIPELINE_OK);
 }
 
