@@ -92,6 +92,10 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
     explicit ScopedAutoHideLock(Shelf* shelf) : shelf_(shelf) {
       ++shelf_->auto_hide_lock_;
     }
+
+    ScopedAutoHideLock(const ScopedAutoHideLock&) = delete;
+    ScopedAutoHideLock& operator=(const ScopedAutoHideLock&) = delete;
+
     ~ScopedAutoHideLock() {
       --shelf_->auto_hide_lock_;
       DCHECK_GE(shelf_->auto_hide_lock_, 0);
@@ -114,6 +118,9 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
       }
     }
 
+    ScopedDisableAutoHide(const ScopedDisableAutoHide&) = delete;
+    ScopedDisableAutoHide& operator=(const ScopedDisableAutoHide&) = delete;
+
     ~ScopedDisableAutoHide() {
       --shelf_->disable_auto_hide_;
       CHECK_GE(shelf_->disable_auto_hide_, 0);
@@ -121,6 +128,8 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
         shelf_->UpdateVisibilityState();
       }
     }
+
+    Shelf* shelf() { return shelf_; }
 
    private:
     const raw_ptr<Shelf, ExperimentalAsh> shelf_;
