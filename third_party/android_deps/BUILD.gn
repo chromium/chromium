@@ -1491,6 +1491,18 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_guava_java") {
+    jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava/kotlinx-coroutines-guava-1.6.4.jar"
+    output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_guava"
+    supports_android = true
+    deps = [
+      ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
+      ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
+      "//third_party/android_deps:guava_android_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jsoup_jsoup_java") {
     jar_path = "libs/org_jsoup_jsoup/jsoup-1.15.1.jar"
     output_name = "org_jsoup_jsoup"

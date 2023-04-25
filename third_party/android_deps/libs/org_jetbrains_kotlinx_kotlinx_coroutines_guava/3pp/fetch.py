@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'org/jetbrains/kotlinx'
 _MODULE_NAME = 'kotlinx-coroutines-guava'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '1.6.4'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 
