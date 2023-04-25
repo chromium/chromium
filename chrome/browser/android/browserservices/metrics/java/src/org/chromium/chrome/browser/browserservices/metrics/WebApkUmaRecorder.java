@@ -185,7 +185,7 @@ public class WebApkUmaRecorder {
     public static void recordWebApkSessionDuration(
             @WebApkDistributor int distributor, long duration) {
         RecordHistogram.recordLongTimesHistogram(
-                "WebApk.Session.TotalDuration2." + getWebApkDistributorUmaSuffix(distributor),
+                "WebApk.Session.TotalDuration3." + getWebApkDistributorUmaSuffix(distributor),
                 duration);
     }
 
