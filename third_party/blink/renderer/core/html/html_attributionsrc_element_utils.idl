@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-[RuntimeEnabled=AttributionReporting]
+[RuntimeEnabled=AttributionReportingInterface]
 interface mixin HTMLAttributionSrcElementUtils {
     [CEReactions, Reflect, SecureContext] attribute USVString attributionSrc;
 };

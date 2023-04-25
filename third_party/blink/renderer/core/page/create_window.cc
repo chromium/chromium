@@ -73,7 +73,9 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
   bool attribution_reporting_enabled =
       dom_window &&
-      RuntimeEnabledFeatures::AttributionReportingEnabled(dom_window);
+      (RuntimeEnabledFeatures::AttributionReportingEnabled(dom_window) ||
+       RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
+           dom_window));
 
   // This code follows the HTML spec, specifically
   // https://html.spec.whatwg.org/C/#concept-window-open-features-tokenize

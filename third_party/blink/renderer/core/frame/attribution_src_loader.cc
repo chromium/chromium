@@ -468,8 +468,10 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
                   invalid_origin ? invalid_origin->ToString() : String());
   };
 
-  if (!RuntimeEnabledFeatures::AttributionReportingEnabled(window))
+  if (!RuntimeEnabledFeatures::AttributionReportingEnabled(window) &&
+      !RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(window)) {
     return absl::nullopt;
+  }
 
   if (!window->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kAttributionReporting)) {
