@@ -79,6 +79,8 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   void DidCreateFencedFrame(FencedFrame* fenced_frame);
 
   // DevToolsAgentHost overrides.
+  // TODO(caseq): remove (Dis)connectWebContents() on frame targets once
+  // front-end uses tab target mode.
   void DisconnectWebContents() override;
   void ConnectWebContents(WebContents* web_contents) override;
   BrowserContext* GetBrowserContext() override;

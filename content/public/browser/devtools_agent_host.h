@@ -74,6 +74,7 @@ class CONTENT_EXPORT DevToolsAgentHost
   // Similar to the above, but returns a DevToolsAgentHost representing 'tab'
   // target. Unlike the one for RenderFrame, this will remain the same through
   // all possible transitions of underlying frame trees.
+  static scoped_refptr<DevToolsAgentHost> GetForTab(WebContents* web_contents);
   static scoped_refptr<DevToolsAgentHost> GetOrCreateForTab(
       WebContents* web_contents);
 

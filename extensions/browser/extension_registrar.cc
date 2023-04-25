@@ -277,9 +277,14 @@ std::vector<scoped_refptr<DevToolsAgentHost>> GetDevToolsAgentHostsFor(
   if (!BackgroundInfo::IsServiceWorkerBased(extension)) {
     ExtensionHost* host =
         process_manager->GetBackgroundHostForExtension(extension->id());
-    if (host && content::DevToolsAgentHost::HasFor(host->host_contents())) {
-      result.push_back(
-          content::DevToolsAgentHost::GetOrCreateFor(host->host_contents()));
+    if (host) {
+      content::WebContents* const wc = host->host_contents();
+      if (auto tab_host = content::DevToolsAgentHost::GetForTab(wc)) {
+        result.push_back(tab_host);
+      }
+      if (content::DevToolsAgentHost::HasFor(wc)) {
+        result.push_back(content::DevToolsAgentHost::GetOrCreateFor(wc));
+      }
     }
   } else {
     content::ServiceWorkerContext* context =
@@ -347,7 +352,6 @@ void ExtensionRegistrar::ReloadExtension(
     if (!agent_hosts.empty()) {
       for (auto& host : agent_hosts) {
         // Let DevTools know we'll be back once extension is reloaded.
-        // TODO(caseq): this should rather be called Disconnect().
         host->DisconnectWebContents();
       }
       // Retain DevToolsAgentHosts for the extension being reloaded to prevent
@@ -443,10 +447,11 @@ void ExtensionRegistrar::DidCreateMainFrameForBackgroundPage(
   ProcessManager::Get(browser_context_)
       ->IncrementLazyKeepaliveCount(host->extension(), Activity::DEV_TOOLS,
                                     std::string());
-  DCHECK_GE(1u, iter->second.size());
   // TODO(caseq): do we need to handle the case when the extension changed
   // from SW-based to WC-based during reload?
-  iter->second[0]->ConnectWebContents(host->host_contents());
+  for (auto& dev_tools_host : iter->second) {
+    dev_tools_host->ConnectWebContents(host->host_contents());
+  }
   orphaned_dev_tools_.erase(iter);
 }
 

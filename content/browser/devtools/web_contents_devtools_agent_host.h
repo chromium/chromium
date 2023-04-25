@@ -48,6 +48,9 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   explicit WebContentsDevToolsAgentHost(WebContents* wc);
   ~WebContentsDevToolsAgentHost() override;
 
+  void InnerAttach(WebContents* web_contents);
+  void InnerDetach();
+
   // DevToolsAgentHost overrides.
   void DisconnectWebContents() override;
   void ConnectWebContents(WebContents* web_contents) override;
@@ -83,7 +86,7 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   DevToolsAgentHostImpl* GetPrimaryFrameAgent();
   scoped_refptr<DevToolsAgentHost> GetOrCreatePrimaryFrameAgent();
 
-  std::unique_ptr<AutoAttacher> auto_attacher_;
+  std::unique_ptr<AutoAttacher> const auto_attacher_;
 };
 
 }  // namespace content

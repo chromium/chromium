@@ -207,22 +207,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
   devtools_util::InspectBackgroundPage(extension, profile());
   observer.WaitForLoad();
 
-  if (base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)) {
-    // This is due to how these keepalive counters are managed by the extension
-    // process manager: //
-    // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:extensions/browser/process_manager.cc;drc=8ce14ef97f8607b1b57f8d02da575ed5150eea9e;l=924
-    // It bumps them each time it sees a DevToolsAgentHost associated to an
-    // extension, and in case of the tab target mode, there's one agent host for
-    // the WebContents and one for the render frame.
-    EXPECT_EQ(2, process_manager->GetLazyKeepaliveCount(extension));
-    activities = process_manager->GetLazyKeepaliveActivities(extension);
-    EXPECT_THAT(activities, testing::UnorderedElementsAre(dev_tools_activity,
-                                                          dev_tools_activity));
-  } else {
-    EXPECT_EQ(1, process_manager->GetLazyKeepaliveCount(extension));
-    activities = process_manager->GetLazyKeepaliveActivities(extension);
-    EXPECT_THAT(activities, testing::UnorderedElementsAre(dev_tools_activity));
-  }
+  // This is due to how these keepalive counters are managed by the extension
+  // process manager:
+  // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:extensions/browser/process_manager.cc;drc=8ce14ef97f8607b1b57f8d02da575ed5150eea9e;l=924
+  // It bumps them each time it sees a DevToolsAgentHost associated to an
+  // extension, and in case of the tab target mode, there's one agent host for
+  // the WebContents and one for the render frame.
+  const int expected_keepalive_count =
+      base::FeatureList::IsEnabled(::features::kDevToolsTabTarget) ? 2 : 1;
+
+  EXPECT_EQ(expected_keepalive_count,
+            process_manager->GetLazyKeepaliveCount(extension));
+  EXPECT_THAT(activities, testing::Each(dev_tools_activity));
 
   // Opening DevTools will cause the background page to load. Wait for it.
   WaitForExtensionViewsToLoad();
@@ -247,10 +243,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
   extension = ExtensionRegistry::Get(profile())
       ->enabled_extensions().GetByID(extension_id);
 
-  // Keepalive count should stabilize back to 1, because DevTools is still open.
-  EXPECT_EQ(1, process_manager->GetLazyKeepaliveCount(extension));
+  // Keepalive count should stabilize back to original count, because DevTools
+  // is still open.
+  EXPECT_EQ(expected_keepalive_count,
+            process_manager->GetLazyKeepaliveCount(extension));
   activities = process_manager->GetLazyKeepaliveActivities(extension);
-  EXPECT_THAT(activities, testing::UnorderedElementsAre(dev_tools_activity));
+  EXPECT_THAT(activities, testing::Each(dev_tools_activity));
 }
 
 // Tests whether the extension runtime stays valid when an extension reloads
