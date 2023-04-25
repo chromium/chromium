@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -138,6 +139,12 @@ class PrintBackendServiceManager {
       const std::string& printer_name,
       mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
           callback);
+#endif
+#if BUILDFLAG(IS_WIN)
+  void GetPaperPrintableArea(
+      const std::string& printer_name,
+      const PrintSettings::RequestedMedia& media,
+      mojom::PrintBackendService::GetPaperPrintableAreaCallback callback);
 #endif
   ContextId EstablishPrintingContext(ClientId client_id,
                                      const std::string& printer_name
@@ -293,6 +300,10 @@ class PrintBackendServiceManager {
       RemoteSavedStructCallbacks<mojom::DefaultPrinterNameResult>;
   using RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks =
       RemoteSavedStructCallbacks<mojom::PrinterSemanticCapsAndDefaultsResult>;
+#if BUILDFLAG(IS_WIN)
+  using RemoteSavedGetPaperPrintableAreaCallbacks =
+      RemoteSavedCallbacks<const gfx::Rect&>;
+#endif
   using RemoteSavedUseDefaultSettingsCallbacks =
       RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
@@ -459,6 +470,10 @@ class PrintBackendServiceManager {
   GetRemoteSavedGetDefaultPrinterNameCallbacks(bool sandboxed);
   RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks&
   GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(bool sandboxed);
+#if BUILDFLAG(IS_WIN)
+  RemoteSavedGetPaperPrintableAreaCallbacks&
+  GetRemoteSavedGetPaperPrintableAreaCallbacks(bool sandboxed);
+#endif
   RemoteSavedUseDefaultSettingsCallbacks&
   GetRemoteSavedUseDefaultSettingsCallbacks(bool sandboxed);
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
@@ -538,6 +553,10 @@ class PrintBackendServiceManager {
   void OnDidGetPrinterSemanticCapsAndDefaults(
       const CallbackContext& context,
       mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps);
+#if BUILDFLAG(IS_WIN)
+  void OnDidGetPaperPrintableArea(const CallbackContext& context,
+                                  const gfx::Rect& printable_area_um);
+#endif
   void OnDidUseDefaultSettings(const CallbackContext& context,
                                mojom::PrintSettingsResultPtr settings);
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
@@ -568,7 +587,7 @@ class PrintBackendServiceManager {
   template <class... T>
   void RunSavedCallbacks(RemoteSavedCallbacks<T...>& saved_callbacks,
                          const RemoteId& remote_id,
-                         T... result);
+                         std::remove_reference<T>::type... result);
 
   // Test support for client ID management.
   static void SetClientsForTesting(
@@ -632,6 +651,12 @@ class PrintBackendServiceManager {
       sandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
   RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks
       unsandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
+#if BUILDFLAG(IS_WIN)
+  RemoteSavedGetPaperPrintableAreaCallbacks
+      sandboxed_saved_get_paper_printable_area_callbacks_;
+  RemoteSavedGetPaperPrintableAreaCallbacks
+      unsandboxed_saved_get_paper_printable_area_callbacks_;
+#endif
   RemoteSavedUseDefaultSettingsCallbacks
       sandboxed_saved_use_default_settings_callbacks_;
   RemoteSavedUseDefaultSettingsCallbacks
