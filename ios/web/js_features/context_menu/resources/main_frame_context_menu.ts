@@ -20,15 +20,13 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  *                 coordinates.
  * @param y - vertical center of the selected point in web view
  *                 coordinates.
- * @param surroundingTextEnabled - enables getting the surrounding characters if
- *               true.
  */
 function findElementAtPoint(
     requestId: string, x: number, y: number, webViewWidth: number,
-    _webViewHeight: number, surroundingTextEnabled: boolean) {
+    _webViewHeight: number) {
   const scale = getPageWidth() / webViewWidth;
   gCrWeb.contextMenuAllFrames.findElementAtPointInPageCoordinates(
-      requestId, x * scale, y * scale, surroundingTextEnabled);
+      requestId, x * scale, y * scale);
 }
 
 /**

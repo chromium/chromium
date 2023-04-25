@@ -75,8 +75,6 @@ void ContextMenuJavaScriptFeature::GetElementAtPoint(
   parameters.push_back(base::Value(point.y));
   parameters.push_back(base::Value(web_content_size.width));
   parameters.push_back(base::Value(web_content_size.height));
-  parameters.push_back(base::Value(
-      base::FeatureList::IsEnabled(web::features::kLongPressSurroundingText)));
   CallJavaScriptFunction(main_frame, "contextMenu.findElementAtPoint",
                          parameters);
 }

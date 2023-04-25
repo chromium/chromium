@@ -76,9 +76,8 @@ interface FindElementTextResult {
   // This is defined for any text element and is an index to the tapped
   // character in `innerText`.
   textOffset?: number;
-  // `surroundingText` and `surroundingTextOffset` can be set if extra text was
-  // asked for before and after `innerText`. Note that `innerText` is contained
-  // in `surroundingText`.
+  // `surroundingText` and `surroundingTextOffset` before and after `innerText`.
+  // Note that `innerText` is contained in `surroundingText`.
   surroundingText?: string;
   surroundingTextOffset?: number;
 }
@@ -174,12 +173,9 @@ function getResponseForImageElement(
  * @param element - the element whose details will be returned.
  * @param x - horizontal center of the selected point in page coordinates.
  * @param y - Vertical center of the selected point in page coordinates.
- * @param extractSurroundingText - enables getting the surrounding characters if
- *               true.
  */
 function getResponseForTextElement(
-    element: Element, x: number, y: number,
-    extractSurroundingText: boolean): FindElementTextResult {
+    element: Element, x: number, y: number): FindElementTextResult {
   const result: FindElementTextResult = {
     tagName: element.tagName,
   };
@@ -192,12 +188,9 @@ function getResponseForTextElement(
       if (textNode.nodeType === Node.TEXT_NODE) {
         result.textOffset = range.startOffset;
         result.innerText = textNode.nodeValue ?? '';
-
-        if (extractSurroundingText) {
-          const textAndStartPos = getSurroundingText(range);
-          result.surroundingText = textAndStartPos.text;
-          result.surroundingTextOffset = textAndStartPos.position;
-        }
+        const textAndStartPos = getSurroundingText(range);
+        result.surroundingText = textAndStartPos.text;
+        result.surroundingTextOffset = textAndStartPos.position;
       }
     }
   }
@@ -215,11 +208,9 @@ function getResponseForTextElement(
  *                 coordinates.
  * @param y - vertical center of the selected point in page
  *                 coordinates.
- * @param extractSurroundingText - enables getting the surrounding characters if
- *               true.
  */
 function findElementAtPointInPageCoordinates(
-    requestId: string, x: number, y: number, extractSurroundingText: boolean) {
+    requestId: string, x: number, y: number) {
   const hitCoordinates = spiralCoordinates(x, y);
   const processedElements = new Set<Element>();
   const firstDefaultElement: Element[] = [];
@@ -233,7 +224,7 @@ function findElementAtPointInPageCoordinates(
                                                  coordinateDetails.y;
     const elementWasFound = findElementAtPoint(
         requestId, window.document, processedElements, coordinateX, coordinateY,
-        x, y, firstDefaultElement, extractSurroundingText);
+        x, y, firstDefaultElement);
 
     // Exit early if an element was found.
     if (elementWasFound) {
@@ -247,7 +238,7 @@ function findElementAtPointInPageCoordinates(
         requestId,
         getResponseForTextElement(
             firstDefaultElement[0], x - window.pageXOffset,
-            y - window.pageYOffset, extractSurroundingText));
+            y - window.pageYOffset));
     return;
   }
 
@@ -267,14 +258,11 @@ function findElementAtPointInPageCoordinates(
  * @param centerX - the X coordinate of the center of the target.
  * @param centerY - the Y coordinate of the center of the target.
  * @param firstDefaultElement - contains the first default element found if any.
- * @param extractSurroundingText - enables getting the surrounding characters if
- *               true.
  */
 function findElementAtPoint(
     requestId: string, root: Document|ShadowRoot,
     processedElements: Set<Element>, pointX: number, pointY: number,
-    centerX: number, centerY: number, firstDefaultElement: Element[],
-    extractSurroundingText: boolean): boolean {
+    centerX: number, centerY: number, firstDefaultElement: Element[]): boolean {
   const elements = root.elementsFromPoint(pointX, pointY);
   let foundLinkElement: HTMLAnchorElement|SVGAElement|null = null;
   for (let elementIndex = 0;
@@ -309,15 +297,13 @@ function findElementAtPoint(
         // keep iterating.
         if (findElementAtPoint(
                 requestId, element.shadowRoot, processedElements, pointX,
-                pointY, centerX, centerY, firstDefaultElement,
-                extractSurroundingText)) {
+                pointY, centerX, centerY, firstDefaultElement)) {
           return true;
         }
       }
 
       if (processElementForFindElementAtPoint(
-              requestId, centerX, centerY, element as HTMLElement,
-              extractSurroundingText)) {
+              requestId, centerX, centerY, element as HTMLElement)) {
         return true;
       }
 
@@ -354,12 +340,10 @@ function findElementAtPoint(
  * @param centerX - the X coordinate of the center of the target.
  * @param centerY - the Y coordinate of the center of the target.
  * @param element - element in the page.
- * @param extractSurroundingText - enables getting the surrounding characters if
- *               true.
  */
 function processElementForFindElementAtPoint(
     requestId: string, centerX: number, centerY: number,
-    element: HTMLElement|null, extractSurroundingText: boolean): boolean {
+    element: HTMLElement|null): boolean {
   if (!element || !element.tagName) {
     return false;
   }
@@ -373,7 +357,6 @@ function processElementForFindElementAtPoint(
       requestId: requestId,
       x: centerX - element.offsetLeft,
       y: centerY - element.offsetTop,
-      extractSurroundingText: extractSurroundingText
     };
     // The message will not be sent if `targetOrigin` is null, so use * which
     // allows the message to be delievered to the contentWindow regardless of
@@ -607,7 +590,7 @@ window.addEventListener('message', function(message) {
       payload.type === 'org.chromium.contextMenuMessage') {
     findElementAtPointInPageCoordinates(
         payload.requestId, payload.x + window.pageXOffset,
-        payload.y + window.pageYOffset, payload.extractSurroundingText);
+        payload.y + window.pageYOffset);
   }
 });
 

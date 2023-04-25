@@ -172,17 +172,6 @@ BASE_FEATURE(kEnableExpKitAppleCalendar,
              "EnableExpKitAppleCalendar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kExperienceKitMapsVariationName[] = "ExperienceKitMapsVariant";
-extern const char kEnableExperienceKitMapsVariationSrp[] = "with SRP";
-
-BASE_FEATURE(kMapsExperienceKit,
-             "MapsExperienceKit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableMiniMap,
-             "EnableMiniMap",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabGridRecencySort,
              "TabGridRecencySort",
              base::FEATURE_DISABLED_BY_DEFAULT);

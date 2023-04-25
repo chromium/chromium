@@ -6706,22 +6706,6 @@
             ]
         }
     ],
-    "IOSExpKitMaps": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LongPressSurroundingText",
-                        "MapsExperienceKit"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFastApplicationWillTerminate": [
         {
             "platforms": [

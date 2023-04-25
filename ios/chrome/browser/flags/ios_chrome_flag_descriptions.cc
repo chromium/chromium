@@ -217,17 +217,6 @@ extern const char kMagicStackDescription[] =
     "When enabled, a Magic Stack will be shown in the Home surface displaying "
     "a variety of modules.";
 
-extern const char kMapsExperienceKitName[] = "Experience Kit Maps";
-extern const char kMapsExperienceKitDescription[] =
-    "When enabled, long pressing on an address will trigger Experience Kit Maps"
-    "location and directions handling. Requires "
-    "#enable-long-press-surrounding-text to be enabled.";
-
-extern const char kLongPressSurroundingTextName[] =
-    "Enable Long Press Surrounding Text";
-extern const char kLongPressSurroundingTextDescription[] =
-    "When enabled, long pressing a text will analyze larger part of the text.";
-
 const char kCredentialProviderExtensionPromoName[] =
     "Enable the Credential Provider Extension promo.";
 const char kCredentialProviderExtensionPromoDescription[] =

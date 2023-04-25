@@ -534,12 +534,6 @@ const FeatureEntry::FeatureVariation kEnableExpKitTextClassifierVariations[] = {
     {"Enabled for email", kEnableExpKitTextClassifierEmail,
      std::size(kEnableExpKitTextClassifierEmail), nullptr}};
 
-const FeatureEntry::FeatureParam kEnableExperienceKitMapsWithSrp[] = {
-    {kExperienceKitMapsVariationName, kEnableExperienceKitMapsVariationSrp}};
-const FeatureEntry::FeatureVariation kEnableExperienceKitMapsVariations[] = {
-    {"with search result page", kEnableExperienceKitMapsWithSrp,
-     std::size(kEnableExperienceKitMapsWithSrp), nullptr}};
-
 const FeatureEntry::FeatureParam kFollowingFeedSortTypeGroupedByPublisher[] = {
     {kFollowingFeedDefaultSortTypeGroupedByPublisher, "true"},
     {kFollowingFeedDefaultSortTypeSortByLatest, "false"}};
@@ -1055,15 +1049,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableExpKitTextClassifier,
                                     kEnableExpKitTextClassifierVariations,
                                     "ExpKitTextClassifier")},
-    {"experience-kit-maps", flag_descriptions::kMapsExperienceKitName,
-     flag_descriptions::kMapsExperienceKitDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kMapsExperienceKit,
-                                    kEnableExperienceKitMapsVariations,
-                                    "IOSExperienceKitMaps")},
-    {"enable-long-press-surrounding-text",
-     flag_descriptions::kLongPressSurroundingTextName,
-     flag_descriptions::kLongPressSurroundingTextDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::features::kLongPressSurroundingText)},
     {"one-tap-experience-maps", flag_descriptions::kOneTapForMapsName,
      flag_descriptions::kOneTapForMapsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kOneTapForMaps)},
