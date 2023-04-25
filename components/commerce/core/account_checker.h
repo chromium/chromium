@@ -37,6 +37,9 @@ class AccountChecker : public signin::IdentityManager::Observer {
 
   virtual bool IsSignedIn();
 
+  // Returns whether bookmarks is currently syncing. This will return true in
+  // cases where sync is still initializing, but the sync feature itself is
+  // enabled.
   virtual bool IsSyncingBookmarks();
 
   virtual bool IsAnonymizedUrlDataCollectionEnabled();
