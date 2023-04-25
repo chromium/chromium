@@ -41,6 +41,11 @@ def __step_config(ctx, step_config):
             "action": "(.*_)?objc",
             "use_remote_exec_wrapper": True,
         },
+        {
+            "name": "action_remote",
+            "command_prefix": "python3 ../../build/util/action_remote.py",
+            "use_remote_exec_wrapper": True,
+        },
     ])
     return step_config
 
