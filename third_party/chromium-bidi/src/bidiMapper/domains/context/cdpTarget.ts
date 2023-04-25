@@ -20,16 +20,17 @@ import {CdpClient} from '../../CdpConnection';
 import {LogManager} from '../log/logManager';
 import {RealmStorage} from '../script/realmStorage';
 import {IEventManager} from '../events/EventManager';
-import {CDP} from '../../../protocol/protocol';
+import {CDP, Script} from '../../../protocol/protocol';
 import {Deferred} from '../../../utils/deferred';
 import {NetworkProcessor} from '../network/networkProcessor';
 
 export class CdpTarget {
-  readonly #targetUnblocked: Deferred<void>;
   readonly #targetId: string;
   readonly #cdpClient: CdpClient;
-  readonly #eventManager: IEventManager;
   readonly #cdpSessionId: string;
+  readonly #eventManager: IEventManager;
+
+  readonly #targetUnblocked: Deferred<void>;
   #networkDomainActivated: boolean;
 
   static create(
@@ -38,7 +39,7 @@ export class CdpTarget {
     cdpSessionId: string,
     realmStorage: RealmStorage,
     eventManager: IEventManager
-  ) {
+  ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
       cdpClient,
@@ -65,8 +66,8 @@ export class CdpTarget {
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
     this.#eventManager = eventManager;
-    this.#networkDomainActivated = false;
 
+    this.#networkDomainActivated = false;
     this.#targetUnblocked = new Deferred();
   }
 
@@ -129,18 +130,52 @@ export class CdpTarget {
   }
 
   #setEventListeners() {
-    this.#cdpClient.on('*', (method, params) => {
+    this.#cdpClient.on('*', (cdpMethod, params) => {
       this.#eventManager.registerEvent(
         {
           method: CDP.EventNames.EventReceivedEvent,
           params: {
-            cdpMethod: method,
-            cdpParams: params || {},
+            cdpMethod,
+            cdpParams: params ?? {},
             cdpSession: this.#cdpSessionId,
           },
         },
         null
       );
     });
+  }
+
+  /**
+   * Issues `Page.addScriptToEvaluateOnNewDocument` CDP command with the given
+   * script source in evaluated form and world name / sandbox.
+   *
+   * @return The CDP preload script ID.
+   */
+  async addPreloadScript(
+    scriptSource: string,
+    sandbox?: string
+  ): Promise<Script.PreloadScript> {
+    const result = await this.cdpClient.sendCommand(
+      'Page.addScriptToEvaluateOnNewDocument',
+      {
+        source: scriptSource,
+        worldName: sandbox,
+      }
+    );
+
+    return result.identifier;
+  }
+
+  /**
+   * Issues `Page.removeScriptToEvaluateOnNewDocument` CDP command with the
+   * given CDP preload script ID.
+   */
+  async removePreloadScript(cdpPreloadScriptId: string): Promise<void> {
+    await this.cdpClient.sendCommand(
+      'Page.removeScriptToEvaluateOnNewDocument',
+      {
+        identifier: cdpPreloadScriptId,
+      }
+    );
   }
 }

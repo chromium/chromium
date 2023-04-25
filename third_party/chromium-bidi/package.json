@@ -114,7 +114,7 @@
       "command": "mocha"
     },
     "tsc": {
-      "command": "tsc --build src/tsconfig.json",
+      "command": "tsc --build src/tsconfig.json --pretty",
       "clean": "if-file-deleted",
       "files": [
         "**/tsconfig*.json",

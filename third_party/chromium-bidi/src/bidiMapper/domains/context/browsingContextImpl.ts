@@ -22,7 +22,6 @@ import {
   BrowsingContext,
   CommonDataTypes,
   Message,
-  Script,
 } from '../../../protocol/protocol.js';
 import {LoggerFn, LogType} from '../../../utils/log.js';
 import {Deferred} from '../../../utils/deferred.js';
@@ -138,8 +137,8 @@ export class BrowsingContextImpl {
     });
 
     // Remove context from the parent.
-    if (this.parentId !== null) {
-      const parent = this.#browsingContextStorage.getContext(this.parentId);
+    if (!this.isTopLevelContext()) {
+      const parent = this.#browsingContextStorage.getContext(this.parentId!);
       parent.#children.delete(this.contextId);
     }
 
@@ -278,9 +277,9 @@ export class BrowsingContextImpl {
         }
         this.#url = params.frame.url + (params.frame.urlFragment ?? '');
 
-        // At the point the page is initiated, all the nested iframes from the
+        // At the point the page is initialized, all the nested iframes from the
         // previous page are detached and realms are destroyed.
-        // Remove context's children.
+        // Remove children from context.
         this.#deleteChildren();
       }
     );
@@ -560,25 +559,6 @@ export class BrowsingContextImpl {
     return {
       result: {
         data: result.data,
-      },
-    };
-  }
-
-  async addPreloadScript(
-    params: Script.AddPreloadScriptParameters
-  ): Promise<Script.AddPreloadScriptResult> {
-    const result = await this.#cdpTarget.cdpClient.sendCommand(
-      'Page.addScriptToEvaluateOnNewDocument',
-      {
-        // The spec provides a function, and CDP expects an evaluation.
-        source: `(${params.expression})();`,
-        worldName: params.sandbox,
-      }
-    );
-
-    return {
-      result: {
-        script: result.identifier,
       },
     };
   }

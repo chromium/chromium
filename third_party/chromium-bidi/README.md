@@ -331,7 +331,7 @@ npm run build
 Continuously:
 
 ```sh
-npm run watch
+npm run build --watch
 ```
 
 #### 3. Run

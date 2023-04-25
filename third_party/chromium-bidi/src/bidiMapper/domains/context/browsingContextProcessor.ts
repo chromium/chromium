@@ -287,7 +287,7 @@ export class BrowsingContextProcessor {
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
     const contexts: BrowsingContextImpl[] = [];
-    const scripts: Script.AddPreloadScriptResult[] = [];
+    const scripts: Script.PreloadScript[] = [];
 
     if (params.context) {
       // TODO(#293): Handle edge case with OOPiF. Whenever a frame is moved out
@@ -301,12 +301,22 @@ export class BrowsingContextProcessor {
 
     scripts.push(
       ...(await Promise.all(
-        contexts.map((context) => context.addPreloadScript(params))
+        contexts.map((context) =>
+          context.cdpTarget.addPreloadScript(
+            // The spec provides a function, and CDP expects an evaluation.
+            `(${params.expression})();`,
+            params.sandbox
+          )
+        )
       ))
     );
 
     // TODO(#293): What to return whenever there are multiple contexts?
-    return scripts[0]!;
+    return {
+      result: {
+        script: scripts[0]!,
+      },
+    };
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await

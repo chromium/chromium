@@ -691,6 +691,7 @@ export namespace Script {
     url: string;
   };
 
+  /** The preload script identifier. */
   export type PreloadScript = string;
 
   export type AddPreloadScriptCommand = {
@@ -701,7 +702,7 @@ export namespace Script {
   export type AddPreloadScriptParameters = {
     expression: string;
     sandbox?: string;
-    context?: CommonDataTypes.BrowsingContext;
+    context?: CommonDataTypes.BrowsingContext | null;
   };
 
   export type AddPreloadScriptResult = {
@@ -1125,7 +1126,7 @@ export namespace CDP {
   export type SendCommandParams = {
     cdpMethod: keyof ProtocolMapping.Commands;
     cdpParams: object;
-    cdpSession?: any;
+    cdpSession?: string;
   };
 
   export type SendCommandResult = {result: unknown};
