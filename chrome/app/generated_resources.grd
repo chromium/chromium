@@ -14471,6 +14471,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION" desc="Description of notification prompting the user to enable Enhanced Safe Browsing after they have enabled account-level protections.">
       Enhanced protection does more to block phishing and malware
     </message>
+    <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION_UPDATED" desc="Description of notification prompting the user to enable Enhanced Safe Browsing after they have enabled account-level protections.">
+      Enhanced Safe Browsing does more to protect you against dangerous websites, downloads, and extensions
+    </message>
     <if expr="use_titlecase">
       <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_ACCEPT" desc="Accept button on notification prompting the user to enable Enhanced Safe Browsing after they have enabled account-level protections.">
         Continue
