@@ -4,6 +4,8 @@
 
 #include "ash/style/tab_slider.h"
 
+#include <cstddef>
+
 #include "ash/style/style_util.h"
 #include "ash/style/tab_slider_button.h"
 #include "base/functional/callback_helpers.h"
@@ -114,6 +116,11 @@ TabSlider::~TabSlider() = default;
 
 views::View* TabSlider::GetSelectorView() {
   return selector_view_;
+}
+
+TabSliderButton* TabSlider::GetButtonAtIndex(size_t index) {
+  CHECK(index < buttons_.size());
+  return buttons_[index];
 }
 
 void TabSlider::SetCustomLayout(const LayoutParams& layout_params) {
