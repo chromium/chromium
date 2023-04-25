@@ -7,11 +7,13 @@
 #include <memory>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "components/prefs/pref_service.h"
+#include "dbus/message.h"
 
 namespace arc {
 
@@ -35,6 +37,10 @@ ArcVmmSwapScheduler::ArcVmmSwapScheduler(
     SetActiveSwappableChecking(swappable_checking_period.value(),
                                std::move(peace_duration_provider));
   }
+  auto* client = ash::ConciergeClient::Get();
+  if (client) {
+    vm_observer_.Observe(client);
+  }
 }
 
 ArcVmmSwapScheduler::~ArcVmmSwapScheduler() = default;
@@ -47,11 +53,17 @@ void ArcVmmSwapScheduler::SetSwappable(bool swappable) {
   if (swappable) {
     swappable_ = true;
     swap_callback_.Run(true);
-    // TODO(sstan): Should be set by swap out signal from concierge.
-    local_state()->SetTime(prefs::kArcVmmSwapOutTime, base::Time::Now());
   } else {
     swap_callback_.Run(false);
   }
+}
+
+void ArcVmmSwapScheduler::OnVmSwapping(
+    const vm_tools::concierge::VmSwappingSignal& signal) {
+  if (signal.name() != kArcVmName) {
+    return;
+  }
+  local_state()->SetTime(prefs::kArcVmmSwapOutTime, base::Time::Now());
 }
 
 void ArcVmmSwapScheduler::SetSwapoutThrottleInterval(base::TimeDelta interval) {

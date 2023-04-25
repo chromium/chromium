@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
@@ -54,6 +55,10 @@ class ArcVmmSwapSchedulerTest : public testing::Test {
     local_state_.Get()->SetTime(prefs::kArcVmmSwapOutTime, base::Time());
   }
 
+  base::Time GetSwapOutTime() {
+    return local_state_.Get()->GetTime(prefs::kArcVmmSwapOutTime);
+  }
+
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
  protected:
@@ -61,8 +66,6 @@ class ArcVmmSwapSchedulerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  std::unique_ptr<ArcVmmSwapScheduler> scheduler_;
-
   ScopedTestingLocalState local_state_;
 };
 
@@ -198,6 +201,21 @@ TEST_F(ArcVmmSwapSchedulerTest, EnableSwapAndDisableSwap) {
   base::RunLoop().RunUntilIdle();
   EXPECT_GT(provider_raw->count(), checking_count_before_busy);
   EXPECT_EQ(swap_count, swap_count_before_busy);
+}
+
+TEST_F(ArcVmmSwapSchedulerTest, ReceiveSignalAndSave) {
+  auto scheduler = std::make_unique<ArcVmmSwapScheduler>(
+      base::NullCallback(),
+      /* minimum_swapout_interval= */ absl::nullopt,
+      /* swappable_checking_period= */ absl::nullopt, nullptr);
+
+  SetSwapOutTime(base::Time());
+  EXPECT_EQ(GetSwapOutTime(), base::Time());
+  vm_tools::concierge::VmSwappingSignal signal;
+  signal.set_name("arcvm");
+  scheduler->OnVmSwapping(signal);
+
+  EXPECT_NE(GetSwapOutTime(), base::Time());
 }
 
 }  // namespace arc

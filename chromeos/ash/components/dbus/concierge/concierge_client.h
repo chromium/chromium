@@ -40,15 +40,19 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
    public:
     // OnVmStarted is signaled by Concierge when a VM starts.
     virtual void OnVmStarted(
-        const vm_tools::concierge::VmStartedSignal& signal) = 0;
+        const vm_tools::concierge::VmStartedSignal& signal) {}
 
     // OnVmStopped is signaled by Concierge when a VM stops.
     virtual void OnVmStopped(
-        const vm_tools::concierge::VmStoppedSignal& signal) = 0;
+        const vm_tools::concierge::VmStoppedSignal& signal) {}
 
     // OnVmStopping is signaled by Concierge when a VM is stopping.
     virtual void OnVmStopping(
         const vm_tools::concierge::VmStoppingSignal& signal) {}
+
+    // OnVmSwapping is signaled by Concierge when a VM is swapping.
+    virtual void OnVmSwapping(
+        const vm_tools::concierge::VmSwappingSignal& signal) {}
 
    protected:
     virtual ~VmObserver() = default;
