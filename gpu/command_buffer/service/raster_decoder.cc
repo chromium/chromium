@@ -230,7 +230,7 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
     }
 
     auto sk_image =
-        scoped_read_access->CreateSkImage(shared_context_state_->gr_context());
+        scoped_read_access->CreateSkImage(shared_context_state_.get());
     if (!sk_image) {
       ERRORSTATE_SET_GL_ERROR(error_state_, GL_INVALID_OPERATION,
                               "SharedImageProviderImpl::OpenSharedImageForRead",
@@ -2338,7 +2338,7 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
   }
 
   auto sk_image =
-      source_scoped_access->CreateSkImage(shared_context_state_->gr_context());
+      source_scoped_access->CreateSkImage(shared_context_state_.get());
   if (!sk_image) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
                        "Couldn't create SkImage for reading.");

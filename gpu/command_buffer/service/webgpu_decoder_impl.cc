@@ -653,8 +653,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       bool success = true;
 
       // Make an SkImage to read the image contents
-      auto sk_image = scoped_read_access->CreateSkImage(
-          shared_context_state_->gr_context());
+      auto sk_image =
+          scoped_read_access->CreateSkImage(shared_context_state_.get());
       if (!sk_image) {
         DLOG(ERROR) << "Couldn't make SkImage";
         // Don't return early so we can perform proper cleanup later.

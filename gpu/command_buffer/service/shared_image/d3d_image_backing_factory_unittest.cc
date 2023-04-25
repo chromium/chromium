@@ -2253,8 +2253,7 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
   SkBitmap dst_bitmap;
   dst_bitmap.allocPixels(rgba_image_info);
   {
-    auto source_image =
-        scoped_read_access->CreateSkImage(context_state_->gr_context());
+    auto source_image = scoped_read_access->CreateSkImage(context_state_.get());
     ASSERT_TRUE(source_image);
 
     SkSurfaceProps surface_props(0, kUnknown_SkPixelGeometry);

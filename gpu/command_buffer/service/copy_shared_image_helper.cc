@@ -335,8 +335,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
                                     "glConvertYUVAMailboxesToRGB",
                                     "RGBA shared image is not readable"));
   }
-  auto rgba_sk_image =
-      rgba_scoped_access->CreateSkImage(shared_context_state_->gr_context());
+  auto rgba_sk_image = rgba_scoped_access->CreateSkImage(shared_context_state_);
   if (!rgba_sk_image) {
     return base::unexpected(GLError(GL_INVALID_OPERATION,
                                     "glReadbackImagePixels",
@@ -634,7 +633,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
 
   base::expected<void, GLError> result = base::ok();
   auto source_image =
-      source_scoped_access->CreateSkImage(shared_context_state_->gr_context());
+      source_scoped_access->CreateSkImage(shared_context_state_);
   if (!source_image) {
     result = base::unexpected(
         GLError(GL_INVALID_VALUE, "glCopySubTexture",
@@ -795,7 +794,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
 
   base::expected<void, GLError> result = base::ok();
   auto source_image =
-      source_scoped_access->CreateSkImage(shared_context_state_->gr_context());
+      source_scoped_access->CreateSkImage(shared_context_state_);
   if (!source_image) {
     result = base::unexpected<GLError>(
         GLError(GL_INVALID_VALUE, "glCopySharedImageToTexture",
@@ -854,12 +853,11 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
   if (source_shared_image->format().is_single_plane()) {
     // Create SkImage without plane index for single planar formats or legacy
     // multiplanar formats with external sampler.
-    sk_image = source_scoped_access->CreateSkImage(
-        shared_context_state_->gr_context());
+    sk_image = source_scoped_access->CreateSkImage(shared_context_state_);
   } else {
     // Pass plane index for creating an SkImage for multiplanar formats.
     sk_image = source_scoped_access->CreateSkImageForPlane(
-        plane_index, shared_context_state_->gr_context());
+        plane_index, shared_context_state_);
   }
 
   base::expected<void, GLError> result = base::ok();

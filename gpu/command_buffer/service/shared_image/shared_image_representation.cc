@@ -217,66 +217,6 @@ SkiaImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
   representation()->EndReadAccess();
 }
 
-sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImage(
-    GrDirectContext* context,
-    SkImage::TextureReleaseProc texture_release_proc,
-    SkImage::ReleaseContext release_context) const {
-  auto format = representation()->format();
-  auto surface_origin = representation()->surface_origin();
-  auto sk_color_space =
-      representation()->color_space().GetAsFullRangeRGB().ToSkColorSpace();
-  if (format.is_single_plane() || format.PrefersExternalSampler()) {
-    DCHECK_EQ(static_cast<int>(promise_image_textures_.size()), 1);
-    auto alpha_type = representation()->alpha_type();
-    auto color_type =
-        viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
-    return SkImages::BorrowTextureFrom(
-        context, promise_image_texture()->backendTexture(), surface_origin,
-        color_type, alpha_type, sk_color_space, texture_release_proc,
-        release_context);
-  } else {
-    DCHECK_EQ(static_cast<int>(promise_image_textures_.size()),
-              format.NumberOfPlanes());
-    std::array<GrBackendTexture, SkYUVAInfo::kMaxPlanes> yuva_textures;
-    // Get the texture per plane.
-    for (int plane_index = 0; plane_index < format.NumberOfPlanes();
-         plane_index++) {
-      yuva_textures[plane_index] =
-          promise_image_texture(plane_index)->backendTexture();
-    }
-
-    SkISize sk_size = gfx::SizeToSkISize(representation()->size());
-    // TODO(crbug.com/828599): This should really default to rec709.
-    SkYUVColorSpace yuv_color_space = kRec601_SkYUVColorSpace;
-    representation()->color_space().ToSkYUVColorSpace(
-        format.MultiplanarBitDepth(), &yuv_color_space);
-    SkYUVAInfo yuva_info(sk_size, ToSkYUVAPlaneConfig(format),
-                         ToSkYUVASubsampling(format), yuv_color_space);
-    GrYUVABackendTextures yuva_backend_textures(yuva_info, yuva_textures.data(),
-                                                surface_origin);
-    return SkImages::TextureFromYUVATextures(
-        context, yuva_backend_textures, sk_color_space, texture_release_proc,
-        release_context);
-  }
-}
-
-sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImageForPlane(
-    int plane_index,
-    GrDirectContext* context) const {
-  auto format = representation()->format();
-  DCHECK(format.is_multi_plane());
-  DCHECK_EQ(static_cast<int>(promise_image_textures_.size()),
-            format.NumberOfPlanes());
-
-  auto surface_origin = representation()->surface_origin();
-  auto alpha_type = SkAlphaType::kOpaque_SkAlphaType;
-  auto color_type =
-      viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane_index);
-  return SkImages::BorrowTextureFrom(
-      context, promise_image_texture(plane_index)->backendTexture(),
-      surface_origin, color_type, alpha_type, /*sk_color_space=*/nullptr);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // SkiaGaneshImageRepresentation
 
@@ -436,6 +376,69 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
       base::debug::DumpWithoutCrashing();
     }
   }
+}
+
+sk_sp<SkImage>
+SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImage(
+    SharedContextState* context_state,
+    SkImage::TextureReleaseProc texture_release_proc,
+    SkImage::ReleaseContext release_context) {
+  auto format = representation()->format();
+  auto surface_origin = representation()->surface_origin();
+  auto sk_color_space =
+      representation()->color_space().GetAsFullRangeRGB().ToSkColorSpace();
+  if (format.is_single_plane() || format.PrefersExternalSampler()) {
+    DCHECK_EQ(static_cast<int>(promise_image_textures_.size()), 1);
+    auto alpha_type = representation()->alpha_type();
+    auto color_type =
+        viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
+    return SkImages::BorrowTextureFrom(
+        context_state->gr_context(), promise_image_texture()->backendTexture(),
+        surface_origin, color_type, alpha_type, sk_color_space,
+        texture_release_proc, release_context);
+  } else {
+    DCHECK_EQ(static_cast<int>(promise_image_textures_.size()),
+              format.NumberOfPlanes());
+    std::array<GrBackendTexture, SkYUVAInfo::kMaxPlanes> yuva_textures;
+    // Get the texture per plane.
+    for (int plane_index = 0; plane_index < format.NumberOfPlanes();
+         plane_index++) {
+      yuva_textures[plane_index] =
+          promise_image_texture(plane_index)->backendTexture();
+    }
+
+    SkISize sk_size = gfx::SizeToSkISize(representation()->size());
+    // TODO(crbug.com/828599): This should really default to rec709.
+    SkYUVColorSpace yuv_color_space = kRec601_SkYUVColorSpace;
+    representation()->color_space().ToSkYUVColorSpace(
+        format.MultiplanarBitDepth(), &yuv_color_space);
+    SkYUVAInfo yuva_info(sk_size, ToSkYUVAPlaneConfig(format),
+                         ToSkYUVASubsampling(format), yuv_color_space);
+    GrYUVABackendTextures yuva_backend_textures(yuva_info, yuva_textures.data(),
+                                                surface_origin);
+    return SkImages::TextureFromYUVATextures(
+        context_state->gr_context(), yuva_backend_textures, sk_color_space,
+        texture_release_proc, release_context);
+  }
+}
+
+sk_sp<SkImage>
+SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImageForPlane(
+    int plane_index,
+    SharedContextState* context_state) {
+  auto format = representation()->format();
+  DCHECK(format.is_multi_plane());
+  DCHECK_EQ(static_cast<int>(promise_image_textures_.size()),
+            format.NumberOfPlanes());
+
+  auto surface_origin = representation()->surface_origin();
+  auto alpha_type = SkAlphaType::kOpaque_SkAlphaType;
+  auto color_type =
+      viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane_index);
+  return SkImages::BorrowTextureFrom(
+      context_state->gr_context(),
+      promise_image_texture(plane_index)->backendTexture(), surface_origin,
+      color_type, alpha_type, /*sk_color_space=*/nullptr);
 }
 
 bool SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
@@ -602,6 +605,58 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
 
 SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
     ~ScopedGraphiteReadAccess() = default;
+
+sk_sp<SkImage>
+SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::CreateSkImage(
+    SharedContextState* context_state,
+    SkImage::TextureReleaseProc texture_release_proc,
+    SkImage::ReleaseContext release_context) {
+  auto format = representation()->format();
+  auto surface_origin = representation()->surface_origin();
+  auto sk_color_space =
+      representation()->color_space().GetAsFullRangeRGB().ToSkColorSpace();
+  auto* recorder = context_state->gpu_main_graphite_recorder();
+  if (format.is_single_plane() || format.PrefersExternalSampler()) {
+    CHECK_EQ(static_cast<int>(graphite_textures_.size()), 1);
+    auto alpha_type = representation()->alpha_type();
+    auto color_type =
+        viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
+    return SkImage::MakeGraphiteFromBackendTexture(
+        recorder, graphite_texture(), color_type, alpha_type, sk_color_space);
+  } else {
+    CHECK_EQ(static_cast<int>(graphite_textures_.size()),
+             format.NumberOfPlanes());
+    SkISize sk_size = gfx::SizeToSkISize(representation()->size());
+    // TODO(crbug.com/828599): This should really default to rec709.
+    SkYUVColorSpace yuv_color_space = kRec601_SkYUVColorSpace;
+    representation()->color_space().ToSkYUVColorSpace(
+        format.MultiplanarBitDepth(), &yuv_color_space);
+    SkYUVAInfo yuva_info(sk_size, ToSkYUVAPlaneConfig(format),
+                         ToSkYUVASubsampling(format), yuv_color_space);
+    skgpu::graphite::YUVABackendTextures yuva_backend_textures(
+        recorder, yuva_info, graphite_textures_.data());
+    return SkImage::MakeGraphiteFromYUVABackendTextures(
+        recorder, yuva_backend_textures, sk_color_space, texture_release_proc,
+        release_context);
+  }
+}
+
+sk_sp<SkImage> SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
+    CreateSkImageForPlane(int plane_index, SharedContextState* context_state) {
+  auto format = representation()->format();
+  CHECK(format.is_multi_plane());
+  CHECK_EQ(static_cast<int>(graphite_textures_.size()),
+           format.NumberOfPlanes());
+
+  auto surface_origin = representation()->surface_origin();
+  auto alpha_type = SkAlphaType::kOpaque_SkAlphaType;
+  auto color_type =
+      viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane_index);
+  return SkImage::MakeGraphiteFromBackendTexture(
+      context_state->gpu_main_graphite_recorder(),
+      graphite_texture(plane_index), color_type, alpha_type,
+      /*sk_color_space=*/nullptr);
+}
 
 bool SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
     HasBackendSurfaceEndState() {

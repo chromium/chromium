@@ -116,7 +116,7 @@ void AttemptDebuggerBufferCapture(
     DCHECK(result);
   }
 
-  auto skimage = scoped_read->CreateSkImage(gr_direct_context);
+  auto skimage = scoped_read->CreateSkImage(context_state);
 
   if (!skimage) {
     DLOG(ERROR) << "Failed to create SkImage from scoped read";

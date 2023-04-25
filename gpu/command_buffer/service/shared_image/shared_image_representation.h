@@ -385,17 +385,18 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     }
 #endif
 
-    // Creates an SkImage from GrBackendTexture for single planar formats or if
+    // Creates an SkImage from BackendTexture for single planar formats or if
     // format prefers external sampler. Creates an SkImage from
-    // GrYUVABackendTexture for multiplanar formats.
-    sk_sp<SkImage> CreateSkImage(
-        GrDirectContext* context,
+    // YUVABackendTexture for multiplanar formats.
+    virtual sk_sp<SkImage> CreateSkImage(
+        SharedContextState* context_state,
         SkImage::TextureReleaseProc texture_release_proc = nullptr,
-        SkImage::ReleaseContext release_context = nullptr) const;
-    // Creates an SkImage for the given `plane_index` from GrBackendTexture for
+        SkImage::ReleaseContext release_context = nullptr) = 0;
+    // Creates an SkImage for the given `plane_index` for
     // multiplanar formats.
-    sk_sp<SkImage> CreateSkImageForPlane(int plane_index,
-                                         GrDirectContext* context) const;
+    virtual sk_sp<SkImage> CreateSkImageForPlane(
+        int plane_index,
+        SharedContextState* context_state) = 0;
 
     // NOTE: Implemented only for Ganesh.
     // Checks if need to apply GrBackendSurfaceMutableState.
@@ -504,6 +505,19 @@ class GPU_GLES2_EXPORT SkiaGaneshImageRepresentation
         std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures,
         std::unique_ptr<GrBackendSurfaceMutableState> end_state);
     ~ScopedGaneshReadAccess() override;
+
+    // Creates an SkImage from GrBackendTexture for single planar formats or if
+    // format prefers external sampler. Creates an SkImage from
+    // GrYUVABackendTexture for multiplanar formats.
+    sk_sp<SkImage> CreateSkImage(
+        SharedContextState* context_state,
+        SkImage::TextureReleaseProc texture_release_proc = nullptr,
+        SkImage::ReleaseContext release_context = nullptr) override;
+    // Creates an SkImage for the given `plane_index` from GrBackendTexture for
+    // multiplanar formats.
+    sk_sp<SkImage> CreateSkImageForPlane(
+        int plane_index,
+        SharedContextState* context_state) override;
 
     // Checks if need to apply GrBackendSurfaceMutableState.
     bool HasBackendSurfaceEndState() override;
@@ -640,6 +654,19 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
         SkiaImageRepresentation* representation,
         std::vector<skgpu::graphite::BackendTexture> graphite_textures);
     ~ScopedGraphiteReadAccess() override;
+
+    // Creates an SkImage from BackendTexture for single planar formats or if
+    // format prefers external sampler. Creates an SkImage from
+    // YUVABackendTexture for multiplanar formats.
+    sk_sp<SkImage> CreateSkImage(
+        SharedContextState* context_state,
+        SkImage::TextureReleaseProc texture_release_proc = nullptr,
+        SkImage::ReleaseContext release_context = nullptr) override;
+    // Creates an SkImage for the given `plane_index` from BackendTexture for
+    // multiplanar formats.
+    sk_sp<SkImage> CreateSkImageForPlane(
+        int plane_index,
+        SharedContextState* context_state) override;
 
     // Graphite-Dawn backend handles Vulkan transitions by itself, so nothing to
     // do here.
