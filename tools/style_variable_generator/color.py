@@ -28,6 +28,42 @@ def split_args(arg_str):
     yield arg_str[prev_index:].strip()
 
 
+def from_rgb(rgb):
+    for v in rgb:
+        if not (0 <= v <= 255):
+            raise ValueError('RGB value out of bounds')
+
+    color = Color()
+    (color.r, color.g, color.b) = rgb
+    return color
+
+
+# Attempts to parse special variables, returns the Color if successful.
+def from_white_black(var):
+    if var == 'white':
+        return from_rgb([255, 255, 255])
+
+    if var == 'black':
+        return from_rgb([0, 0, 0])
+
+    return None
+
+
+def from_rgb_ref(rgb_ref):
+    match = re.match(r'^\$([a-z0-9_\.\-]+)\.rgb$', rgb_ref)
+    if not match:
+        raise ValueError(f'Expected a reference to an RGB variable: {rgb_ref}')
+
+    rgb_var = match.group(1)
+
+    color = from_white_black(rgb_var)
+    if color is None:
+        color = Color()
+        color.rgb_var = rgb_var + '.rgb'
+
+    return color
+
+
 def ParseColor(value):
     def ParseHex(value):
         match = re.match(r'^#([0-9a-f]*)$', value)
@@ -39,7 +75,7 @@ def ParseColor(value):
         if len(value) != 6:
             raise ValueError('Expected #RRGGBB')
 
-        color._AssignRGB([int(x, 16) for x in textwrap.wrap(value, 2)])
+        color = from_rgb([int(x, 16) for x in textwrap.wrap(value, 2)])
         color.opacity = Opacity(1)
 
         return color
@@ -48,17 +84,16 @@ def ParseColor(value):
         match = re.match(r'^rgb\((.*)\)$', value)
         if not match:
             return None
-        color = Color()
-
-        color.opacity = Opacity(1)
 
         values = match.group(1).split(',')
         if len(values) == 1:
-            color._ParseRGBRef(values[0])
+            color = from_rgb_ref(values[0])
+            color.opacity = Opacity(1)
             return color
 
         if len(values) == 3:
-            color._AssignRGB([int(x) for x in values])
+            color = from_rgb([int(x) for x in values])
+            color.opacity = Opacity(1)
             return color
 
         raise ValueError('rgb() expected to have either 1 reference or 3 ints')
@@ -67,16 +102,15 @@ def ParseColor(value):
         match = re.match(r'^rgba\((.*)\)$', value)
         if not match:
             return None
-        color = Color()
 
         values = [x.strip() for x in match.group(1).split(',')]
         if len(values) == 2:
-            color._ParseRGBRef(values[0])
+            color = from_rgb_ref(values[0])
             color.opacity = Opacity(values[1])
             return color
 
         if len(values) == 4:
-            color._AssignRGB([int(x) for x in values[0:3]])
+            color = from_rgb([int(x) for x in values[0:3]])
             color.opacity = Opacity(values[3])
             return color
 
@@ -101,11 +135,11 @@ def ParseColor(value):
         match = re.match(r'^\$([\w\d_\.\-]+)$', value)
         if not match:
             return None
-        color = Color()
 
         var = match.group(1)
 
-        if color._ParseWhiteBlack(var):
+        color = from_white_black(var)
+        if color is not None:
             color.opacity = Opacity(1)
             return color
 
@@ -113,6 +147,7 @@ def ParseColor(value):
             raise ValueError(
                 'color reference cannot resolve to an rgb reference')
 
+        color = Color()
         color.var = var
         return color
 
@@ -167,36 +202,6 @@ class Color:
         self.b = -1
 
         self.opacity = None
-
-    def _AssignRGB(self, rgb):
-        for v in rgb:
-            if not (0 <= v <= 255):
-                raise ValueError('RGB value out of bounds')
-
-        (self.r, self.g, self.b) = rgb
-
-    # Attempts to parse special variables, returns True if successful.
-    def _ParseWhiteBlack(self, var):
-        if var == 'white':
-            self._AssignRGB([255, 255, 255])
-            return True
-
-        if var == 'black':
-            self._AssignRGB([0, 0, 0])
-            return True
-
-        return False
-
-    def _ParseRGBRef(self, rgb_ref):
-        match = re.match(r'^\$([a-z0-9_\.\-]+)\.rgb$', rgb_ref)
-        if not match:
-            raise ValueError(
-                f'Expected a reference to an RGB variable: {rgb_ref}')
-
-        rgb_var = match.group(1)
-
-        if not self._ParseWhiteBlack(rgb_var):
-            self.rgb_var = rgb_var + '.rgb'
 
     def RGBVarToVar(self):
         assert (self.rgb_var)
