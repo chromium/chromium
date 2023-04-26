@@ -4,7 +4,7 @@
 
 import re
 import collections
-from style_variable_generator.color import Color
+from style_variable_generator.color import Color, ParseColor
 from style_variable_generator.opacity import Opacity
 from abc import ABC, abstractmethod
 
@@ -283,7 +283,7 @@ class ColorModel(ModeKeyedModel):
         return result
 
     def _CreateValue(self, value):
-        return Color(value)
+        return ParseColor(value) or Color()
 
 class SimpleModel(collections.OrderedDict, Submodel):
     def __init__(self, variable_type, check_func=None):

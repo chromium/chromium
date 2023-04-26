@@ -10,48 +10,48 @@ from pathlib import Path
 if len(Path(__file__).parents) > 2:
     sys.path += [str(Path(__file__).parents[2])]
 
-from style_variable_generator.color import Color, split_args
+from style_variable_generator.color import Color, split_args, ParseColor
 import unittest
 
 
 class ColorTest(unittest.TestCase):
     def testHexColors(self):
-        c = Color('#0102ff')
+        c = ParseColor('#0102ff')
         self.assertEqual(c.r, 1)
         self.assertEqual(c.g, 2)
         self.assertEqual(c.b, 255)
         self.assertEqual(c.opacity.a, 1)
 
     def testRGBColors(self):
-        c = Color('rgb(100, 200, 123)')
+        c = ParseColor('rgb(100, 200, 123)')
         self.assertEqual(c.r, 100)
         self.assertEqual(c.g, 200)
         self.assertEqual(c.b, 123)
         self.assertEqual(c.opacity.a, 1)
 
-        c = Color('rgb($some_color.rgb)')
+        c = ParseColor('rgb($some_color.rgb)')
         self.assertEqual(c.rgb_var, 'some_color.rgb')
         self.assertEqual(c.opacity.a, 1)
 
     def testRGBAColors(self):
-        c = Color('rgba(100, 200, 123, 0.5)')
+        c = ParseColor('rgba(100, 200, 123, 0.5)')
         self.assertEqual(c.r, 100)
         self.assertEqual(c.g, 200)
         self.assertEqual(c.b, 123)
         self.assertEqual(c.opacity.a, 0.5)
 
-        c = Color('rgba($some_color_400.rgb, 0.1)')
+        c = ParseColor('rgba($some_color_400.rgb, 0.1)')
         self.assertEqual(c.rgb_var, 'some_color_400.rgb')
         self.assertEqual(c.opacity.a, 0.1)
 
     def testLegacyRGBRef(self):
-        c = Color('rgba($some_color_400_rgb, 0.1)')
+        c = ParseColor('rgba($some_color_400_rgb, 0.1)')
         self.assertEqual(c.rgb_var, 'some_color_400.rgb')
         self.assertEqual(c.opacity.a, 0.1)
 
     def testBlendColors(self):
         # White over Grey 900.
-        c = Color('blend($white, #00ff00)')
+        c = ParseColor('blend($white, #00ff00)')
         self.assertEqual(len(c.blended_colors), 2)
         c0 = c.blended_colors[0]
         self.assertEqual(c0.r, 255)
@@ -65,7 +65,8 @@ class ColorTest(unittest.TestCase):
         self.assertEqual(c1.opacity.a, 1)
 
         # Some color 6% over Grey 900 60%.
-        c = Color('blend(rgba($some_color.rgb, 0.06), rgba(32, 33, 36, 0.6))')
+        c = ParseColor(
+            'blend(rgba($some_color.rgb, 0.06), rgba(32, 33, 36, 0.6))')
         self.assertEqual(len(c.blended_colors), 2)
         c0 = c.blended_colors[0]
         self.assertEqual(c0.rgb_var, 'some_color.rgb')
@@ -77,64 +78,64 @@ class ColorTest(unittest.TestCase):
         self.assertEqual(c1.opacity.a, 0.6)
 
     def testReferenceColor(self):
-        c = Color('$some_color')
+        c = ParseColor('$some_color')
         self.assertEqual(c.var, 'some_color')
 
     def testWhiteBlackColor(self):
-        c = Color('$white')
+        c = ParseColor('$white')
         self.assertEqual((c.r, c.g, c.b, c.opacity.a), (255, 255, 255, 1))
 
-        c = Color('rgba($white.rgb, 0.5)')
+        c = ParseColor('rgba($white.rgb, 0.5)')
         self.assertEqual((c.r, c.g, c.b, c.opacity.a), (255, 255, 255, 0.5))
 
-        c = Color('$black')
+        c = ParseColor('$black')
         self.assertEqual((c.r, c.g, c.b, c.opacity.a), (0, 0, 0, 1))
 
-        c = Color('rgba($black.rgb, 0.5)')
+        c = ParseColor('rgba($black.rgb, 0.5)')
         self.assertEqual((c.r, c.g, c.b, c.opacity.a), (0, 0, 0, 0.5))
 
     def testMalformedColors(self):
         with self.assertRaises(ValueError):
             # #RRGGBBAA not supported.
-            Color('#11223311')
+            ParseColor('#11223311')
 
         with self.assertRaises(ValueError):
             # #RGB not supported.
-            Color('#fff')
+            ParseColor('#fff')
 
         with self.assertRaises(ValueError):
-            Color('rgb($non_rgb_var)')
+            ParseColor('rgb($non_rgb_var)')
 
         with self.assertRaises(ValueError):
-            Color('rgba($non_rgb_var, 0.4)')
-
-        with self.assertRaises(ValueError):
-            # Invalid alpha.
-            Color('rgba(1, 2, 4, 2.5)')
+            ParseColor('rgba($non_rgb_var, 0.4)')
 
         with self.assertRaises(ValueError):
             # Invalid alpha.
-            Color('rgba($non_rgb_var, -1)')
+            ParseColor('rgba(1, 2, 4, 2.5)')
+
+        with self.assertRaises(ValueError):
+            # Invalid alpha.
+            ParseColor('rgba($non_rgb_var, -1)')
 
         with self.assertRaises(ValueError):
             # Invalid rgb values.
-            Color('rgb(-1, 5, 5)')
+            ParseColor('rgb(-1, 5, 5)')
 
         with self.assertRaises(ValueError):
             # Invalid rgb values.
-            Color('rgb(0, 256, 5)')
+            ParseColor('rgb(0, 256, 5)')
 
         with self.assertRaises(ValueError):
             # Color reference points to rgb reference.
-            Color('$some_color.rgb')
+            ParseColor('$some_color.rgb')
 
         with self.assertRaises(ValueError):
             # Variable reference with accidental space.
-            print(Color('$some_color.rgb '))
+            print(ParseColor('$some_color.rgb '))
 
         with self.assertRaises(ValueError):
             # Variable reference with accidental space.
-            Color('rgba($non_ rgb_var, 0.4)')
+            ParseColor('rgba($non_ rgb_var, 0.4)')
 
     def testSplitArgs(self):
         args = list(split_args('a'))
