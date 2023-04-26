@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/guid.h"
 #include "base/strings/stringprintf.h"
+#include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -22,7 +22,7 @@ using PrefsInternalsTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(PrefsInternalsTest, TestPrefsAreServed) {
   // Set a preference to something very unique so we can look for it in the
   // generated page.
-  std::string guid = base::GenerateGUID();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   GURL fake_homepage_url = GURL("http://example.com/" + guid);
   EXPECT_TRUE(fake_homepage_url.is_valid());
   browser()->profile()->GetPrefs()->SetString(prefs::kHomePage,
