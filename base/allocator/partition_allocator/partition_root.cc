@@ -868,10 +868,6 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       return;
     }
 
-    // Swaps out the active no-op tagging intrinsics with MTE-capable ones, if
-    // running on the right hardware.
-    ::partition_alloc::internal::InitializeMTESupportIfNeeded();
-
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
     // Reserve address space for partition alloc.
     internal::PartitionAddressSpace::Init();
