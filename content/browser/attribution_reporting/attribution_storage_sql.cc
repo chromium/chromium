@@ -316,18 +316,30 @@ void SerializeCommonAggregatableData(
       attestation_token.has_value()) {
     msg.set_attestation_token(*attestation_token);
   }
+
+  msg.set_source_registration_time_config(
+      proto::AttributionCommonAggregatableMetadata::INCLUDE);
 }
 
 [[nodiscard]] bool DeserializeCommonAggregatableData(
     const proto::AttributionCommonAggregatableMetadata& msg,
     AttributionReport::CommonAggregatableData& data) {
-  if (!msg.has_coordinator()) {
+  if (!msg.has_coordinator() || !msg.has_source_registration_time_config()) {
     return false;
   }
 
   switch (msg.coordinator()) {
     case proto::AttributionCommonAggregatableMetadata::AWS_CLOUD:
       data.aggregation_coordinator = AggregationCoordinator::kAwsCloud;
+      break;
+    default:
+      return false;
+  }
+
+  switch (msg.source_registration_time_config()) {
+    case proto::AttributionCommonAggregatableMetadata::INCLUDE:
+      // TODO(crbug.com/1432558): Add the corresponding field in
+      // `AttributionReport::CommonAggregatableData` and set the value.
       break;
     default:
       return false;

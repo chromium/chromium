@@ -15,8 +15,8 @@ CREATE TABLE source_destinations(source_id INTEGER NOT NULL,destination_site TEX
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','50');
-INSERT INTO meta VALUES('last_compatible_version','50');
+INSERT INTO meta VALUES('version','52');
+INSERT INTO meta VALUES('last_compatible_version','52');
 
 CREATE INDEX sources_by_active_reporting_origin ON sources(event_level_active,aggregatable_active,reporting_origin);
 
@@ -34,6 +34,8 @@ CREATE INDEX reports_by_source_id_report_type ON reports(source_id,report_type);
 
 CREATE INDEX reports_by_trigger_time ON reports(trigger_time);
 
+CREATE INDEX reports_by_reporting_origin ON reports(reporting_origin)WHERE report_type=2;
+
 CREATE INDEX rate_limit_source_site_reporting_origin_idx ON rate_limits(scope,source_site,reporting_origin);
 
 CREATE INDEX rate_limit_reporting_origin_idx ON rate_limits(scope,destination_site,source_site);
@@ -41,8 +43,5 @@ CREATE INDEX rate_limit_reporting_origin_idx ON rate_limits(scope,destination_si
 CREATE INDEX rate_limit_time_idx ON rate_limits(time);
 
 CREATE INDEX rate_limit_source_id_idx ON rate_limits(source_id);
-
-INSERT INTO sources VALUES
-(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19);
 
 COMMIT;

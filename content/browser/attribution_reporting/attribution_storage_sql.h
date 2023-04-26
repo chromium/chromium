@@ -44,15 +44,15 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 51;
+  static constexpr int kCurrentVersionNumber = 52;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 51;
+  static constexpr int kCompatibleVersionNumber = 52;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
-  static constexpr int kDeprecatedVersionNumber = 50;
+  static constexpr int kDeprecatedVersionNumber = 51;
 
   static_assert(kCompatibleVersionNumber <= kCurrentVersionNumber);
   static_assert(kDeprecatedVersionNumber < kCompatibleVersionNumber);
