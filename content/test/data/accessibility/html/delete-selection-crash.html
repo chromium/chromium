@@ -18,31 +18,33 @@ chances to reproduce the bug before terminating the test successfully.
 <script>
 
 function boom() {
-  let iteration = Number.parseInt(document.location.hash.substring(1));
-  if (isNaN(iteration))
-    iteration = 0;
+  requestAnimationFrame(() => { setTimeout(() => {
+    let iteration = Number.parseInt(document.location.hash.substring(1));
+    if (isNaN(iteration))
+      iteration = 0;
 
-  if (iteration > 10) {
-    document.body.innerHTML = "Done";
-    // remove hash
-    history.pushState("", document.title, window.location.pathname
-                                                       + window.location.search);
-    return;
-  }
-  iteration = iteration + 1;
-  location.hash = iteration;
-  var fuzz11 = document.getElementById("fuzz11");
-  var fuzz16 = document.getElementById("fuzz16");
-  var fuzz18 = document.getElementById("fuzz18");
+    if (iteration > 10) {
+      document.body.innerHTML = "Done";
+      // remove hash
+      history.pushState("", document.title, window.location.pathname
+			+ window.location.search);
+      return;
+    }
+    iteration = iteration + 1;
+    location.hash = iteration;
+    var fuzz11 = document.getElementById("fuzz11");
+    var fuzz16 = document.getElementById("fuzz16");
+    var fuzz18 = document.getElementById("fuzz18");
 
-  try { var i5 = document.execCommand("selectAll", false); } catch(e) { }
-  try { var i18 = document.getSelection(); } catch(e) { }
-  try { i18.extend(fuzz18); } catch(e) { }
-  try { var i78 = window.frames; } catch(e) { }
-  try { fuzz11.after(fuzz16); } catch(e) { }
-  try { var i167 = i78.pageYOffset; } catch(e) { }
-  try { i18.deleteFromDocument(); } catch(e) { }
-  location.reload(true);
+    try { var i5 = document.execCommand("selectAll", false); } catch(e) { }
+    try { var i18 = document.getSelection(); } catch(e) { }
+    try { i18.extend(fuzz18); } catch(e) { }
+    try { var i78 = window.frames; } catch(e) { }
+    try { fuzz11.after(fuzz16); } catch(e) { }
+    try { var i167 = i78.pageYOffset; } catch(e) { }
+    try { i18.deleteFromDocument(); } catch(e) { }
+    location.reload(true);
+  }); });
 }
 
 </script>
