@@ -5,7 +5,6 @@
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
 
 #include "base/check_op.h"
-#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pdf_util.h"
 #include "chrome/common/pref_names.h"
@@ -76,11 +75,6 @@ PdfOcrController::PdfOcrController(Profile* profile) : profile_(profile) {
       prefs::kAccessibilityPdfOcrAlwaysActive,
       base::BindRepeating(&PdfOcrController::OnPdfOcrAlwaysActiveChanged,
                           weak_ptr_factory_.GetWeakPtr()));
-
-  // Annotator function of ScreenAI service requires AXScreenAIAnnotator to be
-  // ready to receive OCR accessibility tree data.
-  screen_ai::AXScreenAIAnnotatorFactory::EnsureExistsForBrowserContext(
-      profile_);
 
   component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
 

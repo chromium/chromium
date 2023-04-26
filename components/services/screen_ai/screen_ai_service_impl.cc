@@ -173,6 +173,7 @@ void ScreenAIService::ExtractSemanticLayout(
     const SkBitmap& image,
     const ui::AXTreeID& parent_tree_id,
     ExtractSemanticLayoutCallback callback) {
+  DCHECK(screen_ai_annotator_client_.is_bound());
   std::unique_ptr<ui::AXTreeUpdate> annotation =
       std::make_unique<ui::AXTreeUpdate>();
   ui::AXTreeUpdate* annotation_ptr = annotation.get();
@@ -237,6 +238,7 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
             std::move(callback).Run(*update);
             // TODO(crbug.com/1434701): Send the AXTreeUpdate to the browser
             // side client for Backlight.
+            VLOG(1) << "OCR returned " << update->nodes.size() << " nodes.";
           },
           std::move(callback), std::move(annotation)));
 }
@@ -247,7 +249,6 @@ void ScreenAIService::VisualAnnotationInternal(const SkBitmap& image,
                                                ui::AXTreeUpdate* annotation) {
   // Currently we only support either of OCR or LayoutExtraction features.
   DCHECK_NE(run_ocr, run_layout_extraction);
-  DCHECK(screen_ai_annotator_client_.is_bound());
 
   chrome_screen_ai::VisualAnnotation annotation_proto;
   // TODO(https://crbug.com/1278249): Consider adding a signature that
