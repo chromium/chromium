@@ -5,6 +5,7 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -126,8 +127,15 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest, CreateGroupAndSave) {
                   WaitForShow(kSavedTabGroupButtonElementId, true));
 }
 
+// TODO(crbug.com/1440199): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_UnsaveGroupFromTabGroupHeader \
+  DISABLED_UnsaveGroupFromTabGroupHeader
+#else
+#define MAYBE_UnsaveGroupFromTabGroupHeader UnsaveGroupFromTabGroupHeader
+#endif
 IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
-                       UnsaveGroupFromTabGroupHeader) {
+                       MAYBE_UnsaveGroupFromTabGroupHeader) {
   const tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
 
