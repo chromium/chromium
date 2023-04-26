@@ -1212,7 +1212,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/devtools-frontend-internal': {
-      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + '7302e1126ea7f712f5ea417402468eb3b0994ae3',
+      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + '6df1651e9ee5ad1a71a9408bcc57398df243498f',
     'condition': 'checkout_src_internal',
   },
 
