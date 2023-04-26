@@ -17,13 +17,15 @@ export function getFakeAccountsList(): string[] {
 
 export const fakeAuthExtensionData = {
   hl: 'hl',
-  gaiaUrl: 'gaiaUrl',
+  gaiaUrl: 'https://accounts.google.com/',
+  gaiaPath: 'gaiaPath',
   authMode: 1,
 };
 
 export const fakeAuthExtensionDataWithEmail = {
   hl: 'hl',
-  gaiaUrl: 'gaiaUrl',
+  gaiaUrl: 'https://accounts.google.com/',
+  gaiaPath: 'gaiaPath',
   authMode: 1,
   email: 'example@gmail.com',
 };

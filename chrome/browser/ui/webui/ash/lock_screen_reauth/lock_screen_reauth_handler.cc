@@ -189,6 +189,9 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   signin_partition_name_ = partition_name;
 
   params.Set("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
+  params.Set(
+      "gaiaPath",
+      GaiaUrls::GetInstance()->embedded_setup_chromeos_url().path().substr(1));
   params.Set("clientId", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
   params.Set("dontResizeNonEmbeddedPages", false);
   params.Set("enableGaiaActionButtons", false);

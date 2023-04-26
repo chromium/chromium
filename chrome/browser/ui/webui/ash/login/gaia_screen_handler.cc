@@ -492,8 +492,10 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.Set("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
   switch (gaia_path_) {
     case GaiaPath::kDefault:
-      // Use the default gaia signin path embedded/setup/v2/chromeos which is
-      // set in authenticator.js
+      params.Set(
+          "gaiaPath",
+          GaiaUrls::GetInstance()->embedded_setup_chromeos_url().path().substr(
+              1));
       break;
     case GaiaPath::kChildSignup:
       params.Set("gaiaPath", GaiaUrls::GetInstance()

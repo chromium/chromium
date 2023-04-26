@@ -112,15 +112,10 @@ export let AuthCompletedCredentials;
  */
 export let AuthParams;
 
-// TODO(rogerta): should use gaia URL from GaiaUrls::gaia_url() instead
-// of hardcoding the prod URL here.  As is, this does not work with staging
-// environments.
-const IDP_ORIGIN = 'https://accounts.google.com/';
 const SIGN_IN_HEADER = 'google-accounts-signin';
 const EMBEDDED_FORM_HEADER = 'google-accounts-embedded';
 const LOCATION_HEADER = 'location';
 const SERVICE_ID = 'chromeoslogin';
-const EMBEDDED_SETUP_CHROMEOS_ENDPOINT_V2 = 'embedded/setup/v2/chromeos';
 const SAML_REDIRECTION_PATH = 'samlredirect';
 const BLANK_PAGE_URL = 'about:blank';
 
@@ -719,9 +714,7 @@ export class Authenticator extends EventTarget {
     this.authMode = authMode;
     this.resetStates();
     this.authCompletedFired_ = false;
-    // gaiaUrl parameter is used for testing. Once defined, it is never
-    // changed.
-    this.idpOrigin_ = data.gaiaUrl || IDP_ORIGIN;
+    this.idpOrigin_ = data.gaiaUrl;
     this.isConstrainedWindow_ = data.constrained === '1';
     this.clientId_ = data.clientId;
     this.dontResizeNonEmbeddedPages = data.dontResizeNonEmbeddedPages;
@@ -752,10 +745,6 @@ export class Authenticator extends EventTarget {
 
     this.webview_.src = this.reloadUrl_;
     this.isLoaded_ = true;
-  }
-
-  constructChromeOSAPIUrl_() {
-    return this.idpOrigin_ + EMBEDDED_SETUP_CHROMEOS_ENDPOINT_V2;
   }
 
   /**
@@ -793,12 +782,9 @@ export class Authenticator extends EventTarget {
       return url;
     }
 
-    let url;
-    if (data.gaiaPath) {
-      url = this.idpOrigin_ + data.gaiaPath;
-    } else {
-      url = this.constructChromeOSAPIUrl_();
-    }
+    assert(this.idpOrigin_ !== undefined, "this.idpOrigin_ must be defined");
+    assert(data.gaiaPath !== undefined, "data.gaiaPath must be defined");
+    let url = this.idpOrigin_ + data.gaiaPath;
 
     if (data.chromeType) {
       url = appendParam(url, 'chrometype', data.chromeType);
