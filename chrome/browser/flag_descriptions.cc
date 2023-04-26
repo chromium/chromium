@@ -1083,7 +1083,7 @@ const char kAccessibilitySelectToSpeakPageMigrationDescription[] =
 const char kAccessibilityChromeVoxPageMigrationName[] =
     "ChromeVox Page Migration";
 const char kAccessibilityChromeVoxPageMigrationDescription[] =
-    "This option enables ChromeVox page migration from extension options page"
+    "This option enables ChromeVox page migration from extension options page "
     "to a Chrome OS settings page.";
 
 const char kAccessibilitySelectToSpeakHoverTextImprovementsName[] =
