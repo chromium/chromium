@@ -2003,26 +2003,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnInputAfterAutofill) {
                            {.show_method = ShowMethod::ByChar('M')}));
   EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
-  bool focused_fired = false;
-  bool unfocused_fired = false;
-  bool changed_select_fired = false;
-  bool unchanged_select_fired = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(focused_fired);",
-      &focused_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(unfocused_fired);",
-      &unfocused_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(changed_select_fired);",
-      &changed_select_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(unchanged_select_fired);",
-      &unchanged_select_fired));
-  EXPECT_TRUE(focused_fired);
-  EXPECT_TRUE(unfocused_fired);
-  EXPECT_TRUE(changed_select_fired);
-  EXPECT_FALSE(unchanged_select_fired);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "focused_fired;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "unfocused_fired;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "changed_select_fired;"));
+  EXPECT_EQ(false,
+            content::EvalJs(GetWebContents(), "unchanged_select_fired;"));
 }
 
 // Test that a JavaScript onchange event is fired after auto-filling a form.
@@ -2057,26 +2042,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnChangeAfterAutofill) {
   // The form should be filled.
   EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
-  bool focused_fired = false;
-  bool unfocused_fired = false;
-  bool changed_select_fired = false;
-  bool unchanged_select_fired = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(focused_fired);",
-      &focused_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(unfocused_fired);",
-      &unfocused_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(changed_select_fired);",
-      &changed_select_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(unchanged_select_fired);",
-      &unchanged_select_fired));
-  EXPECT_TRUE(focused_fired);
-  EXPECT_TRUE(unfocused_fired);
-  EXPECT_TRUE(changed_select_fired);
-  EXPECT_FALSE(unchanged_select_fired);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "focused_fired;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "unfocused_fired;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "changed_select_fired;"));
+  EXPECT_EQ(false,
+            content::EvalJs(GetWebContents(), "unchanged_select_fired;"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
@@ -2442,90 +2412,26 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
   EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
   // Checks that all the events were fired for the input field.
-  bool input_focus_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputfocus);",
-      &input_focus_triggered));
-  EXPECT_TRUE(input_focus_triggered);
-  bool input_keydown_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputkeydown);",
-      &input_keydown_triggered));
-  EXPECT_TRUE(input_keydown_triggered);
-  bool input_input_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputinput);",
-      &input_input_triggered));
-  EXPECT_TRUE(input_input_triggered);
-  bool input_change_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputchange);",
-      &input_change_triggered));
-  EXPECT_TRUE(input_change_triggered);
-  bool input_keyup_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputkeyup);",
-      &input_keyup_triggered));
-  EXPECT_TRUE(input_keyup_triggered);
-  bool input_blur_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputblur);",
-      &input_blur_triggered));
-  EXPECT_TRUE(input_blur_triggered);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputfocus;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputkeydown;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputinput;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputchange;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputkeyup;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputblur;"));
 
   // Checks that all the events were fired for the textarea field.
-  bool text_focus_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textfocus);",
-      &text_focus_triggered));
-  EXPECT_TRUE(text_focus_triggered);
-  bool text_keydown_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textkeydown);",
-      &text_keydown_triggered));
-  EXPECT_TRUE(text_keydown_triggered);
-  bool text_input_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textinput);",
-      &text_input_triggered));
-  EXPECT_TRUE(text_input_triggered);
-  bool text_change_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textchange);",
-      &text_change_triggered));
-  EXPECT_TRUE(text_change_triggered);
-  bool text_keyup_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textkeyup);",
-      &text_keyup_triggered));
-  EXPECT_TRUE(text_keyup_triggered);
-  bool text_blur_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textblur);",
-      &text_blur_triggered));
-  EXPECT_TRUE(text_blur_triggered);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textfocus;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textkeydown;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textinput;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textchange;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textkeyup;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textblur;"));
 
   // Checks that all the events were fired for the select field.
-  bool select_focus_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(selectfocus);",
-      &select_focus_triggered));
-  EXPECT_TRUE(select_focus_triggered);
-  bool select_input_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(selectinput);",
-      &select_input_triggered));
-  EXPECT_TRUE(select_input_triggered);
-  bool select_change_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(selectchange);",
-      &select_change_triggered));
-  EXPECT_TRUE(select_change_triggered);
-  bool select_blur_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(selectblur);",
-      &select_blur_triggered));
-  EXPECT_TRUE(select_blur_triggered);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectfocus;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectinput;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectchange;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectblur;"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {

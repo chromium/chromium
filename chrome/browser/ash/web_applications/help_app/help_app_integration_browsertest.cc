@@ -341,16 +341,14 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   constexpr char kScript[] = R"(
     (async () => {
       await window.customLaunchData.delegate.maybeShowDiscoverNotification();
-      window.domAutomationController.send(true);
+      return true;
     })();
   )";
   // Use ExecuteScript instead of EvalJsInAppFrame because the script needs to
   // run in the same world as the page's code.
-  bool script_finished;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript,
-      &script_finished));
-  EXPECT_TRUE(script_finished);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kDiscoverTabSuggestionChipTimesLeftToShow),
             3);
@@ -401,16 +399,14 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
     (async () => {
       const delegate = window.customLaunchData.delegate;
       await delegate.maybeShowReleaseNotesNotification();
-      window.domAutomationController.send(true);
+      return true;
     })();
   )";
   // Use ExecuteScript instead of EvalJsInAppFrame because the script needs to
   // run in the same world as the page's code.
-  bool script_finished;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript,
-      &script_finished));
-  EXPECT_TRUE(script_finished);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
             3);
@@ -669,16 +665,14 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
         urlPathWithParameters: 'help/sub/3399763/id/6318213',
         locale: ''
       }]);
-      window.domAutomationController.send(true);
+      return true;
     })();
   )";
 
-  bool script_finished;
   // Use ExtractBool to make the script wait until the update completes.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript,
-      &script_finished));
-  EXPECT_TRUE(script_finished);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
 
   // Search using the search handler to confirm that the update happened.
   base::RunLoop run_loop;
@@ -738,16 +732,14 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
           locale: '',
         },
       ]);
-      window.domAutomationController.send(true);
+      return true;
     })();
   )";
 
-  bool script_finished;
   // Use ExtractBool to make the script wait until the update completes.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript,
-      &script_finished));
-  EXPECT_TRUE(script_finished);
+  EXPECT_EQ(true,
+            content::EvalJs(
+                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
 
   // These hash values can be found in the enum in the google-internal histogram
   // file.

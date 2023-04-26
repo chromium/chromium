@@ -2025,19 +2025,14 @@ bool TestRecipeReplayer::AllAssertionsPassed(
     const content::ToRenderFrameHost& frame,
     const std::vector<std::string>& assertions) {
   for (const std::string& assertion : assertions) {
-    bool assertion_passed = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        frame,
-        base::StringPrintf("window.domAutomationController.send("
-                           "    (function() {"
-                           "      try {"
-                           "        %s"
-                           "      } catch (ex) {}"
-                           "      return false;"
-                           "    })());",
-                           assertion.c_str()),
-        &assertion_passed));
-    if (!assertion_passed) {
+    if (!EvalJs(frame, base::StringPrintf("(function() {"
+                                          "  try {"
+                                          "    %s"
+                                          "  } catch (ex) {}"
+                                          "  return false;"
+                                          "})();",
+                                          assertion.c_str()))
+             .ExtractBool()) {
       VLOG(1) << "'" << assertion << "' failed!";
       return false;
     }
@@ -2123,18 +2118,13 @@ bool TestRecipeReplayer::ScrollElementIntoView(
       "  const element = automation_helper.getElementByXpath(`%s`);"
       "  element.scrollIntoView({"
       "    block: 'center', inline: 'center'});"
-      "  window.domAutomationController.send(true);"
+      "  true;"
       "} catch(ex) {"
-      "  window.domAutomationController.send(false);"
+      "  false;"
       "}",
       element_xpath.c_str()));
 
-  bool succeeded = false;
-  if (!ExecuteScriptAndExtractBool(frame, scroll_target_js, &succeeded)) {
-    ADD_FAILURE() << "Failed to scroll the element into view with JavaScript!";
-    return false;
-  }
-  return true;
+  return EvalJs(frame, scroll_target_js).ExtractBool();
 }
 
 bool TestRecipeReplayer::PlaceFocusOnElement(
@@ -2145,32 +2135,30 @@ bool TestRecipeReplayer::PlaceFocusOnElement(
     return false;
 
   const std::string focus_on_target_field_js(base::StringPrintf(
-      "try {"
-      "  function onFocusHandler(event) {"
-      "    event.target.removeEventListener(event.type, arguments.callee);"
-      "    window.domAutomationController.send(true);"
+      "new Promise(resolve => {"
+      "  try {"
+      "    function onFocusHandler(event) {"
+      "      event.target.removeEventListener(event.type, arguments.callee);"
+      "      resolve(true);"
+      "    }"
+      "    const element = automation_helper.getElementByXpath(`%s`);"
+      "    if (document.activeElement === element) {"
+      "      resolve(true);"
+      "    } else {"
+      "      element.addEventListener('focus', onFocusHandler);"
+      "      element.focus();"
+      "    }"
+      "    setTimeout(() => {"
+      "      element.removeEventListener('focus', onFocusHandler);"
+      "      resolve(false);"
+      "    }, 1000);"
+      "  } catch(ex) {"
+      "    resolve(false);"
       "  }"
-      "  const element = automation_helper.getElementByXpath(`%s`);"
-      "  if (document.activeElement === element) {"
-      "    window.domAutomationController.send(true);"
-      "  } else {"
-      "    element.addEventListener('focus', onFocusHandler);"
-      "    element.focus();"
-      "  }"
-      "  setTimeout(() => {"
-      "    element.removeEventListener('focus', onFocusHandler);"
-      "    window.domAutomationController.send(false);"
-      "  }, 1000);"
-      "} catch(ex) {"
-      "  window.domAutomationController.send(false);"
-      "}",
+      "});",
       element_xpath.c_str()));
 
-  bool focused = false;
-  if (!ExecuteScriptAndExtractBool(frame, focus_on_target_field_js, &focused)) {
-    ADD_FAILURE() << "Failed to place focus on the element with JavaScript!";
-    return false;
-  }
+  bool focused = EvalJs(frame, focus_on_target_field_js).ExtractBool();
 
   if (focused) {
     return true;

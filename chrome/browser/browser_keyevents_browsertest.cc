@@ -31,18 +31,15 @@ using content::NavigationController;
 namespace {
 
 const char kTestingPage[] = "/keyevents_test.html";
-const char kSuppressEventJS[] =
-    "window.domAutomationController.send(setDefaultAction('%ls', %ls));";
+const char kSuppressEventJS[] = "setDefaultAction('%ls', %ls);";
 const char kGetResultJS[] = "keyEventResult[%d];";
 const char kGetResultLengthJS[] = "keyEventResult.length;";
 const char kGetFocusedElementJS[] = "focusedElement;";
-const char kSetFocusedElementJS[] =
-    "window.domAutomationController.send(setFocusedElement('%ls'));";
+const char kSetFocusedElementJS[] = "setFocusedElement('%ls');";
 const char kGetTextBoxValueJS[] = "document.getElementById('%ls').value;";
 const char kSetTextBoxValueJS[] =
     "document.getElementById('%ls').value = '%ls';";
-const char kStartTestJS[] =
-    "window.domAutomationController.send(startTest(%d));";
+const char kStartTestJS[] = "startTest(%d);";
 
 // Maximum length of the result array in KeyEventTestData structure.
 const size_t kMaxResultLength = 10;
@@ -137,12 +134,11 @@ class BrowserKeyEventsTest : public InProcessBrowserTest {
   // event types are supported: keydown, keypress, keyup and textInput.
   void SuppressEventByType(int tab_index, const wchar_t* type, bool suppress) {
     ASSERT_LT(tab_index, browser()->tab_strip_model()->count());
-    bool actual;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetWebContentsAt(tab_index),
-        base::StringPrintf(kSuppressEventJS, type, GetBoolString(!suppress)),
-        &actual));
-    ASSERT_EQ(!suppress, actual);
+    ASSERT_EQ(!suppress,
+              content::EvalJs(
+                  browser()->tab_strip_model()->GetWebContentsAt(tab_index),
+                  base::StringPrintf(kSuppressEventJS, type,
+                                     GetBoolString(!suppress))));
   }
 
   void SuppressEvents(int tab_index, bool keydown, bool keypress,
@@ -200,12 +196,10 @@ class BrowserKeyEventsTest : public InProcessBrowserTest {
 
   void SetFocusedElement(int tab_index, const wchar_t* focused) {
     ASSERT_LT(tab_index, browser()->tab_strip_model()->count());
-    bool actual;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetWebContentsAt(tab_index),
-        base::StringPrintf(kSetFocusedElementJS, focused),
-        &actual));
-    ASSERT_TRUE(actual);
+    ASSERT_EQ(true,
+              content::EvalJs(
+                  browser()->tab_strip_model()->GetWebContentsAt(tab_index),
+                  base::StringPrintf(kSetFocusedElementJS, focused)));
   }
 
   void CheckTextBoxValue(int tab_index, const wchar_t* id,
@@ -228,12 +222,10 @@ class BrowserKeyEventsTest : public InProcessBrowserTest {
 
   void StartTest(int tab_index, int result_length) {
     ASSERT_LT(tab_index, browser()->tab_strip_model()->count());
-    bool actual;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetWebContentsAt(tab_index),
-        base::StringPrintf(kStartTestJS, result_length),
-        &actual));
-    ASSERT_TRUE(actual);
+    ASSERT_EQ(true,
+              content::EvalJs(
+                  browser()->tab_strip_model()->GetWebContentsAt(tab_index),
+                  base::StringPrintf(kStartTestJS, result_length)));
   }
 
   void TestKeyEvent(int tab_index, const KeyEventTestData& test) {

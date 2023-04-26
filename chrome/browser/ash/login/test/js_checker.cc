@@ -20,10 +20,6 @@ namespace ash {
 namespace test {
 namespace {
 
-std::string WrapSend(const std::string& expression) {
-  return "window.domAutomationController.send(" + expression + ")";
-}
-
 bool CheckOobeCondition(content::WebContents* web_contents,
                         const std::string& js_condition) {
   return JSChecker(web_contents).GetBool(js_condition);
@@ -332,8 +328,8 @@ std::unique_ptr<TestConditionWaiter> JSChecker::CreateHasClassWaiter(
 
 void JSChecker::GetBoolImpl(const std::string& expression, bool* result) {
   CHECK(web_contents_);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents_.get(), WrapSend("!!(" + expression + ")"), result));
+  *result = content::EvalJs(web_contents_.get(), "!!(" + expression + ")")
+                .ExtractBool();
 }
 
 void JSChecker::GetIntImpl(const std::string& expression, int* result) {

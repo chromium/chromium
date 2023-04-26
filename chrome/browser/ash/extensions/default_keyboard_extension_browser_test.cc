@@ -153,13 +153,9 @@ IN_PROC_BROWSER_TEST_F(DefaultKeyboardExtensionBrowserTest,
 IN_PROC_BROWSER_TEST_F(DefaultKeyboardExtensionBrowserTest, IsKeyboardLoaded) {
   content::WebContents* keyboard_wc = GetKeyboardWebContents(kExtensionId);
   ASSERT_TRUE(keyboard_wc);
-  bool loaded = false;
   std::string script = "!!chrome.virtualKeyboardPrivate";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      keyboard_wc, "window.domAutomationController.send(" + script + ");",
-      &loaded));
   // Catches the regression in crbug.com/308653.
-  ASSERT_TRUE(loaded);
+  ASSERT_EQ(true, content::EvalJs(keyboard_wc, script));
 }
 
 IN_PROC_BROWSER_TEST_F(DefaultKeyboardExtensionBrowserTest, EndToEndTest) {

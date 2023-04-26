@@ -395,14 +395,12 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesChromeSchemes) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIDownloadsURL)));
 
-  bool matches;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      base::StringPrintf("window.domAutomationController.send(window."
-                         "matchMedia('(prefers-color-scheme: %s)').matches)",
-                         ExpectedColorScheme()),
-      &matches));
-  EXPECT_TRUE(matches);
+  EXPECT_EQ(
+      true,
+      EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+             base::StringPrintf(
+                 "window.matchMedia('(prefers-color-scheme: %s)').matches",
+                 ExpectedColorScheme())));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -419,14 +417,12 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesPdfUI) {
   GURL pdf_index = GURL(pdf_extension_url).Resolve("/index.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_index));
 
-  bool matches;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      base::StringPrintf("window.domAutomationController.send(window."
-                         "matchMedia('(prefers-color-scheme: %s)').matches)",
-                         ExpectedColorScheme()),
-      &matches));
-  EXPECT_TRUE(matches);
+  EXPECT_EQ(
+      true,
+      EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+             base::StringPrintf(
+                 "window.matchMedia('(prefers-color-scheme: %s)').matches",
+                 ExpectedColorScheme())));
 }
 #endif
 

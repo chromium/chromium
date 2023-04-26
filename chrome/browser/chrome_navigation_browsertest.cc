@@ -221,11 +221,7 @@ class CtrlClickProcessTest : public ChromeNavigationBrowserTest {
       EXPECT_EQ("main_contents", EvalJs(main_contents, "window.name"));
 
       // Verify that the new contents doesn't have a window.opener set.
-      bool window_opener_cast_to_bool = true;
-      EXPECT_TRUE(ExecuteScriptAndExtractBool(
-          new_contents, "window.domAutomationController.send(!!window.opener)",
-          &window_opener_cast_to_bool));
-      EXPECT_FALSE(window_opener_cast_to_bool);
+      EXPECT_EQ(false, EvalJs(new_contents, "!!window.opener"));
 
       VerifyBrowsingInstanceExpectations(main_contents, new_contents);
     }
@@ -1500,18 +1496,15 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
   // Open a popup.
-  bool opened = false;
   content::WebContents* opener =
       browser()->tab_strip_model()->GetActiveWebContents();
-  const char* kScriptFormat =
-      "window.domAutomationController.send(!!window.open('%s'));";
+  const char* kScriptFormat = "!!window.open('%s');";
   GURL popup_url = embedded_test_server()->GetURL("b.com", "/title1.html");
   content::TestNavigationObserver popup_waiter(nullptr, 1);
   popup_waiter.StartWatchingNewWebContents();
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      opener, base::StringPrintf(kScriptFormat, popup_url.spec().c_str()),
-      &opened));
-  EXPECT_TRUE(opened);
+  EXPECT_EQ(true, content::EvalJs(
+                      opener, base::StringPrintf(kScriptFormat,
+                                                 popup_url.spec().c_str())));
   popup_waiter.Wait();
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
@@ -1551,18 +1544,15 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
   // Open a popup.
-  bool opened = false;
   content::WebContents* opener =
       browser()->tab_strip_model()->GetActiveWebContents();
-  const char* kScriptFormat =
-      "window.domAutomationController.send(!!window.open('%s'));";
+  const char* kScriptFormat = "!!window.open('%s');";
   GURL popup_url = embedded_test_server()->GetURL("a.com", "/title1.html");
   content::TestNavigationObserver popup_waiter(nullptr, 1);
   popup_waiter.StartWatchingNewWebContents();
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      opener, base::StringPrintf(kScriptFormat, popup_url.spec().c_str()),
-      &opened));
-  EXPECT_TRUE(opened);
+  EXPECT_EQ(true, content::EvalJs(
+                      opener, base::StringPrintf(kScriptFormat,
+                                                 popup_url.spec().c_str())));
   popup_waiter.Wait();
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
@@ -1885,31 +1875,23 @@ IN_PROC_BROWSER_TEST_F(NavigationConsumingTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Normally, a popup should open fine if it is associated with a user gesture.
-  bool did_open = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents, "window.domAutomationController.send(!!window.open());",
-      &did_open));
-  EXPECT_TRUE(did_open);
+  EXPECT_EQ(true, content::EvalJs(contents, "!!window.open();"));
 
   // Starting a navigation should consume a gesture, but make sure that starting
   // a same-document navigation doesn't do the consuming.
   std::string same_document_script = R"(
     document.getElementById("ref").click();
-    window.domAutomationController.send(!!window.open());
+    !!window.open();
   )";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents, same_document_script, &did_open));
-  EXPECT_TRUE(did_open);
+  EXPECT_EQ(true, content::EvalJs(contents, same_document_script));
 
   // If the navigation is to a different document, the gesture should be
   // successfully consumed.
   std::string different_document_script = R"(
     document.getElementById("title1").click();
-    window.domAutomationController.send(!!window.open());
+    !!window.open();
   )";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents, different_document_script, &did_open));
-  EXPECT_FALSE(did_open);
+  EXPECT_EQ(false, content::EvalJs(contents, different_document_script));
 }
 
 // Regression test for https://crbug.com/856779, where a navigation to a

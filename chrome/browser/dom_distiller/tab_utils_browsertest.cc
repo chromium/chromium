@@ -612,24 +612,22 @@ class DistilledPageImageLoadWaiter {
 
  private:
   void OnTimer() {
-    bool loaded = false;
-    // Use ExecuteScriptAndExtractInt to avoid Content SecurityPolicy errors.
     // Use naturalWidth because the distiller sets the width and height
     // attributes on the img.
     // Get the good and bad imags and check they are loaded and their size.
     // If they aren't loaded or the size is wrong, stay in the loop until the
     // load completes.
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        contents_.get(),
-        content::JsReplace("var ok = document.getElementById('main-content')"
-                           "    .getElementsByTagName('img')[$1];"
-                           "var bad = document.getElementById('main-content')"
-                           "    .getElementsByTagName('img')[$2];"
-                           "window.domAutomationController.send("
-                           "    ok.complete && ok.naturalWidth == $3 &&"
-                           "    bad.complete && bad.naturalWidth == $4)",
-                           ok_elem_, bad_elem_, ok_width_, bad_width_),
-        &loaded));
+    bool loaded =
+        content::EvalJs(contents_.get(),
+                        content::JsReplace(
+                            "var ok = document.getElementById('main-content')"
+                            "    .getElementsByTagName('img')[$1];"
+                            "var bad = document.getElementById('main-content')"
+                            "    .getElementsByTagName('img')[$2];"
+                            "ok.complete && ok.naturalWidth == $3 &&"
+                            "    bad.complete && bad.naturalWidth == $4",
+                            ok_elem_, bad_elem_, ok_width_, bad_width_))
+            .ExtractBool();
     if (loaded)
       runner_.Quit();
   }

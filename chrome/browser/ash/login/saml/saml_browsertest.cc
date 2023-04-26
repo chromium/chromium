@@ -945,33 +945,34 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, NoticeUpdatedOnRedirect) {
   // Wait until the notice shown to the user is updated to contain
   // `kAdditionalIdPHost`.
   std::string js =
-      "var sendIfHostFound = function() {"
-      "  var found = $SamlNoticeMessagePath.textContent.indexOf('$Host') > -1;"
-      "  if (found)"
-      "    window.domAutomationController.send(true);"
-      "  return found;"
-      "};"
-      "var processEventsAndSendIfHostFound = function() {"
-      "  window.setTimeout(function() {"
-      "    if (sendIfHostFound()) {"
-      "      $('gaia-signin').authenticator_.removeEventListener("
-      "          'authDomainChange',"
-      "          processEventsAndSendIfHostFound);"
-      "    }"
-      "  }, 0);"
-      "};"
-      "if (!sendIfHostFound()) {"
-      "  $('gaia-signin').authenticator_.addEventListener("
-      "      'authDomainChange',"
-      "      processEventsAndSendIfHostFound);"
-      "}";
+      "new Promise(resolve => {"
+      "  var sendIfHostFound = function() {"
+      "    var found = $SamlNoticeMessagePath.textContent.indexOf('$Host') > "
+      "-1;"
+      "    if (found)"
+      "      resolve(true);"
+      "    return found;"
+      "  };"
+      "  var processEventsAndSendIfHostFound = function() {"
+      "    window.setTimeout(function() {"
+      "      if (sendIfHostFound()) {"
+      "        $('gaia-signin').authenticator_.removeEventListener("
+      "            'authDomainChange',"
+      "            processEventsAndSendIfHostFound);"
+      "      }"
+      "    }, 0);"
+      "  };"
+      "  if (!sendIfHostFound()) {"
+      "    $('gaia-signin').authenticator_.addEventListener("
+      "        'authDomainChange',"
+      "        processEventsAndSendIfHostFound);"
+      "  }"
+      "});";
   base::ReplaceSubstringsAfterOffset(
       &js, 0, "$SamlNoticeMessagePath",
       test::GetOobeElementPath(kSamlNoticeMessage));
   base::ReplaceSubstringsAfterOffset(&js, 0, "$Host", kAdditionalIdPHost);
-  bool dummy;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetLoginUI()->GetWebContents(), js, &dummy));
+  EXPECT_EQ(true, content::ExecJs(GetLoginUI()->GetWebContents(), js));
 
   // Verify that the notice is visible.
   test::OobeJS().ExpectVisiblePath(kSamlNoticeContainer);
@@ -1618,28 +1619,20 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLoginMediaPermission) {
   SetLoginVideoCaptureAllowedUrls({url0, url1, url2});
 
   // Trigger the permission check from the js side.
-  {
-    bool get_user_media_success = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        SigninFrameJS().web_contents(),
-        "navigator.getUserMedia("
-        "    {video: true},"
-        "    function() { window.domAutomationController.send(true); },"
-        "    function() { window.domAutomationController.send(false); });",
-        &get_user_media_success));
-    ASSERT_TRUE(get_user_media_success);
-  }
-  {
-    bool get_user_media_success = true;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        SigninFrameJS().web_contents(),
-        "navigator.getUserMedia("
-        "    {audio: true},"
-        "    function() { window.domAutomationController.send(true); },"
-        "    function() { window.domAutomationController.send(false); });",
-        &get_user_media_success));
-    ASSERT_FALSE(get_user_media_success);
-  }
+  ASSERT_EQ(true, content::EvalJs(SigninFrameJS().web_contents(),
+                                  "new Promise(resolve => {"
+                                  "  navigator.getUserMedia("
+                                  "    {video: true},"
+                                  "    function() { resolve(true); },"
+                                  "    function() { resolve(false); });"
+                                  "});"));
+  ASSERT_EQ(false, content::EvalJs(SigninFrameJS().web_contents(),
+                                   "new Promise(resolve => {"
+                                   "  navigator.getUserMedia("
+                                   "    {audio: true},"
+                                   "    function() { resolve(true); },"
+                                   "    function() { resolve(false); });"
+                                   "});"));
 
   // Check permissions directly by calling the `CheckMediaAccessPermission`.
   content::WebContents* web_contents = GetLoginUI()->GetWebContents();
@@ -1695,28 +1688,22 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLockMediaPermission) {
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
   ASSERT_TRUE(reauth_dialog_helper);
 
-  {
-    bool get_user_media_success = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        reauth_dialog_helper->SigninFrameJS().web_contents(),
-        "navigator.getUserMedia("
-        "    {video: true},"
-        "    function() { window.domAutomationController.send(true); },"
-        "    function() { window.domAutomationController.send(false); });",
-        &get_user_media_success));
-    ASSERT_TRUE(get_user_media_success);
-  }
-  {
-    bool get_user_media_success = true;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        reauth_dialog_helper->SigninFrameJS().web_contents(),
-        "navigator.getUserMedia("
-        "    {audio: true},"
-        "    function() { window.domAutomationController.send(true); },"
-        "    function() { window.domAutomationController.send(false); });",
-        &get_user_media_success));
-    ASSERT_FALSE(get_user_media_success);
-  }
+  ASSERT_EQ(true, content::EvalJs(
+                      reauth_dialog_helper->SigninFrameJS().web_contents(),
+                      "new Promise(resolve => {"
+                      "  navigator.getUserMedia("
+                      "    {video: true},"
+                      "    function() { resolve(true); },"
+                      "    function() { resolve(false); });"
+                      "});"));
+  ASSERT_EQ(false, content::EvalJs(
+                       reauth_dialog_helper->SigninFrameJS().web_contents(),
+                       "new Promise(resolve => {"
+                       "  navigator.getUserMedia("
+                       "    {audio: true},"
+                       "    function() { resolve(true); },"
+                       "    function() { resolve(false); });"
+                       "});"));
 
   // Check permissions directly by calling the `CheckMediaAccessPermission`.
   // Video devices should be allowed from the lock screen for specified urls.

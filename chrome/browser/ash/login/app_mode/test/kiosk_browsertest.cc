@@ -144,17 +144,19 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, MAYBE_DoNotLaunchWhenUntrusted) {
 
   // Check that the attempt to start a kiosk app fails with an error.
   EXPECT_TRUE(LaunchApp(test_app_id()));
-  bool ignored = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetLoginUI()->GetWebContents(),
-      "if (cr.ui.Oobe.getInstance().errorMessageWasShownForTesting_) {"
-      "  window.domAutomationController.send(true);"
-      "} else {"
-      "  cr.ui.Oobe.showSignInError = function(message, link, helpId) {"
-      "    window.domAutomationController.send(true);"
-      "  };"
-      "}",
-      &ignored));
+  EXPECT_EQ(
+      true,
+      content::ExecJs(
+          GetLoginUI()->GetWebContents(),
+          "new Promise(resolve => {"
+          "  if (cr.ui.Oobe.getInstance().errorMessageWasShownForTesting_) {"
+          "    resolve(true);"
+          "  } else {"
+          "    cr.ui.Oobe.showSignInError = function(message, link, helpId) {"
+          "      resolve(true);"
+          "    };"
+          "  }"
+          "});"));
 }
 
 // TODO(crbug.com/1149893): Migrate to KioskDeviceOwnedTest.

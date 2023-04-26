@@ -481,12 +481,8 @@ class WizardControllerTest : public OobeBaseTest {
   }
 
   bool JSExecuteBooleanExpression(const std::string& expression) {
-    bool result;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        GetWebContents(),
-        "window.domAutomationController.send(!!(" + expression + "));",
-        &result));
-    return result;
+    return content::EvalJs(GetWebContents(), "!!(" + expression + ");")
+        .ExtractBool();
   }
 
   std::string JSExecuteStringExpression(const std::string& expression) {

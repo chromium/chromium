@@ -322,16 +322,15 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
   bool WaitAndExposeLaunchParamsToWindow(
       content::WebContents* web_contents,
       const std::string js_property_name = "launchParams") {
-    bool launch_params_received;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents,
-        content::JsReplace("window.launchParamsPromise.then(launchParams => {"
-                           "  window[$1] = launchParams;"
-                           "  domAutomationController.send(true);"
-                           "});",
-                           js_property_name),
-        &launch_params_received));
-    return launch_params_received;
+    return content::EvalJs(
+               web_contents,
+               content::JsReplace(
+                   "window.launchParamsPromise.then(launchParams => {"
+                   "  window[$1] = launchParams;"
+                   "  return true;"
+                   "});",
+                   js_property_name))
+        .ExtractBool();
   }
 
   std::string GetJsStatementValueAsString(content::WebContents* web_contents,
@@ -444,20 +443,18 @@ class SystemWebAppManagerLaunchDirectoryBrowserTest
   bool WriteContentToJsFileHandle(content::WebContents* web_contents,
                                   const std::string& file_handle_or_promise,
                                   const std::string& content_to_write) {
-    bool file_written;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents,
-        content::JsReplace(
-            "Promise.resolve(" + file_handle_or_promise + ")" +
-                ".then(async (fileHandle) => {"
-                "  const writable = await fileHandle.createWritable();"
-                "  await writable.write($1);"
-                "  await writable.close();"
-                "  window.domAutomationController.send(true);"
-                "});",
-            content_to_write),
-        &file_written));
-    return file_written;
+    return content::EvalJs(
+               web_contents,
+               content::JsReplace(
+                   "Promise.resolve(" + file_handle_or_promise + ")" +
+                       ".then(async (fileHandle) => {"
+                       "  const writable = await fileHandle.createWritable();"
+                       "  await writable.write($1);"
+                       "  await writable.close();"
+                       "  return true;"
+                       "});",
+                   content_to_write))
+        .ExtractBool();
   }
 
   // Remove file by |file_name| from |dir_handle_or_promise| directory handle.
@@ -465,17 +462,16 @@ class SystemWebAppManagerLaunchDirectoryBrowserTest
   bool RemoveFileFromJsDirectoryHandle(content::WebContents* web_contents,
                                        const std::string& dir_handle_or_promise,
                                        const std::string& file_name) {
-    bool file_removed;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents,
-        content::JsReplace("Promise.resolve(" + dir_handle_or_promise + ")" +
-                               ".then(async (dir_handle) => {"
-                               "  await dir_handle.removeEntry($1);"
-                               "  domAutomationController.send(true);"
-                               "});",
-                           file_name),
-        &file_removed));
-    return file_removed;
+    return content::EvalJs(
+               web_contents,
+               content::JsReplace("Promise.resolve(" + dir_handle_or_promise +
+                                      ")" +
+                                      ".then(async (dir_handle) => {"
+                                      "  await dir_handle.removeEntry($1);"
+                                      "  return true;"
+                                      "});",
+                                  file_name))
+        .ExtractBool();
   }
 
   std::string ReadFileContent(const base::FilePath& path) {
@@ -647,61 +643,56 @@ class SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest
  public:
   bool CheckFileIsGif(content::WebContents* web_contents,
                       const std::string& file_handle_or_promise) {
-    bool is_gif_signature;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents,
-        "Promise.resolve(" + file_handle_or_promise + ")" +
-            ".then(async file => {"
-            "  const arrayBuf = await file.arrayBuffer();"
-            "  const bytes = new Uint8Array(arrayBuf.slice(0, 3));"
-            "  const isGifSignature = bytes[0] === 0x47        /* G */"
-            "                         && bytes[1] === 0x49     /* I */ "
-            "                         && bytes[2] === 0x46;    /* F */"
-            "  domAutomationController.send(isGifSignature);"
-            "});",
-        &is_gif_signature));
-    return is_gif_signature;
+    return content::EvalJs(
+               web_contents,
+               "Promise.resolve(" + file_handle_or_promise + ")" +
+                   ".then(async file => {"
+                   "  const arrayBuf = await file.arrayBuffer();"
+                   "  const bytes = new Uint8Array(arrayBuf.slice(0, 3));"
+                   "  const isGifSignature = bytes[0] === 0x47        /* G */"
+                   "                         && bytes[1] === 0x49     /* I */ "
+                   "                         && bytes[2] === 0x46;    /* F */"
+                   "  return isGifSignature;"
+                   "});")
+        .ExtractBool();
   }
 
   bool CheckFileIsPng(content::WebContents* web_contents,
                       const std::string& file_handle_or_promise) {
-    bool is_png_signature;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents,
-        "Promise.resolve(" + file_handle_or_promise + ")" +
-            ".then(async file => {"
-            "  const arrayBuf = await file.arrayBuffer();"
-            "  const bytes = new Uint8Array(arrayBuf.slice(0, 4));"
-            "  const isPngSignature = bytes[0] === 0x89        /* 0x89 */"
-            "                         && bytes[1] === 0x50     /* P */"
-            "                         && bytes[2] === 0x4E     /* N */"
-            "                         && bytes[3] === 0x47;    /* G */"
-            "  domAutomationController.send(isPngSignature);"
-            "});",
-        &is_png_signature));
-    return is_png_signature;
+    return content::EvalJs(
+               web_contents,
+               "Promise.resolve(" + file_handle_or_promise + ")" +
+                   ".then(async file => {"
+                   "  const arrayBuf = await file.arrayBuffer();"
+                   "  const bytes = new Uint8Array(arrayBuf.slice(0, 4));"
+                   "  const isPngSignature = bytes[0] === 0x89        /* 0x89 "
+                   "*/"
+                   "                         && bytes[1] === 0x50     /* P */"
+                   "                         && bytes[2] === 0x4E     /* N */"
+                   "                         && bytes[3] === 0x47;    /* G */"
+                   "  return isPngSignature;"
+                   "});")
+        .ExtractBool();
   }
 
   // Returns whether the file is written.
   bool CheckCanWriteFile(content::WebContents* web_contents,
                          const std::string& file_handle_or_promise) {
-    bool file_written;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        web_contents,
-        "Promise.resolve(" + file_handle_or_promise + ")" +
-            ".then(async fileHandle => {"
-            "  try {"
-            "    const writable = await fileHandle.createWritable();"
-            "    await writable.write('test');"
-            "    await writable.close();"
-            "    domAutomationController.send(true);"
-            "  } catch(err) {"
-            "    console.error('write failed: ' + err.message);"
-            "    domAutomationController.send(false);"
-            "  }"
-            "});",
-        &file_written));
-    return file_written;
+    return content::EvalJs(
+               web_contents,
+               "Promise.resolve(" + file_handle_or_promise + ")" +
+                   ".then(async fileHandle => {"
+                   "  try {"
+                   "    const writable = await fileHandle.createWritable();"
+                   "    await writable.write('test');"
+                   "    await writable.close();"
+                   "    return true;"
+                   "  } catch(err) {"
+                   "    console.error('write failed: ' + err.message);"
+                   "    return false;"
+                   "  }"
+                   "});")
+        .ExtractBool();
   }
 
   void InstallTestFileSystemProvider(Profile* profile) {
@@ -804,17 +795,12 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(WaitAndExposeLaunchParamsToWindow(web_contents, "launchParams"));
 
   // Try to delete the file.
-  bool file_deleted;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents,
-      content::JsReplace("window.launchParams.files[0].removeEntry($1)"
-                         ".then("
-                         "  _ => domAutomationController.send(true),"
-                         "  error => domAutomationController.send(false)"
-                         ");",
-                         "readonly.png"),
-      &file_deleted));
-  EXPECT_FALSE(file_deleted);
+  EXPECT_EQ(false,
+            content::EvalJs(web_contents,
+                            content::JsReplace(
+                                "window.launchParams.files[0].removeEntry($1)"
+                                ".then(_ => true, error => false);",
+                                "readonly.png")));
 
   // Do a no-op JavaScript to check the page is still operational. If the page
   // crashed, the following call will fail.

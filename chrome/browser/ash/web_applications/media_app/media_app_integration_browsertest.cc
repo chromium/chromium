@@ -1518,12 +1518,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, CheckArcWritable) {
 
   EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
 
-  bool result;
   constexpr char kScript[] =
-      "lastLoadedReceivedFileList().item(0).isArcWritable()"
-      ".then(result => domAutomationController.send(result));";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(app, kScript, &result));
-  EXPECT_FALSE(result);
+      "lastLoadedReceivedFileList().item(0).isArcWritable()";
+  EXPECT_EQ(false, content::EvalJs(app, kScript));
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
@@ -1556,18 +1553,14 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
             .ExtractInt();
   } while (received_file_length != 2);
 
-  bool result;
   constexpr char kScript[] =
-      "lastLoadedReceivedFileList().item($1).isBrowserWritable()"
-      ".then(result => domAutomationController.send(result));";
+      "lastLoadedReceivedFileList().item($1).isBrowserWritable()";
   // The first file should be writable.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      app, base::ReplaceStringPlaceholders(kScript, {"0"}, nullptr), &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(app, base::ReplaceStringPlaceholders(
+                                           kScript, {"0"}, nullptr)));
   // The second file should not be writable.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      app, base::ReplaceStringPlaceholders(kScript, {"1"}, nullptr), &result));
-  EXPECT_FALSE(result);
+  EXPECT_EQ(false, content::EvalJs(app, base::ReplaceStringPlaceholders(
+                                            kScript, {"1"}, nullptr)));
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, OpenVideoFile) {
