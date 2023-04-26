@@ -33,6 +33,7 @@ class TestOmniboxClient : public OmniboxClient {
   SessionID GetSessionID() const override;
   void SetBookmarkModel(bookmarks::BookmarkModel* bookmark_model);
   bookmarks::BookmarkModel* GetBookmarkModel() override;
+  AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
   TemplateURLService* GetTemplateURLService() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;

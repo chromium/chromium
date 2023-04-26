@@ -69,21 +69,19 @@ class OmniboxEditModel {
 
   OmniboxEditModel(OmniboxView* view,
                    OmniboxEditModelDelegate* edit_model_delegate,
-                   std::unique_ptr<OmniboxClient> client);
+                   OmniboxClient* client);
   virtual ~OmniboxEditModel();
   OmniboxEditModel(const OmniboxEditModel&) = delete;
   OmniboxEditModel& operator=(const OmniboxEditModel&) = delete;
+
+  void set_omnibox_controller(OmniboxController* omnibox_controller) {
+    omnibox_controller_ = omnibox_controller;
+  }
 
   // TODO(jdonnelly): Remove this accessor when the AutocompleteController has
   //     completely moved to OmniboxController.
   AutocompleteController* autocomplete_controller() const {
     return omnibox_controller_->autocomplete_controller();
-  }
-
-  void set_autocomplete_controller(
-      std::unique_ptr<AutocompleteController> autocomplete_controller) {
-    omnibox_controller_->set_autocomplete_controller(
-        std::move(autocomplete_controller));
   }
 
   void set_popup_view(OmniboxPopupView* popup_view);
@@ -155,7 +153,7 @@ class OmniboxEditModel {
   // Returns the SuperGIcon for chrome builds. Otherwise return an empty
   // ImageModel. If `dark_mode` is enabled, return the monochrome version of the
   // icon.
-  ui::ImageModel GetSuperGIcon(int image_size, bool dark_mode);
+  ui::ImageModel GetSuperGIcon(int image_size, bool dark_mode) const;
 
   // Sets the state of user_input_in_progress_, and notifies the observer if
   // that state has changed.
@@ -644,20 +642,19 @@ class OmniboxEditModel {
   // data source, this should not be called when there's no view.
   std::u16string GetText() const;
 
-  // NOTE: |client_| must outlive |omnibox_controller_|, as the latter has a
-  // reference to the former.
-  std::unique_ptr<OmniboxClient> client_;
+  // Owns this.
+  raw_ptr<OmniboxController> omnibox_controller_;
 
-  std::unique_ptr<OmniboxController> omnibox_controller_;
-
-  // This may be null if the model is instantiated by the Realbox. Ideally,
-  // the model should not depend so much on the view as a primary data source,
-  // and the view should accurately reflect model state as source of truth.
+  // Owns `OmniboxController` which owns this.
   raw_ptr<OmniboxView> view_;
 
+  // Implemented by `LocationBarView` which owns `OmniboxView`.
   raw_ptr<OmniboxEditModelDelegate> edit_model_delegate_;
 
-  OmniboxFocusState focus_state_;
+  // Owned by `omnibox_controller_` which owns this.
+  raw_ptr<OmniboxClient> client_;
+
+  OmniboxFocusState focus_state_ = OMNIBOX_FOCUS_NONE;
 
   // Used to keep track whether the input currently in progress originated by
   // focusing in the Omnibox, Fakebox or Search button. This will be INVALID if

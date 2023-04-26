@@ -90,6 +90,11 @@ bookmarks::BookmarkModel* ChromeOmniboxClientIOS::GetBookmarkModel() {
       browser_state_);
 }
 
+AutocompleteControllerEmitter*
+ChromeOmniboxClientIOS::GetAutocompleteControllerEmitter() {
+  return nullptr;
+}
+
 TemplateURLService* ChromeOmniboxClientIOS::GetTemplateURLService() {
   return ios::TemplateURLServiceFactory::GetForBrowserState(browser_state_);
 }

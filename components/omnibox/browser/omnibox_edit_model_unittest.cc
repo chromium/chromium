@@ -75,7 +75,7 @@ void OpenUrlFromEditBox(TestOmniboxEditModel* model,
 
 class OmniboxEditModelTest : public testing::Test {
  public:
-  void SetUp() override {
+  OmniboxEditModelTest() {
     // The #omnibox-site-search-starter-pack feature flag has to be enabled
     // before set up in order for the OpenTabProvider to be initialized (needed
     // for OpenTabMatch test).
@@ -83,9 +83,13 @@ class OmniboxEditModelTest : public testing::Test {
     feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
 
     edit_model_delegate_ = std::make_unique<TestOmniboxEditModelDelegate>();
-    view_ = std::make_unique<TestOmniboxView>(edit_model_delegate_.get());
-    view_->SetModel(std::make_unique<TestOmniboxEditModel>(
-        view_.get(), edit_model_delegate_.get(), nullptr));
+    auto omnibox_client = std::make_unique<TestOmniboxClient>();
+    auto* omnibox_client_ptr = omnibox_client.get();
+    view_ = std::make_unique<TestOmniboxView>(edit_model_delegate_.get(),
+                                              std::move(omnibox_client));
+
+    view_->SetEditModel(std::make_unique<TestOmniboxEditModel>(
+        view_.get(), edit_model_delegate_.get(), omnibox_client_ptr, nullptr));
   }
 
   TestOmniboxView* view() { return view_.get(); }
@@ -628,12 +632,20 @@ TEST_F(OmniboxEditModelTest,
 
 class OmniboxEditModelPopupTest : public ::testing::Test {
  public:
-  OmniboxEditModelPopupTest()
-      : view_(&edit_model_delegate_),
-        model_(&view_, &edit_model_delegate_, &pref_service_) {
+  OmniboxEditModelPopupTest() {
+    edit_model_delegate_ = std::make_unique<TestOmniboxEditModelDelegate>();
+    auto omnibox_client = std::make_unique<TestOmniboxClient>();
+    auto* omnibox_client_ptr = omnibox_client.get();
+    view_ = std::make_unique<TestOmniboxView>(edit_model_delegate_.get(),
+                                              std::move(omnibox_client));
+
+    view_->SetEditModel(std::make_unique<TestOmniboxEditModel>(
+        view_.get(), edit_model_delegate_.get(), omnibox_client_ptr,
+        &pref_service_));
+
     omnibox::RegisterProfilePrefs(pref_service_.registry());
-    model_.set_popup_view(&popup_view_);
-    model_.SetPopupIsOpen(true);
+    model()->set_popup_view(&popup_view_);
+    model()->SetPopupIsOpen(true);
   }
   OmniboxEditModelPopupTest(const OmniboxEditModelPopupTest&) = delete;
   OmniboxEditModelPopupTest& operator=(const OmniboxEditModelPopupTest&) =
@@ -643,16 +655,17 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
   OmniboxTriggeredFeatureService* triggered_feature_service() {
     return &triggered_feature_service_;
   }
-  TestOmniboxEditModel* model() { return &model_; }
+  TestOmniboxEditModel* model() {
+    return static_cast<TestOmniboxEditModel*>(view_->model());
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  TestOmniboxEditModelDelegate edit_model_delegate_;
+  std::unique_ptr<TestOmniboxEditModelDelegate> edit_model_delegate_;
   TestingPrefServiceSimple pref_service_;
   OmniboxTriggeredFeatureService triggered_feature_service_;
 
-  TestOmniboxView view_;
-  TestOmniboxEditModel model_;
+  std::unique_ptr<TestOmniboxView> view_;
   TestOmniboxPopupView popup_view_;
 };
 

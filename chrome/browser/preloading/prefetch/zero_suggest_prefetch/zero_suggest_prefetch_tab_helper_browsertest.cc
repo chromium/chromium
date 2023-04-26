@@ -66,7 +66,7 @@ class ZeroSuggestPrefetchTabHelperBrowserTest : public InProcessBrowserTest {
         ->window()
         ->GetLocationBar()
         ->GetOmniboxView()
-        ->model()
+        ->controller()
         ->set_autocomplete_controller(std::move(controller));
   }
 

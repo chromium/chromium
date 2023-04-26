@@ -15,7 +15,6 @@
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,6 +24,8 @@
 
 class GURL;
 class MetricsReporter;
+class OmniboxController;
+class OmniboxEditModel;
 class Profile;
 
 namespace content {
@@ -139,12 +140,13 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
   bool ShouldUseUpdatedConnectionSecurityIndicators() const override;
 
  private:
+  OmniboxEditModel* edit_model() const;
   AutocompleteController* autocomplete_controller() const;
   const AutocompleteMatch* GetMatchWithUrl(size_t index, const GURL& url);
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<OmniboxEditModel> edit_model_;
+  std::unique_ptr<OmniboxController> controller_;
   base::ScopedObservation<AutocompleteControllerEmitter,
                           AutocompleteController::Observer>
       controller_emitter_observation_{this};

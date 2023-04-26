@@ -41,6 +41,8 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -404,6 +406,7 @@ class RealboxOmniboxClient : public OmniboxClient {
   bool IsPasteAndGoEnabled() const override;
   SessionID GetSessionID() const override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
+  AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
   TemplateURLService* GetTemplateURLService() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
@@ -447,6 +450,11 @@ SessionID RealboxOmniboxClient::GetSessionID() const {
 
 bookmarks::BookmarkModel* RealboxOmniboxClient::GetBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
+}
+
+AutocompleteControllerEmitter*
+RealboxOmniboxClient::GetAutocompleteControllerEmitter() {
+  return AutocompleteControllerEmitter::GetForBrowserContext(profile_);
 }
 
 TemplateURLService* RealboxOmniboxClient::GetTemplateURLService() {
@@ -689,19 +697,12 @@ RealboxHandler::RealboxHandler(
   controller_emitter_observation_.Observe(
       AutocompleteControllerEmitter::GetForBrowserContext(profile_));
 
-  edit_model_ = std::make_unique<OmniboxEditModel>(
-      /*view=*/nullptr, /*edit_model_delegate=*/this,
-      std::make_unique<RealboxOmniboxClient>(profile_, web_contents_));
-  edit_model_->set_autocomplete_controller(
+  controller_ = std::make_unique<OmniboxController>(
+      /*edit_model_delegate=*/this,
       std::make_unique<AutocompleteController>(
           std::make_unique<ChromeAutocompleteProviderClient>(profile_),
-          AutocompleteClassifier::DefaultOmniboxProviders()));
-
-  AutocompleteControllerEmitter* emitter =
-      AutocompleteControllerEmitter::GetForBrowserContext(profile_);
-  if (emitter) {
-    autocomplete_controller()->AddObserver(emitter);
-  }
+          AutocompleteClassifier::DefaultOmniboxProviders()),
+      std::make_unique<RealboxOmniboxClient>(profile_, web_contents_));
 }
 
 RealboxHandler::~RealboxHandler() = default;
@@ -769,8 +770,8 @@ void RealboxHandler::OpenAutocompleteMatch(
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  edit_model_->OpenSelection(OmniboxPopupSelection(line), timestamp,
-                             disposition);
+  edit_model()->OpenSelection(OmniboxPopupSelection(line), timestamp,
+                              disposition);
 }
 
 void RealboxHandler::OnNavigationLikely(
@@ -839,7 +840,8 @@ void RealboxHandler::ExecuteAction(uint8_t line,
       line, has_action
                 ? OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION
                 : OmniboxPopupSelection::LineState::FOCUSED_BUTTON_TAB_SWITCH);
-  edit_model_->OpenSelection(selection, match_selection_timestamp, disposition);
+  edit_model()->OpenSelection(selection, match_selection_timestamp,
+                              disposition);
 }
 
 void RealboxHandler::OnResultChanged(AutocompleteController* controller,
@@ -976,8 +978,12 @@ bool RealboxHandler::ShouldUseUpdatedConnectionSecurityIndicators() const {
   return false;
 }
 
+OmniboxEditModel* RealboxHandler::edit_model() const {
+  return controller_->edit_model();
+}
+
 AutocompleteController* RealboxHandler::autocomplete_controller() const {
-  return edit_model_->autocomplete_controller();
+  return controller_->autocomplete_controller();
 }
 
 const AutocompleteMatch* RealboxHandler::GetMatchWithUrl(size_t index,

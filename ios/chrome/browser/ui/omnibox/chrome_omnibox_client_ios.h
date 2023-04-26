@@ -33,6 +33,7 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   bool IsDefaultSearchProviderEnabled() const override;
   SessionID GetSessionID() const override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
+  AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
   TemplateURLService* GetTemplateURLService() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;

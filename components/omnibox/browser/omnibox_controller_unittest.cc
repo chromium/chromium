@@ -11,6 +11,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,7 +32,6 @@ class OmniboxControllerTest : public testing::Test {
 
  private:
   // testing::Test:
-  void SetUp() override;
   void TearDown() override;
 
   base::test::TaskEnvironment task_environment_;
@@ -44,9 +44,9 @@ OmniboxControllerTest::OmniboxControllerTest() {}
 OmniboxControllerTest::~OmniboxControllerTest() {}
 
 void OmniboxControllerTest::CreateController() {
-  DCHECK(omnibox_client_);
-  omnibox_controller_ =
-      std::make_unique<OmniboxController>(nullptr, omnibox_client_.get());
+  omnibox_controller_ = std::make_unique<OmniboxController>(
+      /*view=*/nullptr, /*edit_model_delegate=*/nullptr,
+      std::make_unique<TestOmniboxClient>());
 }
 
 // Checks that the list of autocomplete providers used by the OmniboxController
@@ -68,13 +68,8 @@ void OmniboxControllerTest::AssertProviders(int expected_providers) {
   ASSERT_EQ(0, expected_providers);
 }
 
-void OmniboxControllerTest::SetUp() {
-  omnibox_client_ = std::make_unique<TestOmniboxClient>();
-}
-
 void OmniboxControllerTest::TearDown() {
   omnibox_controller_.reset();
-  omnibox_client_.reset();
 }
 
 TEST_F(OmniboxControllerTest, CheckDefaultAutocompleteProviders) {

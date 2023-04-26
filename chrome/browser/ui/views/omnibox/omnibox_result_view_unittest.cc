@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -27,6 +27,8 @@
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
 #endif
+
+class OmniboxEditModel;
 
 namespace {
 
@@ -71,11 +73,11 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
     // Create a widget and assign bounds to support calls to HitTestPoint.
     widget_ = CreateTestWidget();
 
-    edit_model_ = std::make_unique<OmniboxEditModel>(
-        nullptr, nullptr, std::make_unique<TestOmniboxClient>());
-    popup_view_ =
-        std::make_unique<TestOmniboxPopupViewViews>(edit_model_.get());
-    result_view_ = new OmniboxResultView(popup_view_.get(), edit_model_.get(),
+    omnibox_controller_ = std::make_unique<OmniboxController>(
+        /*view=*/nullptr, /*edit_model_delegate=*/nullptr,
+        std::make_unique<TestOmniboxClient>());
+    popup_view_ = std::make_unique<TestOmniboxPopupViewViews>(edit_model());
+    result_view_ = new OmniboxResultView(popup_view_.get(), edit_model(),
                                          kTestResultViewIndex);
 
     views::View* root_view = widget_->GetRootView();
@@ -113,11 +115,12 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
                           ui::EventTimeForNow(), flags, 0);
   }
 
+  OmniboxEditModel* edit_model() { return omnibox_controller_->edit_model(); }
   OmniboxPopupViewViews* popup_view() { return popup_view_.get(); }
   OmniboxResultView* result_view() { return result_view_; }
 
  private:
-  std::unique_ptr<OmniboxEditModel> edit_model_;
+  std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<TestOmniboxPopupViewViews> popup_view_;
   raw_ptr<OmniboxResultView> result_view_;
   std::unique_ptr<views::Widget> widget_;

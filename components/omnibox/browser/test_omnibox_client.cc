@@ -72,6 +72,11 @@ bookmarks::BookmarkModel* TestOmniboxClient::GetBookmarkModel() {
   return bookmark_model_;
 }
 
+AutocompleteControllerEmitter*
+TestOmniboxClient::GetAutocompleteControllerEmitter() {
+  return nullptr;
+}
+
 TemplateURLService* TestOmniboxClient::GetTemplateURLService() {
   DCHECK(template_url_service_);
   return template_url_service_;

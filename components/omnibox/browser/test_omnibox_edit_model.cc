@@ -10,10 +10,9 @@
 TestOmniboxEditModel::TestOmniboxEditModel(
     OmniboxView* view,
     OmniboxEditModelDelegate* edit_model_delegate,
+    OmniboxClient* client,
     PrefService* pref_service)
-    : OmniboxEditModel(view,
-                       edit_model_delegate,
-                       std::make_unique<TestOmniboxClient>()),
+    : OmniboxEditModel(view, edit_model_delegate, client),
       popup_is_open_(false),
       pref_service_(pref_service) {}
 

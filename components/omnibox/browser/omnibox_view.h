@@ -32,6 +32,7 @@
 class OmniboxEditModelDelegate;
 class OmniboxViewMacTest;
 class OmniboxEditModel;
+class OmniboxController;
 
 class OmniboxView {
  public:
@@ -56,9 +57,10 @@ class OmniboxView {
   OmniboxView(const OmniboxView&) = delete;
   OmniboxView& operator=(const OmniboxView&) = delete;
 
-  // Used by the automation system for getting at the model from the view.
-  OmniboxEditModel* model() { return model_.get(); }
-  const OmniboxEditModel* model() const { return model_.get(); }
+  OmniboxEditModel* model();
+  const OmniboxEditModel* model() const;
+
+  OmniboxController* controller() { return controller_.get(); }
 
   // Called when any relevant state changes other than changing tabs.
   virtual void Update() = 0;
@@ -317,9 +319,8 @@ class OmniboxView {
   friend class OmniboxViewMacTest;
   friend class TestOmniboxView;
 
-  // |model_| can be NULL in tests.
-  std::unique_ptr<OmniboxEditModel> model_;
   raw_ptr<OmniboxEditModelDelegate> edit_model_delegate_;
+  std::unique_ptr<OmniboxController> controller_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_VIEW_H_

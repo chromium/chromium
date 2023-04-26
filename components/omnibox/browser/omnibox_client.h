@@ -87,7 +87,7 @@ class OmniboxClient {
       omnibox::mojom::NavigationPredictor navigation_predictor) {}
 
   virtual bookmarks::BookmarkModel* GetBookmarkModel();
-  virtual AutocompleteControllerEmitter* GetAutocompleteControllerEmitter();
+  virtual AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() = 0;
   virtual TemplateURLService* GetTemplateURLService();
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;
   virtual AutocompleteClassifier* GetAutocompleteClassifier();

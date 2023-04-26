@@ -250,11 +250,10 @@ OmniboxEditModel::State::~State() = default;
 OmniboxEditModel::OmniboxEditModel(
     OmniboxView* view,
     OmniboxEditModelDelegate* edit_model_delegate,
-    std::unique_ptr<OmniboxClient> client)
-    : client_(std::move(client)),
-      view_(view),
+    OmniboxClient* client)
+    : view_(view),
       edit_model_delegate_(edit_model_delegate),
-      focus_state_(OMNIBOX_FOCUS_NONE),
+      client_(client),
       user_input_in_progress_(false),
       user_input_since_focus_(true),
       focus_resulted_in_navigation_(false),
@@ -267,10 +266,7 @@ OmniboxEditModel::OmniboxEditModel(
       in_revert_(false),
       allow_exact_keyword_match_(false),
       use_existing_autocomplete_client_(base::FeatureList::IsEnabled(
-          omnibox::kUseExistingAutocompleteClient)) {
-  omnibox_controller_ =
-      std::make_unique<OmniboxController>(this, client_.get());
-}
+          omnibox::kUseExistingAutocompleteClient)) {}
 
 OmniboxEditModel::~OmniboxEditModel() = default;
 
@@ -442,10 +438,11 @@ void OmniboxEditModel::SetUserText(const std::u16string& text) {
   is_keyword_hint_ = false;
   keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
   InternalSetUserText(text);
-  if (base::FeatureList::IsEnabled(omnibox::kRedoCurrentMatch))
+  if (base::FeatureList::IsEnabled(omnibox::kRedoCurrentMatch)) {
     GetInfoForCurrentText(&current_match_, nullptr);
-  else
+  } else {
     omnibox_controller_->InvalidateCurrentMatch();
+  }
   paste_state_ = NONE;
   has_temporary_text_ = false;
 }
@@ -627,7 +624,8 @@ bool OmniboxEditModel::ShouldShowCurrentPageIcon() const {
   return GetText() == display_text_ || GetText() == url_for_editing_;
 }
 
-ui::ImageModel OmniboxEditModel::GetSuperGIcon(int image_size, bool dark_mode) {
+ui::ImageModel OmniboxEditModel::GetSuperGIcon(int image_size,
+                                               bool dark_mode) const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (dark_mode) {
     return ui::ImageModel::FromVectorIcon(
@@ -768,7 +766,7 @@ void OmniboxEditModel::StartPrefetch() {
   const bool interaction_clobber_focus_type = base::FeatureList::IsEnabled(
       omnibox::kOmniboxOnClobberFocusTypeOnContent);
 
-  GURL current_url = client()->GetURL();
+  GURL current_url = client_->GetURL();
   std::u16string text = base::UTF8ToUTF16(current_url.spec());
 
   if (is_ntp_page || interaction_clobber_focus_type) {
@@ -776,7 +774,7 @@ void OmniboxEditModel::StartPrefetch() {
   }
 
   AutocompleteInput input(text, page_classification,
-                          client()->GetSchemeClassifier());
+                          client_->GetSchemeClassifier());
   input.set_current_url(current_url);
   input.set_focus_type(interaction_clobber_focus_type && !is_ntp_page
                            ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
@@ -789,8 +787,9 @@ void OmniboxEditModel::StopAutocomplete() {
 }
 
 bool OmniboxEditModel::CanPasteAndGo(const std::u16string& text) const {
-  if (!client_->IsPasteAndGoEnabled())
+  if (!client_->IsPasteAndGoEnabled()) {
     return false;
+  }
 
   AutocompleteMatch match;
   ClassifyString(text, &match, nullptr);
@@ -827,8 +826,9 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
 
 void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
     OmniboxEventProto::KeywordModeEntryMethod entry_method) {
-  if (!client_->IsDefaultSearchProviderEnabled())
+  if (!client_->IsDefaultSearchProviderEnabled()) {
     return;
+  }
 
   autocomplete_controller()->Stop(false);
 
@@ -1124,8 +1124,9 @@ void OmniboxEditModel::StartZeroSuggestRequest(
     return;
 
   // Early exit if the page has not loaded yet, so we don't annoy users.
-  if (!client_->CurrentPageExists())
+  if (!client_->CurrentPageExists()) {
     return;
+  }
 
   // Early exit if the user already has a navigation or search query in mind.
   if (user_input_in_progress_ && !user_clobbered_permanent_text)
@@ -1765,7 +1766,7 @@ bool OmniboxEditModel::ShouldPreventElision() const {
 }
 
 bool OmniboxEditModel::IsStarredMatch(const AutocompleteMatch& match) const {
-  auto* bookmark_model = client()->GetBookmarkModel();
+  auto* bookmark_model = client_->GetBookmarkModel();
   return bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
 }
 
@@ -1773,11 +1774,11 @@ bool OmniboxEditModel::IsStarredMatch(const AutocompleteMatch& match) const {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
                                           SkColor vector_icon_color) {
-  gfx::Image extension_icon = client()->GetIconIfExtensionMatch(match);
+  gfx::Image extension_icon = client_->GetIconIfExtensionMatch(match);
   // Extension icons are the correct size for non-touch UI but need to be
   // adjusted to be the correct size for touch mode.
   if (!extension_icon.IsEmpty()) {
-    return client()->GetSizedIcon(extension_icon);
+    return client_->GetSizedIcon(extension_icon);
   }
 
   // The @tabs starter pack suggestion is a unique case. It uses a help center
@@ -1787,7 +1788,7 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
   if (AutocompleteMatch::IsStarterPackType(match.type) &&
       match.associated_keyword) {
     TemplateURL* turl =
-        client()->GetTemplateURLService()->GetTemplateURLForKeyword(
+        client_->GetTemplateURLService()->GetTemplateURLForKeyword(
             match.associated_keyword->keyword);
     is_starter_pack_tabs_suggestion =
         turl && turl->GetBuiltinEngineType() == KEYWORD_MODE_STARTER_PACK_TABS;
@@ -1803,7 +1804,7 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
     // all run one after another. This seems to be harmless as the callback
     // just flips a flag to schedule a repaint. However, if it turns out to be
     // costly, we can optimize away the redundant extra callbacks.
-    gfx::Image favicon = client()->GetFaviconForPageUrl(
+    gfx::Image favicon = client_->GetFaviconForPageUrl(
         match.destination_url,
         base::BindOnce(&OmniboxEditModel::OnFaviconFetched,
                        weak_factory_.GetWeakPtr(), match.destination_url));
@@ -1811,14 +1812,14 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
     // Extension icons are the correct size for non-touch UI but need to be
     // adjusted to be the correct size for touch mode.
     if (!favicon.IsEmpty()) {
-      return client()->GetSizedIcon(favicon);
+      return client_->GetSizedIcon(favicon);
     }
   }
 
   bool is_starred_match = IsStarredMatch(match);
   const auto& vector_icon_type = match.GetVectorIcon(is_starred_match);
 
-  return client()->GetSizedIcon(vector_icon_type, vector_icon_color);
+  return client_->GetSizedIcon(vector_icon_type, vector_icon_color);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -1889,7 +1890,7 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
 
   std::u16string keyword;
   bool is_keyword_hint;
-  TemplateURLService* service = client()->GetTemplateURLService();
+  TemplateURLService* service = client_->GetTemplateURLService();
   match.GetKeywordUIState(service, &keyword, &is_keyword_hint);
 
   if (popup_selection_.state == OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {

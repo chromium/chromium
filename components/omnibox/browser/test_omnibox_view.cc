@@ -6,6 +6,9 @@
 
 #include <algorithm>
 
+#include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/test_omnibox_client.h"
+#include "components/omnibox/browser/test_omnibox_edit_model.h"
 #include "ui/gfx/native_widget_types.h"
 
 // static
@@ -23,8 +26,9 @@ OmniboxView::State TestOmniboxView::CreateState(std::string text,
   return state;
 }
 
-void TestOmniboxView::SetModel(std::unique_ptr<OmniboxEditModel> model) {
-  model_ = std::move(model);
+void TestOmniboxView::SetEditModel(
+    std::unique_ptr<OmniboxEditModel> edit_model) {
+  controller_->SetEditModel(std::move(edit_model));
 }
 
 std::u16string TestOmniboxView::GetText() const {
