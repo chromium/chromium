@@ -887,11 +887,6 @@ void ElementRuleCollector::AppendCSSOMWrapperForRule(
     CSSStyleSheet* parent_style_sheet,
     const RuleData* rule_data,
     wtf_size_t position) {
-  // |parentStyleSheet| is 0 if and only if the |rule| is coming from User
-  // Agent. In this case, it is safe to create CSSOM wrappers without
-  // parentStyleSheets as they will be used only by inspector which will not try
-  // to edit them.
-
   // For :visited/:link rules, the question of whether or not a selector
   // matches is delayed until cascade-time (see CascadeExpansion), hence such
   // rules may appear to match from ElementRuleCollector's output. This behavior
@@ -906,10 +901,14 @@ void ElementRuleCollector::AppendCSSOMWrapperForRule(
   StyleRule* rule = rule_data->Rule();
   if (parent_style_sheet) {
     css_rule = FindStyleRule(parent_style_sheet, rule);
+    DCHECK(css_rule);
   } else {
+    // |parentStyleSheet| is nullptr if and only if the |rule| is coming from
+    // User Agent. In this case, it is safe to create CSSOM wrappers without
+    // parentStyleSheets as they will be used only by inspector which will not
+    // try to edit them.
     css_rule = rule->CreateCSSOMWrapper(position);
   }
-  DCHECK(!parent_style_sheet || css_rule);
   EnsureRuleList()->emplace_back(css_rule, rule_data->SelectorIndex());
 }
 
