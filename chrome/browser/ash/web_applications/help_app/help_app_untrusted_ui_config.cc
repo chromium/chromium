@@ -91,6 +91,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
   source->AddBoolean("isCloudGamingDevice",
                      chromeos::features::IsCloudGamingDeviceEnabled());
+  source->AddBoolean("jelly", chromeos::features::IsJellyEnabled());
 
   Profile* profile = Profile::FromWebUI(web_ui);
   PrefService* pref_service = profile->GetPrefs();
