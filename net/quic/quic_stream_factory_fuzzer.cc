@@ -6,7 +6,8 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/network_anonymization_key.h"

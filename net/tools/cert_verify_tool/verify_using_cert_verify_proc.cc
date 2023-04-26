@@ -4,9 +4,9 @@
 
 #include "net/tools/cert_verify_tool/verify_using_cert_verify_proc.h"
 
+#include <algorithm>
 #include <iostream>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
