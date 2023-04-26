@@ -153,22 +153,28 @@ bool NSSDecryptor::ReadAndParseLogins(
   base::ReadFileToString(json_file, &json_content);
   absl::optional<base::Value> parsed_json =
       base::JSONReader::Read(json_content);
-  if (!parsed_json || !parsed_json->is_dict())
+  if (!parsed_json) {
     return false;
+  }
 
-  const base::Value* disabled_hosts =
-      parsed_json->FindListKey("disabledHosts");
+  const base::Value::Dict* parsed_json_dict = parsed_json->GetIfDict();
+  if (!parsed_json_dict) {
+    return false;
+  }
+
+  const base::Value::List* disabled_hosts =
+      parsed_json_dict->FindList("disabledHosts");
   if (disabled_hosts) {
-    for (const auto& value : disabled_hosts->GetList()) {
+    for (const auto& value : *disabled_hosts) {
       if (!value.is_string())
         continue;
       forms->push_back(CreateBlockedPasswordForm(value.GetString()));
     }
   }
 
-  const base::Value* password_list = parsed_json->FindListKey("logins");
+  const base::Value::List* password_list = parsed_json_dict->FindList("logins");
   if (password_list) {
-    for (const auto& value : password_list->GetList()) {
+    for (const auto& value : *password_list) {
       if (!value.is_dict())
         continue;
 

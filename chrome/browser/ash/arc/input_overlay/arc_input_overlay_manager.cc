@@ -350,11 +350,11 @@ std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
   auto result = base::JSONReader::ReadAndReturnValueWithError(json_file);
   DCHECK(result.has_value())
       << "Could not load input overlay data file: " << result.error().message;
-  if (!result.has_value()) {
+  if (!result.has_value() || !result->is_dict()) {
     return touch_injector;
   }
 
-  touch_injector->ParseActions(*result);
+  touch_injector->ParseActions(result->GetDict());
   return touch_injector;
 }
 

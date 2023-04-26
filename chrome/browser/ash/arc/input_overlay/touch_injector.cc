@@ -68,15 +68,20 @@ void RemoveActionsWithSameID(std::vector<std::unique_ptr<Action>>& actions) {
 // Parse Json to different types of actions.
 std::vector<std::unique_ptr<Action>> ParseJsonToActions(
     TouchInjector* touch_injector,
-    const base::Value& root) {
+    const base::Value::Dict& root) {
   std::vector<std::unique_ptr<Action>> actions;
 
   // Parse tap actions if they exist.
-  const auto* tap_act_list = root.FindListKey(kTapAction);
-  if (tap_act_list && tap_act_list->is_list()) {
-    for (const auto& val : tap_act_list->GetList()) {
+  const base::Value::List* tap_act_list = root.FindList(kTapAction);
+  if (tap_act_list) {
+    for (const auto& val : *tap_act_list) {
+      auto* val_dict = val.GetIfDict();
+      if (!val_dict) {
+        LOG(ERROR) << "Value must be a dictionary.";
+        continue;
+      }
       auto action = std::make_unique<ActionTap>(touch_injector);
-      bool succeed = action->ParseFromJson(val);
+      bool succeed = action->ParseFromJson(*val_dict);
       if (succeed) {
         actions.emplace_back(std::move(action));
       }
@@ -84,11 +89,16 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   }
 
   // Parse move actions if they exist.
-  const base::Value* move_act_list = root.FindListKey(kMoveAction);
-  if (move_act_list && move_act_list->is_list()) {
-    for (const base::Value& val : move_act_list->GetList()) {
+  const base::Value::List* move_act_list = root.FindList(kMoveAction);
+  if (move_act_list) {
+    for (const auto& val : *move_act_list) {
+      auto* val_dict = val.GetIfDict();
+      if (!val_dict) {
+        LOG(ERROR) << "Value must be a dictionary.";
+        continue;
+      }
       auto action = std::make_unique<ActionMove>(touch_injector);
-      bool succeed = action->ParseFromJson(val);
+      bool succeed = action->ParseFromJson(*val_dict);
       if (succeed) {
         actions.emplace_back(std::move(action));
       }
@@ -191,10 +201,10 @@ TouchInjector::~TouchInjector() {
   UnRegisterEventRewriter();
 }
 
-void TouchInjector::ParseActions(const base::Value& root) {
+void TouchInjector::ParseActions(const base::Value::Dict& root) {
   DCHECK(actions_.empty());
   if (enable_mouse_lock_) {
-    ParseMouseLock(root.GetDict());
+    ParseMouseLock(root);
   }
 
   auto parsed_actions = ParseJsonToActions(this, root);
@@ -527,7 +537,7 @@ void TouchInjector::SendExtraEvent(
 }
 
 void TouchInjector::ParseMouseLock(const base::Value::Dict& dict) {
-  auto* mouse_lock = dict.Find(kMouseLock);
+  auto* mouse_lock = dict.FindDict(kMouseLock);
   if (!mouse_lock) {
     mouse_lock_ = std::make_unique<KeyCommand>(
         kDefaultMouseLockCode, /*modifier=*/0,

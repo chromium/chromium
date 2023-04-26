@@ -113,9 +113,9 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events) {
 }
 
 absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
-    const base::Value& value,
+    const base::Value::Dict& value,
     const base::StringPiece key_name) {
-  const std::string* key = value.FindStringKey(kKey);
+  const std::string* key = value.FindString(kKey);
   if (!key) {
     LOG(ERROR) << "No key-value for {" << key_name << "}.";
     return absl::nullopt;
@@ -128,10 +128,10 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     return absl::nullopt;
   }
   // "modifiers" is optional.
-  auto* modifier_list = value.FindListKey(kModifiers);
+  const base::Value::List* modifier_list = value.FindList(kModifiers);
   int modifiers = 0;
   if (modifier_list) {
-    for (const base::Value& val : modifier_list->GetList()) {
+    for (const base::Value& val : *modifier_list) {
       if (base::ToLowerASCII(val.GetString()) == kCtrl) {
         modifiers |= ui::EF_CONTROL_DOWN;
       } else if (base::ToLowerASCII(val.GetString()) == kShift) {
@@ -153,20 +153,15 @@ Action::Action(TouchInjector* touch_injector)
 
 Action::~Action() = default;
 
-bool Action::ParseFromJson(const base::Value& value) {
-  if (!value.is_dict()) {
-    LOG(ERROR) << "Value must be a dictionary.";
-    return false;
-  }
-
+bool Action::ParseFromJson(const base::Value::Dict& value) {
   // Name can be empty.
-  auto* name = value.GetDict().FindString(kName);
+  auto* name = value.FindString(kName);
   if (name) {
     name_ = *name;
   }
 
   // Unique ID is required.
-  auto id = value.GetDict().FindInt(kID);
+  auto id = value.FindInt(kID);
   if (!id) {
     LOG(ERROR) << "Must have unique ID for action {" << name_ << "}";
     return false;
@@ -174,12 +169,12 @@ bool Action::ParseFromJson(const base::Value& value) {
   id_ = *id;
 
   // Parse action device source.
-  auto* sources = value.FindListKey(kInputSources);
-  if (!sources || !sources->is_list()) {
+  const base::Value::List* sources = value.FindList(kInputSources);
+  if (!sources) {
     LOG(ERROR) << "Must have input source(s) for each action.";
     return false;
   }
-  for (auto& source : sources->GetList()) {
+  for (auto& source : *sources) {
     if (!source.is_string()) {
       LOG(ERROR) << "Must have input source(s) in string.";
       return false;
@@ -197,7 +192,7 @@ bool Action::ParseFromJson(const base::Value& value) {
   }
 
   // Location can be empty for mouse related actions.
-  const base::Value::List* position = value.GetDict().FindList(kLocation);
+  const base::Value::List* position = value.FindList(kLocation);
   if (position) {
     auto parsed_pos = ParseLocation(*position);
     if (!parsed_pos.empty()) {
@@ -210,7 +205,7 @@ bool Action::ParseFromJson(const base::Value& value) {
     }
   }
   // Parse action radius.
-  if (!ParsePositiveFraction(value.GetDict(), kRadius, &radius_)) {
+  if (!ParsePositiveFraction(value, kRadius, &radius_)) {
     return false;
   }
 

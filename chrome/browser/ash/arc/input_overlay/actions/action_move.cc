@@ -216,7 +216,7 @@ ActionMove::ActionMove(TouchInjector* touch_injector)
 
 ActionMove::~ActionMove() = default;
 
-bool ActionMove::ParseFromJson(const base::Value& value) {
+bool ActionMove::ParseFromJson(const base::Value::Dict& value) {
   Action::ParseFromJson(value);
   if (parsed_input_sources_ == InputSource::IS_KEYBOARD) {
     if (original_positions_.empty()) {
@@ -242,8 +242,8 @@ bool ActionMove::InitFromEditor() {
   return true;
 }
 
-bool ActionMove::ParseJsonFromKeyboard(const base::Value& value) {
-  const auto* list = value.GetDict().FindList(kKeys);
+bool ActionMove::ParseJsonFromKeyboard(const base::Value::Dict& value) {
+  const auto* list = value.FindList(kKeys);
   if (!list) {
     LOG(ERROR) << "Require key codes for move key action: " << name_ << ".";
     return false;
@@ -277,8 +277,8 @@ bool ActionMove::ParseJsonFromKeyboard(const base::Value& value) {
   return true;
 }
 
-bool ActionMove::ParseJsonFromMouse(const base::Value& value) {
-  const auto* mouse_action = value.FindStringKey(kMouseAction);
+bool ActionMove::ParseJsonFromMouse(const base::Value::Dict& value) {
+  const auto* mouse_action = value.FindString(kMouseAction);
   if (!mouse_action) {
     LOG(ERROR) << "Must include mouse action for mouse-bound move action.";
     return false;
@@ -292,7 +292,7 @@ bool ActionMove::ParseJsonFromMouse(const base::Value& value) {
   original_input_ = InputElement::CreateActionMoveMouseElement(*mouse_action);
   current_input_ = InputElement::CreateActionMoveMouseElement(*mouse_action);
 
-  const auto* target_area = value.GetDict().FindDict(kTargetArea);
+  const auto* target_area = value.FindDict(kTargetArea);
   if (target_area) {
     auto top_left = ParseApplyAreaPosition(*target_area, kTopLeft);
     if (!top_left) {

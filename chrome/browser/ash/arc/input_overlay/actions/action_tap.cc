@@ -199,7 +199,7 @@ class ActionTap::ActionTapView : public ActionView {
 ActionTap::ActionTap(TouchInjector* touch_injector) : Action(touch_injector) {}
 ActionTap::~ActionTap() = default;
 
-bool ActionTap::ParseFromJson(const base::Value& value) {
+bool ActionTap::ParseFromJson(const base::Value::Dict& value) {
   Action::ParseFromJson(value);
   if (original_positions_.empty()) {
     LOG(ERROR) << "Require at least one location for tap action {" << name_
@@ -221,7 +221,7 @@ bool ActionTap::InitFromEditor() {
   return true;
 }
 
-bool ActionTap::ParseJsonFromKeyboard(const base::Value& value) {
+bool ActionTap::ParseJsonFromKeyboard(const base::Value::Dict& value) {
   auto key = ParseKeyboardKey(value, name_);
   if (!key) {
     LOG(ERROR) << "No/invalid key code for key tap action {" << name_ << "}.";
@@ -235,8 +235,8 @@ bool ActionTap::ParseJsonFromKeyboard(const base::Value& value) {
   return true;
 }
 
-bool ActionTap::ParseJsonFromMouse(const base::Value& value) {
-  const std::string* mouse_action = value.FindStringKey(kMouseAction);
+bool ActionTap::ParseJsonFromMouse(const base::Value::Dict& value) {
+  const std::string* mouse_action = value.FindString(kMouseAction);
   if (!mouse_action) {
     LOG(ERROR) << "Must include mouse action for mouse move action.";
     return false;

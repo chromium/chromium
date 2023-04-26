@@ -222,8 +222,9 @@ class ActionViewTest : public views::ViewsTestBase {
             [&](std::unique_ptr<AppDataProto>, std::string) {}));
     touch_injector_->set_allow_reposition(true);
     touch_injector_->ParseActions(
-        *base::JSONReader::ReadAndReturnValueWithError(
-            kValidJsonActionMoveKey));
+        base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveKey)
+            .value()
+            .TakeDict());
     touch_injector_->RegisterEventRewriter();
     display_overlay_controller_ = std::make_unique<DisplayOverlayController>(
         touch_injector_.get(), false);
