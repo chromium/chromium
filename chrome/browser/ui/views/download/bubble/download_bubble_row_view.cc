@@ -123,6 +123,8 @@ class TransparentButton : public views::Button {
     }
   }
 
+  void NotifyClickForTesting(const ui::Event& event) { NotifyClick(event); }
+
  private:
   raw_ptr<DownloadBubbleRowView> row_view_;
 };
@@ -643,8 +645,7 @@ void DownloadBubbleRowView::OnMainButtonPressed() {
     navigation_handler_->OpenSecurityDialog(this);
   } else {
     RecordDownloadOpenButtonPressed(model_->IsDone());
-    DownloadCommands(model_->GetWeakPtr())
-        .ExecuteCommand(DownloadCommands::OPEN_WHEN_COMPLETE);
+    model_->OpenDownload();
   }
 }
 
@@ -1021,6 +1022,12 @@ void DownloadBubbleRowView::UnregisterAccelerators(
   }
 
   focus_manager->UnregisterAccelerator(accelerator, this);
+}
+
+void DownloadBubbleRowView::SimulateMainButtonClickForTesting(
+    const ui::Event& event) {
+  static_cast<TransparentButton*>(transparent_button_)
+      ->NotifyClickForTesting(event);  // IN-TEST
 }
 
 BEGIN_METADATA(DownloadBubbleRowView, views::View)
