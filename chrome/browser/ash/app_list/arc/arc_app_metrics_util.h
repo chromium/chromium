@@ -25,11 +25,11 @@ class ArcAppMetricsUtil {
   void maybeReportInstallTimeDelta(const std::string& app_name);
 
   // Reports the number of incomplete app installs to UMA.
-  void reportIncompleteInstalls();
+  void reportMetrics();
 
  private:
-  bool installs_requested_ = false;
   std::map<std::string, base::TimeTicks> install_start_time_map_;
+  int32_t num_requests_ = 0;
 };
 
 }  // namespace arc

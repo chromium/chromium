@@ -17,6 +17,8 @@ constexpr char kManualInstallTimeDeltaHistogram[] =
     "Arc.AppInstall.Manual.InitialSession.TimeDelta";
 constexpr char kManualInstallIncompleteHistogram[] =
     "Arc.AppInstall.Manual.InitialSession.NumAppsIncomplete";
+constexpr char kManualInstallRequestedHistogram[] =
+    "Arc.AppInstall.Manual.InitialSession.NumAppsRequested";
 
 }  // namespace
 
@@ -41,8 +43,9 @@ TEST_F(ArcAppMetricsUtilTest, DoNotRecordTimeDeltaWhenNoStartExists) {
 }
 
 TEST_F(ArcAppMetricsUtilTest, DoNotRecordIncompleteWhenNoInstallsRequested) {
-  arc_app_metrics_util_.reportIncompleteInstalls();
+  arc_app_metrics_util_.reportMetrics();
   tester_.ExpectTotalCount(kManualInstallIncompleteHistogram, 0);
+  tester_.ExpectUniqueSample(kManualInstallRequestedHistogram, 0, 1);
 }
 
 TEST_F(ArcAppMetricsUtilTest, RecordCorrectTimeDeltaForOnePackage) {
@@ -73,26 +76,29 @@ TEST_F(ArcAppMetricsUtilTest, RecordCorrectTimeDeltaForTwoPackages) {
 TEST_F(ArcAppMetricsUtilTest, RecordZeroIncompleteInstalls) {
   arc_app_metrics_util_.recordAppInstallStartTime(kPackageName);
   arc_app_metrics_util_.maybeReportInstallTimeDelta(kPackageName);
-  arc_app_metrics_util_.reportIncompleteInstalls();
+  arc_app_metrics_util_.reportMetrics();
 
   tester_.ExpectUniqueSample(kManualInstallIncompleteHistogram, 0, 1);
+  tester_.ExpectUniqueSample(kManualInstallRequestedHistogram, 1, 1);
 }
 
 TEST_F(ArcAppMetricsUtilTest, RecordOneIncompleteInstall) {
   arc_app_metrics_util_.recordAppInstallStartTime(kPackageName);
   arc_app_metrics_util_.recordAppInstallStartTime(kPackageName2);
   arc_app_metrics_util_.maybeReportInstallTimeDelta(kPackageName);
-  arc_app_metrics_util_.reportIncompleteInstalls();
+  arc_app_metrics_util_.reportMetrics();
 
   tester_.ExpectUniqueSample(kManualInstallIncompleteHistogram, 1, 1);
+  tester_.ExpectUniqueSample(kManualInstallRequestedHistogram, 2, 1);
 }
 
 TEST_F(ArcAppMetricsUtilTest, RecordTwoIncompleteInstalls) {
   arc_app_metrics_util_.recordAppInstallStartTime(kPackageName);
   arc_app_metrics_util_.recordAppInstallStartTime(kPackageName2);
-  arc_app_metrics_util_.reportIncompleteInstalls();
+  arc_app_metrics_util_.reportMetrics();
 
   tester_.ExpectUniqueSample(kManualInstallIncompleteHistogram, 2, 1);
+  tester_.ExpectUniqueSample(kManualInstallRequestedHistogram, 2, 1);
 }
 
 }  // namespace arc

@@ -1195,7 +1195,7 @@ void ArcAppListPrefs::OnArcPlayStoreEnabledChanged(bool enabled) {
 }
 
 void ArcAppListPrefs::OnArcSessionStopped(arc::ArcStopReason stop_reason) {
-  arc_app_metrics_util_->reportIncompleteInstalls();
+  arc_app_metrics_util_->reportMetrics();
 }
 
 void ArcAppListPrefs::SetDefaultAppsFilterLevel() {

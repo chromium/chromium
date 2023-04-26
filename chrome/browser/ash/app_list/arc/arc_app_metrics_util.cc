@@ -22,7 +22,7 @@ ArcAppMetricsUtil::~ArcAppMetricsUtil() = default;
 
 void ArcAppMetricsUtil::recordAppInstallStartTime(const std::string& app_name) {
   install_start_time_map_[app_name] = base::TimeTicks::Now();
-  installs_requested_ = true;
+  num_requests_++;
 }
 
 void ArcAppMetricsUtil::maybeReportInstallTimeDelta(
@@ -36,12 +36,16 @@ void ArcAppMetricsUtil::maybeReportInstallTimeDelta(
   }
 }
 
-void ArcAppMetricsUtil::reportIncompleteInstalls() {
-  if (installs_requested_) {
+void ArcAppMetricsUtil::reportMetrics() {
+  if (num_requests_ > 0) {
     base::UmaHistogramExactLinear(
         base::StrCat({kManualInstallHistogramBase, "NumAppsIncomplete"}),
         install_start_time_map_.size(), /*exclusive_max=*/51);
   }
+
+  base::UmaHistogramExactLinear(
+      base::StrCat({kManualInstallHistogramBase, "NumAppsRequested"}),
+      num_requests_, /*exclusive_max=*/51);
 }
 
 }  // namespace arc
