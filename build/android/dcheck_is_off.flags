@@ -10,3 +10,11 @@
 -checkdiscard class ** {
   @org.chromium.build.annotations.CheckDiscard *;
 }
+
+# We always expect ServiceLoader.load() calls to be resolved by R8.
+-whyareyounotinlining class java.util.ServiceLoader { *** load(...); }
+
+# This has a ServiceLoader.load() failure that we filter out in dex.py.
+-checkdiscard class kotlinx.coroutines.internal.FastServiceLoader {
+  *;
+}
