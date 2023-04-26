@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics/diagnostics_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/fake_diagnostics_service.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

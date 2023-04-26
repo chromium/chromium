@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics/diagnostics_service_ash.h"
 
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/telemetry_extension/diagnostics_service_converters.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics/diagnostics_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"

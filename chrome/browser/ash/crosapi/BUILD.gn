@@ -274,6 +274,7 @@ source_set("crosapi") {
     "//chrome/browser/ash/smart_reader",
     "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/ash/telemetry_extension",
+    "//chrome/browser/ash/telemetry_extension/diagnostics",
     "//chrome/browser/ash/video_conference",
     "//chrome/browser/image_decoder:image_decoder",
     "//chrome/browser/profiles:profile",

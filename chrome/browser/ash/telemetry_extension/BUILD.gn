@@ -8,10 +8,6 @@ assert(is_chromeos_ash, "Telemetry Services are ash-chrome only")
 
 source_set("telemetry_extension") {
   sources = [
-    "diagnostics_service_ash.cc",
-    "diagnostics_service_ash.h",
-    "diagnostics_service_converters.cc",
-    "diagnostics_service_converters.h",
     "probe_service_ash.cc",
     "probe_service_ash.h",
     "probe_service_converters.cc",
@@ -40,8 +36,6 @@ source_set("telemetry_extension") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "diagnostics_service_ash_unittest.cc",
-    "diagnostics_service_converters_unittest.cc",
     "probe_service_ash_unittest.cc",
     "probe_service_converters_unittest.cc",
     "telemetry_event_service_ash_unittest.cc",
@@ -49,6 +43,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":telemetry_extension",
+    "diagnostics:unit_tests",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
