@@ -35,6 +35,7 @@ class DelegatedInkPointPixelTestHelper {
 
   explicit DelegatedInkPointPixelTestHelper(DirectRenderer* renderer);
   void SetRendererAndCreateInkRenderer(DirectRenderer* renderer);
+  void DropRenderer();
 
   void CreateAndSendMetadata(const gfx::PointF& point,
                              float diameter,

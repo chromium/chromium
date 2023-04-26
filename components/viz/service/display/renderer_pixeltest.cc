@@ -5515,6 +5515,11 @@ class DelegatedInkTest : public VizPixelTestWithParam,
     SetRendererAndCreateInkRenderer(VizPixelTestWithParam::renderer_.get());
   }
 
+  void TearDown() override {
+    DropRenderer();
+    VizPixelTestWithParam::TearDown();
+  }
+
   std::unique_ptr<AggregatedRenderPass> CreateTestRootRenderPass(
       AggregatedRenderPassId id,
       const gfx::Rect& output_rect,
