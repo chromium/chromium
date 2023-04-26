@@ -99,12 +99,6 @@ class WallpaperControllerClientImpl
   void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // Wrappers around the ash::WallpaperController interface.
-  void SetCustomWallpaper(const AccountId& account_id,
-                          const std::string& file_name,
-                          ash::WallpaperLayout layout,
-                          const gfx::ImageSkia& image,
-                          bool preview_mode,
-                          const std::string& file_path = "");
   void SetOnlineWallpaper(
       const ash::OnlineWallpaperParams& params,
       ash::WallpaperController::SetWallpaperCallback callback);
@@ -120,10 +114,6 @@ class WallpaperControllerClientImpl
                               const std::string& file_name,
                               ash::WallpaperLayout layout,
                               const gfx::ImageSkia& image);
-  void ConfirmPreviewWallpaper();
-  void CancelPreviewWallpaper();
-  void UpdateCurrentWallpaperLayout(const AccountId& account_id,
-                                    ash::WallpaperLayout layout);
   void ShowUserWallpaper(const AccountId& account_id);
   void ShowSigninWallpaper();
   void ShowOverrideWallpaper(const base::FilePath& image_path,
@@ -132,17 +122,10 @@ class WallpaperControllerClientImpl
   void RemoveUserWallpaper(const AccountId& account_id,
                            base::OnceClosure on_removed);
   void RemovePolicyWallpaper(const AccountId& account_id);
-  void SetAnimationDuration(const base::TimeDelta& animation_duration);
-  void OpenWallpaperPickerIfAllowed();
-  void MinimizeInactiveWindows(const std::string& user_id_hash);
-  void RestoreMinimizedWindows(const std::string& user_id_hash);
   void AddObserver(ash::WallpaperControllerObserver* observer);
   void RemoveObserver(ash::WallpaperControllerObserver* observer);
   gfx::ImageSkia GetWallpaperImage();
-  bool IsWallpaperBlurred();
-  bool IsActiveUserWallpaperControlledByPolicy();
   absl::optional<ash::WallpaperInfo> GetActiveUserWallpaperInfo();
-  bool ShouldShowWallpaperSetting();
   // Record Ash.Wallpaper.Source metric when a new wallpaper is set,
   // either by built-in Wallpaper app or a third party extension/app.
   void RecordWallpaperSourceUMA(const ash::WallpaperType type);
@@ -163,10 +146,6 @@ class WallpaperControllerClientImpl
   bool ShouldShowUserNamesOnLogin() const;
 
   base::FilePath GetDeviceWallpaperImageFilePath();
-
-  // Passes |collection_id| to wallpaper controller on main task runner.
-  void SetDailyRefreshCollectionId(const AccountId& account_id,
-                                   const std::string& collection_id);
 
   void OnDailyImageInfoFetched(DailyWallpaperUrlFetchedCallback callback,
                                bool success,
