@@ -164,7 +164,6 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
   base::Value::Dict value = base::test::ParseJsonDict(kJson);
 
   auto result = ParseAttributionInteropInput(std::move(value), kOffsetTime);
-
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_EQ(result->size(), 2u);
 
@@ -222,7 +221,6 @@ TEST(AttributionInteropParserTest, ValidTriggerParses) {
   base::Value::Dict value = base::test::ParseJsonDict(kJson);
 
   auto result = ParseAttributionInteropInput(std::move(value), kOffsetTime);
-
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(result->size(), 1u);
 
@@ -678,7 +676,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
     base::Value::Dict json = base::test::ParseJsonDict(test_case.json);
     if (test_case.required) {
       auto result = ParseAttributionConfig(json);
-      EXPECT_TRUE(result.has_value()) << json;
+      ASSERT_TRUE(result.has_value()) << json;
       EXPECT_EQ(result, test_case.expected) << json;
     } else {
       AttributionConfig config;

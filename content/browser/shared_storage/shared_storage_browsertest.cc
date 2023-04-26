@@ -937,9 +937,10 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
   // sharedStorage.selectURL() on 8 urls. If `parent_node` is not specified,
   // the primary frame tree's root node will be chosen. This generates an URN
   // associated with `origin` and 3 bits of shared storage budget.
-  GURL SelectFrom8URLsInContext(const url::Origin& origin,
-                                FrameTreeNode* parent_node = nullptr,
-                                bool keep_alive_after_operation = true) {
+  absl::optional<GURL> SelectFrom8URLsInContext(
+      const url::Origin& origin,
+      FrameTreeNode* parent_node = nullptr,
+      bool keep_alive_after_operation = true) {
     if (!parent_node)
       parent_node = PrimaryFrameTreeNodeRoot();
 
@@ -993,18 +994,18 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
     EXPECT_TRUE(result.error.empty());
     const absl::optional<GURL>& observed_urn_uuid =
         config_observer.GetUrnUuid();
-    EXPECT_TRUE(observed_urn_uuid.has_value());
-    EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+    if (observed_urn_uuid.has_value()) {
+      EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
-    if (!ResolveSelectURLToConfig()) {
-      EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+      if (!ResolveSelectURLToConfig()) {
+        EXPECT_EQ(result.ExtractString(), observed_urn_uuid->spec());
+      }
+
+      test_worklet_host_manager()
+          .GetAttachedWorkletHostForFrame(iframe->current_frame_host())
+          ->WaitForWorkletResponses();
     }
-
-    test_worklet_host_manager()
-        .GetAttachedWorkletHostForFrame(iframe->current_frame_host())
-        ->WaitForWorkletResponses();
-
-    return observed_urn_uuid.value();
+    return observed_urn_uuid;
   }
 
   // Prerequisite: The worklet for `frame` has registered a
@@ -4555,10 +4556,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageAllowURNsInIframesBrowserTest,
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
+  absl::optional<GURL> urn_uuid =
+      SelectFrom8URLsInContext(shared_storage_origin);
+  ASSERT_TRUE(urn_uuid.has_value());
 
   FrameTreeNode* iframe_node =
-      CreateIFrame(PrimaryFrameTreeNodeRoot(), urn_uuid);
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), *urn_uuid);
 
   EXPECT_EQ(iframe_node->current_url(),
             https_server()->GetURL("b.test", "/fenced_frames/title1.html"));
@@ -4927,8 +4930,10 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
-  GURL urn_uuid = SelectFrom8URLsInContext(url::Origin::Create(main_url));
-  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
+  absl::optional<GURL> urn_uuid =
+      SelectFrom8URLsInContext(url::Origin::Create(main_url));
+  ASSERT_TRUE(urn_uuid.has_value());
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(*urn_uuid));
 
   FrameTreeNode* iframe_node = PrimaryFrameTreeNodeRoot()->child_at(0);
 
@@ -4939,7 +4944,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   observer.Wait();
 
   // Verify that the `urn_uuid` is still valid in the main page.
-  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(*urn_uuid);
   EXPECT_EQ(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
@@ -4949,7 +4954,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   GURL new_page_main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), new_page_main_url));
 
-  fenced_frame_root_node = CreateFencedFrame(urn_uuid);
+  fenced_frame_root_node = CreateFencedFrame(*urn_uuid);
   EXPECT_NE(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
@@ -5350,9 +5355,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
+  absl::optional<GURL> urn_uuid =
+      SelectFrom8URLsInContext(shared_storage_origin);
+  ASSERT_TRUE(urn_uuid.has_value());
 
-  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(*urn_uuid);
 
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin), kBudgetAllowed);
   EXPECT_DOUBLE_EQ(
@@ -5382,9 +5389,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
+  absl::optional<GURL> urn_uuid =
+      SelectFrom8URLsInContext(shared_storage_origin);
+  ASSERT_TRUE(urn_uuid.has_value());
 
-  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(*urn_uuid);
 
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin), kBudgetAllowed);
   EXPECT_DOUBLE_EQ(
@@ -5420,9 +5429,11 @@ IN_PROC_BROWSER_TEST_F(
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
+  absl::optional<GURL> urn_uuid =
+      SelectFrom8URLsInContext(shared_storage_origin);
+  ASSERT_TRUE(urn_uuid.has_value());
 
-  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(*urn_uuid);
 
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin), kBudgetAllowed);
   EXPECT_DOUBLE_EQ(
@@ -5468,9 +5479,11 @@ IN_PROC_BROWSER_TEST_F(
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
+  absl::optional<GURL> urn_uuid =
+      SelectFrom8URLsInContext(shared_storage_origin);
+  ASSERT_TRUE(urn_uuid.has_value());
 
-  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(*urn_uuid);
 
   {
     GURL new_frame_url = https_server()->GetURL("c.test", kFencedFramePath);
@@ -5518,9 +5531,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
+  absl::optional<GURL> urn_uuid =
+      SelectFrom8URLsInContext(shared_storage_origin);
+  ASSERT_TRUE(urn_uuid.has_value());
 
-  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(*urn_uuid);
 
   GURL nested_fenced_frame_url =
       https_server()->GetURL("c.test", kFencedFramePath);
@@ -5560,17 +5575,20 @@ IN_PROC_BROWSER_TEST_F(
   url::Origin shared_storage_origin_1 =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  GURL urn_uuid_1 = SelectFrom8URLsInContext(shared_storage_origin_1);
-  FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(urn_uuid_1);
+  absl::optional<GURL> urn_uuid_1 =
+      SelectFrom8URLsInContext(shared_storage_origin_1);
+  ASSERT_TRUE(urn_uuid_1.has_value());
+  FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(*urn_uuid_1);
 
   url::Origin shared_storage_origin_2 =
       url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
 
-  GURL urn_uuid_2 = SelectFrom8URLsInContext(shared_storage_origin_2,
-                                             fenced_frame_root_node_1);
+  absl::optional<GURL> urn_uuid_2 = SelectFrom8URLsInContext(
+      shared_storage_origin_2, fenced_frame_root_node_1);
+  ASSERT_TRUE(urn_uuid_2.has_value());
 
   FrameTreeNode* fenced_frame_root_node_2 =
-      CreateFencedFrame(fenced_frame_root_node_1, urn_uuid_2);
+      CreateFencedFrame(fenced_frame_root_node_1, *urn_uuid_2);
 
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin_1), kBudgetAllowed);
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin_2), kBudgetAllowed);
@@ -5641,17 +5659,20 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin_1 =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  GURL urn_uuid_1 = SelectFrom8URLsInContext(shared_storage_origin_1);
-  FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(urn_uuid_1);
+  absl::optional<GURL> urn_uuid_1 =
+      SelectFrom8URLsInContext(shared_storage_origin_1);
+  ASSERT_TRUE(urn_uuid_1.has_value());
+  FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(*urn_uuid_1);
 
   url::Origin shared_storage_origin_2 =
       url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
 
-  GURL urn_uuid_2 = SelectFrom8URLsInContext(shared_storage_origin_2,
-                                             fenced_frame_root_node_1);
+  absl::optional<GURL> urn_uuid_2 = SelectFrom8URLsInContext(
+      shared_storage_origin_2, fenced_frame_root_node_1);
+  ASSERT_TRUE(urn_uuid_2.has_value());
 
   FrameTreeNode* fenced_frame_root_node_2 =
-      CreateFencedFrame(fenced_frame_root_node_1, urn_uuid_2);
+      CreateFencedFrame(fenced_frame_root_node_1, *urn_uuid_2);
 
   EXPECT_TRUE(ExecJs(fenced_frame_root_node_2, R"(
       sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
@@ -5689,9 +5710,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
+  absl::optional<GURL> urn_uuid =
+      SelectFrom8URLsInContext(shared_storage_origin);
+  ASSERT_TRUE(urn_uuid.has_value());
 
-  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(*urn_uuid);
 
   GURL nested_fenced_frame_url =
       https_server()->GetURL("c.test", kFencedFramePath);
@@ -5730,9 +5753,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
+  absl::optional<GURL> urn_uuid =
+      SelectFrom8URLsInContext(shared_storage_origin);
+  ASSERT_TRUE(urn_uuid.has_value());
 
-  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(*urn_uuid);
 
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin), kBudgetAllowed);
   EXPECT_DOUBLE_EQ(
@@ -5899,10 +5924,12 @@ IN_PROC_BROWSER_TEST_F(
 
   url::Origin shared_storage_origin = url::Origin::Create(main_url);
 
-  GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
+  absl::optional<GURL> urn_uuid =
+      SelectFrom8URLsInContext(shared_storage_origin);
+  ASSERT_TRUE(urn_uuid.has_value());
 
-  FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(urn_uuid);
-  FrameTreeNode* fenced_frame_root_node_2 = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(*urn_uuid);
+  FrameTreeNode* fenced_frame_root_node_2 = CreateFencedFrame(*urn_uuid);
 
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin), kBudgetAllowed);
   EXPECT_DOUBLE_EQ(
@@ -6150,9 +6177,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest,
 
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
-  GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
+  absl::optional<GURL> urn_uuid =
+      SelectFrom8URLsInContext(shared_storage_origin);
+  ASSERT_TRUE(urn_uuid.has_value());
 
-  FrameTreeNode* fenced_frame_node = CreateFencedFrame(urn_uuid);
+  FrameTreeNode* fenced_frame_node = CreateFencedFrame(*urn_uuid);
 
   EXPECT_TRUE(ExecJs(fenced_frame_node, R"(
       sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
@@ -6693,15 +6722,16 @@ class SharedStorageSelectURLLimitBrowserTest
       std::string host_str,
       int num_urls,
       WebContentsConsoleObserver* console_observer) {
-    std::pair<GURL, double> result_pair =
+    absl::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(shell(), host_str,
                                                          num_urls);
+    ASSERT_TRUE(result_pair.has_value());
 
     GURL expected_mapped_url = https_server()->GetURL(
         host_str, base::StrCat({"/fenced_frames/title",
                                 base::NumberToString(num_urls - 1), ".html"}));
-    EXPECT_EQ(result_pair.first, expected_mapped_url);
-    EXPECT_DOUBLE_EQ(result_pair.second, std::log2(num_urls));
+    EXPECT_EQ(result_pair->first, expected_mapped_url);
+    EXPECT_DOUBLE_EQ(result_pair->second, std::log2(num_urls));
 
     EXPECT_EQ("Finish executing 'test-url-selection-operation'",
               base::UTF16ToUTF8(console_observer->messages().back().message));
@@ -6719,15 +6749,16 @@ class SharedStorageSelectURLLimitBrowserTest
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
 
-    std::pair<GURL, double> result_pair =
+    absl::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(iframe_node, host_str,
                                                          num_urls);
+    ASSERT_TRUE(result_pair.has_value());
 
     GURL expected_mapped_url = https_server()->GetURL(
         host_str, base::StrCat({"/fenced_frames/title",
                                 base::NumberToString(num_urls - 1), ".html"}));
-    EXPECT_EQ(result_pair.first, expected_mapped_url);
-    EXPECT_DOUBLE_EQ(result_pair.second, std::log2(num_urls));
+    EXPECT_EQ(result_pair->first, expected_mapped_url);
+    EXPECT_DOUBLE_EQ(result_pair->second, std::log2(num_urls));
 
     EXPECT_EQ("Finish executing 'test-url-selection-operation'",
               base::UTF16ToUTF8(console_observer->messages().back().message));
@@ -6735,7 +6766,8 @@ class SharedStorageSelectURLLimitBrowserTest
 
   // Precondition: `addModule('shared_storage/simple_module.js')` has been
   // called in the `execution_target`.
-  std::pair<GURL, double> RunSelectURLExtractingMappedURLAndBudgetToCharge(
+  absl::optional<std::pair<GURL, double>>
+  RunSelectURLExtractingMappedURLAndBudgetToCharge(
       const ToRenderFrameHost& execution_target,
       std::string host_str,
       int num_urls) {
@@ -6752,7 +6784,9 @@ class SharedStorageSelectURLLimitBrowserTest
     EXPECT_TRUE(result.error.empty()) << result.error;
     const absl::optional<GURL>& observed_urn_uuid =
         config_observer.GetUrnUuid();
-    EXPECT_TRUE(observed_urn_uuid.has_value());
+    if (!observed_urn_uuid.has_value()) {
+      return absl::nullopt;
+    }
     EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
     if (!ResolveSelectURLToConfig()) {
@@ -6765,12 +6799,16 @@ class SharedStorageSelectURLLimitBrowserTest
 
     const absl::optional<FencedFrameConfig>& config =
         config_observer.GetConfig();
-    EXPECT_TRUE(config.has_value());
+    if (!config.has_value()) {
+      return absl::nullopt;
+    }
     EXPECT_TRUE(config->mapped_url_.has_value());
 
     SharedStorageBudgetMetadata* metadata =
         GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
-    EXPECT_TRUE(metadata);
+    if (!metadata) {
+      return absl::nullopt;
+    }
     EXPECT_EQ(metadata->origin, https_server()->GetOrigin(host_str));
 
     return std::make_pair(config->mapped_url_->GetValueIgnoringVisibility(),
@@ -6857,14 +6895,15 @@ IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
     // The limit for `selectURL()` has now been reached for "a.test". Make one
     // more call, which will return the default URL due to insufficient origin
     // pageload budget.
-    std::pair<GURL, double> result_pair =
+    absl::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(shell(), "a.test",
                                                          /*num_urls=*/8);
+    ASSERT_TRUE(result_pair.has_value());
 
     GURL expected_mapped_url =
         https_server()->GetURL("a.test", "/fenced_frames/title0.html");
-    EXPECT_EQ(result_pair.first, expected_mapped_url);
-    EXPECT_DOUBLE_EQ(result_pair.second, 0.0);
+    EXPECT_EQ(result_pair->first, expected_mapped_url);
+    EXPECT_DOUBLE_EQ(result_pair->second, 0.0);
 
     EXPECT_EQ("Insufficient budget for selectURL().",
               base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -6915,14 +6954,15 @@ IN_PROC_BROWSER_TEST_P(
     // The limit for `selectURL()` has now been reached for "a.test". Make one
     // more call, which will return the default URL due to insufficient origin
     // pageload budget.
-    std::pair<GURL, double> result_pair =
+    absl::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(shell(), "a.test",
                                                          /*num_urls=*/4);
+    ASSERT_TRUE(result_pair.has_value());
 
     GURL expected_mapped_url =
         https_server()->GetURL("a.test", "/fenced_frames/title0.html");
-    EXPECT_EQ(result_pair.first, expected_mapped_url);
-    EXPECT_DOUBLE_EQ(result_pair.second, 0.0);
+    EXPECT_EQ(result_pair->first, expected_mapped_url);
+    EXPECT_DOUBLE_EQ(result_pair->second, 0.0);
 
     EXPECT_EQ("Insufficient budget for selectURL().",
               base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -6977,14 +7017,15 @@ IN_PROC_BROWSER_TEST_P(
     // The limit for `selectURL()` has now been reached for "b.test". Make one
     // more call, which will return the default URL due to insufficient origin
     // pageload budget.
-    std::pair<GURL, double> result_pair =
+    absl::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(iframe_node, "b.test",
                                                          /*num_urls=*/8);
+    ASSERT_TRUE(result_pair.has_value());
 
     GURL expected_mapped_url =
         https_server()->GetURL("b.test", "/fenced_frames/title0.html");
-    EXPECT_EQ(result_pair.first, expected_mapped_url);
-    EXPECT_DOUBLE_EQ(result_pair.second, 0.0);
+    EXPECT_EQ(result_pair->first, expected_mapped_url);
+    EXPECT_DOUBLE_EQ(result_pair->second, 0.0);
 
     EXPECT_EQ("Insufficient budget for selectURL().",
               base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -7048,15 +7089,16 @@ IN_PROC_BROWSER_TEST_P(
     // The limit for `selectURL()` has now been reached for "b.test". Make one
     // more call, which will return the default URL due to insufficient origin
     // pageload budget.
-    std::pair<GURL, double> result_pair =
+    absl::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(last_iframe_node,
                                                          "b.test",
                                                          /*num_urls=*/4);
+    ASSERT_TRUE(result_pair.has_value());
 
     GURL expected_mapped_url =
         https_server()->GetURL("b.test", "/fenced_frames/title0.html");
-    EXPECT_EQ(result_pair.first, expected_mapped_url);
-    EXPECT_DOUBLE_EQ(result_pair.second, 0.0);
+    EXPECT_EQ(result_pair->first, expected_mapped_url);
+    EXPECT_DOUBLE_EQ(result_pair->second, 0.0);
 
     EXPECT_EQ("Insufficient budget for selectURL().",
               base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -7111,15 +7153,16 @@ IN_PROC_BROWSER_TEST_P(
     // The limit for `selectURL()` has now been reached for "b.test". Make one
     // more call, which will return the default URL due to insufficient origin
     // pageload budget.
-    std::pair<GURL, double> result_pair =
+    absl::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(
             penultimate_iframe_node, "b.test",
             /*num_urls=*/4);
+    ASSERT_TRUE(result_pair.has_value());
 
     GURL expected_mapped_url =
         https_server()->GetURL("b.test", "/fenced_frames/title0.html");
-    EXPECT_EQ(result_pair.first, expected_mapped_url);
-    EXPECT_DOUBLE_EQ(result_pair.second, 0.0);
+    EXPECT_EQ(result_pair->first, expected_mapped_url);
+    EXPECT_DOUBLE_EQ(result_pair->second, 0.0);
 
     EXPECT_EQ("Insufficient budget for selectURL().",
               base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -7201,15 +7244,16 @@ IN_PROC_BROWSER_TEST_P(
       // The limit for `selectURL()` has now been reached for `iframe_host`.
       // Make one more call, which will return the default URL due to
       // insufficient origin pageload budget.
-      std::pair<GURL, double> result_pair =
+      absl::optional<std::pair<GURL, double>> result_pair =
           RunSelectURLExtractingMappedURLAndBudgetToCharge(
               last_loop_iframe_node, iframe_host,
               /*num_urls=*/2);
+      ASSERT_TRUE(result_pair.has_value());
 
       GURL expected_mapped_url =
           https_server()->GetURL(iframe_host, "/fenced_frames/title0.html");
-      EXPECT_EQ(result_pair.first, expected_mapped_url);
-      EXPECT_DOUBLE_EQ(result_pair.second, 0.0);
+      EXPECT_EQ(result_pair->first, expected_mapped_url);
+      EXPECT_DOUBLE_EQ(result_pair->second, 0.0);
 
       EXPECT_EQ("Insufficient budget for selectURL().",
                 base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -7249,15 +7293,16 @@ IN_PROC_BROWSER_TEST_P(
     // The overall pageload limit for `selectURL()` has now been reached. Make
     // one more call, which will return the default URL due to insufficient
     // overall pageload budget.
-    std::pair<GURL, double> result_pair =
+    absl::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(final_iframe_node,
                                                          iframe_host,
                                                          /*num_urls=*/2);
+    ASSERT_TRUE(result_pair.has_value());
 
     GURL expected_mapped_url =
         https_server()->GetURL(iframe_host, "/fenced_frames/title0.html");
-    EXPECT_EQ(result_pair.first, expected_mapped_url);
-    EXPECT_DOUBLE_EQ(result_pair.second, 0.0);
+    EXPECT_EQ(result_pair->first, expected_mapped_url);
+    EXPECT_DOUBLE_EQ(result_pair->second, 0.0);
 
     EXPECT_EQ("Insufficient budget for selectURL().",
               base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -7328,7 +7373,7 @@ class SharedStorageContextBrowserTest
     EXPECT_TRUE(result.error.empty());
     const absl::optional<GURL>& observed_urn_uuid =
         config_observer.GetUrnUuid();
-    EXPECT_TRUE(observed_urn_uuid.has_value());
+    ASSERT_TRUE(observed_urn_uuid.has_value());
     EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
     test_worklet_host_manager()

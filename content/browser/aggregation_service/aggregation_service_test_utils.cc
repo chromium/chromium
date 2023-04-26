@@ -308,44 +308,40 @@ TestHpkeKey GenerateKey(std::string key_id) {
 absl::optional<PublicKeyset> ReadAndParsePublicKeys(const base::FilePath& file,
                                                     base::Time now,
                                                     std::string* error_msg) {
-  if (!base::PathExists(file)) {
-    if (error_msg)
-      *error_msg = base::StrCat({"Failed to open file: ", file.MaybeAsASCII()});
+  const auto keyset = [&]() -> base::expected<PublicKeyset, std::string> {
+    if (!base::PathExists(file)) {
+      return base::unexpected("Failed to open file: " + file.MaybeAsASCII());
+    }
 
-    return absl::nullopt;
-  }
+    std::string contents;
+    if (!base::ReadFileToString(file, &contents)) {
+      return base::unexpected("Failed to read file: " + file.MaybeAsASCII());
+    }
 
-  std::string contents;
-  if (!base::ReadFileToString(file, &contents)) {
-    if (error_msg)
-      *error_msg = base::StrCat({"Failed to read file: ", file.MaybeAsASCII()});
-
-    return absl::nullopt;
-  }
-
-  auto value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(contents);
-  if (!value_with_error.has_value()) {
-    if (error_msg) {
-      *error_msg =
+    auto value_with_error =
+        base::JSONReader::ReadAndReturnValueWithError(contents);
+    if (!value_with_error.has_value()) {
+      return base::unexpected(
           base::StrCat({"Failed to parse \"", contents,
-                        "\" as JSON: ", value_with_error.error().message});
-    }
-    return absl::nullopt;
-  }
-
-  std::vector<PublicKey> keys = GetPublicKeys(*value_with_error);
-  if (keys.empty()) {
-    if (error_msg) {
-      *error_msg =
-          base::StrCat({"Failed to parse public keys from \"", contents, "\""});
+                        "\" as JSON: ", value_with_error.error().message}));
     }
 
-    return absl::nullopt;
-  }
+    std::vector<PublicKey> keys = GetPublicKeys(*value_with_error);
+    if (keys.empty()) {
+      return base::unexpected(base::StrCat(
+          {"Failed to parse public keys from \"", contents, "\""}));
+    }
 
-  return PublicKeyset(std::move(keys), /*fetch_time=*/now,
-                      /*expiry_time=*/base::Time::Max());
+    return PublicKeyset(std::move(keys), /*fetch_time=*/now,
+                        /*expiry_time=*/base::Time::Max());
+  }();
+  if (keyset.has_value()) {
+    return keyset.value();
+  }
+  if (error_msg) {
+    *error_msg = keyset.error();
+  }
+  return absl::nullopt;
 }
 
 std::vector<uint8_t> DecryptPayloadWithHpke(

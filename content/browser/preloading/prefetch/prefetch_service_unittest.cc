@@ -333,7 +333,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         "Upgrade-Insecure-Requests", &upgrade_insecure_request_value));
     EXPECT_EQ(upgrade_insecure_request_value, "1");
 
-    EXPECT_TRUE(request->request.trusted_params.has_value());
+    ASSERT_TRUE(request->request.trusted_params.has_value());
     VerifyIsolationInfo(request->request.trusted_params->isolation_info);
   }
 

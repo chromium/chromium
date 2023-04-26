@@ -146,7 +146,7 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
   // Validation fails with an error.
   auto [success, warnings] =
       FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
-  EXPECT_FALSE(success.has_value());
+  ASSERT_FALSE(success.has_value());
   // An appropriate ParseError is returned.
   EXPECT_EQ(success.error(), FirstPartySetsHandler::ParseError(
                                  ParseErrorType::kNonDisjointSets,

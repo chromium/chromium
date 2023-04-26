@@ -569,6 +569,7 @@ class CacheStorageCacheTest : public testing::Test {
                              expected_blob_data_.end()));
 
     auto bucket_locator = GetOrCreateBucket(kTestUrl);
+    ASSERT_TRUE(bucket_locator.has_value());
     // Use a mock CacheStorage object so we can use real
     // CacheStorageCacheHandle reference counting.  A CacheStorage
     // must be present to be notified when a cache becomes unreferenced.
@@ -577,9 +578,9 @@ class CacheStorageCacheTest : public testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), quota_manager_proxy_,
         blob_storage_context_, /* cache_storage_manager = */ nullptr,
-        bucket_locator, storage::mojom::CacheStorageOwner::kCacheAPI);
+        *bucket_locator, storage::mojom::CacheStorageOwner::kCacheAPI);
 
-    InitCache(mock_cache_storage_.get(), bucket_locator);
+    InitCache(mock_cache_storage_.get(), *bucket_locator);
   }
 
   void TearDown() override {
@@ -587,7 +588,8 @@ class CacheStorageCacheTest : public testing::Test {
     content::RunAllTasksUntilIdle();
   }
 
-  storage::BucketLocator GetOrCreateBucket(const GURL& url) {
+  storage::QuotaErrorOr<storage::BucketLocator> GetOrCreateBucket(
+      const GURL& url) {
     const auto storage_key =
         blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
@@ -595,9 +597,7 @@ class CacheStorageCacheTest : public testing::Test {
         storage::BucketInitParams(storage_key, storage::kDefaultBucketName),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         future.GetCallback());
-    auto bucket = future.Take();
-    EXPECT_TRUE(bucket.has_value());
-    return bucket->ToBucketLocator();
+    return future.Take().transform(&storage::BucketInfo::ToBucketLocator);
   }
 
   GURL BodyUrl() const {
@@ -2399,7 +2399,9 @@ TEST_P(CacheStorageCacheTestP, UnfinishedPutsShouldNotBeReusable) {
   base::RunLoop().RunUntilIdle();
 
   // Create a new Cache in the same space.
-  InitCache(nullptr, GetOrCreateBucket(kTestUrl));
+  auto bucket = GetOrCreateBucket(kTestUrl);
+  ASSERT_TRUE(bucket.has_value());
+  InitCache(nullptr, *std::move(bucket));
 
   // Now attempt to read the same response from the cache. It should fail.
   EXPECT_FALSE(Match(body_request_));
