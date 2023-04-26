@@ -150,7 +150,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
             SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
             SigninBottomSheetCoordinator signinCoordinator =
                     new SigninBottomSheetCoordinator(windowAndroid, bottomSheetController,
-                            Profile.getLastUsedRegularProfile(), null, signinAccessPoint);
+                            Profile.getLastUsedRegularProfile(), null, null, signinAccessPoint);
             signinCoordinator.show();
         }
     }

@@ -38,9 +38,11 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private final @SigninAccessPoint int mSigninAccessPoint;
     private AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinator;
     private final Runnable mOnSigninSuccessCallback;
+    private final AccountPickerBottomSheetStrings mBottomSheetStrings;
 
     public SigninBottomSheetCoordinator(WindowAndroid windowAndroid,
             BottomSheetController controller, Profile profile,
+            @Nullable AccountPickerBottomSheetStrings bottomSheetStrings,
             @Nullable Runnable onSigninSuccessCallback, @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
         mController = controller;
@@ -49,6 +51,8 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         mSetTestToast = false;
         mOnSigninSuccessCallback = onSigninSuccessCallback;
         mSigninAccessPoint = signinAccessPoint;
+        mBottomSheetStrings =
+                bottomSheetStrings != null ? bottomSheetStrings : new BottomSheetStrings();
     }
 
     @Override
@@ -101,7 +105,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
 
     public void show() {
         mAccountPickerBottomSheetCoordinator = new AccountPickerBottomSheetCoordinator(
-                mWindowAndroid, mController, this, new BottomSheetStrings());
+                mWindowAndroid, mController, this, mBottomSheetStrings);
     }
 
     private void makeSigninNotAllowedToast() {
