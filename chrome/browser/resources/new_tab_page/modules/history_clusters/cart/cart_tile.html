@@ -42,7 +42,7 @@
     background: var(--color-new-tab-page-module-background);
     border-radius: var(--ntp-module-item-border-radius);
     height: 128px;
-    margin: 8px;
+    margin: 9px 8px;
     width: 128px;
   }
 
@@ -126,8 +126,15 @@
     height: 17px;
     justify-content: center;
     line-height: 7px;
-    margin-inline-start: 8px;
     width: 54px;
+  }
+
+  :host([one-image]) #titleAnnotation {
+    margin-inline-start: 8px;
+  }
+
+  :host([multiple-images]) #titleAnnotation {
+    margin-inline-start: 10px;
   }
 
   #infoContainer {
@@ -174,6 +181,7 @@
     border-radius: 4px;
     color: var(--color-sys-on-tertiary-container);
     font-size: 9px;
+    font-weight: 500;
     height: 17px;
     line-height: 17px;
     margin-inline-start: 10px;
