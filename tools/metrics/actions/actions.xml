@@ -19195,9 +19195,29 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileInactiveTabsCloseAll">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User pressed 'Close All Inactive' from the inactive tabs view. iOS only.
+  </description>
+</action>
+
+<action name="MobileInactiveTabsCloseAllConfirm">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User pressed 'Close All' from the 'Close All Inactive' confirmation toast.
+    iOS only.
+  </description>
+</action>
+
 <action name="MobileInactiveTabsSettingsBack">
   <owner>alionadangla@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <description>
     Reported when user goes back from Inactive Tabs Settings UI to Tabs Settings
     screen. iOS only.
@@ -19207,6 +19227,7 @@ should be able to be added at any place in this file.
 <action name="MobileInactiveTabsSettingsClose">
   <owner>alionadangla@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <description>
     Reported when Inactive Tabs Settings UI was dismissed. iOS only.
   </description>
