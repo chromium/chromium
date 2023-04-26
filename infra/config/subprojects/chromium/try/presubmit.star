@@ -152,9 +152,7 @@ presubmit_builder(
         },
         "repo_name": "chromium",
     },
-    tryjob = try_.job(
-        disable_reuse = False,
-    ),
+    tryjob = try_.job(),
 )
 
 presubmit_builder(
