@@ -135,6 +135,7 @@ suite('GooglePhotosAlbumsTest', function() {
            boolean) => test('displays error when albums fail to load', async () => {
         // Set values returned by |wallpaperProvider|.
         wallpaperProvider.setGooglePhotosAlbums(undefined);
+        wallpaperProvider.setGooglePhotosSharedAlbums(undefined);
 
         // Initialize |googlePhotosAlbumsElement|.
         googlePhotosAlbumsElement =
