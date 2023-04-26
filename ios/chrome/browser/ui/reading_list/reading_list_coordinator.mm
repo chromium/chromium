@@ -15,6 +15,7 @@
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -38,7 +39,6 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
@@ -647,8 +647,8 @@
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
   const bool syncDisabledPolicy = syncService->GetDisableReasons().Has(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
-  const bool syncTypesDisabledPolicy =
-      IsManagedSyncDataType(_prefService, SyncSetupService::kSyncReadingList);
+  const bool syncTypesDisabledPolicy = IsManagedSyncDataType(
+      _prefService, syncer::UserSelectableType::kReadingList);
   return syncDisabledPolicy || syncTypesDisabledPolicy;
 }
 

@@ -10,6 +10,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/base/pref_names.h"
+#import "components/sync/base/sync_prefs.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -20,22 +22,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Map of all synceable types to the corresponding pref name.
-constexpr auto kSyncableItemTypes =
-    base::MakeFixedFlatMap<SyncSetupService::SyncableDatatype, const char*>({
-        {SyncSetupService::kSyncAutofill, syncer::prefs::kSyncAutofill},
-        {SyncSetupService::kSyncBookmarks, syncer::prefs::kSyncBookmarks},
-        {SyncSetupService::kSyncOmniboxHistory, syncer::prefs::kSyncTypedUrls},
-        {SyncSetupService::kSyncOpenTabs, syncer::prefs::kSyncTabs},
-        {SyncSetupService::kSyncPasswords, syncer::prefs::kSyncPasswords},
-        {SyncSetupService::kSyncReadingList, syncer::prefs::kSyncReadingList},
-        {SyncSetupService::kSyncPreferences, syncer::prefs::kSyncPreferences},
-    });
-
-}  // namespace
-
 bool IsRestrictAccountsToPatternsEnabled() {
   return !GetApplicationContext()
               ->GetLocalState()
@@ -44,18 +30,17 @@ bool IsRestrictAccountsToPatternsEnabled() {
 }
 
 bool IsManagedSyncDataType(PrefService* pref_service,
-                           SyncSetupService::SyncableDatatype data_type) {
-  return pref_service->FindPreference(kSyncableItemTypes.at(data_type))
+                           syncer::UserSelectableType data_type) {
+  return pref_service
+      ->FindPreference(syncer::SyncPrefs::GetPrefNameForType(data_type))
       ->IsManaged();
 }
 
 bool HasManagedSyncDataType(PrefService* pref_service) {
-  for (int type = 0; type != SyncSetupService::kNumberOfSyncableDatatypes;
-       type++) {
-    SyncSetupService::SyncableDatatype data_type =
-        static_cast<SyncSetupService::SyncableDatatype>(type);
-    if (IsManagedSyncDataType(pref_service, data_type))
+  for (syncer::UserSelectableType type : syncer::UserSelectableTypeSet::All()) {
+    if (IsManagedSyncDataType(pref_service, type)) {
       return true;
+    }
   }
   return false;
 }

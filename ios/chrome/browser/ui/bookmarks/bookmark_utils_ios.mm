@@ -27,6 +27,7 @@
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/query_parser/query_parser.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -182,9 +183,9 @@ bool ShouldDisplayCloudSlashIconForProfileModel(
           bookmarks::kEnableBookmarksAccountStorage)) {
     return false;
   }
-  return !(
-      sync_setup_service->IsSyncRequested() &&
-      sync_setup_service->IsDataTypePreferred(syncer::ModelType::BOOKMARKS));
+  return !(sync_setup_service->IsSyncRequested() &&
+           sync_setup_service->IsDataTypePreferred(
+               syncer::UserSelectableType::kBookmarks));
 }
 
 bool IsAccountBookmarkModelAvailable(

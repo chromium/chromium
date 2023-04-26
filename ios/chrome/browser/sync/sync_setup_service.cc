@@ -12,16 +12,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 
-namespace {
-// The set of user-selectable datatypes. This must be in the same order as
-// `SyncSetupService::SyncableDatatype`.
-syncer::ModelType kDataTypes[] = {
-    syncer::BOOKMARKS,    syncer::TYPED_URLS, syncer::PASSWORDS,
-    syncer::PROXY_TABS,   syncer::AUTOFILL,   syncer::PREFERENCES,
-    syncer::READING_LIST,
-};
-}  // namespace
-
 SyncSetupService::SyncSetupService(syncer::SyncService* sync_service)
     : sync_service_(sync_service) {
   DCHECK(sync_service_);
@@ -29,48 +19,33 @@ SyncSetupService::SyncSetupService(syncer::SyncService* sync_service)
 
 SyncSetupService::~SyncSetupService() {}
 
-// static
-syncer::ModelType SyncSetupService::GetModelType(SyncableDatatype datatype) {
-  DCHECK(datatype < std::size(kDataTypes));
-  return kDataTypes[datatype];
-}
-
-syncer::ModelTypeSet SyncSetupService::GetPreferredDataTypes() const {
-  return sync_service_->GetPreferredDataTypes();
-}
-
 bool SyncSetupService::IsDataTypeActive(syncer::ModelType datatype) const {
   return sync_service_->GetActiveDataTypes().Has(datatype);
 }
 
-bool SyncSetupService::IsDataTypePreferred(syncer::ModelType datatype) const {
-  return GetPreferredDataTypes().Has(datatype);
+bool SyncSetupService::IsDataTypePreferred(
+    syncer::UserSelectableType datatype) const {
+  return sync_service_->GetUserSettings()->GetSelectedTypes().Has(datatype);
 }
 
-void SyncSetupService::SetDataTypeEnabled(syncer::ModelType datatype,
+void SyncSetupService::SetDataTypeEnabled(syncer::UserSelectableType datatype,
                                           bool enabled) {
   if (!sync_blocker_)
     sync_blocker_ = sync_service_->GetSetupInProgressHandle();
-  syncer::ModelTypeSet model_types = GetPreferredDataTypes();
-  if (enabled)
-    model_types.Put(datatype);
-  else
-    model_types.Remove(datatype);
+
   syncer::SyncUserSettings* user_settings = sync_service_->GetUserSettings();
-  // TODO(crbug.com/950874): support syncer::UserSelectableType in ios code,
-  // get rid of this workaround and consider getting rid of SyncableDatatype.
-  syncer::UserSelectableTypeSet selected_types;
-  for (syncer::UserSelectableType type :
-       user_settings->GetRegisteredSelectableTypes()) {
-    if (model_types.Has(syncer::UserSelectableTypeToCanonicalModelType(type))) {
-      selected_types.Put(type);
-    }
-  }
+  syncer::UserSelectableTypeSet selected_types =
+      user_settings->GetSelectedTypes();
+  if (enabled)
+    selected_types.Put(datatype);
+  else
+    selected_types.Remove(datatype);
   user_settings->SetSelectedTypes(IsSyncingAllDataTypes(), selected_types);
 }
 
 bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
-  if (!CanSyncFeatureStart() || !IsDataTypePreferred(syncer::PROXY_TABS)) {
+  if (!CanSyncFeatureStart() ||
+      !IsDataTypePreferred(syncer::UserSelectableType::kTabs)) {
     return true;
   }
 

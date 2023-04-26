@@ -109,6 +109,7 @@ source_set("utils") {
     "//components/bookmarks/browser",
     "//components/query_parser",
     "//components/strings",
+    "//components/sync/base",
     "//components/undo",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks",

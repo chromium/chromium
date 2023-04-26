@@ -21,6 +21,7 @@
 #import "components/sessions/core/session_id.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -286,7 +287,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   PrefService* prefService = self.browserState->GetPrefs();
   DCHECK(prefService);
-  if (IsManagedSyncDataType(prefService, SyncSetupService::kSyncOpenTabs)) {
+  if (IsManagedSyncDataType(prefService, syncer::UserSelectableType::kTabs)) {
     // Return YES if the data type is disabled by the SyncTypesListDisabled
     // policy.
     return YES;

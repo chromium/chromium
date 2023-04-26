@@ -12,6 +12,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/test/fake_model_type_controller_delegate.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -177,7 +178,8 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
             chrome_browser_state_.get()));
     ON_CALL(*syncSetupService, CanSyncFeatureStart())
         .WillByDefault(Return(syncEnabled));
-    ON_CALL(*syncSetupService, IsDataTypePreferred(syncer::PROXY_TABS))
+    ON_CALL(*syncSetupService,
+            IsDataTypePreferred(syncer::UserSelectableType::kTabs))
         .WillByDefault(Return(true));
 
     if (syncCompleted) {

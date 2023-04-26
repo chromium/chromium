@@ -173,7 +173,8 @@ const int64_t kLastUsedFolderNone = -1;
   if (base::FeatureList::IsEnabled(
           kEnableEmailInBookmarksReadingListSnackbar) &&
       _syncSetupService->IsSyncRequested() &&
-      _syncSetupService->IsDataTypePreferred(syncer::ModelType::BOOKMARKS)) {
+      _syncSetupService->IsDataTypePreferred(
+          syncer::UserSelectableType::kBookmarks)) {
     id<SystemIdentity> identity =
         _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
     DCHECK(identity);

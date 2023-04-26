@@ -9,6 +9,7 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_user_settings.h"
 
 namespace syncer {
@@ -21,29 +22,12 @@ class SyncSetupInProgressHandle;
 // to allow the complex sync setup flow on iOS.
 class SyncSetupService : public KeyedService {
  public:
-  // The set of user-selectable datatypes handled by Chrome for iOS.
-  // TODO(crbug.com/1067280): Use syncer::UserSelectableType instead.
-  using SyncableDatatype = enum {
-    kSyncBookmarks,
-    kSyncOmniboxHistory,
-    kSyncPasswords,
-    kSyncOpenTabs,
-    kSyncAutofill,
-    kSyncPreferences,
-    kSyncReadingList,
-    kNumberOfSyncableDatatypes
-  };
-
   explicit SyncSetupService(syncer::SyncService* sync_service);
 
   SyncSetupService(const SyncSetupService&) = delete;
   SyncSetupService& operator=(const SyncSetupService&) = delete;
 
   ~SyncSetupService() override;
-
-  // Returns the `syncer::ModelType` associated to the given
-  // `SyncableDatatypes`.
-  static syncer::ModelType GetModelType(SyncableDatatype datatype);
 
   // Returns whether the user wants Sync to run.
   // TODO(crbug.com/1291953): Callers should typically use CanSyncFeatureStart()
@@ -52,19 +36,18 @@ class SyncSetupService : public KeyedService {
   // Returns whether Sync-the-transport can start the Sync feature.
   virtual bool CanSyncFeatureStart() const;
 
-  // Returns all currently enabled datatypes.
-  syncer::ModelTypeSet GetPreferredDataTypes() const;
   // Returns whether the given datatype has been enabled for sync and its
   // initialization is complete (SyncEngineHost::OnEngineInitialized has been
   // called).
   virtual bool IsDataTypeActive(syncer::ModelType datatype) const;
   // Returns whether the given datatype is enabled by the user.
-  virtual bool IsDataTypePreferred(syncer::ModelType datatype) const;
+  // TODO(crbug.com/1429249): Rename to get rid of the `preferred` terminology.
+  virtual bool IsDataTypePreferred(syncer::UserSelectableType datatype) const;
   // Enables or disables the given datatype. To be noted: this can be called at
   // any time, but will only be meaningful if `CanSyncFeatureStart` is true and
   // `IsSyncingAllDataTypes` is false. Changes won't take effect in the sync
   // backend before the next call to `CommitChanges`.
-  void SetDataTypeEnabled(syncer::ModelType datatype, bool enabled);
+  void SetDataTypeEnabled(syncer::UserSelectableType datatype, bool enabled);
 
   // Returns whether the user needs to enter a passphrase or enable sync to make
   // tab sync work.

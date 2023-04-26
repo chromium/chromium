@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
@@ -41,7 +42,7 @@ class FakeSyncSetupService : public SyncSetupService {
   FakeSyncSetupService(syncer::SyncService* sync_service)
       : SyncSetupService(sync_service) {}
 
-  bool IsDataTypePreferred(syncer::ModelType datatype) const override {
+  bool IsDataTypePreferred(syncer::UserSelectableType datatype) const override {
     return true;
   }
 };
