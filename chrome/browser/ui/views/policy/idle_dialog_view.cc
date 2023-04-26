@@ -71,8 +71,9 @@ base::WeakPtr<views::Widget> IdleDialogView::Show(
     base::OnceClosure on_close_by_user) {
   auto view = std::make_unique<IdleDialogView>(
       dialog_duration, idle_threshold, actions, std::move(on_close_by_user));
-  auto* widget = CreateDialogWidget(std::move(view), nullptr, nullptr);
+  auto* widget = CreateBubble(std::move(view));
   widget->Show();
+  widget->CenterWindow(widget->non_client_view()->GetPreferredSize());
   return widget->GetWeakPtr();
 }
 
@@ -117,6 +118,8 @@ IdleDialogView::IdleDialogView(base::TimeDelta dialog_duration,
   SetCancelCallback(std::move(callback2));
 
   set_draggable(true);
+  set_has_parent(false);
+  set_close_on_deactivate(false);
   SetModalType(ui::MODAL_TYPE_NONE);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
