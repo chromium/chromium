@@ -65,9 +65,40 @@ struct TelemetryLidEventInfo {
   State state@0;
 };
 
+// USB event info. This is emitted when a USB device is connected or
+// disconnected.
+//
+// NextMinVersion: 1, NextIndex: 6
+[Stable]
+struct TelemetryUsbEventInfo {
+  // Vendor name.
+  string vendor@0;
+  // Name, model name or product name.
+  string name@1;
+  // Vendor ID.
+  uint16 vid@2;
+  // Product ID.
+  uint16 pid@3;
+  // USB device categories.
+  // https://www.usb.org/defined-class-codes
+  array<string> categories@4;
+
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // USB plugs in.
+    kAdd = 1,
+    // USB plugs out.
+    kRemove = 2,
+  };
+
+  State state@5;
+};
+
 // Union of event info.
 //
-// NextMinVersion: 2, NextIndex: 3
+// NextMinVersion: 3, NextIndex: 4
 [Stable, Extensible]
 union TelemetryEventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -77,17 +108,20 @@ union TelemetryEventInfo {
   TelemetryAudioJackEventInfo audio_jack_event_info@1;
   // Lid event info.
   [MinVersion=1] TelemetryLidEventInfo lid_event_info@2;
+  // Usb event info.
+  [MinVersion=2] TelemetryUsbEventInfo usb_event_info@3;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 2, NextIndex: 3
+// NextMinVersion: 3, NextIndex: 4
 [Stable, Extensible]
 enum TelemetryEventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
   kAudioJack = 1,
   [MinVersion=1] kLid = 2,
+  [MinVersion=2] kUsb = 3,
 };
 
 // Implemented by clients who desire events.

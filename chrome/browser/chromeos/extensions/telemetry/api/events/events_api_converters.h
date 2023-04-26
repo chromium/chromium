@@ -20,6 +20,9 @@ api::os_events::AudioJackEventInfo UncheckedConvertPtr(
 api::os_events::LidEventInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryLidEventInfoPtr ptr);
 
+api::os_events::UsbEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryUsbEventInfoPtr ptr);
+
 }  // namespace unchecked
 
 api::os_events::AudioJackEvent Convert(
@@ -30,6 +33,9 @@ api::os_events::AudioJackDeviceType Convert(
 
 api::os_events::LidEvent Convert(
     crosapi::mojom::TelemetryLidEventInfo::State state);
+
+api::os_events::UsbEvent Convert(
+    crosapi::mojom::TelemetryUsbEventInfo::State state);
 
 crosapi::mojom::TelemetryEventCategoryEnum Convert(
     api::os_events::EventCategory input);

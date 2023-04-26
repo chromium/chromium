@@ -38,6 +38,18 @@ TEST(TelemetryEventServiceConvertersTest,
             crosapi::mojom::TelemetryAudioJackEventInfo::State::kRemove);
 }
 
+TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryUsbEventInfo_State) {
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::UsbEventInfo::State::kUnmappedEnumField),
+      crosapi::mojom::TelemetryUsbEventInfo::State::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::UsbEventInfo::State::kAdd),
+            crosapi::mojom::TelemetryUsbEventInfo::State::kAdd);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::UsbEventInfo::State::kRemove),
+            crosapi::mojom::TelemetryUsbEventInfo::State::kRemove);
+}
+
 TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetryAudioJackEventInfo_DeviceType) {
   EXPECT_EQ(Convert(cros_healthd::mojom::AudioJackEventInfo::DeviceType::
@@ -95,6 +107,9 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
 
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kLid),
             cros_healthd::mojom::EventCategoryEnum::kLid);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kUsb),
+            cros_healthd::mojom::EventCategoryEnum::kUsb);
 }
 
 TEST(TelemetryEventServiceConvertersTest,
@@ -114,6 +129,22 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryLidEventInfoPtr) {
   EXPECT_EQ(ConvertEventPtr(std::move(input)),
             crosapi::mojom::TelemetryLidEventInfo::New(
                 crosapi::mojom::TelemetryLidEventInfo::State::kClosed));
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryUsbEventInfoPtr) {
+  std::vector<std::string> categories = {"category1", "category2"};
+  auto input = cros_healthd::mojom::UsbEventInfo::New();
+  input->state = cros_healthd::mojom::UsbEventInfo::State::kAdd;
+  input->vendor = "test_vendor";
+  input->name = "test_name";
+  input->vid = 1;
+  input->pid = 2;
+  input->categories = categories;
+
+  EXPECT_EQ(ConvertEventPtr(std::move(input)),
+            crosapi::mojom::TelemetryUsbEventInfo::New(
+                "test_vendor", "test_name", 1, 2, categories,
+                crosapi::mojom::TelemetryUsbEventInfo::State::kAdd));
 }
 
 TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryExtensionException) {

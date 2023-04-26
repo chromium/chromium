@@ -31,6 +31,20 @@ api::os_events::LidEventInfo UncheckedConvertPtr(
   return result;
 }
 
+api::os_events::UsbEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryUsbEventInfoPtr ptr) {
+  api::os_events::UsbEventInfo result;
+
+  result.event = Convert(ptr->state);
+  result.vendor = ptr->vendor;
+  result.name = ptr->name;
+  result.vid = ptr->vid;
+  result.pid = ptr->pid;
+  result.categories = ptr->categories;
+
+  return result;
+}
+
 }  // namespace unchecked
 
 api::os_events::AudioJackEvent Convert(
@@ -73,6 +87,19 @@ api::os_events::LidEvent Convert(
   NOTREACHED();
 }
 
+api::os_events::UsbEvent Convert(
+    crosapi::mojom::TelemetryUsbEventInfo::State state) {
+  switch (state) {
+    case crosapi::mojom::TelemetryUsbEventInfo_State::kUnmappedEnumField:
+      return api::os_events::UsbEvent::kNone;
+    case crosapi::mojom::TelemetryUsbEventInfo_State::kAdd:
+      return api::os_events::UsbEvent::kConnected;
+    case crosapi::mojom::TelemetryUsbEventInfo_State::kRemove:
+      return api::os_events::UsbEvent::kDisconnected;
+  }
+  NOTREACHED();
+}
+
 crosapi::mojom::TelemetryEventCategoryEnum Convert(
     api::os_events::EventCategory input) {
   switch (input) {
@@ -82,6 +109,8 @@ crosapi::mojom::TelemetryEventCategoryEnum Convert(
       return crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack;
     case api::os_events::EventCategory::kLid:
       return crosapi::mojom::TelemetryEventCategoryEnum::kLid;
+    case api::os_events::EventCategory::kUsb:
+      return crosapi::mojom::TelemetryEventCategoryEnum::kUsb;
   }
   NOTREACHED();
 }

@@ -34047,6 +34047,7 @@ Called by update_extension_histograms.py.-->
       label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_MOUSE_CHANGED"/>
   <int value="511" label="FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS"/>
   <int value="512" label="OS_EVENTS_ON_LID_EVENT"/>
+  <int value="513" label="OS_EVENTS_ON_USB_EVENT"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

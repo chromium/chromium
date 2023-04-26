@@ -52,6 +52,18 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertLidState) {
             api::os_events::LidEvent::kOpened);
 }
 
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertUsbState) {
+  EXPECT_EQ(
+      Convert(crosapi::mojom::TelemetryUsbEventInfo::State::kUnmappedEnumField),
+      api::os_events::UsbEvent::kNone);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetryUsbEventInfo::State::kAdd),
+            api::os_events::UsbEvent::kConnected);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetryUsbEventInfo::State::kRemove),
+            api::os_events::UsbEvent::kDisconnected);
+}
+
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
   EXPECT_EQ(Convert(api::os_events::EventCategory::kNone),
             crosapi::mojom::TelemetryEventCategoryEnum::kUnmappedEnumField);
@@ -61,6 +73,9 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
 
   EXPECT_EQ(Convert(api::os_events::EventCategory::kLid),
             crosapi::mojom::TelemetryEventCategoryEnum::kLid);
+
+  EXPECT_EQ(Convert(api::os_events::EventCategory::kUsb),
+            crosapi::mojom::TelemetryEventCategoryEnum::kUsb);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertAudioJackEventInfo) {
@@ -84,6 +99,26 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertLidEventInfo) {
   auto result = ConvertEventPtr<api::os_events::LidEventInfo>(std::move(input));
 
   EXPECT_EQ(result.event, api::os_events::LidEvent::kOpened);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertUsbEventInfo) {
+  auto input = crosapi::mojom::TelemetryUsbEventInfo::New();
+  std::vector<std::string> categories = {"category1", "category2"};
+  input->state = crosapi::mojom::TelemetryUsbEventInfo::State::kAdd;
+  input->vendor = "test_vendor";
+  input->name = "test_name";
+  input->vid = 1;
+  input->pid = 2;
+  input->categories = categories;
+
+  auto result = ConvertEventPtr<api::os_events::UsbEventInfo>(std::move(input));
+
+  EXPECT_EQ(result.event, api::os_events::UsbEvent::kConnected);
+  EXPECT_EQ(result.vendor, "test_vendor");
+  EXPECT_EQ(result.name, "test_name");
+  EXPECT_EQ(result.vid, 1);
+  EXPECT_EQ(result.pid, 2);
+  EXPECT_EQ(result.categories, categories);
 }
 
 }  // namespace chromeos::converters

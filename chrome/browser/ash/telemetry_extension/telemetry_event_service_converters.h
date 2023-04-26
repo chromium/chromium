@@ -23,6 +23,9 @@ crosapi::mojom::TelemetryAudioJackEventInfoPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryLidEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::LidEventInfoPtr input);
 
+crosapi::mojom::TelemetryUsbEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::UsbEventInfoPtr input);
+
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input);
 
@@ -51,6 +54,9 @@ crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType Convert(
 
 crosapi::mojom::TelemetryLidEventInfo::State Convert(
     cros_healthd::mojom::LidEventInfo::State input);
+
+crosapi::mojom::TelemetryUsbEventInfo::State Convert(
+    cros_healthd::mojom::UsbEventInfo::State input);
 
 crosapi::mojom::TelemetryExtensionException::Reason Convert(
     cros_healthd::mojom::Exception::Reason input);

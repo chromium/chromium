@@ -24,6 +24,13 @@ crosapi::mojom::TelemetryLidEventInfoPtr UncheckedConvertPtr(
   return crosapi::mojom::TelemetryLidEventInfo::New(Convert(input->state));
 }
 
+crosapi::mojom::TelemetryUsbEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::UsbEventInfoPtr input) {
+  return crosapi::mojom::TelemetryUsbEventInfo::New(
+      input->vendor, input->name, input->vid, input->pid, input->categories,
+      Convert(input->state));
+}
+
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input) {
   switch (input->which()) {
@@ -35,6 +42,10 @@ crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
         kLidEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewLidEventInfo(
           ConvertEventPtr(std::move(input->get_lid_event_info())));
+    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
+        kUsbEventInfo:
+      return crosapi::mojom::TelemetryEventInfo::NewUsbEventInfo(
+          ConvertEventPtr(std::move(input->get_usb_event_info())));
     default:
       LOG(WARNING) << "Got event for unsupported category";
       return nullptr;
@@ -135,6 +146,19 @@ crosapi::mojom::TelemetryLidEventInfo::State Convert(
   NOTREACHED();
 }
 
+crosapi::mojom::TelemetryUsbEventInfo::State Convert(
+    cros_healthd::mojom::UsbEventInfo::State input) {
+  switch (input) {
+    case cros_healthd::mojom::UsbEventInfo_State::kUnmappedEnumField:
+      return crosapi::mojom::TelemetryUsbEventInfo::State::kUnmappedEnumField;
+    case cros_healthd::mojom::UsbEventInfo_State::kAdd:
+      return crosapi::mojom::TelemetryUsbEventInfo::State::kAdd;
+    case cros_healthd::mojom::UsbEventInfo_State::kRemove:
+      return crosapi::mojom::TelemetryUsbEventInfo::State::kRemove;
+  }
+  NOTREACHED();
+}
+
 crosapi::mojom::TelemetryExtensionException::Reason Convert(
     cros_healthd::mojom::Exception::Reason input) {
   switch (input) {
@@ -161,6 +185,8 @@ cros_healthd::mojom::EventCategoryEnum Convert(
       return cros_healthd::mojom::EventCategoryEnum::kAudioJack;
     case crosapi::mojom::TelemetryEventCategoryEnum::kLid:
       return cros_healthd::mojom::EventCategoryEnum::kLid;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kUsb:
+      return cros_healthd::mojom::EventCategoryEnum::kUsb;
   }
   NOTREACHED();
 }

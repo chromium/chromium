@@ -62,6 +62,18 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
             browser_context_);
         break;
       }
+      case crosapi::mojom::internal::TelemetryEventInfo_Data::
+          TelemetryEventInfo_Tag::kUsbEventInfo: {
+        base::Value::List args;
+        args.Append(converters::ConvertEventPtr<api::os_events::UsbEventInfo>(
+                        std::move(info->get_usb_event_info()))
+                        .ToValue());
+        event = std::make_unique<extensions::Event>(
+            extensions::events::OS_EVENTS_ON_USB_EVENT,
+            api::os_events::OnUsbEvent::kEventName, std::move(args),
+            browser_context_);
+        break;
+      }
     }
 
     extensions::EventRouter::Get(browser_context_)

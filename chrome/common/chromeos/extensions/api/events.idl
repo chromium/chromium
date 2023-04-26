@@ -7,7 +7,8 @@
 namespace os.events {
     enum EventCategory {
         audio_jack,
-        lid
+        lid,
+        usb
     };
 
     enum EventSupportStatus {
@@ -43,6 +44,13 @@ namespace os.events {
         opened
     };
 
+    enum UsbEvent {
+        // A USB device was connected.
+        connected,
+        // A USB device was disconnected.
+        disconnected
+    };
+
     dictionary AudioJackEventInfo {
         AudioJackEvent? event;
         AudioJackDeviceType? deviceType;
@@ -50,6 +58,21 @@ namespace os.events {
 
     dictionary LidEventInfo {
         LidEvent? event;
+    };
+
+    dictionary UsbEventInfo {
+        // Vendor name.
+        DOMString? vendor;
+        // Name, model name, product name.
+        DOMString? name;
+        // Vendor ID.
+        long? vid;
+        // Product ID.
+        long? pid;
+        // USB device categories.
+        // https://www.usb.org/defined-class-codes
+        DOMString[] categories;
+        UsbEvent? event;
     };
 
     callback VoidCallback = void();
@@ -81,5 +104,8 @@ namespace os.events {
 
         // Informs the extension that a `Lid` event occured.
         static void onLidEvent(LidEventInfo event_info);
+
+        // Informs the extension that a `Usb` event occured.
+        static void onUsbEvent(UsbEventInfo event_info);
     };
 };

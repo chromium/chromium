@@ -532,6 +532,7 @@ enum HistogramValue {
   ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_MOUSE_CHANGED = 510,
   FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS = 511,
   OS_EVENTS_ON_LID_EVENT = 512,
+  OS_EVENTS_ON_USB_EVENT = 513,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
