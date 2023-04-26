@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -135,26 +136,25 @@ std::string TransformRawPolicyId(const std::string& raw_policy_id) {
   return raw_policy_id;
 }
 
-absl::optional<std::string> GetAppIdFromPolicyId(Profile* profile,
-                                                 const std::string& policy_id) {
+std::vector<std::string> GetAppIdsFromPolicyId(Profile* profile,
+                                               const std::string& policy_id) {
   // AppService might be absent in some cases, e.g. Arc++ Kiosk mode.
   // TODO(b/240493670): Revisit this after app service is available in Kiosk.
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    absl::optional<std::string> app_id;
+    std::vector<std::string> app_ids;
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->AppRegistryCache()
-        .ForEachApp([&policy_id, &app_id](const apps::AppUpdate& update) {
-          if (base::Contains(update.PolicyIds(), policy_id)) {
-            DCHECK(!app_id);
-            app_id = update.AppId();
+        .ForEachApp([&policy_id, &app_ids](const apps::AppUpdate& update) {
+          if (IsInstalled(update.Readiness()) &&
+              base::Contains(update.PolicyIds(), policy_id)) {
+            app_ids.push_back(update.AppId());
           }
         });
-
-    return app_id;
+    return app_ids;
   }
 
   if (IsChromeAppPolicyId(policy_id)) {
-    return policy_id;
+    return {policy_id};
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -167,7 +167,7 @@ absl::optional<std::string> GetAppIdFromPolicyId(Profile* profile,
     if (app_id.empty()) {
       return {};
     }
-    return app_id;
+    return {app_id};
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

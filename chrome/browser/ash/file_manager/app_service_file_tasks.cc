@@ -420,22 +420,30 @@ bool ChooseAndSetDefaultTaskFromPolicyPrefs(
   DCHECK_EQ(default_handlers_for_entries.size(), 1U);
   const auto& policy_id = *default_handlers_for_entries.begin();
 
-  if (auto app_id = apps_util::GetAppIdFromPolicyId(profile, policy_id)) {
-    auto task_it = base::ranges::find_if(
-        resulting_tasks->tasks, [&app_id](const FullTaskDescriptor& task) {
-          return task.task_descriptor.app_id == *app_id;
-        });
-    if (task_it != resulting_tasks->tasks.end()) {
-      task_it->is_default = true;
-      resulting_tasks->policy_default_handler_status =
-          PolicyDefaultHandlerStatus::kDefaultHandlerAssignedByPolicy;
-      return true;
+  std::vector<std::string> app_ids =
+      apps_util::GetAppIdsFromPolicyId(profile, policy_id);
+  if (app_ids.empty()) {
+    resulting_tasks->policy_default_handler_status =
+        PolicyDefaultHandlerStatus::kIncorrectAssignment;
+    return true;
+  }
+
+  std::vector<FullTaskDescriptor*> filtered_tasks;
+  for (auto& task : resulting_tasks->tasks) {
+    if (base::Contains(app_ids, task.task_descriptor.app_id)) {
+      filtered_tasks.push_back(&task);
     }
   }
 
-  // The corresponding task was not found -- no default.
-  resulting_tasks->policy_default_handler_status =
-      PolicyDefaultHandlerStatus::kIncorrectAssignment;
+  if (filtered_tasks.size() == 1) {
+    filtered_tasks.front()->is_default = true;
+    resulting_tasks->policy_default_handler_status =
+        PolicyDefaultHandlerStatus::kDefaultHandlerAssignedByPolicy;
+  } else {
+    // No tasks or multiple tasks were found
+    resulting_tasks->policy_default_handler_status =
+        PolicyDefaultHandlerStatus::kIncorrectAssignment;
+  }
   return true;
 }
 

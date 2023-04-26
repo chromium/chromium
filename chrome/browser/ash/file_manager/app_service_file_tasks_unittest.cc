@@ -27,12 +27,14 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
@@ -110,6 +112,12 @@ class AppServiceFileTasksTest : public testing::Test {
 
   std::vector<FullTaskDescriptor> FindAppServiceTasks(
       const std::vector<FakeFile>& files) {
+    auto resulting_tasks = FindAppServiceTasksImpl(files);
+    return resulting_tasks->tasks;
+  }
+
+  std::unique_ptr<ResultingTasks> FindAppServiceTasksImpl(
+      const std::vector<FakeFile>& files) {
     std::vector<extensions::EntryInfo> entries;
     std::vector<GURL> file_urls;
     std::vector<std::string> dlp_source_urls;
@@ -126,15 +134,23 @@ class AppServiceFileTasksTest : public testing::Test {
       dlp_source_urls.push_back("");
     }
 
-    std::vector<FullTaskDescriptor> tasks;
+    auto resulting_tasks = std::make_unique<ResultingTasks>();
     file_tasks::FindAppServiceTasks(profile(), entries, file_urls,
-                                    dlp_source_urls, &tasks);
+                                    dlp_source_urls, &resulting_tasks->tasks);
     // Sort by app ID so we don't rely on ordering.
-    std::sort(
-        tasks.begin(), tasks.end(), [](const auto& left, const auto& right) {
-          return left.task_descriptor.app_id < right.task_descriptor.app_id;
-        });
-    return tasks;
+    base::ranges::sort(
+        resulting_tasks->tasks, base::ranges::less(),
+        [](const auto& task) { return task.task_descriptor.app_id; });
+
+    return resulting_tasks;
+  }
+
+  std::unique_ptr<ResultingTasks> FindAppServiceTasksWithPolicy(
+      const std::vector<FakeFile>& files) {
+    auto resulting_tasks = FindAppServiceTasksImpl(files);
+    ChooseAndSetDefaultTaskFromPolicyPrefs(
+        profile(), ConvertFakeFilesToEntryInfos(files), resulting_tasks.get());
+    return resulting_tasks;
   }
 
   void AddTextApp() {
@@ -354,6 +370,18 @@ class AppServiceFileTasksTest : public testing::Test {
                                 app_service_proxy_);
   }
 
+  std::vector<extensions::EntryInfo> ConvertFakeFilesToEntryInfos(
+      const std::vector<FakeFile>& files) {
+    std::vector<extensions::EntryInfo> entries;
+    for (const FakeFile& fake_file : files) {
+      entries.emplace_back(
+          util::GetMyFilesFolderForProfile(profile()).AppendASCII(
+              fake_file.file_name),
+          fake_file.mime_type, fake_file.is_directory);
+    }
+    return entries;
+  }
+
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -418,6 +446,22 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceFileTasksText) {
   EXPECT_EQ(kAppIdText, tasks[0].task_descriptor.app_id);
   EXPECT_EQ(kActivityLabelText, tasks[0].task_title);
   EXPECT_FALSE(tasks[0].is_generic_file_handler);
+}
+
+// Test that policy assigning .jpeg to an invalid app results in
+// kIncorrectAssignment.
+TEST_F(AppServiceFileTasksTestEnabled, WrongPolicyConfiguration) {
+  AddChromeApp();
+
+  profile()->AsTestingProfile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kDefaultHandlersForFileExtensions,
+      base::Value(
+          base::Value::Dict().Set(".jpeg", "longandtediouschromeappid")));
+  // Find apps for a "text/plain" file.
+  std::unique_ptr<ResultingTasks> resulting_tasks =
+      FindAppServiceTasksWithPolicy({{"bar.jpeg", kMimeTypeImage}});
+  ASSERT_EQ(resulting_tasks->policy_default_handler_status,
+            PolicyDefaultHandlerStatus::kIncorrectAssignment);
 }
 
 // Test that between an image app and text app, the image app can be
