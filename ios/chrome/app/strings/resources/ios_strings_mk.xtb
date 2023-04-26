@@ -349,7 +349,6 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Промената не можеше да се зачува.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> од <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">Адресава ќе се зачува само на Chrome. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Автоматско пополнување лозинки</translation>
 <translation id="3268451620468152448">Отворени картички</translation>
 <translation id="3272527697863656322">Откажи</translation>
@@ -1266,7 +1265,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="948048872540558976">Создајте нова картичка</translation>
 <translation id="952704832371081537">Откажи</translation>
 <translation id="953008885340860025">Chrome е одјавен</translation>
-<translation id="953673009604363306">Предупредувањето може да го најдете подоцна во делот „Компромитирани лозинки &gt; Отфрлени предупредувања“.</translation>
 <translation id="959066944189734975">Го следите <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Следете ја цената на даден производи насекаде во онлајн продавниците. Ќе добивате известувања кога цената ќе се намали.</translation>
 <translation id="981498610235328462">Вашата организација ви дозволува да се најавите само со одредени сметки. Сметките што не се дозволени се сокриени.</translation>

@@ -120,6 +120,7 @@
 <translation id="1571304935088121812">వినియోగదారు పేరును కాపీ చేస్తుంది</translation>
 <translation id="1592864538817356322">ప్రామాణిక రక్షణ:</translation>
 <translation id="1594635596540195766">దిగువ లిస్ట్‌లో <ph name="SUGGESTIONS_COUNT" /> సూచించిన ఐటెమ్‌లు ఉన్నాయి.</translation>
+<translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌ను ఉపయోగించండి</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />మీరు మీ డేటాను ఎలా మేనేజ్ చేసుకోగలరు:<ph name="END_BOLD" /> మీ గోప్యతను రక్షించడానికి, 4 వారాల కంటే పాతవైన మీ ఆసక్తులను మేము ఆటోమేటిక్‌గా తొలగిస్తాము. మీరు బ్రౌజ్ చేస్తూ ఉంటే, ఆసక్తి ఉన్న ఆ టాపిక్ మళ్లీ లిస్ట్‌లో కనిపించవచ్చు. లేదా Chrome పరిగణనలోకి తీసుకోకూడదు అని మీరు భావించే ఆసక్తులను తీసివేయవచ్చు.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ఎంచుకోబడిన 1 అంశాన్ని తీసివేస్తుంది}other{ఎంచుకోబడిన # అంశాలను తీసివేస్తుంది}}</translation>
 <translation id="1633659023549081553">Chrome హోమ్ పేజీలో కొత్త కంటెంట్‌ను కనుగొనండి</translation>
@@ -546,6 +547,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# గం}other{# గం}}</translation>
 <translation id="4035877632587724847">అనుమతించవద్దు</translation>
 <translation id="4036177530563778041">మీరు ఎక్కడ ఆపారో అక్కడి నుండి సులభంగా కొనసాగించండి</translation>
+<translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌ను కొనసాగించండి</translation>
 <translation id="4045764304651014138">డేటా వినియోగం</translation>
 <translation id="405399507749852140">ఏదైనా సైట్‌లో ధర తగ్గితే అలర్ట్‌లు పొందండి</translation>
 <translation id="4056223980640387499">సెపియా</translation>
@@ -849,6 +851,7 @@
 <translation id="5628604359369369630">చదవనివి - ఆఫ్‌లైన్‌లో అందుబాటులో ఉన్నాయి</translation>
 <translation id="5639724618331995626">అన్ని సైట్‌లను అనుమతించండి</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />సెర్చ్ హిస్టరీ<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK2" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు</translation>
+<translation id="564667659802381754"><ph name="BEGIN_NEW" />కొత్త<ph name="END_NEW" /> గోప్యతా గైడ్</translation>
 <translation id="5648166631817621825">గత 7 రోజులు</translation>
 <translation id="5655963694829536461">మీ డౌన్‌లోడ్‌లను వెతకండి</translation>
 <translation id="5659593005791499971">ఈమెయిల్‌</translation>
@@ -1211,6 +1214,7 @@
 <translation id="7482656565088326534">ప్రివ్యూ ట్యాబ్</translation>
 <translation id="7484997419527351112">Discover - ఆఫ్‌లో ఉంది</translation>
 <translation id="7485033510383818941">ఫీడ్ కంటెంట్‌ను రిఫ్రెష్ చేయడానికి, పేజీని కిందికి లాగండి</translation>
+<translation id="7486953194485875763">చివరి 15 నిమిషాలలోని ఈ డేటాను తొలగించడం జరుగుతుంది:</translation>
 <translation id="749294055653435199">ఈ పరికరంలో Google Lens అందుబాటులో లేదు</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (నవీకరించినది <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Chrome అంచనా వేసే అవకాశం ఉన్న టాపిక్‌లకు ఈ టాపిక్ తిరిగి జోడించబడింది</translation>
@@ -1454,6 +1458,7 @@
 <translation id="8664215986015753476">మీకు నచ్చినట్లు Chromeను ఉపయోగించండి</translation>
 <translation id="8664979001105139458">ఫైల్ పేరు ఇప్పటికే ఉంది</translation>
 <translation id="8666759526542103597">బ్రౌజర్ ఆధారిత యాడ్ వ్యక్తిగతీకరణ గురించి</translation>
+<translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌కు సైన్ అప్ చేయండి</translation>
 <translation id="8676789164135894283">సైన్ ఇన్ వెరిఫికేషన్‌లు</translation>
 <translation id="8683039184091909753">ఇమేజ్</translation>
 <translation id="869891660844655955">గడువు తేదీ</translation>

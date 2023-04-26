@@ -3767,11 +3767,6 @@ na versão 117.</translation>
 <translation id="4463675333222095358">Ativar a conversão de unidades das Respostas rápidas</translation>
 <translation id="4464365009416584564">Desativar a <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Bloquear cookies de terceiros</translation>
-<translation id="4472525987427026071">Se a política for definida como 0 (o padrão), você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript, mas não no contexto de extensões instaladas pela política da empresa. Se ela for definida como 1, você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript em todos os contextos, inclusive o das extensões instaladas pela política da empresa. Se ela for definida como 2, não será possível acessar as ferramentas para desenvolvedores nem inspecionar elementos de sites.
-
-      Essa definição também desativa atalhos de teclado e entradas do menu de contexto ou do menu para abrir as ferramentas para desenvolvedores e o Console JavaScript.
-
-      A partir da versão 99 do <ph name="PRODUCT_NAME" />, essa configuração também vai controlar pontos de entrada para o recurso "Ver código-fonte da página". Se a política foi definida como "DeveloperToolsDisallowed" (valor 2), os usuários não poderão acessar a visualização do código-fonte pelo atalho do teclado nem pelo menu de contexto. Para bloquear totalmente a visualização do código-fonte, também é preciso adicionar "view-source:*" à política <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="4472740647327683596">Largura da página em micrômetros.</translation>
 <translation id="4474167089968829729">Ativar salvamento de senhas no gerenciador de senhas</translation>
 <translation id="4476769083125004742">Se esta política for definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, os apps Android não poderão acessar as informações de local. Se você configurar essa política para qualquer outro valor ou deixá-la sem definição, será solicitado o consentimento do usuário quando um app Android quiser acessar as informações de local.</translation>
@@ -3813,7 +3808,7 @@ No <ph name="PRODUCT_OS_NAME" />, esta política está relacionada a atestados r
 Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="449561952193478261">Luz de fundo azul do teclado</translation>
 <translation id="449784980858429908">Permitir automaticamente que os sites se conectem a todas as portas seriais.</translation>
-<translation id="4499376951770369935">As atualizações do Chrome OS são configuradas de acordo com a versão definida no manifesto do app de quiosque</translation>
+<translation id="4499376951770369935">As atualizações do ChromeOS são configuradas de acordo com a versão definida no manifesto do app de quiosque</translation>
 <translation id="450080746522343150">Bloquear todos os downloads.</translation>
 <translation id="4501388411278568771">Os upgrades do HTTPS podem ser aplicados dependendo do status de lançamento do recurso.</translation>
 <translation id="45036050223225148">Desativar o experimento Encrypted ClientHello do TLS</translation>
@@ -5584,7 +5579,7 @@ O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de e
 <translation id="6181783961196084973">O valor da alternância da coleta de atividade em apps. Se ele for definido como verdadeiro, a atividade em apps será enviada ao servidor para ser exibida no app <ph name="PRODUCT_NAME" /> da criança e do familiar responsável. Se definido como falso o recurso de limites de tempo por app ainda funcionará, mas nenhum dado será enviado ao servidor ou exibido no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182206125906000651">Desativar upgrades do HTTPS.</translation>
 <translation id="6182563940865917569">Permitir que o Chrome inicie mídia automaticamente</translation>
-<translation id="6184385589352532028">Não ativar a API Desk para o controle do Chrome OS de terceiros</translation>
+<translation id="6184385589352532028">Não ativar a API Desk para o controle do ChromeOS de terceiros</translation>
 <translation id="6190367314942602985">Reportar informações de identificação do usuário</translation>
 <translation id="6191963383731098056">Esta política permite que os administradores configurem a cor do tema do <ph name="PRODUCT_NAME" />. Para isso, a string de entrada precisa ser de uma cor hexadecimal válida compatível com o formato "#RRGGBB".
 
@@ -7686,7 +7681,7 @@ Se a política for definida, ela não poderá ser mudada pelos usuários no <ph 
 
       Se ela for ativada, o usuário poderá usar o <ph name="LACROS_NAME" />.</translation>
 <translation id="8016036090567963459">Não permitir que o Chrome inicie mídia automaticamente</translation>
-<translation id="8020222525161221827">Ativar a API Desk para o controle do Chrome OS de terceiros</translation>
+<translation id="8020222525161221827">Ativar a API Desk para o controle do ChromeOS de terceiros</translation>
 <translation id="802147957407376460">Girar tela em 0 graus</translation>
 <translation id="8021777486638359878">Considerar o usuário inativo enquanto o áudio toca</translation>
 <translation id="8022909529579794519">Essa configuração define qual navegador <ph name="LACROS_NAME" /> vai ser usado.
@@ -8839,7 +8834,7 @@ Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode col
 
       Se ela for desativada, os dispositivos registrados não vão gravar nem informar o status do áudio.
       Exceção: no M95 e em versões anteriores, as informações do nível de volume do sistema são controladas por <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
-<translation id="9071527533179676468">Se a política for definida como "Ativada", os apps da Web de terceiros vão poder usar a API Desk para controlar os espaços de trabalho do Chrome OS. Se a política não for definida ou for desativada, a API Desk não vai estar disponível.</translation>
+<translation id="9071527533179676468">Se a política for definida como "Ativada", os apps da Web de terceiros vão poder usar a API Desk para controlar os espaços de trabalho do ChromeOS. Se a política não for definida ou for desativada, a API Desk não vai estar disponível.</translation>
 <translation id="9072475476775217730">Se a política for desativada, os pop-ups direcionados a <ph name="BLANK_PAGE_NAME" /> vão poder acessar (via JavaScript) a página que solicitou a abertura do pop-up.
 
       Se ela for ativada ou deixada sem definição, a propriedade <ph name="WINDOW_OPENER_PROPERTY" /> será <ph name="NULL_VALUE" />, a menos que a âncora especifique <ph name="REL_OPENER_ATTRIBUTE" />.
@@ -8899,7 +8894,6 @@ Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode col
       As possibilidades de reversão reais também podem depender dos patches de vulnerabilidade críticos e do modelo.</translation>
 <translation id="9123464369663964441">Permitir que os usuários adicionem exceções para liberar conteúdo misto</translation>
 <translation id="9124770007620653639">Nunca enviar dados de confiabilidade do domínio para o Google</translation>
-<translation id="9125694642546254164">Não permite o uso das Ferramentas para desenvolvedores em extensões e apps instalados por uma política corporativa, mas permite em outros contextos</translation>
 <translation id="9126331659955304300">Permitir que o avatar do usuário seja selecionado de imagens no sistema de arquivos local, na câmera e no perfil do Google</translation>
 <translation id="9126491667911789829">A definição da política especifica uma lista de apps da Web com instalação silenciosa (sem interação do usuário) e que não podem ser desinstalados nem desativados.
 

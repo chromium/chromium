@@ -127,7 +127,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1757699834933698436">{count,plural, =1{{count} swak wagwoord}other{{count} swak wagwoorde}}</translation>
 <translation id="1767766085187034454">Google Vertaal</translation>
 <translation id="1789803444939621101">Welkom terug, <ph name="USER_NAME" /></translation>
-<translation id="179367147360747549">Maak seker jou wagwoorde is veilig, vind uit of hulle gekompromitteer is, en kry advies om jouself aanlyn te beskerm. <ph name="BEGIN_LINK" />Kom meer te wete.<ph name="END_LINK" /></translation>
 <translation id="1803264062614276815">Kaarthouer se naam</translation>
 <translation id="1809939268435598390">Vee vouer uit</translation>
 <translation id="1813414402673211292">Maak blaaidata skoon</translation>
@@ -187,6 +186,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2242467532204595597">Gebruik Chrome enige tyd wanneer jy op skakels in boodskappe, dokumente en ander apps tik.</translation>
 <translation id="22508856139286506">Toegemaakte waarskuwings (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Kieslys → Geskiedenis</translation>
+<translation id="2252674110805316998">Websoektog</translation>
 <translation id="2256933947031277845">Jou organisasie laat jou toe om net met sekere rekeninge aan te meld.</translation>
 <translation id="225943865679747347">Foutkode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Voeg rekening by</translation>
@@ -350,7 +350,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Jou verandering kon nie gestoor word nie.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> van <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">Hierdie adres word net in Chrome gestoor. Stoor dit in jou Google-rekening, <ph name="USER_EMAIL" />, om dit in alle Google-produkte te gebruik.</translation>
 <translation id="3264775633254836593">Vul wagwoorde outomaties in</translation>
 <translation id="3268451620468152448">Maak oortjies oop</translation>
 <translation id="3272527697863656322">Kanselleer</translation>
@@ -489,6 +488,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4272631900155121838">Aktiveer die kamera in instellings om 'n QR-kode te skandeer</translation>
 <translation id="4277990410970811858">Veiligblaai</translation>
 <translation id="4281844954008187215">Diensbepalings</translation>
+<translation id="4293080268407233932">Soek</translation>
 <translation id="4304713468139749426">Wagwoordbestuurder</translation>
 <translation id="430793432425771671">Sinkroniseer alles</translation>
 <translation id="4309403553630140242">Dubbeltik vir meer inligting</translation>
@@ -744,6 +744,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5951816930277761335">Deel die skakel</translation>
 <translation id="5955891643922670672">Bekyk tans vanlyn weergawe</translation>
 <translation id="5957613098218939406">Meer opsies</translation>
+<translation id="595769230373966252">Soek met <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Kan nie skakel na die hoogtepunt skep nie.</translation>
 <translation id="5965679971710331625">Jy is aangemeld</translation>
 <translation id="5979837087407522202">Soek wagwoorde</translation>
@@ -1267,7 +1268,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="948048872540558976">Skep nuwe oortjie</translation>
 <translation id="952704832371081537">Kanselleer</translation>
 <translation id="953008885340860025">Chrome is afgemeld</translation>
-<translation id="953673009604363306">Die waarskuwing kan later weer gevind word onder Toegemaakte Waarskuwings in die Gekompromitteerde Wagwoorde-afdeling.</translation>
 <translation id="959066944189734975">Jy volg tans <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Spoor die prys van ’n produk in aanlyn winkels na. Jy sal opletberigte ontvang wanneer die prys verlaag word.</translation>
 <translation id="981498610235328462">Jou organisasie laat jou toe om net met sekere rekeninge aan te meld. Rekeninge wat nie toegelaat word nie, word versteek.</translation>

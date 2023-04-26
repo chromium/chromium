@@ -127,7 +127,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1757699834933698436">{count,plural, =1{{count} palavra-passe fraca}other{{count} palavras-passe fracas}}</translation>
 <translation id="1767766085187034454">Google Tradutor</translation>
 <translation id="1789803444939621101">Damos-lhe as boas-vindas de volta, <ph name="USER_NAME" /></translation>
-<translation id="179367147360747549">Certifique-se de que as suas palavras-passe estão seguras, saiba se ficaram comprometidas e obtenha conselhos para se proteger online. <ph name="BEGIN_LINK" />Saiba mais.<ph name="END_LINK" /></translation>
 <translation id="1803264062614276815">Nome do titular do cartão</translation>
 <translation id="1809939268435598390">Eliminar pasta</translation>
 <translation id="1813414402673211292">Limpar dados de navegação</translation>
@@ -187,6 +186,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2242467532204595597">Use o Chrome sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="22508856139286506">Avisos ignorados (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Histórico</translation>
+<translation id="2252674110805316998">Pesquisa Web do Google</translation>
 <translation id="2256933947031277845">A sua organização permite-lhe iniciar sessão apenas com determinadas contas.</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Adicionar conta</translation>
@@ -350,7 +350,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Não foi possível guardar a alteração.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">Esta morada foi guardada apenas no Chrome. Para a usar nos produtos da rede Google, guarde-a na sua Conta Google <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Preencher palavras-passe automaticamente</translation>
 <translation id="3268451620468152448">Separadores abertos</translation>
 <translation id="3272527697863656322">Cancelar</translation>
@@ -489,6 +488,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4272631900155121838">Para ler um código QR, ative a câmara nas definições</translation>
 <translation id="4277990410970811858">Navegação segura</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
+<translation id="4293080268407233932">Pesquisar</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="430793432425771671">Sincronizar Tudo</translation>
 <translation id="4309403553630140242">Toque duas vezes para obter mais informações.</translation>
@@ -744,6 +744,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5951816930277761335">Partilhe o link</translation>
 <translation id="5955891643922670672">Ver a versão offline</translation>
 <translation id="5957613098218939406">Mais opções</translation>
+<translation id="595769230373966252">Pesquisar com o <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Não é possível criar um link para o realce.</translation>
 <translation id="5965679971710331625">Tem sessão iniciada</translation>
 <translation id="5979837087407522202">Pesquisar palavras-passe</translation>
@@ -1267,7 +1268,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="948048872540558976">Criar novo separador</translation>
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="953008885340860025">Sessão terminada no Chrome</translation>
-<translation id="953673009604363306">Pode voltar a encontrar o aviso mais tarde em Avisos ignorados, na secção Palavras-passe comprometidas.</translation>
 <translation id="959066944189734975">Está a seguir <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Acompanhe o preço de um produto em várias lojas online. Vai obter alertas quando o preço descer.</translation>
 <translation id="981498610235328462">A sua organização permite-lhe iniciar sessão apenas com determinadas contas. As contas que não estão autorizadas estão ocultas.</translation>

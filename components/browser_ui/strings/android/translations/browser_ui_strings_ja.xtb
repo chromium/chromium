@@ -226,7 +226,6 @@
 <translation id="5197729504361054390">選択した連絡先が <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> と共有されます。</translation>
 <translation id="5216942107514965959">最終アクセス日: 今日</translation>
 <translation id="5225463052809312700">カメラをオンにする</translation>
-<translation id="5229337741799419985">この設定では、ユーザーを特定したり、ユーザーの閲覧履歴の参照をサイトに許可したりすることはありません</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="5264323282659631142"><ph name="CHIP_LABEL" /> を削除</translation>
 <translation id="528192093759286357">全画面表示を終了するには、上からドラッグして、戻るボタンをタップします。</translation>
@@ -313,7 +312,6 @@
 <translation id="6643016212128521049">削除</translation>
 <translation id="6689172468748959065">プロフィール写真</translation>
 <translation id="6697925417670533197">アクティブなダウンロード</translation>
-<translation id="6701547804986694515">アクセス先のサイトは、あなたが bot でないことを確認する情報を Chrome に保存できます。それ以降にアクセスしたサイトは、あなたが実在のユーザーであることを、前にアクセスしたサイトから Chrome を介して確認できます。</translation>
 <translation id="6722828510648505498">ID サービスからのログイン メッセージをブロックします。</translation>
 <translation id="6746124502594467657">下に移動</translation>
 <translation id="6749077623962119521">権限をリセットしますか？</translation>

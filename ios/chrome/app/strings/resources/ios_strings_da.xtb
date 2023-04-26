@@ -127,7 +127,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1757699834933698436">{count,plural, =1{{count} svag adgangskode}one{{count} svag adgangskode}other{{count} svage adgangskoder}}</translation>
 <translation id="1767766085187034454">Google Oversæt</translation>
 <translation id="1789803444939621101">Velkommen tilbage, <ph name="USER_NAME" /></translation>
-<translation id="179367147360747549">Sørg for, at dine adgangskoder er beskyttet, find ud af, om de er blevet kompromitteret, og få gode råd til, hvordan du beskytter dig selv online. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />.</translation>
 <translation id="1803264062614276815">Kortindehaverens navn</translation>
 <translation id="1809939268435598390">Slet mappe</translation>
 <translation id="1813414402673211292">Ryd browserdata</translation>
@@ -150,6 +149,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1952172573699511566">Websites viser tekst på dit foretrukne sprog, når det er muligt.</translation>
 <translation id="1959679933317802873">Venter på indhold</translation>
 <translation id="1965935827552890526">Gør det færdigt, du var i gang med i dit andet åbne Chrome-vindue.</translation>
+<translation id="1967461193809857427">{count,plural, =1{Vil du se den fane, du havde åben i Android?}one{Vil du se den fane, du havde åben i Android?}other{Vil du se de faner, du havde åbne i Android?}}</translation>
 <translation id="1973912524893600642">Behold data</translation>
 <translation id="1974060860693918893">Avanceret</translation>
 <translation id="1980417445547898121">{count,plural, =1{Se {count} fane, der har været aktiv for nylig, fra din anden enhed på denne iPhone}one{Se {count} fane, der har været aktiv for nylig, fra din anden enhed på denne iPhone}other{Se {count} faner, der har været aktive for nylig, fra din anden enhed på denne iPhone}}</translation>
@@ -226,6 +226,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2500374554657206846">Valgmuligheder for at gemme adgangskode</translation>
 <translation id="2523363575747517183">Dette website forsøger hele tiden at åbne en anden app.</translation>
 <translation id="2529021024822217800">Åbn alle</translation>
+<translation id="2536991091671391962">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Google Adgangskodeadministrator for <ph name="EMAIL" />.</translation>
 <translation id="2547458583188611426">Synkronisering fungerer ikke. Angiv din adgangssætning for at starte synkroniseringen.</translation>
 <translation id="2551153019974022505">Kontofejl</translation>
 <translation id="2556092377360758201">Ingen beskyttelse (anbefales ikke)</translation>
@@ -348,7 +349,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Din ændring kunne ikke gemmes.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> af <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">Denne adresse gemmes kun i Chrome. Hvis du vil bruge den i Google-produkter, skal du gemme den på din Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Autoudfyld adgangskoder</translation>
 <translation id="3268451620468152448">Åbne faner</translation>
 <translation id="3272527697863656322">Annuller</translation>
@@ -640,6 +640,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5211488077761630279">Vil du tillade, at "<ph name="SITE_NAME" />" bruger <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Vær med til at forbedre sikkerheden for alle på nettet</translation>
 <translation id="5221339005270097309">Tjekker adgangskoder…</translation>
+<translation id="5226568866393490213">Afvis advarsel</translation>
 <translation id="5228579091201413441">Aktivér synkronisering</translation>
 <translation id="5232485538978018676">Log ind med Managerkonto</translation>
 <translation id="5234764350956374838">Luk</translation>
@@ -793,6 +794,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6229318421047648685">Request Desktop Site [Vis computerversion]</translation>
 <translation id="6231782223312638214">Foreslået</translation>
 <translation id="6232329973559504466">Søgning i inkognitotilstand</translation>
+<translation id="6236952928980352967">Gendan advarsel</translation>
 <translation id="6247557882553405851">Google Adgangskodeadministrator</translation>
 <translation id="6254066287920239840">Åbn links i appen i stedet for i browseren.</translation>
 <translation id="625491139841322297">{count,plural, =1{Se fanen}one{Se alle faner}other{Se alle faner}}</translation>

@@ -127,7 +127,6 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} ненадзейны пароль}one{{count} ненадзейны пароль}few{{count} ненадзейныя паролі}many{{count} ненадзейных пароляў}other{{count} ненадзейнага пароля}}</translation>
 <translation id="1767766085187034454">Google Перакладчык</translation>
 <translation id="1789803444939621101">З вяртаннем, <ph name="USER_NAME" /></translation>
-<translation id="179367147360747549">Захоўвайце свае паролі ў бяспецы, будзьце ў курсе ў выпадку іх раскрыцця і атрымлівайце парады, якія дапамогуць вам абараніць сябе ў інтэрнэце. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="1803264062614276815">Імя ўладальніка карткі</translation>
 <translation id="1809939268435598390">Выдаліць папку</translation>
 <translation id="1813414402673211292">Выдаленне гісторыі праглядаў</translation>
@@ -150,6 +149,7 @@
 <translation id="1952172573699511566">Тэкст на вэб-сайтах будзе паказвацца на мове, выбранай вамі ў якасці прыярытэтнай, калі гэта магчыма.</translation>
 <translation id="1959679933317802873">Чакаецца атрыманне змесціва</translation>
 <translation id="1965935827552890526">Скончыце тое, што вы пачалі рабіць у іншым адкрытым акне Chrome.</translation>
+<translation id="1967461193809857427">{count,plural, =1{Адкрыць укладку, якую вы праглядалі на Android?}one{Адкрыць укладкі, якія вы праглядалі на Android?}few{Адкрыць укладкі, якія вы праглядалі на Android?}many{Адкрыць укладкі, якія вы праглядалі на Android?}other{Адкрыць укладкі, якія вы праглядалі на Android?}}</translation>
 <translation id="1973912524893600642">Захаваць даныя</translation>
 <translation id="1974060860693918893">Пашыраныя налады</translation>
 <translation id="1980417445547898121">{count,plural, =1{Адкрыйце на iPhone {count} укладку, якая нядаўна была актыўнай на іншай прыладзе}one{Адкрыйце на iPhone {count} укладку, якія нядаўна былі актыўнымі на іншай прыладзе}few{Адкрыйце на iPhone {count} укладкі, якія нядаўна былі актыўнымі на іншай прыладзе}many{Адкрыйце на iPhone {count} укладак, якія нядаўна былі актыўнымі на іншай прыладзе}other{Адкрыйце на iPhone {count} укладкі, якія нядаўна былі актыўнымі на іншай прыладзе}}</translation>
@@ -226,6 +226,7 @@
 <translation id="2500374554657206846">Варыянты захавання пароля</translation>
 <translation id="2523363575747517183">Гэты сайт сістэматычна спрабуе адкрыць іншую праграму.</translation>
 <translation id="2529021024822217800">Адкрыць усе</translation>
+<translation id="2536991091671391962">Вы можаце выкарыстоўваць захаваныя паролі на любой прыладзе. Яны захоўваюцца ў Менеджары пароляў Google для ўліковага запісу <ph name="EMAIL" />.</translation>
 <translation id="2547458583188611426">Сінхранізацыя не працуе. Каб запусціць сінхранізацыю, увядзіце фразу-пароль.</translation>
 <translation id="2551153019974022505">Памылка ва ўліковым запісе</translation>
 <translation id="2556092377360758201">Без абароны (не рэкамендуецца)</translation>
@@ -348,7 +349,6 @@
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245744387817103524">Не ўдалося захаваць змяненне.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> з <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">Гэты адрас будзе захаваны толькі ў Chrome. Каб выкарыстоўваць яго ў іншых прадуктах Google, захавайце яго ва Уліковым запісе Google <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Аўтазапаўненне пароляў</translation>
 <translation id="3268451620468152448">Адкрытыя ўкладкі</translation>
 <translation id="3272527697863656322">Скасаваць</translation>
@@ -640,6 +640,7 @@
 <translation id="5211488077761630279">Дазволіць сайту <ph name="SITE_NAME" /> выкарыстоўваць <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Дапамажыце павысіць бяспеку ў інтэрнэце для кожнага</translation>
 <translation id="5221339005270097309">Ідзе праверка пароляў…</translation>
+<translation id="5226568866393490213">Адхіліць папярэджанне</translation>
 <translation id="5228579091201413441">Уключыць сінхранізацыю</translation>
 <translation id="5232485538978018676">Уваход праз уліковы запіс пад кіраваннем</translation>
 <translation id="5234764350956374838">Адхіліць</translation>
@@ -793,6 +794,7 @@
 <translation id="6229318421047648685">Запытаць сайт для ПК</translation>
 <translation id="6231782223312638214">Прапанаваныя</translation>
 <translation id="6232329973559504466">Пошук у рэжыме інкогніта</translation>
+<translation id="6236952928980352967">Аднавіць папярэджанне</translation>
 <translation id="6247557882553405851">Менеджар пароляў Google</translation>
 <translation id="6254066287920239840">Адкрываць спасылкі ў праграме замест браўзера.</translation>
 <translation id="625491139841322297">{count,plural, =1{Паглядзець укладку}one{Паглядзець усе ўкладкі}few{Паглядзець усе ўкладкі}many{Паглядзець усе ўкладкі}other{Паглядзець усе ўкладкі}}</translation>

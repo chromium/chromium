@@ -120,6 +120,7 @@
 <translation id="1571304935088121812">Копиране на потребителското име</translation>
 <translation id="1592864538817356322">Стандартна защита:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> предложени елемента в списъка по-долу.</translation>
+<translation id="1598163867407640634">Използвайте <ph name="SITE_ETLD_PLUS_ONE" /> за <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Как можете да управлявате данните си<ph name="END_BOLD" />: С цел защита на поверителността ви автоматично изтриваме интересите, които са по-стари от 4 седмици. Докато сърфирате, даден интерес може отново да се покаже в списъка. Имате възможност също да премахвате интересите, които не искате Chrome да взема предвид.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Премахване на 1 избран елемент}other{Премахване на # избрани елемента}}</translation>
 <translation id="1633659023549081553">Открийте ново съдържание на началната страница на Chrome</translation>
@@ -546,6 +547,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч}other{# ч}}</translation>
 <translation id="4035877632587724847">Забраняване</translation>
 <translation id="4036177530563778041">Лесно продължавайте оттам, откъдето сте прекъснали</translation>
+<translation id="4042941173059740150">Продължаване към <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4045764304651014138">Данни за употребата</translation>
 <translation id="405399507749852140">Получаване на сигнали при понижение на цената в който и да е сайт</translation>
 <translation id="4056223980640387499">Сепия</translation>
@@ -1454,6 +1456,7 @@
 <translation id="8664215986015753476">Използвайте Chrome по предпочитания от вас начин</translation>
 <translation id="8664979001105139458">Името на файла вече съществува</translation>
 <translation id="8666759526542103597">Всичко за персонализирането на рекламите въз основа на браузъра</translation>
+<translation id="8676276370198826499">Регистрирайте се за <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Потвърждения при вход</translation>
 <translation id="8683039184091909753">изображение</translation>
 <translation id="869891660844655955">Дата на валидност</translation>

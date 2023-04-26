@@ -226,7 +226,6 @@
 <translation id="5197729504361054390">Kontakti koje izaberete će se deliti sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Poslednji posećen danas</translation>
 <translation id="5225463052809312700">Uključi kameru</translation>
-<translation id="5229337741799419985">Ovo podešavanje radi, a da ne mora da vas identifikuje ili da dozvoli sajtovima da vide istoriju pregledanja</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5264323282659631142">Uklonite „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Prevucite od vrha ekrana i dodirnite dugme Nazad da biste izašli iz režima celog ekrana.</translation>
@@ -313,7 +312,6 @@
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6689172468748959065">Slike profila</translation>
 <translation id="6697925417670533197">Aktivna preuzimanja</translation>
-<translation id="6701547804986694515">Sajt koji posetite može da čuva informacije pomoću Chrome-a koje potvrđuju da niste robot. Dok nastavljate sa pregledanjem, sajtovi mogu da proveravaju u Chrome-u i da od prethodnog sajta koji ste posetili dobiju potvrdu da ste verovatno stvarna osoba</translation>
 <translation id="6722828510648505498">Blokirajte upite za prijavljivanje koje prikazuju usluge za identitet.</translation>
 <translation id="6746124502594467657">Premesti nadole</translation>
 <translation id="6749077623962119521">Želite da resetujete dozvole?</translation>

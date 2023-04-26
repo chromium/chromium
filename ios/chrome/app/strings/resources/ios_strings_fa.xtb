@@ -127,7 +127,6 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} گذرواژه ضعیف}one{{count} گذرواژه ضعیف}other{{count} گذرواژه ضعیف}}</translation>
 <translation id="1767766085187034454">‏ترجمه Google</translation>
 <translation id="1789803444939621101"><ph name="USER_NAME" />، مجدداً خوش آمدید</translation>
-<translation id="179367147360747549">مطمئن شوید گذرواژه‌هایتان ایمن هستند، متوجه شوید لو رفته‌اند یا نه، و برای محافظت از خودتان در فضای آنلاین راهنمایی دریافت کنید. <ph name="BEGIN_LINK" />بیشتر بدانید.<ph name="END_LINK" /></translation>
 <translation id="1803264062614276815">نام صاحب کارت</translation>
 <translation id="1809939268435598390">حذف پوشه</translation>
 <translation id="1813414402673211292">پاک کردن داده‌های مرور</translation>
@@ -350,7 +349,6 @@
 <translation id="3244271242291266297">ماه</translation>
 <translation id="3245744387817103524">تغییر ذخیره نشد.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />، ‏<ph name="ADDITIONAL_INFO" />، ‏<ph name="INDEX" /> از <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">‏این نشانی فقط در Chrome ذخیره شده است. برای استفاده از این نشانی در محصولات Google، آن را در «حساب Google» خود (<ph name="USER_EMAIL" />) ذخیره کنید.</translation>
 <translation id="3264775633254836593">تکمیل خودکار گذرواژه‌ها</translation>
 <translation id="3268451620468152448">برگه‌های باز</translation>
 <translation id="3272527697863656322">لغو</translation>
@@ -1267,7 +1265,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="948048872540558976">ایجاد برگه جدید</translation>
 <translation id="952704832371081537">لغو</translation>
 <translation id="953008885340860025">‏Chrome از سیستم خارج شده است</translation>
-<translation id="953673009604363306">این هشدار را می‌توانید بعداً در «گذرواژه‌های لورفته» بخش «هشدارهای ردشده» مشاهده کنید.</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> را دنبال می‌کنید</translation>
 <translation id="973493300226275298">قیمت محصول موردنظرتان را در فروشگاه‌های آنلاین ردیابی کنید. وقتی قیمت کاهش پیدا کند، هشداری دریافت می‌کنید.</translation>
 <translation id="981498610235328462">سازمانتان فقط ورود به سیستم با حساب‌های خاصی را مجاز کرده است. حساب‌هایی که مجاز نیستند پنهان می‌شوند.</translation>

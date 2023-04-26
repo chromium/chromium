@@ -120,6 +120,7 @@
 <translation id="1571304935088121812">ចម្លងឈ្មោះអ្នកប្រើ</translation>
 <translation id="1592864538817356322">ការការពារ​ស្តង់ដារ៖</translation>
 <translation id="1594635596540195766">ធាតុដែលបានណែនាំ <ph name="SUGGESTIONS_COUNT" /> នៅក្នុងបញ្ជីខាងក្រោម។</translation>
+<translation id="1598163867407640634">ប្រើប្រាស់ <ph name="SITE_ETLD_PLUS_ONE" /> ដោយ​ប្រើ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />របៀបដែល​អ្នកអាចគ្រប់គ្រង​ទិន្នន័យ​របស់អ្នក៖<ph name="END_BOLD" /> ដើម្បីការពារ​ឯកជនភាព​របស់អ្នក យើងលុប​ចំណាប់អារម្មណ៍​របស់អ្នក​ដែលចាស់ជាង 4 សប្ដាហ៍​ដោយស្វ័យប្រវត្តិ។ នៅពេលដែលអ្នក​បន្តរុករក ចំណាប់អារម្មណ៍​ប្រហែលជាបង្ហាញ​នៅលើ​បញ្ជីម្ដងទៀត។ ឬអ្នកអាច​ដកចំណាប់អារម្មណ៍ដែលអ្នក​មិនចង់ឱ្យ Chrome ណែនាំចេញបាន។</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{លុបធាតុដែលបានជ្រើសរើស 1}other{លុបធាតុដែលបានជ្រើសរើស #}}</translation>
 <translation id="1633659023549081553">ស្វែងរកខ្លឹមសារថ្មីនៅលើទំព័រដើមរបស់ Chrome</translation>
@@ -546,6 +547,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ម៉ោង​}other{# ម៉ោង}}</translation>
 <translation id="4035877632587724847">មិនអនុញ្ញាត</translation>
 <translation id="4036177530563778041">ងាយស្រួលបន្ត​ពីចំណុច​ដែលអ្នកបានចាកចេញ</translation>
+<translation id="4042941173059740150">បន្ត​ទៅកាន់ <ph name="SITE_ETLD_PLUS_ONE" /> ដោយ​ប្រើ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4045764304651014138">ទិន្នន័យ​ប្រើប្រាស់</translation>
 <translation id="405399507749852140">ទទួលបានការជូនដំណឹង ប្រសិនបើមានការធ្លាក់ថ្លៃនៅលើគេហទំព័រណាមួយ</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -849,6 +851,7 @@
 <translation id="5628604359369369630">មិនទាន់អាន - អាចប្រើបាន​ពេលគ្មាន​អ៊ីនធឺណិត</translation>
 <translation id="5639724618331995626">អនុញ្ញាត​ទំព័រ​ទាំងអស់</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />ប្រវត្តិ​ស្វែងរក<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />ទម្រង់សកម្មភាព​ផ្សេងទៀត<ph name="END_LINK2" />អាចត្រូវបានរក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក</translation>
+<translation id="564667659802381754">ការណែនាំអំពី​ឯកជនភាព<ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">7 ថ្ងៃមុន</translation>
 <translation id="5655963694829536461">ស្វែងរក​ការទាញយក​របស់អ្នក</translation>
 <translation id="5659593005791499971">អ៊ីម៉េល</translation>
@@ -1211,6 +1214,7 @@
 <translation id="7482656565088326534">ផ្ទាំងមើលសាកល្បង</translation>
 <translation id="7484997419527351112">Discover - បានបិទ</translation>
 <translation id="7485033510383818941">ដើម្បីផ្ទុក​ខ្លឹមសារព័ត៌មាន​ឡើងវិញ សូមទាញ​ទំព័រចុះ</translation>
+<translation id="7486953194485875763">ទិន្នន័យ​ដូចខាងក្រោម​ពី 15 នាទី​ចុងក្រោយ​នឹងត្រូវ​បានលុប៖</translation>
 <translation id="749294055653435199">មិនអាចប្រើ Google Lens នៅលើឧបករណ៍នេះបានទេ</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (បានធ្វើបច្ចុប្បន្នភាព <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">បាន​បញ្ចូល​ប្រធានបទ​ទៅក្នុង​ប្រធានបទ​ដែល​អាច​មានការចាប់អារម្មណ៍​វិញ</translation>
@@ -1454,6 +1458,7 @@
 <translation id="8664215986015753476">ប្រើប្រាស់ Chrome តាម​ដែល​អ្នក​ចង់</translation>
 <translation id="8664979001105139458">ឈ្មោះ​ឯកសារ​មានរួច​ហើយ</translation>
 <translation id="8666759526542103597">អំពី​ការកំណត់​ការផ្សាយពាណិជ្ជកម្ម​ឱ្យស្របតាមបុគ្គល​ដោយផ្អែកលើ​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត</translation>
+<translation id="8676276370198826499">ចុះឈ្មោះលើ <ph name="SITE_ETLD_PLUS_ONE" /> ដោយប្រើ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">ការផ្ទៀងផ្ទាត់​ការចូលគណនី</translation>
 <translation id="8683039184091909753">រូបភាព</translation>
 <translation id="869891660844655955">កាលបរិច្ឆេទការផុតកំណត់</translation>

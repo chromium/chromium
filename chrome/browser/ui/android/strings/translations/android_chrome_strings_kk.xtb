@@ -120,6 +120,7 @@
 <translation id="1571304935088121812">Пайдаланушы атын көшіру</translation>
 <translation id="1592864538817356322">Стандартты қорғау:</translation>
 <translation id="1594635596540195766">Төмендегі тізімде <ph name="SUGGESTIONS_COUNT" /> ұсынылған элемент бар.</translation>
+<translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> сайтын <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> көмегімен пайдалану</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Дерек қалай басқарылады:<ph name="END_BOLD" /> құпиялығыңызды сақтау үшін 4 аптадан көп көрсетілген қызығушылықтарды автоматты түрде жойып отырамыз. Интернетті шолу кезінде белгілі бір қызығушылық тізімде қайтадан шығуы мүмкін. Бұл ретте Chrome-ның ескергенін қаламаған қызығушылықтарды өшіруге болады.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Таңдалған 1 элементті өшіру}other{Таңдалған # элементті өшіру}}</translation>
 <translation id="1633659023549081553">Chrome-ның негізгі бетінен жаңа контентті көріңіз.</translation>
@@ -546,6 +547,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# сағ}other{# сағ}}</translation>
 <translation id="4035877632587724847">Рұқсат бермеу</translation>
 <translation id="4036177530563778041">Тоқтаған жерден оңай жалғастыру</translation>
+<translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> сайтына <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> көмегімен өту</translation>
 <translation id="4045764304651014138">Пайдаланылуы туралы дерек</translation>
 <translation id="405399507749852140">Қандай да бір сайтта баға төмендесе, сізге хабарланады.</translation>
 <translation id="4056223980640387499">Сепия</translation>
@@ -830,7 +832,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5517095782334947753">Сізде <ph name="FROM_ACCOUNT" /> аккаунтының бетбелгілері, тарихы, құпия сөздері және басқа да параметрлері бар.</translation>
 <translation id="5524761631371622910">Сынақ нұсқалары қосылғанда, Chrome сізді белсенді сынақ нұсқасына кездейсоқ орналастырса, браузерді қолдану тарихы төменде берілгендей сіз көретін жарнамалар мен қызығушылықтарға әсер етеді. Құпиялығыңызды сақтау үшін Chrome қызығушылықтарды ай сайын жойып отырады.</translation>
 <translation id="5524843473235508879">Баcқа бетке бағыттау бөгелді.</translation>
-<translation id="5548606607480005320">Қауіпсіздік шарасы</translation>
+<translation id="5548606607480005320">Қауіпсіздік тексерісі</translation>
 <translation id="5555525474779371165">Қажетті Safe Browsing қорғанысын таңдаңыз</translation>
 <translation id="5556459405103347317">Қайта жүктеу</translation>
 <translation id="555816257274242153">Бағаны бақылау тоқтатылды.</translation>
@@ -1454,6 +1456,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8664215986015753476">Chrome-ды қалағаныңызша пайдаланыңыз</translation>
 <translation id="8664979001105139458">Мұндай атаулы файл бұрыннан бар</translation>
 <translation id="8666759526542103597">Жарнаманы браузерге негіздеп жекелендіру туралы ақпарат</translation>
+<translation id="8676276370198826499"><ph name="SITE_ETLD_PLUS_ONE" /> сайтына <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> көмегімен тіркелу</translation>
 <translation id="8676789164135894283">Кіруді растау</translation>
 <translation id="8683039184091909753">сурет</translation>
 <translation id="869891660844655955">Аяқталу мерзімі</translation>

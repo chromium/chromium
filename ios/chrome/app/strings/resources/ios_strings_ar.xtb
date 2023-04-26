@@ -129,7 +129,6 @@
 <translation id="1757699834933698436">{count,plural, =1{هناك كلمة مرور واحدة ({count}) ضعيفة}zero{هناك {count} كلمة مرور ضعيفة}two{هناك كلمتا مرور ({count}) ضعيفتان}few{هناك {count} كلمات مرور ضعيفة}many{هناك {count} كلمة مرور ضعيفة}other{هناك {count} كلمة مرور ضعيفة}}</translation>
 <translation id="1767766085187034454">‏ترجمة Google</translation>
 <translation id="1789803444939621101">مرحبًا بك من جديد، <ph name="USER_NAME" /></translation>
-<translation id="179367147360747549">يُرجى التأكّد من أنّ كلمات المرور الخاصة بك آمنة، وتحديد ما إذا تم اختراقها، والحصول على نصائح للمساعدة في حماية نفسك على الإنترنت. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1803264062614276815">اسم حامل البطاقة</translation>
 <translation id="1809939268435598390">حذف مجلد</translation>
 <translation id="1813414402673211292">محو بيانات التصفّح</translation>
@@ -352,7 +351,6 @@
 <translation id="3244271242291266297">الشهر</translation>
 <translation id="3245744387817103524">تعذَّر حفظ التغيير.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />، و<ph name="ADDITIONAL_INFO" />، و<ph name="INDEX" /> من <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">‏تم حفظ هذا العنوان في Chrome فقط. لاستخدامه في جميع منتجات Google، عليك حفظه في حسابك على Google، <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">الملء التلقائي لكلمات المرور</translation>
 <translation id="3268451620468152448">علامات التبويب المفتوحة</translation>
 <translation id="3272527697863656322">إلغاء</translation>
@@ -1269,7 +1267,6 @@
 <translation id="948048872540558976">إنشاء علامة تبويب جديدة</translation>
 <translation id="952704832371081537">إلغاء</translation>
 <translation id="953008885340860025">‏تم تسجيل الخروج من Chrome</translation>
-<translation id="953673009604363306">يمكن العثور على التحذير مرة أخرى لاحقًا ضِمن "التحذيرات التي تم إغلاقها" في القسم "كلمات مرور محتمَل تعرّضها للاختراق".</translation>
 <translation id="959066944189734975">تتم حاليًا متابعة <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">يمكنك تتبُّع سعر منتج معيَّن في المتاجر على الإنترنت. وستتلقّى تنبيهات عند انخفاض السعر.</translation>
 <translation id="981498610235328462">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها.</translation>

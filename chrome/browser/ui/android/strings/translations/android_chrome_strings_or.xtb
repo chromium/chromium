@@ -120,6 +120,7 @@
 <translation id="1571304935088121812">ଉପଯୋଗକର୍ତ୍ତାନାମ କପି କରନ୍ତୁ</translation>
 <translation id="1592864538817356322">ଷ୍ଟାଣ୍ଡାର୍ଡ ସୁରକ୍ଷା:</translation>
 <translation id="1594635596540195766">ନିମ୍ନୋକ୍ତ ତାଲିକାରେ <ph name="SUGGESTIONS_COUNT" />ଟି ପ୍ରସ୍ତାବିତ ଆଇଟମ।</translation>
+<translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ମାଧ୍ୟମରେ <ph name="SITE_ETLD_PLUS_ONE" /> ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />ଆପଣ ଆପଣଙ୍କ ଡାଟାକୁ କିପରି ପରିଚାଳନା କରିପାରିବେ:<ph name="END_BOLD" /> ଆପଣଙ୍କ ଗୋପନୀୟତାକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ, ଆମେ ଆପଣଙ୍କ 4 ସପ୍ତାହରୁ ଅଧିକ ପୁରୁଣା ରୁଚିଗୁଡ଼ିକୁ ସ୍ୱତଃ-ଡିଲିଟ କରୁ। ଆପଣ ବ୍ରାଉଜ କରିବା ଜାରି ରଖିବା ସମୟରେ, ତାଲିକାରେ ଏକ ରୁଚି ପୁଣି ଦେଖାଯାଇପାରେ। କିମ୍ବା Chrome ଯେଉଁ ରୁଚିଗୁଡ଼ିକୁ ବିଚାରକୁ ନେଉ ବୋଲି ଆପଣ ଚାହୁଁନାହାଁନ୍ତି ସେଗୁଡ଼ିକୁ ଆପଣ କାଢ଼ିପାରିବେ।</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ଚୟନ କରାଯାଇଥିବା ଆଇଟମ୍‌ କାଢ଼ନ୍ତୁ}other{#ଟି ଚୟନ କରାଯାଇଥିବା ଆଇଟମ୍‌ କାଢ଼ନ୍ତୁ}}</translation>
 <translation id="1633659023549081553">Chromeର ମୂଳପୃଷ୍ଠାରେ ନୂଆ ବିଷୟବସ୍ତୁ ଖୋଜି ପାଆନ୍ତୁ</translation>
@@ -546,6 +547,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ଘଣ୍ଟା}other{# ଘଣ୍ଟା}}</translation>
 <translation id="4035877632587724847">ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="4036177530563778041">ଆପଣ ଯେଉଁଠି ଛାଡ଼ିଥିଲେ ସେଠାରୁ ସହଜରେ ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ମାଧ୍ୟମରେ <ph name="SITE_ETLD_PLUS_ONE" /> ସହ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="4045764304651014138">ବ୍ୟବହାର ଡାଟା</translation>
 <translation id="405399507749852140">ଯଦି କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଏ, ତେବେ ଆଲର୍ଟ ପାଆନ୍ତୁ</translation>
 <translation id="4056223980640387499">ସେପିଆ</translation>
@@ -849,6 +851,7 @@
 <translation id="5628604359369369630">ପଢ଼ାଯାଇନଥିବା - ଅଫଲାଇନରେ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5639724618331995626">ସମସ୍ତ ସାଇଟ୍‌କୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />ସର୍ଚ୍ଚ ଇତିହାସ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />ଅନ୍ୟ ପ୍ରକାରର କାର୍ଯ୍ୟକଳାପ<ph name="END_LINK2" /> ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ ହୋଇପାରେ</translation>
+<translation id="564667659802381754"><ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /> ଗୋପନୀୟତା ଗାଇଡ</translation>
 <translation id="5648166631817621825">ବିଗତ 7 ଦିନ</translation>
 <translation id="5655963694829536461">ଆପଣଙ୍କର ଡାଉନ୍‌ଲୋଡ୍‌ଗୁଡ଼ିକରେ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="5659593005791499971">ଇମେଲ୍</translation>
@@ -1211,6 +1214,7 @@
 <translation id="7482656565088326534">ପ୍ରିଭ୍ୟୁ ଟାବ୍</translation>
 <translation id="7484997419527351112">Discover - ବନ୍ଦ ଅଛି</translation>
 <translation id="7485033510383818941">ଫିଡ୍ ବିଷୟବସ୍ତୁକୁ ରିଫ୍ରେସ୍ କରିବାକୁ, ପୃଷ୍ଠାକୁ ତଳକୁ ଟାଣନ୍ତୁ</translation>
+<translation id="7486953194485875763">ଗତ 15 ମିନିଟର ନିମ୍ନୋକ୍ତ ଡାଟା ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="749294055653435199">ଏହି ଡିଭାଇସରେ Google Lens ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> ଅପ୍‌ଡେଟ୍ କରାଯାଇଛି)</translation>
 <translation id="7497755084107113646">ବିଷୟକୁ ସମ୍ଭାବ୍ୟ ବିଷୟଗୁଡ଼ିକରେ ପୁଣି ଯୋଗ କରାଯାଇଛି</translation>
@@ -1454,6 +1458,7 @@
 <translation id="8664215986015753476">ଆପଣଙ୍କ ଅନୁସାରେ Chrome ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8664979001105139458">ଫାଇଲ୍‌ର ନାମ ପୂର୍ବରୁ ଅଛି</translation>
 <translation id="8666759526542103597">ବ୍ରାଉଜର-ଆଧାରିତ ବିଜ୍ଞାପନ ପର୍ସନାଲାଇଜେସନ ବିଷୟରେ</translation>
+<translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ମାଧ୍ୟମରେ <ph name="SITE_ETLD_PLUS_ONE" />ରେ ସାଇନ ଅପ କରନ୍ତୁ</translation>
 <translation id="8676789164135894283">ସାଇନ୍-ଇନ୍ ପାଇଁ ଯାଞ୍ଚକରଣ</translation>
 <translation id="8683039184091909753">ଛବି</translation>
 <translation id="869891660844655955">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ</translation>

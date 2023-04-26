@@ -63,6 +63,7 @@
 <translation id="1478594628797167447">Kichanganuzi</translation>
 <translation id="1483493594462132177">Tuma</translation>
 <translation id="1491076385728777984">Inasasisha programu dhibiti kwenye <ph name="DEVICE_NAME" /></translation>
+<translation id="1499041187027566160">ongeza sauti</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> inamdhibiti mtumiaji huyu na huenda ikadhibiti mipangilio na kufuatilia shughuli za mtumiaji kwa mbali.</translation>
 <translation id="150962533380566081">PUK si sahihi.</translation>
 <translation id="1510238584712386396">Kizindua</translation>
@@ -208,6 +209,7 @@
 <translation id="2620436844016719705">Mfumo</translation>
 <translation id="2638662041295312666">Picha ya akaunti kwenye kifaa</translation>
 <translation id="2640549051766135490">Albamu ya <ph name="TITLE" /> <ph name="DESC" /> imechaguliwa</translation>
+<translation id="267442004702508783">onyesha upya</translation>
 <translation id="2712812801627182647">Ufunguo wa uthibitishaji wa TLS</translation>
 <translation id="2713444072780614174">Nyeupe</translation>
 <translation id="2717139507051041123">Washa hali ya rangi yenye giza</translation>
@@ -266,6 +268,7 @@
 <translation id="3310640316857623290">Muda wa kusubiri wa DNS umezidi zaidi kiwango cha juu kinachoruhusiwa</translation>
 <translation id="3328783797891415197">Jaribio linatekelezwa</translation>
 <translation id="3340011300870565703">Kiwango cha chaji cha spika ya masikioni ya kulia ni asilimia <ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="3340978935015468852">mipangilio</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Umeunganishwa</translation>
 <translation id="3369013195428705271">Una uhakika kuwa ungependa kufuta historia yote ya kuchapisha? Kazi unazoendelea kuchapisha hazitafutwa.</translation>
@@ -476,6 +479,7 @@
 <translation id="5049856988445523908">SIM Imefungwa (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Jina la kikundi</translation>
 <translation id="5051044138948155788">Huu ndio ukurasa pekee uliosalia. Hatua hii itakuelekeza kwenye skrini ya kuanza kuchanganua.</translation>
+<translation id="5087864757604726239">nyuma</translation>
 <translation id="5088172560898466307">Jina la seva pangishi</translation>
 <translation id="5089810972385038852">Jimbo</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -546,6 +550,7 @@
 <translation id="5691511426247308406">Familia</translation>
 <translation id="5695599963893094957">Bonyeza kitufe chochote kwenye kibodi yako. Unaweza kubonyeza hadi vitufe 4 kwa wakati mmoja.</translation>
 <translation id="5701381305118179107">Katikati</translation>
+<translation id="5703716265115423771">punguza sauti</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> kati ya <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Sasisha <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Hali ya Ukurasa wa Mwanzo</translation>
@@ -634,6 +639,7 @@
 <translation id="6410257289063177456">Faili za Picha</translation>
 <translation id="641081527798843608">Mada inalingana</translation>
 <translation id="6412715219990689313">Kibodi iliyojumuishwa ndani ya kifaa</translation>
+<translation id="6417265370957905582">Mratibu wa Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Dhaifu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Nenda kwenye mipangilio ya akaunti</translation>
@@ -882,6 +888,7 @@
 <translation id="8576249514688522074">Haijaanzishwa</translation>
 <translation id="8620617069779373398">Hali ya kutumia mtandao usio wako wa kawaida</translation>
 <translation id="86356131183441916">Rangi ya zambarau isiyokolea</translation>
+<translation id="8651481478098336970">zima sauti</translation>
 <translation id="8655295600908251630">Kituo</translation>
 <translation id="8655828773034788261">Shiriki URL:</translation>
 <translation id="8660881923941176839">wakia</translation>
@@ -933,6 +940,7 @@
 <translation id="8997710128084572139">Kiwango cha chaji ya betri kwenye kifaa ni asilimia <ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="8998289560386111590">Haipatikani katika kifaa chako</translation>
 <translation id="9003704114456258138">Masafa</translation>
+<translation id="9024331582947483881">skrini nzima</translation>
 <translation id="9025198690966128418">Tumia kama kifaa binafsi</translation>
 <translation id="902638246363752736">Mipangilio ya kibodi</translation>
 <translation id="9028832514430399253">Washa kitufe cha geuza ili uchague chaguo za taswira ya skrini</translation>

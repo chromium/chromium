@@ -438,6 +438,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2003775180883135320">Katër shpime lart</translation>
 <translation id="201174227998721785">Menaxho lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
 <translation id="2019607688127825327">Butoni "Menaxho cilësimet e qasshmërisë". Shtyp "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e Chrome</translation>
+<translation id="2021333772895814435">Kjo politikë çaktivizon automatikisht sinkronizimin mes pajisjeve për: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 x 19 inç</translation>
 <translation id="2025115093177348061">Realiteti i zgjeruar</translation>
 <translation id="2025186561304664664">Përfaqësuesi është i caktuar për konfigurim automatik.</translation>
@@ -490,7 +491,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2119867082804433120">Shpim poshtë djathtas</translation>
 <translation id="2122719317867821810">Kjo politikë funksionon sipas parashikimit, por diku është caktuar një vlerë në konflikt dhe ajo është anuluar nga kjo politikë.</translation>
 <translation id="2126374524350484896">Prodhuesi i PDF-së:</translation>
-<translation id="2128262927290305126">Në "Llogarinë tënde të Google", <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Shabllonet që ke specifikuar mund të mos zbatohen për shkak se politika DnsOverHttpsMode nuk është caktuar.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Veshjet për burra</translation>
@@ -639,6 +639,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2521736961081452453">Krijo formular</translation>
 <translation id="2523886232349826891">Ruajtur vetëm në këtë pajisje</translation>
 <translation id="2524461107774643265">Shto më shumë informacion</translation>
+<translation id="2526280916094749336">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë do të ruhet në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Numri CVC është në pjesën e përparme të kartës sate. Ai është kodi me 4 shifra në krye djathtas mbi numrin e kartës sate.</translation>
 <translation id="2529899080962247600">Kjo fushë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> regjistrime. Të gjitha hyrjet e mëtejshme do të shpërfillen.</translation>
 <translation id="253493526287553278">Shiko detajet e kodit promocional</translation>
@@ -834,7 +835,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3029752078111257850">Lajmet nga bota</translation>
 <translation id="3037177537145227281">Çmimi po monitorohet</translation>
 <translation id="3037605927509011580">Ndërprerje aksidentale!</translation>
-<translation id="3041450980936463495">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë ruhet në "Llogarinë tënde të Google" (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Informacioni i certifikatës</translation>
 <translation id="305162504811187366">Historiku i "Desktopit në distancë të Chrome", duke përfshirë vulat kohore, organizatorët dhe ID-të e seancës së klientit.</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> ulje çmimi në <ph name="PRODUCT_NAME" /></translation>
@@ -1225,7 +1225,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4031179711345676612">Mikrofoni lejohet</translation>
 <translation id="4040350669425716613">Kolegjet dhe universitetet</translation>
 <translation id="4047351652147966654">18 x 24 inç</translation>
-<translation id="4047620889508350431">Tani mund të përdorësh adresat nga "Llogaria jote e Google".</translation>
 <translation id="405399507749852140">Merr sinjalizime nëse ulet çmimi në ndonjë sajt</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Lejo që Google të të ndihmojë të gjesh ulje për karrocat e tua</translation>
@@ -1795,7 +1794,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5344579389779391559">Kjo faqe mund të përpiqet të të tarifojë në para</translation>
 <translation id="5347645913823149105">Butoni "Personalizo fontet në Chrome". Shtyp "Enter" për të personalizuar madhësitë e fonteve dhe llojin e karaktereve në Chrome</translation>
 <translation id="5355557959165512791">Nuk mund ta vizitosh <ph name="SITE" /> tani, sepse certifikata e tij është revokuar. Gabimet dhe sulmet në rrjet zakonisht janë të përkohshme, prandaj kjo faqe ndoshta do të punojë më vonë.</translation>
-<translation id="5356345925629253198">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë do të ruhet në "Llogarinë tënde të Google" (<ph name="ACCOUNT" />).</translation>
 <translation id="5357848622083956825">Artet pamore dhe dizajni</translation>
 <translation id="536296301121032821">Dështoi në ruajtjen e cilësimeve të politikës.</translation>
 <translation id="5363309033720083897">Porta seriale e lejuar nga administratori yt</translation>
@@ -1974,6 +1972,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5830698870816298009">Përdorimi dhe lëvizja e kamerës</translation>
 <translation id="583281660410589416">E panjohur</translation>
 <translation id="5838278095973806738">Nuk duhet të futësh asnjë informacion delikat në këtë sajt (p.sh. fjalëkalimet ose karta krediti) pasi mund të vidhet nga sulmuesit.</translation>
+<translation id="5840318881868981258">Në "Llogarinë tënde të Google", <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Të ruhet te llogaria?</translation>
 <translation id="5851548754964597211">Lista e skedave</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -2067,6 +2066,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6051221802930200923">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse sajti i uebit përdor gozhdimin e certifikatës. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
 <translation id="6051898664905071243">Numri i faqeve:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053584886670442526">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë ruhet në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Mëso më shumë se si i mbron Google të dhënat e tua në "Politikën tonë të privatësisë".</translation>
 <translation id="6055888660316801977">Kredencial pagese të sigurt pa fletë përkatëse kredenciali</translation>
 <translation id="6058977677006700226">Dëshiron t'i përdorësh kartat në të gjitha pajisjet e tua?</translation>
@@ -2245,6 +2245,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6513005815064132016">Mund të kërkojë të monitorojë pozicionin e kamerës</translation>
 <translation id="6517596291481585650">Paralajmërim: Kjo politikë nuk është bashkuar si listë siç specifikohet nga politika sepse nuk është listë.</translation>
 <translation id="6518133107902771759">Verifiko</translation>
+<translation id="65203098586853226">Po përkthen nga <ph name="SOURCE" /> në <ph name="TARGET" /></translation>
 <translation id="6521745193039995384">Jo aktiv</translation>
 <translation id="6529173248185917884">Ruli i shtatë</translation>
 <translation id="6529602333819889595">&amp;Bëje përsëri fshirjen</translation>

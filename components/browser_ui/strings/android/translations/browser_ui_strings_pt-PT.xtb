@@ -226,7 +226,6 @@
 <translation id="5197729504361054390">Os contactos que selecionar serão partilhados com <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Última visita hoje</translation>
 <translation id="5225463052809312700">Ativar câmara</translation>
-<translation id="5229337741799419985">Esta definição funciona sem saber a sua identidade nem permitir que os sites vejam o seu histórico de navegação</translation>
 <translation id="5234764350956374838">Ignorar</translation>
 <translation id="5264323282659631142">Remover "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Arraste a partir da parte superior e toque no botão de retrocesso para sair do ecrã inteiro.</translation>
@@ -313,7 +312,6 @@
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Transferências ativas</translation>
-<translation id="6701547804986694515">Um site que visita pode guardar informações no Chrome que validam que não é um bot. À medida que navega, os sites podem verificar com o Chrome e validar com um site anterior que tenha visitado que provavelmente é uma pessoa real</translation>
 <translation id="6722828510648505498">Bloqueie pedidos de início de sessão dos serviços de identidade.</translation>
 <translation id="6746124502594467657">Mover para baixo</translation>
 <translation id="6749077623962119521">Pretende repor as autorizações?</translation>

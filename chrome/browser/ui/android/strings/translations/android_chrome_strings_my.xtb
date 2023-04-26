@@ -120,6 +120,7 @@
 <translation id="1571304935088121812">အသုံးပြုသူအမည်ကို ကူးယူပါ</translation>
 <translation id="1592864538817356322">ပုံမှန်ကာကွယ်မှု -</translation>
 <translation id="1594635596540195766">အောက်ပါစာရင်းတွင် အကြံပြုအရာ<ph name="SUGGESTIONS_COUNT" /> ခု ရှိသည်။</translation>
+<translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> ကို အသုံးပြုပါ</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />သင့်ဒေတာကို စီမံနိုင်ပုံ-<ph name="END_BOLD" /> သင်၏ကိုယ်ရေးအချက်အလက်လုံခြုံမှုကို ကာကွယ်ရန် ၄ ပတ်ကျော်ပြီဖြစ်သော သင့်စိတ်ဝင်စားမှုများကို အလိုအလျောက်ဖျက်သည်။ သင်ကြည့်ရှုနေသည့်အတွက် စိတ်ဝင်စားမှုက စာရင်းတွင် ထပ်ပေါ်လာနိုင်သည်။ သို့မဟုတ် Chrome ထည့်မတွက်ရမည့် စိတ်ဝင်စားမှုများကို ဖယ်ရှားနိုင်သည်။</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ရွေးချယ်ထားသည့် အကြောင်းအရာ ၁ ခုကို ဖယ်ရှားရန်}other{ရွေးချယ်ထားသည့် အကြောင်းအရာ # ခုကို ဖယ်ရှားရန်}}</translation>
 <translation id="1633659023549081553">Chrome ပင်မစာမျက်နှာတွင် အကြောင်းအရာသစ်များ စူးစမ်းရှာဖွေပါ</translation>
@@ -546,6 +547,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# နာရီ}other{# နာရီ}}</translation>
 <translation id="4035877632587724847">ခွင့်မပြုပါ</translation>
 <translation id="4036177530563778041">သင်ထားခဲ့သည့်နေရာမှ လွယ်ကူစွာ ရှေ့ဆက်နိုင်သည်</translation>
+<translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> ကို ရှေ့ဆက်ပါ</translation>
 <translation id="4045764304651014138">သုံးစွဲမှုဒေတာ</translation>
 <translation id="405399507749852140">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1455,6 +1457,7 @@
 <translation id="8664215986015753476">Chrome ကို သင့်အလိုကျသုံးခြင်း</translation>
 <translation id="8664979001105139458">ဖိုင်အမည် ရှိပြီးသားဖြစ်သည်</translation>
 <translation id="8666759526542103597">ဘရောင်ဇာအခြေခံ ကြော်ငြာ စိတ်ကြိုက်သတ်မှတ်ခြင်းအကြောင်း</translation>
+<translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> သို့ စာရင်းသွင်းပါ</translation>
 <translation id="8676789164135894283">လက်မှတ်ထိုးဝင်မှု စိစစ်ချက်များ</translation>
 <translation id="8683039184091909753">ပုံ</translation>
 <translation id="869891660844655955">သက်တမ်း ကုန်ဆုံးရက်</translation>

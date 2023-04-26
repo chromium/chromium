@@ -63,6 +63,7 @@
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1491076385728777984">Atualizando firmware no <ph name="DEVICE_NAME" /></translation>
+<translation id="1499041187027566160">aumentar o volume</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gerencia o usuário. Esse administrador pode controlar as configurações e monitorar a atividade do usuário remotamente.</translation>
 <translation id="150962533380566081">PUK inválida.</translation>
 <translation id="1510238584712386396">Iniciador</translation>
@@ -208,6 +209,7 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Imagem de login</translation>
 <translation id="2640549051766135490">Álbum <ph name="TITLE" /> <ph name="DESC" /> selecionado</translation>
+<translation id="267442004702508783">atualizar</translation>
 <translation id="2712812801627182647">Chave de autenticação do TLS</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2717139507051041123">Ativar o modo de cor escuro</translation>
@@ -266,6 +268,7 @@
 <translation id="3310640316857623290">Latência do DNS significativamente acima do limite permitido</translation>
 <translation id="3328783797891415197">Teste em execução</translation>
 <translation id="3340011300870565703">O fone direito tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
+<translation id="3340978935015468852">configurações</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369013195428705271">Tem certeza de que quer limpar todo o histórico? Os trabalhos de impressão atuais não serão apagados.</translation>
@@ -284,7 +287,7 @@
 <translation id="3486220673238053218">definição</translation>
 <translation id="3488065109653206955">Ativado parcialmente</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />dados de rastreamento de performance<ph name="END_LINK1" /></translation>
-<translation id="3517001332549868749">Atualização do Chrome OS</translation>
+<translation id="3517001332549868749">Atualização do ChromeOS</translation>
 <translation id="3527036260304016759">Falha - Erro desconhecido</translation>
 <translation id="3532980081107202182">Aproximadamente <ph name="MIN_REMAINING" /> minutos restantes</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
@@ -476,6 +479,7 @@
 <translation id="5049856988445523908">Chip bloqueado (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
 <translation id="5051044138948155788">Essa é a única página. Se você removê-la, a tela inicial de digitalização será aberta.</translation>
+<translation id="5087864757604726239">voltar</translation>
 <translation id="5088172560898466307">Nome do host do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -546,6 +550,7 @@
 <translation id="5691511426247308406">Família</translation>
 <translation id="5695599963893094957">Pressione qualquer tecla. Você pode pressionar até quatro teclas ao mesmo tempo.</translation>
 <translation id="5701381305118179107">Centralizar</translation>
+<translation id="5703716265115423771">diminuir o volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Atualizar o <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Estado do portal</translation>
@@ -634,6 +639,7 @@
 <translation id="6410257289063177456">Arquivos de imagem</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
 <translation id="6412715219990689313">Teclado integrado</translation>
+<translation id="6417265370957905582">Google Assistente</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Fraco (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Acessar as configurações da conta</translation>
@@ -882,6 +888,7 @@
 <translation id="8576249514688522074">Não inicializado</translation>
 <translation id="8620617069779373398">Status do roaming</translation>
 <translation id="86356131183441916">Roxo-claro</translation>
+<translation id="8651481478098336970">desativar o som</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Compartilhar URL:</translation>
 <translation id="8660881923941176839">libras</translation>
@@ -933,6 +940,7 @@
 <translation id="8997710128084572139">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% bateria.</translation>
 <translation id="8998289560386111590">Indisponível no seu dispositivo</translation>
 <translation id="9003704114456258138">Frequência</translation>
+<translation id="9024331582947483881">tela cheia</translation>
 <translation id="9025198690966128418">Usar como dispositivo pessoal</translation>
 <translation id="902638246363752736">Configurações do teclado</translation>
 <translation id="9028832514430399253">Ative o modo ambiente para selecionar as opções de protetor de tela</translation>

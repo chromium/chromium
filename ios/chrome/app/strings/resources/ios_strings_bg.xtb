@@ -127,7 +127,6 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} ненадеждна парола}other{{count} ненадеждни пароли}}</translation>
 <translation id="1767766085187034454">Google Преводач</translation>
 <translation id="1789803444939621101">Добре дошли отново, <ph name="USER_NAME" /></translation>
-<translation id="179367147360747549">Уверете се, че паролите ви са защитени, разберете дали са били компрометирани и получете съвет за това как да се предпазите онлайн. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" />.</translation>
 <translation id="1803264062614276815">Име на титуляря на картата</translation>
 <translation id="1809939268435598390">Изтриване на папката</translation>
 <translation id="1813414402673211292">Изчистване на данните за сърфирането</translation>
@@ -350,7 +349,6 @@
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245744387817103524">Промяната ви не бе запазена.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> от <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">Този адрес е запазен само в Chrome. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="3264775633254836593">Автоматично попълване на пароли</translation>
 <translation id="3268451620468152448">Отворени раздели</translation>
 <translation id="3272527697863656322">Отказ</translation>
@@ -1267,7 +1265,6 @@
 <translation id="948048872540558976">Създаване на нов раздел</translation>
 <translation id="952704832371081537">Отказ</translation>
 <translation id="953008885340860025">Не сте в профила си в Chrome</translation>
-<translation id="953673009604363306">Можете да намерите предупреждението отново по-късно в „Отхвърлени предупреждения“ в секцията „Компрометирани пароли“.</translation>
 <translation id="959066944189734975">Следвате <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Проследявайте цената на даден продукт в различни онлайн магазини. Ще получите сигнал, когато цената се понижи.</translation>
 <translation id="981498610235328462">Организацията ви разрешава да влизате само с определени профили. Неразрешените профили са скрити.</translation>

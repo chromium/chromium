@@ -67,11 +67,11 @@
 <translation id="4126409073460786861">ಹೊಂದಿಸುವಿಕೆಯು ಪೂರ್ಣಗೊಂಡ ಬಳಿಕ, ಈ ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ. ಆನಂತರ, ನಿಮ್ಮ ಸಾಧನವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ, ಪಿನ್ ನಮೂದಿಸುವ ಮೂಲಕ ನೀವು ಕಂಪ್ಯೂಟರ್‌ಗೆ ಪ್ರವೇಶಿಸಬಹುದು.</translation>
 <translation id="4145029455188493639"><ph name="EMAIL_ADDRESS" /> ನಂತೆ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4155497795971509630">ಕೆಲವು ಅಗತ್ಯವಿರುವ ಅಂಶಗಳು ಕಾಣೆಯಾಗಿವೆ. ನೀವು ಸಾಫ್ಟ್‌ವೇರ್‌ನ ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯನ್ನು ಸ್ಥಾಪಿಸಿರುವಿರಾ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="4176825807642096119">ಪ್ರವೇಶ ಕೋಡ್</translation>
+<translation id="4176825807642096119">ಆ್ಯಕ್ಸೆಸ್ ಕೋಡ್</translation>
 <translation id="4227991223508142681">ಹೋಸ್ಟ್ ಒದಗಿಸುವಿಕೆ ಸೌಲಭ್ಯ</translation>
 <translation id="4240294130679914010">ಕ್ರೊಮೋಟಿಂಗ್ ಹೋಸ್ಟ್ ಅಸ್ಥಾಪಕ</translation>
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL ಫಾರ್ವರ್ಡ್ ಮಾಡುವವರು</translation>
-<translation id="4277736576214464567">ಪ್ರವೇಶ ಕೋಡ್ ಅಮಾನ್ಯವಾಗಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="4277736576214464567">ಆ್ಯಕ್ಸೆಸ್ ಕೋಡ್ ಅಮಾನ್ಯವಾಗಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4281844954008187215">ಸೇವೆಯ ನಿಯಮಗಳು</translation>
 <translation id="4405930547258349619">ಮುಖ್ಯ ಲೈಬ್ರರಿ</translation>
 <translation id="443560535555262820">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಆದ್ಯತೆಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -142,7 +142,7 @@
 <translation id="7319983568955948908">ಹಂಚಿಕೆಯನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="7359298090707901886">ಆಯ್ಕೆ ಮಾಡಿದ ಬ್ರೌಸರ್ ಅನ್ನು ಸ್ಥಳೀಯ ಯಂತ್ರದಲ್ಲಿ URL ಗಳನ್ನು ತೆರೆಯಲು ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="7401733114166276557">Chrome ರಿಮೋಟ್ ಡೆಸ್ಕ್‌ಟಾಪ್</translation>
-<translation id="7434397035092923453">ಕ್ಲೈಂಟ್‌ಗೆ ಪ್ರವೇಶ ನಿರಾಕರಿಸಲಾಗಿದೆ: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="7434397035092923453">ಕ್ಲೈಂಟ್‌ಗೆ ಆ್ಯಕ್ಸೆಸ್ ನಿರಾಕರಿಸಲಾಗಿದೆ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ಕ್ಲೈಂಟ್ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">ಖಾತೆಯನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="7535110896613603182">ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್‌ಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>

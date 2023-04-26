@@ -63,6 +63,7 @@
 <translation id="1478594628797167447">Máy quét</translation>
 <translation id="1483493594462132177">Gửi</translation>
 <translation id="1491076385728777984">Cập nhật chương trình cơ sở trên <ph name="DEVICE_NAME" /></translation>
+<translation id="1499041187027566160">tăng âm lượng</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> quản lý người dùng này và có thể quản lý từ xa các tùy chọn cài đặt cũng như giám sát hoạt động của người dùng.</translation>
 <translation id="150962533380566081">PUK không hợp lệ.</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
@@ -208,6 +209,7 @@
 <translation id="2620436844016719705">Hệ thống</translation>
 <translation id="2638662041295312666">Hình ảnh đăng nhập</translation>
 <translation id="2640549051766135490">Đã chọn album <ph name="TITLE" /> <ph name="DESC" /></translation>
+<translation id="267442004702508783">làm mới</translation>
 <translation id="2712812801627182647">Khoá xác thực TLS</translation>
 <translation id="2713444072780614174">Trắng</translation>
 <translation id="2717139507051041123">Bật chế độ màu tối</translation>
@@ -266,6 +268,7 @@
 <translation id="3310640316857623290">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đáng kể</translation>
 <translation id="3328783797891415197">Đang chạy quá trình kiểm tra</translation>
 <translation id="3340011300870565703">Tai nghe phải còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
+<translation id="3340978935015468852">cài đặt</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Đã kết nối</translation>
 <translation id="3369013195428705271">Bạn có chắc chắn muốn xóa toàn bộ lịch sử in không? Các lệnh in đang thực hiện sẽ không bị xóa.</translation>
@@ -476,6 +479,7 @@
 <translation id="5049856988445523908">Đã khóa SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Tên nhóm</translation>
 <translation id="5051044138948155788">Đây là trang duy nhất. Thao tác này sẽ đưa bạn đến màn hình bắt đầu quét.</translation>
+<translation id="5087864757604726239">quay lại</translation>
 <translation id="5088172560898466307">Tên máy chủ</translation>
 <translation id="5089810972385038852">Tỉnh</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -546,6 +550,7 @@
 <translation id="5691511426247308406">Gia đình</translation>
 <translation id="5695599963893094957">Nhấn phím bất kỳ trên bàn phím. Bạn có thể nhấn tối đa 4 phím cùng lúc.</translation>
 <translation id="5701381305118179107">Giữa</translation>
+<translation id="5703716265115423771">giảm âm lượng</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Cập nhật <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Trạng thái trang xác thực</translation>
@@ -634,6 +639,7 @@
 <translation id="6410257289063177456">Tệp hình ảnh</translation>
 <translation id="641081527798843608">Khớp với chủ đề</translation>
 <translation id="6412715219990689313">Bàn phím tích hợp sẵn</translation>
+<translation id="6417265370957905582">Trợ lý Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Yếu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Chuyển đến phần cài đặt tài khoản</translation>
@@ -882,6 +888,7 @@
 <translation id="8576249514688522074">Chưa khởi chạy</translation>
 <translation id="8620617069779373398">Trạng thái chuyển vùng</translation>
 <translation id="86356131183441916">Tím nhạt</translation>
+<translation id="8651481478098336970">tắt tiếng</translation>
 <translation id="8655295600908251630">Kênh</translation>
 <translation id="8655828773034788261">Chia sẻ URL:</translation>
 <translation id="8660881923941176839">pao</translation>
@@ -933,6 +940,7 @@
 <translation id="8997710128084572139">Thiết bị còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
 <translation id="8998289560386111590">Không hoạt động trên thiết bị của bạn</translation>
 <translation id="9003704114456258138">Tần số</translation>
+<translation id="9024331582947483881">toàn màn hình</translation>
 <translation id="9025198690966128418">Dùng làm thiết bị cá nhân</translation>
 <translation id="902638246363752736">Cài đặt bàn phím</translation>
 <translation id="9028832514430399253">Bật nút chuyển để chọn trình bảo vệ màn hình</translation>

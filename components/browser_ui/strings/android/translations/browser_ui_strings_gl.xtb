@@ -226,7 +226,6 @@
 <translation id="5197729504361054390">Os contactos que selecciones compartiranse con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Visitouse hoxe por última vez</translation>
 <translation id="5225463052809312700">Acender cámara</translation>
-<translation id="5229337741799419985">Esta opción de configuración non te identifica nin permite que os sitios vexan o teu historial de navegación</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="5264323282659631142">Quitar <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Arrastra desde a parte superior e toca o botón Volver para saír da pantalla completa.</translation>
@@ -313,7 +312,6 @@
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Descargas activas</translation>
-<translation id="6701547804986694515">Calquera sitio que visites pode gardar información en Chrome que confirme que non es un bot. A medida que navegues, os sitios poderán facer comprobacións con Chrome e verificar, cun sitio que xa visitases, que é probable que sexas unha persoa real</translation>
 <translation id="6722828510648505498">Bloquea as solicitudes de inicio de sesión dos servizos de identidade.</translation>
 <translation id="6746124502594467657">Mover cara abaixo</translation>
 <translation id="6749077623962119521">Queres restablecer os permisos?</translation>

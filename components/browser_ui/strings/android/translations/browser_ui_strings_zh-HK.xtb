@@ -226,7 +226,6 @@
 <translation id="5197729504361054390">系統會將您選取的聯絡人向 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 提供。</translation>
 <translation id="5216942107514965959">上次瀏覽時間：今天</translation>
 <translation id="5225463052809312700">開啟攝錄機</translation>
-<translation id="5229337741799419985">此設定運作時不需識別您的身份或允許網站查看您的瀏覽記錄</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5264323282659631142">移除「<ph name="CHIP_LABEL" />」</translation>
 <translation id="528192093759286357">由上而下拖曳，然後輕觸返回按鈕即可退出全螢幕。</translation>
@@ -313,7 +312,6 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6689172468748959065">個人檔案相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>
-<translation id="6701547804986694515">您瀏覽的網站可將資料儲存至 Chrome，以驗證您不是機器人。您隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資料，確認您應該是真人</translation>
 <translation id="6722828510648505498">封鎖來自身分服務的登入提示。</translation>
 <translation id="6746124502594467657">向下移</translation>
 <translation id="6749077623962119521">要重設權限嗎？</translation>

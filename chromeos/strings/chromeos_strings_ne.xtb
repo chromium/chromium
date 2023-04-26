@@ -63,6 +63,7 @@
 <translation id="1478594628797167447">स्क्यानर</translation>
 <translation id="1483493594462132177">पठाउनुहोस्</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> को फर्मवेयर अपडेट गरिँदै छ</translation>
+<translation id="1499041187027566160">आवाज ठुलो</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले टाढैबाट सेटिङ व्यवस्थापन गर्न र प्रयोगकर्ताले गर्ने क्रियाकलाप निगरानी गर्न सक्छ।</translation>
 <translation id="150962533380566081">अमान्य PUK।</translation>
 <translation id="1510238584712386396">लन्चर</translation>
@@ -208,6 +209,7 @@
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2638662041295312666">प्रोफाइल फोटो</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गरियो</translation>
+<translation id="267442004702508783">पुनःताजा</translation>
 <translation id="2712812801627182647">TLS प्रमाणीकरण की</translation>
 <translation id="2713444072780614174">सेतो</translation>
 <translation id="2717139507051041123">अँध्यारो रङ मोड अन गर्नुहोस्</translation>
@@ -266,6 +268,7 @@
 <translation id="3310640316857623290">DNS को विलम्बता तोकिएको समयसीमाभन्दा अत्याधिक मात्रामा बढी छ</translation>
 <translation id="3328783797891415197">परीक्षण चलिरहेको छ</translation>
 <translation id="3340011300870565703">यो डिभाइसको दायाँपट्टिको बडमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
+<translation id="3340978935015468852">सेटिङहरू</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">जडित</translation>
 <translation id="3369013195428705271">आफूले गरेका प्रिन्टको सबै इतिहास मेटाउन खोज्नुभएकै हो? भइरहेका प्रिन्टिङ कार्यहरू मेटाइने छैनन्।</translation>
@@ -476,6 +479,7 @@
 <translation id="5049856988445523908">SIM लक गरिएको छ (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">समूहको नाम</translation>
 <translation id="5051044138948155788">यो एउटा मात्र पेज हो। यसले तपाईंलाई स्क्यान सुरु गर्ने स्क्रिनमा लैजाने छ।</translation>
+<translation id="5087864757604726239">पछाडि जानुहोस्</translation>
 <translation id="5088172560898466307">सर्भरको होस्टनाम</translation>
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -546,6 +550,7 @@
 <translation id="5691511426247308406">परिवार</translation>
 <translation id="5695599963893094957">आफ्नो किबोर्डको कुनै की थिच्नुहोस्। तपाईं एकै पटकमा ४ वटासम्म कीहरू थिच्न सक्नुहुन्छ।</translation>
 <translation id="5701381305118179107">केन्द्र</translation>
+<translation id="5703716265115423771">आवाज सानो</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /> पृष्ठ</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> अपडेट गर्नुहोस्</translation>
 <translation id="5760715441271661976">पोर्टलको स्थिति</translation>
@@ -634,6 +639,7 @@
 <translation id="6410257289063177456">छवि फाइलहरू</translation>
 <translation id="641081527798843608">विषयको मिलान</translation>
 <translation id="6412715219990689313">अन्तर्निर्मित किबोर्ड</translation>
+<translation id="6417265370957905582">Google सहायक</translation>
 <translation id="6423239382391657905">खुल्लाVPN</translation>
 <translation id="6439505561246192797">कमजोर (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाताका सेटिङमा जानुहोस्</translation>
@@ -753,7 +759,7 @@
 <translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
 <translation id="7481312909269577407">अगाडि</translation>
 <translation id="7487067081878637334">प्रविधि</translation>
-<translation id="7490813197707563893">MAC एड्रेस</translation>
+<translation id="7490813197707563893">म्याक एड्रेस</translation>
 <translation id="7491478667760509108">फ्लोट विन्डोबाट बाहिरिनुहोस्</translation>
 <translation id="7497215489070763236">सर्भरको CA को सर्टिफिकेट</translation>
 <translation id="7502658306369382406">IPv6 ठेगाना</translation>
@@ -882,6 +888,7 @@
 <translation id="8576249514688522074">सुरु गरिएको छैन</translation>
 <translation id="8620617069779373398">रोमिङको स्थिति</translation>
 <translation id="86356131183441916">हल्का बैजनी रङ</translation>
+<translation id="8651481478098336970">आवाज म्यूट</translation>
 <translation id="8655295600908251630">च्यानल</translation>
 <translation id="8655828773034788261">URL सेयर गर्नुहोस्:</translation>
 <translation id="8660881923941176839">पाउन्ड</translation>
@@ -933,6 +940,7 @@
 <translation id="8997710128084572139">यो डिभाइसमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="8998289560386111590">तपाईंको डिभाइसमा उपलब्ध छैन</translation>
 <translation id="9003704114456258138">फ्रिक्वेन्सी</translation>
+<translation id="9024331582947483881">फुल स्क्रिन</translation>
 <translation id="9025198690966128418">व्यक्तिगत डिभाइसका रूपमा प्रयोग गर्नुहोस्</translation>
 <translation id="902638246363752736">किबोर्ड सेटिङहरू</translation>
 <translation id="9028832514430399253">तपाईं स्क्रिन सेभरका विकल्पहरू चयन गर्न चाहनुहुन्छ भने टगल अन गर्नुहोस्</translation>

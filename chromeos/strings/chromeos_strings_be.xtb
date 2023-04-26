@@ -63,6 +63,7 @@
 <translation id="1478594628797167447">Сканер</translation>
 <translation id="1483493594462132177">Адправіць</translation>
 <translation id="1491076385728777984">Ідзе абнаўленне ўбудаванага праграмнага забеспячэння прылады "<ph name="DEVICE_NAME" />"</translation>
+<translation id="1499041187027566160">павялічыць гучнасць</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> можа кіраваць наладамі гэтага карыстальніка і адсочваць яго дзеянні.</translation>
 <translation id="150962533380566081">Няправільны PUK-код.</translation>
 <translation id="1510238584712386396">Панэль запуску</translation>
@@ -208,6 +209,7 @@
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="2638662041295312666">Відарыс уліковага запісу</translation>
 <translation id="2640549051766135490">Выбраны альбом "<ph name="TITLE" />" (<ph name="DESC" />)</translation>
+<translation id="267442004702508783">абнавіць</translation>
 <translation id="2712812801627182647">Ключ аўтэнтыфікацыі TLS</translation>
 <translation id="2713444072780614174">Белы</translation>
 <translation id="2717139507051041123">Уключыць рэжым цёмных колераў</translation>
@@ -266,6 +268,7 @@
 <translation id="3310640316857623290">Затрымка DNS значна перавышае дапушчальнае парогавае значэнне</translation>
 <translation id="3328783797891415197">Выконваецца праверка</translation>
 <translation id="3340011300870565703">Узровень зараду акумулятара ў правым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3340978935015468852">налады</translation>
 <translation id="3360306038446926262">Вокны</translation>
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3369013195428705271">Сапраўды выдаліць гісторыю друку? Бягучыя заданні друку выдалены не будуць.</translation>
@@ -476,6 +479,7 @@
 <translation id="5049856988445523908">SIM-карта заблакіравана (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Назва групы</translation>
 <translation id="5051044138948155788">Гэта адзіная старонка. Вы будзеце перанакіраваны на пачатковы экран сканіравання.</translation>
+<translation id="5087864757604726239">назад</translation>
 <translation id="5088172560898466307">Назва хоста сервера</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -546,6 +550,7 @@
 <translation id="5691511426247308406">Сям'я</translation>
 <translation id="5695599963893094957">Націсніце любую клавішу на клавіятуры. Адначасова можна націснуць да 4 клавіш.</translation>
 <translation id="5701381305118179107">У цэнтры</translation>
+<translation id="5703716265115423771">паменшыць гучнасць</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Абнавіць убудаванае ПЗ прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="5760715441271661976">Стан партала</translation>
@@ -634,6 +639,7 @@
 <translation id="6410257289063177456">Файлы відарысаў</translation>
 <translation id="641081527798843608">Супадзенне суб'екта</translation>
 <translation id="6412715219990689313">Убудаваная клавіятура</translation>
+<translation id="6417265370957905582">Памочнік Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабы (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перайсці ў налады ўліковага запісу</translation>
@@ -882,6 +888,7 @@
 <translation id="8576249514688522074">Неініцыялізаваная</translation>
 <translation id="8620617069779373398">Стан роўмінгу</translation>
 <translation id="86356131183441916">Светла-фіялетавы</translation>
+<translation id="8651481478098336970">выключэнне гуку</translation>
 <translation id="8655295600908251630">Версія</translation>
 <translation id="8655828773034788261">Абагуліць URL-адрас:</translation>
 <translation id="8660881923941176839">фунт.</translation>
@@ -933,6 +940,7 @@
 <translation id="8997710128084572139">Узровень зараду акумулятара прылады: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8998289560386111590">Недаступна на вашай прыладзе</translation>
 <translation id="9003704114456258138">Частата</translation>
+<translation id="9024331582947483881">увесь экран</translation>
 <translation id="9025198690966128418">Выкарыстоўваць як асабістую прыладу</translation>
 <translation id="902638246363752736">Налады клавіятуры</translation>
 <translation id="9028832514430399253">Актывуйце пераключальнік для выбару варыянтаў застаўкі</translation>

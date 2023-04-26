@@ -186,6 +186,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2242467532204595597">Utilizza Chrome ogni volta che tocchi i link in messaggi, documenti e altre app.</translation>
 <translation id="22508856139286506">Avvisi ignorati (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Cronologia</translation>
+<translation id="2252674110805316998">Ricerca Google</translation>
 <translation id="2256933947031277845">La tua organizzazione ti consente di accedere solo con determinati account.</translation>
 <translation id="225943865679747347">Codice di errore: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Aggiungi account</translation>
@@ -349,7 +350,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Impossibile salvare la modifica.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> di <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">Questo indirizzo viene salvato solo su Chrome. Per usarlo su tutti i prodotti Google, salvalo nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Compila automaticamente le password</translation>
 <translation id="3268451620468152448">Schede aperte</translation>
 <translation id="3272527697863656322">Annulla</translation>
@@ -488,6 +488,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4272631900155121838">Per eseguire la scansione di un codice QR, attiva la videocamera dalle impostazioni</translation>
 <translation id="4277990410970811858">Navigazione sicura</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
+<translation id="4293080268407233932">Ricerca</translation>
 <translation id="4304713468139749426">Gestione password</translation>
 <translation id="430793432425771671">Sincronizza tutto</translation>
 <translation id="4309403553630140242">Tocca due volte per ulteriori informazioni</translation>
@@ -743,6 +744,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5951816930277761335">Condividi il link</translation>
 <translation id="5955891643922670672">È visualizzata la versione offline</translation>
 <translation id="5957613098218939406">Altre opzioni</translation>
+<translation id="595769230373966252">Cerca con <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Non è possibile creare un link al testo evidenziato.</translation>
 <translation id="5965679971710331625">Hai eseguito l'accesso</translation>
 <translation id="5979837087407522202">Cerca password</translation>
@@ -1266,7 +1268,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="948048872540558976">Crea nuova scheda</translation>
 <translation id="952704832371081537">Annulla</translation>
 <translation id="953008885340860025">Chrome è disconnesso</translation>
-<translation id="953673009604363306">L'avviso viene visualizzato di nuovo in un secondo momento in Avvisi ignorati nella sezione Password compromesse.</translation>
 <translation id="959066944189734975">Stai seguendo <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Monitora il prezzo di un prodotto nei negozi online. Riceverai avvisi quando il prezzo cala.</translation>
 <translation id="981498610235328462">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti.</translation>

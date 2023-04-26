@@ -127,7 +127,6 @@
 <translation id="1757699834933698436">{count,plural, =1{ദുർബലമായ {count} പാസ്‌വേഡ്}other{ദുർബലമായ {count} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1789803444939621101">വീണ്ടും സ്വാഗതം, <ph name="USER_NAME" /></translation>
-<translation id="179367147360747549">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമാണെന്ന് ഉറപ്പാക്കുക, അവ അപഹരിക്കപ്പെട്ടുവെന്ന് കണ്ടെത്തിയാൽ ഓൺലൈനിൽ നിങ്ങളെ സുരക്ഷിതരാക്കാൻ സഹായിക്കുന്ന ഉപദേശം നേടുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക.<ph name="END_LINK" /></translation>
 <translation id="1803264062614276815">കാർഡ് ഉടമയുടെ പേര്</translation>
 <translation id="1809939268435598390">ഫോൾഡർ ഇല്ലാതാക്കുക</translation>
 <translation id="1813414402673211292">ബ്രൌസിംഗ് ഡാറ്റാ മായ്ക്കുക...</translation>
@@ -187,6 +186,7 @@
 <translation id="2242467532204595597">സന്ദേശങ്ങൾ, ഡോക്യുമെന്റുകൾ, മറ്റ് ആപ്പുകൾ എന്നിവയിലെ ലിങ്കുകൾ ക്ലിക്ക് ചെയ്യുമ്പോഴെല്ലാം Chrome ഉപയോഗിക്കുക.</translation>
 <translation id="22508856139286506">ഡിസ്‌മിസ് ചെയ്‌ത മുന്നറിയിപ്പുകൾ (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">മെനു → ചരിത്രം</translation>
+<translation id="2252674110805316998">വെബ് തിരയൽ</translation>
 <translation id="2256933947031277845">ചില അക്കൗണ്ടുകൾ ഉപയോഗിച്ച് മാത്രമേ സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കൂ.</translation>
 <translation id="225943865679747347">പിശക് കോഡ്: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">അക്കൗണ്ട് ചേർക്കുക</translation>
@@ -350,7 +350,6 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">നിങ്ങൾ വരുത്തിയ മാറ്റം സംരക്ഷിക്കാനായില്ല.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">ഈ വിലാസം Chrome-ൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാൻ, ഇത് നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന Google Account-ൽ സംരക്ഷിക്കുക.</translation>
 <translation id="3264775633254836593">പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="3268451620468152448">ഓപ്പൺ ടാബുകൾ</translation>
 <translation id="3272527697863656322">റദ്ദാക്കുക</translation>
@@ -489,6 +488,7 @@
 <translation id="4272631900155121838">QR കോഡ് സ്‌കാൻ ചെയ്യാൻ, ക്രമീകരണത്തിൽ നിന്ന് ക്യാമറ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="4277990410970811858">സുരക്ഷിതമായ ബ്രൗസ് ചെയ്യൽ</translation>
 <translation id="4281844954008187215">സേവന നിബന്ധനകൾ</translation>
+<translation id="4293080268407233932">തിരയുക</translation>
 <translation id="4304713468139749426">പാസ്‌വേഡ് മാനേജർ</translation>
 <translation id="430793432425771671">എല്ലാം സമന്വയിപ്പിക്കുക</translation>
 <translation id="4309403553630140242">കൂടുതൽ വിവരങ്ങൾക്ക് ഡബിൾ ടാപ്പ് ചെയ്യുക</translation>
@@ -744,6 +744,7 @@
 <translation id="5951816930277761335">ലിങ്ക് പങ്കിടുക</translation>
 <translation id="5955891643922670672">ഓഫ്‌ലൈൻ പതിപ്പ് കാണുന്നു</translation>
 <translation id="5957613098218939406">കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
+<translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="5963939892571022323">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല.</translation>
 <translation id="5965679971710331625">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തു</translation>
 <translation id="5979837087407522202">പാസ്‌വേഡുകൾ തിരയുക</translation>
@@ -1267,7 +1268,6 @@
 <translation id="948048872540558976">പുതിയ ടാബ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="952704832371081537">റദ്ദാക്കുക</translation>
 <translation id="953008885340860025">Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്തു</translation>
-<translation id="953673009604363306">അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ വിഭാഗത്തിൽ ഡിസ്‌മിസ് ചെയ്ത മുന്നറിയിപ്പുകൾക്ക് കീഴിൽ മുന്നറിയിപ്പ് വീണ്ടും കാണാം.</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> എന്നത് നിങ്ങൾ പിന്തുടരുന്നു</translation>
 <translation id="973493300226275298">ഓൺലൈൻ സ്റ്റോറുകളിലുടനീളം ഒരു ഉൽപ്പന്നത്തിന്റെ നിരക്ക് ട്രാക്ക് ചെയ്യുക. നിരക്ക് കുറയുമ്പോൾ നിങ്ങൾക്ക് അലേർട്ടുകൾ ലഭിക്കും.</translation>
 <translation id="981498610235328462">ചില അക്കൗണ്ടുകൾ ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യാൻ മാത്രമേ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കൂ. അനുവദനീയമല്ലാത്ത അക്കൗണ്ടുകൾ മറച്ചിരിക്കുന്നു.</translation>

@@ -63,6 +63,7 @@
 <translation id="1478594628797167447">Σαρωτής</translation>
 <translation id="1483493594462132177">Αποστολή</translation>
 <translation id="1491076385728777984">Ενημέρωση υλικολογισμικού στη συσκευή <ph name="DEVICE_NAME" /></translation>
+<translation id="1499041187027566160">αύξηση έντασης ήχου</translation>
 <translation id="1499900233129743732">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτόν τον χρήστη και ενδέχεται να διαχειρίζεται απομακρυσμένα τις ρυθμίσεις και να παρακολουθεί τη δραστηριότητα του χρήστη.</translation>
 <translation id="150962533380566081">Μη έγκυρος κωδικός PUK.</translation>
 <translation id="1510238584712386396">Λειτουργία εκκίνησης</translation>
@@ -208,6 +209,7 @@
 <translation id="2620436844016719705">Σύστημα</translation>
 <translation id="2638662041295312666">Εικόνα σύνδεσης</translation>
 <translation id="2640549051766135490">Επιλέχθηκε το λεύκωμα <ph name="TITLE" /> <ph name="DESC" /></translation>
+<translation id="267442004702508783">ανανέωση</translation>
 <translation id="2712812801627182647">Κλειδί ελέγχου ταυτότητας TLS</translation>
 <translation id="2713444072780614174">Λευκό</translation>
 <translation id="2717139507051041123">Ενεργοποίηση λειτουργίας σκοτεινού χρώματος</translation>
@@ -266,6 +268,7 @@
 <translation id="3310640316857623290">Ο λανθάνων χρόνος DNS έχει υπερβεί σημαντικά το επιτρεπόμενο ελάχιστο όριο.</translation>
 <translation id="3328783797891415197">Η δοκιμή εκτελείται</translation>
 <translation id="3340011300870565703">Η μπαταρία δεξιού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3340978935015468852">ρυθμίσεις</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
 <translation id="3369013195428705271">Είστε βέβαιοι ότι θέλετε να διαγράψετε όλο το ιστορικό εκτύπωσης; Οι τρέχουσες εργασίες εκτύπωσης δεν θα διαγραφούν.</translation>
@@ -476,6 +479,7 @@
 <translation id="5049856988445523908">Κλειδωμένη SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Όνομα ομάδας</translation>
 <translation id="5051044138948155788">Αυτή είναι η μοναδική σελίδα. Θα μεταβείτε στην οθόνη έναρξης σάρωσης.</translation>
+<translation id="5087864757604726239">πίσω</translation>
 <translation id="5088172560898466307">Όνομα κεντρικού υπολογιστή διακομιστή</translation>
 <translation id="5089810972385038852">Πολιτεία</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -546,6 +550,7 @@
 <translation id="5691511426247308406">Οικογένεια</translation>
 <translation id="5695599963893094957">Πατήστε οποιοδήποτε πλήκτρο στο πληκτρολόγιο. Μπορείτε να πατήσετε έως και 4 πλήκτρα ταυτόχρονα.</translation>
 <translation id="5701381305118179107">Κέντρο</translation>
+<translation id="5703716265115423771">μείωση έντασης ήχου</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> από <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Ενημέρωση της συσκευής <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Κατάσταση πύλης</translation>
@@ -634,6 +639,7 @@
 <translation id="6410257289063177456">Αρχεία εικόνας</translation>
 <translation id="641081527798843608">Αντιστοιχία θέματος</translation>
 <translation id="6412715219990689313">Ενσωματωμένο πληκτρολόγιο</translation>
+<translation id="6417265370957905582">Βοηθός Google</translation>
 <translation id="6423239382391657905">Άνοιγμα VPN</translation>
 <translation id="6439505561246192797">Αδύναμο (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Μετάβαση στις ρυθμίσεις λογαριασμού</translation>
@@ -882,6 +888,7 @@
 <translation id="8576249514688522074">Μη προετοιμασμένο</translation>
 <translation id="8620617069779373398">Κατάσταση περιαγωγής</translation>
 <translation id="86356131183441916">Ανοιχτό μοβ</translation>
+<translation id="8651481478098336970">σίγαση ήχου</translation>
 <translation id="8655295600908251630">Κανάλι</translation>
 <translation id="8655828773034788261">Κοινοποίηση URL:</translation>
 <translation id="8660881923941176839">λίβρες</translation>
@@ -933,6 +940,7 @@
 <translation id="8997710128084572139">Η μπαταρία της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8998289560386111590">Δεν διατίθεται στη συσκευή σας</translation>
 <translation id="9003704114456258138">Συχνότητα</translation>
+<translation id="9024331582947483881">πλήρης οθόνη</translation>
 <translation id="9025198690966128418">Χρήση ως προσωπική συσκευή</translation>
 <translation id="902638246363752736">Ρυθμίσεις πληκτρολογίου</translation>
 <translation id="9028832514430399253">Ενεργοποιήστε την εναλλαγή για να ορίσετε τις επιλογές προφύλαξης οθόνης</translation>

@@ -120,6 +120,7 @@
 <translation id="1571304935088121812">Копировать имя пользователя</translation>
 <translation id="1592864538817356322">Стандартная защита:</translation>
 <translation id="1594635596540195766">Предложенных объектов в списке: <ph name="SUGGESTIONS_COUNT" /></translation>
+<translation id="1598163867407640634">Оплачивайте покупки на <ph name="SITE_ETLD_PLUS_ONE" /> через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Как вы можете управлять своими данными.<ph name="END_BOLD" /> Для защиты вашей конфиденциальности интересы автоматически удаляются через 4 недели с момента создания. Если после этого вы продолжите использовать браузер, то удаленные интересы могут вновь появиться в списке. Чтобы Chrome не учитывал конкретные интересы, вы можете их удалить.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Удалить 1 выбранный объект}one{Удалить # выбранный объект}few{Удалить # выбранных объекта}many{Удалить # выбранных объектов}other{Удалить # выбранного объекта}}</translation>
 <translation id="1633659023549081553">Просматривайте рекомендации контента на главной странице Chrome.</translation>
@@ -546,6 +547,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# час}one{# час}few{# часа}many{# часов}other{# часа}}</translation>
 <translation id="4035877632587724847">Запретить</translation>
 <translation id="4036177530563778041">Легко продолжайте с того места, где остановились.</translation>
+<translation id="4042941173059740150">Продолжите на <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4045764304651014138">Данные об использовании</translation>
 <translation id="405399507749852140">Если на одном из сайтов цена снизится, вы получите уведомление.</translation>
 <translation id="4056223980640387499">Сепия</translation>
@@ -1454,6 +1456,7 @@
 <translation id="8664215986015753476">Настройте Chrome под себя</translation>
 <translation id="8664979001105139458">Файл с таким именем уже существует.</translation>
 <translation id="8666759526542103597">О персонализации рекламы на основе данных браузера</translation>
+<translation id="8676276370198826499">Зарегистрируйтесь на <ph name="SITE_ETLD_PLUS_ONE" /> через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Подтверждение входа</translation>
 <translation id="8683039184091909753">Изображение</translation>
 <translation id="869891660844655955">Срок действия</translation>

@@ -226,7 +226,6 @@
 <translation id="5197729504361054390">Vybrané kontakty budú zdieľané s webom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Naposledy navštívený dnes</translation>
 <translation id="5225463052809312700">Zapnúť kameru</translation>
-<translation id="5229337741799419985">Toto nastavenie funguje bez identifikácie vašej totožnosti alebo bez toho, aby weby videli vašu históriu prehliadania</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5264323282659631142">Odstrániť <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Režim celej obrazovky ukončíte potiahnutím z hornej časti a klepnutím na tlačidlo Späť.</translation>
@@ -313,7 +312,6 @@
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6689172468748959065">Profilové fotky</translation>
 <translation id="6697925417670533197">Práve sťahované položky</translation>
-<translation id="6701547804986694515">Web, ktorý navštívite, môže v Chrome uložiť informácie potvrdzujúce, že nie ste robot. Pri ďalšom prehliadaní môžu weby pomocou Chromu overiť informácie z predchádzajúceho navštíveného webu, že ste zrejme skutočná osoba.</translation>
 <translation id="6722828510648505498">Blokujte výzvy na prihlásenie od služieb identity.</translation>
 <translation id="6746124502594467657">Presunúť nadol</translation>
 <translation id="6749077623962119521">Chcete resetovať povolenia?</translation>

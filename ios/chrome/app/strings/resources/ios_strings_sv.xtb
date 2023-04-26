@@ -127,7 +127,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1757699834933698436">{count,plural, =1{{count} svagt lösenord}other{{count} svaga lösenord}}</translation>
 <translation id="1767766085187034454">Google Översätt</translation>
 <translation id="1789803444939621101">Välkommen tillbaka, <ph name="USER_NAME" /></translation>
-<translation id="179367147360747549">Se till att dina lösenord är säkra, ta reda på om de har utsatts för intrång och få råd om hur du skyddar dig online. <ph name="BEGIN_LINK" />Läs mer.<ph name="END_LINK" /></translation>
 <translation id="1803264062614276815">Namn på kortinnehavare</translation>
 <translation id="1809939268435598390">Ta bort mapp</translation>
 <translation id="1813414402673211292">Rensa webbinformation</translation>
@@ -350,7 +349,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Det gick inte att spara ändringen.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">Adressen sparas bara i Chrome. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot, <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Fyll i lösenord automatiskt</translation>
 <translation id="3268451620468152448">Öppna flikar</translation>
 <translation id="3272527697863656322">Avbryt</translation>
@@ -1267,7 +1265,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="948048872540558976">Skapa ny flik</translation>
 <translation id="952704832371081537">Avbryt</translation>
 <translation id="953008885340860025">Utloggad från Chrome</translation>
-<translation id="953673009604363306">Du kan se varningen igen senare under Ignorerade varningar i avsnittet Utsatta lösenord.</translation>
 <translation id="959066944189734975">Du följer <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Bevaka en produkts pris i onlinebutiker. Du får aviseringar när priset sänks.</translation>
 <translation id="981498610235328462">Organisationen tillåter inloggning med endast vissa konton. Konton som inte tillåts är dolda.</translation>

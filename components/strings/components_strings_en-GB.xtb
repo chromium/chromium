@@ -491,7 +491,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2119867082804433120">Punch bottom right</translation>
 <translation id="2122719317867821810">This policy is working as intended but a conflicting value is set elsewhere and is overridden by this policy.</translation>
 <translation id="2126374524350484896">PDF producer:</translation>
-<translation id="2128262927290305126">In your Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2135799067377889518">Men's clothing</translation>
@@ -836,7 +835,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3029752078111257850">World news</translation>
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
-<translation id="3041450980936463495">You can use saved addresses across Google products. This address is saved in your Google Account (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Certificate Information</translation>
 <translation id="305162504811187366">Chrome Remote Desktop history, including timestamps, hosts and client session ids</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> price drop on <ph name="PRODUCT_NAME" /></translation>
@@ -1227,7 +1225,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4031179711345676612">Microphone allowed</translation>
 <translation id="4040350669425716613">Colleges and universities</translation>
 <translation id="4047351652147966654">18 in x 24 in</translation>
-<translation id="4047620889508350431">You can now use addresses from your Google Account.</translation>
+<translation id="4050392779074832022">You will be able to use it across Google products</translation>
 <translation id="405399507749852140">Get alerts if the price drops on any site</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Let Google help you find discounts for your baskets</translation>
@@ -1797,7 +1795,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5344579389779391559">This page may try to charge you money</translation>
 <translation id="5347645913823149105">Customise fonts in Chrome button, press Enter to customise font sizes and typefaces in Chrome</translation>
 <translation id="5355557959165512791">You cannot visit <ph name="SITE" /> right now because its certificate has been revoked. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
-<translation id="5356345925629253198">You can use saved addresses across Google products. This address will be saved in your Google Account (<ph name="ACCOUNT" />).</translation>
 <translation id="5357848622083956825">Visual art and design</translation>
 <translation id="536296301121032821">Failed to store policy settings</translation>
 <translation id="5363309033720083897">Serial port allowed by your administrator</translation>
@@ -1976,6 +1973,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5830698870816298009">camera use and movement</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5838278095973806738">You should not enter any sensitive information on this site (for example, passwords or credit cards) because it could be stolen by attackers.</translation>
+<translation id="5840318881868981258">In your Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Save in account?</translation>
 <translation id="5851548754964597211">Tab list</translation>
 <translation id="5852909432155870672">RA4</translation>

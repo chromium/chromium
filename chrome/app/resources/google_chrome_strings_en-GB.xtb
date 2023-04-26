@@ -418,7 +418,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9054037008353851982">Relaunch to update – Your tabs will reopen</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>
 <translation id="9138603949443464873">To apply your changes, relaunch Chrome</translation>
-<translation id="9190003950176692491">{NUM_DEVICES,plural, =0{Google Chrome was accessing a HID device}=1{Google Chrome is accessing a HID device}other{Google Chrome is accessing HID devices}}</translation>
 <translation id="9195993889682885387">Chrome can estimate your interests based on your browsing history from the last few weeks. This info stays on your device.</translation>
 <translation id="919706545465235479">Update Chrome to start sync</translation>
 <translation id="922152298093051471">Customise Chrome</translation>

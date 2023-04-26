@@ -127,7 +127,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1757699834933698436">{count,plural, =1{{count} weak password}other{{count} weak passwords}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1789803444939621101">Welcome back, <ph name="USER_NAME" /></translation>
-<translation id="179367147360747549">Make sure your passwords are safe, find out if they’ve been compromised and get advice to help protect yourself online. <ph name="BEGIN_LINK" />Learn more.<ph name="END_LINK" /></translation>
 <translation id="1803264062614276815">Cardholder name</translation>
 <translation id="1809939268435598390">Delete folder</translation>
 <translation id="1813414402673211292">Clear Browsing Data</translation>
@@ -350,7 +349,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Your change couldn't be saved.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> of <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">This address is saved only to Chrome. To use it across Google products, save it in your Google Account, <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Auto-fill passwords</translation>
 <translation id="3268451620468152448">Open tabs</translation>
 <translation id="3272527697863656322">Cancel</translation>
@@ -1267,7 +1265,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="948048872540558976">Create new tab</translation>
 <translation id="952704832371081537">Cancel</translation>
 <translation id="953008885340860025">Chrome is signed out</translation>
-<translation id="953673009604363306">The warning can be found again later under 'Dismissed warnings' in the 'Compromised passwords' section.</translation>
 <translation id="959066944189734975">You're following <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Track the price of a product across online shops. You’ll get alerts when the price drops.</translation>
 <translation id="981498610235328462">Your organisation allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden.</translation>
