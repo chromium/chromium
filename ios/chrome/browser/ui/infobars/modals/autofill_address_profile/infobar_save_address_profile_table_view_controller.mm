@@ -120,6 +120,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   self.styler.tableViewBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.tableView.allowsSelection = NO;
   self.tableView.sectionHeaderHeight = 0;
   self.tableView.sectionFooterHeight = 0;
   if (self.isUpdateModal && [self shouldShowOldSection]) {
@@ -227,65 +228,14 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
                addTarget:self
                   action:@selector(noThanksButtonWasPressed:)
         forControlEvents:UIControlEventTouchUpInside];
-  } else {
-    if (itemType == ItemTypeFooter ||
-        itemType == ItemTypeUpdateModalDescription ||
-        itemType == ItemTypeUpdateModalTitle) {
-      // Hide the separator line.
-      cell.separatorInset =
-          UIEdgeInsetsMake(0, 0, 0, self.tableView.bounds.size.width);
-    }
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  } else if (itemType == ItemTypeFooter ||
+             itemType == ItemTypeUpdateModalDescription ||
+             itemType == ItemTypeUpdateModalTitle) {
+    // Hide the separator line.
+    cell.separatorInset =
+        UIEdgeInsetsMake(0, 0, 0, self.tableView.bounds.size.width);
   }
   return cell;
-}
-
-#pragma mark - UITableViewDelegate
-
-- (void)tableView:(UITableView*)tableView
-    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  TableViewModel* model = self.tableViewModel;
-  NSInteger itemType = [model itemTypeForIndexPath:indexPath];
-  switch (itemType) {
-    case ItemTypeSaveAddress:
-    case ItemTypeSaveEmail:
-    case ItemTypeSavePhone:
-    case ItemTypeUpdateNameNew:
-    case ItemTypeUpdateAddressNew:
-    case ItemTypeUpdateEmailNew:
-    case ItemTypeUpdatePhoneNew:
-      [self ensureContextMenuShownForItemType:itemType atIndexPath:indexPath];
-      break;
-    default:
-      break;
-  }
-}
-
-// If the context menu is not shown for a given item type, constructs that
-// menu and shows it. This method should only be called for item types
-// representing the cells with the save/update address profile modal.
-- (void)ensureContextMenuShownForItemType:(NSInteger)itemType
-                              atIndexPath:(NSIndexPath*)indexPath {
-  UIMenuController* menu = [UIMenuController sharedMenuController];
-  if (![menu isMenuVisible]) {
-    menu.menuItems = [self menuItems];
-    [self becomeFirstResponder];
-    [menu showMenuFromView:self.tableView
-                      rect:[self.tableView rectForRowAtIndexPath:indexPath]];
-  }
-}
-
-#pragma mark - UIResponder
-
-- (BOOL)canBecomeFirstResponder {
-  return YES;
-}
-
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-  if (action == @selector(showEditAddressProfileModal)) {
-    return YES;
-  }
-  return NO;
 }
 
 #pragma mark - InfobarSaveAddressProfileModalConsumer
@@ -568,16 +518,6 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       NOTREACHED();
       return 0;
   }
-}
-
-// Returns an array of UIMenuItems to display in a context menu on the site
-// cell.
-- (NSArray*)menuItems {
-  // TODO(crbug.com/1167062): Use proper i18n string for Edit.
-  UIMenuItem* editOption =
-      [[UIMenuItem alloc] initWithTitle:@"Edit"
-                                 action:@selector(showEditAddressProfileModal)];
-  return @[ editOption ];
 }
 
 // Returns YES if the old section is shown in the update modal.
