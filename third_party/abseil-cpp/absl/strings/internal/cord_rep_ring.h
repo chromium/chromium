@@ -472,7 +472,7 @@ class CordRepRing : public CordRep {
   // Increases the data offset for entry `index` by `n`.
   void AddDataOffset(index_type index, size_t n);
 
-  // Descreases the length for entry `index` by `n`.
+  // Decreases the length for entry `index` by `n`.
   void SubLength(index_type index, size_t n);
 
   index_type head_;

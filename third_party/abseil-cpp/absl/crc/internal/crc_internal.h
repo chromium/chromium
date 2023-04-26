@@ -111,7 +111,7 @@ class CRC32 : public CRCImpl {
   // Common implementation guts for ExtendByZeroes and UnextendByZeroes().
   //
   // zeroes_table is a table as returned by FillZeroesTable(), containing
-  // polynomials representing CRCs of strings-of-zeros of various lenghts,
+  // polynomials representing CRCs of strings-of-zeros of various lengths,
   // and which can be combined by polynomial multiplication.  poly_table is
   // a table of CRC byte extension values.  These tables are determined by
   // the generator polynomial.

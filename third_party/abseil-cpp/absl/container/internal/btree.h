@@ -763,9 +763,12 @@ class btree_node {
   void clear_child(field_type i) {
     absl::container_internal::SanitizerPoisonObject(&mutable_child(i));
   }
-  void set_child(field_type i, btree_node *c) {
+  void set_child_noupdate_position(field_type i, btree_node *c) {
     absl::container_internal::SanitizerUnpoisonObject(&mutable_child(i));
     mutable_child(i) = c;
+  }
+  void set_child(field_type i, btree_node *c) {
+    set_child_noupdate_position(i, c);
     c->set_position(i);
   }
   void init_child(field_type i, btree_node *c) {
@@ -948,18 +951,19 @@ class btree_node {
   void merge(btree_node *src, allocator_type *alloc);
 
   // Node allocation/deletion routines.
-  void init_leaf(field_type max_count, btree_node *parent) {
+  void init_leaf(field_type position, field_type max_count,
+                 btree_node *parent) {
     set_generation(0);
     set_parent(parent);
-    set_position(0);
+    set_position(position);
     set_start(0);
     set_finish(0);
     set_max_count(max_count);
     absl::container_internal::SanitizerPoisonMemoryRegion(
         start_slot(), max_count * sizeof(slot_type));
   }
-  void init_internal(btree_node *parent) {
-    init_leaf(kNodeSlots, parent);
+  void init_internal(field_type position, btree_node *parent) {
+    init_leaf(position, kNodeSlots, parent);
     // Set `max_count` to a sentinel value to indicate that this node is
     // internal.
     set_max_count(kInternalNodeMaxCount);
@@ -1695,19 +1699,19 @@ class btree {
   }
 
   // Node creation/deletion routines.
-  node_type *new_internal_node(node_type *parent) {
+  node_type *new_internal_node(field_type position, node_type *parent) {
     node_type *n = allocate(node_type::InternalSize());
-    n->init_internal(parent);
+    n->init_internal(position, parent);
     return n;
   }
-  node_type *new_leaf_node(node_type *parent) {
+  node_type *new_leaf_node(field_type position, node_type *parent) {
     node_type *n = allocate(node_type::LeafSize());
-    n->init_leaf(kNodeSlots, parent);
+    n->init_leaf(position, kNodeSlots, parent);
     return n;
   }
   node_type *new_leaf_root_node(field_type max_count) {
     node_type *n = allocate(node_type::LeafSize(max_count));
-    n->init_leaf(max_count, /*parent=*/n);
+    n->init_leaf(/*position=*/0, max_count, /*parent=*/n);
     return n;
   }
 
@@ -1946,6 +1950,8 @@ void btree_node<P>::split(const int insert_position, btree_node *dest,
                           allocator_type *alloc) {
   assert(dest->count() == 0);
   assert(max_count() == kNodeSlots);
+  assert(position() + 1 == dest->position());
+  assert(parent() == dest->parent());
 
   // We bias the split based on the position being inserted. If we're
   // inserting at the beginning of the left node then bias the split to put
@@ -1968,7 +1974,7 @@ void btree_node<P>::split(const int insert_position, btree_node *dest,
   --mutable_finish();
   parent()->emplace_value(position(), alloc, finish_slot());
   value_destroy(finish(), alloc);
-  parent()->init_child(position() + 1, dest);
+  parent()->set_child_noupdate_position(position() + 1, dest);
 
   if (is_internal()) {
     for (field_type i = dest->start(), j = finish() + 1; i <= dest->finish();
@@ -2685,16 +2691,17 @@ void btree<P>::rebalance_or_split(iterator *iter) {
     // value.
     assert(parent->max_count() == kNodeSlots);
     if (parent->count() == kNodeSlots) {
-      iterator parent_iter(node->parent(), node->position());
+      iterator parent_iter(parent, node->position());
       rebalance_or_split(&parent_iter);
+      parent = node->parent();
     }
   } else {
     // Rebalancing not possible because this is the root node.
     // Create a new root node and set the current root node as the child of the
     // new root.
-    parent = new_internal_node(parent);
+    parent = new_internal_node(/*position=*/0, parent);
     parent->set_generation(root()->generation());
-    parent->init_child(parent->start(), root());
+    parent->init_child(parent->start(), node);
     mutable_root() = parent;
     // If the former root was a leaf node, then it's now the rightmost node.
     assert(parent->start_child()->is_internal() ||
@@ -2704,11 +2711,11 @@ void btree<P>::rebalance_or_split(iterator *iter) {
   // Split the node.
   node_type *split_node;
   if (node->is_leaf()) {
-    split_node = new_leaf_node(parent);
+    split_node = new_leaf_node(node->position() + 1, parent);
     node->split(insert_position, split_node, mutable_allocator());
     if (rightmost() == node) mutable_rightmost() = split_node;
   } else {
-    split_node = new_internal_node(parent);
+    split_node = new_internal_node(node->position() + 1, parent);
     node->split(insert_position, split_node, mutable_allocator());
   }
 

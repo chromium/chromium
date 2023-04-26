@@ -203,6 +203,7 @@ if (build_with_chromium) {
         "absl/crc:non_temporal_memcpy_test",
         "absl/debugging:stacktrace_test",
         "absl/functional:any_invocable_test",
+        "absl/functional:function_ref_test",
         "absl/hash:hash_test",
         "absl/hash:low_level_hash_test",
         "absl/log:absl_check_test",

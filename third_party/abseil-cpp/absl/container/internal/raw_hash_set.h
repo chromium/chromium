@@ -115,7 +115,7 @@
 // starting with that index and extract potential candidates: occupied slots
 // with a control byte equal to `H2(hash(x))`. If we find an empty slot in the
 // group, we stop and return an error. Each candidate slot `y` is compared with
-// `x`; if `x == y`, we are done and return `&y`; otherwise we contine to the
+// `x`; if `x == y`, we are done and return `&y`; otherwise we continue to the
 // next probe index. Tombstones effectively behave like full slots that never
 // match the value we're looking for.
 //
@@ -2456,8 +2456,8 @@ class raw_hash_set {
   void rehash_and_grow_if_necessary() {
     const size_t cap = capacity();
     if (cap > Group::kWidth &&
-        // Do these calcuations in 64-bit to avoid overflow.
-        size() * uint64_t{32} <= cap* uint64_t{25}) {
+        // Do these calculations in 64-bit to avoid overflow.
+        size() * uint64_t{32} <= cap * uint64_t{25}) {
       // Squash DELETED without growing if there is enough capacity.
       //
       // Rehash in place if the current size is <= 25/32 of capacity.

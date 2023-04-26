@@ -488,7 +488,7 @@ class CoreImpl {
     // object.
     Clear();
 
-    // Perform the actual move/destory operation on the target function.
+    // Perform the actual move/destroy operation on the target function.
     other.manager_(FunctionToCall::relocate_from_to, &other.state_, &state_);
     manager_ = other.manager_;
     invoker_ = other.invoker_;

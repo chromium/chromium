@@ -71,9 +71,9 @@ class CrcCordState {
   struct Rep {
     // `removed_prefix` is the crc and length of any prefix that has been
     // removed from the Cord (for example, by calling
-    // `CrcCord::RemovePrefix()`). To get the checkum of any prefix of the cord,
-    // this value must be subtracted from `prefix_crc`. See `Checksum()` for an
-    // example.
+    // `CrcCord::RemovePrefix()`). To get the checksum of any prefix of the
+    // cord, this value must be subtracted from `prefix_crc`. See `Checksum()`
+    // for an example.
     //
     // CrcCordState is said to be "normalized" if removed_prefix.length == 0.
     PrefixCrc removed_prefix;

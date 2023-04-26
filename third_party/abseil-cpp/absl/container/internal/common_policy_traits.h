@@ -87,7 +87,7 @@ struct common_policy_traits {
   }
 
  private:
-  // To rank the overloads below for overload resoltion. Rank0 is preferred.
+  // To rank the overloads below for overload resolution. Rank0 is preferred.
   struct Rank2 {};
   struct Rank1 : Rank2 {};
   struct Rank0 : Rank1 {};

@@ -695,6 +695,20 @@ class Condition {
   template<typename T>
   Condition(bool (*func)(T *), T *arg);
 
+  // Same as above, but allows for cases where `arg` comes from a pointer that
+  // is convertible to the function parameter type `T*` but not an exact match.
+  //
+  // For example, the argument might be `X*` but the function takes `const X*`,
+  // or the argument might be `Derived*` while the function takes `Base*`, and
+  // so on for cases where the argument pointer can be implicitly converted.
+  //
+  // Implementation notes: This constructor overload is required in addition to
+  // the one above to allow deduction of `T` from `arg` for cases such as where
+  // a function template is passed as `func`. Also, the dummy `typename = void`
+  // template parameter exists just to work around a MSVC mangling bug.
+  template <typename T, typename = void>
+  Condition(bool (*func)(T *), typename absl::internal::identity<T>::type *arg);
+
   // Templated version for invoking a method that returns a `bool`.
   //
   // `Condition(object, &Class::Method)` constructs a `Condition` that evaluates
@@ -1022,6 +1036,12 @@ inline Condition::Condition(bool (*func)(T *), T *arg)
                 "An overlarge function pointer was passed to Condition.");
   StoreCallback(func);
 }
+
+template <typename T, typename>
+inline Condition::Condition(bool (*func)(T *),
+                            typename absl::internal::identity<T>::type *arg)
+    // Just delegate to the overload above.
+    : Condition(func, arg) {}
 
 template <typename T>
 inline Condition::Condition(T *object,

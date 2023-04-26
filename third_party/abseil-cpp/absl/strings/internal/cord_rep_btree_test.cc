@@ -507,7 +507,7 @@ TEST_P(CordRepBtreeTest, AppendToTreeTwoDeep) {
   for (size_t i = max_cap * max_cap + 1; i < max_cap * max_cap * max_cap; ++i) {
     // Ref top level tree based on param.
     // Ref child node once every 16 iterations, and leaf node every 4
-    // iterrations which  which should not have an observable effect other than
+    // iterations which  which should not have an observable effect other than
     //  the node and/or the leaf below it being copied.
     refs.RefIf(shared(), tree);
     refs.RefIf(i % 16 == 0, tree->Edges().back());
@@ -568,7 +568,7 @@ TEST_P(CordRepBtreeTest, PrependToTreeTwoDeep) {
   for (size_t i = max_cap * max_cap + 1; i < max_cap * max_cap * max_cap; ++i) {
     // Ref top level tree based on param.
     // Ref child node once every 16 iterations, and leaf node every 4
-    // iterrations which  which should not have an observable effect other than
+    // iterations which  which should not have an observable effect other than
     //  the node and/or the leaf below it being copied.
     refs.RefIf(shared(), tree);
     refs.RefIf(i % 16 == 0, tree->Edges().back());

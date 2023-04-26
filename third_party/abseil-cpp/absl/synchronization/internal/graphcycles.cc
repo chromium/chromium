@@ -114,7 +114,7 @@ class Vec {
     if (src->ptr_ == src->space_) {
       // Need to actually copy
       resize(src->size_);
-      std::copy(src->ptr_, src->ptr_ + src->size_, ptr_);
+      std::copy_n(src->ptr_, src->size_, ptr_);
       src->size_ = 0;
     } else {
       Discard();
@@ -148,7 +148,7 @@ class Vec {
     size_t request = static_cast<size_t>(capacity_) * sizeof(T);
     T* copy = static_cast<T*>(
         base_internal::LowLevelAlloc::AllocWithArena(request, arena));
-    std::copy(ptr_, ptr_ + size_, copy);
+    std::copy_n(ptr_, size_, copy);
     Discard();
     ptr_ = copy;
   }

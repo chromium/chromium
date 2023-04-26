@@ -46,6 +46,8 @@ SemWaiter::SemWaiter() : wakeups_(0) {
 #if defined(__GLIBC__) && \
     (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 30))
 #define ABSL_INTERNAL_HAVE_SEM_CLOCKWAIT 1
+#elif defined(__ANDROID_API__) && __ANDROID_API__ >= 30
+#define ABSL_INTERNAL_HAVE_SEM_CLOCKWAIT 1
 #endif
 
 // Calls sem_timedwait() or possibly something else like

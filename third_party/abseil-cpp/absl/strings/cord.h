@@ -661,7 +661,7 @@ class Cord {
   class CharRange {
    public:
     // Fulfill minimum c++ container requirements [container.requirements]
-    // Theses (partial) container type definitions allow CharRange to be used
+    // These (partial) container type definitions allow CharRange to be used
     // in various utilities expecting a subset of [container.requirements].
     // For example, the below enables using `::testing::ElementsAre(...)`
     using value_type = char;

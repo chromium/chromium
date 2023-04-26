@@ -81,6 +81,8 @@ PthreadWaiter::PthreadWaiter() : waiter_count_(0), wakeup_count_(0) {
 #if defined(__GLIBC__) && \
     (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 30))
 #define ABSL_INTERNAL_HAVE_PTHREAD_COND_CLOCKWAIT 1
+#elif defined(__ANDROID_API__) && __ANDROID_API__ >= 30
+#define ABSL_INTERNAL_HAVE_PTHREAD_COND_CLOCKWAIT 1
 #endif
 
 // Calls pthread_cond_timedwait() or possibly something else like

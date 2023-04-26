@@ -745,7 +745,7 @@ class InlinedVector {
   // Erases the element at `pos`, returning an `iterator` pointing to where the
   // erased element was located.
   //
-  // NOTE: may return `end()`, which is not dereferencable.
+  // NOTE: may return `end()`, which is not dereferenceable.
   iterator erase(const_iterator pos) {
     ABSL_HARDENING_ASSERT(pos >= begin());
     ABSL_HARDENING_ASSERT(pos < end());
@@ -757,7 +757,7 @@ class InlinedVector {
   // range [`from`, `to`), returning an `iterator` pointing to where the first
   // erased element was located.
   //
-  // NOTE: may return `end()`, which is not dereferencable.
+  // NOTE: may return `end()`, which is not dereferenceable.
   iterator erase(const_iterator from, const_iterator to) {
     ABSL_HARDENING_ASSERT(from >= begin());
     ABSL_HARDENING_ASSERT(from <= to);

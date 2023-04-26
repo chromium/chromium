@@ -411,7 +411,7 @@ AbslHashValue(H hash_state, LongDouble value) {
 
 // AbslHashValue() for hashing pointers
 template <typename H, typename T>
-H AbslHashValue(H hash_state, T* ptr) {
+  H AbslHashValue(H hash_state, T* ptr) {
   auto v = reinterpret_cast<uintptr_t>(ptr);
   // Due to alignment, pointers tend to have low bits as zero, and the next few
   // bits follow a pattern since they are also multiples of some base value.

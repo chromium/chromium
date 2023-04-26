@@ -53,7 +53,7 @@ class CRC {
   // points to an array of "length" zero bytes.
   virtual void ExtendByZeroes(uint32_t* crc, size_t length) const = 0;
 
-  // Inverse opration of ExtendByZeroes.  If `crc` is the CRC value of a string
+  // Inverse operation of ExtendByZeroes.  If `crc` is the CRC value of a string
   // ending in `length` zero bytes, this returns a CRC value of that string
   // with those zero bytes removed.
   virtual void UnextendByZeroes(uint32_t* crc, size_t length) const = 0;

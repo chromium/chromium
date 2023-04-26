@@ -121,7 +121,7 @@ inline void* Clone(FlagOpFn op, const void* obj) {
   flags_internal::CopyConstruct(op, obj, res);
   return res;
 }
-// Returns true if parsing of input text is successfull.
+// Returns true if parsing of input text is successful.
 inline bool Parse(FlagOpFn op, absl::string_view text, void* dst,
                   std::string* error) {
   return op(FlagOp::kParse, &text, dst, error) != nullptr;
@@ -139,12 +139,12 @@ inline size_t Sizeof(FlagOpFn op) {
   return static_cast<size_t>(reinterpret_cast<intptr_t>(
       op(FlagOp::kSizeof, nullptr, nullptr, nullptr)));
 }
-// Returns fast type id coresponding to the value type.
+// Returns fast type id corresponding to the value type.
 inline FlagFastTypeId FastTypeId(FlagOpFn op) {
   return reinterpret_cast<FlagFastTypeId>(
       op(FlagOp::kFastTypeId, nullptr, nullptr, nullptr));
 }
-// Returns fast type id coresponding to the value type.
+// Returns fast type id corresponding to the value type.
 inline const std::type_info* RuntimeTypeId(FlagOpFn op) {
   return reinterpret_cast<const std::type_info*>(
       op(FlagOp::kRuntimeTypeId, nullptr, nullptr, nullptr));
