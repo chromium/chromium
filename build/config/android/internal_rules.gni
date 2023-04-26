@@ -1519,18 +1519,21 @@ if (enable_java_templates) {
                                      "top_target_name",
                                      "version_code",
                                    ])
+        args = [
+          "--proguard-configs=@FileArg($_rebased_build_config:deps_info:proguard_all_configs)",
+          "--min-api=$_min_sdk_version",
+        ]
         inputs = []
         if (defined(invoker.inputs)) {
           inputs += invoker.inputs
         }
         if (defined(invoker.proguard_configs)) {
           inputs += invoker.proguard_configs
+          _rebased_proguard_configs =
+              rebase_path(invoker.proguard_configs, root_build_dir)
+          args += [ "--proguard-configs=$_rebased_proguard_configs" ]
         }
 
-        args = [
-          "--proguard-configs=@FileArg($_rebased_build_config:deps_info:proguard_all_configs)",
-          "--min-api=$_min_sdk_version",
-        ]
         if (defined(invoker.has_apk_under_test) && invoker.has_apk_under_test) {
           args += [ "--input-paths=@FileArg($_rebased_build_config:deps_info:device_classpath_extended)" ]
         } else if (defined(invoker.add_view_trace_events) &&

@@ -35,19 +35,14 @@ _IGNORE_WARNINGS = (
     # https://crbug.com/1364192 << To fix this in a better way.
     r'Missing class org.chromium.build.NativeLibraries',
     # Caused by internal protobuf package: https://crbug.com/1183971
-    r'referenced from: com.google.protobuf.GeneratedMessageLite$GeneratedExtension',  # pylint: disable=line-too-long
-    # Desugaring configs may occasionally not match types in our program. This
-    # may happen temporarily until we move over to the new desugared library
-    # json flags. See crbug.com/1302088 - this should be removed when this bug
-    # is fixed.
-    r'Warning: Specification conversion: The following',
+    r'referenced from: com\.google\.protobuf\.GeneratedMessageLite\$GeneratedExtension',  # pylint: disable=line-too-long
     # Caused by protobuf runtime using -identifiernamestring in a way that
     # doesn't work with R8. Looks like:
     # Rule matches the static final field `...`, which may have been inlined...
     # com.google.protobuf.*GeneratedExtensionRegistryLite {
     #   static java.lang.String CONTAINING_TYPE_*;
     # }
-    r'GeneratedExtensionRegistryLite.CONTAINING_TYPE_',
+    r'GeneratedExtensionRegistryLite\.CONTAINING_TYPE_',
     # Relevant for R8 when optimizing an app that doesn't use protobuf.
     r'Ignoring -shrinkunusedprotofields since the protobuf-lite runtime is',
     # Ignore Unused Rule Warnings in third_party libraries.
@@ -58,6 +53,8 @@ _IGNORE_WARNINGS = (
     r'Proguard configuration rule does not match anything:',
     # TODO(agrieve): Remove once we update to U SDK.
     r'OnBackAnimationCallback',
+    # We enforce that this class is removed via -checkdiscard.
+    r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
 )
 
 _SKIPPED_CLASS_FILE_NAMES = (
@@ -168,7 +165,11 @@ def CreateStderrFilter(show_desugar_default_interface_warnings):
     if os.environ.get('R8_SHOW_ALL_OUTPUT', '0') != '0':
       return output
 
-    warnings = re.split(r'^(?=Warning|Error)', output, flags=re.MULTILINE)
+    # All missing definitions are logged as a single warning, but start on a
+    # new line like "Missing class ...".
+    warnings = re.split(r'^(?=Warning|Error|Missing (?:class|field|method))',
+                        output,
+                        flags=re.MULTILINE)
     preamble, *warnings = warnings
 
     patterns = list(_IGNORE_WARNINGS)
@@ -178,7 +179,7 @@ def CreateStderrFilter(show_desugar_default_interface_warnings):
     if not show_desugar_default_interface_warnings:
       patterns += ['default or static interface methods']
 
-    combined_pattern = '|'.join(re.escape(p) for p in patterns)
+    combined_pattern = '|'.join(patterns)
     preamble = build_utils.FilterLines(preamble, combined_pattern)
 
     compiled_re = re.compile(combined_pattern, re.DOTALL)

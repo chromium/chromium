@@ -3119,12 +3119,6 @@ if (enable_java_templates && is_android) {
         if (defined(invoker.proguard_configs)) {
           proguard_configs += invoker.proguard_configs
         }
-        if (!_assertions_implicitly_enabled && !enable_java_asserts &&
-            (!defined(testonly) || !testonly) &&
-            # Injected JaCoCo code causes -checkdiscards to fail.
-            !use_jacoco_coverage) {
-          proguard_configs += [ "//build/android/dcheck_is_off.flags" ]
-        }
         if (!_is_bundle_module) {
           proguard_mapping_path = _proguard_mapping_path
         }
@@ -3182,6 +3176,15 @@ if (enable_java_templates && is_android) {
           deps += [ ":$_compile_resources_target" ]
           proguard_mapping_path = _proguard_mapping_path
           has_apk_under_test = defined(invoker.apk_under_test)
+
+          # Must not be set via write_build_config, because that will cause it
+          # to be picked up by test apks that use apk_under_test.
+          if (!_assertions_implicitly_enabled && !enable_java_asserts &&
+              (!defined(testonly) || !testonly) &&
+              # Injected JaCoCo code causes -checkdiscards to fail.
+              !use_jacoco_coverage) {
+            proguard_configs = [ "//build/android/dcheck_is_off.flags" ]
+          }
         } else {
           if (_min_sdk_version >= default_min_sdk_version) {
             # Enable dex merging only when min_sdk_version is >= what the library
@@ -5110,6 +5113,17 @@ if (enable_java_templates && is_android) {
           deps += [ ":${_rewritten_jar_target_name}" ]
         }
         modules = _modules
+
+        # Must not be set via write_build_config, because that will cause it
+        # to be picked up by test apks that use apk_under_test.
+        _assertions_implicitly_enabled =
+            defined(invoker.custom_assertion_handler)
+        if (!_assertions_implicitly_enabled && !enable_java_asserts &&
+            (!defined(testonly) || !testonly) &&
+            # Injected JaCoCo code causes -checkdiscards to fail.
+            !use_jacoco_coverage) {
+          proguard_configs = [ "//build/android/dcheck_is_off.flags" ]
+        }
       }
     }
 
