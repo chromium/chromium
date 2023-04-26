@@ -59,7 +59,7 @@ class SignedWebBundleIdValidTest
 
 TEST_P(SignedWebBundleIdValidTest, ParseValidIDs) {
   const auto parsed_id = SignedWebBundleId::Create(raw_id_);
-  EXPECT_TRUE(parsed_id.has_value());
+  ASSERT_TRUE(parsed_id.has_value());
   EXPECT_EQ(parsed_id->type(), type_);
 }
 
