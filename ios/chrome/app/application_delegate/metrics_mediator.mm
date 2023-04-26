@@ -409,6 +409,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 
   NSMutableSet* uniqueURLs = [NSMutableSet set];
   std::vector<base::TimeDelta> timesSinceCreation;
+  const base::Time now = base::Time::Now();
 
   for (SceneState* scene in scenes) {
     if (!scene.browserProviderInterface) {
@@ -421,10 +422,15 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
     const WebStateList* webStateList =
         scene.browserProviderInterface.mainBrowserProvider.browser
             ->GetWebStateList();
-    numTabs += webStateList->count();
-
-    const base::Time now = base::Time::Now();
+    const WebStateList* inactiveWebStateList =
+        scene.browserProviderInterface.mainBrowserProvider.inactiveBrowser
+            ->GetWebStateList();
     const int webStateListCount = webStateList->count();
+    const int inactiveWebStateListCount = inactiveWebStateList->count();
+
+    numTabs += webStateListCount + inactiveWebStateListCount;
+    // All inactive tabs are inactive since minimum 7 days or more.
+    numOldTabs += inactiveWebStateListCount;
 
     for (int i = 0; i < webStateListCount; i++) {
       web::WebState* webState = webStateList->GetWebStateAt(i);
@@ -454,6 +460,14 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
       timesSinceCreation.push_back(timeSinceCreation);
 
       DCHECK_EQ(wasWebStateRealized, webState->IsRealized());
+    }
+
+    for (int i = 0; i < inactiveWebStateListCount; i++) {
+      web::WebState* webState = inactiveWebStateList->GetWebStateAt(i);
+
+      // Calculate the age (time elapsed since creation) of WebState.
+      base::TimeDelta timeSinceCreation = now - webState->GetCreationTime();
+      timesSinceCreation.push_back(timeSinceCreation);
     }
   }
 

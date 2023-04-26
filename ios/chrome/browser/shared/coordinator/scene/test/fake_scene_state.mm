@@ -29,6 +29,7 @@
 @implementation FakeSceneState {
   // Owning pointer for the browser that backs the interface provider.
   std::unique_ptr<TestBrowser> _browser;
+  std::unique_ptr<TestBrowser> _inactive_browser;
   std::unique_ptr<TestBrowser> _incognito_browser;
 }
 
@@ -48,6 +49,11 @@
     base::mac::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.mainBrowserProvider)
         .browser = _browser.get();
+
+    _inactive_browser = std::make_unique<TestBrowser>(browserState);
+    base::mac::ObjCCastStrict<StubBrowserProvider>(
+        self.browserProviderInterface.mainBrowserProvider)
+        .inactiveBrowser = _inactive_browser.get();
 
     _incognito_browser = std::make_unique<TestBrowser>(
         browserState->GetOffTheRecordChromeBrowserState());

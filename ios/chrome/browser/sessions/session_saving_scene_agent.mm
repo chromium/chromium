@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 
@@ -63,14 +62,10 @@
   Browser* mainBrowser = browserProviderInterface.mainBrowserProvider.browser;
   SessionRestorationBrowserAgent::FromBrowser(mainBrowser)
       ->SaveSession(/*immediately=*/true);
-  if (IsInactiveTabsEnabled()) {
-    Browser* inactiveBrowser =
-        browserProviderInterface.mainBrowserProvider.inactiveBrowser;
-    if (inactiveBrowser) {
-      SessionRestorationBrowserAgent::FromBrowser(inactiveBrowser)
-          ->SaveSession(/*immediately=*/true);
-    }
-  }
+  Browser* inactiveBrowser =
+      browserProviderInterface.mainBrowserProvider.inactiveBrowser;
+  SessionRestorationBrowserAgent::FromBrowser(inactiveBrowser)
+      ->SaveSession(/*immediately=*/true);
   if (browserProviderInterface.hasIncognitoBrowserProvider) {
     Browser* incognitoBrowser =
         browserProviderInterface.incognitoBrowserProvider.browser;
