@@ -117,6 +117,7 @@ export {SettingsMultideviceCombinedSetupItemElement} from './multidevice_page/mu
 export {SettingsMultideviceSmartlockItemElement} from './multidevice_page/multidevice_smartlock_item.js';
 export {SettingsMultideviceTaskContinuationDisabledLinkElement} from './multidevice_page/multidevice_task_continuation_disabled_link.js';
 export {SettingsMultideviceTaskContinuationItemElement} from './multidevice_page/multidevice_task_continuation_item.js';
+export {SettingsMultideviceWifiSyncDisabledLinkElement} from './multidevice_page/multidevice_wifi_sync_disabled_link.js';
 export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
 export {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './os_a11y_page/bluetooth_braille_display_manager.js';
 export {BluetoothBrailleDisplayUiElement} from './os_a11y_page/bluetooth_braille_display_ui.js';
