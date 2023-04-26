@@ -193,7 +193,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/common/controlled_frame.h"
+#include "chrome/common/controlled_frame/controlled_frame.h"
 #include "chrome/common/initialize_extensions_client.h"
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
 #include "extensions/common/constants.h"

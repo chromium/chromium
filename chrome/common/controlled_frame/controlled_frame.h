@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_CONTROLLED_FRAME_H_
-#define CHROME_COMMON_CONTROLLED_FRAME_H_
+#ifndef CHROME_COMMON_CONTROLLED_FRAME_CONTROLLED_FRAME_H_
+#define CHROME_COMMON_CONTROLLED_FRAME_CONTROLLED_FRAME_H_
 
 #include <memory>
 #include <string>
@@ -29,4 +29,4 @@ CreateAvailabilityCheckMap();
 
 }  // namespace controlled_frame
 
-#endif  // CHROME_COMMON_CONTROLLED_FRAME_H_
+#endif  // CHROME_COMMON_CONTROLLED_FRAME_CONTROLLED_FRAME_H_
