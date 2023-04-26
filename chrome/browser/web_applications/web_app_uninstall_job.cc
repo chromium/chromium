@@ -150,6 +150,7 @@ void WebAppUninstallJob::Start(
   if (app_profile_path.has_value() &&
       base::FeatureList::IsEnabled(
           kExperimentalWebAppProfileIsolationDeleteProfile)) {
+    CHECK(Profile::IsWebAppProfilePath(app_profile_path.value()));
     auto* profile_manager = g_browser_process->profile_manager();
 
     // Check whether the profile exists or not before removing it.
