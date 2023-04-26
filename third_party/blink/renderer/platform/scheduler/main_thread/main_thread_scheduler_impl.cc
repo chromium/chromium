@@ -86,9 +86,6 @@ const int64_t kSecondsPerMinute = 60;
 constexpr base::TimeDelta kDefaultPrioritizeCompositingAfterDelay =
     base::Milliseconds(100);
 
-constexpr TaskPriority kPrioritizeCompositingAfterDelayPriority =
-    TaskPriority::kVeryHighPriority;
-
 v8::RAILMode RAILModeToV8RAILMode(RAILMode rail_mode) {
   switch (rail_mode) {
     case RAILMode::kResponse:
@@ -222,8 +219,18 @@ TaskPriority GetPriorityFromCompositorTQPolicyDuringThreadedScrolling(
   }
 }
 
-TaskPriority MaxPriority(TaskPriority priority1, TaskPriority priority2) {
-  return std::min(priority1, priority2);
+const char* RenderingPrioritizationStateToString(
+    MainThreadSchedulerImpl::RenderingPrioritizationState state) {
+  using RenderingPrioritizationState =
+      MainThreadSchedulerImpl::RenderingPrioritizationState;
+  switch (state) {
+    case RenderingPrioritizationState::kNone:
+      return "none";
+    case RenderingPrioritizationState::kRenderingStarved:
+      return "rendering_starved";
+    case RenderingPrioritizationState::kWaitingForInputResponse:
+      return "waiting_for_input_response";
+  }
 }
 
 }  // namespace
@@ -463,19 +470,17 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
           "Scheduler.TaskPriority",
           &main_thread_scheduler_impl->tracing_controller_,
           OptionalTaskPriorityToString),
-      prioritize_compositing_after_input(
-          false,
-          "Scheduler.PrioritizeCompositingAfterInput",
-          &main_thread_scheduler_impl->tracing_controller_,
-          YesNoStateToString),
       main_thread_compositing_is_fast(false),
       compositor_priority(TaskPriority::kNormalPriority,
                           "Scheduler.CompositorPriority",
                           &main_thread_scheduler_impl->tracing_controller_,
                           TaskPriorityToString),
+      main_frame_prioritization_state(
+          RenderingPrioritizationState::kNone,
+          "RenderingPrioritizationState",
+          &main_thread_scheduler_impl->tracing_controller_,
+          RenderingPrioritizationStateToString),
       last_frame_time(now),
-      should_prioritize_compositor_task_queue_after_delay(false),
-      have_seen_a_frame(false),
       audible_power_mode_voter(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Audible")),
@@ -861,7 +866,7 @@ void MainThreadSchedulerImpl::WillBeginFrame(const viz::BeginFrameArgs& args) {
     base::AutoLock lock(any_thread_lock_);
     any_thread().begin_main_frame_on_critical_path = args.on_critical_path;
   }
-  main_thread_only().have_seen_a_frame = true;
+  main_thread_only().is_current_task_main_frame = true;
 }
 
 void MainThreadSchedulerImpl::DidCommitFrameToCompositor() {
@@ -1333,7 +1338,7 @@ void MainThreadSchedulerImpl::DidHandleInputEventOnMainThread(
     }
   }
   if (!PendingUserInput::IsContinuousEventType(web_input_event.GetType())) {
-    main_thread_only().did_handle_discrete_input_event = true;
+    main_thread_only().is_current_task_discrete_input = true;
   }
 }
 
@@ -2540,40 +2545,48 @@ MainThreadSchedulerImpl::scheduling_settings() const {
 }
 
 TaskPriority MainThreadSchedulerImpl::ComputeCompositorPriority() const {
-  if (main_thread_only().prioritize_compositing_after_input) {
-    // Return the highest priority here otherwise consecutive heavy inputs (e.g.
-    // typing) will starve rendering.
-    return TaskPriority::kHighestPriority;
-  } else {
-    absl::optional<TaskPriority> computed_compositor_priority =
-        ComputeCompositorPriorityFromUseCase();
-    // The default behavior for compositor gestures like compositor-driven
-    // scrolling is to deprioritize compositor TQ tasks (low priority) and not
-    // apply delay-based anti-starvation. This can lead to degraded user
-    // experience due to increased checkerboarding or scrolling blank content.
-    // When `kThreadedScrollPreventRenderingStarvation` is enabled, we use the
-    // priority computed in `ComputeCompositorPriorityFromUseCase()` as well as
-    // enable the delay-based anti-starvation to mitigate these issues.
-    //
-    // Note: for other use cases, the computed priority is higher, so they are
-    // not prone to rendering starvation in the same way.
-    if (current_use_case() == UseCase::kCompositorGesture &&
-        scheduling_settings().compositor_tq_policy_during_threaded_scroll !=
-            CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways &&
-        main_thread_only()
-            .should_prioritize_compositor_task_queue_after_delay) {
-      DCHECK(computed_compositor_priority);
-      return MaxPriority(kPrioritizeCompositingAfterDelayPriority,
-                         *computed_compositor_priority);
-    }
-    if (computed_compositor_priority) {
-      return computed_compositor_priority.value();
-    } else if (main_thread_only()
-                   .should_prioritize_compositor_task_queue_after_delay) {
-      return kPrioritizeCompositingAfterDelayPriority;
-    }
+  absl::optional<TaskPriority> targeted_main_frame_priority =
+      ComputeCompositorPriorityForMainFrame();
+  absl::optional<TaskPriority> use_case_priority =
+      ComputeCompositorPriorityFromUseCase();
+  if (!targeted_main_frame_priority && !use_case_priority) {
+    return TaskPriority::kNormalPriority;
+  } else if (!use_case_priority) {
+    return *targeted_main_frame_priority;
+  } else if (!targeted_main_frame_priority) {
+    return *use_case_priority;
   }
-  return TaskPriority::kNormalPriority;
+
+  // Both are set, so some reconciliation is needed.
+  CHECK(targeted_main_frame_priority && use_case_priority);
+  // If either votes for the highest priority, use that to simplify the
+  // remaining case.
+  if (*targeted_main_frame_priority == TaskPriority::kHighestPriority ||
+      *use_case_priority == TaskPriority::kHighestPriority) {
+    return TaskPriority::kHighestPriority;
+  }
+  // Otherwise, this must be a combination of UseCase::kCompositorGesture and
+  // rendering starvation since all other states set the priority to highest.
+  CHECK(current_use_case() == UseCase::kCompositorGesture &&
+        main_thread_only().main_frame_prioritization_state ==
+            RenderingPrioritizationState::kRenderingStarved);
+  // The default behavior for compositor gestures like compositor-driven
+  // scrolling is to deprioritize compositor TQ tasks (low priority) and not
+  // apply delay-based anti-starvation. This can lead to degraded user
+  // experience due to increased checkerboarding or scrolling blank content.
+  // When `kThreadedScrollPreventRenderingStarvation` is enabled, we use the
+  // priority computed in `ComputeCompositorPriorityFromUseCase()` as well as
+  // enable the delay-based anti-starvation to mitigate these issues.
+  //
+  // Note: for other use cases, the computed priority is higher, so they are
+  // not prone to rendering starvation in the same way.
+  if (scheduling_settings().compositor_tq_policy_during_threaded_scroll ==
+      CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways) {
+    return *use_case_priority;
+  } else {
+    CHECK_LE(*targeted_main_frame_priority, *use_case_priority);
+    return *targeted_main_frame_priority;
+  }
 }
 
 void MainThreadSchedulerImpl::UpdateCompositorTaskQueuePriority() {
@@ -2595,53 +2608,54 @@ void MainThreadSchedulerImpl::
     MaybeUpdateCompositorTaskQueuePriorityOnTaskCompleted(
         MainThreadTaskQueue* queue,
         const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
-  bool current_prioritize_compositer_after_input =
-      main_thread_only().prioritize_compositing_after_input;
-  bool current_prioritize_compositor_after_delay =
-      main_thread_only().should_prioritize_compositor_task_queue_after_delay;
+  RenderingPrioritizationState old_state =
+      main_thread_only().main_frame_prioritization_state;
+  // A main frame task resets the rendering prioritization state. Otherwise if
+  // the scheduler is waiting for a frame because of discrete input, the state
+  // will only change once a main frame happens. Otherwise, compute the state in
+  // descending priority order.
   if (queue &&
       queue->queue_type() == MainThreadTaskQueue::QueueType::kCompositor &&
-      main_thread_only().have_seen_a_frame) {
+      main_thread_only().is_current_task_main_frame) {
     main_thread_only().last_frame_time = task_timing.end_time();
-    main_thread_only().have_seen_a_frame = false;
-    main_thread_only().should_prioritize_compositor_task_queue_after_delay =
-        false;
-    main_thread_only().prioritize_compositing_after_input = false;
-  } else if (queue &&
-             queue->queue_type() == MainThreadTaskQueue::QueueType::kInput &&
-             main_thread_only().did_handle_discrete_input_event) {
-    // Assume this input will result in a frame, which we want to show ASAP.
-    main_thread_only().prioritize_compositing_after_input = true;
-  } else {
-    base::TimeDelta threshold;
-    switch (current_use_case()) {
-      case UseCase::kCompositorGesture:
-        // Don't use experimental values if we're processing a gesture, so as
-        // not to interfere with kThreadedScrollPreventRenderingStarvation.
-        threshold = kDefaultPrioritizeCompositingAfterDelay;
-        break;
-      case UseCase::kEarlyLoading:
-        threshold =
-            scheduling_settings_.prioritize_compositing_after_delay_pre_fcp;
-        break;
-      default:
-        threshold =
-            scheduling_settings_.prioritize_compositing_after_delay_post_fcp;
-        break;
-    }
-    if (task_timing.end_time() - main_thread_only().last_frame_time >=
-        threshold) {
-      main_thread_only().should_prioritize_compositor_task_queue_after_delay =
-          true;
+    main_thread_only().is_current_task_main_frame = false;
+    main_thread_only().main_frame_prioritization_state =
+        RenderingPrioritizationState::kNone;
+  } else if (main_thread_only().main_frame_prioritization_state !=
+             RenderingPrioritizationState::kWaitingForInputResponse) {
+    if (queue &&
+        queue->queue_type() == MainThreadTaskQueue::QueueType::kInput &&
+        main_thread_only().is_current_task_discrete_input) {
+      // Assume this input will result in a frame, which we want to show ASAP.
+      main_thread_only().main_frame_prioritization_state =
+          RenderingPrioritizationState::kWaitingForInputResponse;
+    } else {
+      base::TimeDelta threshold;
+      switch (current_use_case()) {
+        case UseCase::kCompositorGesture:
+          // Don't use experimental values if we're processing a gesture, so as
+          // not to interfere with kThreadedScrollPreventRenderingStarvation.
+          threshold = kDefaultPrioritizeCompositingAfterDelay;
+          break;
+        case UseCase::kEarlyLoading:
+          threshold =
+              scheduling_settings_.prioritize_compositing_after_delay_pre_fcp;
+          break;
+        default:
+          threshold =
+              scheduling_settings_.prioritize_compositing_after_delay_post_fcp;
+          break;
+      }
+      if (task_timing.end_time() - main_thread_only().last_frame_time >=
+          threshold) {
+        main_thread_only().main_frame_prioritization_state =
+            RenderingPrioritizationState::kRenderingStarved;
+      }
     }
   }
+  main_thread_only().is_current_task_discrete_input = false;
 
-  main_thread_only().did_handle_discrete_input_event = false;
-
-  if (main_thread_only().should_prioritize_compositor_task_queue_after_delay !=
-          current_prioritize_compositor_after_delay ||
-      main_thread_only().prioritize_compositing_after_input !=
-          current_prioritize_compositer_after_input) {
+  if (old_state != main_thread_only().main_frame_prioritization_state) {
     UpdateCompositorTaskQueuePriority();
   }
 }
@@ -2694,6 +2708,22 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
       NOTREACHED();
       return absl::nullopt;
   }
+}
+
+absl::optional<TaskPriority>
+MainThreadSchedulerImpl::ComputeCompositorPriorityForMainFrame() const {
+  switch (main_thread_only().main_frame_prioritization_state) {
+    case RenderingPrioritizationState::kNone:
+      return absl::nullopt;
+    case RenderingPrioritizationState::kRenderingStarved:
+      // Set higher than most tasks, but lower than input.
+      return TaskPriority::kVeryHighPriority;
+    case RenderingPrioritizationState::kWaitingForInputResponse:
+      // Return the highest priority here otherwise consecutive heavy inputs
+      // (e.g. typing) will starve rendering.
+      return TaskPriority::kHighestPriority;
+  }
+  NOTREACHED_NORETURN();
 }
 
 bool MainThreadSchedulerImpl::AllPagesFrozen() const {
