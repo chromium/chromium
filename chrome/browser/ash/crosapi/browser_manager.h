@@ -338,6 +338,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   static void DisableForTesting();
   static void EnableForTesting();
 
+  void KillLacrosForTesting();
+
  protected:
   // The actual Lacros launch mode.
   // These values are persisted to logs. Entries should not be renumbered and

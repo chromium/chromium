@@ -1823,4 +1823,8 @@ BrowserManager::ScopedUnsetAllKeepAliveForTesting::
       !manager_->keep_alive_features_.empty());
 }
 
+void BrowserManager::KillLacrosForTesting() {
+  lacros_process_.Terminate(/*exit_code=*/1, /*wait=*/false);
+}
+
 }  // namespace crosapi

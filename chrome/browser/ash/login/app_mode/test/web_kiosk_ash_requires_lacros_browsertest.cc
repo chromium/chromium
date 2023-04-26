@@ -2,14 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
+#include "components/exo/wm_helper.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
+
+namespace {
+class AuraWindowWatcher : public exo::WMHelper::ExoWindowObserver {
+ public:
+  AuraWindowWatcher() {
+    exo::WMHelper::GetInstance()->AddExoWindowObserver(this);
+  }
+
+  ~AuraWindowWatcher() override {
+    exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
+  }
+
+  AuraWindowWatcher(const AuraWindowWatcher&) = delete;
+  AuraWindowWatcher& operator=(const AuraWindowWatcher&) = delete;
+
+  // `exo::WMHelper::ExoWindowObserver`
+  void OnExoWindowCreated(aura::Window* window) override {
+    window_future_.SetValue(window);
+  }
+
+  aura::Window* WaitForWindow() { return window_future_.Take(); }
+
+ private:
+  base::test::TestFuture<aura::Window*> window_future_;
+};
+
+}  // namespace
 
 // Tests Ash-side of the web kiosk when Lacros is enabled.
 class WebKioskAshRequiresLacrosTest : public WebKioskBaseTest {
@@ -73,6 +102,23 @@ IN_PROC_BROWSER_TEST_F(WebKioskAshRequiresLacrosTest, RegularOnlineKiosk) {
     return;
   }
   InitializeRegularOnlineKiosk();
+  EXPECT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskAshRequiresLacrosTest, RecoverFromLacrosCrash) {
+  if (!HasLacrosArgument()) {
+    return;
+  }
+  InitializeRegularOnlineKiosk();
+
+  AuraWindowWatcher watcher;
+
+  crosapi::BrowserManager::Get()->KillLacrosForTesting();
+
+  // Wait for a new Lacros window to created after the crash.
+  aura::Window* window = watcher.WaitForWindow();
+
+  EXPECT_TRUE(crosapi::browser_util::IsLacrosWindow(window));
   EXPECT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
 }
 
