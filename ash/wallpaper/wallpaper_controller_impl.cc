@@ -733,13 +733,12 @@ bool WallpaperControllerImpl::ShouldApplyShield() const {
     needs_shield = true;
   }
 
-  return needs_shield &&
-         (!IsOneShotWallpaper() || allow_blur_or_shield_for_testing_);
+  return needs_shield && (!IsOneShotWallpaper() || allow_shield_for_testing_);
 }
 
 bool WallpaperControllerImpl::IsBlurAllowedForLockState() const {
   return !IsDevicePolicyWallpaper() &&
-         (!IsOneShotWallpaper() || allow_blur_or_shield_for_testing_);
+         (!IsOneShotWallpaper() || allow_blur_for_testing_);
 }
 
 bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
