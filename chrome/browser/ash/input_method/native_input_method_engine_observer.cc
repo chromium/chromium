@@ -898,7 +898,7 @@ void NativeInputMethodEngineObserver::OnFocus(
       TextClient{.context_id = context_id, .state = TextClientState::kPending};
 
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
-    assistive_suggester_->OnFocus(context_id);
+    assistive_suggester_->OnFocus(context_id, context);
   }
   autocorrect_manager_->OnFocus(context_id);
   if (grammar_manager_->IsOnDeviceGrammarEnabled()) {

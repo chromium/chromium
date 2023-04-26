@@ -58,7 +58,7 @@ class AssistiveSuggester : public SuggestionsSource {
   void OnActivate(const std::string& engine_id);
 
   // Called when a text field gains focus, and suggester starts working.
-  void OnFocus(int context_id);
+  void OnFocus(int context_id, const TextInputMethod::InputContext& context);
 
   // Called when a text field loses focus, and suggester stops working.
   void OnBlur();
@@ -206,6 +206,8 @@ class AssistiveSuggester : public SuggestionsSource {
   bool auto_repeat_suppress_metric_emitted_ = false;
 
   int last_cursor_pos_ = 0;
+
+  TextInputMethod::InputContext context_;
 
   base::WeakPtrFactory<AssistiveSuggester> weak_ptr_factory_{this};
 };

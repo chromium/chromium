@@ -196,7 +196,8 @@ AssistiveSuggester::AssistiveSuggester(
       multi_word_suggester_(suggestion_handler, profile),
       longpress_diacritics_suggester_(suggestion_handler),
       longpress_control_v_suggester_(suggestion_handler),
-      suggester_switch_(std::move(suggester_switch)) {
+      suggester_switch_(std::move(suggester_switch)),
+      context_(TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_NONE)) {
   RecordAssistiveUserPrefForEmoji(
       profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled));
 }
@@ -212,7 +213,7 @@ bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
 
 void AssistiveSuggester::FetchEnabledSuggestionsFromBrowserContextThen(
     AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback) {
-  suggester_switch_->FetchEnabledSuggestionsThen(std::move(callback));
+  suggester_switch_->FetchEnabledSuggestionsThen(std::move(callback), context_);
 }
 
 bool AssistiveSuggester::IsEmojiSuggestAdditionEnabled() {
@@ -322,10 +323,12 @@ bool AssistiveSuggester::IsAssistiveTypeAllowedInBrowserContext(
   }
 }
 
-void AssistiveSuggester::OnFocus(int context_id) {
+void AssistiveSuggester::OnFocus(int context_id,
+                                 const TextInputMethod::InputContext& context) {
   // Some parts of the code reserve negative/zero context_id for unfocused
   // context. As a result we should make sure it is not being errornously set to
   // a negative number, and cause unexpected behaviour.
+  context_ = context;
   DCHECK(context_id > 0);
   focused_context_id_ = context_id;
   emoji_suggester_.OnFocus(context_id);
@@ -335,7 +338,8 @@ void AssistiveSuggester::OnFocus(int context_id) {
   enabled_suggestions_from_last_onfocus_ = absl::nullopt;
   suggester_switch_->FetchEnabledSuggestionsThen(
       base::BindOnce(&AssistiveSuggester::HandleEnabledSuggestionsOnFocus,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      context);
 }
 
 void AssistiveSuggester::HandleEnabledSuggestionsOnFocus(
@@ -493,7 +497,8 @@ void AssistiveSuggester::OnExternalSuggestionsUpdated(
 
   suggester_switch_->FetchEnabledSuggestionsThen(
       base::BindOnce(&AssistiveSuggester::ProcessExternalSuggestions,
-                     weak_ptr_factory_.GetWeakPtr(), suggestions));
+                     weak_ptr_factory_.GetWeakPtr(), suggestions),
+      context_);
 }
 
 void AssistiveSuggester::ProcessExternalSuggestions(
@@ -582,7 +587,8 @@ void AssistiveSuggester::OnSurroundingTextChanged(
   last_cursor_pos_ = selection_range.end();
   suggester_switch_->FetchEnabledSuggestionsThen(
       base::BindOnce(&AssistiveSuggester::ProcessOnSurroundingTextChanged,
-                     weak_ptr_factory_.GetWeakPtr(), text, selection_range));
+                     weak_ptr_factory_.GetWeakPtr(), text, selection_range),
+      context_);
 }
 
 void AssistiveSuggester::ProcessOnSurroundingTextChanged(

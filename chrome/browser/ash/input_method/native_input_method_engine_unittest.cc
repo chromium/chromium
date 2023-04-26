@@ -79,7 +79,8 @@ class FakeSuggesterSwitch : public AssistiveSuggesterSwitch {
 
   // AssistiveSuggesterSwitch overrides
   void FetchEnabledSuggestionsThen(
-      FetchEnabledSuggestionsCallback callback) override {
+      FetchEnabledSuggestionsCallback callback,
+      const TextInputMethod::InputContext& context) override {
     std::move(callback).Run(enabled_suggestions_);
   }
 

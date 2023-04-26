@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/exo/wm_helper.h"
+#include "ui/base/ime/ash/text_input_method.h"
+#include "ui/base/ime/text_input_type.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -270,12 +272,16 @@ bool IsMatchedSubDomainWithPathPrefix(
 void ReturnEnabledSuggestions(
     AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback,
     WindowProperties window_properties,
+    const TextInputMethod::InputContext& context,
     const absl::optional<GURL>& current_url) {
   // Deny-list (will block if matched, otherwise allow)
   bool diacritic_suggestions_allowed =
       !IsMatchedSubDomain(kDeniedDomainsForDiacritics, current_url) &&
       !IsMatchedApp(kDeniedAppsForDiacritics, window_properties) &&
-      !IsMatchedExactUrl(kDeniedUrlsForDiacritics, current_url);
+      !IsMatchedExactUrl(kDeniedUrlsForDiacritics, current_url) &&
+      // Disable in P/W and number fields
+      !(context.type == ui::TEXT_INPUT_TYPE_PASSWORD ||
+        context.type == ui::TEXT_INPUT_TYPE_NUMBER);
 
   // TODO(b/245469813): Investigate if denied is intentional for suggesters
   // below is intentional.
@@ -326,10 +332,11 @@ AssistiveSuggesterClientFilter::AssistiveSuggesterClientFilter(
 AssistiveSuggesterClientFilter::~AssistiveSuggesterClientFilter() = default;
 
 void AssistiveSuggesterClientFilter::FetchEnabledSuggestionsThen(
-    FetchEnabledSuggestionsCallback callback) {
+    FetchEnabledSuggestionsCallback callback,
+    const TextInputMethod::InputContext& context) {
   WindowProperties window_properties = get_window_properties_.Run();
   get_url_.Run(base::BindOnce(ReturnEnabledSuggestions, std::move(callback),
-                              window_properties));
+                              window_properties, context));
 }
 
 }  // namespace input_method
