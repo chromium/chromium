@@ -4516,6 +4516,11 @@ extern const char kHeuristicMemorySaverDescription[] =
     "discarding a tab rather than doing it after a fixed amount of time in the "
     "background.";
 
+extern const char kHighEfficiencyModeTimeBeforeDiscardName[] =
+    "Configure discard time for Memory Saver";
+extern const char kHighEfficiencyModeTimeBeforeDiscardDescription[] =
+    "When set, this controls the time before memory saver discards a tab.";
+
 extern const char kHighEfficiencySavingsReportingImprovementsName[] =
     "Enable improvements to how memory savings are reported.";
 extern const char kHighEfficiencySavingsReportingImprovementsDescription[] =

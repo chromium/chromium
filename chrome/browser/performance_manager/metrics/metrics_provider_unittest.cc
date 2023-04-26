@@ -30,12 +30,12 @@ class ScopedAXModeSetter {
   ui::AXMode previous_mode_;
 };
 
-class FakeHighEfficiencyModeToggleDelegate
+class FakeHighEfficiencyModeDelegate
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
-          HighEfficiencyModeToggleDelegate {
+          HighEfficiencyModeDelegate {
  public:
   void ToggleHighEfficiencyMode(bool enabled) override {}
-  ~FakeHighEfficiencyModeToggleDelegate() override = default;
+  ~FakeHighEfficiencyModeDelegate() override = default;
 };
 
 class PerformanceManagerMetricsProviderTest : public testing::Test {

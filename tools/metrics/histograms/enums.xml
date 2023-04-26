@@ -63862,6 +63862,7 @@ from previous Chrome versions.
   <int value="899347105" label="NearbySharingWifiLan:enabled"/>
   <int value="900614020" label="ContentSuggestionsShowSummary:disabled"/>
   <int value="902209599" label="ShelfHotseat:enabled"/>
+  <int value="902442795" label="time-before-discard-in-minutes"/>
   <int value="902649149" label="ArcGhostWindowNewStyle:enabled"/>
   <int value="902839593" label="WebContentsForceDark:disabled"/>
   <int value="903267263" label="disable-offline-pages"/>
