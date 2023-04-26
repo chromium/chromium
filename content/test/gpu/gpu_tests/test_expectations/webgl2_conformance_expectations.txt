@@ -305,11 +305,18 @@ crbug.com/angleproject/7109 [ win angle-d3d11 ] conformance2/renderbuffers/inval
 
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 
+## win10 / angle-d3d9 / Passthrough command decoder failures ##
+
+crbug.com/1439591 [ angle-d3d9 intel passthrough win10 ] conformance/uniforms/uniform-samplers-test.html [ RetryOnFailure ]
+
 # win10 / angle-d3d11 / passthrough command decoder failures.
 crbug.com/1378372 [ angle-d3d11 nvidia-0x2184 passthrough target-cpu-32 win10 ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
 crbug.com/1378372 [ angle-d3d11 nvidia-0x2184 passthrough target-cpu-32 win10 ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
+crbug.com/1439591 [ angle-d3d11 intel passthrough win10 ] conformance/uniforms/uniform-samplers-test.html [ RetryOnFailure ]
+crbug.com/1439591 [ angle-d3d11 nvidia passthrough win10 ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ RetryOnFailure ]
 
 ## Win / Intel ##
+crbug.com/1439591 [ win10 intel angle-vulkan passthrough ] conformance/uniforms/uniform-samplers-test.html [ RetryOnFailure ]
 
 
 ## Win / NVIDIA ##
