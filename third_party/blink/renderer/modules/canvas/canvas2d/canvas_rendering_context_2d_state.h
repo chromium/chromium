@@ -137,13 +137,11 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void SetStrokeColor(Color color);
   void SetStrokePattern(CanvasPattern* pattern);
   void SetStrokeGradient(CanvasGradient* gradient);
-  void SetStrokeStyle(CanvasStyle*);
   CanvasStyle* StrokeStyle() const { return stroke_style_.Get(); }
 
   void SetFillColor(Color color);
   void SetFillPattern(CanvasPattern* pattern);
   void SetFillGradient(CanvasGradient* gradient);
-  void SetFillStyle(CanvasStyle*);
   CanvasStyle* FillStyle() const { return fill_style_.Get(); }
 
   // Prefer to use Style() over StrokeStyle() and FillStyle()
@@ -262,8 +260,6 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   using PassKey = base::PassKey<CanvasRenderingContext2DState>;
 
   void UpdateLineDash() const;
-  void UpdateStrokeStyle() const;
-  void UpdateFillStyle() const;
   void UpdateFilterQuality() const;
   void UpdateFilterQuality(cc::PaintFlags::FilterQuality) const;
   void ShadowParameterChanged();
@@ -336,8 +332,6 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   bool has_complex_clip_ : 1;
   bool letter_spacing_is_set_ : 1;
   bool word_spacing_is_set_ : 1;
-  mutable bool fill_style_dirty_ : 1;
-  mutable bool stroke_style_dirty_ : 1;
   mutable bool line_dash_dirty_ : 1;
 
   bool image_smoothing_enabled_;

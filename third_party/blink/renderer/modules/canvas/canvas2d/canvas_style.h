@@ -31,7 +31,10 @@
 #include "base/types/pass_key.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -65,8 +68,19 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
   CanvasGradient* GetCanvasGradient() const { return gradient_.Get(); }
   CanvasPattern* GetCanvasPattern() const { return pattern_; }
 
-  void ApplyToFlags(cc::PaintFlags&) const;
-  Color PaintColor() const;
+  // Applies the CanvasStyle to PaintFlags. This is the slow path to be used
+  // in cases where PaintFlags has never been initialized and no assumptions
+  // can be made about the CanvasStyle's type
+  void ApplyToFlags(cc::PaintFlags&, float global_alpha) const;
+
+  // Like ApplyFlags, but does nothing if type is Color. This method is called
+  // at draw time to synchronize the states of live CanvasPattern and
+  // CanvasGradientObjects.
+  void SyncFlags(cc::PaintFlags&, float global_alpha) const;
+
+  // FastPath: Call this instead of ApplyToFlags when the CanvasStyle is known
+  // to be of type kColor.
+  void ApplyColorToFlags(cc::PaintFlags&, float global_alpha) const;
 
   bool IsEquivalentColor(Color color) const {
     return type_ == kColor && color_ == color;
@@ -116,6 +130,26 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
   Member<CanvasGradient> gradient_;
   Member<CanvasPattern> pattern_;
 };
+
+ALWAYS_INLINE void CanvasStyle::ApplyColorToFlags(cc::PaintFlags& flags,
+                                                  float global_alpha) const {
+  // Inlined fast path for color values: because color values are immutable
+  // they can be applied once at style set time.
+  DCHECK(type_ == kColor);
+  flags.setShader(nullptr);
+  Color color = color_;
+  color.SetAlpha(color.FloatAlpha() * global_alpha);
+  flags.setColor(color.toSkColor4f());
+}
+
+ALWAYS_INLINE void CanvasStyle::SyncFlags(cc::PaintFlags& flags,
+                                          float global_alpha) const {
+  if (LIKELY(type_ == kColor)) {
+    // Color values are immutable so they never need to be sync'ed at draw time.
+    return;
+  }
+  ApplyToFlags(flags, global_alpha);
+}
 
 enum class ColorParseResult {
   // The string identified a valid color.

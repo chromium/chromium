@@ -86,8 +86,6 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
       has_complex_clip_(false),
       letter_spacing_is_set_(false),
       word_spacing_is_set_(false),
-      fill_style_dirty_(true),
-      stroke_style_dirty_(true),
       line_dash_dirty_(false),
       image_smoothing_quality_(cc::PaintFlags::FilterQuality::kLow) {
   fill_flags_.setStyle(cc::PaintFlags::kFill_Style);
@@ -153,8 +151,6 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
       has_complex_clip_(other.has_complex_clip_),
       letter_spacing_is_set_(other.letter_spacing_is_set_),
       word_spacing_is_set_(other.word_spacing_is_set_),
-      fill_style_dirty_(other.fill_style_dirty_),
-      stroke_style_dirty_(other.stroke_style_dirty_),
       line_dash_dirty_(other.line_dash_dirty_),
       image_smoothing_enabled_(other.image_smoothing_enabled_),
       image_smoothing_quality_(other.image_smoothing_quality_),
@@ -220,10 +216,10 @@ static bool HasANonZeroElement(const Vector<double>& line_dash) {
   return false;
 }
 
-void CanvasRenderingContext2DState::UpdateLineDash() const {
-  if (!line_dash_dirty_)
+ALWAYS_INLINE void CanvasRenderingContext2DState::UpdateLineDash() const {
+  if (LIKELY(!line_dash_dirty_)) {
     return;
-
+  }
   if (!HasANonZeroElement(line_dash_)) {
     stroke_flags_.setPathEffect(nullptr);
   } else {
@@ -232,7 +228,6 @@ void CanvasRenderingContext2DState::UpdateLineDash() const {
     stroke_flags_.setPathEffect(SkDashPathEffect::Make(
         line_dash.data(), line_dash.size(), line_dash_offset_));
   }
-
   line_dash_dirty_ = false;
 }
 
@@ -240,131 +235,69 @@ void CanvasRenderingContext2DState::SetStrokeColor(Color color) {
   if (stroke_style_->IsEquivalentColor(color)) {
     return;
   }
-
-  if (stroke_style_->is_shared()) {
-    SetStrokeStyle(MakeGarbageCollected<CanvasStyle>(color));
-    return;
+  if (UNLIKELY(stroke_style_->is_shared())) {
+    stroke_style_ = MakeGarbageCollected<CanvasStyle>(color);
+  } else {
+    stroke_style_->SetColor(PassKey(), color);
   }
-
-  stroke_style_dirty_ = true;
-  stroke_style_->SetColor(PassKey(), color);
+  stroke_style_->ApplyColorToFlags(stroke_flags_, global_alpha_);
 }
 
 void CanvasRenderingContext2DState::SetStrokePattern(CanvasPattern* pattern) {
-  if (stroke_style_->IsEquivalentPattern(pattern)) {
-    // Even though the pointer value hasn't changed, the contents of the pattern
-    // may have. For this reason the style is marked dirty.
-    stroke_style_dirty_ = true;
-    return;
+  if (!stroke_style_->IsEquivalentPattern(pattern)) {
+    if (UNLIKELY(stroke_style_->is_shared())) {
+      stroke_style_ = MakeGarbageCollected<CanvasStyle>(pattern);
+    } else {
+      stroke_style_->SetPattern(PassKey(), pattern);
+    }
   }
-
-  if (stroke_style_->is_shared()) {
-    SetStrokeStyle(MakeGarbageCollected<CanvasStyle>(pattern));
-    return;
-  }
-
-  stroke_style_->SetPattern(PassKey(), pattern);
-  stroke_style_dirty_ = true;
+  // Will be applied to PaintFlags at draw time by SyncFlags.
 }
 
 void CanvasRenderingContext2DState::SetStrokeGradient(
     CanvasGradient* gradient) {
-  if (stroke_style_->IsEquivalentGradient(gradient)) {
-    // Even though the pointer value hasn't changed, the contents of the
-    // gradient may have. For this reason the style is marked dirty.
-    stroke_style_dirty_ = true;
-    return;
+  if (!stroke_style_->IsEquivalentGradient(gradient)) {
+    if (UNLIKELY(stroke_style_->is_shared())) {
+      stroke_style_ = MakeGarbageCollected<CanvasStyle>(gradient);
+    } else {
+      stroke_style_->SetGradient(PassKey(), gradient);
+    }
   }
-
-  if (stroke_style_->is_shared()) {
-    SetStrokeStyle(MakeGarbageCollected<CanvasStyle>(gradient));
-    return;
-  }
-
-  stroke_style_->SetGradient(PassKey(), gradient);
-  stroke_style_dirty_ = true;
-}
-
-void CanvasRenderingContext2DState::SetStrokeStyle(CanvasStyle* style) {
-  stroke_style_ = style;
-  stroke_style_dirty_ = true;
+  // Will be applied to PaintFlags at draw time by SyncFlags.
 }
 
 void CanvasRenderingContext2DState::SetFillColor(Color color) {
   if (fill_style_->IsEquivalentColor(color)) {
     return;
   }
-
-  if (fill_style_->is_shared()) {
-    SetFillStyle(MakeGarbageCollected<CanvasStyle>(color));
-    return;
+  if (UNLIKELY(fill_style_->is_shared())) {
+    fill_style_ = MakeGarbageCollected<CanvasStyle>(color);
+  } else {
+    fill_style_->SetColor(PassKey(), color);
   }
-
-  fill_style_dirty_ = true;
-  fill_style_->SetColor(PassKey(), color);
+  fill_style_->ApplyColorToFlags(fill_flags_, global_alpha_);
 }
 
 void CanvasRenderingContext2DState::SetFillPattern(CanvasPattern* pattern) {
-  if (fill_style_->IsEquivalentPattern(pattern)) {
-    // Even though the pointer value hasn't changed, the contents of the pattern
-    // may have. For this reason the style is marked dirty.
-    fill_style_dirty_ = true;
-    return;
+  if (!fill_style_->IsEquivalentPattern(pattern)) {
+    if (UNLIKELY(fill_style_->is_shared())) {
+      fill_style_ = MakeGarbageCollected<CanvasStyle>(pattern);
+    } else {
+      fill_style_->SetPattern(PassKey(), pattern);
+    }
   }
-
-  if (fill_style_->is_shared()) {
-    SetFillStyle(MakeGarbageCollected<CanvasStyle>(pattern));
-    return;
-  }
-
-  fill_style_dirty_ = true;
-  fill_style_->SetPattern(PassKey(), pattern);
+  // Will be applied to PaintFlags at draw time by SyncFlags.
 }
 
 void CanvasRenderingContext2DState::SetFillGradient(CanvasGradient* gradient) {
-  if (fill_style_->IsEquivalentGradient(gradient)) {
-    // Even though the pointer value hasn't changed, the contents of the
-    // gradient may have. For this reason the style is marked dirty.
-    fill_style_dirty_ = true;
-    return;
+  if (!fill_style_->IsEquivalentGradient(gradient)) {
+    if (UNLIKELY(fill_style_->is_shared())) {
+      fill_style_ = MakeGarbageCollected<CanvasStyle>(gradient);
+    } else {
+      fill_style_->SetGradient(PassKey(), gradient);
+    }
   }
-
-  if (fill_style_->is_shared()) {
-    SetFillStyle(MakeGarbageCollected<CanvasStyle>(gradient));
-    return;
-  }
-
-  fill_style_dirty_ = true;
-  fill_style_->SetGradient(PassKey(), gradient);
-}
-
-void CanvasRenderingContext2DState::SetFillStyle(CanvasStyle* style) {
-  fill_style_ = style;
-  fill_style_dirty_ = true;
-}
-
-void CanvasRenderingContext2DState::UpdateStrokeStyle() const {
-  if (!stroke_style_dirty_)
-    return;
-
-  DCHECK(stroke_style_);
-  stroke_style_->ApplyToFlags(stroke_flags_);
-  Color stroke_color = stroke_style_->PaintColor();
-  stroke_color.SetAlpha(stroke_color.FloatAlpha() * global_alpha_);
-  stroke_flags_.setColor(stroke_color.toSkColor4f());
-  stroke_style_dirty_ = false;
-}
-
-void CanvasRenderingContext2DState::UpdateFillStyle() const {
-  if (!fill_style_dirty_)
-    return;
-
-  DCHECK(fill_style_);
-  fill_style_->ApplyToFlags(fill_flags_);
-  Color fill_color = fill_style_->PaintColor();
-  fill_color.SetAlpha(fill_color.FloatAlpha() * global_alpha_);
-  fill_flags_.setColor(fill_color.toSkColor4f());
-  fill_style_dirty_ = false;
+  // Will be applied to PaintFlags at draw time by SyncFlags.
 }
 
 CanvasStyle* CanvasRenderingContext2DState::Style(PaintType paint_type) const {
@@ -394,8 +327,8 @@ bool CanvasRenderingContext2DState::ShouldAntialias() const {
 
 void CanvasRenderingContext2DState::SetGlobalAlpha(double alpha) {
   global_alpha_ = alpha;
-  stroke_style_dirty_ = true;
-  fill_style_dirty_ = true;
+  stroke_style_->ApplyToFlags(stroke_flags_, global_alpha_);
+  fill_style_->ApplyToFlags(fill_flags_, global_alpha_);
   image_flags_.setColor(ScaleAlpha(SK_ColorBLACK, alpha));
 }
 
@@ -546,11 +479,9 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilterForOffscreenCanvas(
   // We can't reuse m_fillFlags and m_strokeFlags for the filter, since these
   // incorporate the global alpha, which isn't applicable here.
   cc::PaintFlags fill_flags_for_filter;
-  fill_style_->ApplyToFlags(fill_flags_for_filter);
-  fill_flags_for_filter.setColor(fill_style_->PaintColor().toSkColor4f());
+  fill_style_->ApplyToFlags(fill_flags_for_filter, 1.0f);
   cc::PaintFlags stroke_flags_for_filter;
-  stroke_style_->ApplyToFlags(stroke_flags_for_filter);
-  stroke_flags_for_filter.setColor(stroke_style_->PaintColor().toSkColor4f());
+  stroke_style_->ApplyToFlags(stroke_flags_for_filter, 1.0f);
 
   FilterEffectBuilder filter_effect_builder(
       gfx::RectF(gfx::SizeF(canvas_size)),
@@ -618,11 +549,9 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
   // We can't reuse m_fillFlags and m_strokeFlags for the filter, since these
   // incorporate the global alpha, which isn't applicable here.
   cc::PaintFlags fill_flags_for_filter;
-  fill_style_->ApplyToFlags(fill_flags_for_filter);
-  fill_flags_for_filter.setColor(fill_style_->PaintColor().toSkColor4f());
+  fill_style_->ApplyToFlags(fill_flags_for_filter, 1.0f);
   cc::PaintFlags stroke_flags_for_filter;
-  stroke_style_->ApplyToFlags(stroke_flags_for_filter);
-  stroke_flags_for_filter.setColor(stroke_style_->PaintColor().toSkColor4f());
+  stroke_style_->ApplyToFlags(stroke_flags_for_filter, 1.0f);
 
   FilterEffectBuilder filter_effect_builder(
       gfx::RectF(gfx::SizeF(canvas_size)),
@@ -825,7 +754,7 @@ const cc::PaintFlags* CanvasRenderingContext2DState::GetFlags(
   switch (paint_type) {
     case kStrokePaintType:
       UpdateLineDash();
-      UpdateStrokeStyle();
+      stroke_style_->SyncFlags(stroke_flags_, global_alpha_);
       flags = &stroke_flags_;
       break;
     default:
@@ -834,7 +763,7 @@ const cc::PaintFlags* CanvasRenderingContext2DState::GetFlags(
       // about uninitialized variable.
       [[fallthrough]];
     case kFillPaintType:
-      UpdateFillStyle();
+      fill_style_->SyncFlags(fill_flags_, global_alpha_);
       flags = &fill_flags_;
       break;
     case kImagePaintType:
