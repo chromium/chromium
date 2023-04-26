@@ -6646,7 +6646,7 @@
   {
     "name": "safe-mode-for-cached-flags",
     "owners": ["hnakashima"],
-    "expiry_milestone": 115
+    "expiry_milestone": 130
   },
   {
     "name": "safe-sites-filter-behavior-policy-android",
