@@ -257,12 +257,4 @@ base::TimeTicks EventConverterEvdev::TimeTicksFromInputEvent(
   ValidateEventTimeClock(&timestamp);
   return timestamp;
 }
-
-std::ostream& EventConverterEvdev::DescribeForLog(std::ostream& os) const {
-  os << "class=ui::EventConverterEvdev id=" << input_device_.id << std::endl
-     << " path=\"" << path_.value() << "\"" << std::endl
-     << "member ";
-  return input_device_.DescribeForLog(os);
-}
-
 }  // namespace ui

@@ -345,15 +345,4 @@ void EventConverterEvdevImpl::FlushEvents(const input_event& input) {
   y_offset_ = 0;
 }
 
-std::ostream& EventConverterEvdevImpl::DescribeForLog(std::ostream& os) const {
-  os << "class=ui::EventConverterEvdevImpl id=" << input_device_.id << std::endl
-     << " keyboard_type=" << keyboard_type_ << std::endl
-     << " has_keyboard=" << HasKeyboard() << std::endl
-     << " has_touchpad=" << has_touchpad_ << std::endl
-     << " has_caps_lock_led=" << has_caps_lock_led_ << std::endl
-     << " has_stylus_switch=" << has_stylus_switch_ << std::endl
-     << "base ";
-  return EventConverterEvdev::DescribeForLog(os);
-}
-
 }  // namespace ui

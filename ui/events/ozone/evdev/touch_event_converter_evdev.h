@@ -11,7 +11,6 @@
 
 #include <bitset>
 #include <memory>
-#include <ostream>
 #include <queue>
 // See if we compile against new enough headers and add missing definition
 // if the headers are too old.
@@ -91,8 +90,6 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
 
   // Unsafe part of initialization.
   virtual void Initialize(const EventDeviceInfo& info);
-
-  std::ostream& DescribeForLog(std::ostream& os) const override;
 
   static const char kHoldCountAtReleaseEventName[];
   static const char kHoldCountAtCancelEventName[];

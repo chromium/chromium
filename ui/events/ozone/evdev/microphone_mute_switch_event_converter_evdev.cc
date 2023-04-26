@@ -92,12 +92,4 @@ void MicrophoneMuteSwitchEventConverterEvdev::ProcessEvent(
     dispatcher_->DispatchMicrophoneMuteSwitchValueChanged(input.value);
 }
 
-std::ostream& MicrophoneMuteSwitchEventConverterEvdev::DescribeForLog(
-    std::ostream& os) const {
-  os << "class=ui::MicrophoneMuteSwitchEventConverterEvdev id="
-     << input_device_.id << std::endl
-     << "base ";
-  return EventConverterEvdev::DescribeForLog(os);
-}
-
 }  // namespace ui

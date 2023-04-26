@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <ostream>
 #include <set>
 #include <vector>
 
@@ -207,9 +206,6 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   virtual void SetHapticTouchpadEffectForNextButtonRelease(
       HapticTouchpadEffect effect,
       HapticTouchpadEffectStrength strength);
-
-  // Describe converter for system log
-  virtual std::ostream& DescribeForLog(std::ostream& os) const;
 
  protected:
   // base::MessagePumpForUI::FdWatcher:
