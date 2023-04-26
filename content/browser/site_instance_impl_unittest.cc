@@ -21,6 +21,7 @@
 #include "content/browser/browsing_instance.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/isolated_origin_util.h"
+#include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -2020,8 +2021,11 @@ TEST_F(SiteInstanceTest, SiteInfoDetermineProcessLock_OriginAgentCluster) {
   // skip over the check for OAC process isolated origins, which is required for
   // this test to operate.
   SiteInfo site_info_for_a_foo = SiteInfo::Create(
-      IsolationContext(BrowsingInstanceId::FromUnsafeValue(42), context(),
-                       /*is_guest=*/false, /*is_fenced=*/false),
+      IsolationContext(
+          BrowsingInstanceId::FromUnsafeValue(42), context(),
+          /*is_guest=*/false, /*is_fenced=*/false,
+          OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+              context())),
       UrlInfo(UrlInfoInit(a_foo_url).WithOriginIsolationRequest(
           UrlInfo::OriginIsolationRequest::kOriginAgentCluster)));
   EXPECT_TRUE(

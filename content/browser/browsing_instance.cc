@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/coop_related_group.h"
+#include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -35,7 +36,9 @@ BrowsingInstance::BrowsingInstance(
           BrowsingInstanceId::FromUnsafeValue(next_browsing_instance_id_++),
           BrowserOrResourceContext(browser_context),
           is_guest,
-          is_fenced),
+          is_fenced,
+          OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+              browser_context)),
       active_contents_count_(0u),
       default_site_instance_(nullptr),
       web_exposed_isolation_info_(web_exposed_isolation_info),

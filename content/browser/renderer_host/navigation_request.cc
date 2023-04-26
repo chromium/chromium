@@ -3692,17 +3692,25 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
 UrlInfo NavigationRequest::GetUrlInfo() {
   // Compute the isolation request flags.  Note that multiple requests could be
   // active simultaneously for the same navigation.
-  uint32_t isolation_flags = UrlInfo::OriginIsolationRequest::kNone;
+  // We start by assuming that the default isolation will be used, and only
+  // change it if an explicit opt-in or opt-out request is seen. Depending on
+  // the value of OriginAgentClusterIsolationState::CreateForDefaultIsolation,
+  // default isolation could potentially be non-isolated, origin-agent-cluster,
+  // or origin-agent-cluster in an origin-keyed process. Note: the
+  // IsOriginIsolationImplied() case is handled via kDefault. It is the only
+  // case where the `Origin-Agent-Cluster` header is absent.
+  uint32_t isolation_flags = UrlInfo::OriginIsolationRequest::kDefault;
 
-  // An origin-keyed agent cluster is used if requested by header
-  // (or possibly by default, if no opt-out is requested), while an
-  // origin-keyed process is currently only used if requested by header.
-  if (IsOriginAgentClusterOptInRequested() || IsIsolationImplied())
-    isolation_flags |= UrlInfo::OriginIsolationRequest::kOriginAgentCluster;
-  if (IsOriginAgentClusterOptInRequested() &&
-      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
-    isolation_flags |=
-        UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess;
+  if (IsOriginAgentClusterOptOutRequested()) {
+    isolation_flags = UrlInfo::OriginIsolationRequest::kNone;
+  } else if (IsOriginAgentClusterOptInRequested()) {
+    // An origin-keyed agent cluster is used if explicitly requested by header.
+    isolation_flags = UrlInfo::OriginIsolationRequest::kOriginAgentCluster;
+    if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
+      // An origin-keyed process is used if requested by header.
+      isolation_flags |=
+          UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess;
+    }
   }
 
   auto isolation_request =

@@ -201,10 +201,14 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   // be able to give spOAC origins their own SiteInstance.
   // https://crbug.com/1195535
   OriginAgentClusterIsolationState requested_isolation_state =
-      url_info.requests_origin_agent_cluster()
-          ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
-                url_info.requests_origin_keyed_process())
-          : OriginAgentClusterIsolationState::CreateNonIsolated();
+      isolation_context.default_isolation_state();
+  if (!url_info.requests_default_origin_agent_cluster_isolation()) {
+    requested_isolation_state =
+        url_info.requests_origin_agent_cluster()
+            ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+                  url_info.requests_origin_keyed_process())
+            : OriginAgentClusterIsolationState::CreateNonIsolated();
+  }
 
   bool requires_origin_keyed_process = false;
   if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
@@ -351,7 +355,8 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
             IsolationContext(BrowsingInstanceId(0),
                              isolation_context.browser_or_resource_context(),
                              isolation_context.is_guest(),
-                             isolation_context.is_fenced()),
+                             isolation_context.is_fenced(),
+                             isolation_context.default_isolation_state()),
             url::Origin::Create(process_lock_url_),
             false /* origin_requests_isolation */, &result_origin)) {
       non_oac_site_info.process_lock_url_ = result_origin.GetURL();

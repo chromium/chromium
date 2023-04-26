@@ -251,8 +251,11 @@ class ChildProcessSecurityPolicyTest
     ChildProcessSecurityPolicyImpl* p =
         ChildProcessSecurityPolicyImpl::GetInstance();
     return p->IsIsolatedOrigin(
-        IsolationContext(browsing_instance_id, context,
-                         /*is_guest=*/false, /*is_fenced=*/false),
+        IsolationContext(
+            browsing_instance_id, context,
+            /*is_guest=*/false, /*is_fenced=*/false,
+            OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+                &browser_context_)),
         origin, false /* origin_requests_isolation */);
   }
 

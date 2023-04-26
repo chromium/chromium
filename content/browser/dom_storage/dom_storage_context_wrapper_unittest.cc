@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/uuid.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -39,8 +40,11 @@ class DOMStorageContextWrapperTest : public testing::Test {
     security_policy->AddFutureIsolatedOrigins(
         {test_storage_key1_.origin(), test_storage_key2_.origin()},
         ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
-    IsolationContext isolation_context(BrowsingInstanceId(1), &browser_context_,
-                                       /*is_guest=*/false, /*is_fenced=*/false);
+    IsolationContext isolation_context(
+        BrowsingInstanceId(1), &browser_context_,
+        /*is_guest=*/false, /*is_fenced=*/false,
+        OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+            &browser_context_));
     security_policy->LockProcessForTesting(
         isolation_context, kTestProcessIdOrigin1,
         test_storage_key1_.origin().GetURL());
