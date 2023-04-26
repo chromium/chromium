@@ -423,12 +423,13 @@ class ASH_EXPORT WallpaperControllerImpl
   // Update a Wallpaper for all root windows.
   void UpdateWallpaperForAllRootWindows(bool lock_state_changed);
 
-  // Moves the wallpaper to the specified container across all root windows.
+  // Moves the wallpaper to the correct container across all root windows.
   // Returns true if a wallpaper moved.
-  bool ReparentWallpaper(int container);
+  bool ReparentWallpaper();
 
-  // Returns the wallpaper container id for unlocked and locked states.
-  int GetWallpaperContainerId(bool locked);
+  // Returns the wallpaper container id for different session and wallpaper
+  // states.
+  int GetWallpaperContainerId();
 
   // Implementation of |RemoveUserWallpaper|, which deletes |account_id|'s
   // custom wallpapers and directories.
@@ -774,7 +775,7 @@ class ASH_EXPORT WallpaperControllerImpl
   void CleanUpBeforeSettingUserWallpaperInfo(const AccountId& account_id,
                                              const WallpaperInfo& info);
 
-  bool locked_ = false;
+  bool is_session_active_ = false;
 
   WallpaperMode wallpaper_mode_ = WALLPAPER_NONE;
 

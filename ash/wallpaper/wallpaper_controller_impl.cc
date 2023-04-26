@@ -1390,7 +1390,7 @@ void WallpaperControllerImpl::ShowOverrideWallpaper(
   const WallpaperInfo info = {/*in_location=*/std::string(),
                               WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                               WallpaperType::kOneShot, base::Time::Now()};
-  ReparentWallpaper(GetWallpaperContainerId(locked_));
+  ReparentWallpaper();
   ReadAndDecodeWallpaper(
       base::BindOnce(&WallpaperControllerImpl::OnOverrideWallpaperDecoded,
                      weak_factory_.GetWeakPtr(), info),
@@ -1405,7 +1405,7 @@ void WallpaperControllerImpl::RemoveOverrideWallpaper() {
   is_always_on_top_wallpaper_ = false;
   is_override_wallpaper_ = false;
   reload_override_wallpaper_callback_.Reset();
-  ReparentWallpaper(GetWallpaperContainerId(locked_));
+  ReparentWallpaper();
   // Forget current wallpaper data.
   current_wallpaper_.reset();
   ReloadWallpaper(/*clear_cache=*/false);
@@ -1655,7 +1655,7 @@ void WallpaperControllerImpl::OnSessionStateChanged(
 
   CalculateWallpaperColors();
 
-  locked_ = state != session_manager::SessionState::ACTIVE;
+  is_session_active_ = state == session_manager::SessionState::ACTIVE;
 
   // The wallpaper may be dimmed/blurred based on session state. The color of
   // the dimming overlay depends on the prominent color cached from a previous
@@ -1668,7 +1668,7 @@ void WallpaperControllerImpl::OnSessionStateChanged(
     UpdateWallpaperForAllRootWindows(/*lock_state_changed=*/true);
   } else {
     // Just update container.
-    ReparentWallpaper(GetWallpaperContainerId(locked_));
+    ReparentWallpaper();
   }
 }
 
@@ -1833,7 +1833,7 @@ void WallpaperControllerImpl::UpdateWallpaperForRootWindow(
       for (auto& observer : observers_)
         observer.OnWallpaperBlurChanged();
     }
-    const int container_id = GetWallpaperContainerId(locked_);
+    const int container_id = GetWallpaperContainerId();
     wallpaper_widget_controller->Reparent(container_id);
 
     blur = is_wallpaper_blurred_for_lock_state
@@ -1853,7 +1853,9 @@ void WallpaperControllerImpl::UpdateWallpaperForAllRootWindows(
   current_max_display_size_ = GetMaxDisplaySizeInNative();
 }
 
-bool WallpaperControllerImpl::ReparentWallpaper(int container) {
+bool WallpaperControllerImpl::ReparentWallpaper() {
+  auto container = GetWallpaperContainerId();
+
   bool moved = false;
   for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
     moved |= root_window_controller->wallpaper_widget_controller()->Reparent(
@@ -1862,12 +1864,13 @@ bool WallpaperControllerImpl::ReparentWallpaper(int container) {
   return moved;
 }
 
-int WallpaperControllerImpl::GetWallpaperContainerId(bool locked) {
-  if (is_always_on_top_wallpaper_)
+int WallpaperControllerImpl::GetWallpaperContainerId() {
+  if (is_always_on_top_wallpaper_) {
     return kShellWindowId_AlwaysOnTopWallpaperContainer;
+  }
 
-  return locked ? kShellWindowId_LockScreenWallpaperContainer
-                : kShellWindowId_WallpaperContainer;
+  return is_session_active_ ? kShellWindowId_WallpaperContainer
+                            : kShellWindowId_LockScreenWallpaperContainer;
 }
 
 void WallpaperControllerImpl::RemoveUserWallpaperImpl(

@@ -699,10 +699,6 @@ class WallpaperControllerTest : public AshTestBase {
 
   void ClearWallpaper() { controller_->current_wallpaper_.reset(); }
 
-  int GetWallpaperContainerId() {
-    return controller_->GetWallpaperContainerId(controller_->locked_);
-  }
-
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
   }
