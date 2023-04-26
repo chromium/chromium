@@ -289,6 +289,11 @@ public class AutofillTestHelper {
         return String.valueOf(Calendar.getInstance().get(Calendar.YEAR) + 1);
     }
 
+    /** Returns the YY value of the year after the current year. */
+    public static String twoDigitNextYear() {
+        return nextYear().substring(2);
+    }
+
     /** Creates a simple {@link CreditCard}. */
     public static CreditCard createLocalCreditCard(
             String name, String number, String month, String year) {

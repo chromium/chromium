@@ -695,6 +695,13 @@ public class PersonalDataManager {
                     + getYear();
         }
 
+        public String getFormattedExpirationDateWithTwoDigitYear(Context context) {
+            String twoDigityear = getYear().substring(2);
+            return getMonth()
+                    + context.getResources().getString(R.string.autofill_expiration_date_separator)
+                    + twoDigityear;
+        }
+
         @CalledByNative("CreditCard")
         public boolean getIsLocal() {
             return mIsLocal;

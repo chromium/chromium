@@ -214,7 +214,7 @@ public class AutofillPaymentMethodsFragmentTest {
         String summary = cardPreference.getSummary().toString();
         // Verify that the summary (line below the card name and number) contains the expiration
         // date.
-        assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.nextYear()));
+        assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.twoDigitNextYear()));
     }
 
     @Test
@@ -227,7 +227,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
         Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
         String summary = cardPreference.getSummary().toString();
-        assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.nextYear()));
+        assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.twoDigitNextYear()));
     }
 
     @Test
@@ -241,7 +241,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
         Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
         String summary = cardPreference.getSummary().toString();
-        assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.nextYear()));
+        assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.twoDigitNextYear()));
     }
 
     @Test
