@@ -459,9 +459,12 @@ enum class IOSOverflowMenuActionType {
   }
 
   if (self.overflowMenuMediator) {
-    [self.bubblePresenter presentTabPinnedBubble];
-    [self.baseViewController dismissViewControllerAnimated:animated
-                                                completion:nil];
+    __weak __typeof(self) weakSelf = self;
+    [self.baseViewController
+        dismissViewControllerAnimated:animated
+                           completion:^{
+                             [weakSelf.bubblePresenter presentTabPinnedBubble];
+                           }];
     [self.overflowMenuMediator disconnect];
     self.overflowMenuMediator = nil;
   }
