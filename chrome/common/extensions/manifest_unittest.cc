@@ -20,7 +20,6 @@
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -96,12 +95,12 @@ class ManifestUnitTest : public testing::Test {
 
 // Verifies that extensions can access the correct keys.
 TEST_F(ManifestUnitTest, Extension) {
-  base::Value::Dict manifest_value;
-  manifest_value.Set(keys::kName, "extension");
-  manifest_value.Set(keys::kVersion, "1");
-  manifest_value.Set(keys::kManifestVersion, 2);
+  auto manifest_value = base::Value::Dict()
+                            .Set(keys::kName, "extension")
+                            .Set(keys::kVersion, "1")
+                            .Set(keys::kManifestVersion, 2)
+                            .Set("unknown_key", "foo");
   manifest_value.SetByDottedPath(keys::kBackgroundPage, "bg.html");
-  manifest_value.Set("unknown_key", "foo");
 
   std::unique_ptr<Manifest> manifest(
       new Manifest(ManifestLocation::kInternal, std::move(manifest_value),
@@ -198,11 +197,10 @@ TEST_F(ManifestUnitTest, ExtensionTypes) {
 // Verifies that the getters filter restricted keys taking into account the
 // manifest version.
 TEST_F(ManifestUnitTest, RestrictedKeys_ManifestVersion) {
-  base::Value::Dict value = DictionaryBuilder()
+  base::Value::Dict value = base::Value::Dict()
                                 .Set(keys::kName, "extension")
                                 .Set(keys::kVersion, "1")
-                                .Set(keys::kManifestVersion, 2)
-                                .Build();
+                                .Set(keys::kManifestVersion, 2);
 
   auto manifest =
       std::make_unique<Manifest>(ManifestLocation::kInternal, std::move(value),
@@ -227,12 +225,11 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ManifestVersion) {
 // Verifies that the getters filter restricted keys taking into account the
 // item type.
 TEST_F(ManifestUnitTest, RestrictedKeys_ItemType) {
-  base::Value::Dict value = DictionaryBuilder()
+  base::Value::Dict value = base::Value::Dict()
                                 .Set(keys::kName, "item")
                                 .Set(keys::kVersion, "1")
                                 .Set(keys::kManifestVersion, 2)
-                                .Set(keys::kPageAction, base::Value::Dict())
-                                .Build();
+                                .Set(keys::kPageAction, base::Value::Dict());
 
   auto manifest =
       std::make_unique<Manifest>(ManifestLocation::kInternal, std::move(value),

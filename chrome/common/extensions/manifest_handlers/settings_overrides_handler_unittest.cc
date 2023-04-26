@@ -9,13 +9,13 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_url_handlers.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -104,7 +104,6 @@ const char kManifestBrokenStartupPagesButCorrectHomepage[] = R"(
   }
 })";
 
-using extensions::DictionaryBuilder;
 using extensions::Extension;
 using extensions::Manifest;
 using extensions::SettingsOverrides;
@@ -138,16 +137,15 @@ scoped_refptr<Extension> CreateExtension(base::StringPiece manifest,
 scoped_refptr<Extension> CreateExtensionWithSearchProvider(
     base::Value::Dict search_provider,
     std::string* error) {
-  DictionaryBuilder manifest;
-  manifest.Set("name", "name")
-      .Set("manifest_version", 2)
-      .Set("version", "0.1")
-      .Set("description", "desc")
-      .Set("chrome_settings_overrides",
-           DictionaryBuilder()
-               .Set("search_provider", std::move(search_provider))
-               .Build());
-  return CreateExtension(manifest.Build(), error);
+  auto manifest = base::Value::Dict()
+                      .Set("name", "name")
+                      .Set("manifest_version", 2)
+                      .Set("version", "0.1")
+                      .Set("description", "desc")
+                      .Set("chrome_settings_overrides",
+                           base::Value::Dict().Set("search_provider",
+                                                   std::move(search_provider)));
+  return CreateExtension(std::move(manifest), error);
 }
 
 TEST(OverrideSettingsTest, ParseManifest) {
@@ -309,13 +307,14 @@ TEST(OverrideSettingsTest, SearchProviderMissingKeys) {
       {"favicon_url", "http://www.foo.com/favicon.ico"},
   };
 
-  DictionaryBuilder search_provider;
-  search_provider.Set("search_url", "http://www.foo.com/s?q={searchTerms}")
-      .Set("is_default", true);
+  auto search_provider =
+      base::Value::Dict()
+          .Set("search_url", "http://www.foo.com/s?q={searchTerms}")
+          .Set("is_default", true);
   for (const KeyValue& kv : kMandatorySearchProviderKeyValues)
     search_provider.Set(kv.key, kv.value);
   base::Value::Dict search_provider_with_all_keys_dict =
-      search_provider.Build();
+      std::move(search_provider);
 
   // Missing all keys from |kMandatorySearchProviderValues|.
   for (const KeyValue& kv : kMandatorySearchProviderKeyValues) {

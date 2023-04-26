@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
@@ -14,7 +15,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -31,14 +31,12 @@ TEST_F(BrowserActionManifestTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
-              DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", "No default properties")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
-                  .Set(
-                      "browser_action",
-                      DictionaryBuilder().Set("default_title", "Title").Build())
-                  .Build())
+                  .Set("browser_action",
+                       base::Value::Dict().Set("default_title", "Title")))
           .Build();
 
   ASSERT_TRUE(extension.get());
@@ -53,14 +51,12 @@ TEST_F(BrowserActionManifestTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
-              DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", "String default icon")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
-                  .Set("browser_action", DictionaryBuilder()
-                                             .Set("default_icon", "icon.png")
-                                             .Build())
-                  .Build())
+                  .Set("browser_action",
+                       base::Value::Dict().Set("default_icon", "icon.png")))
           .Build();
 
   ASSERT_TRUE(extension.get());
@@ -82,19 +78,16 @@ TEST_F(BrowserActionManifestTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
-              DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", "Dictionary default icon")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
                   .Set("browser_action",
-                       DictionaryBuilder()
-                           .Set("default_icon", DictionaryBuilder()
-                                                    .Set("19", "icon19.png")
-                                                    .Set("24", "icon24.png")
-                                                    .Set("38", "icon38.png")
-                                                    .Build())
-                           .Build())
-                  .Build())
+                       base::Value::Dict().Set("default_icon",
+                                               base::Value::Dict()
+                                                   .Set("19", "icon19.png")
+                                                   .Set("24", "icon24.png")
+                                                   .Set("38", "icon38.png"))))
           .Build();
 
   ASSERT_TRUE(extension.get());
