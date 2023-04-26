@@ -3847,6 +3847,26 @@
             ]
         }
     ],
+    "DecreaseProcessingAudioFifoSize": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled1_20230425",
+                    "params": {
+                        "fifo_size": "10"
+                    },
+                    "enable_features": [
+                        "DecreaseProcessingAudioFifoSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultBrowserBlueDotPromo": [
         {
             "platforms": [
