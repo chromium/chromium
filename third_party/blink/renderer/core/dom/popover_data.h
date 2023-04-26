@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -66,6 +67,37 @@ class PopoverData final : public GarbageCollected<PopoverData>,
     pending_toggle_event_started_closed_ = was_closed;
   }
 
+  class ScopedStartShowingOrHiding {
+    STACK_ALLOCATED();
+
+   public:
+    explicit ScopedStartShowingOrHiding(const Element& popover,
+                                        bool show_warning = true)
+        : popover_(popover),
+          was_set_(popover.GetPopoverData()->hiding_or_showing_this_popover_) {
+      if (was_set_ && show_warning) {
+        popover_.GetDocument().AddConsoleMessage(MakeGarbageCollected<
+                                                 ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "The `beforetoggle` event handler for a popover triggered another "
+            "popover to be shown or hidden. This is not recommended."));
+      } else {
+        popover_.GetPopoverData()->hiding_or_showing_this_popover_ = true;
+      }
+    }
+    ~ScopedStartShowingOrHiding() {
+      if (!was_set_ && popover_.GetPopoverData()) {
+        popover_.GetPopoverData()->hiding_or_showing_this_popover_ = false;
+      }
+    }
+    explicit operator bool() const { return was_set_; }
+
+   private:
+    const Element& popover_;
+    bool was_set_;
+  };
+
   HTMLSelectMenuElement* ownerSelectMenuElement() const {
     return owner_select_menu_element_;
   }
@@ -90,6 +122,9 @@ class PopoverData final : public GarbageCollected<PopoverData>,
   // behavior so that only one such event is fired.
   TaskHandle pending_toggle_event_task_;
   bool pending_toggle_event_started_closed_;
+
+  // True when we're in the middle of trying to hide/show this popover.
+  bool hiding_or_showing_this_popover_;
 
   WeakMember<HTMLSelectMenuElement> owner_select_menu_element_;
 };
