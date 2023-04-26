@@ -134,10 +134,9 @@ bool IsRestoreSessionUrl(const GURL& url) {
 }
 
 bool IsRestoreSessionUrl(NSURL* url) {
-  return
-      [url.scheme isEqual:@"file"] &&
-      [url.path
-          isEqual:base::SysUTF8ToNSString(GetRestoreSessionBaseUrl().path())];
+  return [url.scheme isEqualToString:@"file"] &&
+         [url.path isEqualToString:base::SysUTF8ToNSString(
+                                       GetRestoreSessionBaseUrl().path())];
 }
 
 GURL CreateRedirectUrl(const GURL& target_url) {

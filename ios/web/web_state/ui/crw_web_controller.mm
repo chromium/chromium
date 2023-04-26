@@ -726,8 +726,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   web::WKBackForwardListItemHolder* holder =
       web::WKBackForwardListItemHolder::FromNavigationItem(item);
   holder->set_navigation_type(WKNavigationTypeBackForward);
-  context->SetIsPost((holder && [holder->http_method() isEqual:@"POST"]) ||
-                     item->HasPostData());
+  context->SetIsPost(
+      (holder && [holder->http_method() isEqualToString:@"POST"]) ||
+      item->HasPostData());
 
   if (holder) {
     context->SetMimeType(holder->mime_type());

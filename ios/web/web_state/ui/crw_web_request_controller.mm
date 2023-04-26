@@ -305,7 +305,7 @@ enum class BackForwardNavigationType {
   } else {
     BOOL isPostNavigation =
         [self.navigationHandler.pendingNavigationInfo.HTTPMethod
-            isEqual:@"POST"];
+            isEqualToString:@"POST"];
     self.navigationManagerImpl->AddPendingItem(
         requestURL, referrer, transition,
         rendererInitiated ? web::NavigationInitiationType::RENDERER_INITIATED
@@ -602,7 +602,7 @@ enum class BackForwardNavigationType {
       self.navigationHandler.currentBackForwardListItemHolder;
 
   BOOL repostedForm =
-      [holder->http_method() isEqual:@"POST"] &&
+      [holder->http_method() isEqualToString:@"POST"] &&
       (holder->navigation_type() == WKNavigationTypeFormResubmitted ||
        holder->navigation_type() == WKNavigationTypeFormSubmitted);
   web::NavigationItemImpl* currentItem = self.currentNavItem;
