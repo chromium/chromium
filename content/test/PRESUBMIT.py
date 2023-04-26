@@ -21,7 +21,7 @@ def CheckChange(input_api, output_api):
         # pylint: disable=no-name-in-module,import-outside-toplevel
         from build.ios import presubmit_support
         results += presubmit_support.CheckBundleData(
-            input_api, output_api, 'content_unittests_bundle_data', '.')
+            input_api, output_api, 'content_test_bundle_data', '.')
     finally:
         sys.path = old_sys_path
     return results

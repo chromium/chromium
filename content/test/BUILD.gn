@@ -1735,10 +1735,17 @@ test("content_browsertests") {
     "//ui/webui:test_support",
   ]
 
-  data = [
-    "data/",
-    "//media/test/data/",
-  ]
+  if (is_ios) {
+    bundle_deps = [
+      ":content_test_bundle_data",
+      "//media/test:media_bundle_data",
+    ]
+  } else {
+    data = [
+      "data/",
+      "//media/test/data/",
+    ]
+  }
 
   data_deps = [
     "//content/shell:pak",
@@ -1960,7 +1967,9 @@ test("content_browsertests") {
       "//content/public/browser:proto",
       "//ui/base/clipboard:clipboard_test_support",
     ]
-    data += [ "//content/test/data/clipboard/" ]
+    if (!is_ios) {
+      data += [ "//content/test/data/clipboard/" ]
+    }
   }
   if (is_posix) {
     deps += [ "//services/tracing:test_utils" ]
@@ -2012,7 +2021,7 @@ test("content_browsertests") {
       "../browser/keyboard_lock_browsertest_ios.mm",
       "../browser/pointer_lock_browsertest_ios.mm",
     ]
-    bundle_deps = [ ":content_shell_pak_bundle_data" ]
+    bundle_deps += [ ":content_shell_pak_bundle_data" ]
   }
 
   if (is_chromeos_ash) {
@@ -2765,7 +2774,7 @@ test("content_unittests") {
   if (is_ios) {
     bundle_deps = [
       ":content_shell_pak_bundle_data",
-      ":content_unittests_bundle_data",
+      ":content_test_bundle_data",
       "//media/test:media_bundle_data",
     ]
   }
@@ -3237,9 +3246,9 @@ if (is_ios) {
     outputs = [ "{{bundle_resources_dir}}/content_shell.pak" ]
   }
 
-  bundle_data_from_filelist("content_unittests_bundle_data") {
+  bundle_data_from_filelist("content_test_bundle_data") {
     testonly = true
-    filelist_name = "content_unittests_bundle_data.filelist"
+    filelist_name = "content_test_bundle_data.filelist"
   }
 }
 

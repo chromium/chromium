@@ -6,7 +6,6 @@
 # files are used to update their .filelist counterparts.
 
 data/**
--data/accessibility/**
 -data/**/OWNERS
 -data/**/DIR_METADATA
 -data/**/README.md
