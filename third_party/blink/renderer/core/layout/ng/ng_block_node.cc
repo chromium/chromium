@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_marquee_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -318,6 +319,13 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
   if (node.IsGrid() && (style.LogicalMinWidth().IsPercentOrCalc() ||
                         style.LogicalMaxWidth().IsPercentOrCalc()))
     return false;
+
+  if (constraint_space.IsInFlexIntrinsicSizing() !=
+      node.GetLayoutBox()->IntrinsicLogicalWidthsInFlexIntrinsicSizing()) {
+    UseCounter::Count(node.GetDocument(),
+                      WebFeature::kFlexIntrinsicSizesCacheMiss);
+    return false;
+  }
 
   return true;
 }
@@ -1081,6 +1089,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     box_->SetIntrinsicLogicalWidthsFromNG(
         initial_block_size, self_depends_on_block_constraints,
         /* child_depends_on_block_constraints */ true,
+        /* flex_intrinsic_sizing */ false,
         /* sizes */ nullptr);
 
     return MinMaxSizesResult(sizes, self_depends_on_block_constraints);
@@ -1117,7 +1126,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   box_->SetIntrinsicLogicalWidthsFromNG(
       initial_block_size, depends_on_block_constraints,
       /* child_depends_on_block_constraints */
-      result.depends_on_block_constraints, &result.sizes);
+      result.depends_on_block_constraints,
+      constraint_space.IsInFlexIntrinsicSizing(), &result.sizes);
 
   if (IsNGTableCell()) {
     To<LayoutNGTableCell>(box_.Get())

@@ -1601,6 +1601,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(b);
   }
 
+  void SetIntrinsicLogicalWidthsInFlexIntrinsicSizing(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetIntrinsicLogicalWidthsInFlexIntrinsicSizing(b);
+  }
+  bool IntrinsicLogicalWidthsInFlexIntrinsicSizing() const {
+    NOT_DESTROYED();
+    return bitfields_.IntrinsicLogicalWidthsInFlexIntrinsicSizing();
+  }
+
   bool NeedsLayoutOverflowRecalc() const {
     NOT_DESTROYED();
     return bitfields_.SelfNeedsLayoutOverflowRecalc() ||
@@ -4007,6 +4016,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     ADD_BOOLEAN_BITFIELD(
         intrinsic_logical_widths_child_depends_on_block_constraints_,
         IntrinsicLogicalWidthsChildDependsOnBlockConstraints);
+
+    ADD_BOOLEAN_BITFIELD(intrinsic_logical_widths_in_flex_intrinsic_sizing_,
+                         IntrinsicLogicalWidthsInFlexIntrinsicSizing);
 
     // This flag is set on inline container boxes that need to run the
     // Pre-layout phase in LayoutNG. See NGInlineNode::CollectInlines().

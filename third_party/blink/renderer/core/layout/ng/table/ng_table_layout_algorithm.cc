@@ -735,7 +735,8 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
       std::max(grid_min_max.min_size, caption_constraint.min_size),
       std::max(grid_min_max.max_size, caption_constraint.min_size)};
 
-  if (is_fixed_layout && Style().LogicalWidth().IsPercentOrCalc()) {
+  if (is_fixed_layout && Style().LogicalWidth().IsPercentOrCalc() &&
+      !ConstraintSpace().IsInFlexIntrinsicSizing()) {
     min_max.max_size = NGTableTypes::kTableMaxInlineSize;
   }
   DCHECK_LE(min_max.min_size, min_max.max_size);

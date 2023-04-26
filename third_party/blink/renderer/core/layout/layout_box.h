@@ -1695,12 +1695,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       LayoutUnit intrinsic_logical_widths_initial_block_size,
       bool depends_on_block_constraints,
       bool child_depends_on_block_constraints,
+      bool flex_intrinsic_sizing,
       const MinMaxSizes* sizes) {
     NOT_DESTROYED();
     intrinsic_logical_widths_initial_block_size_ =
         intrinsic_logical_widths_initial_block_size;
     SetIntrinsicLogicalWidthsDependsOnBlockConstraints(
         depends_on_block_constraints);
+    SetIntrinsicLogicalWidthsInFlexIntrinsicSizing(flex_intrinsic_sizing);
     SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(
         child_depends_on_block_constraints);
     if (sizes)

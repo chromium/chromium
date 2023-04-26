@@ -42184,6 +42184,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4547" label="SecurePaymentConfirmationActivationlessShow"/>
   <int value="4548"
       label="ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest"/>
+  <int value="4549" label="FlexIntrinsicSizesCacheMiss"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -476,7 +476,8 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
 
 NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
     const NGBlockNode& flex_item,
-    absl::optional<LayoutUnit> override_inline_size) const {
+    absl::optional<LayoutUnit> override_inline_size,
+    Phase phase) const {
   const ComputedStyle& child_style = flex_item.Style();
   NGConstraintSpaceBuilder space_builder(ConstraintSpace(),
                                          child_style.GetWritingDirection(),
@@ -484,6 +485,9 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), flex_item, &space_builder);
   space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
   space_builder.SetIsPaintedAtomically(true);
+  if (phase == Phase::kRowIntrinsicSize) {
+    space_builder.SetIsInFlexIntrinsicSizing(true);
+  }
 
   if (WillChildCrossSizeBeContainerCrossSize(flex_item)) {
     if (is_column_)
@@ -732,8 +736,8 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         // We want the child's intrinsic inline sizes in its writing mode, so
         // pass child's writing mode as the first parameter, which is nominally
         // |container_writing_mode|.
-        const auto child_space =
-            BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
+        const auto child_space = BuildSpaceForIntrinsicBlockSize(
+            child, max_content_contribution, phase);
         min_max_sizes =
             child.ComputeMinMaxSizes(child_writing_mode, type, child_space);
       }
@@ -829,8 +833,8 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
             border_padding_in_child_writing_mode);
       }
       if (!layout_result) {
-        NGConstraintSpace child_space =
-            BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
+        NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(
+            child, max_content_contribution, phase);
         layout_result = child.Layout(child_space, /* break_token */ nullptr);
         DCHECK(layout_result);
       }
@@ -885,7 +889,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           // algorithm, which will eventually lead to a forced block size.
           LayoutUnit caption_block_size = table_child->ComputeCaptionBlockSize(
               BuildSpaceForIntrinsicBlockSize(*table_child,
-                                              max_content_contribution));
+                                              max_content_contribution, phase));
           flex_base_border_box += caption_block_size;
         }
       }

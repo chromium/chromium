@@ -41,6 +41,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     if (parent_space.ShouldRepeat())
       SetShouldRepeat(true);
     SetIsInsideRepeatableContent(parent_space.IsInsideRepeatableContent());
+    SetIsInFlexIntrinsicSizing(parent_space.IsInFlexIntrinsicSizing());
   }
 
   // The setters on this builder are in the writing mode of parent_writing_mode.
@@ -176,6 +177,10 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   }
 
   void DisableFurtherFragmentation() { space_.DisableFurtherFragmentation(); }
+
+  void SetIsInFlexIntrinsicSizing(bool b) {
+    space_.bitfields_.is_in_flex_intrinsic_sizing = b;
+  }
 
   void SetIsFixedInlineSize(bool b) {
     if (LIKELY(is_in_parallel_flow_))
