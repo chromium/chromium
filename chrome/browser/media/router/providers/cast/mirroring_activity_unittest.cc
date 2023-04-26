@@ -504,6 +504,36 @@ TEST_F(MirroringActivityTest, OnSourceChanged) {
   testing::Mock::VerifyAndClearExpectations(mirroring_service_);
 }
 
+TEST_F(MirroringActivityTest, OnSourceChangedNotifiesMediaStatusObserver) {
+  MakeActivity();
+  mojo::PendingRemote<mojom::MediaStatusObserver> observer_pending_remote;
+  NiceMock<MockMediaStatusObserver> media_status_observer =
+      NiceMock<MockMediaStatusObserver>(
+          observer_pending_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::MediaController> media_controller;
+  activity_->CreateMediaController(
+      media_controller.BindNewPipeAndPassReceiver(),
+      std::move(observer_pending_remote));
+  RunUntilIdle();
+
+  // A random int indicating the new tab source.
+  const int new_tab_source = 3;
+
+  EXPECT_CALL(on_source_changed_, Run(kFrameTreeNodeId, new_tab_source));
+
+  EXPECT_CALL(*mirroring_service_, GetTabSourceId())
+      .WillOnce(testing::Return(new_tab_source));
+
+  EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        EXPECT_EQ(mojom::MediaStatus::PlayState::PLAYING, status->play_state);
+      });
+
+  activity_->OnSourceChanged();
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&media_status_observer);
+}
+
 TEST_F(MirroringActivityTest, ReportsNotEnabledByDefault) {
   MediaSource source = MediaSource::ForDesktop(kDesktopMediaId, true);
   MakeActivity(source);

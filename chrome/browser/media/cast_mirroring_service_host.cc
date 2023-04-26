@@ -481,6 +481,7 @@ void CastMirroringServiceHost::WebContentsDestroyed() {
   audio_stream_factory_.reset();
   gpu_client_.reset();
   RecordTabUIUsageMetricsIfNeededAndReset();
+  video_capture_host_ = nullptr;
 }
 
 void CastMirroringServiceHost::ShowCaptureIndicator() {
@@ -556,6 +557,11 @@ void CastMirroringServiceHost::SwitchMirroringSourceTab(
     const content::DesktopMediaID& media_id) {
   source_media_id_ = media_id;
   source_media_id_.web_contents_id.disable_local_echo = true;
+
+  // Drop the reference to the VideoCaptureHost, since the weak_ptr will be
+  // invalidated. A new VideoCaptureHost will be created for the new source tab
+  // by the Mirroring Service.
+  video_capture_host_ = nullptr;
 
   // Observe the target WebContents for tab mirroring.
   DCHECK_EQ(source_media_id_.type, content::DesktopMediaID::TYPE_WEB_CONTENTS);

@@ -121,6 +121,8 @@ class MirroringActivity : public CastActivity,
  private:
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, GetScrubbedLogMessage);
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, OnSourceChanged);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest,
+                           OnSourceChangedNotifiesMediaStatusObserver);
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, ReportsNotEnabledByDefault);
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, EnableRtcpReports);
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, Pause);

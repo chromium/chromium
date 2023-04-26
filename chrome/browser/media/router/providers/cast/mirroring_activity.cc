@@ -356,6 +356,11 @@ void MirroringActivity::OnSourceChanged() {
   source_changed_callback_.Run(frame_tree_node_id_, *frame_tree_node_id);
   frame_tree_node_id_ = *frame_tree_node_id;
 
+  // The source changed, which means that a new capturer was created that is
+  // now sending frames. Ensure the state is now PLAYING.
+  media_status_->play_state = mojom::MediaStatus::PlayState::PLAYING;
+  NotifyMediaStatusObserver();
+
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&SwitchToFlingingIfPossible, frame_tree_node_id_));
