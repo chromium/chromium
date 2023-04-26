@@ -91,6 +91,9 @@ CONTENT_EXPORT bool IsPathRestrictionSatisfiedWithoutHeader(
     const GURL& script_url,
     std::string* error_message);
 
+// Returns the set of hash strings of fetch handlers which can be bypassed.
+const base::flat_set<std::string> FetchHandlerBypassedHashStrings();
+
 }  // namespace service_worker_loader_helpers
 
 }  // namespace content
