@@ -250,6 +250,10 @@ BASE_FEATURE(kOnBeginFrameAcks,
              "OnBeginFrameAcks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSharedBitmapToSharedImage,
+             "SharedBitmapToSharedImage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }

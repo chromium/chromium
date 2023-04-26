@@ -107,7 +107,9 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
                          InitParams params)
     : delegate_(delegate),
       viz_main_(std::move(viz_main)),
-      params_(std::move(params)) {
+      params_(std::move(params)),
+      shared_bitmap_to_shared_image_flag_(
+          base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage)) {
   // Create a special GPU info collection service if the GPU process is used for
   // info collection only.
 #if BUILDFLAG(IS_WIN)
@@ -233,7 +235,10 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
   shutdown_timeout_.Stop();
 
   // If GPU features are already blocklisted, no need to establish the channel.
-  if (!delegate_->GpuAccessAllowed()) {
+  bool gpu_channel_allowed = shared_bitmap_to_shared_image_flag_
+                                 ? true
+                                 : delegate_->GpuAccessAllowed();
+  if (!gpu_channel_allowed) {
     DVLOG(1) << "GPU access blocked, refusing to open a GPU channel.";
     std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
                             gpu::GpuFeatureInfo(),
@@ -470,7 +475,10 @@ void GpuHostImpl::OnChannelEstablished(
 
   // Currently if any of the GPU features are blocklisted, we don't establish a
   // GPU channel.
-  if (channel_handle.is_valid() && !delegate_->GpuAccessAllowed()) {
+  bool gpu_channel_allowed = shared_bitmap_to_shared_image_flag_
+                                 ? true
+                                 : delegate_->GpuAccessAllowed();
+  if (channel_handle.is_valid() && !gpu_channel_allowed) {
     gpu_service_remote_->CloseChannel(client_id);
     std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
                             gpu::GpuFeatureInfo(),

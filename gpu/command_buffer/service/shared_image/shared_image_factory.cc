@@ -137,6 +137,15 @@ SharedImageFactory::SharedImageFactory(
       is_for_display_compositor_(is_for_display_compositor),
       gr_context_type_(context_state ? context_state->gr_context_type()
                                      : GrContextType::kGL) {
+  auto shared_memory_backing_factory =
+      std::make_unique<SharedMemoryImageBackingFactory>();
+  factories_.push_back(std::move(shared_memory_backing_factory));
+
+  // if GL is disabled, it only needs SharedMemoryImageBackingFactory.
+  if (gl::GetGLImplementation() == gl::kGLImplementationDisabled) {
+    return;
+  }
+
   scoped_refptr<gles2::FeatureInfo> feature_info;
   if (shared_context_state_) {
     feature_info = shared_context_state_->feature_info();
@@ -150,10 +159,6 @@ SharedImageFactory::SharedImageFactory(
     feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
                              use_passthrough, gles2::DisallowedFeatures());
   }
-
-  auto shared_memory_backing_factory =
-      std::make_unique<SharedMemoryImageBackingFactory>();
-  factories_.push_back(std::move(shared_memory_backing_factory));
 
   if (context_state) {
     auto wrapped_sk_image_factory =

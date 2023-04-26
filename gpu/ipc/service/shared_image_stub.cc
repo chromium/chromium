@@ -500,7 +500,10 @@ void SharedImageStub::OnRegisterSharedImageUploadBuffer(
 }
 
 bool SharedImageStub::MakeContextCurrent(bool needs_gl) {
-  DCHECK(context_state_);
+  // Software Renderer doesn't have valid context_state_.
+  if (!context_state_) {
+    return true;
+  }
 
   if (context_state_->context_lost()) {
     LOG(ERROR) << "SharedImageStub: context already lost";
@@ -518,20 +521,23 @@ bool SharedImageStub::MakeContextCurrent(bool needs_gl) {
 ContextResult SharedImageStub::MakeContextCurrentAndCreateFactory() {
   auto* channel_manager = channel_->gpu_channel_manager();
   DCHECK(!context_state_);
-  ContextResult result;
-  context_state_ = channel_manager->GetSharedContextState(&result);
-  if (result != ContextResult::kSuccess) {
-    LOG(ERROR) << "SharedImageStub: unable to create context";
-    context_state_ = nullptr;
-    return result;
-  }
-  DCHECK(context_state_);
-  DCHECK(!context_state_->context_lost());
-  // Some shared image backing factories will use GL in ctor, so we need GL even
-  // if chrome is using non-GL backing.
-  if (!MakeContextCurrent(/*needs_gl=*/true)) {
-    context_state_ = nullptr;
-    return ContextResult::kTransientFailure;
+
+  if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
+    ContextResult result;
+    context_state_ = channel_manager->GetSharedContextState(&result);
+    if (result != ContextResult::kSuccess) {
+      LOG(ERROR) << "SharedImageStub: unable to create context";
+      context_state_ = nullptr;
+      return result;
+    }
+    DCHECK(context_state_);
+    DCHECK(!context_state_->context_lost());
+    // Some shared image backing factories will use GL in ctor, so we need GL
+    // even if chrome is using non-GL backing.
+    if (!MakeContextCurrent(/*needs_gl=*/true)) {
+      context_state_ = nullptr;
+      return ContextResult::kTransientFailure;
+    }
   }
 
   factory_ = std::make_unique<SharedImageFactory>(
