@@ -77,6 +77,11 @@ void ContentAnalysisSdkManager::ResetClient(
   }
 }
 
+void ContentAnalysisSdkManager::ResetAllClients() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  clients_.clear();
+}
+
 std::unique_ptr<content_analysis::sdk::Client>
 ContentAnalysisSdkManager::CreateClient(
     const content_analysis::sdk::Client::Config& config) {

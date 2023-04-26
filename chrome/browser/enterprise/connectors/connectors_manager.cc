@@ -16,6 +16,10 @@
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"  // nogncheck
+#endif
+
 namespace enterprise_connectors {
 
 ConnectorsManager::ConnectorsManager(
@@ -30,8 +34,12 @@ ConnectorsManager::ConnectorsManager(
           std::move(extension_install_event_router)) {
   DCHECK(browser_crash_event_router_) << "Crash event router is null";
   DCHECK(extension_install_event_router_) << "Extension event router is null";
-  if (observe_prefs)
+  if (observe_prefs) {
     StartObservingPrefs(pref_service);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    MaybeCloseLocalContentAnalysisAgentConnection();
+#endif
+  }
   extension_install_event_router_->StartObserving();
 }
 
@@ -54,6 +62,16 @@ bool ConnectorsManager::IsConnectorEnabled(AnalysisConnector connector) const {
   return settings.is_cloud_analysis() ||
          base::FeatureList::IsEnabled(kLocalContentAnalysisEnabled);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+bool ConnectorsManager::IsConnectorEnabledForLocalAgent(
+    AnalysisConnector connector) const {
+  if (!IsConnectorEnabled(connector)) {
+    return false;
+  }
+  return analysis_connector_settings_.at(connector)[0].is_local_analysis();
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 bool ConnectorsManager::IsConnectorEnabled(ReportingConnector connector) const {
   if (reporting_connector_settings_.count(connector) == 1)
@@ -153,6 +171,33 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
   for (const base::Value& service_settings : policy_value)
     analysis_connector_settings_[connector].emplace_back(
         service_settings, *service_provider_config_);
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void ConnectorsManager::MaybeCloseLocalContentAnalysisAgentConnection() {
+  constexpr enterprise_connectors::AnalysisConnector kConnectors[] = {
+      AnalysisConnector::BULK_DATA_ENTRY,
+      AnalysisConnector::FILE_ATTACHED,
+      AnalysisConnector::PRINT,
+  };
+
+  for (auto connector : kConnectors) {
+    if (IsConnectorEnabledForLocalAgent(connector)) {
+      // Return early because at lease one access point is enabled for local
+      // agent.
+      return;
+    }
+  }
+  // Delete connection with local agents when no access point is enabled.
+  ContentAnalysisSdkManager::Get()->ResetAllClients();
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+void ConnectorsManager::OnPrefChanged(AnalysisConnector connector) {
+  CacheAnalysisConnectorPolicy(connector);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  MaybeCloseLocalContentAnalysisAgentConnection();
+#endif
 }
 
 void ConnectorsManager::CacheReportingConnectorPolicy(
@@ -309,9 +354,8 @@ void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
   DCHECK(pref);
   if (!pref_change_registrar_.IsObserved(pref)) {
     pref_change_registrar_.Add(
-        pref,
-        base::BindRepeating(&ConnectorsManager::CacheAnalysisConnectorPolicy,
-                            base::Unretained(this), connector));
+        pref, base::BindRepeating(&ConnectorsManager::OnPrefChanged,
+                                  base::Unretained(this), connector));
   }
 }
 

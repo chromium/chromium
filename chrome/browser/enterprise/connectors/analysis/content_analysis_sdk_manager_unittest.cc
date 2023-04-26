@@ -74,7 +74,7 @@ TEST_F(ContentAnalysisSdkManagerTest, Create) {
   EXPECT_TRUE(wrapped->HasAtLeastOneRef());
 }
 
-TEST_F(ContentAnalysisSdkManagerTest, Reset) {
+TEST_F(ContentAnalysisSdkManagerTest, ResetClient) {
   content_analysis::sdk::Client::Config config{"local_test"};
   FakeContentAnalysisSdkManager manager;
 
@@ -87,6 +87,30 @@ TEST_F(ContentAnalysisSdkManagerTest, Reset) {
   EXPECT_TRUE(wrapped->HasOneRef());
   EXPECT_EQ(config.name, wrapped->client()->GetConfig().name);
   EXPECT_EQ(config.user_specific, wrapped->client()->GetConfig().user_specific);
+}
+
+TEST_F(ContentAnalysisSdkManagerTest, ResetAllClients) {
+  content_analysis::sdk::Client::Config config1{"local_test1"};
+  content_analysis::sdk::Client::Config config2{"local_test2"};
+  FakeContentAnalysisSdkManager manager;
+
+  auto wrapped1 = manager.GetClient(config1);
+  auto wrapped2 = manager.GetClient(config2);
+
+  manager.ResetAllClients();
+  EXPECT_TRUE(manager.NoConnectionEstablished());
+  EXPECT_FALSE(manager.HasClientForTesting(config1));
+  EXPECT_FALSE(manager.HasClientForTesting(config2));
+
+  // Existing refptrs should still be valid.
+  EXPECT_TRUE(wrapped1->HasOneRef());
+  EXPECT_EQ(config1.name, wrapped1->client()->GetConfig().name);
+  EXPECT_EQ(config1.user_specific,
+            wrapped1->client()->GetConfig().user_specific);
+  EXPECT_TRUE(wrapped2->HasOneRef());
+  EXPECT_EQ(config2.name, wrapped2->client()->GetConfig().name);
+  EXPECT_EQ(config2.user_specific,
+            wrapped2->client()->GetConfig().user_specific);
 }
 
 #if BUILDFLAG(IS_WIN)

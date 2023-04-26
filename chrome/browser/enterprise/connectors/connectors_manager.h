@@ -66,6 +66,11 @@ class ConnectorsManager {
   bool IsConnectorEnabled(AnalysisConnector connector) const;
   bool IsConnectorEnabled(ReportingConnector connector) const;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Check if the corresponding connector is enabled for any local agent.
+  bool IsConnectorEnabledForLocalAgent(AnalysisConnector connector) const;
+#endif
+
   bool DelayUntilVerdict(AnalysisConnector connector);
   absl::optional<std::u16string> GetCustomMessage(AnalysisConnector connector,
                                                   const std::string& tag);
@@ -99,6 +104,16 @@ class ConnectorsManager {
   // Read and cache the policy corresponding to |connector|.
   void CacheAnalysisConnectorPolicy(AnalysisConnector connector) const;
   void CacheReportingConnectorPolicy(ReportingConnector connector);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Close connection with local agent if all the relevant connectors are turned
+  // off for it.
+  void MaybeCloseLocalContentAnalysisAgentConnection();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  // Re-cache analysis connector policy and update local agent connection if
+  // needed.
+  void OnPrefChanged(AnalysisConnector connector);
 
   // Sets up |pref_change_registrar_|. Used by the constructor and
   // SetUpForTesting.
