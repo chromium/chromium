@@ -640,12 +640,7 @@ BASE_FEATURE(kLazyImageLoading,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLazyImageVisibleLoadTimeMetrics,
              "LazyImageVisibleLoadTimeMetrics",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable lazy initialization of the media controls.
 BASE_FEATURE(kLazyInitializeMediaControls,
