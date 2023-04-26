@@ -199,7 +199,10 @@ class BrowsingDataRemoverBrowserTest
 
     SetDataForType(type);
     EXPECT_EQ(1, GetSiteDataCount());
-    ExpectCookieTreeModelCount(1);
+    // TODO(crbug.com/1307796): Use a different approach to determine presence
+    // of data that does not depend on UI code and has a better resolution when
+    // 3PSP is fully enabled. ExpectCookieTreeModelCount(1) is not always true
+    // here.
     EXPECT_TRUE(HasDataForType(type));
 
     RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
@@ -221,7 +224,10 @@ class BrowsingDataRemoverBrowserTest
     // Opening a store of this type creates a site data entry.
     EXPECT_FALSE(HasDataForType(type));
     EXPECT_EQ(1, GetSiteDataCount());
-    ExpectCookieTreeModelCount(1);
+    // TODO(crbug.com/1307796): Use a different approach to determine presence
+    // of data that does not depend on UI code and has a better resolution when
+    // 3PSP is fully enabled. ExpectCookieTreeModelCount(1) is not always true
+    // here.
     RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
                   delete_begin);
 
@@ -1492,7 +1498,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // LocalStorage are counted. TODO(crbug.com/1307796): Use a different approach
   // to determine presence of data that does not depend on UI code and has a
   // better resolution when 3PSP is fully enabled.
-  ExpectCookieTreeModelCount(kStorageTypes.size() - 2, 2);
+  ExpectCookieTreeModelCount(kStorageTypes.size() - 2, 3);
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
                 content::BrowsingDataRemover::DATA_TYPE_CACHE |
                 chrome_browsing_data_remover::DATA_TYPE_HISTORY |
@@ -1548,7 +1554,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // Cookies and LocalStorage are counted. TODO(crbug.com/1307796): Use a
   // different approach to determine presence of data that does not depend on UI
   // code and has a better resolution when 3PSP is fully enabled.
-  ExpectCookieTreeModelCount(kSessionOnlyStorageTestTypes.size() - 1, 2);
+  ExpectCookieTreeModelCount(kSessionOnlyStorageTestTypes.size() - 1, 3);
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                  CONTENT_SETTING_SESSION_ONLY);
