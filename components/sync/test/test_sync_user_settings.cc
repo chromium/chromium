@@ -77,7 +77,7 @@ UserSelectableTypeSet TestSyncUserSettings::GetSelectedTypes() const {
 
 bool TestSyncUserSettings::IsTypeManagedByPolicy(
     UserSelectableType type) const {
-  return false;
+  return managed_types_.Has(type);
 }
 
 ModelTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
@@ -107,7 +107,7 @@ UserSelectableOsTypeSet TestSyncUserSettings::GetSelectedOsTypes() const {
 
 bool TestSyncUserSettings::IsOsTypeManagedByPolicy(
     UserSelectableOsType type) const {
-  return false;
+  return managed_os_types_.Has(type);
 }
 
 void TestSyncUserSettings::SetSelectedOsTypes(bool sync_all_os_types,
@@ -233,6 +233,26 @@ void TestSyncUserSettings::SetFirstSetupComplete() {
 void TestSyncUserSettings::ClearFirstSetupComplete() {
   first_setup_complete_ = false;
 }
+
+void TestSyncUserSettings::SetTypeIsManaged(UserSelectableType type,
+                                            bool managed) {
+  if (managed) {
+    managed_types_.Put(type);
+  } else {
+    managed_types_.Remove(type);
+  }
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void TestSyncUserSettings::SetOsTypeIsManaged(UserSelectableOsType type,
+                                              bool managed) {
+  if (managed) {
+    managed_os_types_.Put(type);
+  } else {
+    managed_os_types_.Remove(type);
+  }
+}
+#endif
 
 void TestSyncUserSettings::SetPassphraseRequired(bool required) {
   passphrase_required_ = required;

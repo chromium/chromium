@@ -71,6 +71,10 @@ class TestSyncUserSettings : public SyncUserSettings {
 
   void SetFirstSetupComplete();
   void ClearFirstSetupComplete();
+  void SetTypeIsManaged(UserSelectableType type, bool managed);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetOsTypeIsManaged(UserSelectableOsType type, bool managed);
+#endif
   void SetCustomPassphraseAllowed(bool allowed);
   void SetPassphraseRequired(bool required);
   void SetPassphraseRequiredForPreferredDataTypes(bool required);
@@ -83,8 +87,10 @@ class TestSyncUserSettings : public SyncUserSettings {
   raw_ptr<TestSyncService> service_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   UserSelectableOsTypeSet selected_os_types_;
+  UserSelectableOsTypeSet managed_os_types_;
 #endif
   UserSelectableTypeSet selected_types_;
+  UserSelectableTypeSet managed_types_;
 
   bool first_setup_complete_ = true;
   bool sync_everything_enabled_ = true;

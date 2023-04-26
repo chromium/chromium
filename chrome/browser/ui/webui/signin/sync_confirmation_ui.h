@@ -15,10 +15,13 @@
 
 class Browser;
 class Profile;
-class PrefService;
 
 namespace content {
 class WebUIDataSource;
+}
+
+namespace syncer {
+class SyncService;
 }
 
 namespace ui {
@@ -38,7 +41,8 @@ class SyncConfirmationUI : public SigninWebDialogUI {
   // the user, based on which `syncer::UserSelectableType`s are available.
   // The data format is:
   // `[{"iconName": "${iron_icon_id}", "title": "${grit_string_id}"}, ...]`
-  static std::string GetSyncBenefitsListJSON(PrefService& pref_service);
+  static std::string GetSyncBenefitsListJSON(
+      const syncer::SyncService* sync_service);
 
   explicit SyncConfirmationUI(content::WebUI* web_ui);
 

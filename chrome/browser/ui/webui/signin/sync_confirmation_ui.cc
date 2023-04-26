@@ -33,13 +33,13 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -62,11 +62,13 @@ const char kSyncBenefitHistoryAndMoreStringName[] =
 const char kSyncBenefitIconNameKey[] = "iconName";
 const char kSyncBenefitTitleKey[] = "title";
 
-bool IsAnyTypeSyncable(PrefService& pref_service,
+bool IsAnyTypeSyncable(const syncer::SyncService* sync_service,
                        syncer::UserSelectableTypeSet types) {
+  if (!sync_service) {
+    return false;
+  }
   for (auto type : types) {
-    const char* pref_name = syncer::SyncPrefs::GetPrefNameForType(type);
-    if (!pref_service.IsManagedPreference(pref_name)) {
+    if (!sync_service->GetUserSettings()->IsTypeManagedByPolicy(type)) {
       return true;
     }
   }
@@ -76,14 +78,14 @@ bool IsAnyTypeSyncable(PrefService& pref_service,
 
 // static
 std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
-    PrefService& pref_service) {
+    const syncer::SyncService* sync_service) {
   using syncer::UserSelectableType;
   base::Value::List sync_benefits_list;
 
-  if (IsAnyTypeSyncable(pref_service, {UserSelectableType::kBookmarks,
+  if (IsAnyTypeSyncable(sync_service, {UserSelectableType::kBookmarks,
                                        UserSelectableType::kReadingList})) {
     std::string titleKey;
-    if (IsAnyTypeSyncable(pref_service, {UserSelectableType::kBookmarks})) {
+    if (IsAnyTypeSyncable(sync_service, {UserSelectableType::kBookmarks})) {
       titleKey = kSyncBenefitBookmarksStringName;
     } else {
       titleKey = kSyncBenefitReadingListStringName;
@@ -95,7 +97,7 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
     sync_benefits_list.Append(std::move(bookmarks));
   }
 
-  if (IsAnyTypeSyncable(pref_service, {UserSelectableType::kAutofill,
+  if (IsAnyTypeSyncable(sync_service, {UserSelectableType::kAutofill,
                                        UserSelectableType::kPasswords})) {
     base::Value::Dict autofill;
     autofill.Set(kSyncBenefitTitleKey, kSyncBenefitAutofillStringName);
@@ -103,7 +105,7 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
     sync_benefits_list.Append(std::move(autofill));
   }
 
-  if (IsAnyTypeSyncable(pref_service, {UserSelectableType::kExtensions,
+  if (IsAnyTypeSyncable(sync_service, {UserSelectableType::kExtensions,
                                        UserSelectableType::kApps})) {
     base::Value::Dict extensions;
     extensions.Set(kSyncBenefitTitleKey, kSyncBenefitExtensionsStringName);
@@ -216,8 +218,9 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   source->AddString("accountPictureUrl",
                     profiles::GetPlaceholderAvatarIconUrl());
 
-  source->AddString("syncBenefitsList",
-                    GetSyncBenefitsListJSON(*profile_->GetPrefs()));
+  source->AddString(
+      "syncBenefitsList",
+      GetSyncBenefitsListJSON(SyncServiceFactory::GetForProfile(profile_)));
 
   // Default overrides without placeholders
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
