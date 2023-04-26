@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/events/input_event.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/range.h"

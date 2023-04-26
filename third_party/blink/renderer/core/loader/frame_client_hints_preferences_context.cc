@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/no_destructor.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/client_hints.h"
