@@ -1430,11 +1430,6 @@ targets.generated_script(
     label = "//components/module_installer/android:module_installer_junit_tests",
 )
 
-targets.generated_script(
-    name = "monochrome_internal_webview_finch_smoke_tests",
-    label = "//clank/android_webview/components:monochrome_internal_webview_finch_smoke_tests",
-)
-
 targets.console_test_launcher(
     name = "monochrome_public_smoke_test",
     label = "//chrome/android:monochrome_public_smoke_test",

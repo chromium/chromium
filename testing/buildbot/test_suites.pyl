@@ -111,18 +111,6 @@
       },
     },
 
-    'android_finch_smoke_tests': {
-      'monochrome_internal_webview_finch_smoke_tests': {
-        'args': [
-          '--finch-seed-path',
-          '../../variations_seed',
-        ],
-        'mixins': [
-          'skia_gold_test',
-        ],
-      },
-    },
-
     'android_isolated_scripts': {
       'content_shell_crash_test': {
         'args': [
@@ -458,6 +446,7 @@
         'experiment_percentage': 100,
       },
     },
+
     'chrome_finch_smoke_tests': {
       'variations_smoke_tests': {
         'isolate_name': 'variations_smoke_tests',
