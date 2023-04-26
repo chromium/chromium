@@ -4,8 +4,6 @@
 
 #include "components/services/screen_ai/screen_ai_library_wrapper.h"
 
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -73,22 +71,13 @@ bool ScreenAILibraryWrapper::Init(const base::FilePath& library_path) {
       "Accessibility.ScreenAI.LibraryLoadDetailedResultOnWindows",
       static_cast<int>(error));
   if (error != ERROR_SUCCESS) {
-    // TODO(crbug.com/1278249): Remove after Windows load library issue is
-    // fixed.
-    base::debug::Alias(&error);
-    base::debug::DumpWithoutCrashing();
     VLOG(0) << "Library load error: " << library_.GetError()->code;
     return false;
   }
 #else
 
   if (!library_.GetError()->message.empty()) {
-    std::string error = library_.GetError()->message;
-    // TODO(crbug.com/1278249): Remove after library load issues are fixed.
-    base::debug::Alias(&error);
-    DEBUG_ALIAS_FOR_CSTR(library_load_error, error.c_str(), 1024);
-    base::debug::DumpWithoutCrashing();
-    VLOG(0) << "Library load error: " << error;
+    VLOG(0) << "Library load error: " << library_.GetError()->message;
     return false;
   }
 #endif
