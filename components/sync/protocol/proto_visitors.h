@@ -696,8 +696,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ModelTypeState& proto) {
   VISIT(notes_enabled_before_initial_sync_for_passwords);
 }
 
-VISIT_PROTO_FIELDS(
-    const sync_pb::ModelTypeState::Invalidation& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::ModelTypeState::Invalidation& proto) {
   VISIT(hint);
   VISIT(version);
 }
@@ -1490,6 +1489,8 @@ VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics& proto) {
   VISIT(updated_time_windows_epoch_micros);
   VISIT(desk);
   VISIT_ENUM(desk_type);
+  VISIT(client_cache_guid);
+  VISIT_ENUM(device_form_factor);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::App& proto) {
