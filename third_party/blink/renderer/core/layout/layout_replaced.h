@@ -216,8 +216,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       const NGPhysicalBoxStrut& border_padding,
       const LayoutSize* overridden_intrinsic_size) const;
 
-  void ComputeIntrinsicSizingInfoForReplacedContent(IntrinsicSizingInfo&) const;
-
   absl::optional<LayoutUnit> IntrinsicWidthOverride() const {
     NOT_DESTROYED();
     if (HasOverrideIntrinsicContentWidth())
