@@ -516,9 +516,8 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
   auto response =
       ParseResponse(net_error, response_code, std::move(response_body),
                     requested_hash_prefixes, allow_retriable_errors);
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.HPRT.OperationResult",
-      response.has_value() ? OperationResult::kSuccess : response.error());
+  base::UmaHistogramEnumeration("SafeBrowsing.HPRT.OperationResult",
+                                response.error_or(OperationResult::kSuccess));
   if (response.has_value()) {
     backoff_operator_->ReportSuccess();
   } else if (response.error() != OperationResult::kRetriableError) {
@@ -579,35 +578,33 @@ HashRealTimeService::ParseResponse(
     std::unique_ptr<std::string> response_body,
     const std::vector<std::string>& requested_hash_prefixes,
     bool allow_retriable_errors) const {
-  auto response = std::make_unique<V5::SearchHashesResponse>();
-  bool net_and_http_ok = net_error == net::OK && response_code == net::HTTP_OK;
-  if (net_and_http_ok && response->ParseFromString(*response_body)) {
-    if (!response->has_cache_duration()) {
-      return base::unexpected(OperationResult::kNoCacheDurationError);
-    }
-    for (const auto& full_hash : response->full_hashes()) {
-      if (full_hash.full_hash().length() !=
-          hash_realtime_utils::kFullHashLength) {
-        return base::unexpected(OperationResult::kIncorrectFullHashLengthError);
-      }
-    }
-    RemoveUnmatchedFullHashes(response, requested_hash_prefixes);
-    RemoveFullHashDetailsWithInvalidEnums(response);
-    return std::move(response);
-  } else if (net_and_http_ok) {
-    return base::unexpected(OperationResult::kParseError);
-  } else if (allow_retriable_errors &&
-             ErrorIsRetriable(net_error, response_code)) {
-    return base::unexpected(OperationResult::kRetriableError);
-  } else if (net_error != net::OK &&
-             net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
-    return base::unexpected(OperationResult::kNetworkError);
-  } else if (response_code != net::HTTP_OK) {
-    return base::unexpected(OperationResult::kHttpError);
-  } else {
-    NOTREACHED();
-    return base::unexpected(OperationResult::kNotReached);
+  if (net_error != net::OK &&
+      net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
+    return base::unexpected(allow_retriable_errors &&
+                                    ErrorIsRetriable(net_error, response_code)
+                                ? OperationResult::kRetriableError
+                                : OperationResult::kNetworkError);
   }
+  if (response_code != net::HTTP_OK) {
+    return base::unexpected(OperationResult::kHttpError);
+  }
+  CHECK_EQ(net::OK, net_error);
+  auto response = std::make_unique<V5::SearchHashesResponse>();
+  if (!response->ParseFromString(*response_body)) {
+    return base::unexpected(OperationResult::kParseError);
+  }
+  if (!response->has_cache_duration()) {
+    return base::unexpected(OperationResult::kNoCacheDurationError);
+  }
+  for (const auto& full_hash : response->full_hashes()) {
+    if (full_hash.full_hash().length() !=
+        hash_realtime_utils::kFullHashLength) {
+      return base::unexpected(OperationResult::kIncorrectFullHashLengthError);
+    }
+  }
+  RemoveUnmatchedFullHashes(response, requested_hash_prefixes);
+  RemoveFullHashDetailsWithInvalidEnums(response);
+  return std::move(response);
 }
 
 std::unique_ptr<network::ResourceRequest>
