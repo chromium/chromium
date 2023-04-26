@@ -66,13 +66,13 @@ namespace sidePanel {
     // operation.
     // |behavior|: The new behavior to be set.
     // |callback|: Called when the new behavior has been set.
-    [nodoc, supportsPromises] static void setPanelBehavior(
+    [supportsPromises] static void setPanelBehavior(
         PanelBehavior behavior,
         optional VoidCallback callback);
 
     // Returns the extension's current side panel behavior.
     // |callback|: Called with the extension's side panel behavior.
-    [nodoc, supportsPromises] static void getPanelBehavior(
+    [supportsPromises] static void getPanelBehavior(
         PanelBehaviorCallback callback);
   };
 };
