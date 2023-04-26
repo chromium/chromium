@@ -7,10 +7,10 @@
 #include <combaseapi.h>
 #include <wchar.h>
 
+#include <algorithm>
 #include <string>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"

@@ -5,9 +5,10 @@
 #include "ui/gfx/geometry/transform_util.h"
 
 #include <stddef.h>
+
+#include <algorithm>
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "base/numerics/math_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
