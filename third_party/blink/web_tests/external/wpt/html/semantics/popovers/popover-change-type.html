@@ -35,7 +35,7 @@ promise_test(async () => {
   assert_true(mypopover.matches(':popover-open'),
     'The popover should be open after the toggling sequence.');
 
-  await sendEscape(mypopover);
+  await sendEscape();
   assert_false(mypopover.matches(':popover-open'),
     'The popover should light dismiss because it is in the auto state.');
 }, 'Changing the popover attribute should always update the auto/manual behavior.');
