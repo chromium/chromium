@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_IO_TASK_SCANNING_IMPL_H_
-#define CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_IO_TASK_SCANNING_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_IO_TASK_POLICY_IMPL_H_
+#define CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_IO_TASK_POLICY_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -41,7 +41,7 @@ namespace file_manager::io_task {
 // reporting. This is done to minimize the influence of the scan to the user
 // experience. As the source might no longer exist after the scan, e.g., because
 // the operation was a move, the files are scanned at the destination.
-class CopyOrMoveIOTaskScanningImpl : public CopyOrMoveIOTaskImpl {
+class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   using IsTransferAllowedCallback = base::OnceCallback<void(base::File::Error)>;
 
  public:
@@ -53,7 +53,7 @@ class CopyOrMoveIOTaskScanningImpl : public CopyOrMoveIOTaskImpl {
   // `FileTransferAnalysisDelegate::IsEnabledVec()` and contain separate
   // settings for each source url. A setting for a source url can be null if
   // scanning is not enabled for that source url.
-  CopyOrMoveIOTaskScanningImpl(
+  CopyOrMoveIOTaskPolicyImpl(
       OperationType type,
       ProgressStatus& progress,
       std::vector<base::FilePath> destination_file_names,
@@ -63,7 +63,7 @@ class CopyOrMoveIOTaskScanningImpl : public CopyOrMoveIOTaskImpl {
       Profile* profile,
       scoped_refptr<storage::FileSystemContext> file_system_context,
       bool show_notification = true);
-  ~CopyOrMoveIOTaskScanningImpl() override;
+  ~CopyOrMoveIOTaskPolicyImpl() override;
 
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
@@ -119,9 +119,9 @@ class CopyOrMoveIOTaskScanningImpl : public CopyOrMoveIOTaskImpl {
   // This is set to true if `block_until_verdict` is 0.
   bool report_only_scans_ = false;
 
-  base::WeakPtrFactory<CopyOrMoveIOTaskScanningImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<CopyOrMoveIOTaskPolicyImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace file_manager::io_task
 
-#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_IO_TASK_SCANNING_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_IO_TASK_POLICY_IMPL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_manager/copy_or_move_io_task_scanning_impl.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_io_task_policy_impl.h"
 
 #include <cmath>
 #include <memory>
@@ -105,7 +105,7 @@ void StartReportOnlyScanning(
 
 }  // namespace
 
-CopyOrMoveIOTaskScanningImpl::CopyOrMoveIOTaskScanningImpl(
+CopyOrMoveIOTaskPolicyImpl::CopyOrMoveIOTaskPolicyImpl(
     OperationType type,
     ProgressStatus& progress,
     std::vector<base::FilePath> destination_file_names,
@@ -138,9 +138,9 @@ CopyOrMoveIOTaskScanningImpl::CopyOrMoveIOTaskScanningImpl(
                        enterprise_connectors::BlockUntilVerdict::kNoBlock;
 }
 
-CopyOrMoveIOTaskScanningImpl::~CopyOrMoveIOTaskScanningImpl() = default;
+CopyOrMoveIOTaskPolicyImpl::~CopyOrMoveIOTaskPolicyImpl() = default;
 
-void CopyOrMoveIOTaskScanningImpl::Execute(
+void CopyOrMoveIOTaskPolicyImpl::Execute(
     IOTask::ProgressCallback progress_callback,
     IOTask::CompleteCallback complete_callback) {
   if (report_only_scans_) {
@@ -156,7 +156,7 @@ void CopyOrMoveIOTaskScanningImpl::Execute(
   }
 }
 
-void CopyOrMoveIOTaskScanningImpl::VerifyTransfer() {
+void CopyOrMoveIOTaskPolicyImpl::VerifyTransfer() {
   if (report_only_scans_) {
     // Don't do any scans. Instead, the scans are performed after the copy/move
     // is completed.
@@ -170,7 +170,7 @@ void CopyOrMoveIOTaskScanningImpl::VerifyTransfer() {
   MaybeScanForDisallowedFiles(0);
 }
 
-void CopyOrMoveIOTaskScanningImpl::MaybeScanForDisallowedFiles(size_t idx) {
+void CopyOrMoveIOTaskPolicyImpl::MaybeScanForDisallowedFiles(size_t idx) {
   DCHECK_LE(idx, progress_->sources.size());
   if (idx == progress_->sources.size()) {
     // Scanning is complete.
@@ -201,11 +201,11 @@ void CopyOrMoveIOTaskScanningImpl::MaybeScanForDisallowedFiles(size_t idx) {
           std::move(settings_[idx].value()));
 
   file_transfer_analysis_delegates_[idx]->UploadData(
-      base::BindOnce(&CopyOrMoveIOTaskScanningImpl::MaybeScanForDisallowedFiles,
+      base::BindOnce(&CopyOrMoveIOTaskPolicyImpl::MaybeScanForDisallowedFiles,
                      weak_ptr_factory_.GetWeakPtr(), idx + 1));
 }
 
-void CopyOrMoveIOTaskScanningImpl::IsTransferAllowed(
+void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
     size_t idx,
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
@@ -231,7 +231,7 @@ void CopyOrMoveIOTaskScanningImpl::IsTransferAllowed(
 }
 
 storage::FileSystemOperation::ErrorBehavior
-CopyOrMoveIOTaskScanningImpl::GetErrorBehavior() {
+CopyOrMoveIOTaskPolicyImpl::GetErrorBehavior() {
   if (report_only_scans_) {
     return storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT;
   }
@@ -245,11 +245,11 @@ CopyOrMoveIOTaskScanningImpl::GetErrorBehavior() {
 }
 
 std::unique_ptr<storage::CopyOrMoveHookDelegate>
-CopyOrMoveIOTaskScanningImpl::GetHookDelegate(size_t idx) {
+CopyOrMoveIOTaskPolicyImpl::GetHookDelegate(size_t idx) {
   // For all callbacks, we are using CreateRelayCallback to ensure that the
   // callbacks are executed on the current (i.e., UI) thread.
   auto progress_callback = google_apis::CreateRelayCallback(
-      base::BindRepeating(&CopyOrMoveIOTaskScanningImpl::OnCopyOrMoveProgress,
+      base::BindRepeating(&CopyOrMoveIOTaskPolicyImpl::OnCopyOrMoveProgress,
                           weak_ptr_factory_.GetWeakPtr(), idx));
 
   if (report_only_scans_) {
@@ -270,7 +270,7 @@ CopyOrMoveIOTaskScanningImpl::GetHookDelegate(size_t idx) {
   }
 
   auto file_check_callback = google_apis::CreateRelayCallback(
-      base::BindRepeating(&CopyOrMoveIOTaskScanningImpl::IsTransferAllowed,
+      base::BindRepeating(&CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed,
                           weak_ptr_factory_.GetWeakPtr(), idx));
   return std::make_unique<FileManagerCopyOrMoveHookFileCheckDelegate>(
       file_system_context_, progress_callback, file_check_callback);

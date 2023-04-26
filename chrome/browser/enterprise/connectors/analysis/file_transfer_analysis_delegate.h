@@ -83,10 +83,9 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   // Returns a vector with the AnalysisSettings for file transfers from the
   // respective source url to the destination_url.
-  // If the transfer is not enabled for any of the transfers an empty vector is
-  // returned.
-  // Each entry in the returned vector corresponds to the entry in the
-  // `source_urls` vector with the same index.
+  // If the enterprise connectors are not enabled for any of the transfers an
+  // empty vector is returned. Each entry in the returned vector corresponds to
+  // the entry in the `source_urls` vector with the same index.
   static std::vector<absl::optional<AnalysisSettings>> IsEnabledVec(
       Profile* profile,
       const std::vector<storage::FileSystemURL>& source_urls,
