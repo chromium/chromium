@@ -738,8 +738,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   base::Value::List GetOnStorageFetchedSentList() {
     handler()->ClearAllSitesMapForTesting();
 
-    base::Value::List get_all_sites_args;
-    get_all_sites_args.Append(kCallbackId);
+    auto get_all_sites_args = base::Value::List().Append(kCallbackId);
     handler()->HandleGetAllSites(get_all_sites_args);
     handler()->ServicePendingRequests();
 
@@ -797,11 +796,10 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   scoped_refptr<const extensions::Extension> LoadExtension(
       const std::string& extension_name) {
     auto extension = extensions::ExtensionBuilder()
-                         .SetManifest(extensions::DictionaryBuilder()
+                         .SetManifest(base::Value::Dict()
                                           .Set("name", kExtensionName)
                                           .Set("version", "1.0.0")
-                                          .Set("manifest_version", 3)
-                                          .Build())
+                                          .Set("manifest_version", 3))
                          .Build();
 
     extensions::TestExtensionSystem* extension_system =
@@ -2062,11 +2060,10 @@ TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
 
   scoped_refptr<const extensions::Extension> extension;
   extension = extensions::ExtensionBuilder()
-                  .SetManifest(extensions::DictionaryBuilder()
+                  .SetManifest(base::Value::Dict()
                                    .Set("name", kExtensionName)
                                    .Set("version", "1.0.0")
-                                   .Set("manifest_version", 2)
-                                   .Build())
+                                   .Set("manifest_version", 2))
                   .SetID("ahfgeienlihckogmohjhadlkjgocpleb")
                   .Build();
 
@@ -4775,8 +4772,7 @@ TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
   // In the beginning, there should be nothing stored in the origin data.
   ASSERT_EQ(0u, user_prefs->GetDict(prefs::kMediaCdmOriginData).size());
 
-  base::Value::Dict entry_google;
-  entry_google.Set(
+  auto entry_google = base::Value::Dict().Set(
       "https://www.google.com/",
       base::UnguessableTokenToValue(base::UnguessableToken::Create()));
 

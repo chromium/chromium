@@ -26,9 +26,9 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/values.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 using StandardOnboardingTabsParams =
@@ -644,9 +644,7 @@ TEST_F(StartupTabProviderPrivacySandboxTest,
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("1")
           .SetManifestKey("chrome_url_overrides",
-                          extensions::DictionaryBuilder()
-                              .Set("newtab", "custom_tab.html")
-                              .Build())
+                          base::Value::Dict().Set("newtab", "custom_tab.html"))
           .Build();
   registry()->AddEnabled(extension);
   auto output = StartupTabProviderImpl::GetPrivacySandboxTabsForState(

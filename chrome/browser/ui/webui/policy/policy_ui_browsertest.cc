@@ -457,8 +457,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, MAYBE_WritePoliciesToJSONFile) {
   expected_values.FindDict("policyValues")
       ->Set("extensions", base::Value::Dict());
 
-  base::Value::List popups_blocked_for_urls;
-  popups_blocked_for_urls.Append("aaa");
+  auto popups_blocked_for_urls = base::Value::List().Append("aaa");
   popups_blocked_for_urls.Append("bbb");
   popups_blocked_for_urls.Append("ccc");
   values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,
@@ -1116,18 +1115,17 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
   base::WriteFile(schema_path, json_data);
 
   // Build extension that contains the policy schema.
-  extensions::DictionaryBuilder storage;
-  storage.Set("managed_schema", schema_file);
+  auto storage = base::Value::Dict().Set("managed_schema", schema_file);
 
-  extensions::DictionaryBuilder manifest;
-  manifest.Set("name", "test")
-      .Set("version", "1")
-      .Set("manifest_version", 2)
-      .Set("storage", storage.Build());
+  auto manifest = base::Value::Dict()
+                      .Set("name", "test")
+                      .Set("version", "1")
+                      .Set("manifest_version", 2)
+                      .Set("storage", std::move(storage));
 
   extensions::ExtensionBuilder builder;
   builder.SetPath(temp_dir_.GetPath());
-  builder.SetManifest(manifest.Build());
+  builder.SetManifest(std::move(manifest));
   builder.SetLocation(
       extensions::mojom::ManifestLocation::kExternalPolicyDownload);
 

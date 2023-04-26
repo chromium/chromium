@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "chrome/browser/printing/pwg_raster_converter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
@@ -30,17 +31,14 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/usb_device_permission.h"
 #include "extensions/common/permissions/usb_device_permission_data.h"
-#include "extensions/common/value_builder.h"
 #include "printing/print_job_constants.h"
 #include "printing/pwg_raster_settings.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using extensions::DevicePermissionsManager;
-using extensions::DictionaryBuilder;
 using extensions::Extension;
 using extensions::ExtensionRegistry;
-using extensions::ListBuilder;
 using extensions::UsbDeviceManager;
 using extensions::UsbPrinterManifestData;
 
@@ -327,7 +325,7 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
   DevicePermissionsManager* permissions_manager =
       DevicePermissionsManager::Get(profile_);
 
-  ListBuilder printer_list;
+  base::Value::List printer_list;
 
   for (const auto& extension : registry->enabled_extensions()) {
     const UsbPrinterManifestData* manifest_data =
@@ -350,7 +348,7 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
         }
 
         printer_list.Append(
-            DictionaryBuilder()
+            base::Value::Dict()
                 .Set("id",
                      GenerateProvisionalUsbPrinterId(extension.get(), *device))
                 .Set("name",
@@ -361,15 +359,14 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
                          std::u16string(), false))
                 .Set("extensionId", extension->id())
                 .Set("extensionName", extension->name())
-                .Set("provisional", true)
-                .Build());
+                .Set("provisional", true));
       }
     }
   }
 
   DCHECK_GT(pending_enumeration_count_, 0);
   pending_enumeration_count_--;
-  base::Value::List list = printer_list.Build();
+  base::Value::List list = std::move(printer_list);
   if (!list.empty())
     callback.Run(std::move(list));
   if (pending_enumeration_count_ == 0)

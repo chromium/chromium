@@ -33,7 +33,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -153,15 +152,16 @@ TEST_F(ExtensionMessageBubbleBridgeUnitTest,
 // SuspiciousExtensionBubbleDelegate.
 TEST_F(ExtensionMessageBubbleBridgeUnitTest, SuspiciousExtensionBubble) {
   // Load up a simple extension.
-  extensions::DictionaryBuilder manifest;
-  manifest.Set("name", "foo")
-          .Set("description", "some extension")
-          .Set("version", "0.1")
-          .Set("manifest_version", 2);
+  auto manifest = base::Value::Dict()
+                      .Set("name", "foo")
+                      .Set("description", "some extension")
+                      .Set("version", "0.1")
+                      .Set("manifest_version", 2);
   scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionBuilder().SetID(crx_file::id_util::GenerateId("foo"))
-                                    .SetManifest(manifest.Build())
-                                    .Build();
+      extensions::ExtensionBuilder()
+          .SetID(crx_file::id_util::GenerateId("foo"))
+          .SetManifest(std::move(manifest))
+          .Build();
   ASSERT_TRUE(extension);
   service()->AddExtension(extension.get());
   const std::string id = extension->id();

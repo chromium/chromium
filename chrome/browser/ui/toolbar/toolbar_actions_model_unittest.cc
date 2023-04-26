@@ -48,7 +48,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -432,14 +431,15 @@ TEST_F(ToolbarActionsModelUnitTest, TestToolbarExtensionTypesEnabledSwitch) {
                                     no_action()->id()));
 
   // Extensions that are installed by default shouldn't be given an icon.
-  extensions::DictionaryBuilder default_installed_manifest;
-  default_installed_manifest.Set("name", "default installed")
-      .Set("description", "A default installed extension")
-      .Set("manifest_version", 2)
-      .Set("version", "1.0.0.0");
+  auto default_installed_manifest =
+      base::Value::Dict()
+          .Set("name", "default installed")
+          .Set("description", "A default installed extension")
+          .Set("manifest_version", 2)
+          .Set("version", "1.0.0.0");
   scoped_refptr<const extensions::Extension> default_installed_extension =
       extensions::ExtensionBuilder()
-          .SetManifest(default_installed_manifest.Build())
+          .SetManifest(std::move(default_installed_manifest))
           .SetID(crx_file::id_util::GenerateId("default"))
           .SetLocation(ManifestLocation::kInternal)
           .AddFlags(extensions::Extension::WAS_INSTALLED_BY_DEFAULT)
@@ -682,9 +682,8 @@ TEST_F(ToolbarActionsModelUnitTest, AddUserScriptExtension) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("a")
           .SetLocation(ManifestLocation::kInternal)
-          .MergeManifest(extensions::DictionaryBuilder()
-                             .Set("converted_from_user_script", true)
-                             .Build())
+          .MergeManifest(
+              base::Value::Dict().Set("converted_from_user_script", true))
           .Build();
 
   // We should start off without any actions.

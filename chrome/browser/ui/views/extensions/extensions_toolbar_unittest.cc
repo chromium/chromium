@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
@@ -20,7 +21,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -32,10 +32,11 @@ using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
 base::Value::List ToListValue(const std::vector<std::string>& permissions) {
-  extensions::ListBuilder builder;
-  for (const std::string& permission : permissions)
+  base::Value::List builder;
+  for (const std::string& permission : permissions) {
     builder.Append(permission);
-  return builder.Build();
+  }
+  return builder;
 }
 
 }  // namespace

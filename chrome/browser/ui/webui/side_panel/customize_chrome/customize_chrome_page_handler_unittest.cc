@@ -560,11 +560,10 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThirdPartyTheme) {
   auto* extension_registry = extensions::ExtensionRegistry::Get(profile_.get());
   scoped_refptr<const extensions::Extension> extension;
   extension = extensions::ExtensionBuilder()
-                  .SetManifest(extensions::DictionaryBuilder()
+                  .SetManifest(base::Value::Dict()
                                    .Set("name", "Foo Extension")
                                    .Set("version", "1.0.0")
-                                   .Set("manifest_version", 2)
-                                   .Build())
+                                   .Set("manifest_version", 2))
                   .SetID("foo")
                   .Build();
   extension_registry->AddEnabled(extension);
