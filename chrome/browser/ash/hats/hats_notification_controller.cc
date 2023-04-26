@@ -139,10 +139,14 @@ const char HatsNotificationController::kNotificationId[] = "hats_notification";
 HatsNotificationController::HatsNotificationController(
     Profile* profile,
     const HatsConfig& hats_config,
-    const base::flat_map<std::string, std::string>& product_specific_data)
+    const base::flat_map<std::string, std::string>& product_specific_data,
+    const std::u16string title,
+    const std::u16string body)
     : profile_(profile),
       hats_config_(hats_config),
-      product_specific_data_(product_specific_data) {
+      product_specific_data_(product_specific_data),
+      title_(std::move(title)),
+      body_(std::move(body)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string histogram_name = HatsFinchHelper::GetHistogramName(*hats_config_);
@@ -156,6 +160,17 @@ HatsNotificationController::HatsNotificationController(
       base::BindOnce(&HatsNotificationController::Initialize,
                      weak_pointer_factory_.GetWeakPtr()));
 }
+
+HatsNotificationController::HatsNotificationController(
+    Profile* profile,
+    const HatsConfig& hats_config,
+    const base::flat_map<std::string, std::string>& product_specific_data)
+    : HatsNotificationController(
+          profile,
+          hats_config,
+          product_specific_data,
+          l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_TITLE),
+          l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_BODY)) {}
 
 HatsNotificationController::HatsNotificationController(
     Profile* profile,
@@ -326,9 +341,8 @@ void HatsNotificationController::PortalStateChanged(
     // Create and display the notification for the user.
     if (!notification_) {
       notification_ = CreateSystemNotificationPtr(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
-          l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_TITLE),
-          l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_BODY),
+          message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title_,
+          body_,
           l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_NOTIFIER_HATS_NAME),
           GURL(kNotificationOriginUrl),
           message_center::NotifierId(
