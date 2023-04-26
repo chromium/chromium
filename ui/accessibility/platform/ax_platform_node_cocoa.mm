@@ -1821,7 +1821,14 @@ void CollectAncestorRoles(
   for (auto child_iterator_ptr = _node->GetDelegate()->ChildrenBegin();
        *child_iterator_ptr != *_node->GetDelegate()->ChildrenEnd();
        ++(*child_iterator_ptr)) {
-    [children addObject:child_iterator_ptr->GetNativeViewAccessible()];
+    ui::AXPlatformNodeDelegate* child = child_iterator_ptr->get();
+    if (child && child->IsInvisibleOrIgnored()) {
+      [children
+          addObjectsFromArray:[child_iterator_ptr->GetNativeViewAccessible()
+                                  accessibilityChildren]];
+    } else {
+      [children addObject:child_iterator_ptr->GetNativeViewAccessible()];
+    }
   }
   return NSAccessibilityUnignoredChildren(children);
 }
