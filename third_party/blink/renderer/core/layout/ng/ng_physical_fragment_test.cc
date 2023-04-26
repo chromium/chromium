@@ -120,12 +120,12 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithTargetInsideColumn) {
     Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x66 LayoutNGBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x50 LayoutNGBlockFlow BODY
         Box (block-flow-root block-flow) offset:0,0 size:784x50 LayoutNGBlockFlow DIV id='multicol'
-          Box (column block-flow) offset:0,0 size:260.656x50
-            Box (block-flow) offset:0,0 size:260.656x50 LayoutNGBlockFlow DIV id='child'
-          Box (column block-flow) offset:261.656,0 size:260.656x50
-*           Box (block-flow) offset:0,0 size:260.656x50 LayoutNGBlockFlow DIV id='child'
-          Box (column block-flow) offset:523.313,0 size:260.656x50
-            Box (block-flow) offset:0,0 size:260.656x50 LayoutNGBlockFlow DIV id='child'
+          Box (column block-flow) offset:0,0 size:260.65625x50
+            Box (block-flow) offset:0,0 size:260.65625x50 LayoutNGBlockFlow DIV id='child'
+          Box (column block-flow) offset:261.65625,0 size:260.65625x50
+*           Box (block-flow) offset:0,0 size:260.65625x50 LayoutNGBlockFlow DIV id='child'
+          Box (column block-flow) offset:523.3125,0 size:260.65625x50
+            Box (block-flow) offset:0,0 size:260.65625x50 LayoutNGBlockFlow DIV id='child'
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
