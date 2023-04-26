@@ -39,11 +39,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "activate-metrics-reporting-enabled-policy",
-    "owners": [ "ftirelo" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "adaptive-button-in-top-toolbar",
     "owners": [ "bttk", "chrome-segmentation-platform@google.com" ],
     "expiry_milestone": 99
@@ -4383,11 +4378,6 @@
     "name": "high-efficiency-mode-time-before-discard",
     "owners": [ "chrome-performance-ui-team@google.com" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "highlight-managed-pref-disclaimer-android",
-    "owners": [ "ftirelo" ],
-    "expiry_milestone": 115
   },
   {
     "name": "history-journeys",
