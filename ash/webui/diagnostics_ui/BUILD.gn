@@ -21,6 +21,7 @@ static_library("diagnostics_ui") {
 
   deps = [
     "//ash/constants",
+    "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:keyboard_diagram_strings",
     "//ash/webui/common/backend",
     "//ash/webui/diagnostics_ui/backend",

@@ -21,6 +21,7 @@
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
+#include "ash/webui/diagnostics_ui/diagnostics_ui.h"
 #include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
@@ -32,6 +33,9 @@
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
@@ -153,6 +157,32 @@ std::unique_ptr<content::WebUIConfig> MakeGuestOSInstallerUIConfig() {
       create_controller_func);
 }
 
+std::unique_ptr<content::WebUIConfig> MakeDiagnosticsUIConfig() {
+  CreateWebUIControllerFunc create_controller_func =
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+    ash::HoldingSpaceKeyedService* holding_space_keyed_service =
+        ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+            web_ui->GetWebContents()->GetBrowserContext());
+    // This directory stores routine and network event logs for a given
+    // |profile|.
+    static constexpr base::FilePath::CharType kDiagnosticsLogDirectoryName[] =
+        FILE_PATH_LITERAL("diagnostics");
+    return std::make_unique<ash::DiagnosticsDialogUI>(
+        web_ui,
+        base::BindRepeating([](content::WebContents* web_contents)
+                                -> std::unique_ptr<ui::SelectFilePolicy> {
+          return std::make_unique<ChromeSelectFilePolicy>(web_contents);
+        }),
+        holding_space_keyed_service->client(),
+        Profile::FromWebUI(web_ui)->GetPath().Append(
+            kDiagnosticsLogDirectoryName));
+  };
+
+  return std::make_unique<ash::DiagnosticsDialogUIConfig>(
+      create_controller_func);
+}
+
 void RegisterAshChromeWebUIConfigs() {
   // Add `WebUIConfig`s for Ash ChromeOS to the list here.
   auto& map = content::WebUIConfigMap::GetInstance();
@@ -179,6 +209,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::CrostiniInstallerUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CrostiniUpgraderUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CryptohomeUIConfig>());
+  map.AddWebUIConfig(MakeDiagnosticsUIConfig());
   map.AddWebUIConfig(std::make_unique<ash::DriveInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::EmojiUIConfig>());
   map.AddWebUIConfig(

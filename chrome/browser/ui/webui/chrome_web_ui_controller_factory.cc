@@ -31,7 +31,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_features.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/about_ui.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui.h"
@@ -189,8 +188,6 @@
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/color_internals/url_constants.h"
-#include "ash/webui/diagnostics_ui/diagnostics_ui.h"
-#include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "ash/webui/eche_app_ui/eche_app_ui.h"
 #include "ash/webui/eche_app_ui/url_constants.h"
@@ -252,8 +249,6 @@
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
@@ -620,11 +615,6 @@ void BindScanService(
     service->BindInterface(std::move(pending_receiver));
 }
 
-std::unique_ptr<ui::SelectFilePolicy> CreateChromeSelectFilePolicy(
-    content::WebContents* web_contents) {
-  return std::make_unique<ChromeSelectFilePolicy>(web_contents);
-}
-
 template <>
 WebUIController* NewWebUI<ash::ScanningUI>(WebUI* web_ui, const GURL& url) {
   Profile* profile = Profile::FromWebUI(web_ui);
@@ -638,23 +628,6 @@ WebUIController* NewWebUI<ash::ShimlessRMADialogUI>(WebUI* web_ui,
                                                     const GURL& url) {
   return new ash::ShimlessRMADialogUI(
       web_ui, std::make_unique<ash::shimless_rma::ChromeShimlessRmaDelegate>());
-}
-
-template <>
-WebUIController* NewWebUI<ash::DiagnosticsDialogUI>(WebUI* web_ui,
-                                                    const GURL& url) {
-  ash::HoldingSpaceKeyedService* holding_space_keyed_service =
-      ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
-          web_ui->GetWebContents()->GetBrowserContext());
-  // This directory stores routine and network event logs for a given
-  // |profile|.
-  static constexpr base::FilePath::CharType kDiagnosticsLogDirectoryName[] =
-      FILE_PATH_LITERAL("diagnostics");
-  return new ash::DiagnosticsDialogUI(
-      web_ui, base::BindRepeating(&CreateChromeSelectFilePolicy),
-      holding_space_keyed_service->client(),
-      Profile::FromWebUI(web_ui)->GetPath().Append(
-          kDiagnosticsLogDirectoryName));
 }
 
 void BindMultiDeviceSetup(
@@ -974,9 +947,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewComponentUI<ash::HelpAppUI, ash::ChromeHelpAppUIDelegate>;
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
     return &NewWebUI<ash::cellular_setup::MobileSetupUI>;
-  if (url.host_piece() == ash::kChromeUIDiagnosticsAppHost) {
-    return &NewWebUI<ash::DiagnosticsDialogUI>;
-  }
   if (url.host_piece() == ash::kChromeUIPrintManagementHost)
     return &NewWebUI<ash::printing::printing_manager::PrintManagementUI>;
   if (url.host_piece() == ash::kChromeUIScanningAppHost)
