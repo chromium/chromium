@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "ash/public/cpp/file_preview/file_preview_controller.h"
-#include "ash/public/cpp/file_preview/file_preview_image_skia_source.h"
+#include "ash/public/cpp/file_preview/file_preview_factory.h"
 #include "ash/public/cpp/test/test_image_decoder.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 
@@ -55,6 +56,8 @@ class FilePreviewTest : public testing::Test {
   }
 
   FilePreviewController* controller() { return controller_.get(); }
+  ui::ColorProvider* color_provider() { return &color_provider_; }
+  ui::ImageModel* model() { return &model_; }
   SkColor last_pixel_color() const { return last_pixel_color_; }
 
   // testing::Test:
@@ -65,26 +68,25 @@ class FilePreviewTest : public testing::Test {
     // decoding and return test frames. It must contain some data, though, to
     // prevent the `image_util::DecodeAnimationData()` from exiting early.
     ASSERT_TRUE(base::WriteFile(TestFilePath(), "foobar"));
+    color_provider_.GenerateColorMap();
+  }
+
+  void SetUpFilePreviewImageModel(base::FilePath path) {
+    model_ = FilePreviewFactory::Get()->CreateImageModel(std::move(path),
+                                                         gfx::Size(1, 1));
+
+    controller_ = FilePreviewFactory::Get()->GetController(model_);
+
+    invalidation_subscription_ =
+        controller_->AddInvalidationCallback(base::BindLambdaForTesting([&]() {
+          auto* bitmap = model_.Rasterize(color_provider()).bitmap();
+          last_pixel_color_ =
+              bitmap->isNull() ? SK_ColorTRANSPARENT : bitmap->getColor(0, 0);
+        }));
   }
 
   base::FilePath TestFilePath() const {
     return scoped_temp_dir_.GetPath().Append("test_file.gif");
-  }
-
-  void SetUpFilePreviewController(base::FilePath path) {
-    controller_ = std::make_unique<FilePreviewController>(std::move(path),
-                                                          gfx::Size(1, 1));
-    invalidation_subscription_ =
-        controller_->AddInvalidationCallback(base::BindLambdaForTesting([&]() {
-          SkBitmap bitmap = GetBitmap();
-          last_pixel_color_ =
-              bitmap.isNull() ? SK_ColorTRANSPARENT : bitmap.getColor(0, 0);
-        }));
-  }
-
-  SkBitmap GetBitmap() {
-    const auto* bitmap_ptr = controller()->GetImageSkiaForTest().bitmap();
-    return bitmap_ptr ? SkBitmap(*bitmap_ptr) : SkBitmap();
   }
 
   void WaitForInvalidation() {
@@ -97,27 +99,28 @@ class FilePreviewTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
-  std::unique_ptr<FilePreviewController> controller_;
+  ui::ColorProvider color_provider_;
   base::MockRepeatingCallback<SkBitmap()> mock_image_callback_;
   TestImageDecoder decoder_;
   SkColor last_pixel_color_ = SK_ColorTRANSPARENT;
   base::CallbackListSubscription invalidation_subscription_;
+  base::raw_ptr<FilePreviewController> controller_ = nullptr;
+  ui::ImageModel model_;
 };
 
 TEST_F(FilePreviewTest, IsNullForBadPath) {
-  SetUpFilePreviewController(base::FilePath("does_not_exist.gif"));
-  auto bitmap = GetBitmap();
-  EXPECT_TRUE(bitmap.isNull());
+  SetUpFilePreviewImageModel(base::FilePath("does_not_exist.gif"));
+  auto image = model()->Rasterize(color_provider());
+  EXPECT_TRUE(image.GetRepresentation(1.0f).is_null());
 
   // Since this file does not exist, loading it should fail and the image
   // should continue to be empty.
   WaitForInvalidation();
-  bitmap = GetBitmap();
-  EXPECT_TRUE(bitmap.isNull());
+  EXPECT_TRUE(image.GetRepresentation(1.0f).is_null());
 }
 
 TEST_F(FilePreviewTest, PlaybackModeChange) {
-  SetUpFilePreviewController(base::FilePath(TestFilePath()));
+  SetUpFilePreviewImageModel(base::FilePath(TestFilePath()));
 
   controller()->SetPlaybackMode(
       FilePreviewImageSkiaSource::PlaybackMode::kLoop);
@@ -149,10 +152,11 @@ TEST_F(FilePreviewTest, PlaybackModeChange) {
 
   base::RunLoop run_loop;
   base::OneShotTimer timer;
-
   timer.Start(FROM_HERE, kTestFrameDelay * 2, run_loop.QuitClosure());
   run_loop.Run();
-  auto pixel_color = GetBitmap().getColor(0, 0);
+
+  auto pixel_color =
+      model()->Rasterize(color_provider()).bitmap()->getColor(0, 0);
   EXPECT_EQ(pixel_color, kTestColors[0]);
 }
 

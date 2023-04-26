@@ -9,11 +9,14 @@
 #include "ash/public/cpp/file_preview/file_preview_image_skia_source.h"
 #include "base/callback_list.h"
 #include "base/memory/ptr_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
 namespace ash {
 
-FilePreviewController::FilePreviewController(base::FilePath path,
+FilePreviewController::FilePreviewController(base::PassKey<FilePreviewFactory>,
+                                             base::FilePath path,
                                              const gfx::Size& size)
     : source_(new FilePreviewImageSkiaSource(this, std::move(path))),
       image_skia_(gfx::ImageSkia(base::WrapUnique(source_.get()), size)),
@@ -27,6 +30,14 @@ FilePreviewController::~FilePreviewController() {
 }
 
 // static
+FilePreviewController::Key FilePreviewController::GetKey(
+    const ui::ImageModel& image_model) {
+  // Using a default constructed `ui::ColorProvider` is fine here since we are
+  // just using it to get to the backing object.
+  ui::ColorProvider color_provider;
+  return GetKey(image_model.Rasterize(&color_provider));
+}
+
 FilePreviewController::Key FilePreviewController::GetKey(
     const gfx::ImageSkia& image_skia) {
   return image_skia.GetBackingObject();
@@ -51,7 +62,8 @@ void FilePreviewController::Invalidate(
   invalidation_callbacks_.Notify();
 }
 
-const gfx::ImageSkia& FilePreviewController::GetImageSkiaForTest() const {
+const gfx::ImageSkia& FilePreviewController::GetImageSkia(
+    base::PassKey<FilePreviewFactory>) const {
   // This check is to protect against regression, since the entire file preview
   // design hinges on the key being consistent.
   CHECK(GetKey(image_skia_) == key_);

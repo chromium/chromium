@@ -18,7 +18,13 @@ namespace gfx {
 class Size;
 }
 
+namespace ui {
+class ImageModel;
+}
+
 namespace ash {
+
+class FilePreviewFactory;
 
 // Enables control over the behavior of a `ui::ImageModel` wrapping a
 // `FilePreviewImageSkiaSource`. Copies of an image model will have the same
@@ -28,13 +34,20 @@ class ASH_PUBLIC_EXPORT FilePreviewController {
   using Key = const void*;
   using PlaybackMode = FilePreviewImageSkiaSource::PlaybackMode;
 
-  FilePreviewController(base::FilePath path, const gfx::Size& size);
+  // Only constructable by `FilePreviewFactory` because it manages the lifetime
+  // of `FilePreviewController`s to make sure it does not outlive its
+  // `FilePreviewImageSkiaSource`.
+  FilePreviewController(base::PassKey<FilePreviewFactory>,
+                        base::FilePath path,
+                        const gfx::Size& size);
+
   FilePreviewController(const FilePreviewController&) = delete;
   FilePreviewController& operator=(const FilePreviewController&) = delete;
   ~FilePreviewController();
 
   // Fetches the `Key` used to map a given `gfx::ImageSkia` to its
-  // `FilePreviewController`. Currently only used to check for regression.
+  // `FilePreviewController`.
+  static Key GetKey(const ui::ImageModel& image_model);
   static Key GetKey(const gfx::ImageSkia& image_skia);
 
   // Adds a closure to be called whenever the image is invalidated, e.g., when
@@ -53,9 +66,11 @@ class ASH_PUBLIC_EXPORT FilePreviewController {
   // repainting of views.
   void Invalidate(base::PassKey<FilePreviewImageSkiaSource>);
 
-  // TODO(http://b/266000869): Remove once `FilePreviewFactory` is implemented
-  // and producing working `ui::ImageModel`s.
-  const gfx::ImageSkia& GetImageSkiaForTest() const;
+  // Gets the `gfx::ImageSkia` that matches this controller. Exists to enable
+  // `FilePreviewFactory` to register a new `ui::ImageModel` with its
+  // controller. Anyone else looking to get a `gfx::ImageSkia` should call
+  // `ui::ImageModel::Rasterize()`.
+  const gfx::ImageSkia& GetImageSkia(base::PassKey<FilePreviewFactory>) const;
 
  private:
   // The `FilePreviewImageSkiaSource` this controller controls. Owned by the
