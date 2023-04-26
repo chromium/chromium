@@ -4,6 +4,7 @@
 
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
