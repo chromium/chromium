@@ -8602,7 +8602,7 @@
             ]
         }
     ],
-    "NtpHistoryClustersMetricsOnly112": [
+    "NtpHistoryClusters": [
         {
             "platforms": [
                 "chromeos",
@@ -8613,21 +8613,22 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230404",
+                    "name": "QuestsAllowlist_20230425",
                     "params": {
                         "NtpHistoryClustersModuleCategoriesAllowlistParam": "/m/testparsinglogicallow,/m/testparsinglogicallow-2",
                         "NtpHistoryClustersModuleCategoriesBlocklistParam": "/m/testparsinglogicblock,/m/testparsinglogicblock-2",
                         "NtpHistoryClustersModuleCategoriesBoostlistParam": "/m/testparsinglogicboost,/m/testparsinglogicboost-2",
-                        "NtpHistoryClustersModuleMaxClustersParam": "0",
-                        "NtpHistoryClustersModuleMinimumImagesRequiredParam": "1"
+                        "search_visits_only": "false"
                     },
                     "enable_features": [
-                        "NtpHistoryClustersMaxClusters",
+                        "JourneysOnDeviceClusteringContentClustering",
+                        "NtpHistoryClustersModule",
                         "NtpHistoryClustersModuleCategories",
-                        "NtpHistoryClustersModuleLoad",
-                        "NtpHistoryClustersModuleMinimumImagesRequired",
+                        "NtpModulesHeaderIcon",
+                        "NtpWideModules",
                         "PageContentAnnotationsPersistSalientImageMetadata",
-                        "RemotePageMetadata"
+                        "RemotePageMetadata",
+                        "SyncPollImmediatelyOnEveryStartup"
                     ]
                 }
             ]
