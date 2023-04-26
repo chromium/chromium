@@ -158,8 +158,8 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportInstalledApp) {
   ::chromeos::MissiveClientTestObserver missive_observer(base::BindRepeating(
       &IsMetricEventOfType, MetricEventType::APP_INSTALLED));
   const auto& app_id = InstallStandaloneWebApp(GURL(kWebAppUrl));
-  const auto& [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto& metric_data = AssertEvent(priority, record);
+  const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
+  const auto metric_data = AssertEvent(priority, record);
   ASSERT_TRUE(
       metric_data.telemetry_data().app_telemetry().has_app_install_data());
   const auto& app_install_data =
@@ -189,8 +189,8 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportLaunchedApp) {
   ::chromeos::MissiveClientTestObserver missive_observer(
       base::BindRepeating(&IsMetricEventOfType, MetricEventType::APP_LAUNCHED));
   ::web_app::LaunchWebAppBrowser(profile(), app_id);
-  const auto& [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto& metric_data = AssertEvent(priority, record);
+  const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
+  const auto metric_data = AssertEvent(priority, record);
   ASSERT_TRUE(
       metric_data.telemetry_data().app_telemetry().has_app_launch_data());
   const auto& app_launch_data =
@@ -214,8 +214,8 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportUninstalledApp) {
   ::chromeos::MissiveClientTestObserver missive_observer(base::BindRepeating(
       &IsMetricEventOfType, MetricEventType::APP_UNINSTALLED));
   UninstallStandaloneWebApp(app_id);
-  const auto& [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto& metric_data = AssertEvent(priority, record);
+  const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
+  const auto metric_data = AssertEvent(priority, record);
   ASSERT_TRUE(
       metric_data.telemetry_data().app_telemetry().has_app_uninstall_data());
   const auto& app_uninstall_data =

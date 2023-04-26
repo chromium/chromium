@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest, ReportUsageData) {
   MockClock::Get().Advance(
       metrics::kDefaultDeviceActivityHeartbeatCollectionRate);
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto& metric_data = AssertAppUsageTelemetryData(priority, record);
+  const auto metric_data = AssertAppUsageTelemetryData(priority, record);
 
   // Data reported includes usage from the web app + the native Chrome
   // component application since these leverage the browser.
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   MockClock::Get().Advance(
       metrics::kDefaultDeviceActivityHeartbeatCollectionRate);
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto& metric_data = AssertAppUsageTelemetryData(priority, record);
+  const auto metric_data = AssertAppUsageTelemetryData(priority, record);
 
   // Data reported includes usage from the web app + the native Chrome
   // component application since these leverage the browser.
