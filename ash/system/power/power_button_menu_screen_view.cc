@@ -65,7 +65,8 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
     : public views::View,
       public ui::ImplicitAnimationObserver {
  public:
-  PowerButtonMenuBackgroundView(base::RepeatingClosure show_animation_done)
+  explicit PowerButtonMenuBackgroundView(
+      base::RepeatingClosure show_animation_done)
       : show_animation_done_(show_animation_done) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     layer()->SetOpacity(0.f);
