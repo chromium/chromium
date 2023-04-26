@@ -149,6 +149,9 @@ message ExtensionInstallProto {
     // The extension is disabled because it is not in 1st party ash keep list
     // and the 1st party ash extension keep list is enforced in ash.
     NOT_ASH_KEEPLISTED = 18;
+    // Policy requires the extension to be published and available for download
+    // from the web store.
+    PUBLISHED_IN_STORE_REQUIRED_BY_POLICY = 19;
   }
   // Any DisableReasons in effect for the extension. An empty list means the
   // extension is not disabled. Note that an extension that is not disabled may
