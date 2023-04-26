@@ -112,6 +112,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // timeline is inactive.
   absl::optional<ScrollOffsets> GetResolvedScrollOffsets() const;
 
+  float GetResolvedZoom() const { return timeline_state_snapshotted_.zoom; }
+
   bool Matches(TimelineAttachment,
                ReferenceType,
                Element* reference_element,
@@ -196,10 +198,12 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
     TimelinePhase phase = TimelinePhase::kInactive;
     absl::optional<base::TimeDelta> current_time;
     absl::optional<ScrollOffsets> scroll_offsets;
+    // Zoom factor applied to the scroll offsets.
+    float zoom = 1.0f;
 
     bool operator==(const TimelineState& other) const {
       return phase == other.phase && current_time == other.current_time &&
-             scroll_offsets == other.scroll_offsets;
+             scroll_offsets == other.scroll_offsets && zoom == other.zoom;
     }
   };
 

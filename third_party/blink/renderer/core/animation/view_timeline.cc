@@ -564,7 +564,8 @@ CSSNumericValue* ViewTimeline::startOffset() const {
   if (!scroll_offsets)
     return nullptr;
 
-  return CSSUnitValues::px(scroll_offsets->start);
+  DCHECK(GetResolvedZoom());
+  return CSSUnitValues::px(scroll_offsets->start / GetResolvedZoom());
 }
 
 CSSNumericValue* ViewTimeline::endOffset() const {
@@ -572,7 +573,8 @@ CSSNumericValue* ViewTimeline::endOffset() const {
   if (!scroll_offsets)
     return nullptr;
 
-  return CSSUnitValues::px(scroll_offsets->end);
+  DCHECK(GetResolvedZoom());
+  return CSSUnitValues::px(scroll_offsets->end / GetResolvedZoom());
 }
 
 void ViewTimeline::UpdateSnapshot() {

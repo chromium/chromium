@@ -836,6 +836,11 @@ TEST_F(ScrollTimelineTest, ViewTimelineOffsetZoom) {
     ASSERT_TRUE(scroll_offsets.has_value());
     EXPECT_EQ(100.0, scroll_offsets->start);
     EXPECT_EQ(300.0, scroll_offsets->end);
+
+    ASSERT_TRUE(timeline->startOffset());
+    EXPECT_EQ("100px", timeline->startOffset()->toString());
+    ASSERT_TRUE(timeline->endOffset());
+    EXPECT_EQ("300px", timeline->endOffset()->toString());
   }
 
   // zoom = 2
@@ -850,6 +855,12 @@ TEST_F(ScrollTimelineTest, ViewTimelineOffsetZoom) {
     ASSERT_TRUE(scroll_offsets.has_value());
     EXPECT_EQ(200.0, scroll_offsets->start);
     EXPECT_EQ(600.0, scroll_offsets->end);
+
+    // Web-facing APIs should still report unzoomed values.
+    ASSERT_TRUE(timeline->startOffset());
+    EXPECT_EQ("100px", timeline->startOffset()->toString());
+    ASSERT_TRUE(timeline->endOffset());
+    EXPECT_EQ("300px", timeline->endOffset()->toString());
   }
 }
 
