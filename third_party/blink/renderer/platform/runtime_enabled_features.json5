@@ -3641,6 +3641,11 @@
       base_feature: "none",
     },
     {
+      name: "WebAppTabStripCustomizations",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "WebAppTranslations",
       status: "experimental",
       base_feature: "WebAppEnableTranslations",

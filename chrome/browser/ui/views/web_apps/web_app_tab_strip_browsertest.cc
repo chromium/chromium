@@ -48,6 +48,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -63,9 +64,10 @@ class WebAppTabStripBrowserTest : public WebAppControllerBrowserTest {
   ~WebAppTabStripBrowserTest() override = default;
 
   void SetUp() override {
-    features_.InitWithFeatures({features::kDesktopPWAsTabStrip,
-                                features::kDesktopPWAsTabStripSettings},
-                               {});
+    features_.InitWithFeatures(
+        {features::kDesktopPWAsTabStrip, features::kDesktopPWAsTabStripSettings,
+         blink::features::kDesktopPWAsTabStripCustomizations},
+        {});
     ASSERT_TRUE(embedded_test_server()->Start());
 
     WebAppControllerBrowserTest::SetUp();

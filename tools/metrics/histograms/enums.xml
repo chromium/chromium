@@ -59934,6 +59934,7 @@ from previous Chrome versions.
   <int value="-1231507397" label="NtpZeroSuggest:enabled"/>
   <int value="-1230678816" label="PersonalizationHub:disabled"/>
   <int value="-1230610048" label="SyncWifiConfigurations:disabled"/>
+  <int value="-1229882308" label="DesktopPWAsTabStripCustomizations:disabled"/>
   <int value="-1229114522"
       label="ClearCrossSiteCrossBrowsingContextGroupWindowName:disabled"/>
   <int value="-1228782289" label="EventPath:disabled"/>
@@ -62407,6 +62408,7 @@ from previous Chrome versions.
   <int value="98029688" label="MediaAppDisplayExif:disabled"/>
   <int value="98134240" label="material-design-ink-drop-animation-speed"/>
   <int value="98218116" label="ContextualSearchLongpressResolve:disabled"/>
+  <int value="98773632" label="DesktopPWAsTabStripCustomizations:enabled"/>
   <int value="99177659" label="OmniboxUICuesForSearchHistoryMatches:disabled"/>
   <int value="99660832" label="DockedMagnifierResizing:enabled"/>
   <int value="101253756" label="RequestDesktopSiteDefaults:disabled"/>

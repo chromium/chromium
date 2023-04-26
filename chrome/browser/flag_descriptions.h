@@ -563,6 +563,9 @@ extern const char kDesktopPWAsTabStripDescription[];
 extern const char kDesktopPWAsTabStripSettingsName[];
 extern const char kDesktopPWAsTabStripSettingsDescription[];
 
+extern const char kDesktopPWAsTabStripCustomizationsName[];
+extern const char kDesktopPWAsTabStripCustomizationsDescription[];
+
 extern const char kDesktopPWAsSubAppsName[];
 extern const char kDesktopPWAsSubAppsDescription[];
 

@@ -226,7 +226,8 @@ bool ManifestParser::Parse() {
       manifest_->dark_background_color = *dark_background_color;
   }
 
-  if (RuntimeEnabledFeatures::WebAppTabStripEnabled(execution_context_) &&
+  if (RuntimeEnabledFeatures::WebAppTabStripCustomizationsEnabled(
+          execution_context_) &&
       manifest_->display_override.Contains(
           mojom::blink::DisplayMode::kTabbed)) {
     manifest_->tab_strip = ParseTabStrip(root_object.get());
