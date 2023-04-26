@@ -9,7 +9,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';

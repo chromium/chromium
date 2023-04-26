@@ -13,6 +13,7 @@ build_webui("build") {
   web_component_files = [
     "controls/extension_controlled_indicator.ts",
     "controls/settings_dropdown_menu.ts",
+    "controls/settings_toggle_button.ts",
   ]
 
   non_web_component_files = [
@@ -38,6 +39,7 @@ build_webui("build") {
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/settings_prefs:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 }

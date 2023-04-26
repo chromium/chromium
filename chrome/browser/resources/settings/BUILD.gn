@@ -113,7 +113,6 @@ build_webui("build") {
     "controls/settings_checkbox.ts",
     "controls/settings_radio_group.ts",
     "controls/settings_slider.ts",
-    "controls/settings_toggle_button.ts",
     "downloads_page/downloads_page.ts",
     "on_startup_page/on_startup_page.ts",
     "on_startup_page/startup_url_dialog.ts",

@@ -8,7 +8,7 @@
  * that contains the MSBB setting with a two-column description.
  */
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import '../../controls/settings_toggle_button.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 import './privacy_guide_description_item.js';
 import './privacy_guide_fragment_shared.css.js';
 

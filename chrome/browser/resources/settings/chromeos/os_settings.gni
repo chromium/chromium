@@ -258,7 +258,6 @@ web_component_files = [
   "controls/password_prompt_dialog.ts",
   "controls/settings_radio_group.ts",
   "controls/settings_slider.ts",
-  "controls/settings_toggle_button.ts",
   "privacy_page/secure_dns.ts",
   "privacy_page/secure_dns_input.ts",
 ]
