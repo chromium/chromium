@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -271,6 +273,28 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
   SimulateNetworkOnline();
   WaitForAppLaunchSuccess();
+}
+
+IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, LaunchAppUserCancel) {
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  // Do not let the app be run to avoid race condition.
+  BlockAppLaunch(true);
+
+  WaitForOobeScreen(AppLaunchSplashScreenView::kScreenId);
+
+  base::test::TestFuture<void> termination_future_;
+  auto subscription = browser_shutdown::AddAppTerminatingCallback(
+      termination_future_.GetCallback());
+  settings_helper_.SetBoolean(
+      kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled, true);
+
+  LoginDisplayHost::default_host()->HandleAccelerator(
+      LoginAcceleratorAction::kAppLaunchBailout);
+  EXPECT_TRUE(termination_future_.Wait());
+
+  EXPECT_EQ(KioskAppLaunchError::Error::kUserCancel,
+            KioskAppLaunchError::Get());
 }
 
 class KioskEnterpriseEphemeralTest

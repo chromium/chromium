@@ -309,27 +309,6 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
   WaitForAppLaunchSuccess();
 }
 
-// TODO(b/231213239): Flaky seg faults
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, DISABLED_LaunchAppUserCancel) {
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  OobeScreenWaiter splash_waiter(AppLaunchSplashScreenView::kScreenId);
-  // Do not let the app be run to avoid race condition.
-  BlockAppLaunch(true);
-  splash_waiter.Wait();
-
-  base::RunLoop run_loop;
-  auto subscription =
-      browser_shutdown::AddAppTerminatingCallback(run_loop.QuitClosure());
-  settings_helper_.SetBoolean(
-      kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled, true);
-  LoginDisplayHost::default_host()->HandleAccelerator(
-      LoginAcceleratorAction::kAppLaunchBailout);
-  run_loop.Run();
-  EXPECT_EQ(KioskAppLaunchError::Error::kUserCancel,
-            KioskAppLaunchError::Get());
-}
-
 // Verifies available volumes for kiosk apps in kiosk session.
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, GetVolumeList) {
   set_test_app_id(kTestGetVolumeListKioskApp);
