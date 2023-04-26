@@ -291,11 +291,8 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
   // The QR version (i.e. size) must be >= 5 because otherwise the dino painted
   // over the middle covers too much of the code to be decodable.
   constexpr int kMinimumQRVersion = 5;
-  absl::optional<QRCodeGenerator::GeneratedCode> qr_data =
-      qr.Generate(base::span<const uint8_t>(
-                      reinterpret_cast<const uint8_t*>(request->data.data()),
-                      request->data.size()),
-                  kMinimumQRVersion);
+  absl::optional<QRCodeGenerator::GeneratedCode> qr_data = qr.Generate(
+      base::as_bytes(base::make_span(request->data)), kMinimumQRVersion);
   if (!qr_data || qr_data->data.data() == nullptr ||
       qr_data->data.size() == 0) {
     // The above check should have caught the too-long-URL case.
