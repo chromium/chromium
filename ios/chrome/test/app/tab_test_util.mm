@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/app/main_controller_private.h"
+#import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"

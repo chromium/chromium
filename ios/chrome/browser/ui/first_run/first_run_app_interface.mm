@@ -8,7 +8,6 @@
 #import "components/metrics/metrics_reporting_default_state.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/app/main_controller_private.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
