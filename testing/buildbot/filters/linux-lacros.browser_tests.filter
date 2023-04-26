@@ -6,7 +6,6 @@
 -BluetoothApiTest.*
 -BluetoothLowEnergyApiTest.*
 -BluetoothPrivateApiTest.*
--BrowserTest.RestorePinnedTabs
 -BrowserViewTest.GetAccessibleTabModalDialogTitle
 -BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
 -DeclarativeContentApiTest.RulesPersistence
