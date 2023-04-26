@@ -1162,7 +1162,7 @@ export namespace CDP {
     context: CommonDataTypes.BrowsingContext;
   };
 
-  export type GetSessionResult = {result: {session: string}};
+  export type GetSessionResult = {result: {cdpSession: string}};
 
   export type EventReceivedEvent = EventResponse<
     EventNames.EventReceivedEvent,
