@@ -37,37 +37,4 @@ TEST(ValueBuilderTest, Basic) {
   ASSERT_EQ(list_value->back().GetString(), "history");
 }
 
-TEST(ValueBuilderTest, AppendList) {
-  auto get_json = [](const base::Value::List& value) -> std::string {
-    std::string json;
-    if (!base::JSONWriter::Write(value, &json)) {
-      // Since this isn't valid JSON, there shouldn't be any risk of this
-      // matching expected output.
-      return "JSONWriter::Write() failed!";
-    }
-    return json;
-  };
-
-  {
-    std::vector<std::string> strings = {"hello", "world", "!"};
-    base::Value::List value =
-        ListBuilder().Append(strings.begin(), strings.end()).Build();
-    EXPECT_EQ(R"(["hello","world","!"])", get_json(value));
-  }
-
-  {
-    std::set<int> ints = {0, 1, 2, 3};
-    base::Value::List value =
-        ListBuilder().Append(ints.begin(), ints.end()).Build();
-    EXPECT_EQ(R"([0,1,2,3])", get_json(value));
-  }
-
-  {
-    std::list<bool> bools = {false, true, false, true};
-    base::Value::List value =
-        ListBuilder().Append(bools.begin(), bools.end()).Build();
-    EXPECT_EQ(R"([false,true,false,true])", get_json(value));
-  }
-}
-
 }  // namespace extensions

@@ -37,39 +37,39 @@ struct ExtensionBuilder::ManifestData {
   absl::optional<base::Value::Dict> extra;
 
   base::Value::Dict GetValue() const {
-    DictionaryBuilder manifest;
-    manifest.Set(manifest_keys::kName, name)
-        .Set(manifest_keys::kManifestVersion, manifest_version.value_or(2))
-        .Set(manifest_keys::kVersion, version.value_or("0.1"))
-        .Set(manifest_keys::kDescription, "some description");
+    auto manifest =
+        base::Value::Dict()
+            .Set(manifest_keys::kName, name)
+            .Set(manifest_keys::kManifestVersion, manifest_version.value_or(2))
+            .Set(manifest_keys::kVersion, version.value_or("0.1"))
+            .Set(manifest_keys::kDescription, "some description");
 
     switch (type) {
       case Type::EXTENSION:
         break;  // Sufficient already.
       case Type::PLATFORM_APP: {
-        DictionaryBuilder background;
-        background.Set("scripts", ListBuilder().Append("test.js").Build());
-        manifest.Set(
-            "app",
-            DictionaryBuilder().Set("background", background.Build()).Build());
+        base::Value::Dict background;
+        background.Set("scripts", base::Value::List().Append("test.js"));
+        manifest.Set("app", base::Value::Dict().Set("background",
+                                                    std::move(background)));
         break;
       }
     }
 
     if (!permissions.empty()) {
-      ListBuilder permissions_builder;
+      base::Value::List permissions_builder;
       for (const std::string& permission : permissions)
         permissions_builder.Append(permission);
-      manifest.Set(manifest_keys::kPermissions, permissions_builder.Build());
+      manifest.Set(manifest_keys::kPermissions, std::move(permissions_builder));
     }
 
     if (!optional_permissions.empty()) {
-      ListBuilder permissions_builder;
+      base::Value::List permissions_builder;
       for (const std::string& permission : optional_permissions) {
         permissions_builder.Append(permission);
       }
       manifest.Set(manifest_keys::kOptionalPermissions,
-                   permissions_builder.Build());
+                   std::move(permissions_builder));
     }
 
     if (action) {
@@ -78,7 +78,7 @@ struct ExtensionBuilder::ManifestData {
     }
 
     if (background_context) {
-      DictionaryBuilder background;
+      base::Value::Dict background;
       absl::optional<bool> persistent;
       switch (*background_context) {
         case BackgroundContext::BACKGROUND_PAGE:
@@ -96,27 +96,30 @@ struct ExtensionBuilder::ManifestData {
       if (persistent) {
         background.Set("persistent", *persistent);
       }
-      manifest.Set("background", background.Build());
+      manifest.Set("background", std::move(background));
     }
 
     if (!content_scripts.empty()) {
-      ListBuilder scripts_value;
-      for (const auto& script : content_scripts) {
-        ListBuilder matches;
-        matches.Append(script.second.begin(), script.second.end());
+      base::Value::List scripts_value;
+      scripts_value.reserve(content_scripts.size());
+      for (const auto& [script_name, pattern_matches] : content_scripts) {
+        base::Value::List matches;
+        matches.reserve(pattern_matches.size());
+        for (const auto& pattern_match : pattern_matches) {
+          matches.Append(pattern_match);
+        }
         scripts_value.Append(
-            DictionaryBuilder()
+            base::Value::Dict()
                 .Set(api::content_scripts::ContentScript::kJs,
-                     ListBuilder().Append(script.first).Build())
+                     base::Value::List().Append(script_name))
                 .Set(api::content_scripts::ContentScript::kMatches,
-                     matches.Build())
-                .Build());
+                     std::move(matches)));
       }
       manifest.Set(api::content_scripts::ManifestKeys::kContentScripts,
-                   scripts_value.Build());
+                   std::move(scripts_value));
     }
 
-    base::Value::Dict result = manifest.Build();
+    base::Value::Dict result = std::move(manifest);
     if (extra)
       result.Merge(extra->Clone());
 

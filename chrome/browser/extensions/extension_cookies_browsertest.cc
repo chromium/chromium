@@ -264,19 +264,21 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
   const Extension* MakeExtension(
       const std::vector<std::string>& host_patterns) {
     ChromeTestExtensionLoader loader(profile());
-    DictionaryBuilder manifest;
-    manifest.Set("name", "Cookies test extension")
-        .Set("version", "1")
-        .Set("manifest_version", 2)
-        .Set("web_accessible_resources", ListBuilder().Append("*.html").Build())
-        .Set("content_security_policy", kCspHeader)
-        .Set("permissions",
-             ListBuilder()
-                 .Append(host_patterns.begin(), host_patterns.end())
-                 .Build());
+    base::Value::List permissions;
+    for (const auto& host_pattern : host_patterns) {
+      permissions.Append(host_pattern);
+    }
+    auto manifest = base::Value::Dict()
+                        .Set("name", "Cookies test extension")
+                        .Set("version", "1")
+                        .Set("manifest_version", 2)
+                        .Set("web_accessible_resources",
+                             base::Value::List().Append("*.html"))
+                        .Set("content_security_policy", kCspHeader)
+                        .Set("permissions", std::move(permissions));
     extension_dir_->WriteFile(FILE_PATH_LITERAL("empty.html"), "");
     extension_dir_->WriteFile(FILE_PATH_LITERAL("script.js"), "");
-    extension_dir_->WriteManifest(manifest.ToJSON());
+    extension_dir_->WriteManifest(manifest);
 
     const Extension* extension =
         loader.LoadExtension(extension_dir_->UnpackedPath()).get();
