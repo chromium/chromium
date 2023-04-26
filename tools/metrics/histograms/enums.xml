@@ -32834,10 +32834,12 @@ Called by update_document_policy_enum.py.-->
 
 <enum name="EnterpriseSystemLogUploadResult">
   <summary>Result of system log upload attempt.</summary>
-  <int value="0" label="Log upload succeeded"/>
-  <int value="1" label="Zipped log upload succeeded"/>
-  <int value="2" label="Log upload failed"/>
-  <int value="3" label="Zipped log upload failed"/>
+  <int value="0" label="(Obsolete) Log upload succeeded. Removed since M115."/>
+  <int value="1"
+      label="(Obsolete) Zipped log upload succeeded. Removed since M115."/>
+  <int value="2" label="(Obsolete) Log upload failed. Removed since M115."/>
+  <int value="3"
+      label="(Obsolete) Zipped log upload failed. Removed since M115."/>
 </enum>
 
 <enum name="EnterpriseUploadJobSuccess">

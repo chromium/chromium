@@ -15,7 +15,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
@@ -316,9 +315,6 @@ const char* const SystemLogUploader::kZippedLogsFileName = "logs.zip";
 const char* const SystemLogUploader::kContentTypeOctetStream =
     "application/octet-stream";
 
-const char* const SystemLogUploader::kSystemLogUploadResultHistogram =
-    "Enterprise.SystemLogUploadResult";
-
 SystemLogUploader::SystemLogUploader(
     std::unique_ptr<Delegate> syslog_delegate,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
@@ -356,10 +352,6 @@ void SystemLogUploader::OnSuccess() {
   log_upload_in_progress_ = false;
   retry_count_ = 0;
 
-  // TODO(b/279419095): Remove the histogram.
-  UMA_HISTOGRAM_ENUMERATION(kSystemLogUploadResultHistogram,
-                            ZIPPED_LOGS_UPLOAD_SUCCESS);
-
   // On successful log upload schedule the next log upload after
   // upload_frequency_ time from now.
   ScheduleNextSystemLogUpload(upload_frequency_, absl::nullopt);
@@ -370,9 +362,6 @@ void SystemLogUploader::OnFailure(UploadJob::ErrorCode error_code) {
   last_upload_attempt_ = base::Time::NowFromSystemTime();
   log_upload_in_progress_ = false;
 
-  // TODO(b/279419095): Remove the histogram.
-  UMA_HISTOGRAM_ENUMERATION(kSystemLogUploadResultHistogram,
-                            ZIPPED_LOGS_UPLOAD_FAILURE);
   //  If we have hit the maximum number of retries, terminate this upload
   //  attempt and schedule the next one using the normal delay. Otherwise, retry
   //  uploading after kErrorUploadDelayMs milliseconds.

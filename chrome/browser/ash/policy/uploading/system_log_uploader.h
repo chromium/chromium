@@ -60,9 +60,6 @@ class SystemLogUploader : public UploadJob::Delegate {
   static const char* const kZippedLogsFileName;
   static const char* const kContentTypeOctetStream;
 
-  // UMA histogram name.
-  static const char* const kSystemLogUploadResultHistogram;
-
   // A delegate interface used by SystemLogUploader to read the system logs
   // from the disk and create an upload job.
   class Delegate {
@@ -90,19 +87,6 @@ class SystemLogUploader : public UploadJob::Delegate {
     // Zips system logs in a single zip archive and invokes |upload_callback|.
     virtual void ZipSystemLogs(std::unique_ptr<SystemLogs> system_logs,
                                ZippedLogUploadCallback upload_callback) = 0;
-  };
-
-  // Enum used for UMA. Do NOT reorder or remove entry.
-  // Don't forget to update enums.xml when adding new entries.
-  enum SystemLogUploadResult : uint8_t {
-    NON_ZIPPED_LOGS_UPLOAD_SUCCESS = 0,
-    ZIPPED_LOGS_UPLOAD_SUCCESS = 1,
-    NON_ZIPPED_LOGS_UPLOAD_FAILURE = 2,
-    ZIPPED_LOGS_UPLOAD_FAILURE = 3,
-
-    // Magic constant used by the histogram macros.
-    // Always update it to the max value.
-    kMaxValue = ZIPPED_LOGS_UPLOAD_FAILURE
   };
 
   // Constructor. Callers can inject their own Delegate. A nullptr can be passed
