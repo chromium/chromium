@@ -16,6 +16,7 @@
 #include "net/cert/pki/ocsp.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/trust_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -38,7 +39,7 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
                          const RevocationPolicy& policy,
                          base::TimeTicks deadline,
                          base::StringPiece stapled_ocsp_response,
-                         base::TimeDelta max_age,
+                         absl::optional<int64_t> max_age_seconds,
                          CertNetFetcher* net_fetcher,
                          CertErrors* cert_errors,
                          OCSPVerifyResult* stapled_ocsp_verify_result) {
@@ -53,7 +54,7 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
     OCSPVerifyResult::ResponseStatus response_details;
     OCSPRevocationStatus ocsp_status = CheckOCSP(
         stapled_ocsp_response, cert, issuer_cert, base::Time::Now().ToTimeT(),
-        max_age.InSeconds(), &response_details);
+        max_age_seconds, &response_details);
     if (stapled_ocsp_verify_result) {
       stapled_ocsp_verify_result->response_status = response_details;
       stapled_ocsp_verify_result->revocation_status = ocsp_status;
@@ -138,7 +139,7 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
           std::string_view(
               reinterpret_cast<const char*>(ocsp_response_bytes.data()),
               ocsp_response_bytes.size()),
-          cert, issuer_cert, base::Time::Now().ToTimeT(), max_age.InSeconds(),
+          cert, issuer_cert, base::Time::Now().ToTimeT(), max_age_seconds,
           &response_details);
 
       switch (ocsp_status) {
@@ -229,7 +230,7 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
                   reinterpret_cast<const char*>(crl_response_bytes.data()),
                   crl_response_bytes.size()),
               certs, target_cert_index, distribution_point,
-              base::Time::Now().ToTimeT(), max_age.InSeconds());
+              base::Time::Now().ToTimeT(), max_age_seconds);
 
           switch (crl_status) {
             case CRLRevocationStatus::REVOKED:
@@ -301,18 +302,19 @@ void CheckValidatedChainRevocation(
     base::StringPiece stapled_ocsp =
         (i == 0) ? stapled_leaf_ocsp_response : base::StringPiece();
 
-    // TODO(https://crbug.com/971714): This applies Baseline Requirements max
-    // update age to all revocation checks, including locally trusted anchors.
-    // Confirm whether this causes any issues in enterprise deployments.
-    base::TimeDelta max_age = (i == 0) ? kMaxRevocationLeafUpdateAge
-                                       : kMaxRevocationIntermediateUpdateAge;
+    absl::optional<int64_t> max_age_seconds;
+    if (policy.enforce_baseline_requirements) {
+      max_age_seconds = ((i == 0) ? kMaxRevocationLeafUpdateAge
+                                  : kMaxRevocationIntermediateUpdateAge)
+                            .InSeconds();
+    }
 
     // Check whether this certificate's revocation status complies with the
     // policy.
-    bool cert_ok =
-        CheckCertRevocation(certs, i, policy, deadline, stapled_ocsp, max_age,
-                            net_fetcher, errors->GetErrorsForCert(i),
-                            (i == 0) ? stapled_ocsp_verify_result : nullptr);
+    bool cert_ok = CheckCertRevocation(
+        certs, i, policy, deadline, stapled_ocsp, max_age_seconds, net_fetcher,
+        errors->GetErrorsForCert(i),
+        (i == 0) ? stapled_ocsp_verify_result : nullptr);
 
     if (!cert_ok) {
       // If any certificate in the chain fails revocation checks, the chain is
