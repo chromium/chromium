@@ -2371,6 +2371,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Video.EncodingBitrateOvershoot.{WebRtcCodecs}"
+    units="%" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
+  <owner>sprang@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    The average bitrate overshoot percent for a sent stream. Recorded when a
+    stream is removed.
+  </summary>
+  <token key="WebRtcCodecs">
+    <variant name="Av1" summary=""/>
+    <variant name="Generic" summary=""/>
+    <variant name="H264" summary=""/>
+    <variant name="Multiplex" summary=""/>
+    <variant name="Vp8" summary=""/>
+    <variant name="Vp9" summary=""/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.Video.EndToEndDelayInMs{WebRTCVideoExperimentGroupId}"
     units="ms" expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
@@ -2948,6 +2969,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Video.RMSEOfEncodingBitrateInKbps.{WebRtcCodecs}"
+    units="kbps" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
+  <owner>sprang@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    The RMSE(Root Mean Square Error) between sent bits per second for a sent
+    stream and target bitrate set by WebRTC. Recorded when a stream is removed.
+  </summary>
+  <token key="WebRtcCodecs">
+    <variant name="Av1" summary=""/>
+    <variant name="Generic" summary=""/>
+    <variant name="H264" summary=""/>
+    <variant name="Multiplex" summary=""/>
+    <variant name="Vp8" summary=""/>
+    <variant name="Vp9" summary=""/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.Video.RtpToNtpFreqOffsetInKhz" units="kHz"
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
@@ -3106,6 +3148,28 @@ chromium-metrics-reviews@google.com.
     The average encode time per frame for a sent (screen content) video stream.
     Recorded when a stream is removed.
   </summary>
+</histogram>
+
+<histogram
+    name="WebRTC.Video.Screenshare.EncodingBitrateOvershoot.{WebRtcCodecs}"
+    units="%" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
+  <owner>sprang@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    The average bitrate overshoot percent for a sent screenshare stream.
+    Recorded when a stream is removed.
+  </summary>
+  <token key="WebRtcCodecs">
+    <variant name="Av1" summary=""/>
+    <variant name="Generic" summary=""/>
+    <variant name="H264" summary=""/>
+    <variant name="Multiplex" summary=""/>
+    <variant name="Vp8" summary=""/>
+    <variant name="Vp9" summary=""/>
+  </token>
 </histogram>
 
 <histogram
@@ -3528,6 +3592,29 @@ chromium-metrics-reviews@google.com.
     Recorded when a stream is removed. The total number of bytes is divided by
     the time the video stream exists.
   </summary>
+</histogram>
+
+<histogram
+    name="WebRTC.Video.Screenshare.RMSEOfEncodingBitrateInKbps.{WebRtcCodecs}"
+    units="kbps" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
+  <owner>sprang@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    The RMSE(Root Mean Square Error) between sent bits per second for a sent
+    screenshare stream and target bitrate set by WebRTC. Recorded when a stream
+    is removed.
+  </summary>
+  <token key="WebRtcCodecs">
+    <variant name="Av1" summary=""/>
+    <variant name="Generic" summary=""/>
+    <variant name="H264" summary=""/>
+    <variant name="Multiplex" summary=""/>
+    <variant name="Vp8" summary=""/>
+    <variant name="Vp9" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.RtxBitrateSentInKbps" units="kbps"
