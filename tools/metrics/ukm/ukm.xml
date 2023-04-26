@@ -11878,6 +11878,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="LoginDetection" singular="True">
+  <obsolete>
+    Deprecated as of 04/2023.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

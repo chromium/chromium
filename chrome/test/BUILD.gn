@@ -1907,7 +1907,6 @@ if (!is_android) {
       "../browser/loadtimes_extension_bindings_browsertest.cc",
       "../browser/locale_tests_browsertest.cc",
       "../browser/login_detection/login_detection_browsertest.cc",
-      "../browser/login_detection/password_store_sites_browsertest.cc",
       "../browser/lookalikes/lookalike_test_helper.cc",
       "../browser/lookalikes/lookalike_test_helper.h",
       "../browser/lookalikes/lookalike_url_navigation_throttle_browsertest.cc",

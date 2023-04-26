@@ -256,16 +256,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Login.PageLoad.DetectionType" enum="LoginDetectionType"
-    expires_after="2022-11-30">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Type of login detected for a page load based on different heuristics.
-    Recorded once per page load.
-  </summary>
-</histogram>
-
 <histogram name="Login.PasswordChanged.ReauthReason" enum="LoginReauthReasons"
     expires_after="2023-10-08">
   <owner>antrim@chromium.org</owner>
