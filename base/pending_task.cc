@@ -22,7 +22,10 @@ PendingTask::PendingTask(const Location& posted_from,
       delayed_run_time(delayed_run_time),
       leeway(leeway),
       delay_policy(delay_policy) {
-  record_replay_id = recordreplay::NewIdAnyThread("PendingTask");
+  if (!recordreplay::AreEventsDisallowed()) {
+    // We use these for Asserts.
+    record_replay_id = recordreplay::NewIdAnyThread("PendingTask");
+  }
 }
 
 PendingTask::PendingTask(PendingTask&& other) = default;
