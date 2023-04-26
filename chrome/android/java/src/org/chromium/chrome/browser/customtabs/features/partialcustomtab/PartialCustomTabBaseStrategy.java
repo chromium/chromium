@@ -430,7 +430,7 @@ public abstract class PartialCustomTabBaseStrategy
         dragBar.setBackground(
                 new InsetDrawable(dragBarBackground, leftInset, topInset, rightInset, 0));
         getCoordinatorLayout().setBackground(
-                new InsetDrawable(cctBackground, leftInset, topInset, rightInset, 0));
+                new InsetDrawable(cctBackground, leftInset, 0, rightInset, 0));
     }
 
     protected GradientDrawable getDragBarBackground() {

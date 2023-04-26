@@ -234,6 +234,10 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         initializeHeight();
         positionAtWidth(mVersionCompat.getDisplayWidth());
+        if (shouldDrawDividerLine()) {
+            resetCoordinatorLayoutInsets();
+            drawDividerLine();
+        }
         updateShadowOffset();
         maybeInvokeResizeCallback();
         if (!isFixedHeight()) mRestoreAfterFindPage = false;
@@ -631,6 +635,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         showNavbarButtons(true);
         finishResizing(mStatus);
         updateShadowOffset();
+        if (shouldDrawDividerLine()) drawDividerLine();
         if (mSoftKeyboardRunnable != null) {
             mSoftKeyboardRunnable.run();
             mSoftKeyboardRunnable = null;
@@ -853,9 +858,10 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         int width =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_outline_width);
         boolean maxWidthBottomSheet = isMaxWidthLandscapeBottomSheet();
-        int dividerInset = maxWidthBottomSheet ? width : 0;
+        int dividerSideInset = maxWidthBottomSheet ? width : 0;
+        int dividerTopInset = shouldHaveNoShadowOffset() ? 0 : width;
 
-        drawDividerLineBase(dividerInset, 0, dividerInset);
+        drawDividerLineBase(dividerSideInset, dividerTopInset, dividerSideInset);
     }
 
     @Override
