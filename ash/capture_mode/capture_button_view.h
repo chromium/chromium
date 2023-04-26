@@ -59,9 +59,14 @@ class CaptureButtonView : public views::View {
   void SetupButton(views::Button* button);
 
   // Bound to callbacks that will create a path generator for both the capture
-  // and the drop down buttons.
+  // and the drop down buttons. If `use_zero_insets` is true, no insets will be
+  // added to the resulting path generator. This is useful when using the path
+  // generator for the ink drop highlight which should not have any insets,
+  // unlike the focus ring which should be insetted a little to be drawn within
+  // the bounds of the view.
   std::unique_ptr<views::HighlightPathGenerator> CreateFocusRingPath(
-      views::View* view);
+      views::View* view,
+      bool use_zero_insets);
 
   // The button which when pressed, screen capture will be performed.
   const raw_ptr<views::LabelButton, ExperimentalAsh> capture_button_;

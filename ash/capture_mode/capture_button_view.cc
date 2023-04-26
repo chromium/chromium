@@ -162,6 +162,12 @@ void CaptureButtonView::UpdateViewVisuals() {
     // `drop_down_button_` as it never changes, and always remains half rounded.
     CaptureModeSessionFocusCycler::HighlightHelper::Get(capture_button_)
         ->InvalidateFocusRingPath();
+
+    // The ink drop highlight needs to be updated as well, since the rounded
+    // corners have changed.
+    views::HighlightPathGenerator::Install(
+        capture_button_,
+        CreateFocusRingPath(capture_button_, /*use_zero_insets=*/true));
   }
 }
 
@@ -200,25 +206,37 @@ void CaptureButtonView::SetupButton(views::Button* button) {
       button, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
   button->SetNotifyEnterExitOnChild(true);
 
+  // This installs a path generator that will be used for the ink drop
+  // highlight. It should not have any insets as the highlight should span the
+  // entire bounds of the view.
+  views::HighlightPathGenerator::Install(
+      button, CreateFocusRingPath(button, /*use_zero_insets=*/true));
+
+  // This will be used to install a path generator for the focus ring, which
+  // should be insetted a little so that the focus ring can paint within the
+  // bounds the view.
   CaptureModeSessionFocusCycler::HighlightHelper::Install(
       button, base::BindRepeating(&CaptureButtonView::CreateFocusRingPath,
-                                  base::Unretained(this), button));
+                                  base::Unretained(this), button,
+                                  /*use_zero_insets=*/false));
 }
 
 std::unique_ptr<views::HighlightPathGenerator>
-CaptureButtonView::CreateFocusRingPath(views::View* view) {
+CaptureButtonView::CreateFocusRingPath(views::View* view,
+                                       bool use_zero_insets) {
+  const auto insets = use_zero_insets ? gfx::Insets() : kFocusRingPathInsets;
   if (view == capture_button_) {
     const bool should_ring_be_half_rounded =
         drop_down_button_ && drop_down_button_->GetVisible();
     return std::make_unique<views::RoundRectHighlightPathGenerator>(
-        kFocusRingPathInsets, should_ring_be_half_rounded
-                                  ? kCaptureButtonHalfRoundedCorners
-                                  : kCaptureButtonFullyRoundedCorners);
+        insets, should_ring_be_half_rounded
+                    ? kCaptureButtonHalfRoundedCorners
+                    : kCaptureButtonFullyRoundedCorners);
   }
 
   DCHECK_EQ(view, drop_down_button_);
   return std::make_unique<views::RoundRectHighlightPathGenerator>(
-      kFocusRingPathInsets, kDropDownButtonRoundedCorners);
+      insets, kDropDownButtonRoundedCorners);
 }
 
 BEGIN_METADATA(CaptureButtonView, views::View)
