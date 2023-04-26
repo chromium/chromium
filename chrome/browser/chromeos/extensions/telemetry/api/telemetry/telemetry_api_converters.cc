@@ -136,7 +136,8 @@ telemetry_api::PhysicalCpuInfo UncheckedConvertPtr(
 }
 
 telemetry_api::BatteryInfo UncheckedConvertPtr(
-    telemetry_service::ProbeBatteryInfoPtr input) {
+    telemetry_service::ProbeBatteryInfoPtr input,
+    bool has_serial_number_permission) {
   telemetry_api::BatteryInfo result;
   result.vendor = std::move(input->vendor);
   result.model_name = std::move(input->model_name);
@@ -167,6 +168,10 @@ telemetry_api::BatteryInfo UncheckedConvertPtr(
     result.temperature = input->temperature->value;
   }
   result.manufacture_date = std::move(input->manufacture_date);
+
+  if (has_serial_number_permission) {
+    result.serial_number = std::move(input->serial_number);
+  }
 
   return result;
 }
