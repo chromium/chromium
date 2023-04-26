@@ -53,7 +53,7 @@
   }
 
   :host(:not([can-add-printer])) #addPrinterSection,
-  :host(:not([can-add-printer])) #nearbyPrinters {
+  :host(:not([can-add-printer])) .nearby-printers-section {
     opacity: var(--cr-disabled-opacity);
     pointer-events: none;
   }
@@ -92,23 +92,30 @@
   </div>
 </template>
 <template is="dom-if" if="[[attemptedLoadingPrinters_]]">
-  <div class="padded first" id="nearbyPrinters">
-    <div aria-label$="[[nearbyPrintersAriaLabel_]]"
-        hidden="[[isPrinterSettingsRevampEnabled_]]">
+  <div id="nearbyPrinters" class="padded first nearby-printers-section"
+      hidden="[[isPrinterSettingsRevampEnabled_]]">
+    <div aria-label$="[[nearbyPrintersAriaLabel_]]">
       $i18n{nearbyPrintersListTitle}
-    </div>
-    <div id="availablePrintersReadyTitle"
-        aria-label$="[[nearbyPrintersAriaLabel_]]"
-        hidden="[[!isPrinterSettingsRevampEnabled_]]">
-      $i18n{availablePrintersReadyTitle}
     </div>
     <localized-link class="secondary"
         localized-string="$i18n{nearbyPrintersListDescription}"
-        link-url="$i18n{printingCUPSPrintLearnMoreUrl}"
-        hidden="[[isPrinterSettingsRevampEnabled_]]">
+        link-url="$i18n{printingCUPSPrintLearnMoreUrl}">
     </localized-link>
-    <div id="availablePrintersReadySubtext" class="secondary"
-        hidden="[[!isPrinterSettingsRevampEnabled_]]">
+    <template is="dom-if" if="[[!addPrinterButtonActive_(canAddPrinter,
+      prefs.native_printing.user_native_printers_allowed.value)]]">
+      <cr-policy-pref-indicator
+          pref="[[prefs.native_printing.user_native_printers_allowed]]"
+          icon-aria-label="$i18n{printingPageTitle}">
+      </cr-policy-pref-indicator>
+    </template>
+  </div>
+  <div id="nearbyPrintersRevamp" class="padded first nearby-printers-section"
+      hidden="[[!isPrinterSettingsRevampEnabled_]]">
+    <div id="availablePrintersReadyTitle"
+        aria-label$="[[nearbyPrintersAriaLabel_]]">
+      $i18n{availablePrintersReadyTitle}
+    </div>
+    <div id="availablePrintersReadySubtext" class="secondary">
       $i18n{availablePrintersReadySubtext}
     </div>
     <template is="dom-if" if="[[!addPrinterButtonActive_(canAddPrinter,
