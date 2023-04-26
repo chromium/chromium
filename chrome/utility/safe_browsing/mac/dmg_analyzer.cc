@@ -137,50 +137,16 @@ DMGAnalyzer::~DMGAnalyzer() = default;
 
 DMGAnalyzer::DMGAnalyzer() = default;
 
-void DMGAnalyzer::Init(base::File dmg_file,
-                       base::FilePath root_dmg_path,
-                       FinishedAnalysisCallback finished_analysis_callback,
-                       GetTempFileCallback get_temp_file_callback,
-                       ArchiveAnalyzerResults* results) {
-  results_ = results;
-  root_dmg_path_ = root_dmg_path;
-  finished_analysis_callback_ = std::move(finished_analysis_callback);
-  get_temp_file_callback_ = get_temp_file_callback;
-  dmg_file_ = std::move(dmg_file);
-  read_stream_ = std::make_unique<FileReadStream>(dmg_file_.GetPlatformFile());
+void DMGAnalyzer::Init() {
+  GetTempFile(
+      base::BindOnce(&DMGAnalyzer::OnGetTempFile, weak_factory_.GetWeakPtr()));
+
+  read_stream_ =
+      std::make_unique<FileReadStream>(GetArchiveFile().GetPlatformFile());
   iterator_ = std::make_unique<DMGIterator>(&*read_stream_);
-
-  get_temp_file_callback_.Run(
-      base::BindOnce(&DMGAnalyzer::FilePreChecks, weak_factory_.GetWeakPtr()));
 }
 
-void DMGAnalyzer::FilePreChecks(base::File temp_file) {
-  bool failed_pre_checks = false;
-  if (!temp_file.IsValid()) {
-    failed_pre_checks = true;
-    results_->analysis_result = ArchiveAnalysisResult::kFailedToOpenTempFile;
-  }
-  if (!iterator_->Open()) {
-    failed_pre_checks = true;
-    results_->analysis_result = safe_browsing::ArchiveAnalysisResult::kUnknown;
-  } else if (iterator_->IsEmpty()) {
-    failed_pre_checks = true;
-    results_->analysis_result =
-        safe_browsing::ArchiveAnalysisResult::kDmgNoPartitions;
-  }
-
-  if (failed_pre_checks) {
-    results_->success = false;
-    std::move(finished_analysis_callback_).Run();
-    return;
-  }
-  results_->signature_blob = iterator_->GetCodeSignature();
-  AnalyzeDMGFile();
-}
-
-void DMGAnalyzer::AnalyzeDMGFile() {
-  results_->success = false;
-
+bool DMGAnalyzer::ResumeExtraction() {
   MachOFeatureExtractor feature_extractor;
   while (iterator_->Next()) {
     std::unique_ptr<ReadStream> stream = iterator_->GetReadStream();
@@ -194,7 +160,7 @@ void DMGAnalyzer::AnalyzeDMGFile() {
         path, "_CodeSignature/CodeSignature", base::CompareCase::SENSITIVE);
 
     if (is_detached_code_signature_file) {
-      results_->has_executable = true;
+      results()->has_executable = true;
 
       std::vector<uint8_t> signature_contents;
       if (!ReadEntireStream(stream.get(), &signature_contents)) {
@@ -211,101 +177,81 @@ void DMGAnalyzer::AnalyzeDMGFile() {
       }
 
       ClientDownloadRequest_DetachedCodeSignature* detached_signature =
-          results_->detached_code_signatures.Add();
+          results()->detached_code_signatures.Add();
       detached_signature->set_file_name(path);
       detached_signature->set_contents(signature_contents.data(),
                                        signature_contents.size());
-    } else if (base::FeatureList::IsEnabled(kNestedArchives) &&
-               AnalyzeNestedArchive(GetFileType(base::FilePath(path)),
-                                    base::FilePath(path))) {
-      results_->success = false;
-      return;
     } else if (feature_extractor.IsMachO(stream.get())) {
       ClientDownloadRequest_ArchivedBinary* binary =
-          results_->archived_binary.Add();
+          results()->archived_binary.Add();
       binary->set_file_path(path);
 
       if (feature_extractor.ExtractFeatures(stream.get(), binary)) {
         binary->set_download_type(
             ClientDownloadRequest_DownloadType_MAC_EXECUTABLE);
         binary->set_is_executable(true);
-        results_->has_executable = true;
+        results()->has_executable = true;
       } else {
-        results_->archived_binary.RemoveLast();
+        results()->archived_binary.RemoveLast();
+      }
+    } else if (base::FeatureList::IsEnabled(kNestedArchives)) {
+      DownloadFileType_InspectionType file_type =
+          GetFileType(base::FilePath(path));
+      if (file_type == DownloadFileType::ZIP ||
+          file_type == DownloadFileType::RAR ||
+          file_type == DownloadFileType::DMG ||
+          file_type == DownloadFileType::SEVEN_ZIP) {
+        if (!CopyStreamToFile(iterator_->GetReadStream().get(), temp_file_)) {
+          continue;
+        }
+
+        if (!temp_file_.IsValid()) {
+          continue;
+        }
+
+        // TODO(crbug.com/1373671): Support file length here.
+        return !UpdateResultsForEntry(
+            temp_file_.Duplicate(), GetRootPath().Append(path),
+            /*file_length=*/0,
+            /*is_encrypted=*/false, /*is_directory=*/false);
       }
     }
   }
 
-  results_->analysis_result = safe_browsing::ArchiveAnalysisResult::kValid;
-  results_->success = true;
-  std::move(finished_analysis_callback_).Run();
+  return true;
 }
 
-bool DMGAnalyzer::AnalyzeNestedArchive(
-    safe_browsing::DownloadFileType_InspectionType file_type,
-    base::FilePath path) {
-  if (!CopyStreamToFile(iterator_->GetReadStream().get(), temp_file_)) {
-    return false;
+void DMGAnalyzer::OnGetTempFile(base::File temp_file) {
+  if (!temp_file.IsValid()) {
+    InitComplete(ArchiveAnalysisResult::kFailedToOpenTempFile);
+    return;
   }
-  // TODO(crbug.com/1373671): Add support for SevenZip archives.
-  if (!temp_file_.IsValid()) {
-    return false;
-  }
-  FinishedAnalysisCallback nested_analysis_finished_callback =
-      base::BindOnce(&DMGAnalyzer::NestedAnalysisFinished,
-                     weak_factory_.GetWeakPtr(), root_dmg_path_.Append(path));
-  if (file_type == DownloadFileType::ZIP) {
-    nested_zip_analyzer_ = std::make_unique<safe_browsing::ZipAnalyzer>();
-    nested_zip_analyzer_->Init(temp_file_.Duplicate(),
-                               root_dmg_path_.Append(path),
-                               std::move(nested_analysis_finished_callback),
-                               get_temp_file_callback_, results_);
-    return true;
-  } else if (file_type == DownloadFileType::RAR) {
-    nested_rar_analyzer_ = std::make_unique<safe_browsing::RarAnalyzer>();
-    nested_rar_analyzer_->Init(temp_file_.Duplicate(),
-                               root_dmg_path_.Append(path),
-                               std::move(nested_analysis_finished_callback),
-                               get_temp_file_callback_, results_);
-    return true;
-  } else if (file_type == DownloadFileType::DMG) {
-    nested_dmg_analyzer_ = std::make_unique<DMGAnalyzer>();
-    nested_dmg_analyzer_->Init(temp_file_.Duplicate(),
-                               root_dmg_path_.Append(path),
-                               std::move(nested_analysis_finished_callback),
-                               get_temp_file_callback_, results_);
-    return true;
-  }
-  return false;
-}
 
-void DMGAnalyzer::NestedAnalysisFinished(base::FilePath path) {
-  // `results_->success` will contain the latest analyzer's success
-  // status and can be used to determine if the nester archive unpacked
-  // successfully.
-  if (!results_->success) {
-    results_->has_archive = true;
-    results_->archived_archive_filenames.push_back(path.BaseName());
-    ClientDownloadRequest::ArchivedBinary* archived_archive =
-        results_->archived_binary.Add();
-    archived_archive->set_download_type(ClientDownloadRequest::ARCHIVE);
-    archived_archive->set_is_encrypted(false);
-    archived_archive->set_is_archive(true);
-    SetNameForContainedFile(path, archived_archive);
-    SetLengthAndDigestForContainedFile(&temp_file_, temp_file_.GetLength(),
-                                       archived_archive);
+  if (!iterator_->Open()) {
+    InitComplete(ArchiveAnalysisResult::kUnknown);
+    return;
+  } else if (iterator_->IsEmpty()) {
+    InitComplete(ArchiveAnalysisResult::kDmgNoPartitions);
+    return;
   }
-  AnalyzeDMGFile();
+
+  results()->signature_blob = iterator_->GetCodeSignature();
+  InitComplete(ArchiveAnalysisResult::kValid);
 }
 
 void DMGAnalyzer::AnalyzeDMGFileForTesting(
     std::unique_ptr<DMGIterator> iterator,
     ArchiveAnalyzerResults* results,
-    base::File temp_file) {
-  results_ = results;
+    base::File temp_file,
+    FinishedAnalysisCallback callback) {
+  SetResultsForTesting(results);                       // IN-TEST
+  SetFinishedCallbackForTesting(std::move(callback));  // IN-TEST
   iterator_ = std::move(iterator);
-  finished_analysis_callback_ = base::DoNothing();
-  FilePreChecks(std::move(temp_file));
+  OnGetTempFile(std::move(temp_file));
+}
+
+base::WeakPtr<ArchiveAnalyzer> DMGAnalyzer::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace dmg

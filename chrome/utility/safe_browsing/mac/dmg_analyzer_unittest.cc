@@ -12,7 +12,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/utility/safe_browsing/mac/dmg_iterator.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
@@ -71,6 +73,7 @@ class MockDMGIterator : public DMGIterator {
 };
 
 TEST(DMGAnalyzerTest, FailToOpen) {
+  base::test::TaskEnvironment task_environment;
   DMGAnalyzer analyzer_;
   base::FilePath temp_path;
   base::File temp_file;
@@ -82,8 +85,11 @@ TEST(DMGAnalyzerTest, FailToOpen) {
   std::unique_ptr<MockDMGIterator> iterator =
       std::make_unique<MockDMGIterator>(false, MockDMGIterator::FileList());
   safe_browsing::ArchiveAnalyzerResults results;
+  base::RunLoop run_loop;
   analyzer_.AnalyzeDMGFileForTesting(std::move(iterator), &results,
-                                     std::move(temp_file));
+                                     std::move(temp_file),
+                                     run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_FALSE(results.success);
   EXPECT_FALSE(results.has_archive);
@@ -92,6 +98,7 @@ TEST(DMGAnalyzerTest, FailToOpen) {
 }
 
 TEST(DMGAnalyzerTest, EmptyDMG) {
+  base::test::TaskEnvironment task_environment;
   DMGAnalyzer analyzer_;
   base::FilePath temp_path;
   base::File temp_file;
@@ -103,8 +110,11 @@ TEST(DMGAnalyzerTest, EmptyDMG) {
   std::unique_ptr<MockDMGIterator> iterator =
       std::make_unique<MockDMGIterator>(true, MockDMGIterator::FileList());
   safe_browsing::ArchiveAnalyzerResults results;
+  base::RunLoop run_loop;
   analyzer_.AnalyzeDMGFileForTesting(std::move(iterator), &results,
-                                     std::move(temp_file));
+                                     std::move(temp_file),
+                                     run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_FALSE(results.success);
   EXPECT_FALSE(results.has_archive);
@@ -113,6 +123,7 @@ TEST(DMGAnalyzerTest, EmptyDMG) {
 }
 
 TEST(DMGAnalyzerTest, DetachedCodeSignature) {
+  base::test::TaskEnvironment task_environment;
   DMGAnalyzer analyzer_;
   base::FilePath temp_path;
   base::File temp_file;
@@ -146,8 +157,11 @@ TEST(DMGAnalyzerTest, DetachedCodeSignature) {
   std::unique_ptr<MockDMGIterator> iterator =
       std::make_unique<MockDMGIterator>(true, file_list);
   safe_browsing::ArchiveAnalyzerResults results;
+  base::RunLoop run_loop;
   analyzer_.AnalyzeDMGFileForTesting(std::move(iterator), &results,
-                                     std::move(temp_file));
+                                     std::move(temp_file),
+                                     run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_TRUE(results.success);
   EXPECT_TRUE(results.has_executable);
@@ -158,6 +172,7 @@ TEST(DMGAnalyzerTest, DetachedCodeSignature) {
 }
 
 TEST(DMGAnalyzerTest, InvalidDetachedCodeSignature) {
+  base::test::TaskEnvironment task_environment;
   DMGAnalyzer analyzer_;
   base::FilePath temp_path;
   base::File temp_file;
@@ -173,8 +188,11 @@ TEST(DMGAnalyzerTest, InvalidDetachedCodeSignature) {
   std::unique_ptr<MockDMGIterator> iterator =
       std::make_unique<MockDMGIterator>(true, file_list);
   safe_browsing::ArchiveAnalyzerResults results;
+  base::RunLoop run_loop;
   analyzer_.AnalyzeDMGFileForTesting(std::move(iterator), &results,
-                                     std::move(temp_file));
+                                     std::move(temp_file),
+                                     run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_TRUE(results.success);
   EXPECT_TRUE(results.has_executable);
