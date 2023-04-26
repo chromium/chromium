@@ -93,7 +93,11 @@ FastPairRepositoryImpl::FastPairRepositoryImpl()
       footprints_last_updated_(base::Time::UnixEpoch()) {
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
       &FastPairRepositoryImpl::OnGetAdapter, weak_ptr_factory_.GetWeakPtr()));
-  NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
+  // NetworkHandler may not be initialized in tests.
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler::Get()->network_state_handler()->AddObserver(this,
+                                                                FROM_HERE);
+  }
 }
 
 void FastPairRepositoryImpl::OnGetAdapter(
@@ -123,8 +127,11 @@ FastPairRepositoryImpl::FastPairRepositoryImpl(
       retry_write_or_delete_last_attempted_(base::Time::UnixEpoch()) {}
 
 FastPairRepositoryImpl::~FastPairRepositoryImpl() {
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                 FROM_HERE);
+  // NetworkHandler may not be initialized in tests.
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
+                                                                   FROM_HERE);
+  }
 }
 
 void FastPairRepositoryImpl::GetDeviceMetadata(
