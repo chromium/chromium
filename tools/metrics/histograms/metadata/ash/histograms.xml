@@ -22,10 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="AmbientModeThemes">
+<variants name="AmbientUiSettings">
   <variant name="FeelTheBreeze" summary="Feel the breeze"/>
   <variant name="FloatOnBy" summary="Float on by"/>
   <variant name="SlideShow" summary="Slide show"/>
+  <variant name="Video.Clouds" summary="Clouds video"/>
+  <variant name="Video.NewMexico" summary="New Mexico video"/>
 </variants>
 
 <variants name="DeviceActiveClientState">
@@ -190,6 +192,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.AmbientMode.EngagementTime.{Settings}" units="ms"
+    expires_after="2023-12-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>esum@google.com</owner>
+  <summary>
+    Among eligible users with ambient mode enabled, records the length of each
+    session for {Settings}. The metric is emitted when ambient mode is ended.
+  </summary>
+  <token key="Settings" variants="AmbientUiSettings"/>
+</histogram>
+
+<histogram name="Ash.AmbientMode.EngagementTime.{Settings}.{Orientation}"
+    units="ms" expires_after="2023-12-01">
+  <owner>esum@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Among eligible users with ambient mode enabled, records the accumulated
+    duration spent in {Orientation} mode during a single ambient mode session
+    rendering the {Settings} UI. For example, say ambient mode starts in
+    landscape for A ms, switches to portrait for B ms, then back to landscape
+    for C ms before ambient mode ends. A + C will be emitted for landscape mode,
+    and B will be emitted for portrait mode. Emitted once per observed
+    orientation each time the user exits ambient mode.
+  </summary>
+  <token key="Orientation">
+    <variant name="Landscape" summary="landscape"/>
+    <variant name="Portrait" summary="portrait"/>
+  </token>
+  <token key="Settings" variants="AmbientUiSettings"/>
+</histogram>
+
 <histogram name="Ash.AmbientMode.EngagementTime.{TabletOrClamshell}" units="ms"
     expires_after="2023-12-01">
   <owner>cowmoo@google.com</owner>
@@ -202,66 +235,35 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
-<histogram name="Ash.AmbientMode.EngagementTime.{Theme}" units="ms"
-    expires_after="2023-12-01">
-  <owner>cowmoo@google.com</owner>
-  <owner>esum@google.com</owner>
-  <summary>
-    Among eligible users with ambient mode enabled, records the length of each
-    session for {Theme}. The metric is emitted when ambient mode is ended.
-  </summary>
-  <token key="Theme" variants="AmbientModeThemes"/>
-</histogram>
-
-<histogram name="Ash.AmbientMode.EngagementTime.{Theme}.{Orientation}"
-    units="ms" expires_after="2023-12-01">
+<histogram name="Ash.AmbientMode.LottieAnimationSmoothness.{Settings}"
+    units="%" expires_after="2023-12-01">
   <owner>esum@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <summary>
-    Among eligible users with ambient mode enabled, records the accumulated
-    duration spent in {Orientation} mode during a single ambient mode session
-    rendering the {Theme} UI. For example, say ambient mode starts in landscape
-    for A ms, switches to portrait for B ms, then back to landscape for C ms
-    before ambient mode ends. A + C will be emitted for landscape mode, and B
-    will be emitted for portrait mode. Emitted once per observed orientation
-    each time the user exits ambient mode.
-  </summary>
-  <token key="Orientation">
-    <variant name="Landscape" summary="landscape"/>
-    <variant name="Portrait" summary="portrait"/>
-  </token>
-  <token key="Theme" variants="AmbientModeThemes"/>
-</histogram>
-
-<histogram name="Ash.AmbientMode.LottieAnimationSmoothness.{Theme}" units="%"
-    expires_after="2023-12-01">
-  <owner>esum@google.com</owner>
-  <owner>xiaohuic@chromium.org</owner>
-  <summary>
-    Emitted periodically while {Theme} is rendering in ambient mode. 100%
+    Emitted periodically while {Settings} is rendering in ambient mode. 100%
     represents ideal smoothness.
   </summary>
-  <token key="Theme" variants="AmbientModeThemes"/>
+  <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
-<histogram name="Ash.AmbientMode.MultiScreenOffset.{Theme}" units="ms"
+<histogram name="Ash.AmbientMode.MultiScreenOffset.{Settings}" units="ms"
     expires_after="2023-12-01">
   <owner>esum@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <summary>
     Only applies to multi-screen use cases in ambient mode. Records the offset
-    observed between {Theme} animations' timestamps when rendering on multiple
-    screens. Ideally, this would be 0, but small imperceptible offsets are
-    acceptable (under .1 seconds). The offset recorded here is the absolute
+    observed between {Settings} animations' timestamps when rendering on
+    multiple screens. Ideally, this would be 0, but small imperceptible offsets
+    are acceptable (under .1 seconds). The offset recorded here is the absolute
     difference in milliseconds between the animation with the smallest and
     largest timestamp. The metric is emitted after every single animation frame
     in ambient mode (there is a high volume). For single-screen use cases, this
     metric is inactive.
   </summary>
-  <token key="Theme" variants="AmbientModeThemes"/>
+  <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
-<histogram name="Ash.AmbientMode.PhotoOrientationMatch.{Theme}" units="%"
+<histogram name="Ash.AmbientMode.PhotoOrientationMatch.{Settings}" units="%"
     expires_after="2023-12-01">
   <owner>esum@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
@@ -274,7 +276,7 @@ chromium-metrics-reviews@google.com.
     photos in the animation are refreshed (after each animation cycle is
     complete).
   </summary>
-  <token key="Theme" variants="AmbientModeThemes"/>
+  <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.PhotoSource" enum="AmbientModePhotoSource"
@@ -287,16 +289,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.AmbientMode.ScreenCount.{Theme}" units="int"
+<histogram name="Ash.AmbientMode.ScreenCount.{Settings}" units="int"
     expires_after="2023-12-01">
   <owner>esum@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <summary>
     Among eligible users with ambient mode enabled, records the number of
-    screens present during a {Theme} ambient mode session. Emitted each time
+    screens present during a {Settings} ambient mode session. Emitted each time
     ambient mode exits.
   </summary>
-  <token key="Theme" variants="AmbientModeThemes"/>
+  <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.SelectedNumberOfAlbums" units="int"
@@ -310,12 +312,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.AmbientMode.StartupTime.{Theme}" units="ms"
+<histogram name="Ash.AmbientMode.StartupTime.{Settings}" units="ms"
     expires_after="2023-12-01">
   <owner>esum@google.com</owner>
   <owner>xiaohuic@google.com</owner>
   <summary>
-    Records the amount of time it takes for {Theme} in ambient mode to start.
+    Records the amount of time it takes for {Settings} in ambient mode to start.
     This includes tasks such as downloading an initial set of photos from IMAX
     server, decoding them, loading the animation from resource pak, etc. Note
     this measurement does not include the lock screen inactivity timeout
@@ -326,10 +328,10 @@ chromium-metrics-reviews@google.com.
     histogram has a 15 second maximum (added a 5 second buffer to the timeout
     just to be safe). Anything over the 15 second maximum goes in the overflow
     bucket and is considered a total failure to start ambient mode. This should
-    be extremely rare. Emitted each time the {Theme} UI starts rendering, or
+    be extremely rare. Emitted each time the {Settings} UI starts rendering, or
     when ambient mode exits in the event that the UI never started rendering.
   </summary>
-  <token key="Theme" variants="AmbientModeThemes"/>
+  <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.TotalNumberOfAlbums" units="int"
