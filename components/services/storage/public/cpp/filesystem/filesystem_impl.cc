@@ -121,7 +121,7 @@ void FilesystemImpl::GetEntries(const base::FilePath& path,
   base::FileErrorOr<std::vector<base::FilePath>> result =
       GetDirectoryEntries(full_path, mode);
   if (!result.has_value()) {
-    std::move(callback).Run(result.error(), std::vector<base::FilePath>());
+    std::move(callback).Run(result.error(), {});
     return;
   }
 
