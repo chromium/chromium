@@ -299,6 +299,7 @@
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_platform.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
+#include "content/public/browser/user_level_memory_pressure_signal_features.h"
 #include "content/public/browser/vpn_service_proxy.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
@@ -2867,7 +2868,32 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #if BUILDFLAG(IS_ANDROID)
     // If the platform is Android, force the distillability service on.
     command_line->AppendSwitch(switches::kEnableDistillabilityService);
-#endif
+
+    // The browser process only decides to enable or disable
+    // UserLevelMemoryPressureSignalGenerator feature. Renderer processes
+    // follow the decision. If the browser process enables the feature, renderer
+    // processes will provide private memory footprint for the browser process
+    // and will generate memory pressure signals when the browser process
+    // requests. So the decision will be provided for renderer processes
+    // via commandline flag.
+    std::ostringstream user_level_memory_pressure_params;
+    if (features::IsUserLevelMemoryPressureSignalEnabledOn4GbDevices()) {
+      user_level_memory_pressure_params
+          << features::InertIntervalFor4GbDevices().InSeconds() << "s,"
+          << features::MinUserMemoryPressureIntervalOn4GbDevices().InSeconds()
+          << "s";
+    } else if (features::IsUserLevelMemoryPressureSignalEnabledOn6GbDevices()) {
+      user_level_memory_pressure_params
+          << features::InertIntervalFor6GbDevices().InSeconds() << "s,"
+          << features::MinUserMemoryPressureIntervalOn6GbDevices().InSeconds()
+          << "s";
+    }
+    if (user_level_memory_pressure_params.tellp() > 0) {
+      command_line->AppendSwitchASCII(
+          switches::kUserLevelMemoryPressureSignalParams,
+          user_level_memory_pressure_params.str());
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // Please keep this in alphabetical order.
     static const char* const kSwitchNames[] = {

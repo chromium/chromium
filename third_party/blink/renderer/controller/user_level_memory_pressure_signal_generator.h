@@ -52,8 +52,7 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
 
   explicit UserLevelMemoryPressureSignalGenerator(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      base::TimeDelta inert_interval,
-      base::TimeDelta minimum_interval);
+      std::pair<base::TimeDelta, base::TimeDelta> inert_and_minimum_interval);
   UserLevelMemoryPressureSignalGenerator(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       base::TimeDelta inert_interval,

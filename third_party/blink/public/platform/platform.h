@@ -786,11 +786,9 @@ class BLINK_PLATFORM_EXPORT Platform {
       uint64_t private_memory_footprint_bytes) {}
 
   virtual bool IsUserLevelMemoryPressureSignalEnabled() { return false; }
-  virtual base::TimeDelta InertIntervalOfUserLevelMemoryPressureSignal() {
-    return base::TimeDelta();
-  }
-  virtual base::TimeDelta MinimumIntervalOfUserLevelMemoryPressureSignal() {
-    return base::TimeDelta();
+  virtual std::pair<base::TimeDelta, base::TimeDelta>
+  InertAndMinimumIntervalOfUserLevelMemoryPressureSignal() {
+    return std::make_pair(base::TimeDelta(), base::TimeDelta());
   }
 #endif
 

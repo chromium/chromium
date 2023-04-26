@@ -225,9 +225,9 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   void SetPrivateMemoryFootprint(
       uint64_t private_memory_footprint_bytes) override;
   bool IsUserLevelMemoryPressureSignalEnabled() override;
-  base::TimeDelta InertIntervalOfUserLevelMemoryPressureSignal() override;
-  base::TimeDelta MinimumIntervalOfUserLevelMemoryPressureSignal() override;
-#endif
+  std::pair<base::TimeDelta, base::TimeDelta>
+  InertAndMinimumIntervalOfUserLevelMemoryPressureSignal() override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Tells this platform that the renderer is locked to a site (i.e., a scheme
   // plus eTLD+1, such as https://google.com), or to a more specific origin.
