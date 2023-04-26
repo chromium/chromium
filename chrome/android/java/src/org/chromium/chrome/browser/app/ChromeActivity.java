@@ -2267,8 +2267,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return handleBackPressed();
     }
 
-    @CallSuper
-    protected void initializeBackPressHandling() {
+    private void initializeBackPressHandling() {
         if (BackPressManager.isEnabled()) {
             getOnBackPressedDispatcher().addCallback(this, mBackPressManager.getCallback());
             // TODO(crbug.com/1279941): consider move to RootUiCoordinator.

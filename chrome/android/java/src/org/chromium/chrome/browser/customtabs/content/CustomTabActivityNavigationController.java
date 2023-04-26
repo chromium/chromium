@@ -16,10 +16,13 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -59,7 +62,8 @@ import dagger.Lazy;
  * Responsible for navigating to new pages and going back to previous pages.
  */
 @ActivityScope
-public class CustomTabActivityNavigationController implements StartStopWithNativeObserver {
+public class CustomTabActivityNavigationController
+        implements StartStopWithNativeObserver, BackPressHandler {
     @IntDef({FinishReason.USER_NAVIGATION, FinishReason.REPARENTING, FinishReason.OTHER,
             FinishReason.OPEN_IN_BROWSER})
     @Retention(RetentionPolicy.SOURCE)
@@ -106,6 +110,10 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
     private final ChromeBrowserInitializer mChromeBrowserInitializer;
     private final Activity mActivity;
     private final DefaultBrowserProvider mDefaultBrowserProvider;
+    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
+            new ObservableSupplierImpl<>() {
+                { set(false); }
+            };
 
     @Nullable
     private ToolbarManager mToolbarManager;
@@ -121,12 +129,27 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
 
     private final CustomTabActivityTabProvider.Observer mTabObserver =
             new CustomTabActivityTabProvider.Observer() {
+                @Override
+                public void onInitialTabCreated(@NonNull Tab tab, int mode) {
+                    mBackPressStateSupplier.set(shouldInterceptBackPress());
+                }
 
-        @Override
-        public void onAllTabsClosed() {
-            finish(mIsHandlingUserNavigation ? USER_NAVIGATION : OTHER);
-        }
-    };
+                @Override
+                public void onTabSwapped(@NonNull Tab tab) {
+                    mBackPressStateSupplier.set(shouldInterceptBackPress());
+                }
+
+                @Override
+                public void onAllTabsClosed() {
+                    mBackPressStateSupplier.set(shouldInterceptBackPress());
+                    finish(mIsHandlingUserNavigation ? USER_NAVIGATION : OTHER);
+                }
+
+                private boolean shouldInterceptBackPress() {
+                    return mTabProvider.getTab() != null
+                            && mChromeBrowserInitializer.isFullBrowserInitialized();
+                }
+            };
 
     @Inject
     public CustomTabActivityNavigationController(CustomTabActivityTabController tabController,
@@ -148,6 +171,8 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
 
         lifecycleDispatcher.register(this);
         mTabProvider.addObserver(mTabObserver);
+        mChromeBrowserInitializer.runNowOrAfterFullBrowserStarted(
+                () -> { mBackPressStateSupplier.set(mTabProvider.getTab() != null); });
     }
 
     /**
@@ -261,6 +286,17 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
 
         return true;
     }
+
+    @Override
+    public int handleBackPress() {
+        return navigateOnBack() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
+    }
+
     /**
      * Handles close button navigation.
      */

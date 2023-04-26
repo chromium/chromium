@@ -74,6 +74,7 @@ public class BackPressManager implements Destroyable {
 
     private final BackPressHandler[] mHandlers = new BackPressHandler[Type.NUM_TYPES];
     private final boolean mUseSystemBack;
+    private boolean mHasSystemBackArm;
 
     private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
     private Runnable mFallbackOnBackPressed;
@@ -181,8 +182,27 @@ public class BackPressManager implements Destroyable {
         mFallbackOnBackPressed = runnable;
     }
 
+    /**
+     * Turn on more checks if a system back arm is available, such as when running on tabbed
+     * activity.
+     * @param hasSystemBackArm True if system back arm is feasible.
+     */
+    public void setHasSystemBackArm(boolean hasSystemBackArm) {
+        mHasSystemBackArm = hasSystemBackArm;
+    }
+
     private void backPressStateChanged() {
-        mCallback.setEnabled(shouldInterceptBackPress());
+        boolean intercept = shouldInterceptBackPress();
+        if (mHasSystemBackArm) {
+            // If not using system back and MINIMIZE_APP_AND_CLOSE_TAB has registered, this must be
+            // true, since MINIMIZE_APP_AND_CLOSE_TAB unconditionally consumes last back press.
+            if (has(Type.MINIMIZE_APP_AND_CLOSE_TAB) && !mUseSystemBack) {
+                assert intercept : "Should always intercept back press on non-systemback group";
+            }
+            mCallback.setEnabled(intercept || !mUseSystemBack);
+        } else {
+            mCallback.setEnabled(intercept);
+        }
     }
 
     private void handleBackPress() {

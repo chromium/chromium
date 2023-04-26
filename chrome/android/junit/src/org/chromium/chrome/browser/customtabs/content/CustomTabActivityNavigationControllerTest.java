@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -77,10 +78,14 @@ public class CustomTabActivityNavigationControllerTest {
                 MinimizeAppAndCloseTabType.MINIMIZE_APP);
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
+        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
         verify(mFinishHandler).onFinish(eq(FinishReason.USER_NAVIGATION));
+        env.tabProvider.removeTab();
+        Assert.assertNull(env.tabProvider.getTab());
+        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
     }
 
     @Test
@@ -92,6 +97,7 @@ public class CustomTabActivityNavigationControllerTest {
             env.tabProvider.swapTab(env.prepareTab());
             return null;
         }).when(mTabController).closeTab();
+        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
