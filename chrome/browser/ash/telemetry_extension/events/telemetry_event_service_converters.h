@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_TELEMETRY_EVENT_SERVICE_CONVERTERS_H_
-#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_TELEMETRY_EVENT_SERVICE_CONVERTERS_H_
+#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_SERVICE_CONVERTERS_H_
+#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_SERVICE_CONVERTERS_H_
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
@@ -72,4 +72,4 @@ auto ConvertStructPtr(InputT input) {
 
 }  // namespace ash::converters
 
-#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_TELEMETRY_EVENT_SERVICE_CONVERTERS_H_
+#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_SERVICE_CONVERTERS_H_

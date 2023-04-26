@@ -6,41 +6,12 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Telemetry Services are ash-chrome only")
 
-source_set("telemetry_extension") {
-  sources = [
-    "telemetry_event_forwarder.cc",
-    "telemetry_event_forwarder.h",
-    "telemetry_event_service_ash.cc",
-    "telemetry_event_service_ash.h",
-    "telemetry_event_service_converters.cc",
-    "telemetry_event_service_converters.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromeos/ash/services/cros_healthd/public/cpp",
-    "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/crosapi/mojom",
-    "//mojo/public/cpp/bindings",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "telemetry_event_service_ash_unittest.cc",
-    "telemetry_event_service_converters_unittest.cc",
-  ]
+
   deps = [
-    ":telemetry_extension",
     "diagnostics:unit_tests",
+    "events:unit_tests",
     "telemetry:unit_tests",
-    "//base",
-    "//base/test:test_support",
-    "//chromeos/ash/components/mojo_service_manager",
-    "//chromeos/ash/services/cros_healthd/public/cpp",
-    "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/crosapi/mojom",
-    "//testing/gtest",
   ]
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_TELEMETRY_EVENT_SERVICE_ASH_H_
-#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_TELEMETRY_EVENT_SERVICE_ASH_H_
+#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_SERVICE_ASH_H_
+#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_SERVICE_ASH_H_
 
 #include <map>
 #include <memory>
@@ -11,7 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ash/telemetry_extension/telemetry_event_forwarder.h"
+#include "chrome/browser/ash/telemetry_extension/events/telemetry_event_forwarder.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
@@ -76,4 +76,4 @@ class TelemetryEventServiceAsh : public crosapi::mojom::TelemetryEventService {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_TELEMETRY_EVENT_SERVICE_ASH_H_
+#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_SERVICE_ASH_H_

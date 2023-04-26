@@ -53,7 +53,7 @@ source_set("event_router") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/telemetry_extension" ]
+    deps += [ "//chrome/browser/ash/telemetry_extension/events" ]
   }
 
   if (is_chromeos_lacros) {
@@ -139,7 +139,7 @@ source_set("browser_tests") {
       "fake_events_service_factory.h",
     ]
 
-    deps += [ "//chrome/browser/ash/telemetry_extension" ]
+    deps += [ "//chrome/browser/ash/telemetry_extension/events" ]
   }
 
   if (is_chromeos_lacros) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/telemetry_extension/telemetry_event_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
 
 #include <algorithm>
 #include <memory>
@@ -10,8 +10,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ash/telemetry_extension/telemetry_event_forwarder.h"
-#include "chrome/browser/ash/telemetry_extension/telemetry_event_service_converters.h"
+#include "chrome/browser/ash/telemetry_extension/events/telemetry_event_forwarder.h"
+#include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"

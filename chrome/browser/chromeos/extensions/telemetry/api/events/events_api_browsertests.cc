@@ -23,7 +23,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/telemetry_extension/telemetry_event_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
