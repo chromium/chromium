@@ -374,6 +374,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://linux-proxy-config",
     "chrome://multidevice-internals",
     "chrome://nearby-internals",
+    "chrome://network",
     "chrome://power",
     "chrome://projector",
     "chrome://proximity-auth/proximity_auth.html",

@@ -970,7 +970,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUINetworkHost);
 
-  html->DisableTrustedTypesCSP();
+  webui::EnableTrustedTypesCSP(html);
 
   html->AddLocalizedStrings(localized_strings);
   html->AddBoolean("isGuestModeActive", IsGuestModeActive());
