@@ -27,7 +27,7 @@ const SettingsMultideviceTaskContinuationDisabledLinkElementBase =
     I18nMixin(PolymerElement);
 
 /** @polymer */
-class SettingsMultideviceTaskContinuationDisabledLinkElement extends
+export class SettingsMultideviceTaskContinuationDisabledLinkElement extends
     SettingsMultideviceTaskContinuationDisabledLinkElementBase {
   static get is() {
     return 'settings-multidevice-task-continuation-disabled-link' as const;
