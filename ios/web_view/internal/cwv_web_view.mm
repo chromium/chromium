@@ -32,7 +32,6 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #include "ios/web/public/favicon/favicon_url.h"
 #include "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -376,7 +375,8 @@ BOOL gChromeContextMenuEnabled = NO;
 
 - (void)evaluateJavaScript:(NSString*)javaScriptString
                 completion:(void (^)(id, NSError*))completion {
-  web::WebFrame* mainFrame = web::GetMainFrame(_webState.get());
+  web::WebFrame* mainFrame =
+      _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
   if (!mainFrame) {
     if (completion) {
       completion(nil, [NSError errorWithDomain:@"org.chromium.chromewebview"

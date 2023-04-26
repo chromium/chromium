@@ -44,7 +44,6 @@
 #import "ios/web/public/annotations/annotations_text_manager.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/find_in_page/crw_find_interaction.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/crw_context_menu_item.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"

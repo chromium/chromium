@@ -22,7 +22,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -207,7 +207,8 @@ base::Value MojoFacade::HandleMojoHandleWatch(base::Value::Dict args) {
             stringWithFormat:
                 @"Mojo.internal.watchCallbacksHolder.callCallback(%d, %d)",
                 inner_callback_id, result];
-        web::WebFrame* main_frame = web::GetMainFrame(web_state_);
+        web::WebFrame* main_frame =
+            web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame();
         if (main_frame) {
           main_frame->ExecuteJavaScript(base::SysNSStringToUTF16(script));
         }

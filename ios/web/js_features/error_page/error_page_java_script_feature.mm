@@ -8,7 +8,7 @@
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -83,7 +83,7 @@ void ErrorPageJavaScriptFeature::ScriptMessageReceived(
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:kEasterEggHighScore];
   } else if (*command == "trackEasterEgg") {
-    auto* frame = GetMainFrame(web_state);
+    WebFrame* frame = GetWebFramesManager(web_state)->GetMainWebFrame();
     if (!frame) {
       return;
     }

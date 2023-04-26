@@ -21,7 +21,6 @@ source_set("js_messaging") {
     "script_message.h",
     "web_frame.h",
     "web_frame_user_data.h",
-    "web_frame_util.h",
     "web_frames_manager.h",
     "web_frames_manager_observer_bridge.h",
   ]
