@@ -11,7 +11,12 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
+#include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
+#include "chrome/browser/ash/file_system_provider/mount_path_util.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,6 +26,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 using storage::FileSystemURL;
@@ -53,7 +59,7 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest {
         chromeos::features::kUploadOfficeToCloud);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     my_files_dir_ = temp_dir_.GetPath().Append("myfiles");
-    test_file_name_ = "text.docx";
+    read_only_dir_ = temp_dir_.GetPath().Append("readonly");
   }
 
   OneDriveUploadHandlerTest(const OneDriveUploadHandlerTest&) = delete;
@@ -78,6 +84,26 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest {
     CHECK(storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         mount_point_name, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), my_files_dir_));
+    file_manager::VolumeManager::Get(profile())
+        ->RegisterDownloadsDirectoryForTesting(my_files_dir_);
+  }
+
+  // Creates a new filesystem which represents a read-only location, files
+  // cannot be moved from it.
+  void SetUpReadOnlyLocation() {
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::CreateDirectory(read_only_dir_));
+    }
+    std::string mount_point_name = "readonly";
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        mount_point_name);
+    EXPECT_TRUE(profile()->GetMountPoints()->RegisterFileSystem(
+        mount_point_name, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(), read_only_dir_));
+    file_manager::VolumeManager::Get(profile())->AddVolumeForTesting(
+        read_only_dir_, file_manager::VOLUME_TYPE_TESTING,
+        ash::DeviceType::kUnknown, true /* read_only */);
   }
 
   // Creates and mounts fake provided file system for OneDrive.
@@ -93,6 +119,56 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest {
             extension_misc::kODFSExtensionId));
     EXPECT_EQ(base::File::FILE_OK,
               service->MountFileSystem(provider_id, options));
+    std::vector<file_system_provider::ProvidedFileSystemInfo> file_systems =
+        service->GetProvidedFileSystemInfoList(provider_id);
+    // One and only one filesystem should be mounted for the ODFS extension.
+    EXPECT_EQ(1u, file_systems.size());
+    provided_file_system_ =
+        static_cast<file_system_provider::FakeProvidedFileSystem*>(
+            service->GetProvidedFileSystem(provider_id,
+                                           file_systems[0].file_system_id()));
+  }
+
+  void CheckPathExistsOnODFS(const base::FilePath& path) {
+    ASSERT_TRUE(provided_file_system_);
+    provided_file_system_->GetMetadata(
+        path, storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
+        base::BindOnce(&OneDriveUploadHandlerTest::OnGetMetadataExpectSuccess,
+                       base::Unretained(this)));
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_FALSE(run_loop_);
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    run_loop_ = nullptr;
+  }
+
+  void CheckPathNotFoundOnODFS(const base::FilePath& path) {
+    ASSERT_TRUE(provided_file_system_);
+    provided_file_system_->GetMetadata(
+        path, storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
+        base::BindOnce(&OneDriveUploadHandlerTest::OnGetMetadataExpectNotFound,
+                       base::Unretained(this)));
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_FALSE(run_loop_);
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    run_loop_ = nullptr;
+  }
+
+  void OnGetMetadataExpectSuccess(
+      std::unique_ptr<file_system_provider::EntryMetadata> entry_metadata,
+      base::File::Error result) {
+    EXPECT_EQ(base::File::Error::FILE_OK, result);
+    ASSERT_TRUE(run_loop_);
+    run_loop_->Quit();
+  }
+
+  void OnGetMetadataExpectNotFound(
+      std::unique_ptr<file_system_provider::EntryMetadata> entry_metadata,
+      base::File::Error result) {
+    EXPECT_EQ(base::File::Error::FILE_ERROR_NOT_FOUND, result);
+    ASSERT_TRUE(run_loop_);
+    run_loop_->Quit();
   }
 
   // The exit point of the test. `WaitForUploadComplete` will not complete until
@@ -113,41 +189,99 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest {
 
   Profile* profile() { return browser()->profile(); }
 
-  base::FilePath source_file_path() {
-    return my_files_dir_.AppendASCII(test_file_name_);
-  }
-
  protected:
   base::FilePath my_files_dir_;
-  std::string test_file_name_;
+  base::FilePath read_only_dir_;
 
  private:
+  file_system_provider::FakeProvidedFileSystem*
+      provided_file_system_;  // Owned by Service.
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, UploadToOneDriveSuccess) {
+IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, UploadFromMyFiles) {
+  const std::string test_file_name = "text.docx";
+  const base::FilePath source_file_path =
+      my_files_dir_.AppendASCII(test_file_name);
+
   SetUpMyFiles();
   SetUpODFS();
 
   // Create test docx file within My files.
-  const base::FilePath test_file_path = GetTestFilePath(test_file_name_);
+  const base::FilePath test_file_path = GetTestFilePath(test_file_name);
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    CHECK(base::CopyFile(test_file_path, source_file_path()));
+    CHECK(base::CopyFile(test_file_path, source_file_path));
+  }
+
+  // Check that the source file exists at the intended source location.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
+    CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
   }
 
   // Start the upload workflow and end the test once the upload has completed
   // successfully.
   FileSystemURL source_file_url = FilePathToFileSystemURL(
       profile(), file_manager::util::GetFileManagerFileSystemContext(profile()),
-      source_file_path());
+      source_file_path);
   OneDriveUploadHandler::Upload(
       profile(), source_file_url,
       base::BindOnce(&OneDriveUploadHandlerTest::OnUploadDone,
                      base::Unretained(this)));
   WaitForUploadComplete();
+
+  // Check that the source file has been moved to OneDrive.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_FALSE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
+    CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
+                       UploadFromReadOnlyFileSystem) {
+  const std::string test_file_name = "text.docx";
+  const base::FilePath source_file_path =
+      read_only_dir_.AppendASCII(test_file_name);
+
+  SetUpReadOnlyLocation();
+  SetUpODFS();
+
+  // Create test docx file within My files.
+  const base::FilePath test_file_path = GetTestFilePath(test_file_name);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    CHECK(base::CopyFile(test_file_path, source_file_path));
+  }
+
+  // Check that the source file exists at the intended source location.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(read_only_dir_.AppendASCII(test_file_name)));
+    CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+  }
+
+  // Start the upload workflow and end the test once the upload has completed
+  // successfully.
+  FileSystemURL source_file_url = FilePathToFileSystemURL(
+      profile(), file_manager::util::GetFileManagerFileSystemContext(profile()),
+      source_file_path);
+  OneDriveUploadHandler::Upload(
+      profile(), source_file_url,
+      base::BindOnce(&OneDriveUploadHandlerTest::OnUploadDone,
+                     base::Unretained(this)));
+  WaitForUploadComplete();
+
+  // Check that the source file has been moved to OneDrive.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(read_only_dir_.AppendASCII(test_file_name)));
+    CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+  }
 }
 
 }  // namespace ash::cloud_upload

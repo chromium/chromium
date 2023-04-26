@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -601,6 +604,25 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(
   args->dialog_page = dialog_page;
   args->first_time_setup =
       !file_manager::file_tasks::OfficeSetupComplete(profile_);
+  const file_manager::io_task::OperationType operation_type =
+      GetOperationTypeForUpload(profile_, file_urls_[0]);
+  switch (operation_type) {
+    case file_manager::io_task::OperationType::kMove:
+      args->operation_type = mojom::OperationType::kMove;
+      break;
+    case file_manager::io_task::OperationType::kCopy:
+      args->operation_type = mojom::OperationType::kCopy;
+      break;
+    case file_manager::io_task::OperationType::kDelete:
+    case file_manager::io_task::OperationType::kEmptyTrash:
+    case file_manager::io_task::OperationType::kExtract:
+    case file_manager::io_task::OperationType::kRestore:
+    case file_manager::io_task::OperationType::kRestoreToDestination:
+    case file_manager::io_task::OperationType::kTrash:
+    case file_manager::io_task::OperationType::kZip:
+      NOTREACHED() << "Unexpected upload operation type";
+      break;
+  }
   return args;
 }
 

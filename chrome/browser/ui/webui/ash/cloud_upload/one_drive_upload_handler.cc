@@ -56,7 +56,8 @@ OneDriveUploadHandler::OneDriveUploadHandler(Profile* profile,
               "Microsoft OneDrive",
               "Microsoft 365",
               // TODO(b/242685536) Update when support for multi-files is added.
-              /*num_files=*/1)),
+              /*num_files=*/1,
+              GetOperationTypeForUpload(profile, source_url))),
       source_url_(source_url) {
   observed_task_id_ = -1;
 }
@@ -117,10 +118,12 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
     return;
   }
 
+  const file_manager::io_task::OperationType operation_type =
+      GetOperationTypeForUpload(profile_, source_url_);
   std::vector<FileSystemURL> source_urls{source_url_};
   std::unique_ptr<file_manager::io_task::IOTask> task =
       std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
-          file_manager::io_task::OperationType::kMove, std::move(source_urls),
+          operation_type, std::move(source_urls),
           std::move(destination_folder_url), profile_, file_system_context_,
           /*show_notification=*/false);
 

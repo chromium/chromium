@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -556,10 +557,9 @@ class FixUpFlowBrowserTest : public InProcessBrowserTest {
     base::FilePath file =
         file_manager::util::GetMyFilesFolderForProfile(profile()).AppendASCII(
             "foo.doc");
-    GURL url;
-    CHECK(file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-        profile(), file, file_manager::util::GetFileManagerURL(), &url));
-    files_.push_back(storage::FileSystemURL::CreateForTest(url));
+    files_.push_back(FilePathToFileSystemURL(
+        profile(),
+        file_manager::util::GetFileManagerFileSystemContext(profile()), file));
   }
 
   void AddFakeODFS() {

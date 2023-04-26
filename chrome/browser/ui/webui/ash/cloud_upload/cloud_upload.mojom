@@ -26,6 +26,12 @@ enum DialogPage {
   kMoveConfirmationGoogleDrive,
 };
 
+// Operation used to upload the source file.
+enum OperationType {
+  kMove,
+  kCopy,
+};
+
 // A local file task that is displayed in the `kFileHandlerDialog` which the
 // user could select to open the files. The `position` is the tasks position
 // in a vector with the other `DialogTask`s.
@@ -52,6 +58,9 @@ struct DialogArgs {
   // True if the setup flow is running for the first time. False if running
   // fixup flow.
   bool first_time_setup;
+
+  // Indicates what operation is used to upload the source file (copy or move).
+  OperationType operation_type;
 };
 
 // Lives in the browser process. A renderer uses this to create a page handler

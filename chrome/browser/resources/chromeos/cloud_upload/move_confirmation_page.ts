@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {UserAction} from './cloud_upload.mojom-webui.js';
+import {OperationType, UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {getTemplate} from './move_confirmation_page.html.js';
 
@@ -37,10 +37,20 @@ export class MoveConfirmationPageElement extends HTMLElement {
 
     moveButton.addEventListener('click', () => this.onMoveButtonClick());
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
+    this.init();
   }
 
   $<T extends HTMLElement>(query: string): T {
     return this.shadowRoot!.querySelector(query)!;
+  }
+
+  async init() {
+    const dialogArgs = await this.proxy.handler.getDialogArgs();
+
+    if (dialogArgs.args.operationType === OperationType.kCopy) {
+      const moveButton = this.$<HTMLElement>('.action-button')!;
+      moveButton.innerText = 'Copy and open';
+    }
   }
 
   private getProviderText(cloudProvider: CloudProvider) {

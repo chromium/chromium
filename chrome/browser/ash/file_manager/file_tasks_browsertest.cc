@@ -637,13 +637,12 @@ const TaskDescriptor CreateOpenInOfficeTask() {
                         full_action_id);
 }
 
-const FileSystemURL CreateTestOfficeFile(Profile* profile) {
+const FileSystemURL CreateOfficeFileSourceURL(Profile* profile) {
   base::FilePath file =
       util::GetMyFilesFolderForProfile(profile).AppendASCII("text.docx");
-  GURL url;
-  CHECK(util::ConvertAbsoluteFilePathToFileSystemUrl(
-      profile, file, util::GetFileManagerURL(), &url));
-  return FileSystemURL::CreateForTest(url);
+  return ash::cloud_upload::FilePathToFileSystemURL(
+      profile, file_manager::util::GetFileManagerFileSystemContext(profile),
+      file);
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1217,7 +1216,7 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileNotInDriveOpensSetUpDialog) {
   // not in the correct location for this task and would have to be moved to
   // DriveFs.
   const TaskDescriptor web_drive_office_task = CreateWebDriveOfficeTask();
-  FileSystemURL file_outside_drive = CreateTestOfficeFile(profile());
+  FileSystemURL file_outside_drive = CreateOfficeFileSourceURL(profile());
   std::vector<storage::FileSystemURL> file_urls{file_outside_drive};
 
   // Watch for dialog URL chrome://cloud-upload.
@@ -1629,7 +1628,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromODFS) {
 // cloud provider specified is OneDrive but the office file to be opened needs
 // to be moved to ODFS.
 IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileNotFromODFS) {
-  FileSystemURL file_outside_one_drive = CreateTestOfficeFile(profile());
+  FileSystemURL file_outside_one_drive = CreateOfficeFileSourceURL(profile());
   std::vector<storage::FileSystemURL> file_urls{file_outside_one_drive};
 
   // Watch for dialog URL chrome://cloud-upload.
@@ -1822,7 +1821,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileNotInOneDriveOpensSetUpDialog) {
   // Create an Open in Office task to open the file from ODFS. The file is not
   // in the correct location for this task and would have to be moved to ODFS.
   const TaskDescriptor open_in_office_task = CreateOpenInOfficeTask();
-  FileSystemURL file_outside_one_drive = CreateTestOfficeFile(profile());
+  FileSystemURL file_outside_one_drive = CreateOfficeFileSourceURL(profile());
   std::vector<storage::FileSystemURL> file_urls{file_outside_one_drive};
 
   // Watch for dialog URL chrome://cloud-upload.
