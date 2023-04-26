@@ -9734,9 +9734,6 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(pending_default_factory);
 
     // Only documents from a file precursor scheme can load file subresoruces.
-    //
-    // For loading Web Bundle files, we don't set FileURLLoaderFactory.
-    // Because loading local files from a Web Bundle file is prohibited.
     if (effective_scheme == url::kFileScheme) {
       // USER_BLOCKING because this scenario is exactly one of the examples
       // given by the doc comment for USER_BLOCKING: Loading and rendering a web
