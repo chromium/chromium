@@ -134,20 +134,17 @@ bool FakeLog::Emptied() const {
   return true;
 }
 
-absl::optional<base::Value::Dict> ParseDictionary(const std::string& json) {
+base::expected<base::Value::Dict, std::string> ParseDictionary(
+    const std::string& json) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
   if (!parsed_json.has_value()) {
-    SCOPED_TRACE(json.c_str());
-    SCOPED_TRACE(parsed_json.error().message.c_str());
-    ADD_FAILURE();
-    return absl::nullopt;
+    return base::unexpected("Couldn't parse " + json +
+                            ", got: " + parsed_json.error().message);
   }
 
   base::Value::Dict* dict = parsed_json->GetIfDict();
   if (!dict) {
-    SCOPED_TRACE("JSON object is not a dictionary");
-    ADD_FAILURE();
-    return absl::nullopt;
+    return base::unexpected("JSON object is not a dictionary");
   }
 
   return std::move(*dict);
@@ -160,8 +157,9 @@ void ValidateLogEntry(const LogEntry* entry,
   EXPECT_EQ(Log::kInfo, entry->level);
   EXPECT_LT(0, entry->timestamp.ToTimeT());
 
-  absl::optional<base::Value::Dict> message = ParseDictionary(entry->message);
-  ASSERT_TRUE(message);
+  base::expected<base::Value::Dict, std::string> message =
+      ParseDictionary(entry->message);
+  ASSERT_TRUE(message.has_value()) << message.error();
   const std::string* webview = message->FindString("webview");
   ASSERT_TRUE(webview);
   EXPECT_EQ(expected_webview, *webview);
@@ -398,8 +396,9 @@ TEST(PerformanceLogger, WarnWhenTraceBufferFull) {
   LogEntry* entry = log.GetEntries()[0].get();
   EXPECT_EQ(Log::kWarning, entry->level);
   EXPECT_LT(0, entry->timestamp.ToTimeT());
-  absl::optional<base::Value::Dict> message = ParseDictionary(entry->message);
-  ASSERT_TRUE(message);
+  base::expected<base::Value::Dict, std::string> message =
+      ParseDictionary(entry->message);
+  ASSERT_TRUE(message.has_value()) << message.error();
   const std::string* webview = message->FindString("webview");
   ASSERT_TRUE(webview);
   EXPECT_EQ(DevToolsClientImpl::kBrowserwideDevToolsClientId, *webview);

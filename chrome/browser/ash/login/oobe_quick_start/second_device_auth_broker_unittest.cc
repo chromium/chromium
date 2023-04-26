@@ -41,10 +41,12 @@ using ::testing::Invoke;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
 using ::testing::Optional;
+using ::testing::Property;
 using ::testing::StrictMock;
 using ::testing::VariantWith;
 using ::testing::WithArg;
 
+using State = GoogleServiceAuthError::State;
 using RefreshTokenUnknownErrorResponse =
     SecondDeviceAuthBroker::RefreshTokenUnknownErrorResponse;
 using RefreshTokenSuccessResponse =
@@ -273,9 +275,9 @@ TEST_F(SecondDeviceAuthBrokerTest,
   SimulateAuthError(kGetChallengeDataUrl);
   base::expected<std::string, GoogleServiceAuthError> response =
       GetChallengeBytes();
-  ASSERT_THAT(response.has_value(), IsFalse());
-  EXPECT_THAT(response.error().state(),
-              Eq(GoogleServiceAuthError::State::SERVICE_ERROR));
+  ASSERT_FALSE(response.has_value());
+  EXPECT_THAT(response.error(), Property(&GoogleServiceAuthError::state,
+                                         Eq(State::SERVICE_ERROR)));
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
@@ -283,21 +285,24 @@ TEST_F(SecondDeviceAuthBrokerTest,
   AddFakeResponse(kGetChallengeDataUrl, "");
   base::expected<std::string, GoogleServiceAuthError> response =
       GetChallengeBytes();
-  ASSERT_THAT(response.has_value(), IsFalse());
-  EXPECT_THAT(response.error().state(),
-              Eq(GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE));
+  ASSERT_FALSE(response.has_value());
+  EXPECT_THAT(response.error(),
+              Property(&GoogleServiceAuthError::state,
+                       Eq(State::UNEXPECTED_SERVICE_RESPONSE)));
 
   AddFakeResponse(kGetChallengeDataUrl, "{}");
   response = GetChallengeBytes();
-  ASSERT_THAT(response.has_value(), IsFalse());
-  EXPECT_THAT(response.error().state(),
-              Eq(GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE));
+  ASSERT_FALSE(response.has_value());
+  EXPECT_THAT(response.error(),
+              Property(&GoogleServiceAuthError::state,
+                       Eq(State::UNEXPECTED_SERVICE_RESPONSE)));
 
   AddFakeResponse(kGetChallengeDataUrl, "{\"challengeData\": \"\"}");
   response = GetChallengeBytes();
-  ASSERT_THAT(response.has_value(), IsFalse());
-  EXPECT_THAT(response.error().state(),
-              Eq(GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE));
+  ASSERT_FALSE(response.has_value());
+  EXPECT_THAT(response.error(),
+              Property(&GoogleServiceAuthError::state,
+                       Eq(State::UNEXPECTED_SERVICE_RESPONSE)));
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
@@ -305,17 +310,18 @@ TEST_F(SecondDeviceAuthBrokerTest,
   AddFakeResponse(kGetChallengeDataUrl, kInvalidBase64ChallengeDataResponse);
   base::expected<std::string, GoogleServiceAuthError> response =
       GetChallengeBytes();
-  ASSERT_THAT(response.has_value(), IsFalse());
-  EXPECT_THAT(response.error().state(),
-              Eq(GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE));
+  ASSERT_FALSE(response.has_value());
+  EXPECT_THAT(response.error(),
+              Property(&GoogleServiceAuthError::state,
+                       Eq(State::UNEXPECTED_SERVICE_RESPONSE)));
 }
 
 TEST_F(SecondDeviceAuthBrokerTest, GetChallengeBytesReturnsChallengeBytes) {
   AddFakeResponse(kGetChallengeDataUrl, kFakeChallengeDataResponse);
   base::expected<std::string, GoogleServiceAuthError> response =
       GetChallengeBytes();
-  ASSERT_THAT(response.has_value(), IsTrue());
-  EXPECT_THAT(response->size(), Gt(0UL));
+  ASSERT_TRUE(response.has_value());
+  EXPECT_THAT(response.value(), Property(&std::string::size, Gt(0UL)));
 }
 
 TEST_F(
@@ -341,7 +347,7 @@ TEST_F(
 
   base::expected<std::string, SecondDeviceAuthBroker::AttestationErrorType>
       response = FetchAttestationCertificate(kFidoCredentialId);
-  ASSERT_THAT(response.has_value(), IsFalse());
+  ASSERT_FALSE(response.has_value());
   EXPECT_THAT(
       response.error(),
       Eq(SecondDeviceAuthBroker::AttestationErrorType::kTransientError));
@@ -369,7 +375,7 @@ TEST_F(SecondDeviceAuthBrokerTest,
 
   base::expected<std::string, SecondDeviceAuthBroker::AttestationErrorType>
       response = FetchAttestationCertificate(kFidoCredentialId);
-  ASSERT_THAT(response.has_value(), IsFalse());
+  ASSERT_FALSE(response.has_value());
   EXPECT_THAT(
       response.error(),
       Eq(SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
@@ -399,7 +405,7 @@ TEST_F(SecondDeviceAuthBrokerTest,
 
   base::expected<std::string, SecondDeviceAuthBroker::AttestationErrorType>
       response = FetchAttestationCertificate(kFidoCredentialId);
-  ASSERT_THAT(response.has_value(), IsTrue());
+  ASSERT_TRUE(response.has_value());
   EXPECT_THAT(response.value(), Eq(kCertificate));
 }
 

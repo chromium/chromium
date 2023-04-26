@@ -433,7 +433,7 @@ TEST_F(LocalFileSyncContextTest, CreateDefaultSyncableBucket) {
       base::SequencedTaskRunner::GetCurrentDefault(), future.GetCallback());
 
   const auto result = future.Take();
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->name, storage::kDefaultBucketName);
   EXPECT_EQ(result->type, blink::mojom::StorageType::kSyncable);
   EXPECT_GT(result->id.value(), 0);

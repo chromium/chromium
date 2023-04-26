@@ -132,10 +132,10 @@ content::EvalJsResult EvalJsLocal(
 
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       json, base::JSON_ALLOW_TRAILING_COMMAS);
-
-  if (!parsed_json.has_value())
+  if (!parsed_json.has_value()) {
     return content::EvalJsResult(
         base::Value(), "JSON parse error: " + parsed_json.error().message);
+  }
 
   if (!parsed_json->is_list() || parsed_json->GetList().size() != 2U ||
       !parsed_json->GetList()[1].is_list() ||

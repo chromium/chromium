@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <set>
+#include <utility>
 
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
@@ -140,7 +141,9 @@ class ConnectorsManagerTest : public testing::Test {
       auto maybe_pref_value =
           base::JSONReader::Read(pref_value, base::JSON_ALLOW_TRAILING_COMMAS);
       EXPECT_TRUE(maybe_pref_value.has_value());
-      pref_service_->Set(pref, maybe_pref_value.value());
+      if (maybe_pref_value.has_value()) {
+        pref_service_->Set(pref, maybe_pref_value.value());
+      }
     }
 
     ~ScopedConnectorPref() { pref_service_->ClearPref(pref_); }

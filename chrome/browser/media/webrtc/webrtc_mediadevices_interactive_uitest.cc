@@ -89,17 +89,13 @@ class WebRtcMediaDevicesInteractiveUITest
 
     auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
         devices_as_json, base::JSON_ALLOW_TRAILING_COMMAS);
-
     ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
-    EXPECT_EQ(parsed_json->type(), base::Value::Type::LIST);
-
-    base::Value& values = *parsed_json;
-    ASSERT_TRUE(values.is_list());
-    ASSERT_FALSE(values.GetList().empty());
+    ASSERT_TRUE(parsed_json->is_list());
+    ASSERT_FALSE(parsed_json->GetList().empty());
     bool found_audio_input = false;
     bool found_video_input = false;
 
-    for (const auto& value : values.GetList()) {
+    for (const auto& value : parsed_json->GetList()) {
       const base::Value::Dict* dict = value.GetIfDict();
       ASSERT_TRUE(dict);
       MediaDeviceInfo device;

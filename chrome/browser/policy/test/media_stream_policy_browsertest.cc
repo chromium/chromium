@@ -118,8 +118,8 @@ class MediaStreamDevicesControllerBrowserTest
       const blink::mojom::StreamDevices& devices =
           *stream_devices_set.stream_devices[0];
       if (policy_value_ || request_url_allowed_via_allowlist_) {
-        ASSERT_EQ(1, devices.audio_device.has_value() +
-                         devices.video_device.has_value());
+        ASSERT_NE(devices.audio_device.has_value(),
+                  devices.video_device.has_value());
         if (devices.audio_device.has_value()) {
           ASSERT_EQ("fake_dev", devices.audio_device.value().id);
         } else if (devices.video_device.has_value()) {

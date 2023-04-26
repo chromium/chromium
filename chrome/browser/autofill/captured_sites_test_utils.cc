@@ -364,25 +364,20 @@ std::vector<CapturedSiteParams> GetCapturedSites(
       replay_files_dir_path.AppendASCII("testcases.json");
 
   std::string json_text;
-  {
-    if (!base::ReadFileToString(config_file_path, &json_text)) {
-      LOG(WARNING) << "Could not read json file: " << config_file_path;
-      return sites;
-    }
+  if (!base::ReadFileToString(config_file_path, &json_text)) {
+    LOG(WARNING) << "Could not read json file: " << config_file_path;
+    return sites;
   }
   // Parse json text content to json value node.
-  base::Value::Dict root_node;
-  {
-    auto value_with_error = JSONReader::ReadAndReturnValueWithError(
-        json_text, JSONParserOptions::JSON_PARSE_RFC);
-    if (!value_with_error.has_value()) {
-      LOG(WARNING) << "Could not load test config from json file: "
-                   << "`testcases.json` because: "
-                   << value_with_error.error().message;
-      return sites;
-    }
-    root_node = std::move(*value_with_error).TakeDict();
+  auto value_with_error = JSONReader::ReadAndReturnValueWithError(
+      json_text, JSONParserOptions::JSON_PARSE_RFC);
+  if (!value_with_error.has_value()) {
+    LOG(WARNING) << "Could not load test config from json file: "
+                 << "`testcases.json` because: "
+                 << value_with_error.error().message;
+    return sites;
   }
+  base::Value::Dict root_node = std::move(*value_with_error).TakeDict();
   const base::Value::List* list_node = root_node.FindList("tests");
   if (!list_node) {
     LOG(WARNING) << "No tests found in `testcases.json` config";
