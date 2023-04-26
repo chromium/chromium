@@ -3022,8 +3022,8 @@
   },
   {
     "name": "enable-phone-hub-call-notification",
-    "owners": [ "dhnishi", "andychou", "samchiu" ],
-    "expiry_milestone": 102
+    "owners": [ "jonmann", "nayebi" ],
+    "expiry_milestone": 125
   },
   {
     "name": "enable-phone-hub-camera-roll",
