@@ -7693,26 +7693,14 @@ bool ChromeContentBrowserClient::OpenExternally(
   // crash dump for various cases so that we can better understand the
   // situation. For now, continue as usual afterwards (i.e. don't handle the
   // request here).
-  if (is_lacros_only) {
-    size_t id = 0;
-    if (url.SchemeIs(content::kChromeDevToolsScheme)) {
-      id = 1;
-    } else if (url.SchemeIs(content::kChromeUIUntrustedScheme) &&
-               (!url.has_host() || url.host() != "terminal")) {
-      id = 2;
-    } else if (url.SchemeIs(content::kChromeUIScheme)) {
-      id = 3;
-    } else if (url.SchemeIs(extensions::kExtensionScheme)) {
-      id = 4;
-    } else {
+  if (is_lacros_only &&
       // We know that Terminal still needs to open Ash windows, no need to dump.
-      DCHECK(url.SchemeIs(content::kChromeUIUntrustedScheme));
-      DCHECK(url.host() == "terminal");
-    }
-    if (id > 0) {
-      base::debug::DumpWithoutCrashingWithUniqueId(id);
-      LOG(WARNING) << "Allowing Ash window creation for url " << url;
-    }
+      !(url.SchemeIs(content::kChromeUIUntrustedScheme) && url.has_host() &&
+        url.host() == "terminal")) {
+    SCOPED_CRASH_KEY_STRING32("CCBC", "OpenExternally",
+                              url.possibly_invalid_spec());
+    base::debug::DumpWithoutCrashing();
+    LOG(WARNING) << "Allowing Ash window creation for url " << url;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
