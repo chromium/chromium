@@ -358,14 +358,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegrationInIncognito) {
   EXPECT_EQ(selection_color_dark, GetSelectedColor(incognito_browser));
 }
 
-// TODO(tapted): https://crbug.com/905508 Fix and enable on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ClickOmnibox DISABLED_ClickOmnibox
-#else
-#define MAYBE_ClickOmnibox ClickOmnibox
-#endif
 // Test that clicks over the omnibox do not hit the popup.
-IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, MAYBE_ClickOmnibox) {
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ClickOmnibox) {
   CreatePopupForTestQuery();
 
   gfx::NativeWindow event_window = browser()->window()->GetNativeWindow();
