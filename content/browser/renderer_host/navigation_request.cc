@@ -2570,6 +2570,12 @@ void NavigationRequest::BeginNavigationImpl() {
     // and https://crbug.com/1125106.
     if (IsSameDocument()) {
       render_frame_host_ = frame_tree_node_->current_frame_host()->GetSafeRef();
+
+      auto* site_instance = render_frame_host_.value()->GetSiteInstance();
+      DCHECK(site_instance->HasSite());
+
+      WillCommitWithoutUrlLoader();
+      return;
     } else {
       // [spec]: https://html.spec.whatwg.org/C/#process-a-navigate-response
       // 4. if [...] the result of checking a navigation response's adherence to
@@ -2594,46 +2600,9 @@ void NavigationRequest::BeginNavigationImpl() {
           policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
           origin, net::NetworkAnonymizationKey::CreateSameSite(site));
 
-      if (auto result =
-              frame_tree_node_->render_manager()->GetFrameHostForNavigation(
-                  this, &browsing_context_group_swap_);
-          result.has_value()) {
-        render_frame_host_ = result.value()->GetSafeRef();
-      } else {
-        switch (result.error()) {
-          case GetFrameHostForNavigationFailed::kCouldNotReinitializeMainFrame:
-            // TODO(https://crbug.com/1400535): This was unhandled before and
-            // remains explicitly unhandled. This branch may be removed in the
-            // future.
-            break;
-          case GetFrameHostForNavigationFailed::kBlockedByPendingCommit:
-            // TODO(https://crbug.com/1220337): Split (part of?) the
-            // NeedsUrlLoader() block off into its own function and make it
-            // possible to resume the navigation request for a cross-document
-            // request that needs to assign a new RFH.
-            break;
-        }
-      }
-
-      CHECK(Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-          &*render_frame_host_.value(), GetUrlInfo(),
-          /*is_renderer_initiated_check=*/false));
+      SelectFrameHostForBeginNavigationImpl();
+      return;
     }
-
-    // TODO(crbug.com/1400535, crbug.com/1220337): Ideally this shouldn't need
-    // a null check, but see the notes about GetFrameHostForNavigation's return
-    // value above. If this navigation is deferred due to navigation queueing,
-    // ensure that this code will still run after the final RFH is picked.
-    if (HasRenderFrameHost()) {
-      auto* site_instance = render_frame_host_.value()->GetSiteInstance();
-      if (!site_instance->HasSite() &&
-          SiteInstanceImpl::ShouldAssignSiteForUrlInfo(GetUrlInfo())) {
-        site_instance->ConvertToDefaultOrSetSite(GetUrlInfo());
-      }
-    }
-
-    WillCommitWithoutUrlLoader();
-    return;
   }
 
   base::UmaHistogramTimes(
@@ -2643,6 +2612,47 @@ void NavigationRequest::BeginNavigationImpl() {
   WillStartRequest();
   // DO NOT ADD CODE AFTER THIS, as the NavigationRequest might have been
   // deleted by the previous calls.
+}
+
+void NavigationRequest::SelectFrameHostForBeginNavigationImpl() {
+  if (auto result =
+          frame_tree_node_->render_manager()->GetFrameHostForNavigation(
+              this, &browsing_context_group_swap_);
+      result.has_value()) {
+    render_frame_host_ = result.value()->GetSafeRef();
+  } else {
+    switch (result.error()) {
+      case GetFrameHostForNavigationFailed::kCouldNotReinitializeMainFrame:
+        // TODO(https://crbug.com/1400535): This was unhandled before and
+        // remains explicitly unhandled. This branch may be removed in the
+        // future.
+        break;
+      case GetFrameHostForNavigationFailed::kBlockedByPendingCommit:
+        // TODO(https://crbug.com/1220337): Split (part of?) the
+        // NeedsUrlLoader() block off into its own function and make it
+        // possible to resume the navigation request for a cross-document
+        // request that needs to assign a new RFH.
+        break;
+    }
+  }
+
+  CHECK(Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
+      &*render_frame_host_.value(), GetUrlInfo(),
+      /*is_renderer_initiated_check=*/false));
+
+  // TODO(crbug.com/1400535, crbug.com/1220337): Ideally this shouldn't need
+  // a null check, but see the notes about GetFrameHostForNavigation's return
+  // value above. If this navigation is deferred due to navigation queueing,
+  // ensure that this code will still run after the final RFH is picked.
+  if (HasRenderFrameHost()) {
+    auto* site_instance = render_frame_host_.value()->GetSiteInstance();
+    if (!site_instance->HasSite() &&
+        SiteInstanceImpl::ShouldAssignSiteForUrlInfo(GetUrlInfo())) {
+      site_instance->ConvertToDefaultOrSetSite(GetUrlInfo());
+    }
+  }
+
+  WillCommitWithoutUrlLoader();
 }
 
 void NavigationRequest::SetWaitingForRendererResponse() {
@@ -4565,6 +4575,14 @@ void NavigationRequest::OnRequestFailedInternal(
       policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
       url::Origin(), net::NetworkAnonymizationKey::CreateTransient());
 
+  SelectFrameHostForOnRequestFailedInternal(status, skip_throttles,
+                                            error_page_content);
+}
+
+void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
+    const network::URLLoaderCompletionStatus& status,
+    bool skip_throttles,
+    const absl::optional<std::string>& error_page_content) {
   switch (ComputeErrorPageProcess()) {
     case ErrorPageProcess::kCurrentProcess:
       // There's no way to get here with a same-document navigation, it would
