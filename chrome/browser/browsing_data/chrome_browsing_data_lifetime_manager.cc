@@ -160,13 +160,20 @@ class BrowsingDataRemoverObserver
 uint64_t GetOriginTypeMask(const base::Value::List& data_types) {
   uint64_t result = 0;
   for (const auto& data_type : data_types) {
-    std::string data_type_str = data_type.GetString();
-    if (data_type_str ==
-        browsing_data::policy_data_types::kCookiesAndOtherSiteData) {
-      result |= content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kHostedAppData) {
-      result |= content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
+    absl::optional<browsing_data::PolicyDataType> policy_data_type =
+        browsing_data::NameToPolicyDataType(data_type.GetString());
+    if (!policy_data_type.has_value()) {
+      continue;
+    }
+    switch (*policy_data_type) {
+      case browsing_data::PolicyDataType::kCookiesAndOtherSiteData:
+        result |= content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
+        break;
+      case browsing_data::PolicyDataType::kHostedAppData:
+        result |= content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
+        break;
+      default:
+        break;
     }
   }
   return result;
@@ -175,29 +182,39 @@ uint64_t GetOriginTypeMask(const base::Value::List& data_types) {
 uint64_t GetRemoveMask(const base::Value::List& data_types) {
   uint64_t result = 0;
   for (const auto& data_type : data_types) {
-    std::string data_type_str = data_type.GetString();
-    if (data_type_str == browsing_data::policy_data_types::kBrowsingHistory) {
-      result |= chrome_browsing_data_remover::DATA_TYPE_HISTORY;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kDownloadHistory) {
-      result |= content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kCookiesAndOtherSiteData) {
-      result |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kCachedImagesAndFiles) {
-      result |= content::BrowsingDataRemover::DATA_TYPE_CACHE;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kPasswordSignin) {
-      result |= chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
-    } else if (data_type_str == browsing_data::policy_data_types::kAutofill) {
-      result |= chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kSiteSettings) {
-      result |= chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
-    } else if (data_type_str ==
-               browsing_data::policy_data_types::kHostedAppData) {
-      result |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
+    absl::optional<browsing_data::PolicyDataType> policy_data_type =
+        browsing_data::NameToPolicyDataType(data_type.GetString());
+    if (!policy_data_type.has_value()) {
+      continue;
+    }
+    switch (*policy_data_type) {
+      case browsing_data::PolicyDataType::kBrowsingHistory:
+        result |= chrome_browsing_data_remover::DATA_TYPE_HISTORY;
+        break;
+      case browsing_data::PolicyDataType::kDownloadHistory:
+        result |= content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS;
+        break;
+      case browsing_data::PolicyDataType::kCookiesAndOtherSiteData:
+        result |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
+        break;
+      case browsing_data::PolicyDataType::kCachedImagesAndFiles:
+        result |= content::BrowsingDataRemover::DATA_TYPE_CACHE;
+        break;
+      case browsing_data::PolicyDataType::kPasswordSignin:
+        result |= chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
+        break;
+      case browsing_data::PolicyDataType::kAutofill:
+        result |= chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
+        break;
+      case browsing_data::PolicyDataType::kSiteSettings:
+        result |= chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
+        break;
+      case browsing_data::PolicyDataType::kHostedAppData:
+        result |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
+        break;
+      case browsing_data::PolicyDataType::kNumTypes:
+        NOTREACHED();
+        break;
     }
   }
   return result;

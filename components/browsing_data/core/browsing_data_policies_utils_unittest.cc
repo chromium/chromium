@@ -83,3 +83,22 @@ TEST(BrowsingDataPoliciesUtils, UpdateSyncTypesForClearBrowsingDataOnExit) {
   EXPECT_EQ(sync_types, expected_types);
 }
 #endif
+
+TEST(BrowsingDataPoliciesUtils, NameToPolicyDataType) {
+  EXPECT_EQ(browsing_data::NameToPolicyDataType("browsing_history"),
+            browsing_data::PolicyDataType::kBrowsingHistory);
+  EXPECT_EQ(browsing_data::NameToPolicyDataType("password_signin"),
+            browsing_data::PolicyDataType::kPasswordSignin);
+  EXPECT_EQ(browsing_data::NameToPolicyDataType("autofill"),
+            browsing_data::PolicyDataType::kAutofill);
+  EXPECT_EQ(browsing_data::NameToPolicyDataType("site_settings"),
+            browsing_data::PolicyDataType::kSiteSettings);
+  EXPECT_EQ(browsing_data::NameToPolicyDataType("hosted_app_data"),
+            browsing_data::PolicyDataType::kHostedAppData);
+  EXPECT_EQ(browsing_data::NameToPolicyDataType("download_history"),
+            browsing_data::PolicyDataType::kDownloadHistory);
+  EXPECT_EQ(browsing_data::NameToPolicyDataType("cookies_and_other_site_data"),
+            browsing_data::PolicyDataType::kCookiesAndOtherSiteData);
+  EXPECT_EQ(browsing_data::NameToPolicyDataType("cached_images_and_files"),
+            browsing_data::PolicyDataType::kCachedImagesAndFiles);
+}
