@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/json/json_writer.h"
 #include "base/strings/string_piece.h"
 
 namespace extensions {
@@ -19,13 +18,6 @@ DictionaryBuilder::DictionaryBuilder(const base::Value::Dict& init)
     : dict_(init.Clone()) {}
 
 DictionaryBuilder::~DictionaryBuilder() = default;
-
-std::string DictionaryBuilder::ToJSON() const {
-  std::string json;
-  base::JSONWriter::WriteWithOptions(
-      dict_, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
-  return json;
-}
 
 // ListBuilder
 

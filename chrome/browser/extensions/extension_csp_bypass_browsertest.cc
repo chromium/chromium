@@ -4,6 +4,7 @@
 
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
@@ -12,7 +13,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -51,14 +51,15 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
 
     std::string unique_name = base::StringPrintf(
         "component=%d, all_urls=%d", is_component, all_urls_permission);
-    DictionaryBuilder manifest;
-    manifest.Set("name", unique_name)
-        .Set("version", "1")
-        .Set("manifest_version", 2)
-        .Set("web_accessible_resources", ListBuilder().Append("*").Build());
+    auto manifest =
+        base::Value::Dict()
+            .Set("name", unique_name)
+            .Set("version", "1")
+            .Set("manifest_version", 2)
+            .Set("web_accessible_resources", base::Value::List().Append("*"));
 
     if (all_urls_permission) {
-      manifest.Set("permissions", ListBuilder().Append("<all_urls>").Build());
+      manifest.Set("permissions", base::Value::List().Append("<all_urls>"));
     }
     if (is_component) {
       // LoadExtensionAsComponent requires the manifest to contain a key.
@@ -68,7 +69,7 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
     }
 
     dir.WriteFile(FILE_PATH_LITERAL("script.js"), "");
-    dir.WriteManifest(manifest.ToJSON());
+    dir.WriteManifest(manifest);
 
     const Extension* extension = nullptr;
     if (is_component) {

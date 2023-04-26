@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -51,7 +52,6 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -212,23 +212,22 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
                                    bool has_background_process) {
     TestExtensionDir dir;
 
-    DictionaryBuilder manifest;
-    manifest.Set("name", name)
-        .Set("version", "1")
-        .Set("manifest_version", 2)
-        // To allow ExecuteScript* to work.
-        .Set("content_security_policy",
-             "script-src 'self' 'unsafe-eval'; object-src 'self'")
-        .Set("sandbox",
-             DictionaryBuilder()
-                 .Set("pages", ListBuilder().Append("sandboxed.html").Build())
-                 .Build())
-        .Set("web_accessible_resources",
-             ListBuilder().Append("*.html").Build());
+    auto manifest =
+        base::Value::Dict()
+            .Set("name", name)
+            .Set("version", "1")
+            .Set("manifest_version", 2)
+            // To allow ExecuteScript* to work.
+            .Set("content_security_policy",
+                 "script-src 'self' 'unsafe-eval'; object-src 'self'")
+            .Set("sandbox",
+                 base::Value::Dict().Set(
+                     "pages", base::Value::List().Append("sandboxed.html")))
+            .Set("web_accessible_resources",
+                 base::Value::List().Append("*.html"));
 
     if (has_background_process) {
-      manifest.Set("background",
-                   DictionaryBuilder().Set("page", "bg.html").Build());
+      manifest.Set("background", base::Value::Dict().Set("page", "bg.html"));
       dir.WriteFile(FILE_PATH_LITERAL("bg.html"),
                     "<iframe id='bgframe' src='empty.html'></iframe>");
     }
@@ -247,7 +246,7 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
 
     dir.WriteFile(FILE_PATH_LITERAL("empty.html"), "");
 
-    dir.WriteManifest(manifest.ToJSON());
+    dir.WriteManifest(manifest);
 
     const Extension* extension = LoadExtension(dir.UnpackedPath());
     EXPECT_TRUE(extension);

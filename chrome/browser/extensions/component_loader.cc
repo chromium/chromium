@@ -185,8 +185,9 @@ void ComponentLoader::LoadAll() {
       profile_util::ProfileCanUseNonComponentExtensions(profile_);
   const base::TimeTicks load_start_time = base::TimeTicks::Now();
 
-  for (const auto& component_extension : component_extensions_)
+  for (const auto& component_extension : component_extensions_) {
     Load(component_extension);
+  }
 
   const base::TimeDelta load_all_component_time =
       base::TimeTicks::Now() - load_start_time;
@@ -218,13 +219,19 @@ absl::optional<base::Value::Dict> ComponentLoader::ParseManifest(
 std::string ComponentLoader::Add(int manifest_resource_id,
                                  const base::FilePath& root_directory) {
   if (!ignore_allowlist_for_testing_ &&
-      !IsComponentExtensionAllowlisted(manifest_resource_id))
+      !IsComponentExtensionAllowlisted(manifest_resource_id)) {
     return std::string();
+  }
 
   base::StringPiece manifest_contents =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
           manifest_resource_id);
   return Add(manifest_contents, root_directory, true);
+}
+
+std::string ComponentLoader::Add(base::Value::Dict manifest,
+                                 const base::FilePath& root_directory) {
+  return Add(std::move(manifest), root_directory, false);
 }
 
 std::string ComponentLoader::Add(const base::StringPiece& manifest_contents,
@@ -238,8 +245,9 @@ std::string ComponentLoader::Add(const base::StringPiece& manifest_contents,
   // The Value is kept for the lifetime of the ComponentLoader. This is
   // required in case LoadAll() is called again.
   absl::optional<base::Value::Dict> manifest = ParseManifest(manifest_contents);
-  if (manifest)
+  if (manifest) {
     return Add(std::move(*manifest), root_directory, skip_allowlist);
+  }
   return std::string();
 }
 
@@ -248,13 +256,15 @@ std::string ComponentLoader::Add(base::Value::Dict parsed_manifest,
                                  bool skip_allowlist) {
   ComponentExtensionInfo info(std::move(parsed_manifest), root_directory);
   if (!ignore_allowlist_for_testing_ && !skip_allowlist &&
-      !IsComponentExtensionAllowlisted(info.extension_id))
+      !IsComponentExtensionAllowlisted(info.extension_id)) {
     return std::string();
+  }
 
   component_extensions_.push_back(std::move(info));
   ComponentExtensionInfo& added_info = component_extensions_.back();
-  if (extension_system_->is_ready())
+  if (extension_system_->is_ready()) {
     Load(added_info);
+  }
   return added_info.extension_id;
 }
 
@@ -320,8 +330,9 @@ void ComponentLoader::Remove(const std::string& id) {
 
 bool ComponentLoader::Exists(const std::string& id) const {
   for (const auto& component_extension : component_extensions_) {
-    if (component_extension.extension_id == id)
+    if (component_extension.extension_id == id) {
       return true;
+    }
   }
   return false;
 }
@@ -353,8 +364,9 @@ void ComponentLoader::AddWithNameAndDescription(
     const std::string& name_string,
     const std::string& description_string) {
   if (!ignore_allowlist_for_testing_ &&
-      !IsComponentExtensionAllowlisted(manifest_resource_id))
+      !IsComponentExtensionAllowlisted(manifest_resource_id)) {
     return;
+  }
 
   base::StringPiece manifest_contents =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
@@ -373,8 +385,9 @@ void ComponentLoader::AddWithNameAndDescription(
 
 void ComponentLoader::AddWebStoreApp() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!IsNormalSession())
+  if (!IsNormalSession()) {
     return;
+  }
 #endif
 
   AddWithNameAndDescription(
@@ -447,8 +460,9 @@ void ComponentLoader::AddDefaultComponentExtensions(
   if (!skip_session_components) {
     AddWebStoreApp();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (crosapi::browser_util::IsAshWebBrowserEnabled())
+    if (crosapi::browser_util::IsAshWebBrowserEnabled()) {
       AddChromeApp();
+    }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(ENABLE_PDF)
     Add(pdf_extension_util::GetManifest(),
@@ -465,8 +479,9 @@ void ComponentLoader::AddDefaultComponentExtensionsForKioskMode(
   // to AddDefaultComponentExtensionsWithBackgroundPagesForKioskMode.
 
   // No component extension for kiosk app launch splash screen.
-  if (skip_session_components)
+  if (skip_session_components) {
     return;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add virtual keyboard.
@@ -506,8 +521,9 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
   }
 #endif  // BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
 
-  if (should_disable_background_extensions)
+  if (should_disable_background_extensions) {
     return;
+  }
 
   if (!skip_session_components) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -534,8 +550,9 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // TODO(https://crbug.com/1005083): Force the off the record profile to be
     // created to allow the virtual keyboard to work in guest mode.
-    if (!IsNormalSession())
+    if (!IsNormalSession()) {
       ExtensionsBrowserClient::Get()->GetOffTheRecordContext(profile_);
+    }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
     Add(IDR_ARC_SUPPORT_MANIFEST,
@@ -649,11 +666,13 @@ void ComponentLoader::FinishAddComponentFromDir(
     base::OnceClosure done_cb,
     absl::optional<base::Value::Dict> manifest) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!manifest)
+  if (!manifest) {
     return;  // Error already logged.
+  }
 
-  if (name_string)
+  if (name_string) {
     manifest->Set(manifest_keys::kName, name_string.value());
+  }
 
   if (description_string) {
     manifest->Set(manifest_keys::kDescription, description_string.value());
@@ -662,8 +681,9 @@ void ComponentLoader::FinishAddComponentFromDir(
   std::string actual_extension_id =
       Add(std::move(*manifest), root_directory, false);
   CHECK_EQ(extension_id, actual_extension_id);
-  if (done_cb)
+  if (done_cb) {
     std::move(done_cb).Run();
+  }
 }
 
 void ComponentLoader::FinishLoadSpeechSynthesisExtension(

@@ -65,10 +65,6 @@ class DictionaryBuilder {
     return result;
   }
 
-  // Immediately serializes the current state to JSON. Can be called as many
-  // times as you like.
-  std::string ToJSON() const;
-
   template <typename T>
   DictionaryBuilder& Set(base::StringPiece key, T in_value) {
     dict_.Set(key, std::move(in_value));

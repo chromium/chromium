@@ -28,6 +28,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
@@ -112,7 +113,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/switches.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
@@ -184,8 +184,9 @@ void DispatchOnTestSuiteSkipCheck(DevToolsWindow* window,
   const char* args_array[] = {method, args...};
   std::ostringstream script;
   script << "uiTests.dispatchOnTestSuite([";
-  for (size_t i = 0; i < std::size(args_array); ++i)
+  for (size_t i = 0; i < std::size(args_array); ++i) {
     script << (i ? "," : "") << '\"' << args_array[i] << '\"';
+  }
   script << "])";
   EXPECT_EQ("[OK]", content::EvalJs(wc, script.str(),
                                     content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
@@ -282,8 +283,9 @@ class DevToolsTest : public InProcessBrowserTest {
  protected:
   static std::unique_ptr<net::test_server::HttpResponse> HandleFaviconRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.relative_url != "/favicon.ico")
+    if (request.relative_url != "/favicon.ico") {
       return nullptr;
+    }
     // The response doesn't have to be a valid favicon to avoid logging a
     // console error. Any 200 response will do.
     return std::make_unique<net::test_server::BasicHttpResponse>();
@@ -373,8 +375,7 @@ class SitePerProcessDevToolsTest : public DevToolsTest {
 };
 
 // Used to block until a dev tools window gets beforeunload event.
-class DevToolsWindowBeforeUnloadObserver
-    : public content::WebContentsObserver {
+class DevToolsWindowBeforeUnloadObserver : public content::WebContentsObserver {
  public:
   explicit DevToolsWindowBeforeUnloadObserver(DevToolsWindow*);
 
@@ -384,6 +385,7 @@ class DevToolsWindowBeforeUnloadObserver
       const DevToolsWindowBeforeUnloadObserver&) = delete;
 
   void Wait();
+
  private:
   // Invoked when the beforeunload handler fires.
   void BeforeUnloadFired(bool proceed) override;
@@ -396,23 +398,24 @@ DevToolsWindowBeforeUnloadObserver::DevToolsWindowBeforeUnloadObserver(
     DevToolsWindow* devtools_window)
     : WebContentsObserver(
           DevToolsWindowTesting::Get(devtools_window)->main_web_contents()),
-      m_fired(false) {
-}
+      m_fired(false) {}
 
 void DevToolsWindowBeforeUnloadObserver::Wait() {
-  if (m_fired)
+  if (m_fired) {
     return;
+  }
   message_loop_runner_ = base::MakeRefCounted<content::MessageLoopRunner>();
   message_loop_runner_->Run();
 }
 
 void DevToolsWindowBeforeUnloadObserver::BeforeUnloadFired(bool proceed) {
   m_fired = true;
-  if (message_loop_runner_.get())
+  if (message_loop_runner_.get()) {
     message_loop_runner_->Quit();
+  }
 }
 
-class DevToolsBeforeUnloadTest: public DevToolsTest {
+class DevToolsBeforeUnloadTest : public DevToolsTest {
  public:
   void CloseInspectedTab() {
     browser()->tab_strip_model()->CloseWebContentsAt(0,
@@ -423,9 +426,7 @@ class DevToolsBeforeUnloadTest: public DevToolsTest {
     DevToolsWindowTesting::CloseDevToolsWindow(window_);
   }
 
-  void CloseInspectedBrowser() {
-    chrome::CloseWindow(browser());
-  }
+  void CloseInspectedBrowser() { chrome::CloseWindow(browser()); }
 
  protected:
   void InjectBeforeUnloadListener(content::WebContents* web_contents) {
@@ -436,14 +437,13 @@ class DevToolsBeforeUnloadTest: public DevToolsTest {
     content::PrepContentsForBeforeUnloadTest(web_contents);
   }
 
-  void RunBeforeUnloadTest(
-      bool is_docked,
-      base::RepeatingCallback<void(void)> close_method,
-      bool wait_for_browser_close = true) {
+  void RunBeforeUnloadTest(bool is_docked,
+                           base::RepeatingCallback<void(void)> close_method,
+                           bool wait_for_browser_close = true) {
     OpenDevToolsWindow(kDebuggerTestPage, is_docked);
     auto runner = base::MakeRefCounted<content::MessageLoopRunner>();
-    DevToolsWindowTesting::Get(window_)->
-        SetCloseCallback(runner->QuitClosure());
+    DevToolsWindowTesting::Get(window_)->SetCloseCallback(
+        runner->QuitClosure());
     InjectBeforeUnloadListener(main_web_contents());
     {
       DevToolsWindowBeforeUnloadObserver before_unload_observer(window_);
@@ -454,14 +454,15 @@ class DevToolsBeforeUnloadTest: public DevToolsTest {
     {
       close_method.Run();
       AcceptModalDialog();
-      if (wait_for_browser_close)
+      if (wait_for_browser_close) {
         ui_test_utils::WaitForBrowserToClose(browser());
+      }
     }
     runner->Run();
   }
 
-  DevToolsWindow* OpenDevToolWindowOnWebContents(
-      content::WebContents* contents, bool is_docked) {
+  DevToolsWindow* OpenDevToolWindowOnWebContents(content::WebContents* contents,
+                                                 bool is_docked) {
     DevToolsWindow* window =
         DevToolsWindowTesting::OpenDevToolsWindowSync(contents, is_docked);
     return window;
@@ -548,27 +549,30 @@ class DevToolsExtensionTest : public DevToolsTest {
     return GetExtensionByPath(registry->enabled_extensions(), path);
   }
 
-  std::string BuildExtensionManifest(const std::string& name,
-                                     const std::string& devtools_page = "",
-                                     const std::string& key = "") {
-    extensions::DictionaryBuilder manifest;
-    manifest.Set("name", name)
-        .Set("version", "1")
-        .Set("manifest_version", 2)
-        // simple_test_page.html is currently the only page referenced outside
-        // of its own extension in the tests
-        .Set("web_accessible_resources", extensions::ListBuilder()
-                                             .Append("simple_test_page.html")
-                                             .Append("source.map")
-                                             .Build());
+  base::Value::Dict BuildExtensionManifest(
+      const std::string& name,
+      const std::string& devtools_page = "",
+      const std::string& key = "") {
+    auto manifest = base::Value::Dict()
+                        .Set("name", name)
+                        .Set("version", "1")
+                        .Set("manifest_version", 2)
+                        // simple_test_page.html is currently the only page
+                        // referenced outside of its own extension in the tests
+                        .Set("web_accessible_resources",
+                             base::Value::List()
+                                 .Append("simple_test_page.html")
+                                 .Append("source.map"));
 
     // If |devtools_page| isn't empty, make it a devtools extension in the
     // manifest.
-    if (!devtools_page.empty())
+    if (!devtools_page.empty()) {
       manifest.Set("devtools_page", devtools_page);
-    if (!key.empty())
+    }
+    if (!key.empty()) {
       manifest.Set("key", key);
-    return manifest.ToJSON();
+    }
+    return manifest;
   }
 
   // Builds an extension populated with a bunch of test
@@ -670,11 +674,11 @@ class DevToolsExtensionTest : public DevToolsTest {
     extensions::TestExtensionDir& extension_dir =
         BuildExtensionForTest("Component extension", "" /* devtools_page */,
                               "" /* panel_iframe_src */);
-    std::string manifest = BuildExtensionManifest(
-        "Component extension", "" /* devtools_page */, kPublicKey);
+    auto manifest = BuildExtensionManifest("Component extension",
+                                           "" /* devtools_page */, kPublicKey);
     component_loader->set_ignore_allowlist_for_testing(true);
-    std::string extension_id =
-        component_loader->Add(manifest, extension_dir.UnpackedPath());
+    std::string extension_id = component_loader->Add(
+        std::move(manifest), extension_dir.UnpackedPath());
     EXPECT_TRUE(extension_registry->enabled_extensions().GetByID(extension_id));
     return extension_id;
   }
@@ -931,8 +935,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
 // we try to exit application.
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        TestUndockedDevToolsApplicationClose) {
-  RunBeforeUnloadTest(false,
-                            base::BindRepeating(&chrome::CloseAllBrowsers));
+  RunBeforeUnloadTest(false, base::BindRepeating(&chrome::CloseAllBrowsers));
 }
 
 // Tests that inspected tab gets closed if devtools renderer
@@ -942,12 +945,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        DISABLED_TestUndockedDevToolsUnresponsive) {
   LoadTestPage(kDebuggerTestPage);
-  DevToolsWindow* devtools_window = OpenDevToolWindowOnWebContents(
-      GetInspectedTab(), false);
+  DevToolsWindow* devtools_window =
+      OpenDevToolWindowOnWebContents(GetInspectedTab(), false);
 
   auto runner = base::MakeRefCounted<content::MessageLoopRunner>();
-  DevToolsWindowTesting::Get(devtools_window)->SetCloseCallback(
-      runner->QuitClosure());
+  DevToolsWindowTesting::Get(devtools_window)
+      ->SetCloseCallback(runner->QuitClosure());
 
   ASSERT_TRUE(content::ExecuteScript(
       DevToolsWindowTesting::Get(devtools_window)->main_web_contents(),
@@ -963,8 +966,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
 IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
                        DISABLED_TestWorkerWindowClosing) {
   LoadTestPage(kDebuggerTestPage);
-  DevToolsWindow* devtools_window = OpenDevToolWindowOnWebContents(
-      GetInspectedTab(), false);
+  DevToolsWindow* devtools_window =
+      OpenDevToolWindowOnWebContents(GetInspectedTab(), false);
 
   OpenDevToolsPopupWindow(devtools_window);
   CloseDevToolsPopupWindow(devtools_window);
@@ -982,8 +985,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
       close_observers;
   content::WebContents* inspected_web_contents = GetInspectedTab();
   for (int i = 0; i < 3; ++i) {
-    DevToolsWindow* devtools_window = OpenDevToolWindowOnWebContents(
-      inspected_web_contents, i == 0);
+    DevToolsWindow* devtools_window =
+        OpenDevToolWindowOnWebContents(inspected_web_contents, i == 0);
     windows.push_back(devtools_window);
     close_observers.push_back(
         std::make_unique<content::WebContentsDestroyedWatcher>(
@@ -1021,8 +1024,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
     AcceptModalDialog();
     ui_test_utils::WaitForBrowserToClose(browser());
   }
-  for (auto& close_observer : close_observers)
+  for (auto& close_observer : close_observers) {
     close_observer->Wait();
+  }
 }
 
 // Tests scripts panel showing.
@@ -1031,8 +1035,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestShowScriptsTab) {
 }
 
 // Tests that chrome.devtools extension is correctly exposed.
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       TestDevToolsExtensionAPI) {
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestDevToolsExtensionAPI) {
   LoadExtension("devtools_extension");
   RunTest("waitForTestResultsInConsole", kArbitraryPage);
 }
@@ -1272,12 +1275,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
     OpenDevToolsWindow(kDebuggerTestPage, false);
   }
 
-  ASSERT_TRUE(message_queue) <<
-      "OpenDevToolsWindow must create at least one WebContents";
+  ASSERT_TRUE(message_queue)
+      << "OpenDevToolsWindow must create at least one WebContents";
   while (true) {
     ASSERT_TRUE(message_queue->WaitForMessage(&message));
-    if (message == "\"DONE\"")
+    if (message == "\"DONE\"") {
       break;
+    }
   }
 
   std::vector<RenderFrameHost*> rfhs =
@@ -1588,8 +1592,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                        DISABLED_DevToolsExtensionSecurityPolicyGrants) {
   auto dir = std::make_unique<extensions::TestExtensionDir>();
 
-  extensions::DictionaryBuilder manifest;
-  dir->WriteManifest(extensions::DictionaryBuilder()
+  dir->WriteManifest(base::Value::Dict()
                          .Set("name", "Devtools Panel")
                          .Set("version", "1")
                          // Allow the script we stuff into the 'blob:' URL:
@@ -1599,8 +1602,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                               "TB4='; "
                               "object-src 'none'")
                          .Set("manifest_version", 2)
-                         .Set("devtools_page", "devtools.html")
-                         .ToJSON());
+                         .Set("devtools_page", "devtools.html"));
 
   dir->WriteFile(
       FILE_PATH_LITERAL("devtools.html"),
@@ -1661,19 +1663,22 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   std::string message;
   while (true) {
     ASSERT_TRUE(message_queue.WaitForMessage(&message));
-    if (message == "\"xhr blob contents\"")
+    if (message == "\"xhr blob contents\"") {
       break;
+    }
   }
   while (true) {
     ASSERT_TRUE(message_queue.WaitForMessage(&message));
-    if (message == "\"iframe blob contents\"")
+    if (message == "\"iframe blob contents\"") {
       break;
+    }
   }
 }
 
 // Disabled on Windows due to flakiness. http://crbug.com/183649
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_TestDevToolsExtensionMessaging DISABLED_TestDevToolsExtensionMessaging
+#define MAYBE_TestDevToolsExtensionMessaging \
+  DISABLED_TestDevToolsExtensionMessaging
 #else
 #define MAYBE_TestDevToolsExtensionMessaging TestDevToolsExtensionMessaging
 #endif
@@ -1695,15 +1700,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsExperimentalExtensionTest,
 }
 
 // Tests that a content script is in the scripts list.
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       TestContentScriptIsPresent) {
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestContentScriptIsPresent) {
   LoadExtension("simple_content_script");
   RunTest("testContentScriptIsPresent", kPageWithContentScript);
 }
 
 // Tests that console selector shows correct context names.
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       TestConsoleContextNames) {
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestConsoleContextNames) {
   LoadExtension("simple_content_script");
   RunTest("testConsoleContextNames", kPageWithContentScript);
 }
@@ -1940,8 +1943,9 @@ bool InterceptURLLoad(content::URLLoaderInterceptor::RequestParams* params) {
   load_timing.send_end = base::TimeTicks::Now();
   load_timing.receive_headers_end = base::TimeTicks::Now();
   load_timing.push_start = start_time - base::Milliseconds(100);
-  if (url.query() != kPushUseNullEndTime)
+  if (url.query() != kPushUseNullEndTime) {
     load_timing.push_end = base::TimeTicks::Now();
+  }
 
   // The response's body is empty. The pipe is not filled.
   mojo::ScopedDataPipeProducerHandle producer_handle;
@@ -2051,8 +2055,7 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
 #define MAYBE_TestDispatchKeyEventShowsAutoFill \
   TestDispatchKeyEventShowsAutoFill
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest,
-                       MAYBE_TestDispatchKeyEventShowsAutoFill) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestDispatchKeyEventShowsAutoFill) {
   OpenDevToolsWindow(kDispatchKeyEventShowsAutoFill, false);
   GetInspectedTab()->Focus();
 
@@ -2113,8 +2116,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestSettings) {
 IN_PROC_BROWSER_TEST_F(DevToolsTest, TestDevToolsExternalNavigation) {
   OpenDevToolsWindow(kDebuggerTestPage, true);
   GURL url = embedded_test_server()->GetURL(kNavigateBackTestPage);
-  ui_test_utils::UrlLoadObserver observer(url,
-      content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver observer(
+      url, content::NotificationService::AllSources());
   ASSERT_TRUE(content::ExecuteScript(
       main_web_contents(),
       std::string("window.location = \"") + url.spec() + "\""));
@@ -2174,6 +2177,7 @@ class DevToolsAutoOpenerTest : public DevToolsTest {
     command_line->AppendSwitch(switches::kAutoOpenDevToolsForTabs);
     observer_ = std::make_unique<DevToolsWindowCreationObserver>();
   }
+
  protected:
   std::unique_ptr<DevToolsWindowCreationObserver> observer_;
 };
@@ -2291,9 +2295,11 @@ IN_PROC_BROWSER_TEST_F(WorkerDevToolsTest, InspectSharedWorker) {
 // Flaky on multiple platforms. See http://crbug.com/1263230
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_PauseInSharedWorkerInitialization DISABLED_PauseInSharedWorkerInitialization
+#define MAYBE_PauseInSharedWorkerInitialization \
+  DISABLED_PauseInSharedWorkerInitialization
 #else
-#define MAYBE_PauseInSharedWorkerInitialization PauseInSharedWorkerInitialization
+#define MAYBE_PauseInSharedWorkerInitialization \
+  PauseInSharedWorkerInitialization
 #endif
 IN_PROC_BROWSER_TEST_F(WorkerDevToolsTest,
                        MAYBE_PauseInSharedWorkerInitialization) {
@@ -2677,8 +2683,7 @@ class MockWebUIProvider
 // This tests checks that window is correctly initialized when DevTools is
 // opened while navigation through history with forward and back actions.
 // (crbug.com/627407)
-IN_PROC_BROWSER_TEST_F(DevToolsTest,
-                       TestWindowInitializedOnNavigateBack) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestWindowInitializedOnNavigateBack) {
   TestChromeWebUIControllerFactory test_factory;
   content::ScopedWebUIControllerFactoryRegistration factory_registration(
       &test_factory);
@@ -2817,8 +2822,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_CreateBrowserContext) {
 }
 
 // TODO(crbug.com/1110417): Flaky.
-IN_PROC_BROWSER_TEST_F(DevToolsTest,
-                       DISABLED_DisposeEmptyBrowserContext) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_DisposeEmptyBrowserContext) {
   window_ = DevToolsWindowTesting::OpenDiscoveryDevToolsWindowSync(
       browser()->profile());
   RunTestMethod("testDisposeEmptyBrowserContext");
@@ -3273,9 +3277,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, HostBindingsSyncIntegration) {
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, NoJavascriptUrlOnDevtools) {
-  // As per crbug/1115460 one could use javascript: url as a homepage URL and then trigger homepage
-  // navigation (e.g. via keyboard shortcut) to execute in the context of the privileged devtools
-  // frontend.
+  // As per crbug/1115460 one could use javascript: url as a homepage URL and
+  // then trigger homepage navigation (e.g. via keyboard shortcut) to execute in
+  // the context of the privileged devtools frontend.
   OpenDevToolsWindow("about:blank", true);
 
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
