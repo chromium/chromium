@@ -55,9 +55,6 @@ bool HttpsOnlyModeEnforcelist::IsEnforcedForHost(
   }
 
   GURL url = GetSecureGURLForHost(host);
-  const ContentSettingsPattern pattern =
-      ContentSettingsPattern::FromURLNoWildcard(url);
-
   const base::Value value = host_content_settings_map_->GetWebsiteSetting(
       url, url, ContentSettingsType::HTTPS_ENFORCED, nullptr);
   if (!value.is_dict()) {

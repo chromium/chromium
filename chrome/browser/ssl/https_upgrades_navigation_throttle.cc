@@ -67,8 +67,7 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
       HttpsFirstModeServiceFactory::GetForProfile(profile);
   if (hfm_service) {
     // Can be null in some cases, e.g. when using Ash sign-in profile.
-    hfm_service->MaybeEnableHttpsFirstModeForUrl(handle->GetWebContents(),
-                                                 handle->GetURL());
+    hfm_service->MaybeEnableHttpsFirstModeForUrl(profile, handle->GetURL());
   }
   // StatefulSSLHostStateDelegate can be null during tests.
   if (state && state->IsHttpsEnforcedForHost(handle->GetURL().host(),
