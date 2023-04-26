@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/cups_proxy/fake_cups_proxy_service_delegate.h"
@@ -23,7 +22,7 @@ namespace {
 
 using Printer = chromeos::Printer;
 
-// Generated via base::GenerateGUID.
+// Generated via base::Uuid::GenerateRandomV4().AsLowercaseString().
 const char kGenericGUID[] = "fd4c5f2e-7549-43d5-b931-9bf4e4f1bf51";
 
 // Faked delegate gives control over PrinterInstaller's printing stack
