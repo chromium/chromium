@@ -681,9 +681,7 @@ std::u16string PageInfoUI::PermissionStateToUIString(
         DCHECK_EQ(permission.source, content_settings::SETTING_SOURCE_USER);
         DCHECK(permissions::PermissionUtil::CanPermissionBeAllowedOnce(
             permission.type));
-        message_id = delegate->IsMultipleTabsOpen()
-                         ? IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE_MULTIPLE_TAB
-                         : IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE_ONE_TAB;
+        message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE;
 #endif
       } else {
         message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED;

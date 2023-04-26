@@ -101,16 +101,6 @@ bool IsOneTimePermission(permissions::PermissionPrompt::Delegate& delegate) {
   return true;
 }
 
-std::u16string GetWindowTitleInternal(
-    const std::u16string display_name,
-    const bool should_show_allow_this_time_button) {
-  int message_id = should_show_allow_this_time_button
-                       ? IDS_PERMISSIONS_BUBBLE_PROMPT_ONE_TIME
-                       : IDS_PERMISSIONS_BUBBLE_PROMPT;
-
-  return l10n_util::GetStringFUTF16(message_id, display_name);
-}
-
 std::u16string GetAccessibleWindowTitleInternal(
     const std::u16string display_name,
     std::vector<permissions::PermissionRequest*> visible_requests) {
@@ -206,8 +196,8 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
       accessible_window_title_(GetAccessibleWindowTitleInternal(
           url_identity_.name,
           GetVisibleRequests(*delegate.get()))),
-      window_title_(
-          GetWindowTitleInternal(url_identity_.name, is_one_time_permission_)) {
+      window_title_(l10n_util::GetStringFUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT,
+                                               url_identity_.name)) {
   // Note that browser_ may be null in unit tests.
 
   // To prevent permissions being accepted accidentally, and as a security
@@ -251,39 +241,27 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
         base::BindRepeating(
             &PermissionPromptBubbleView::AcceptPermissionThisTime,
             base::Unretained(this)),
-        l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ONCE));
+        l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
 
     auto allow_always_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&PermissionPromptBubbleView::AcceptPermission,
                             base::Unretained(this)),
-        l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ALWAYS));
+        l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_EVERY_VISIT));
     allow_always_button->SetProperty(views::kElementIdentifierKey,
                                      kAllowButtonElementId);
 
+    int block_message_id =
+        permissions::feature_params::kUseStrongerPromptLanguage.Get()
+            ? IDS_PERMISSION_NEVER_ALLOW
+            : IDS_PERMISSION_DONT_ALLOW;
     auto block_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&PermissionPromptBubbleView::DenyPermission,
                             base::Unretained(this)),
-        l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
+        l10n_util::GetStringUTF16(block_message_id));
 
-    if (permissions::feature_params::kOkButtonBehavesAsAllowAlways.Get()) {
-      buttons_container->AddChildView(std::move(allow_once_button));
-      if (views::PlatformStyle::kIsOkButtonLeading) {
-        buttons_container->AddChildView(std::move(allow_always_button));
-        buttons_container->AddChildView(std::move(block_button));
-      } else {
-        buttons_container->AddChildView(std::move(block_button));
-        buttons_container->AddChildView(std::move(allow_always_button));
-      }
-    } else {
-      buttons_container->AddChildView(std::move(allow_always_button));
-      if (views::PlatformStyle::kIsOkButtonLeading) {
-        buttons_container->AddChildView(std::move(allow_once_button));
-        buttons_container->AddChildView(std::move(block_button));
-      } else {
-        buttons_container->AddChildView(std::move(block_button));
-        buttons_container->AddChildView(std::move(allow_once_button));
-      }
-    }
+    buttons_container->AddChildView(std::move(allow_once_button));
+    buttons_container->AddChildView(std::move(allow_always_button));
+    buttons_container->AddChildView(std::move(block_button));
     AddChildView(std::move(buttons_container));
   } else {
     SetButtonLabel(ui::DIALOG_BUTTON_OK,

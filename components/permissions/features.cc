@@ -148,10 +148,8 @@ BASE_FEATURE(kWindowManagementPermissionAlias,
 }  // namespace features
 namespace feature_params {
 
-const base::FeatureParam<bool> kOkButtonBehavesAsAllowAlways(
-    &permissions::features::kOneTimePermission,
-    "OkButtonBehavesAsAllowAlways",
-    true);
+const base::FeatureParam<bool> kUseStrongerPromptLanguage{
+    &features::kOneTimePermission, "use_stronger_prompt_language", false};
 
 const base::FeatureParam<std::string> kPermissionPredictionServiceUrlOverride{
     &permissions::features::kPermissionPredictionServiceUseUrlOverride,
