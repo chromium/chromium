@@ -144,7 +144,11 @@ enum class ProfileKeepAliveOrigin {
   // alive.
   kProfileDeletionProcess = 32,
 
-  kMaxValue = kProfileDeletionProcess,
+  // Used when displaying the statistics for a profile in the Profile Picker,
+  // when deleting this profile.
+  kProfileStatistics = 33,
+
+  kMaxValue = kProfileStatistics,
 };
 
 std::ostream& operator<<(std::ostream& out,

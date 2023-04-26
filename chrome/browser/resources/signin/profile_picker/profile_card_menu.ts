@@ -263,6 +263,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
 
   private onRemoveCancelClicked_() {
     this.$.removeConfirmationDialog.cancel();
+    this.manageProfilesBrowserProxy_.closeProfileStatistics();
   }
 
   // <if expr="chromeos_lacros">
