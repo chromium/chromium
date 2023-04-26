@@ -1251,23 +1251,30 @@ bool NavigationManagerImpl::CanTrustLastCommittedItem(
   if (going_to_back_forward_list_item_)
     return true;
 
+  const GURL& last_committed_url = last_committed_item->GetURL();
+  // WKWebView.URL will update immediately when navigating to and from
+  // about, file or chrome scheme URLs.
+  // Checks `last_committed_url` in advance to reduce the calling to
+  // `web_view_cache_.GetVisibleWebViewOriginURL()` for better performance.
+  if (last_committed_url.SchemeIs(url::kAboutScheme) ||
+      last_committed_url.SchemeIs(url::kFileScheme) ||
+      web::GetWebClient()->IsAppSpecificURL(last_committed_url)) {
+    return true;
+  }
+
   // Only compare origins, as any mismatch between `web_view_url` and
   // `last_committed_url` with the same origin are safe to return as
   // visible.
   const GURL& web_view_origin_url =
       web_view_cache_.GetVisibleWebViewOriginURL();
-  const GURL& last_committed_url = last_committed_item->GetURL();
   if (web_view_origin_url == last_committed_url.DeprecatedGetOriginAsURL())
     return true;
 
   // WKWebView.URL will update immediately when navigating to and from
   // about, file or chrome scheme URLs.
   if (web_view_origin_url.SchemeIs(url::kAboutScheme) ||
-      last_committed_url.SchemeIs(url::kAboutScheme) ||
       web_view_origin_url.SchemeIs(url::kFileScheme) ||
-      last_committed_url.SchemeIs(url::kFileScheme) ||
-      web::GetWebClient()->IsAppSpecificURL(web_view_origin_url) ||
-      web::GetWebClient()->IsAppSpecificURL(last_committed_url)) {
+      web::GetWebClient()->IsAppSpecificURL(web_view_origin_url)) {
     return true;
   }
 
@@ -1356,12 +1363,15 @@ const GURL& NavigationManagerImpl::WKWebViewCache::GetVisibleWebViewOriginURL()
   id<CRWWebViewNavigationProxy> proxy =
       navigation_manager_->delegate_->GetWebViewNavigationProxy();
   if (proxy) {
-    if (![cached_visible_host_nsstring_ isEqualToString:proxy.URL.host] ||
-        ![cached_visible_scheme_nsstring_ isEqualToString:proxy.URL.scheme]) {
+    // Retain the url to reduce the number of calls to `proxy.URL` which may be
+    // very expensive after being called hundreds of time for one navigation.
+    NSURL* url = proxy.URL;
+    if (![cached_visible_host_nsstring_ isEqualToString:url.host] ||
+        ![cached_visible_scheme_nsstring_ isEqualToString:url.scheme]) {
       cached_visible_origin_url_ =
-          net::GURLWithNSURL(proxy.URL).DeprecatedGetOriginAsURL();
-      cached_visible_host_nsstring_ = proxy.URL.host;
-      cached_visible_scheme_nsstring_ = proxy.URL.scheme;
+          net::GURLWithNSURL(url).DeprecatedGetOriginAsURL();
+      cached_visible_host_nsstring_ = url.host;
+      cached_visible_scheme_nsstring_ = url.scheme;
     }
     return cached_visible_origin_url_;
   }
