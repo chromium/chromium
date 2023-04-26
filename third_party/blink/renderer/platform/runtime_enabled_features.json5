@@ -2330,7 +2330,7 @@
     },
     {
       name: "NewFlexboxSizing",
-      base_feature: "none",
+      status: "test",
     },
     {
       name: "NoIdleEncodingForWebTests",

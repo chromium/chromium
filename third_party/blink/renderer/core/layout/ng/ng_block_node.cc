@@ -965,8 +965,9 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   // MinMaxSizes computation. Instead of running (and possible caching incorrect
   // results), when we're not performing layout, just use border + padding.
   if (!is_in_perform_layout &&
-      (IsGrid() || (IsFlexibleBox() &&
-                    RuntimeEnabledFeatures::NewFlexboxSizingEnabled()))) {
+      (IsGrid() ||
+       (IsFlexibleBox() && Style().ResolvedIsColumnFlexDirection() &&
+        RuntimeEnabledFeatures::NewFlexboxSizingEnabled()))) {
     const NGFragmentGeometry fragment_geometry =
         CalculateInitialFragmentGeometry(constraint_space, *this,
                                          /* break_token */ nullptr,
