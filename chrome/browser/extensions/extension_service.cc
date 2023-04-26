@@ -156,21 +156,6 @@ const char* const kObsoleteComponentExtensionIds[] = {
     "jcgeabjmjgoblfofpppfkcoakmfobdko",  // Video Player
 };
 
-// When uninstalling an extension determine if the extension's directory
-// should be deleted when uninstalling. Returns `true` iff extension is
-// unpacked and installed outside the unpacked extensions installations dir.
-// Example: packed extensions are always deleted. But unpacked extensions are
-// in a folder outside the profile dir are not deleted.
-bool SkipDeleteExtensionDir(const Extension& extension,
-                            const base::FilePath& profile_path) {
-  bool is_unpacked_location =
-      Manifest::IsUnpackedLocation(extension.location());
-  bool extension_dir_not_direct_subdir_of_unpacked_extensions_install_dir =
-      extension.path().DirName() !=
-      profile_path.AppendASCII(extensions::kUnpackedInstallDirectoryName);
-  return is_unpacked_location &&
-         extension_dir_not_direct_subdir_of_unpacked_extensions_install_dir;
-}
 }  // namespace
 
 // ExtensionService.
@@ -835,25 +820,13 @@ bool ExtensionService::UninstallExtension(
         base::BarrierClosure(num_tasks, std::move(done_callback));
   }
 
-  // Delete extensions in profile directory (from webstore, or from .crx), but
-  // do not delete unpacked in a folder outside the profile directory.
-  if (!SkipDeleteExtensionDir(*extension, profile_->GetPath())) {
-    // Extensions installed from webstore or .crx are versioned in subdirs so we
-    // delete the parent dir. Unpacked (installed from .zip rather than folder)
-    // are not versioned so we just delete the single installation directory.
-    base::FilePath deletion_dir =
-        is_unpacked_location ? extension->path() : extension->path().DirName();
-
-    // Tell the backend to start deleting installed extension on the file
-    // thread.
+  // Tell the backend to start deleting installed extensions on the file thread.
+  if (!is_unpacked_location) {
     if (!GetExtensionFileTaskRunner()->PostTaskAndReply(
             FROM_HERE,
             base::BindOnce(&ExtensionService::UninstallExtensionOnFileThread,
                            extension->id(), profile_->GetProfileUserName(),
-                           /*extensions_install_dir=*/
-                           is_unpacked_location ? unpacked_install_directory_
-                                                : install_directory_,
-                           /*extension_dir_to_delete=*/std::move(deletion_dir),
+                           install_directory_, extension->path(),
                            profile_->GetPath()),
             subtask_done_callback)) {
       NOTREACHED();
@@ -879,14 +852,13 @@ bool ExtensionService::UninstallExtension(
 void ExtensionService::UninstallExtensionOnFileThread(
     const std::string& id,
     const std::string& profile_user_name,
-    const base::FilePath& extensions_install_dir,
-    const base::FilePath& extension_dir_to_delete,
+    const base::FilePath& install_dir,
+    const base::FilePath& extension_path,
     const base::FilePath& profile_dir) {
   ExtensionAssetsManager* assets_manager =
       ExtensionAssetsManager::GetInstance();
-  assets_manager->UninstallExtension(id, profile_user_name,
-                                     extensions_install_dir,
-                                     extension_dir_to_delete, profile_dir);
+  assets_manager->UninstallExtension(id, profile_user_name, install_dir,
+                                     extension_path, profile_dir);
 }
 
 bool ExtensionService::IsExtensionEnabled(

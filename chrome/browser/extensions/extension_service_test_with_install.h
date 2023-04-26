@@ -46,9 +46,7 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceUserTestBase,
 
  protected:
   void InitializeExtensionService(
-      const ExtensionServiceTestBase::ExtensionServiceInitParams& params,
-      const base::FilePath::CharType* preferences_filename =
-          chrome::kPreferencesFilename) override;
+      const ExtensionServiceInitParams& params) override;
 
   static std::vector<std::u16string> GetErrors();
 
@@ -126,18 +124,7 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceUserTestBase,
                        const base::FilePath& in_path,
                        UpdateState expected_state);
 
-  enum UninstallExtensionFileDeleteType {
-    kDeletePath,         // Delete the exact path of the extension install.
-    kDeleteAllVersions,  // Delete all version of the extension (e.g. delete the
-                         // root of the install folder).
-    kDoNotDelete,        // Do not delete any of the extension's files.
-  };
-
-  // Uninstalls extension with `id` and expects deletion of the extension's
-  // files according to `delete_type`.
-  void UninstallExtension(
-      const std::string& id,
-      UninstallExtensionFileDeleteType delete_type = kDeleteAllVersions);
+  void UninstallExtension(const std::string& id);
 
   void TerminateExtension(const std::string& id);
 

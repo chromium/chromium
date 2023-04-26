@@ -16,7 +16,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_service.h"
@@ -69,9 +68,9 @@ class ExtensionServiceTestBase : public testing::Test {
     // If not, sync_preferences::TestingPrefServiceSyncable is used.
     absl::optional<std::string> prefs_content;
 
-    // If not empty, copies both directories to the profile directory.
+    // If not empty, copies the directory to the profile's extension
+    // directory.
     base::FilePath extensions_dir;
-    base::FilePath unpacked_extensions_dir;
 
     bool autoupdate_enabled = false;
     bool extensions_enabled = true;
@@ -95,9 +94,7 @@ class ExtensionServiceTestBase : public testing::Test {
     // Also, there must be a directory named "Extensions" containing extensions
     // data for testing.
     [[nodiscard]] bool ConfigureByTestDataDirectory(
-        const base::FilePath& filepath,
-        const base::FilePath::CharType* preferences_filename =
-            chrome::kPreferencesFilename);
+        const base::FilePath& filepath);
   };
 
   ExtensionServiceTestBase(const ExtensionServiceTestBase&) = delete;
@@ -119,21 +116,15 @@ class ExtensionServiceTestBase : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  // Initialize an ExtensionService according to the given `params`.
-  // `preferences_filename` is the name of the preferences file in the extension
-  // test directory.
+  // Initialize an ExtensionService according to the given |params|.
   virtual void InitializeExtensionService(
-      const ExtensionServiceTestBase::ExtensionServiceInitParams& params,
-      const base::FilePath::CharType* preferences_filename =
-          chrome::kPreferencesFilename);
+      const ExtensionServiceInitParams& params);
 
   // Initialize an empty ExtensionService using the default init params.
   void InitializeEmptyExtensionService();
 
   // Initialize an ExtensionService with a few already-installed extensions.
-  // Setting `unpacked` true uses the unpacked version of the test extension
-  // instead.
-  void InitializeGoodInstalledExtensionService(bool unpacked = false);
+  void InitializeGoodInstalledExtensionService();
 
   // Initialize an ExtensionService with autoupdate enabled.
   void InitializeExtensionServiceWithUpdater();
@@ -167,9 +158,6 @@ class ExtensionServiceTestBase : public testing::Test {
   ExtensionRegistry* registry() { return registry_; }
   const base::FilePath& extensions_install_dir() const {
     return extensions_install_dir_;
-  }
-  const base::FilePath& unpacked_install_dir() const {
-    return unpacked_install_dir_;
   }
   const base::FilePath& data_dir() const { return data_dir_; }
   const base::ScopedTempDir& temp_dir() const { return temp_dir_; }
@@ -232,8 +220,6 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // The directory into which extensions are installed.
   base::FilePath extensions_install_dir_;
-  // The directory into which unpacked extensions are installed.
-  base::FilePath unpacked_install_dir_;
 
   // chrome/test/data/extensions/
   base::FilePath data_dir_;

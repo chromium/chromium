@@ -98,7 +98,6 @@
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_service_factory.h"
 #include "extensions/browser/zipfile_installer.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
@@ -1456,18 +1455,9 @@ DeveloperPrivateInstallDroppedFileFunction::Run() {
 
   ExtensionService* service = GetExtensionService(browser_context());
   if (path.MatchesExtension(FILE_PATH_LITERAL(".zip"))) {
-    if (base::FeatureList::IsEnabled(
-            extensions_features::kExtensionsZipFileInstalledInProfileDir)) {
-      ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
-                               MakeRegisterInExtensionServiceCallback(service))
-          ->InstallZipFileToUnpackedExtensionsDir(
-              path, service->unpacked_install_directory());
-    } else {
-      ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
-                               MakeRegisterInExtensionServiceCallback(service))
-          ->InstallZipFileToTempDir(path);
-    }
-
+    ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
+                             MakeRegisterInExtensionServiceCallback(service))
+        ->LoadFromZipFile(path);
   } else {
     auto prompt = std::make_unique<ExtensionInstallPrompt>(web_contents);
     scoped_refptr<CrxInstaller> crx_installer =
