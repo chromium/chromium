@@ -17,7 +17,6 @@
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "extensions/common/value_builder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
@@ -119,8 +118,8 @@ class ExtensionBuilder {
   // Shortcuts to setting values on the manifest dictionary without needing to
   // go all the way through MergeManifest(). Sample usage:
   // ExtensionBuilder("name").SetManifestKey("version", "0.2").Build();
-  // Can be used in conjuction with ListBuilder and DictionaryBuilder for more
-  // complex types.
+  // Can be used in conjuction with chained base::Value::List and
+  // base::Value::Dict to create complex values.
   template <typename T>
   ExtensionBuilder& SetManifestKey(base::StringPiece key, T&& value) {
     SetManifestKeyImpl(key, base::Value(std::forward<T>(value)));

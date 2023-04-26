@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/api/messaging/send_message_tester.h"
@@ -110,7 +110,7 @@ TEST_F(RuntimeHooksDelegateTest, RuntimeId) {
     scoped_refptr<const Extension> connectable_extension =
         ExtensionBuilder("connectable")
             .SetManifestPath("externally_connectable.matches",
-                             ListBuilder().Append("*://example.com/*").Build())
+                             base::Value::List().Append("*://example.com/*"))
             .Build();
     RegisterExtension(connectable_extension);
   }

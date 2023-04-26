@@ -438,8 +438,6 @@ static_library("common") {
     "utils/content_script_utils.h",
     "utils/extension_types_utils.cc",
     "utils/extension_types_utils.h",
-    "value_builder.cc",
-    "value_builder.h",
     "value_counter.cc",
     "value_counter.h",
     "verifier_formats.cc",
@@ -613,7 +611,6 @@ source_set("unit_tests") {
     "url_pattern_set_unittest.cc",
     "url_pattern_unittest.cc",
     "user_script_unittest.cc",
-    "value_builder_unittest.cc",
     "value_counter_unittest.cc",
   ]
 
