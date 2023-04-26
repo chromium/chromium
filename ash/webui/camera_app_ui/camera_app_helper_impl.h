@@ -163,7 +163,7 @@ class CameraAppHelperImpl : public TabletModeObserver,
   // Client to connect to document detection service.
   std::unique_ptr<DocumentScannerServiceClient> document_scanner_service_;
 
-  base::raw_ptr<HoldingSpaceClient> const holding_space_client_;
+  raw_ptr<HoldingSpaceClient> const holding_space_client_;
 
   base::WeakPtrFactory<CameraAppHelperImpl> weak_factory_{this};
 };

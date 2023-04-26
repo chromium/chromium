@@ -130,8 +130,8 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   }
 
  private:
-  base::raw_ptr<views::Widget> widget_;
-  base::raw_ptr<TestBubbleView> bubble_view_;
+  raw_ptr<views::Widget> widget_;
+  raw_ptr<TestBubbleView> bubble_view_;
 };
 
 // Stub AccountSelectionView::Delegate.
@@ -155,7 +155,7 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   content::WebContents* GetWebContents() override { return web_contents_; }
 
  private:
-  base::raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace

@@ -364,8 +364,7 @@ class ExistingUserController::DeviceLocalAccountPolicyWaiter
   void OnDeviceLocalAccountsChanged() override {}
 
  private:
-  base::raw_ptr<policy::DeviceLocalAccountPolicyService> policy_service_ =
-      nullptr;
+  raw_ptr<policy::DeviceLocalAccountPolicyService> policy_service_ = nullptr;
   base::OnceClosure callback_;
   std::string user_id_;
   base::ScopedObservation<policy::DeviceLocalAccountPolicyService,

@@ -300,7 +300,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
   }
 
  protected:
-  base::raw_ptr<RenderFrameHost> iframe_render_frame_host_;
+  raw_ptr<RenderFrameHost> iframe_render_frame_host_;
   std::unique_ptr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;

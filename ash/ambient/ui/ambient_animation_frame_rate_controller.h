@@ -71,7 +71,7 @@ class ASH_EXPORT AmbientAnimationFrameRateController
   void RemoveWindowToThrottle(aura::Window* window);
   void TrySetNewTrackingAnimation();
 
-  const base::raw_ptr<FrameThrottlingController> frame_throttling_controller_;
+  const raw_ptr<FrameThrottlingController> frame_throttling_controller_;
 
   // Matches one of the lottie::Animations in |windows_to_throttle_|. Even
   // though the caller may add multiple lottie::Animations in
@@ -81,7 +81,7 @@ class ASH_EXPORT AmbientAnimationFrameRateController
   // synchronized; this is ensured within AmbientAnimationPlayer. If the
   // |tracking_animation_| is destroyed while this class is active, a new one
   // is picked from the |windows_to_throttle_|.
-  base::raw_ptr<lottie::Animation> tracking_animation_ = nullptr;
+  raw_ptr<lottie::Animation> tracking_animation_ = nullptr;
   AmbientAnimationFrameRateSchedule schedule_;
 
   // Points to the current section in the |schedule_| that's being played.

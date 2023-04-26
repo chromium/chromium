@@ -58,7 +58,7 @@ class AmbientSlideshowPeripheralUi : public views::View,
   // constructor.
   const std::unique_ptr<JitterCalculator> owned_jitter_calculator_;
   // Never null. Always points to the `JitterCalculator` to use.
-  const base::raw_ptr<JitterCalculator> jitter_calculator_;
+  const raw_ptr<JitterCalculator> jitter_calculator_;
 
   raw_ptr<AmbientInfoView, ExperimentalAsh> ambient_info_view_ = nullptr;
 

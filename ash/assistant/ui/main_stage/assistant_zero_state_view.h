@@ -60,8 +60,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantZeroStateView
   // Owned by view hierarchy;
   raw_ptr<AssistantOnboardingView, ExperimentalAsh> onboarding_view_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> greeting_label_ = nullptr;
-  base::raw_ptr<views::View> spacer_ = nullptr;
-  base::raw_ptr<AppListToastView> learn_more_toast_ = nullptr;
+  raw_ptr<views::View> spacer_ = nullptr;
+  raw_ptr<AppListToastView> learn_more_toast_ = nullptr;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

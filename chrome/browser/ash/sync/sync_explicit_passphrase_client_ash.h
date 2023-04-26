@@ -52,7 +52,7 @@ class SyncExplicitPassphraseClientAsh
   bool ValidateAccountKey(
       const crosapi::mojom::AccountKeyPtr& mojo_account_key) const;
 
-  const base::raw_ptr<syncer::SyncService> sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   bool is_passphrase_required_;
   bool is_passphrase_available_;

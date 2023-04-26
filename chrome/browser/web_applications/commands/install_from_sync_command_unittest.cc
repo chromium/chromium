@@ -234,7 +234,7 @@ class InstallFromSyncTest : public WebAppTest {
     return base::UTF8ToUTF16(registrar().GetAppShortName(app_id));
   }
 
-  base::raw_ptr<TestWebAppUrlLoader> command_manager_url_loader_;
+  raw_ptr<TestWebAppUrlLoader> command_manager_url_loader_;
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
 };
 

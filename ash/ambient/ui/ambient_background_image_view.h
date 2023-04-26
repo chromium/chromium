@@ -83,7 +83,7 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   // Owned by |AmbientController| and should always outlive |this|.
   raw_ptr<AmbientViewDelegate, ExperimentalAsh> delegate_ = nullptr;
 
-  const base::raw_ptr<JitterCalculator> glanceable_info_jitter_calculator_;
+  const raw_ptr<JitterCalculator> glanceable_info_jitter_calculator_;
 
   // View to display current image(s) on ambient. Owned by the view hierarchy.
   raw_ptr<views::View, ExperimentalAsh> image_container_ = nullptr;

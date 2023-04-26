@@ -95,7 +95,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   const raw_ptr<session_manager::SessionManager, ExperimentalAsh>
       session_manager_;
 
-  const base::raw_ptr<ash::FileSuggestKeyedService> file_suggest_service_;
+  const raw_ptr<ash::FileSuggestKeyedService> file_suggest_service_;
 
   const base::Time construction_time_;
   base::TimeTicks query_start_time_;

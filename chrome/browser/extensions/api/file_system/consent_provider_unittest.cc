@@ -95,7 +95,7 @@ class TestingConsentProviderDelegate
   }
 
   // Use raw_ptr since |state| is owned by owner.
-  base::raw_ptr<TestDelegateState> state_;
+  raw_ptr<TestDelegateState> state_;
 };
 
 // Rewrites result of a consent request from |result| to |log|.

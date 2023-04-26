@@ -30,8 +30,7 @@ class NoOpWebrtcFrameScheduler : public WebrtcFrameScheduler {
                         base::TimeDelta duration) override;
 
  private:
-  base::raw_ptr<DesktopCapturer> capturer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<DesktopCapturer> capturer_ GUARDED_BY_CONTEXT(sequence_checker_);
   uint32_t last_frame_rate_ GUARDED_BY_CONTEXT(sequence_checker_) = 60;
 
   SEQUENCE_CHECKER(sequence_checker_);

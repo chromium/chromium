@@ -233,7 +233,7 @@ class ContinueButton : public views::MdTextButton {
   }
 
  private:
-  base::raw_ptr<AccountSelectionBubbleView> bubble_view_;
+  raw_ptr<AccountSelectionBubbleView> bubble_view_;
   absl::optional<SkColor> brand_background_color_;
   absl::optional<SkColor> brand_text_color_;
 };
@@ -327,7 +327,7 @@ class IdpImageView : public views::ImageView {
 
   // The AccountSelectionBubbleView outlives IdpImageView so it is safe to store
   // a raw pointer to it.
-  base::raw_ptr<AccountSelectionBubbleView> bubble_view_;
+  raw_ptr<AccountSelectionBubbleView> bubble_view_;
 
   base::WeakPtrFactory<IdpImageView> weak_ptr_factory_{this};
 };

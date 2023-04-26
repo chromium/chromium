@@ -40,7 +40,7 @@ class SignalsAggregatorImpl : public SignalsAggregator {
                                GetSignalsCallback callback,
                                const UserPermission user_permission);
 
-  base::raw_ptr<UserPermissionService> permission_service_;
+  raw_ptr<UserPermissionService> permission_service_;
   std::vector<std::unique_ptr<SignalsCollector>> collectors_;
 
   base::WeakPtrFactory<SignalsAggregatorImpl> weak_factory_{this};

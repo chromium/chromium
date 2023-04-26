@@ -40,7 +40,7 @@ class ASH_EXPORT AmbientAnimationShieldController : public ColorModeObserver {
   void OnColorModeChanged(bool dark_mode_enabled) override;
 
   const std::unique_ptr<views::View> shield_view_;
-  const base::raw_ptr<views::View> parent_view_;
+  const raw_ptr<views::View> parent_view_;
   base::ScopedObservation<DarkLightModeControllerImpl, ColorModeObserver>
       color_provider_observer_{this};
 };

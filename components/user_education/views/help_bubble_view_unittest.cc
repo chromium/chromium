@@ -103,7 +103,7 @@ class HelpBubbleViewTest : public views::ViewsTestBase {
   }
 
   test::TestHelpBubbleDelegate test_delegate_;
-  base::raw_ptr<views::View> view_;
+  raw_ptr<views::View> view_;
   std::unique_ptr<views::Widget> widget_;
 };
 

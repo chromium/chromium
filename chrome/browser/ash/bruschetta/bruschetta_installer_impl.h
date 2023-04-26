@@ -97,11 +97,11 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
 
   std::unique_ptr<guest_os::GuestOsDlcInstallation> in_progress_dlc_;
 
-  const base::raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
 
   base::OnceClosure close_closure_;
 
-  base::raw_ptr<Observer> observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 
   base::WeakPtrFactory<BruschettaInstallerImpl> weak_ptr_factory_{this};
 };

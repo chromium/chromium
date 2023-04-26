@@ -64,7 +64,7 @@ class CryptohomePinEngine {
                                      absl::optional<AuthenticationError> error);
 
   // Non owning pointer
-  const base::raw_ptr<ash::AuthPerformer> auth_performer_;
+  const raw_ptr<ash::AuthPerformer> auth_performer_;
 
   ash::AuthFactorEditor auth_factor_editor_;
 

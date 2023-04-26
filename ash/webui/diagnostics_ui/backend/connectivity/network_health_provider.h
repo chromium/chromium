@@ -131,7 +131,7 @@ class NetworkHealthProvider
 
   mojom::NetworkState GetNetworkStateForGuid(const std::string& guid);
 
-  base::raw_ptr<NetworkingLog> networking_log_ptr_ = nullptr;  // Not owned.
+  raw_ptr<NetworkingLog> networking_log_ptr_ = nullptr;  // Not owned.
 
   // Guid for the currently active network (if one exists). This guid will
   // be present in |networks_|.

@@ -50,7 +50,7 @@ class ASH_EXPORT InputDeviceNotifier : public ui::InputDeviceEventObserver {
   // `connected_devices_` is owned by `InputDeviceSettingsControllerImpl` which
   // instantiates the `InputDeviceNotifier` as a member. `connected_devices_`
   // will always outlive `InputDeviceNotifier`.
-  base::raw_ptr<base::flat_map<DeviceId, MojomDevicePtr>> connected_devices_;
+  raw_ptr<base::flat_map<DeviceId, MojomDevicePtr>> connected_devices_;
   InputDeviceListsUpdatedCallback device_lists_updated_callback_;
 };
 

@@ -39,7 +39,7 @@ class WebStateWrapper : public WebWrapper {
   void ClearWebStatePointer();
 
  private:
-  base::raw_ptr<web::WebState> web_state_;
+  raw_ptr<web::WebState> web_state_;
 };
 
 }  // namespace commerce

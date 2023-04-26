@@ -58,7 +58,7 @@ class EnrollmentFwmpHelper {
       absl::optional<user_data_auth::GetFirmwareManagementParametersReply>
           reply);
 
-  base::raw_ptr<ash::InstallAttributesClient> install_attributes_client_;
+  raw_ptr<ash::InstallAttributesClient> install_attributes_client_;
   base::WeakPtrFactory<EnrollmentFwmpHelper> weak_ptr_factory_{this};
 };
 

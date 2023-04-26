@@ -94,7 +94,7 @@ class TestCompositorMonitor : public ui::CompositorObserver {
   }
 
  private:
-  const base::raw_ptr<ui::Compositor> compositor_;
+  const raw_ptr<ui::Compositor> compositor_;
   bool animations_running_ = false;
   bool waiting_for_did_present_compositor_frame_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;

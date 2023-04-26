@@ -70,7 +70,7 @@ class RootCompositorFrameSinkImpl::StandaloneBeginFrameObserver
   }
 
   mojo::Remote<mojom::BeginFrameObserver> remote_observer_;
-  base::raw_ptr<BeginFrameSource> begin_frame_source_;
+  raw_ptr<BeginFrameSource> begin_frame_source_;
 };
 
 // static

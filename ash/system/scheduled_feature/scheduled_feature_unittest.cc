@@ -147,7 +147,7 @@ class CheckpointObserver : public ScheduledFeature::CheckpointObserver {
   base::ScopedObservation<ScheduledFeature,
                           ScheduledFeature::CheckpointObserver>
       observation_{this};
-  const base::raw_ptr<const base::Clock> clock_;
+  const raw_ptr<const base::Clock> clock_;
   std::vector<std::pair<TimeOfDay, ScheduleCheckpoint>> changes_;
 };
 

@@ -56,8 +56,8 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   SearchResultImageViewDelegate delegate_;
 
   // Owned by views hierarchy.
-  base::raw_ptr<views::Label> title_label_ = nullptr;
-  base::raw_ptr<views::BoxLayoutView> image_view_container_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::BoxLayoutView> image_view_container_ = nullptr;
   std::vector<SearchResultImageView*> image_views_;
 };
 

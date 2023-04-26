@@ -62,7 +62,7 @@ class ASH_EXPORT AmbientSessionMetricsRecorder
       const lottie::Animation& animation_r) const;
 
   const AmbientTheme theme_;
-  const base::raw_ptr<const base::TickClock> clock_;
+  const raw_ptr<const base::TickClock> clock_;
   const base::TimeTicks session_start_time_;
 
   int num_registered_screens_ = 0;

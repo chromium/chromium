@@ -41,7 +41,7 @@ class BorealisSplashScreenView
 
  private:
   raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
-  base::raw_ptr<views::Label> starting_label_;
+  raw_ptr<views::Label> starting_label_;
   base::WeakPtrFactory<BorealisSplashScreenView> weak_factory_;
 };
 

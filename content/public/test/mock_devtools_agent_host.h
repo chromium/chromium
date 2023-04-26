@@ -50,7 +50,7 @@ class MockDevToolsAgentHost : public content::DevToolsAgentHost {
  protected:
   ~MockDevToolsAgentHost() override = default;
 
-  base::raw_ptr<content::DevToolsAgentHostClient> client_ = nullptr;
+  raw_ptr<content::DevToolsAgentHostClient> client_ = nullptr;
 };
 
 }  // namespace content

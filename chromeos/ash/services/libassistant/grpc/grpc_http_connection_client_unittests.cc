@@ -85,7 +85,7 @@ class MockHttpConnection : public HttpConnection {
   void SendOnConnectionDestroyed() { delegate_->OnConnectionDestroyed(); }
 
  private:
-  base::raw_ptr<HttpConnection::Delegate> delegate_;
+  raw_ptr<HttpConnection::Delegate> delegate_;
 };
 
 class TestHttpConnectionFactory
@@ -210,7 +210,7 @@ class TestGrpcHttpConnectionService {
     client_->OnRpcReadAvailable(nullptr, response);
   }
 
-  base::raw_ptr<GrpcHttpConnectionClient> client_;
+  raw_ptr<GrpcHttpConnectionClient> client_;
   std::unique_ptr<MockStreamingWriter> writer_;
 };
 

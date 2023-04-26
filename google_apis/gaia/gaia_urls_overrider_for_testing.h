@@ -32,7 +32,7 @@ class GaiaUrlsOverriderForTesting {
 
  private:
   // To make sure tests and this class modify the same command line instance.
-  const base::raw_ptr<base::CommandLine> command_line_;
+  const raw_ptr<base::CommandLine> command_line_;
 
   // Scoped version of `GaiaUrls` that used instead of the original
   // singleton.

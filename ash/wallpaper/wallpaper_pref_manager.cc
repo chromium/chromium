@@ -274,7 +274,7 @@ class WallpaperProfileHelperImpl : public WallpaperProfileHelper {
   }
 
  private:
-  base::raw_ptr<WallpaperControllerClient> wallpaper_controller_client_ =
+  raw_ptr<WallpaperControllerClient> wallpaper_controller_client_ =
       nullptr;  // not owned
 };
 

@@ -110,7 +110,7 @@ class ManifestDemuxerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MediaLog> media_log_;
   std::unique_ptr<MockDemuxerHost> mock_host_;
-  base::raw_ptr<MockEngine> mock_engine_;
+  raw_ptr<MockEngine> mock_engine_;
   std::unique_ptr<ManifestDemuxer> manifest_demuxer_;
 };
 

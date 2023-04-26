@@ -96,7 +96,7 @@ class AttributionAttestationMediatorTest : public testing::Test {
 
   // We hold onto a raw ptr to configure the call expectations, the helper owns
   // the unique_ptr.
-  base::raw_ptr<FakeCryptographer> fake_cryptographer_;
+  raw_ptr<FakeCryptographer> fake_cryptographer_;
   std::unique_ptr<AttributionAttestationMediator> mediator_;
 
   base::HistogramTester histograms_;

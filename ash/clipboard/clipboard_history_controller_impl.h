@@ -249,7 +249,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   std::unique_ptr<MenuDelegate> menu_delegate_;
   // Bubble view displayed by `ShowMenu()` when the clipboard history refresh
   // feature is enabled. Null when `MenuIsShowing()` is false.
-  base::raw_ptr<ClipboardManagerBubbleView> clipboard_manager_ = nullptr;
+  raw_ptr<ClipboardManagerBubbleView> clipboard_manager_ = nullptr;
 
   // The timestamp when the clipboard history menu was last shown.
   base::TimeTicks last_menu_show_time_;

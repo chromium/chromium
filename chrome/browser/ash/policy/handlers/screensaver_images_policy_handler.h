@@ -54,7 +54,7 @@ class ASH_EXPORT ScreensaverImagesPolicyHandler
 
   base::flat_set<base::FilePath> downloaded_images_;
 
-  base::raw_ptr<PrefService> user_pref_service_ = nullptr;
+  raw_ptr<PrefService> user_pref_service_ = nullptr;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

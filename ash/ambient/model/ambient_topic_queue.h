@@ -123,7 +123,7 @@ class ASH_EXPORT AmbientTopicQueue {
   const base::TimeDelta topic_fetch_interval_;
   const bool should_split_topics_;
   const std::unique_ptr<Delegate> delegate_;
-  const base::raw_ptr<AmbientBackendController> backend_controller_;
+  const raw_ptr<AmbientBackendController> backend_controller_;
 
   std::queue<AmbientModeTopic> available_topics_;
   int total_topics_fetched_ = 0;

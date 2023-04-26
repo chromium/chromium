@@ -488,7 +488,7 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
     TestProperty(
         &FencedFrameProperties::shared_storage_budget_metadata_,
         &RedactedFencedFrameProperties::shared_storage_budget_metadata_,
-        static_cast<base::raw_ptr<const SharedStorageBudgetMetadata>>(
+        static_cast<raw_ptr<const SharedStorageBudgetMetadata>>(
             &test_shared_storage_budget_metadata),
         pointer_value_eq_fn, eq_fn);
   }

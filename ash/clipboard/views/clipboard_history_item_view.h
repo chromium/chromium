@@ -162,7 +162,7 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   const base::UnguessableToken item_id_;
 
   // Owned by `ClipboardHistoryControllerImpl`.
-  const base::raw_ptr<const ClipboardHistory> clipboard_history_;
+  const raw_ptr<const ClipboardHistory> clipboard_history_;
 
   const raw_ptr<views::MenuItemView, ExperimentalAsh> container_;
 

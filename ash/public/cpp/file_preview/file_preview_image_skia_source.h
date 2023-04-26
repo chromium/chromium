@@ -71,7 +71,7 @@ class ASH_PUBLIC_EXPORT FilePreviewImageSkiaSource
   // triggers invalidation.
   void Update();
 
-  base::raw_ptr<FilePreviewController> controller_;
+  raw_ptr<FilePreviewController> controller_;
   const base::FilePath file_path_;
   std::vector<image_util::AnimationFrame> frames_;
   size_t frame_index_ = 0;

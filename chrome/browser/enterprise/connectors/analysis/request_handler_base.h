@@ -85,7 +85,7 @@ class RequestHandlerBase {
   safe_browsing::BinaryUploadService* GetBinaryUploadService();
 
   base::WeakPtr<safe_browsing::BinaryUploadService> upload_service_ = nullptr;
-  base::raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   const raw_ref<const enterprise_connectors::AnalysisSettings>
       analysis_settings_;
   GURL url_;

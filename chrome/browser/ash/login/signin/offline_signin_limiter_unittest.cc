@@ -81,7 +81,7 @@ class OfflineSigninLimiterTest : public testing::Test {
 
   std::unique_ptr<MockLockHandler> lock_handler_;
 
-  base::raw_ptr<base::WallClockTimer> timer_ = nullptr;
+  raw_ptr<base::WallClockTimer> timer_ = nullptr;
 
   std::unique_ptr<OfflineSigninLimiter> limiter_;
   base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;

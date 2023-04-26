@@ -78,8 +78,8 @@ class SyncAppsyncOptinClient : public syncer::SyncServiceObserver {
   // if no profile can be found.
   std::string GetActiveProfileHash(const syncer::SyncService* sync_service);
 
-  const base::raw_ptr<syncer::SyncService> sync_service_;
-  const base::raw_ptr<user_manager::UserManager> user_manager_;
+  const raw_ptr<syncer::SyncService> sync_service_;
+  const raw_ptr<user_manager::UserManager> user_manager_;
 
   bool is_apps_sync_enabled_;
 

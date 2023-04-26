@@ -103,7 +103,7 @@ class BooleanPrefValueChecker : public StatusChangeChecker {
   const char* path_;
   const bool expected_value_;
 
-  const base::raw_ptr<PrefService> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

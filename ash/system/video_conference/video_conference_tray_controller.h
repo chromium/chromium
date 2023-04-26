@@ -207,7 +207,7 @@ class ASH_EXPORT VideoConferenceTrayController
   // ChromeBrowserMainParts::PostMainMessageLoopRun() as a chrome_extra_part;
   // VideoConferenceManagerAsh is destroyed inside crosapi_manager_.reset()
   // which is after VideoConferenceTrayController.
-  base::raw_ptr<VideoConferenceManagerBase> video_conference_manager_ = nullptr;
+  raw_ptr<VideoConferenceManagerBase> video_conference_manager_ = nullptr;
   bool initialized_ = false;
 
   base::WeakPtrFactory<VideoConferenceTrayController> weak_ptr_factory_{this};

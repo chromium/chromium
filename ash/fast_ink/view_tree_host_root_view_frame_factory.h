@@ -90,7 +90,7 @@ class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
       bool is_overlay_candidate,
       UiResourceManager& resource_manager) const;
 
-  base::raw_ptr<views::Widget> widget_;
+  raw_ptr<views::Widget> widget_;
 };
 
 }  // namespace ash

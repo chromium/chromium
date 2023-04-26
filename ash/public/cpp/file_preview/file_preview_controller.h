@@ -75,7 +75,7 @@ class ASH_PUBLIC_EXPORT FilePreviewController {
  private:
   // The `FilePreviewImageSkiaSource` this controller controls. Owned by the
   // `gfx::ImageSkia`.
-  const base::raw_ptr<FilePreviewImageSkiaSource> source_ = nullptr;
+  const raw_ptr<FilePreviewImageSkiaSource> source_ = nullptr;
 
   // The `gfx::ImageSkia` that contains the `FilePreviewImageSkiaSource`. This
   // is the same one in the `ui::ImageModel` that `FilePreviewFactory` creates.

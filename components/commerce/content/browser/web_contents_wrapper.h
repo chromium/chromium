@@ -40,7 +40,7 @@ class WebContentsWrapper : public WebWrapper {
   void ClearWebContentsPointer();
 
  private:
-  base::raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // The ID of the isolated world to run javascript in.
   int32_t js_world_id_;

@@ -110,7 +110,7 @@ class ASH_EXPORT RoundedDisplayProvider {
   // Represents the surface on which the `host_` render the mask textures of the
   // rounded-display corners. It gets destroyed when its window_tree_host
   // is destroyed.
-  base::raw_ptr<aura::Window> host_window_ = nullptr;
+  raw_ptr<aura::Window> host_window_ = nullptr;
 
   // Responsible to render the mask textures by submitting compositor frames.
   std::unique_ptr<RoundedDisplayHost> host_;

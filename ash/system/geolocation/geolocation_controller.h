@@ -164,7 +164,7 @@ class ASH_EXPORT GeolocationController
   const raw_ptr<network::SharedURLLoaderFactory, ExperimentalAsh> factory_;
 
   // May be null if a user has not logged in yet.
-  base::raw_ptr<PrefService> active_user_pref_service_ = nullptr;
+  raw_ptr<PrefService> active_user_pref_service_ = nullptr;
 
   // The IP-based geolocation provider.
   SimpleGeolocationProvider provider_;

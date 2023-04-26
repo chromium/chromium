@@ -250,8 +250,8 @@ class DualReadingListModelTest : public testing::Test {
       local_or_syncable_model_storage_ptr_;
   base::WeakPtr<FakeReadingListModelStorage> account_model_storage_ptr_;
   // Owned by `dual_model_` and guaranteed to exist while `dual_model_` exists.
-  base::raw_ptr<ReadingListModelImpl> local_or_syncable_model_ptr_;
-  base::raw_ptr<ReadingListModelImpl> account_model_ptr_;
+  raw_ptr<ReadingListModelImpl> local_or_syncable_model_ptr_;
+  raw_ptr<ReadingListModelImpl> account_model_ptr_;
   std::unique_ptr<reading_list::DualReadingListModel> dual_model_;
 };
 

@@ -119,7 +119,7 @@ struct HelpBubbleHandlerBase::ElementData {
 
   std::unique_ptr<TrackedElementWebUI> element;
   std::unique_ptr<HelpBubbleParams> params;
-  base::raw_ptr<HelpBubbleWebUI> help_bubble = nullptr;
+  raw_ptr<HelpBubbleWebUI> help_bubble = nullptr;
   base::CallbackListSubscription external_bubble_subscription;
 
   // This is set to true if we are closing the help bubble as the result of a

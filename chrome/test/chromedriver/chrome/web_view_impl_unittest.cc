@@ -796,7 +796,7 @@ class CallUserSyncScriptArgs
 
   BrowserInfo browser_info;
   std::unique_ptr<WebViewImpl> view;
-  base::raw_ptr<FakeDevToolsClient> client_ptr;
+  raw_ptr<FakeDevToolsClient> client_ptr;
 };
 
 TEST_P(CallUserSyncScriptArgs, Root) {

@@ -129,7 +129,7 @@ class HistoryClustersHandler : public mojom::PageHandler,
 
   // Used only for hiding History visits. It's not used for querying History,
   // because we do our querying with HistoryClustersService.
-  base::raw_ptr<history::HistoryService> history_service_;
+  raw_ptr<history::HistoryService> history_service_;
 
   // Used only for deleting History properly, and observing deletions that occur
   // from other tabs. It's not used for querying History, because we do our

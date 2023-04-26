@@ -27,7 +27,7 @@ class HelpBubbleFactoryMac : public HelpBubbleFactory {
       const ui::TrackedElement* element) const override;
 
  private:
-  base::raw_ptr<const HelpBubbleDelegate> delegate_;
+  raw_ptr<const HelpBubbleDelegate> delegate_;
 };
 
 }  // namespace user_education

@@ -42,7 +42,7 @@ class CoreCastService : public shell::CastServiceSimple {
   void StopInternal() override { runtime_service_->Stop(); }
 
  private:
-  base::raw_ref<RuntimeServiceImpl> runtime_service_;
+  raw_ref<RuntimeServiceImpl> runtime_service_;
 };
 
 }  // namespace

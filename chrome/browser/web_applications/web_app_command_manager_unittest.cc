@@ -188,7 +188,7 @@ class WebAppCommandManagerTest : public WebAppTest {
   TestWebAppUrlLoader* url_loader() const { return url_loader_.get(); }
 
  private:
-  base::raw_ptr<TestWebAppUrlLoader> url_loader_;
+  raw_ptr<TestWebAppUrlLoader> url_loader_;
 };
 
 TEST_F(WebAppCommandManagerTest, SimpleCommand) {

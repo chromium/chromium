@@ -340,9 +340,9 @@ class DeviceStatusCollector : public StatusCollector,
   bool IncludeEmailsInActivityReports() const;
 
   // Pref service that is mainly used to store activity periods for reporting.
-  const base::raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
-  const base::raw_ptr<ReportingUserTracker> reporting_user_tracker_;
+  const raw_ptr<ReportingUserTracker> reporting_user_tracker_;
 
   // The last time an idle state check was performed.
   base::Time last_idle_check_;

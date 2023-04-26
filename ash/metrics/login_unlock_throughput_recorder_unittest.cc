@@ -115,7 +115,7 @@ class TestObserver final : public ui::CompositorAnimationObserver {
 
  private:
   int count_ = 0;
-  const base::raw_ptr<ui::Compositor> compositor_;
+  const raw_ptr<ui::Compositor> compositor_;
 };
 
 class BeginMainFrameWaiter : public ui::CompositorObserver {
@@ -146,7 +146,7 @@ class BeginMainFrameWaiter : public ui::CompositorObserver {
   }
 
  private:
-  const base::raw_ptr<ui::Compositor> compositor_;
+  const raw_ptr<ui::Compositor> compositor_;
   bool done_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
@@ -224,7 +224,7 @@ class MetricsWaiter {
   }
 
  private:
-  base::raw_ptr<base::HistogramTester> histogram_tester_;
+  raw_ptr<base::HistogramTester> histogram_tester_;
   const std::string metrics_name_;
 };
 

@@ -202,11 +202,11 @@ class RecommendAppsScreenTest : public OobeBaseTest {
     test::OobeJS().ExpectHiddenPath({kRecommendAppsId, "loadingDialog"});
   }
 
-  base::raw_ptr<RecommendAppsScreen, DanglingUntriaged> recommend_apps_screen_ =
+  raw_ptr<RecommendAppsScreen, DanglingUntriaged> recommend_apps_screen_ =
       nullptr;
   absl::optional<RecommendAppsScreen::Result> screen_result_;
-  base::raw_ptr<StubRecommendAppsFetcher, DanglingUntriaged>
-      recommend_apps_fetcher_ = nullptr;
+  raw_ptr<StubRecommendAppsFetcher, DanglingUntriaged> recommend_apps_fetcher_ =
+      nullptr;
 
   LoginManagerMixin login_manager_{&mixin_host_};
 

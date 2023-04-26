@@ -70,7 +70,7 @@ class CrostiniSectionTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  base::raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> profile_;
 };
 
 // Test that Bruschetta doesn't show up when it's disabled by flags.

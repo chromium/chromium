@@ -69,8 +69,8 @@ class GlanceableInfoView : public views::View,
   const raw_ptr<AmbientViewDelegate, ExperimentalAsh> delegate_ = nullptr;
 
   // Unowned. Must out live |GlancealeInfoView|.
-  base::raw_ptr<GlanceableInfoView::Delegate> const
-      glanceable_info_view_delegate_ = nullptr;
+  raw_ptr<GlanceableInfoView::Delegate> const glanceable_info_view_delegate_ =
+      nullptr;
 
   const int time_font_size_dip_;
 

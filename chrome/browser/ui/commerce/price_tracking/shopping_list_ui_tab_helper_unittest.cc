@@ -135,7 +135,7 @@ class ShoppingListUiTabHelperTest : public testing::Test {
   }
 
  protected:
-  base::raw_ptr<ShoppingListUiTabHelper> tab_helper_;
+  raw_ptr<ShoppingListUiTabHelper> tab_helper_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
@@ -148,7 +148,7 @@ class ShoppingListUiTabHelperTest : public testing::Test {
   content::TestWebContentsFactory test_web_contents_factory_;
 
  protected:
-  base::raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 TEST_F(ShoppingListUiTabHelperTest, TestSubscriptionEventsUpdateState) {

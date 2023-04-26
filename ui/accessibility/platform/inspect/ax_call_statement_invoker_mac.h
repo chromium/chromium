@@ -111,10 +111,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvoker final {
 
   // Map between AXUIElement objects and their DOMIds/accessible tree
   // line numbers. Owned by the caller and outlives this object.
-  const base::raw_ptr<const AXTreeIndexerMac> indexer_;
+  const raw_ptr<const AXTreeIndexerMac> indexer_;
 
   // Variables storage. Owned by the caller and outlives this object.
-  const base::raw_ptr<std::map<std::string, id>> storage_;
+  const raw_ptr<std::map<std::string, id>> storage_;
 };
 
 }  // namespace ui

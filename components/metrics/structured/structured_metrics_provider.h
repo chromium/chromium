@@ -230,7 +230,7 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
 
   // Interface for providing the SystemProfile to metrics.
   // See chrome/browser/metrics/chrome_metrics_service_client.h
-  base::raw_ptr<metrics::MetricsProvider> system_profile_provider_;
+  raw_ptr<metrics::MetricsProvider> system_profile_provider_;
 
   // A set of projects that are not allowed to be recorded. This is a cache of
   // GetDisabledProjects().

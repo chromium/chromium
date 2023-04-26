@@ -98,7 +98,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossBatteryManagerClient
   void BatteryCallbackRegistered(DBusResult<uint32_t> result);
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
-  base::raw_ptr<dbus::Bus> bus_ = nullptr;
+  raw_ptr<dbus::Bus> bus_ = nullptr;
 
   // Path used for battery api calls by this class.
   dbus::ObjectPath battery_manager_adapter_path_;

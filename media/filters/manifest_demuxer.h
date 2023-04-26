@@ -157,7 +157,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
 
    private:
     WrapperReadCb read_cb_;
-    base::raw_ptr<DemuxerStream> stream_;
+    raw_ptr<DemuxerStream> stream_;
   };
 
   void OnChunkDemuxerInitialized(PipelineStatus init_status);
@@ -200,7 +200,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   // Wrapped chunk demuxer that actually does the parsing and demuxing of the
   // raw data we feed it.
   std::unique_ptr<ChunkDemuxer> chunk_demuxer_;
-  base::raw_ptr<DemuxerHost> host_;
+  raw_ptr<DemuxerHost> host_;
 
   // Updated by seek, and by updates from outgoing frames.
   base::TimeDelta media_time_ = base::Seconds(0);

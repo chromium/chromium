@@ -55,7 +55,7 @@ class ExtensionPoliciesValueProvider
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_POLICY_VALUE_PROVIDER_EXTENSION_POLICIES_VALUE_PROVIDER_H_

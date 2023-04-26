@@ -45,7 +45,7 @@ class ArcPackagesCountChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  const base::raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
   const size_t expected_count_;
 };
 

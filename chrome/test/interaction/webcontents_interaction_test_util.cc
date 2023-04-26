@@ -279,8 +279,8 @@ class WebContentsInteractionTestUtil::NewTabWatcher
     owner_->StartWatchingWebContents(web_contents);
   }
 
-  const base::raw_ptr<WebContentsInteractionTestUtil> owner_;
-  const base::raw_ptr<Browser> browser_;
+  const raw_ptr<WebContentsInteractionTestUtil> owner_;
+  const raw_ptr<Browser> browser_;
 };
 
 class WebContentsInteractionTestUtil::Poller {
@@ -342,7 +342,7 @@ class WebContentsInteractionTestUtil::Poller {
   const DeepQuery where_;
   const base::TimeDelta interval_;
   const absl::optional<base::TimeDelta> timeout_;
-  const base::raw_ptr<WebContentsInteractionTestUtil> owner_;
+  const raw_ptr<WebContentsInteractionTestUtil> owner_;
   base::RepeatingTimer timer_;
   bool is_polling_ = false;
   base::WeakPtrFactory<Poller> weak_factory_{this};
@@ -494,7 +494,7 @@ class WebContentsInteractionTestUtil::WebViewData : public views::ViewObserver {
   }
 
   const raw_ptr<WebContentsInteractionTestUtil> owner_;
-  base::raw_ptr<views::WebView> web_view_;
+  raw_ptr<views::WebView> web_view_;
   bool visible_ = false;
   ui::ElementContext context_;
   ui::ElementTracker::Subscription shown_subscription_;

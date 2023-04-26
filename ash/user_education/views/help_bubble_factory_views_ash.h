@@ -88,7 +88,7 @@ class ASH_EXPORT HelpBubbleViewsAsh : public user_education::HelpBubble,
       scoped_observation_{this};
 
   // Track the anchor element to determine if/when it goes away.
-  base::raw_ptr<const ui::TrackedElement, DanglingUntriaged> anchor_element_;
+  raw_ptr<const ui::TrackedElement, DanglingUntriaged> anchor_element_;
 
   // Listens so that the bubble can be closed if the anchor element disappears.
   // The specific anchor view is not tracked because in a few cases (e.g. Mac
@@ -128,7 +128,7 @@ class ASH_EXPORT HelpBubbleFactoryViewsAsh
       user_education::HelpBubbleParams params);
 
  private:
-  base::raw_ptr<const user_education::HelpBubbleDelegate> delegate_;
+  raw_ptr<const user_education::HelpBubbleDelegate> delegate_;
 };
 
 }  // namespace ash

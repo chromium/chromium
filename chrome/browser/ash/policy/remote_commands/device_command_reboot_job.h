@@ -107,27 +107,26 @@ class DeviceCommandRebootJob : public RemoteCommandJob,
   void ResetTriggeringEvents();
 
   // Sends the reboot request to power manager service. Unowned.
-  const base::raw_ptr<chromeos::PowerManagerClient> power_manager_client_;
+  const raw_ptr<chromeos::PowerManagerClient> power_manager_client_;
   // Checks the availability of `power_manager_client_`.
   base::ScopedObservation<chromeos::PowerManagerClient, DeviceCommandRebootJob>
       power_manager_availability_observation_{this};
 
   // Provides information about current logins status and device mode to
   // determine how to proceed with the reboot.
-  const base::raw_ptr<ash::LoginState> login_state_;
+  const raw_ptr<ash::LoginState> login_state_;
 
   // Handles reboot on signout.
-  base::raw_ptr<ash::SessionTerminationManager> session_termination_manager_;
+  raw_ptr<ash::SessionTerminationManager> session_termination_manager_;
 
   // Scheduler for reboot notification and dialog. Unowned.
-  base::raw_ptr<RebootNotificationsScheduler>
-      in_session_notifications_scheduler_;
+  raw_ptr<RebootNotificationsScheduler> in_session_notifications_scheduler_;
   // Timer tracking the delayed reboot event.
   base::WallClockTimer in_session_reboot_timer_;
 
   // Clock to schedule in-user-session reboot delay. Can be mocked for testing.
   // Unowned.
-  base::raw_ptr<const base::Clock> clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Returns device's boot timestamp. The boot time is not constant and may
   // change at runtime, e.g. because of time sync.

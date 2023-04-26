@@ -170,7 +170,7 @@ class OAuth2LoginManagerStateWaiter : public OAuth2LoginManager::Observer {
     signal_->SetValue();
   }
 
-  const base::raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
   std::set<OAuth2LoginManager::SessionRestoreState> states_;
   bool waiting_for_state_ = false;
   OAuth2LoginManager::SessionRestoreState final_state_ =

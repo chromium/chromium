@@ -116,7 +116,7 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   bool IsLoggingEnabled() const;
 
-  base::raw_ptr<TelemetryLog> telemetry_log_ptr_ = nullptr;  // Not owned.
+  raw_ptr<TelemetryLog> telemetry_log_ptr_ = nullptr;  // Not owned.
 
   CpuUsageData previous_cpu_usage_data_;
 

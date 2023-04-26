@@ -111,8 +111,8 @@ class InstallFromSyncCommand
   std::unique_ptr<SharedWebContentsWithAppLockDescription> lock_description_;
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;
 
-  const base::raw_ptr<WebAppUrlLoader> url_loader_;
-  const base::raw_ptr<Profile> profile_;
+  const raw_ptr<WebAppUrlLoader> url_loader_;
+  const raw_ptr<Profile> profile_;
   const std::unique_ptr<WebAppDataRetriever> data_retriever_;
   const Params params_;
   OnceInstallCallback install_callback_;

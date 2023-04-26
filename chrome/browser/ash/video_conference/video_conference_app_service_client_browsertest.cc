@@ -129,7 +129,7 @@ class FakeAppInstance {
  private:
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<apps::Instance> instance_;
-  base::raw_ptr<apps::InstanceRegistry> instance_registry_;
+  raw_ptr<apps::InstanceRegistry> instance_registry_;
 };
 
 }  // namespace

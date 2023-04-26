@@ -107,7 +107,7 @@ class LibcurlNetworkFetcherImpl {
     return response_headers.contains(lower) ? response_headers.at(lower) : "";
   }
 
-  base::raw_ptr<CURL> curl_;
+  raw_ptr<CURL> curl_;
   std::array<char, CURL_ERROR_SIZE> curl_error_buf_;
 
   // Sequence to post callbacks to.

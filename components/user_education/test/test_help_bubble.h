@@ -58,7 +58,7 @@ class TestHelpBubble : public HelpBubble {
  private:
   void OnElementHidden(ui::TrackedElement* element);
 
-  base::raw_ptr<ui::TrackedElement> element_;
+  raw_ptr<ui::TrackedElement> element_;
   base::CallbackListSubscription element_hidden_subscription_;
   HelpBubbleParams params_;
   int focus_count_ = 0;

@@ -174,11 +174,9 @@ std::unique_ptr<InstallSignature> InstallSignature::FromDict(
   if (dict.FindInt(kSignatureFormatVersionKey) != kSignatureFormatVersion)
     return nullptr;
 
-  base::raw_ptr<const std::string> expire_date =
-      dict.FindString(kExpireDateKey);
-  base::raw_ptr<const std::string> salt_base64 = dict.FindString(kSaltKey);
-  base::raw_ptr<const std::string> signature_base64 =
-      dict.FindString(kSignatureKey);
+  raw_ptr<const std::string> expire_date = dict.FindString(kExpireDateKey);
+  raw_ptr<const std::string> salt_base64 = dict.FindString(kSaltKey);
+  raw_ptr<const std::string> signature_base64 = dict.FindString(kSignatureKey);
   if (!expire_date || !salt_base64 || !signature_base64 ||
       !base::Base64Decode(*salt_base64, &result->salt) ||
       !base::Base64Decode(*signature_base64, &result->signature))
@@ -191,8 +189,8 @@ std::unique_ptr<InstallSignature> InstallSignature::FromDict(
   result->timestamp =
       base::ValueToTime(dict.Find(kTimestampKey)).value_or(base::Time());
 
-  base::raw_ptr<const base::Value::List> ids_list = dict.FindList(kIdsKey);
-  base::raw_ptr<const base::Value::List> invalid_ids_list =
+  raw_ptr<const base::Value::List> ids_list = dict.FindList(kIdsKey);
+  raw_ptr<const base::Value::List> invalid_ids_list =
       dict.FindList(kInvalidIdsKey);
   if (!ids_list || !invalid_ids_list)
     return nullptr;

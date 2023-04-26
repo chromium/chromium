@@ -31,7 +31,7 @@ class WebTestAttributionManager
   void Reset(ResetCallback) override;
 
  private:
-  const base::raw_ptr<StoragePartition> storage_partition_;
+  const raw_ptr<StoragePartition> storage_partition_;
 };
 
 }  // namespace content

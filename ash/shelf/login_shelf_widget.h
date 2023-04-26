@@ -51,14 +51,14 @@ class ASH_EXPORT LoginShelfWidget : public ShelfComponent,
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnUserSessionAdded(const AccountId& account_id) override;
 
-  const base::raw_ptr<Shelf> shelf_;
+  const raw_ptr<Shelf> shelf_;
 
   class LoginShelfWidgetDelegate;
-  base::raw_ptr<LoginShelfWidgetDelegate> delegate_;
+  raw_ptr<LoginShelfWidgetDelegate> delegate_;
 
   ScopedSessionObserver scoped_session_observer_;
 
-  base::raw_ptr<LoginShelfView> login_shelf_view_ = nullptr;
+  raw_ptr<LoginShelfView> login_shelf_view_ = nullptr;
 
   // The target widget bounds in screen coordinates.
   gfx::Rect target_bounds_;

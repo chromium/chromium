@@ -997,7 +997,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   }
 
   // DriveFS bulk-pinning manager.
-  base::raw_ptr<PinManager> pin_manager_ = nullptr;
+  raw_ptr<PinManager> pin_manager_ = nullptr;
 
   // The last event sent to the JavaScript side.
   int last_sent_event_id_ = -1;

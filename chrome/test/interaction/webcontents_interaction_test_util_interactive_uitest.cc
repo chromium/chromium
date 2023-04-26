@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
 
   std::unique_ptr<WebContentsInteractionTestUtil> tab_search_page;
   const ui::ElementContext context = browser()->window()->GetElementContext();
-  base::raw_ptr<WebUIBubbleDialogView> bubble_view = nullptr;
+  raw_ptr<WebUIBubbleDialogView> bubble_view = nullptr;
 
   auto sequence =
       ui::InteractionSequence::Builder()

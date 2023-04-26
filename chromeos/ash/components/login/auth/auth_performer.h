@@ -176,7 +176,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
       AuthSessionStatusCallback callback,
       absl::optional<user_data_auth::GetAuthSessionStatusReply> reply);
 
-  const base::raw_ptr<UserDataAuthClient, DanglingUntriaged> client_;
+  const raw_ptr<UserDataAuthClient, DanglingUntriaged> client_;
   base::WeakPtrFactory<AuthPerformer> weak_factory_{this};
 };
 

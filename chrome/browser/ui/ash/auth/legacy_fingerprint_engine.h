@@ -64,7 +64,7 @@ class LegacyFingerprintEngine {
 
  private:
   // Non owning pointer
-  const base::raw_ptr<AuthPerformer> auth_performer_;
+  const raw_ptr<AuthPerformer> auth_performer_;
 
   base::WeakPtrFactory<LegacyFingerprintEngine> weak_factory_{this};
 };

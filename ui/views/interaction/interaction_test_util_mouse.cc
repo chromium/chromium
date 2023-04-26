@@ -42,7 +42,7 @@
 namespace views::test {
 
 namespace {
-base::raw_ptr<InteractionTestUtilMouse> g_current_mouse_util = nullptr;
+raw_ptr<InteractionTestUtilMouse> g_current_mouse_util = nullptr;
 
 void PostTask(base::OnceClosure task) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
@@ -169,7 +169,7 @@ class InteractionTestUtilMouse::DragEnder
   // a proxy for the existence of the DragDropClient, and unregister listeners
   // when the window goes away. If this is not done, UAFs may happen when the
   // scoped observation of the drag client goes away.
-  base::raw_ptr<aura::Window> window_;
+  raw_ptr<aura::Window> window_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
   base::ScopedObservation<aura::client::DragDropClient,

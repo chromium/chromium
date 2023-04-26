@@ -182,7 +182,7 @@ class InteractiveTestTest : public InteractiveTest {
         FROM_HERE, std::move(actions));
   }
 
-  base::raw_ptr<TestSimulator> simulator_ = nullptr;
+  raw_ptr<TestSimulator> simulator_ = nullptr;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{

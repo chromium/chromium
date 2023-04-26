@@ -288,7 +288,7 @@ class UserCloudPolicyManagerAsh
   base::OneShotTimer policy_refresh_timeout_;
 
   // The pref service to pass to the refresh scheduler on initialization.
-  base::raw_ptr<PrefService> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // Used to fetch the policy OAuth token, when necessary. This object holds
   // a callback with an unretained reference to the manager, when it exists.

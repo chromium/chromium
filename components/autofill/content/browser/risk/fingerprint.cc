@@ -476,7 +476,7 @@ void GetFingerprint(
   // |screen_info| using display::DisplayUtil::GetDefaultScreenInfo().
   if (web_contents) {
     content_bounds = web_contents->GetContainerBounds();
-    base::raw_ptr<content::RenderWidgetHostView> host_view =
+    raw_ptr<content::RenderWidgetHostView> host_view =
         web_contents->GetRenderWidgetHostView();
     if (host_view)
       screen_info = host_view->GetRenderWidgetHost()->GetScreenInfo();

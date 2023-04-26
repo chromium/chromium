@@ -36,7 +36,7 @@ class UserPermissionServiceImpl : public UserPermissionService {
   void CanCollectSignals(CanCollectCallback callback) override;
 
  private:
-  base::raw_ptr<policy::ManagementService> management_service_;
+  raw_ptr<policy::ManagementService> management_service_;
   std::unique_ptr<UserDelegate> user_delegate_;
 
   base::WeakPtrFactory<UserPermissionServiceImpl> weak_factory_{this};

@@ -352,7 +352,7 @@ class AttributionEventHandler : public AttributionObserver {
   }
 
   const std::unique_ptr<AttributionManagerImpl> manager_;
-  const base::raw_ptr<FakeCookieChecker> fake_cookie_checker_;
+  const raw_ptr<FakeCookieChecker> fake_cookie_checker_;
 
   const AttributionReportJsonConverter json_converter_;
 

@@ -135,7 +135,7 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
   gfx::RectF right_bounds_;
 
   // Owned by our parent (cardboard_device)
-  base::raw_ptr<CardboardSdk> cardboard_sdk_;
+  raw_ptr<CardboardSdk> cardboard_sdk_;
 
   // Session Controllers
   mojo::Receiver<mojom::XRFrameDataProvider> frame_data_receiver_{this};

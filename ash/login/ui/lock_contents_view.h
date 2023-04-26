@@ -482,7 +482,7 @@ class ASH_EXPORT LockContentsView
   raw_ptr<LoginErrorBubble, ExperimentalAsh> warning_banner_bubble_;
 
   // View that is shown on login timeout with camera usage.
-  base::raw_ptr<LoginCameraTimeoutView, DanglingUntriaged>
+  raw_ptr<LoginCameraTimeoutView, DanglingUntriaged>
       login_camera_timeout_view_ = nullptr;
 
   // Bottom status indicator displaying entreprise domain or ADB enabled alert

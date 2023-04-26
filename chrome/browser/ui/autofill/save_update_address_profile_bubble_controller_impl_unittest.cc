@@ -43,7 +43,7 @@ class SaveUpdateAddressProfileBubbleControllerImplTest
   }
 
  protected:
-  base::raw_ptr<content::WebContents> web_contents() const {
+  raw_ptr<content::WebContents> web_contents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 

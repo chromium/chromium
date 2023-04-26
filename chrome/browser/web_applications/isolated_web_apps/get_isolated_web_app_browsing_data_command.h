@@ -50,7 +50,7 @@ class GetIsolatedWebAppBrowsingDataCommand
   void StoragePartitionSizeFetched(const url::Origin& iwa_origin, int64_t size);
   void MaybeCompleteCommand();
 
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
   BrowsingDataCallback callback_;
 
   std::unique_ptr<AllAppsLockDescription> lock_description_;

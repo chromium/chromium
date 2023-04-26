@@ -418,7 +418,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   NonConfigurableActionsMap non_configurable_actions_map_;
   base::test::ScopedFeatureList scoped_feature_list_;
   // Test global singleton. Delete is handled by InputMethodManager::Shutdown().
-  base::raw_ptr<TestInputMethodManager> input_method_manager_;
+  raw_ptr<TestInputMethodManager> input_method_manager_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
   FakeAcceleratorsUpdatedObserver observer_;
 };

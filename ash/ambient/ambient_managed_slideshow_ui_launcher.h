@@ -52,7 +52,7 @@ class AmbientManagedSlideshowUiLauncher : public AmbientUiLauncher,
   void UpdateImageFilePaths(const std::vector<base::FilePath>& path_to_images);
 
   AmbientManagedPhotoController photo_controller_;
-  base::raw_ptr<AmbientViewDelegateImpl> delegate_;
+  raw_ptr<AmbientViewDelegateImpl> delegate_;
   InitializationCallback initialization_callback_;
   base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
       ambient_backend_model_observer_{this};

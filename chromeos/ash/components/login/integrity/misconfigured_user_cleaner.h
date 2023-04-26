@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_INTEGRITY) MisconfiguredUserCleaner {
   // by `ash::Shell` and destroyed in
   // `ChromeBrowserMainPartsAsh::PostMainMessageLoopRun`, before
   // `ChromeBrowserMainPartsAsh`, the owner of this class.
-  const base::raw_ptr<SessionController, DanglingUntriaged> session_controller_;
+  const raw_ptr<SessionController, DanglingUntriaged> session_controller_;
 
   std::unique_ptr<MountPerformer> mount_performer_;
 

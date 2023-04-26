@@ -51,8 +51,8 @@ class ASH_EXPORT AmbientAnimationPlayer {
   ~AmbientAnimationPlayer();
 
  private:
-  const base::raw_ptr<views::AnimatedImageView> animated_image_view_;
-  const base::raw_ptr<AmbientAnimationProgressTracker> progress_tracker_;
+  const raw_ptr<views::AnimatedImageView> animated_image_view_;
+  const raw_ptr<AmbientAnimationProgressTracker> progress_tracker_;
   base::TimeDelta cycle_restart_timestamp_;
 };
 

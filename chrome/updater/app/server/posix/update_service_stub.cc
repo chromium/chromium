@@ -208,7 +208,7 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
  private:
   void OnClientDisconnected();
 
-  base::raw_ptr<mojom::UpdateService> impl_;
+  raw_ptr<mojom::UpdateService> impl_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

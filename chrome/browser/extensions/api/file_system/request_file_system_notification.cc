@@ -79,7 +79,7 @@ class AppNotificationLauncher : public AppIconLoaderDelegate,
  private:
   ~AppNotificationLauncher() override = default;
 
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<AppIconLoader> icon_loader_;
   std::unique_ptr<message_center::Notification> pending_notification_;
 };

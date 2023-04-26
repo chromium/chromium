@@ -50,7 +50,7 @@ class ReportingUserTracker : public user_manager::UserManager::Observer {
   // Removes user from the list of the users who should be reported.
   void RemoveReportingUser(const AccountId& account_id);
 
-  const base::raw_ptr<PrefService> local_state_;
+  const raw_ptr<PrefService> local_state_;
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       observation_{this};

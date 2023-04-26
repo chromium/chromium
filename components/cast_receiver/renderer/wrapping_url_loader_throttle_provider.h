@@ -58,7 +58,7 @@ class WrappingURLLoaderThrottleProvider
   void SetOnline(bool is_online) override;
 
  private:
-  base::raw_ref<Client> client_;
+  raw_ref<Client> client_;
   std::unique_ptr<blink::URLLoaderThrottleProvider> wrapped_provider_;
 
   SEQUENCE_CHECKER(sequence_checker_);

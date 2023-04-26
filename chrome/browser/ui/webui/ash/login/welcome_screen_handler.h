@@ -98,7 +98,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   // Returns available timezones.
   static base::Value::List GetTimezoneList();
 
-  const base::raw_ptr<CoreOobeView> core_oobe_view_;
+  const raw_ptr<CoreOobeView> core_oobe_view_;
 };
 
 }  // namespace ash

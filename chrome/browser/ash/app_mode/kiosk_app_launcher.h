@@ -98,7 +98,7 @@ class KioskAppLauncher {
   virtual void LaunchApp() = 0;
 
  protected:
-  base::raw_ptr<NetworkDelegate> delegate_ = nullptr;  // Not owned, owns us.
+  raw_ptr<NetworkDelegate> delegate_ = nullptr;  // Not owned, owns us.
 };
 
 }  // namespace ash

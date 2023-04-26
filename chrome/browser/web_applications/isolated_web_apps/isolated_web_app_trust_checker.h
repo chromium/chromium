@@ -93,7 +93,7 @@ class IsolatedWebAppTrustChecker {
   [[nodiscard]] bool IsTrustedViaDevMode(
       const web_package::SignedWebBundleId& web_bundle_id) const;
 
-  base::raw_ref<const PrefService> pref_service_;
+  raw_ref<const PrefService> pref_service_;
 
   base::WeakPtrFactory<IsolatedWebAppTrustChecker> weak_ptr_factory_{this};
 };

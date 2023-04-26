@@ -37,7 +37,7 @@ class FaceMLPageHandler : public mojom::face_ml_app::PageHandler {
 
   mojo::Receiver<mojom::face_ml_app::PageHandler> receiver_{this};
   mojo::Remote<mojom::face_ml_app::Page> page_;
-  base::raw_ref<FaceMLAppUI> face_ml_app_ui_;  // Owns |this|.
+  raw_ref<FaceMLAppUI> face_ml_app_ui_;  // Owns |this|.
 };
 
 }  // namespace ash

@@ -100,7 +100,7 @@ class MediaStringView : public views::View,
   views::Label* media_text_label_for_testing() { return media_text_; }
 
   // Unowned. Must out live |MediaStringView|.
-  base::raw_ptr<MediaStringView::Delegate> delegate_ = nullptr;
+  raw_ptr<MediaStringView::Delegate> delegate_ = nullptr;
 
   // Music eighth note.
   raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;

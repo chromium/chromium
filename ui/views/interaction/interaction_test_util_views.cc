@@ -250,13 +250,13 @@ class DropdownItemSelector {
     return nullptr;
   }
 
-  const base::raw_ptr<InteractionTestUtilSimulatorViews> simulator_;
+  const raw_ptr<InteractionTestUtilSimulatorViews> simulator_;
   const ui::test::InteractionTestUtil::InputType input_type_;
   const size_t item_index_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   AnyWidgetObserver observer_{views::test::AnyWidgetTestPasskey()};  // IN-TEST
   absl::optional<ui::test::ActionResult> result_;
-  base::raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
   base::WeakPtrFactory<DropdownItemSelector> weak_ptr_factory_{this};
 };
 

@@ -47,9 +47,9 @@ class ASH_EXPORT LoginCameraTimeoutView : public NonAccessibleView {
   void RequestFocus() override;
 
  private:
-  base::raw_ptr<views::Label> title_;
-  base::raw_ptr<views::Label> subtitle_;
-  base::raw_ptr<ArrowButtonView> arrow_button_;
+  raw_ptr<views::Label> title_;
+  raw_ptr<views::Label> subtitle_;
+  raw_ptr<ArrowButtonView> arrow_button_;
 };
 
 }  // namespace ash

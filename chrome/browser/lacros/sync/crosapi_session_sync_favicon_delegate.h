@@ -47,8 +47,7 @@ class CrosapiSessionSyncFaviconDelegate
       GetFaviconImageForPageURLCallback callback,
       const favicon_base::FaviconImageResult& favicon_image_result);
 
-  base::raw_ptr<favicon::HistoryUiFaviconRequestHandler>
-      favicon_request_handler_;
+  raw_ptr<favicon::HistoryUiFaviconRequestHandler> favicon_request_handler_;
   mojo::Receiver<crosapi::mojom::SyncedSessionClientFaviconDelegate> receiver_{
       this};
 

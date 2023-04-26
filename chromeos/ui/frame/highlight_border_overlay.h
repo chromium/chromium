@@ -62,8 +62,8 @@ class HighlightBorderOverlay : public aura::WindowObserver,
   void UpdateNinePatchLayer();
 
   ui::Layer layer_;
-  base::raw_ptr<views::Widget> widget_;
-  base::raw_ptr<aura::Window> window_;
+  raw_ptr<views::Widget> widget_;
+  raw_ptr<aura::Window> window_;
   int rounded_corner_radius_ = 0;
 
   display::ScopedDisplayObserver display_observer_{this};

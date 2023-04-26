@@ -542,7 +542,7 @@ class ChromeBrowserMainParts::ProfileInitManager
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};
   // Raw pointer. This is safe because `ChromeBrowserMainParts` owns `this`.
-  const base::raw_ptr<ChromeBrowserMainParts> browser_main_;
+  const raw_ptr<ChromeBrowserMainParts> browser_main_;
 };
 
 ChromeBrowserMainParts::ProfileInitManager::ProfileInitManager(

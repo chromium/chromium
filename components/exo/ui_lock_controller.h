@@ -105,7 +105,7 @@ class UILockController : public ui::EventHandler,
   raw_ptr<Surface, ExperimentalAsh> focused_surface_to_unlock_ = nullptr;
 
   // Pointers currently being captured.
-  base::flat_set<base::raw_ptr<Pointer>> captured_pointers_;
+  base::flat_set<raw_ptr<Pointer>> captured_pointers_;
 
   base::ObserverList<Notifier> notifiers_;
 

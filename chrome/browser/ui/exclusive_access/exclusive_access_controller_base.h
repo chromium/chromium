@@ -75,7 +75,7 @@ class ExclusiveAccessControllerBase {
     using content::WebContentsObserver::Observe;
 
    private:
-    const base::raw_ref<ExclusiveAccessControllerBase> controller_;
+    const raw_ref<ExclusiveAccessControllerBase> controller_;
   } web_contents_observer_{*this};
 };
 

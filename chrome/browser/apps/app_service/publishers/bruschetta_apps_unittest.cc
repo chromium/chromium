@@ -59,8 +59,8 @@ class BruschettaAppsTest : public testing::Test,
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  base::raw_ptr<AppServiceProxy> app_service_proxy_ = nullptr;
-  base::raw_ptr<guest_os::GuestOsRegistryService> registry_ = nullptr;
+  raw_ptr<AppServiceProxy> app_service_proxy_ = nullptr;
+  raw_ptr<guest_os::GuestOsRegistryService> registry_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

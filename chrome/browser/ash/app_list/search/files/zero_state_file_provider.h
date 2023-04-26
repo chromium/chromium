@@ -65,7 +65,7 @@ class ZeroStateFileProvider : public SearchProvider,
 
   ash::ThumbnailLoader thumbnail_loader_;
 
-  const base::raw_ptr<ash::FileSuggestKeyedService> file_suggest_service_;
+  const raw_ptr<ash::FileSuggestKeyedService> file_suggest_service_;
 
   base::TimeTicks query_start_time_;
 

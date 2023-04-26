@@ -251,7 +251,7 @@ class SearchPrefetchRequest {
   // before we receive a prefetch response or the prerender is not created.
   base::WeakPtr<content::PreloadingAttempt> prerender_preloading_attempt_;
 
-  base::raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
 };
 
 // Used when DCHECK_STATE_TRANSITION triggers.

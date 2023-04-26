@@ -42,7 +42,7 @@ class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
   // SearchResultObserver overrides:
   void OnMetadataChanged() override;
 
-  base::raw_ptr<views::ImageButton> result_image_ =
+  raw_ptr<views::ImageButton> result_image_ =
       nullptr;  // Owned by views hierarchy.
 
   // TODO(crbug.com/1352636) remove once backend service is available.

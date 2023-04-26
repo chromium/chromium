@@ -366,10 +366,9 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
       wallpaper_observation_{this};
 
-  base::raw_ptr<WallpaperControllerImpl> wallpaper_controller_;  // unowned
+  raw_ptr<WallpaperControllerImpl> wallpaper_controller_;  // unowned
 
-  base::raw_ptr<DarkLightModeController>
-      dark_light_mode_controller_;  // unowned
+  raw_ptr<DarkLightModeController> dark_light_mode_controller_;  // unowned
 
   base::ObserverList<ColorPaletteController::Observer> observers_;
 };

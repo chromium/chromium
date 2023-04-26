@@ -67,8 +67,8 @@ class EiEventWatcherGlib {
   // FD to watch for events.
   int fd_ = -1;
 
-  base::raw_ptr<ei> ei_ = nullptr;
-  base::raw_ptr<EiEventHandler> handler_ = nullptr;
+  raw_ptr<ei> ei_ = nullptr;
+  raw_ptr<EiEventHandler> handler_ = nullptr;
 };
 
 }  // namespace remoting

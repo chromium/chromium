@@ -244,7 +244,7 @@ class JsSandboxIsolate::InspectorClient final
   }
 
  private:
-  const base::raw_ref<JsSandboxIsolate> isolate_;
+  const raw_ref<JsSandboxIsolate> isolate_;
 };
 
 JsSandboxIsolate::JsSandboxIsolate(

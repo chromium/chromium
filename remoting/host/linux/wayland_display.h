@@ -90,7 +90,7 @@ class WaylandDisplay {
 
   const struct wl_output_listener wl_output_listener_;
   const struct zxdg_output_v1_listener xdg_output_listener_;
-  base::raw_ptr<struct zxdg_output_manager_v1> xdg_output_manager_ = nullptr;
+  raw_ptr<struct zxdg_output_manager_v1> xdg_output_manager_ = nullptr;
   std::vector<DisplayInfo> display_info_;
 };
 

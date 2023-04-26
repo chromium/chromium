@@ -79,12 +79,11 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   void RestartThroughputTracking();
   void ApplyJitter();
 
-  const base::raw_ptr<AmbientViewDelegateImpl> view_delegate_;
-  const base::raw_ptr<AmbientAnimationProgressTracker> progress_tracker_;
+  const raw_ptr<AmbientViewDelegateImpl> view_delegate_;
+  const raw_ptr<AmbientAnimationProgressTracker> progress_tracker_;
   const std::unique_ptr<const AmbientAnimationStaticResources>
       static_resources_;
-  const base::raw_ptr<AmbientAnimationFrameRateController>
-      frame_rate_controller_;
+  const raw_ptr<AmbientAnimationFrameRateController> frame_rate_controller_;
   AmbientAnimationPhotoProvider animation_photo_provider_;
   std::unique_ptr<AmbientAnimationAttributionProvider>
       animation_attribution_provider_;

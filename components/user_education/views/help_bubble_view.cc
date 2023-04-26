@@ -172,7 +172,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
   }
 
  private:
-  const base::raw_ptr<const HelpBubbleDelegate> delegate_;
+  const raw_ptr<const HelpBubbleDelegate> delegate_;
   bool is_default_button_;
 };
 
@@ -218,7 +218,7 @@ class ClosePromoButton : public views::ImageButton {
   }
 
  private:
-  const base::raw_ptr<const HelpBubbleDelegate> delegate_;
+  const raw_ptr<const HelpBubbleDelegate> delegate_;
 };
 
 BEGIN_METADATA(ClosePromoButton, views::ImageButton)
@@ -271,7 +271,7 @@ class DotView : public views::View {
  private:
   static constexpr int kStrokeWidth = 1;
 
-  base::raw_ptr<const HelpBubbleDelegate> delegate_;
+  raw_ptr<const HelpBubbleDelegate> delegate_;
   const gfx::Size size_;
   const bool should_fill_;
 };

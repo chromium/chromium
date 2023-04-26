@@ -30,8 +30,8 @@ class UserDelegateImpl : public device_signals::UserDelegate {
   bool IsSameUser(const std::string& gaia_id) const override;
 
  private:
-  const base::raw_ptr<Profile> profile_;
-  const base::raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 }  // namespace enterprise_signals

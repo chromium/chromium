@@ -83,7 +83,7 @@ class CastContentWindowControls : public cast_receiver::ContentWindowControls,
 
   bool was_window_created_ = false;
 
-  base::raw_ref<CastContentWindow> content_window_;
+  raw_ref<CastContentWindow> content_window_;
 };
 
 cast::common::StopReason::Type ToProtoType(

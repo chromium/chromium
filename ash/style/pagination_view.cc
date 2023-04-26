@@ -294,7 +294,7 @@ class PaginationView::IndicatorContainer : public views::BoxLayoutView {
     }
   }
 
-  std::vector<base::raw_ptr<IndicatorButton>> buttons_;
+  std::vector<raw_ptr<IndicatorButton>> buttons_;
   absl::optional<InterpolationInterval<int>> scroll_interval_;
 };
 

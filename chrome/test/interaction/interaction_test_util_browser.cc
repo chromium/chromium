@@ -73,7 +73,7 @@ class PixelTestUi : public TestBrowserUi {
   }
 
  private:
-  base::raw_ptr<views::View> view_ = nullptr;
+  raw_ptr<views::View> view_ = nullptr;
   std::string screenshot_name_;
   std::string baseline_;
 };

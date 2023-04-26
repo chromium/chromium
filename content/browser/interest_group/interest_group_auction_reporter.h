@@ -109,7 +109,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     //
     // TODO(mmenke):  Figure out how to make this survive the auction (perhaps
     // pass ownership to the constructor).
-    base::raw_ptr<const blink::AuctionConfig, DanglingUntriaged> auction_config;
+    raw_ptr<const blink::AuctionConfig, DanglingUntriaged> auction_config;
 
     std::unique_ptr<SubresourceUrlBuilder> subresource_url_builder;
 

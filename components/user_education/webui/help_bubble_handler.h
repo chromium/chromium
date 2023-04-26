@@ -105,7 +105,7 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
     void SetLastKnownVisibility(absl::optional<bool> visible);
 
    private:
-    base::raw_ptr<HelpBubbleHandlerBase> handler_;
+    raw_ptr<HelpBubbleHandlerBase> handler_;
   };
 
   HelpBubbleHandlerBase(std::unique_ptr<ClientProvider> client_provider,
@@ -220,7 +220,7 @@ class HelpBubbleHandler : public HelpBubbleHandlerBase {
   void ReportBadMessage(base::StringPiece error) override;
 
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandler> receiver_;
-  const base::raw_ptr<content::WebUIController> controller_;
+  const raw_ptr<content::WebUIController> controller_;
 };
 
 }  // namespace user_education

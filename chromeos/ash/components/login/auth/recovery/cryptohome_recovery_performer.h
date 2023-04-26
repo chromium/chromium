@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   std::string access_token_;
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher_;
 
-  const base::raw_ptr<UserDataAuthClient> user_data_auth_client_;
+  const raw_ptr<UserDataAuthClient> user_data_auth_client_;
   CryptohomeRecoveryServiceClient service_client_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

@@ -78,7 +78,7 @@ class MediaScrollView : public views::ScrollView,
   }
 
  private:
-  base::raw_ptr<PaginationModel> model_ = nullptr;
+  raw_ptr<PaginationModel> model_ = nullptr;
   base::ScopedObservation<PaginationModel, PaginationModelObserver> observer_{
       this};
 };

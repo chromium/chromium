@@ -101,13 +101,13 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   // If set, overrides the anchor bounds within the anchor view.
   absl::optional<gfx::Rect> local_anchor_bounds_;
 
-  base::raw_ptr<views::ImageView> icon_view_ = nullptr;
+  raw_ptr<views::ImageView> icon_view_ = nullptr;
   std::vector<views::Label*> labels_;
 
   // If the bubble has buttons, it must be focusable.
   std::vector<views::MdTextButton*> non_default_buttons_;
-  base::raw_ptr<views::MdTextButton> default_button_ = nullptr;
-  base::raw_ptr<views::Button> close_button_ = nullptr;
+  raw_ptr<views::MdTextButton> default_button_ = nullptr;
+  raw_ptr<views::Button> close_button_ = nullptr;
 
   // This is the base accessible name of the window.
   std::u16string accessible_name_;

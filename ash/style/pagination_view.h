@@ -90,20 +90,20 @@ class ASH_EXPORT PaginationView : public views::View,
   void SelectedPageChanged(int old_selected, int new_selected) override;
   void TransitionChanged() override;
 
-  base::raw_ptr<PaginationModel> const model_;
+  raw_ptr<PaginationModel> const model_;
   const Orientation orientation_;
 
   // The scroll view with an indicator container as its contents. The scroll
   // view is owned by this and the container is owned by the scroll view.
-  base::raw_ptr<views::ScrollView> indicator_scroll_view_ = nullptr;
-  base::raw_ptr<IndicatorContainer> indicator_container_ = nullptr;
+  raw_ptr<views::ScrollView> indicator_scroll_view_ = nullptr;
+  raw_ptr<IndicatorContainer> indicator_container_ = nullptr;
 
   // The selector dot view which is owned by this.
-  base::raw_ptr<SelectorDotView> selector_dot_ = nullptr;
+  raw_ptr<SelectorDotView> selector_dot_ = nullptr;
 
   // The arrow buttons owned by this.
-  base::raw_ptr<views::ImageButton> backward_arrow_button_ = nullptr;
-  base::raw_ptr<views::ImageButton> forward_arrow_button_ = nullptr;
+  raw_ptr<views::ImageButton> backward_arrow_button_ = nullptr;
+  raw_ptr<views::ImageButton> forward_arrow_button_ = nullptr;
 
   base::ScopedObservation<PaginationModel, PaginationModelObserver>
       model_observation_{this};
