@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_set_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_url_with_metadata.h"
@@ -43,6 +45,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -631,6 +634,7 @@ ScriptPromise SharedStorage::selectURL(
     HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
     const SharedStorageRunOperationMethodOptions* options,
     ExceptionState& exception_state) {
+  CHECK(options);
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
@@ -798,11 +802,18 @@ ScriptPromise SharedStorage::selectURL(
   }
 
   bool keep_alive = options->keepAlive();
+  WTF::String context_id;
+  if (!CheckPrivateAggregationContextId(*options, *script_state, *resolver,
+                                        /*out_string=*/&context_id)) {
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
+    return promise;
+  }
 
   GetSharedStorageDocumentService(execution_context)
       ->RunURLSelectionOperationOnWorklet(
           name, std::move(converted_urls), std::move(serialized_data),
-          keep_alive,
+          keep_alive, std::move(context_id),
           WTF::BindOnce(
               [](ScriptPromiseResolver* resolver, SharedStorage* shared_storage,
                  base::TimeTicks start_time, bool resolve_to_config,
@@ -853,6 +864,7 @@ ScriptPromise SharedStorage::run(
     const String& name,
     const SharedStorageRunOperationMethodOptions* options,
     ExceptionState& exception_state) {
+  CHECK(options);
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
@@ -879,10 +891,16 @@ ScriptPromise SharedStorage::run(
   }
 
   bool keep_alive = options->keepAlive();
+  WTF::String context_id;
+  if (!CheckPrivateAggregationContextId(*options, *script_state, *resolver,
+                                        /*out_string=*/&context_id)) {
+    LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
+    return promise;
+  }
 
   GetSharedStorageDocumentService(execution_context)
       ->RunOperationOnWorklet(
-          name, std::move(serialized_data), keep_alive,
+          name, std::move(serialized_data), keep_alive, std::move(context_id),
           WTF::BindOnce(&OnVoidOperationFinished, WrapPersistent(resolver),
                         WrapPersistent(this),
                         blink::SharedStorageVoidOperation::kRun,

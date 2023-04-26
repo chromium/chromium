@@ -5,6 +5,11 @@
 #ifndef CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_H_
 #define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_H_
 
+#include <stdint.h>
+
+#include <string>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
@@ -12,6 +17,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
@@ -68,13 +74,15 @@ class CONTENT_EXPORT SharedStorageWorkletHost
           callback);
   void RunOperationOnWorklet(const std::string& name,
                              const std::vector<uint8_t>& serialized_data,
-                             bool keep_alive_after_operation);
+                             bool keep_alive_after_operation,
+                             const absl::optional<std::string>& context_id);
   void RunURLSelectionOperationOnWorklet(
       const std::string& name,
       std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
           urls_with_metadata,
       const std::vector<uint8_t>& serialized_data,
       bool keep_alive_after_operation,
+      const absl::optional<std::string>& context_id,
       blink::mojom::SharedStorageDocumentService::
           RunURLSelectionOperationOnWorkletCallback callback);
 
@@ -183,7 +191,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // `PendingRemote`. If there is no `PrivateAggregationManger`, returns an
   // invalid `PendingRemote`.
   mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
-  MaybeBindPrivateAggregationHost();
+  MaybeBindPrivateAggregationHost(
+      const absl::optional<std::string>& context_id);
 
   bool IsSharedStorageAllowed();
 

@@ -5,10 +5,16 @@
 #ifndef CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_DOCUMENT_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_DOCUMENT_SERVICE_IMPL_H_
 
+#include <stdint.h>
+
+#include <string>
+#include <vector>
+
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "url/origin.h"
 
@@ -57,6 +63,7 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   void RunOperationOnWorklet(const std::string& name,
                              const std::vector<uint8_t>& serialized_data,
                              bool keep_alive_after_operation,
+                             const absl::optional<std::string>& context_id,
                              RunOperationOnWorkletCallback callback) override;
   void RunURLSelectionOperationOnWorklet(
       const std::string& name,
@@ -64,6 +71,7 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
           urls_with_metadata,
       const std::vector<uint8_t>& serialized_data,
       bool keep_alive_after_operation,
+      const absl::optional<std::string>& context_id,
       RunURLSelectionOperationOnWorkletCallback callback) override;
   void SharedStorageSet(const std::u16string& key,
                         const std::u16string& value,

@@ -57,9 +57,10 @@ interface SharedStorageDocumentService {
   // errors reported are if the API is disabled or if the worklet has expired
   // because the context previously initiated either a `run()` or `selectURL()`
   // call without including the option `keepAlive: true`; other errors are
-  // suppressed and reported as success.
+  // suppressed and reported as success. `context_id` is an optional string that
+  // is passed to Private Aggregation (if enabled).
   RunOperationOnWorklet(string name, array<uint8> serialized_data,
-                        bool keep_alive_after_operation)
+                        bool keep_alive_after_operation, string? context_id)
       => (bool success,
           string error_message);
 
@@ -74,11 +75,14 @@ interface SharedStorageDocumentService {
   // data will be only consumed in an environment (i.e. the worklet) in control
   // by the same origin. `keep_alive_after_operation` indicates whether or not
   // the worklet should be kept alive after this operation finishes.
+  // `context_id` is an optional string that is passed to Private Aggregation
+  // (if enabled).
   RunURLSelectionOperationOnWorklet(string name,
                                     array<SharedStorageUrlWithMetadata>
                                       urls_with_metadata,
                                     array<uint8> serialized_data,
-                                    bool keep_alive_after_operation)
+                                    bool keep_alive_after_operation,
+                                    string? context_id)
     => (bool success, string error_message, FencedFrameConfig? config);
 
   // Handle sharedStorage.set(): set `key`’s entry to `value`. If

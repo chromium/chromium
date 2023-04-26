@@ -991,6 +991,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sensor_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_share_data.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_share_data.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_set_method_options.cc",

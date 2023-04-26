@@ -718,6 +718,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/shared_storage/private_aggregation_histogram_contribution.idl",
           "//third_party/blink/renderer/modules/shared_storage/private_aggregation_debug_mode_options.idl",
           "//third_party/blink/renderer/modules/shared_storage/shared_storage.idl",
+          "//third_party/blink/renderer/modules/shared_storage/shared_storage_private_aggregation_config.idl",
           "//third_party/blink/renderer/modules/shared_storage/shared_storage_run_operation_method_options.idl",
           "//third_party/blink/renderer/modules/shared_storage/shared_storage_set_method_options.idl",
           "//third_party/blink/renderer/modules/shared_storage/shared_storage_url_with_metadata.idl",

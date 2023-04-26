@@ -4,6 +4,11 @@
 
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 
+#include <stdint.h>
+
+#include <string>
+#include <utility>
+
 #include "base/strings/strcat.h"
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
@@ -16,6 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "url/url_constants.h"
@@ -142,7 +148,16 @@ void SharedStorageDocumentServiceImpl::RunOperationOnWorklet(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data,
     bool keep_alive_after_operation,
+    const absl::optional<std::string>& context_id,
     RunOperationOnWorkletCallback callback) {
+  if (context_id.has_value() &&
+      !blink::IsValidPrivateAggregationContextId(context_id.value())) {
+    receiver_.ReportBadMessage("Invalid context_id.");
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::kRunNonWebVisible);
+    return;
+  }
+
   if (!IsSharedStorageAllowed()) {
     std::move(callback).Run(/*success=*/false,
                             /*error_message=*/kSharedStorageDisabledMessage);
@@ -163,7 +178,7 @@ void SharedStorageDocumentServiceImpl::RunOperationOnWorklet(
       SharedStorageEventParams::CreateForRun(name, serialized_data));
 
   GetSharedStorageWorkletHost()->RunOperationOnWorklet(
-      name, serialized_data, keep_alive_after_operation);
+      name, serialized_data, keep_alive_after_operation, context_id);
   std::move(callback).Run(/*success=*/true, /*error_message=*/{});
 }
 
@@ -173,6 +188,7 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
         urls_with_metadata,
     const std::vector<uint8_t>& serialized_data,
     bool keep_alive_after_operation,
+    const absl::optional<std::string>& context_id,
     RunURLSelectionOperationOnWorkletCallback callback) {
   if (!blink::IsValidSharedStorageURLsArrayLength(urls_with_metadata.size())) {
     // This could indicate a compromised renderer, so let's terminate it.
@@ -218,6 +234,14 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
 
     converted_urls.emplace_back(url_with_metadata->url,
                                 std::move(reporting_metadata));
+  }
+
+  if (context_id.has_value() &&
+      !blink::IsValidPrivateAggregationContextId(context_id.value())) {
+    receiver_.ReportBadMessage("Invalid context_id.");
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
+    return;
   }
 
   if (!IsSharedStorageAllowed()) {
@@ -283,7 +307,7 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
 
   GetSharedStorageWorkletHost()->RunURLSelectionOperationOnWorklet(
       name, std::move(urls_with_metadata), serialized_data,
-      keep_alive_after_operation, std::move(callback));
+      keep_alive_after_operation, context_id, std::move(callback));
 }
 
 void SharedStorageDocumentServiceImpl::SharedStorageSet(
