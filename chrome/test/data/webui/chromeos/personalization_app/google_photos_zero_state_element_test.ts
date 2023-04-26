@@ -6,9 +6,8 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {GooglePhotosTab, GooglePhotosZeroState} from 'chrome://personalization/js/personalization_app.js';
-
-import {assertEquals, assertTrue} from '../../chai_assert.js';
-import {waitAfterNextRender} from '../../polymer_test_util.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {initElement} from './personalization_app_test_utils.js';
 
