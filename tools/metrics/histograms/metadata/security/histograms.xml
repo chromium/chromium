@@ -194,6 +194,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Security.HttpsFirstModeWithEngagementHeuristic.NavigationEvent"
+    enum="HttpsFirstModeNavigationEvent" expires_after="2023-09-10">
+  <owner>meacer@chromium.org</owner>
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Same as Security.HttpsFirstMode.NavigationEvent but only recorded iff HFM is
+    disabled by the UI setting and enabled by the Site Engagement Heuristic
+    because the site's HTTPS score is high and HTTP score is low.
+  </summary>
+</histogram>
+
 <histogram name="Security.JSONParser.ChromiumExtensionUsage"
     enum="JsonParserExtension" expires_after="2023-09-10">
   <owner>rsesek@chromium.org</owner>

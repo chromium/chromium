@@ -9,7 +9,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+// #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
+#include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -120,8 +122,17 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
   int frame_tree_node_id_;
 
   // Controls whether we are upgrading and falling back with an interstitial
-  // before proceeding with the HTTP navigation.
-  bool http_interstitial_enabled_ = false;
+  // before proceeding with the HTTP navigation. This reflects the general
+  // UI setting. Only used to set the values of interstitial_state_.
+  bool http_interstitial_enabled_by_pref_ = false;
+
+  // Parameters about whether the throttle should trigger the interstitial
+  // warning before navigating to the HTTP fallback URL.
+  // This is a unique ptr to ensure that all fields are initialized (otherwise
+  // this should be null).
+  std::unique_ptr<
+      security_interstitials::https_only_mode::HttpInterstitialState>
+      interstitial_state_;
 
   // Receiver for the URLLoader interface.
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};

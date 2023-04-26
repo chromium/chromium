@@ -28,6 +28,7 @@
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "components/security_interstitials/core/metrics_helper.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
@@ -51,6 +52,8 @@
 using security_interstitials::https_only_mode::Event;
 using security_interstitials::https_only_mode::kEventHistogram;
 using security_interstitials::https_only_mode::
+    kEventHistogramWithEngagementHeuristic;
+using security_interstitials::https_only_mode::
     kNavigationRequestSecurityLevelHistogram;
 using security_interstitials::https_only_mode::NavigationRequestSecurityLevel;
 
@@ -61,10 +64,14 @@ using security_interstitials::https_only_mode::NavigationRequestSecurityLevel;
 // The code also needs to be able to run safely when v2 is enabled, but neither
 // HTTPS-First Mode nor HTTPS-Upgrades are enabled.
 enum class HttpsUpgradesTestType {
+  // Enables HFM pref. The feature flag is always enabled.
   kHttpsFirstModeOnly,
+  // Enables HTTPS Upgrades feature flag.
   kHttpsUpgradesOnly,
+  // Enables both the HFM pref and HTTPS Upgrades feature flag.
   kBoth,
-  kNeither
+  // Disables the pref and HTTPS Upgrades feature.
+  kNeither,
 };
 
 // Tests for the v2 implementation of HTTPS-First Mode.
@@ -74,6 +81,15 @@ class HttpsUpgradesBrowserTest
  public:
   HttpsUpgradesBrowserTest() = default;
   ~HttpsUpgradesBrowserTest() override = default;
+
+  HttpsUpgradesTestType https_upgrades_test_type() const { return GetParam(); }
+
+  void SetSiteEngagementScore(const GURL& url, double score) {
+    site_engagement::SiteEngagementService* service =
+        site_engagement::SiteEngagementService::Get(browser()->profile());
+    service->ResetBaseScoreForURL(url, score);
+    ASSERT_EQ(score, service->GetScore(url));
+  }
 
   void SetUp() override {
     if (GetParam() == HttpsUpgradesTestType::kHttpsUpgradesOnly ||
@@ -89,6 +105,7 @@ class HttpsUpgradesBrowserTest
     } else {
       feature_list_.InitAndEnableFeature(features::kHttpsFirstModeV2);
     }
+
     InProcessBrowserTest::SetUp();
   }
 
@@ -184,7 +201,7 @@ class HttpsUpgradesBrowserTest
 
   // Whether the tests should run steps that assume HTTP upgrading will trigger.
   bool IsHttpUpgradingEnabled() const {
-    return GetParam() != HttpsUpgradesTestType::kNeither;
+    return https_upgrades_test_type() != HttpsUpgradesTestType::kNeither;
   }
 
   net::EmbeddedTestServer* http_server() { return &http_server_; }
@@ -447,6 +464,66 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
     histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
     histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError,
                                     1);
+  } else {
+    histograms()->ExpectTotalCount(kEventHistogram, 1);
+    histograms()->ExpectBucketCount(kEventHistogram,
+                                    Event::kUpgradeNotAttempted, 1);
+  }
+}
+
+// TODO(https://crbug.com/1435222): Fails on the linux-wayland-rel bot.
+#if defined(OZONE_PLATFORM_WAYLAND)
+#define MAYBE_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_SiteEngagement \
+  DISABLED_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_SiteEngagement
+#else
+#define MAYBE_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_SiteEngagement \
+  UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_SiteEngagement
+#endif
+// Test for Site Engagement Heuristic, a feature that enables HFM on specific
+// sites based on their site engagement scores.
+// If the user navigates to an HTTP URL for a site with broken HTTPS, the
+// navigation should end up on the HTTPS URL and show the HTTPS-Only Mode
+// interstitial. It should also record a separate histogram for Site Engagement
+// Heuristic if the interstitial isn't enabled.
+IN_PROC_BROWSER_TEST_P(
+    HttpsUpgradesBrowserTest,
+    MAYBE_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_SiteEngagement) {
+  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+  GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
+  SetSiteEngagementScore(http_url, 2);
+  SetSiteEngagementScore(https_url, 95);
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  if (IsHttpInterstitialEnabled()) {
+    EXPECT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  }
+
+  // // Verify that navigation event metrics were correctly recorded.
+  if (IsHttpUpgradingEnabled()) {
+    histograms()->ExpectTotalCount(kEventHistogram, 3);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted,
+                                    1);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError,
+                                    1);
+
+    // Check engagement heuristic metrics. These are only recorded when the
+    // interstitial isn't enabled by the user pref.
+    if (!IsHttpInterstitialEnabled()) {
+      histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 3);
+      histograms()->ExpectBucketCount(kEventHistogramWithEngagementHeuristic,
+                                      Event::kUpgradeAttempted, 1);
+      histograms()->ExpectBucketCount(kEventHistogramWithEngagementHeuristic,
+                                      Event::kUpgradeFailed, 1);
+      histograms()->ExpectBucketCount(kEventHistogramWithEngagementHeuristic,
+                                      Event::kUpgradeCertError, 1);
+    }
+
   } else {
     histograms()->ExpectTotalCount(kEventHistogram, 1);
     histograms()->ExpectBucketCount(kEventHistogram,

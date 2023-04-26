@@ -10,9 +10,14 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/ssl/https_only_mode_tab_helper.h"
+#include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_interstitials/content/https_only_mode_blocking_page.h"
+#include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/variations/synthetic_trials.h"
 #include "content/public/browser/browser_context.h"
 
@@ -26,6 +31,81 @@ const char kHttpsFirstModeSyntheticFieldTrialName[] =
     "HttpsFirstModeClientSetting";
 const char kHttpsFirstModeSyntheticFieldTrialEnabledGroup[] = "Enabled";
 const char kHttpsFirstModeSyntheticFieldTrialDisabledGroup[] = "Disabled";
+
+// Returns the HTTP URL from `http_url` using the test port numbers, if any.
+// TODO(crbug.com/1435222): Refactor and merge with UpgradeUrlToHttps().
+GURL GetHttpUrlFromHttps(const GURL& https_url) {
+  DCHECK(https_url.SchemeIsCryptographic());
+
+  // Replace scheme with HTTP.
+  GURL::Replacements upgrade_url;
+  upgrade_url.SetSchemeStr(url::kHttpScheme);
+
+  // For tests that use the EmbeddedTestServer, the server's port needs to be
+  // specified as it can't use the default ports.
+  int http_port_for_testing = HttpsUpgradesInterceptor::GetHttpPortForTesting();
+  // `port_str` must be in scope for the call to ReplaceComponents() below.
+  const std::string port_str = base::NumberToString(http_port_for_testing);
+  if (http_port_for_testing) {
+    // Only reached in testing, where the original URL will always have a
+    // non-default port. One of the tests navigates to Google support pages, so
+    // exclude that.
+    // TODO(meacer): Remove this exception.
+    if (https_url != GURL(security_interstitials::HttpsOnlyModeBlockingPage::
+                              kLearnMoreLink)) {
+      DCHECK(!https_url.port().empty());
+      upgrade_url.SetPortStr(port_str);
+    }
+  }
+
+  return https_url.ReplaceComponents(upgrade_url);
+}
+
+// Returns the HTTPS URL from `http_url` using the test port numbers, if any.
+// TODO(crbug.com/1435222): Refactor and merge with UpgradeUrlToHttps().
+GURL GetHttpsUrlFromHttp(const GURL& http_url) {
+  DCHECK(!http_url.SchemeIsCryptographic());
+
+  // Replace scheme with HTTPS.
+  GURL::Replacements upgrade_url;
+  upgrade_url.SetSchemeStr(url::kHttpsScheme);
+
+  // For tests that use the EmbeddedTestServer, the server's port needs to be
+  // specified as it can't use the default ports.
+  int https_port_for_testing =
+      HttpsUpgradesInterceptor::GetHttpsPortForTesting();
+  // `port_str` must be in scope for the call to ReplaceComponents() below.
+  const std::string port_str = base::NumberToString(https_port_for_testing);
+  if (https_port_for_testing) {
+    // Only reached in testing, where the original URL will always have a
+    // non-default port.
+    DCHECK(!http_url.port().empty());
+    upgrade_url.SetPortStr(port_str);
+  }
+
+  return http_url.ReplaceComponents(upgrade_url);
+}
+
+// Minimum score of an HTTPS origin to enable HFM on its hostname.
+const double kHttpsAddThreshold = 40;
+
+// Maximum score of an HTTP origin to enable HFM on its hostname.
+const double kHttpAddThreshold = 5;
+
+bool ShouldEnforceHttpsFirstModeForUrl(content::WebContents* web_contents,
+                                       const GURL& url) {
+  GURL https_url = url.SchemeIsCryptographic() ? url : GetHttpsUrlFromHttp(url);
+  GURL http_url = !url.SchemeIsCryptographic() ? url : GetHttpUrlFromHttps(url);
+
+  auto* engagement_svc = site_engagement::SiteEngagementService::Get(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+
+  double https_score = engagement_svc->GetScore(https_url);
+  double http_score = engagement_svc->GetScore(http_url);
+
+  return https_score > kHttpsAddThreshold && http_score < kHttpAddThreshold;
+}
+
 }  // namespace
 
 HttpsFirstModeService::HttpsFirstModeService(Profile* profile)
@@ -85,6 +165,23 @@ void HttpsFirstModeService::OnAdvancedProtectionStatusChanged(bool enabled) {
       !profile_->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
     profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
   }
+}
+
+void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(
+    content::WebContents* web_contents,
+    const GURL& url) {
+  if (ShouldEnforceHttpsFirstModeForUrl(web_contents, url)) {
+    StatefulSSLHostStateDelegate* state =
+        static_cast<StatefulSSLHostStateDelegate*>(
+            profile_->GetSSLHostStateDelegate());
+    // StatefulSSLHostStateDelegate can be null during tests.
+    if (state) {
+      state->EnforceHttpsForHost(
+          url.host(),
+          web_contents->GetPrimaryMainFrame()->GetStoragePartition());
+    }
+  }
+  // TODO(crbug.com/1435222): Implement un-enforce HTTPS.
 }
 
 // static

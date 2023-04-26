@@ -5224,7 +5224,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       MaybeAddThrottle(
           HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
               handle, std::make_unique<ChromeSecurityBlockingPageFactory>(),
-              profile->GetPrefs()),
+              profile),
           &throttles);
     } else {
       MaybeAddThrottle(

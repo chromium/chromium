@@ -74,6 +74,18 @@ bool MockSSLHostStateDelegate::IsHttpAllowedForHost(
   return base::Contains(allow_http_hosts_, host);
 }
 
+void MockSSLHostStateDelegate::EnforceHttpsForHost(
+    const std::string& host,
+    StoragePartition* storage_partition) {
+  enforce_https_hosts_.insert(host);
+}
+
+bool MockSSLHostStateDelegate::IsHttpsEnforcedForHost(
+    const std::string& host,
+    StoragePartition* storage_partition) {
+  return base::Contains(enforce_https_hosts_, host);
+}
+
 void MockSSLHostStateDelegate::RevokeUserAllowExceptions(
     const std::string& host) {
   exceptions_.erase(exceptions_.find(host));

@@ -14,6 +14,8 @@ static_library("core") {
     "controller_client.h",
     "https_only_mode_allowlist.cc",
     "https_only_mode_allowlist.h",
+    "https_only_mode_enforcelist.cc",
+    "https_only_mode_enforcelist.h",
     "https_only_mode_metrics.cc",
     "https_only_mode_metrics.h",
     "https_only_mode_ui_util.cc",
