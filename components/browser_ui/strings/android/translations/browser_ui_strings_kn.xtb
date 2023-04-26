@@ -41,7 +41,7 @@
 <translation id="1818308510395330587">AR ಬಳಸಲು <ph name="APP_NAME" /> ಗೆ ಅನುಮತಿ ನೀಡುವುದಕ್ಕಾಗಿ, <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಕ್ಯಾಮರಾವನ್ನು ಸಹ ಆನ್ ಮಾಡಿ.</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> ನಿಂದ</translation>
 <translation id="187227595286001730">ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳು ಗುಂಪಿನಲ್ಲಿ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಬಹುದು</translation>
-<translation id="1887786770086287077">ಈ ಸಾಧನದ ಸ್ಥಳ ಪ್ರವೇಶ ಆಫ್ ಆಗಿದೆ. ಅದನ್ನು <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಆನ್ ಮಾಡಿ.</translation>
+<translation id="1887786770086287077">ಈ ಸಾಧನದ ಸ್ಥಳ ಆ್ಯಕ್ಸೆಸ್ ಆಫ್ ಆಗಿದೆ. ಅದನ್ನು <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಆನ್ ಮಾಡಿ.</translation>
 <translation id="1915307458270490472">ಹ್ಯಾಂಗ್ ಅಪ್ ಮಾಡಿ</translation>
 <translation id="1919345977826869612">ಜಾಹೀರಾತುಗಳು</translation>
 <translation id="1919950603503897840">ಸಂಪರ್ಕಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
@@ -88,7 +88,7 @@
 <translation id="2501278716633472235">ಹಿಂದಿರುಗಿ</translation>
 <translation id="2546283357679194313">ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 ಕುಕೀಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{# ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{# ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
-<translation id="2570922361219980984">ಈ ಸಾಧನದ ಸ್ಥಳ ಪ್ರವೇಶ ಸಹ ಆಫ್ ಆಗಿದೆ. ಅದನ್ನು <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಆನ್ ಮಾಡಿ.</translation>
+<translation id="2570922361219980984">ಈ ಸಾಧನದ ಸ್ಥಳ ಆ್ಯಕ್ಸೆಸ್ ಸಹ ಆಫ್ ಆಗಿದೆ. ಅದನ್ನು <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಆನ್ ಮಾಡಿ.</translation>
 <translation id="257931822824936280">ವಿಸ್ತರಿಸಲಾಗಿದೆ - ಕುಗ್ಗಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="2586657967955657006">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್</translation>
 <translation id="2597457036804169544">ಸೈಟ್‌ಗಳಿಗೆ ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ಅನ್ವಯಿಸಬೇಡಿ</translation>

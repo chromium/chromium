@@ -3765,7 +3765,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4348766275249686434">Prikupljaj greške</translation>
 <translation id="4349828822184870497">Korisno</translation>
 <translation id="4350230709416545141">Uvek blokiraj pristup lokaciji za <ph name="HOST" /></translation>
-<translation id="4350782034419308508">Ok Google</translation>
+<translation id="4350782034419308508">Hej Google</translation>
 <translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Da bi pružio najbolji doživljaj, <ph name="DEVICE_OS" /> prikuplja podatke o hardveru sa uređaja i deli ih sa Google-om da bi utvrdio koja ažuriranja treba da pruži. Možete opcionalno da dozvolite Google-u da koristi te podatke u dodatne svrhe poput podrške i poboljšanja za <ph name="DEVICE_OS" /> doživljaj i uslugu.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Možete da se prijavite na ovom uređaju i posetite odeljak CHROMEOSFLEX_HARDWARE_INFO na chrome://system da biste videli podatke koji se šalju Google-u radi filtriranja ažuriranja, kao i sve druge slučajeve u kojima odlučujete da delite podatke sa Google-om.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Više detalja o podacima koje <ph name="DEVICE_OS" /> može da deli sa Google-om, kao i o tome kako se oni koriste, potražite na g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
@@ -6491,7 +6491,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6842749380892715807">XML liste sajtova su poslednji put preuzete: <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Sajtovi obično otkrivaju kada aktivno koristite uređaj radi podešavanja dostupnosti u aplikacijama za ćaskanje</translation>
 <translation id="6843264316370513305">Otklanjanje grešaka na mreži</translation>
-<translation id="6843423766595476978">Opcija Ok Google je spremna</translation>
+<translation id="6843423766595476978">Opcija Hej Google je spremna</translation>
 <translation id="6845038076637626672">Otvori uvećano</translation>
 <translation id="6845231585063669905">Od A do Z</translation>
 <translation id="6846178040388691741"><ph name="EXTENSION_NAME" /> želi da štampa <ph name="FILE_NAME" /> pomoću štampača <ph name="PRINTER_NAME" />.</translation>
@@ -6584,7 +6584,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6923633482430812883">Greška pri učitavanju deljene datoteke. Proverite da li server datoteka sa kojim se povezujete podržava SMBv2 ili noviju verziju.</translation>
 <translation id="6925127338315966709">Dodajete profil kojim se upravlja u ovaj pregledač. Administrator ima kontrolu nad profilom i može da pristupa njegovim podacima. Obeleživači, istorija, lozinke i druga podešavanja mogu da se sinhronizuju sa nalogom i administrator može da upravlja njima.</translation>
 <translation id="6929126689972602640">Roditeljski nadzor nije podržan za naloge za školu. Da biste dodali nalog za školu koji omogućava pristup Google učionici i drugim veb-sajtovima za školske zadatke kod kuće, prvo se prijavite pomoću detetovog ličnog naloga. Nalog za školu možete da dodate kasnije tokom podešavanja.</translation>
-<translation id="6929760895658557216">Ok Google</translation>
+<translation id="6929760895658557216">Hej Google</translation>
 <translation id="6930036377490597025">Eksterni bezbednosni ključ ili ugrađeni senzor</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Dodatak je odbijen}one{# dodatak je odbijen}few{# dodatka su odbijena}other{# dodataka je odbijeno}}</translation>
 <translation id="6931690462168617033">Jačina klika</translation>

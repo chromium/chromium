@@ -5555,7 +5555,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5984222099446776634">Nylig besøkte</translation>
 <translation id="5985458664595100876">Ugyldig nettadresseformat. Støttede formater er \\tjener\delt og smb://tjener/delt.</translation>
 <translation id="598810097218913399">Fjern tilordningen</translation>
-<translation id="5990266201903445068">Bare Wifi</translation>
+<translation id="5990266201903445068">Bare wifi</translation>
 <translation id="5990386583461751448">Oversatt</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{For å sikre at du fortsatt kan surfe på nettet, be administratoren din om å fjerne dette programmet.}other{For å sikre at du fortsatt kan surfe på nettet, be administratoren din om å fjerne disse programmene.}}</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Gjennomgangen er fullført for 1 nettsted}other{Gjennomgangen er fullført for {NUM_SITES} nettsteder}}</translation>
