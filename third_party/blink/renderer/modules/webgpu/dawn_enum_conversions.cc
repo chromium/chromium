@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_front_face.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_load_op.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_mipmap_filter_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_pipeline_statistic_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_primitive_topology.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_query_type.h"
@@ -846,6 +847,15 @@ WGPUFilterMode AsDawnEnum(const V8GPUFilterMode& webgpu_enum) {
       return WGPUFilterMode_Nearest;
     case V8GPUFilterMode::Enum::kLinear:
       return WGPUFilterMode_Linear;
+  }
+}
+
+WGPUMipmapFilterMode AsDawnEnum(const V8GPUMipmapFilterMode& webgpu_enum) {
+  switch (webgpu_enum.AsEnum()) {
+    case V8GPUMipmapFilterMode::Enum::kNearest:
+      return WGPUMipmapFilterMode_Nearest;
+    case V8GPUMipmapFilterMode::Enum::kLinear:
+      return WGPUMipmapFilterMode_Linear;
   }
 }
 
