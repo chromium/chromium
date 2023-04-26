@@ -5926,7 +5926,7 @@
             ]
         }
     ],
-    "GoogleLensDesktopV3AndRedirectFixDisabledM102AndAbove": [
+    "GoogleLensDesktopV3UploadUrlAndRedirectFixDisabled": [
         {
             "platforms": [
                 "chromeos",
