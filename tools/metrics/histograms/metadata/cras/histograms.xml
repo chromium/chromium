@@ -219,6 +219,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Cras.DeviceSampleRate" units="bps" expires_after="2024-04-21">
+<!-- Name completed by histogram_suffixes
+     name="Cras.DeviceType" and
+     name="Cras.Direction" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The sampling rate of a device. It is recorded when the device is opened.
+  </summary>
+</histogram>
+
 <histogram name="Cras.DeviceTypeInput" enum="CrasDeviceType"
     expires_after="2023-10-08">
   <owner>yuhsuan@chromium.org</owner>
