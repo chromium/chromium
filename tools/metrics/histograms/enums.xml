@@ -42187,6 +42187,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4548"
       label="ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest"/>
   <int value="4549" label="FlexIntrinsicSizesCacheMiss"/>
+  <int value="4550" label="CSSStyleContainerQuery"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

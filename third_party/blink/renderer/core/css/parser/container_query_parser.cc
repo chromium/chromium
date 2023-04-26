@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 
 namespace blink {
 
@@ -170,6 +171,7 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
 
     if (const MediaQueryExpNode* query =
             ConsumeFeatureQuery(block, offsets, StyleFeatureSet())) {
+      context_.Count(WebFeature::kCSSStyleContainerQuery);
       return MediaQueryExpNode::Function(query, "style");
     }
   }

@@ -3888,6 +3888,7 @@ enum WebFeature {
   kSecurePaymentConfirmationActivationlessShow = 4547,
   kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest = 4548,
   kFlexIntrinsicSizesCacheMiss = 4549,
+  kCSSStyleContainerQuery = 4550,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -4335,6 +4335,30 @@ TEST_F(StyleEngineTest, AtContainerUseCount) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleContainer));
 }
 
+TEST_F(StyleEngineTest, StyleQueryUseCount) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @container (width = 200px) {
+        body { background: red; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleContainer));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSStyleContainerQuery));
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @container ((width > 0px) and style(--foo: bar)) {
+        body { background: lime; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleContainer));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSStyleContainerQuery));
+}
+
 TEST_F(StyleEngineTest, NestingUseCount) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
