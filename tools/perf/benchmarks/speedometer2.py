@@ -19,8 +19,8 @@ from telemetry.web_perf import timeline_based_measurement
 
 from page_sets import speedometer2_pages
 
-_SPEEDOMETER_DIR = os.path.join(path_util.GetChromiumSrcDir(),
-    'third_party', 'blink', 'perf_tests', 'speedometer')
+_PERF_TEST_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'third_party',
+                              'blink', 'perf_tests')
 
 
 class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
@@ -47,7 +47,7 @@ class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
     filtered_suite_names = list(
         map(story_cls.GetFullSuiteName, story_cls.GetSuites(options.suite)))
 
-    story_set = story.StorySet(base_dir=_SPEEDOMETER_DIR)
+    story_set = story.StorySet(base_dir=self._SOURCE_DIR)
 
     # For a smoke test one iteration is sufficient
     if self.enable_smoke_test_mode and not self.iteration_count:
@@ -130,6 +130,9 @@ class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
 class Speedometer20(_Speedometer2):
   """Speedometer2.0 benchmark.
   Explicitly named version."""
+
+  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer')
+
   @classmethod
   def GetStoryClass(cls):
     return speedometer2_pages.Speedometer20Story
@@ -145,6 +148,10 @@ class Speedometer20(_Speedometer2):
 class Speedometer21(_Speedometer2):
   """Speedometer2.1 benchmark.
   Explicitly named version."""
+
+  #TODO(cbruni): update path once new version is checked in.
+  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer')
+
   @classmethod
   def GetStoryClass(cls):
     return speedometer2_pages.Speedometer21Story
@@ -157,7 +164,7 @@ class Speedometer21(_Speedometer2):
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
                 component='Blink>JavaScript',
                 documentation_url='https://browserbench.org/Speedometer2.0')
-class Speedometer2(_Speedometer2):
+class Speedometer2(Speedometer20):
   """The latest version of the Speedometer2 benchmark."""
   @classmethod
   def GetStoryClass(cls):
