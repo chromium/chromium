@@ -48,7 +48,7 @@ struct H264PicOrderCompare {
 bool ParseBitDepth(const H264SPS& sps, uint8_t& bit_depth) {
   // Spec 7.4.2.1.1
   if (sps.bit_depth_luma_minus8 != sps.bit_depth_chroma_minus8) {
-    DVLOG(1) << "H264Decoder doesn't support different bit depths between luma"
+    VLOGF(4) << "H264Decoder doesn't support different bit depths between luma"
              << "and chroma, bit_depth_luma_minus8="
              << sps.bit_depth_luma_minus8
              << ", bit_depth_chroma_minus8=" << sps.bit_depth_chroma_minus8;
@@ -70,7 +70,7 @@ bool ParseBitDepth(const H264SPS& sps, uint8_t& bit_depth) {
       bit_depth = 14u;
       break;
     default:
-      DVLOG(1) << "Invalid bit depth: "
+      VLOGF(4) << "Invalid bit depth: "
                << base::checked_cast<int>(sps.bit_depth_luma_minus8 + 8);
       return false;
   }
@@ -571,7 +571,7 @@ VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
       break;
     }
     default: {
-      DVLOG(1) << "Invalid pic_order_cnt_type: " << sps->pic_order_cnt_type;
+      VLOGF(4) << "Invalid pic_order_cnt_type: " << sps->pic_order_cnt_type;
       return VideoDecoder::kError;
     }
   }
@@ -734,7 +734,7 @@ void H264Decoder::FinishPicture(H264SliceMetadata picture, const int sps_id) {
 
   for (const auto reusable_buffer_slot : reusable_buffer_slots) {
     if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_slot)) {
-      VLOG(1) << "VIDIOC_QBUF failed for CAPTURE queue.";
+      VLOGF(4) << "VIDIOC_QBUF failed for CAPTURE queue.";
     }
     // Keeps track of which indices are currently queued in the
     // CAPTURE queue. This will be used to determine which indices
