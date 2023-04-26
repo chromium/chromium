@@ -45,9 +45,9 @@
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
@@ -95,63 +95,6 @@ std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
   return std::make_unique<FakeTabRestoreService>();
 }
 }  // namespace
-
-// Test object that conforms to TabCollectionConsumer and exposes inner state
-// for test verification.
-@interface FakeConsumer : NSObject <TabCollectionConsumer>
-// The fake consumer only keeps the identifiers of items for simplicity
-@property(nonatomic, strong) NSMutableArray<NSString*>* items;
-@property(nonatomic, copy) NSString* selectedItemID;
-@end
-@implementation FakeConsumer
-@synthesize items = _items;
-@synthesize selectedItemID = _selectedItemID;
-
-- (void)setItemsRequireAuthentication:(BOOL)require {
-  // No-op.
-}
-
-- (void)populateItems:(NSArray<TabSwitcherItem*>*)items
-       selectedItemID:(NSString*)selectedItemID {
-  self.selectedItemID = selectedItemID;
-  self.items = [NSMutableArray array];
-  for (TabSwitcherItem* item in items) {
-    [self.items addObject:item.identifier];
-  }
-}
-
-- (void)insertItem:(TabSwitcherItem*)item
-           atIndex:(NSUInteger)index
-    selectedItemID:(NSString*)selectedItemID {
-  [self.items insertObject:item.identifier atIndex:index];
-  self.selectedItemID = selectedItemID;
-}
-
-- (void)removeItemWithID:(NSString*)removedItemID
-          selectedItemID:(NSString*)selectedItemID {
-  [self.items removeObject:removedItemID];
-  self.selectedItemID = selectedItemID;
-}
-
-- (void)selectItemWithID:(NSString*)selectedItemID {
-  self.selectedItemID = selectedItemID;
-}
-
-- (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
-  NSUInteger index = [self.items indexOfObject:itemID];
-  self.items[index] = item.identifier;
-}
-
-- (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex {
-  [self.items removeObject:itemID];
-  [self.items insertObject:itemID atIndex:toIndex];
-}
-
-- (void)dismissModals {
-  // No-op.
-}
-
-@end
 
 // Fake WebStateList delegate that attaches the required tab helper.
 class TabHelperFakeWebStateListDelegate : public FakeWebStateListDelegate {
@@ -238,7 +181,7 @@ class TabGridMediatorTest : public PlatformTest {
     browser_->GetWebStateList()->ActivateWebStateAt(1);
     original_selected_identifier_ =
         browser_->GetWebStateList()->GetWebStateAt(1)->GetStableIdentifier();
-    consumer_ = [[FakeConsumer alloc] init];
+    consumer_ = [[FakeTabCollectionConsumer alloc] init];
     mediator_ = [[TabGridMediator alloc] initWithConsumer:consumer_];
     mediator_.browser = browser_.get();
     mediator_.tabRestoreService = tab_restore_service_;
@@ -311,7 +254,7 @@ class TabGridMediatorTest : public PlatformTest {
   std::unique_ptr<ChromeBrowserState> browser_state_;
   sessions::TabRestoreService* tab_restore_service_;
   id tab_model_;
-  FakeConsumer* consumer_;
+  FakeTabCollectionConsumer* consumer_;
   TabGridMediator* mediator_;
   NSSet<NSString*>* original_identifiers_;
   NSString* original_selected_identifier_;
