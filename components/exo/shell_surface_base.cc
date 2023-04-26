@@ -68,6 +68,7 @@
 #include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_animations.h"
+#include "ui/wm/core/window_properties.h"
 #include "ui/wm/core/window_util.h"
 
 namespace exo {
@@ -772,6 +773,13 @@ void ShellSurfaceBase::SetCanMinimize(bool can_minimize) {
 
   can_minimize_ = can_minimize;
   WidgetDelegate::SetCanMinimize(!parent_ && can_minimize_);
+}
+
+void ShellSurfaceBase::SetPersistable(bool persistable) {
+  // This should be called before the widget is created.
+  DCHECK(!widget_);
+
+  persistable_ = persistable;
 }
 
 void ShellSurfaceBase::SetMenu() {
@@ -1517,6 +1525,9 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
     params.init_properties_container.SetProperty(
         app_restore::kAppIdKey, restore_window_id_source_.value());
   }
+
+  params.init_properties_container.SetProperty(wm::kPersistableKey,
+                                               persistable_);
 
   // Restore `params` to those of the saved `restore_window_id_`.
   app_restore::ModifyWidgetParams(params.init_properties_container.GetProperty(

@@ -147,6 +147,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Set the flag if the surface can maximize or not.
   void SetCanMinimize(bool can_minimize);
 
+  // Set whether the window is persistable.  This should be called before the
+  // widget is created.
+  void SetPersistable(bool persistable);
+
   // Set normal shadow bounds, |shadow_bounds_|, to |bounds| to be used and
   // applied via `UpdateShadow()`. Set and update resize shadow bounds with
   // |widget_|'s origin and |bounds| via `UpdateResizeShadowBoundsOfWindow()`.
@@ -509,6 +513,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   absl::optional<int32_t> restore_session_id_;
   absl::optional<int32_t> restore_window_id_;
   absl::optional<std::string> restore_window_id_source_;
+
+  // Member determines if the owning process is persistable.
+  bool persistable_ = true;
 
   // Overlay members.
   std::unique_ptr<views::Widget> overlay_widget_;

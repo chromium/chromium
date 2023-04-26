@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="51">
+  <interface name="zaura_shell" version="52">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -764,7 +764,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_toplevel" version="50">
+  <interface name="zaura_toplevel" version="52">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -1120,6 +1120,25 @@
       </description>
       <arg name="scale" type="uint" summary="Raster scale, in float format"/>
     </event>
+
+    <!-- Version 52 additions -->
+    <enum name="persistable">
+      <description summary="Describes whether or not the value is persistable">
+        Binary enum maps to boolean, describes whether or not a value is
+        persistable.
+      </description>
+      <entry name="not_persistable" value="0" summary="the value is not persistable"/>
+      <entry name="persistable" value="1" summary="the value is persistable"/>
+    </enum>
+
+    <request name="set_persistable" since="52">
+      <description summary="Describes if the window is persistable">
+      Request the persistable status of a window.  Sets the persistable status
+      of the window in its window properties.  Should be called before first
+      commit.
+      </description>
+      <arg name="persistable" type="uint" enum="persistable" summary="is the argument persistable"/>
+    </request>
   </interface>
 
   <interface name="zaura_popup" version="46">

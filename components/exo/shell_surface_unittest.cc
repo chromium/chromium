@@ -56,6 +56,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_types.h"
+#include "ui/wm/core/window_properties.h"
 #include "ui/wm/core/window_util.h"
 
 namespace exo {
@@ -2895,6 +2896,18 @@ TEST_F(ShellSurfaceTest, SetRestoreInfo) {
   EXPECT_EQ(restore_window_id,
             shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
                 app_restore::kRestoreWindowIdKey));
+}
+
+TEST_F(ShellSurfaceTest, SetNotPersistable) {
+  auto shell_surface = test::ShellSurfaceBuilder(gfx::Size(20, 30))
+                           .SetNoCommit()
+                           .BuildShellSurface();
+  shell_surface->SetPersistable(/*persistable=*/false);
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_TRUE(shell_surface->GetWidget()->IsVisible());
+  EXPECT_FALSE(shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+      wm::kPersistableKey));
 }
 
 // Test that restore id is set correctly.
