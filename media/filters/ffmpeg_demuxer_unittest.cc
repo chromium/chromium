@@ -476,6 +476,19 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
 }
 #endif
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+TEST_F(FFmpegDemuxerTest, Initialize_Multitrack_Disabled) {
+  // Open a file containing the following streams:
+  //   Stream #0: Video (AVC), disabled
+  //   Stream #1: Video (AVC)
+  CreateDemuxer("multitrack-disabled.mp4");
+  InitializeDemuxer();
+
+  std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
+  EXPECT_EQ(1u, streams.size());
+}
+#endif
+
 TEST_F(FFmpegDemuxerTest, Initialize_Encrypted) {
   EXPECT_CALL(*this,
               OnEncryptedMediaInitData(

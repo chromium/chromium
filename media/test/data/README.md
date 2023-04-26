@@ -1257,6 +1257,12 @@ Generated using following steps:
     ffmpeg -i bbb1.mp4 -i bbb2.mp4 -map 0:0 -map 0:1 -map 1:0 -map 1:1 -c:v copy -c:a copy -movflags frag_keyframe+omit_tfhd_offset+separate_moof bbb-320x240-2video-2audio.mp4
     ```
 
+#### multitrack-disabled.mp4
+H.264 video stream with the first track marked as disabled, generated with
+````
+ffmpeg -f lavfi -i "color=c=white:d=1" -f lavfi -i "testsrc2=d=1" -map 0 -disposition:v:0 0 -map 1 -disposition:v:1 default -c:v libx264 multitrack-disabled.mp4
+````
+
 ### Multi-track WebM file
 
 #### multitrack-3video-2audio.webm
