@@ -328,6 +328,8 @@ bool Connector::PrefersSerializedMessages() {
 }
 
 bool Connector::Accept(Message* message) {
+  recordreplay::Assert("[RUN-1209-1800] Connector::Accept A %d %d %d",
+                       !!lock_, !!task_runner_, !!error_);
   if (!lock_ && task_runner_)
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -336,6 +338,9 @@ bool Connector::Accept(Message* message) {
 
   internal::MayAutoLock locker(&lock_);
 
+  recordreplay::Assert("[RUN-1209-1800] Connector::Accept B %d %d %d",
+                       message_pipe_.is_valid(), drop_writes_,
+                       message->is_serialized());
   if (!message_pipe_.is_valid() || drop_writes_)
     return true;
 
