@@ -706,8 +706,8 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   GURL url("https://www.example.com/test/foo.html");
   base::Time creation_time = base::Time::Now();
   absl::optional<base::Time> server_time = absl::nullopt;
-  auto partition_key = absl::make_optional(
-      CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com")));
+  auto partition_key =
+      CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"));
   CookieInclusionStatus status;
 
   // Valid Partitioned attribute
