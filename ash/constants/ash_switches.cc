@@ -981,14 +981,6 @@ const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 const char kUseMyFilesInUserDataDirForTesting[] =
     "use-myfiles-in-user-data-dir-for-testing";
 
-// Used to tell the policy infrastructure to not let profile initialization
-// complete until policy is manually set by a test. This is used to provide
-// backward compatibility with a few tests that incorrectly use the
-// synchronously-initialized login profile to run their tests - do not add new
-// uses of this flag.
-const char kWaitForInitialPolicyFetchForTest[] =
-    "wait-for-initial-policy-fetch-for-test";
-
 // If provided, any webui will be loaded from <flag value>/<handler_name>, where
 // handler_name is the name passed to MaybeConfigureTestableDataSource, if the
 // file exists.

@@ -156,14 +156,6 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
   DCHECK(profile_);
   DCHECK(local_state_);
 
-  // Some tests don't want to complete policy initialization until they have
-  // manually injected policy even though the profile itself is synchronously
-  // initialized.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kWaitForInitialPolicyFetchForTest)) {
-    waiting_for_policy_fetch_ = true;
-  }
-
   // If a refresh timeout was specified, set a timer to call us back.
   if (!policy_refresh_timeout.is_zero()) {
     // Shouldn't pass a timeout unless we're refreshing existing policy.
@@ -235,9 +227,7 @@ void UserCloudPolicyManagerAsh::ConnectManagementService(
 
     // If we are doing a synchronous load, then wait_for_policy_fetch_ should
     // never be set (because we can't wait).
-    CHECK(!waiting_for_policy_fetch_ ||
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              ash::switches::kWaitForInitialPolicyFetchForTest));
+    CHECK(!waiting_for_policy_fetch_);
     if (!client()->is_registered() &&
         enforcement_type_ != PolicyEnforcement::kPolicyOptional) {
       // We expected to load policy, but we don't have policy, so exit the
@@ -584,13 +574,6 @@ void UserCloudPolicyManagerAsh::FetchPolicyOAuthToken() {
         refresh_token, system_url_loader_factory,
         base::BindOnce(&UserCloudPolicyManagerAsh::OnOAuth2PolicyTokenFetched,
                        base::Unretained(this)));
-    return;
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kWaitForInitialPolicyFetchForTest)) {
-    // Some tests don't want to complete policy initialization until they have
-    // manually injected policy. Do not treat this as a policy fetch error.
     return;
   }
 

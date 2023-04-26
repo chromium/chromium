@@ -328,8 +328,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUpdateRequiredAueForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kUseMyFilesInUserDataDirForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kWaitForInitialPolicyFetchForTest[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kWebUiDataSourcePathForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGetAccessTokenForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
