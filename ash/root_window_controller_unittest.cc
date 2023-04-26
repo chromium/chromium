@@ -55,7 +55,7 @@ namespace {
 class DeleteOnBlurDelegate : public aura::test::TestWindowDelegate,
                              public aura::client::FocusChangeObserver {
  public:
-  DeleteOnBlurDelegate() : window_(nullptr) {}
+  DeleteOnBlurDelegate() = default;
 
   DeleteOnBlurDelegate(const DeleteOnBlurDelegate&) = delete;
   DeleteOnBlurDelegate& operator=(const DeleteOnBlurDelegate&) = delete;
@@ -74,11 +74,12 @@ class DeleteOnBlurDelegate : public aura::test::TestWindowDelegate,
   // aura::client::FocusChangeObserver implementation:
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override {
-    if (window_ == lost_focus)
+    if (window_ == lost_focus) {
       delete window_;
+    }
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_{nullptr};
 };
 
 aura::LayoutManager* GetLayoutManager(RootWindowController* controller,
@@ -618,7 +619,7 @@ TEST_F(RootWindowControllerTest, FocusBlockedWindow) {
 // Tracks whether OnWindowDestroying() has been invoked.
 class DestroyedWindowObserver : public aura::WindowObserver {
  public:
-  DestroyedWindowObserver() : destroyed_(false), window_(nullptr) {}
+  DestroyedWindowObserver() = default;
 
   DestroyedWindowObserver(const DestroyedWindowObserver&) = delete;
   DestroyedWindowObserver& operator=(const DestroyedWindowObserver&) = delete;
@@ -640,14 +641,15 @@ class DestroyedWindowObserver : public aura::WindowObserver {
 
  private:
   void Shutdown() {
-    if (!window_)
+    if (!window_) {
       return;
+    }
     window_->RemoveObserver(this);
     window_ = nullptr;
   }
 
-  bool destroyed_;
-  raw_ptr<Window, ExperimentalAsh> window_;
+  bool destroyed_ = false;
+  raw_ptr<Window, ExperimentalAsh> window_{nullptr};
 };
 
 // Verifies shutdown doesn't delete windows that are not owned by the parent.
@@ -759,8 +761,9 @@ class TargetHitTestEventHandler : public ui::test::TestEventHandler {
 
   // ui::test::TestEventHandler overrides.
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED)
+    if (event->type() == ui::ET_MOUSE_PRESSED) {
       ui::test::TestEventHandler::OnMouseEvent(event);
+    }
     event->StopPropagation();
   }
 };
