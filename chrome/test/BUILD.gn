@@ -4037,7 +4037,6 @@ if (!is_android) {
         "../browser/ash/os_url_handler_browsertest.cc",
         "../browser/ash/platform_keys/key_permissions/key_permissions_manager_browsertest.cc",
         "../browser/ash/platform_keys/platform_keys_service_browsertest.cc",
-        "../browser/ash/policy/active_directory/component_active_directory_policy_browsertest.cc",
         "../browser/ash/policy/affiliation/affiliation_mixin.cc",
         "../browser/ash/policy/affiliation/affiliation_mixin.h",
         "../browser/ash/policy/affiliation/affiliation_test_helper.cc",
