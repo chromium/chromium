@@ -32,21 +32,25 @@ using InsetValueSequence =
 
 namespace {
 
-double ComputeOffset(Element* source_element,
-                     LayoutBox* subject_layout,
+double ComputeOffset(LayoutBox* subject_layout,
                      LayoutBox* source_layout,
                      ScrollOrientation physical_orientation) {
+  DCHECK(source_layout);
   MapCoordinatesFlags flags = kIgnoreScrollOffset | kIgnoreTransforms;
   gfx::PointF point = gfx::PointF(subject_layout->LocalToAncestorPoint(
       PhysicalOffset(), source_layout, flags));
 
-  // We can not call the regular clientLeft/Top functions here, because we
-  // may reach this function during style resolution, and clientLeft/Top
-  // also attempt to update style/layout.
+  // We call LayoutObject::ClientLeft/Top directly and avoid
+  // Element::clientLeft/Top because:
+  //
+  // - We may reach this function during style resolution,
+  //   and clientLeft/Top also attempt to update style/layout.
+  // - Those functions return the unzoomed values, and we require the zoomed
+  //   values.
   if (physical_orientation == kHorizontalScroll)
-    return point.x() - source_element->ClientLeftNoLayout();
+    return point.x() - source_layout->ClientLeft().Round();
   else
-    return point.y() - source_element->ClientTopNoLayout();
+    return point.y() - source_layout->ClientTop().Round();
 }
 
 bool IsBlockDirection(ViewTimeline::ScrollAxis axis, WritingMode writing_mode) {
@@ -319,7 +323,7 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
   LayoutUnit viewport_size;
 
   target_offset_ =
-      ComputeOffset(source, layout_box, source_layout, physical_orientation);
+      ComputeOffset(layout_box, source_layout, physical_orientation);
 
   if (physical_orientation == kHorizontalScroll) {
     target_size_ = layout_box->Size().Width().ToDouble();

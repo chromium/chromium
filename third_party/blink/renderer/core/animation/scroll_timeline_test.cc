@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -83,6 +84,18 @@ class TestScrollTimeline : public ScrollTimeline {
 
   void Trace(Visitor* visitor) const override {
     ScrollTimeline::Trace(visitor);
+  }
+};
+
+class TestViewTimeline : public ViewTimeline {
+ public:
+  TestViewTimeline(Document* document, Element* subject)
+      : ViewTimeline(document,
+                     TimelineAttachment::kLocal,
+                     subject,
+                     ScrollAxis::kVertical,
+                     TimelineInset()) {
+    UpdateSnapshot();
   }
 };
 
@@ -739,6 +752,105 @@ TEST_F(ScrollTimelineTest, WeakReferences) {
 
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(0u, scroll_timeline->GetAnimations().size());
+}
+
+TEST_F(ScrollTimelineTest, ScrollTimelineOffsetZoom) {
+  using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller {
+        overflow-y: auto;
+        width: 100px;
+        height: 100px;
+        border: 20px solid black;
+      }
+      .spacer {
+        height: 200px;
+      }
+    }
+    </style>
+    <div id='scroller'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // zoom = 1
+  {
+    auto* timeline = MakeGarbageCollected<TestScrollTimeline>(
+        &GetDocument(), GetElementById("scroller"));
+    absl::optional<ScrollOffsets> scroll_offsets =
+        timeline->GetResolvedScrollOffsets();
+    ASSERT_TRUE(scroll_offsets.has_value());
+    EXPECT_EQ(0.0, scroll_offsets->start);
+    EXPECT_EQ(100.0, scroll_offsets->end);
+  }
+
+  // zoom = 2
+  GetFrame().SetPageZoomFactor(2.0f);
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    auto* timeline = MakeGarbageCollected<TestScrollTimeline>(
+        &GetDocument(), GetElementById("scroller"));
+    absl::optional<ScrollOffsets> scroll_offsets =
+        timeline->GetResolvedScrollOffsets();
+    ASSERT_TRUE(scroll_offsets.has_value());
+    EXPECT_EQ(0.0, scroll_offsets->start);
+    EXPECT_EQ(200.0, scroll_offsets->end);
+  }
+}
+
+TEST_F(ScrollTimelineTest, ViewTimelineOffsetZoom) {
+  using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller {
+        overflow-y: auto;
+        width: 100px;
+        height: 100px;
+        border: 20px solid black;
+      }
+      .spacer {
+        height: 200px;
+      }
+      #subject {
+        height: 100px;
+      }
+    }
+    </style>
+    <div id='scroller'>
+      <div class='spacer'></div>
+      <div id='subject'></div>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // zoom = 1
+  {
+    auto* timeline = MakeGarbageCollected<TestViewTimeline>(
+        &GetDocument(), GetElementById("subject"));
+    absl::optional<ScrollOffsets> scroll_offsets =
+        timeline->GetResolvedScrollOffsets();
+    ASSERT_TRUE(scroll_offsets.has_value());
+    EXPECT_EQ(100.0, scroll_offsets->start);
+    EXPECT_EQ(300.0, scroll_offsets->end);
+  }
+
+  // zoom = 2
+  GetFrame().SetPageZoomFactor(2.0f);
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    auto* timeline = MakeGarbageCollected<TestViewTimeline>(
+        &GetDocument(), GetElementById("subject"));
+    absl::optional<ScrollOffsets> scroll_offsets =
+        timeline->GetResolvedScrollOffsets();
+    ASSERT_TRUE(scroll_offsets.has_value());
+    EXPECT_EQ(200.0, scroll_offsets->start);
+    EXPECT_EQ(600.0, scroll_offsets->end);
+  }
 }
 
 }  //  namespace blink
