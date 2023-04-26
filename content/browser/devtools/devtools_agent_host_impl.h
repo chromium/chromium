@@ -119,15 +119,24 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   void NotifyCreated();
   void NotifyNavigated();
   void NotifyCrashed(base::TerminationStatus status);
-  void ForceDetachAllSessions();
   void ForceDetachRestrictedSessions(
       const std::vector<DevToolsSession*>& restricted_sessions);
   DevToolsIOContext* GetIOContext() { return &io_context_; }
   DevToolsRendererChannel* GetRendererChannel() { return &renderer_channel_; }
 
   const std::vector<DevToolsSession*>& sessions() const { return sessions_; }
+  // Returns refptr retaining `this`. All other references may be removed
+  // at this point, so `this` will become invalid as soon as returned refptr
+  // gets destroyed.
+  [[nodiscard]] scoped_refptr<DevToolsAgentHost> ForceDetachAllSessionsImpl();
 
  private:
+  // Note that calling this may result in the instance being deleted,
+  // as instance may be owned by client sessions. This should not be
+  // used by methods of derived classes, use `ForceDetachAllSessionsImpl()`
+  // above instead.
+  void ForceDetachAllSessions();
+
   friend class DevToolsAgentHost;  // for static methods
   friend class DevToolsSession;
   friend class DevToolsRendererChannel;
