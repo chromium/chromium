@@ -36,6 +36,7 @@
 #import "ui/base/test/scoped_fake_nswindow_focus.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 using extensions::AppWindow;
 using extensions::PlatformAppBrowserTest;
@@ -243,23 +244,44 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, Minimize) {
   EXPECT_FALSE([ns_window isMiniaturized]);
 
   // Native minimize, Restore.
+  base::scoped_nsobject<WindowedNSNotificationObserver> miniaturizationObserver(
+      [[WindowedNSNotificationObserver alloc]
+          initForNotification:NSWindowDidMiniaturizeNotification
+                       object:ns_window]);
   [ns_window miniaturize:nil];
+  [miniaturizationObserver wait];
   EXPECT_NSEQ(initial_frame, [ns_window frame]);
   EXPECT_TRUE(window->IsMinimized());
   EXPECT_TRUE([ns_window isMiniaturized]);
 
+  views::test::PropertyWaiter deminimize_waiter(
+      base::BindRepeating(&extensions::NativeAppWindow::IsMinimized,
+                          base::Unretained(window)),
+      false);
   app_window->Restore();
+  EXPECT_TRUE(deminimize_waiter.Wait());
+
   EXPECT_NSEQ(initial_frame, [ns_window frame]);
   EXPECT_FALSE(window->IsMinimized());
   EXPECT_FALSE([ns_window isMiniaturized]);
 
   // Minimize, native restore.
+  views::test::PropertyWaiter minimize_waiter(
+      base::BindRepeating(&extensions::NativeAppWindow::IsMinimized,
+                          base::Unretained(window)),
+      true);
   app_window->Minimize();
+  EXPECT_TRUE(minimize_waiter.Wait());
   EXPECT_NSEQ(initial_frame, [ns_window frame]);
   EXPECT_TRUE(window->IsMinimized());
   EXPECT_TRUE([ns_window isMiniaturized]);
 
+  base::scoped_nsobject<WindowedNSNotificationObserver>
+      deminiaturizationObserver([[WindowedNSNotificationObserver alloc]
+          initForNotification:NSWindowDidDeminiaturizeNotification
+                       object:ns_window]);
   [ns_window deminiaturize:nil];
+  [deminiaturizationObserver wait];
   EXPECT_NSEQ(initial_frame, [ns_window frame]);
   EXPECT_FALSE(window->IsMinimized());
   EXPECT_FALSE([ns_window isMiniaturized]);
@@ -379,25 +401,49 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, MinimizeMaximize) {
   EXPECT_NSEQ(maximized_frame, [ns_window frame]);
   EXPECT_TRUE(window->IsMaximized());
 
-  app_window->Minimize();
+  {
+    views::test::PropertyWaiter minimize_waiter(
+        base::BindRepeating(&extensions::NativeAppWindow::IsMinimized,
+                            base::Unretained(window)),
+        true);
+    app_window->Minimize();
+    EXPECT_TRUE(minimize_waiter.Wait());
+  }
   EXPECT_NSEQ(maximized_frame, [ns_window frame]);
   EXPECT_FALSE(window->IsMaximized());
   EXPECT_TRUE(window->IsMinimized());
   EXPECT_TRUE([ns_window isMiniaturized]);
 
+  views::test::PropertyWaiter deminimize_waiter(
+      base::BindRepeating(&extensions::NativeAppWindow::IsMinimized,
+                          base::Unretained(window)),
+      false);
   app_window->Restore();
+  EXPECT_TRUE(deminimize_waiter.Wait());
   EXPECT_NSEQ(initial_frame, [ns_window frame]);
   EXPECT_FALSE(window->IsMaximized());
   EXPECT_FALSE(window->IsMinimized());
   EXPECT_FALSE([ns_window isMiniaturized]);
 
   // Minimize, Maximize.
-  app_window->Minimize();
+  {
+    views::test::PropertyWaiter minimize_waiter(
+        base::BindRepeating(&extensions::NativeAppWindow::IsMinimized,
+                            base::Unretained(window)),
+        true);
+    app_window->Minimize();
+    EXPECT_TRUE(minimize_waiter.Wait());
+  }
   EXPECT_NSEQ(initial_frame, [ns_window frame]);
   EXPECT_TRUE(window->IsMinimized());
   EXPECT_TRUE([ns_window isMiniaturized]);
 
+  base::scoped_nsobject<WindowedNSNotificationObserver>
+      deminiaturizationObserver([[WindowedNSNotificationObserver alloc]
+          initForNotification:NSWindowDidDeminiaturizeNotification
+                       object:ns_window]);
   app_window->Maximize();
+  [deminiaturizationObserver wait];
   EXPECT_TRUE([ns_window isVisible]);
   EXPECT_NSEQ(maximized_frame, [ns_window frame]);
   EXPECT_TRUE(window->IsMaximized());
