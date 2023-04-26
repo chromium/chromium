@@ -42,8 +42,8 @@ public class SelectionPopupBackPressHandler
     @Override
     public @BackPressResult int handleBackPress() {
         assert mPopupController != null;
-        int res =
-                mPopupController.hasSelection() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
+        int res = mPopupController.isSelectActionBarShowing() ? BackPressResult.SUCCESS
+                                                              : BackPressResult.FAILURE;
         mPopupController.clearSelection();
         return res;
     }
