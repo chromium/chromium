@@ -7981,6 +7981,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLauncherLocalImageSearchName,
      flag_descriptions::kLauncherLocalImageSearchDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(search_features::kLauncherImageSearch)},
+    {"quick-app-access-test-ui", flag_descriptions::kQuickAppAccessTestUIName,
+     flag_descriptions::kQuickAppAccessTestUIDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kQuickAppAccessTestUI)},
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

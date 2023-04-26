@@ -1850,6 +1850,10 @@ BASE_FEATURE(kQuickDim, "QuickDim", base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether the smart reader feature is enabled.
 BASE_FEATURE(kSmartReader, "SmartReader", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kQuickAppAccessTestUI,
+             "QuickAppAccessTestUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables fingerprint quick unlock.
 BASE_FEATURE(kQuickUnlockFingerprint,
              "QuickUnlockFingerprint",
@@ -2821,7 +2825,8 @@ bool IsHoldingSpaceTourEnabled() {
 }
 
 bool IsHomeButtonQuickAppAccessEnabled() {
-  return base::FeatureList::IsEnabled(kHomeButtonQuickAppAccess);
+  return base::FeatureList::IsEnabled(kHomeButtonQuickAppAccess) ||
+         base::FeatureList::IsEnabled(kQuickAppAccessTestUI);
 }
 
 bool IsHomeButtonWithTextEnabled() {

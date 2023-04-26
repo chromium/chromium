@@ -6423,6 +6423,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "quick-app-access-test-ui",
+    "owners": [ "mmourgos", "//ash/app_list/OWNERS" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "quick-commands",
     "owners": [ "lgrey" ],
     "expiry_milestone": 120

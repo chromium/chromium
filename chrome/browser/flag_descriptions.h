@@ -1577,6 +1577,9 @@ extern const char kPwaUpdateDialogForAppTitleDescription[];
 extern const char kQuicName[];
 extern const char kQuicDescription[];
 
+extern const char kQuickAppAccessTestUIName[];
+extern const char kQuickAppAccessTestUIDescription[];
+
 extern const char kQuickDimName[];
 extern const char kQuickDimDescription[];
 

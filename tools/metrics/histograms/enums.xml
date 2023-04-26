@@ -60659,6 +60659,7 @@ from previous Chrome versions.
   <int value="-848691867" label="DesktopPWAWindowing:enabled"/>
   <int value="-847735582" label="NotificationsViaHelperApp:enabled"/>
   <int value="-847216521" label="ChromeDuplex:enabled"/>
+  <int value="-846670837" label="QuickAppAccessTestUI:enabled"/>
   <int value="-844786349" label="ClipboardHistoryNudgeSessionReset:enabled"/>
   <int value="-844537521" label="HttpFormWarning:disabled"/>
   <int value="-844381918" label="ArcNativeBridgeExperiment:disabled"/>
@@ -65006,6 +65007,7 @@ from previous Chrome versions.
   <int value="1519067750" label="ActionableContentSettings:disabled"/>
   <int value="1520181151" label="PrintServerScaling:disabled"/>
   <int value="1520754417" label="ConfirmationChip:enabled"/>
+  <int value="1524016321" label="QuickAppAccessTestUI:disabled"/>
   <int value="1524178643" label="AppServiceExternalProtocol:enabled"/>
   <int value="1524631783" label="CrOSLateBootCrasSplitAlsaUSBInternal:enabled"/>
   <int value="1526489044" label="NtpRealboxMatchSearchboxTheme:disabled"/>

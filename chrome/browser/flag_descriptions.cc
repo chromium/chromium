@@ -2802,6 +2802,11 @@ const char kPwaUpdateDialogForAppTitleDescription[] =
 const char kQuicName[] = "Experimental QUIC protocol";
 const char kQuicDescription[] = "Enable experimental QUIC protocol support.";
 
+extern const char kQuickAppAccessTestUIName[] =
+    "Internal test: quick app access";
+extern const char kQuickAppAccessTestUIDescription[] =
+    "Show an app in the quick app access area at the start of the session";
+
 const char kQuickIntensiveWakeUpThrottlingAfterLoadingName[] =
     "Quick intensive throttling after loading";
 const char kQuickIntensiveWakeUpThrottlingAfterLoadingDescription[] =
