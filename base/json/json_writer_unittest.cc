@@ -185,9 +185,8 @@ TEST(JsonWriterTest, TestMaxDepthWithValidNodes) {
   // Ensure we can read and write the JSON
   auto json_val = JSONReader::ReadAndReturnValueWithError(
       nested_json, JSON_ALLOW_TRAILING_COMMAS);
-  EXPECT_TRUE(json_val.has_value());
-  const Value& value = *json_val;
-  EXPECT_NE(WriteJson(value), absl::nullopt);
+  ASSERT_TRUE(json_val.has_value());
+  EXPECT_NE(WriteJson(*json_val), absl::nullopt);
 }
 
 // Test that the JSONWriter::Write method still works.
