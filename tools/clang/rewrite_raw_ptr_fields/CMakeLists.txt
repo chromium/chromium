@@ -10,6 +10,7 @@ add_llvm_executable(rewrite_raw_ptr_fields
   RewriteRawPtrFields.cpp
   ../plugins/Util.cpp
   ../plugins/RawPtrHelpers.cpp
+  ../plugins/StackAllocatedChecker.cpp
   )
 
 target_link_libraries(rewrite_raw_ptr_fields

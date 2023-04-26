@@ -1,0 +1,13 @@
+raw_ptr_exclude_stack_allocated.cpp:24:26: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  NonStackAllocatedType* err_a;
+                         ^
+raw_ptr_exclude_stack_allocated.cpp:25:39: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  std::vector<NonStackAllocatedType>* err_b;
+                                      ^
+raw_ptr_exclude_stack_allocated.cpp:26:26: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  NonStackAllocatedType& err_ref_a;
+                         ^
+raw_ptr_exclude_stack_allocated.cpp:27:39: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  std::vector<NonStackAllocatedType>& err_ref_b;
+                                      ^
+4 errors generated.

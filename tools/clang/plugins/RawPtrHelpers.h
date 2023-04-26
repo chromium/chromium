@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "StackAllocatedChecker.h"
 #include "Util.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/ASTMatchers/ASTMatchersMacros.h"
@@ -61,11 +62,20 @@ class FilterFile {
   mutable std::optional<llvm::Regex> exclusion_substring_regex_;
 };
 
+// Represents an exclusion rules for raw pointers/references errors.
+// See |PtrAndRefExclusions| for details.
+struct RawPtrAndRefExclusionsOptions {
+  FilterFile* fields_to_exclude;
+  FilterFile* paths_to_exclude;
+  bool should_exclude_stack_allocated_records;
+  chrome_checker::StackAllocatedPredicate* stack_allocated_predicate;
+};
+
 AST_MATCHER(clang::Type, anyCharType) {
   return Node.isAnyCharacterType();
 }
 
-AST_MATCHER(clang::FieldDecl, isInScratchSpace) {
+AST_MATCHER(clang::Decl, isInScratchSpace) {
   const clang::SourceManager& source_manager =
       Finder->getASTContext().getSourceManager();
   clang::SourceLocation location = Node.getSourceRange().getBegin();
@@ -76,7 +86,7 @@ AST_MATCHER(clang::FieldDecl, isInScratchSpace) {
   return source_manager.isWrittenInScratchSpace(spelling_location);
 }
 
-AST_MATCHER(clang::FieldDecl, isInThirdPartyLocation) {
+AST_MATCHER(clang::Decl, isInThirdPartyLocation) {
   std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
                                      Node.getSourceRange().getBegin());
 
@@ -90,7 +100,7 @@ AST_MATCHER(clang::FieldDecl, isInThirdPartyLocation) {
   return filename.find("/third_party/") != std::string::npos;
 }
 
-AST_MATCHER(clang::FieldDecl, isInGeneratedLocation) {
+AST_MATCHER(clang::Decl, isInGeneratedLocation) {
   std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
                                      Node.getSourceRange().getBegin());
 
@@ -98,14 +108,14 @@ AST_MATCHER(clang::FieldDecl, isInGeneratedLocation) {
          filename.rfind("gen/", 0) == 0;
 }
 
-AST_MATCHER_P(clang::FieldDecl,
+AST_MATCHER_P(clang::NamedDecl,
               isFieldDeclListedInFilterFile,
               const FilterFile*,
               Filter) {
   return Filter->ContainsLine(Node.getQualifiedNameAsString());
 }
 
-AST_MATCHER_P(clang::FieldDecl,
+AST_MATCHER_P(clang::Decl,
               isInLocationListedInFilterFile,
               const FilterFile*,
               Filter) {
@@ -193,20 +203,23 @@ AST_MATCHER(clang::FunctionDecl, isImplicitFunctionTemplateSpecialization) {
 // 2. fields within an implicit class or function template specialization
 //    (e.g. when a template is instantiated by a bit of code and there's no
 //    explicit specialization for it).
-clang::ast_matchers::internal::Matcher<clang::FieldDecl>
-ImplicitFieldDeclaration();
+clang::ast_matchers::internal::Matcher<clang::Decl> ImplicitFieldDeclaration();
 
 // Matches raw pointer field declarations that is a candidate for raw_ptr<T>
 // conversion.
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
-    const FilterFile* paths_to_exclude,
-    const FilterFile* fields_to_exclude);
+    const RawPtrAndRefExclusionsOptions& options);
 
 // Matches raw reference field declarations that are candidates for raw_ref<T>
 // conversion.
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(
-    const FilterFile* paths_to_exclude,
-    const FilterFile* fields_to_exclude);
+    const RawPtrAndRefExclusionsOptions& options);
+
+// Matches (raw_ptr|raw_ref) (variable|field) declarations pointing to
+// |STACK_ALLOCATED| object.
+clang::ast_matchers::internal::Matcher<clang::TypeLoc>
+RawPtrToStackAllocatedTypeLoc(
+    const chrome_checker::StackAllocatedPredicate* predicate);
 
 // If `field_decl` declares a field in an implicit template specialization, then
 // finds and returns the corresponding FieldDecl from the template definition.
@@ -342,6 +355,13 @@ AST_POLYMORPHIC_MATCHER(isInMacroLocation,
                                                         clang::Stmt,
                                                         clang::TypeLoc)) {
   return Node.getBeginLoc().isMacroID();
+}
+
+AST_MATCHER_P(clang::CXXRecordDecl,
+              isStackAllocated,
+              chrome_checker::StackAllocatedPredicate,
+              checker) {
+  return checker.IsStackAllocated(&Node);
 }
 
 #endif  // TOOLS_CLANG_PLUGINS_RAWPTRHELPERS_H_

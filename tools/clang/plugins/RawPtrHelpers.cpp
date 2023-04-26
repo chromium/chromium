@@ -4,6 +4,7 @@
 
 #include "RawPtrHelpers.h"
 
+#include "StackAllocatedChecker.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "llvm/Support/LineIterator.h"
 #include "llvm/Support/MemoryBuffer.h"
@@ -79,8 +80,7 @@ void FilterFile::ParseInputFile(const std::string& filepath,
   }
 }
 
-clang::ast_matchers::internal::Matcher<clang::FieldDecl>
-ImplicitFieldDeclaration() {
+clang::ast_matchers::internal::Matcher<clang::Decl> ImplicitFieldDeclaration() {
   auto implicit_class_specialization_matcher =
       classTemplateSpecializationDecl(isImplicitClassTemplateSpecialization());
   auto implicit_function_specialization_matcher =
@@ -93,8 +93,15 @@ ImplicitFieldDeclaration() {
   return implicit_field_decl_matcher;
 }
 
+clang::ast_matchers::internal::Matcher<clang::QualType> StackAllocatedQualType(
+    const chrome_checker::StackAllocatedPredicate* checker) {
+  return qualType(recordType(hasDeclaration(
+                      cxxRecordDecl(isStackAllocated(*checker)))))
+      .bind("pointeeQualType");
+}
+
 // These represent the common conditions to skip the rewrite for reference and
-// pointer fields. This includes fields that are:
+// pointer decls. This includes decls that are:
 // - listed in the --exclude-fields cmdline param or located in paths
 //   matched by --exclude-paths cmdline param
 // - "implicit" (i.e. field decls that are not explicitly present in
@@ -103,19 +110,29 @@ ImplicitFieldDeclaration() {
 // RAW_PTR_EXCLUSION
 // - located under third_party/ except under third_party/blink as Blink
 // is part of chromium git repo.
-auto PtrAndRefExclusions(const FilterFile* paths_to_exclude,
-                         const FilterFile* fields_to_exclude) {
-  return anyOf(isExpansionInSystemHeader(), isInExternCContext(),
-               isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
-               isInGeneratedLocation(),
-               isInLocationListedInFilterFile(paths_to_exclude),
-               isFieldDeclListedInFilterFile(fields_to_exclude),
-               ImplicitFieldDeclaration());
+clang::ast_matchers::internal::Matcher<clang::NamedDecl> PtrAndRefExclusions(
+    const RawPtrAndRefExclusionsOptions& options) {
+  if (!options.should_exclude_stack_allocated_records) {
+    return anyOf(isExpansionInSystemHeader(), isInExternCContext(),
+                 isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
+                 isInGeneratedLocation(),
+                 isInLocationListedInFilterFile(options.paths_to_exclude),
+                 isFieldDeclListedInFilterFile(options.fields_to_exclude),
+                 ImplicitFieldDeclaration());
+  } else {
+    return anyOf(isExpansionInSystemHeader(), isInExternCContext(),
+                 isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
+                 isInGeneratedLocation(),
+                 isInLocationListedInFilterFile(options.paths_to_exclude),
+                 isFieldDeclListedInFilterFile(options.fields_to_exclude),
+                 ImplicitFieldDeclaration(),
+                 hasDescendant(StackAllocatedQualType(
+                     options.stack_allocated_predicate)));
+  }
 }
 
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
-    const FilterFile* paths_to_exclude,
-    const FilterFile* fields_to_exclude) {
+    const RawPtrAndRefExclusionsOptions& options) {
   // Supported pointer types =========
   // Given
   //   struct MyStrict {
@@ -142,16 +159,14 @@ clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
   auto field_decl_matcher =
       fieldDecl(
           allOf(hasType(supported_pointer_types_matcher),
-                unless(anyOf(
-                    const_char_pointer_matcher, isInScratchSpace(),
-                    PtrAndRefExclusions(paths_to_exclude, fields_to_exclude)))))
+                unless(anyOf(const_char_pointer_matcher, isInScratchSpace(),
+                             PtrAndRefExclusions(options)))))
           .bind("affectedFieldDecl");
   return field_decl_matcher;
 }
 
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(
-    const FilterFile* paths_to_exclude,
-    const FilterFile* fields_to_exclude) {
+    const RawPtrAndRefExclusionsOptions& options) {
   // Field declarations =========
   // Given
   //   struct S {
@@ -162,11 +177,65 @@ clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(
   // - fields matching criteria elaborated in PtrAndRefExclusions
   auto field_decl_matcher =
       fieldDecl(allOf(has(referenceTypeLoc().bind("affectedFieldDeclType")),
-                      unless(PtrAndRefExclusions(paths_to_exclude,
-                                                 fields_to_exclude))))
+                      unless(PtrAndRefExclusions(options))))
           .bind("affectedFieldDecl");
 
   return field_decl_matcher;
+}
+
+clang::ast_matchers::internal::Matcher<clang::TypeLoc>
+RawPtrToStackAllocatedTypeLoc(
+    const chrome_checker::StackAllocatedPredicate* predicate) {
+  // Given
+  //   class StackAllocatedType { STACK_ALLOCATED(); };
+  //   class StackAllocatedSubType : public StackAllocatedType {};
+  //   class NonStackAllocatedType {};
+  //
+  //   struct MyStruct {
+  //     raw_ptr<StackAllocatedType> a;
+  //     raw_ptr<StackAllocatedSubType> b;
+  //     raw_ptr<NonStackAllocatedType> c;
+  //     raw_ptr<some_container<StackAllocatedType>> d;
+  //     raw_ptr<some_container<StackAllocatedSubType>> e;
+  //     raw_ptr<some_container<NonStackAllocatedType>> f;
+  //     some_container<raw_ptr<StackAllocatedType>> g;
+  //     some_container<raw_ptr<StackAllocatedSubType>> h;
+  //     some_container<raw_ptr<NonStackAllocatedType>> i;
+  //   };
+  // matches fields a,b,d,e,g,h, and not c,f,i.
+  // Similarly, given
+  //   void my_func() {
+  //     raw_ptr<StackAllocatedType> a;
+  //     raw_ptr<StackAllocatedSubType> b;
+  //     raw_ptr<NonStackAllocatedType> c;
+  //     raw_ptr<some_container<StackAllocatedType>> d;
+  //     raw_ptr<some_container<StackAllocatedSubType>> e;
+  //     raw_ptr<some_container<NonStackAllocatedType>> f;
+  //     some_container<raw_ptr<StackAllocatedType>> g;
+  //     some_container<raw_ptr<StackAllocatedSubType>> h;
+  //     some_container<raw_ptr<NonStackAllocatedType>> i;
+  //   }
+  // matches variables a,b,d,e,g,h, and not c,f,i.
+
+  // Matches records |raw_ptr| or |raw_ref|.
+  auto pointer_record =
+      cxxRecordDecl(hasAnyName("base::raw_ptr", "base::raw_ref"))
+          .bind("pointerRecordDecl");
+
+  // Matches qual types having a record with |isStackAllocated| = true.
+  auto pointee_type =
+      qualType(StackAllocatedQualType(predicate)).bind("pointeeQualType");
+
+  // Matches type locs like |raw_ptr<StackAllocatedType>| or
+  // |raw_ref<StackAllocatedType>|.
+  auto stack_allocated_rawptr_type_loc =
+      templateSpecializationTypeLoc(
+          loc(templateSpecializationType(hasDeclaration(
+              allOf(pointer_record,
+                    classTemplateSpecializationDecl(
+                        hasTemplateArgument(0, refersToType(pointee_type))))))))
+          .bind("stackAllocatedRawPtrTypeLoc");
+  return stack_allocated_rawptr_type_loc;
 }
 
 // If |field_decl| declares a field in an implicit template specialization, then

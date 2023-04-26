@@ -1,0 +1,76 @@
+raw_ptr_to_stack_allocated.cpp:15:35: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'StackAllocatedType'.
+typedef raw_ptr<StackAllocatedType> ErrTypeA;
+                                  ^
+raw_ptr_to_stack_allocated.cpp:16:38: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'StackAllocatedSubType'.
+typedef raw_ptr<StackAllocatedSubType> ErrTypeB;
+                                     ^
+raw_ptr_to_stack_allocated.cpp:18:48: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'std::vector<StackAllocatedType>'.
+typedef raw_ptr<std::vector<StackAllocatedType>> ErrTypeD;
+                                               ^
+raw_ptr_to_stack_allocated.cpp:19:51: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'std::vector<StackAllocatedSubType>'.
+typedef raw_ptr<std::vector<StackAllocatedSubType>> ErrTypeE;
+                                                  ^
+raw_ptr_to_stack_allocated.cpp:21:47: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'StackAllocatedType'.
+typedef std::vector<raw_ptr<StackAllocatedType>> ErrTypeG;
+                                              ^
+<scratch space>:5:1: note: expanded from here
+>
+^
+raw_ptr_to_stack_allocated.cpp:22:50: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'StackAllocatedSubType'.
+typedef std::vector<raw_ptr<StackAllocatedSubType>> ErrTypeH;
+                                                 ^
+<scratch space>:6:1: note: expanded from here
+>
+^
+raw_ptr_to_stack_allocated.cpp:27:29: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'StackAllocatedType'.
+  raw_ptr<StackAllocatedType> err_a;
+                            ^
+raw_ptr_to_stack_allocated.cpp:28:32: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'StackAllocatedSubType'.
+  raw_ptr<StackAllocatedSubType> err_b;
+                               ^
+raw_ptr_to_stack_allocated.cpp:30:42: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'std::vector<StackAllocatedType>'.
+  raw_ptr<std::vector<StackAllocatedType>> err_d;
+                                         ^
+raw_ptr_to_stack_allocated.cpp:31:45: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'std::vector<StackAllocatedSubType>'.
+  raw_ptr<std::vector<StackAllocatedSubType>> err_e;
+                                            ^
+raw_ptr_to_stack_allocated.cpp:33:41: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'StackAllocatedType'.
+  std::vector<raw_ptr<StackAllocatedType>> err_g;
+                                        ^
+<scratch space>:11:1: note: expanded from here
+>
+^
+raw_ptr_to_stack_allocated.cpp:34:44: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'StackAllocatedSubType'.
+  std::vector<raw_ptr<StackAllocatedSubType>> err_h;
+                                           ^
+<scratch space>:12:1: note: expanded from here
+>
+^
+raw_ptr_to_stack_allocated.cpp:40:29: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'StackAllocatedType'.
+  raw_ptr<StackAllocatedType> err_a;
+                            ^
+raw_ptr_to_stack_allocated.cpp:41:32: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'StackAllocatedSubType'.
+  raw_ptr<StackAllocatedSubType> err_b;
+                               ^
+raw_ptr_to_stack_allocated.cpp:43:42: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'std::vector<StackAllocatedType>'.
+  raw_ptr<std::vector<StackAllocatedType>> err_d;
+                                         ^
+raw_ptr_to_stack_allocated.cpp:44:45: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'std::vector<StackAllocatedSubType>'.
+  raw_ptr<std::vector<StackAllocatedSubType>> err_e;
+                                            ^
+raw_ptr_to_stack_allocated.cpp:46:41: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'StackAllocatedType'.
+  std::vector<raw_ptr<StackAllocatedType>> err_g;
+                                        ^
+<scratch space>:17:1: note: expanded from here
+>
+^
+raw_ptr_to_stack_allocated.cpp:47:44: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ptr<T>' on a `STACK_ALLOCATED` object 'StackAllocatedSubType'.
+  std::vector<raw_ptr<StackAllocatedSubType>> err_h;
+                                           ^
+<scratch space>:18:1: note: expanded from here
+>
+^
+raw_ptr_to_stack_allocated.cpp:50:29: error: [chromium-raw-ptr-to-stack-allocated] Do not use 'raw_ref<T>' on a `STACK_ALLOCATED` object 'StackAllocatedType'.
+  raw_ref<StackAllocatedType> err_raw_ref;
+                            ^
+19 errors generated.

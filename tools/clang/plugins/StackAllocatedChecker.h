@@ -15,6 +15,19 @@ class FieldDecl;
 
 namespace chrome_checker {
 
+// This determines a record (class/struct) is annotated with
+// |STACK_ALLOCATED()|. Even if it is explicitly annotated with
+// |STACK_ALLOCATED()|, this will consider it as "stack allocated" when its
+// ancestor has the annotation. Similarly, classes with a "stack allocated"
+// template type parameter is considered "stack allocated".
+class StackAllocatedPredicate {
+ public:
+  bool IsStackAllocated(const clang::CXXRecordDecl* record) const;
+
+ private:
+  mutable std::map<const clang::CXXRecordDecl*, bool> cache_;
+};
+
 // This verifies usage of classes annotated with STACK_ALLOCATED().
 // Specifically, it ensures that an instance of such a class cannot be used as a
 // member variable in a non-STACK_ALLOCATED() class.
@@ -25,11 +38,9 @@ class StackAllocatedChecker {
   void Check(clang::CXXRecordDecl* record);
 
  private:
-  bool IsStackAllocated(clang::CXXRecordDecl* record);
-
   clang::CompilerInstance& compiler_;
   unsigned stack_allocated_field_error_signature_;
-  std::map<clang::CXXRecordDecl*, bool> cache_;
+  StackAllocatedPredicate predicate_;
 };
 
 }  // namespace chrome_checker

@@ -33,14 +33,8 @@ const clang::Type* StripReferences(const clang::Type* type) {
 
 }  // namespace
 
-StackAllocatedChecker::StackAllocatedChecker(clang::CompilerInstance& compiler)
-    : compiler_(compiler),
-      stack_allocated_field_error_signature_(
-          compiler.getDiagnostics().getCustomDiagID(
-              clang::DiagnosticsEngine::Error,
-              kStackAllocatedFieldError)) {}
-
-bool StackAllocatedChecker::IsStackAllocated(clang::CXXRecordDecl* record) {
+bool StackAllocatedPredicate::IsStackAllocated(
+    const clang::CXXRecordDecl* record) const {
   if (!record) {
     return false;
   }
@@ -65,7 +59,8 @@ bool StackAllocatedChecker::IsStackAllocated(clang::CXXRecordDecl* record) {
 
   // Check base classes
   if (record->hasDefinition()) {
-    for (clang::CXXRecordDecl::base_class_iterator it = record->bases_begin();
+    for (clang::CXXRecordDecl::base_class_const_iterator it =
+             record->bases_begin();
          !stack_allocated && it != record->bases_end(); ++it) {
       clang::CXXRecordDecl* parent_record =
           it->getType().getTypePtr()->getAsCXXRecordDecl();
@@ -102,12 +97,19 @@ bool StackAllocatedChecker::IsStackAllocated(clang::CXXRecordDecl* record) {
   return stack_allocated;
 }
 
+StackAllocatedChecker::StackAllocatedChecker(clang::CompilerInstance& compiler)
+    : compiler_(compiler),
+      stack_allocated_field_error_signature_(
+          compiler.getDiagnostics().getCustomDiagID(
+              clang::DiagnosticsEngine::Error,
+              kStackAllocatedFieldError)) {}
+
 void StackAllocatedChecker::Check(clang::CXXRecordDecl* record) {
   if (!record->isCompleteDefinition()) {
     return;
   }
   // If this type is stack allocated, no need to check fields.
-  if (IsStackAllocated(record)) {
+  if (predicate_.IsStackAllocated(record)) {
     return;
   }
   for (clang::RecordDecl::field_iterator it = record->field_begin();
@@ -134,7 +136,7 @@ void StackAllocatedChecker::Check(clang::CXXRecordDecl* record) {
       continue;
     }
 
-    if (IsStackAllocated(field_record)) {
+    if (predicate_.IsStackAllocated(field_record)) {
       compiler_.getDiagnostics().Report(field->getLocation(),
                                         stack_allocated_field_error_signature_)
           << record->getName() << field->getNameAsString();
