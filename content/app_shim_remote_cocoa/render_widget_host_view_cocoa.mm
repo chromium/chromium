@@ -6,12 +6,12 @@
 
 #include <Carbon/Carbon.h>  // for <HIToolbox/Events.h>
 
+#include <algorithm>
 #include <limits>
 #include <tuple>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"

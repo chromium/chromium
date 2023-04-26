@@ -4,7 +4,8 @@
 
 #include "content/public/test/test_host_resolver.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/threading/thread.h"
 #include "content/browser/notification_service_impl.h"
 #include "net/base/net_errors.h"
