@@ -1,0 +1,137 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/wm/float/float_controller.h"
+
+#include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/shell.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "ash/wm/float/float_controller.h"
+#include "ash/wm/window_state.h"
+#include "base/test/bind.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
+#include "ui/aura/window.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_util.h"
+
+namespace {
+
+// Tuck a window to the bottom right corner by generating a fling.
+void TuckWindow(aura::Window* window) {
+  auto* frame_view = static_cast<BrowserNonClientFrameViewChromeOS*>(
+      views::Widget::GetWidgetForNativeView(window)
+          ->non_client_view()
+          ->frame_view());
+  const gfx::Point start =
+      frame_view->GetBoundsInScreen().top_center() + gfx::Vector2d(0, 10);
+  const gfx::Vector2d offset(10, 10);
+  ui::test::EventGenerator event_generator(window->GetRootWindow());
+  event_generator.GestureTapAt(start);
+  event_generator.GestureScrollSequence(start, start + offset,
+                                        base::Milliseconds(10), /*steps=*/1);
+}
+
+void CreateSystemWebApp(Profile* profile, ash::SystemWebAppType app_type) {
+  web_app::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
+  apps::AppLaunchParams params(
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
+
+  base::RunLoop launch_wait;
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
+      std::move(params),
+      base::BindLambdaForTesting(
+          [&](apps::LaunchResult&& result) { launch_wait.Quit(); }));
+  launch_wait.Run();
+}
+
+}  // namespace
+
+class FloatControllerBrowserTest : public InProcessBrowserTest {
+ public:
+  FloatControllerBrowserTest() = default;
+  FloatControllerBrowserTest(const FloatControllerBrowserTest&) = delete;
+  FloatControllerBrowserTest& operator=(const FloatControllerBrowserTest&) =
+      delete;
+  ~FloatControllerBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::wm::features::kWindowLayoutMenu};
+};
+
+// Tests that repeated tucking of a floated window in tablet mode does not cause
+// the window to freeze. Regression test for b/278917878.
+IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
+                       TuckingBrowserDoesNotFreezeWindow) {
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
+
+  // Open two SWAs. The bug was a result of the window targeters installed by
+  // the window tucker and immersive mode not being reinstalled in the correct
+  // order. More details in b/278917878.
+  CreateSystemWebApp(browser()->profile(), ash::SystemWebAppType::FILE_MANAGER);
+  aura::Window* browser_window1 =
+      BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
+
+  CreateSystemWebApp(browser()->profile(), ash::SystemWebAppType::SETTINGS);
+  aura::Window* browser_window2 =
+      BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
+
+  ASSERT_NE(browser()->window()->GetNativeWindow(), browser_window1);
+  ASSERT_NE(browser()->window()->GetNativeWindow(), browser_window2);
+  ASSERT_NE(browser_window1, browser_window2);
+
+  auto* float_controller = ash::Shell::Get()->float_controller();
+
+  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+
+  // Float and then tuck the background window repeatedly. This emulates the
+  // steps listed in the bug.
+  ui::test::EventGenerator event_generator(browser_window1->GetRootWindow());
+  event_generator.PressAndReleaseKey(ui::VKEY_F,
+                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(ash::WindowState::Get(browser_window2)->IsFloated());
+  TuckWindow(browser_window2);
+  ash::ShellTestApi().WaitForWindowFinishAnimating(browser_window2);
+  ASSERT_TRUE(
+      float_controller->IsFloatedWindowTuckedForTablet(browser_window2));
+
+  // Float `browser_window1` using accelerator and tuck it.
+  wm::ActivateWindow(browser_window1);
+  event_generator.PressAndReleaseKey(ui::VKEY_F,
+                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(ash::WindowState::Get(browser_window1)->IsFloated());
+  ASSERT_TRUE(ash::WindowState::Get(browser_window2)->IsMaximized());
+  TuckWindow(browser_window1);
+  ash::ShellTestApi().WaitForWindowFinishAnimating(browser_window2);
+  ASSERT_TRUE(
+      float_controller->IsFloatedWindowTuckedForTablet(browser_window1));
+
+  // Float `browser_window2` using accelerator and tuck it. At each point,
+  // `TuckWindow` should tuck the window otherwise the window has frozen and the
+  // test will hang.
+  wm::ActivateWindow(browser_window2);
+  event_generator.PressAndReleaseKey(ui::VKEY_F,
+                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(ash::WindowState::Get(browser_window2)->IsFloated());
+  ASSERT_TRUE(ash::WindowState::Get(browser_window1)->IsMaximized());
+  TuckWindow(browser_window2);
+  ash::ShellTestApi().WaitForWindowFinishAnimating(browser_window2);
+  ASSERT_TRUE(
+      float_controller->IsFloatedWindowTuckedForTablet(browser_window2));
+}
