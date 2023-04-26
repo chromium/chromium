@@ -299,6 +299,9 @@ void FakeWebAppProvider::Shutdown() {
     externally_managed_app_manager_->Shutdown();
   if (manifest_update_manager_)
     manifest_update_manager_->Shutdown();
+  if (iwa_command_line_install_manager_) {
+    iwa_command_line_install_manager_->Shutdown();
+  }
   if (install_manager_)
     install_manager_->Shutdown();
   if (icon_manager_)

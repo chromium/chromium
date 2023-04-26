@@ -63,7 +63,7 @@ class WebAppCommandScheduler {
                      InstallIsolatedWebAppCommandError>)>;
 
   WebAppCommandScheduler(Profile& profile, WebAppProvider* provider);
-  ~WebAppCommandScheduler();
+  virtual ~WebAppCommandScheduler();
 
   void Shutdown();
 
@@ -162,11 +162,11 @@ class WebAppCommandScheduler {
 
   // Schedules a command that installs the Isolated Web App described by the
   // given IsolatedWebAppUrlInfo and IsolationData.
-  void InstallIsolatedWebApp(
+  virtual void InstallIsolatedWebApp(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppLocation& location,
-      std::unique_ptr<ScopedKeepAlive> keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+      std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       InstallIsolatedWebAppCallback callback,
       const base::Location& call_location = FROM_HERE);
 

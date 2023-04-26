@@ -148,7 +148,10 @@ enum class ProfileKeepAliveOrigin {
   // when deleting this profile.
   kProfileStatistics = 33,
 
-  kMaxValue = kProfileStatistics,
+  // Used during installation of an Isolated Web App.
+  kIsolatedWebAppInstall = 34,
+
+  kMaxValue = kIsolatedWebAppInstall,
 };
 
 std::ostream& operator<<(std::ostream& out,

@@ -271,8 +271,8 @@ void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
     const GURL& url,
     const AppId& app_id,
     WebAppInstallInfo install_info,
-    std::unique_ptr<ScopedKeepAlive> keep_alive,
-    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+    std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     ManifestWriteCallback callback,
     const base::Location& location) {
   if (IsShuttingDown()) {
@@ -287,7 +287,8 @@ void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ManifestUpdateFinalizeCommand>(
           url, app_id, std::move(install_info), std::move(callback),
-          std::move(keep_alive), std::move(profile_keep_alive)),
+          std::move(optional_keep_alive),
+          std::move(optional_profile_keep_alive)),
       location);
 }
 

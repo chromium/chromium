@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -142,6 +143,9 @@ class WebAppProvider : public KeyedService {
   // Clients can use WebAppPolicyManager to request updates of policy installed
   // Web Apps.
   WebAppPolicyManager& policy_manager();
+  // Clients can use `IsolatedWebAppCommandLineInstallManager` to request the
+  // installation of IWAs based on command line switches.
+  IsolatedWebAppCommandLineInstallManager& iwa_command_line_install_manager();
 
   WebAppUiManager& ui_manager();
 
@@ -214,6 +218,8 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppAudioFocusIdMap> audio_focus_id_map_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
+  std::unique_ptr<IsolatedWebAppCommandLineInstallManager>
+      iwa_command_line_install_manager_;
 #if (BUILDFLAG(IS_CHROMEOS))
   std::unique_ptr<WebAppRunOnOsLoginManager> web_app_run_on_os_login_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
