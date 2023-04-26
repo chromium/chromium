@@ -20714,6 +20714,15 @@ should be able to be added at any place in this file.
   <description>User switched on torch in the QR Scanner.</description>
 </action>
 
+<action name="MobileReadingListAccessibilityClose">
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when a user closes Reading List on iOS by performing a VoiceOver
+    dismiss action.
+  </description>
+</action>
+
 <action name="MobileReadingListAdd">
   <owner>gambard@chromium.org</owner>
   <description>
@@ -20724,7 +20733,10 @@ should be able to be added at any place in this file.
 <action name="MobileReadingListClose">
   <owner>rohitrao@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <description>Recorded when a user closes Reading List on iOS.</description>
+  <description>
+    Recorded when a user closes Reading List on iOS by tapping the
+    dismiss(&quot;Done&quot;) button.
+  </description>
 </action>
 
 <action name="MobileReadingListDeleteEntry">

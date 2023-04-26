@@ -9,6 +9,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -1460,6 +1461,14 @@ enum class ToolbarKind {
 }
 
 - (void)showReadingList {
+  // TODO(crbug.com/1434711) Convert the DCHECK to CHECK and remove the if block
+  // below when the DCHECK will be fixed. The coordinator should be nil at this
+  // point.
+  DCHECK(!self.readingListCoordinator)
+      << base::SysNSStringToUTF8(self.readingListCoordinator.description);
+  if (self.readingListCoordinator) {
+    [self closeReadingList];
+  }
   self.readingListCoordinator = [[ReadingListCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];

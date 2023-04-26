@@ -1157,6 +1157,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 #pragma mark - Accessibility
 
 - (BOOL)accessibilityPerformEscape {
+  base::RecordAction(
+      base::UserMetricsAction("MobileReadingListAccessibilityClose"));
   [self.delegate dismissReadingListListViewController:self];
   return YES;
 }

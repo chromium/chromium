@@ -116,6 +116,15 @@
   signin::IdentityManager* _identityManager;
 }
 
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:
+          @"<%@: %p, isStarted: %d, _delegate: %p, _shouldShowSignInPromo: %d,"
+          @"isPresented: %d>",
+          self.class.description, self, self.isStarted, _delegate,
+          _shouldShowSignInPromo, [self.tableViewController isBeingPresented]];
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
