@@ -40,7 +40,7 @@ const std::u16string kDiagnosticsPermissionMessage =
 const std::u16string kTelemetryEventsPermissionMessage =
     u"Subscribe to ChromeOS system events";
 const std::u16string kTelemetryPermissionMessage =
-    u"Read ChromeOS device information and device data";
+    u"Read ChromeOS device information and data";
 const std::u16string kTelemetrySerialNumberPermissionMessage =
     u"Read ChromeOS device and component serial numbers";
 const std::u16string kTelemetryNetworkInformationPermissionMessage =

@@ -5032,7 +5032,7 @@ are declared in tools/grit/grit_rule.gni.
             Subscribe to ChromeOS Flex system events
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY" desc="Permission string for chrome.os.telemetry API.">
-            Read ChromeOS Flex device information and device data
+            Read ChromeOS Flex device information and data
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER" desc="Permission string for serial number permission.">
             Read ChromeOS Flex device and component serial numbers
@@ -5052,7 +5052,7 @@ are declared in tools/grit/grit_rule.gni.
             Subscribe to ChromeOS system events
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY" desc="Permission string for chrome.os.telemetry API.">
-            Read ChromeOS device information and device data
+            Read ChromeOS device information and data
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER" desc="Permission string for serial number permission.">
             Read ChromeOS device and component serial numbers
