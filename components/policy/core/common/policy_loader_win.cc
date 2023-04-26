@@ -16,12 +16,12 @@
 #include <stddef.h>
 #include <userenv.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"

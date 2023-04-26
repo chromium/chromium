@@ -6,7 +6,8 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
