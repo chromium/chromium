@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/cast_config_controller.h"
+#include "ash/public/cpp/test/test_cast_config_controller.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
@@ -24,50 +24,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-namespace {
-
-class TestCastConfigController : public CastConfigController {
- public:
-  TestCastConfigController() = default;
-  TestCastConfigController(const TestCastConfigController&) = delete;
-  TestCastConfigController& operator=(const TestCastConfigController&) = delete;
-  ~TestCastConfigController() override = default;
-
-  // CastConfigController:
-  void AddObserver(Observer* observer) override {}
-  void RemoveObserver(Observer* observer) override {}
-  bool HasMediaRouterForPrimaryProfile() const override { return true; }
-  bool HasSinksAndRoutes() const override { return false; }
-  bool HasActiveRoute() const override { return false; }
-  bool AccessCodeCastingEnabled() const override {
-    return access_code_casting_enabled_;
-  }
-  void RequestDeviceRefresh() override {}
-  const std::vector<SinkAndRoute>& GetSinksAndRoutes() override {
-    return sinks_and_routes_;
-  }
-  void CastToSink(const std::string& sink_id) override {
-    ++cast_to_sink_count_;
-    if (cast_to_sink_closure_) {
-      std::move(cast_to_sink_closure_).Run();
-    }
-  }
-  void StopCasting(const std::string& route_id) override {
-    ++stop_casting_count_;
-    stop_casting_route_id_ = route_id;
-  }
-  void FreezeRoute(const std::string& route_id) override {}
-  void UnfreezeRoute(const std::string& route_id) override {}
-
-  bool access_code_casting_enabled_ = false;
-  std::vector<SinkAndRoute> sinks_and_routes_;
-  size_t cast_to_sink_count_ = 0;
-  base::OnceClosure cast_to_sink_closure_;
-  size_t stop_casting_count_ = 0;
-  std::string stop_casting_route_id_;
-};
-
-}  // namespace
 
 class CastDetailedViewTest : public AshTestBase {
  public:
@@ -162,7 +118,7 @@ TEST_F(CastDetailedViewTest, ClickOnViewClosesBubble) {
 
   // Clicking on a view triggers a cast session and closes the bubble.
   LeftClickOn(first_view);
-  EXPECT_EQ(cast_config_.cast_to_sink_count_, 1u);
+  EXPECT_EQ(cast_config_.cast_to_sink_count(), 1u);
   EXPECT_EQ(delegate_->close_bubble_call_count(), 1u);
 }
 
@@ -175,16 +131,16 @@ TEST_F(CastDetailedViewTest, CastToSinkClosingBubbleDoesNotCrash) {
   // In multi-monitor situations, casting will create a picker window to choose
   // the desktop to cast. This causes a window activation that closes the
   // system tray bubble and deletes the widget owning the CastDetailedView.
-  cast_config_.cast_to_sink_closure_ =
+  cast_config_.set_cast_to_sink_closure(
       base::BindOnce([](CastDetailedViewTest* test) { test->widget_.reset(); },
-                     base::Unretained(this));
+                     base::Unretained(this)));
   LeftClickOn(first_view);
-  EXPECT_EQ(cast_config_.cast_to_sink_count_, 1u);
+  EXPECT_EQ(cast_config_.cast_to_sink_count(), 1u);
   // No crash.
 }
 
 TEST_F(CastDetailedViewTest, AccessCodeCasting) {
-  cast_config_.access_code_casting_enabled_ = true;
+  cast_config_.set_access_code_casting_enabled(true);
   ResetCastDevices();
   views::View* add_access_code_device = GetAddAccessCodeDeviceView();
   ASSERT_TRUE(add_access_code_device);
@@ -239,8 +195,8 @@ TEST_F(CastDetailedViewTest, StopCastingButton) {
 
   // Clicking on the button stops casting.
   LeftClickOn(right_view);
-  EXPECT_EQ(cast_config_.stop_casting_count_, 1u);
-  EXPECT_EQ(cast_config_.stop_casting_route_id_, "fake_route_id_1");
+  EXPECT_EQ(cast_config_.stop_casting_count(), 1u);
+  EXPECT_EQ(cast_config_.stop_casting_route_id(), "fake_route_id_1");
   EXPECT_EQ(delegate_->close_bubble_call_count(), 1u);
 }
 

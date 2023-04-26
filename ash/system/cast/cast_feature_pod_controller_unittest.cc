@@ -5,7 +5,7 @@
 #include "ash/system/cast/cast_feature_pod_controller.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/cast_config_controller.h"
+#include "ash/public/cpp/test/test_cast_config_controller.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -14,39 +14,6 @@
 
 namespace ash {
 namespace {
-
-class TestCastConfigController : public CastConfigController {
- public:
-  TestCastConfigController() = default;
-  TestCastConfigController(const TestCastConfigController&) = delete;
-  TestCastConfigController& operator=(const TestCastConfigController&) = delete;
-  ~TestCastConfigController() override = default;
-
-  // CastConfigController:
-  void AddObserver(Observer* observer) override {}
-  void RemoveObserver(Observer* observer) override {}
-  bool HasMediaRouterForPrimaryProfile() const override {
-    return has_media_router_;
-  }
-  bool HasSinksAndRoutes() const override { return has_sinks_and_routes_; }
-  bool HasActiveRoute() const override { return false; }
-  bool AccessCodeCastingEnabled() const override {
-    return access_code_casting_enabled_;
-  }
-  void RequestDeviceRefresh() override {}
-  const std::vector<SinkAndRoute>& GetSinksAndRoutes() override {
-    return sinks_and_routes_;
-  }
-  void CastToSink(const std::string& sink_id) override {}
-  void StopCasting(const std::string& route_id) override {}
-  void FreezeRoute(const std::string& route_id) override {}
-  void UnfreezeRoute(const std::string& route_id) override {}
-
-  bool has_media_router_ = true;
-  bool has_sinks_and_routes_ = false;
-  bool access_code_casting_enabled_ = false;
-  std::vector<SinkAndRoute> sinks_and_routes_;
-};
 
 class CastFeaturePodControllerTest : public AshTestBase {
  public:
@@ -78,14 +45,14 @@ TEST_F(CastFeaturePodControllerTest, CreateTile) {
 }
 
 TEST_F(CastFeaturePodControllerTest, TileNotVisibleWhenNoMediaRouter) {
-  cast_config_.has_media_router_ = false;
+  cast_config_.set_has_media_router(false);
   std::unique_ptr<FeatureTile> tile = controller_->CreateTile();
   EXPECT_FALSE(tile->GetVisible());
 }
 
 TEST_F(CastFeaturePodControllerTest, SubLabelVisibleWhenSinksAvailable) {
   // When cast devices are available, the sub-label is visible.
-  cast_config_.has_sinks_and_routes_ = true;
+  cast_config_.set_has_sinks_and_routes(true);
   std::unique_ptr<FeatureTile> tile = controller_->CreateTile();
   EXPECT_TRUE(tile->sub_label()->GetVisible());
   EXPECT_EQ(tile->sub_label()->GetText(), u"Devices available");
@@ -94,7 +61,7 @@ TEST_F(CastFeaturePodControllerTest, SubLabelVisibleWhenSinksAvailable) {
 TEST_F(CastFeaturePodControllerTest,
        SubLabelVisibleWhenAccessCodeCastingEnabled) {
   // When access code casting is available, the sub-label is visible.
-  cast_config_.access_code_casting_enabled_ = true;
+  cast_config_.set_access_code_casting_enabled(true);
   std::unique_ptr<FeatureTile> tile = controller_->CreateTile();
   EXPECT_TRUE(tile->sub_label()->GetVisible());
   EXPECT_EQ(tile->sub_label()->GetText(), u"Devices available");
@@ -107,7 +74,7 @@ TEST_F(CastFeaturePodControllerTest, SubLabelVisibleOnDevicesUpdated) {
 
   // If cast devices become available while the tray is open, the sub-label
   // becomes visible.
-  cast_config_.has_sinks_and_routes_ = true;
+  cast_config_.set_has_sinks_and_routes(true);
   controller_->OnDevicesUpdated({});
   EXPECT_TRUE(tile->sub_label()->GetVisible());
 }
