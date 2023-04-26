@@ -29,6 +29,7 @@ import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfa
 import {ForegroundWindow} from '../../externs/foreground_window.js';
 import {PropStatus} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
+import {updateBulkPinProgress} from '../../state/actions/bulk_pinning.js';
 import {updatePreferences} from '../../state/actions/preferences.js';
 import {updateSearch} from '../../state/actions/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/actions/ui_entries.js';
@@ -746,6 +747,14 @@ export class FileManager extends EventTarget {
 
     await Promise.all(
         [fileListPromise, currentDirectoryPromise, this.setGuestMode_()]);
+
+    // When bulk pin progress events are received, dispatch an action to the
+    // store containing the updated data.
+    // TODO(b/275635808): Depending on the users corpus size, this API could be
+    // quite chatty, consider wrapping it in a concurrency model.
+    chrome.fileManagerPrivate.onBulkPinProgress.addListener((progress) => {
+      this.store_.dispatch(updateBulkPinProgress(progress));
+    });
   }
 
   /**

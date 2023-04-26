@@ -26,8 +26,8 @@ export type PreferencesChange = chrome.fileManagerPrivate.PreferencesChange;
 function isPreferencesChange(payload: Preferences|
                              PreferencesChange): payload is PreferencesChange {
   // The field `driveEnabled` is only on a `Preferences` object, so if this is
-  // undefined the payload is a `Preferences` object otherwise it's a
-  // `PreferencesChange` object.
+  // undefined the payload is a `PreferencesChange` object otherwise it's a
+  // `Preferences` object.
   if ((payload as Preferences).driveEnabled !== undefined) {
     return false;
   }
