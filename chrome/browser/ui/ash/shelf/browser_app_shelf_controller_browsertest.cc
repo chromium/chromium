@@ -521,8 +521,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
   }
 }
 
+// Flakily fails: https://crbug.com/1373054
 IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
-                       ActivateAndMinimizeTabs) {
+                       DISABLED_ActivateAndMinimizeTabs) {
   if (!HasLacrosArgument()) {
     return;
   }
@@ -657,8 +658,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
   EXPECT_TRUE(appB->window->IsVisible());
 }
 
+// Flakily fails: https://crbug.com/1373054
 IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
-                       MultipleInstancesShowMenu) {
+                       DISABLED_MultipleInstancesShowMenu) {
   if (!HasLacrosArgument()) {
     return;
   }
