@@ -2602,12 +2602,15 @@ ServiceWorkerGlobalScope::FetchHandlerType() {
   if (!elv) {
     return mojom::blink::ServiceWorkerFetchHandlerType::kNoHandler;
   }
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  v8::HandleScope handle_scope(isolate);
+
+  ScriptState* script_state = ScriptController()->GetScriptState();
+  // Do not remove this, |scope| is needed by `GetEffectiveFunction`.
+  ScriptState::Scope scope(script_state);
+
   // TODO(crbug.com/1349613): revisit the way to implement this.
   // The following code returns kEmptyFetchHandler if all handlers are nop.
   for (RegisteredEventListener& e : *elv) {
-    EventTarget* et = EventTarget::Create(ScriptController()->GetScriptState());
+    EventTarget* et = EventTarget::Create(script_state);
     v8::Local<v8::Value> v =
         To<JSBasedEventListener>(e.Callback())->GetEffectiveFunction(*et);
     if (!v->IsFunction() ||
