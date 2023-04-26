@@ -19,24 +19,31 @@ class ReportingUserTrackerTest : public ::testing::Test {
  protected:
   void SetUp() override {
     user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
+    reporting_user_tracker_ =
+        std::make_unique<ReportingUserTracker>(user_manager_.get());
   }
 
-  void TearDown() override { user_manager_.reset(); }
-
-  ReportingUserTracker& tracker() {
-    return user_manager_->reporting_user_tracker_;
+  void TearDown() override {
+    reporting_user_tracker_.reset();
+    user_manager_.reset();
   }
+
   ash::FakeChromeUserManager& user_manager() { return *user_manager_; }
+  ReportingUserTracker& tracker() { return *reporting_user_tracker_; }
 
   void RecreatUserManager() {
+    reporting_user_tracker_.reset();
     user_manager_.reset();
     user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
+    reporting_user_tracker_ = std::make_unique<ReportingUserTracker>(
+        user_manager_.get());
   }
 
  private:
   ScopedTestingLocalState scoped_local_state_{
       TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<ash::FakeChromeUserManager> user_manager_;
+  std::unique_ptr<ReportingUserTracker> reporting_user_tracker_;
 };
 
 TEST_F(ReportingUserTrackerTest, RegularUserAffiliation) {

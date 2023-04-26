@@ -58,6 +58,7 @@ namespace policy {
 
 class EnterpriseActivityStorage;
 class DeviceStatusCollectorState;
+class ReportingUserTracker;
 
 // TODO(b/216131674): Remove this.
 enum class CrosHealthdCollectionMode { kFull, kBattery };
@@ -149,6 +150,7 @@ class DeviceStatusCollector : public StatusCollector,
   // Pool. Caller is responsible for passing already initialized |pref_service|.
   DeviceStatusCollector(
       PrefService* pref_service,
+      ReportingUserTracker* reporting_user_tracker,
       ash::system::StatisticsProvider* provider,
       ManagedSessionService* managed_session_service,
       const VolumeInfoFetcher& volume_info_fetcher,
@@ -166,6 +168,7 @@ class DeviceStatusCollector : public StatusCollector,
   // Blocking Pool. Caller is responsible for passing already initialized
   // |pref_service|.
   DeviceStatusCollector(PrefService* pref_service,
+                        ReportingUserTracker* reporting_user_tracker,
                         ash::system::StatisticsProvider* provider,
                         ManagedSessionService* managed_session_service);
 
@@ -337,7 +340,9 @@ class DeviceStatusCollector : public StatusCollector,
   bool IncludeEmailsInActivityReports() const;
 
   // Pref service that is mainly used to store activity periods for reporting.
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const base::raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+
+  const base::raw_ptr<ReportingUserTracker> reporting_user_tracker_;
 
   // The last time an idle state check was performed.
   base::Time last_idle_check_;

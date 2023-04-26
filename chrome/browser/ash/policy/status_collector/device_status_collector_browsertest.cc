@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -105,6 +106,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/upload_list/upload_list.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
@@ -347,11 +349,13 @@ class TestingDeviceStatusCollector : public DeviceStatusCollector {
   // production logic with fake tpm manager and attestation clients.
   TestingDeviceStatusCollector(
       PrefService* pref_service,
+      ReportingUserTracker* reporting_user_tracker,
       ash::system::StatisticsProvider* provider,
       ManagedSessionService* managed_session_service,
       std::unique_ptr<TestingDeviceStatusCollectorOptions> options,
       base::SimpleTestClock* clock)
       : DeviceStatusCollector(pref_service,
+                              reporting_user_tracker,
                               provider,
                               managed_session_service,
                               options->volume_info_fetcher,
@@ -814,6 +818,8 @@ class DeviceStatusCollectorTest : public testing::Test {
   // TODO(b/216186861) Default all policies to false for each unit test
   DeviceStatusCollectorTest()
       : user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
+        reporting_user_tracker_(std::make_unique<ReportingUserTracker>(
+            user_manager::UserManager::Get())),
         got_session_status_(false),
         fake_kiosk_device_local_account_(
             DeviceLocalAccount::TYPE_KIOSK_APP,
@@ -957,9 +963,9 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   virtual void RestartStatusCollector(
       std::unique_ptr<TestingDeviceStatusCollectorOptions> options) {
-    std::vector<em::VolumeInfo> expected_volume_info;
     status_collector_ = std::make_unique<TestingDeviceStatusCollector>(
-        GetFakeChromeUserManager()->GetLocalState(), &fake_statistics_provider_,
+        GetFakeChromeUserManager()->GetLocalState(),
+        reporting_user_tracker_.get(), &fake_statistics_provider_,
         managed_session_service_.get(), std::move(options), &test_clock_);
   }
 
@@ -1192,6 +1198,7 @@ class DeviceStatusCollectorTest : public testing::Test {
   // called.
   std::unique_ptr<ash::KioskAppManager> kiosk_app_manager_;
   user_manager::ScopedUserManager user_manager_;
+  std::unique_ptr<ReportingUserTracker> reporting_user_tracker_;
   em::DeviceStatusReportRequest device_status_;
   em::SessionStatusReportRequest session_status_;
   bool got_session_status_;

@@ -65,6 +65,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -214,6 +215,10 @@ class DeviceCloudPolicyManagerAshTest
     manager_->Init(&schema_registry_);
     manager_->SetSigninProfileSchemaRegistry(&schema_registry_);
 
+    user_manager_ =
+        std::make_unique<user_manager::FakeUserManager>(&local_state_);
+    manager_->OnUserManagerCreated(user_manager_.get());
+
     // SharedURLLoaderFactory and LocalState singletons have to be set since
     // they are accessed by EnrollmentHandler and StartupUtils.
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
@@ -238,6 +243,10 @@ class DeviceCloudPolicyManagerAshTest
     if (initializer_)
       initializer_->Shutdown();
     ShutdownManager();
+
+    manager_->OnUserManagerWillBeDestroyed(user_manager_.get());
+    user_manager_.reset();
+
     manager_.reset();
     install_attributes_.reset();
 
@@ -339,6 +348,7 @@ class DeviceCloudPolicyManagerAshTest
   net::HttpStatusCode url_fetcher_response_code_;
   std::string url_fetcher_response_string_;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<user_manager::FakeUserManager> user_manager_;
   StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService device_management_service_{
       &job_creation_handler_};

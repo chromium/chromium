@@ -53,6 +53,7 @@ class EuiccStatusUploader;
 class ForwardingSchemaRegistry;
 class HeartbeatScheduler;
 class ManagedSessionService;
+class ReportingUserTracker;
 class SchemaRegistry;
 class StatusUploader;
 class SystemLogUploader;
@@ -118,6 +119,9 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   }
 
   DeviceCloudPolicyStoreAsh* device_store() { return device_store_.get(); }
+  ReportingUserTracker* reporting_user_tracker() {
+    return reporting_user_tracker_.get();
+  }
 
   // Return the StatusUploader used to communicate device status to the
   // policy server.
@@ -232,10 +236,12 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   // The TaskRunner used to do device status and log uploads.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  // PrefService instance to read the policy refresh rate from.
+  base::raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
+
   base::CallbackListSubscription state_keys_update_subscription_;
 
-  // PrefService instance to read the policy refresh rate from.
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
+  std::unique_ptr<ReportingUserTracker> reporting_user_tracker_;
 
   std::unique_ptr<ash::attestation::EnrollmentCertificateUploader>
       enrollment_certificate_uploader_;
