@@ -4,11 +4,24 @@
 
 #include "ash/test/pixel/ash_pixel_diff_util.h"
 
+#include <string>
+#include <vector>
+
+#include "base/strings/strcat.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
+std::string GetScreenshotPrefixForCurrentTestInfo() {
+  const testing::TestInfo* info =
+      ::testing::UnitTest::GetInstance()->current_test_info();
+  return base::StrCat(
+      {info->test_suite_name(), std::string("."), info->name()});
+}
 
 void PopulateUiComponentScreenBounds(std::vector<gfx::Rect>* rects) {}
 

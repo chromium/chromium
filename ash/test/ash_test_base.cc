@@ -28,6 +28,7 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/pixel/ash_pixel_diff_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/test/test_widget_builder.h"
@@ -39,7 +40,6 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -591,11 +591,9 @@ void AshTestBase::PrepareForPixelDiffTest() {
       switches::kStabilizeTimeDependentViewForTests);
 
   DCHECK(!pixel_differ_);
-  const testing::TestInfo* info =
-      ::testing::UnitTest::GetInstance()->current_test_info();
-  pixel_differ_ = std::make_unique<AshPixelDiffer>(
-      base::StrCat({info->test_suite_name(), std::string("."), info->name()}),
-      /*corpus=*/std::string());
+  pixel_differ_ =
+      std::make_unique<AshPixelDiffer>(GetScreenshotPrefixForCurrentTestInfo(),
+                                       /*corpus=*/std::string());
 }
 
 // ============================================================================
