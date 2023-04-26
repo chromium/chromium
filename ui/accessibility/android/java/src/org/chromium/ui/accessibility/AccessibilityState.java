@@ -8,6 +8,7 @@ import static android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_SPO
 import static android.accessibilityservice.AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -23,6 +24,9 @@ import android.view.autofill.AutofillManager;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -153,6 +157,14 @@ public class AccessibilityState {
 
     private static State sState;
     private static boolean sInitialized;
+
+    // Observers for various System, Activity, and Settings states relevant to accessibility.
+    private static final ApplicationStatus.ActivityStateListener sActivityStateListener =
+            AccessibilityState::onActivityStateChange;
+    private static final ApplicationStatus.ApplicationStateListener sApplicationStateListener =
+            AccessibilityState::onApplicationStateChange;
+    private static ServicesObserver sAccessibilityServicesObserver;
+    private static ServicesObserver sAnimationDurationScaleObserver;
 
     /**
      * Whether the user has enabled the Android-OS speak password when in accessibility mode,
@@ -543,37 +555,91 @@ public class AccessibilityState {
         return sServiceIds;
     }
 
-    @CalledByNative
-    static void registerObservers() {
+    /**
+     * Register observers of various system properties and initialize a state for clients.
+     *
+     * Note: This should only be called once, and before any client queries of accessibility state.
+     *       The first time any client queries the state, |this| will be initialized.
+     */
+    public static void registerObservers() {
+        assert !sInitialized
+            : "AccessibilityState has been called to register observers, but observers have "
+              + "already been registered, or, a client has already queried the state. Observers "
+              + "should only be registered once during browser init and before any client queries.";
+
         ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
-        ServicesObserver animationDurationScaleObserver =
-                new ServicesObserver(ThreadUtils.getUiThreadHandler(),
-                        () -> AccessibilityStateJni.get().onAnimatorDurationScaleChanged());
-        ServicesObserver accessibilityServiceObserver = new ServicesObserver(
-                ThreadUtils.getUiThreadHandler(), AccessibilityState::updateAccessibilityServices);
+        sAnimationDurationScaleObserver = new ServicesObserver(ThreadUtils.getUiThreadHandler(),
+                () -> AccessibilityStateJni.get().onAnimatorDurationScaleChanged());
+        sAccessibilityServicesObserver = new ServicesObserver(
+                ThreadUtils.getUiThreadHandler(), AccessibilityState::processServicesChange);
 
         // We want to be notified whenever the user has updated the animator duration scale.
         contentResolver.registerContentObserver(
                 Settings.Global.getUriFor(Settings.Global.ANIMATOR_DURATION_SCALE), false,
-                animationDurationScaleObserver);
+                sAnimationDurationScaleObserver);
 
         // We want to be notified whenever the currently enabled services changes.
         contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES), false,
-                accessibilityServiceObserver);
+                sAccessibilityServicesObserver);
         contentResolver.registerContentObserver(
                 Settings.System.getUriFor(Settings.Secure.TOUCH_EXPLORATION_ENABLED), false,
-                accessibilityServiceObserver);
+                sAccessibilityServicesObserver);
 
         // We want to be notified if the user changes their preferred password show/speak settings.
         contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.ACCESSIBILITY_SPEAK_PASSWORD), false,
-                accessibilityServiceObserver);
+                sAccessibilityServicesObserver);
         contentResolver.registerContentObserver(
                 Settings.System.getUriFor(Settings.System.TEXT_SHOW_PASSWORD), false,
-                accessibilityServiceObserver);
+                sAccessibilityServicesObserver);
+    }
 
-        if (!sInitialized) updateAccessibilityServices();
+    public static void initializeOnStartup() {
+        // This method is called as a deferred task during browser init. If no services are enabled,
+        // this will ensure the state is populated for any client queries later. If a service is
+        // enabled during startup, the current state may be queried before this method is called,
+        // in which case another update is not needed.
+        if (!sInitialized) {
+            updateAccessibilityServices();
+        }
+
+        // We want to be notified whenever an Activity or Application state changes.
+        ApplicationStatus.registerStateListenerForAllActivities(sActivityStateListener);
+        ApplicationStatus.registerApplicationStateListener(sApplicationStateListener);
+
+        // Histograms are recorded once during startup, and any time services change afterwards.
+        AccessibilityStateJni.get().recordAccessibilityServiceInfoHistograms();
+    }
+
+    private static void onActivityStateChange(Activity activity, int newState) {
+        // If Chrome is sent to the background, we will unregister observers, and re-register the
+        // observers and query state when Chrome is brought back to the foreground.
+        if (newState == ActivityState.RESUMED) processServicesChange();
+    }
+
+    private static void onApplicationStateChange(int newState) {
+        // If Chrome is sent to the background, we will unregister observers, and re-register the
+        // observers when Chrome is brought back to the foreground.
+        if (newState != ApplicationState.HAS_RUNNING_ACTIVITIES
+                && newState != ApplicationState.HAS_PAUSED_ACTIVITIES) {
+            unregisterObservers();
+        } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES && !sInitialized) {
+            registerObservers();
+        }
+    }
+
+    private static void unregisterObservers() {
+        ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
+        contentResolver.unregisterContentObserver(sAccessibilityServicesObserver);
+        contentResolver.unregisterContentObserver(sAnimationDurationScaleObserver);
+        sState = null;
+        sInitialized = false;
+    }
+
+    private static void processServicesChange() {
+        updateAccessibilityServices();
+        AccessibilityStateJni.get().recordAccessibilityServiceInfoHistograms();
     }
 
     private static class ServicesObserver extends ContentObserver {
@@ -598,5 +664,6 @@ public class AccessibilityState {
     @NativeMethods
     interface Natives {
         void onAnimatorDurationScaleChanged();
+        void recordAccessibilityServiceInfoHistograms();
     }
 }

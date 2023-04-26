@@ -109,6 +109,7 @@ import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PhotoPicker;
 import org.chromium.ui.base.PhotoPickerListener;
@@ -256,6 +257,8 @@ public class ProcessInitializationHandler {
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();
         refreshCachedSegmentationResult();
         setProcessStateSummaryForAnrs(true);
+
+        AccessibilityState.registerObservers();
     }
 
     /**
@@ -467,6 +470,9 @@ public class ProcessInitializationHandler {
             }
         });
         deferredStartupHandler.addDeferredTask(() -> { PersistedTabData.onDeferredStartup(); });
+
+        // Asynchronously query system accessibility state so it is ready for clients.
+        deferredStartupHandler.addDeferredTask(AccessibilityState::initializeOnStartup);
     }
 
     private void initChannelsAsync() {

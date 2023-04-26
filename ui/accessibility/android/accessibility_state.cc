@@ -18,6 +18,12 @@ void JNI_AccessibilityState_OnAnimatorDurationScaleChanged(JNIEnv* env) {
 }
 
 // static
+void JNI_AccessibilityState_RecordAccessibilityServiceInfoHistograms(
+    JNIEnv* env) {
+  AccessibilityState::NotifyRecordAccessibilityServiceInfoHistogram();
+}
+
+// static
 void AccessibilityState::RegisterAnimatorDurationScaleDelegate(
     Delegate* delegate) {
   GetDelegates().push_back(delegate);
@@ -39,11 +45,10 @@ void AccessibilityState::NotifyAnimatorDurationScaleObservers() {
 }
 
 // static
-void AccessibilityState::RegisterObservers() {
-  // Setup the listeners for accessibility state changes, so we can
-  // inform the renderer about changes.
-  JNIEnv* env = AttachCurrentThread();
-  ui::Java_AccessibilityState_registerObservers(env);
+void AccessibilityState::NotifyRecordAccessibilityServiceInfoHistogram() {
+  for (Delegate* delegate : GetDelegates()) {
+    delegate->RecordAccessibilityServiceInfoHistograms();
+  }
 }
 
 // static

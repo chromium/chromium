@@ -249,7 +249,6 @@ enum {
 }  // namespace
 
 BrowserAccessibilityStateImplAndroid::BrowserAccessibilityStateImplAndroid() {
-  ui::AccessibilityState::RegisterObservers();
   ui::AccessibilityState::RegisterAnimatorDurationScaleDelegate(this);
 }
 
@@ -257,7 +256,8 @@ BrowserAccessibilityStateImplAndroid::~BrowserAccessibilityStateImplAndroid() {
   ui::AccessibilityState::UnregisterAnimatorDurationScaleDelegate(this);
 }
 
-void BrowserAccessibilityStateImplAndroid::CollectAccessibilityServiceStats() {
+void BrowserAccessibilityStateImplAndroid::
+    RecordAccessibilityServiceInfoHistograms() {
   int event_type_mask =
       ui::AccessibilityState::GetAccessibilityServiceEventTypeMask();
   int feedback_type_mask =

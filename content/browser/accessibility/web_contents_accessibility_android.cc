@@ -202,11 +202,6 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
   // calling UpdateBrowserAccessibilityManager() which accesses
   // weak_ptr_factory_.
   connector_ = new Connector(web_contents, this);
-
-  BrowserAccessibilityStateImplAndroid* accessibility_state =
-      static_cast<BrowserAccessibilityStateImplAndroid*>(
-          BrowserAccessibilityStateImpl::GetInstance());
-  accessibility_state->CollectAccessibilityServiceStats();
 }
 
 WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
@@ -224,11 +219,6 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
       *ax_tree_snapshot, GetWeakPtr(), nullptr);
   snapshot_root_manager_->BuildAXTreeHitTestCache();
   connector_ = nullptr;
-
-  BrowserAccessibilityStateImplAndroid* accessibility_state =
-      static_cast<BrowserAccessibilityStateImplAndroid*>(
-          BrowserAccessibilityStateImpl::GetInstance());
-  accessibility_state->CollectAccessibilityServiceStats();
 }
 
 WebContentsAccessibilityAndroid::~WebContentsAccessibilityAndroid() {
