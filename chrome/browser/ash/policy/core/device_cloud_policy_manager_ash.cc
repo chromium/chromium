@@ -292,6 +292,10 @@ void DeviceCloudPolicyManagerAsh::OnUserManagerCreated(
 
 void DeviceCloudPolicyManagerAsh::OnUserManagerWillBeDestroyed(
     user_manager::UserManager* user_manager) {
+  // DeviceStatusCollector internally holds the reference to the
+  // ReportingUserTracker instance, so should be released via Shutdown()
+  // before this is reached.
+  DCHECK(!status_uploader_);
   reporting_user_tracker_.reset();
   user_manager_observation_.Reset();
 }
