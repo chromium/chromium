@@ -342,6 +342,21 @@ void RemapLegacySemanticColors(ui::ColorMixer& mixer) {
   mixer[cros_tokens::kColorPositive] = {cros_tokens::kCrosSysPositive};
   mixer[cros_tokens::kColorWarning] = {cros_tokens::kCrosSysWarning};
   mixer[cros_tokens::kColorAlert] = {cros_tokens::kCrosSysError};
+
+  // Illustration Colors
+  mixer[cros_tokens::kIllustrationColor1] = {cros_tokens::kCrosSysIlloColor1};
+  mixer[cros_tokens::kIllustrationColor2] = {cros_tokens::kCrosSysIlloColor2};
+  mixer[cros_tokens::kIllustrationColor3] = {cros_tokens::kCrosSysIlloColor3};
+  mixer[cros_tokens::kIllustrationColor4] = {cros_tokens::kCrosSysIlloColor4};
+  mixer[cros_tokens::kIllustrationColor5] = {cros_tokens::kCrosSysIlloColor5};
+  mixer[cros_tokens::kIllustrationColor6] = {cros_tokens::kCrosSysIlloColor6};
+  mixer[cros_tokens::kIllustrationBaseColor] = {cros_tokens::kCrosSysIlloBase};
+  mixer[cros_tokens::kIllustrationSecondaryColor] = {
+      cros_tokens::kCrosSysIlloSecondary};
+  mixer[cros_tokens::kIllustrationColor1Shade1] = {
+      cros_tokens::kCrosSysIlloColor11};
+  mixer[cros_tokens::kIllustrationColor1Shade2] = {
+      cros_tokens::kCrosSysIlloColor12};
 }
 
 // Adds the dynamic color palette tokens based on user_color. This is the base
