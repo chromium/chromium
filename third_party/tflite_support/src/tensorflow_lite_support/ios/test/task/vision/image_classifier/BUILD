@@ -78,7 +78,7 @@ objc_library(
         "//tensorflow_lite_support/ios/task/core:TFLBaseOptions",
         "//tensorflow_lite_support/ios/task/vision:TFLImageClassifier",
         "//tensorflow_lite_support/ios/task/vision/utils:GMLImageUtils",
-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:coreml_plugin",
+        "@org_tensorflow//tensorflow/lite/acceleration/configuration:coreml_plugin",
     ],
 )
 

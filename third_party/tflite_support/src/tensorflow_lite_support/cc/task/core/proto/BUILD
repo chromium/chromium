@@ -38,7 +38,7 @@ proto_library(
     srcs = ["base_options.proto"],
     deps = [
         ":external_file_proto",
-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto",
+        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_proto",
     ],
 )
 
@@ -55,7 +55,7 @@ support_py_proto_library(
     api_version = 2,
     proto_deps = [":base_options_proto"],
     py_proto_deps = [
-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto_external_py",
+        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_proto_external_py",
         "//tensorflow_lite_support/cc/task/core/proto:external_file_py_pb2",
     ],
 )

@@ -40,6 +40,7 @@ Modifications:
     * This patch might not apply cleanly, so run `git cl format` and commit the
       changes.
 15) Use abs() from std in tflite::task::core::Category
+16) Fix dependencies which were moved out of experimental folder.
 
 Update Process (internal: http://shortn/_nwz8liqimy):
 1) Run these commands:

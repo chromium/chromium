@@ -9,7 +9,8 @@ import("//third_party/tflite/features.gni")
 
 proto_library("tflite-config-proto") {
   proto_in_dir = "src"
-  sources = [ "src/tensorflow/lite/experimental/acceleration/configuration/configuration.proto" ]
+  sources =
+      [ "src/tensorflow/lite/acceleration/configuration/configuration.proto" ]
   cc_generator_options = "lite=true:"
 }
 
@@ -125,6 +126,7 @@ source_set("tflite_kernel_common_headers") {
     "src/tensorflow/lite/kernels/cpu_backend_gemm_params.h",
     "src/tensorflow/lite/kernels/cpu_backend_threadpool.h",
     "src/tensorflow/lite/kernels/internal/compatibility.h",
+    "src/tensorflow/lite/kernels/internal/runtime_shape.h",
     "src/tensorflow/lite/kernels/internal/tensor_ctypes.h",
     "src/tensorflow/lite/kernels/op_macros.h",
   ]
@@ -146,6 +148,7 @@ source_set("fft2d_deps") {
 
 source_set("tflite_kernel_internals") {
   sources = [
+    "src/tensorflow/lite/kernels/internal/common.cc",
     "src/tensorflow/lite/kernels/internal/common.h",
     "src/tensorflow/lite/kernels/internal/cppmath.h",
     "src/tensorflow/lite/kernels/internal/kernel_utils.cc",
@@ -188,6 +191,7 @@ source_set("tflite_kernel_internals") {
     "src/tensorflow/lite/kernels/internal/reference/batch_matmul.h",
     "src/tensorflow/lite/kernels/internal/reference/binary_function.h",
     "src/tensorflow/lite/kernels/internal/reference/ceil.h",
+    "src/tensorflow/lite/kernels/internal/reference/comparisons.cc",
     "src/tensorflow/lite/kernels/internal/reference/comparisons.h",
     "src/tensorflow/lite/kernels/internal/reference/concatenation.h",
     "src/tensorflow/lite/kernels/internal/reference/conv.h",
@@ -235,10 +239,14 @@ source_set("tflite_kernel_internals") {
     "src/tensorflow/lite/kernels/internal/reference/sub.h",
     "src/tensorflow/lite/kernels/internal/reference/svdf.h",
     "src/tensorflow/lite/kernels/internal/reference/tanh.h",
+    "src/tensorflow/lite/kernels/internal/runtime_shape.cc",
+    "src/tensorflow/lite/kernels/internal/runtime_shape.h",
     "src/tensorflow/lite/kernels/internal/spectrogram.cc",
     "src/tensorflow/lite/kernels/internal/spectrogram.h",
     "src/tensorflow/lite/kernels/internal/strided_slice_logic.h",
     "src/tensorflow/lite/kernels/internal/tensor.h",
+    "src/tensorflow/lite/kernels/internal/tensor_ctypes.cc",
+    "src/tensorflow/lite/kernels/internal/tensor_ctypes.h",
     "src/tensorflow/lite/kernels/internal/tensor_utils.cc",
     "src/tensorflow/lite/kernels/internal/tensor_utils.h",
     "src/tensorflow/lite/kernels/internal/transpose_utils.cc",
@@ -413,11 +421,17 @@ source_set("tflite_kernels") {
 # tflite version.
 static_library("tflite") {
   sources = [
+    "src/tensorflow/lite/acceleration/configuration/flatbuffer_to_proto.cc",
+    "src/tensorflow/lite/acceleration/configuration/flatbuffer_to_proto.h",
+    "src/tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.cc",
+    "src/tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.h",
     "src/tensorflow/lite/allocation.cc",
     "src/tensorflow/lite/arena_planner.cc",
     "src/tensorflow/lite/builtin_ops.h",
     "src/tensorflow/lite/c/common_internal.cc",
     "src/tensorflow/lite/c/common_internal.h",
+    "src/tensorflow/lite/core/acceleration/configuration/delegate_registry.cc",
+    "src/tensorflow/lite/core/acceleration/configuration/delegate_registry.h",
     "src/tensorflow/lite/core/api/error_reporter.cc",
     "src/tensorflow/lite/core/api/error_reporter.h",
     "src/tensorflow/lite/core/api/flatbuffer_conversions.cc",
@@ -435,8 +449,6 @@ static_library("tflite") {
     "src/tensorflow/lite/core/async/task_internal.h",
     "src/tensorflow/lite/core/c/common.cc",
     "src/tensorflow/lite/core/c/common.h",
-    "src/tensorflow/lite/core/experimental/acceleration/configuration/delegate_registry.cc",
-    "src/tensorflow/lite/core/experimental/acceleration/configuration/delegate_registry.h",
     "src/tensorflow/lite/core/interpreter.cc",
     "src/tensorflow/lite/core/interpreter_builder.cc",
     "src/tensorflow/lite/core/interpreter_experimental.cc",
@@ -450,10 +462,6 @@ static_library("tflite") {
     "src/tensorflow/lite/delegates/interpreter_utils.h",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate_disabled.cc",
-    "src/tensorflow/lite/experimental/acceleration/configuration/flatbuffer_to_proto.cc",
-    "src/tensorflow/lite/experimental/acceleration/configuration/flatbuffer_to_proto.h",
-    "src/tensorflow/lite/experimental/acceleration/configuration/proto_to_flatbuffer.cc",
-    "src/tensorflow/lite/experimental/acceleration/configuration/proto_to_flatbuffer.h",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.h",
     "src/tensorflow/lite/experimental/remat/metadata_util.cc",

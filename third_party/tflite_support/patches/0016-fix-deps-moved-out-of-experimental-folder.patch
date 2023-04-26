@@ -1,0 +1,517 @@
+From ff1314fca040253082af92f30fa9ef182507de42 Mon Sep 17 00:00:00 2001
+From: Ravi Yanamala <raviyanamala@chromium.org>
+Date: Tue, 25 Apr 2023 10:48:19 +0000
+Subject: [PATCH] fix deps moved out of experimental folder
+
+---
+ .../acceleration/configuration/BUILD           | 18 +++++++++---------
+ .../configuration/edgetpu_coral_plugin.cc      |  4 ++--
+ .../configuration/edgetpu_coral_plugin_test.cc |  4 ++--
+ .../src/tensorflow_lite_support/cc/port/BUILD  |  2 +-
+ .../cc/port/configuration_proto_inc.h          |  2 +-
+ .../cc/port/default/BUILD                      | 10 +++++-----
+ .../cc/port/default/tflite_wrapper.cc          |  4 ++--
+ .../cc/port/default/tflite_wrapper.h           |  6 +++---
+ .../cc/task/core/proto/BUILD                   |  4 ++--
+ .../cc/task/core/proto/base_options.proto      |  6 +++---
+ .../cc/task/vision/BUILD                       | 10 +++++-----
+ .../cc/task/vision/proto/BUILD                 | 14 +++++++-------
+ .../proto/image_classifier_options.proto       |  4 ++--
+ .../vision/proto/image_embedder_options.proto  |  4 ++--
+ .../vision/proto/image_segmenter_options.proto |  4 ++--
+ .../vision/proto/object_detector_options.proto |  4 ++--
+ .../src/tensorflow_lite_support/cc/utils/BUILD |  2 +-
+ .../cc/utils/jni_utils.cc                      |  6 +++---
+ .../test/task/vision/image_classifier/BUILD    |  2 +-
+ 19 files changed, 55 insertions(+), 55 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/BUILD b/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/BUILD
+index 8d32b5952f61f..f45725debdb12 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/BUILD
++++ b/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/BUILD
+@@ -16,7 +16,7 @@ cc_library(
+         "//visibility:public",
+     ],
+     deps = [
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:gpu_plugin",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:gpu_plugin",
+     ],
+     alwayslink = 1,  # For registration to always run.
+ )
+@@ -27,7 +27,7 @@ cc_library(
+         "//visibility:public",
+     ],
+     deps = [
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:nnapi_plugin",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:nnapi_plugin",
+     ],
+     alwayslink = 1,  # For registration to always run.
+ )
+@@ -38,7 +38,7 @@ cc_library(
+         "//visibility:public",
+     ],
+     deps = [
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:hexagon_plugin",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:hexagon_plugin",
+     ],
+     alwayslink = 1,  # For registration to always run.
+ )
+@@ -49,7 +49,7 @@ cc_library(
+         "//visibility:public",
+     ],
+     deps = [
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:xnnpack_plugin",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:xnnpack_plugin",
+     ],
+     alwayslink = 1,  # For registration to always run.
+ )
+@@ -69,8 +69,8 @@ cc_library(
+         "@com_google_glog//:glog",
+         "@libedgetpu//tflite/public:edgetpu_c",
+         "@libedgetpu//tflite/public:oss_edgetpu_direct_all",  # buildcleaner: keep
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_fbs",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:delegate_registry",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_fbs",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:delegate_registry",
+     ],
+     alwayslink = 1,  # For registration to always run.
+ )
+@@ -94,8 +94,8 @@ cc_test(
+         "@com_google_googletest//:gtest_main",
+         "@org_tensorflow//tensorflow/lite:framework",
+         "@org_tensorflow//tensorflow/lite/c:common",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_fbs",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:delegate_registry",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_fbs",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:delegate_registry",
+         "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+     ],
+ )
+@@ -108,7 +108,7 @@ tflite_jni_binary(
+     linkscript = "//tensorflow_lite_support/java:default_version_script.lds",
+     visibility = ["//visibility:private"],
+     deps = [
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration/c:gpu_plugin",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration/c:gpu_plugin",
+     ],
+ )
+ 
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin.cc b/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin.cc
+index 6a16d12856258..e8143167d2cb7 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin.cc
+@@ -20,8 +20,8 @@ limitations under the License.
+ #include "absl/memory/memory.h"            // from @com_google_absl
+ #include "absl/strings/match.h"            // from @com_google_absl
+ #include "absl/strings/numbers.h"          // from @com_google_absl
+-#include "tensorflow/lite/experimental/acceleration/configuration/configuration_generated.h"
+-#include "tensorflow/lite/experimental/acceleration/configuration/delegate_registry.h"
++#include "tensorflow/lite/acceleration/configuration/configuration_generated.h"
++#include "tensorflow/lite/acceleration/configuration/delegate_registry.h"
+ #include "tflite/public/edgetpu_c.h"
+ 
+ namespace tflite {
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin_test.cc
+index 6ac4e5c734567..9db9a5ae2c529 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin_test.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin_test.cc
+@@ -15,9 +15,9 @@ limitations under the License.
+ 
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
++#include "tensorflow/lite/acceleration/configuration/configuration_generated.h"
++#include "tensorflow/lite/acceleration/configuration/delegate_registry.h"
+ #include "tensorflow/lite/c/common.h"
+-#include "tensorflow/lite/experimental/acceleration/configuration/configuration_generated.h"
+-#include "tensorflow/lite/experimental/acceleration/configuration/delegate_registry.h"
+ #include "tensorflow/lite/interpreter.h"
+ #include "tensorflow/lite/kernels/register.h"
+ #include "tensorflow/lite/model.h"
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/BUILD b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/BUILD
+index 6cfb65e8e9fbe..682fe3e337521 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/BUILD
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/BUILD
+@@ -31,7 +31,7 @@ cc_library(
+ cc_library(
+     name = "configuration_proto_inc",
+     hdrs = ["configuration_proto_inc.h"],
+-    deps = ["@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_cc_proto"],
++    deps = ["@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_cc_proto"],
+ )
+ 
+ cc_library_with_tflite(
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/configuration_proto_inc.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/configuration_proto_inc.h
+index d014973166d64..0208f4d0023ef 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/configuration_proto_inc.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/configuration_proto_inc.h
+@@ -16,6 +16,6 @@ limitations under the License.
+ #ifndef THIRD_PARTY_TENSORFLOW_LITE_SUPPORT_CC_PORT_CONFIGURATION_PROTO_INC_H_
+ #define THIRD_PARTY_TENSORFLOW_LITE_SUPPORT_CC_PORT_CONFIGURATION_PROTO_INC_H_
+ 
+-#include "tensorflow/lite/experimental/acceleration/configuration/configuration.pb.h"
++#include "tensorflow/lite/acceleration/configuration/configuration.pb.h"
+ 
+ #endif  // THIRD_PARTY_TENSORFLOW_LITE_SUPPORT_CC_PORT_CONFIGURATION_PROTO_INC_H_
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/BUILD b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/BUILD
+index 02afcef09ab1e..1ae6a9610601c 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/BUILD
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/BUILD
+@@ -41,12 +41,12 @@ cc_library(
+         "@org_tensorflow//tensorflow/lite:framework",
+         "@org_tensorflow//tensorflow/lite:minimal_logging",
+         "@org_tensorflow//tensorflow/lite/c:common",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:nnapi_plugin",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:nnapi_plugin",
+         "@org_tensorflow//tensorflow/lite/delegates:interpreter_utils",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_cc_proto",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:delegate_registry",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:flatbuffer_to_proto",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:proto_to_flatbuffer",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_cc_proto",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:delegate_registry",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:flatbuffer_to_proto",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:proto_to_flatbuffer",
+         "@org_tensorflow//tensorflow/lite/experimental/acceleration/mini_benchmark",
+         "//tensorflow_lite_support/cc/port:status_macros",
+     ] + select({
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc
+index 4d23efe43bc99..03b87d2de7e74 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc
+@@ -17,10 +17,10 @@ limitations under the License.
+ 
+ #include "absl/status/status.h"       // from @com_google_absl
+ #include "absl/strings/str_format.h"  // from @com_google_absl
++#include "tensorflow/lite/acceleration/configuration/flatbuffer_to_proto.h"
++#include "tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.h"
+ #include "tensorflow/lite/c/common.h"
+ #include "tensorflow/lite/delegates/interpreter_utils.h"
+-#include "tensorflow/lite/experimental/acceleration/configuration/flatbuffer_to_proto.h"
+-#include "tensorflow/lite/experimental/acceleration/configuration/proto_to_flatbuffer.h"
+ #include "tensorflow/lite/minimal_logging.h"
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ 
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.h
+index a9deed9f93521..c3ee9f655bf43 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.h
+@@ -21,9 +21,9 @@ limitations under the License.
+ 
+ #include "absl/status/status.h"       // from @com_google_absl
+ #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
++#include "tensorflow/lite/acceleration/configuration/configuration.pb.h"
++#include "tensorflow/lite/acceleration/configuration/delegate_registry.h"
+ #include "tensorflow/lite/c/common.h"
+-#include "tensorflow/lite/experimental/acceleration/configuration/configuration.pb.h"
+-#include "tensorflow/lite/experimental/acceleration/configuration/delegate_registry.h"
+ #include "tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.h"
+ #include "tensorflow/lite/interpreter.h"
+ #include "tensorflow/lite/interpreter_builder.h"
+@@ -79,7 +79,7 @@ struct InterpreterCreationResources {
+ // threads must be guarded by synchronization outside this class.
+ //
+ // [1]:
+-// https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/configuration.proto
++// https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/configuration.proto
+ class TfLiteInterpreterWrapper {
+  public:
+   // Creates an instance to be associated with a TfLite model that could be
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/proto/BUILD b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/proto/BUILD
+index 88e7869af8fc9..12a255fb3f4ed 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/proto/BUILD
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/proto/BUILD
+@@ -38,7 +38,7 @@ proto_library(
+     srcs = ["base_options.proto"],
+     deps = [
+         ":external_file_proto",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_proto",
+     ],
+ )
+ 
+@@ -55,7 +55,7 @@ support_py_proto_library(
+     api_version = 2,
+     proto_deps = [":base_options_proto"],
+     py_proto_deps = [
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto_external_py",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_proto_external_py",
+         "//tensorflow_lite_support/cc/task/core/proto:external_file_py_pb2",
+     ],
+ )
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/proto/base_options.proto b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/proto/base_options.proto
+index 7b71fcc582847..c67fefe9e9b05 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/proto/base_options.proto
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/proto/base_options.proto
+@@ -17,7 +17,7 @@ syntax = "proto2";
+ 
+ package tflite.task.core;
+ 
+-import "tensorflow/lite/experimental/acceleration/configuration/configuration.proto";
++import "tensorflow/lite/acceleration/configuration/configuration.proto";
+ 
+ import "tensorflow_lite_support/cc/task/core/proto/external_file.proto";
+ 
+@@ -44,11 +44,11 @@ message BaseOptions {
+   // needs to be linked at build time.
+   //
+   // For example, `gpu_plugin` for GPU from:
+-  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/BUILD
++  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/BUILD
+   // To use EDGETPU_CORAL, link to `edgetpu_coral_plugin` from:
+   // https://github.com/tensorflow/tflite-support/blob/a58a4f9225c411fa9ba29f821523e6e283988d23/tensorflow_lite_support/acceleration/configuration/BUILD#L11
+   //
+   // See settings definition at:
+-  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/configuration.proto
++  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/configuration.proto
+   optional tflite.proto.ComputeSettings compute_settings = 2;
+ }
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/BUILD b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/BUILD
+index e23b339298425..a06683acb8994 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/BUILD
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/BUILD
+@@ -11,7 +11,7 @@ package(
+ # IMPORTANT: in order to use hardware acceleration delegates, configurable through the
+ # `compute_settings` field of the ObjectDetectorOptions, you must additionally link to
+ # the appropriate delegate plugin target (e.g. `gpu_plugin` for GPU) from:
+-# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/BUILD
++# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/BUILD
+ # To use EDGETPU_CORAL, link to `edgetpu_coral_plugin` from:
+ # https://github.com/tensorflow/tflite-support/blob/a58a4f9225c411fa9ba29f821523e6e283988d23/tensorflow_lite_support/acceleration/configuration/BUILD#L11
+ cc_library_with_tflite(
+@@ -54,7 +54,7 @@ cc_library_with_tflite(
+ # IMPORTANT: in order to use hardware acceleration delegates, configurable through the
+ # `compute_settings` field of the ImageClassifierOptions, you must additionally link to
+ # the appropriate delegate plugin target (e.g. `gpu_plugin` for GPU) from:
+-# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/BUILD
++# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/BUILD
+ # To use EDGETPU_CORAL, link to `edgetpu_coral_plugin` from:
+ # https://github.com/tensorflow/tflite-support/blob/a58a4f9225c411fa9ba29f821523e6e283988d23/tensorflow_lite_support/acceleration/configuration/BUILD#L11
+ cc_library_with_tflite(
+@@ -99,7 +99,7 @@ cc_library_with_tflite(
+ # IMPORTANT: in order to use hardware acceleration delegates, configurable through the
+ # `compute_settings` field of the ImageSegmenterOptions, you must additionally link to
+ # the appropriate delegate plugin target (e.g. `gpu_plugin` for GPU) from:
+-# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/BUILD
++# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/BUILD
+ # To use EDGETPU_CORAL, link to `edgetpu_coral_plugin` from:
+ # https://github.com/tensorflow/tflite-support/blob/a58a4f9225c411fa9ba29f821523e6e283988d23/tensorflow_lite_support/acceleration/configuration/BUILD#L11
+ cc_library_with_tflite(
+@@ -140,7 +140,7 @@ cc_library_with_tflite(
+ # IMPORTANT: in order to use hardware acceleration delegates, configurable through the
+ # `compute_settings` field of the ImageEmbedderOptions, you must additionally link to
+ # the appropriate delegate plugin target (e.g. `gpu_plugin` for GPU) from:
+-# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/BUILD
++# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/BUILD
+ # To use EDGETPU_CORAL, link to `edgetpu_coral_plugin` from:
+ # https://github.com/tensorflow/tflite-support/blob/a58a4f9225c411fa9ba29f821523e6e283988d23/tensorflow_lite_support/acceleration/configuration/BUILD#L11
+ cc_library_with_tflite(
+@@ -178,7 +178,7 @@ cc_library_with_tflite(
+ # IMPORTANT: in order to use hardware acceleration delegates, configurable through the
+ # `compute_settings` field of the ImageSearcherOptions, you must additionally link to
+ # the appropriate delegate plugin target (e.g. `gpu_plugin` for GPU) from:
+-# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/BUILD
++# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/BUILD
+ # To use EDGETPU_CORAL, link to `edgetpu_coral_plugin` from:
+ # https://github.com/tensorflow/tflite-support/blob/a58a4f9225c411fa9ba29f821523e6e283988d23/tensorflow_lite_support/acceleration/configuration/BUILD#L11
+ cc_library_with_tflite(
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/BUILD b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/BUILD
+index 8ed246e5b33d4..2516b3fd28ab5 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/BUILD
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/BUILD
+@@ -68,7 +68,7 @@ proto_library(
+     deps = [
+         "//tensorflow_lite_support/cc/task/core/proto:base_options_proto",
+         "//tensorflow_lite_support/cc/task/core/proto:external_file_proto",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_proto",
+     ],
+ )
+ 
+@@ -85,7 +85,7 @@ support_py_proto_library(
+     api_version = 2,
+     proto_deps = [":object_detector_options_proto"],
+     py_proto_deps = [
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto_external_py",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_proto_external_py",
+         "//tensorflow_lite_support/cc/task/core/proto:base_options_py_pb2",
+         "//tensorflow_lite_support/cc/task/core/proto:external_file_py_pb2",
+     ],
+@@ -146,7 +146,7 @@ proto_library(
+     deps = [
+         "//tensorflow_lite_support/cc/task/core/proto:base_options_proto",
+         "//tensorflow_lite_support/cc/task/core/proto:external_file_proto",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_proto",
+     ],
+ )
+ 
+@@ -163,7 +163,7 @@ support_py_proto_library(
+     api_version = 2,
+     proto_deps = [":image_classifier_options_proto"],
+     py_proto_deps = [
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto_external_py",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_proto_external_py",
+         "//tensorflow_lite_support/cc/task/core/proto:base_options_py_pb2",
+         "//tensorflow_lite_support/cc/task/core/proto:external_file_py_pb2",
+     ],
+@@ -219,7 +219,7 @@ proto_library(
+     deps = [
+         "//tensorflow_lite_support/cc/task/core/proto:base_options_proto",
+         "//tensorflow_lite_support/cc/task/core/proto:external_file_proto",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_proto",
+     ],
+ )
+ 
+@@ -272,7 +272,7 @@ proto_library(
+     srcs = ["image_embedder_options.proto"],
+     deps = [
+         "//tensorflow_lite_support/cc/task/core/proto:external_file_proto",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_proto",
+     ],
+ )
+ 
+@@ -289,7 +289,7 @@ support_py_proto_library(
+     api_version = 2,
+     proto_deps = [":image_embedder_options_proto"],
+     py_proto_deps = [
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_proto_external_py",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_proto_external_py",
+         "//tensorflow_lite_support/cc/task/core/proto:external_file_py_pb2",
+     ],
+ )
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/image_classifier_options.proto b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/image_classifier_options.proto
+index 34e17475802ed..478bf680d8e2f 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/image_classifier_options.proto
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/image_classifier_options.proto
+@@ -17,7 +17,7 @@ syntax = "proto2";
+ 
+ package tflite.task.vision;
+ 
+-import "tensorflow/lite/experimental/acceleration/configuration/configuration.proto";
++import "tensorflow/lite/acceleration/configuration/configuration.proto";
+ import "tensorflow_lite_support/cc/task/core/proto/base_options.proto";
+ import "tensorflow_lite_support/cc/task/core/proto/external_file.proto";
+ 
+@@ -87,7 +87,7 @@ message ImageClassifierOptions {
+   // https://github.com/tensorflow/tflite-support/blob/master/tensorflow_lite_support/cc/task/vision/BUILD
+   //
+   // See settings definition at:
+-  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/configuration.proto
++  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/configuration.proto
+   //
+   // Deprecated: only works with `model_file_with_metadata`. Prefer using
+   // `base_options` to specifying the TFLite model and using
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/image_embedder_options.proto b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/image_embedder_options.proto
+index 87693adcf1bf2..dd48d57f958f7 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/image_embedder_options.proto
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/image_embedder_options.proto
+@@ -17,7 +17,7 @@ syntax = "proto2";
+ 
+ package tflite.task.vision;
+ 
+-import "tensorflow/lite/experimental/acceleration/configuration/configuration.proto";
++import "tensorflow/lite/acceleration/configuration/configuration.proto";
+ import "tensorflow_lite_support/cc/task/core/proto/external_file.proto";
+ 
+ // Options for setting up an ImageEmbedder.
+@@ -58,7 +58,7 @@ message ImageEmbedderOptions {
+   // https://github.com/tensorflow/tflite-support/blob/master/tensorflow_lite_support/cc/task/vision/BUILD
+   //
+   // See settings definition at:
+-  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/configuration.proto
++  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/configuration.proto
+   optional tflite.proto.ComputeSettings compute_settings = 8;
+ 
+   // Reserved tags.
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/image_segmenter_options.proto b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/image_segmenter_options.proto
+index 683fc4580e780..5f10ed55a2bd2 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/image_segmenter_options.proto
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/image_segmenter_options.proto
+@@ -17,7 +17,7 @@ syntax = "proto2";
+ 
+ package tflite.task.vision;
+ 
+-import "tensorflow/lite/experimental/acceleration/configuration/configuration.proto";
++import "tensorflow/lite/acceleration/configuration/configuration.proto";
+ import "tensorflow_lite_support/cc/task/core/proto/base_options.proto";
+ import "tensorflow_lite_support/cc/task/core/proto/external_file.proto";
+ 
+@@ -81,7 +81,7 @@ message ImageSegmenterOptions {
+   // https://github.com/tensorflow/tflite-support/blob/master/tensorflow_lite_support/cc/task/vision/BUILD
+   //
+   // See settings definition at:
+-  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/configuration.proto
++  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/configuration.proto
+   //
+   // Deprecated: only works with `model_file_with_metadata`. Prefer using
+   // `base_options` to specifying the TFLite model and use
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/object_detector_options.proto b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/object_detector_options.proto
+index 0e75684edcc26..538b6743688b7 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/object_detector_options.proto
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/object_detector_options.proto
+@@ -17,7 +17,7 @@ syntax = "proto2";
+ 
+ package tflite.task.vision;
+ 
+-import "tensorflow/lite/experimental/acceleration/configuration/configuration.proto";
++import "tensorflow/lite/acceleration/configuration/configuration.proto";
+ import "tensorflow_lite_support/cc/task/core/proto/base_options.proto";
+ import "tensorflow_lite_support/cc/task/core/proto/external_file.proto";
+ 
+@@ -85,7 +85,7 @@ message ObjectDetectorOptions {
+   // https://github.com/tensorflow/tflite-support/blob/master/tensorflow_lite_support/cc/task/vision/BUILD
+   //
+   // See settings definition at:
+-  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/configuration.proto
++  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/acceleration/configuration/configuration.proto
+   //
+   // Deprecated: only works with `model_file_with_metadata`. Prefer using
+   // `base_options` to specifying the TFLite model and using
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/utils/BUILD b/third_party/tflite_support/src/tensorflow_lite_support/cc/utils/BUILD
+index 08225d2e0b421..15cb5d99ffb81 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/utils/BUILD
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/utils/BUILD
+@@ -16,7 +16,7 @@ cc_library_with_tflite(
+     tflite_deps = [
+         "@org_tensorflow//tensorflow/lite/core/shims:delegate_plugin",
+         "@org_tensorflow//tensorflow/lite/core/shims:delegate_registry",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:delegate_plugin_converter",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:delegate_plugin_converter",
+     ],
+     visibility = [
+         "//tensorflow_lite_support:internal",
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/utils/jni_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/utils/jni_utils.cc
+index 35ce822951ad8..8dc087d6317b1 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/utils/jni_utils.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/utils/jni_utils.cc
+@@ -21,9 +21,9 @@ limitations under the License.
+ #include "absl/memory/memory.h"       // from @com_google_absl
+ #include "absl/status/status.h"       // from @com_google_absl
+ #include "absl/strings/str_format.h"  // from @com_google_absl
+-#include "tensorflow/lite/core/shims/c/experimental/acceleration/configuration/delegate_plugin.h"
+-#include "tensorflow/lite/core/shims/cc/experimental/acceleration/configuration/delegate_registry.h"
+-#include "tensorflow/lite/experimental/acceleration/configuration/delegate_plugin_converter.h"
++#include "tensorflow/lite/acceleration/configuration/delegate_plugin_converter.h"
++#include "tensorflow/lite/core/shims/c/acceleration/configuration/delegate_plugin.h"
++#include "tensorflow/lite/core/shims/cc/acceleration/configuration/delegate_registry.h"
+ #include "tensorflow_lite_support/cc/common.h"
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ 
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_classifier/BUILD b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_classifier/BUILD
+index b3e7b9b9b27c1..12ecbe000d065 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_classifier/BUILD
++++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/test/task/vision/image_classifier/BUILD
+@@ -78,7 +78,7 @@ objc_library(
+         "//tensorflow_lite_support/ios/task/core:TFLBaseOptions",
+         "//tensorflow_lite_support/ios/task/vision:TFLImageClassifier",
+         "//tensorflow_lite_support/ios/task/vision/utils:GMLImageUtils",
+-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:coreml_plugin",
++        "@org_tensorflow//tensorflow/lite/acceleration/configuration:coreml_plugin",
+     ],
+ )
+ 
+-- 
+2.40.0.634.g4ca3ef3211-goog
+

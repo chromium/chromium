@@ -16,7 +16,7 @@ cc_library_with_tflite(
     tflite_deps = [
         "@org_tensorflow//tensorflow/lite/core/shims:delegate_plugin",
         "@org_tensorflow//tensorflow/lite/core/shims:delegate_registry",
-        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:delegate_plugin_converter",
+        "@org_tensorflow//tensorflow/lite/acceleration/configuration:delegate_plugin_converter",
     ],
     visibility = [
         "//tensorflow_lite_support:internal",

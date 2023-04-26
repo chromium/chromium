@@ -31,7 +31,7 @@ cc_library(
 cc_library(
     name = "configuration_proto_inc",
     hdrs = ["configuration_proto_inc.h"],
-    deps = ["@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_cc_proto"],
+    deps = ["@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_cc_proto"],
 )
 
 cc_library_with_tflite(
