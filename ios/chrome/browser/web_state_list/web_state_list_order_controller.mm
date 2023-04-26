@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
 
+#import <algorithm>
 #import <cstdint>
 #import <set>
 
 #import "base/check_op.h"
-#import "base/cxx17_backports.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
