@@ -368,17 +368,21 @@ FindAndEditSubMenuModel::~FindAndEditSubMenuModel() = default;
 void FindAndEditSubMenuModel::Build(Browser* browser) {
   AddItemWithStringIdAndIcon(
       IDC_FIND, IDS_FIND,
-      ui::ImageModel::FromVectorIcon(kSearchMenuIcon, ui::kColorMenuIcon));
+      ui::ImageModel::FromVectorIcon(kSearchMenuIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringIdAndIcon(
       IDC_CUT, IDS_CUT,
-      ui::ImageModel::FromVectorIcon(kCutMenuIcon, ui::kColorMenuIcon));
+      ui::ImageModel::FromVectorIcon(kCutMenuIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
   AddItemWithStringIdAndIcon(
       IDC_COPY, IDS_COPY,
-      ui::ImageModel::FromVectorIcon(kCopyMenuIcon, ui::kColorMenuIcon));
+      ui::ImageModel::FromVectorIcon(kCopyMenuIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
   AddItemWithStringIdAndIcon(
       IDC_PASTE, IDS_PASTE,
-      ui::ImageModel::FromVectorIcon(kPasteMenuIcon, ui::kColorMenuIcon));
+      ui::ImageModel::FromVectorIcon(kPasteMenuIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1241,8 +1245,9 @@ void AppMenuModel::Build() {
     auto set_icon = [this](int command_id, const gfx::VectorIcon& vector_icon) {
       auto index = GetIndexOfCommandId(command_id);
       if (index) {
-        SetIcon(index.value(), ui::ImageModel::FromVectorIcon(
-                                   vector_icon, ui::kColorMenuIcon));
+        SetIcon(index.value(),
+                ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorMenuIcon,
+                                               kDefaultIconSize));
       }
     };
     set_icon(IDC_NEW_TAB, kNewTabRefreshIcon);
