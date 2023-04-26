@@ -193964,6 +193964,19 @@
        {}
       ]
      ],
+     "text-decoration-propagation-04.html": [
+      "8c9bb9b7e72bcb261eac5840f024a5cdacdc7fe3",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-propagation-04-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-decoration-propagation-display-contents.html": [
       "33d3593b668f0d81aee48441639324a0abe34756",
       [
@@ -236801,6 +236814,97 @@
        {}
       ]
      ],
+     "orthogonal-root-resize-icb-001.html": [
+      "5e7ff7aef51344e8fa6fafed85318da33a33397b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "orthogonal-root-resize-icb-002.html": [
+      "6164411b64cd1a43dc092e97b700a7624588efcc",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "orthogonal-root-resize-icb-003.html": [
+      "4bf7183c15bf1275bf5132b82719ad0622ef3188",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "orthogonal-root-resize-icb-004.html": [
+      "c01497e1eafebe44077a930ffd9932ea2d8f159b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "orthogonal-root-resize-icb-005.html": [
+      "927086a723a333d31935fc6397cdaf3361bf8b6a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "orthogonal-root-resize-icb-006.html": [
+      "5ed7d4f3025783314a6534272edf475f9d9ad740",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "orthogonal-root-resize-icb-007.html": [
+      "0b403b2aafcd89614810834bec8d04c0bb80b0e1",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "outline-inline-block-vrl-006.html": [
       "14dcf916d8f3ca1e531f41a4cc3dbc8b866fbbb1",
       [
@@ -270023,16 +270127,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "2b965ecd4d50797a144ad97f915e342ca3f6f29f",
-     []
-    ],
-    "mtime.json": [
-     "89f393cb10a8bb62916b1ab4f92a1702e0437494",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -322502,6 +322596,10 @@
       ],
       "text-decoration-propagation-03-ref.html": [
        "84ad43f88c30c503a38e7bedb913a4a0a34045f3",
+       []
+      ],
+      "text-decoration-propagation-04-ref.html": [
+       "7d359610c5518252856fa1051b51e84207994025",
        []
       ],
       "text-decoration-propagation-display-contents-ref.html": [
