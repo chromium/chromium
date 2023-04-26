@@ -1,0 +1,26 @@
+{
+  "source_filter_data": {
+    "a": []
+  },
+  "event_trigger_data": [
+    {
+      "trigger_data": "3",
+      "not_filters": {
+        "a": []
+      }
+    },
+    {
+      "trigger_data": "4",
+      "not_filters": {
+        "a": ["b"]
+      }
+    },
+    {
+      "trigger_data": "5",
+      "not_filters": {
+        "a": ["b"]
+      }
+    }
+  ],
+  "expected_trigger_data": "4"
+}

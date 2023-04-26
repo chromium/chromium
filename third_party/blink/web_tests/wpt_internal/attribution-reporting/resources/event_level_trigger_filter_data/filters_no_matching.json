@@ -1,0 +1,12 @@
+{
+  "event_trigger_data": [
+    {
+      "trigger_data": "0",
+      "filters": {
+        "source_type": ["event"]
+      }
+    }
+  ],
+  "debug_reporting": true,
+  "cookie": "ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/"
+}

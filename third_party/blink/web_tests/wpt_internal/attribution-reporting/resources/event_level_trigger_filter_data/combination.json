@@ -1,0 +1,44 @@
+{
+  "source_filter_data": {
+    "a": ["b", "c"]
+  },
+  "event_trigger_data": [
+    {
+      "trigger_data": "3",
+      "filters": {
+        "a": []
+      },
+      "not_filters": {
+        "a": ["d"]
+      }
+    },
+    {
+      "trigger_data": "4",
+      "filters": {
+        "a": ["c"]
+      },
+      "not_filters": {
+        "a": ["b"]
+      }
+    },
+    {
+      "trigger_data": "5",
+      "filters": {
+        "a": ["c"]
+      },
+      "not_filters": {
+        "a": ["d"]
+      }
+    },
+    {
+      "trigger_data": "6",
+      "filters": {
+        "a": ["c"]
+      },
+      "not_filters": {
+        "a": ["d"]
+      }
+    }
+  ],
+  "expected_trigger_data": "5"
+}

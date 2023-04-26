@@ -1,281 +1,66 @@
 <!doctype html>
 <meta charset=utf-8>
 <meta name=timeout content=long>
-<meta name=variant content="?include=filters">
-<meta name=variant content="?include=not_filters">
-<meta name=variant content="?include=combination">
+<meta name="variant" content="?input=filters_implicit_matching_event_source_type">
+<meta name="variant" content="?input=filters_implicit_matching_navigation_source_type">
+<meta name="variant" content="?input=filters_empty_filter_data">
+<meta name="variant" content="?input=filters_single_filter_with_multiple_values">
+<meta name="variant" content="?input=filters_multiple_filters">
+<meta name="variant" content="?input=filters_no_matching">
+<meta name="variant" content="?input=not_filters_implicit_matching_event_source_type">
+<meta name="variant" content="?input=not_filters_implicit_matching_navigation_source_type">
+<meta name="variant" content="?input=not_filters_empty_filter_data">
+<meta name="variant" content="?input=not_filters_single_filter_with_multiple_values">
+<meta name="variant" content="?input=not_filters_multiple_filters">
+<meta name="variant" content="?input=not_filters_no_matching">
+<meta name="variant" content="?input=combination">
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/subset-tests-by-key.js"></script>
 <script src="resources/helpers.js"></script>
 <script>
-const filter_data_promise_test = (testCase) =>
-  attribution_reporting_promise_test(async t => {
-    const source = {
-      source_event_id: generateSourceEventId(),
-      debug_reporting: true,
-      destination: 'https://{{host}}',
-      filter_data: testCase.source_filter_data,
-    };
-    await registerAttributionSrc({
-      source,
-      method: testCase.method === undefined ? 'open' : testCase.method,
-      cookie: attributionDebugCookie,
-    });
-    await waitForSourceToBeRegistered(source.source_event_id);
+attribution_reporting_promise_test(async t => {
+  const searchParams = new URLSearchParams(location.search);
+  const input = searchParams.get('input');
+  const inputJSON =
+      await fetch(`resources/event_level_trigger_filter_data/${input}.json`)
+                .then((response) => response.json());
 
-    await registerAttributionSrc({
-      trigger: {
-        event_trigger_data: testCase.event_trigger_data,
-        debug_reporting: testCase.debug_reporting,
-      },
-      cookie: testCase.cookie,
-    });
+  const source = {
+    source_event_id: generateSourceEventId(),
+    debug_reporting: true,
+    destination: 'https://{{host}}',
+    filter_data: inputJSON.source_filter_data,
+  };
+  await registerAttributionSrc({
+    source,
+    method: inputJSON.method === undefined ? 'open' : inputJSON.method,
+    cookie: attributionDebugCookie,
+  });
+  await waitForSourceToBeRegistered(source.source_event_id);
 
-    if (testCase.expectedTriggerData) {
-      const payload = await pollEventLevelReports();
-      assert_equals(payload.reports.length, 1);
-      const report = JSON.parse(payload.reports[0].body);
-
-      assert_equals(report.trigger_data, testCase.expectedTriggerData);
-      return;
-    }
-
-    const payload = await pollVerboseDebugReports();
-    assert_equals(payload.reports.length, 1);
-    const debugReport = JSON.parse(payload.reports[0].body);
-    assert_equals(debugReport.length, 1);
-    assert_equals(debugReport[0].type, 'trigger-event-no-matching-configurations');
-  }, testCase.testName);
-
-const testCases = new Map();
-testCases.set('filters', [
-  {
-    testName: 'Implicit matching of event source type',
-    method: 'img',
-    event_trigger_data: [
-      {
-        trigger_data: '0',
-        filters: {source_type: ['navigation']},
-      },
-      {
-        trigger_data: '1',
-        filters: {source_type: ['event']},
-      },
-    ],
-    expectedTriggerData: '1',
-  },
- {
-    testName: 'Implicit matching of navigation source type',
-    event_trigger_data: [
-      {
-        trigger_data: '0',
-        filters: {source_type: ['event']},
-      },
-      {
-        trigger_data: '1',
-        filters: {source_type: ['navigation']},
-      },
-    ],
-    expectedTriggerData: '1',
-  },
-  {
-    testName: 'Empty filter data',
-    source_filter_data: {a: []},
-    event_trigger_data: [
-      {
-        trigger_data: '3',
-        filters: {a: ['b']},
-      },
-      {
-        trigger_data: '4',
-        filters: {a: []},
-      },
-      {
-        trigger_data: '5',
-        filters: {a: []},
-      },
-    ],
-    expectedTriggerData: '4',
-  },
-  {
-    testName: 'Single filter with multiple values',
-    source_filter_data: {a: ['b', 'c']},
-    event_trigger_data: [
-      {
-        trigger_data: '3',
-        filters: {a: []},
-      },
-      {
-        trigger_data: '4',
-        filters: {a: ['d']},
-      },
-      {
-        trigger_data: '5',
-        filters: {a: ['b']},
-      },
-    ],
-    expectedTriggerData: '5',
-  },
-  {
-    testName: 'Multiple filters',
-    source_filter_data: {
-      'a': ['c'],
-      'b': ['d'],
+  await registerAttributionSrc({
+    trigger: {
+      event_trigger_data: inputJSON.event_trigger_data,
+      debug_reporting: inputJSON.debug_reporting,
     },
-    event_trigger_data: [
-      {
-        trigger_data: '3',
-        filters: {'a': ['c'], 'b': []},
-      },
-      {
-        trigger_data: '4',
-        filters: {'a': ['c'], 'b': ['d']},
-      },
-    ],
-    expectedTriggerData: '4',
-  },
-  {
-    testName: 'No matching',
-    event_trigger_data: [
-      {
-        trigger_data: '0',
-        filters: {source_type: ['event']},
-      }
-    ],
-    debug_reporting: true,
-    cookie: attributionDebugCookie,
-  },
-]);
+    cookie: inputJSON.cookie,
+  });
 
-testCases.set('not_filters', [
-  {
-    testName: 'Implicit matching of event source type',
-    method: 'img',
-    event_trigger_data: [
-      {
-        trigger_data: '0',
-        not_filters: {source_type: ['event']},
-      },
-      {
-        trigger_data: '1',
-        not_filters: {source_type: ['navigation']},
-      },
-    ],
-    expectedTriggerData: '1',
-  },
-  {
-    testName: 'Implicit matching of navigation source type',
-    event_trigger_data: [
-      {
-        trigger_data: '0',
-        not_filters: {source_type: ['navigation']},
-      },
-      {
-        trigger_data: '1',
-        not_filters: {source_type: ['event']},
-      },
-    ],
-    expectedTriggerData: '1',
-  },
-  {
-    testName: 'Empty filter data',
-    source_filter_data: {a: []},
-    event_trigger_data: [
-      {
-        trigger_data: '3',
-        not_filters: {a: []},
-      },
-      {
-        trigger_data: '4',
-        not_filters: {a: ['b']},
-      },
-      {
-        trigger_data: '5',
-        not_filters: {a: ['b']},
-      },
-    ],
-    expectedTriggerData: '4',
-  },
-  {
-    testName: 'Single filter with multiple values',
-    source_filter_data: {a: ['b', 'c']},
-    event_trigger_data: [
-      {
-        trigger_data: '3',
-        not_filters: {a: ['b']},
-      },
-      {
-        trigger_data: '4',
-        not_filters: {a: ['d']},
-      },
-    ],
-    expectedTriggerData: '4',
-  },
-  {
-    testName: 'Multiple filters',
-    source_filter_data: {a: ['c'], b: ['d']},
-    event_trigger_data: [
-      {
-        trigger_data: '3',
-        not_filters: {a: ['c'], b: []},
-      },
-      {
-        trigger_data: '4',
-        not_filters: {a: ['d'], b: []},
-      },
-    ],
-    expectedTriggerData: '4',
-  },
-  {
-    testName: 'No matching',
-    event_trigger_data: [
-      {
-        trigger_data: '0',
-        not_filters: {source_type: ['navigation']},
-      },
-    ],
-    debug_reporting: true,
-    cookie: attributionDebugCookie,
+  if (inputJSON.expected_trigger_data) {
+    const payload = await pollEventLevelReports();
+    assert_equals(payload.reports.length, 1);
+    const report = JSON.parse(payload.reports[0].body);
+
+    assert_equals(report.trigger_data, inputJSON.expected_trigger_data);
+    return;
   }
-]);
 
-testCases.set('combination', [
-  {
-    testName: 'Combination of positive and negative filters',
-    source_filter_data: {a: ['b', 'c']},
-    event_trigger_data: [
-      {
-        trigger_data: '3',
-        filters: {a: []},
-        not_filters: {a: ['d']},
-      },
-      {
-        trigger_data: '4',
-        filters: {a: ['c']},
-        not_filters: {a: ['b']},
-      },
-      {
-        trigger_data: '5',
-        filters: {a: ['c']},
-        not_filters: {a: ['d']},
-      },
-      {
-        trigger_data: '6',
-        filters: {a: ['c']},
-        not_filters: {a: ['d']},
-      },
-    ],
-    expectedTriggerData: '5',
-  }
-]);
-
-testCases.forEach((subTestCases, key) => {
-  subsetTestByKey(key, (subTestCases) => {
-    subTestCases.forEach(filter_data_promise_test);
-  }, subTestCases);
-});
-
+  const payload = await pollVerboseDebugReports();
+  assert_equals(payload.reports.length, 1);
+  const debugReport = JSON.parse(payload.reports[0].body);
+  assert_equals(debugReport.length, 1);
+  assert_equals(debugReport[0].type, 'trigger-event-no-matching-configurations');
+  }, 'Event level trigger filter data');
 </script>

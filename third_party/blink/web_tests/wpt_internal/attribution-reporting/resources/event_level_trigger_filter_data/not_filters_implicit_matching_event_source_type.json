@@ -1,0 +1,18 @@
+{
+  "method": "img",
+  "event_trigger_data": [
+    {
+      "trigger_data": "0",
+      "not_filters": {
+        "source_type": ["event"]
+      }
+    },
+    {
+      "trigger_data": "1",
+      "not_filters": {
+        "source_type": ["navigation"]
+      }
+    }
+  ],
+  "expected_trigger_data": "1"
+}

@@ -1,0 +1,17 @@
+{
+  "event_trigger_data": [
+    {
+      "trigger_data": "0",
+      "not_filters": {
+        "source_type": ["navigation"]
+      }
+    },
+    {
+      "trigger_data": "1",
+      "not_filters": {
+        "source_type": ["event"]
+      }
+    }
+  ],
+  "expected_trigger_data": "1"
+}
