@@ -15,6 +15,7 @@
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/test/base/testing_profile.h"
@@ -34,7 +35,6 @@
 #include "extensions/common/permissions/manifest_permission_set.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/url_pattern_set.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/skia_util.h"
@@ -89,12 +89,11 @@ TEST_F(ExtensionInstallPromptUnitTest, PromptShowsPermissionWarnings) {
                         URLPatternSet(), URLPatternSet()));
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "foo")
                            .Set("version", "1.0")
                            .Set("manifest_version", 2)
-                           .Set("description", "Random Ext")
-                           .Build())
+                           .Set("description", "Random Ext"))
           .Build();
 
   content::TestWebContentsFactory factory;
@@ -116,16 +115,15 @@ TEST_F(ExtensionInstallPromptUnitTest,
        DelegatedPromptShowsOptionalPermissions) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "foo")
                            .Set("version", "1.0")
                            .Set("manifest_version", 2)
                            .Set("description", "Random Ext")
                            .Set("permissions",
-                                ListBuilder().Append("clipboardRead").Build())
+                                base::Value::List().Append("clipboardRead"))
                            .Set("optional_permissions",
-                                ListBuilder().Append("tabs").Build())
-                           .Build())
+                                base::Value::List().Append("tabs")))
           .Build();
 
   content::TestWebContentsFactory factory;

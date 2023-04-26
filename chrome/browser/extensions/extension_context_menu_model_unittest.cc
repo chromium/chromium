@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
@@ -56,7 +57,6 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "net/disk_cache/blockfile/disk_format_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -313,15 +313,17 @@ const Extension* ExtensionContextMenuModelTest::AddExtensionWithHostPermission(
     const char* action_key,
     ManifestLocation location,
     const std::string& host_permission) {
-  DictionaryBuilder manifest;
-  manifest.Set("name", name).Set("version", "1").Set("manifest_version", 2);
+  auto manifest = base::Value::Dict()
+                      .Set("name", name)
+                      .Set("version", "1")
+                      .Set("manifest_version", 2);
   if (action_key)
-    manifest.Set(action_key, DictionaryBuilder().Build());
+    manifest.Set(action_key, base::Value::Dict());
   if (!host_permission.empty())
-    manifest.Set("permissions", ListBuilder().Append(host_permission).Build());
+    manifest.Set("permissions", base::Value::List().Append(host_permission));
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(manifest.Build())
+          .SetManifest(std::move(manifest))
           .SetID(crx_file::id_util::GenerateId(name))
           .SetLocation(location)
           .Build();
@@ -500,13 +502,11 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
   InitializeEmptyExtensionService();
 
   std::string name("component");
-  base::Value::Dict manifest =
-      DictionaryBuilder()
-          .Set("name", name)
-          .Set("version", "1")
-          .Set("manifest_version", 2)
-          .Set("browser_action", DictionaryBuilder().Build())
-          .Build();
+  base::Value::Dict manifest = base::Value::Dict()
+                                   .Set("name", name)
+                                   .Set("version", "1")
+                                   .Set("manifest_version", 2)
+                                   .Set("browser_action", base::Value::Dict());
 
   {
     scoped_refptr<const Extension> extension =

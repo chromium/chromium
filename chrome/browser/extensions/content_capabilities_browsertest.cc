@@ -31,10 +31,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/quota/special_storage_policy.h"
 
-using extensions::DictionaryBuilder;
 using extensions::Extension;
 using extensions::ExtensionBuilder;
-using extensions::ListBuilder;
 
 class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
  protected:

@@ -20,7 +20,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -37,29 +36,24 @@ namespace {
 
 base::Value::Dict MakeExtensionManifest(
     const base::Value::Dict& manifest_extra) {
-  base::Value::Dict manifest = DictionaryBuilder()
+  base::Value::Dict manifest = base::Value::Dict()
                                    .Set("name", "Extension")
                                    .Set("version", "1.0")
-                                   .Set("manifest_version", 2)
-                                   .Build();
+                                   .Set("manifest_version", 2);
   manifest.Merge(manifest_extra.Clone());
   return manifest;
 }
 
 base::Value::Dict MakePackagedAppManifest() {
-  return extensions::DictionaryBuilder()
+  return base::Value::Dict()
       .Set("name", "Test App Name")
       .Set("version", "2.0")
       .Set("manifest_version", 2)
-      .Set("app", extensions::DictionaryBuilder()
-                      .Set("background",
-                           extensions::DictionaryBuilder()
-                               .Set("scripts", extensions::ListBuilder()
-                                                   .Append("background.js")
-                                                   .Build())
-                               .Build())
-                      .Build())
-      .Build();
+      .Set("app",
+           base::Value::Dict().Set(
+               "background",
+               base::Value::Dict().Set(
+                   "scripts", base::Value::List().Append("background.js"))));
 }
 
 }  // namespace

@@ -31,7 +31,6 @@
 #include "extensions/browser/updater/safe_manifest_parser.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/value_builder.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -183,14 +182,12 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
 
   void SetupExtensionManagementPref() {
     base::Value::Dict extension_entry =
-        DictionaryBuilder()
+        base::Value::Dict()
             .Set("installation_mode", "allowed")
-            .Set(ExternalProviderImpl::kExternalUpdateUrl, kExtensionUpdateUrl)
-            .Build();
-    prefs()->SetManagedPref(pref_names::kExtensionManagement,
-                            DictionaryBuilder()
-                                .Set(kExtensionId1, std::move(extension_entry))
-                                .Build());
+            .Set(ExternalProviderImpl::kExternalUpdateUrl, kExtensionUpdateUrl);
+    prefs()->SetManagedPref(
+        pref_names::kExtensionManagement,
+        base::Value::Dict().Set(kExtensionId1, std::move(extension_entry)));
   }
 
   void CreateExtensionService(bool extensions_enabled) {
@@ -1362,7 +1359,7 @@ TEST_F(ForceInstalledMetricsTest,
   SetupForceList(ExtensionOrigin::kWebStore);
   // Set TYPE_EXTENSION and TYPE_THEME as the allowed extension types.
   base::Value::List list =
-      ListBuilder().Append("extension").Append("theme").Build();
+      base::Value::List().Append("extension").Append("theme");
   prefs()->SetManagedPref(pref_names::kAllowedTypes, std::move(list));
 
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
@@ -1392,7 +1389,7 @@ TEST_F(ForceInstalledMetricsTest,
 
   // Set TYPE_EXTENSION and TYPE_THEME as the allowed extension types.
   base::Value::List list =
-      ListBuilder().Append("extension").Append("theme").Build();
+      base::Value::List().Append("extension").Append("theme");
   prefs()->SetManagedPref(pref_names::kAllowedTypes, std::move(list));
 
   scoped_refptr<const Extension> ext1 = CreateNewExtension(

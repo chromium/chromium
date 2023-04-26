@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
@@ -25,7 +26,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -82,11 +82,10 @@ TEST_F(ErrorConsoleUnitTest, EnableAndDisableErrorConsole) {
       "ohmmkhmmmpcnpikjeljgnaoabkaalbgc";
   scoped_refptr<const Extension> adt =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "apps dev tools")
                            .Set("version", "0.2.0")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .SetID(kAppsDeveloperToolsExtensionId)
           .Build();
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_.get());
@@ -197,21 +196,19 @@ TEST_F(ErrorConsoleUnitTest, TestDefaultStoringPrefs) {
   // For this, we need actual extensions.
   scoped_refptr<const Extension> unpacked_extension =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "unpacked")
                            .Set("version", "0.0.1")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .SetLocation(mojom::ManifestLocation::kUnpacked)
           .SetID(crx_file::id_util::GenerateId("unpacked"))
           .Build();
   scoped_refptr<const Extension> packed_extension =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "packed")
                            .Set("version", "0.0.1")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(crx_file::id_util::GenerateId("packed"))
           .Build();

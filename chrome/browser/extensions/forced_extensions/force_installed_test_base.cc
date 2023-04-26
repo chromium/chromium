@@ -66,16 +66,13 @@ void ForceInstalledTestBase::SetupForceList(ExtensionOrigin origin) {
   list.Append(base::StrCat({kExtensionId1, ";", update_url}));
   list.Append(base::StrCat({kExtensionId2, ";", update_url}));
   base::Value::Dict dict =
-      DictionaryBuilder()
+      base::Value::Dict()
           .Set(kExtensionId1,
-               DictionaryBuilder()
-                   .Set(ExternalProviderImpl::kExternalUpdateUrl, update_url)
-                   .Build())
+               base::Value::Dict().Set(ExternalProviderImpl::kExternalUpdateUrl,
+                                       update_url))
           .Set(kExtensionId2,
-               DictionaryBuilder()
-                   .Set(ExternalProviderImpl::kExternalUpdateUrl, update_url)
-                   .Build())
-          .Build();
+               base::Value::Dict().Set(ExternalProviderImpl::kExternalUpdateUrl,
+                                       update_url));
   prefs_->SetManagedPref(pref_names::kInstallForceList, std::move(dict));
 
   EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
@@ -92,8 +89,7 @@ void ForceInstalledTestBase::SetupForceList(ExtensionOrigin origin) {
 }
 
 void ForceInstalledTestBase::SetupEmptyForceList() {
-  base::Value::Dict dict = DictionaryBuilder().Build();
-  prefs_->SetManagedPref(pref_names::kInstallForceList, std::move(dict));
+  prefs_->SetManagedPref(pref_names::kInstallForceList, base::Value::Dict());
 
   EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
       .WillRepeatedly(testing::Return(true));
