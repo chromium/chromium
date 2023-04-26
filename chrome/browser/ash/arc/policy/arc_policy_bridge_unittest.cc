@@ -446,32 +446,6 @@ TEST_F(ArcPolicyBridgeTest, ArcPolicyTest) {
       instance_guid() + "\"," + kMountPhysicalMediaDisabledPolicySetting + "}");
 }
 
-TEST_F(ArcPolicyBridgeTest, InstallTypeOptionalMigrationTest) {
-  policy_map().Set(
-      policy::key::kArcPolicy, policy::POLICY_LEVEL_MANDATORY,
-      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-      base::Value("{\"applications\":"
-                  "[{\"packageName\":\"com.google.android.apps.youtube.kids\","
-                  "\"installType\":\"OPTIONAL\","
-                  "\"lockTaskAllowed\":false,"
-                  "\"permissionGrants\":[]"
-                  "}],"
-                  "\"defaultPermissionPolicy\":\"GRANT\""
-                  "}"),
-      nullptr);
-  GetPoliciesAndVerifyResult(
-      "{\"apkCacheEnabled\":true,"
-      "\"applications\":"
-      "[{\"installType\":\"AVAILABLE\","
-      "\"lockTaskAllowed\":false,"
-      "\"packageName\":\"com.google.android.apps.youtube.kids\","
-      "\"permissionGrants\":[]"
-      "}],"
-      "\"defaultPermissionPolicy\":\"GRANT\","
-      "\"guid\":\"" +
-      instance_guid() + "\"," + kMountPhysicalMediaDisabledPolicySetting + "}");
-}
-
 TEST_F(ArcPolicyBridgeTest, HompageLocationTest) {
   // This policy will not be passed on, result should be empty except for the
   // instance GUID.
