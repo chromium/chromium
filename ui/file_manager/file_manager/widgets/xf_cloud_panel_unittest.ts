@@ -1,0 +1,149 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {assertEquals, assertNotEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+
+import {waitUntil} from '../common/js/test_error_reporting.js';
+
+import {XfCloudPanel} from './xf_cloud_panel.js';
+
+/**
+ * Creates new <xf-cloud-panel> for each test.
+ */
+export function setUp() {
+  document.body.innerHTML = '<xf-cloud-panel></xf-cloud-panel>';
+}
+
+/**
+ * Returns the <xf-cloud-panel> element.
+ */
+function getCloudPanelElement(): XfCloudPanel {
+  const element = document.querySelector('xf-cloud-panel');
+  assertNotEquals(null, element, 'xf-cloud-panel is null');
+  assertEquals('XF-CLOUD-PANEL', element!.tagName);
+  return element! as XfCloudPanel;
+}
+
+/**
+ * Asynchronously waits for the attribute value on `element` to equal `want`.
+ */
+async function waitForAttributeValue(
+    element: HTMLElement, attributeName: string, want: string): Promise<void> {
+  let value = null;
+  await waitUntil(() => {
+    value = element.getAttribute(attributeName);
+    return value !== null;
+  });
+  assertEquals(value, want);
+}
+
+/**
+ * Wait for a computed style to equal `want`.
+ */
+async function waitForStyles(
+    element: HTMLElement, tag: string, want: string): Promise<void> {
+  return waitUntil(() => {
+    const styleMap = element.computedStyleMap();
+    if (!styleMap.has(tag) || !styleMap.get(tag)) {
+      return false;
+    }
+    return styleMap.get(tag)!.toString() === want;
+  });
+}
+
+/**
+ * Helper to get an element parented at `root` asynchronously.
+ */
+async function getElement<T extends HTMLElement>(
+    root: Document|DocumentFragment, selector: string): Promise<T> {
+  let element: T|null = null;
+  await waitUntil(() => {
+    element = root.querySelector(selector);
+    return element !== null;
+  });
+  assertNotEquals(element, null);
+  return element!;
+}
+
+/**
+ * Get the progress bar element in the cloud panel shadowroot.
+ */
+async function getProgressBar(): Promise<HTMLProgressElement> {
+  const element = getCloudPanelElement();
+  let progressElement: HTMLProgressElement|null = null;
+  await waitUntil(() => {
+    progressElement =
+        element.shadowRoot!.querySelector<HTMLProgressElement>('progress');
+    return progressElement !== null;
+  });
+  return progressElement! as HTMLProgressElement;
+}
+
+/**
+ * Tests that the initial `<xf-cloud-panel>` element only has the Google Drive
+ * settings link and the progress state is not visible.
+ */
+export async function testInitialElementOnlyHasLink(done: () => void) {
+  const element = getCloudPanelElement();
+
+  // Expect neither `items` nor `progress` to be set on `<xf-cloud-panel>`.
+  assertEquals(element.getAttribute('items'), null);
+  assertEquals(element.getAttribute('percentage'), null);
+
+  // Ensure the the container of progress state should have display none (as a
+  // result of the absence of `items` and `progress` attributes above).
+  const progressStateElement =
+      await getElement<HTMLDivElement>(element.shadowRoot!, '#progress-state');
+  await waitForStyles(progressStateElement, 'display', 'none');
+
+  done();
+}
+
+/**
+ * Tests that when updating the progress values, it updates the underlying
+ * progress bar element.
+ */
+export async function testProgressStateUpdatesProgressBar(done: () => void) {
+  const element = getCloudPanelElement();
+  const progressStateElement =
+      await getElement<HTMLDivElement>(element.shadowRoot!, '#progress-state');
+
+  // The initial progress state should not show until the type is updated.
+  assertEquals(element.getAttribute('items'), null);
+  assertEquals(element.getAttribute('percentage'), null);
+  await waitForStyles(progressStateElement, 'display', 'none');
+  // Update the items and progress
+  element.setAttribute('items', '3');
+  element.setAttribute('percentage', '12');
+
+  // Wait for the progress bar to update and the #progress-state div to show.
+  const progress = await getProgressBar();
+  await waitForStyles(progressStateElement, 'display', 'block');
+  await waitForAttributeValue(progress, 'value', '12');
+  done();
+}
+
+/**
+ * Tests that when clicking the "Google Drive settings" button an event is
+ * emitted.
+ */
+export async function testWhenGoogleDriveSettingsIsClickedEventIsEmitted(
+    done: () => void) {
+  const element = getCloudPanelElement();
+
+  // Set up an event listener for the button to be clicked.
+  let clicks = 0;
+  element.addEventListener(
+      XfCloudPanel.events.DRIVE_SETTINGS_CLICKED, () => ++clicks);
+
+  // Click the "Google Drive settings" button.
+  const settingsButton =
+      await getElement<HTMLButtonElement>(element.shadowRoot!, 'button.action');
+  settingsButton!.click();
+
+  // Wait until the number of clicks has incremented.
+  await waitUntil(() => clicks === 1);
+
+  done();
+}

@@ -1749,4 +1749,14 @@
   <message name="IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES" desc="The source of a system-generated notification from the Files app, as displayed to the user.">
   Files
   </message>
+  <!-- TODO(b/276126188): Remove the translateable="false" when the copy has been landed on. -->
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_SETTINGS_LINK_LABEL" translateable="false" desc="The text of the button in the Bulk pinning dialog that takes the user to the chromeOS settings page for Google Drive.">
+    Google Drive settings
+  </message>
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_MULTIPLE_FILES_SYNCING_LABEL" translateable="false" desc="The text used when Google drive items are being downloaded and this represents the total number of items to sync.">
+    Syncing <ph name="NUMBER_OF_FILES_SYNCING">$1<ex>1,687</ex></ph> files
+  </message>
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_SINGLE_FILE_SYNCING_LABEL" translateable="false" desc="The text used when Google drive items are being downloaded and this represents the total number of items to sync.">
+    Syncing 1 file
+  </message>
 </grit-part>

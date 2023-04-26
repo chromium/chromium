@@ -361,6 +361,7 @@ ts_test_files = [
   # Widgets:
   "file_manager/widgets/xf_breadcrumb_unittest.ts",
   "file_manager/widgets/xf_conflict_dialog_unittest.ts",
+  "file_manager/widgets/xf_cloud_panel_unittest.ts",
   "file_manager/widgets/xf_dlp_restriction_details_dialog_unittest.ts",
   "file_manager/widgets/xf_icon_unittest.ts",
   "file_manager/widgets/xf_nudge_unittest.ts",
