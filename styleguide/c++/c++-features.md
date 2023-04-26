@@ -737,6 +737,17 @@ struct is_lock_free_impl
 [Discussion thread](https://groups.google.com/u/1/a/chromium.org/g/cxx/c/jNMsxFTd30M)
 ***
 
+### std::clamp <sup>[allowed]</sup>
+
+```c++
+int x = std::clamp(inp, 0, 100);
+```
+
+**Description:** Clamps a value between a minimum and a maximum.
+
+**Documentation:**
+[`std::clamp`](https://en.cppreference.com/w/cpp/algorithm/clamp)
+
 ### std::{{con,dis}junction,negation} <sup>[allowed]</sup>
 
 ```c++
@@ -1135,22 +1146,6 @@ std::any x = 5;
 
 Banned since workaround for lack of RTTI isn't compatible with the component
 build ([Bug](https://crbug.com/1096380)). Also see `absl::any`.
-***
-
-### std::clamp <sup>[banned]</sup>
-
-```c++
-int x = std::clamp(inp, 0, 100);
-```
-
-**Description:** Clamps a value between a minimum and a maximum.
-
-**Documentation:**
-[`std::clamp`](https://en.cppreference.com/w/cpp/algorithm/clamp)
-
-**Notes:**
-*** promo
-[Will be allowed soon](https://crbug.com/1373621); for now, use `base::clamp`.
 ***
 
 ### std::filesystem <sup>[banned]</sup>
