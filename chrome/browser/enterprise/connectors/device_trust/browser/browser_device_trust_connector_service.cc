@@ -20,8 +20,7 @@ BrowserDeviceTrustConnectorService::~BrowserDeviceTrustConnectorService() =
     default;
 
 bool BrowserDeviceTrustConnectorService::IsConnectorEnabled() const {
-  return DeviceTrustConnectorService::IsConnectorEnabled() &&
-         !key_manager_->HasPermanentFailure();
+  return DeviceTrustConnectorService::IsConnectorEnabled();
 }
 
 void BrowserDeviceTrustConnectorService::OnConnectorEnabled() {

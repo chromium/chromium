@@ -46,10 +46,10 @@ const std::string CreateErrorJsonString(
                      DeviceTrustErrorToString(dt_response.error.value()));
 
   if (dt_response.attestation_result &&
-      dt_response.attestation_result.value() != DTAttestationResult::kSuccess) {
+      !IsSuccessAttestationResult(dt_response.attestation_result.value())) {
     error_response.Set(
         kSpecificErrorCodePropertyName,
-        AttestationResultToString(dt_response.attestation_result.value()));
+        AttestationErrorToString(dt_response.attestation_result.value()));
   }
 
   std::string out_json;

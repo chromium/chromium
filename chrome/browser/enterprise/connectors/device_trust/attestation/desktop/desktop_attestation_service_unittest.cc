@@ -116,9 +116,9 @@ class DesktopAttestationServiceTest : public testing::Test {
 
     fake_dm_token_storage_.SetDMToken(kDmToken);
     fake_dm_token_storage_.SetClientId(kFakeDeviceId);
-    auto* factory = KeyPersistenceDelegateFactory::GetInstance();
-    DCHECK(factory);
-    test_key_pair_ = factory->CreateKeyPersistenceDelegate()->LoadKeyPair();
+    test_key_pair_ =
+        persistence_delegate_factory_.CreateKeyPersistenceDelegate()
+            ->LoadKeyPair();
 
     mock_key_manager_ = std::make_unique<test::MockDeviceTrustKeyManager>();
 
@@ -165,6 +165,21 @@ class DesktopAttestationServiceTest : public testing::Test {
     return signals;
   }
 
+  void VerifyAttestationResponse(
+      const AttestationResponse& attestation_response,
+      bool has_signature = true) {
+    ASSERT_FALSE(attestation_response.challenge_response.empty());
+    auto signed_data =
+        ParseDataFromResponse(attestation_response.challenge_response);
+    ASSERT_TRUE(signed_data);
+    EXPECT_FALSE(signed_data->data().empty());
+    EXPECT_EQ(signed_data->signature().empty(), !has_signature);
+
+    EXPECT_EQ(attestation_response.result_code,
+              has_signature ? DTAttestationResult::kSuccess
+                            : DTAttestationResult::kSuccessNoSignature);
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<SigningKeyPair> test_key_pair_;
   std::unique_ptr<DesktopAttestationService> attestation_service_;
@@ -184,15 +199,8 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseDev_Success) {
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ true), CreateSignals(),
       future.GetCallback());
-  const auto& attestation_response = future.Get();
-  ASSERT_FALSE(attestation_response.challenge_response.empty());
-  auto signed_data =
-      ParseDataFromResponse(attestation_response.challenge_response);
-  ASSERT_TRUE(signed_data);
-  EXPECT_FALSE(signed_data->data().empty());
-  EXPECT_FALSE(signed_data->signature().empty());
 
-  EXPECT_EQ(attestation_response.result_code, DTAttestationResult::kSuccess);
+  VerifyAttestationResponse(future.Get());
 }
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseProd_Success) {
@@ -205,15 +213,8 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseProd_Success) {
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
       future.GetCallback());
-  const auto& attestation_response = future.Get();
-  ASSERT_FALSE(attestation_response.challenge_response.empty());
-  auto signed_data =
-      ParseDataFromResponse(attestation_response.challenge_response);
-  ASSERT_TRUE(signed_data);
-  EXPECT_FALSE(signed_data->data().empty());
-  EXPECT_FALSE(signed_data->signature().empty());
 
-  EXPECT_EQ(attestation_response.result_code, DTAttestationResult::kSuccess);
+  VerifyAttestationResponse(future.Get());
 }
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_InvalidDmToken) {
@@ -249,17 +250,16 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyDmToken) {
 }
 
 TEST_F(DesktopAttestationServiceTest,
-       BuildChallengeResponse_MissingSigningKey) {
+       BuildChallengeResponse_FailedPublicKeyExport) {
   SetupPubkeyExport(/*can_export_pubkey=*/false);
+  SetupSignature();
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
       future.GetCallback());
 
-  const auto& response = future.Get();
-  ASSERT_TRUE(response.challenge_response.empty());
-  EXPECT_EQ(response.result_code, DTAttestationResult::kMissingSigningKey);
+  VerifyAttestationResponse(future.Get());
 }
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyChallenge) {
@@ -292,8 +292,7 @@ TEST_F(DesktopAttestationServiceTest,
             DTAttestationResult::kBadChallengeSource);
 }
 
-TEST_F(DesktopAttestationServiceTest,
-       BuildChallengeResponse_EmptyEncryptedResponse) {
+TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_NoSignature) {
   SetupPubkeyExport();
   SetupSignature(/*can_sign=*/false);
 
@@ -302,9 +301,7 @@ TEST_F(DesktopAttestationServiceTest,
       GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
       future.GetCallback());
 
-  const auto& response = future.Get();
-  ASSERT_TRUE(response.challenge_response.empty());
-  EXPECT_EQ(response.result_code, DTAttestationResult::kFailedToSignResponse);
+  VerifyAttestationResponse(future.Get(), /*has_signature=*/false);
 }
 
 // TODO(crbug.com/1208881): Add signals and validate they effectively get

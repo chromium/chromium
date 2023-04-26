@@ -134,7 +134,7 @@ void DeviceTrustService::OnAttestationResponseReceived(
   dt_response.challenge_response = attestation_response.challenge_response;
   dt_response.attestation_result = attestation_response.result_code;
 
-  if (attestation_response.result_code != DTAttestationResult::kSuccess) {
+  if (!IsSuccessAttestationResult(attestation_response.result_code)) {
     dt_response.error = DeviceTrustError::kFailedToCreateResponse;
   }
 

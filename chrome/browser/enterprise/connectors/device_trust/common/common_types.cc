@@ -4,12 +4,11 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 
-#include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
 
 namespace enterprise_connectors {
 
-const std::string AttestationResultToString(DTAttestationResult result) {
+const std::string AttestationErrorToString(DTAttestationResult result) {
   switch (result) {
     case DTAttestationResult::kMissingCoreSignals:
       return errors::kMissingCoreSignals;
@@ -32,9 +31,14 @@ const std::string AttestationResultToString(DTAttestationResult result) {
     case DTAttestationResult::kFailedToSerializeSignals:
       return errors::kFailedToSerializeSignals;
     case DTAttestationResult::kSuccess:
-      NOTREACHED();
+    case DTAttestationResult::kSuccessNoSignature:
       return std::string();
   }
+}
+
+bool IsSuccessAttestationResult(DTAttestationResult result) {
+  return result == DTAttestationResult::kSuccess ||
+         result == DTAttestationResult::kSuccessNoSignature;
 }
 
 const std::string DeviceTrustErrorToString(DeviceTrustError error) {

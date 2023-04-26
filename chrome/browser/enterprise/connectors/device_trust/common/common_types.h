@@ -27,7 +27,8 @@ enum class DTAttestationResult {
   kEmptySerializedResponse = 8,
   kSuccess = 9,
   kFailedToSerializeSignals = 10,
-  kMaxValue = kFailedToSerializeSignals,
+  kSuccessNoSignature = 11,
+  kMaxValue = kSuccessNoSignature,
 };
 
 // Enum representing all possible errors that may cause the generation of a
@@ -39,9 +40,12 @@ enum class DeviceTrustError {
   kFailedToCreateResponse
 };
 
-// Used to convert an error `result` to a string. This function will return an
-// empty string if `result` represents `kSuccess`.
-const std::string AttestationResultToString(DTAttestationResult result);
+// Used to convert an attestation `error` to a string. This function will return
+// an empty string if `error` represents a success.
+const std::string AttestationErrorToString(DTAttestationResult error);
+
+// Returns true if `result` corresponds to one of the successful results.
+bool IsSuccessAttestationResult(DTAttestationResult result);
 
 // Used to convert `error` to a string representation.
 const std::string DeviceTrustErrorToString(DeviceTrustError error);

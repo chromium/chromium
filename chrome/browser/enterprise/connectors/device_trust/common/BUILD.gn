@@ -26,3 +26,13 @@ source_set("common") {
         [ "//chromeos/ash/components/install_attributes:install_attributes" ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "common_types_unittest.cc" ]
+
+  deps = [
+    ":common",
+    "//testing/gtest",
+  ]
+}

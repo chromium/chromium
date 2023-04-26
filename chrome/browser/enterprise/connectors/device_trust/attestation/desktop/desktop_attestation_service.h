@@ -51,19 +51,19 @@ class DesktopAttestationService : public AttestationService {
                            AttestationCallback callback,
                            absl::optional<std::string> exported_key);
 
-  void OnChallengeValidated(const SignedData& signed_data,
-                            const std::string& exported_public_key,
-                            base::Value::Dict signals,
-                            AttestationCallback callback,
-                            bool is_va_challenge);
+  void OnChallengeValidated(
+      const SignedData& signed_data,
+      const absl::optional<std::string>& exported_public_key,
+      base::Value::Dict signals,
+      AttestationCallback callback,
+      bool is_va_challenge);
 
   void OnResponseCreated(AttestationCallback callback,
-                         absl::optional<std::string> serialized_response);
+                         absl::optional<std::string> encrypted_response);
 
-  void OnResponseSigned(
-      AttestationCallback callback,
-      const std::string& serialized_response,
-      absl::optional<std::vector<uint8_t>> encrypted_response);
+  void OnResponseSigned(AttestationCallback callback,
+                        const std::string& encrypted_response,
+                        absl::optional<std::vector<uint8_t>> signed_response);
 
   GoogleKeys google_keys_;
 

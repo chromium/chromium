@@ -30,7 +30,7 @@ base::Value::List GetOrigins() {
 
 class BrowserDeviceTrustConnectorServiceTest
     : public testing::Test,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
   void SetUp() override {
     RegisterDeviceTrustConnectorProfilePrefs(profile_prefs_.registry());
@@ -55,13 +55,11 @@ class BrowserDeviceTrustConnectorServiceTest
   }
 
   bool is_attestation_flow_enabled() {
-    return is_flag_enabled() && is_policy_enabled() &&
-           !has_permanent_key_creation_failure();
+    return is_flag_enabled() && is_policy_enabled();
   }
 
   bool is_flag_enabled() { return std::get<0>(GetParam()); }
   bool is_policy_enabled() { return std::get<1>(GetParam()); }
-  bool has_permanent_key_creation_failure() { return std::get<2>(GetParam()); }
 
   base::test::ScopedFeatureList feature_list_;
   testing::StrictMock<MockDeviceTrustKeyManager> mock_key_manager_;
@@ -72,10 +70,6 @@ TEST_P(BrowserDeviceTrustConnectorServiceTest, IsConnectorEnabled) {
   if (is_flag_enabled() && is_policy_enabled()) {
     // Called when the service is initialized.
     EXPECT_CALL(mock_key_manager_, StartInitialization());
-
-    // Called in `IsConnectorEnabled`.
-    EXPECT_CALL(mock_key_manager_, HasPermanentFailure())
-        .WillOnce(testing::Return(has_permanent_key_creation_failure()));
   }
 
   auto service = CreateService();
@@ -84,8 +78,6 @@ TEST_P(BrowserDeviceTrustConnectorServiceTest, IsConnectorEnabled) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          BrowserDeviceTrustConnectorServiceTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace enterprise_connectors

@@ -147,6 +147,8 @@ constexpr int kHardFailureCode = 400;
 
 class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
  public:
+  DeviceTrustBrowserTestBase() { ResetState(); }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
@@ -217,8 +219,8 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     return embedded_test_server()->GetURL(kOtherHost, "/simple.html");
   }
 
-  void ExpectFunnelStep(DTAttestationFunnelStep step, int attempts = 1) {
-    histogram_tester_.ExpectBucketCount(kFunnelHistogramName, step, attempts);
+  void ExpectFunnelStep(DTAttestationFunnelStep step) {
+    histogram_tester_->ExpectBucketCount(kFunnelHistogramName, step, 1);
   }
 
   // This function needs to reflect how IdP are expected to behave.
@@ -263,7 +265,7 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     return active_browser->profile()->GetPrefs();
   }
 
-  std::string GetChallengeResponseHeader(int attempts = 1) {
+  std::string GetChallengeResponseHeader() {
     // Attestation flow should be fully done.
     EXPECT_TRUE(initial_attestation_request_);
 
@@ -280,9 +282,8 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     // when using v1 header).
     EXPECT_TRUE(challenge_response_request_.has_value());
 
-    ExpectFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted,
-                     attempts);
-    ExpectFunnelStep(DTAttestationFunnelStep::kChallengeReceived, attempts);
+    ExpectFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted);
+    ExpectFunnelStep(DTAttestationFunnelStep::kChallengeReceived);
 
     EXPECT_EQ(challenge_response_request_->GetURL().path(),
               GetRedirectLocationUrl().path());
@@ -291,24 +292,17 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
         ->second;
   }
 
-  void VerifyAttestationFlowSuccessful(int failed_attempts = 0) {
-    const int total_attempts = failed_attempts + 1;
-    std::string challenge_response = GetChallengeResponseHeader(total_attempts);
+  void VerifyAttestationFlowSuccessful(
+      DTAttestationResult success_result = DTAttestationResult::kSuccess) {
+    std::string challenge_response = GetChallengeResponseHeader();
     // TODO(crbug.com/1241857): Add challenge-response validation.
     EXPECT_TRUE(!challenge_response.empty());
-    ExpectFunnelStep(DTAttestationFunnelStep::kSignalsCollected,
-                     total_attempts);
+    ExpectFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
     ExpectFunnelStep(DTAttestationFunnelStep::kChallengeResponseSent);
-    if (failed_attempts == 0) {
-      histogram_tester_.ExpectUniqueSample(kResultHistogramName,
-                                           DTAttestationResult::kSuccess, 1);
-    } else {
-      histogram_tester_.ExpectBucketCount(kResultHistogramName,
-                                          DTAttestationResult::kSuccess, 1);
-    }
-    histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 1);
-    histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName,
-                                       failed_attempts);
+    histogram_tester_->ExpectUniqueSample(kResultHistogramName, success_result,
+                                          1);
+    histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 1);
+    histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 0);
   }
 
   void VerifyAttestationFlowFailure() {
@@ -316,17 +310,19 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     static constexpr char kFailedToParseChallengeJsonResponse[] =
         "{\"error\":\"failed_to_parse_challenge\"}";
     EXPECT_EQ(challenge_response, kFailedToParseChallengeJsonResponse);
-    histogram_tester_.ExpectBucketCount(
+    histogram_tester_->ExpectBucketCount(
         kFunnelHistogramName, DTAttestationFunnelStep::kSignalsCollected, 0);
-    histogram_tester_.ExpectBucketCount(
+    histogram_tester_->ExpectBucketCount(
         kFunnelHistogramName, DTAttestationFunnelStep::kChallengeResponseSent,
         0);
-    histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
-    histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
-    histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 1);
+    histogram_tester_->ExpectTotalCount(kResultHistogramName, 0);
+    histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 0);
+    histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 1);
   }
 
   virtual void AttestationFullFlowKeyExistsTest(bool key_exists) {
+    ResetState();
+
     GURL redirect_url = GetRedirectUrl();
     TestNavigationManager first_navigation(web_contents(), redirect_url);
 
@@ -342,9 +338,15 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     ASSERT_TRUE(first_navigation.WaitForNavigationFinished());
   }
 
+  void ResetState() {
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+    initial_attestation_request_.reset();
+    challenge_response_request_.reset();
+  }
+
   std::string test_header_ = kChallenge;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  base::HistogramTester histogram_tester_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   absl::optional<const net::test_server::HttpRequest>
@@ -523,10 +525,10 @@ class DeviceTrustDisabledBrowserTest : public DeviceTrustBrowserTest {
     EXPECT_FALSE(initial_attestation_request_);
     EXPECT_FALSE(challenge_response_request_);
 
-    histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
-    histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
-    histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
-    histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
+    histogram_tester_->ExpectTotalCount(kFunnelHistogramName, 0);
+    histogram_tester_->ExpectTotalCount(kResultHistogramName, 0);
+    histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 0);
+    histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 0);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -567,10 +569,10 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationHostNotAllowed) {
   EXPECT_FALSE(initial_attestation_request_);
   EXPECT_FALSE(challenge_response_request_);
 
-  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
-  histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
-  histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
-  histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
+  histogram_tester_->ExpectTotalCount(kFunnelHistogramName, 0);
+  histogram_tester_->ExpectTotalCount(kResultHistogramName, 0);
+  histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 0);
+  histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 0);
 }
 
 // Tests that the attestation flow does not get triggered when the allow-list is
@@ -589,10 +591,10 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationPrefEmptyList) {
   EXPECT_FALSE(initial_attestation_request_);
   EXPECT_FALSE(challenge_response_request_);
 
-  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
-  histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
-  histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
-  histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
+  histogram_tester_->ExpectTotalCount(kFunnelHistogramName, 0);
+  histogram_tester_->ExpectTotalCount(kResultHistogramName, 0);
+  histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 0);
+  histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 0);
 }
 
 // Tests that the attestation flow does not get triggered when the allow-list
@@ -609,10 +611,10 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationPrefNotSet) {
   EXPECT_FALSE(initial_attestation_request_);
   EXPECT_FALSE(challenge_response_request_);
 
-  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
-  histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
-  histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
-  histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
+  histogram_tester_->ExpectTotalCount(kFunnelHistogramName, 0);
+  histogram_tester_->ExpectTotalCount(kResultHistogramName, 0);
+  histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 0);
+  histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 0);
 }
 
 // Tests that the device trust navigation throttle does not get created for a
@@ -702,12 +704,14 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
   // exist, and KeyRotationCommand fails to upload the newly created key.
   device_trust_test_environment_win_->SetUploadResult(kHardFailureCode);
   AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
+  VerifyAttestationFlowSuccessful(DTAttestationResult::kSuccessNoSignature);
   // DT attestation key should not be created if attestation fails.
   ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
 
   // Second attestation flow attempt fails when key upload fails again, this is
   // for testing that consecutive failures does not break anything
   AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
+  VerifyAttestationFlowSuccessful(DTAttestationResult::kSuccessNoSignature);
   ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
 
   // Third attestation flow attempt succeeds after two failed attempts, this is
@@ -715,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
   // succeeding AND that metrics is working at the same time.
   device_trust_test_environment_win_->SetUploadResult(kSuccessCode);
   AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
-  VerifyAttestationFlowSuccessful(/*failed_attempts=*/2);
+  VerifyAttestationFlowSuccessful();
   ASSERT_TRUE(device_trust_test_environment_win_->KeyExists());
 }
 
