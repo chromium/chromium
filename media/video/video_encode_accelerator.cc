@@ -164,16 +164,6 @@ bool VideoEncodeAccelerator::Config::HasSpatialLayer() const {
   return spatial_layers.size() > 1u;
 }
 
-void VideoEncodeAccelerator::Client::NotifyError(Error error) {
-  NOTREACHED() << "NotifyError() must be implemented if it doesn't "
-               << "implement NotifyErrorStatus()";
-}
-
-void VideoEncodeAccelerator::Client::NotifyErrorStatus(
-    const EncoderStatus& status) {
-  NotifyError(ConvertStatusToVideoEncodeAcceleratorError(status));
-}
-
 void VideoEncodeAccelerator::Client::NotifyEncoderInfoChange(
     const VideoEncoderInfo& info) {
   // Do nothing if a client doesn't use the info.
