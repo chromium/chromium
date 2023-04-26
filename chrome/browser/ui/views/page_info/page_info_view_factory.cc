@@ -369,6 +369,10 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     case ContentSettingsType::IDLE_DETECTION:
       icon = &vector_icons::kDevicesIcon;
       break;
+    case ContentSettingsType::STORAGE_ACCESS:
+      // TODO(crbug.com/1433644): Choose the right icon.
+      icon = &vector_icons::kCookieIcon;
+      break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
       // not shown in the Page Info bubble.

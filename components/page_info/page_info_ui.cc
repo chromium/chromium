@@ -214,6 +214,8 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
     {ContentSettingsType::WINDOW_MANAGEMENT,
      IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT,
      IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE},
+    {ContentSettingsType::STORAGE_ACCESS, IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS,
+     IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS_MID_SENTENCE},
 #endif
   };
   return kPermissionUIInfo;
@@ -351,6 +353,9 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       break;
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
       message_id = IDS_PAGE_INFO_STATE_TEXT_FILE_SYSTEM_WRITE_ASK;
+      break;
+    case ContentSettingsType::STORAGE_ACCESS:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_STORAGE_ACCESS_ASK;
       break;
     default:
       NOTREACHED();
