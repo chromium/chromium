@@ -145,6 +145,11 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/autosharder",
+    bootstrappable = True,
+)
+
+build_recipe(
     name = "recipe:chromium/orchestrator",
     bootstrappable = True,
 )
