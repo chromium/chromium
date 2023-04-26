@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
@@ -140,7 +141,7 @@ void PrefModelAssociator::InitPrefAndAssociate(
 
   if (sync_pref.IsValid()) {
     const sync_pb::PreferenceSpecifics& preference = GetSpecifics(sync_pref);
-    DCHECK(pref_name == preference.name());
+    CHECK_EQ(pref_name, preference.name());
     base::JSONReader::Result parsed_json =
         base::JSONReader::ReadAndReturnValueWithError(preference.value());
     if (!parsed_json.has_value()) {
