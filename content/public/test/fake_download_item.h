@@ -74,7 +74,6 @@ class FakeDownloadItem : public download::DownloadItem {
   bool CanResume() const override;
   int64_t GetBytesWasted() const override;
   int32_t GetAutoResumeCount() const override;
-  bool IsOffTheRecord() const override;
   const GURL& GetReferrerUrl() const override;
   const std::string& GetSerializedEmbedderDownloadData() const override;
   const GURL& GetTabUrl() const override;

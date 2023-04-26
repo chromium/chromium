@@ -18,6 +18,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/drag_download_item.h"
 #include "chrome/browser/icon_manager.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -303,6 +304,7 @@ void DownloadBubbleRowView::SetIcon() {
     return;
   }
 
+  // For downloads in incognito mode.
   if (bubble_controller_->ShouldShowIncognitoIcon(model_.get())) {
     if (last_overridden_icon_ == &kIncognitoIcon) {
       return;
@@ -311,6 +313,18 @@ void DownloadBubbleRowView::SetIcon() {
     has_default_icon_ = false;
     SetIconFromImageModel(ui::ImageModel::FromVectorIcon(
         kIncognitoIcon, ui::kColorIcon, GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+    return;
+  }
+
+  // For downloads in guest sessions.
+  if (bubble_controller_->ShouldShowGuestIcon(model_.get())) {
+    if (last_overridden_icon_ == &kUserAccountAvatarIcon) {
+      return;
+    }
+    last_overridden_icon_ = &kUserAccountAvatarIcon;
+    has_default_icon_ = false;
+    SetIconFromImageModel(
+        profiles::GetGuestAvatar(GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
     return;
   }
 

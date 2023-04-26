@@ -853,10 +853,6 @@ int32_t DownloadItemImpl::GetAutoResumeCount() const {
   return auto_resume_count_;
 }
 
-bool DownloadItemImpl::IsOffTheRecord() const {
-  return delegate_->IsOffTheRecord();
-}
-
 const GURL& DownloadItemImpl::GetURL() const {
   return request_info_.url_chain.empty() ? GURL::EmptyGURL()
                                          : request_info_.url_chain.back();

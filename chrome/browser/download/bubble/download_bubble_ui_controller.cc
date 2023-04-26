@@ -95,8 +95,14 @@ void DownloadBubbleUIController::OnDownloadItemAdded(
 
 bool DownloadBubbleUIController::ShouldShowIncognitoIcon(
     const DownloadUIModel* model) const {
-  return download::IsDownloadBubbleV2Enabled(profile_) &&
-         model->GetDownloadItem() && model->GetDownloadItem()->IsOffTheRecord();
+  return download::IsDownloadBubbleV2Enabled(profile_) && model->profile() &&
+         model->profile()->IsIncognitoProfile();
+}
+
+bool DownloadBubbleUIController::ShouldShowGuestIcon(
+    const DownloadUIModel* model) const {
+  return download::IsDownloadBubbleV2Enabled(profile_) && model->profile() &&
+         model->profile()->IsGuestSession();
 }
 
 void DownloadBubbleUIController::OnOfflineItemRemoved(const ContentId& id) {

@@ -274,9 +274,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // user triggered resumption.
   virtual int32_t GetAutoResumeCount() const = 0;
 
-  // Whether the download is off the record.
-  virtual bool IsOffTheRecord() const = 0;
-
   //    Origin State accessors -------------------------------------------------
 
   // Final URL. The primary resource being downloaded is from this URL. This is

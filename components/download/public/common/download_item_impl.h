@@ -267,7 +267,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   bool IsDone() const override;
   int64_t GetBytesWasted() const override;
   int32_t GetAutoResumeCount() const override;
-  bool IsOffTheRecord() const override;
   const GURL& GetURL() const override;
   const std::vector<GURL>& GetUrlChain() const override;
   const GURL& GetOriginalUrl() const override;
