@@ -1193,10 +1193,6 @@ Value* Value::SetIntKey(StringPiece key, int value) {
   return GetDict().Set(key, value);
 }
 
-Value* Value::SetDoubleKey(StringPiece key, double value) {
-  return GetDict().Set(key, value);
-}
-
 Value* Value::SetStringKey(StringPiece key, StringPiece value) {
   return GetDict().Set(key, value);
 }

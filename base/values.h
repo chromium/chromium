@@ -792,8 +792,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetIntKey(StringPiece key, int val);
   // DEPRECATED: Prefer `Value::Dict::Set()`.
-  Value* SetDoubleKey(StringPiece key, double val);
-  // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetStringKey(StringPiece key, StringPiece val);
   // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetStringKey(StringPiece key, StringPiece16 val);
