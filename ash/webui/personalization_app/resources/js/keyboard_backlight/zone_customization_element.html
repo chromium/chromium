@@ -28,8 +28,15 @@
 
   paper-ripple {
     border-radius: 24px;
-    color: rgba(var(--cros-ripple-color-rgb), 1);
     --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+  }
+
+  .zone-tab[aria-selected=false] paper-ripple {
+    color: var(--cros-sys-ripple_neutral_on_subtle);
+  }
+
+  .zone-tab[aria-selected=true] paper-ripple {
+    color: var(--cros-sys-ripple_primary);
   }
 
   .zone-tab {
@@ -37,7 +44,7 @@
     border: 2px solid var(--cros-tab-slider-track-color);
     border-radius: 24px;
     box-sizing: border-box;
-    color: var(--cros-sys-on_primary_container, var(--cros-button-label-color-secondary));
+    color: var(--cros-sys-secondary, var(--cros-button-label-color-secondary));
     cursor: pointer;
     font: var(--cros-button-2-font);
     height: 100%;
@@ -49,6 +56,11 @@
   .zone-tab[aria-selected=true] {
     background-color: var(--cros-sys-primary, var(--cros-button-background-color-primary));
     color: var(--cros-sys-on_primary, var(--cros-button-label-color-primary));
+  }
+
+  .zone-tab[aria-selected=false]:hover {
+    background-color: var(--cros-sys-hover_on_subtle, var(--cros-ripple-color));
+    color: var(--cros-sys-on_surface);
   }
 
   .zone-title-container {
