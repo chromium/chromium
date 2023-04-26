@@ -91,6 +91,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1101,11 +1102,14 @@ void RenderViewContextMenu::InitMenu() {
     AppendPlatformEditableItems();
   }
 
-  // Show Read Anything option if text is selected.
+  // Show Read Anything option if text is selected and if it's not already open
+  // in the side panel.
   if (features::IsReadAnythingEnabled()) {
-    if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_COPY) ||
-        content_type_->SupportsGroup(
-            ContextMenuContentType::ITEM_GROUP_EDITABLE)) {
+    if (GetBrowser() && !IsReadAnythingEntryShowing(GetBrowser()) &&
+        (content_type_->SupportsGroup(
+             ContextMenuContentType::ITEM_GROUP_COPY) ||
+         content_type_->SupportsGroup(
+             ContextMenuContentType::ITEM_GROUP_EDITABLE))) {
       AppendReadAnythingItem();
     }
   }
@@ -3616,6 +3620,14 @@ void RenderViewContextMenu::ExecOpenLinkInProfile(int profile_index) {
   profiles::SwitchToProfile(
       profile_path, false,
       base::BindRepeating(OnBrowserCreated, params_.link_url));
+}
+
+void RenderViewContextMenu::ExecOpenInReadAnything() {
+  Browser* browser = GetBrowser();
+  if (!browser) {
+    return;
+  }
+  ShowReadAnythingSidePanel(browser);
 }
 
 void RenderViewContextMenu::ExecInspectElement() {

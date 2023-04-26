@@ -164,7 +164,6 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
 
   // TODO(oshima): Remove this.
   virtual void AppendPlatformEditableItems() {}
-  virtual void ExecOpenInReadAnything() = 0;
 
   bool IsCustomItemChecked(int id) const;
   bool IsCustomItemEnabled(int id) const;

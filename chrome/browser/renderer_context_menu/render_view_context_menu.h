@@ -347,8 +347,7 @@ class RenderViewContextMenu
   void ExecLanguageSettings(int event_flags);
   void ExecProtocolHandlerSettings(int event_flags);
   void ExecPictureInPicture();
-  // Implemented in RenderViewContextMenuViews.
-  void ExecOpenInReadAnything() override {}
+  void ExecOpenInReadAnything();
 
   void MediaPlayerActionAt(const gfx::Point& location,
                            const blink::mojom::MediaPlayerAction& action);
