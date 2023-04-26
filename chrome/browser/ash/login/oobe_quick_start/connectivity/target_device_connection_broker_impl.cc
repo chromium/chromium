@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "crypto/random.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -430,7 +431,9 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
 
   // TODO(b/234655072): Handle Connection Closed in the Connection Broker
   connection_ = connection_factory_->Create(
-      nearby_connection, BuildConnectionSessionContext(), base::DoNothing(),
+      nearby_connection, BuildConnectionSessionContext(),
+      base::BindOnce(&TargetDeviceConnectionBrokerImpl::OnConnectionClosed,
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(
           &TargetDeviceConnectionBrokerImpl::OnConnectionAuthenticated,
           weak_ptr_factory_.GetWeakPtr()));

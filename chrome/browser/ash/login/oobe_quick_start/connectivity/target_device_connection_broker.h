@@ -177,6 +177,8 @@ class TargetDeviceConnectionBroker {
   void OnConnectionAuthenticated(
       base::WeakPtr<AuthenticatedConnection> authenticated_connection);
 
+  void OnConnectionClosed(ConnectionClosedReason reason);
+
   // Returns a deep link URL as a vector of bytes that will form the QR code
   // used to authenticate the connection.
   std::vector<uint8_t> GetQrCodeData(const RandomSessionId& random_session_id,

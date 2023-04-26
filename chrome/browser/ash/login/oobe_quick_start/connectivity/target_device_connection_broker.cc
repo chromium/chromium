@@ -21,8 +21,9 @@ void TargetDeviceConnectionBroker::GetFeatureSupportStatusAsync(
 
 void TargetDeviceConnectionBroker::MaybeNotifyFeatureStatus() {
   FeatureSupportStatus status = GetFeatureSupportStatus();
-  if (status == FeatureSupportStatus::kUndetermined)
+  if (status == FeatureSupportStatus::kUndetermined) {
     return;
+  }
 
   auto callbacks = std::exchange(feature_status_callbacks_, {});
 
@@ -36,6 +37,12 @@ void TargetDeviceConnectionBroker::OnConnectionAuthenticated(
   CHECK(connection_lifecycle_listener_);
   connection_lifecycle_listener_->OnConnectionAuthenticated(
       authenticated_connection);
+}
+
+void TargetDeviceConnectionBroker::OnConnectionClosed(
+    ConnectionClosedReason reason) {
+  CHECK(connection_lifecycle_listener_);
+  connection_lifecycle_listener_->OnConnectionClosed(reason);
 }
 
 std::vector<uint8_t> TargetDeviceConnectionBroker::GetQrCodeData(

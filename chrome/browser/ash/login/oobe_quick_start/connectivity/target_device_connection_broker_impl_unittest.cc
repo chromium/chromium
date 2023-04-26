@@ -270,6 +270,7 @@ class FakeConnectionLifecycleListener
   void OnConnectionClosed(
       TargetDeviceConnectionBroker::ConnectionClosedReason reason) override {
     connection_closed_ = true;
+    connection_closed_reason_ = reason;
   }
 
   absl::optional<std::string> pin_;
@@ -279,6 +280,8 @@ class FakeConnectionLifecycleListener
       authenticated_connection_;
   bool connection_rejected_ = false;
   bool connection_closed_ = false;
+  TargetDeviceConnectionBroker::ConnectionClosedReason
+      connection_closed_reason_;
 };
 
 class FakeConnection : public Connection {
@@ -818,6 +821,34 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, GetPrepareForUpdateInfo) {
   EXPECT_EQ(GetSecondarySharedSecretString(),
             *prepare_for_update_info.FindString(
                 kPrepareForUpdateSecondarySharedSecretKey));
+}
+
+TEST_F(TargetDeviceConnectionBrokerImplTest,
+       ConnectionClosedEventIssuesCallback) {
+  FinishFetchingBluetoothAdapter();
+  connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
+                                       /* use_pin_authentication= */ false,
+                                       base::DoNothing());
+  EXPECT_FALSE(connection_lifecycle_listener_.qr_code_data_);
+  NearbyConnectionsManager::IncomingConnectionListener*
+      incoming_connection_listener =
+          fake_nearby_connections_manager_.GetAdvertisingListener();
+  ASSERT_TRUE(incoming_connection_listener);
+  incoming_connection_listener->OnIncomingConnectionInitiated(
+      kEndpointId, std::vector<uint8_t>());
+  ASSERT_TRUE(connection_lifecycle_listener_.qr_code_data_);
+  incoming_connection_listener->OnIncomingConnectionAccepted(
+      kEndpointId, std::vector<uint8_t>(), &fake_nearby_connection_);
+
+  ASSERT_TRUE(connection());
+
+  connection()->Close(
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kConnectionLost);
+
+  ASSERT_TRUE(connection_lifecycle_listener_.connection_closed_);
+  ASSERT_EQ(
+      connection_lifecycle_listener_.connection_closed_reason_,
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kConnectionLost);
 }
 
 }  // namespace ash::quick_start
