@@ -282,6 +282,18 @@ LICENSE_AND_HEADER = """\
 
 """
 
+def WriteReset(out_file, functions):
+ for group in functions:
+    if 'ifdef' in group:
+      out_file.write('#if %s\n' % group['ifdef'])
+
+    for func in group['functions']:
+      out_file.write('%s = nullptr;\n' % func)
+
+    if 'ifdef' in group:
+      out_file.write('#endif  // %s\n' % group['ifdef'])
+    out_file.write('\n')
+
 def WriteFunctionsInternal(out_file, functions, gen_content,
                            check_extension=False):
   for group in functions:
@@ -431,6 +443,8 @@ COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers* GetVulkanFunctionPointers();
 struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunctionPointers();
   ~VulkanFunctionPointers();
+
+  void Reset();
 
   bool BindUnassociatedFunctionPointersFromLoaderLib(base::NativeLibrary lib);
   bool BindUnassociatedFunctionPointersFromGetProcAddr(
@@ -594,6 +608,25 @@ VulkanFunctionPointers* GetVulkanFunctionPointers() {
 
 VulkanFunctionPointers::VulkanFunctionPointers() = default;
 VulkanFunctionPointers::~VulkanFunctionPointers() = default;
+
+void VulkanFunctionPointers::Reset() {
+  base::AutoLock lock(write_lock_);
+
+  per_queue_lock_map.clear();
+  loader_library_ = nullptr;
+  vkGetInstanceProcAddr = nullptr;
+
+""")
+
+  WriteReset(
+      out_file, VULKAN_UNASSOCIATED_FUNCTIONS)
+  WriteReset(
+      out_file, VULKAN_INSTANCE_FUNCTIONS)
+  WriteReset(
+      out_file, VULKAN_DEVICE_FUNCTIONS)
+
+  out_file.write("""\
+}
 
 bool VulkanFunctionPointers::BindUnassociatedFunctionPointersFromLoaderLib(
     base::NativeLibrary lib) {

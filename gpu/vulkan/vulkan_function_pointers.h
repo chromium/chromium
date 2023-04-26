@@ -57,6 +57,8 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunctionPointers();
   ~VulkanFunctionPointers();
 
+  void Reset();
+
   bool BindUnassociatedFunctionPointersFromLoaderLib(base::NativeLibrary lib);
   bool BindUnassociatedFunctionPointersFromGetProcAddr(
       PFN_vkGetInstanceProcAddr proc);
