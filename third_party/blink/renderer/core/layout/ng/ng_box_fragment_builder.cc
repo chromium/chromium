@@ -124,6 +124,8 @@ void NGBoxFragmentBuilder::AddResult(
     PropagateBreakInfo(*result_for_propagation, offset);
   if (UNLIKELY(ConstraintSpace().ShouldPropagateChildBreakValues()))
     PropagateChildBreakValues(*result_for_propagation);
+
+  PropagateFromLayoutResult(*result_for_propagation);
 }
 
 void NGBoxFragmentBuilder::AddChild(
@@ -256,7 +258,8 @@ void NGBoxFragmentBuilder::AddChild(
   }
 
   DCHECK(relative_offset);
-  PropagateChildData(child, child_offset, *relative_offset, inline_container);
+  PropagateFromFragment(child, child_offset, *relative_offset,
+                        inline_container);
   AddChildInternal(&child, child_offset + *relative_offset);
 }
 

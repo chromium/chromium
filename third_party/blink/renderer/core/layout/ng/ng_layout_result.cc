@@ -271,6 +271,10 @@ NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
   bitfields_.should_force_same_fragmentation_flow =
       builder->should_force_same_fragmentation_flow_;
 
+  if (builder->has_orthogonal_fallback_size_descendant_) {
+    EnsureRareData()->set_has_orthogonal_fallback_size_descendant(true);
+  }
+
   if (HasRareData()) {
     rare_data_->bfc_line_offset = builder->bfc_line_offset_;
     rare_data_->SetBfcBlockOffset(builder->bfc_block_offset_);

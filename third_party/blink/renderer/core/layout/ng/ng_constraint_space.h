@@ -282,6 +282,12 @@ class CORE_EXPORT NGConstraintSpace final {
                          : absl::nullopt;
   }
 
+  // True if we're using the "fallback" available inline-size. This typically
+  // means that we depend on the size of the initial containing block.
+  bool UsesOrthogonalFallbackInlineSize() const {
+    return HasRareData() && rare_data_->uses_orthogonal_fallback_inline_size;
+  }
+
   // Inline/block target stretch size constraints.
   // See:
   // https://w3c.github.io/mathml-core/#dfn-inline-stretch-size-constraint
@@ -896,6 +902,7 @@ class CORE_EXPORT NGConstraintSpace final {
           is_past_break(false),
           min_block_size_should_encompass_intrinsic_size(false),
           has_override_min_max_block_sizes(false),
+          uses_orthogonal_fallback_inline_size(false),
           min_break_appeal(kBreakAppealLastResort),
           propagate_child_break_values(false),
           is_at_fragmentainer_start(false),
@@ -931,6 +938,8 @@ class CORE_EXPORT NGConstraintSpace final {
               other.min_block_size_should_encompass_intrinsic_size),
           has_override_min_max_block_sizes(
               other.has_override_min_max_block_sizes),
+          uses_orthogonal_fallback_inline_size(
+              other.uses_orthogonal_fallback_inline_size),
           min_break_appeal(other.min_break_appeal),
           propagate_child_break_values(other.propagate_child_break_values),
           is_at_fragmentainer_start(other.is_at_fragmentainer_start),
@@ -1325,6 +1334,7 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned is_past_break : 1;
     unsigned min_block_size_should_encompass_intrinsic_size : 1;
     unsigned has_override_min_max_block_sizes : 1;
+    unsigned uses_orthogonal_fallback_inline_size : 1;
     unsigned min_break_appeal : kNGBreakAppealBitsNeeded;
     unsigned propagate_child_break_values : 1;
     unsigned is_at_fragmentainer_start : 1;

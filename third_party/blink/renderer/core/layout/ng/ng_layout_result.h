@@ -113,6 +113,19 @@ class CORE_EXPORT NGLayoutResult final
     return HasRareData() ? rare_data_->lines_until_clamp : 0;
   }
 
+  // Return true if this is an orthogonal writing-mode root that depends on the
+  // size of the initial containing block.
+  bool HasOrthogonalFallbackInlineSize() const {
+    return space_.UsesOrthogonalFallbackInlineSize();
+  }
+
+  // Return true if there's an orthogonal writing-mode root descendant inside
+  // that depends on the size of the initial containing block.
+  bool HasOrthogonalFallbackSizeDescendant() const {
+    return HasRareData() &&
+           rare_data_->has_orthogonal_fallback_size_descendant();
+  }
+
   // Return the adjustment baked into the fragment's block-offset that's caused
   // by ruby annotations.
   LayoutUnit AnnotationBlockOffsetAdjustment() const {
@@ -578,6 +591,8 @@ class CORE_EXPORT NGLayoutResult final
         LineBoxBfcBlockOffsetIsSetFlag::DefineNextValue<uint8_t, 1>;
     using DataUnionTypeValue =
         PositionFallbackResultIsSetFlag::DefineNextValue<uint8_t, 3>;
+    using HasOrthogonalFallbackSizeDescendantFlag =
+        DataUnionTypeValue::DefineNextValue<bool, 1>;
 
     struct BlockData {
       GC_PLUGIN_IGNORE("crbug.com/1146383")
@@ -640,6 +655,14 @@ class CORE_EXPORT NGLayoutResult final
 
     void set_position_fallback_result_is_set(bool flag) {
       return bit_field.set<PositionFallbackResultIsSetFlag>(flag);
+    }
+
+    bool has_orthogonal_fallback_size_descendant() const {
+      return bit_field.get<HasOrthogonalFallbackSizeDescendantFlag>();
+    }
+
+    void set_has_orthogonal_fallback_size_descendant(bool flag) {
+      return bit_field.set<HasOrthogonalFallbackSizeDescendantFlag>(flag);
     }
 
     DataUnionType data_union_type() const {

@@ -132,9 +132,26 @@ void NGFragmentBuilder::PropagateChildAnchors(
   }
 }
 
+void NGFragmentBuilder::PropagateFromLayoutResultAndFragment(
+    const NGLayoutResult& child_result,
+    LogicalOffset child_offset,
+    LogicalOffset relative_offset,
+    const NGInlineContainer<LogicalOffset>* inline_container) {
+  PropagateFromLayoutResult(child_result);
+  PropagateFromFragment(child_result.PhysicalFragment(), child_offset,
+                        relative_offset, inline_container);
+}
+
+void NGFragmentBuilder::PropagateFromLayoutResult(
+    const NGLayoutResult& child_result) {
+  has_orthogonal_fallback_size_descendant_ |=
+      child_result.HasOrthogonalFallbackInlineSize() ||
+      child_result.HasOrthogonalFallbackSizeDescendant();
+}
+
 // Propagate data in |child| to this fragment. The |child| will then be added as
 // a child fragment or a child fragment item.
-void NGFragmentBuilder::PropagateChildData(
+void NGFragmentBuilder::PropagateFromFragment(
     const NGPhysicalFragment& child,
     LogicalOffset child_offset,
     LogicalOffset relative_offset,

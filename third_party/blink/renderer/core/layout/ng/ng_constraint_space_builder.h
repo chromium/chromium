@@ -71,13 +71,14 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   // If inline size is indefinite, use the fallback size for available inline
   // size for orthogonal flow roots. See:
   // https://www.w3.org/TR/css-writing-modes-3/#orthogonal-auto
-  void AdjustInlineSizeIfNeeded(LayoutUnit* inline_size) const {
+  void AdjustInlineSizeIfNeeded(LayoutUnit* inline_size) {
     DCHECK(!is_in_parallel_flow_);
     DCHECK(adjust_inline_size_if_needed_);
     if (*inline_size != kIndefiniteSize)
       return;
     DCHECK_NE(orthogonal_fallback_inline_size_, kIndefiniteSize);
     *inline_size = orthogonal_fallback_inline_size_;
+    space_.EnsureRareData()->uses_orthogonal_fallback_inline_size = true;
   }
 
   // |available_size| is logical for the writing-mode of the container.

@@ -468,7 +468,15 @@ class CORE_EXPORT NGFragmentBuilder {
 
   NGLogicalAnchorQuery& EnsureAnchorQuery();
 
-  void PropagateChildData(
+  void PropagateFromLayoutResultAndFragment(
+      const NGLayoutResult&,
+      LogicalOffset child_offset,
+      LogicalOffset relative_offset,
+      const NGInlineContainer<LogicalOffset>* = nullptr);
+
+  void PropagateFromLayoutResult(const NGLayoutResult&);
+
+  void PropagateFromFragment(
       const NGPhysicalFragment& child,
       LogicalOffset child_offset,
       LogicalOffset relative_offset,
@@ -552,6 +560,7 @@ class CORE_EXPORT NGFragmentBuilder {
   bool is_block_in_inline_ = false;
   bool has_floating_descendants_for_paint_ = false;
   bool has_descendant_that_depends_on_percentage_block_size_ = false;
+  bool has_orthogonal_fallback_size_descendant_ = false;
   bool may_have_descendant_above_block_start_ = false;
   bool has_block_fragmentation_ = false;
   bool is_fragmentation_context_root_ = false;
