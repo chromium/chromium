@@ -107,6 +107,25 @@ std::unique_ptr<views::Label> CreateErrorLabel(std::u16string error_msg) {
       .Build();
 }
 
+// Vertically aligns `textfield` in the middle of the row, such that the text
+// inside `textfield` is aligned with the icon in the row. In case of a
+// multiline textarea, the first line in the contents is vertically aligned with
+// the icon.
+void AlignTextfieldWithRowIcon(raw_ptr<views::Textfield> textfield) {
+  int line_height = views::style::GetLineHeight(views::style::CONTEXT_TEXTFIELD,
+                                                views::style::STYLE_PRIMARY);
+  int vertical_padding_inside_textfield =
+      2 * ChromeLayoutProvider::Get()->GetDistanceMetric(
+              views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING);
+  int remaining_vertical_space =
+      kDetailRowHeight - line_height - vertical_padding_inside_textfield;
+  if (remaining_vertical_space <= 0) {
+    return;
+  }
+  textfield->SetProperty(views::kMarginsKey,
+                         gfx::Insets().set_top((remaining_vertical_space / 2)));
+}
+
 // Aligns `error_label` such that the error message is vertically aligned with
 // the text in the corropsnding textfield/textarea.
 void AlignErrorLabelWithTextFieldContents(raw_ptr<views::Label> error_label) {
@@ -308,6 +327,7 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
           l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_USERNAME_TEXTFIELD));
   (*textfield)
       ->SetID(static_cast<int>(ManagePasswordsViewIDs::kUsernameTextField));
+  AlignTextfieldWithRowIcon(*textfield);
   *error_label = username_with_error_label_view->AddChildView(
       CreateErrorLabel(l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PASSWORD_USERNAME_ALREADY_USED,
@@ -357,6 +377,7 @@ std::unique_ptr<views::View> CreateEditNoteRow(
                                views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING)));
 
   (*textarea)->SetID(static_cast<int>(ManagePasswordsViewIDs::kNoteTextarea));
+  AlignTextfieldWithRowIcon(*textarea);
   *error_label = note_with_error_label_view->AddChildView(
       CreateErrorLabel(l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT_WARNING,
