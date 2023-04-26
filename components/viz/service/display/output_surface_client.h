@@ -43,7 +43,7 @@ class VIZ_SERVICE_EXPORT OutputSurfaceClient {
       const gfx::CALayerParams& ca_layer_params) = 0;
 
   // For sending swap sizes back to the browser process. Currently only used on
-  // Android.
+  // Android and Linux.
   virtual void DidSwapWithSize(const gfx::Size& pixel_size) = 0;
 
   // See |gfx::PresentationFeedback| for detail.
