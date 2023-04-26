@@ -249,7 +249,7 @@ source_set("gin_unittests_filters") {
   testonly = true
 
   data = [
-    "//testing/buildbot/filters/android.pie_arm64.gin_unittests_coverage.filter",
+    "//testing/buildbot/filters/android.pie_arm64.gin_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.gin_unittests.filter",
   ]
 }
