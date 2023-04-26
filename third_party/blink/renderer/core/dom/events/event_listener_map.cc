@@ -32,6 +32,8 @@
 
 #include "third_party/blink/renderer/core/dom/events/event_listener_map.h"
 
+#include "base/bits.h"
+#include "base/debug/crash_logging.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_options.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -132,9 +134,20 @@ bool EventListenerMap::Add(const AtomicString& event_type,
   CheckNoActiveIterators();
 
   for (const auto& entry : entries_) {
-    if (entry.first == event_type)
+    if (entry.first == event_type) {
+      // Report the size of event listener vector in case of hang-crash to see
+      // if http://crbug.com/1420890 is induced by event listener count runaway.
+      // Only do this when we have a non-trivial number of listeners already.
+      static constexpr wtf_size_t kMinNumberOfListenersToReport = 8;
+      if (entry.second->size() < kMinNumberOfListenersToReport) {
+        return AddListenerToVector(entry.second.Get(), listener, options,
+                                   registered_listener);
+      }
+      SCOPED_CRASH_KEY_NUMBER("events", "listener_count_log2",
+                              base::bits::Log2Floor(entry.second->size()));
       return AddListenerToVector(entry.second.Get(), listener, options,
                                  registered_listener);
+    }
   }
 
   entries_.push_back(
