@@ -70,7 +70,8 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
     auto* bubble = static_cast<PageInfoBubbleView*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting());
     bubble->presenter_for_testing()->OnSitePermissionChanged(
-        permission.type, permission.setting, permission.is_one_time);
+        permission.type, permission.setting, permission.requesting_origin,
+        permission.is_one_time);
   }
 
   void OpenEnoughNewTabs() {

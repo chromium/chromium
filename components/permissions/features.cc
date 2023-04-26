@@ -129,14 +129,14 @@ BASE_FEATURE(kRecordPermissionExpirationTimestamps,
              "RecordPermissionExpirationTimestamps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // When enabled, permission grants for Storage Access API will be enabled.
 // This includes enabling prompts, a new settings page and page info and
 // omnibox integration.
 BASE_FEATURE(kPermissionStorageAccessAPI,
              "PermissionStorageAccessAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled "window-management" may be used as an alias for
 // "window-placement". Additionally, reverse mappings (i.e. enum to string) will

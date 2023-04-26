@@ -15,6 +15,7 @@
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
@@ -180,7 +181,11 @@ class PageInfo : private content_settings::CookieControlsView {
   // |PermissionInfo| contains information about a single permission |type| for
   // the current website.
   struct PermissionInfo {
-    PermissionInfo() = default;
+    PermissionInfo();
+    PermissionInfo(const PermissionInfo& other);
+    PermissionInfo& operator=(const PermissionInfo& other);
+    ~PermissionInfo();
+
     // Site permission |type|.
     ContentSettingsType type = ContentSettingsType::DEFAULT;
     // The current value for the permission |type| (e.g. ALLOW or BLOCK).
@@ -190,7 +195,11 @@ class PageInfo : private content_settings::CookieControlsView {
     // The settings source e.g. user, extensions, policy, ... .
     content_settings::SettingSource source =
         content_settings::SETTING_SOURCE_NONE;
+    // Whether the permission is a one-time grant.
     bool is_one_time = false;
+    // Only set for settings that can have multiple permissions for different
+    // embedded origins.
+    absl::optional<url::Origin> requesting_origin;
   };
 
   // Creates a PageInfo for the passed |url| using the given |ssl| status
@@ -239,6 +248,7 @@ class PageInfo : private content_settings::CookieControlsView {
   // This method is called when ever a permission setting is changed.
   void OnSitePermissionChanged(ContentSettingsType type,
                                ContentSetting value,
+                               absl::optional<url::Origin> requesting_origin,
                                bool is_one_time);
 
   // This method is called whenever access to an object is revoked.
@@ -346,7 +356,20 @@ class PageInfo : private content_settings::CookieControlsView {
   // function does not update visible UI-- that's part of Present*().
   void ComputeUIInputs(const GURL& url);
 
-  // Sets (presents) the information about the site's permissions in the |ui_|.
+  // Populates the setting, default_setting, source and is_one_time fields of
+  // the |permission_info| struct based on the passed in information as well
+  // as the embargo status of the permission. permission_info.type must already
+  // be set.
+  void PopulatePermissionInfo(PermissionInfo& permission_info,
+                              HostContentSettingsMap* content_settings,
+                              const content_settings::SettingInfo& info,
+                              const base::Value& value) const;
+
+  // Returns whether |info| should be displayed in the UI.
+  bool ShouldShowPermission(const PageInfo::PermissionInfo& info) const;
+
+  // Sets (presents) the information about the site's permissions in the
+  // |ui_|.
   void PresentSitePermissions();
 
   // Helper function which `PresentSiteData` calls after the ignored empty
@@ -396,7 +419,7 @@ class PageInfo : private content_settings::CookieControlsView {
   GetPageSpecificContentSettings() const;
 
   // Whether the content setting of type |type| has changed via Page Info UI.
-  bool HasContentSettingChangedViaPageInfo(ContentSettingsType type);
+  bool HasContentSettingChangedViaPageInfo(ContentSettingsType type) const;
 
   // Notifies the delegate that the content setting of type |type| has changed
   // via Page Info UI.

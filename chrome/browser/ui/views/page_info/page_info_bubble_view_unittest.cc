@@ -290,6 +290,7 @@ class PageInfoBubbleViewTestApi {
   void SetPermissionInfo(const PermissionInfoList& list) {
     for (const PageInfo::PermissionInfo& info : list) {
       presenter_->OnSitePermissionChanged(info.type, info.setting,
+                                          info.requesting_origin,
                                           /*is_one_time=*/false);
     }
     CreateView();
