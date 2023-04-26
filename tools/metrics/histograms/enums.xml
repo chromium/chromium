@@ -26332,6 +26332,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="3" label="Line gutter context menu"/>
   <int value="4" label="Keyboard Shortcut"/>
   <int value="5" label="Linkifier"/>
+  <int value="6" label="Mouse click"/>
 </enum>
 
 <enum name="DevToolsBreakpointWithConditionAdded">
