@@ -4,10 +4,10 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
