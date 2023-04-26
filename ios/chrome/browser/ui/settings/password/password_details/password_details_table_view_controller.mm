@@ -1022,7 +1022,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context) {
   switch (static_cast<PasswordDetailsItemType>(itemType)) {
     case PasswordDetailsItemTypeUsername:
     case PasswordDetailsItemTypePassword:
-    case PasswordDetailsItemTypeNote:
       return YES;
     case PasswordDetailsItemTypeWebsite:
     case PasswordDetailsItemTypeFederation:
@@ -1034,6 +1033,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context) {
     case PasswordDetailsItemTypeMoveToAccountButton:
     case PasswordDetailsItemTypeMoveToAccountRecommendation:
     case PasswordDetailsItemTypeNoteFooter:
+    case PasswordDetailsItemTypeNote:
       return NO;
   }
 }
