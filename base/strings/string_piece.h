@@ -628,6 +628,8 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& o, WStringPiece piece);
 // Stand-ins for the STL's std::hash<> specializations.
 template <typename StringPieceType>
 struct StringPieceHashImpl {
+  using is_transparent = void;  // to allow for heterogenous lookup
+
   // This is a custom hash function. We don't use the ones already defined for
   // string and std::u16string directly because it would require the string
   // constructors to be called, which we don't want.
