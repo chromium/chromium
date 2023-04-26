@@ -143,6 +143,10 @@ class OpacityModel(ModeKeyedModel):
         super().__init__()
         self.variable_type = VariableType.OPACITY
 
+    def Add(self, name, value_obj, context):
+        name = full_token_name(name, context)
+        return super().Add(name, value_obj, context)
+
     # Returns a float from 0-1 representing the concrete value of |opacity|.
     def ResolveOpacity(self, opacity, mode):
         if opacity.a != -1:
@@ -344,11 +348,10 @@ class Model(object):
         '''Adds a new variable to the submodel for |variable_type|.
         '''
         try:
-            submodel = self.submodels[variable_type]
             added = self.submodels[variable_type].Add(name, value_obj, context)
         except ValueError as err:
             raise ValueError(
-                f'Error parsing {variable_type} "{full_name}": {value_obj}'
+                f'Error parsing {variable_type} "{name}": {value_obj}'
             ) from err
 
         for var in added:
