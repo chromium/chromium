@@ -1321,10 +1321,9 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
     // Not all window states are supported.
     const bool restoreable_state =
         chromeos::IsNormalWindowStateType(target_state) ||
+        chromeos::IsSnappedWindowStateType(target_state) ||
         target_state == chromeos::WindowStateType::kMinimized ||
-        target_state == chromeos::WindowStateType::kMaximized ||
-        target_state == chromeos::WindowStateType::kPrimarySnapped ||
-        target_state == chromeos::WindowStateType::kSecondarySnapped;
+        target_state == chromeos::WindowStateType::kMaximized;
 
     if (restoreable_state) {
       WindowState* window_state =

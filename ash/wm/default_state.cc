@@ -444,7 +444,6 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
   EnterToNextState(window_state, next_state_type);
 }
 
-// static
 bool DefaultState::SetMaximizedOrFullscreenBounds(WindowState* window_state) {
   DCHECK(!window_state->is_dragged());
   DCHECK(!window_state->allow_set_bounds_direct());
@@ -461,7 +460,6 @@ bool DefaultState::SetMaximizedOrFullscreenBounds(WindowState* window_state) {
   return false;
 }
 
-// static
 void DefaultState::SetBounds(WindowState* window_state,
                              const SetBoundsWMEvent* event) {
   if (window_state->is_dragged() || window_state->allow_set_bounds_direct()) {

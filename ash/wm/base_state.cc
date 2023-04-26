@@ -220,8 +220,7 @@ gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
     aura::Window* window,
     const WindowStateType state_type,
     float snap_ratio) {
-  DCHECK(state_type == WindowStateType::kPrimarySnapped ||
-         state_type == WindowStateType::kSecondarySnapped);
+  DCHECK(chromeos::IsSnappedWindowStateType(state_type));
   gfx::Rect bounds_in_parent;
   if (ShouldAllowSplitView()) {
     bounds_in_parent =

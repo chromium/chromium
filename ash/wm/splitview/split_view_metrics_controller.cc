@@ -361,8 +361,7 @@ void SplitViewMetricsController::OnPostWindowStateTypeChange(
     chromeos::WindowStateType old_type) {
   // We only care if a window is snapped or unsnapped.
   bool is_snapped = window_state->IsSnapped();
-  bool was_snapped = old_type == chromeos::WindowStateType::kPrimarySnapped ||
-                     old_type == chromeos::WindowStateType::kSecondarySnapped;
+  bool was_snapped = chromeos::IsSnappedWindowStateType(old_type);
   if (is_snapped == was_snapped)
     return;
   MaybeStartOrEndRecordBothSnappedClamshellSplitView();

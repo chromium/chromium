@@ -60,7 +60,6 @@ class ASH_EXPORT WindowDimmer : public aura::WindowObserver,
 
   ~WindowDimmer() override;
 
-  aura::Window* parent() { return parent_; }
   aura::Window* window() { return window_; }
 
   // Set the opacity value of the default dimming color which is Black. If it's

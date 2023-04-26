@@ -539,8 +539,7 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
       if (Shell::Get()->tablet_mode_controller()->InTabletMode())
         Shell::Get()->tablet_mode_controller()->AddWindow(window);
 
-      if (*state_type == chromeos::WindowStateType::kPrimarySnapped ||
-          *state_type == chromeos::WindowStateType::kSecondarySnapped) {
+      if (chromeos::IsSnappedWindowStateType(*state_type)) {
         base::AutoReset<aura::Window*> auto_reset_to_be_snapped(
             &to_be_snapped_window_, window);
         const WMEvent snap_event(

@@ -73,7 +73,6 @@ class ASH_EXPORT LockLayoutManager : public WmDefaultLayoutManager,
   void AdjustWindowsForWorkAreaChange(const WMEvent* event);
 
   aura::Window* window() { return window_; }
-  aura::Window* root_window() { return root_window_; }
 
  private:
   raw_ptr<aura::Window, ExperimentalAsh> window_;

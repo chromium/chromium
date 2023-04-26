@@ -339,8 +339,7 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
   const WMEventType event_type = event->type();
   aura::Window* window = window_state->window();
 
-  if (next_state_type == WindowStateType::kPrimarySnapped ||
-      next_state_type == WindowStateType::kSecondarySnapped) {
+  if (chromeos::IsSnappedWindowStateType(next_state_type)) {
     if (window_state->CanSnap()) {
       HandleWindowSnapping(window_state,
                            next_state_type == WindowStateType::kPrimarySnapped

@@ -20,7 +20,7 @@ template <typename UserData>
 class WindowUserData;
 
 // ScreenDimmer displays a partially-opaque layer above everything
-// else in the given container window to darken the display.  It shouldn't be
+// else in the given container window to darken the display. It shouldn't be
 // used for long-term brightness adjustments due to performance
 // considerations -- it's only intended for cases where we want to
 // briefly dim the screen (e.g. to indicate to the user that we're
@@ -28,48 +28,29 @@ class WindowUserData;
 // can be adjusted).
 class ASH_EXPORT ScreenDimmer : public ShellObserver {
  public:
-  // Indicates the container ScreenDimmer operates on.
-  enum class Container {
-    ROOT,
-    LOCK_SCREEN,
-  };
-
-  explicit ScreenDimmer(Container container);
-
+  ScreenDimmer();
   ScreenDimmer(const ScreenDimmer&) = delete;
   ScreenDimmer& operator=(const ScreenDimmer&) = delete;
-
   ~ScreenDimmer() override;
 
-  // Dim or undim the layers.
+  // Dims or undims the layers.
   void SetDimming(bool should_dim);
 
-  void set_at_bottom(bool at_bottom) { at_bottom_ = at_bottom; }
-
-  bool is_dimming() const { return is_dimming_; }
-
-  // Find a ScreenDimmer in the container, or nullptr if it does not exist.
-  static ScreenDimmer* FindForTest(int container_id);
+  void set_at_bottom_for_testing(bool at_bottom) { at_bottom_ = at_bottom; }
 
  private:
   friend class ScreenDimmerTest;
 
-  // Returns the aura::Windows (one per display) that correspond to
-  // |container_|.
-  std::vector<aura::Window*> GetAllContainers();
-
   // ShellObserver:
   void OnRootWindowAdded(aura::Window* root_window) override;
 
-  // Update the dimming state. This will also create a new DimWindow
-  // if necessary. (Used when a new display is connected)
+  // Updates the dimming state. This will also create a new `WindowDimmer` if
+  // necessary. (Used when a new display is connected).
   void Update(bool should_dim);
 
-  const Container container_;
-
   // Are we currently dimming the screen?
-  bool is_dimming_;
-  bool at_bottom_;
+  bool is_dimming_ = false;
+  bool at_bottom_ = false;
 
   // Owns the WindowDimmers.
   std::unique_ptr<WindowUserData<WindowDimmer>> window_dimmers_;

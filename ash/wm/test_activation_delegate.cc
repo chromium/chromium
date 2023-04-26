@@ -4,10 +4,8 @@
 
 #include "ash/wm/test_activation_delegate.h"
 
-#include "ash/wm/window_util.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
-#include "ui/events/event.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 

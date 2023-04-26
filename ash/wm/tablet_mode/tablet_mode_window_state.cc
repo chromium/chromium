@@ -121,22 +121,15 @@ bool ShouldAnimateWindowForTransition(aura::Window* window) {
   return window == first_mru_window;
 }
 
-bool IsSnapped(WindowStateType state) {
-  return state == WindowStateType::kPrimarySnapped ||
-         state == WindowStateType::kSecondarySnapped;
-}
-
 // Returns true if the bounds change of |window| is from VK request and can be
 // allowed by the current window's state.
 bool BoundsChangeIsFromVKAndAllowed(aura::Window* window) {
   WindowStateType state_type = WindowState::Get(window)->GetStateType();
-  if (state_type == WindowStateType::kNormal ||
-      state_type == WindowStateType::kDefault) {
+  if (chromeos::IsNormalWindowStateType(state_type)) {
     return window->GetProperty(wm::kVirtualKeyboardRestoreBoundsKey) != nullptr;
   }
 
-  if (state_type == WindowStateType::kPrimarySnapped ||
-      state_type == WindowStateType::kSecondarySnapped) {
+  if (chromeos::IsSnappedWindowStateType(state_type)) {
     return SplitViewController::Get(window)->BoundsChangeIsFromVKAndAllowed(
         window);
   }
@@ -413,7 +406,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
         // If an already snapped window gets added to the workspace it should
         // not be maximized, rather retain its previous state.
         const WindowStateType new_state =
-            IsSnapped(current_state_type_)
+            chromeos::IsSnappedWindowStateType(current_state_type_)
                 ? window_state->GetStateType()
                 : window_state->GetMaximizedOrCenteredWindowType();
         UpdateWindow(window_state, new_state, /*animate=*/true);
