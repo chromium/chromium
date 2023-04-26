@@ -42,8 +42,8 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
   // TODO: we probably don't want to check every time but only once and cache
   // the value(s). Also, we need to check all accessibility enums, structs
   // reachable from AXTreeUpdate and AXEvent.
-  int remote_version = chromeos::LacrosService::Get()->GetInterfaceVersion(
-      crosapi::mojom::Automation::Uuid_);
+  int remote_version = chromeos::LacrosService::Get()
+                           ->GetInterfaceVersion<crosapi::mojom::Automation>();
   if (remote_version < 0 ||
       crosapi::mojom::Automation::kDispatchAccessibilityEventsMinVersion >
           static_cast<uint32_t>(remote_version)) {

@@ -20,8 +20,8 @@ chromeos::LacrosService* GetLacrosService(int min_version,
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service)
     return nullptr;
-  int interface_version = service->GetInterfaceVersion(
-      crosapi::mojom::DeviceOAuth2TokenService::Uuid_);
+  int interface_version =
+      service->GetInterfaceVersion<crosapi::mojom::DeviceOAuth2TokenService>();
   if (interface_version < min_version) {
     DLOG(ERROR) << "Unsupported ash version for " << function_name;
     return nullptr;

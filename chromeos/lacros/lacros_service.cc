@@ -807,19 +807,6 @@ void LacrosService::BindStableVideoDecoderFactory(
       mojo::GenericPendingReceiver(std::move(receiver)));
 }
 
-int LacrosService::GetInterfaceVersion(base::Token interface_uuid) const {
-  if (chromeos::BrowserParamsProxy::Get()->DisableCrosapiForTesting())
-    return -1;
-  if (!chromeos::BrowserParamsProxy::Get()->InterfaceVersions())
-    return -1;
-  const base::flat_map<base::Token, uint32_t>& versions =
-      chromeos::BrowserParamsProxy::Get()->InterfaceVersions().value();
-  auto it = versions.find(interface_uuid);
-  if (it == versions.end())
-    return -1;
-  return it->second;
-}
-
 absl::optional<uint32_t> LacrosService::CrosapiVersion() const {
   if (chromeos::BrowserParamsProxy::Get()->DisableCrosapiForTesting())
     return absl::nullopt;
@@ -853,6 +840,22 @@ void LacrosService::ConstructRemote() {
   interfaces_.emplace(CrosapiInterface::Uuid_,
                       std::make_unique<LacrosService::InterfaceEntry<
                           CrosapiInterface, bind_func, MethodMinVersion>>());
+}
+
+int LacrosService::GetInterfaceVersionImpl(base::Token interface_uuid) const {
+  if (chromeos::BrowserParamsProxy::Get()->DisableCrosapiForTesting()) {
+    return -1;
+  }
+  if (!chromeos::BrowserParamsProxy::Get()->InterfaceVersions()) {
+    return -1;
+  }
+  const base::flat_map<base::Token, uint32_t>& versions =
+      chromeos::BrowserParamsProxy::Get()->InterfaceVersions().value();
+  auto it = versions.find(interface_uuid);
+  if (it == versions.end()) {
+    return -1;
+  }
+  return it->second;
 }
 
 void LacrosService::AddObserver(Observer* obs) {

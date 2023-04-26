@@ -51,7 +51,7 @@ class TelemetryExtensionDiagnosticsApiBrowserTest
     auto* lacros_service = chromeos::LacrosService::Get();
 
     return lacros_service &&
-           lacros_service->GetInterfaceVersion(Interface::Uuid_) >= version;
+           lacros_service->GetInterfaceVersion<Interface>() >= version;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

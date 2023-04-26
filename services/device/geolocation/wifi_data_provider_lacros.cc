@@ -50,8 +50,8 @@ bool IsGeolocationServiceAvailable() {
   if (!chromeos::LacrosService::Get())
     return false;
   const int crosapiVersion =
-      chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::Crosapi::Uuid_);
+      chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::Crosapi>();
   const int minRequiredVersion = static_cast<int>(
       crosapi::mojom::Crosapi::kBindGeolocationServiceMinVersion);
   return crosapiVersion >= minRequiredVersion;

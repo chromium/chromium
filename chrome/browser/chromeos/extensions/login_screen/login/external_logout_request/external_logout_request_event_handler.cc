@@ -26,7 +26,7 @@ ExternalLogoutRequestEventHandler::ExternalLogoutRequestEventHandler(
   chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
   if (chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::Login>()) {
     int interface_version =
-        lacros_service->GetInterfaceVersion(crosapi::mojom::Login::Uuid_);
+        lacros_service->GetInterfaceVersion<crosapi::mojom::Login>();
     if (interface_version <
         int(crosapi::mojom::Login::
                 kAddExternalLogoutRequestObserverMinVersion)) {

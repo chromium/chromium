@@ -411,8 +411,8 @@ void LacrosExtensionAppsPublisher::Initialize() {
 
 bool LacrosExtensionAppsPublisher::InitializeCrosapi() {
   // Ash is too old to support the chrome app publisher interface.
-  int crosapiVersion = chromeos::LacrosService::Get()->GetInterfaceVersion(
-      crosapi::mojom::Crosapi::Uuid_);
+  int crosapiVersion = chromeos::LacrosService::Get()
+                           ->GetInterfaceVersion<crosapi::mojom::Crosapi>();
   int minRequiredVersion =
       static_cast<int>(which_type_.ChooseForChromeAppOrExtension(
           crosapi::mojom::Crosapi::kBindChromeAppPublisherMinVersion,

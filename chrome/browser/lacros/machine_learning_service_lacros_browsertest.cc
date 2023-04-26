@@ -36,8 +36,8 @@ using MachineLearningServiceLacrosBrowserTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(MachineLearningServiceLacrosBrowserTest,
                        CallViaLacrosService) {
   uint32_t interface_version =
-      chromeos::LacrosService::Get()->GetInterfaceVersion(
-          MachineLearningService::Uuid_);
+      chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<MachineLearningService>();
 
   // LoadBuiltinModel doesn't have MinVersion tag in mojom, so it gets 0 as min
   // version implicitly.

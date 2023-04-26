@@ -127,7 +127,7 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
     auto* service = chromeos::LacrosService::Get();
     if (!service->IsRegistered<crosapi::mojom::PrintingMetrics>() ||
         !service->IsAvailable<crosapi::mojom::TestController>() ||
-        service->GetInterfaceVersion(crosapi::mojom::TestController::Uuid_) <
+        service->GetInterfaceVersion<crosapi::mojom::TestController>() <
             static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                                  kCreateAndCancelPrintJobMinVersion)) {
       LOG(ERROR) << "Unsupported ash version.";

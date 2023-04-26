@@ -406,7 +406,7 @@ PrintPreviewHandler::PrintPreviewHandler() {
   if (service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
     local_printer_ = service->GetRemote<crosapi::mojom::LocalPrinter>().get();
     local_printer_version_ =
-        service->GetInterfaceVersion(crosapi::mojom::LocalPrinter::Uuid_);
+        service->GetInterfaceVersion<crosapi::mojom::LocalPrinter>();
   } else {
     LOG(ERROR) << "Local printer not available";
   }

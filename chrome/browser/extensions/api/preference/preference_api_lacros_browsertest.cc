@@ -112,8 +112,8 @@ class ExtensionPreferenceApiLacrosBrowserTest
   }
 
   bool IsServiceAvailable() {
-    if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-            crosapi::mojom::Prefs::Uuid_) <
+    if (chromeos::LacrosService::Get()
+            ->GetInterfaceVersion<crosapi::mojom::Prefs>() <
         static_cast<int>(crosapi::mojom::Prefs::MethodMinVersions::
                              kGetExtensionPrefWithControlMinVersion)) {
       LOG(WARNING) << "Unsupported ash version.";

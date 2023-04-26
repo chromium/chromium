@@ -135,16 +135,16 @@ void FileSystemProviderBase::RespondWithError(const std::string& error) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool FileSystemProviderBase::MountFinishedInterfaceAvailable() {
   auto* service = chromeos::LacrosService::Get();
-  return service->GetInterfaceVersion(
-             crosapi::mojom::FileSystemProviderService::Uuid_) >=
+  return service->GetInterfaceVersion<
+             crosapi::mojom::FileSystemProviderService>() >=
          int{crosapi::mojom::FileSystemProviderService::MethodMinVersions::
                  kMountFinishedMinVersion};
 }
 
 bool FileSystemProviderBase::OperationFinishedInterfaceAvailable() {
   auto* service = chromeos::LacrosService::Get();
-  return service->GetInterfaceVersion(
-             crosapi::mojom::FileSystemProviderService::Uuid_) >=
+  return service->GetInterfaceVersion<
+             crosapi::mojom::FileSystemProviderService>() >=
          int{crosapi::mojom::FileSystemProviderService::MethodMinVersions::
                  kOperationFinishedMinVersion};
 }

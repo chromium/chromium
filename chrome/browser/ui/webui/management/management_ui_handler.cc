@@ -547,8 +547,7 @@ ManagementUIHandler::ManagementUIHandler() {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   // Get device report sources.
   if (service->IsAvailable<crosapi::mojom::DeviceSettingsService>() &&
-      service->GetInterfaceVersion(
-          crosapi::mojom::DeviceSettingsService::Uuid_) >=
+      service->GetInterfaceVersion<crosapi::mojom::DeviceSettingsService>() >=
           static_cast<int>(crosapi::mojom::DeviceSettingsService::
                                kGetDeviceReportSourcesMinVersion)) {
     service->GetRemote<crosapi::mojom::DeviceSettingsService>()

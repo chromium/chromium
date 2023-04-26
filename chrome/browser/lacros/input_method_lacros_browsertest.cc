@@ -28,16 +28,16 @@ using ::crosapi::mojom::InputMethodTestInterfaceAsyncWaiter;
 bool IsInputMethodTestInterfaceAvailable() {
   return chromeos::LacrosService::Get()
              ->IsAvailable<crosapi::mojom::TestController>() &&
-         chromeos::LacrosService::Get()->GetInterfaceVersion(
-             crosapi::mojom::TestController::Uuid_) >=
+         chromeos::LacrosService::Get()
+                 ->GetInterfaceVersion<crosapi::mojom::TestController>() >=
              static_cast<int>(
                  crosapi::mojom::TestController::MethodMinVersions::
                      kBindInputMethodTestInterfaceMinVersion);
 }
 
 int GetInputMethodTestInterfaceVersion() {
-  return chromeos::LacrosService::Get()->GetInterfaceVersion(
-      crosapi::mojom::InputMethodTestInterface::Uuid_);
+  return chromeos::LacrosService::Get()
+      ->GetInterfaceVersion<crosapi::mojom::InputMethodTestInterface>();
 }
 
 // Used to parameterize these tests.

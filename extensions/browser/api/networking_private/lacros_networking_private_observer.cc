@@ -37,7 +37,7 @@ LacrosNetworkingPrivateObserver::LacrosNetworkingPrivateObserver()
     return;
   }
 
-  if (service->GetInterfaceVersion(NetworkingPrivate::Uuid_) <
+  if (service->GetInterfaceVersion<NetworkingPrivate>() <
       static_cast<int>(
           NetworkingPrivate::MethodMinVersions::kAddObserverMinVersion)) {
     DLOG(WARNING) << "Unsupported ash version.";

@@ -556,7 +556,7 @@ void AppServiceProxyLacros::Initialize() {
   }
 
   crosapi_app_service_proxy_version_ =
-      service->GetInterfaceVersion(crosapi::mojom::AppServiceProxy::Uuid_);
+      service->GetInterfaceVersion<crosapi::mojom::AppServiceProxy>();
 
   if (crosapi_app_service_proxy_version_ <
       int{crosapi::mojom::AppServiceProxy::MethodMinVersions::

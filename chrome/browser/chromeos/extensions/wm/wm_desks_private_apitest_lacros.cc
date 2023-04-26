@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest,
   chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
 
   if (!lacros_service->IsAvailable<crosapi::mojom::Desk>() ||
-      lacros_service->GetInterfaceVersion(crosapi::mojom::Desk::Uuid_) <
+      lacros_service->GetInterfaceVersion<crosapi::mojom::Desk>() <
           static_cast<int>(crosapi::mojom::Desk::MethodMinVersions::
                                kGetSavedDesksMinVersion)) {
     GTEST_SKIP() << "Unsupported ash version.";
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, SwitchToDifferentDeskTest) {
   auto* lacros_service = chromeos::LacrosService::Get();
 
   if (!lacros_service->IsAvailable<crosapi::mojom::Desk>() ||
-      lacros_service->GetInterfaceVersion(crosapi::mojom::Desk::Uuid_) <
+      lacros_service->GetInterfaceVersion<crosapi::mojom::Desk>() <
           static_cast<int>(
               crosapi::mojom::Desk::MethodMinVersions::kSwitchDeskMinVersion)) {
     GTEST_SKIP() << "Unsupported ash version.";
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, SwitchToCurrentDeskTest) {
   auto* lacros_service = chromeos::LacrosService::Get();
 
   if (!lacros_service->IsAvailable<crosapi::mojom::Desk>() ||
-      lacros_service->GetInterfaceVersion(crosapi::mojom::Desk::Uuid_) <
+      lacros_service->GetInterfaceVersion<crosapi::mojom::Desk>() <
           static_cast<int>(
               crosapi::mojom::Desk::MethodMinVersions::kSwitchDeskMinVersion)) {
     GTEST_SKIP() << "Unsupported ash version.";
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, GetDeskByIDTest) {
   auto* lacros_service = chromeos::LacrosService::Get();
 
   if (!lacros_service->IsAvailable<crosapi::mojom::Desk>() ||
-      lacros_service->GetInterfaceVersion(crosapi::mojom::Desk::Uuid_) <
+      lacros_service->GetInterfaceVersion<crosapi::mojom::Desk>() <
           static_cast<int>(crosapi::mojom::Desk::MethodMinVersions::
                                kGetDeskByIDMinVersion)) {
     GTEST_SKIP() << "Unsupported ash version.";
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, GetDeskByInvalidIDTest) {
   auto* lacros_service = chromeos::LacrosService::Get();
 
   if (!lacros_service->IsAvailable<crosapi::mojom::Desk>() ||
-      lacros_service->GetInterfaceVersion(crosapi::mojom::Desk::Uuid_) <
+      lacros_service->GetInterfaceVersion<crosapi::mojom::Desk>() <
           static_cast<int>(crosapi::mojom::Desk::MethodMinVersions::
                                kGetDeskByIDMinVersion)) {
     GTEST_SKIP() << "Unsupported ash version.";

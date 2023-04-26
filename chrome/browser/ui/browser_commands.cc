@@ -1714,8 +1714,8 @@ void OpenTaskManager(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Open linux version of task manager UI if ash TaskManager
   // interface is in an old version.
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TaskManager::Uuid_) < 1) {
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TaskManager>() < 1) {
     base::RecordAction(UserMetricsAction("TaskManager"));
     chrome::ShowTaskManager(browser);
     return;

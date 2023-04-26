@@ -49,8 +49,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberBrowserTest, DISABLED_Smoke) {
   auto* lacros_service = chromeos::LacrosService::Get();
   ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());
   // This test requires the tab scrubbing API.
-  if (lacros_service->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) <
+  if (lacros_service->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                            kTriggerTabScrubbingMinVersion)) {
     return;

@@ -178,8 +178,8 @@ void CdmDocumentServiceImpl::ChallengePlatform(
   auto* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service &&
       lacros_service->IsAvailable<crosapi::mojom::ContentProtection>() &&
-      lacros_service->GetInterfaceVersion(
-          crosapi::mojom::ContentProtection::Uuid_) >=
+      lacros_service
+              ->GetInterfaceVersion<crosapi::mojom::ContentProtection>() >=
           static_cast<int>(crosapi::mojom::ContentProtection::
                                kChallengePlatformMinVersion)) {
     lacros_service->GetRemote<crosapi::mojom::ContentProtection>()
@@ -301,8 +301,8 @@ void CdmDocumentServiceImpl::IsVerifiedAccessEnabled(
   auto* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service &&
       lacros_service->IsAvailable<crosapi::mojom::ContentProtection>() &&
-      lacros_service->GetInterfaceVersion(
-          crosapi::mojom::ContentProtection::Uuid_) >=
+      lacros_service
+              ->GetInterfaceVersion<crosapi::mojom::ContentProtection>() >=
           static_cast<int>(crosapi::mojom::ContentProtection::
                                kIsVerifiedAccessEnabledMinVersion)) {
     lacros_service->GetRemote<crosapi::mojom::ContentProtection>()

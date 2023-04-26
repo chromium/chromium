@@ -18,7 +18,7 @@ chromeos::LacrosService* GetLacrosService(int min_version,
   if (!service)
     return nullptr;
   int interface_version =
-      service->GetInterfaceVersion(crosapi::mojom::IdentityManager::Uuid_);
+      service->GetInterfaceVersion<crosapi::mojom::IdentityManager>();
   if (interface_version < min_version) {
     DLOG(ERROR) << "Unsupported ash version for " << function_name;
     return nullptr;

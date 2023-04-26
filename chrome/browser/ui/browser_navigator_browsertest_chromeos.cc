@@ -216,8 +216,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectFail) {
 // the ash side and does not produce a navigation on the Lacros side.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
                        DISABLED_OsSchemeRedirectSucceed) {
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                            kGetOpenAshBrowserWindowsMinVersion)) {
     LOG(WARNING) << "Unsupported ash version.";

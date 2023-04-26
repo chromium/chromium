@@ -16,8 +16,9 @@ void DriveFsCache::Start() {
     return;
 
   // Check if Ash is too old to support the `DriveIntegrationServiceObserver`.
-  int driveServiceVersion = lacros_service->GetInterfaceVersion(
-      crosapi::mojom::DriveIntegrationService::Uuid_);
+  int driveServiceVersion =
+      lacros_service
+          ->GetInterfaceVersion<crosapi::mojom::DriveIntegrationService>();
   int minRequiredVersion = static_cast<int>(
       crosapi::mojom::DriveIntegrationService::MethodMinVersions::
           kAddDriveIntegrationServiceObserverMinVersion);

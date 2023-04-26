@@ -504,7 +504,7 @@ class NetworkingPrivateChromeOSApiTestLacros
   bool SetUpAsh() {
     auto* service = chromeos::LacrosService::Get();
     if (!service->IsAvailable<crosapi::mojom::TestController>() ||
-        service->GetInterfaceVersion(crosapi::mojom::TestController::Uuid_) <
+        service->GetInterfaceVersion<crosapi::mojom::TestController>() <
             static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                                  kBindShillClientTestInterfaceMinVersion)) {
       LOG(ERROR) << "Unsupported ash version.";
@@ -526,7 +526,7 @@ class NetworkingPrivateChromeOSApiTestLacros
   std::string GetSanitizedActiveUsername() override {
     auto* service = chromeos::LacrosService::Get();
     if (!service->IsAvailable<crosapi::mojom::TestController>() ||
-        service->GetInterfaceVersion(crosapi::mojom::TestController::Uuid_) <
+        service->GetInterfaceVersion<crosapi::mojom::TestController>() <
             static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                                  kGetSanitizedActiveUsernameMinVersion)) {
       LOG(ERROR) << "Unsupported ash version.";

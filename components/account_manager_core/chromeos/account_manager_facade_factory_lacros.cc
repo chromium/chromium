@@ -103,8 +103,8 @@ class AccountManagerFacadeFactoryLacros {
         std::make_unique<account_manager::AccountManagerFacadeImpl>(
             GetAccountManagerRemote(),
             /*remote_version=*/
-            chromeos::LacrosService::Get()->GetInterfaceVersion(
-                crosapi::mojom::AccountManager::Uuid_),
+            chromeos::LacrosService::Get()
+                ->GetInterfaceVersion<crosapi::mojom::AccountManager>(),
             /*account_manager_for_tests=*/nullptr);
   }
 

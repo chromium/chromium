@@ -272,11 +272,8 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   //    LacrosService::Get()->GetInterfaceVersion<crosapi::mojom::Arc>();
   template <typename T>
   int GetInterfaceVersion() const {
-    return GetInterfaceVersion(T::Uuid_);
+    return GetInterfaceVersionImpl(T::Uuid_);
   }
-
-  // Similar to Above, but taking UUID.
-  int GetInterfaceVersion(base::Token interface_uuid) const;
 
   using Crosapi = crosapi::mojom::Crosapi;
 
@@ -383,6 +380,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
             void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>),
             uint32_t MethodMinVersion>
   void ConstructRemote();
+
+  // Similar to GetInterfaceVersion(), but taking UUID
+  int GetInterfaceVersionImpl(base::Token interface_uuid) const;
 
   // BrowserService implementation injected by chrome/. Must only be used on the
   // affine sequence.

@@ -751,8 +751,7 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
   auto* lacros_service = chromeos::LacrosService::Get();
   if (chromeos::BrowserParamsProxy::Get()->WebAppsEnabled() && lacros_service &&
       lacros_service->IsAvailable<crosapi::mojom::WebAppService>() &&
-      lacros_service->GetInterfaceVersion(
-          crosapi::mojom::WebAppService::Uuid_) >=
+      lacros_service->GetInterfaceVersion<crosapi::mojom::WebAppService>() >=
           int{crosapi::mojom::WebAppService::MethodMinVersions::
                   kGetAssociatedAndroidPackageMinVersion}) {
     lacros_service->GetRemote<crosapi::mojom::WebAppService>()

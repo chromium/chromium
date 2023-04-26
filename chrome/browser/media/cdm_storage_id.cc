@@ -123,8 +123,8 @@ void ComputeStorageId(const std::vector<uint8_t>& profile_salt,
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service ||
       !lacros_service->IsAvailable<crosapi::mojom::ContentProtection>() ||
-      lacros_service->GetInterfaceVersion(
-          crosapi::mojom::ContentProtection::Uuid_) < 1) {
+      lacros_service->GetInterfaceVersion<crosapi::mojom::ContentProtection>() <
+          1) {
     std::move(callback).Run(std::vector<uint8_t>());
     return;
   }

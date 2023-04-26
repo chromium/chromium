@@ -245,7 +245,7 @@ void CertificateProviderService::SetCertificatesProvidedByExtension(
   // Synchronize with Ash-Chrome
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (service && service->IsAvailable<crosapi::mojom::CertDatabase>() &&
-      service->GetInterfaceVersion(crosapi::mojom::CertDatabase::Uuid_) >=
+      service->GetInterfaceVersion<crosapi::mojom::CertDatabase>() >=
           static_cast<int>(crosapi::mojom::CertDatabase::MethodMinVersions::
                                kSetCertsProvidedByExtensionMinVersion)) {
     service->GetRemote<crosapi::mojom::CertDatabase>()

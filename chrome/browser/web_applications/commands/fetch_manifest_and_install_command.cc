@@ -125,7 +125,7 @@ mojo::Remote<crosapi::mojom::Arc>* GetArcRemoteWithMinVersion(
     uint32_t minVersion) {
   auto* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service && lacros_service->IsAvailable<crosapi::mojom::Arc>() &&
-      lacros_service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_) >=
+      lacros_service->GetInterfaceVersion<crosapi::mojom::Arc>() >=
           static_cast<int>(minVersion)) {
     return &lacros_service->GetRemote<crosapi::mojom::Arc>();
   }

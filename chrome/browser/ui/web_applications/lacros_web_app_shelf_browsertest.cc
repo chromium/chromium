@@ -82,8 +82,8 @@ class LacrosWebAppShelfBrowserTest : public WebAppNavigationBrowserTest {
   // there's nothing to do for this test.
   bool IsServiceAvailable() {
     DCHECK(IsWebAppsCrosapiEnabled());
-    if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-            crosapi::mojom::TestController::Uuid_) <
+    if (chromeos::LacrosService::Get()
+            ->GetInterfaceVersion<crosapi::mojom::TestController>() <
         static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                              kGetShelfItemStateMinVersion)) {
       LOG(WARNING) << "Unsupported ash version.";

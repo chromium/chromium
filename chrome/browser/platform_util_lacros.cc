@@ -30,7 +30,7 @@ void OnOpenResult(const base::FilePath& path,
 void OpenItemOnUiThread(const base::FilePath& path, OpenItemType type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* service = chromeos::LacrosService::Get();
-  if (service->GetInterfaceVersion(crosapi::mojom::FileManager::Uuid_) < 1) {
+  if (service->GetInterfaceVersion<crosapi::mojom::FileManager>() < 1) {
     LOG(ERROR) << "Unsupported ash version.";
     return;
   }
@@ -62,7 +62,7 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* service = chromeos::LacrosService::Get();
   int interface_version =
-      service->GetInterfaceVersion(crosapi::mojom::FileManager::Uuid_);
+      service->GetInterfaceVersion<crosapi::mojom::FileManager>();
   if (interface_version < 1) {
     DLOG(ERROR) << "Unsupported ash version.";
     return;

@@ -19,8 +19,8 @@ namespace {
 // If ash does not contain the relevant test controller functionality, then
 // there's nothing to do for this test.
 bool IsServiceAvailable() {
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) <
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
                            kEnterOverviewModeMinVersion)) {
     LOG(WARNING) << "Unsupported ash version.";

@@ -378,7 +378,7 @@ void TtsClientLacros::SpeakOrEnqueue(
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service->IsAvailable<crosapi::mojom::Tts>() ||
       static_cast<uint32_t>(
-          lacros_service->GetInterfaceVersion(crosapi::mojom::Tts::Uuid_)) <
+          lacros_service->GetInterfaceVersion<crosapi::mojom::Tts>()) <
           crosapi::mojom::Tts::kSpeakOrEnqueueMinVersion) {
     LOG(WARNING) << kErrorUnsupportedVersion;
     return;
@@ -400,8 +400,9 @@ void TtsClientLacros::SpeakOrEnqueue(
 void TtsClientLacros::RequestStop(const GURL& source_url) {
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service->IsAvailable<crosapi::mojom::Tts>() ||
-      static_cast<uint32_t>(lacros_service->GetInterfaceVersion(
-          crosapi::mojom::Tts::Uuid_)) < crosapi::mojom::Tts::kStopMinVersion) {
+      static_cast<uint32_t>(
+          lacros_service->GetInterfaceVersion<crosapi::mojom::Tts>()) <
+          crosapi::mojom::Tts::kStopMinVersion) {
     LOG(WARNING) << kErrorUnsupportedVersion;
     return;
   }
@@ -412,7 +413,7 @@ void TtsClientLacros::RequestPause() {
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service->IsAvailable<crosapi::mojom::Tts>() ||
       static_cast<uint32_t>(
-          lacros_service->GetInterfaceVersion(crosapi::mojom::Tts::Uuid_)) <
+          lacros_service->GetInterfaceVersion<crosapi::mojom::Tts>()) <
           crosapi::mojom::Tts::kPauseMinVersion) {
     LOG(WARNING) << kErrorUnsupportedVersion;
     return;
@@ -424,7 +425,7 @@ void TtsClientLacros::RequestResume() {
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service->IsAvailable<crosapi::mojom::Tts>() ||
       static_cast<uint32_t>(
-          lacros_service->GetInterfaceVersion(crosapi::mojom::Tts::Uuid_)) <
+          lacros_service->GetInterfaceVersion<crosapi::mojom::Tts>()) <
           crosapi::mojom::Tts::kResumeMinVersion) {
     LOG(WARNING) << kErrorUnsupportedVersion;
     return;
@@ -436,7 +437,7 @@ void TtsClientLacros::IsSpeaking(base::OnceCallback<void(bool)> callback) {
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service->IsAvailable<crosapi::mojom::Tts>() ||
       static_cast<uint32_t>(
-          lacros_service->GetInterfaceVersion(crosapi::mojom::Tts::Uuid_)) <
+          lacros_service->GetInterfaceVersion<crosapi::mojom::Tts>()) <
           crosapi::mojom::Tts::kIsSpeakingMinVersion) {
     LOG(WARNING) << kErrorUnsupportedVersion;
     std::move(callback).Run(false);
