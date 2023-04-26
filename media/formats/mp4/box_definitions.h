@@ -240,11 +240,14 @@ struct MEDIA_EXPORT AVCDecoderConfigurationRecord : Box {
   uint8_t avc_level;
   uint8_t length_size;
 
-  typedef std::vector<uint8_t> SPS;
-  typedef std::vector<uint8_t> PPS;
+  std::vector<std::vector<uint8_t>> sps_list;
+  std::vector<std::vector<uint8_t>> pps_list;
 
-  std::vector<SPS> sps_list;
-  std::vector<PPS> pps_list;
+  uint8_t chroma_format;
+  uint8_t bit_depth_luma_minus8;
+  uint8_t bit_depth_chroma_minus8;
+
+  std::vector<std::vector<uint8_t>> sps_ext_list;
 
  private:
   bool ParseInternal(BufferReader* reader, MediaLog* media_log);

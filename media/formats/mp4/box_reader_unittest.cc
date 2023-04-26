@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "media/base/mock_media_log.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/parse_result.h"
@@ -489,11 +490,11 @@ TEST_F(BoxReaderTest, OutsideOfBoxRead) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromMp4) {
   std::vector<uint8_t> test_data{
-      0x1,        // configurationVersion
-      0x64,       // AVCProfileIndication
-      0x0,        // profile_compatibility
-      0xc,        // AVCLevelIndication
-      0xff,       // lengthSizeMinusOne
+      0x1,        // configurationVersion = 1
+      0x64,       // AVCProfileIndication = 100
+      0x0,        // profile_compatibility = 0
+      0xc,        // AVCLevelIndication = 10
+      0xff,       // lengthSizeMinusOne = 3
       0xe1,       // numOfSequenceParameterSets = 1
       0x0, 0x19,  // sequenceParameterSetLength = 25
 
@@ -505,8 +506,10 @@ TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromMp4) {
       0x0, 0x6,  // pictureParameterSetLength = 6
       0x68, 0xeb, 0xe3, 0xcb, 0x22, 0xc0,
 
-      // Profile specific params are not supported yet, skip last bytes
-      // 0xfd, 0xf8, 0xf8, 0x0
+      0xfd,  // chroma_format = 1
+      0xf8,  // bit_depth_luma_minus8 = 0
+      0xf8,  // bit_depth_chroma_minus8 = 0
+      0x0,   // numOfSequanceParameterSetExt = 0
   };
 
   AVCDecoderConfigurationRecord record;
@@ -521,6 +524,10 @@ TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromMp4) {
   EXPECT_EQ(record.sps_list[0].size(), 25ull);
   EXPECT_EQ(record.pps_list.size(), 1ull);
   EXPECT_EQ(record.pps_list[0].size(), 6ull);
+  EXPECT_EQ(record.chroma_format, 1);
+  EXPECT_EQ(record.bit_depth_luma_minus8, 0);
+  EXPECT_EQ(record.bit_depth_chroma_minus8, 0);
+  EXPECT_EQ(record.sps_ext_list.size(), 0ull);
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(record.Serialize(output));
