@@ -25,6 +25,25 @@
 namespace ash {
 namespace {
 VideoConferenceAppServiceClient* g_client_instance = nullptr;
+
+crosapi::mojom::VideoConferenceAppType ToVideoConferenceAppType(
+    apps::AppType app_type) {
+  switch (app_type) {
+    case apps::AppType::kArc:
+      return crosapi::mojom::VideoConferenceAppType::kArcApp;
+    case apps::AppType::kChromeApp:
+    case apps::AppType::kStandaloneBrowserChromeApp:
+      return crosapi::mojom::VideoConferenceAppType::kChromeApp;
+    case apps::AppType::kWeb:
+      return crosapi::mojom::VideoConferenceAppType::kWebApp;
+    case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
+      return crosapi::mojom::VideoConferenceAppType::kChromeExtension;
+    default:
+      return crosapi::mojom::VideoConferenceAppType::kAppServiceUnknown;
+  }
+}
+
 }  // namespace
 
 VideoConferenceAppServiceClient::VideoConferenceAppServiceClient()
@@ -78,7 +97,9 @@ void VideoConferenceAppServiceClient::GetMediaApps(
         /*is_capturing_camera=*/app_state.is_capturing_camera,
         /*is_capturing_microphone=*/app_state.is_capturing_microphone,
         /*is_capturing_screen=*/false,
-        /*title=*/base::UTF8ToUTF16(app_name), /*url=*/absl::nullopt));
+        /*title=*/base::UTF8ToUTF16(app_name),
+        /*url=*/absl::nullopt,
+        /*app_type=*/ToVideoConferenceAppType(GetAppType(app_id))));
   }
 
   std::move(callback).Run(std::move(apps));

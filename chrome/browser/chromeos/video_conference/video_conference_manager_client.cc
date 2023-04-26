@@ -17,8 +17,13 @@
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/manifest.h"
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
 #else
@@ -28,6 +33,39 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace video_conference {
+namespace {
+
+// Returns whether the `contents` is a WebApp.
+bool IsWebApp(content::WebContents* contents) {
+  return web_app::AppBrowserController::IsWebApp(
+      chrome::FindBrowserWithWebContents(contents));
+}
+
+// Returns the AppType of the `contents`.
+// We only handled cases that are relevant to video conference apps.
+crosapi::mojom::VideoConferenceAppType GetAppType(
+    content::WebContents* contents) {
+  auto* ext = extensions::ProcessManager::Get(contents->GetBrowserContext())
+                  ->GetExtensionForWebContents(contents);
+  if (ext) {
+    auto type = ext->GetType();
+    if (type == extensions::Manifest::TYPE_EXTENSION) {
+      return crosapi::mojom::VideoConferenceAppType::kChromeExtension;
+    }
+    if (type == extensions::Manifest::TYPE_PLATFORM_APP) {
+      return crosapi::mojom::VideoConferenceAppType::kChromeApp;
+    }
+
+    return crosapi::mojom::VideoConferenceAppType::kBrowserUnknown;
+  }
+  if (IsWebApp(contents)) {
+    return crosapi::mojom::VideoConferenceAppType::kWebApp;
+  }
+
+  return crosapi::mojom::VideoConferenceAppType::kChromeTab;
+}
+
+}  // namespace
 
 VideoConferenceManagerClientImpl::VideoConferenceManagerClientImpl()
     : client_id_(base::UnguessableToken::Create()),
@@ -203,7 +241,9 @@ void VideoConferenceManagerClientImpl::GetMediaApps(
         /*is_capturing_camera=*/app_state.is_capturing_camera,
         /*is_capturing_microphone=*/app_state.is_capturing_microphone,
         /*is_capturing_screen=*/app_state.is_capturing_screen,
-        /*title=*/web_contents->GetTitle(), /*url=*/web_contents->GetURL()));
+        /*title=*/web_contents->GetTitle(),
+        /*url=*/web_contents->GetURL(),
+        /*app_type=*/GetAppType(web_contents)));
   }
 
   std::move(callback).Run(std::move(apps));
