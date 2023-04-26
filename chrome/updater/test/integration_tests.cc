@@ -95,9 +95,6 @@ class IntegrationTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-    GTEST_SKIP() << "Integration tests disabled on Arm64 Win";
-#else
     ASSERT_NO_FATAL_FAILURE(CleanProcesses());
     ASSERT_TRUE(WaitForUpdaterExit());
     ASSERT_NO_FATAL_FAILURE(Clean());
@@ -107,7 +104,6 @@ class IntegrationTest : public ::testing::Test {
     ASSERT_NO_FATAL_FAILURE(EnterTestMode(GURL("http://localhost:1234"),
                                           GURL("http://localhost:1235"),
                                           GURL("http://localhost:1236")));
-#endif
 #if BUILDFLAG(IS_LINUX)
     // On LUCI the XDG_RUNTIME_DIR and DBUS_SESSION_BUS_ADDRESS environment
     // variables may not be set. These are required for systemctl to connect to
@@ -127,9 +123,6 @@ class IntegrationTest : public ::testing::Test {
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-    GTEST_SKIP() << "Integration tests disabled on Arm64 Win";
-#else
     ExitTestMode();
     if (!HasFailure()) {
       ExpectClean();
@@ -148,7 +141,6 @@ class IntegrationTest : public ::testing::Test {
     // Updater process must not be running for `Clean()` to succeed.
     ASSERT_TRUE(WaitForUpdaterExit());
     Clean();
-#endif
   }
 
   void ExpectNoCrashes() { test_commands_->ExpectNoCrashes(); }
@@ -430,6 +422,23 @@ class IntegrationTest : public ::testing::Test {
   ScopedIPCSupportWrapper ipc_support_;
 };
 
+// TODO(crbug.com/1424548): re-enable the tests once they are passing on
+// Windows ARM64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_InstallLowerVersion DISABLED_InstallLowerVersion
+#define MAYBE_OverinstallBroken DISABLED_OverinstallBroken
+#define MAYBE_OverinstallWorking DISABLED_OverinstallWorking
+#define MAYBE_SelfUpdateFromOldReal DISABLED_SelfUpdateFromOldReal
+#define MAYBE_UninstallIfUnusedSelfAndOldReal \
+  DISABLED_UninstallIfUnusedSelfAndOldReal
+#else
+#define MAYBE_InstallLowerVersion InstallLowerVersion
+#define MAYBE_OverinstallBroken OverinstallBroken
+#define MAYBE_OverinstallWorking OverinstallWorking
+#define MAYBE_SelfUpdateFromOldReal SelfUpdateFromOldReal
+#define MAYBE_UninstallIfUnusedSelfAndOldReal UninstallIfUnusedSelfAndOldReal
+#endif
+
 // The project's position is that component builds are not portable outside of
 // the build directory. Therefore, installation of component builds is not
 // expected to work and these tests do not run on component builders.
@@ -453,7 +462,7 @@ TEST_F(IntegrationTest, Install) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, OverinstallWorking) {
+TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
@@ -467,7 +476,7 @@ TEST_F(IntegrationTest, OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, OverinstallBroken) {
+TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(DeleteUpdaterDirectory());
@@ -924,7 +933,7 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 // TODO(crbug.com/1097297) Enable these tests once the `Brand the updater and
 // qualification app ids` change is available on CIPD.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
+TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
@@ -951,7 +960,7 @@ TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, UninstallIfUnusedSelfAndOldReal) {
+TEST_F(IntegrationTest, MAYBE_UninstallIfUnusedSelfAndOldReal) {
   ScopedServer test_server(test_commands_);
 
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
@@ -988,7 +997,7 @@ TEST_F(IntegrationTest, UninstallIfUnusedSelfAndOldReal) {
 
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.
-TEST_F(IntegrationTest, InstallLowerVersion) {
+TEST_F(IntegrationTest, MAYBE_InstallLowerVersion) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
