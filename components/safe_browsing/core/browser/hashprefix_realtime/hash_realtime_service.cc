@@ -464,6 +464,16 @@ void HashRealTimeService::OnURLLoaderComplete(
                           base::TimeTicks::Now() - request_start_time);
   RecordHttpResponseOrErrorCode("SafeBrowsing.HPRT.Network.Result", net_error,
                                 response_code);
+  if (net_error == net::ERR_INTERNET_DISCONNECTED) {
+    base::UmaHistogramSparse(
+        "SafeBrowsing.HPRT.Network.HttpResponseCode.InternetDisconnected",
+        response_code);
+  }
+  if (net_error == net::ERR_NETWORK_CHANGED) {
+    base::UmaHistogramSparse(
+        "SafeBrowsing.HPRT.Network.HttpResponseCode.NetworkChanged",
+        response_code);
+  }
 
   base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
       response = ParseResponseAndUpdateBackoff(
