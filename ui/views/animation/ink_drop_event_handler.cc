@@ -175,4 +175,13 @@ void InkDropEventHandler::OnViewBlurred(View* observed_view) {
   delegate_->GetInkDrop()->SetFocused(false);
 }
 
+void InkDropEventHandler::OnViewThemeChanged(View* observed_view) {
+  CHECK_EQ(host_view_, observed_view);
+  // The call to GetInkDrop() will lazily create the ink drop when called. We do
+  // not want to create the ink drop when view theme changed.
+  if (delegate_->HasInkDrop()) {
+    delegate_->GetInkDrop()->HostViewThemeChanged();
+  }
+}
+
 }  // namespace views
