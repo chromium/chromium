@@ -540,18 +540,33 @@ TriView* TrayDetailedView::AddScrollListSubHeader(views::View* container,
   auto* color_provider = AshColorProvider::Get();
   sub_header_label_ = TrayPopupUtils::CreateDefaultLabel();
   sub_header_label_->SetText(l10n_util::GetStringUTF16(text_id));
-  sub_header_label_->SetEnabledColor(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  TrayPopupUtils::SetLabelFontList(sub_header_label_,
-                                   TrayPopupUtils::FontStyle::kSubHeader);
+
+  if (chromeos::features::IsJellyEnabled()) {
+    sub_header_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                               *title_label_);
+  } else {
+    sub_header_label_->SetEnabledColor(color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    TrayPopupUtils::SetLabelFontList(sub_header_label_,
+                                     TrayPopupUtils::FontStyle::kSubHeader);
+  }
+
   header->AddView(TriView::Container::CENTER, sub_header_label_);
 
   sub_header_image_view_ =
       TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false);
   sub_header_icon_ = &icon;
-  sub_header_image_view_->SetImage(gfx::CreateVectorIcon(
-      icon, color_provider->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  if (chromeos::features::IsJellyEnabled()) {
+    sub_header_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        icon,
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant)));
+  } else {
+    sub_header_image_view_->SetImage(gfx::CreateVectorIcon(
+        icon, color_provider->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  }
+
   header->AddView(TriView::Container::START, sub_header_image_view_);
 
   container->AddChildView(header);
@@ -623,10 +638,17 @@ std::unique_ptr<TriView> TrayDetailedView::CreateTitleTriView(int string_id) {
 
   title_label_ = TrayPopupUtils::CreateDefaultLabel();
   title_label_->SetText(l10n_util::GetStringUTF16(string_id));
-  title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  TrayPopupUtils::SetLabelFontList(title_label_,
-                                   TrayPopupUtils::FontStyle::kTitle);
+  if (chromeos::features::IsJellyEnabled()) {
+    title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    ash::TypographyProvider::Get()->StyleLabel(
+        ash::TypographyToken::kCrosTitle1, *title_label_);
+  } else {
+    title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    TrayPopupUtils::SetLabelFontList(title_label_,
+                                     TrayPopupUtils::FontStyle::kTitle);
+  }
+
   tri_view->AddView(TriView::Container::CENTER, title_label_);
   tri_view->SetContainerVisible(TriView::Container::END, false);
 
@@ -710,25 +732,24 @@ void TrayDetailedView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
   if (title_label_) {
-    title_label_->SetEnabledColor(
-        features::IsQsRevampEnabled()
-            ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)
-            : color_provider->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kTextColorPrimary));
-    if (chromeos::features::IsJellyEnabled()) {
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
-                                            *title_label_);
+    if (!chromeos::features::IsJellyEnabled()) {
+      title_label_->SetEnabledColor(color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary));
     }
   }
   if (sub_header_label_) {
-    sub_header_label_->SetEnabledColor(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    if (!chromeos::features::IsJellyEnabled()) {
+      sub_header_label_->SetEnabledColor(color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary));
+    }
   }
   if (sub_header_image_view_) {
-    sub_header_image_view_->SetImage(gfx::CreateVectorIcon(
-        *sub_header_icon_,
-        color_provider->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+    if (!chromeos::features::IsJellyEnabled()) {
+      sub_header_image_view_->SetImage(gfx::CreateVectorIcon(
+          *sub_header_icon_,
+          color_provider->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorPrimary)));
+    }
   }
   if (title_separator_) {
     title_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
