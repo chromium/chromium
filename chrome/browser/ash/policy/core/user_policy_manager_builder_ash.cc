@@ -254,8 +254,7 @@ void CreateConfigurationPolicyProvider(
   std::unique_ptr<UserCloudPolicyStoreAsh> store =
       std::make_unique<UserCloudPolicyStoreAsh>(
           ash::CryptohomeMiscClient::Get(), ash::SessionManagerClient::Get(),
-          background_task_runner, account_id, policy_key_dir,
-          is_active_directory);
+          background_task_runner, account_id, policy_key_dir);
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(

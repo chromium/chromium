@@ -135,7 +135,7 @@ class UserCloudPolicyStoreAshTest : public testing::Test {
     store_ = std::make_unique<UserCloudPolicyStoreAsh>(
         &cryptohome_misc_client_, session_manager_client_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), account_id_,
-        user_policy_dir(), false /* is_active_directory */);
+        user_policy_dir());
     store_->AddObserver(&observer_);
 
     // Install the initial public key, so that by default the validation of

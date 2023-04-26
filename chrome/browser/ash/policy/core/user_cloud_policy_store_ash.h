@@ -32,22 +32,14 @@ class CachedPolicyKeyLoader;
 // Implements a policy store backed by the Chrome OS' session_manager, which
 // takes care of persisting policy to disk and is accessed via DBus calls
 // through SessionManagerClient.
-// TODO(tnagel): Rename class to reflect that it can store Active Directory
-// policy as well. Also think about whether it would make more sense to keep
-// cloud and AD policy stores separate and to extract the common functionality
-// somewhere else.
 class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
  public:
-  // Policy validation is relaxed when |is_active_directory| is set, most
-  // notably signature validation is disabled.  It is essential that this flag
-  // is only set when install attributes are locked into Active Directory mode.
   UserCloudPolicyStoreAsh(
       ash::CryptohomeMiscClient* cryptohome_misc_client,
       ash::SessionManagerClient* session_manager_client,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const AccountId& account_id,
-      const base::FilePath& user_policy_key_dir,
-      bool is_active_directory);
+      const base::FilePath& user_policy_key_dir);
 
   UserCloudPolicyStoreAsh(const UserCloudPolicyStoreAsh&) = delete;
   UserCloudPolicyStoreAsh& operator=(const UserCloudPolicyStoreAsh&) = delete;
@@ -97,7 +89,6 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
 
   raw_ptr<ash::SessionManagerClient, ExperimentalAsh> session_manager_client_;
   const AccountId account_id_;
-  bool is_active_directory_;
 
   // Used to load the policy key provided by session manager as a file.
   std::unique_ptr<CachedPolicyKeyLoader> cached_policy_key_loader_;
