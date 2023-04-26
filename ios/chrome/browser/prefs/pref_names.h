@@ -38,6 +38,7 @@ extern const char kIosBookmarkSigninPromoDisplayedCount[];
 extern const char kIosBringAndroidTabsPromptDisplayed[];
 extern const char kIosShareChromeCount[];
 extern const char kIosShareChromeLastShare[];
+extern const char kIosSyncSegmentsNewTabPageDisplayCount[];
 extern const char kIosDiscoverFeedLastRefreshTime[];
 extern const char kIosDiscoverFeedLastUnseenRefreshTime[];
 extern const char kIosPasswordBottomSheetDismissCount[];

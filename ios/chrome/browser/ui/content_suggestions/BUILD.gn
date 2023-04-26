@@ -49,6 +49,7 @@ source_set("content_suggestions") {
     "//components/favicon/ios",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/history/core/browser",
     "//components/ntp_tiles",
     "//components/pref_registry",
     "//components/prefs",

@@ -611,8 +611,9 @@ void HistoryBackend::UpdateSegmentForExistingForeignVisit(VisitRow& visit_row) {
   }
 
   SegmentID new_segment_id =
-      CanAddForeignVisitToSegments(
-          visit_row, local_device_originator_cache_guid_, sync_device_info_)
+      (can_add_foreign_visits_to_segments_ &&
+       CanAddForeignVisitToSegments(
+           visit_row, local_device_originator_cache_guid_, sync_device_info_))
           ? CalculateSegmentID(url_row.url(), visit_row.referring_visit,
                                visit_row.transition)
           : 0;
@@ -1701,7 +1702,8 @@ VisitID HistoryBackend::AddSyncedVisit(
 
   db_->SetMayContainForeignVisits(true);
 
-  if (CanAddForeignVisitToSegments(visit, local_device_originator_cache_guid_,
+  if (can_add_foreign_visits_to_segments_ &&
+      CanAddForeignVisitToSegments(visit, local_device_originator_cache_guid_,
                                    sync_device_info_)) {
     AssignSegmentForNewVisit(url, visit.referring_visit, visit_id,
                              visit.transition, visit.visit_time);
@@ -3471,6 +3473,10 @@ void HistoryBackend::SetLocalDeviceOriginatorCacheGuid(
     std::string local_device_originator_cache_guid) {
   local_device_originator_cache_guid_ =
       std::move(local_device_originator_cache_guid);
+}
+
+void HistoryBackend::SetCanAddForeignVisitsToSegments(bool add_foreign_visits) {
+  can_add_foreign_visits_to_segments_ = add_foreign_visits;
 }
 
 void HistoryBackend::ProcessDBTask(

@@ -173,6 +173,11 @@ const char kIosShareChromeCount[] = "ios.share_chrome.count";
 // Preference to store the last time the user shared the chrome app.
 const char kIosShareChromeLastShare[] = "ios.share_chrome.last_share";
 
+// Preference to store the number of times the user opens the New Tab Page
+// with foreign history included in segments data (i.e. Most Visited Tiles).
+const char kIosSyncSegmentsNewTabPageDisplayCount[] =
+    "ios.sync_segments.ntp.display_count";
+
 // Preference that hold a boolean indicating if the user has already dismissed
 // the sign-in promo in the ntp feed top section.
 const char kIosNtpFeedTopPromoAlreadySeen[] =
