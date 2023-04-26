@@ -10,6 +10,7 @@
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_metrics_provider.h"
+#include "components/metrics/structured/structured_metrics_recorder.h"
 
 namespace metrics::structured {
 
@@ -26,7 +27,7 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
   TestStructuredMetricsProvider& operator=(
       const TestStructuredMetricsProvider&) = delete;
 
-  const std::unique_ptr<PersistentProto<EventsProto>>& ReadEvents();
+  const EventsProto& ReadEvents();
 
   // Returns pointer to the first event with the hash |project_name_hash| and
   // |event_name_hash|. If no event is found, returns absl::nullopt.
@@ -55,9 +56,9 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
   void OnReportingStateChanged(bool enabled) override;
   absl::optional<int> LastKeyRotation(uint64_t project_name_hash) override;
 
-  std::unique_ptr<StructuredMetricsProvider> structured_metrics_provider_;
-
   std::unique_ptr<MetricsProvider> system_profile_provider_;
+
+  std::unique_ptr<StructuredMetricsProvider> structured_metrics_provider_;
 
   base::ScopedTempDir temp_dir_;
 

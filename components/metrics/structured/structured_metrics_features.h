@@ -20,6 +20,10 @@ BASE_DECLARE_FEATURE(kBluetoothSessionizedMetrics);
 // Controls whether fast pair logging is enabled or not.
 BASE_DECLARE_FEATURE(kFastPairMetrics);
 
+// Controls whether the structured metrics service is recorder instead of the
+// provider.
+BASE_DECLARE_FEATURE(kEnabledStructuredMetricsService);
+
 // TODO(crbug.com/1148168): This is a temporary switch to revert structured
 // metrics upload to its old behaviour. Old behaviour:
 // - all metrics are uploaded in the main UMA upload
