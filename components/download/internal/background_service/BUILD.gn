@@ -192,7 +192,7 @@ source_set("unit_tests") {
     "stats_unittest.cc",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "client_set_unittest.cc",
       "controller_impl_unittest.cc",
@@ -218,7 +218,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     deps += [
       ":internal",
       "//components/download/internal/background_service/proto",
