@@ -156,50 +156,44 @@
         </settings-subpage>
       </template>
 
-      <template is="dom-if" if=
-          "[[isPrivacySandboxSettings4Enabled_(
-              isPrivacySandboxRestricted_,
-              isPrivacySandboxRestrictedNoticeEnabled_,
-              isPrivacySandboxSettings4_)]]">
-        <template is="dom-if" route-path="/adPrivacy">
-          <settings-subpage id="privacy-sandbox"
-              page-title="$i18n{adPrivacyPageTitle}"
-              associated-control="[[$$('#privacySandboxLinkRow')]]"
-              learn-more-url="$i18n{adPrivacyLearnMoreURL}">
-            <settings-privacy-sandbox-page prefs="{{prefs}}">
-            </settings-privacy-sandbox-page>
-          </settings-subpage>
-        </template>
+      <template is="dom-if" route-path="/adPrivacy">
+        <settings-subpage id="privacy-sandbox"
+            page-title="$i18n{adPrivacyPageTitle}"
+            associated-control="[[$$('#privacySandboxLinkRow')]]"
+            learn-more-url="$i18n{adPrivacyLearnMoreURL}">
+          <settings-privacy-sandbox-page prefs="{{prefs}}">
+          </settings-privacy-sandbox-page>
+        </settings-subpage>
+      </template>
 
-        <template is="dom-if" route-path="/adPrivacy/interests">
-          <settings-subpage id="privacy-sandbox-topics"
-              page-title="$i18n{topicsPageTitle}"
-              associated-control="[[$$('#privacySandboxLinkRow')]]"
-              learn-more-url="$i18n{adPrivacyLearnMoreURL}">
-            <settings-privacy-sandbox-topics-subpage prefs="{{prefs}}">
-            </settings-privacy-sandbox-topics-subpage>
-          </settings-subpage>
-        </template>
+      <template is="dom-if" route-path="/adPrivacy/interests">
+        <settings-subpage id="privacy-sandbox-topics"
+            page-title="$i18n{topicsPageTitle}"
+            associated-control="[[$$('#privacySandboxLinkRow')]]"
+            learn-more-url="$i18n{adPrivacyLearnMoreURL}">
+          <settings-privacy-sandbox-topics-subpage prefs="{{prefs}}">
+          </settings-privacy-sandbox-topics-subpage>
+        </settings-subpage>
+      </template>
 
-        <template is="dom-if" route-path="/adPrivacy/sites">
-          <settings-subpage id="privacy-sandbox-fledge"
-              page-title="$i18n{fledgePageTitle}"
-              associated-control="[[$$('#privacySandboxLinkRow')]]"
-              learn-more-url="$i18n{adPrivacyLearnMoreURL}">
-            <settings-privacy-sandbox-fledge-subpage prefs="{{prefs}}">
-            </settings-privacy-sandbox-fledge-subpage>
-          </settings-subpage>
-        </template>
+      <template is="dom-if" route-path="/adPrivacy/sites">
+        <settings-subpage id="privacy-sandbox-fledge"
+            page-title="$i18n{fledgePageTitle}"
+            associated-control="[[$$('#privacySandboxLinkRow')]]"
+            learn-more-url="$i18n{adPrivacyLearnMoreURL}">
+          <settings-privacy-sandbox-fledge-subpage prefs="{{prefs}}">
+          </settings-privacy-sandbox-fledge-subpage>
+        </settings-subpage>
+      </template>
 
-        <template is="dom-if" route-path="/adPrivacy/measurement">
-          <settings-subpage id="privacy-sandbox-ad-measurement"
-              page-title="$i18n{adMeasurementPageTitle}"
-              associated-control="[[$$('#privacySandboxLinkRow')]]"
-              learn-more-url="$i18n{adPrivacyLearnMoreURL}">
-            <settings-privacy-sandbox-ad-measurement-subpage prefs="{{prefs}}">
-            </settings-privacy-sandbox-ad-measurement-subpage>
-          </settings-subpage>
-        </template>
+      <template is="dom-if" route-path="/adPrivacy/measurement">
+        <settings-subpage id="privacy-sandbox-ad-measurement"
+            page-title="$i18n{adMeasurementPageTitle}"
+            associated-control="[[$$('#privacySandboxLinkRow')]]"
+            learn-more-url="$i18n{adPrivacyLearnMoreURL}">
+          <settings-privacy-sandbox-ad-measurement-subpage prefs="{{prefs}}">
+          </settings-privacy-sandbox-ad-measurement-subpage>
+        </settings-subpage>
       </template>
 
       <template is="dom-if" route-path="/content/all" no-search>
