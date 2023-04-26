@@ -15,8 +15,7 @@ from typing import Iterable, Optional, TextIO
 
 from common import catch_sigterm, read_package_paths, register_common_args, \
                    register_device_args, run_continuous_ffx_command, \
-                   stop_ffx_daemon
-from compatible_utils import running_unattended
+                   run_ffx_command
 from ffx_integration import ScopedFfxConfig, run_symbolizer
 
 
@@ -38,14 +37,7 @@ class LogManager(AbstractContextManager):
     def __enter__(self):
         if self._scoped_ffx_log:
             self._scoped_ffx_log.__enter__()
-            # log.dir change always requires the restarting of the daemon.
-            # In the test fleet with running_unattended being true, we
-            # explicitly disallow the daemon from automatically starting, and
-            # do all the configuration before starting the daemon.
-            # But in local development workflow, we help the developers to
-            # restart the daemon to ensure the change of log.dir taking effect.
-            if not running_unattended():
-                stop_ffx_daemon()
+            run_ffx_command(('daemon', 'stop'), check=False)
 
         return self
 
@@ -82,8 +74,9 @@ class LogManager(AbstractContextManager):
         self.stop()
         if self._scoped_ffx_log:
             self._scoped_ffx_log.__exit__(exc_type, exc_value, traceback)
-            if not running_unattended():
-                stop_ffx_daemon()
+
+            # Allow command to fail while ffx team investigates the issue.
+            run_ffx_command(('daemon', 'stop'), check=False)
 
 
 def start_system_log(log_manager: LogManager,

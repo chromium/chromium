@@ -237,30 +237,6 @@ def _run_repair_command(output):
     return True  # Repair succeeded.
 
 
-# The following two functions are the temporary work around before
-# https://fxbug.dev/92296 and https://fxbug.dev/125873 are being fixed.
-def start_ffx_daemon():
-    """Starts the ffx daemon by using doctor --restart-daemon since daemon start
-    blocks the current shell.
-
-    Note, doctor --restart-daemon usually fails since the timeout in ffx is
-    short and won't be sufficient to wait for the daemon to really start.
-
-    Also, doctor --restart-daemon always restarts the daemon, so this function
-    should be used with caution unless it's really needed to "restart" the
-    daemon by explicitly calling stop daemon first.
-    """
-    assert not _is_daemon_running(), "Call stop_ffx_daemon first."
-    run_ffx_command(('doctor', '--restart-daemon'), check=False)
-    _wait_for_daemon(start=True)
-
-
-def stop_ffx_daemon():
-    """Stops the ffx daemon"""
-    run_ffx_command(('daemon', 'stop'))
-    _wait_for_daemon(start=False)
-
-
 def run_ffx_command(cmd: Iterable[str],
                     target_id: Optional[str] = None,
                     check: bool = True,
