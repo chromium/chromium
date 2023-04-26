@@ -27,7 +27,6 @@ build_webui_tests("build") {
     "avatar_icon_test.ts",
     "basic_page_test.ts",
     "battery_page_test.ts",
-    "category_default_setting_test.ts",
     "category_setting_exceptions_test.ts",
     "checkbox_test.ts",
     "chooser_exception_list_entry_test.ts",

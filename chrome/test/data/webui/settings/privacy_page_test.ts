@@ -186,7 +186,6 @@ suite('PrivacyPage', function() {
     assertTrue(isVisible(categorySettingExceptions));
     assertEquals(
         ContentSettingsTypes.NOTIFICATIONS, categorySettingExceptions.category);
-    assertFalse(isChildVisible(page, 'category-default-setting'));
   });
 
   test('privacySandboxRestricted', function() {

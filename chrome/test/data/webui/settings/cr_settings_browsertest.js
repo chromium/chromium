@@ -886,7 +886,6 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
    'settings_category_default_radio_group_test.js',
  ],
  ['AntiAbusePage', 'anti_abuse_page_test.js'],
- ['CategoryDefaultSetting', 'category_default_setting_test.js'],
  ['CategorySettingExceptions', 'category_setting_exceptions_test.js'],
  ['Checkbox', 'checkbox_test.js'],
  ['ChooserExceptionList', 'chooser_exception_list_test.js'],

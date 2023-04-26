@@ -38,7 +38,6 @@ import './site_settings/file_system_site_entry.js';
 import './site_settings/file_system_site_entry_item.js';
 import './site_settings/file_system_site_list.js';
 import './site_settings_page/site_settings_page.js';
-import './site_settings/category_default_setting.js';
 import './site_settings/category_setting_exceptions.js';
 import './site_settings/chooser_exception_list.js';
 import './site_settings/site_details_permission_device_entry.js';
@@ -219,7 +218,6 @@ export {AllSitesElement} from './site_settings/all_sites.js';
 // <if expr="chromeos_ash">
 export {AndroidInfoBrowserProxy, AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './site_settings/android_info_browser_proxy.js';
 // </if>
-export {CategoryDefaultSettingElement} from './site_settings/category_default_setting.js';
 export {CategorySettingExceptionsElement} from './site_settings/category_setting_exceptions.js';
 export {ChooserExceptionListElement} from './site_settings/chooser_exception_list.js';
 export {ChooserExceptionListEntryElement} from './site_settings/chooser_exception_list_entry.js';

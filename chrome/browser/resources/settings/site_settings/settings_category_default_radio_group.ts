@@ -122,10 +122,6 @@ export class SettingsCategoryDefaultRadioGroupElement extends
   }
 
   private getAllowOptionForCategory_(): ContentSetting {
-    /**
-     * This list must be kept in sync with the list in
-     * category_default_setting.js
-     */
     switch (this.category) {
       case ContentSettingsTypes.ADS:
       case ContentSettingsTypes.BACKGROUND_SYNC:

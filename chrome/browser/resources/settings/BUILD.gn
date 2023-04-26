@@ -195,7 +195,6 @@ build_webui("build") {
     "site_favicon.ts",
     "site_settings/add_site_dialog.ts",
     "site_settings/all_sites.ts",
-    "site_settings/category_default_setting.ts",
     "site_settings/category_setting_exceptions.ts",
     "site_settings/chooser_exception_list_entry.ts",
     "site_settings/chooser_exception_list.ts",
