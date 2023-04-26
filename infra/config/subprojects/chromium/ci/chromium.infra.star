@@ -312,6 +312,42 @@ ci.builder(
     # TODO(crbug.com/1260195): Enable the notifies once recipe fully works
     notifies = [],
     properties = {
-        "dry_run": True,
+        "flash_criteria": [
+            # Used by ci/Android Release (Nexus 5X)
+            # This is mirrored by the CQ builder android-arm64-rel
+            {
+                "pool": "chromium.tests",
+                "device_type": "bullhead",
+                "device_os": "N2G48C",
+                "max_uid_threshold": 18000,
+                "dry_run": True,
+            },
+            # Used by ci/android-pie-arm64-rel
+            # This is mirrored by the CQ builder android-arm64-rel
+            {
+                "pool": "chromium.tests",
+                "device_type": "walleye",
+                "device_os": "PQ3A.190801.002",
+                "max_uid_threshold": 18000,
+                "dry_run": True,
+            },
+            # Used by ci/android-pie-arm64-rel
+            # This is mirrored by the CQ builder android-arm64-rel
+            {
+                "pool": "chromium.tests",
+                "device_type": "sailfish",
+                "device_os": "PQ3A.190801.002",
+                "max_uid_threshold": 18000,
+                "dry_run": True,
+            },
+            # Used by GPU team
+            {
+                "pool": "chromium.tests.gpu",
+                "device_type": "oriole",
+                "device_os": "TP1A.220624.021",
+                "max_uid_threshold": 18000,
+                "dry_run": True,
+            },
+        ],
     },
 )
