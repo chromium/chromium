@@ -704,12 +704,10 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueInvalid) {
       kPolicyMapJson, base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(parsed_json_or_error.has_value())
       << parsed_json_or_error.error().message;
-
-  base::Value& parsed_json = *parsed_json_or_error;
-  ASSERT_TRUE(parsed_json.is_dict());
+  ASSERT_TRUE(parsed_json_or_error->is_dict());
 
   PolicyMap policy_map;
-  policy_map.LoadFrom(parsed_json.GetDict(), POLICY_LEVEL_RECOMMENDED,
+  policy_map.LoadFrom(parsed_json_or_error->GetDict(), POLICY_LEVEL_RECOMMENDED,
                       POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
 
   TestSchemaValidatingPolicyHandler handler(schema, SCHEMA_ALLOW_UNKNOWN);

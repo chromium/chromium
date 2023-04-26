@@ -47,9 +47,8 @@ base::expected<std::vector<uint8_t>, Status> AesGcmEncrypt(
   Status status = Encrypt(algorithm, key, plain_text, &output);
   if (status.IsError()) {
     return base::unexpected(status);
-  } else {
-    return output;
   }
+  return output;
 }
 
 base::expected<std::vector<uint8_t>, Status> AesGcmDecrypt(
@@ -65,9 +64,8 @@ base::expected<std::vector<uint8_t>, Status> AesGcmDecrypt(
   Status status = Decrypt(algorithm, key, ciphertext, &output);
   if (status.IsError()) {
     return base::unexpected(status);
-  } else {
-    return output;
   }
+  return output;
 }
 
 class WebCryptoAesGcmTest : public WebCryptoTestBase {};
@@ -191,9 +189,9 @@ TEST_F(WebCryptoAesGcmTest, KnownAnswers) {
     for (unsigned int length : {0, 8, 96, 120, 128, 160, 255}) {
       if (test.tagbits == length)
         continue;
-      auto result = AesGcmDecrypt(key, iv_bytes, additional_bytes, length,
-                                  ciphertext_bytes);
-      EXPECT_FALSE(result.has_value());
+      EXPECT_FALSE(AesGcmDecrypt(key, iv_bytes, additional_bytes, length,
+                                 ciphertext_bytes)
+                       .has_value());
     }
   }
 }

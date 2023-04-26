@@ -182,7 +182,7 @@ TEST_P(FilesystemProxyTest, OpenFileOpenIfExists) {
   FileErrorOr<base::File> file1 =
       proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base::File::FLAG_READ |
                                    base::File::FLAG_WRITE);
-  EXPECT_TRUE(file1.has_value());
+  ASSERT_TRUE(file1.has_value());
   EXPECT_EQ(kFile1Contents, ReadFileContents(&file1.value()));
 }
 
@@ -427,7 +427,7 @@ TEST_P(FilesystemProxyTest, LockFile) {
   const base::FilePath kLockFilename{FILE_PATH_LITERAL("lox")};
   FileErrorOr<std::unique_ptr<FilesystemProxy::FileLock>> result =
       proxy().LockFile(kLockFilename);
-  ASSERT_FALSE(!result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_NE(nullptr, result.value());
 
   FileErrorOr<std::unique_ptr<FilesystemProxy::FileLock>> result2 =
@@ -447,7 +447,7 @@ TEST_P(FilesystemProxyTest, LockFile) {
 
   // And once again we should be able to reacquire the lock.
   result = proxy().LockFile(kLockFilename);
-  ASSERT_FALSE(!result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_NE(nullptr, result.value());
 }
 
@@ -464,7 +464,7 @@ TEST_P(FilesystemProxyTest, AbsolutePathEqualToRoot) {
   // operate correctly.
   FileErrorOr<std::vector<base::FilePath>> result = proxy().GetDirectoryEntries(
       GetTestRoot(), FilesystemProxy::DirectoryEntryType::kFilesAndDirectories);
-  ASSERT_FALSE(!result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_THAT(result.value(),
               UnorderedElementsAre(MakeAbsolute(kFile1), MakeAbsolute(kFile2),
                                    MakeAbsolute(kDir1), MakeAbsolute(kDir2)));
@@ -477,7 +477,7 @@ TEST_P(FilesystemProxyTest, AbsolutePathWithinRoot) {
   FileErrorOr<std::vector<base::FilePath>> result = proxy().GetDirectoryEntries(
       GetTestRoot().Append(kDir1),
       FilesystemProxy::DirectoryEntryType::kFilesAndDirectories);
-  ASSERT_FALSE(!result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_THAT(result.value(),
               UnorderedElementsAre(MakeAbsolute(kDir1.Append(kDir1File1)),
                                    MakeAbsolute(kDir1.Append(kDir1File2)),
