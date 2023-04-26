@@ -1344,17 +1344,13 @@ int SearchProvider::GetVerbatimRelevance(bool* relevance_from_server) const {
 }
 
 bool SearchProvider::ShouldCurbDefaultSuggestions() const {
-  // Only curb if the global experimental keyword feature is enabled, we're
-  // in keyword mode and we believe the user selected the mode explicitly.
+  // Only curb if we're in keyword mode and we believe the user selected the
+  // mode explicitly.
   if (providers_.has_keyword_provider()) {
     const TemplateURL* turl = providers_.GetKeywordProviderURL();
     DCHECK(turl);
-    if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
-        (turl->starter_pack_id() > 0)) {
-      return true;
-    }
-    return InExplicitExperimentalKeywordMode(input_,
-                                             providers_.keyword_provider());
+    return (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+            (turl->starter_pack_id() > 0));
   } else {
     return false;
   }

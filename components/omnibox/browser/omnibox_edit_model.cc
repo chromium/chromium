@@ -904,11 +904,6 @@ void OmniboxEditModel::OpenSelection(base::TimeTicks timestamp,
   OpenSelection(popup_selection_, timestamp, disposition);
 }
 
-bool OmniboxEditModel::InExplicitExperimentalKeywordMode() {
-  return AutocompleteProvider::InExplicitExperimentalKeywordMode(input_,
-                                                                 keyword_);
-}
-
 bool OmniboxEditModel::AcceptKeyword(
     OmniboxEventProto::KeywordModeEntryMethod entry_method) {
   TRACE_EVENT0("omnibox", "OmniboxEditModel::AcceptKeyword");

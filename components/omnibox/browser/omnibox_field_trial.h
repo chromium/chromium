@@ -335,10 +335,6 @@ extern const base::FeatureParam<int> kFuzzyUrlSuggestionsPenaltyLow;
 // applied and where the low penalty will be applied.
 extern const base::FeatureParam<int> kFuzzyUrlSuggestionsPenaltyTaperLength;
 
-// Simply a convenient wrapper for testing a flag. Used downstream for an
-// assortment of keyword mode experiments.
-bool IsExperimentalKeywordModeEnabled();
-
 // On Device Suggestions feature and its helper functions.
 // TODO(crbug.com/1307005): clean up head suggest flags once crbug.com/1307005
 // no longer happens.

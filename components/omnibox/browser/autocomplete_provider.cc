@@ -306,35 +306,6 @@ bool AutocompleteProvider::InKeywordMode(const AutocompleteInput& input) {
          metrics::OmniboxEventProto::INVALID;
 }
 
-// static
-bool AutocompleteProvider::InExplicitExperimentalKeywordMode(
-    const AutocompleteInput& input,
-    const std::u16string& keyword) {
-  return OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() &&
-         input.prefer_keyword() &&
-         base::StartsWith(input.text(), keyword,
-                          base::CompareCase::SENSITIVE) &&
-         InExplicitKeywordMode(input, keyword);
-}
-
-// static
-bool AutocompleteProvider::InExplicitKeywordMode(
-    const AutocompleteInput& input,
-    const std::u16string& keyword) {
-  // It is important to this method that we determine if the user entered
-  // keyword mode intentionally, as we use this routine to e.g. filter
-  // all but keyword results. Currently we assume that the user entered
-  // keyword mode intentionally with all entry methods except with a
-  // space (and disregard entry method during a backspace). However, if the
-  // user has typed a char past the space, we again assume keyword mode.
-  return (((input.keyword_mode_entry_method() !=
-                metrics::OmniboxEventProto::SPACE_AT_END &&
-            input.keyword_mode_entry_method() !=
-                metrics::OmniboxEventProto::SPACE_IN_MIDDLE) &&
-           !input.prevent_inline_autocomplete()) ||
-          input.text().size() > keyword.size() + 1);
-}
-
 void AutocompleteProvider::ResizeMatches(size_t max_matches,
                                          bool ml_scoring_enabled) {
   if (matches_.size() <= max_matches) {

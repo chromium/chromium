@@ -253,10 +253,6 @@ OmniboxResultView* OmniboxPopupViewViews::GetSelectedResultView() {
   return result_view_at(selected_line);
 }
 
-bool OmniboxPopupViewViews::InExplicitExperimentalKeywordMode() {
-  return edit_model_->InExplicitExperimentalKeywordMode();
-}
-
 bool OmniboxPopupViewViews::IsOpen() const {
   return popup_ != nullptr;
 }

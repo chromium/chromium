@@ -255,10 +255,6 @@ class OmniboxEditModel {
     return !is_keyword_hint_ && !keyword_.empty();
   }
 
-  // A stronger version of is_keyword_selected(), which depends on there
-  // being input after the keyword.
-  bool InExplicitExperimentalKeywordMode();
-
   // Accepts the current keyword hint as a keyword. It always returns true for
   // caller convenience. |entry_method| indicates how the user entered
   // keyword mode.

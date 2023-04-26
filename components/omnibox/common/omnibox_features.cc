@@ -46,12 +46,6 @@ const auto enabled_by_default_android_ios =
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif
 
-// Feature used to enable various experiments on keyword mode, UI and
-// suggestions.
-BASE_FEATURE(kExperimentalKeywordMode,
-             "OmniboxExperimentalKeywordMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature to enable showing thumbnail in front of the Omnibox clipboard image
 // search suggestion.
 BASE_FEATURE(kImageSearchSuggestionThumbnail,

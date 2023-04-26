@@ -607,10 +607,6 @@ const base::FeatureParam<int>
         "FuzzyUrlSuggestionsPenaltyTaperLength",
         0);
 
-bool OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kExperimentalKeywordMode);
-}
-
 bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForIncognito() {
   return base::FeatureList::IsEnabled(omnibox::kOnDeviceHeadProviderIncognito);
 }

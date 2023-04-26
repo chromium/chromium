@@ -1195,8 +1195,7 @@ void AutocompleteController::UpdateKeywordDescriptions(
       i->description.clear();
       i->description_class.clear();
       DCHECK(!i->keyword.empty());
-      if (i->keyword != last_keyword &&
-          !ShouldCurbKeywordDescriptions(i->keyword)) {
+      if (i->keyword != last_keyword) {
         const TemplateURL* template_url =
             i->GetTemplateURL(template_url_service_, false);
         if (template_url) {
@@ -1426,12 +1425,6 @@ void AutocompleteController::StopHelper(bool clear_result,
     // e.g., discard the selected suggestion when closing the omnibox.
     DelayedNotifyChanged(false);
   }
-}
-
-bool AutocompleteController::ShouldCurbKeywordDescriptions(
-    const std::u16string& keyword) {
-  return AutocompleteProvider::InExplicitExperimentalKeywordMode(input_,
-                                                                 keyword);
 }
 
 bool AutocompleteController::OnMemoryDump(

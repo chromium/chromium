@@ -656,16 +656,6 @@ void LocationBarView::Layout() {
           (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION)) {
         image = extensions::OmniboxAPI::Get(profile_)->GetOmniboxIcon(
             template_url->GetExtensionId());
-      } else if (template_url && template_url->type() == TemplateURL::NORMAL &&
-                 OmniboxFieldTrial::IsExperimentalKeywordModeEnabled()) {
-        image =
-            omnibox_view()
-                ->model()
-                ->client()
-                ->GetFaviconForKeywordSearchProvider(
-                    template_url,
-                    base::BindOnce(&LocationBarView::OnKeywordFaviconFetched,
-                                   base::Unretained(this)));
       }
       selected_keyword_view_->SetCustomImage(image);
     }

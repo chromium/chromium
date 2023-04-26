@@ -259,36 +259,6 @@ TEST_F(DocumentProviderTest, IsDocumentProviderAllowed) {
   template_url_service->Remove(new_default_provider);
   EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
 
-  // Should not be in explicit keyword mode unless the keyword is the default or
-  // drive.google.com.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {omnibox::kDocumentProvider, omnibox::kExperimentalKeywordMode}, {});
-    {
-      AutocompleteInput input(u"wikipedia.org soup",
-                              metrics::OmniboxEventProto::OTHER,
-                              TestSchemeClassifier());
-      input.set_prefer_keyword(true);
-      EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), input));
-    }
-    {
-      // Amazon is not registered as a keyword in |SetUp()|.
-      AutocompleteInput input(u"amazon.com soup",
-                              metrics::OmniboxEventProto::OTHER,
-                              TestSchemeClassifier());
-      input.set_prefer_keyword(true);
-      EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), input));
-    }
-    {
-      AutocompleteInput input(u"drive.google.com soup",
-                              metrics::OmniboxEventProto::OTHER,
-                              TestSchemeClassifier());
-      input.set_prefer_keyword(true);
-      EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), input));
-    }
-  }
-
   // Input should not be on-focus.
   {
     AutocompleteInput input(u"text text", metrics::OmniboxEventProto::OTHER,

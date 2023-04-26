@@ -245,10 +245,8 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
 void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
   match_ = match.GetMatchWithContentsAndDescriptionPossiblySwapped();
 
-  const int suggestion_indent =
-      popup_view_->InExplicitExperimentalKeywordMode() ? 70 : 0;
   suggestion_view_->SetProperty(views::kMarginsKey,
-                                gfx::Insets::TLBR(0, suggestion_indent, 0, 0));
+                                gfx::Insets::TLBR(0, 0, 0, 0));
 
   suggestion_view_->OnMatchUpdate(this, match_);
   UpdateRemoveSuggestionVisibility();

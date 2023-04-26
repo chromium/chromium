@@ -361,19 +361,6 @@ class AutocompleteProvider
   // in keyword mode.
   static bool InKeywordMode(const AutocompleteInput& input);
 
-  // Used to determine if we're in keyword mode, if experimental keyword
-  // mode is enabled, and if we're confident that the user is intentionally
-  // (not accidentally) in keyword mode. Combined, this method returns
-  // whether the caller should perform steps that are only valid in this state.
-  static bool InExplicitExperimentalKeywordMode(const AutocompleteInput& input,
-                                                const std::u16string& keyword);
-
-  // Uses the keyword entry mode in `input` (and possibly compare the length
-  // of the user input vs `keyword`) to decide if the user intentionally
-  // entered keyword mode.
-  static bool InExplicitKeywordMode(const AutocompleteInput& input,
-                                    const std::u16string& keyword);
-
   // Trims "http:" or "https:" and up to two subsequent slashes from |url|. If
   // |trim_https| is true, trims "https:", otherwise trims "http:". Returns the
   // number of characters that were trimmed.

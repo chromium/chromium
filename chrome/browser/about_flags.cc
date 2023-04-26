@@ -5692,10 +5692,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
-    {"omnibox-experimental-keyword-mode",
-     flag_descriptions::kOmniboxExperimentalKeywordModeName,
-     flag_descriptions::kOmniboxExperimentalKeywordModeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kExperimentalKeywordMode)},
     {"omnibox-domain-suggestions",
      flag_descriptions::kOmniboxDomainSuggestionsName,
      flag_descriptions::kOmniboxDomainSuggestionsDescription, kOsDesktop,

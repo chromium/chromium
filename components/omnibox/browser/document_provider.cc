@@ -479,23 +479,6 @@ bool DocumentProvider::IsDocumentProviderAllowed(
     return false;
   }
 
-  if (OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() &&
-      input.prefer_keyword()) {
-    // If a keyword provider matches, and we're explicitly in keyword mode,
-    // then the keyword provider must match the default, or the document
-    // provider.
-    AutocompleteInput keyword_input = input;
-    const TemplateURL* keyword_provider =
-        KeywordProvider::GetSubstitutingTemplateURLForInput(
-            template_url_service, &keyword_input);
-    if (keyword_provider &&
-        InExplicitKeywordMode(input, keyword_provider->keyword()) &&
-        !base::StartsWith(input.text(), u"drive.google.com",
-                          base::CompareCase::SENSITIVE)) {
-      return false;
-    }
-  }
-
   // There should be no document suggestions fetched for on-focus suggestion
   // requests, or if the input is empty.
   if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
