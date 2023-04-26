@@ -34,10 +34,11 @@ absl::optional<blink::InspectorPlayerError> ErrorFromParams(
   blink::WebVector<blink::InspectorPlayerError::SourceLocation> stack_vec;
   if (const auto* vec = param.FindList(media::StatusConstants::kStackKey)) {
     for (const auto& loc : *vec) {
+      const auto& loc_dict = loc.GetDict();
       const std::string* file =
-          loc.GetDict().FindString(media::StatusConstants::kFileKey);
+          loc_dict.FindString(media::StatusConstants::kFileKey);
       absl::optional<int> line =
-          loc.GetDict().FindInt(media::StatusConstants::kLineKey);
+          loc_dict.FindInt(media::StatusConstants::kLineKey);
       if (!file || !line.has_value())
         continue;
       blink::InspectorPlayerError::SourceLocation entry = {

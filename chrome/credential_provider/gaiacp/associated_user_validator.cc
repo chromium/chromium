@@ -79,16 +79,16 @@ unsigned __stdcall CheckReauthStatus(void* param) {
     }
 
     base::StringPiece response_string(response.data(), response.size());
-    absl::optional<base::Value> properties(base::JSONReader::Read(
-        response_string, base::JSON_ALLOW_TRAILING_COMMAS));
-    if (!properties || !properties->is_dict()) {
+    absl::optional<base::Value> properties_val = base::JSONReader::Read(
+        response_string, base::JSON_ALLOW_TRAILING_COMMAS);
+    if (!properties_val || !properties_val->is_dict()) {
       LOGFN(ERROR) << "base::JSONReader::Read failed forcing reauth";
       return 0;
     }
 
-    absl::optional<int> expires_in = properties->FindIntKey("expires_in");
-    if (properties->GetDict().contains("error") || !expires_in ||
-        expires_in.value() < 0) {
+    const auto& properties = properties_val->GetDict();
+    absl::optional<int> expires_in = properties.FindInt("expires_in");
+    if (properties.contains("error") || !expires_in || expires_in.value() < 0) {
       LOGFN(VERBOSE) << "Needs reauth sid=" << reauth_info->sid;
       return 0;
     }

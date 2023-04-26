@@ -129,15 +129,16 @@ bool PadSecret(const std::string& secret, std::string* out) {
 // find padded secret. It then removes the padding and returns original secret.
 bool UnpadSecret(const std::string& serialized_padded_secret,
                  std::string* out) {
-  absl::optional<base::Value> pwd_padding_dict = base::JSONReader::Read(
+  absl::optional<base::Value> pwd_padding = base::JSONReader::Read(
       serialized_padded_secret, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!pwd_padding_dict.has_value() || !pwd_padding_dict->is_dict()) {
+  if (!pwd_padding.has_value() || !pwd_padding->is_dict()) {
     LOGFN(ERROR) << "Failed to deserialize given secret from json.";
     return false;
   }
 
-  auto* padded_secret = pwd_padding_dict->FindStringKey(kPaddedPassword);
-  auto pwd_length = pwd_padding_dict->FindIntKey(kPasswordLength);
+  const auto& pwd_padding_dict = pwd_padding->GetDict();
+  auto* padded_secret = pwd_padding_dict.FindString(kPaddedPassword);
+  auto pwd_length = pwd_padding_dict.FindInt(kPasswordLength);
 
   auto result = true;
   if (!padded_secret || !pwd_length.has_value()) {
@@ -146,7 +147,7 @@ bool UnpadSecret(const std::string& serialized_padded_secret,
     out->assign(&(*padded_secret)[padded_secret->size() - *pwd_length],
                 *pwd_length);
   }
-  SecurelyClearDictionaryValueWithKey(&pwd_padding_dict, kPaddedPassword);
+  SecurelyClearDictionaryValueWithKey(&pwd_padding, kPaddedPassword);
 
   return result;
 }
