@@ -7,8 +7,6 @@
 
 #import <StoreKit/StoreKit.h>
 
-#import "ios/chrome/browser/promos_manager/constants.h"
-
 @class ShowSigninCommand;
 
 // Commands to show app-wide promos.
