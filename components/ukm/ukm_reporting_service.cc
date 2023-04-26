@@ -47,15 +47,11 @@ constexpr int kMinUnsentLogBytes = 300000;
 constexpr size_t kMaxLogRetransmitSize = 100 * 1024;
 
 GURL GetServerUrl() {
-#ifndef NDEBUG
-  // Only allow overriding the server URL through the command line in debug
-  // builds. This is to prevent, for example, rerouting metrics due to malware.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(metrics::switches::kUkmServerUrl)) {
     return GURL(
         command_line->GetSwitchValueASCII(metrics::switches::kUkmServerUrl));
   }
-#endif  // NDEBUG
 
   std::string server_url =
       base::GetFieldTrialParamValueByFeature(kUkmFeature, "ServerUrl");
