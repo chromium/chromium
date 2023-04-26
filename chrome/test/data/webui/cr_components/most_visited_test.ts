@@ -137,11 +137,19 @@ function wide() {
   updateScreenWidth(true, true);
 }
 
+function medium() {
+  updateScreenWidth(false, true);
+}
+
+function narrow() {
+  updateScreenWidth(false, false);
+}
+
 function leaveUrlInput() {
   $$(mostVisited, '#dialogInputUrl').dispatchEvent(new Event('blur'));
 }
 
-function setUpTest(singleRow: boolean) {
+function setUpTest(singleRow: boolean, reflowOnOverflow: boolean) {
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
   createBrowserProxy();
@@ -149,6 +157,7 @@ function setUpTest(singleRow: boolean) {
 
   mostVisited = new MostVisitedElement();
   mostVisited.singleRow = singleRow;
+  mostVisited.reflowOnOverflow = reflowOnOverflow;
   document.body.appendChild(mostVisited);
   assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
   wide();
@@ -156,7 +165,7 @@ function setUpTest(singleRow: boolean) {
 
 suite('General', () => {
   setup(() => {
-    setUpTest(/*singleRow=*/ false);
+    setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
   });
 
   test('empty shows add shortcut only', async () => {
@@ -190,9 +199,9 @@ suite('General', () => {
   });
 });
 
-function createLayoutsSuite(singleRow: boolean) {
+function createLayoutsSuite(singleRow: boolean, reflowOnOverflow: boolean) {
   setup(() => {
-    setUpTest(singleRow);
+    setUpTest(singleRow, reflowOnOverflow);
   });
 
   test('four tiles fit on one line with addShortcut', async () => {
@@ -318,15 +327,13 @@ function createLayoutsSuite(singleRow: boolean) {
     assertTrue(mostVisited.hasAttribute('visible_'));
     assertFalse(mostVisited.$.container.hidden);
   });
+}
 
+function createLayoutsWidthsSuite(singleRow: boolean) {
   suite('test various widths', () => {
-    function medium() {
-      updateScreenWidth(false, true);
-    }
-
-    function narrow() {
-      updateScreenWidth(false, false);
-    }
+    setup(() => {
+      setUpTest(singleRow, false);
+    });
 
     test('six / three is max for narrow', async () => {
       await addTiles(7);
@@ -420,18 +427,90 @@ function createLayoutsSuite(singleRow: boolean) {
   });
 }
 
+function rowCount(): number {
+  return Number(getComputedStyle(mostVisited.$.container)
+                    .getPropertyValue('--row-count'));
+}
+
+function columnCount(): number {
+  return Number(getComputedStyle(mostVisited.$.container)
+                    .getPropertyValue('--column-count'));
+}
+
+function createLayoutsWidthsReflowSuite(singleRow: boolean) {
+  suite('test reflow on various widths', () => {
+    setup(() => {
+      setUpTest(singleRow, /*reflowOnOverflow=*/ true);
+    });
+
+    test('No hidden tiles', async () => {
+      await addTiles(7);
+      updateScreenWidth(false, true);
+      assertTileLength(7);
+      assertHiddenTileLength(0);
+      updateScreenWidth(false, false);
+      assertTileLength(7);
+      assertHiddenTileLength(0);
+      assertAddShortcutShown();
+    });
+
+    test(
+        'Eight tiles + shortcut reflow to 3c x 3r in narrow layout',
+        async () => {
+          narrow();
+          await addTiles(8);
+          assertAddShortcutShown();
+          assertEquals(columnCount(), 3);
+          assertEquals(rowCount(), 3);
+        });
+
+    test(
+        'Eight tiles + shortcut reflow to 4c x 3r in medium layout',
+        async () => {
+          medium();
+          await addTiles(8);
+          assertAddShortcutShown();
+          assertEquals(columnCount(), 4);
+          assertEquals(rowCount(), 3);
+        });
+
+    test('Eight tiles + shortcut reflow in wide layout', async () => {
+      wide();
+      await addTiles(8);
+      assertAddShortcutShown();
+      assertEquals(columnCount(), singleRow ? 9 : 5);
+      assertEquals(rowCount(), singleRow ? 1 : 2);
+    });
+  });
+}
+
 suite('Layouts', () => {
   suite('double row', () => {
-    createLayoutsSuite(false);
+    createLayoutsSuite(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
+    createLayoutsWidthsSuite(/*singleRow=*/ false);
   });
+
   suite('single row', () => {
-    createLayoutsSuite(true);
+    createLayoutsSuite(/*singleRow=*/ true, /*reflowOnOverflow=*/ false);
+    createLayoutsWidthsSuite(/*singleRow=*/ true);
+  });
+});
+
+suite('Reflow Layouts', () => {
+  suite('double row', () => {
+    createLayoutsSuite(/*singleRow=*/ false, /*reflowOnOverflow=*/ true);
+    createLayoutsWidthsReflowSuite(/*singleRow=*/ false);
+  });
+
+  suite('single row', () => {
+    createLayoutsSuite(/*singleRow=*/ false, /*reflowOnOverflow=*/ true);
+    createLayoutsWidthsReflowSuite(/*singleRow=*/ true);
   });
 });
 
 suite('LoggingAndUpdates', () => {
   setup(() => {
-    setUpTest(/*singleRow=*/ false);
+    setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
   });
 
   test('rendering tiles logs event', async () => {
@@ -513,7 +592,7 @@ suite('Modification', () => {
   });
 
   setup(() => {
-    setUpTest(/*singleRow=*/ false);
+    setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
   });
 
   suite('add dialog', () => {
@@ -967,9 +1046,9 @@ suite('Modification', () => {
 });
 
 
-function createDragAndDropSuite(singleRow: boolean) {
+function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
   setup(() => {
-    setUpTest(singleRow);
+    setUpTest(singleRow, reflowOnOverflow);
   });
 
   test('drag first tile to second position', async () => {
@@ -1059,16 +1138,18 @@ function createDragAndDropSuite(singleRow: boolean) {
 
 suite('DragAndDrop', () => {
   suite('double row', () => {
-    createDragAndDropSuite(false);
+    createDragAndDropSuite(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
+    createDragAndDropSuite(/*singleRow=*/ false, /*reflowOnOverflow=*/ true);
   });
   suite('single row', () => {
-    createDragAndDropSuite(true);
+    createDragAndDropSuite(/*singleRow=*/ true, /*reflowOnOverflow=*/ false);
+    createDragAndDropSuite(/*singleRow=*/ true, /*reflowOnOverflow=*/ true);
   });
 });
 
 suite('Theming', () => {
   setup(() => {
-    setUpTest(/*singleRow=*/ false);
+    setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
   });
 
   test('RIGHT_TO_LEFT tile title text direction', async () => {

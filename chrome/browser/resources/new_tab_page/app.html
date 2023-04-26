@@ -372,7 +372,8 @@
     <template>
       <template is="dom-if" if="[[shortcutsEnabled_]]">
         <cr-most-visited id="mostVisited" theme="[[theme_.mostVisited]]"
-            single-row="[[singleRowShortcutsEnabled_]]">
+            single-row="[[singleRowShortcutsEnabled_]]"
+            reflow-on-overflow="[[mostVisitedReflowOnOverflowEnabled_]]">
         </cr-most-visited>
       </template>
       <template is="dom-if" if="[[middleSlotPromoEnabled_]]">

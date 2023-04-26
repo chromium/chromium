@@ -261,6 +261,13 @@ export class AppElement extends AppElementBase {
         reflectToAttribute: true,
       },
 
+      mostVisitedReflowOnOverflowEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('mostVisitedReflowOnOverflowEnabled'),
+        reflectToAttribute: true,
+      },
+
       wideModulesEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('wideModulesEnabled'),
