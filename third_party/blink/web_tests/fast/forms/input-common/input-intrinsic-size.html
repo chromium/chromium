@@ -64,6 +64,14 @@ for (let type of types) {
         assert_equals(rect.height, originalRect.height);
       }
     }, `${type}: display:inline`);
+
+    test(() => {
+      const i = document.body.appendChild(input.cloneNode());
+      i.style.display = 'inline list-item';
+      const rect = i.getBoundingClientRect();
+      assert_equals(rect.width, originalRect.width);
+      assert_equals(rect.height, originalRect.height);
+    }, `${type}: display:inline list-item`);
   }
 }
 </script>
