@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -20,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/fake_probe_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

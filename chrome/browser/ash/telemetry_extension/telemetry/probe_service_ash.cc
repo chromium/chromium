@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_ash.h"
 
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/telemetry_extension/probe_service_converters.h"
+#include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_converters.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"

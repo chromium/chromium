@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/telemetry_extension/probe_service_converters.h"
+#include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_converters.h"
 
 #include <cstdint>
 #include <utility>

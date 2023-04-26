@@ -103,7 +103,7 @@
 #include "chrome/browser/ash/sync/sync_mojo_service_ash.h"
 #include "chrome/browser/ash/sync/sync_mojo_service_factory_ash.h"
 #include "chrome/browser/ash/telemetry_extension/diagnostics/diagnostics_service_ash.h"
-#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_ash.h"
 #include "chrome/browser/ash/telemetry_extension/telemetry_event_service_ash.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/browser_process.h"
