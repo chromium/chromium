@@ -3,8 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace ash::cloud_upload {
@@ -33,9 +39,40 @@ file_manager::io_task::OperationType GetOperationTypeForUpload(
   DCHECK(source_volume)
       << "Unable to find source volume (source path filesystem_id: "
       << source_url.filesystem_id() << ")";
-  return source_volume && source_volume->is_read_only()
-             ? file_manager::io_task::OperationType::kCopy
-             : file_manager::io_task::OperationType::kMove;
+  if (!source_volume) {
+    return file_manager::io_task::OperationType::kMove;
+  }
+  // If the source volume is read-only, always copy.
+  if (source_volume->is_read_only()) {
+    return file_manager::io_task::OperationType::kCopy;
+  }
+  // For certain types of volumes (generally associated with cloud filesystems),
+  // always copy.
+  if (source_volume->type() == file_manager::VOLUME_TYPE_GOOGLE_DRIVE ||
+      source_volume->type() == file_manager::VOLUME_TYPE_SMB ||
+      source_volume->type() == file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER) {
+    return file_manager::io_task::OperationType::kCopy;
+  }
+  // For provided file systems, copy only if the file system's source data is
+  // retrieved over the network.
+  if (source_volume->type() == file_manager::VOLUME_TYPE_PROVIDED) {
+    const base::FilePath source_path = source_url.path();
+    file_system_provider::Service* service =
+        file_system_provider::Service::Get(profile);
+    std::vector<file_system_provider::ProvidedFileSystemInfo> file_systems =
+        service->GetProvidedFileSystemInfoList();
+    for (const auto& file_system : file_systems) {
+      if (file_system.mount_path().IsParent(source_path)) {
+        return file_system.source() ==
+                       extensions::FileSystemProviderSource::SOURCE_NETWORK
+                   ? file_manager::io_task::OperationType::kCopy
+                   : file_manager::io_task::OperationType::kMove;
+      }
+    }
+    return file_manager::io_task::OperationType::kMove;
+  }
+  // Move in all other cases.
+  return file_manager::io_task::OperationType::kMove;
 }
 
 }  // namespace ash::cloud_upload
