@@ -13,6 +13,7 @@ class DexTest(unittest.TestCase):
     # pylint: disable=line-too-long
     output = """\
 some initial message
+Warning: Specification conversion: The following prefixes do not match any type: [Ljava/util/Desugar]
 Warning in ../../clank/third_party/google3/pg_confs/java_com_google_protobuf_lite_proguard.pgcfg:
 Rule matches the static final field `java.lang.String com.google.protobuf.BaseGeneratedExtensionRegistryLite.CONTAINING_TYPE_0`, which may have been inlined: -identifiernamestring class com.google.protobuf.*GeneratedExtensionRegistryLite {
   static java.lang.String CONTAINING_TYPE_*;
@@ -39,7 +40,7 @@ Warning: some message
 
     # Test no preamble, filtered
     output = """\
-Missing class org.chromium.build.NativeLibraries',
+Warning: Specification conversion: The following prefixes do not ...
 """
     expected = ''
     self.assertEqual(filter_func(output), expected)

@@ -551,7 +551,8 @@ def _ExtractEmbeddedConfigs(jar_path, embedded_configs):
 
 
 def _ContainsDebuggingConfig(config_str):
-  return '-whyareyoukeeping' in config_str
+  debugging_configs = ('-whyareyoukeeping', '-whyareyounotinlining')
+  return any(config in config_str for config in debugging_configs)
 
 
 def _MaybeWriteStampAndDepFile(options, inputs):
