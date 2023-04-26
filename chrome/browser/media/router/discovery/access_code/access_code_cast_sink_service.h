@@ -208,6 +208,8 @@ class AccessCodeCastSinkService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest, RecordRouteDuration);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            RecordRouteDurationNonAccessCodeDevice);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           RestartExpirationTimerDoesntResetTimer);
 
   // Use |AccessCodeCastSinkServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
@@ -226,7 +228,7 @@ class AccessCodeCastSinkService : public KeyedService,
                              AddSinkResultCode result_code);
 
   void OnChannelOpenedResult(AddSinkResultCallback add_sink_callback,
-                             MediaSink::Id sink_id,
+                             const MediaSinkInternal& sink,
                              bool channel_opened);
 
   bool IsSinkValidAccessCodeSink(const MediaSinkInternal* sink);

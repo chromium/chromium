@@ -11,6 +11,7 @@ static_library("access_code_cast_integration_base") {
   ]
   deps = [
     "//base/test:test_support",
+    "//chrome/browser:browser",
     "//chrome/browser/media/router:router",
     "//chrome/browser/media/router:test_support",
     "//chrome/browser/media/router/discovery:discovery",

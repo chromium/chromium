@@ -409,7 +409,7 @@ void AccessCodeCastSinkService::OpenChannelIfNecessary(
       StoreSinkInPrefs(&sink);
       SetExpirationTimer(&sink);
 
-      // Get the existing sink to we can update its info.
+      // Get the existing sink so we can update its info.
       cast_media_sink_service_impl_->task_runner()->PostTaskAndReplyWithResult(
           FROM_HERE,
           base::BindOnce(&CastMediaSinkServiceImpl::GetSinkById,
@@ -428,7 +428,7 @@ void AccessCodeCastSinkService::OpenChannelIfNecessary(
   // runner.
   auto channel_cb = base::BindOnce(
       &AccessCodeCastSinkService::OnChannelOpenedResult,
-      weak_ptr_factory_.GetWeakPtr(), std::move(add_sink_callback), sink.id());
+      weak_ptr_factory_.GetWeakPtr(), std::move(add_sink_callback), sink);
 
   auto returned_channel_cb =
       base::BindPostTask(task_runner_, std::move(channel_cb));
@@ -498,17 +498,20 @@ AccessCodeCastSinkService::CreateCastSocketOpenParams(
 
 void AccessCodeCastSinkService::OnChannelOpenedResult(
     AddSinkResultCallback add_sink_callback,
-    MediaSink::Id sink_id,
+    const MediaSinkInternal& sink,
     bool channel_opened) {
   if (!channel_opened) {
-    LogError("The channel failed to open.", sink_id);
+    LogError("The channel failed to open.", sink.id());
     std::move(add_sink_callback)
         .Run(AddSinkResultCode::CHANNEL_OPEN_ERROR, absl::nullopt);
     return;
   }
-  LogInfo("The channel successfully opened.", sink_id);
-  std::move(add_sink_callback).Run(AddSinkResultCode::OK, sink_id);
-  StoreSinkAndSetExpirationTimer(sink_id);
+  LogInfo("The channel successfully opened.", sink.id());
+  std::move(add_sink_callback).Run(AddSinkResultCode::OK, sink.id());
+  if (sink.cast_data().discovery_type ==
+      CastDiscoveryType::kAccessCodeManualEntry) {
+    StoreSinkAndSetExpirationTimer(sink.id());
+  }
 }
 
 void AccessCodeCastSinkService::StoreSinkAndSetExpirationTimer(

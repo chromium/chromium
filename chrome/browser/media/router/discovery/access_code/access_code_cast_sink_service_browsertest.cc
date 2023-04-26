@@ -182,6 +182,10 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, SavedDevice) {
           base::BindOnce(
               &AccessCodeCastIntegrationBrowserTest::ExpectMediaRouterHasSink,
               weak_ptr_factory_.GetWeakPtr()));
+  // Verify that the saved devices sink added time isn't reset after it has been
+  // successfully opened and exists in the media router.
+  EXPECT_EQ(GetPrefUpdater()->GetDeviceAddedTime("cast:<1234>").value(),
+            GetDeviceAddedTime());
 }
 
 }  // namespace media_router

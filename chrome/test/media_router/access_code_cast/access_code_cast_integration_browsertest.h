@@ -159,6 +159,10 @@ class AccessCodeCastIntegrationBrowserTest
   static constexpr char kAccessCodeCastSavedDeviceScreenplayTag[] =
       "screenplay-5aba818e-1cca-4c41-811a-4bf704cbe820";
 
+  base::Time GetDeviceAddedTime() { return device_added_time_; }
+
+  void UpdateDeviceAddedTime(const MediaSinkInternal& cast_sink);
+
  private:
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription subscription_;
@@ -201,6 +205,8 @@ class AccessCodeCastIntegrationBrowserTest
 
   mojom::RouteRequestResultCode result_code_ =
       mojom::RouteRequestResultCode::OK;
+
+  base::Time device_added_time_;
 
   base::WeakPtrFactory<AccessCodeCastIntegrationBrowserTest> weak_ptr_factory_{
       this};

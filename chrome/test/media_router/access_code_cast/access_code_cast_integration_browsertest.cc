@@ -23,6 +23,7 @@
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -452,6 +453,15 @@ void AccessCodeCastIntegrationBrowserTest::MockOnChannelOpenedCall(
                      base::Unretained(mock_cast_media_sink_service_impl()),
                      cast_sink));
 
+  if (cast_sink.cast_data().discovery_type ==
+      CastDiscoveryType::kAccessCodeRememberedDevice) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AccessCodeCastIntegrationBrowserTest::UpdateDeviceAddedTime,
+            base::Unretained(this), cast_sink));
+  }
+
   // The open channel callback needs to run after the AddSinkForTest is posted
   // to ensure that no race conditions occur and we mimic an actual access code
   // casting situation.
@@ -558,13 +568,25 @@ void AccessCodeCastIntegrationBrowserTest::ExpectStartRouteCallFromTabMirroring(
 
 AccessCodeCastPrefUpdater*
 AccessCodeCastIntegrationBrowserTest::GetPrefUpdater() {
-  return AccessCodeCastSinkServiceFactory::GetForProfile(browser()->profile())
+  return AccessCodeCastSinkServiceFactory::GetForProfile(
+             ProfileManager::GetLastUsedProfile())
       ->pref_updater_.get();
 }
 
 void AccessCodeCastIntegrationBrowserTest::AddScreenplayTag(
     const std::string& screenplay_tag) {
   base::AddTagToTestResult("feature_id", screenplay_tag);
+}
+
+void AccessCodeCastIntegrationBrowserTest::UpdateDeviceAddedTime(
+    const MediaSinkInternal& cast_sink) {
+  // Record the device added time of saved sinks to verify that this does not
+  // change when the channel is opened.
+  if (!GetPrefUpdater()->GetDeviceAddedTime(cast_sink.id()).has_value()) {
+    return;
+  }
+  device_added_time_ =
+      GetPrefUpdater()->GetDeviceAddedTime(cast_sink.id()).value();
 }
 
 }  // namespace media_router
