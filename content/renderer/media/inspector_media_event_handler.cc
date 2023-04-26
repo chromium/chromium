@@ -35,9 +35,9 @@ absl::optional<blink::InspectorPlayerError> ErrorFromParams(
   if (const auto* vec = param.FindList(media::StatusConstants::kStackKey)) {
     for (const auto& loc : *vec) {
       const std::string* file =
-          loc.FindStringKey(media::StatusConstants::kFileKey);
+          loc.GetDict().FindString(media::StatusConstants::kFileKey);
       absl::optional<int> line =
-          loc.FindIntKey(media::StatusConstants::kLineKey);
+          loc.GetDict().FindInt(media::StatusConstants::kLineKey);
       if (!file || !line.has_value())
         continue;
       blink::InspectorPlayerError::SourceLocation entry = {
