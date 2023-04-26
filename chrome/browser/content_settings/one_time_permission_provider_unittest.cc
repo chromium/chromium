@@ -51,23 +51,6 @@ class OneTimePermissionProviderTest : public testing::Test {
         .session_model = content_settings::SessionModel::OneTime};
   }
 
-  // TODO(fjacky): extract to utility class crbug.com/1439219
-  // Utility method, because uma mapping functions aren't exposed
-  std::string GetOneTimePermissionEventHistogram(ContentSettingsType type) {
-    std::string permission_type;
-    if (type == ContentSettingsType::GEOLOCATION) {
-      permission_type = "Geolocation";
-    } else if (type == ContentSettingsType::MEDIASTREAM_MIC) {
-      permission_type = "AudioCapture";
-    } else if (type == ContentSettingsType::MEDIASTREAM_CAMERA) {
-      permission_type = "VideoCapture";
-    } else {
-      NOTREACHED();
-    }
-
-    return "Permissions.OneTimePermission." + permission_type + ".Event";
-  }
-
   GURL primary_url = GURL("http://example.com/");
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromURLNoWildcard(primary_url);
@@ -104,7 +87,8 @@ TEST_F(OneTimePermissionProviderTest, SetAndGetContentSetting) {
                 ContentSettingsType::GEOLOCATION, false));
 
   histograms.ExpectUniqueSample(
-      GetOneTimePermissionEventHistogram(ContentSettingsType::GEOLOCATION),
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::GEOLOCATION),
       static_cast<base::HistogramBase::Sample>(
           permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
       1);
@@ -178,14 +162,16 @@ TEST_F(OneTimePermissionProviderTest,
 
   // We granted to two distinct origins
   histograms.ExpectBucketCount(
-      GetOneTimePermissionEventHistogram(ContentSettingsType::GEOLOCATION),
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::GEOLOCATION),
       static_cast<base::HistogramBase::Sample>(
           permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
       2);
 
   // Only one origin was in the background and should have been expired
   histograms.ExpectBucketCount(
-      GetOneTimePermissionEventHistogram(ContentSettingsType::GEOLOCATION),
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::GEOLOCATION),
       static_cast<base::HistogramBase::Sample>(
           permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND),
       1);
@@ -218,31 +204,35 @@ TEST_F(OneTimePermissionProviderTest, CaptureExpiryRevokesPermissions) {
                 one_time_permission_provider_.get(), other_url, secondary_url,
                 ContentSettingsType::MEDIASTREAM_MIC, false));
 
-  histograms.ExpectTotalCount(GetOneTimePermissionEventHistogram(
-                                  ContentSettingsType::MEDIASTREAM_CAMERA),
-                              2);
   histograms.ExpectTotalCount(
-      GetOneTimePermissionEventHistogram(ContentSettingsType::MEDIASTREAM_MIC),
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_CAMERA),
+      2);
+  histograms.ExpectTotalCount(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_MIC),
       2);
   histograms.ExpectBucketCount(
-      GetOneTimePermissionEventHistogram(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
           ContentSettingsType::MEDIASTREAM_CAMERA),
       static_cast<base::HistogramBase::Sample>(
           permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
       1);
   histograms.ExpectBucketCount(
-      GetOneTimePermissionEventHistogram(
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
           ContentSettingsType::MEDIASTREAM_CAMERA),
       static_cast<base::HistogramBase::Sample>(
           permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND),
       1);
   histograms.ExpectBucketCount(
-      GetOneTimePermissionEventHistogram(ContentSettingsType::MEDIASTREAM_MIC),
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_MIC),
       static_cast<base::HistogramBase::Sample>(
           permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
       1);
   histograms.ExpectBucketCount(
-      GetOneTimePermissionEventHistogram(ContentSettingsType::MEDIASTREAM_MIC),
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::MEDIASTREAM_MIC),
       static_cast<base::HistogramBase::Sample>(
           permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND),
       1);
@@ -305,7 +295,8 @@ TEST_F(OneTimePermissionProviderTest, EnsureOneDayExpiry) {
   // Only a grant sample should be recorded. 1-day expiry can be computed from
   // #grants - #other buckets
   histograms.ExpectUniqueSample(
-      GetOneTimePermissionEventHistogram(ContentSettingsType::GEOLOCATION),
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::GEOLOCATION),
       static_cast<base::HistogramBase::Sample>(
           permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
       1);
@@ -328,15 +319,19 @@ TEST_F(OneTimePermissionProviderTest, ManualRevocationUmaTest) {
       ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_ASK), {});
 
   histograms.ExpectTotalCount(
-      GetOneTimePermissionEventHistogram(ContentSettingsType::GEOLOCATION), 2);
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::GEOLOCATION),
+      2);
   histograms.ExpectBucketCount(
-      GetOneTimePermissionEventHistogram(ContentSettingsType::GEOLOCATION),
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::GEOLOCATION),
       static_cast<base::HistogramBase::Sample>(
           permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
       1);
 
   histograms.ExpectBucketCount(
-      GetOneTimePermissionEventHistogram(ContentSettingsType::GEOLOCATION),
+      permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+          ContentSettingsType::GEOLOCATION),
       static_cast<base::HistogramBase::Sample>(
           permissions::OneTimePermissionEvent::REVOKED_MANUALLY),
       1);

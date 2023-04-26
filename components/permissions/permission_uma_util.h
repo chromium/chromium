@@ -557,6 +557,9 @@ class PermissionUmaUtil {
   static void RecordPageInfoDialogAccessType(
       PageInfoDialogAccessType access_type);
 
+  static std::string GetOneTimePermissionEventHistogram(
+      ContentSettingsType type);
+
   static void RecordOneTimePermissionEvent(ContentSettingsType type,
                                            OneTimePermissionEvent event);
 

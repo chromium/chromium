@@ -221,7 +221,8 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
                                   permissions::OneTimePermissionEvent event,
                                   int occ) {
     histograms_.ExpectUniqueSample(
-        GetOneTimePermissionEventHistogram(content_setting_type),
+        permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+            content_setting_type),
         static_cast<base::HistogramBase::Sample>(event), occ);
   }
 
@@ -229,7 +230,8 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
                                  permissions::OneTimePermissionEvent event,
                                  int occ) {
     histograms_.ExpectBucketCount(
-        GetOneTimePermissionEventHistogram(content_setting_type),
+        permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
+            content_setting_type),
         static_cast<base::HistogramBase::Sample>(event), occ);
   }
 
@@ -240,23 +242,6 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
   base::HistogramTester histograms_;
 
  private:
-  // TODO(fjacky): extract to utility class crbug.com/1439219
-  // Utility method, because uma mapping functions aren't exposed
-  std::string GetOneTimePermissionEventHistogram(ContentSettingsType type) {
-    std::string permission_type;
-    if (type == ContentSettingsType::GEOLOCATION) {
-      permission_type = "Geolocation";
-    } else if (type == ContentSettingsType::MEDIASTREAM_MIC) {
-      permission_type = "AudioCapture";
-    } else if (type == ContentSettingsType::MEDIASTREAM_CAMERA) {
-      permission_type = "VideoCapture";
-    } else {
-      NOTREACHED();
-    }
-
-    return "Permissions.OneTimePermission." + permission_type + ".Event";
-  }
-
   // The render frame host where JS calls will be executed.
   raw_ptr<content::RenderFrameHost, DanglingUntriaged> render_frame_host_ =
       nullptr;
