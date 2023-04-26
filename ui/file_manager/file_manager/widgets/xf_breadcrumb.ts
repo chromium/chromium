@@ -439,8 +439,6 @@ function getCSS() {
     :host {
       align-items: center;
       display: flex;
-      font-family: 'Roboto Medium';
-      font-size: 14px;
       outline: none;
       overflow: hidden;
       user-select: none;
@@ -471,8 +469,7 @@ function getCSS() {
       display: inline-block;
       position: relative;
 
-      /* don't use browser's button font. */
-      font: inherit;
+      font: var(--cros-title-1-font);;
       margin: 0;
 
       /* elide wide text */
@@ -489,7 +486,6 @@ function getCSS() {
 
     button[disabled] {
       cursor: default;
-      font-weight: 500;
       margin-inline-end: 4px;
       pointer-events: none;
     }
@@ -558,8 +554,7 @@ function getCSS() {
     #elider-menu button {
       color: var(--cros-sys-on_surface);
       display: block;
-      font-family: 'Roboto';
-      font-size: 13px;
+      font: var(--cros-button-2-font);
       height: 36px;
       max-width: min(288px, 40vw);
       min-width: 192px;  /* menu width */

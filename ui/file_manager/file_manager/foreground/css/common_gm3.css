@@ -126,8 +126,7 @@ cr-menu.chrome-menu > [checked]::before {
   color: var(--cros-sys-on_primary_container);
   cursor: pointer;
   display: inline-block;
-  font-size: 13px;
-  font-weight: 500;
+  font: var(--cros-button-2-font);
   height: 36px;
   margin: 0;
   margin-inline-start: 8px;
@@ -314,13 +313,12 @@ html[dir='rtl'] .entry-name {
 .cr-dialog-container .cr-dialog-title {
   color: var(--cros-sys-on_surface);
   display: block;
-  font-size: 16px;
-  font-weight: 500;
+  font: var(--cros-display-7-font);
   margin-bottom: 16px;
 }
 
 .cr-dialog-container .cr-dialog-text {
-  font-size: 14px;
+  font: var(--cros-body-1-font);
 }
 
 .cr-dialog-container .cr-dialog-text,
@@ -405,32 +403,12 @@ html[dir='rtl'] .entry-name {
 }
 
 /* Common typography styles for ChromeOS. */
-.headline2 {
-  color: var(--cros-sys-on_surface);
-  font-family: Roboto;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 22px;
-}
-
 .button2 {
   color: var(--cros-sys-on_surface);
-  font-family: Roboto;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 20px;
+  font: var(--cros-button-2-font);
 }
 
 .body2-primary {
   color: var(--cros-sys-on_surface);
-  font-family: Roboto;
-  font-size: 13px;
-  line-height: 20px;
-}
-
-.annotation1-primary {
-  color: var(--cros-sys-on_surface);
-  font-family: Roboto;
-  font-size: 12px;
-  line-height: 18px;
+  font: var(--cros-body-2-font);
 }

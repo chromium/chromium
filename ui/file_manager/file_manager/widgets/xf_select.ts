@@ -393,6 +393,7 @@ function getCSS(): CSSResultGroup {
       --ripple-opacity: 100%;
       --text-color: var(--cros-sys-on_surface);
       box-shadow: none;
+      font: var(--cros-button-1-font);
     }
     #dropdown-toggle {
       --border-color: var(--cros-sys-separator);
@@ -439,6 +440,7 @@ function getCSS(): CSSResultGroup {
     }
     cr-button.dropdown-item {
       --focus-shadow-color: none;
+      font: var(--cros-button-2-font);
       padding: 0 16px;
     }
     cr-button.dropdown-item:hover {

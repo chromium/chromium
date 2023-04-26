@@ -19,12 +19,22 @@ found in the LICENSE file.
     opacity: 100%;
   }
 
-  #label,
-  #link.link-label {
+  :host-context([theme='legacy']) #label,
+  :host-context([theme='legacy']) #link.link-label {
     align-items: center;
     border-radius: 2px;
     display: inline-flex;
     font-size: 12px;
+    padding: 0 8px;
+    white-space: nowrap;
+  }
+
+  :host-context([theme='refresh23']) #label,
+  :host-context([theme='refresh23']) #link.link-label {
+    align-items: center;
+    border-radius: 2px;
+    display: inline-flex;
+    font: var(--cros-annotation-1-font);
     padding: 0 8px;
     white-space: nowrap;
   }

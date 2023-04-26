@@ -8,7 +8,12 @@ found in the LICENSE file.
     width: 100%;
   }
 
-  [slot='body'] > div {
+  :host-context([theme='legacy']) [slot='body'] > div {
+    margin-bottom: var(--cr-form-field-bottom-spacing);
+  }
+
+  :host-context([theme='refresh23']) [slot='body'] > div {
+    font: var(--cros-body-1-font);
     margin-bottom: var(--cr-form-field-bottom-spacing);
   }
 
@@ -76,12 +81,13 @@ found in the LICENSE file.
     --cr-dialog-title-slot-padding-start: 0;
     --cr-dialog-title-slot-padding-top: 0;
     --cr-primary-text-color: var(--cros-sys-on_surface);
-    font-weight: 500;
+    font: var(--cros-display-7-font);
   }
 
   :host-context([theme='refresh23']) [slot='body'] {
     --cr-dialog-body-padding-horizontal: 0;
     --cr-secondary-text-color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-body-1-font);
   }
 
   :host-context([theme='refresh23']) .md-select {
@@ -104,6 +110,7 @@ found in the LICENSE file.
     --cr-input-padding-end: 16px;
     --cr-input-padding-start: 16px;
     --cr-input-placeholder-color: var(--cros-sys-secondary);
+    font: var(--cros-body-2-font);
   }
 
   :host-context([theme='refresh23']) cr-button {
@@ -128,6 +135,7 @@ found in the LICENSE file.
     border: none;
     border-radius: 18px;
     box-shadow: none;
+    font: var(--cros-button-2-font);
     position: relative;
   }
 

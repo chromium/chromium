@@ -113,11 +113,9 @@ function getCSS(): CSSResultGroup {
         flex-direction: row;
         align-items: center;
         width: 100%;
-        line-height: 24px;
         padding: 8px;
         border-top: 1px solid var(--cros-sys-separator);
-        font-family: 'Roboto Medium';
-        font-size: 13px;
+        font: var(--cros-title-1-font);
         outline: none;
         user-select: none;
       }

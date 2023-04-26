@@ -39,7 +39,6 @@ body {
   display: flex;
   flex: auto;
   flex-direction: column;
-  font-size: 13px;
   height: 100%;
   margin: 0;
   padding: 0;
@@ -168,7 +167,7 @@ html.breadcrumb-elider-expanded #directory-tree {
 #directory-tree .tree-row > .file-row > .label {
   display: block;
   flex: auto;
-  font-weight: 500;
+  font: var(--cros-button-2-font);
   margin-inline-start: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -176,7 +175,7 @@ html.breadcrumb-elider-expanded #directory-tree {
 
 #directory-tree .tree-row .rename-placeholder {
   flex: auto;
-  font-weight: 500;
+  font: var(--cros-button-2-font);
 }
 
 #directory-tree .tree-row .rename-placeholder > input {
@@ -347,7 +346,6 @@ html.col-resize .jelly-splitter:not(.splitter-active):hover {
   display: flex;
   flex: none;
   flex-direction: row;
-  font-size: 14px;
   height: 57px;
   overflow: hidden;
   transition: background 220ms ease;
@@ -456,6 +454,7 @@ body.check-select .dialog-header
 
 .dialog-header #tasks {
   color: var(--cros-sys-primary);
+  font: var(--cros-button-2-font);
   margin: 0 8px;
   padding-bottom: 0;
   padding-inline: 16px;
@@ -578,7 +577,7 @@ body:not(.check-select) #selection-menu-button {
 
 #files-selected-label {
   display: none;
-  font-weight: 500;
+  font: var(--cros-button-1-font);
 }
 
 body.files-ng #files-selected-label {
@@ -654,7 +653,7 @@ body.check-select-v1 #search-button {
 #search-box {
   display: flex;
   flex: none;
-  font-size: 14px;
+  font: var(--cros-body-2-font);
 }
 
 .dialog-header.files-ng #search-box cr-input::part(input) {
@@ -727,6 +726,7 @@ html[dir='rtl'] #search-box .clear {
 
 .dialog-header.files-ng #pinned-toggle-label {
   color: var(--cros-sys-on_surface);
+  font: var(--cros-button-2-font);
 }
 
 .dialog-header.files-ng cr-toggle {
@@ -1038,8 +1038,7 @@ body.check-select #read-only-indicator {
 
 #read-only-label {
   flex: none;
-  font-size: 13px;
-  font-weight: 500;
+  font: var(--cros-button-1-font);
 }
 
 .filelist-panel {
@@ -1088,6 +1087,10 @@ body.check-select #read-only-indicator {
   margin-top: 16px;
   text-align: center;
   width: 320px;
+}
+
+#empty-folder #empty-folder-title {
+  font: var(--cros-button-2-font);
 }
 
 #detail-table {
@@ -1179,7 +1182,7 @@ body.files-ng .banner-close {
 body.files-ng grid .grid-title {
   box-sizing: border-box;
   color: var(--cros-sys-on_surface);
-  font-family: 'Roboto Medium';
+  font: var(--cros-button-2-font);
   padding-inline-start: 16px;
   padding-top: 20px;
   /* Make sure clicking this area can unselect file grids. */
@@ -1295,7 +1298,7 @@ body[type='full-page'] .detail-name .detail-icon:active {
 
 .thumbnail-bottom .filename-label {
   flex: auto;
-  font-weight: normal;
+  font: var(--cros-body-2-font);
   padding-inline-end: 8px;
 }
 
@@ -1522,7 +1525,7 @@ html[dir='rtl'] body.files-ng #default-tasks-list li[selected]::after {
   border-bottom: 1px solid var(--cros-separator-color);
   box-sizing: border-box;
   color: var(--cros-text-color-secondary);
-  font-family: 'Roboto Medium';
+  font: var(--cros-button-2-font);
   /* The desired height plus the border width. */
   height: calc(56px + 1px);
   padding-inline-start: 16px;
@@ -1607,7 +1610,7 @@ input.rename::selection,
 }
 
 input.rename {
-  font: inherit;
+  font: var(--cros-body-2-font);
   line-height: 1;
   text-align: inherit;
 }
@@ -1672,7 +1675,6 @@ li[renaming=''] .filename-label {
   box-sizing: border-box;
   color: var(--cros-sys-on_surface);
   flex: none;
-  font-family: 'Roboto Medium';
   /* The desired height plus the border bottom. */
   height: calc(48px + 1px);
   line-height: 20px;
@@ -1681,8 +1683,7 @@ li[renaming=''] .filename-label {
 /* Text label in a table header. */
 .table-header-label {
   color: inherit;
-  font-weight: normal;
-  line-height: 20px;
+  font: var(--cros-button-2-font);
   margin: 0 10px;
   margin-inline-end: 0;
   margin-inline-start: 32px;
@@ -1997,8 +1998,8 @@ html.col-resize .table-header-label .sort-icon:not(:active):hover {
 #list-container li.table-row {
   background-color: var(--cros-sys-app_base);
   box-sizing: border-box;
+  font: var(--cros-body-2-font);
   height: 48px;
-  line-height: 20px;
 }
 
 .check-select #list-container list li[selected] .detail-thumbnail
@@ -2107,7 +2108,7 @@ html.col-resize .table-header-splitter .splitter-icon:not(:active):hover {
 }
 
 .check-select li[selected] .filename-label {
-  font-weight: 500;
+  font: var(--cros-button-2-font);
 }
 
 body.files-ng #list-container li .detail-checkmark {
@@ -2360,9 +2361,14 @@ files-toast {
   --ripple-opacity: 100%;
   --text-color: var(--cros-sys-on_surface);
   border-radius: 8px;
+  font: var(--cros-button-1-font);
   margin-inline: 4px;
   min-width: auto;
   padding-inline: 12px;
+}
+
+.file-type-filter-button:first-child {
+  margin-inline-start: 0;
 }
 
 .file-type-filter-button.active {
