@@ -602,6 +602,7 @@ source_set("web_applications_unit_tests") {
     "commands/externally_managed_install_command_unittest.cc",
     "commands/fetch_installability_for_chrome_management_unittest.cc",
     "commands/fetch_manifest_and_install_command_unittest.cc",
+    "commands/install_app_locally_command_unittest.cc",
     "commands/install_from_sync_command_unittest.cc",
     "commands/install_placeholder_command_unittest.cc",
     "commands/manifest_update_check_command_unittest.cc",
