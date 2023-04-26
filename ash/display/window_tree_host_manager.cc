@@ -744,7 +744,7 @@ void WindowTreeHostManager::AddRoundedDisplayProviderIfNeeded(
   const display::ManagedDisplayInfo& display_info =
       GetDisplayManager()->GetDisplayInfo(display.id());
 
-  const gfx::RoundedCornersF panel_radii = display_info.rounded_corners_radii();
+  const gfx::RoundedCornersF panel_radii = display_info.panel_corners_radii();
 
   if (panel_radii.IsEmpty() || GetRoundedDisplayProvider(display.id())) {
     return;

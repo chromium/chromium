@@ -68,7 +68,7 @@ namespace ash {
 namespace {
 
 const char kWallpaperView[] = "WallpaperViewWidget";
-constexpr auto kTestRoundedDisplayRadii = gfx::RoundedCornersF(10, 10, 15, 15);
+constexpr auto kTestRoundedPanelRadii = gfx::RoundedCornersF(10, 10, 15, 15);
 
 template <typename T>
 class Resetter {
@@ -392,7 +392,7 @@ class WindowTreeHostManagerRoundedDisplayTest : public AshTestBase {
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kHostWindowBounds,
-        "1920x1080~" + ToDisplaySpecRadiiString(kTestRoundedDisplayRadii));
+        "1920x1080~" + ToDisplaySpecRadiiString(kTestRoundedPanelRadii));
     scoped_features_.InitAndEnableFeature(display::features::kRoundedDisplay);
     AshTestBase::SetUp();
 
@@ -806,7 +806,7 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
 
   ash::RoundedDisplayProviderTestApi primary_display_provider_test(
       primary_display_rounded_display_provider);
-  EXPECT_EQ(kTestRoundedDisplayRadii,
+  EXPECT_EQ(kTestRoundedPanelRadii,
             primary_display_provider_test.GetCurrentPanelRadii());
 }
 
@@ -825,13 +825,13 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
   ash::RoundedDisplayProviderTestApi primary_display_provider_test(
       primary_display_rounded_display_provider);
 
-  // Primary display has rounded corners set in
+  // Primary display has panel radii set in
   // `WindowTreeHostManagerRoundedDisplayTest::SetUp()`.
-  EXPECT_EQ(kTestRoundedDisplayRadii,
+  EXPECT_EQ(kTestRoundedPanelRadii,
             primary_display_provider_test.GetCurrentPanelRadii());
 
-  // Adding a secondary display should not propagate the rounded corner
-  // property.
+  // Adding a secondary display should not propagate the radii of display's
+  // panel.
   display_manager()->OnNativeDisplaysChanged(
       {first_display_info_,
        display::ManagedDisplayInfo::CreateFromSpec("1+1-300x200")});
@@ -843,20 +843,20 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
       window_tree_host_manager->GetRoundedDisplayProvider(
           secondary_display.id());
 
-  EXPECT_EQ(kTestRoundedDisplayRadii,
+  EXPECT_EQ(kTestRoundedPanelRadii,
             primary_display_provider_test.GetCurrentPanelRadii());
   EXPECT_FALSE(secondary_display_rounded_display_provider);
 
-  // Removing the secondary display should not effect the rounded corner
-  // property.
+  // Removing the secondary display should not effect the radii of display's
+  // panel.
   display_manager()->OnNativeDisplaysChanged({first_display_info_});
   primary_display_rounded_display_provider =
       window_tree_host_manager->GetRoundedDisplayProvider(primary_display.id());
 
-  EXPECT_EQ(kTestRoundedDisplayRadii,
+  EXPECT_EQ(kTestRoundedPanelRadii,
             primary_display_provider_test.GetCurrentPanelRadii());
 
-  // Changing the the metrics should not effect rounded corner property.
+  // Changing the the metrics should not effect radii of display's panel.
   display::ManagedDisplayInfo update_first_display_info = first_display_info_;
   update_first_display_info.set_device_scale_factor(2.0);
   update_first_display_info.SetBounds(gfx::Rect(400, 200));
@@ -865,7 +865,7 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
   primary_display_rounded_display_provider =
       window_tree_host_manager->GetRoundedDisplayProvider(primary_display.id());
 
-  EXPECT_EQ(kTestRoundedDisplayRadii,
+  EXPECT_EQ(kTestRoundedPanelRadii,
             primary_display_provider_test.GetCurrentPanelRadii());
 }
 
@@ -884,9 +884,9 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
   ash::RoundedDisplayProviderTestApi primary_display_provider_test(
       primary_display_rounded_display_provider);
 
-  // Primary display has rounded corners set in
+  // Primary display has panel radii set in
   // `WindowTreeHostManagerRoundedDisplayTest::SetUp()`.
-  EXPECT_EQ(kTestRoundedDisplayRadii,
+  EXPECT_EQ(kTestRoundedPanelRadii,
             primary_display_provider_test.GetCurrentPanelRadii());
 
   // Adding a secondary display without rounded-display.
@@ -935,8 +935,8 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
   RoundedDisplayProviderTestApi secondary_provider_test(
       new_secondary_display_rounded_display_provider);
 
-  // When a display is swapped. we should not have destroyed the rounded display
-  // provider instead just update the parent of the host window.
+  // When a display is swapped, we should update the parent of the host window
+  // of the provider instead of creating a new provider.
   EXPECT_EQ(new_secondary_display_rounded_display_provider,
             primary_display_rounded_display_provider);
 

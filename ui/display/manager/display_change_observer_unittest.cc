@@ -163,22 +163,19 @@ TEST_F(DisplayChangeObserverPanelRadiiTest, RadiiSpecifiedForInternalDisplay) {
       display_change_observer_.get(), display_snapshot.get(),
       default_display_mode_.get());
 
-  EXPECT_EQ(display_info.rounded_corners_radii(),
+  EXPECT_EQ(display_info.panel_corners_radii(),
             gfx::RoundedCornersF(16, 16, 15, 15));
 }
 
-TEST_F(DisplayChangeObserverPanelRadiiTest, RadiiNotSetForExternalDisplays) {
-  // Specifies radii for connectors that are different from the connector of
-  // the display(snapshot) under test.
+TEST_F(DisplayChangeObserverPanelRadiiTest, IgnoreRadiiIfNotInternalDisplay) {
   command_line_.GetProcessCommandLine()->AppendSwitchASCII(
       switches::kDisplayProperties,
-      "[{\"connector-type\": 14, \"rounded-corners\": {\"bottom-left\": 15, "
+      "[{\"connector-type\": 15, \"rounded-corners\": {\"bottom-left\": 15, "
       "\"bottom-right\": 15, \"top-left\": 16, \"top-right\": 16}}]");
 
   InitializeDisplayChangeObserver();
 
-  // Radii is not specified for the connection protocol
-  // `DisplayConnectionProtocol::k9PinDin` through command line.
+  // The snapshot is of a display that is not a internal display.
   std::unique_ptr<DisplaySnapshot> display_snapshot =
       FakeDisplaySnapshot::Builder()
           .SetId(123)
@@ -190,7 +187,7 @@ TEST_F(DisplayChangeObserverPanelRadiiTest, RadiiNotSetForExternalDisplays) {
       display_change_observer_.get(), display_snapshot.get(),
       default_display_mode_.get());
 
-  EXPECT_TRUE(display_info.rounded_corners_radii().IsEmpty());
+  EXPECT_TRUE(display_info.panel_corners_radii().IsEmpty());
 }
 
 TEST_P(DisplayChangeObserverTest, GetExternalManagedDisplayModeList) {

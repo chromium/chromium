@@ -234,8 +234,8 @@ TEST_F(DisplayManagerTest,
   WindowTreeHostManager* window_tree_host_manager =
       Shell::Get()->window_tree_host_manager();
 
-  // Have 4 displays out of which 2 displays have rounded-corners. Value after
-  // '~' specifies radii of the display.
+  // Have 4 displays out of which 2 displays have rounded panels. Value after
+  // '~' specifies radii of the display's panel.
   UpdateDisplay("500x400,400x300~15,400x300~16,500x400");
   ASSERT_EQ(4U, display_manager()->GetNumDisplays());
 
@@ -245,7 +245,7 @@ TEST_F(DisplayManagerTest,
     const RoundedDisplayProvider* rounded_display_provider =
         window_tree_host_manager->GetRoundedDisplayProvider(display.id());
     EXPECT_EQ(!!rounded_display_provider,
-              !display_info.rounded_corners_radii().IsEmpty());
+              !display_info.panel_corners_radii().IsEmpty());
   }
 }
 
@@ -256,8 +256,8 @@ TEST_F(DisplayManagerTest, RoundedDisplayProviderIsRemovedForRemovedDisplay) {
   WindowTreeHostManager* window_tree_host_manager =
       Shell::Get()->window_tree_host_manager();
 
-  // Have 4 displays out of which 2 displays have rounded-corners. Value after
-  // '~' specifies radii of the display.
+  // Have 4 displays out of which 2 displays have rounded panels. Value after
+  // '~' specifies radii of the display's panel.
   UpdateDisplay("500x400,400x300~15,400x300~16,500x400");
   ASSERT_EQ(4U, display_manager()->GetNumDisplays());
 

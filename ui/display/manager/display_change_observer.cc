@@ -356,7 +356,7 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
 
   new_info.set_maximum_cursor_size(snapshot->maximum_cursor_size());
 
-  new_info.set_rounded_corners_radii(panel_radii);
+  new_info.set_panel_corners_radii(panel_radii);
 
   new_info.SetDRMFormatsAndModifiers(snapshot->GetDRMFormatsAndModifiers());
 
