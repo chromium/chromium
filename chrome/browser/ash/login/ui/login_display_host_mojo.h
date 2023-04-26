@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
+#include "components/user_manager/user.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
@@ -57,10 +58,12 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   ~LoginDisplayHostMojo() override;
 
+  static LoginDisplayHostMojo* Get();
+
   // Called when the gaia dialog is destroyed.
   void OnDialogDestroyed(const OobeUIDialogDelegate* dialog);
 
-  void SetUserCount(int user_count);
+  void SetUsers(const user_manager::UserList& users);
 
   UserSelectionScreen* user_selection_screen() {
     return user_selection_screen_.get();
@@ -240,6 +243,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   // Set if this has been added as a `OobeUI::Observer`.
   bool added_as_oobe_observer_ = false;
+
+  bool initialized_ = false;
 
   // Set if Gaia dialog is shown with prefilled email.
   absl::optional<AccountId> gaia_reauth_account_id_;

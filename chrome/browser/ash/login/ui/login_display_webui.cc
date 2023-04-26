@@ -18,8 +18,6 @@ LoginDisplayWebUI::~LoginDisplayWebUI() = default;
 
 LoginDisplayWebUI::LoginDisplayWebUI() = default;
 
-void LoginDisplayWebUI::Init(const user_manager::UserList& users) {}
-
 void LoginDisplayWebUI::SetUIEnabled(bool is_enabled) {
   LoginDisplayHost* host = LoginDisplayHost::default_host();
   if (host && host->GetWebUILoginView())

@@ -27,102 +27,12 @@
 
 namespace ash {
 
-LoginDisplayMojo::LoginDisplayMojo(LoginDisplayHostMojo* host) : host_(host) {
+LoginDisplayMojo::LoginDisplayMojo() {
   user_manager::UserManager::Get()->AddObserver(this);
 }
 
 LoginDisplayMojo::~LoginDisplayMojo() {
   user_manager::UserManager::Get()->RemoveObserver(this);
-}
-
-void LoginDisplayMojo::UpdatePinKeyboardState(const AccountId& account_id) {
-  quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
-      // Currently if PIN is cryptohome-based, PinCanAuthenticate always return
-      // true if there's a set up PIN, even if the quick unlock policy disables
-      // it. And if PIN is pref-based it always returns false regardless of the
-      // policy because pref-based PIN doesn't have capability to decrypt the
-      // user's cryptohome. So just pass an arbitrary purpose here.
-      account_id, quick_unlock::Purpose::kAny,
-      base::BindOnce(&LoginDisplayMojo::OnPinCanAuthenticate,
-                     weak_factory_.GetWeakPtr(), account_id));
-}
-
-void LoginDisplayMojo::UpdateChallengeResponseAuthAvailability(
-    const AccountId& account_id) {
-  const bool enable_challenge_response =
-      ChallengeResponseAuthKeysLoader::CanAuthenticateUser(account_id);
-  LoginScreen::Get()->GetModel()->SetChallengeResponseAuthEnabledForUser(
-      account_id, enable_challenge_response);
-}
-
-void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users) {
-  host_->SetUserCount(filtered_users.size());
-  host_->UpdateAddUserButtonStatus();
-  auto* client = LoginScreenClientImpl::Get();
-
-  // ExistingUserController::DeviceSettingsChanged and others may initialize the
-  // login screen multiple times. Views-login only supports initialization once.
-  if (!initialized_) {
-    client->SetDelegate(host_);
-    LoginScreen::Get()->ShowLoginScreen();
-  }
-
-  UserSelectionScreen* user_selection_screen = host_->user_selection_screen();
-  user_selection_screen->Init(filtered_users);
-  LoginScreen::Get()->GetModel()->SetUserList(
-      user_selection_screen->UpdateAndReturnUserListForAsh());
-  user_selection_screen->SetUsersLoaded(true /*loaded*/);
-
-  if (user_manager::UserManager::IsInitialized()) {
-    // Enable pin and challenge-response authentication for any users who can
-    // use them.
-    for (const user_manager::User* user : filtered_users) {
-      if (!user->IsDeviceLocalAccount()) {
-        UpdatePinKeyboardState(user->GetAccountId());
-        UpdateChallengeResponseAuthAvailability(user->GetAccountId());
-      }
-    }
-  }
-
-  if (!initialized_) {
-    initialized_ = true;
-
-    // login-prompt-visible is recorded and tracked to verify boot performance
-    // does not regress. Autotests may also depend on it (ie,
-    // login_SameSessionTwice).
-    VLOG(1) << "Emitting login-prompt-visible";
-    SessionManagerClient::Get()->EmitLoginPromptVisible();
-
-    // TODO(crbug.com/1305245) - Remove once the issue is fixed.
-    LOG(WARNING) << "LoginDisplayMojo::Init() NotifyLoginOrLockScreenVisible";
-    session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
-
-    // If there no available users exist, delay showing the dialogs until after
-    // GAIA dialog is shown (GAIA dialog will check these local state values,
-    // too). Login UI will show GAIA dialog if no user are registered, which
-    // might hide any UI shown here.
-    if (filtered_users.empty())
-      return;
-
-    // TODO(crbug.com/1105387): Part of initial screen logic.
-    // Check whether factory reset or debugging feature have been requested in
-    // prior session, and start reset or enable debugging wizard as needed.
-    // This has to happen after login-prompt-visible, as some reset dialog
-    // features (TPM firmware update) depend on system services running, which
-    // is in turn blocked on the 'login-prompt-visible' signal.
-    PrefService* local_state = g_browser_process->local_state();
-    if (local_state->GetBoolean(prefs::kFactoryResetRequested)) {
-      host_->StartWizard(ResetView::kScreenId);
-    } else if (local_state->GetBoolean(prefs::kDebuggingFeaturesRequested)) {
-      host_->StartWizard(EnableDebuggingScreenView::kScreenId);
-    } else if (local_state->GetBoolean(prefs::kEnableAdbSideloadingRequested)) {
-      host_->StartWizard(EnableAdbSideloadingScreenView::kScreenId);
-    } else if (!KioskAppManager::Get()->GetAutoLaunchApp().empty() &&
-               KioskAppManager::Get()->IsAutoLaunchRequested()) {
-      VLOG(0) << "Showing auto-launch warning";
-      host_->StartWizard(KioskAutolaunchScreenView::kScreenId);
-    }
-  }
 }
 
 void LoginDisplayMojo::SetUIEnabled(bool is_enabled) {}
@@ -131,12 +41,6 @@ void LoginDisplayMojo::OnUserImageChanged(const user_manager::User& user) {
   LoginScreen::Get()->GetModel()->SetAvatarForUser(
       user.GetAccountId(),
       UserSelectionScreen::BuildAshUserAvatarForUser(user));
-}
-
-void LoginDisplayMojo::OnPinCanAuthenticate(const AccountId& account_id,
-                                            bool can_authenticate) {
-  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(account_id,
-                                                       can_authenticate);
 }
 
 }  // namespace ash

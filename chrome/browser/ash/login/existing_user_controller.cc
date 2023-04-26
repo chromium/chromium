@@ -54,6 +54,7 @@
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/user_flow.h"
@@ -292,6 +293,39 @@ AccountId GetPublicSessionAutoLoginAccountId(
   return EmptyAccountId();
 }
 
+int CountRegularUsers(const user_manager::UserList& users) {
+  // Counts regular device users that can log in.
+  int regular_users_counter = 0;
+  for (auto* user : users) {
+    // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
+    // kiosk UI) is currently disabled and it gets the apps directly from
+    // KioskAppManager, ArcKioskAppManager and WebKioskAppManager.
+    if (user->IsKioskType()) {
+      continue;
+    }
+    // Allow offline login from the error screen if user of one of these types
+    // has already logged in.
+    if (user->GetType() == user_manager::USER_TYPE_REGULAR ||
+        user->GetType() == user_manager::USER_TYPE_CHILD ||
+        user->GetType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
+      regular_users_counter++;
+    }
+  }
+  return regular_users_counter;
+}
+
+user_manager::UserList ExtractSamlLoginUsers(
+    const user_manager::UserList& users) {
+  user_manager::UserList saml_users_for_password_sync;
+  for (auto* user : users) {
+    if (user->using_saml() && user->HasGaiaAccount() &&
+        user_manager::UserManager::Get()->IsGaiaUserAllowed(*user)) {
+      saml_users_for_password_sync.push_back(user);
+    }
+  }
+  return saml_users_for_password_sync;
+}
+
 }  // namespace
 
 // Utility class used to wait for a Public Session policy to be available if
@@ -408,8 +442,6 @@ void ExistingUserController::UpdateLoginDisplay(
     SessionTerminationManager::Get()->RebootIfNecessary();
   }
   bool show_users_on_signin = true;
-  user_manager::UserList saml_users_for_password_sync;
-
   cros_settings_->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
                              &show_users_on_signin);
   AuthMetricsRecorder::Get()->OnShowUsersOnSignin(show_users_on_signin);
@@ -417,39 +449,16 @@ void ExistingUserController::UpdateLoginDisplay(
   cros_settings_->GetBoolean(kAccountsPrefEphemeralUsersEnabled,
                              &enable_ephemeral_users);
   AuthMetricsRecorder::Get()->OnEnableEphemeralUsers(enable_ephemeral_users);
-  user_manager::UserManager* const user_manager =
-      user_manager::UserManager::Get();
-  // By default disable offline login from the error screen.
-  ErrorScreen::AllowOfflineLogin(false /* allowed */);
   // Counts regular device users that can log in.
-  int regular_users_counter = 0;
-  for (auto* user : users) {
-    // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
-    // kiosk UI) is currently disabled and it gets the apps directly from
-    // KioskAppManager, ArcKioskAppManager and WebKioskAppManager.
-    if (user->IsKioskType())
-      continue;
-    // Allow offline login from the error screen if user of one of these types
-    // has already logged in.
-    if (user->GetType() == user_manager::USER_TYPE_REGULAR ||
-        user->GetType() == user_manager::USER_TYPE_CHILD ||
-        user->GetType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
-      ErrorScreen::AllowOfflineLogin(true /* allowed */);
-      regular_users_counter++;
-    }
-    const bool meets_allowlist_requirements =
-        !user->HasGaiaAccount() ||
-        user_manager::UserManager::Get()->IsGaiaUserAllowed(*user);
-    if (meets_allowlist_requirements && user->using_saml())
-      saml_users_for_password_sync.push_back(user);
-  }
-
+  const int regular_users_counter = CountRegularUsers(users);
+  // Allow offline login from the error screen if a regular user has already
+  // logged in.
+  ErrorScreen::AllowOfflineLogin(/*allowed=*/regular_users_counter > 0);
   // Records total number of users on the login screen.
   base::UmaHistogramCounts100("Login.NumberOfUsersOnLoginScreen",
                               regular_users_counter);
   AuthMetricsRecorder::Get()->OnUserCount(regular_users_counter);
-
-  auto login_users = ExtractLoginUsers(users);
+  const auto saml_users_for_password_sync = ExtractSamlLoginUsers(users);
 
   // ExistingUserController owns PasswordSyncTokenLoginCheckers only if user
   // pods are hidden.
@@ -462,11 +471,16 @@ void ExistingUserController::UpdateLoginDisplay(
   } else {
     sync_token_checkers_.reset();
   }
+
   if (LoginScreen::Get()) {
     LoginScreen::Get()->SetAllowLoginAsGuest(
-        user_manager->IsGuestSessionAllowed());
+        user_manager::UserManager::Get()->IsGuestSessionAllowed());
   }
-  GetLoginDisplay()->Init(login_users);
+
+  if (LoginDisplayHostMojo::Get()) {
+    auto login_users = ExtractLoginUsers(users);
+    LoginDisplayHostMojo::Get()->SetUsers(login_users);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
