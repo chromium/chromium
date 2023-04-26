@@ -203,28 +203,26 @@ void StartSuggestService::SuggestResponseLoaded(
 void StartSuggestService::SuggestionsParsed(
     SuggestResultCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value() || !result.value().is_list()) {
-    std::move(callback).Run(QuerySuggestions());
-    return;
-  }
-
-  SearchSuggestionParser::Results results;
-  AutocompleteInput input;
-  const bool results_parsed = SearchSuggestionParser::ParseSuggestResults(
-      result->GetList(), input, *scheme_classifier_, -1, false, &results);
-  if (!results_parsed) {
-    std::move(callback).Run(QuerySuggestions());
-    return;
-  }
-  QuerySuggestions query_suggestions;
-  for (SearchSuggestionParser::SuggestResult suggest :
-       results.suggest_results) {
-    QuerySuggestion query;
-    query.query = suggest.suggestion();
-    query.destination_url = GetQueryDestinationURL(
-        query.query, template_url_service_->GetDefaultSearchProvider());
-    query_suggestions.push_back(query);
-  }
-  suggestions_cache_[kTrendingQuerySuggestionCachedResults] = query_suggestions;
-  std::move(callback).Run(std::move(query_suggestions));
+  std::move(callback).Run([&] {
+    QuerySuggestions query_suggestions;
+    if (result.has_value() && result.value().is_list()) {
+      SearchSuggestionParser::Results results;
+      AutocompleteInput input;
+      if (SearchSuggestionParser::ParseSuggestResults(result->GetList(), input,
+                                                      *scheme_classifier_, -1,
+                                                      false, &results)) {
+        for (SearchSuggestionParser::SuggestResult suggest :
+             results.suggest_results) {
+          QuerySuggestion query;
+          query.query = suggest.suggestion();
+          query.destination_url = GetQueryDestinationURL(
+              query.query, template_url_service_->GetDefaultSearchProvider());
+          query_suggestions.push_back(std::move(query));
+        }
+        suggestions_cache_[kTrendingQuerySuggestionCachedResults] =
+            query_suggestions;
+      }
+    }
+    return query_suggestions;
+  }());
 }
