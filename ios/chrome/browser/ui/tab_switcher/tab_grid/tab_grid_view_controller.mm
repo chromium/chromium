@@ -2454,7 +2454,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)pinnedViewControllerDragSessionDidEnd:
     (PinnedTabsViewController*)pinnedTabsViewController {
+  self.dragSeesionInProgress = NO;
+
   [self.topToolbar setSearchButtonEnabled:YES];
+
+  [self configureDoneButtonBasedOnPage:self.currentPage];
+  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
+  [self configureNewTabButtonBasedOnContentPermissions];
 }
 
 #pragma mark - GridViewControllerDelegate
