@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
@@ -183,6 +184,14 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
       UpdateSelectors();
     }
   }
+  if (!wants_pointer_events_ && rule_set->requires_unfiltered_input()) {
+    wants_pointer_events_ = true;
+    Document& document = *GetSupplementable();
+    if (auto* frame = document.GetFrame()) {
+      frame->GetEventHandlerRegistry().DidAddEventHandler(
+          document, EventHandlerRegistry::kPointerEvent);
+    }
+  }
   QueueUpdateSpeculationCandidates();
 
   probe::DidAddSpeculationRuleSet(*GetSupplementable(), *rule_set);
@@ -196,6 +205,16 @@ void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
     InvalidateAllLinks();
     if (!rule_set->selectors().empty()) {
       UpdateSelectors();
+    }
+  }
+  if (wants_pointer_events_ && rule_set->requires_unfiltered_input() &&
+      base::ranges::none_of(rule_sets_,
+                            &SpeculationRuleSet::requires_unfiltered_input)) {
+    wants_pointer_events_ = false;
+    Document& document = *GetSupplementable();
+    if (auto* frame = document.GetFrame()) {
+      frame->GetEventHandlerRegistry().DidRemoveEventHandler(
+          document, EventHandlerRegistry::kPointerEvent);
     }
   }
   QueueUpdateSpeculationCandidates();
@@ -487,13 +506,6 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
         if (!referrer)
           continue;
 
-        // The default Eagerness value for |"source": "list"| rules is
-        // |kEager|. More info can be found here:
-        // https://github.com/WICG/nav-speculation/blob/main/triggers.md#eagerness
-        mojom::blink::SpeculationEagerness eagerness =
-            rule->eagerness().value_or(
-                mojom::blink::SpeculationEagerness::kEager);
-
         CHECK(!rule->target_browsing_context_name_hint() ||
               action == mojom::blink::SpeculationAction::kPrerender);
 
@@ -502,7 +514,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
             rule->requires_anonymous_client_ip_when_cross_origin(),
             rule->target_browsing_context_name_hint().value_or(
                 mojom::blink::SpeculationTargetHint::kNoHint),
-            eagerness, rule->no_vary_search_expected().Clone(),
+            rule->eagerness(), rule->no_vary_search_expected().Clone(),
             rule->injection_world(), rule_set, /*anchor=*/nullptr));
       }
     }
@@ -632,13 +644,6 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
             if (!referrer)
               continue;
 
-            // The default Eagerness value for |"source": "document"|
-            // rules is |kConservative|. More info can be found here:
-            // https://github.com/WICG/nav-speculation/blob/main/triggers.md#eagerness
-            mojom::blink::SpeculationEagerness eagerness =
-                rule->eagerness().value_or(
-                    mojom::blink::SpeculationEagerness::kConservative);
-
             mojom::blink::SpeculationTargetHint target_hint =
                 mojom::blink::SpeculationTargetHint::kNoHint;
             if (action == mojom::blink::SpeculationAction::kPrerender) {
@@ -656,7 +661,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
                 MakeGarbageCollected<SpeculationCandidate>(
                     link->HrefURL(), action, referrer.value(),
                     rule->requires_anonymous_client_ip_when_cross_origin(),
-                    target_hint, eagerness,
+                    target_hint, rule->eagerness(),
                     rule->no_vary_search_expected().Clone(),
                     rule->injection_world(), rule_set, link);
             link_candidates->push_back(std::move(candidate));
