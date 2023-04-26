@@ -357,11 +357,23 @@ void DownloadToolbarButtonView::UpdateIcon() {
       ui::ImageModel::FromVectorIcon(
           *new_icon, GetForegroundColor(ButtonState::STATE_DISABLED)));
 
-  badge_image_view_->SetImage(GetBadgeImage(
-      icon_info.is_active, controller_->GetProgress().download_count,
-      GetProgressColor(GetVisualState() == Button::STATE_DISABLED,
-                       icon_info.is_active),
-      GetColorProvider()->GetColor(kColorToolbar)));
+  int progress_download_count = controller_->GetProgress().download_count;
+  badge_image_view_->SetImage(
+      GetBadgeImage(icon_info.is_active, progress_download_count,
+                    GetProgressColor(GetVisualState() == Button::STATE_DISABLED,
+                                     icon_info.is_active),
+                    GetColorProvider()->GetColor(kColorToolbar)));
+
+  // Update the toolbar button's tooltip.
+  if (progress_download_count == 0) {
+    // "Downloads".
+    SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON));
+  } else {
+    // "1 download in progress" or "N downloads in progress".
+    SetTooltipText(l10n_util::GetPluralStringFUTF16(
+        IDS_DOWNLOAD_BUBBLE_TOOLTIP_IN_PROGRESS_COUNT,
+        progress_download_count));
+  }
 }
 
 void DownloadToolbarButtonView::Layout() {
