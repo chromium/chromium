@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+
 /**
  * @fileoverview APIs used for the scroll workaround. See crbug.com/554257.
  */
 
-/** @private */
-var webViewScrollViewIsDragging_ = false;
+let webViewScrollViewIsDragging = false;
 
 /**
  * Tracks whether user is in the middle of scrolling/dragging. If user is
  * scrolling, ignore window.scrollTo() until user stops scrolling.
  */
-__gCrWeb['setWebViewScrollViewIsDragging'] = function(state) {
-  webViewScrollViewIsDragging_ = state;
-};
+gCrWeb.setWebViewScrollViewIsDragging = function(state: boolean) {
+  webViewScrollViewIsDragging = state;
+}
 
-/** @private */
-var originalWindowScrollTo_ = window.scrollTo;
+const originalWindowScrollTo_: Function = window.scrollTo;
 
 /**
  * Wraps the original window.scrollTo() to suppress it as long as
@@ -27,6 +27,6 @@ var originalWindowScrollTo_ = window.scrollTo;
  * scrollTo(x, y) and scrollTo(options).
  */
 window.scrollTo = function() {
-  if (webViewScrollViewIsDragging_) return;
+  if (webViewScrollViewIsDragging) return;
   originalWindowScrollTo_.apply(null, arguments);
 };
