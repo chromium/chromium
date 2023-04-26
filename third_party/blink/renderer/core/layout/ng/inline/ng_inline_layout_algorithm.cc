@@ -280,6 +280,16 @@ void NGInlineLayoutAlgorithm::CreateLine(
       DCHECK(item.GetLayoutObject());
       DCHECK(item.GetLayoutObject()->IsText() ||
              item.GetLayoutObject()->IsLayoutNGListItem());
+
+      if (UNLIKELY(!item_result.Length())) {
+        // Empty or fully collapsed text isn't needed for layout, but needs
+        // `ClearNeedsLayout`. See `NGLineBreaker::HandleEmptyText`.
+        LayoutObject* layout_object = item.GetLayoutObject();
+        if (layout_object->NeedsLayout()) {
+          layout_object->ClearNeedsLayout();
+        }
+        continue;
+      }
       DCHECK(item_result.shape_result);
 
       if (UNLIKELY(quirks_mode_))

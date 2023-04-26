@@ -383,7 +383,7 @@ TEST_F(NGLineBreakerTest, OverflowMargin) {
   EXPECT_EQ(3u, lines.size());
   EXPECT_EQ("123", lines[0].first);
   EXPECT_EQ("456", lines[1].first);
-  DCHECK_EQ(NGInlineItem::kCloseTag, items[lines[1].second].Type());
+  DCHECK_EQ(NGInlineItem::kCloseTag, items[lines[1].second - 1].Type());
   EXPECT_EQ("789", lines[2].first);
 
   // Same as above, but this time "456" overflows the line because it is 70px.
@@ -650,6 +650,61 @@ TEST_P(NGTrailingSpaceWidthTest, TrailingSpaceWidth) {
   } else {
     EXPECT_EQ(first_hang_width_, LayoutUnit());
   }
+}
+
+TEST_F(NGLineBreakerTest, FullyCollapsedSpaces) {
+  // The space in `span` will be collapsed in `CollectInlines`, but it may have
+  // set `NeedsLayout`. It should be cleared when a layout lifecycle is done,
+  // but not by the line breaker.
+  NGInlineNode node = CreateInlineNode(R"HTML(
+    <style>
+    #container {
+      font-size: 10px;
+    }
+    </style>
+    <div id=container>0 <span id=span> </span>2</div>
+  )HTML");
+
+  auto* span = To<LayoutInline>(GetLayoutObjectByElementId("span"));
+  LayoutObject* space_text = span->FirstChild();
+  space_text->SetNeedsLayout("test");
+
+  // `NGLineBreaker` should not `ClearNeedsLayout`.
+  BreakLines(node, LayoutUnit(800));
+  EXPECT_TRUE(space_text->NeedsLayout());
+
+  // But a layout pass should.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(space_text->NeedsLayout());
+}
+
+TEST_F(NGLineBreakerTest, TrailingCollapsedSpaces) {
+  // The space in `span` is not collapsed but the line breaker removes it as a
+  // trailing space. Similar to `FullyCollapsedSpaces` above, its `NeedsLayout`
+  // should be cleared in a layout lifecycle, but not by the line breaker.
+  LoadAhem();
+  NGInlineNode node = CreateInlineNode(R"HTML(
+    <style>
+    #container {
+      font-size: 10px;
+      font-family: Ahem;
+      width: 2em;
+    }
+    </style>
+    <div id=container>0<span id=span> </span>2</div>
+  )HTML");
+
+  auto* span = To<LayoutInline>(GetLayoutObjectByElementId("span"));
+  LayoutObject* space_text = span->FirstChild();
+  space_text->SetNeedsLayout("test");
+
+  // `NGLineBreaker` should not `ClearNeedsLayout`.
+  BreakLines(node, LayoutUnit(800));
+  EXPECT_TRUE(space_text->NeedsLayout());
+
+  // But a layout pass should.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(space_text->NeedsLayout());
 }
 
 TEST_F(NGLineBreakerTest, MinMaxWithTrailingSpaces) {

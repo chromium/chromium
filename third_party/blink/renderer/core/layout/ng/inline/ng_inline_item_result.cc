@@ -38,8 +38,15 @@ void NGInlineItemResult::ShapeHyphen() {
 #if DCHECK_IS_ON()
 void NGInlineItemResult::CheckConsistency(bool allow_null_shape_result) const {
   DCHECK(item);
+  text_offset.AssertValid();
+  DCHECK_GE(text_offset.start, item->StartOffset());
+  DCHECK_LE(text_offset.end, item->EndOffset());
   if (item->Type() == NGInlineItem::kText) {
-    text_offset.AssertNotEmpty();
+    if (!Length()) {
+      // Empty text item should not have a `shape_result`.
+      DCHECK(!shape_result);
+      return;
+    }
     if (allow_null_shape_result && !shape_result)
       return;
     DCHECK(shape_result);

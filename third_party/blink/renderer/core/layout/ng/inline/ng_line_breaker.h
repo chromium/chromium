@@ -98,6 +98,7 @@ class CORE_EXPORT NGLineBreaker {
                               unsigned end_offset,
                               NGLineInfo*);
   NGInlineItemResult* AddItem(const NGInlineItem&, NGLineInfo*);
+  NGInlineItemResult* AddEmptyItem(const NGInlineItem&, NGLineInfo*);
 
   void BreakLine(NGLineInfo*);
   void PrepareNextLine(NGLineInfo*);
@@ -220,8 +221,6 @@ class CORE_EXPORT NGLineBreaker {
   }
   bool CanFitOnLine() const { return position_ <= AvailableWidthToFit(); }
   LayoutUnit ComputeAvailableWidth() const;
-
-  void ClearNeedsLayout(const NGInlineItem& item);
 
   // True if the current line is hyphenated.
   bool HasHyphen() const { return hyphen_index_.has_value(); }
