@@ -37,8 +37,6 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer, WebContentsObserver {
  private:
   void CancelStartedPrerenders();
 
-  // TODO(https://crbug.com/1197133): Cancel started prerenders when candidates
-  // are updated.
   // This is kept sorted by URL.
   struct PrerenderInfo;
   std::vector<PrerenderInfo> started_prerenders_;
