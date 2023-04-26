@@ -999,6 +999,9 @@ class DriveTest : public TestAccountBrowserTest {
     test_file_name_ = "text.docx";
     // Path of test file relative to the DriveFs mount point.
     relative_test_file_path = base::FilePath("/").AppendASCII(test_file_name_);
+
+    network_connection_tracker_ =
+        network::TestNetworkConnectionTracker::CreateInstance();
   }
 
   DriveTest(const DriveTest&) = delete;
@@ -1040,14 +1043,12 @@ class DriveTest : public TestAccountBrowserTest {
         (drive_mount_point_.value() + relative_test_file_path.value()));
   }
 
-  void SetConnectionOnline() {
-    network_connection_tracker_ =
-        network::TestNetworkConnectionTracker::CreateInstance();
+  void SetNetwork(network::mojom::ConnectionType connection_type) {
     content::SetNetworkConnectionTrackerForTesting(nullptr);
     content::SetNetworkConnectionTrackerForTesting(
         network_connection_tracker_.get());
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
+        connection_type);
   }
 
   // Complete the set up of the fake DriveFs with a test file added.
@@ -1071,6 +1072,8 @@ class DriveTest : public TestAccountBrowserTest {
         profile(),
         file_manager::util::GetFileManagerFileSystemContext(profile()),
         observed_absolute_drive_path());
+
+    SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
   }
 
  protected:
@@ -1127,7 +1130,7 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  SetConnectionOnline();
+  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
 
   // Start watching for the opening of `expected_web_drive_office_url`. The
   // query parameter is concatenated to the URL as office files opened from
@@ -1179,7 +1182,7 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileInDriveOpensSetUpDialog) {
   // Add test file to fake DriveFs.
   SetUpTest();
 
-  SetConnectionOnline();
+  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
 
   // Create a Web Drive Office task to open the file from DriveFs. The file is
   // in the correct location for this task.
@@ -1208,7 +1211,7 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileNotInDriveOpensSetUpDialog) {
   // Set up DriveFs.
   SetUpTest();
 
-  SetConnectionOnline();
+  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
 
   // Create a Web Drive Office task to open the file from DriveFs. The file is
   // not in the correct location for this task and would have to be moved to
@@ -1441,7 +1444,7 @@ class OneDriveTest : public TestAccountBrowserTest {
 
     web_app_publisher_ = std::make_unique<FakeWebAppPublisher>(profile());
 
-    SetConnectionOffline();
+    SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -1479,20 +1482,12 @@ class OneDriveTest : public TestAccountBrowserTest {
         "pivots%2F" + user_email);
   }
 
-  void SetConnectionOffline() {
+  void SetNetwork(network::mojom::ConnectionType connection_type) {
     content::SetNetworkConnectionTrackerForTesting(nullptr);
     content::SetNetworkConnectionTrackerForTesting(
         network_connection_tracker_.get());
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_NONE);
-  }
-
-  void SetConnectionOnline() {
-    content::SetNetworkConnectionTrackerForTesting(nullptr);
-    content::SetNetworkConnectionTrackerForTesting(
-        network_connection_tracker_.get());
-    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
+        connection_type);
   }
 
  protected:
@@ -1549,7 +1544,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
 
   CHECK_EQ(0u, web_app_publisher_->GetLaunches().size());
 
-  SetConnectionOnline();
+  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
 
   // Run dialog callback, simulate user choosing to "try-again". Will succeed
   // because system is online, and the file doesn't need to be moved.
@@ -1597,7 +1592,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
 
   ASSERT_EQ(0u, web_app_publisher_->GetLaunches().size());
 
-  SetConnectionOnline();
+  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
 
   // Run dialog callback, simulate user choosing to "cancel". The file will not
   // open.
@@ -1796,7 +1791,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileInOneDriveOpensSetUpDialog) {
   // Creates a fake ODFS with a test file.
   SetUpTest();
 
-  SetConnectionOnline();
+  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
 
   // Create an Open in Office task to open the file from ODFS. The file is in
   // the correct location for this task.
@@ -1822,7 +1817,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileInOneDriveOpensSetUpDialog) {
 // will be run when an Open in Office task tries to open an office file not
 // already in ODFS.
 IN_PROC_BROWSER_TEST_F(OneDriveTest, FileNotInOneDriveOpensSetUpDialog) {
-  SetConnectionOnline();
+  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
 
   // Create an Open in Office task to open the file from ODFS. The file is not
   // in the correct location for this task and would have to be moved to ODFS.
