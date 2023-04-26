@@ -13,8 +13,10 @@ import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -379,5 +381,54 @@ public class OmniboxResourceProvider {
         TypedValue themeRes = new TypedValue();
         context.getTheme().resolveAttribute(attributeResId, themeRes, true);
         return themeRes.resourceId;
+    }
+
+    /** Gets the margin, in pixels, on either side of an omnibox suggestion. */
+    public static @Px int getSideSpacing(@NonNull Context context) {
+        return context.getResources().getDimensionPixelSize(selectMarginDimen(
+                R.dimen.omnibox_suggestion_side_spacing, R.dimen.omnibox_suggestion_side_spacing,
+                R.dimen.omnibox_suggestion_side_spacing_smallest));
+    }
+
+    /** Gets the start padding for an omnibox suggestion's decoration icon. */
+    public static @Px int getIconStartPadding(Context context) {
+        return context.getResources().getDimensionPixelSize(
+                selectMarginDimen(R.dimen.omnibox_suggestion_24dp_icon_margin_start_modern,
+                        R.dimen.omnibox_suggestion_24dp_icon_margin_start_modern,
+                        R.dimen.omnibox_suggestion_24dp_icon_margin_start));
+    }
+
+    /** Gets the start padding for a large omnibox suggestion decoration icon. */
+    public static @Px int getLargeIconStartPadding(Context context) {
+        return context.getResources().getDimensionPixelSize(
+                selectMarginDimen(R.dimen.omnibox_suggestion_36dp_icon_margin_start_smaller,
+                        R.dimen.omnibox_suggestion_36dp_icon_margin_start_smallest,
+                        R.dimen.omnibox_suggestion_36dp_icon_margin_start));
+    }
+
+    /** Gets the end padding for a large omnibox suggestion decoration icon. */
+    public static @Px int getLargeIconEndPadding(Context context) {
+        return context.getResources().getDimensionPixelSize(
+                selectMarginDimen(R.dimen.omnibox_suggestion_36dp_icon_margin_end_smaller,
+                        R.dimen.omnibox_suggestion_36dp_icon_margin_end_smallest,
+                        R.dimen.omnibox_suggestion_36dp_icon_margin_end));
+    }
+
+    /** Get the top margin for a suggestion that is the beginning of a group. */
+    public static int getSuggestionGroupTopMargin(Context context) {
+        return context.getResources().getDimensionPixelSize(
+                selectMarginDimen(R.dimen.omnibox_suggestion_group_vertical_margin,
+                        R.dimen.omnibox_suggestion_group_vertical_margin,
+                        R.dimen.omnibox_suggestion_group_vertical_small_margin));
+    }
+
+    static @DimenRes int selectMarginDimen(
+            @DimenRes int regular, @DimenRes int smaller, @DimenRes int smallest) {
+        if (OmniboxFeatures.shouldShowSmallestMargins()) {
+            return smallest;
+        } else if (OmniboxFeatures.shouldShowSmallerMargins()) {
+            return smaller;
+        }
+        return regular;
     }
 }

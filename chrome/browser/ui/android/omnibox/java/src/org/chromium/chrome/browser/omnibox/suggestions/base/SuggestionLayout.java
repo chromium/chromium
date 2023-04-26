@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
@@ -26,10 +27,13 @@ import java.lang.annotation.RetentionPolicy;
  * the size of the view is known ahead of time.
  */
 class SuggestionLayout extends ViewGroup {
-    private final @Px int mDecorationIconWidthPx;
+    @VisibleForTesting
+    public final @Px int mDecorationIconWidthPx;
+    @VisibleForTesting
+    public final @Px int mContentHeightPx;
+    @VisibleForTesting
+    public final @Px int mCompactContentHeightPx;
     private final @Px int mActionButtonWidthPx;
-    private final @Px int mCompactContentHeightPx;
-    private final @Px int mContentHeightPx;
     private final @Px int mContentPaddingPx;
 
     /**
@@ -137,17 +141,30 @@ class SuggestionLayout extends ViewGroup {
             setPaddingRelative(startSpace, 0, endSpace, 0);
         }
 
-        mDecorationIconWidthPx = getResources().getDimensionPixelSize(useModernUI
+        mDecorationIconWidthPx = getResources().getDimensionPixelSize(
+                useModernUI && OmniboxFeatures.shouldShowSmallBottomMargin()
                         ? R.dimen.omnibox_suggestion_icon_area_size_modern
                         : R.dimen.omnibox_suggestion_icon_area_size);
 
         mActionButtonWidthPx = getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_action_button_width);
 
-        mCompactContentHeightPx = getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_compact_content_height);
-        mContentHeightPx =
-                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
+        if (OmniboxFeatures.shouldShowSmallestMargins()) {
+            int marginPx = getResources().getDimensionPixelSize(
+                    R.dimen.omnibox_suggestion_vertical_margin);
+            mCompactContentHeightPx = getResources().getDimensionPixelSize(
+                                              R.dimen.omnibox_suggestion_compact_content_height)
+                    - marginPx;
+            mContentHeightPx =
+                    getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height)
+                    - marginPx;
+        } else {
+            mCompactContentHeightPx = getResources().getDimensionPixelSize(
+                    R.dimen.omnibox_suggestion_compact_content_height);
+            mContentHeightPx =
+                    getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
+        }
+
         mContentPaddingPx =
                 getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding);
     }

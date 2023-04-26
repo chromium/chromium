@@ -302,7 +302,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     public ToolbarPhone(Context context, AttributeSet attrs) {
         super(context, attrs);
         mShouldShowModernizeVisualUpdate = OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
-        final int edgePaddingRes = mShouldShowModernizeVisualUpdate
+        final int edgePaddingRes =
+                (mShouldShowModernizeVisualUpdate && !OmniboxFeatures.shouldShowSmallestMargins())
                 ? R.dimen.toolbar_edge_padding_modern
                 : R.dimen.toolbar_edge_padding;
         mToolbarSidePadding = getResources().getDimensionPixelOffset(edgePaddingRes);

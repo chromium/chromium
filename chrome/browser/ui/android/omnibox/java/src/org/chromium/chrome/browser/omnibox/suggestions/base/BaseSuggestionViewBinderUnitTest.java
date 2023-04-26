@@ -269,7 +269,7 @@ public class BaseSuggestionViewBinderUnitTest {
         mModel.set(DropdownCommonProperties.BOTTOM_MARGIN, 17);
         mModel.set(DropdownCommonProperties.TOP_MARGIN, 13);
 
-        verify(mBaseView).setLayoutParams(any());
+        verify(mBaseView, times(2)).setLayoutParams(any());
         int sideSpacing = mBaseView.getContext().getResources().getDimensionPixelOffset(
                 R.dimen.omnibox_suggestion_side_spacing);
         MarginLayoutParams layoutParams = (MarginLayoutParams) mBaseView.getLayoutParams();

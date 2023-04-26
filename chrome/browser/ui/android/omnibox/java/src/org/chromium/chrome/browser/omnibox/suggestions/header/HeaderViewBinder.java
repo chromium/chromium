@@ -8,6 +8,7 @@ import android.content.res.Resources;
 
 import androidx.core.view.ViewCompat;
 
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -45,7 +46,11 @@ public class HeaderViewBinder {
             if (useModernizedHeaderPadding) {
                 minHeight = res.getDimensionPixelSize(
                         R.dimen.omnibox_suggestion_header_height_modern_phase2);
-                paddingStart += res.getDimensionPixelSize(R.dimen.omnibox_suggestion_side_spacing);
+                paddingStart = OmniboxFeatures.shouldShowSmallestMargins()
+                        ? res.getDimensionPixelSize(
+                                R.dimen.omnibox_suggestion_header_padding_start_modern_smallest)
+                        : res.getDimensionPixelSize(
+                                R.dimen.omnibox_suggestion_header_padding_start_modern);
                 // TODO(crbug.com/1372596): Header view is off center and we should fix this.
                 paddingBottom = 0;
             }
