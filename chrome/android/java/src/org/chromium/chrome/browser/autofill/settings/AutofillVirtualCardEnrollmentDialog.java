@@ -118,9 +118,7 @@ public class AutofillVirtualCardEnrollmentDialog {
         issuerLegalMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         ((TextView) customView.findViewById(R.id.credit_card_identifier))
-                .setText(mContext.getString(
-                        R.string.autofill_virtual_card_enrollment_dialog_card_label,
-                        mVirtualCardEnrollmentFields.getCardIdentifierString()));
+                .setText(mVirtualCardEnrollmentFields.getCardIdentifierString());
         ((ImageView) customView.findViewById(R.id.credit_card_issuer_icon))
                 .setImageBitmap(mVirtualCardEnrollmentFields.getIssuerCardArt());
         return customView;
