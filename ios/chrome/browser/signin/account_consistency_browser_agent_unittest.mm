@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -31,10 +32,11 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
 
     application_commands_mock_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    base_view_controller_mock_ = OCMStrictClassMock([UIViewController class]);
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     AccountConsistencyBrowserAgent::CreateForBrowser(
-        browser_.get(), nil, application_commands_mock_);
+        browser_.get(), base_view_controller_mock_, application_commands_mock_);
     agent_ = AccountConsistencyBrowserAgent::FromBrowser(browser_.get());
 
     WebStateList* web_state_list = browser_.get()->GetWebStateList();
@@ -46,6 +48,7 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
 
   void TearDown() override {
     EXPECT_OCMOCK_VERIFY((id)application_commands_mock_);
+    EXPECT_OCMOCK_VERIFY((id)base_view_controller_mock_);
   }
 
  protected:
@@ -54,6 +57,7 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   AccountConsistencyBrowserAgent* agent_;
   id<ApplicationCommands> application_commands_mock_;
+  UIViewController* base_view_controller_mock_;
 };
 
 // Tests the command sent by OnGoIncognito() when there is no URL.
@@ -86,4 +90,41 @@ TEST_F(AccountConsistencyBrowserAgentTest, OnGoIncognitoWithURL) {
   EXPECT_TRUE(received_command.inIncognito);
   EXPECT_FALSE(received_command.inBackground);
   EXPECT_EQ(received_command.URL, url);
+}
+
+// Tests OnAddAccount() to not send ShowSigninCommand if a view controller is
+// presented on top of the base view controller.
+// See http://crbug.com/1399464.
+TEST_F(AccountConsistencyBrowserAgentTest, OnAddAccountWithPresentedView) {
+  OCMStub([base_view_controller_mock_ presentedViewController])
+      .andReturn([[UIViewController alloc] init]);
+  agent_->OnAddAccount();
+  // Expect [application_commands_mock_ showSignin:baseViewController:] to not
+  // be called. This is ensured by TearDown because application_commands_mock_
+  // is a strict mock.
+}
+
+// Tests OnAddAccount() to send ShowSigninCommand if there is no view presented
+// on top of the base view controller.
+// See http://crbug.com/1399464.
+TEST_F(AccountConsistencyBrowserAgentTest, OnAddAccountWithoutPresentedView) {
+  OCMStub([base_view_controller_mock_ presentedViewController])
+      .andReturn((id)nil);
+  __block ShowSigninCommand* received_command = nil;
+  OCMExpect([application_commands_mock_
+              showSignin:[OCMArg
+                             checkWithBlock:^BOOL(ShowSigninCommand* command) {
+                               received_command = command;
+                               return YES;
+                             }]
+      baseViewController:base_view_controller_mock_]);
+  agent_->OnAddAccount();
+  EXPECT_NE(received_command, nil);
+  EXPECT_EQ(received_command.operation, AuthenticationOperationAddAccount);
+  EXPECT_EQ(received_command.identity, nil);
+  EXPECT_EQ(
+      received_command.accessPoint,
+      signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE);
+  EXPECT_EQ(received_command.promoAction,
+            signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
 }
