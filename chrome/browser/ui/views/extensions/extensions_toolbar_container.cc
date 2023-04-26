@@ -647,6 +647,7 @@ void ExtensionsToolbarContainer::CreateActionForId(
   // Set visibility before adding to prevent extraneous animation.
   icon->SetVisible(CanShowActionsInToolbar() &&
                    model_->IsActionPinned(action_id));
+  views::FocusRing::Get(icon.get())->SetOutsetFocusRingDisabled(true);
   ObserveButton(icon.get());
   icons_.insert({action_id, AddChildView(std::move(icon))});
 }
