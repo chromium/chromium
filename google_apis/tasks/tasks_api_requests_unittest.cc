@@ -133,7 +133,7 @@ TEST_F(TasksApiRequestsTest, ListTaskListsRequestHandlesError) {
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_FALSE(future.Get().has_value());
+  ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), HTTP_NOT_FOUND);
 }
 
@@ -188,7 +188,7 @@ TEST_F(TasksApiRequestsTest, ListTasksRequestHandlesError) {
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_FALSE(future.Get().has_value());
+  ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), HTTP_NOT_FOUND);
 }
 
