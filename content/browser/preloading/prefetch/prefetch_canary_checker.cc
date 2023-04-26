@@ -80,15 +80,7 @@ std::string NameForClient(PrefetchCanaryChecker::CheckType name) {
   return std::string();
 }
 
-std::string GenerateNetworkID(
-    network::NetworkConnectionTracker* network_connection_tracker) {
-  network::mojom::ConnectionType connection_type =
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN;
-  if (network_connection_tracker) {
-    network_connection_tracker->GetConnectionType(&connection_type,
-                                                  base::DoNothing());
-  }
-
+std::string GenerateNetworkID(network::mojom::ConnectionType connection_type) {
   std::string id = base::NumberToString(static_cast<int>(connection_type));
   bool is_cellular =
       network::NetworkConnectionTracker::IsConnectionCellular(connection_type);
@@ -112,6 +104,28 @@ std::string GenerateNetworkID(
 #endif
 
   return id;
+}
+
+void UpdateCacheWithNetworkID(
+    network::NetworkConnectionTracker* network_connection_tracker,
+    base::OnceCallback<void(std::string key)> updateCallBack) {
+  base::OnceCallback<void(network::mojom::ConnectionType connection_type)>
+      connectionTypeCallback = base::BindOnce(
+          [](base::OnceCallback<void(std::string key)> updateCallBack,
+             network::mojom::ConnectionType connection_type) {
+            base::ThreadPool::PostTaskAndReplyWithResult(
+                FROM_HERE, base::BindOnce(GenerateNetworkID, connection_type),
+                std::move(updateCallBack));
+          },
+          std::move(updateCallBack));
+
+  auto split = base::SplitOnceCallback(std::move(connectionTypeCallback));
+  network::mojom::ConnectionType connection_type =
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  if (network_connection_tracker->GetConnectionType(&connection_type,
+                                                    std::move(split.first))) {
+    std::move(split.second).Run(connection_type);
+  }
 }
 
 }  // namespace
@@ -190,8 +204,8 @@ void PrefetchCanaryChecker::OnCheckEnd(bool success) {
   // network might have changed since we completed the check. Fortunately, the
   // impact of using the wrong key is limited: we might simply filter probe when
   // we don't have to or fail to filter probe when we should.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(GenerateNetworkID, network_connection_tracker_),
+  UpdateCacheWithNetworkID(
+      network_connection_tracker_,
       base::BindOnce(&PrefetchCanaryChecker::UpdateCacheEntry, GetWeakPtr(),
                      entry));
 
@@ -323,9 +337,10 @@ absl::optional<bool> PrefetchCanaryChecker::LookupAndRunChecksIfNeeded() {
   // Asynchronously update the network cache key. On Android, getting the
   // network cache key can be very slow, so we don't want to block the main
   // thread.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(GenerateNetworkID, network_connection_tracker_),
+  UpdateCacheWithNetworkID(
+      network_connection_tracker_,
       base::BindOnce(&PrefetchCanaryChecker::UpdateCacheKey, GetWeakPtr()));
+
   // Assume the cache key has not changed since last time we checked it. Note
   // that if we have never set latest_cache_key_, |it| will be cache_.end().
   auto it = cache_.Get(latest_cache_key_);
