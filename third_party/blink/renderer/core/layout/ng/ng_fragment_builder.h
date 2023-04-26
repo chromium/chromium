@@ -27,6 +27,7 @@ namespace blink {
 class LayoutObject;
 class NGColumnSpannerPath;
 class NGEarlyBreak;
+class NGFragmentItemsBuilder;
 class NGInlineBreakToken;
 
 class CORE_EXPORT NGFragmentBuilder {
@@ -160,7 +161,12 @@ class CORE_EXPORT NGFragmentBuilder {
 
   // True if |this| has |NGFragmentItemsBuilder|; i.e., if |this| is an inline
   // formatting context.
-  virtual bool HasItems() const { return false; }
+  bool HasItems() const { return items_builder_; }
+  // The |NGFragmentItemsBuilder| for the inline formatting context of this box.
+  NGFragmentItemsBuilder* ItemsBuilder() { return items_builder_; }
+  void SetItemsBuilder(NGFragmentItemsBuilder* builder) {
+    items_builder_ = builder;
+  }
 
   // Propagate |child|'s anchor for the CSS Anchor Positioning to |this|
   // builder. This includes the anchor of the |child| itself and anchors
@@ -504,6 +510,8 @@ class CORE_EXPORT NGFragmentBuilder {
   absl::optional<int> lines_until_clamp_;
 
   ChildrenVector children_;
+
+  NGFragmentItemsBuilder* items_builder_ = nullptr;
 
   // Only used by the NGBoxFragmentBuilder subclass, but defined here to avoid
   // a virtual function call.

@@ -620,13 +620,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     break_token_data_ = break_token_data;
   }
 
-  // The |NGFragmentItemsBuilder| for the inline formatting context of this box.
-  bool HasItems() const final { return items_builder_; }
-  NGFragmentItemsBuilder* ItemsBuilder() { return items_builder_; }
-  void SetItemsBuilder(NGFragmentItemsBuilder* builder) {
-    items_builder_ = builder;
-  }
-
   // Returns offset for given child. DCHECK if child not found.
   // Warning: Do not call unless necessary.
   LogicalOffset GetChildOffset(const LayoutObject* child) const;
@@ -689,8 +682,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   LogicalSize child_available_size_;
   LayoutUnit intrinsic_block_size_;
   absl::optional<LogicalRect> inflow_bounds_;
-
-  NGFragmentItemsBuilder* items_builder_ = nullptr;
 
   bool is_fieldset_container_ = false;
   bool is_table_ng_part_ = false;
