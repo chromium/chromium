@@ -5,7 +5,7 @@
 import os
 import math
 import re
-from style_variable_generator.color import Color
+from style_variable_generator.color import Color, ColorVar
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.model import Modes, VariableType
 
@@ -87,7 +87,7 @@ class ViewsStyleGenerator(CSSStyleGenerator):
         '''Returns the C++ color representation of |c|'''
         assert (isinstance(c, Color))
 
-        if c.var:
+        if isinstance(c, ColorVar):
             return ('ResolveColor(ColorName::%s, is_dark_mode)' %
                     self._ToConstName(c.var))
 

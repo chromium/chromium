@@ -6,7 +6,7 @@ import collections
 import math
 import os
 import re
-from style_variable_generator.color import Color, ColorBlend
+from style_variable_generator.color import Color, ColorBlend, ColorVar
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.model import Modes, VariableType
 
@@ -82,7 +82,7 @@ class ColorMappingsStyleGenerator(CSSStyleGenerator):
                 self._ColorMixerColor(c.blended_colors[0], mode),
                 self._ColorMixerColor(c.blended_colors[1], mode))
 
-        if c.var:
+        if isinstance(c, ColorVar):
             return '{%s}' % self._ToColorIdName(c.var)
 
         if c.rgb_var:

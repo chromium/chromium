@@ -4,7 +4,7 @@
 
 from style_variable_generator.base_generator import BaseGenerator
 from style_variable_generator.model import Modes, VariableType
-from style_variable_generator.color import ColorBlend
+from style_variable_generator.color import ColorBlend, ColorVar
 import collections
 
 
@@ -144,7 +144,7 @@ class CSSStyleGenerator(BaseGenerator):
 
     def CSSColorRGB(self, c):
         '''Returns the CSS rgb representation of |c|'''
-        if c.var:
+        if isinstance(c, ColorVar):
             return 'var(%s-rgb)' % self.ToCSSVarName(c.var)
 
         if c.rgb_var:
@@ -157,7 +157,7 @@ class CSSStyleGenerator(BaseGenerator):
         return 'rgb(%s)' % self.CSSColorRGB(c)
 
     def ExtractOpacity(self, c, mode):
-        if c.var:
+        if isinstance(c, ColorVar):
             return self.ExtractOpacity(self.model.colors.Resolve(c.var, mode),
                                        mode)
         if c.opacity:
@@ -168,7 +168,7 @@ class CSSStyleGenerator(BaseGenerator):
 
     def CSSColorVar(self, name, color, mode):
         '''Returns the CSS color representation given a color name and color'''
-        if color.var:
+        if isinstance(color, ColorVar):
             return 'var(%s)' % self.ToCSSVarName(color.var)
 
         if color.opacity and color.opacity.a != 1:

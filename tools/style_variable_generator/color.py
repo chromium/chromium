@@ -132,7 +132,7 @@ def ParseColor(value):
         raise ValueError('blend() expected to have 2 colors')
 
     def ParseVariableReference(value):
-        match = re.match(r'^\$([\w\d_\.\-]+)$', value)
+        match = re.match(r'^\$([\w\.\-]+)$', value)
         if not match:
             return None
 
@@ -147,9 +147,7 @@ def ParseColor(value):
             raise ValueError(
                 'color reference cannot resolve to an rgb reference')
 
-        color = Color()
-        color.var = var
-        return color
+        return ColorVar(var)
 
     parsers = [
         ParseHex,
@@ -169,8 +167,7 @@ def ParseColor(value):
 
     if parsed is None:
         raise ValueError('Malformed color value')
-    if not parsed.var and not parsed.opacity and not isinstance(
-            parsed, ColorBlend):
+    if not parsed.opacity and not isinstance(parsed, (ColorBlend, ColorVar)):
         raise ValueError(repr(parsed))
 
     return parsed
@@ -195,7 +192,6 @@ class Color:
     '''
 
     def __init__(self):
-        self.var = None
         self.rgb_var = None
         self.r = -1
         self.g = -1
@@ -208,8 +204,6 @@ class Color:
         return self.rgb_var.replace('.rgb', '')
 
     def GetFormula(self):
-        if self.var:
-            return self.var
         if self.rgb_var:
             a = self.opacity.GetReadableStr()
             return '%s @ %s' % (self.rgb_var, a)
@@ -219,13 +213,24 @@ class Color:
     def __repr__(self):
         a = repr(self.opacity)
 
-        if self.var:
-            return 'var(--%s)' % self.var
-
         if self.rgb_var:
             return 'rgba(var(--%s), %s)' % (self.rgb_var, a)
 
         return 'rgba(%d, %d, %d, %s)' % (self.r, self.g, self.b, a)
+
+
+class ColorVar(Color):
+    def __init__(self, var=None):
+        super().__init__()
+        if not re.match(r'^[\w\.\-]+$', var):
+            raise ValueError(f'{var} is not a valid var value')
+        self.var = var
+
+    def GetFormula(self):
+        return self.var
+
+    def __repr__(self):
+        return 'var(--%s)' % self.var
 
 
 class ColorBlend(Color):

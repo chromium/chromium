@@ -4,7 +4,7 @@
 
 import re
 import collections
-from style_variable_generator.color import Color, ParseColor, ColorBlend
+from style_variable_generator.color import Color, ParseColor, ColorBlend, ColorVar
 from style_variable_generator.opacity import Opacity
 from abc import ABC, abstractmethod
 
@@ -222,7 +222,7 @@ class ColorModel(ModeKeyedModel):
 
     # Returns a Color that is the final RGBA value for |color| in |mode|.
     def _ResolveColorToRGBA(self, color, mode):
-        if color.var:
+        if isinstance(color, ColorVar):
             return self.ResolveToRGBA(color.var, mode)
 
         if isinstance(color, ColorBlend) and len(color.blended_colors) == 2:
@@ -392,7 +392,7 @@ class Model(object):
                                  (name, referrer))
 
         def CheckColor(color, name):
-            if color.var:
+            if isinstance(color, ColorVar):
                 CheckColorReference(color.var, name)
             if color.rgb_var:
                 CheckColorReference(color.RGBVarToVar(), name)
