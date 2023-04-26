@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ash/login/ui/mock_login_display.h"
 
-#include "chrome/browser/ash/login/help_app_launcher.h"
-#include "components/user_manager/user.h"
-#include "ui/gfx/geometry/rect.h"
-
 namespace ash {
 
 MockLoginDisplay::MockLoginDisplay() = default;

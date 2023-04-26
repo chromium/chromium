@@ -57,6 +57,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
+#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -231,10 +232,6 @@ bool IsActiveDirectoryManaged() {
 
 LoginDisplayHost* GetLoginDisplayHost() {
   return LoginDisplayHost::default_host();
-}
-
-LoginDisplay* GetLoginDisplay() {
-  return GetLoginDisplayHost()->GetLoginDisplay();
 }
 
 void SetLoginExtensionApiCanLockManagedGuestSessionPref(
@@ -732,7 +729,11 @@ void ExistingUserController::ShowEncryptionMigrationScreen(
 }
 
 void ExistingUserController::ShowTPMError() {
-  GetLoginDisplay()->SetUIEnabled(false);
+  if (GetLoginDisplayHost()->GetWebUILoginView()) {
+    GetLoginDisplayHost()
+        ->GetWebUILoginView()
+        ->SetKeyboardEventsAndSystemTrayEnabled(false);
+  }
   GetLoginDisplayHost()->StartWizard(TpmErrorView::kScreenId);
 }
 
@@ -994,7 +995,11 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
 void ExistingUserController::OnProfilePrepared(Profile* profile,
                                                bool browser_launched) {
   // Reenable clicking on other windows and status area.
-  GetLoginDisplay()->SetUIEnabled(true);
+  if (GetLoginDisplayHost()->GetWebUILoginView()) {
+    GetLoginDisplayHost()
+        ->GetWebUILoginView()
+        ->SetKeyboardEventsAndSystemTrayEnabled(true);
+  }
 
   profile_prepared_ = true;
 
@@ -1519,7 +1524,11 @@ void ExistingUserController::LoginAsPublicSessionInternal(
 void ExistingUserController::PerformPreLoginActions(
     const UserContext& user_context) {
   // Disable clicking on other windows and status tray.
-  GetLoginDisplay()->SetUIEnabled(false);
+  if (GetLoginDisplayHost()->GetWebUILoginView()) {
+    GetLoginDisplayHost()
+        ->GetWebUILoginView()
+        ->SetKeyboardEventsAndSystemTrayEnabled(false);
+  }
 
   if (last_login_attempt_account_id_ != user_context.GetAccountId()) {
     last_login_attempt_account_id_ = user_context.GetAccountId();
@@ -1536,7 +1545,11 @@ void ExistingUserController::PerformLoginFinishedActions(
   is_login_in_progress_ = false;
 
   // Reenable clicking on other windows and status area.
-  GetLoginDisplay()->SetUIEnabled(true);
+  if (GetLoginDisplayHost()->GetWebUILoginView()) {
+    GetLoginDisplayHost()
+        ->GetWebUILoginView()
+        ->SetKeyboardEventsAndSystemTrayEnabled(true);
+  }
 
   if (start_auto_login_timer)
     StartAutoLoginTimer();
@@ -1556,7 +1569,11 @@ void ExistingUserController::ContinueLoginWhenCryptohomeAvailable(
 void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
     base::OnceClosure continuation) {
   // Disable clicking on other windows and status tray.
-  GetLoginDisplay()->SetUIEnabled(false);
+  if (GetLoginDisplayHost()->GetWebUILoginView()) {
+    GetLoginDisplayHost()
+        ->GetWebUILoginView()
+        ->SetKeyboardEventsAndSystemTrayEnabled(false);
+  }
 
   // Stop the auto-login timer.
   StopAutoLoginTimer();
@@ -1581,7 +1598,11 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
     // Re-enable clicking on other windows and the status area. Do not start the
     // auto-login timer though. Without trusted `cros_settings_`, no auto-login
     // can succeed.
-    GetLoginDisplay()->SetUIEnabled(true);
+    if (GetLoginDisplayHost()->GetWebUILoginView()) {
+      GetLoginDisplayHost()
+          ->GetWebUILoginView()
+          ->SetKeyboardEventsAndSystemTrayEnabled(true);
+    }
     return;
   }
 
@@ -1591,7 +1612,11 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
 
     // Re-enable clicking on other windows and the status area. Do not start the
     // auto-login timer though. On a disabled device, no auto-login can succeed.
-    GetLoginDisplay()->SetUIEnabled(true);
+    if (GetLoginDisplayHost()->GetWebUILoginView()) {
+      GetLoginDisplayHost()
+          ->GetWebUILoginView()
+          ->SetKeyboardEventsAndSystemTrayEnabled(true);
+    }
     return;
   }
 
@@ -1685,7 +1710,11 @@ void ExistingUserController::DoLogin(const UserContext& user_context,
     // Ensure WebUI is loaded to allow security token dialog to pop up.
     GetLoginDisplayHost()->GetWizardController();
     // Reenable clicking on other windows and status area.
-    GetLoginDisplay()->SetUIEnabled(true);
+    if (GetLoginDisplayHost()->GetWebUILoginView()) {
+      GetLoginDisplayHost()
+          ->GetWebUILoginView()
+          ->SetKeyboardEventsAndSystemTrayEnabled(true);
+    }
     // Restart the auto-login timer.
     StartAutoLoginTimer();
   }

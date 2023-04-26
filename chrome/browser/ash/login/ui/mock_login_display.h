@@ -13,13 +13,9 @@ namespace ash {
 class MockLoginDisplay : public LoginDisplay {
  public:
   MockLoginDisplay();
-
   MockLoginDisplay(const MockLoginDisplay&) = delete;
   MockLoginDisplay& operator=(const MockLoginDisplay&) = delete;
-
   ~MockLoginDisplay() override;
-
-  MOCK_METHOD(void, SetUIEnabled, (bool), (override));
 };
 
 }  // namespace ash

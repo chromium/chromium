@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
@@ -269,8 +270,8 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
   RecordKioskLaunchUMA(auto_launch);
   SetKioskLaunchStateCrashKey(KioskLaunchState::kLauncherStarted);
 
-  if (host_) {
-    host_->GetLoginDisplay()->SetUIEnabled(true);
+  if (host_ && host_->GetWebUILoginView()) {
+    host_->GetWebUILoginView()->SetKeyboardEventsAndSystemTrayEnabled(true);
   }
 
   if (kiosk_app_id.type == KioskAppType::kChromeApp) {

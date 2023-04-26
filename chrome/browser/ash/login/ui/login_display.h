@@ -19,9 +19,6 @@ class LoginDisplay {
   LoginDisplay& operator=(const LoginDisplay&) = delete;
 
   virtual ~LoginDisplay();
-
-  // Changes enabled state of the UI.
-  virtual void SetUIEnabled(bool is_enabled) = 0;
 };
 
 }  // namespace ash

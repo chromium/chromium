@@ -890,7 +890,7 @@ void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
   // `login_window_`. Closing `login_window_` could immediately invalidate the
   // `login_view_` pointer.
   if (login_view_) {
-    login_view_->SetUIEnabled(true);
+    login_view_->SetKeyboardEventsAndSystemTrayEnabled(true);
     ResetLoginView();
   }
 

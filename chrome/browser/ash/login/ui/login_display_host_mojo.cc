@@ -417,7 +417,6 @@ content::WebContents* LoginDisplayHostMojo::GetOobeWebContents() const {
 }
 
 WebUILoginView* LoginDisplayHostMojo::GetWebUILoginView() const {
-  NOTREACHED();
   return nullptr;
 }
 

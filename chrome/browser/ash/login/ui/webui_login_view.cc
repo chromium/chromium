@@ -266,7 +266,7 @@ void WebUILoginView::SetStatusAreaVisible(bool visible) {
   SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(visible);
 }
 
-void WebUILoginView::SetUIEnabled(bool enabled) {
+void WebUILoginView::SetKeyboardEventsAndSystemTrayEnabled(bool enabled) {
   forward_keyboard_event_ = enabled;
 
   SystemTrayClientImpl::Get()->SetPrimaryTrayEnabled(enabled);

@@ -4,24 +4,10 @@
 
 #include "chrome/browser/ash/login/ui/login_display_webui.h"
 
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/webui_login_view.h"
-#include "ui/base/user_activity/user_activity_detector.h"
-
 namespace ash {
-
-// LoginDisplayWebUI, public: --------------------------------------------------
 
 LoginDisplayWebUI::~LoginDisplayWebUI() = default;
 
-// LoginDisplay implementation: ------------------------------------------------
-
 LoginDisplayWebUI::LoginDisplayWebUI() = default;
-
-void LoginDisplayWebUI::SetUIEnabled(bool is_enabled) {
-  LoginDisplayHost* host = LoginDisplayHost::default_host();
-  if (host && host->GetWebUILoginView())
-    host->GetWebUILoginView()->SetUIEnabled(is_enabled);
-}
 
 }  // namespace ash

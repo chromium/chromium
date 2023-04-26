@@ -23,9 +23,6 @@ class LoginDisplayMojo : public LoginDisplay,
 
   ~LoginDisplayMojo() override;
 
-  // LoginDisplay:
-  void SetUIEnabled(bool is_enabled) override;
-
   // user_manager::UserManager::Observer:
   void OnUserImageChanged(const user_manager::User& user) override;
 };

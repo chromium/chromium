@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_WEBUI_H_
 
 #include "chrome/browser/ash/login/ui/login_display.h"
-#include "components/user_manager/user.h"
 
 namespace ash {
 
@@ -14,13 +13,9 @@ namespace ash {
 class LoginDisplayWebUI : public LoginDisplay {
  public:
   LoginDisplayWebUI();
-
   LoginDisplayWebUI(const LoginDisplayWebUI&) = delete;
   LoginDisplayWebUI& operator=(const LoginDisplayWebUI&) = delete;
-
   ~LoginDisplayWebUI() override;
-
-  void SetUIEnabled(bool is_enabled) override;
 };
 
 }  // namespace ash
