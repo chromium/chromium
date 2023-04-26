@@ -1474,18 +1474,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return LayoutOverflowIsSet();
   }
 
-  // Return true if re-laying out the containing block of this object means that
-  // we need to recalculate the preferred min/max logical widths of this object.
-  //
-  // Calculating min/max widths for an object should ideally only take itself
-  // and its children as input. However, some objects don't adhere strictly to
-  // this rule, and also take input from their containing block to figure out
-  // their min/max widths. This is the case for e.g. shrink-to-fit containers
-  // with percentage inline-axis padding. This isn't good practise, but that's
-  // how it is and how it's going to stay, unless we want to undertake a
-  // substantial maintenance task of the min/max preferred widths machinery.
-  virtual bool NeedsPreferredWidthsRecalculation() const;
-
   // See README.md for an explanation of scroll origin.
   gfx::Vector2d OriginAdjustmentForScrollbars() const;
   gfx::Point ScrollOrigin() const;

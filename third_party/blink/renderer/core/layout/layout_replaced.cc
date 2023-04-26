@@ -152,14 +152,6 @@ void LayoutReplaced::Paint(const PaintInfo& paint_info) const {
   ReplacedPainter(*this).Paint(paint_info);
 }
 
-bool LayoutReplaced::NeedsPreferredWidthsRecalculation() const {
-  NOT_DESTROYED();
-  // If the height is a percentage and the width is auto, then the
-  // containingBlocks's height changing can cause this node to change it's
-  // preferred width because it maintains aspect ratio.
-  return HasRelativeLogicalHeight() && StyleRef().LogicalWidth().IsAuto();
-}
-
 static inline bool LayoutObjectHasIntrinsicAspectRatio(
     const LayoutObject* layout_object) {
   DCHECK(layout_object);

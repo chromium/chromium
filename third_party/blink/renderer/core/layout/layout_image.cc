@@ -436,14 +436,6 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
   }
 }
 
-bool LayoutImage::NeedsPreferredWidthsRecalculation() const {
-  NOT_DESTROYED();
-  if (LayoutReplaced::NeedsPreferredWidthsRecalculation())
-    return true;
-  SVGImage* svg_image = EmbeddedSVGImage();
-  return svg_image && svg_image->HasIntrinsicSizingInfo();
-}
-
 SVGImage* LayoutImage::EmbeddedSVGImage() const {
   NOT_DESTROYED();
   if (!image_resource_)

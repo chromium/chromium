@@ -1885,12 +1885,6 @@ bool LayoutBox::HasHorizontallyScrollableAncestor(LayoutObject* layout_object) {
   return false;
 }
 
-bool LayoutBox::NeedsPreferredWidthsRecalculation() const {
-  NOT_DESTROYED();
-  return StyleRef().PaddingStart().IsPercentOrCalc() ||
-         StyleRef().PaddingEnd().IsPercentOrCalc();
-}
-
 gfx::Vector2d LayoutBox::OriginAdjustmentForScrollbars() const {
   NOT_DESTROYED();
   if (CanSkipComputeScrollbars())

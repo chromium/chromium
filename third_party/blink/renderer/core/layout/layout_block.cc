@@ -1121,10 +1121,4 @@ bool LayoutBlock::HasDefiniteLogicalHeight() const {
   return AvailableLogicalHeightForPercentageComputation() != LayoutUnit(-1);
 }
 
-bool LayoutBlock::NeedsPreferredWidthsRecalculation() const {
-  NOT_DESTROYED();
-  return (HasRelativeLogicalHeight() && StyleRef().LogicalWidth().IsAuto()) ||
-         LayoutBox::NeedsPreferredWidthsRecalculation();
-}
-
 }  // namespace blink

@@ -74,8 +74,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // or underflow the final content box by 1px.
   static PhysicalRect PreSnappedRectForPersistentSizing(const PhysicalRect&);
 
-  bool NeedsPreferredWidthsRecalculation() const override;
-
   void RecalcVisualOverflow() override;
 
   // These values are specified to be 300 and 150 pixels in the CSS 2.1 spec.

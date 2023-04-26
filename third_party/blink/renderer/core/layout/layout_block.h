@@ -281,8 +281,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     return IsInline() && IsAtomicInlineLevel();
   }
 
-  bool NeedsPreferredWidthsRecalculation() const override;
-
   bool IsInSelfHitTestingPhase(HitTestPhase phase) const final {
     NOT_DESTROYED();
     return phase == HitTestPhase::kSelfBlockBackground;
