@@ -57,7 +57,10 @@ void GpuServiceFactory::RunMediaService(
   // operations are blocked, user may hear audio glitch or see video
   // freezing, hence "user blocking".
   scoped_refptr<base::SequencedTaskRunner> task_runner = task_runner_;
-  if (base::FeatureList::IsEnabled(media::kDedicatedMediaServiceThread)) {
+  // D3D9 device doesn't support multi-treaded use.
+  if (gpu_info_.gl_implementation_parts.angle !=
+          gl::ANGLEImplementation::kD3D9 &&
+      base::FeatureList::IsEnabled(media::kDedicatedMediaServiceThread)) {
     if (base::FeatureList::IsEnabled(
             media::kUseSequencedTaskRunnerForMediaService)) {
       task_runner = base::ThreadPool::CreateSequencedTaskRunner(
