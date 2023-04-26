@@ -45,6 +45,7 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/util/mock_clock.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -58,6 +59,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "url/gurl.h"
 
+using ::reporting::test::MockClock;
 using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Ge;
@@ -91,62 +93,6 @@ MATCHER(ContainsAppId,
         "Matches app id in app usage proto with the expected one") {
   return std::get<0>(arg).app_id() == std::get<1>(arg);
 }
-
-// Mock clock that supplies a mock time and can be advanced for testing
-// purposes. Needed to simulate usage, and trigger telemetry collection and
-// reporting. Only applicable for browser tests where a `TaskEnvironment` is
-// unavailable.
-class MockClock {
- public:
-  // Returns a MockClock which will not be deleted. Should be called once while
-  // single-threaded to initialize ScopedTimeClockOverrides to avoid threading
-  // issues.
-  static MockClock& Get() {
-    static base::NoDestructor<MockClock> mock_clock;
-    return *mock_clock;
-  }
-
-  MockClock(const MockClock&) = delete;
-  MockClock& operator=(const MockClock&) = delete;
-  ~MockClock() = default;
-
-  // Advance clock by the specified duration.
-  void Advance(const base::TimeDelta& duration) {
-    base::AutoLock lock(lock_);
-    offset_ += duration;
-  }
-
- private:
-  friend base::NoDestructor<MockClock>;
-
-  static base::Time MockedNow() {
-    return base::subtle::TimeNowIgnoringOverride() + Get().Offset();
-  }
-
-  static base::TimeTicks MockedTicksNow() {
-    return base::subtle::TimeTicksNowIgnoringOverride() + Get().Offset();
-  }
-
-  MockClock()
-      : time_override_(std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-            &MockClock::MockedNow,
-            &MockClock::MockedTicksNow,
-            nullptr)) {}
-
-  // Returns the offset duration.
-  const base::TimeDelta& Offset() {
-    base::AutoLock lock(lock_);
-    return offset_;
-  }
-
-  const std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
-
-  // A lock is necessary because `MockedNow` and `MockedTicksNow` can be
-  // accessed by components from different threads when they retrieve the
-  // current time.
-  base::Lock lock_;
-  base::TimeDelta offset_ GUARDED_BY(lock_);
-};
 
 // Assert app usage telemetry data in a record with relevant DM token and
 // returns the underlying `MetricData` object.
