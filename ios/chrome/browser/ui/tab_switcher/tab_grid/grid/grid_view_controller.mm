@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 
 #import <algorithm>
+#import <memory>
 
 #import "base/check_op.h"
 #import "base/ios/block_types.h"
@@ -55,6 +56,18 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+class ScrollingTimeLogger {
+ public:
+  ScrollingTimeLogger() : start_(base::TimeTicks::Now()) {}
+  ~ScrollingTimeLogger() {
+    base::TimeDelta duration = base::TimeTicks::Now() - start_;
+    base::UmaHistogramTimes("IOS.TabSwitcher.TimeSpentScrolling", duration);
+  }
+
+ private:
+  base::TimeTicks start_;
+};
 
 namespace {
 
@@ -171,10 +184,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, assign) NSInteger inactiveTabsDaysThreshold;
 // Tracks if a drop action initiated in this grid is in progress.
 @property(nonatomic) BOOL localDragActionInProgress;
-
 @end
 
-@implementation GridViewController
+@implementation GridViewController {
+  // Tracks when the grid view is scrolling. Create a new instance to start
+  // timing and reset to stop and log the associated time histogram.
+  std::unique_ptr<ScrollingTimeLogger> _scrollingTimeLogger;
+}
 
 @synthesize thumbStripEnabled = _thumbStripEnabled;
 
@@ -1099,6 +1115,23 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
   [self.delegate gridViewControllerWillBeginDragging:self];
+  base::RecordAction(base::UserMetricsAction("MobileTabGridUserScrolled"));
+  _scrollingTimeLogger = std::make_unique<ScrollingTimeLogger>();
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
+                  willDecelerate:(BOOL)decelerate {
+  if (!decelerate) {
+    _scrollingTimeLogger = nullptr;
+  }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
+  _scrollingTimeLogger = nullptr;
+}
+
+- (void)scrollViewDidScrollToTop:(UIScrollView*)scrollView {
+  base::RecordAction(base::UserMetricsAction("MobileTabGridUserScrolledToTop"));
 }
 
 - (void)scrollViewDidChangeAdjustedContentInset:(UIScrollView*)scrollView {

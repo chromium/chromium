@@ -2347,6 +2347,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.TabSwitcher.TimeSpentScrolling" units="ms"
+    expires_after="2024-05-14">
+  <owner>lpromero@chromium.org</owner>
+  <owner>alionadangla@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>
+    The time spent while the tab grid is scrolled by the user. This includes the
+    deceleration time.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TextSelection.EntityDetection.DetectedEntityType"
     enum="TextSelectionDetectedEntityType" expires_after="2023-10-08">
   <owner>rajendrant@chromium.org</owner>
