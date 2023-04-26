@@ -49,11 +49,16 @@ const int kSharedStorageEntryTotalBytesMultiplier = 4;
 //              * add `last_used_time` to `values_mapping`
 //              * rename `last_used_time` in `per_origin_mapping` to
 //                `creation_time`
-const int SharedStorageDatabase::kCurrentVersionNumber = 2;
+// Version 3 - https://crrev.com/c/4463360
+//              * store `key` and `value` as BLOB instead of TEXT in order to
+//                prevent roundtrip conversion to UTF-8 and back, which is
+//                lossy if the original UTF-16 string contains unpaired
+//                surrogates
+const int SharedStorageDatabase::kCurrentVersionNumber = 3;
 
 // Earliest version which can use a `kCurrentVersionNumber` database
 // without failing.
-const int SharedStorageDatabase::kCompatibleVersionNumber = 2;
+const int SharedStorageDatabase::kCompatibleVersionNumber = 3;
 
 // Latest version of the database that cannot be upgraded to
 // `kCurrentVersionNumber` without razing the database.
@@ -71,8 +76,8 @@ namespace {
   static constexpr char kValuesMappingSql[] =
       "CREATE TABLE IF NOT EXISTS values_mapping("
       "context_origin TEXT NOT NULL,"
-      "key TEXT NOT NULL,"
-      "value TEXT,"
+      "key BLOB NOT NULL,"
+      "value BLOB NOT NULL,"
       "last_used_time INTEGER NOT NULL,"
       "PRIMARY KEY(context_origin,key)) WITHOUT ROWID";
   if (!db.Execute(kValuesMappingSql))
@@ -104,8 +109,7 @@ namespace {
   if (!db.Execute(kOriginTimeIndexSql))
     return false;
 
-  if (meta_table.GetVersionNumber() ==
-      SharedStorageDatabase::kCurrentVersionNumber) {
+  if (meta_table.GetVersionNumber() >= 2) {
     static constexpr char kValuesLastUsedTimeIndexSql[] =
         "CREATE INDEX IF NOT EXISTS values_mapping_last_used_time_idx "
         "ON values_mapping(last_used_time)";
@@ -260,7 +264,7 @@ SharedStorageDatabase::GetResult SharedStorageDatabase::Get(
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   std::string origin_str(SerializeOrigin(context_origin));
   statement.BindString(0, origin_str);
-  statement.BindString16(1, key);
+  statement.BindBlob(1, key);
 
   if (statement.Step()) {
     base::Time last_used_time = statement.ColumnTime(1);
@@ -268,7 +272,11 @@ SharedStorageDatabase::GetResult SharedStorageDatabase::Get(
         (last_used_time >= clock_->Now() - staleness_threshold_)
             ? OperationResult::kSuccess
             : OperationResult::kExpired;
-    return GetResult(statement.ColumnString16(0), last_used_time, op_result);
+    std::u16string value;
+    if (!statement.ColumnBlobAsString16(0, &value)) {
+      return GetResult();
+    }
+    return GetResult(value, last_used_time, op_result);
   }
 
   if (!statement.Succeeded())
@@ -394,7 +402,7 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Delete(
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
   statement.BindString(0, origin_str);
-  statement.BindString16(1, key);
+  statement.BindBlob(1, key);
 
   if (!statement.Run())
     return OperationResult::kSqlError;
@@ -515,22 +523,28 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Keys(
       saved_first_key_for_next_batch.reset();
     }
 
+    bool blob_retrieval_error = false;
     while (select_statement.Step()) {
+      std::u16string key;
+      if (!select_statement.ColumnBlobAsString16(0, &key)) {
+        blob_retrieval_error = true;
+        break;
+      }
       if (keys.size() < max_iterator_batch_size_) {
-        keys.push_back(blink::mojom::SharedStorageKeyAndOrValue::New(
-            select_statement.ColumnString16(0), u""));
+        keys.push_back(
+            blink::mojom::SharedStorageKeyAndOrValue::New(std::move(key), u""));
       } else {
         // Cache the current key to use as the start of the next batch, as we're
         // already passing through this step and the next iteration of
         // `statement.Step()`, if there is one, during the next iteration of the
         // outer while loop, will give us the subsequent key.
-        saved_first_key_for_next_batch = select_statement.ColumnString16(0);
+        saved_first_key_for_next_batch = std::move(key);
         has_more_entries = true;
         break;
       }
     }
 
-    if (!select_statement.Succeeded()) {
+    if (!select_statement.Succeeded() || blob_retrieval_error) {
       keys_listener->DidReadEntries(
           /*success=*/false,
           "SQL database encountered an error while retrieving keys.",
@@ -626,25 +640,35 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Entries(
       saved_first_value_for_next_batch.reset();
     }
 
+    bool blob_retrieval_error = false;
     while (select_statement.Step()) {
+      std::u16string key;
+      if (!select_statement.ColumnBlobAsString16(0, &key)) {
+        blob_retrieval_error = true;
+        break;
+      }
+      std::u16string value;
+      if (!select_statement.ColumnBlobAsString16(1, &value)) {
+        blob_retrieval_error = true;
+        break;
+      }
       if (entries.size() < max_iterator_batch_size_) {
         entries.push_back(blink::mojom::SharedStorageKeyAndOrValue::New(
-            select_statement.ColumnString16(0),
-            select_statement.ColumnString16(1)));
+            std::move(key), std::move(value)));
       } else {
         // Cache the current key and value to use as the start of the next
         // batch, as we're already passing through this step and the next
         // iteration of `statement.Step()`, if there is one, during the next
         // iteration of the outer while loop, will give us the subsequent
         // key-value pair.
-        saved_first_key_for_next_batch = select_statement.ColumnString16(0);
-        saved_first_value_for_next_batch = select_statement.ColumnString16(1);
+        saved_first_key_for_next_batch = std::move(key);
+        saved_first_value_for_next_batch = std::move(value);
         has_more_entries = true;
         break;
       }
     }
 
-    if (!select_statement.Succeeded()) {
+    if (!select_statement.Succeeded() || blob_retrieval_error) {
       entries_listener->DidReadEntries(
           /*success=*/false,
           "SQL database encountered an error while retrieving entries.",
@@ -947,9 +971,16 @@ SharedStorageDatabase::GetEntriesForDevTools(url::Origin context_origin) {
   select_statement.BindTime(1, clock_->Now() - staleness_threshold_);
 
   while (select_statement.Step()) {
-    entries.entries.emplace_back(
-        base::UTF16ToUTF8(select_statement.ColumnString16(0)),
-        base::UTF16ToUTF8(select_statement.ColumnString16(1)));
+    std::u16string key;
+    if (!select_statement.ColumnBlobAsString16(0, &key)) {
+      key = u"[[DATABASE_ERROR: unable to retrieve key]]";
+    }
+    std::u16string value;
+    if (!select_statement.ColumnBlobAsString16(1, &value)) {
+      value = u"[[DATABASE_ERROR: unable to retrieve value]]";
+    }
+    entries.entries.emplace_back(base::UTF16ToUTF8(key),
+                                 base::UTF16ToUTF8(value));
   }
 
   if (!select_statement.Succeeded())
@@ -1384,7 +1415,7 @@ bool SharedStorageDatabase::HasEntryFor(const std::string& context_origin,
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   statement.BindString(0, context_origin);
-  statement.BindString16(1, key);
+  statement.BindBlob(1, key);
 
   return statement.Step();
 }
@@ -1461,10 +1492,10 @@ bool SharedStorageDatabase::UpdateValuesMappingWithTime(
         "WHERE context_origin=? AND key=?";
 
     sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
-    statement.BindString16(0, value);
+    statement.BindBlob(0, value);
     statement.BindTime(1, last_used_time);
     statement.BindString(2, context_origin);
-    statement.BindString16(3, key);
+    statement.BindBlob(3, key);
 
     return statement.Run();
   }
@@ -1479,8 +1510,8 @@ bool SharedStorageDatabase::UpdateValuesMappingWithTime(
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kInsertSql));
   statement.BindString(0, context_origin);
-  statement.BindString16(1, key);
-  statement.BindString16(2, value);
+  statement.BindBlob(1, key);
+  statement.BindBlob(2, value);
   statement.BindTime(3, last_used_time);
 
   if (!statement.Run())

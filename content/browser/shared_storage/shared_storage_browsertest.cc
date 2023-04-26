@@ -7567,4 +7567,303 @@ IN_PROC_BROWSER_TEST_F(SharedStorageContextBrowserTest,
             base::UTF16ToUTF8(console_observer.messages().back().message));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageBrowserTest,
+    StringRoundTrip_SetThenGet_UnpairedSurrogatesArePreserved) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  GURL script_url =
+      https_server()->GetURL("a.test", "/shared_storage/round_trip.js");
+
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  std::vector<std::tuple<std::vector<uint16_t>, bool>> string_test_cases = {
+      {std::vector<uint16_t>({0x0068}), true},          // letter 'h'
+      {std::vector<uint16_t>({0xd800}), false},         // lone high surrogate
+      {std::vector<uint16_t>({0xdc00}), false},         // lone low surrogate
+      {std::vector<uint16_t>({0xd800, 0xdc00}), true},  // surrogate pair
+  };
+
+  for (size_t i = 0; i < string_test_cases.size(); ++i) {
+    const std::vector<uint16_t>& char_code_array =
+        std::get<0>(string_test_cases[i]);
+    std::u16string test_string =
+        std::u16string(char_code_array.begin(), char_code_array.end());
+    base::Value::List char_code_values;
+    for (uint16_t char_code : char_code_array) {
+      char_code_values.Append(static_cast<int>(char_code));
+    }
+
+    const bool expected_valid = std::get<1>(string_test_cases[i]);
+
+    // Check validity of UTF-16.
+    std::string base_output;
+    EXPECT_EQ(expected_valid,
+              base::UTF16ToUTF8(test_string.c_str(), test_string.size(),
+                                &base_output));
+
+    // The dummy assignment is necessary, because otherwise under the hood,
+    // `ExecJs` makes a call to that tries to evaluate the most recent script
+    // result as a `base::Value`, and `char_code_values` causes that to fail.
+    EXPECT_TRUE(ExecJs(shell(), JsReplace(R"(window.charCodeArray = $1;
+                                             window.dummyAssignment = 0;)",
+                                          std::move(char_code_values))));
+
+    // We will wait for 1 "worklet operation": `run()`.
+    test_worklet_host_manager()
+        .GetAttachedWorkletHost()
+        ->SetExpectedWorkletResponsesCount(1);
+
+    EXPECT_TRUE(ExecJs(shell(), R"(
+        sharedStorage.run('set-get-operation',
+                          {data: {'key': 'asValue',
+                                  'valueCharCodeArray' : charCodeArray},
+                           keepAlive: true});
+      )"));
+
+    test_worklet_host_manager()
+        .GetAttachedWorkletHost()
+        ->WaitForWorkletResponses();
+
+    EXPECT_EQ(4u * (i + 1), console_observer.messages().size());
+    EXPECT_EQ(u"key: 'asValue'", console_observer.messages()[4 * i].message);
+    EXPECT_THAT(
+        base::UTF16ToUTF8(console_observer.messages()[4 * i + 1].message),
+        testing::HasSubstr("value: '"));
+    EXPECT_THAT(
+        base::UTF16ToUTF8(console_observer.messages()[4 * i + 2].message),
+        testing::HasSubstr("retrieved sharedStorage.get('asValue'): '"));
+    EXPECT_THAT(
+        base::UTF16ToUTF8(console_observer.messages()[4 * i + 3].message),
+        testing::HasSubstr("' was retrieved: true"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageBrowserTest,
+    StringRoundTrip_SetThenKeys_UnpairedSurrogatesArePreserved) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  GURL script_url =
+      https_server()->GetURL("a.test", "/shared_storage/round_trip.js");
+
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  std::vector<std::tuple<std::vector<uint16_t>, bool>> string_test_cases = {
+      {std::vector<uint16_t>({0x0068}), true},          // letter 'h'
+      {std::vector<uint16_t>({0xd800}), false},         // lone high surrogate
+      {std::vector<uint16_t>({0xdc00}), false},         // lone low surrogate
+      {std::vector<uint16_t>({0xd800, 0xdc00}), true},  // surrogate pair
+  };
+
+  for (size_t i = 0; i < string_test_cases.size(); ++i) {
+    const std::vector<uint16_t>& char_code_array =
+        std::get<0>(string_test_cases[i]);
+    std::u16string test_string =
+        std::u16string(char_code_array.begin(), char_code_array.end());
+    base::Value::List char_code_values;
+    for (uint16_t char_code : char_code_array) {
+      char_code_values.Append(static_cast<int>(char_code));
+    }
+
+    const bool expected_valid = std::get<1>(string_test_cases[i]);
+
+    // Check validity of UTF-16.
+    std::string base_output;
+    EXPECT_EQ(expected_valid,
+              base::UTF16ToUTF8(test_string.c_str(), test_string.size(),
+                                &base_output));
+
+    // The dummy assignment is necessary, because otherwise under the hood,
+    // `ExecJs` makes a call to that tries to evaluate the most recent script
+    // result as a `base::Value`, and `char_code_values` causes that to fail.
+    EXPECT_TRUE(ExecJs(shell(), JsReplace(R"(window.charCodeArray = $1;
+                                             window.dummyAssignment = 0;)",
+                                          std::move(char_code_values))));
+
+    // We will wait for 1 "worklet operation": `run()`.
+    test_worklet_host_manager()
+        .GetAttachedWorkletHost()
+        ->SetExpectedWorkletResponsesCount(1);
+
+    EXPECT_TRUE(ExecJs(shell(), R"(
+        sharedStorage.run('set-keys-operation',
+                          {data: {'keyCharCodeArray' : charCodeArray,
+                                  'value': 'asKey'},
+                           keepAlive: true});
+      )"));
+
+    test_worklet_host_manager()
+        .GetAttachedWorkletHost()
+        ->WaitForWorkletResponses();
+
+    EXPECT_EQ(4u * (i + 1), console_observer.messages().size());
+    EXPECT_THAT(base::UTF16ToUTF8(console_observer.messages()[4 * i].message),
+                testing::HasSubstr("key: '"));
+    EXPECT_EQ(u"value: 'asKey'",
+              console_observer.messages()[4 * i + 1].message);
+    EXPECT_THAT(
+        base::UTF16ToUTF8(console_observer.messages()[4 * i + 2].message),
+        testing::HasSubstr("retrieved key: '"));
+    EXPECT_THAT(
+        base::UTF16ToUTF8(console_observer.messages()[4 * i + 3].message),
+        testing::HasSubstr("' was retrieved: true"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageBrowserTest,
+    StringRoundTrip_AppendThenDelete_UnpairedSurrogatesArePreserved) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  GURL script_url =
+      https_server()->GetURL("a.test", "/shared_storage/round_trip.js");
+
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  std::vector<std::tuple<std::vector<uint16_t>, bool>> string_test_cases = {
+      {std::vector<uint16_t>({0x0068}), true},          // letter 'h'
+      {std::vector<uint16_t>({0xd800}), false},         // lone high surrogate
+      {std::vector<uint16_t>({0xdc00}), false},         // lone low surrogate
+      {std::vector<uint16_t>({0xd800, 0xdc00}), true},  // surrogate pair
+  };
+
+  for (size_t i = 0; i < string_test_cases.size(); ++i) {
+    const std::vector<uint16_t>& char_code_array =
+        std::get<0>(string_test_cases[i]);
+    std::u16string test_string =
+        std::u16string(char_code_array.begin(), char_code_array.end());
+    base::Value::List char_code_values;
+    for (uint16_t char_code : char_code_array) {
+      char_code_values.Append(static_cast<int>(char_code));
+    }
+
+    const bool expected_valid = std::get<1>(string_test_cases[i]);
+
+    // Check validity of UTF-16.
+    std::string base_output;
+    EXPECT_EQ(expected_valid,
+              base::UTF16ToUTF8(test_string.c_str(), test_string.size(),
+                                &base_output));
+
+    // The dummy assignment is necessary, because otherwise under the hood,
+    // `ExecJs` makes a call to that tries to evaluate the most recent script
+    // result as a `base::Value`, and `char_code_values` causes that to fail.
+    EXPECT_TRUE(ExecJs(shell(), JsReplace(R"(window.charCodeArray = $1;
+                                             window.dummyAssignment = 0;)",
+                                          std::move(char_code_values))));
+
+    // We will wait for 1 "worklet operation": `run()`.
+    test_worklet_host_manager()
+        .GetAttachedWorkletHost()
+        ->SetExpectedWorkletResponsesCount(1);
+
+    EXPECT_TRUE(ExecJs(shell(), R"(
+        sharedStorage.run('append-delete-operation',
+                          {data: {'keyCharCodeArray' : charCodeArray,
+                                  'value': 'asKey'},
+                           keepAlive: true});
+      )"));
+
+    test_worklet_host_manager()
+        .GetAttachedWorkletHost()
+        ->WaitForWorkletResponses();
+
+    EXPECT_EQ(3u * (i + 1), console_observer.messages().size());
+    EXPECT_THAT(base::UTF16ToUTF8(console_observer.messages()[3 * i].message),
+                testing::HasSubstr("key: '"));
+    EXPECT_EQ(u"value: 'asKey'",
+              console_observer.messages()[3 * i + 1].message);
+    EXPECT_EQ(u"delete success: true",
+              console_observer.messages()[3 * i + 2].message);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageBrowserTest,
+    StringRoundTrip_AppendThenEntries_UnpairedSurrogatesArePreserved) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  GURL script_url =
+      https_server()->GetURL("a.test", "/shared_storage/round_trip.js");
+
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  std::vector<std::tuple<std::vector<uint16_t>, bool>> string_test_cases = {
+      {std::vector<uint16_t>({0x0068}), true},          // letter 'h'
+      {std::vector<uint16_t>({0xd800}), false},         // lone high surrogate
+      {std::vector<uint16_t>({0xdc00}), false},         // lone low surrogate
+      {std::vector<uint16_t>({0xd800, 0xdc00}), true},  // surrogate pair
+  };
+
+  for (size_t i = 0; i < string_test_cases.size(); ++i) {
+    const std::vector<uint16_t>& char_code_array =
+        std::get<0>(string_test_cases[i]);
+    std::u16string test_string =
+        std::u16string(char_code_array.begin(), char_code_array.end());
+    base::Value::List char_code_values;
+    for (uint16_t char_code : char_code_array) {
+      char_code_values.Append(static_cast<int>(char_code));
+    }
+
+    const bool expected_valid = std::get<1>(string_test_cases[i]);
+
+    // Check validity of UTF-16.
+    std::string base_output;
+    EXPECT_EQ(expected_valid,
+              base::UTF16ToUTF8(test_string.c_str(), test_string.size(),
+                                &base_output));
+
+    // The dummy assignment is necessary, because otherwise under the hood,
+    // `ExecJs` makes a call to that tries to evaluate the most recent script
+    // result as a `base::Value`, and `char_code_values` causes that to fail.
+    EXPECT_TRUE(ExecJs(shell(), JsReplace(R"(window.charCodeArray = $1;
+                                             window.dummyAssignment = 0;)",
+                                          std::move(char_code_values))));
+
+    // We will wait for 1 "worklet operation": `run()`.
+    test_worklet_host_manager()
+        .GetAttachedWorkletHost()
+        ->SetExpectedWorkletResponsesCount(1);
+
+    EXPECT_TRUE(ExecJs(shell(), R"(
+        sharedStorage.run('append-entries-operation',
+                          {data: {'key': 'asValue',
+                                  'valueCharCodeArray': charCodeArray},
+                           keepAlive: true});
+      )"));
+
+    test_worklet_host_manager()
+        .GetAttachedWorkletHost()
+        ->WaitForWorkletResponses();
+
+    EXPECT_EQ(4u * (i + 1), console_observer.messages().size());
+    EXPECT_EQ(u"key: 'asValue'", console_observer.messages()[4 * i].message);
+    EXPECT_THAT(
+        base::UTF16ToUTF8(console_observer.messages()[4 * i + 1].message),
+        testing::HasSubstr("value: '"));
+    EXPECT_THAT(
+        base::UTF16ToUTF8(console_observer.messages()[4 * i + 2].message),
+        testing::HasSubstr("retrieved key: '"));
+    EXPECT_THAT(
+        base::UTF16ToUTF8(console_observer.messages()[4 * i + 2].message),
+        testing::HasSubstr("; retrieved value: '"));
+    EXPECT_THAT(
+        base::UTF16ToUTF8(console_observer.messages()[4 * i + 3].message),
+        testing::HasSubstr("' was retrieved: true"));
+  }
+}
+
 }  // namespace content

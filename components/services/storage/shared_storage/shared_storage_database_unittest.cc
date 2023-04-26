@@ -543,6 +543,13 @@ TEST_P(SharedStorageDatabaseParamTest, BasicOperations) {
   // Check that trying to delete the empty key doesn't give an error, even
   // though the input is invalid and no value is found to delete.
   EXPECT_EQ(OperationResult::kSuccess, db_->Delete(kOrigin1, u""));
+
+  // Check that trying to store and retrieve an empty value doesn't cause an
+  // error.
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key2", u""));
+  GetResult result2 = db_->Get(kOrigin1, u"key2");
+  EXPECT_EQ(OperationResult::kSuccess, result2.result);
+  EXPECT_TRUE(result2.data.empty());
 }
 
 TEST_P(SharedStorageDatabaseParamTest, IgnoreIfPresent) {
@@ -1802,7 +1809,7 @@ class SharedStorageDatabaseIteratorTest : public SharedStorageDatabaseTest {
 };
 
 TEST_F(SharedStorageDatabaseIteratorTest, Keys) {
-  db_ = LoadFromFile("shared_storage.v2.iterator.sql");
+  db_ = LoadFromFile("shared_storage.v3.iterator.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1850,7 +1857,7 @@ TEST_F(SharedStorageDatabaseIteratorTest, Keys) {
 }
 
 TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
-  db_ = LoadFromFile("shared_storage.v2.iterator.sql");
+  db_ = LoadFromFile("shared_storage.v3.iterator.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1901,7 +1908,7 @@ TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
 // Tests correct calculation of five-number summary when there is only one
 // origin.
 TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
-  db_ = LoadFromFile("shared_storage.v2.single_origin.sql");
+  db_ = LoadFromFile("shared_storage.v3.single_origin.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1927,7 +1934,7 @@ TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
 // Tests correct calculation of five-number summary when number of origins is
 // greater than one and has remainder 1 modulo 4.
 TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
-  db_ = LoadFromFile("shared_storage.v2.empty_values_mapping.5origins.sql");
+  db_ = LoadFromFile("shared_storage.v3.empty_values_mapping.5origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1958,7 +1965,7 @@ TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 2 modulo 4.
 TEST_F(SharedStorageDatabaseTest, SixOrigins) {
-  db_ = LoadFromFile("shared_storage.v2.empty_values_mapping.6origins.sql");
+  db_ = LoadFromFile("shared_storage.v3.empty_values_mapping.6origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1990,7 +1997,7 @@ TEST_F(SharedStorageDatabaseTest, SixOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 3 modulo 4.
 TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
-  db_ = LoadFromFile("shared_storage.v2.empty_values_mapping.7origins.sql");
+  db_ = LoadFromFile("shared_storage.v3.empty_values_mapping.7origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -2025,7 +2032,7 @@ TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 0 modulo 4.
 TEST_F(SharedStorageDatabaseTest, EightOrigins) {
-  db_ = LoadFromFile("shared_storage.v2.empty_values_mapping.8origins.sql");
+  db_ = LoadFromFile("shared_storage.v3.empty_values_mapping.8origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
