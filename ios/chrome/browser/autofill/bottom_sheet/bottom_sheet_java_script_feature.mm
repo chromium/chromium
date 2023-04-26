@@ -38,16 +38,13 @@ BottomSheetJavaScriptFeature* BottomSheetJavaScriptFeature::GetInstance() {
 }
 
 BottomSheetJavaScriptFeature::BottomSheetJavaScriptFeature()
-    : web::JavaScriptFeature(
-          // TODO(crbug.com/1175793): Move autofill code to kIsolatedWorld
-          // once all scripts are converted to JavaScriptFeatures.
-          web::ContentWorld::kPageContentWorld,
-          {FeatureScript::CreateWithFilename(
-              kScriptName,
-              FeatureScript::InjectionTime::kDocumentEnd,
-              FeatureScript::TargetFrames::kAllFrames,
-              FeatureScript::ReinjectionBehavior::
-                  kReinjectOnDocumentRecreation)}) {}
+    : web::JavaScriptFeature(web::ContentWorld::kIsolatedWorld,
+                             {FeatureScript::CreateWithFilename(
+                                 kScriptName,
+                                 FeatureScript::InjectionTime::kDocumentEnd,
+                                 FeatureScript::TargetFrames::kAllFrames,
+                                 FeatureScript::ReinjectionBehavior::
+                                     kReinjectOnDocumentRecreation)}) {}
 
 BottomSheetJavaScriptFeature::~BottomSheetJavaScriptFeature() = default;
 
