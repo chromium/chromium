@@ -29,7 +29,6 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/display_switches.h"
 #include "ui/wm/core/window_util.h"
@@ -592,29 +591,17 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HiddenButtons) {
 }
 
 // Tests that showing the menu will dismiss the visual cue (drag bar).
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, CueVisibleOnShowMenu) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, DismissCueOnShowMenu) {
   auto window = CreateAppWindow();
 
-  auto* multitask_cue = GetMultitaskMenuEventHandler()->multitask_cue();
+  auto* multitask_cue =
+      GetMultitaskMenuEventHandler()->multitask_cue_for_testing();
   ASSERT_TRUE(multitask_cue);
   EXPECT_TRUE(multitask_cue->cue_layer());
 
-  // Wait for fade in to finish.
-  ui::LayerAnimationStoppedWaiter animation_waiter;
-  animation_waiter.Wait(multitask_cue->cue_layer());
-
-  // Cue should still be showing when the menu is activated.
   ShowMultitaskMenu(*window);
-  ASSERT_TRUE(multitask_cue);
-  EXPECT_TRUE(multitask_cue->cue_layer());
 
-  multitask_cue->FireCueDismissTimerForTesting();
-
-  // Wait for fade out to finish.
-  animation_waiter.Wait(multitask_cue->cue_layer());
+  multitask_cue = GetMultitaskMenuEventHandler()->multitask_cue_for_testing();
   ASSERT_TRUE(multitask_cue);
   EXPECT_FALSE(multitask_cue->cue_layer());
 }
