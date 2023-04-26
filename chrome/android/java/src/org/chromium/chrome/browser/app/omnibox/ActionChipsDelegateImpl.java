@@ -151,11 +151,14 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
      * @param actionInSuggest the action to execute the intent for
      */
     private void startActionInSuggestIntent(OmniboxActionInSuggest actionInSuggest) {
+        var actionType = actionInSuggest.actionInfo.getActionType();
+        Intent intent = null;
+
         try {
-            var intent = Intent.parseUri(
+            intent = Intent.parseUri(
                     actionInSuggest.actionInfo.getActionUri(), Intent.URI_INTENT_SCHEME);
 
-            switch (actionInSuggest.actionInfo.getActionType()) {
+            switch (actionType) {
                 case WEBSITE:
                     // Rather than invoking an intent that opens a new tab, load the page in the
                     // current tab.
@@ -176,11 +179,22 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
             SuggestionsMetrics.recordActionInSuggestIntentResult(
                     SuggestionsMetrics.ActionInSuggestIntentResult.SUCCESS);
         } catch (URISyntaxException e) {
-            SuggestionsMetrics.recordActionInSuggestIntentResult(
-                    SuggestionsMetrics.ActionInSuggestIntentResult.BAD_URI_SYNTAX);
+            // Never happens. http://b/279756377.
         } catch (ActivityNotFoundException e) {
             SuggestionsMetrics.recordActionInSuggestIntentResult(
                     SuggestionsMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND);
+            // At this point we know that we were unable to launch the target activity.
+            // We may still be able to handle the corresponding action inside the browser.
+            switch (actionType) {
+                case DIRECTIONS:
+                    loadPageInCurrentTab(intent.getDataString());
+                    break;
+
+                case CALL:
+                case WEBSITE:
+                    // Give up. Don't add the `default` clause though, capture missed variants.
+                    break;
+            }
         }
     }
     /**

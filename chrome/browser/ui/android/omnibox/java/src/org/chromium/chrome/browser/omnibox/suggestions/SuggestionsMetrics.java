@@ -57,9 +57,12 @@ public class SuggestionsMetrics {
             ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND, ActionInSuggestIntentResult.COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionInSuggestIntentResult {
-        int SUCCESS = 0; // Intent started successfully.
-        int BAD_URI_SYNTAX = 1; // Unable to deserialize intent: invalid syntax.
-        int ACTIVITY_NOT_FOUND = 2; // Unable to start intent: no activity.
+        /// Intent started successfully.
+        int SUCCESS = 0;
+        /// Unable to deserialize intent: invalid syntax. Never recorded: http://b/279756377.
+        int BAD_URI_SYNTAX = 1;
+        /// Unable to start intent: no activity.
+        int ACTIVITY_NOT_FOUND = 2;
         int COUNT = 3;
     }
     // TODO(crbug/1418077) export this from upstream.

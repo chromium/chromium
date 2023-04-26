@@ -7,15 +7,18 @@ package org.chromium.chrome.browser.app.omnibox;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 
 import androidx.annotation.Nullable;
 
@@ -30,14 +33,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -49,6 +51,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -56,8 +59,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.EntityInfoProto;
 import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionInSuggest;
 import org.chromium.components.omnibox.action.OmniboxActionType;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.components.omnibox.action.OmniboxPedalType;
@@ -106,8 +111,9 @@ public class ActionChipsDelegateImplUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock HistoryClustersCoordinator mHistoryClustersCoordinator;
     private @Mock Tab mTab;
+    private @Mock Activity mActivity;
+    private ArgumentCaptor<Intent> mIntentCaptor = ArgumentCaptor.forClass(Intent.class);
 
-    private ShadowActivity mShadowActivity;
     private ShadowLooper mShadowLooper;
     private OneshotSupplierImpl<HistoryClustersCoordinator> mHistoryClustersCoordinatorSupplier;
     private ObservableSupplierImpl<Tab> mTabSupplier;
@@ -115,15 +121,18 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Before
     public void setUp() {
-        var activity = Robolectric.buildActivity(Activity.class).get();
-        mShadowActivity = shadowOf(activity);
         mShadowLooper = ShadowLooper.shadowMainLooper();
 
         mHistoryClustersCoordinatorSupplier = new OneshotSupplierImpl<>();
         mTabSupplier = new ObservableSupplierImpl<>();
 
         mDelegate = new ActionChipsDelegateImpl(
-                activity, mHistoryClustersCoordinatorSupplier, null, mTabSupplier);
+                mActivity, mHistoryClustersCoordinatorSupplier, null, mTabSupplier);
+
+        doReturn(ContextUtils.getApplicationContext()).when(mActivity).getApplicationContext();
+        doReturn(ContextUtils.getApplicationContext().getPackageName())
+                .when(mActivity)
+                .getPackageName();
     }
 
     @After
@@ -131,9 +140,6 @@ public class ActionChipsDelegateImplUnitTest {
         // Other than tests that verify this value (and reset it to its original state) no other
         // tests should ever trigger PasswordManager.
         assertFalse(ShadowPasswordManagerLauncher.sPasswordSettingsRequested);
-        // Other than tests that verify an intent being started (and remove it from the queue) no
-        // other tests should ever invoke intents.
-        assertNull(mShadowActivity.getNextStartedActivity());
         // Other than tests that interact with mHistoryClustersCoordinator (and confirm appropriate
         // calls to be made) no other tests should interact with this instance.
         verifyNoMoreInteractions(mHistoryClustersCoordinator);
@@ -146,7 +152,9 @@ public class ActionChipsDelegateImplUnitTest {
      * @param fragmentClass When specified, expect particular settings fragment to be requested.
      */
     private void checkSettingsActivityFragmentStarted(@Nullable Class fragmentClass) {
-        var intent = mShadowActivity.getNextStartedActivity();
+        verify(mActivity, times(1)).startActivity(mIntentCaptor.capture(), any());
+
+        var intent = mIntentCaptor.getValue();
         assertEquals(SettingsActivity.class.getName(), intent.getComponent().getClassName());
         assertEquals(fragmentClass == null ? null : fragmentClass.getName(),
                 intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT));
@@ -178,6 +186,20 @@ public class ActionChipsDelegateImplUnitTest {
      */
     private OmniboxAction buildHistoryClustersAction(String query) {
         return new HistoryClustersAction("hint", query);
+    }
+
+    /**
+     * Create Action in Suggest with a supplied definition.
+     */
+    private OmniboxAction buildActionInSuggest(
+            EntityInfoProto.ActionInfo.ActionType type, Intent intent) {
+        var uri = intent.toUri(Intent.URI_INTENT_SCHEME);
+        var action = EntityInfoProto.ActionInfo.newBuilder()
+                             .setActionType(type)
+                             .setActionUri(uri)
+                             .build();
+
+        return new OmniboxActionInSuggest("wink", action);
     }
 
     @Test
@@ -234,7 +256,9 @@ public class ActionChipsDelegateImplUnitTest {
     public void executePedal_launchIncognito_fromCustomActivity() {
         mDelegate.execute(buildPedal(OmniboxPedalType.LAUNCH_INCOGNITO));
 
-        var intent = mShadowActivity.getNextStartedActivity();
+        verify(mActivity, times(1)).startActivity(mIntentCaptor.capture());
+        var intent = mIntentCaptor.getValue();
+
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
         assertTrue(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
 
@@ -245,7 +269,9 @@ public class ActionChipsDelegateImplUnitTest {
     public void executePedal_viewChromeHistory_fromCustomActivity() {
         mDelegate.execute(buildPedal(OmniboxPedalType.VIEW_CHROME_HISTORY));
 
-        var intent = mShadowActivity.getNextStartedActivity();
+        verify(mActivity, times(1)).startActivity(mIntentCaptor.capture());
+        var intent = mIntentCaptor.getValue();
+
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
         assertEquals(UrlConstants.HISTORY_URL, intent.getDataString());
         assertTrue(
@@ -270,7 +296,9 @@ public class ActionChipsDelegateImplUnitTest {
     public void executePedal_playChromeDinoGame_fromCustomActivity() {
         mDelegate.execute(buildPedal(OmniboxPedalType.PLAY_CHROME_DINO_GAME));
 
-        var intent = mShadowActivity.getNextStartedActivity();
+        verify(mActivity, times(1)).startActivity(mIntentCaptor.capture());
+        var intent = mIntentCaptor.getValue();
+
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
         assertEquals(UrlConstants.CHROME_DINO_URL, intent.getDataString());
         assertTrue(
@@ -280,14 +308,14 @@ public class ActionChipsDelegateImplUnitTest {
     }
 
     @Test
-    public void executeNonPedal_historyClusters_noCoordinator() {
+    public void executeHistoryClusters_noCoordinator() {
         String testJourneyName = "example journey name";
         mDelegate.execute(buildHistoryClustersAction(testJourneyName));
         verifyNoMoreInteractions(mHistoryClustersCoordinator);
     }
 
     @Test
-    public void executeNonPedal_historyClusters_withCoordinator() {
+    public void executeHistoryClusters_withCoordinator() {
         String testJourneyName = "example journey name";
 
         mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
@@ -295,5 +323,137 @@ public class ActionChipsDelegateImplUnitTest {
 
         mDelegate.execute(buildHistoryClustersAction(testJourneyName));
         verify(mHistoryClustersCoordinator).openHistoryClustersUi(testJourneyName);
+    }
+
+    @Test
+    public void executeActionInSuggest_executeDirectionsWithMaps() {
+        mTabSupplier.set(mTab);
+        mDelegate.execute(buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.DIRECTIONS,
+                new Intent("Magic Intent Action")));
+
+        verify(mActivity, times(1)).startActivity(mIntentCaptor.capture());
+        var intent = mIntentCaptor.getValue();
+
+        assertEquals("Magic Intent Action", intent.getAction());
+
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.Omnibox.ActionInSuggest.IntentResult",
+                        SuggestionsMetrics.ActionInSuggestIntentResult.SUCCESS));
+        verifyNoMoreInteractions(mTab);
+    }
+
+    @Test
+    public void executeActionInSuggest_redirectDirectionsActionToLocalTabIfAvailable() {
+        mTabSupplier.set(mTab);
+
+        var intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
+
+        // NOTE: the intent is serialized and deserialized. Can't directly check if instance is
+        // same.
+        doThrow(new ActivityNotFoundException()).when(mActivity).startActivity(any());
+        mDelegate.execute(
+                buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.DIRECTIONS, intent));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.Omnibox.ActionInSuggest.IntentResult",
+                        SuggestionsMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
+
+        var loadParamsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTab, times(1)).loadUrl(loadParamsCaptor.capture());
+
+        var loadUrlParams = loadParamsCaptor.getValue();
+        assertNotNull(loadUrlParams);
+        assertEquals(UrlConstants.CHROME_DINO_URL, loadUrlParams.getUrl());
+        verifyNoMoreInteractions(mTab);
+    }
+
+    @Test
+    public void executeActionInSuggest_redirectDirectionsActionToRemoteTab() {
+        mTabSupplier.set(null);
+
+        var intent = new Intent(Intent.ACTION_DIAL);
+        intent.setClassName("no.such.package", ".");
+        intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
+
+        // First intent is to DIAL with "no.such.package".
+        doThrow(new ActivityNotFoundException())
+                // Confirm the second intent asks to load webpage in Chrome.
+                .doAnswer(inv -> {
+                    Intent newIntent = inv.getArgument(0);
+                    assertEquals(Intent.ACTION_VIEW, newIntent.getAction());
+                    assertEquals(
+                            mActivity.getPackageName(), newIntent.getComponent().getPackageName());
+                    assertEquals(UrlConstants.CHROME_DINO_URL, newIntent.getDataString());
+                    return 0;
+                })
+                .when(mActivity)
+                .startActivity(any());
+
+        mDelegate.execute(
+                buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.DIRECTIONS, intent));
+
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.Omnibox.ActionInSuggest.IntentResult",
+                        SuggestionsMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
+    }
+
+    @Test
+    public void executeActionInSuggest_executeCallActionWithDialer() {
+        mTabSupplier.set(mTab);
+        mDelegate.execute(buildActionInSuggest(
+                EntityInfoProto.ActionInfo.ActionType.CALL, new Intent(Intent.ACTION_CALL)));
+
+        verify(mActivity, times(1)).startActivity(mIntentCaptor.capture());
+        var intent = mIntentCaptor.getValue();
+        // OBSERVE: We rewrite ACTION_CALL with ACTION_DIAL, which does not carry high permission
+        // requirements.
+        assertEquals(Intent.ACTION_DIAL, intent.getAction());
+
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.Omnibox.ActionInSuggest.IntentResult",
+                        SuggestionsMetrics.ActionInSuggestIntentResult.SUCCESS));
+        verifyNoMoreInteractions(mTab);
+    }
+
+    @Test
+    public void executeActionInSuggest_dontRedirectCallActionToLocalTab() {
+        mTabSupplier.set(mTab);
+
+        var intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
+
+        // NOTE: the intent is serialized and deserialized. Can't directly check if instance is
+        // same.
+        doThrow(new ActivityNotFoundException()).when(mActivity).startActivity(any());
+        mDelegate.execute(buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.CALL, intent));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.Omnibox.ActionInSuggest.IntentResult",
+                        SuggestionsMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
+        verifyNoMoreInteractions(mTab);
+    }
+
+    @Test
+    public void executeActionInSuggest_dontRedirectCallActionToRemoteTab() {
+        mTabSupplier.set(null);
+
+        var intent = new Intent(Intent.ACTION_DIAL);
+        intent.setClassName("no.such.package", ".");
+        intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
+
+        // Keep throwing. Test should fail if we attempt to invoke intent to self.
+        doThrow(new ActivityNotFoundException()).when(mActivity).startActivity(any());
+        mDelegate.execute(buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.CALL, intent));
+
+        verifyNoMoreInteractions(mTab);
+
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.Omnibox.ActionInSuggest.IntentResult",
+                        SuggestionsMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
     }
 }
