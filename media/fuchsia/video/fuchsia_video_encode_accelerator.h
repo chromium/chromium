@@ -72,8 +72,7 @@ class MEDIA_EXPORT FuchsiaVideoEncodeAccelerator final
   void OnStreamProcessorError() override;
 
   void ReleaseEncoder();
-  void OnError(VideoEncodeAccelerator::Error error_type,
-               const std::string& error_message);
+  void OnError(EncoderStatus status);
   void OnInputBuffersAcquired(
       std::vector<VmoBuffer> buffers,
       const fuchsia::sysmem::SingleBufferSettings& buffer_settings);
