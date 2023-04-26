@@ -64063,6 +64063,7 @@ from previous Chrome versions.
       label="AutofillUseImprovedLabelDisambiguation:disabled"/>
   <int value="1009437086" label="AutofillEnableOfferNotification:disabled"/>
   <int value="1009596554" label="PWAsDefaultOfflinePage:enabled"/>
+  <int value="1009713313" label="NtpChromeCartHistoryClusterCoexist:disabled"/>
   <int value="1009976778" label="SidePanel:disabled"/>
   <int value="1011491959" label="PageInfoCookiesSubpage:enabled"/>
   <int value="1011550878" label="MessagesForAndroidPermissionUpdate:disabled"/>
@@ -65101,6 +65102,7 @@ from previous Chrome versions.
   <int value="1582771017" label="kDiagnosticsAppJelly:disabled"/>
   <int value="1583543236" label="QuickSettingsNetworkRevamp:disabled"/>
   <int value="1584039096" label="highlight-all-webviews"/>
+  <int value="1584111738" label="NtpChromeCartHistoryClusterCoexist:enabled"/>
   <int value="1584112058" label="TrustSafetySentimentSurveyV2:enabled"/>
   <int value="1584425198" label="NtpModules:enabled"/>
   <int value="1584536816" label="LimitAltTabToActiveDesk:enabled"/>
