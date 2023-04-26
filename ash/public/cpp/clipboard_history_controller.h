@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_CLIPBOARD_HISTORY_CONTROLLER_H_
 
 #include <memory>
-#include <set>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"

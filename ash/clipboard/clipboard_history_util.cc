@@ -236,4 +236,14 @@ ui::ImageModel GetHtmlPreviewPlaceholder() {
   return *model;
 }
 
+std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>
+GetItemDescriptorsFrom(const std::list<ClipboardHistoryItem>& items) {
+  std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor> item_descriptors;
+  for (const auto& item : items) {
+    item_descriptors.emplace_back(item.display_text(), item.display_format(),
+                                  item.id().ToString());
+  }
+  return item_descriptors;
+}
+
 }  // namespace ash::clipboard_history_util

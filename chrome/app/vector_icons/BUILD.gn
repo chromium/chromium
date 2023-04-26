@@ -301,7 +301,6 @@ aggregate_vector_icons("chrome_vector_icons") {
       "person_add.icon",
       "sharesheet_link.icon",
       "sharesheet_share_with_others.icon",
-      "sharesheet_text.icon",
       "shutdown_guest_os.icon",
       "tip.icon",
     ]

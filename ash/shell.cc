@@ -34,6 +34,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/child_accounts/parent_access_controller_impl.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/control_v_histogram_recorder.h"
 #include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/constants/ash_features.h"
@@ -229,6 +230,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -736,6 +738,12 @@ Shell::~Shell() {
   RemoveAccessibilityEventHandler(mouse_cursor_filter_.get());
   RemovePreTargetHandler(modality_filter_.get());
   RemovePreTargetHandler(tooltip_controller_.get());
+
+  // Resets the implementation of clipboard history utility functions.
+  chromeos::clipboard_history::SetQueryItemDescriptorsImpl(
+      base::NullCallback());
+  chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(
+      base::NullCallback());
 
   // Resets the text context menu implementation factory.
   views::ViewsTextServicesContextMenuChromeos::SetImplFactory(
@@ -1637,6 +1645,21 @@ void Shell::Init(
             return std::make_unique<ViewsTextServicesContextMenuAsh>(menu_model,
                                                                      textfield);
           }));
+
+  // Sets the implementation of clipboard history utility functions.
+  // It is safe to pass `clipboard_history_controller_` raw pointer here.
+  // Because the function implementation is reset before
+  // `clipboard_history_controller_` is destroyed.
+  chromeos::clipboard_history::SetQueryItemDescriptorsImpl(base::BindRepeating(
+      [](ClipboardHistoryControllerImpl* controller) {
+        return clipboard_history_util::GetItemDescriptorsFrom(
+            controller->history()->GetItems());
+      },
+      clipboard_history_controller_.get()));
+  chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(
+      base::BindRepeating([](const std::string& id) {
+        ClipboardHistoryController::Get()->PasteClipboardItemById(id);
+      }));
 
   for (auto& observer : shell_observers_) {
     observer.OnShellInitialized();

@@ -5,10 +5,13 @@
 #ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_UTIL_H_
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_UTIL_H_
 
+#include <list>
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "base/strings/string_piece_forward.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 
@@ -153,6 +156,10 @@ ASH_EXPORT ui::ImageModel GetIconForFileClipboardItem(
 // Returns a placeholder image to display for HTML items while their previews
 // render.
 ASH_EXPORT ui::ImageModel GetHtmlPreviewPlaceholder();
+
+// Returns the item descriptors based on `items`.
+std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>
+GetItemDescriptorsFrom(const std::list<ClipboardHistoryItem>& items);
 
 }  // namespace clipboard_history_util
 }  // namespace ash

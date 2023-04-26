@@ -48,6 +48,7 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "screenshot.icon",
     "sentiment_very_satisfied.icon",
     "straighten.icon",
+    "text.icon",
     "timer.icon",
     "translate.icon",
     "unfloat_button.icon",

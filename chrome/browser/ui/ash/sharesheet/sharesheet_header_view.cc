@@ -438,7 +438,7 @@ std::unique_ptr<views::Label> SharesheetHeaderView::CreatePreviewLabel(
 const gfx::VectorIcon& SharesheetHeaderView::GetTextVectorIcon() {
   switch (text_icon_) {
     case (TextPlaceholderIcon::kGenericText):
-      return kSharesheetTextIcon;
+      return chromeos::kTextIcon;
     case (TextPlaceholderIcon::kLink):
       return kSharesheetLinkIcon;
   }

@@ -414,6 +414,7 @@ component("cpp") {
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/base",
+    "//chromeos/ui/clipboard_history",
     "//chromeos/ui/frame",
     "//chromeos/ui/vector_icons",
     "//components/access_code_cast/common",
