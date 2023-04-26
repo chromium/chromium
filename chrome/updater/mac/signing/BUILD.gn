@@ -36,6 +36,8 @@ process_version_rc_template("sign_config") {
     "MAC_BUNDLE_ID=\"" + mac_updater_bundle_identifier + "\"",
     "-e",
     "KEYSTONE_APP_NAME=\"" + keystone_app_name + "\"",
+    "-e",
+    "MAC_TEAM_ID=\"" + mac_team_identifier + "\"",
   ]
 
   extra_args += [

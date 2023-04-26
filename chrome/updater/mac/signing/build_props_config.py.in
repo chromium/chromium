@@ -34,3 +34,7 @@ class BuildPropsCodeSignConfig(CodeSignConfig):
     @property
     def keystone_app_name(self):
         return '@KEYSTONE_APP_NAME@'
+
+    @property
+    def notary_team_id(self):
+        return '@MAC_TEAM_ID@'
