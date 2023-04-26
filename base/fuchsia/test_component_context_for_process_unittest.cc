@@ -140,7 +140,7 @@ TEST_F(TestComponentContextForProcessTest, ProvideSystemServiceNatural) {
 
   // If the BuildInfo service is actually connected then GetBuildInfo() will
   // return a result, otherwise the bindings will report an error.
-  provider->GetBuildInfo().ThenExactlyOnce(
+  provider->GetBuildInfo().Then(
       [quit_loop = wait_loop.QuitClosure()](auto build_info) {
         EXPECT_FALSE(build_info.is_error())
             << build_info.error_value().status();

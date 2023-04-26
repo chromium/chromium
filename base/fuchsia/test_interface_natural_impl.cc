@@ -40,7 +40,7 @@ zx_status_t VerifyTestInterface(
   zx_status_t result = ZX_ERR_INTERNAL;
   base::WeakPtrFactory<zx_status_t> weak_result(&result);
 
-  client->Add({{2, 2}}).ThenExactlyOnce(
+  client->Add({{2, 2}}).Then(
       [quit = run_loop.QuitClosure(), weak_result = weak_result.GetWeakPtr()](
           fidl::Result<base_testfidl::TestInterface::Add>& result) {
         if (result.is_ok()) {

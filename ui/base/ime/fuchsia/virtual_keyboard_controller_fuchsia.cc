@@ -110,7 +110,7 @@ void VirtualKeyboardControllerFuchsia::WatchVisibility() {
     return;
   }
 
-  controller_client_->WatchVisibility().ThenExactlyOnce(fit::bind_member(
+  controller_client_->WatchVisibility().Then(fit::bind_member(
       this, &VirtualKeyboardControllerFuchsia::OnVisibilityChange));
 }
 

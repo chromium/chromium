@@ -149,7 +149,7 @@ KeyboardClient::KeyboardClient(
       ->AddListener(
           {{.view_ref = std::move(view_ref),
             .listener = std::move(keyboard_listener_endpoints->client)}})
-      .ThenExactlyOnce([](auto result) {});
+      .Then([](auto result) {});
   binding_.emplace(async_get_default_dispatcher(),
                    std::move(keyboard_listener_endpoints->server), this,
                    fidl::kIgnoreBindingClosure);
