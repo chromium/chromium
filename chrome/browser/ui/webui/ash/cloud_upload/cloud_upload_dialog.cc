@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
@@ -629,7 +630,8 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(
 // Creates and shows a new dialog for the cloud upload workflow. If there are
 // local file tasks from `resulting_tasks`, include them in the dialog
 // arguments. These tasks are can be selected by the user to open the files
-// instead of using a cloud provider.
+// instead of using a cloud provider. If no modal_parent was provided, first
+// launches a new Files app window, which we listen for in OnBrowserAdded().
 void CloudOpenTask::ShowDialog(
     mojom::DialogArgsPtr args,
     const mojom::DialogPage dialog_page,
@@ -651,10 +653,14 @@ void CloudOpenTask::ShowDialog(
       dialog_page, office_move_confirmation_shown);
 
   if (!modal_parent_) {
-    // Create a files app window and use it as the modal parent.
-    file_manager::util::ShowItemInFolder(
-        profile_, file_urls_.at(0).path(),
-        base::BindOnce(&CloudOpenTask::FilesAppWindowCreated, this, dialog));
+    BrowserList::AddObserver(this);
+    DCHECK(!pending_dialog_);
+    pending_dialog_ = dialog;
+    // Create a files app window and use it as the modal parent. CloudOpenTask
+    // is kept alive by the callback passed to CloudUploadDialog above. We
+    // expect this to trigger OnBrowserAdded, which then shows the dialog.
+    file_manager::util::ShowItemInFolder(profile_, file_urls_.at(0).path(),
+                                         base::DoNothing());
   } else {
     dialog->ShowSystemDialog(modal_parent_);
   }
@@ -690,25 +696,21 @@ void CloudOpenTask::SetTaskArgs(
   }
 }
 
-void CloudOpenTask::FilesAppWindowCreated(
-    CloudUploadDialog* dialog,
-    platform_util::OpenOperationResult result) {
-  if (result != platform_util::OpenOperationResult::OPEN_SUCCEEDED) {
-    // We keep going even if we failed to launch files app. The dialog
-    // just won't be modal in this case.
-    dialog->set_modal_type(ui::MODAL_TYPE_NONE);
-    dialog->ShowSystemDialog();
+void CloudOpenTask::OnBrowserAdded(Browser* browser) {
+  // TODO(petermarshall): Add a timeout. If Files app never launches for some
+  // reason, then we will never show the dialog.
+  DCHECK(pending_dialog_);
+  if (!IsBrowserForSystemWebApp(browser, SystemWebAppType::FILE_MANAGER)) {
+    // Wait for Files app to launch.
+    LOG(WARNING) << "Browser did not match Files app";
     return;
   }
-  Browser* browser =
-      FindSystemWebAppBrowser(profile_, SystemWebAppType::FILE_MANAGER);
-  if (!browser) {
-    dialog->set_modal_type(ui::MODAL_TYPE_NONE);
-    dialog->ShowSystemDialog();
-    return;
-  }
+  BrowserList::RemoveObserver(this);
+
   modal_parent_ = browser->window()->GetNativeWindow();
-  dialog->ShowSystemDialog(modal_parent_);
+  pending_dialog_->ShowSystemDialog(modal_parent_);
+  // The dialog is deleted in `SystemWebDialogDelegate::OnDialogClosed`.
+  pending_dialog_ = nullptr;
 }
 
 // Receive user's dialog response and acts accordingly. `user_response` is
@@ -903,7 +905,7 @@ CloudUploadDialog::CloudUploadDialog(mojom::DialogArgsPtr args,
 CloudUploadDialog::~CloudUploadDialog() = default;
 
 ui::ModalType CloudUploadDialog::GetDialogModalType() const {
-  return modal_type_;
+  return ui::MODAL_TYPE_WINDOW;
 }
 
 bool CloudUploadDialog::ShouldCloseDialogOnEscape() const {
