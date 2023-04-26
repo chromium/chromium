@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 117 tests; 115 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 120 tests; 116 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS round(10,10) should be used-value-equivalent to 10
 PASS mod(1,1) should be used-value-equivalent to 0
 PASS rem(1,1) should be used-value-equivalent to 0
@@ -117,5 +117,8 @@ PASS rem(18px,100% / 15) should be used-value-equivalent to 3px
 PASS rem(-18px,100% / 15) should be used-value-equivalent to -3px
 PASS rem(18vw,5vw) should be used-value-equivalent to 3vw
 PASS rem(-18vw,5vw) should be used-value-equivalent to -3vw
+PASS calc(round(1px + 0%, 1px + 0%)) should be used-value-equivalent to 1px
+FAIL calc(mod(1px + 0%, 1px + 0%)) should be used-value-equivalent to 0px assert_not_equals: calc(mod(1px + 0%, 1px + 0%)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL calc(rem(1px + 0%, 1px + 0%)) should be used-value-equivalent to 0px assert_not_equals: calc(rem(1px + 0%, 1px + 0%)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 Harness: the test ran to completion.
 
