@@ -268,6 +268,9 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
   std::string GetChallengeResponseHeader() {
     // Attestation flow should be fully done.
     EXPECT_TRUE(initial_attestation_request_);
+    if (!initial_attestation_request_) {
+      return std::string();
+    }
 
     // Validate that the two requests contain expected information. URLs' paths
     // have to be used for comparison due to how the HostResolver is replacing
