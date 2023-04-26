@@ -307,7 +307,7 @@
 <translation id="1254593899333212300">Тікелей интернет қосылысы</translation>
 <translation id="1257336506558170607">Таңдалған сертификатты экспорттау</translation>
 <translation id="1258491128795710625">Жаңалықтар</translation>
-<translation id="1259152067760398571">Қауіпсіздік шарасы кеше қолданылды.</translation>
+<translation id="1259152067760398571">Қауіпсіздік тексерісі кеше қолданылды.</translation>
 <translation id="1260451001046713751">Қалқымалы терезелердің шығуына және <ph name="HOST" /> хостынан бағыттауға әрқашан рұқсат беру</translation>
 <translation id="1260810365552581339">Linux жүйесінде диск жады аз болуы мүмкін. Linux диск жадын көбейтіңіз де, оны <ph name="LINK_START" />параметрлерде<ph name="LINK_END" /> қайтадан қалпына келтіріп көріңіз.</translation>
 <translation id="1261380933454402672">Баяу</translation>
@@ -830,7 +830,7 @@
 <translation id="1703666494654169921">Сайттардың виртуалдық шындық құрылғыларын немесе деректерді пайдалануына рұқсат бермеу</translation>
 <translation id="1704097193565924901">Бас әріпке өзгерту</translation>
 <translation id="1704230497453185209">Сайттардың дыбысты шығаруына рұқсат бермеу</translation>
-<translation id="1704970325597567340">Қауіпсіздік шарасы <ph name="DATE" /> күні қолданылды.</translation>
+<translation id="1704970325597567340">Қауіпсіздік тексерісі <ph name="DATE" /> күні қолданылды.</translation>
 <translation id="1706586824377653884">Әкімші енгізген</translation>
 <translation id="170658918174941828">Chrome нұсқасы, операциялық жүйе нұсқасы, Cast параметрлері, экран көшірмесін көрсету статистикалары және байланыс арнасының диагностикалық журналдары жоғарыда қоса берілетін кез келген ақпаратпен бірге жіберіледі. Бұл пікір ақауларды тексеріп, функцияны жақсарту үшін пайдаланылады. Қандай да бір әдейі не байқаусызда жіберілген жеке ақпарат құпиялық саясаттарына сай қорғалады. Осы пікірді жібере отырып, Google-дың қандай да бір өнімін не қызметін жақсарту үшін берген пікіріңізді пайдалануына келісім бересіз.</translation>
 <translation id="1708291623166985230">Хотспот өшірулі</translation>
@@ -1094,7 +1094,7 @@
 <translation id="192494336144674234">Ашу әдісі</translation>
 <translation id="1925017091976104802">Қою үшін <ph name="MODIFIER_KEY_DESCRIPTION" /> пернелерін басыңыз.</translation>
 <translation id="1925021887439448749">Арнаулы веб-мекенжайды енгізу</translation>
-<translation id="1925124445985510535">Қауіпсіздік шарасы сағат <ph name="TIME" /> қолданылды.</translation>
+<translation id="1925124445985510535">Қауіпсіздік тексерісі сағат <ph name="TIME" /> қолданылды.</translation>
 <translation id="192564025059434655">Chrome қолданбаларының ескі нұсқалары 2022 жылдың желтоқсанынан кейін Windows жүйесіндегі құрылғыларда ашылмайды. Жаңа нұсқаның бар-жоғын тексеруіңізге болады.</translation>
 <translation id="1926339101652878330">Бұл параметрлер кәсіпорын саясаты бойынша бақыланады. Қосымша ақпарат алу үшін әкімшіңізге хабарласыңыз.</translation>
 <translation id="1927632033341042996"><ph name="NEW_FINGER_NUMBER" />-саусақ</translation>
@@ -2619,7 +2619,7 @@
 <translation id="3264582393905923483">Мәнмәтін</translation>
 <translation id="3265459715026181080">Терезені жабу</translation>
 <translation id="3266022278425892773">Linux әзірлеуші ортасы</translation>
-<translation id="3266274118485960573">Қауіпсіздік шарасы қосулы.</translation>
+<translation id="3266274118485960573">Қауіпсіздік тексерісі қосулы.</translation>
 <translation id="3267726687589094446">Бірнеше файлды автоматты жүктеуге берілген рұқсат күшін сақтау</translation>
 <translation id="3268451620468152448">Ашық қойындылар</translation>
 <translation id="3269093882174072735">Кескінді жүктеу</translation>
@@ -2710,7 +2710,7 @@
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" бұл кеңейтімді жоймақ.</translation>
 <translation id="3343046414300263892">Қаріп өлшемін ұлғайту</translation>
 <translation id="3343977377045378693">Реттеліп жатыр</translation>
-<translation id="3345634917232014253">Қауіпсіздік шарасы жаңа ғана қолданылды.</translation>
+<translation id="3345634917232014253">Қауіпсіздік тексерісі жаңа ғана қолданылды.</translation>
 <translation id="3345886924813989455">Қолдау көрсетілетін браузер табылмады</translation>
 <translation id="3347086966102161372">Кескін мекенжайын к&amp;өшіру</translation>
 <translation id="3348038390189153836">Алынбалы құрылғы анықталды</translation>
@@ -5111,7 +5111,7 @@
 <translation id="5499476581866658341">Енді телефондағы соңғы фотосуреттер мен медиафайлдарды көре аласыз</translation>
 <translation id="549957179819296104">Жаңа белгіше</translation>
 <translation id="5500168250243071806">Аккаунтқа кірген кезде, <ph name="BEGIN_LINK_SEARCH" />Іздеу тарихы<ph name="END_LINK_SEARCH" /> мен <ph name="BEGIN_LINK_GOOGLE" />әрекеттің басқа үлгілері<ph name="END_LINK_GOOGLE" /> Google аккаунтыңызға сақталуы мүмкін. Оларды кез келген уақытта жоя аласыз.</translation>
-<translation id="5500709606820808700">Қауіпсіздік шарасы бүгін қолданылды.</translation>
+<translation id="5500709606820808700">Қауіпсіздік тексерісі бүгін қолданылды.</translation>
 <translation id="5501322521654567960">Сол жақ бүйірлік панель</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> құрылғысынан <ph name="ATTACHMENTS" /> алынбады.}other{<ph name="DEVICE_NAME" /> құрылғысынан <ph name="ATTACHMENTS" /> алынбады.}}</translation>
 <translation id="5502500733115278303">Firefox браузерінен импортталған</translation>
@@ -5158,7 +5158,7 @@
 <translation id="5546865291508181392">Табу</translation>
 <translation id="5548075230008247516">Барлық таңдалған элементтер алынып тасталды, таңдау режимі өшірілді.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" және тағы 1 қойынды}other{"<ph name="TAB_TITLE" />" және тағы # қойынды}}</translation>
-<translation id="5548606607480005320">Қауіпсіздік шарасы</translation>
+<translation id="5548606607480005320">Қауіпсіздік тексерісі</translation>
 <translation id="5548644592758170183">Сол жақта көрсету</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Пернетақта және мәтін енгізу</translation>
@@ -6308,7 +6308,7 @@
 <translation id="6587958707401001932">Әдепкі параметрді таңдау</translation>
 <translation id="6588043302623806746">Қауіпсіз DNS пайдалану</translation>
 <translation id="6588047202935130957">Интернетті шолу кезінде табылған қызығушылықтар тізімі осы жерге шығуы мүмкін.</translation>
-<translation id="659005207229852190">Қауіпсіздік шарасы аяқталды.</translation>
+<translation id="659005207229852190">Қауіпсіздік тексерісі аяқталды.</translation>
 <translation id="6590458744723262880">Қалтаның атауын өзгерту</translation>
 <translation id="6592267180249644460">WebRTC журналы жазып алынды <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Саусақ ізіңіз түсірілді.</translation>

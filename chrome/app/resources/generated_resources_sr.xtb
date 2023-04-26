@@ -3842,7 +3842,7 @@
 <translation id="4348766275249686434">Прикупљај грешке</translation>
 <translation id="4349828822184870497">Корисно</translation>
 <translation id="4350230709416545141">Увек блокирај приступ локацији за <ph name="HOST" /></translation>
-<translation id="4350782034419308508">Ок Google</translation>
+<translation id="4350782034419308508">Хеј Google</translation>
 <translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Да би пружио најбољи доживљај, <ph name="DEVICE_OS" /> прикупља податке о хардверу са уређаја и дели их са Google-ом да би утврдио која ажурирања треба да пружи. Можете опционално да дозволите Google-у да користи те податке у додатне сврхе попут подршке и побољшања за <ph name="DEVICE_OS" /> доживљај и услугу.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Можете да се пријавите на овом уређају и посетите одељак CHROMEOSFLEX_HARDWARE_INFO на chrome://system да бисте видели податке који се шаљу Google-у ради филтрирања ажурирања, као и све друге случајеве у којима одлучујете да делите податке са Google-ом.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Више детаља о подацима које <ph name="DEVICE_OS" /> може да дели са Google-ом, као и о томе како се они користе, потражите на g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
@@ -6615,7 +6615,7 @@
 <translation id="6842749380892715807">XML листе сајтова су последњи пут преузете: <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Сајтови обично откривају када активно користите уређај ради подешавања доступности у апликацијама за ћаскање</translation>
 <translation id="6843264316370513305">Отклањање грешака на мрежи</translation>
-<translation id="6843423766595476978">Опција Ок Google је спремна</translation>
+<translation id="6843423766595476978">Опција Хеј Google је спремна</translation>
 <translation id="6845038076637626672">Отвори увећано</translation>
 <translation id="6845231585063669905">Од А до Z</translation>
 <translation id="6846178040388691741"><ph name="EXTENSION_NAME" /> жели да штампа <ph name="FILE_NAME" /> помоћу штампача <ph name="PRINTER_NAME" />.</translation>
@@ -6709,7 +6709,7 @@
 <translation id="6923633482430812883">Грешка при учитавању дељене датотеке. Проверите да ли сервер датотека са којим се повезујете подржава SMBv2 или новију верзију.</translation>
 <translation id="6925127338315966709">Додајете профил којим се управља у овај прегледач. Администратор има контролу над профилом и може да приступа његовим подацима. Обележивачи, историја, лозинке и друга подешавања могу да се синхронизују са налогом и администратор може да управља њима.</translation>
 <translation id="6929126689972602640">Родитељски надзор није подржан за налоге за школу. Да бисте додали налог за школу који омогућава приступ Google учионици и другим веб-сајтовима за школске задатке код куће, прво се пријавите помоћу дететовог личног налога. Налог за школу можете да додате касније током подешавања.</translation>
-<translation id="6929760895658557216">Ок Google</translation>
+<translation id="6929760895658557216">Хеј Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Додатак је одбијен}one{# додатак је одбијен}few{# додатка су одбијена}other{# додатака је одбијено}}</translation>
 <translation id="6931690462168617033">Јачина клика</translation>
 <translation id="6935286146439255109">Недостаје посуда за папир</translation>

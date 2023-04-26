@@ -1422,7 +1422,7 @@
 <translation id="2190069059097339078">WiFi Credentials Getter</translation>
 <translation id="219008588003277019">ဇာတိဖောက်သည် သင်ရိုး: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(ဗလာ)</translation>
-<translation id="2191754378957563929">ဖွင့်ထားသည်</translation>
+<translation id="2191754378957563929">ဖွင့်</translation>
 <translation id="2192505247865591433">မှ:</translation>
 <translation id="2193365732679659387">ယုံကြည်မှု ဆက်တင်များ</translation>
 <translation id="2194856509914051091">စဉ်းစားရန် အချက်များ</translation>
@@ -3244,7 +3244,7 @@
 <translation id="3792973596468118484">နောက်ဆက်တွဲ <ph name="NUM_EXTENSIONS" /> ခု</translation>
 <translation id="3794792524918736965">Windows Hello ဖွင့်ခြင်း</translation>
 <translation id="379500251094592809">'အနီးတစ်ဝိုက် မျှဝေခြင်း' အသုံးပြုရန် စက်နှစ်ခုလုံးပွင့်နေပြီး အတူကပ်ထားကာ ဘလူးတုသ်ဖွင့်ထားကြောင်း သေချာပါစေ။ သင်၏အဆက်အသွယ်များတွင် မပါဝင်သော Chromebook အား မျှဝေနေပါက ၎င်းတွင် 'အနီးတစ်ဝိုက် မြင်နိုင်မှု' ဖွင့်ထားကြောင်း သေချာပါစေ (အချိန်ရွေးချယ်ပြီး အခြေအနေပြနေရာကို ဖွင့်ပါ၊ ထို့နောက် 'အနီးတစ်ဝိုက် မြင်နိုင်မှု' ကိုဖွင့်ပါ) <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
-<translation id="379509625511193653">ပိတ်ထားသည်</translation>
+<translation id="379509625511193653">ပိတ်</translation>
 <translation id="3795766489237825963">လှုပ်ရှားသက်ဝင်ပုံများ ဖွင့်ရန်</translation>
 <translation id="3796648294839530037">စိတ်ကြိုက်ကွန်ယက်များ</translation>
 <translation id="3797739167230984533">သင့်အဖွဲ့အစည်းက သင်၏ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ကို စီမံခန့်ခွဲထားပါသည်<ph name="END_LINK" /></translation>
@@ -4581,7 +4581,7 @@
 <translation id="4995293419989417004">ကြော်ငြာအကြောင်းအရာများအကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> VM မရှိပါ}=1{<ph name="VM_TYPE" /> VM 1 ခု တွေ့သည်-<ph name="VM_NAME_LIST" />}other{<ph name="VM_TYPE" /> VM {NUM_VMS} ခု တွေ့သည်- <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">အင်တာနက် ချိတ်ဆက်မှု မရှိပါ။</translation>
-<translation id="4998430619171209993">ဖွင့်ထားသည်</translation>
+<translation id="4998430619171209993">ဖွင့်</translation>
 <translation id="4999804342505941663">'မနှောင့်ယှက်ရ' ကို ဖွင့်ရန်</translation>
 <translation id="5000922062037820727">ပိတ်ဆို့ထား၏ (အကြံပြုထား)</translation>
 <translation id="5001526427543320409">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီး</translation>
@@ -6510,7 +6510,7 @@
 <translation id="6759193508432371551">စက်ရုံဆက်တင် ပြန်လည်သပ်မှတ်</translation>
 <translation id="6761431452438552910">သင့်ဘလူးတုသ်သုံးစက်သည် တွဲချိတ်ခြင်းမုဒ်တွင် ရှိပြီး အနီးအနားတွင် ရှိနေကြောင်း သေချာပါစေ။ သင်ယုံကြည်ရသော စက်များနှင့်သာ တွဲချိတ်ပါ။</translation>
 <translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
-<translation id="6762833852331690540">ဖွင့်ထားသည်</translation>
+<translation id="6762833852331690540">ဖွင့်</translation>
 <translation id="676560328519657314">Google Pay ရှိ သင်၏ငွေပေးချေနည်းလမ်းများ</translation>
 <translation id="6767566652486411142">အခြားဘာသာစကားတစ်ခု ရွေးရန်...</translation>
 <translation id="6767639283522617719">ဒိုမိန်းသို့ ချိတ်ဆက်၍မရပါ။ အဖွဲ့အစည်းဌာနအတွက် ဆက်တင်များ မှန်ကန်ခြင်းရှိမရှိ သေချာစစ်ဆေးပါ။</translation>
@@ -7689,7 +7689,7 @@
 <translation id="7792388396321542707">မျှဝေမှု ရပ်ရန်</translation>
 <translation id="779308894558717334">အစိမ်းဖျော့</translation>
 <translation id="7793098747275782155">အပြာရင့်</translation>
-<translation id="7797571222998226653">ပိတ်ထားသည်</translation>
+<translation id="7797571222998226653">ပိတ်</translation>
 <translation id="7798504574384119986">ဝဘ်ခွင့်ပြုချက်များ ကြည့်ရန်</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> ကို အလိုအလျောက် ပိတ်ထားသည်</translation>
 <translation id="7800518121066352902">ရေတွက်စက်ကို လက်ဝဲ&amp;ရစ် လှည့်ပေးရန်</translation>
@@ -7765,7 +7765,7 @@
 <translation id="7870790288828963061">ပိုသစ်သည့် ဗားရှင်းဖြင့် Kiosk အက်ပ် တစ်ခုကိုမှ မတွေ့ခဲ့ပါ။ ကျေးဇူးပြုပြီး USB အချောင်းကို ဖယ်ရှားလိုက်ပါ။</translation>
 <translation id="7871049986386271121">‘ဤဝဘ်ဆိုက်’ တွင် အမြဲဖွင့်ထားရန်</translation>
 <translation id="7871109039747854576">လျှောက်ထားသူစာရင်း စာမျက်နှာဖွဲ့ရန် <ph name="COMMA" /> နှင့် <ph name="PERIOD" /> ကီးများကို အသုံးပြုပါ</translation>
-<translation id="787268756490971083">ပိတ်ထားသည်</translation>
+<translation id="787268756490971083">ပိတ်</translation>
 <translation id="7872758299142009420">ထည့်သွင်းထားသော အုပ်စုများ အလွန်များနေသည်- <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome နောက်ခံပုံများ</translation>
 <translation id="7876027585589532670">ဖြတ်လမ်းလင့်ခ်ကို တည်းဖြတ်၍မရပါ</translation>
