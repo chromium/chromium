@@ -38,6 +38,13 @@
 
 - (void)start {
   DCHECK(self.browser);
+
+  // Set the font which supports the Dynamic Type.
+  UIFont* defaultSnackbarFont =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  [[MDCSnackbarManager defaultManager] setMessageFont:defaultSnackbarFont];
+  [[MDCSnackbarManager defaultManager] setButtonFont:defaultSnackbarFont];
+
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   [dispatcher startDispatchingToTarget:self
                            forProtocol:@protocol(SnackbarCommands)];
