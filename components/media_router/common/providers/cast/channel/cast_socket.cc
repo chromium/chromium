@@ -626,8 +626,8 @@ void CastSocketImpl::CloseInternal() {
   delegate_.reset();
   transport_.reset();
   mojo_data_pump_.reset();
-  tcp_socket_.reset();
   socket_.reset();
+  tcp_socket_.reset();
   if (GetTimer()) {
     GetTimer()->Stop();
   }
