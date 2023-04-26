@@ -9,6 +9,7 @@ edition = "2021"
 members = ["cxxbridge_cmd/v1/crate"]
 
 [dependencies]
+anyhow = "1"
 bitflags = "1"
 cargo-platform = "0.1"
 cargo_metadata = "0.14"
@@ -53,6 +54,10 @@ build-script-outputs = ["tables.rs"]
 [patch.crates-io.aho-corasick_v0_7]
 path = "aho_corasick/v0_7/crate"
 package = "aho-corasick"
+
+[patch.crates-io.anyhow_v1]
+path = "anyhow/v1/crate"
+package = "anyhow"
 
 [patch.crates-io.atty_v0_2]
 path = "atty/v0_2/crate"

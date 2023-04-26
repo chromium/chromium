@@ -78,6 +78,7 @@ rstest = "0.12"
 small_ctor = "0.1"
 
 # Used in Rust tool for BUILD.gn generation.
+anyhow = "1"
 cargo_metadata = "0.14"
 cargo-platform = "0.1"
 clap = "4"

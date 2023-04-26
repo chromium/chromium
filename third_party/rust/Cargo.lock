@@ -10,6 +10,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyhow"
+version = "1.0.70"
+
+[[package]]
 name = "atty"
 version = "0.2.14"
 dependencies = [
@@ -59,6 +63,7 @@ version = "1.0.0"
 name = "chromium"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "bitflags",
  "cargo-platform",
  "cargo_metadata",
