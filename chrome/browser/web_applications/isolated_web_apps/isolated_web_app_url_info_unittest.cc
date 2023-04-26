@@ -39,31 +39,25 @@ constexpr char kValidIsolatedWebAppUrl[] =
 using IsolatedWebAppUrlInfoTest = ::testing::Test;
 
 TEST_F(IsolatedWebAppUrlInfoTest, CreateSucceedsWithValidUrl) {
-  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl));
-
-  EXPECT_THAT(url_info.has_value(), IsTrue());
+  EXPECT_TRUE(
+      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl)).has_value());
 }
 
 TEST_F(IsolatedWebAppUrlInfoTest, CreateFailsWithInvalidScheme) {
   GURL gurl(
       "https://"
       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/");
-
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
       IsolatedWebAppUrlInfo::Create(gurl);
-
-  EXPECT_THAT(url_info.has_value(), IsFalse());
+  ASSERT_FALSE(url_info.has_value());
   EXPECT_THAT(url_info.error(), StartsWith("The URL scheme must be"));
 }
 
 TEST_F(IsolatedWebAppUrlInfoTest, CreateFailsWithInvalidUrl) {
   GURL gurl("aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/");
-
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
       IsolatedWebAppUrlInfo::Create(gurl);
-
-  EXPECT_THAT(url_info.has_value(), IsFalse());
+  ASSERT_FALSE(url_info.has_value());
   EXPECT_THAT(url_info.error(), Eq("Invalid URL"));
 }
 
@@ -71,10 +65,9 @@ TEST_F(IsolatedWebAppUrlInfoTest, CreateFailsWithSubdomain) {
   GURL gurl(
       "isolated-app://"
       "foo.aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/");
-
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
       IsolatedWebAppUrlInfo::Create(gurl);
-
+  ASSERT_FALSE(url_info.has_value());
   EXPECT_THAT(url_info.error(),
               StartsWith("The host of isolated-app:// URLs must be a valid"));
 }
@@ -83,22 +76,11 @@ TEST_F(IsolatedWebAppUrlInfoTest, CreateFailsWithBadHostname) {
   GURL gurl(
       "isolated-app://"
       "ßerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/");
-
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
       IsolatedWebAppUrlInfo::Create(gurl);
-
+  ASSERT_FALSE(url_info.has_value());
   EXPECT_THAT(url_info.error(),
               StartsWith("The host of isolated-app:// URLs must be a valid"));
-}
-
-TEST_F(IsolatedWebAppUrlInfoTest,
-       CreateFromSignedWebBundleIdSucceedsWithRandomId) {
-  web_package::SignedWebBundleId random_id =
-      web_package::SignedWebBundleId::CreateRandomForDevelopment();
-  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(random_id);
-
-  EXPECT_THAT(url_info.has_value(), IsTrue());
 }
 
 TEST_F(IsolatedWebAppUrlInfoTest, OriginIsCorrect) {
@@ -176,8 +158,7 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
   IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
       location, test_future.GetCallback());
   base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
-
-  ASSERT_THAT(result.has_value(), false);
+  ASSERT_FALSE(result.has_value());
   EXPECT_THAT(result.error(), HasSubstr("is not implemented"));
 }
 
@@ -196,8 +177,7 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
   IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
       location, test_future.GetCallback());
   base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
-
-  ASSERT_THAT(result.has_value(), true);
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value().web_bundle_id(), bundle.id);
 }
 
@@ -214,8 +194,7 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
   IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
       location, test_future.GetCallback());
   base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
-
-  ASSERT_THAT(result.has_value(), false);
+  ASSERT_FALSE(result.has_value());
   EXPECT_THAT(result.error(),
               HasSubstr("Failed to read the integrity block of the signed web "
                         "bundle: FILE_ERROR_NOT_FOUND"));
@@ -236,8 +215,7 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
   IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
       location, test_future.GetCallback());
   base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
-
-  ASSERT_THAT(result.has_value(), false);
+  ASSERT_FALSE(result.has_value());
   EXPECT_THAT(result.error(),
               HasSubstr("Failed to read the integrity block of the signed web "
                         "bundle: Wrong array size or magic bytes."));
@@ -251,9 +229,7 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
 
   IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
       location, test_future.GetCallback());
-  base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
-
-  EXPECT_THAT(result.has_value(), true);
+  EXPECT_TRUE(test_future.Get().has_value());
 }
 
 class IsolatedWebAppGURLConversionTest

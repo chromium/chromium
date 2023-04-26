@@ -48,6 +48,9 @@ namespace {
 
 using testing::ElementsAre;
 
+using ReadResponseError = IsolatedWebAppReaderRegistry::ReadResponseError;
+using VerifierError = web_package::SignedWebBundleSignatureVerifier::Error;
+
 constexpr uint8_t kEd25519PublicKey[32] = {0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0,
                                            0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0,
                                            0, 0, 0, 0, 2, 2, 2, 0, 0, 0};
@@ -80,8 +83,7 @@ class FakeSignatureVerifier
     : public web_package::SignedWebBundleSignatureVerifier {
  public:
   explicit FakeSignatureVerifier(
-      absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
-          error,
+      absl::optional<VerifierError> error,
       base::RepeatingClosure on_verify_signatures = base::DoNothing())
       : error_(error), on_verify_signatures_(on_verify_signatures) {}
 
@@ -95,7 +97,7 @@ class FakeSignatureVerifier
   }
 
  private:
-  absl::optional<web_package::SignedWebBundleSignatureVerifier::Error> error_;
+  absl::optional<VerifierError> error_;
   base::RepeatingClosure on_verify_signatures_;
 };
 
@@ -202,8 +204,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
 };
 
 using ReadResult =
-    base::expected<IsolatedWebAppResponseReader::Response,
-                   IsolatedWebAppReaderRegistry::ReadResponseError>;
+    base::expected<IsolatedWebAppResponseReader::Response, ReadResponseError>;
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
   base::HistogramTester histogram_tester;
@@ -311,9 +312,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
 
   ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(
-      result.error().type,
-      IsolatedWebAppReaderRegistry::ReadResponseError::Type::kResponseNotFound);
+  EXPECT_EQ(result.error().type, ReadResponseError::Type::kResponseNotFound);
   EXPECT_EQ(result.error().message,
             "Failed to read response: The Web Bundle does not contain a "
             "response for the provided URL: "
@@ -470,8 +469,7 @@ TEST_P(IsolatedWebAppReaderRegistryIntegrityBlockParserErrorTest,
 
   ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type,
-            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
   EXPECT_EQ(result.error().message,
             "Failed to parse integrity block: test error");
 
@@ -520,8 +518,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
 
   ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type,
-            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
   EXPECT_EQ(result.error().message,
             "Failed to validate integrity block: test error");
 
@@ -534,8 +531,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
 
 class IsolatedWebAppReaderRegistrySignatureVerificationErrorTest
     : public IsolatedWebAppReaderRegistryTest,
-      public ::testing::WithParamInterface<
-          web_package::SignedWebBundleSignatureVerifier::Error> {};
+      public ::testing::WithParamInterface<VerifierError> {};
 
 TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
        SignatureVerificationError) {
@@ -564,8 +560,7 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
   FulfillMetadata();
   FulfillResponse(resource_request);
 
-  ReadResult result = read_response_future.Take();
-  ASSERT_TRUE(result.has_value()) << result.error().message;
+  ASSERT_TRUE(read_response_future.Take().has_value());
 
   histogram_tester.ExpectBucketCount(
       "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
@@ -575,8 +570,7 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
 #else
   ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type,
-            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
   EXPECT_EQ(result.error().message,
             base::StringPrintf("Failed to verify signatures: %s",
                                GetParam().message.c_str()));
@@ -592,11 +586,8 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
-    ::testing::Values(
-        web_package::SignedWebBundleSignatureVerifier::Error::ForInternalError(
-            "internal error"),
-        web_package::SignedWebBundleSignatureVerifier::Error::
-            ForInvalidSignature("invalid signature")));
+    ::testing::Values(VerifierError::ForInternalError("internal error"),
+                      VerifierError::ForInvalidSignature("invalid signature")));
 
 class IsolatedWebAppReaderRegistryMetadataParserErrorTest
     : public IsolatedWebAppReaderRegistryTest,
@@ -625,8 +616,7 @@ TEST_P(IsolatedWebAppReaderRegistryMetadataParserErrorTest,
 
   ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type,
-            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
   EXPECT_EQ(result.error().message, "Failed to parse metadata: test error");
 
   histogram_tester.ExpectBucketCount(
@@ -670,8 +660,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
 
   ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type,
-            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
   EXPECT_EQ(result.error().message,
             base::StringPrintf("Failed to validate metadata: Primary URL must "
                                "not be present, but was %s",
@@ -702,8 +691,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
 
   ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type,
-            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
   EXPECT_EQ(result.error().message,
             "Failed to validate metadata: The URL of an exchange is invalid: "
             "The host of isolated-app:// URLs must be a valid Signed Web "
@@ -741,8 +729,7 @@ TEST_P(IsolatedWebAppReaderRegistryResponseHeadParserErrorTest,
 
   ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().type,
-            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
   EXPECT_EQ(result.error().message,
             "Failed to parse response head: test error");
 

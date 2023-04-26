@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/repeating_test_future.h"
@@ -78,8 +79,8 @@ MATCHER(HasNoValue, negation ? "not absent" : "absent") {
 
 MATCHER_P(IsDevModeProxy,
           proxy_url,
-          std::string(negation ? "isn't " : "Dev Mode proxy with URL: \"") +
-              proxy_url + '"') {
+          base::StrCat({negation ? "isn't " : "Dev Mode proxy with URL: \"",
+                        proxy_url, "\""})) {
   if (!arg.has_value() || !arg.value().has_value()) {
     DescribeOptionalLocation(result_listener, arg);
     return false;
@@ -392,20 +393,20 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        InstallsAppWhenProxyFlagValidAndBundleFlagAbsent) {
+  constexpr base::StringPiece kUrl = "http://example.com";
   base::test::TestFuture<MaybeIwaLocation> future;
   GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine("http://example.com", absl::nullopt),
-      future.GetCallback());
-  EXPECT_THAT(future.Get(), IsDevModeProxy("http://example.com"));
+      CreateCommandLine(kUrl, absl::nullopt), future.GetCallback());
+  EXPECT_THAT(future.Get(), IsDevModeProxy(kUrl));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        InstallsAppWhenProxyFlagWithPortValidAndBundleFlagAbsent) {
+  constexpr base::StringPiece kUrl = "http://example.com:12345";
   base::test::TestFuture<MaybeIwaLocation> future;
   GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine("http://example.com:12345", absl::nullopt),
-      future.GetCallback());
-  EXPECT_THAT(future.Get(), IsDevModeProxy("http://example.com:12345"));
+      CreateCommandLine(kUrl, absl::nullopt), future.GetCallback());
+  EXPECT_THAT(future.Get(), IsDevModeProxy(kUrl));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
@@ -419,12 +420,12 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        InstallsAppWhenProxyFlagValidAndBundleFlagEmpty) {
+  constexpr base::StringPiece kUrl = "http://example.com";
   base::test::TestFuture<MaybeIwaLocation> future;
   GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine("http://example.com",
-                        base::FilePath::FromUTF8Unsafe("")),
+      CreateCommandLine(kUrl, base::FilePath::FromUTF8Unsafe("")),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), IsDevModeProxy("http://example.com"));
+  EXPECT_THAT(future.Get(), IsDevModeProxy(kUrl));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,

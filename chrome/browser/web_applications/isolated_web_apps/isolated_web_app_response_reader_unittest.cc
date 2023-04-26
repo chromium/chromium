@@ -104,7 +104,7 @@ TEST_F(IsolatedWebAppResponseReaderTest,
                        IsolatedWebAppResponseReader::Error>>
         response_future;
     response_reader->ReadResponse(request, response_future.GetCallback());
-    EXPECT_THAT(response_future.Get().has_value(), IsTrue());
+    EXPECT_TRUE(response_future.Get().has_value());
   }
 
   {
@@ -115,7 +115,7 @@ TEST_F(IsolatedWebAppResponseReaderTest,
                        IsolatedWebAppResponseReader::Error>>
         response_future;
     response_reader->ReadResponse(request, response_future.GetCallback());
-    EXPECT_THAT(response_future.Get().has_value(), IsTrue());
+    EXPECT_TRUE(response_future.Get().has_value());
   }
 }
 
@@ -134,7 +134,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, ReadResponseBody) {
                                         IsolatedWebAppResponseReader::Error>>
       response_future;
   response_reader->ReadResponse(request, response_future.GetCallback());
-  ASSERT_THAT(response_future.Get().has_value(), IsTrue());
+  ASSERT_TRUE(response_future.Get().has_value());
 
   IsolatedWebAppResponseReader::Response response = *response_future.Take();
   EXPECT_THAT(response.head()->response_code, Eq(200));

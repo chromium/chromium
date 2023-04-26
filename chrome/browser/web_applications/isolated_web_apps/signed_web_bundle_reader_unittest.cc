@@ -445,7 +445,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponse) {
   auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
                                          metadata_->requests[kUrl]->Clone(),
                                          response_->Clone());
-  EXPECT_TRUE(response.has_value()) << response.error().message;
+  ASSERT_TRUE(response.has_value()) << response.error().message;
   EXPECT_EQ((*response)->response_code, 200);
   EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
   EXPECT_EQ((*response)->payload_length, response_->payload_length);
@@ -473,7 +473,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithFragment) {
   auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
                                          metadata_->requests[kUrl]->Clone(),
                                          response_->Clone());
-  EXPECT_TRUE(response.has_value()) << response.error().message;
+  ASSERT_TRUE(response.has_value()) << response.error().message;
   EXPECT_EQ((*response)->response_code, 200);
   EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
   EXPECT_EQ((*response)->payload_length, response_->payload_length);
@@ -597,7 +597,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
     auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
                                            metadata_->requests[kUrl]->Clone(),
                                            response_->Clone());
-    EXPECT_TRUE(response.has_value()) << response.error().message;
+    ASSERT_TRUE(response.has_value()) << response.error().message;
     EXPECT_EQ((*response)->response_code, 200);
     EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
     EXPECT_EQ((*response)->payload_length, response_->payload_length);
@@ -612,7 +612,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
     auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
                                            metadata_->requests[kUrl]->Clone(),
                                            response_->Clone());
-    EXPECT_TRUE(response.has_value()) << response.error().message;
+    ASSERT_TRUE(response.has_value()) << response.error().message;
     EXPECT_EQ((*response)->response_code, 200);
     EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
     EXPECT_EQ((*response)->payload_length, response_->payload_length);
@@ -683,7 +683,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserCrash) {
   reader->ReadResponse(resource_request, response_result.GetCallback());
 
   auto response = response_result.Take();
-  EXPECT_FALSE(response.has_value());
+  ASSERT_FALSE(response.has_value());
   EXPECT_EQ(
       response.error().type,
       SignedWebBundleReader::ReadResponseError::Type::kParserInternalError);
@@ -709,7 +709,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseBody) {
   auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
                                          metadata_->requests[kUrl]->Clone(),
                                          response_->Clone());
-  EXPECT_TRUE(response.has_value()) << response.error().message;
+  ASSERT_TRUE(response.has_value()) << response.error().message;
 
   std::string response_body =
       ReadAndFulfillResponseBody(*reader.get(), std::move(*response));

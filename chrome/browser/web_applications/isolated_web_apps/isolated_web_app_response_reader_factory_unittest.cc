@@ -49,6 +49,8 @@ using testing::NotNull;
 using testing::StartsWith;
 using testing::VariantWith;
 
+using VerifierError = web_package::SignedWebBundleSignatureVerifier::Error;
+
 constexpr uint8_t kEd25519PublicKey[32] = {0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0,
                                            0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0,
                                            0, 0, 0, 0, 2, 2, 2, 0, 0, 0};
@@ -81,8 +83,7 @@ class FakeSignatureVerifier
     : public web_package::SignedWebBundleSignatureVerifier {
  public:
   explicit FakeSignatureVerifier(
-      absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
-          error,
+      absl::optional<VerifierError> error,
       base::RepeatingClosure on_verify_signatures = base::DoNothing())
       : error_(error), on_verify_signatures_(on_verify_signatures) {}
 
@@ -96,7 +97,7 @@ class FakeSignatureVerifier
   }
 
  private:
-  absl::optional<web_package::SignedWebBundleSignatureVerifier::Error> error_;
+  absl::optional<VerifierError> error_;
   base::RepeatingClosure on_verify_signatures_;
 };
 
@@ -225,7 +226,7 @@ TEST_P(IsolatedWebAppResponseReaderFactoryIntegrityBlockParserErrorTest,
   parser_factory_->RunIntegrityBlockCallback(nullptr, error->Clone());
 
   ReaderResult result = reader_future.Take();
-  ASSERT_THAT(result.has_value(), IsFalse());
+  ASSERT_FALSE(result.has_value());
   auto* actual_error =
       absl::get_if<web_package::mojom::BundleIntegrityBlockParseErrorPtr>(
           &result.error());
@@ -276,7 +277,7 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
   FulfillIntegrityBlock();
 
   ReaderResult result = reader_future.Take();
-  ASSERT_THAT(result.has_value(), IsFalse());
+  ASSERT_FALSE(result.has_value());
   auto* actual_error = absl::get_if<IntegrityBlockError>(&result.error());
   ASSERT_THAT(actual_error, NotNull());
   EXPECT_THAT(actual_error->message, Eq("test error"));
@@ -290,9 +291,7 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
 
 class IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest
     : public IsolatedWebAppResponseReaderFactoryTest,
-      public ::testing::WithParamInterface<
-          std::tuple<web_package::SignedWebBundleSignatureVerifier::Error,
-                     bool>> {
+      public ::testing::WithParamInterface<std::tuple<VerifierError, bool>> {
  public:
   IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest()
       : IsolatedWebAppResponseReaderFactoryTest(),
@@ -300,7 +299,7 @@ class IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest
         skip_signature_verification_(std::get<1>(GetParam())) {}
 
  protected:
-  web_package::SignedWebBundleSignatureVerifier::Error error_;
+  VerifierError error_;
   bool skip_signature_verification_;
 };
 
@@ -311,7 +310,7 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
   factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
       std::make_unique<FakeIsolatedWebAppValidator>(absl::nullopt),
       base::BindRepeating(
-          [](web_package::SignedWebBundleSignatureVerifier::Error error)
+          [](VerifierError error)
               -> std::unique_ptr<
                   web_package::SignedWebBundleSignatureVerifier> {
             return std::make_unique<FakeSignatureVerifier>(error);
@@ -330,8 +329,7 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
   if (skip_signature_verification_) {
     FulfillMetadata();
 
-    ReaderResult result = reader_future.Take();
-    EXPECT_THAT(result.has_value(), IsTrue());
+    EXPECT_TRUE(reader_future.Take().has_value());
 
     histogram_tester.ExpectBucketCount(
         "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
@@ -340,7 +338,7 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
         0);
   } else {
     ReaderResult result = reader_future.Take();
-    ASSERT_THAT(result.has_value(), IsFalse());
+    ASSERT_FALSE(result.has_value());
     auto* actual_error =
         absl::get_if<web_package::SignedWebBundleSignatureVerifier::Error>(
             &result.error());
@@ -359,10 +357,9 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
     ::testing::Combine(
-        ::testing::Values(web_package::SignedWebBundleSignatureVerifier::Error::
-                              ForInternalError("internal error"),
-                          web_package::SignedWebBundleSignatureVerifier::Error::
-                              ForInvalidSignature("invalid signature")),
+        ::testing::Values(
+            VerifierError::ForInternalError("internal error"),
+            VerifierError::ForInvalidSignature("invalid signature")),
         // skip_signature_verification
         ::testing::Bool()));
 
@@ -390,7 +387,7 @@ TEST_P(IsolatedWebAppResponseReaderFactoryMetadataParserErrorTest,
                                        error->Clone());
 
   ReaderResult result = reader_future.Take();
-  ASSERT_THAT(result.has_value(), IsFalse());
+  ASSERT_FALSE(result.has_value());
   auto* actual_error =
       absl::get_if<web_package::mojom::BundleMetadataParseErrorPtr>(
           &result.error());
@@ -436,7 +433,7 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest, TestInvalidMetadataPrimaryUrl) {
                                        std::move(metadata));
 
   ReaderResult result = reader_future.Take();
-  ASSERT_THAT(result.has_value(), IsFalse());
+  ASSERT_FALSE(result.has_value());
   auto* actual_error = absl::get_if<MetadataError>(&result.error());
   ASSERT_THAT(actual_error, NotNull());
   EXPECT_THAT(actual_error->message,
@@ -465,7 +462,7 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
                                        std::move(metadata));
 
   ReaderResult result = reader_future.Take();
-  ASSERT_THAT(result.has_value(), IsFalse());
+  ASSERT_FALSE(result.has_value());
   auto* actual_error = absl::get_if<MetadataError>(&result.error());
   ASSERT_THAT(actual_error, NotNull());
   EXPECT_THAT(actual_error->message,

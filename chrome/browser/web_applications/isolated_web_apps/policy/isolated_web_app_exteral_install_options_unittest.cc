@@ -40,10 +40,8 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValue) {
   const base::Value policy_entry =
       CreatePolicyEntry(kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl);
 
-  const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
-      options = IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
-          policy_entry);
-
+  const auto options =
+      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry);
   ASSERT_TRUE(options.has_value());
   EXPECT_EQ(options->web_bundle_id().id(), kEd25519SignedWebBundleId);
   EXPECT_EQ(options->update_manifest_url(), GURL(kCorrectUpdateManifestUrl));
