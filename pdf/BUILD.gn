@@ -12,6 +12,10 @@ import("//third_party/pdfium/pdfium.gni")
 import("//tools/grit/repack.gni")
 import("//v8/gni/v8.gni")
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 # Generate a buildflag header for compile-time checking of PDF support.
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -423,5 +427,12 @@ if (enable_pdf) {
   group("features") {
   }
   group("pdf") {
+  }
+}
+
+if (is_ios) {
+  bundle_data_from_filelist("pdf_test_bundle_data") {
+    testonly = true
+    filelist_name = "test/pdf_test_bundle_data.filelist"
   }
 }

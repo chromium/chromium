@@ -2968,7 +2968,7 @@ test("content_unittests") {
     ]
   }
 
-  if (enable_printing) {
+  if (enable_printing || enable_printing_unittests) {
     deps += [
       "//printing",
       "//printing/backend",

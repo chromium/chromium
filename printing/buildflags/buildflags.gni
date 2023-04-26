@@ -12,6 +12,10 @@ import("//pdf/features.gni")
 declare_args() {
   # Enables printing support.
   enable_printing = !is_ios && !is_castos && !is_cast_android
+
+  # TODO(crbug.com/1432082): iOS blink port only enables printing_unittests for
+  # now because the port does not enable the printing feature yet.
+  enable_printing_unittests = is_ios && use_blink
 }
 
 declare_args() {
