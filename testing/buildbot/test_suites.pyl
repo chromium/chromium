@@ -3889,6 +3889,7 @@
       'mojo_unittests': {},
       'net_unittests': {},
       'perfetto_unittests': {},
+      'printing_unittests': {},
       'services_unittests': {},
       'shell_dialogs_unittests': {},
       'skia_unittests': {},
