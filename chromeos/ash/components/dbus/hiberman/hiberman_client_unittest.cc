@@ -42,10 +42,6 @@ class HibermanClientTest : public testing::Test {
     dbus_service_proxy_ = new dbus::MockObjectProxy(
         bus_.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
 
-    // Except that we will test alive once after the object comes up.
-    EXPECT_CALL(*bus_.get(), GetObjectProxy(DBUS_SERVICE_DBUS,
-                                            dbus::ObjectPath(DBUS_PATH_DBUS)))
-        .WillOnce(Return(proxy_.get()));
     // Makes sure `GetObjectProxy()` is caled with the correct service name and
     // path.
     EXPECT_CALL(*bus_.get(),
