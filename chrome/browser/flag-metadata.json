@@ -742,12 +742,12 @@
   {
     "name": "back-gesture-refactor-activity-android",
     "owners": ["lazzzis@google.com", "jinsukkim", "twellington"],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "back-gesture-refactor-android",
     "owners": ["lazzzis@google.com", "jinsukkim", "twellington"],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "background-resource-fetch",
