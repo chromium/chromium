@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -71,9 +72,9 @@ class PolicyDialogBase : public views::DialogDelegateView {
                           const std::u16string& title);
 
   // The upper section of the dialog.
-  views::View* upper_panel_;
+  raw_ptr<views::View, ExperimentalAsh> upper_panel_;
   // The scrollable container used for listing contents or files.
-  views::View* scroll_view_container_;
+  raw_ptr<views::View, ExperimentalAsh> scroll_view_container_;
 };
 
 }  // namespace policy

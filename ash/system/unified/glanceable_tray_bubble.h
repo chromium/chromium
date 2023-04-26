@@ -7,6 +7,7 @@
 
 #include "ash/system/tray/tray_bubble_base.h"
 #include "ash/system/unified/date_tray.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -35,21 +36,21 @@ class ASH_EXPORT GlanceableTrayBubble : public TrayBubbleBase {
   void UpdateBubble();
 
   // Owner of this class.
-  DateTray* tray_;
+  raw_ptr<DateTray, ExperimentalAsh> tray_;
 
   // Widget that contains GlanceableTrayView. Unowned.
   // When the widget is closed by deactivation, |bubble_widget_| pointer is
   // invalidated and we have to delete GlanceableTrayBubble by calling
   // DateTray::CloseBubble().
   // In order to do this, we observe OnWidgetDestroying().
-  views::Widget* bubble_widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
 
   // Main bubble view anchored to `tray_`.
-  TrayBubbleView* bubble_view_ = nullptr;
+  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
 
   // Stand-in title label for glanceables_view_.
   // TODO(b:277268122): Remove and replace with actual glanceable content.
-  views::Label* title_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
 };
 }  // namespace ash
 

@@ -52,7 +52,7 @@ void CrtcCommitRequest::WriteIntoTrace(perfetto::TracedValue context) const {
 
   DrmWriteIntoTraceHelper(mode_, dict.AddItem("mode"));
 
-  dict.Add("hardware_display_plane_list", plane_list_);
+  dict.Add("hardware_display_plane_list", plane_list_.get());
 
   dict.Add("overlays", overlays_);
   dict.Add("enable_vrr", enable_vrr_);

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -46,12 +47,12 @@ class ASH_EXPORT CaptureModeSourceView : public views::View {
 
   // Owned by the view hierarchy. Contains fullscreen, region, and window toggle
   // buttons.
-  IconSwitch* capture_source_switch_;
+  raw_ptr<IconSwitch, ExperimentalAsh> capture_source_switch_;
 
   // Owned by the `capture_source_switch_`.
-  IconButton* fullscreen_toggle_button_;
-  IconButton* region_toggle_button_;
-  IconButton* window_toggle_button_;
+  raw_ptr<IconButton, ExperimentalAsh> fullscreen_toggle_button_;
+  raw_ptr<IconButton, ExperimentalAsh> region_toggle_button_;
+  raw_ptr<IconButton, ExperimentalAsh> window_toggle_button_;
 };
 
 }  // namespace ash

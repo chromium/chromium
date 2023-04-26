@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -147,29 +148,27 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, FetchGuidFromFrame) {
                                                          fetch_url.spec())));
   };
 
-  // clang-format off
-  struct {
-    const GURL& frame_url;
-    const GURL& expected_frame_url;
-    const GURL& fetch_url;
+  const struct {
+    GURL frame_url;
+    GURL expected_frame_url;
+    GURL fetch_url;
     const char* expected_fetch_url_contents;
   } test_cases[] = {
-    // Fetch web accessible resource from extension resource.
-    {
-      extension->url().Resolve("extension_resource.html"),
-      extension->url().Resolve("extension_resource.html"),
-      extension->url().Resolve("web_accessible_resource.html"),
-      "web_accessible_resource.html"
-    },
-    // Fetch dynamic web accessible resource from extension resource.
-    {
-      extension->url().Resolve("extension_resource.html"),
-      extension->url().Resolve("extension_resource.html"),
-      extension->dynamic_url().Resolve("web_accessible_resource.html"),
-      "web_accessible_resource.html"
-    },
+      // Fetch web accessible resource from extension resource.
+      {
+          extension->url().Resolve("extension_resource.html"),
+          extension->url().Resolve("extension_resource.html"),
+          extension->url().Resolve("web_accessible_resource.html"),
+          "web_accessible_resource.html",
+      },
+      // Fetch dynamic web accessible resource from extension resource.
+      {
+          extension->url().Resolve("extension_resource.html"),
+          extension->url().Resolve("extension_resource.html"),
+          extension->dynamic_url().Resolve("web_accessible_resource.html"),
+          "web_accessible_resource.html",
+      },
   };
-  // clang-format on
 
   for (const auto& test_case : test_cases) {
     test_frame_with_fetch(test_case.frame_url, test_case.expected_frame_url,

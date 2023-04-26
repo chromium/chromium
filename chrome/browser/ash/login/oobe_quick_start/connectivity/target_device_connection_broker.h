@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -190,7 +191,8 @@ class TargetDeviceConnectionBroker {
   // request pin verification or QR code verification.
   bool use_pin_authentication_ = false;
 
-  ConnectionLifecycleListener* connection_lifecycle_listener_ = nullptr;
+  raw_ptr<ConnectionLifecycleListener, ExperimentalAsh>
+      connection_lifecycle_listener_ = nullptr;
 
  private:
   std::vector<FeatureSupportStatusCallback> feature_status_callbacks_;

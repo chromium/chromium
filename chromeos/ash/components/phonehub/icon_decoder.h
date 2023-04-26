@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_ICON_DECODER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "ui/gfx/image/image.h"
 
@@ -24,7 +25,7 @@ class IconDecoder {
     DecodingData(unsigned long id, const std::string& input_data);
 
     const unsigned long id;
-    const std::string& input_data;
+    const raw_ref<const std::string, ExperimentalAsh> input_data;
     gfx::Image result;
   };
 

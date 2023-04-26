@@ -223,7 +223,7 @@ class VideoConferenceIntegrationTest : public testing::WithParamInterface<bool>,
   raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> share_bt_ = nullptr;
 
   raw_ptr<ToastManagerImpl, ExperimentalAsh> toast_manager_ = nullptr;
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser, ExperimentalAsh> browser_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_{
       ash::features::kVideoConference};

@@ -452,7 +452,7 @@ class ASH_EXPORT CaptureModeSession
 
   // The currently active capture mode behavior for this session which will be
   // used to configure capture mode session differently with different modes.
-  CaptureModeBehavior* const active_behavior_;
+  const raw_ptr<CaptureModeBehavior, ExperimentalAsh> active_behavior_;
 
   // The current root window on which the capture session is active, which may
   // change if the user warps the cursor to another display in some situations.

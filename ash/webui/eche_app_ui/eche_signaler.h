@@ -90,7 +90,8 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
   raw_ptr<EcheConnector, ExperimentalAsh> eche_connector_ = nullptr;
   raw_ptr<AppsLaunchInfoProvider, ExperimentalAsh> apps_launch_info_provider_ =
       nullptr;
-  EcheConnectionStatusHandler* eche_connection_status_handler_ = nullptr;
+  raw_ptr<EcheConnectionStatusHandler, ExperimentalAsh>
+      eche_connection_status_handler_ = nullptr;
   raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
       connection_manager_ = nullptr;
   mojo::Remote<mojom::SignalingMessageObserver> observer_;

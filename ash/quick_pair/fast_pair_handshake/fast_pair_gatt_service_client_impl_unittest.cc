@@ -15,6 +15,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor_impl.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -154,7 +155,7 @@ class FakeBluetoothDevice
 
     gatt_connection_ = std::make_unique<
         testing::NiceMock<device::MockBluetoothGattConnection>>(
-        fake_adapter_, kTestBleDeviceAddress);
+        fake_adapter_.get(), kTestBleDeviceAddress);
 
     if (has_gatt_connection_error_) {
       std::move(callback).Run(std::move(gatt_connection_),
@@ -211,8 +212,10 @@ class FakeBluetoothDevice
   bool has_gatt_connection_hang_ = false;
   bool has_disconnect_error_ = false;
   bool no_disconnect_response_ = false;
-  base::test::TaskEnvironment* task_environment_ = nullptr;
-  ash::quick_pair::FakeBluetoothAdapter* fake_adapter_ = nullptr;
+  raw_ptr<base::test::TaskEnvironment, ExperimentalAsh> task_environment_ =
+      nullptr;
+  raw_ptr<ash::quick_pair::FakeBluetoothAdapter, ExperimentalAsh>
+      fake_adapter_ = nullptr;
 };
 
 class FakeBluetoothGattCharacteristic
@@ -295,7 +298,8 @@ class FakeBluetoothGattCharacteristic
   bool write_remote_error_ = false;
   bool notify_timeout_ = false;
   bool write_timeout_ = false;
-  base::test::TaskEnvironment* task_environment_ = nullptr;
+  raw_ptr<base::test::TaskEnvironment, ExperimentalAsh> task_environment_ =
+      nullptr;
 };
 
 std::unique_ptr<FakeBluetoothDevice> CreateTestBluetoothDevice(
@@ -623,14 +627,16 @@ class FastPairGattServiceClientTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
-  FakeBluetoothDevice* raw_fake_bt_device_;
+  raw_ptr<FakeBluetoothDevice, ExperimentalAsh> raw_fake_bt_device_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
 
  private:
   // We need temporary pointers to use for write/ready requests because we
   // move the unique pointers when we notify the session.
-  FakeBluetoothGattCharacteristic* temp_fake_key_based_characteristic_;
-  FakeBluetoothGattCharacteristic* temp_passkey_based_characteristic_;
+  raw_ptr<FakeBluetoothGattCharacteristic, ExperimentalAsh>
+      temp_fake_key_based_characteristic_;
+  raw_ptr<FakeBluetoothGattCharacteristic, ExperimentalAsh>
+      temp_passkey_based_characteristic_;
   absl::optional<ash::quick_pair::AccountKeyFailure> account_key_error_ =
       absl::nullopt;
   bool passkey_char_error_ = false;

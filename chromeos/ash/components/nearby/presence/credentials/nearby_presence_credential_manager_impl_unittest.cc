@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/nearby/presence/credentials/fake_local_device_data_provider.h"
@@ -30,7 +31,8 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  FakeLocalDeviceDataProvider* fake_local_device_data_provider_ = nullptr;
+  raw_ptr<FakeLocalDeviceDataProvider, ExperimentalAsh>
+      fake_local_device_data_provider_ = nullptr;
   TestingPrefServiceSimple pref_service_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<NearbyPresenceCredentialManager> credential_manager_;

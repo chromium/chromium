@@ -650,7 +650,7 @@ void PaletteTray::ShowBubble() {
   // ripples.
   std::vector<PaletteToolView> views = palette_tool_manager_->CreateViews();
   for (const PaletteToolView& view : views) {
-    bubble_view->AddChildView(view.view);
+    bubble_view->AddChildView(view.view.get());
   }
 
   // Show the bubble.

@@ -45,8 +45,11 @@ CaptureModeSourceView::CaptureModeSourceView()
           // Tooltip text will be set in `OnCaptureTypeChanged`.
           /*tooltip_text=*/u"")) {
   // Add highlight helper to each toggle button.
-  for (auto* button : {fullscreen_toggle_button_, region_toggle_button_,
-                       window_toggle_button_}) {
+  for (auto* button : {
+           fullscreen_toggle_button_.get(),
+           region_toggle_button_.get(),
+           window_toggle_button_.get(),
+       }) {
     CaptureModeSessionFocusCycler::HighlightHelper::Install(button);
   }
 

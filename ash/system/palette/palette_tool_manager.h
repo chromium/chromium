@@ -32,7 +32,7 @@ enum class PaletteToolId;
 struct ASH_EXPORT PaletteToolView {
   PaletteGroup group;
   PaletteToolId tool_id;
-  views::View* view;
+  raw_ptr<views::View, ExperimentalAsh> view;
 };
 
 class ASH_EXPORT PaletteToolManager : public PaletteTool::Delegate {

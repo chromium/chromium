@@ -237,7 +237,8 @@ class OsUpdatesReporterPowerwashBrowserTest
  private:
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 
-  ::policy::DeviceCloudPolicyManagerAsh* policy_manager_;
+  raw_ptr<::policy::DeviceCloudPolicyManagerAsh, ExperimentalAsh>
+      policy_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(OsUpdatesReporterPowerwashBrowserTest, RemotePowerwash) {

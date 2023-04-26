@@ -349,7 +349,8 @@ void SplitViewDivider::RefreshStackingOrder() {
   CHECK(top_window);
   aura::Window* divider_window = divider_widget_->GetNativeWindow();
 
-  auto* divider_sibling_window = dragged_window_ ? dragged_window_ : top_window;
+  auto* divider_sibling_window =
+      dragged_window_ ? dragged_window_.get() : top_window;
   CHECK(divider_sibling_window);
 
   // The divider needs to have the same parent of the `divider_sibling_window`

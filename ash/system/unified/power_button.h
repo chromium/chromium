@@ -73,7 +73,7 @@ class ASH_EXPORT PowerButton : public views::View {
   std::unique_ptr<MenuController> context_menu_;
 
   // Owned by UnifiedSystemTrayBubble.
-  UnifiedSystemTrayController* const tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
 };
 
 }  // namespace ash

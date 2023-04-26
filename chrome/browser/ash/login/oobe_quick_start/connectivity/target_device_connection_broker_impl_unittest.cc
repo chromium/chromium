@@ -337,7 +337,8 @@ class FakeTargetDeviceConnectionBrokerFactory
         session_id, nearby_connections_manager, std::move(connection_factory));
   }
 
-  FakeConnection::Factory* connection_factory_ = nullptr;
+  raw_ptr<FakeConnection::Factory, ExperimentalAsh> connection_factory_ =
+      nullptr;
 };
 
 }  // namespace

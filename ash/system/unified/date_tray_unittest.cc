@@ -58,7 +58,7 @@ class DateTrayTest
     unified_system_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()
                                ->unified_system_tray();
     widget_->GetContentsView()->AddChildView(date_tray_.get());
-    widget_->GetContentsView()->AddChildView(unified_system_tray_);
+    widget_->GetContentsView()->AddChildView(unified_system_tray_.get());
     date_tray_->SetVisiblePreferred(true);
     date_tray_->unified_system_tray_->SetVisiblePreferred(true);
   }
@@ -132,7 +132,7 @@ class DateTrayTest
   // Owned by `widget_`.
   raw_ptr<DateTray, ExperimentalAsh> date_tray_ = nullptr;
 
-  UnifiedSystemTray* unified_system_tray_ = nullptr;
+  raw_ptr<UnifiedSystemTray, ExperimentalAsh> unified_system_tray_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

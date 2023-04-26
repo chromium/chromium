@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client_impl.h"
 #include "chromeos/ash/components/nearby/presence/proto/list_public_certificates_rpc.pb.h"
@@ -40,7 +41,8 @@ class FakeNearbyPresenceServerClient : public NearbyPresenceServerClient {
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
         override;
 
-    FakeNearbyPresenceServerClient* last_created_fake_server_client_ = nullptr;
+    raw_ptr<FakeNearbyPresenceServerClient, ExperimentalAsh>
+        last_created_fake_server_client_ = nullptr;
   };
 
   FakeNearbyPresenceServerClient();

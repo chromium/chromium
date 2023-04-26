@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -71,19 +72,19 @@ std::locale NiceNumLocale() {
 
 template <typename T>
 struct Quoter {
-  const T& value;
+  const raw_ref<const T, ExperimentalAsh> value;
 };
 
 template <typename T>
 Quoter<T> Quote(const T& value) {
-  return {value};
+  return {raw_ref(value)};
 }
 
 template <typename T>
   requires std::is_enum_v<T>
 ostream& operator<<(ostream& out, Quoter<T> q) {
   // Convert enum value to string.
-  const std::string s = (std::ostringstream() << q.value).str();
+  const std::string s = (std::ostringstream() << (*q.value)).str();
 
   // Does the string start with 'k'?
   if (!s.empty() && s.front() == 'k') {
@@ -96,7 +97,7 @@ ostream& operator<<(ostream& out, Quoter<T> q) {
 }
 
 ostream& operator<<(ostream& out, Quoter<TimeDelta> q) {
-  const int64_t ms = q.value.InMilliseconds();
+  const int64_t ms = q.value->InMilliseconds();
   if (ms < 1000) {
     return out << ms << " ms";
   }
@@ -116,11 +117,11 @@ ostream& operator<<(ostream& out, Quoter<TimeDelta> q) {
 }
 
 ostream& operator<<(ostream& out, Quoter<Path> q) {
-  return out << "'" << q.value << "'";
+  return out << "'" << (*q.value) << "'";
 }
 
 ostream& operator<<(ostream& out, Quoter<std::string> q) {
-  return out << "'" << q.value << "'";
+  return out << "'" << (*q.value) << "'";
 }
 
 template <typename T>
@@ -133,17 +134,17 @@ ostream& operator<<(ostream& out, Quoter<absl::optional<T>> q) {
 }
 
 ostream& operator<<(ostream& out, Quoter<ShortcutDetails> q) {
-  out << "{" << PinManager::Id(q.value.target_stable_id);
+  out << "{" << PinManager::Id(q.value->target_stable_id);
 
-  if (q.value.target_lookup_status != LookupStatus::kOk) {
-    out << " " << Quote(q.value.target_lookup_status);
+  if (q.value->target_lookup_status != LookupStatus::kOk) {
+    out << " " << Quote(q.value->target_lookup_status);
   }
 
   return out << "}";
 }
 
 ostream& operator<<(ostream& out, Quoter<FileMetadata> q) {
-  const FileMetadata& md = q.value;
+  const FileMetadata& md = *q.value;
 
   out << "{" << Quote(md.type) << " " << PinManager::Id(md.stable_id);
 
@@ -179,7 +180,7 @@ ostream& operator<<(ostream& out, Quoter<FileMetadata> q) {
 }
 
 ostream& operator<<(ostream& out, Quoter<mojom::ItemEvent> q) {
-  const mojom::ItemEvent& e = q.value;
+  const mojom::ItemEvent& e = *q.value;
   return out << "{" << Quote(e.state) << " " << PinManager::Id(e.stable_id)
              << " " << Quote(e.path) << ", bytes_transferred: "
              << HumanReadableSize(e.bytes_transferred)
@@ -189,14 +190,14 @@ ostream& operator<<(ostream& out, Quoter<mojom::ItemEvent> q) {
 }
 
 ostream& operator<<(ostream& out, Quoter<mojom::FileChange> q) {
-  const mojom::FileChange& change = q.value;
+  const mojom::FileChange& change = *q.value;
   return out << "{" << Quote(change.type) << " "
              << PinManager::Id(change.stable_id) << " " << Quote(change.path)
              << "}";
 }
 
 ostream& operator<<(ostream& out, Quoter<mojom::DriveError> q) {
-  const mojom::DriveError& e = q.value;
+  const mojom::DriveError& e = *q.value;
   return out << "{" << Quote(e.type) << " " << PinManager::Id(e.stable_id)
              << " " << Quote(e.path) << "}";
 }
