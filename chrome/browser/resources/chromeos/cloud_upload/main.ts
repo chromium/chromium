@@ -26,15 +26,17 @@ switch (dialogArgs.args.dialogPage) {
   }
   case DialogPage.kMoveConfirmationOneDrive: {
     const movePage = new MoveConfirmationPageElement();
-    movePage.setNumFiles(dialogArgs.args.fileNames.length);
-    await movePage.setCloudProvider(CloudProvider.ONE_DRIVE);
+    await movePage.setDialogAttributes(
+        dialogArgs.args.fileNames.length, dialogArgs.args.operationType,
+        CloudProvider.ONE_DRIVE);
     document.body.append(movePage);
     break;
   }
   case DialogPage.kMoveConfirmationGoogleDrive: {
     const movePage = new MoveConfirmationPageElement();
-    movePage.setNumFiles(dialogArgs.args.fileNames.length);
-    await movePage.setCloudProvider(CloudProvider.GOOGLE_DRIVE);
+    await movePage.setDialogAttributes(
+        dialogArgs.args.fileNames.length, dialogArgs.args.operationType,
+        CloudProvider.GOOGLE_DRIVE);
     document.body.append(movePage);
     break;
   }
