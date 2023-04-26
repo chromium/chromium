@@ -2073,15 +2073,6 @@ const CSSValue* ComputedStyle::GetVariableValue(
   return blink::GetVariableValue(*this, name, is_inherited_property);
 }
 
-bool ComputedStyle::HasIdenticalAscentDescentAndLineGap(
-    const ComputedStyle& other) const {
-  const SimpleFontData* font_data = GetFont().PrimaryFont();
-  const SimpleFontData* other_font_data = other.GetFont().PrimaryFont();
-  return font_data && other_font_data &&
-         font_data->GetFontMetrics().HasIdenticalAscentDescentAndLineGap(
-             other_font_data->GetFontMetrics());
-}
-
 Length ComputedStyle::LineHeight() const {
   const Length& lh = LineHeightInternal();
   // Unlike getFontDescription().computedSize() and hence fontSize(), this is

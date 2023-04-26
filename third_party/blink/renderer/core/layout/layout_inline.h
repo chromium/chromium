@@ -176,7 +176,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
     DCHECK(!IsInLayoutNGInlineFormattingContext());
     SetAlwaysCreateLineBoxesForLayoutInline(always_create_line_boxes);
   }
-  void UpdateAlwaysCreateLineBoxes(bool full_layout);
 
   // True if this inline box should force creation of NGPhysicalBoxFragment.
   bool ShouldCreateBoxFragment() const {

@@ -831,7 +831,6 @@ class ComputedStyle : public ComputedStyleBase,
   CORE_EXPORT const FontDescription& GetFontDescription() const {
     return GetFont().GetFontDescription();
   }
-  bool HasIdenticalAscentDescentAndLineGap(const ComputedStyle& other) const;
   bool HasFontRelativeUnits() const {
     return HasEmUnits() || HasRootFontRelativeUnits() ||
            HasGlyphRelativeUnits();
