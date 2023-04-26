@@ -182,7 +182,7 @@ TEST_F(LayoutInlineTest, RegionHitTest) {
     DCHECK(cursor.Current().IsLineBox());
     NGInlineCursor line_cursor = cursor.CursorForDescendants();
     bool hit_outcome = lots_of_boxes->HitTestCulledInline(
-        hit_result, location, hit_offset, &line_cursor);
+        hit_result, location, hit_offset, line_cursor);
     EXPECT_FALSE(hit_outcome);
   }
   // Make sure that the inline is hit

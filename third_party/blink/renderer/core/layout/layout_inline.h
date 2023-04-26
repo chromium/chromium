@@ -195,13 +195,12 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   // When this LayoutInline doesn't generate line boxes of its own, regenerate
   // the rects of the line boxes and hit test the rects.
-  // In LayoutNG, |parent_fragment| is non-null, and limits the regenerated
-  // rects to be from descendant fragments of |parent_fragment|.
-  // In legacy, |parent_fragment| is always null, and all rects are regenerated.
+  // |parent_cursor| is used to limit the regenerated rects to be from
+  // descendant fragments of |parent_cursor|.
   bool HitTestCulledInline(HitTestResult&,
                            const HitTestLocation&,
                            const PhysicalOffset& accumulated_offset,
-                           const NGInlineCursor* parent_cursor = nullptr);
+                           const NGInlineCursor& parent_cursor);
 
   PhysicalOffset FirstLineBoxTopLeft() const {
     NOT_DESTROYED();

@@ -631,46 +631,37 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
 bool LayoutInline::HitTestCulledInline(HitTestResult& result,
                                        const HitTestLocation& hit_test_location,
                                        const PhysicalOffset& accumulated_offset,
-                                       const NGInlineCursor* parent_cursor) {
+                                       const NGInlineCursor& parent_cursor) {
   NOT_DESTROYED();
-  DCHECK(parent_cursor);
   if (!VisibleToHitTestRequest(result.GetHitTestRequest()))
     return false;
 
   HitTestLocation adjusted_location(hit_test_location, -accumulated_offset);
   cc::Region region_result;
   bool intersected = false;
-  auto yield = [&adjusted_location, &region_result,
-                &intersected](const PhysicalRect& rect) {
+
+  // NG generates purely physical rectangles here.
+
+  // Iterate fragments for |this|, including culled inline, but only that are
+  // descendants of |parent_cursor|.
+  DCHECK(IsDescendantOf(parent_cursor.GetLayoutBlockFlow()));
+  NGInlineCursor cursor(parent_cursor);
+  cursor.MoveToIncludingCulledInline(*this);
+  for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+    // Block-in-inline is inline in the box tree, and may appear as a child of
+    // a culled inline, but it should be painted and hit-tested as block
+    // painting-order-wise. Don't include it as part of the culled inline
+    // region. https://www.w3.org/TR/CSS22/zindex.html#painting-order
+    if (const auto* fragment = cursor.Current().BoxFragment()) {
+      if (UNLIKELY(fragment->IsOpaque())) {
+        continue;
+      }
+    }
+    PhysicalRect rect = cursor.Current().RectInContainerFragment();
     if (adjusted_location.Intersects(rect)) {
       intersected = true;
       region_result.Union(ToEnclosingRect(rect));
     }
-  };
-
-  // NG generates purely physical rectangles here, while legacy sets the block
-  // offset on the rectangles relatively to the block-start. NG is doing the
-  // right thing. Legacy is wrong.
-  if (parent_cursor) {
-    // Iterate fragments for |this|, including culled inline, but only that are
-    // descendants of |parent_cursor|.
-    DCHECK(IsDescendantOf(parent_cursor->GetLayoutBlockFlow()));
-    NGInlineCursor cursor(*parent_cursor);
-    cursor.MoveToIncludingCulledInline(*this);
-    for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-      // Block-in-inline is inline in the box tree, and may appear as a child of
-      // a culled inline, but it should be painted and hit-tested as block
-      // painting-order-wise. Don't include it as part of the culled inline
-      // region. https://www.w3.org/TR/CSS22/zindex.html#painting-order
-      if (const NGPhysicalBoxFragment* fragment =
-              cursor.Current().BoxFragment()) {
-        if (UNLIKELY(fragment->IsOpaque()))
-          continue;
-      }
-      yield(cursor.Current().RectInContainerFragment());
-    }
-  } else {
-    DCHECK(!IsInLayoutNGInlineFormattingContext());
   }
 
   if (intersected) {

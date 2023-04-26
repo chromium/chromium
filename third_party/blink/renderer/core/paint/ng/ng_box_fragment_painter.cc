@@ -180,8 +180,9 @@ bool HitTestCulledInlineAncestors(
     if (auto* parent_layout_inline = DynamicTo<LayoutInline>(parent)) {
       if (parent_layout_inline->HitTestCulledInline(result, hit_test_location,
                                                     fallback_accumulated_offset,
-                                                    &parent_cursor))
+                                                    parent_cursor)) {
         return true;
+      }
     }
   }
 
