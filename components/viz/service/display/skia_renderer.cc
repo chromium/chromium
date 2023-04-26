@@ -429,11 +429,9 @@ struct SkiaRenderer::DrawRPDQParams {
     // pre-transformed by this before |content_device_transform|).
     SkMatrix transform;
 
-    // `rect` from the bypassed RenderPassDrawQuad.
-    gfx::RectF rect;
-
-    // `visible_rect` from the bypassed RenderPassDrawQuad.
-    gfx::RectF visible_rect;
+    // Clipping in bypassed render pass coordinate space. This can come from
+    // RenderPassDrawQuad::visible_rect and bypass quads clip_rect.
+    gfx::RectF clip_rect;
   };
 
   explicit DrawRPDQParams(const gfx::RectF& visible_rect);
@@ -471,7 +469,7 @@ struct SkiaRenderer::DrawRPDQParams {
 
     SkRect content_bounds =
         bypass_geometry->transform.mapRect(gfx::RectFToSkRect(content_rect));
-    return !bypass_geometry->visible_rect.Contains(
+    return !bypass_geometry->clip_rect.Contains(
         gfx::SkRectToRectF(content_bounds));
   }
 };
@@ -1420,11 +1418,8 @@ void SkiaRenderer::PrepareCanvasForRPDQ(const DrawRPDQParams& rpdq_params,
 
     // Only sample from pixels behind the RPDQ for backdrop filters to avoid
     // color bleeding with pixel-moving filters.
-    if (rpdq_params.bypass_geometry) {
-      crop_rect.Intersect(rpdq_params.bypass_geometry->rect);
-    } else {
-      crop_rect.Intersect(params->rect);
-    }
+    crop_rect.Intersect(params->rect);
+
     SkIRect sk_crop_rect = gfx::RectToSkIRect(gfx::ToEnclosingRect(crop_rect));
 
     SkIRect sk_src_rect = backdrop_filter->filterBounds(
@@ -1455,7 +1450,7 @@ void SkiaRenderer::PrepareCanvasForRPDQ(const DrawRPDQParams& rpdq_params,
   }
 
   SkRect bounds = gfx::RectFToSkRect(
-      rpdq_params.bypass_geometry ? rpdq_params.bypass_geometry->visible_rect
+      rpdq_params.bypass_geometry ? rpdq_params.bypass_geometry->clip_rect
                                   : params->visible_rect);
   current_canvas_->saveLayer(
       SkCanvas::SaveLayerRec(&bounds, &layer_paint, backdrop_filter.get(), 0));
@@ -1542,7 +1537,7 @@ void SkiaRenderer::PreparePaintOrCanvasForRPDQ(
   // Whether or not we saved a layer, clip the bypassed RenderPass's content
   if (needs_bypass_clip) {
     current_canvas_->clipRect(
-        gfx::RectFToSkRect(rpdq_params.bypass_geometry->visible_rect),
+        gfx::RectFToSkRect(rpdq_params.bypass_geometry->clip_rect),
         params->aa_flags != SkCanvas::kNone_QuadAAFlags);
   }
 }
@@ -1575,7 +1570,7 @@ void SkiaRenderer::PrepareColorOrCanvasForRPDQ(
   // the output rect of the renderpass it is bypassing.
   if (rpdq_params.needs_bypass_clip(params->visible_rect)) {
     current_canvas_->clipRect(
-        gfx::RectFToSkRect(rpdq_params.bypass_geometry->visible_rect),
+        gfx::RectFToSkRect(rpdq_params.bypass_geometry->clip_rect),
         params->aa_flags != SkCanvas::kNone_QuadAAFlags);
   }
 }
@@ -1916,7 +1911,7 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
         gfx::SkMatrixToTransform(bypass_geometry.transform);
     DCHECK(Is2dScaleTranslateTransform(bypass_transform));
 
-    // `bypass_geometry.visible_rect` is in the first bypassed render pass
+    // `bypass_geometry.clip_rect` is in the first bypassed render pass
     // coordinate space. The last CalculateBypassParams() updated
     // `params->visible_rect` so it is in the current bypassed render pass
     // coordinate space. Transform that into the first bypassed render pass
@@ -1925,17 +1920,17 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
     // pass coordinate space.
     gfx::RectF bypass_visible_rect =
         bypass_transform.MapRect(params->visible_rect);
-    bypass_geometry.visible_rect.Intersect(bypass_visible_rect);
+    bypass_geometry.clip_rect.Intersect(bypass_visible_rect);
 
     // Update transform so it maps from `bypass_quad` to the first bypassed
     // render pass coordinate space.
     bypass_geometry.transform.preConcat(bypass_to_rpdq);
   } else {
-    // BypassGeometry holds the RenderPassDrawQuad rect and visible_rect, which
-    // are in the bypassed render pass coordinate space, along with the
-    // transform from bypassed render pass to `bypass_quad` coordinate space.
-    rpdq_params->bypass_geometry = DrawRPDQParams::BypassGeometry{
-        bypass_to_rpdq, params->rect, params->visible_rect};
+    // BypassGeometry holds the RenderPassDrawQuad visible_rect, which is in the
+    // bypassed render pass coordinate space, along with the transform from
+    // `bypass_quad` to bypassed render pass coordinate space.
+    rpdq_params->bypass_geometry =
+        DrawRPDQParams::BypassGeometry{bypass_to_rpdq, params->visible_rect};
   }
 
   if (bypass_quad->shared_quad_state->clip_rect) {
@@ -1943,7 +1938,7 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
     // scissor_rect in SetScissorStateForQuad(). That never happens when the
     // render pass is bypassed. The clip_rect is in the same coordinate space as
     // the RPDQ + bypassed render pass aka the same as bypass_geometry.
-    rpdq_params->bypass_geometry->visible_rect.Intersect(
+    rpdq_params->bypass_geometry->clip_rect.Intersect(
         gfx::RectF(*bypass_quad->shared_quad_state->clip_rect));
   }
 
