@@ -34,6 +34,7 @@ SafeBrowsingQuietErrorUI::SafeBrowsingQuietErrorUI(
                               time_triggered,
                               controller),
       is_giant_webview_(is_giant_webview) {
+  user_made_decision_ = false;
   controller->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
   controller->metrics_helper()->RecordUserInteraction(
       MetricsHelper::TOTAL_VISITS);
@@ -88,6 +89,7 @@ void SafeBrowsingQuietErrorUI::HandleCommand(
   switch (command) {
     case CMD_PROCEED: {
       // User pressed on the button to proceed.
+      user_made_decision_ = true;
       if (!is_proceed_anyway_disabled()) {
         controller()->metrics_helper()->RecordUserDecision(
             MetricsHelper::PROCEED);

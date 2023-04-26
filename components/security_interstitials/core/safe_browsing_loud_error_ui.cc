@@ -55,6 +55,7 @@ SafeBrowsingLoudErrorUI::SafeBrowsingLoudErrorUI(
                               time_triggered,
                               controller),
       created_prior_to_navigation_(created_prior_to_navigation) {
+  user_made_decision_ = false;
   controller->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
   controller->metrics_helper()->RecordUserInteraction(
       MetricsHelper::TOTAL_VISITS);
@@ -130,6 +131,7 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
   switch (command) {
     case CMD_PROCEED: {
       // User pressed on the button to proceed.
+      user_made_decision_ = true;
       if (!is_proceed_anyway_disabled()) {
         controller()->metrics_helper()->RecordUserDecision(
             MetricsHelper::PROCEED);
@@ -141,6 +143,7 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
     }
     case CMD_DONT_PROCEED: {
       // User pressed on the button to return to safety.
+      user_made_decision_ = true;
       // Don't record the user action here because there are other ways of
       // triggering DontProceed, like clicking the back button.
       if (is_main_frame_load_blocked()) {

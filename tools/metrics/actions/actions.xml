@@ -27112,14 +27112,85 @@ should be able to be added at any place in this file.
   <description>User pressed back on a Phishing interstitial.</description>
 </action>
 
+<action name="PhishingInterstitial.CloseInterstitialWithoutUI">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User exits interstitial page without clicking the back button on a Phishing
+    interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.Diagnostic">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to show diagnostic on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.EnhancedProtectionMessage">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to show enhanced protection message on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.EnhancedProtectionSettings">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to open enhanced protection settings on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.LearnMore">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to learn more on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.PrivacyPolicy">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to show privacy policy on a Phishing interstitial.
+  </description>
+</action>
+
 <action name="PhishingInterstitial.Proceed">
   <owner>psarouthakis@chromium.org</owner>
   <description>User proceeded on a Phishing interstitial.</description>
 </action>
 
+<action name="PhishingInterstitial.ReportPhishingError">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to report an error on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.SetExtendedReportingDisabled">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to disable extended reporting on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishingInterstitial.SetExtendedReportingEnabled">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to enable extended reporting on a Phishing interstitial.
+  </description>
+</action>
+
 <action name="PhishingInterstitial.Show">
   <owner>psarouthakis@chromium.org</owner>
   <description>User saw the Phishing interstitial.</description>
+</action>
+
+<action name="PhishingInterstitial.WhitePaper">
+  <owner>skrakowi@chromium.org</owner>
+  <description>
+    User clicks to show white paper on a Phishing interstitial.
+  </description>
 </action>
 
 <action name="PhysicalWeb.NotificationPressed">

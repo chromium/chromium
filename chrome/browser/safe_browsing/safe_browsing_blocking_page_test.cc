@@ -1462,6 +1462,39 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectBucketCount(
       interaction_histogram,
       security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION, 1);
+  histograms.ExpectBucketCount(
+      interaction_histogram,
+      security_interstitials::MetricsHelper::CLOSE_INTERSTITIAL_WITHOUT_UI, 0);
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       Histograms_UserMadeNoDecision) {
+  base::HistogramTester histograms;
+  std::string prefix;
+  SBThreatType threat_type = GetThreatType();
+  if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
+    prefix = "malware";
+  } else if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
+    prefix = "phishing";
+  } else if (threat_type == SB_THREAT_TYPE_URL_UNWANTED) {
+    prefix = "harmful";
+  } else {
+    NOTREACHED();
+  }
+  const std::string interaction_histogram =
+      "interstitial." + prefix + ".interaction";
+
+  // Histograms should start off empty.
+  histograms.ExpectTotalCount(interaction_histogram, 0);
+
+  // Navigate to the page and show warning.
+  GURL url = SetupWarningAndNavigate(browser());
+
+  // Close tab without making an explicit choice on interstitial.
+  chrome::CloseTab(browser());
+  histograms.ExpectBucketCount(
+      interaction_histogram,
+      security_interstitials::MetricsHelper::CLOSE_INTERSTITIAL_WITHOUT_UI, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, AllowlistRevisit) {

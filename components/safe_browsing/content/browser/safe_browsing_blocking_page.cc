@@ -24,6 +24,7 @@
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/controller_client.h"
+#include "components/security_interstitials/core/safe_browsing_loud_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -115,6 +116,12 @@ SafeBrowsingBlockingPage::GetTypeForTesting() {
 }
 
 void SafeBrowsingBlockingPage::OnInterstitialClosing() {
+  // If this is a phishing interstitial and the user did not make a decision
+  // through the UI, record that interaction in UMA
+  if (!sb_error_ui()->did_user_make_decision()) {
+    controller()->metrics_helper()->RecordUserInteraction(
+        security_interstitials::MetricsHelper::CLOSE_INTERSTITIAL_WITHOUT_UI);
+  }
   // With committed interstitials OnProceed and OnDontProceed don't get
   // called, so call FinishThreatDetails from here.
   FinishThreatDetails(
