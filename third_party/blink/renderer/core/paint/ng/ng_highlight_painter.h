@@ -45,6 +45,8 @@ class CORE_EXPORT NGHighlightPainter {
     STACK_ALLOCATED();
 
    public:
+    // ComputeSelectionStyle must be called to finish initializing. Until then,
+    // only Status() may be called.
     explicit SelectionPaintState(
         const NGInlineCursor& containing_block,
         const PhysicalOffset& box_offset,
