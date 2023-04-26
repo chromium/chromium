@@ -6,7 +6,7 @@ import collections
 import math
 import os
 import re
-from style_variable_generator.color import Color
+from style_variable_generator.color import Color, ColorBlend
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.model import Modes, VariableType
 
@@ -77,7 +77,7 @@ class ColorMappingsStyleGenerator(CSSStyleGenerator):
         '''Returns the C++ ColorMappings representation of |c|'''
         assert (isinstance(c, Color))
 
-        if c.blended_colors:
+        if isinstance(c, ColorBlend):
             return 'ui::GetResultingPaintColor(%s, %s)' % (
                 self._ColorMixerColor(c.blended_colors[0], mode),
                 self._ColorMixerColor(c.blended_colors[1], mode))

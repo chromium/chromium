@@ -2,8 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from style_variable_generator.base_generator import Color, BaseGenerator
+from style_variable_generator.base_generator import BaseGenerator
 from style_variable_generator.model import Modes, VariableType
+from style_variable_generator.color import ColorBlend
 import collections
 
 
@@ -173,7 +174,7 @@ class CSSStyleGenerator(BaseGenerator):
         if color.opacity and color.opacity.a != 1:
             return 'rgba(var(%s-rgb), %s)' % (self.ToCSSVarName(name),
                                               self._CSSOpacity(color.opacity))
-        if color.blended_colors:
+        if isinstance(color, ColorBlend):
             return 'color-mix(in srgb, %s %s%%, %s)' % (
                 self.CSSBlendInputColor(color.blended_colors[0]),
                 self.ExtractOpacity(color.blended_colors[0], mode),
@@ -182,4 +183,4 @@ class CSSStyleGenerator(BaseGenerator):
         return 'rgb(var(%s-rgb))' % self.ToCSSVarName(name)
 
     def NeedsRGBVariant(self, color):
-        return not color.blended_colors
+        return not isinstance(color, ColorBlend)

@@ -4,7 +4,7 @@
 
 import re
 import collections
-from style_variable_generator.color import Color, ParseColor
+from style_variable_generator.color import Color, ParseColor, ColorBlend
 from style_variable_generator.opacity import Opacity
 from abc import ABC, abstractmethod
 
@@ -177,7 +177,7 @@ class ColorModel(ModeKeyedModel):
         if isinstance(value_obj, dict):
             generate_per_mode = value_obj.pop('generate_per_mode', None)
             generate_inverted = value_obj.pop('generate_inverted', None)
-        elif self._CreateValue(value_obj).blended_colors:
+        elif isinstance(self._CreateValue(value_obj), ColorBlend):
             # A blended color could evaluate to different colors in different
             # modes, so add it to all the modes.
             value_obj = {mode: value_obj for mode in Modes.ALL}
@@ -221,7 +221,7 @@ class ColorModel(ModeKeyedModel):
         if color.var:
             return self.ResolveToRGBA(color.var, mode)
 
-        if len(color.blended_colors) == 2:
+        if isinstance(color, ColorBlend) and len(color.blended_colors) == 2:
             return self._BlendColors(color.blended_colors[0],
                                      color.blended_colors[1], mode)
 
@@ -246,7 +246,7 @@ class ColorModel(ModeKeyedModel):
                 should_preblend = context.get('CSS',
                                               {}).get('preblend',
                                                       default_preblend)
-                if color.blended_colors and should_preblend:
+                if isinstance(color, ColorBlend) and should_preblend:
                     assert len(color.blended_colors) == 2
                     if name not in temp_model:
                         temp_model[name] = {}
@@ -395,7 +395,7 @@ class Model(object):
                 CheckColorReference(color.RGBVarToVar(), name)
             if color.opacity and color.opacity.var:
                 CheckOpacityReference(color.opacity.var, name)
-            if color.blended_colors:
+            if isinstance(color, ColorBlend):
                 assert len(color.blended_colors) == 2
                 CheckColor(color.blended_colors[0], name)
                 CheckColor(color.blended_colors[1], name)

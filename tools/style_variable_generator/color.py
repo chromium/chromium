@@ -87,7 +87,7 @@ def ParseColor(value):
         match = re.match(r'^blend\((.*)\)$', value)
         if not match:
             return None
-        color = Color()
+        color = ColorBlend()
 
         values = list(split_args(match.group(1)))
         if len(values) == 2:
@@ -134,7 +134,8 @@ def ParseColor(value):
 
     if parsed is None:
         raise ValueError('Malformed color value')
-    if not parsed.var and not parsed.blended_colors and not parsed.opacity:
+    if not parsed.var and not parsed.opacity and not isinstance(
+            parsed, ColorBlend):
         raise ValueError(repr(parsed))
 
     return parsed
@@ -164,10 +165,6 @@ class Color:
         self.r = -1
         self.g = -1
         self.b = -1
-        # If non-empty, this color is the result of blending two other
-        # colors using the "A over B" operation, where A is blended_colors[0]
-        # and B is blended_colors[1].
-        self.blended_colors = []
 
         self.opacity = None
 
@@ -206,9 +203,6 @@ class Color:
         return self.rgb_var.replace('.rgb', '')
 
     def GetFormula(self):
-        if self.blended_colors:
-            return 'blend(%s, %s)' % (self.blended_colors[0].GetFormula(),
-                                      self.blended_colors[1].GetFormula())
         if self.var:
             return self.var
         if self.rgb_var:
@@ -220,9 +214,6 @@ class Color:
     def __repr__(self):
         a = repr(self.opacity)
 
-        if self.blended_colors:
-            return 'blend(' + repr(self.blended_colors) + ")"
-
         if self.var:
             return 'var(--%s)' % self.var
 
@@ -230,3 +221,21 @@ class Color:
             return 'rgba(var(--%s), %s)' % (self.rgb_var, a)
 
         return 'rgba(%d, %d, %d, %s)' % (self.r, self.g, self.b, a)
+
+
+class ColorBlend(Color):
+    '''This color is the result of blending two other colors
+
+    It uses the "A over B" operation, where A is blended_colors[0] and B is
+    blended_colors[1].
+    '''
+    def __init__(self):
+        super().__init__()
+        self.blended_colors = []
+
+    def GetFormula(self):
+        return 'blend(%s, %s)' % (self.blended_colors[0].GetFormula(),
+                                  self.blended_colors[1].GetFormula())
+
+    def __repr__(self):
+        return 'blend(' + repr(self.blended_colors) + ")"
