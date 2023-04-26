@@ -373,10 +373,9 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
 
 TEST_F(PrefetchDocumentManagerTest,
        ProcessNoVarySearchResponseWithDefaultValue) {
-  EXPECT_THAT(
-      TriggerNoVarySearchParseErrorAndGetConsoleMessage(
-          network::mojom::NoVarySearchParseError::kDefaultValue),
-      testing::HasSubstr("is equivalent to the default search variance"));
+  EXPECT_THAT(TriggerNoVarySearchParseErrorAndGetConsoleMessage(
+                  network::mojom::NoVarySearchParseError::kDefaultValue),
+              testing::HasSubstr("is equivalent to the default behavior"));
 }
 
 TEST_F(PrefetchDocumentManagerTest,

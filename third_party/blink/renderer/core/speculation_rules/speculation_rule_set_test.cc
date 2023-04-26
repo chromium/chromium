@@ -4040,8 +4040,7 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
     EXPECT_THAT(
         rule_set->error_message().Utf8(),
         ::testing::HasSubstr(
-            "No-Vary-Search hint value is equivalent to the default search"
-            " variance"));
+            "No-Vary-Search hint value is equivalent to the default behavior"));
   }
   {
     auto* rule_set =
