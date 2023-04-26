@@ -125,6 +125,21 @@ presubmit_builder(
 )
 
 presubmit_builder(
+    name = "targets-spec-verifier",
+    description_html = "checks that target specs specified in starlark match those specified in //testing/buildbot",
+    executable = "recipe:chromium/targets_spec_verifier",
+    properties = {
+        "builder_config_directory": "infra/config/generated/builders",
+    },
+    # TODO(crbug.com/1420012) Once the recipe is working, actually add this to
+    # the CQ
+    # tryjob = try_.job(
+    #     location_filters = ["infra/config/generated/builders/tests/.*"],
+    # ),
+    tryjob = None,
+)
+
+presubmit_builder(
     name = "chromium_presubmit",
     branch_selector = branches.selector.ALL_BRANCHES,
     executable = "recipe:presubmit",

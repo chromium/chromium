@@ -165,6 +165,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/targets_spec_verifier",
+)
+
+build_recipe(
     name = "recipe:chromium_polymorphic/launcher",
 )
 
