@@ -744,7 +744,7 @@ BASE_FEATURE(kContextualSearchThinWebViewImplementation,
 
 BASE_FEATURE(kDeferKeepScreenOnDuringGesture,
              "DeferKeepScreenOnDuringGesture",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeferNotifyInMotion,
              "DeferNotifyInMotion",

@@ -3925,21 +3925,6 @@
             ]
         }
     ],
-    "DeferKeepScreenOnDuringGesture": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DeferKeepScreenOnDuringGesture"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeferredSyncStartupCustomDelay": [
         {
             "platforms": [
