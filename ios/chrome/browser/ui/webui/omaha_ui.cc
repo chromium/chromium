@@ -51,7 +51,8 @@ class OmahaDOMHandler : public WebUIIOSMessageHandler {
   void HandleRequestDebugInformation(const base::Value::List& args);
 
   // Called when the debug information have been computed.
-  void OnDebugInformationAvailable(base::Value::Dict debug_information);
+  void OnDebugInformationAvailable(const std::string& callback_id,
+                                   base::Value::Dict debug_information);
 
   // WeakPtr factory needed because this object might be deleted before
   // receiving the callbacks from the OmahaService.
@@ -71,15 +72,19 @@ void OmahaDOMHandler::RegisterMessages() {
 
 void OmahaDOMHandler::HandleRequestDebugInformation(
     const base::Value::List& args) {
+  CHECK_EQ(1u, args.size());
+  std::string callback_id = args[0].GetString();
+
   OmahaService::GetDebugInformation(
       base::BindOnce(&OmahaDOMHandler::OnDebugInformationAvailable,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
 void OmahaDOMHandler::OnDebugInformationAvailable(
+    const std::string& callback_id,
     base::Value::Dict debug_information) {
-  base::ValueView args[] = {debug_information};
-  web_ui()->CallJavascriptFunction("updateOmahaDebugInformation", args);
+  web_ui()->ResolveJavascriptCallback(base::Value(callback_id),
+                                      /*response=*/debug_information);
 }
 
 }  // namespace
