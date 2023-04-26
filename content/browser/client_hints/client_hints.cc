@@ -547,42 +547,6 @@ bool IsOriginTrialHintEnabledForFrame(const url::Origin& origin,
   return false;
 }
 
-// TODO(crbug.com/1258063): Delete this function when the UserAgentReduction and
-// SendFullUserAgentAfterReduction Origin Trial is finished.
-void RemoveAllClientHintsExceptOriginTrialHints(
-    const url::Origin& origin,
-    FrameTreeNode* frame_tree_node,
-    ClientHintsControllerDelegate* delegate,
-    std::vector<WebClientHintsType>* accept_ch,
-    url::Origin* outermost_main_frame_origin,
-    absl::optional<url::Origin>* third_party_origin) {
-  RenderFrameHostImpl* main_frame =
-      frame_tree_node->frame_tree().GetMainFrame()->GetOutermostMainFrame();
-
-  for (auto it = accept_ch->begin(); it != accept_ch->end();) {
-    if (*it == WebClientHintsType::kUAReduced ||
-        *it == WebClientHintsType::kFullUserAgent) {
-      ++it;
-    } else {
-      it = accept_ch->erase(it);
-    }
-  }
-
-  if (!main_frame->GetLastCommittedOrigin().IsSameOriginWith(origin)) {
-    // If third-party cookeis are blocked, we will not persist the
-    // Sec-CH-UA-Reduced client hint in a third-party context.
-    if (delegate->AreThirdPartyCookiesBlocked(
-            origin.GetURL(), frame_tree_node->current_frame_host())) {
-      accept_ch->clear();
-      return;
-    }
-    // Third-party contexts need the correct main frame URL and third-party
-    // URL in order to validate the Origin Trial token correctly, if present.
-    *outermost_main_frame_origin = main_frame->GetLastCommittedOrigin();
-    *third_party_origin = absl::make_optional(origin);
-  }
-}
-
 // Captures the state used in applying client hints.
 struct ClientHintsExtendedData {
   ClientHintsExtendedData(const url::Origin& origin,
@@ -1109,7 +1073,7 @@ ParseAndPersistAcceptCHForNavigation(
   }
 
   std::vector<WebClientHintsType> accept_ch = parsed_headers->accept_ch.value();
-  url::Origin main_frame_origin = origin;
+  url::Origin outermost_main_frame_origin = origin;
   absl::optional<url::Origin> third_party_origin;
   // Only the main frame should parse accept-CH, except for the temporary
   // Sec-CH-UA-Reduced client hint (used for the User-Agent reduction origin
@@ -1121,16 +1085,36 @@ ParseAndPersistAcceptCHForNavigation(
   //
   // TODO(crbug.com/1258063): Delete this call when the UserAgentReduction
   // Origin Trial is finished.
-  // TODO(crbug.com/1433353): fix this caller to actually send the outermost
-  // frame.
   if (!frame_tree_node->IsMainFrame()) {
-    RemoveAllClientHintsExceptOriginTrialHints(
-        origin, frame_tree_node, delegate, &accept_ch, &main_frame_origin,
-        &third_party_origin);
+    RenderFrameHostImpl* outermost_main_frame =
+        frame_tree_node->frame_tree().GetMainFrame()->GetOutermostMainFrame();
+    for (auto it = accept_ch.begin(); it != accept_ch.end();) {
+      if (*it == WebClientHintsType::kUAReduced ||
+          *it == WebClientHintsType::kFullUserAgent) {
+        ++it;
+      } else {
+        it = accept_ch.erase(it);
+      }
+    }
     if (accept_ch.empty()) {
       // There are is no Sec-CH-UA-Reduced in Accept-CH for the embedded frame,
       // so nothing should be persisted.
       return absl::nullopt;
+    }
+    if (!outermost_main_frame->GetLastCommittedOrigin().IsSameOriginWith(
+            origin)) {
+      // If third-party cookies are blocked, we will not persist the
+      // Sec-CH-UA-Reduced client hint in a third-party context.
+      if (delegate->AreThirdPartyCookiesBlocked(
+              origin.GetURL(), frame_tree_node->current_frame_host())) {
+        return absl::nullopt;
+      }
+      // Third-party contexts need the correct main frame URL and third-party
+      // URL in order to validate the Origin Trial token correctly, if
+      // present.
+      outermost_main_frame_origin =
+          outermost_main_frame->GetLastCommittedOrigin();
+      third_party_origin = absl::make_optional(origin);
     }
   }
 
@@ -1140,8 +1124,8 @@ ParseAndPersistAcceptCHForNavigation(
 
   blink::EnabledClientHints enabled_hints;
   for (const WebClientHintsType type : accept_ch) {
-    enabled_hints.SetIsEnabled(main_frame_origin.GetURL(), third_party_url,
-                               response_headers, type, true);
+    enabled_hints.SetIsEnabled(outermost_main_frame_origin.GetURL(),
+                               third_party_url, response_headers, type, true);
   }
 
   const std::vector<WebClientHintsType> persisted_hints =
