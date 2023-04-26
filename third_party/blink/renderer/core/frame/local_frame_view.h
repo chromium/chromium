@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/core/frame/layout_subtree_root_list.h"
 #include "third_party/blink/renderer/core/frame/overlay_interstitial_ad_detector.h"
 #include "third_party/blink/renderer/core/frame/sticky_ad_detector.h"
-#include "third_party/blink/renderer/core/layout/depth_ordered_layout_object_list.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/paint/layout_object_counter.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_request_forward.h"
@@ -183,12 +182,6 @@ class CORE_EXPORT LocalFrameView final
   void DidFinishForcedLayout(DocumentUpdateReason);
 
   void ClearLayoutSubtreeRoot(const LayoutObject&);
-  void AddOrthogonalWritingModeRoot(LayoutBox&);
-  void RemoveOrthogonalWritingModeRoot(LayoutBox&);
-  bool HasOrthogonalWritingModeRoots() const;
-  void LayoutOrthogonalWritingModeRoots();
-  void ScheduleOrthogonalWritingModeRootsForLayout();
-  void MarkOrthogonalWritingModeRootsForLayout();
 
   // Returns true if commits will be deferred for first contentful paint.
   bool WillDoPaintHoldingForFCP() const;
@@ -1033,7 +1026,6 @@ class CORE_EXPORT LocalFrameView final
 
   bool has_pending_layout_;
   LayoutSubtreeRootList layout_subtree_root_list_;
-  DepthOrderedLayoutObjectList orthogonal_writing_mode_root_list_;
 
   bool layout_scheduling_enabled_;
   unsigned layout_count_for_testing_;

@@ -125,9 +125,6 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
     if (notify_layout_object) {
       LayoutCounter::LayoutObjectSubtreeWillBeDetached(old_child);
       old_child->WillBeRemovedFromTree();
-    } else if (old_child->IsBox() &&
-               To<LayoutBox>(old_child)->IsOrthogonalWritingModeRoot()) {
-      To<LayoutBox>(old_child)->UnmarkOrthogonalWritingModeRoot();
     }
 
     if (old_child->IsInLayoutNGInlineFormattingContext()) {

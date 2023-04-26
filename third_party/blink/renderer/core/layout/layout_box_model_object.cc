@@ -169,7 +169,6 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   bool had_non_initial_backdrop_filter = HasNonInitialBackdropFilter();
   bool had_layer = HasLayer();
   bool layer_was_self_painting = had_layer && Layer()->IsSelfPaintingLayer();
-  bool was_horizontal_writing_mode = IsHorizontalWritingMode();
   bool could_contain_fixed = CanContainFixedPositionObjects();
   bool could_contain_absolute = CanContainAbsolutePositionObjects();
 
@@ -292,22 +291,6 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     Layer()->StyleDidChange(diff, old_style);
     if (had_layer && Layer()->IsSelfPaintingLayer() != layer_was_self_painting)
       SetChildNeedsLayout();
-  }
-
-  if (old_style && was_horizontal_writing_mode != IsHorizontalWritingMode()) {
-    // Changing the getWritingMode() may change isOrthogonalWritingModeRoot()
-    // of children. Make sure all children are marked/unmarked as orthogonal
-    // writing-mode roots.
-    bool new_horizontal_writing_mode = IsHorizontalWritingMode();
-    for (LayoutObject* child = SlowFirstChild(); child;
-         child = child->NextSibling()) {
-      if (!child->IsBox())
-        continue;
-      if (new_horizontal_writing_mode != child->IsHorizontalWritingMode())
-        To<LayoutBox>(child)->MarkOrthogonalWritingModeRoot();
-      else
-        To<LayoutBox>(child)->UnmarkOrthogonalWritingModeRoot();
-    }
   }
 
   // The used style for body background may change due to computed style change

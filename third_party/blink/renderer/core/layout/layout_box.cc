@@ -495,9 +495,6 @@ void LayoutBox::WillBeDestroyed() {
   if (IsOutOfFlowPositioned())
     LayoutBlock::RemovePositionedObject(this);
 
-  if (IsOrthogonalWritingModeRoot() && !DocumentBeingDestroyed())
-    UnmarkOrthogonalWritingModeRoot();
-
   ShapeOutsideInfo::RemoveInfo(*this);
 
   if (!DocumentBeingDestroyed()) {
@@ -526,16 +523,10 @@ void LayoutBox::InsertedIntoTree() {
   LayoutBoxModelObject::InsertedIntoTree();
   AddScrollSnapMapping();
   AddCustomLayoutChildIfNeeded();
-
-  if (IsOrthogonalWritingModeRoot())
-    MarkOrthogonalWritingModeRoot();
 }
 
 void LayoutBox::WillBeRemovedFromTree() {
   NOT_DESTROYED();
-  if (!DocumentBeingDestroyed() && IsOrthogonalWritingModeRoot())
-    UnmarkOrthogonalWritingModeRoot();
-
   ClearCustomLayoutChild();
   ClearScrollSnapMapping();
   LayoutBoxModelObject::WillBeRemovedFromTree();
@@ -657,12 +648,6 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
 void LayoutBox::StyleDidChange(StyleDifference diff,
                                const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  // Horizontal writing mode definition is updated in LayoutBoxModelObject::
-  // updateFromStyle, (as part of the LayoutBoxModelObject::styleDidChange call
-  // below). So, we can safely cache the horizontal writing mode value before
-  // style change here.
-  bool old_horizontal_writing_mode = IsHorizontalWritingMode();
-
   LayoutBoxModelObject::StyleDidChange(diff, old_style);
 
   // Reflection works through PaintLayer. Some child classes e.g. LayoutSVGBlock
@@ -675,15 +660,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       !old_style->IsFloating() && !old_style->HasOutOfFlowPosition() &&
       parent_flow_block)
     parent_flow_block->ChildBecameFloatingOrOutOfFlow(this);
-
-  if (old_horizontal_writing_mode != IsHorizontalWritingMode()) {
-    if (old_style) {
-      if (IsOrthogonalWritingModeRoot())
-        MarkOrthogonalWritingModeRoot();
-      else
-        UnmarkOrthogonalWritingModeRoot();
-    }
-  }
 
   SetOverflowClipAxes(ComputeOverflowClipAxes());
 
@@ -5103,18 +5079,6 @@ bool LayoutBox::ShouldBeConsideredAsReplaced() const {
     return !IsA<HTMLFieldSetElement>(element);
   }
   return IsA<HTMLImageElement>(element);
-}
-
-void LayoutBox::MarkOrthogonalWritingModeRoot() {
-  NOT_DESTROYED();
-  DCHECK(GetFrameView());
-  GetFrameView()->AddOrthogonalWritingModeRoot(*this);
-}
-
-void LayoutBox::UnmarkOrthogonalWritingModeRoot() {
-  NOT_DESTROYED();
-  DCHECK(GetFrameView());
-  GetFrameView()->RemoveOrthogonalWritingModeRoot(*this);
 }
 
 // Children of LayoutCustom object's are only considered "items" when it has a

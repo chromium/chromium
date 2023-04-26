@@ -1380,8 +1380,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return Parent() &&
            Parent()->IsHorizontalWritingMode() != IsHorizontalWritingMode();
   }
-  void MarkOrthogonalWritingModeRoot();
-  void UnmarkOrthogonalWritingModeRoot();
 
   bool IsCustomItem() const;
   bool IsCustomItemShrinkToFit() const;
