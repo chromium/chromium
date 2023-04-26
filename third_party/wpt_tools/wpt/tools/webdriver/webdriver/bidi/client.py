@@ -92,6 +92,7 @@ class BidiSession:
         # For each module, have a property representing that module
         self.session = modules.Session(self)
         self.browsing_context = modules.BrowsingContext(self)
+        self.input = modules.Input(self)
         self.script = modules.Script(self)
 
     @property
@@ -144,7 +145,7 @@ class BidiSession:
         await self.transport.start()
 
         if self.session_id is None:
-            self.session_id, self.capabilities = await self.session.new(
+            self.session_id, self.capabilities = await self.session.new(  # type: ignore
                 capabilities=self.requested_capabilities)
 
     async def send_command(

@@ -1,10 +1,9 @@
 # mypy: allow-untyped-defs
 
 import os
+import subprocess
 from multiprocessing import Queue, Event
-from subprocess import PIPE
 from threading import Thread
-from mozprocess import ProcessHandlerMixin
 
 from . import chrome_spki_certs
 from .base import Browser, ExecutorBrowser
@@ -85,6 +84,10 @@ class ContentShellBrowser(Browser):
     process are connected to multiprocessing Queues so that the runner process can
     interact with content_shell through its protocol mode.
     """
+    # Seconds to wait for the process to stop after it was sent `SIGTERM` or
+    # `TerminateProcess()`. The value is inherited from:
+    # https://chromium.googlesource.com/chromium/src/+/b175d48d3ea4ea66eea35c88c11aa80d233f3bee/third_party/blink/tools/blinkpy/web_tests/port/base.py#476
+    termination_timeout: float = 3
 
     def __init__(self, logger, binary="content_shell", binary_args=[], **kwargs):
         super().__init__(logger)
@@ -94,13 +97,16 @@ class ContentShellBrowser(Browser):
 
     def start(self, group_metadata, **kwargs):
         self.logger.debug("Starting content shell: %s..." % self._args[0])
-
-        # Unfortunately we need to use the Process class directly because we do not
-        # want mozprocess to do any output handling at all.
-        self._proc = ProcessHandlerMixin.Process(self._args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         if os.name == "posix":
-            self._proc.pgid = ProcessHandlerMixin._getpgid(self._proc.pid)
-            self._proc.detached_pid = None
+            close_fds, preexec_fn = True, lambda: os.setpgid(0, 0)
+        else:
+            close_fds, preexec_fn = False, None
+        self._proc = subprocess.Popen(self._args,
+                                      stdin=subprocess.PIPE,
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE,
+                                      close_fds=close_fds,
+                                      preexec_fn=preexec_fn)
 
         self._stdout_queue = Queue()
         self._stderr_queue = Queue()
@@ -119,11 +125,15 @@ class ContentShellBrowser(Browser):
         self.logger.debug("Stopping content shell...")
 
         if self.is_alive():
-            kill_result = self._proc.kill(timeout=5)
-            # This makes sure any left-over child processes get killed.
-            # See http://bugzilla.mozilla.org/show_bug.cgi?id=1760080
-            if force and kill_result != 0:
-                self._proc.kill(9, timeout=5)
+            self._proc.terminate()
+            try:
+                self._proc.wait(timeout=self.termination_timeout)
+            except subprocess.TimeoutExpired:
+                self.logger.warning(
+                    "Content shell failed to stop gracefully (PID: "
+                    f"{self._proc.pid}, timeout: {self.termination_timeout}s)")
+                if force:
+                    self._proc.kill()
 
         # We need to shut down these queues cleanly to avoid broken pipe error spam in the logs.
         self._stdout_reader.join(2)
