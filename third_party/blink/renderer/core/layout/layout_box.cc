@@ -2084,7 +2084,6 @@ MinMaxSizes LayoutBox::PreferredLogicalWidths() const {
 
 MinMaxSizes LayoutBox::IntrinsicLogicalWidths(MinMaxSizesType type) const {
   NOT_DESTROYED();
-  CHECK(IsManagedByLayoutNG(*this));
   const_cast<LayoutBox*>(this)->UpdateCachedIntrinsicLogicalWidthsIfNeeded();
   return intrinsic_logical_widths_;
 }
@@ -3657,7 +3656,7 @@ void LayoutBox::ComputeLogicalHeight(
     return;
 
   Length h;
-  if (IsManagedByLayoutNG(*this) && HasOverrideLogicalHeight()) {
+  if (HasOverrideLogicalHeight()) {
     computed_values.extent_ = OverrideLogicalHeight();
   } else if (IsOutOfFlowPositioned()) {
     ComputePositionedLogicalHeight(computed_values);

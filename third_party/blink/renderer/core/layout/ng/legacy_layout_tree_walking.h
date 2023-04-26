@@ -71,20 +71,6 @@ inline bool IsLayoutNGContainingBlock(const LayoutBlock* containing_block) {
   return containing_block && containing_block->IsLayoutNGObject();
 }
 
-// Return true if the layout object is a LayoutNG object that is managed by the
-// LayoutNG engine (i.e. its containing block is a LayoutNG object as well).
-inline bool IsManagedByLayoutNG(const LayoutObject& object) {
-  if (!object.IsLayoutNGObject() && !object.IsLayoutReplaced() &&
-      !object.IsLayoutMultiColumnSpannerPlaceholder())
-    return false;
-  if (object.IsOutOfFlowPositioned())
-    return true;
-  const auto* containing_block = object.ContainingBlock();
-  if (UNLIKELY(!containing_block))
-    return false;
-  return IsLayoutNGContainingBlock(containing_block);
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LEGACY_LAYOUT_TREE_WALKING_H_
