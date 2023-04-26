@@ -41,7 +41,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
           TelemetryEventInfo_Tag::kAudioJackEventInfo: {
         base::Value::List args;
         args.Append(
-            converters::ConvertEventPtr<api::os_events::AudioJackEventInfo>(
+            converters::ConvertStructPtr<api::os_events::AudioJackEventInfo>(
                 std::move(info->get_audio_jack_event_info()))
                 .ToValue());
         event = std::make_unique<extensions::Event>(
@@ -53,7 +53,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::mojom::internal::TelemetryEventInfo_Data::
           TelemetryEventInfo_Tag::kLidEventInfo: {
         base::Value::List args;
-        args.Append(converters::ConvertEventPtr<api::os_events::LidEventInfo>(
+        args.Append(converters::ConvertStructPtr<api::os_events::LidEventInfo>(
                         std::move(info->get_lid_event_info()))
                         .ToValue());
         event = std::make_unique<extensions::Event>(
@@ -65,7 +65,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
       case crosapi::mojom::internal::TelemetryEventInfo_Data::
           TelemetryEventInfo_Tag::kUsbEventInfo: {
         base::Value::List args;
-        args.Append(converters::ConvertEventPtr<api::os_events::UsbEventInfo>(
+        args.Append(converters::ConvertStructPtr<api::os_events::UsbEventInfo>(
                         std::move(info->get_usb_event_info()))
                         .ToValue());
         event = std::make_unique<extensions::Event>(

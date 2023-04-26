@@ -41,7 +41,7 @@ crosapi::mojom::TelemetryEventCategoryEnum Convert(
     api::os_events::EventCategory input);
 
 template <class OutputT, class InputT>
-OutputT ConvertEventPtr(InputT input) {
+OutputT ConvertStructPtr(InputT input) {
   return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
                             : OutputT();
 }

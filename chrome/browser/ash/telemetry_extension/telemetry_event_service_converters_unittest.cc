@@ -17,11 +17,11 @@
 
 namespace ash::converters {
 
-// Tests that `ConvertEventPtr` function returns nullptr if input is
-// nullptr. `ConvertEventPtr` is a template, so we can test this function
+// Tests that `ConvertStructPtr` function returns nullptr if input is
+// nullptr. `ConvertStructPtr` is a template, so we can test this function
 // with any valid type.
-TEST(TelemetryEventServiceConvertersTest, ConvertEventPtrTakesNullPtr) {
-  EXPECT_TRUE(ConvertEventPtr(cros_healthd::mojom::EventInfoPtr()).is_null());
+TEST(TelemetryEventServiceConvertersTest, ConvertStructPtrTakesNullPtr) {
+  EXPECT_TRUE(ConvertStructPtr(cros_healthd::mojom::EventInfoPtr()).is_null());
 }
 
 TEST(TelemetryEventServiceConvertersTest,
@@ -117,7 +117,7 @@ TEST(TelemetryEventServiceConvertersTest,
   auto input = cros_healthd::mojom::AudioJackEventInfo::New();
   input->state = cros_healthd::mojom::AudioJackEventInfo::State::kAdd;
 
-  EXPECT_EQ(ConvertEventPtr(std::move(input)),
+  EXPECT_EQ(ConvertStructPtr(std::move(input)),
             crosapi::mojom::TelemetryAudioJackEventInfo::New(
                 crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd));
 }
@@ -126,7 +126,7 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryLidEventInfoPtr) {
   auto input = cros_healthd::mojom::LidEventInfo::New();
   input->state = cros_healthd::mojom::LidEventInfo::State::kClosed;
 
-  EXPECT_EQ(ConvertEventPtr(std::move(input)),
+  EXPECT_EQ(ConvertStructPtr(std::move(input)),
             crosapi::mojom::TelemetryLidEventInfo::New(
                 crosapi::mojom::TelemetryLidEventInfo::State::kClosed));
 }
@@ -141,7 +141,7 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryUsbEventInfoPtr) {
   input->pid = 2;
   input->categories = categories;
 
-  EXPECT_EQ(ConvertEventPtr(std::move(input)),
+  EXPECT_EQ(ConvertStructPtr(std::move(input)),
             crosapi::mojom::TelemetryUsbEventInfo::New(
                 "test_vendor", "test_name", 1, 2, categories,
                 crosapi::mojom::TelemetryUsbEventInfo::State::kAdd));
@@ -154,7 +154,7 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryExtensionException) {
   input->reason = cros_healthd::mojom::Exception::Reason::kUnexpected;
   input->debug_message = kDebugMessage;
 
-  auto result = ConvertEventPtr(std::move(input));
+  auto result = ConvertStructPtr(std::move(input));
 
   ASSERT_TRUE(result);
   EXPECT_EQ(result->reason,
@@ -164,14 +164,14 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryExtensionException) {
 
 TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetryExtensionSupportedPtr) {
-  EXPECT_EQ(ConvertEventPtr(cros_healthd::mojom::Supported::New()),
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::Supported::New()),
             crosapi::mojom::TelemetryExtensionSupported::New());
 }
 
 TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetryExtensionUnsupportedReasonPtr) {
   EXPECT_EQ(
-      ConvertEventPtr(
+      ConvertStructPtr(
           cros_healthd::mojom::UnsupportedReason::NewUnmappedUnionField(9)),
       crosapi::mojom::TelemetryExtensionUnsupportedReason::
           NewUnmappedUnionField(9));
@@ -187,7 +187,7 @@ TEST(TelemetryEventServiceConvertersTest,
   input->reason = cros_healthd::mojom::UnsupportedReason::NewUnmappedUnionField(
       kUnmappedUnionField);
 
-  auto result = ConvertEventPtr(std::move(input));
+  auto result = ConvertStructPtr(std::move(input));
 
   ASSERT_TRUE(result);
   EXPECT_EQ(result->debug_message, kDebugMsg);
@@ -201,14 +201,15 @@ TEST(TelemetryEventServiceConvertersTest,
   constexpr char kDebugMsg[] = "Test";
   constexpr uint8_t kUnmappedUnionField = 4;
 
-  EXPECT_EQ(ConvertEventPtr(cros_healthd::mojom::SupportStatus::NewSupported(
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::SupportStatus::NewSupported(
                 cros_healthd::mojom::Supported::New())),
             crosapi::mojom::TelemetryExtensionSupportStatus::NewSupported(
                 crosapi::mojom::TelemetryExtensionSupported::New()));
 
   EXPECT_EQ(
-      ConvertEventPtr(cros_healthd::mojom::SupportStatus::NewUnmappedUnionField(
-          kUnmappedUnionField)),
+      ConvertStructPtr(
+          cros_healthd::mojom::SupportStatus::NewUnmappedUnionField(
+              kUnmappedUnionField)),
       crosapi::mojom::TelemetryExtensionSupportStatus::NewUnmappedUnionField(
           kUnmappedUnionField));
 
@@ -219,7 +220,7 @@ TEST(TelemetryEventServiceConvertersTest,
           kUnmappedUnionField);
 
   auto unsupported_result =
-      ConvertEventPtr(cros_healthd::mojom::SupportStatus::NewUnsupported(
+      ConvertStructPtr(cros_healthd::mojom::SupportStatus::NewUnsupported(
           std::move(unsupported)));
 
   ASSERT_TRUE(unsupported_result->is_unsupported());
@@ -232,7 +233,7 @@ TEST(TelemetryEventServiceConvertersTest,
   exception->reason = cros_healthd::mojom::Exception::Reason::kUnexpected;
   exception->debug_message = kDebugMsg;
 
-  auto exception_result = ConvertEventPtr(
+  auto exception_result = ConvertStructPtr(
       cros_healthd::mojom::SupportStatus::NewException(std::move(exception)));
 
   ASSERT_TRUE(exception_result->is_exception());
@@ -248,7 +249,7 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventInfoPtr) {
   auto input = cros_healthd::mojom::EventInfo::NewAudioJackEventInfo(
       std::move(audio_jack_info));
 
-  EXPECT_EQ(ConvertEventPtr(std::move(input)),
+  EXPECT_EQ(ConvertStructPtr(std::move(input)),
             crosapi::mojom::TelemetryEventInfo::NewAudioJackEventInfo(
                 crosapi::mojom::TelemetryAudioJackEventInfo::New(
                     crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd)));
@@ -257,7 +258,7 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventInfoPtr) {
   auto illegal_input = cros_healthd::mojom::EventInfo::NewThunderboltEventInfo(
       std::move(illegal_info));
 
-  EXPECT_TRUE(ConvertEventPtr(std::move(illegal_input)).is_null());
+  EXPECT_TRUE(ConvertStructPtr(std::move(illegal_input)).is_null());
 }
 
 }  // namespace ash::converters

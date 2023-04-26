@@ -73,14 +73,15 @@ void TelemetryEventServiceAsh::IsEventSupported(
     IsEventSupportedCallback callback) {
   cros_healthd::ServiceConnection::GetInstance()
       ->GetEventService()
-      ->IsEventSupported(converters::Convert(category),
-                         base::BindOnce(
-                             [](IsEventSupportedCallback callback,
-                                cros_healthd::mojom::SupportStatusPtr ptr) {
-                               std::move(callback).Run(
-                                   converters::ConvertEventPtr(std::move(ptr)));
-                             },
-                             std::move(callback)));
+      ->IsEventSupported(
+          converters::Convert(category),
+          base::BindOnce(
+              [](IsEventSupportedCallback callback,
+                 cros_healthd::mojom::SupportStatusPtr ptr) {
+                std::move(callback).Run(
+                    converters::ConvertStructPtr(std::move(ptr)));
+              },
+              std::move(callback)));
 }
 
 void TelemetryEventServiceAsh::OnConnectionClosed(

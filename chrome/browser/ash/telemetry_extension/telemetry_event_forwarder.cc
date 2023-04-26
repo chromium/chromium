@@ -44,7 +44,7 @@ CrosHealthdEventForwarder::~CrosHealthdEventForwarder() = default;
 
 void CrosHealthdEventForwarder::OnEvent(
     cros_healthd::mojom::EventInfoPtr info) {
-  crosapi_observer_->OnEvent(converters::ConvertEventPtr(std::move(info)));
+  crosapi_observer_->OnEvent(converters::ConvertStructPtr(std::move(info)));
 }
 
 void CrosHealthdEventForwarder::OnCrosHealthdDisconnect(

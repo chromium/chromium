@@ -85,7 +85,7 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertAudioJackEventInfo) {
       crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::kHeadphone;
 
   auto result =
-      ConvertEventPtr<api::os_events::AudioJackEventInfo>(std::move(input));
+      ConvertStructPtr<api::os_events::AudioJackEventInfo>(std::move(input));
 
   EXPECT_EQ(result.event, api::os_events::AudioJackEvent::kConnected);
   EXPECT_EQ(result.device_type,
@@ -96,7 +96,8 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertLidEventInfo) {
   auto input = crosapi::mojom::TelemetryLidEventInfo::New();
   input->state = crosapi::mojom::TelemetryLidEventInfo::State::kOpened;
 
-  auto result = ConvertEventPtr<api::os_events::LidEventInfo>(std::move(input));
+  auto result =
+      ConvertStructPtr<api::os_events::LidEventInfo>(std::move(input));
 
   EXPECT_EQ(result.event, api::os_events::LidEvent::kOpened);
 }
@@ -111,7 +112,7 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertUsbEventInfo) {
   input->pid = 2;
   input->categories = categories;
 
-  auto result = ConvertEventPtr<api::os_events::UsbEventInfo>(std::move(input));
+  auto result = ConvertStructPtr<api::os_events::UsbEventInfo>(std::move(input));
 
   EXPECT_EQ(result.event, api::os_events::UsbEvent::kConnected);
   EXPECT_EQ(result.vendor, "test_vendor");

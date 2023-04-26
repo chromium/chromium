@@ -65,7 +65,7 @@ cros_healthd::mojom::EventCategoryEnum Convert(
     crosapi::mojom::TelemetryEventCategoryEnum input);
 
 template <class InputT>
-auto ConvertEventPtr(InputT input) {
+auto ConvertStructPtr(InputT input) {
   return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
                             : nullptr;
 }

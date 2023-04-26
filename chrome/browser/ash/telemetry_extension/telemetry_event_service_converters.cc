@@ -37,15 +37,15 @@ crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
         kAudioJackEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewAudioJackEventInfo(
-          ConvertEventPtr(std::move(input->get_audio_jack_event_info())));
+          ConvertStructPtr(std::move(input->get_audio_jack_event_info())));
     case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
         kLidEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewLidEventInfo(
-          ConvertEventPtr(std::move(input->get_lid_event_info())));
+          ConvertStructPtr(std::move(input->get_lid_event_info())));
     case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
         kUsbEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewUsbEventInfo(
-          ConvertEventPtr(std::move(input->get_usb_event_info())));
+          ConvertStructPtr(std::move(input->get_usb_event_info())));
     default:
       LOG(WARNING) << "Got event for unsupported category";
       return nullptr;
@@ -76,7 +76,7 @@ crosapi::mojom::TelemetryExtensionUnsupportedReasonPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryExtensionUnsupportedPtr UncheckedConvertPtr(
     cros_healthd::mojom::UnsupportedPtr input) {
   return crosapi::mojom::TelemetryExtensionUnsupported::New(
-      input->debug_message, ConvertEventPtr(std::move(input->reason)));
+      input->debug_message, ConvertStructPtr(std::move(input->reason)));
 }
 
 crosapi::mojom::TelemetryExtensionSupportStatusPtr UncheckedConvertPtr(
@@ -89,15 +89,15 @@ crosapi::mojom::TelemetryExtensionSupportStatusPtr UncheckedConvertPtr(
     case cros_healthd::mojom::internal::SupportStatus_Data::SupportStatus_Tag::
         kException:
       return crosapi::mojom::TelemetryExtensionSupportStatus::NewException(
-          ConvertEventPtr(std::move(input->get_exception())));
+          ConvertStructPtr(std::move(input->get_exception())));
     case cros_healthd::mojom::internal::SupportStatus_Data::SupportStatus_Tag::
         kSupported:
       return crosapi::mojom::TelemetryExtensionSupportStatus::NewSupported(
-          ConvertEventPtr(std::move(input->get_supported())));
+          ConvertStructPtr(std::move(input->get_supported())));
     case cros_healthd::mojom::internal::SupportStatus_Data::SupportStatus_Tag::
         kUnsupported:
       return crosapi::mojom::TelemetryExtensionSupportStatus::NewUnsupported(
-          ConvertEventPtr(std::move(input->get_unsupported())));
+          ConvertStructPtr(std::move(input->get_unsupported())));
   }
 }
 
