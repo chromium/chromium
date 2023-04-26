@@ -58,7 +58,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -102,6 +101,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/startup/browser_params_proxy.h"
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 #endif
 
 namespace {
@@ -208,7 +211,9 @@ void StartupBrowserCreatorImpl::Launch(
         command_line_->GetSwitchValueASCII(switches::kInstallChromeApp));
   }
 
-  web_app::MaybeInstallAppFromCommandLine(*command_line_, *profile);
+#if !BUILDFLAG(IS_CHROMEOS)
+  web_app::MaybeInstallIwaFromCommandLine(*command_line_, *profile);
+#endif
 
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
   if (process_startup == chrome::startup::IsProcessStartup::kYes) {

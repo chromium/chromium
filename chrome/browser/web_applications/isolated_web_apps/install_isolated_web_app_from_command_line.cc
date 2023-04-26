@@ -157,7 +157,31 @@ void IsolatedWebAppCommandLineInstallManager::SetSubsystems(
   command_scheduler_ = command_scheduler;
 }
 
-void IsolatedWebAppCommandLineInstallManager::Start() {}
+void IsolatedWebAppCommandLineInstallManager::Start() {
+#if BUILDFLAG(IS_CHROMEOS)
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  if (!HasIwaInstallSwitch(command_line)) {
+    return;
+  }
+
+  if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+    ReportInstallationResult(base::unexpected(
+        "Unable to install IWA due to browser shutting down."));
+    return;
+  }
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::ISOLATED_WEB_APP_INSTALL,
+      KeepAliveRestartOption::DISABLED);
+  std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive;
+  if (!profile_->IsOffTheRecord()) {
+    optional_profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+        &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppInstall);
+  }
+
+  InstallFromCommandLine(command_line, std::move(keep_alive),
+                         std::move(optional_profile_keep_alive));
+#endif
+}
 
 void IsolatedWebAppCommandLineInstallManager::Shutdown() {
   // Avoid dangling pointer error on destruction of the `WebAppProvider` by
@@ -255,7 +279,7 @@ void IsolatedWebAppCommandLineInstallManager::ReportInstallationResult(
   on_report_installation_result_.Run(std::move(result));
 }
 
-void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
+void MaybeInstallIwaFromCommandLine(const base::CommandLine& command_line,
                                     Profile& profile) {
   if (!HasIwaInstallSwitch(command_line)) {
     // Early-exit for better performance when none of the IWA-specific command

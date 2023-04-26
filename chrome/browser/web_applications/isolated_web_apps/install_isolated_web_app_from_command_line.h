@@ -38,6 +38,15 @@ void GetIsolatedWebAppLocationFromCommandLine(
 //
 // The `InstallFromCommandLine` method can be used to imperatively parse the
 // provided command line and install an IWA if specified.
+//
+// On ChromeOS only, the command line will be parsed whenever a new manager is
+// started, which occurs on `Profile` initialization. This is done this way
+// because the browser does not go through the "normal" startup flow on
+// ChromeOS, and has different startup behaviors depending on whether or not Ash
+// or Lacros is used.
+//
+// TODO(cmfcmf): Revisit this behavior once using Ash instead of Lacros is no
+// longer possible.
 class IsolatedWebAppCommandLineInstallManager {
  public:
   explicit IsolatedWebAppCommandLineInstallManager(Profile& profile);
@@ -100,7 +109,7 @@ class IsolatedWebAppCommandLineInstallManager {
 // - missing command line parameters
 // - missing `WebAppProvider`
 // - browser shutting down
-void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line_,
+void MaybeInstallIwaFromCommandLine(const base::CommandLine& command_line_,
                                     Profile& profile);
 
 }  // namespace web_app
