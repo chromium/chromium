@@ -97,7 +97,9 @@ class H264DPB : public std::map<uint64_t, H264SliceMetadata> {
   // Removes long term reference picture marking from |H264SliceMetadata|
   // objects that have a long term frame index greater than index.
   void UnmarkLongTermPicsGreaterThanFrameIndex(const int index);
-
+  // Returns a set of indices on the CAPTURE queue which are
+  // currently in use and cannot be refreshed.
+  std::set<int> GetHeldCaptureIds() const;
   // Maximum number of elements in the DPB. This is utilized by the
   // decoder for updating elements in the DPB.
   size_t max_dpb_size_ = -1;

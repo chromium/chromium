@@ -931,13 +931,16 @@ H264Decoder::~H264Decoder() = default;
 
 std::set<uint32_t> H264Decoder::GetReusableReferenceSlots(
     const MmappedBuffer& buffer,
-    std::set<uint32_t> queued_buffer_indices) {
+    std::set<uint32_t> queued_buffer_ids) {
   std::set<uint32_t> reusable_buffer_slots = {};
+  const std::set<int> dpb_ids = dpb_.GetHeldCaptureIds();
   for (size_t i = 0; i < CAPTURE_queue_->num_buffers(); i++) {
     // Check that index is not currently queued in the CAPTURE queue and
     // that it is not the same buffer index previously written to.
-    if (!queued_buffer_indices.count(i) && i != buffer.buffer_id()) {
-      reusable_buffer_slots.insert(i);
+    if (!queued_buffer_ids.count(i) && i != buffer.buffer_id()) {
+      if (dpb_ids.find(i) == dpb_ids.end()) {
+        reusable_buffer_slots.insert(i);
+      }
     }
   }
   return reusable_buffer_slots;

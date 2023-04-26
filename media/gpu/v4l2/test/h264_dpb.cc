@@ -135,5 +135,16 @@ void H264DPB::UnmarkLongTermPicsGreaterThanFrameIndex(const int index) {
   }
 }
 
+std::set<int> H264DPB::GetHeldCaptureIds() const {
+  std::set<int> dpb_ids;
+  for (auto& i : *this) {
+    if (i.second.ref || !i.second.outputted) {
+      dpb_ids.insert(i.second.capture_queue_buffer_id);
+    }
+  }
+
+  return dpb_ids;
+}
+
 }  // namespace v4l2_test
 }  // namespace media
