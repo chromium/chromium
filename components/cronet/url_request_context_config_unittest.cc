@@ -218,7 +218,6 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   EXPECT_FALSE(quic_params->migrate_sessions_early_v2);
   EXPECT_FALSE(quic_params->migrate_idle_sessions);
   EXPECT_FALSE(quic_params->retry_on_alternate_network_before_handshake);
-  EXPECT_FALSE(quic_params->race_stale_dns_on_connection);
   EXPECT_TRUE(quic_params->allow_port_migration);
   EXPECT_FALSE(quic_params->disable_tls_zero_rtt);
   EXPECT_TRUE(quic_params->retry_without_alt_svc_on_quic_errors);
@@ -803,56 +802,6 @@ TEST(URLRequestContextConfigTest, SetQuicConnectionMigrationV2Options) {
       4, quic_params->max_migrations_to_non_default_network_on_path_degrading);
   EXPECT_EQ(net::DefaultSupportedQuicVersions(),
             quic_params->supported_versions);
-}
-
-TEST(URLRequestContextConfigTest, SetQuicStaleDNSracing) {
-  base::test::TaskEnvironment task_environment_(
-      base::test::TaskEnvironment::MainThreadType::IO);
-
-  std::unique_ptr<URLRequestContextConfig> config =
-      URLRequestContextConfig::CreateURLRequestContextConfig(
-          // Enable QUIC.
-          true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
-          // Enable SPDY.
-          true,
-          // Enable Brotli.
-          false,
-          // Type of http cache.
-          URLRequestContextConfig::HttpCacheType::DISK,
-          // Max size of http cache in bytes.
-          1024000,
-          // Disable caching for HTTP responses. Other information may be stored
-          // in the cache.
-          false,
-          // Storage path for http cache and cookie storage.
-          "/data/data/org.chromium.net/app_cronet_test/test_storage",
-          // Accept-Language request header field.
-          "foreign-language",
-          // User-Agent request header field.
-          "fake agent",
-          // JSON encoded experimental options.
-          "{\"QUIC\":{\"race_stale_dns_on_connection\":true}}",
-          // MockCertVerifier to use for testing purposes.
-          std::unique_ptr<net::CertVerifier>(),
-          // Enable network quality estimator.
-          false,
-          // Enable Public Key Pinning bypass for local trust anchors.
-          true,
-          // Optional network thread priority.
-          absl::optional<double>());
-
-  net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
-  // Set a ProxyConfigService to avoid DCHECK failure when building.
-  builder.set_proxy_config_service(
-      std::make_unique<net::ProxyConfigServiceFixed>(
-          net::ProxyConfigWithAnnotation::CreateDirect()));
-  std::unique_ptr<net::URLRequestContext> context(builder.Build());
-  const net::QuicParams* quic_params = context->quic_context()->params();
-
-  EXPECT_TRUE(quic_params->race_stale_dns_on_connection);
 }
 
 TEST(URLRequestContextConfigTest, SetQuicAllowPortMigration) {

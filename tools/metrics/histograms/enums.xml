@@ -18445,18 +18445,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Aborted"/>
 </enum>
 
-<enum name="ConnectionStateAfterDNS">
-  <int value="0" label="Fresh DNS has failed, close the whole connection."/>
-  <int value="1" label="Resolved IP can be pooled."/>
-  <int value="2"
-      label="Stale connection is waiting for handshake and dns matches."/>
-  <int value="3"
-      label="Stale connection is waiting for handshake but dns doesn't match."/>
-  <int value="4" label="Stale connection finishes handshake and dns matches."/>
-  <int value="5"
-      label="Stale connection finishes handshake but dns doesn't match."/>
-</enum>
-
 <enum name="ConnectionStatus">
   <int value="0" label="Offline"/>
   <int value="1" label="Connected"/>

@@ -116,7 +116,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   params.allow_server_migration = data_provider.ConsumeBool();
   params.estimate_initial_rtt = data_provider.ConsumeBool();
   params.enable_socket_recv_optimization = data_provider.ConsumeBool();
-  params.race_stale_dns_on_connection = data_provider.ConsumeBool();
 
   env->crypto_client_stream_factory.AddProofVerifyDetails(&env->verify_details);
 

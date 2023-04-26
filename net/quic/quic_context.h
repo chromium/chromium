@@ -177,9 +177,6 @@ struct NET_EXPORT QuicParams {
   // If true, allows QUIC to use alternative services with a different
   // hostname from the origin.
   bool allow_remote_alt_svc = true;
-  // If true, the quic stream factory may race connection from stale dns
-  // result with the original dns resolution
-  bool race_stale_dns_on_connection = false;
   // If true, estimate the initial RTT for QUIC connections based on network.
   bool estimate_initial_rtt = false;
   // The initial rtt that will be used in crypto handshake if no cached

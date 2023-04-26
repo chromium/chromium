@@ -86,7 +86,6 @@ const char kQuicUserAgentId[] = "user_agent_id";
 const char kQuicMigrateSessionsEarlyV2[] = "migrate_sessions_early_v2";
 const char kQuicRetryOnAlternateNetworkBeforeHandshake[] =
     "retry_on_alternate_network_before_handshake";
-const char kQuicRaceStaleDNSOnConnection[] = "race_stale_dns_on_connection";
 const char kQuicHostWhitelist[] = "host_whitelist";
 const char kQuicEnableSocketRecvOptimization[] =
     "enable_socket_recv_optimization";
@@ -576,10 +575,6 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
           quic_args.FindBool(kQuicRetryOnAlternateNetworkBeforeHandshake)
               .value_or(
                   quic_params->retry_on_alternate_network_before_handshake);
-
-      quic_params->race_stale_dns_on_connection =
-          quic_args.FindBool(kQuicRaceStaleDNSOnConnection)
-              .value_or(quic_params->race_stale_dns_on_connection);
 
       quic_params->allow_port_migration =
           quic_args.FindBool(kAllowPortMigration)

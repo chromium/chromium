@@ -3232,18 +3232,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.ConnectionStateAfterDNS"
-    enum="ConnectionStateAfterDNS" expires_after="2024-04-03">
-  <owner>renjietang@chromium.org</owner>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Logs the state of the connection from stale host when fresh dns resolution
-    is completed. This histogram is only valid when race_stale_dns_on_connection
-    experiment is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicSession.ConnectionTypeFromPeer" enum="AddressFamily"
     expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>
@@ -3361,17 +3349,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Triggered any time Finch configures an obsolete QUIC version. Only recorded
     when obsolete versions are not allowed (which is the default).
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.FreshDnsResolutionTime" units="ms"
-    expires_after="2023-09-17">
-  <owner>renjietang@chromium.org</owner>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The time for a fresh DNS resolution from DoResolveHost to having a fresh DNS
-    result.
   </summary>
 </histogram>
 
@@ -4215,13 +4192,6 @@ chromium-metrics-reviews@google.com.
     The time a QUIC connection from invalid stale dns result takes to do Crypto
     handshake. This starts on DoConnect and ends when the connection finishes.
   </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.StaleHostRacing" enum="Boolean"
-    expires_after="2024-04-03">
-  <owner>renjietang@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>True if the stale host is used in racing connection.</summary>
 </histogram>
 
 <histogram name="Net.QuicSession.StatelessResetAfterProbingCancelled"
