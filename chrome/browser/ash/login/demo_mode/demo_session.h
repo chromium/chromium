@@ -121,9 +121,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // StartIfInDemoMode() or PreloadOfflineResourcesIfInDemoMode()).
   static DemoSession* Get();
 
-  // Returns an additional comma-separated language list for demo mode.
-  static std::string GetAdditionalLanguageList();
-
   // Returns the id of the screensaver app based on the board name.
   static std::string GetScreensaverAppId();
 

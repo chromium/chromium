@@ -88,9 +88,6 @@ constexpr char kPhotosPath[] = "media/photos";
 // contains splash screen images.
 constexpr char kSplashScreensPath[] = "media/splash_screens";
 
-// Prefix for the private language tag used to indicate the device's country.
-constexpr char kDemoModeCountryPrivateLanguageTagPrefix[] = "x-dm-country-";
-
 // Returns the list of apps normally pinned by Demo Mode policy that shouldn't
 // be pinned if the device is offline.
 std::vector<std::string> GetIgnorePinPolicyApps() {
@@ -311,13 +308,6 @@ void DemoSession::ShutDownIfInitialized() {
 // static
 DemoSession* DemoSession::Get() {
   return g_demo_session;
-}
-
-// static
-std::string DemoSession::GetAdditionalLanguageList() {
-  return kDemoModeCountryPrivateLanguageTagPrefix +
-         base::ToUpperASCII(g_browser_process->local_state()->GetString(
-             prefs::kDemoModeCountry));
 }
 
 // static

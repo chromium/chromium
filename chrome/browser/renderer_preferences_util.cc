@@ -95,12 +95,6 @@ std::string GetLanguageListForProfile(Profile* profile,
     // In incognito mode return only the first language.
     return language::GetFirstLanguage(language_list);
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS, if in demo mode, add the demo mode private language list.
-  if (ash::DemoSession::IsDeviceInDemoMode()) {
-    return language_list + "," + ash::DemoSession::GetAdditionalLanguageList();
-  }
-#endif
   return language_list;
 }
 
