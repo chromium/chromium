@@ -10,6 +10,7 @@ import "url/mojom/url.mojom";
 // TODO(b/274618365): Link documentation for server side counterpart that must
 // be kept in sync.
 enum MethodType {
+  // Methods used in renderer -> browser communication.
   // Method corresponding to `CompanionPageHandler.OnPromoAction`.
   kOnPromoAction = 1,
 
@@ -31,6 +32,13 @@ enum MethodType {
 
   // Method called when cq candidates are available.
   kOnCqCandidatesAvailable = 7,
+
+  // Methods used in browser -> renderer communication.
+  // Method corresponding to `CompanionPage.UpdateCompanionPage`.
+  kUpdateCompanionPage = 31,
+
+  // Method corresponding to `CompanionPage.OnCqFindTextResultsAvailable`.
+  kOnCqFindTextResultsAvailable = 32,
 };
 
 // Types of promos shown in the companion UI.

@@ -75,8 +75,10 @@ function initialize() {
       (companionUpdateProto: string) => {
         const companionOrigin =
             new URL(loadTimeData.getString('companion_origin')).origin;
-        const message =
-            {[ParamType.COMPANION_UPDATE_PARAMS]: companionUpdateProto};
+        const message = {
+          [ParamType.METHOD_TYPE]: MethodType.kUpdateCompanionPage,
+          [ParamType.COMPANION_UPDATE_PARAMS]: companionUpdateProto,
+        };
 
         const frame = document.body.querySelector('iframe');
         assert(frame);
@@ -139,6 +141,7 @@ function initialize() {
         const companionOrigin =
             new URL(loadTimeData.getString('companion_origin')).origin;
         const message = {
+          [ParamType.METHOD_TYPE]: MethodType.kOnCqFindTextResultsAvailable,
           [ParamType.CQ_TEXT_DIRECTIVES]: textDirectives,
           [ParamType.CQ_TEXT_FIND_RESULTS]: results,
         };
