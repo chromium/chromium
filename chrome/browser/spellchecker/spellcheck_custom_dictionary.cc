@@ -420,7 +420,6 @@ SpellcheckCustomDictionary::LoadFileResult::~LoadFileResult() {}
 std::unique_ptr<SpellcheckCustomDictionary::LoadFileResult>
 SpellcheckCustomDictionary::LoadDictionaryFile(const base::FilePath& path) {
   std::unique_ptr<LoadFileResult> result = LoadDictionaryFileReliably(path);
-  SpellCheckHostMetrics::RecordCustomWordCountStats(result->words.size());
   return result;
 }
 

@@ -5542,7 +5542,9 @@ chromium-metrics-reviews@google.com.
       label="This variation counts the number of locales that are not
              supported by either Hunspell or the OS spell checker."/>
   <affected-histogram name="Spellcheck.Windows.ChromeLocalesSupport"/>
+  <affected-histogram name="Spellcheck.Windows.ChromeLocalesSupport2"/>
   <affected-histogram name="Spellcheck.Windows.SpellcheckLocalesSupport"/>
+  <affected-histogram name="Spellcheck.Windows.SpellcheckLocalesSupport2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Spellcheck_Windows_SpellcheckType" separator=".">

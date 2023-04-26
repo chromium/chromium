@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_hunspell_dictionary.h"
 #include "components/language/core/browser/pref_names.h"
@@ -47,6 +48,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -62,6 +64,21 @@ namespace {
 SpellcheckService::SpellCheckerBinder& GetSpellCheckerBinderOverride() {
   static base::NoDestructor<SpellcheckService::SpellCheckerBinder> binder;
   return *binder;
+}
+
+// Only record spelling-configuration metrics for profiles in which the user
+// can configure spelling.
+bool RecordSpellingConfigurationMetrics(content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS creates various unusual profiles (login, lock screen...) which
+  // pass the IsRegularProfile() test above yet for which users cannot
+  // configure spelling.
+  if (!ash::ProfileHelper::IsUserProfile(profile)) {
+    return false;
+  }
+#endif
+  return profile->IsRegularProfile();
 }
 
 }  // namespace
@@ -371,12 +388,19 @@ void SpellcheckService::EnableFirstUserLanguageForSpellcheck(
 
 void SpellcheckService::StartRecordingMetrics(bool spellcheck_enabled) {
   metrics_ = std::make_unique<SpellCheckHostMetrics>();
-  metrics_->RecordEnabledStats(spellcheck_enabled);
+  auto record_configuration_metrics =
+      RecordSpellingConfigurationMetrics(context_);
+  if (record_configuration_metrics) {
+    metrics_->RecordEnabledStats(spellcheck_enabled);
+  }
+
   OnUseSpellingServiceChanged();
 
 #if BUILDFLAG(IS_WIN)
-  RecordChromeLocalesStats();
-  RecordSpellcheckLocalesStats();
+  if (record_configuration_metrics) {
+    RecordChromeLocalesStats();
+    RecordSpellcheckLocalesStats();
+  }
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -472,7 +496,9 @@ void SpellcheckService::LoadDictionaries() {
   }
 
 #if BUILDFLAG(IS_WIN)
-  RecordSpellcheckLocalesStats();
+  if (RecordSpellingConfigurationMetrics(context_)) {
+    RecordSpellcheckLocalesStats();
+  }
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   if (base::FeatureList::IsEnabled(
@@ -841,8 +867,9 @@ void SpellcheckService::OnSpellCheckDictionariesChanged() {
 void SpellcheckService::OnUseSpellingServiceChanged() {
   bool enabled = pref_change_registrar_.prefs()->GetBoolean(
       spellcheck::prefs::kSpellCheckUseSpellingService);
-  if (metrics_)
+  if (metrics_ && RecordSpellingConfigurationMetrics(context_)) {
     metrics_->RecordSpellingServiceStats(enabled);
+  }
 }
 
 void SpellcheckService::OnAcceptLanguagesChanged() {
@@ -865,7 +892,9 @@ void SpellcheckService::OnAcceptLanguagesChanged() {
   dictionaries_pref.SetValue(filtered_dictionaries);
 
 #if BUILDFLAG(IS_WIN)
-  RecordChromeLocalesStats();
+  if (RecordSpellingConfigurationMetrics(context_)) {
+    RecordChromeLocalesStats();
+  }
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }

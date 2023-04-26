@@ -245,7 +245,6 @@ void SpellcheckHunspellDictionary::OnSimpleLoaderComplete(
 #if !BUILDFLAG(IS_ANDROID)
   // To prevent corrupted dictionary data from causing a renderer crash, scan
   // the dictionary data and verify it is sane before save it to a file.
-  // TODO(rlp): Adding metrics to RecordDictionaryCorruptionStats
   if (!hunspell::BDict::Verify(data->data(), data->size())) {
     // Let PostTaskAndReply caller send to InformListenersOfInitialization
     // through SaveDictionaryDataComplete().

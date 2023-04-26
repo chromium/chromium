@@ -12053,12 +12053,30 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SpellCheck.Enabled" enum="BooleanEnabled"
     expires_after="2023-09-09">
+  <obsolete>
+    Logged on profile open, including for profiles that do not use this setting
+    (such as &quot;system&quot; profiles) and for profiles that do not allow the
+    profile-owner to to configure this setting (such as &quot;guest&quot;
+    profiles). When logged in such cases, reported the default value. Replaced
+    in M-114 with the histogram SpellCheck.Enabled2, which is similar yet only
+    emitted for regular profiles.
+  </obsolete>
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of sessions that started with spellchecking enabled.
 
     Warning: this histogram was expired from M83 to M107; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="SpellCheck.Enabled2" enum="BooleanEnabled"
+    expires_after="2023-09-09">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of sessions that started with spellchecking enabled. Recorded
+    only for regular profiles. (Not recorded on guest profiles for example.)
   </summary>
 </histogram>
 
@@ -12117,12 +12135,32 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SpellCheck.SpellingService.Enabled" enum="BooleanEnabled"
     expires_after="2023-09-09">
+  <obsolete>
+    Logged on profile open, including for profiles that do not use this setting
+    (such as &quot;system&quot; profiles) and for profiles that do not allow the
+    profile-owner to to configure this setting (such as &quot;guest&quot;
+    profiles). When logged in such cases, reported the default value. Replaced
+    in M-114 with the histogram SpellCheck.SpellingService.Enabled2, which is
+    similar yet only emitted for regular profiles.
+  </obsolete>
   <owner>groby@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Whether the user has opted in to asking Google for spelling suggestions.
     Recorded both when spelling is initialized and when the preference is
     changed.
+  </summary>
+</histogram>
+
+<histogram name="SpellCheck.SpellingService.Enabled2" enum="BooleanEnabled"
+    expires_after="2023-09-09">
+  <owner>groby@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether the user has opted in to asking Google for spelling suggestions.
+    Recorded only for regular profiles. (Not recorded on guest profiles for
+    example.) Recorded both when spelling is initialized and when the preference
+    is changed.
   </summary>
 </histogram>
 
@@ -12169,6 +12207,14 @@ should be kept until we remove incident reporting. -->
 
 <histogram base="true" name="Spellcheck.Windows.ChromeLocalesSupport"
     units="locales" expires_after="2023-09-17">
+  <obsolete>
+    Logged on profile open, including for profiles that do not use this setting
+    (such as &quot;system&quot; profiles) and for profiles that do not allow the
+    profile-owner to to configure this setting (such as &quot;guest&quot;
+    profiles). When logged in such cases, reported the default value. Replaced
+    in M-114 with the histogram Spellcheck.Windows.ChromeLocalesSupport2.*,
+    which are similar yet only emitted for regular profiles.
+  </obsolete>
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -12187,13 +12233,60 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram base="true" name="Spellcheck.Windows.ChromeLocalesSupport2"
+    units="locales" expires_after="2023-09-17">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Counts how many languages are added to Chrome by the user but are not
+    supported for spell check (today Chrome only supports a hard-coded list of
+    locales for spell check). Recorded only for regular profiles. (Not recorded
+    on guest profiles for example.)
+
+    This is a measure of the potential impact of adding support for non-Hunspell
+    locales in the spell check settings. This also helps answer the following
+    question: should the Chrome spell check settings raise awareness of Windows
+    language packs and / or link to documentation describing how to install a
+    Windows language pack?
+
+    This is recorded once during spell check initialization, and then once each
+    time the user changes their Chrome languages.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Spellcheck.Windows.SpellcheckLocalesSupport"
+    units="locales" expires_after="2023-09-30">
+  <obsolete>
+    Logged on profile open, including for profiles that do not use this setting
+    (such as &quot;system&quot; profiles) and for profiles that do not allow the
+    profile-owner to to configure this setting (such as &quot;guest&quot;
+    profiles). When logged in such cases, reported the default value. Replaced
+    in M-114 with the histogram Spellcheck.Windows.SpellcheckLocalesSupport2.*,
+    which are similar yet only emitted for regular profiles.
+  </obsolete>
+  <owner>gujen@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Of all the currently enabled spell check languages, counts how many are
+    supported by the different spell checkers (Hunspell and the Windows OS).
+
+    This helps measure the impact and reach of the native spell checker
+    integration.
+
+    This is recorded once during spell check initialization, and then once each
+    time the user changes their enabled spell check languages.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Spellcheck.Windows.SpellcheckLocalesSupport2"
     units="locales" expires_after="2023-09-30">
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Of all the currently enabled spell check languages, counts how many are
     supported by the different spell checkers (Hunspell and the Windows OS).
+    Recorded only for regular profiles. (Not recorded on guest profiles for
+    example.)
 
     This helps measure the impact and reach of the native spell checker
     integration.
