@@ -129,27 +129,18 @@ void AppSearchProviderTestBase::AddExtension(const std::string& id,
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetManifest(
-              extensions::DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", name)
                   .Set("version", "0.1")
-                  .Set("app",
-                       extensions::DictionaryBuilder()
-                           .Set("urls",
-                                extensions::ListBuilder()
-                                    .Append("http://localhost/extensions/"
-                                            "hosted_app/main.html")
-                                    .Build())
-                           .Build())
-                  .Set("launch",
-                       extensions::DictionaryBuilder()
-                           .Set("urls",
-                                extensions::ListBuilder()
-                                    .Append("http://localhost/extensions/"
-                                            "hosted_app/main.html")
-                                    .Build())
-                           .Build())
-                  .Set("display_in_launcher", display_in_launcher)
-                  .Build())
+                  .Set("app", base::Value::Dict().Set(
+                                  "urls", base::Value::List().Append(
+                                              "http://localhost/extensions/"
+                                              "hosted_app/main.html")))
+                  .Set("launch", base::Value::Dict().Set(
+                                     "urls", base::Value::List().Append(
+                                                 "http://localhost/extensions/"
+                                                 "hosted_app/main.html")))
+                  .Set("display_in_launcher", display_in_launcher))
           .SetLocation(location)
           .AddFlags(init_from_value_flags)
           .SetID(id)

@@ -58,12 +58,8 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-using extensions::DictionaryBuilder;
-using extensions::ListBuilder;
 
 namespace lock_screen_apps {
 
@@ -319,34 +315,29 @@ class LockScreenAppManagerImplTest
     std::string version = test_app.version;
     bool supports_lock_screen = test_app.supports_lock_screen;
 
-    base::Value::Dict background =
-        DictionaryBuilder()
-            .Set("scripts", ListBuilder().Append("background.js").Build())
-            .Build();
-    base::Value::List action_handlers =
-        ListBuilder()
-            .Append(DictionaryBuilder()
-                        .Set("action", "new_note")
-                        .Set("enabled_on_lock_screen", supports_lock_screen)
-                        .Build())
-            .Build();
+    base::Value::Dict background = base::Value::Dict().Set(
+        "scripts", base::Value::List().Append("background.js"));
+    base::Value::List action_handlers = base::Value::List().Append(
+        base::Value::Dict()
+            .Set("action", "new_note")
+            .Set("enabled_on_lock_screen", supports_lock_screen));
 
-    DictionaryBuilder manifest_builder;
-    manifest_builder.Set("name", "Note taking app")
-        .Set("version", version)
-        .Set("manifest_version", 2)
-        .Set("app", DictionaryBuilder()
-                        .Set("background", std::move(background))
-                        .Build())
-        .Set("permissions", ListBuilder().Append("lockScreen").Build())
-        .Set("action_handlers", std::move(action_handlers));
+    auto manifest_builder =
+        base::Value::Dict()
+            .Set("name", "Note taking app")
+            .Set("version", version)
+            .Set("manifest_version", 2)
+            .Set("app",
+                 base::Value::Dict().Set("background", std::move(background)))
+            .Set("permissions", base::Value::List().Append("lockScreen"))
+            .Set("action_handlers", std::move(action_handlers));
 
     base::FilePath extension_path =
         GetTestAppSourcePath(appType, profile, id, version);
 
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder()
-            .SetManifest(manifest_builder.Build())
+            .SetManifest(std::move(manifest_builder))
             .SetID(id)
             .SetPath(extension_path)
             .SetLocation(GetAppLocation(appType))

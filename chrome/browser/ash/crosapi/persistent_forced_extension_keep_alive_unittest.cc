@@ -66,12 +66,9 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
   }
 
   void SetInstallForceList(const std::string& extension_id) {
-    base::Value::Dict dict =
-        extensions::DictionaryBuilder()
-            .Set(extension_id, extensions::DictionaryBuilder().Build())
-            .Build();
     profile_->GetPrefs()->Set(extensions::pref_names::kInstallForceList,
-                              base::Value(std::move(dict)));
+                              base::Value(base::Value::Dict().Set(
+                                  extension_id, base::Value::Dict())));
   }
 
   FakeBrowserManager& browser_manager() { return *browser_manager_; }

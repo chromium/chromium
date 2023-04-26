@@ -201,11 +201,10 @@ TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
   TestingProfile* profile = LoginDemoUser();
   scoped_refptr<const extensions::Extension> screensaver_app =
       extensions::ExtensionBuilder()
-          .SetManifest(extensions::DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "Test App")
                            .Set("version", "1.0")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .SetID(DemoSession::GetScreensaverAppId())
           .Build();
   extensions::AppWindow* app_window = new extensions::AppWindow(
@@ -266,11 +265,10 @@ TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
   TestingProfile* profile = LoginDemoUser();
   scoped_refptr<const extensions::Extension> screensaver_app =
       extensions::ExtensionBuilder()
-          .SetManifest(extensions::DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "Test App")
                            .Set("version", "1.0")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .SetID(DemoSession::GetScreensaverAppId())
           .Build();
   extensions::AppWindow* app_window = new extensions::AppWindow(

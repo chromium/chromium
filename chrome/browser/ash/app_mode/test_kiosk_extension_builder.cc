@@ -11,11 +11,8 @@
 #include "base/values.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 
-using extensions::DictionaryBuilder;
 using extensions::ExtensionBuilder;
-using extensions::ListBuilder;
 
 namespace ash {
 
@@ -39,22 +36,18 @@ void TestKioskExtensionBuilder::AddSecondaryExtensionWithEnabledOnLaunch(
 
 scoped_refptr<const extensions::Extension> TestKioskExtensionBuilder::Build()
     const {
-  DictionaryBuilder manifest_builder;
-  manifest_builder.Set("name", "Test kiosk app")
-      .Set("version", version_)
-      .Set("manifest_version", 2);
+  auto manifest_builder = base::Value::Dict()
+                              .Set("name", "Test kiosk app")
+                              .Set("version", version_)
+                              .Set("manifest_version", 2);
 
-  base::Value background = base::Value(
-      DictionaryBuilder()
-          .Set("scripts",
-               base::Value(ListBuilder().Append("background.js").Build()))
-          .Build());
+  base::Value background = base::Value(base::Value::Dict().Set(
+      "scripts", base::Value(base::Value::List().Append("background.js"))));
 
   switch (type_) {
     case extensions::Manifest::TYPE_PLATFORM_APP:
       manifest_builder.Set(
-          "app",
-          DictionaryBuilder().Set("background", std::move(background)).Build());
+          "app", base::Value::Dict().Set("background", std::move(background)));
       break;
     case extensions::Manifest::TYPE_EXTENSION:
       manifest_builder.Set("background", std::move(background));
@@ -71,23 +64,23 @@ scoped_refptr<const extensions::Extension> TestKioskExtensionBuilder::Build()
   manifest_builder.Set("offline_enabled", offline_enabled_);
 
   if (!secondary_extensions_.empty()) {
-    ListBuilder secondary_extension_list_builder;
+    base::Value::List secondary_extension_list_builder;
     for (const auto& secondary_extension : secondary_extensions_) {
-      DictionaryBuilder secondary_extension_builder;
+      base::Value::Dict secondary_extension_builder;
       secondary_extension_builder.Set("id", secondary_extension.id);
       if (secondary_extension.enabled_on_launch.has_value()) {
         secondary_extension_builder.Set(
             "enabled_on_launch", secondary_extension.enabled_on_launch.value());
       }
       secondary_extension_list_builder.Append(
-          secondary_extension_builder.Build());
+          std::move(secondary_extension_builder));
     }
     manifest_builder.Set("kiosk_secondary_apps",
-                         secondary_extension_list_builder.Build());
+                         std::move(secondary_extension_list_builder));
   }
 
   return ExtensionBuilder()
-      .SetManifest(manifest_builder.Build())
+      .SetManifest(std::move(manifest_builder))
       .SetID(extension_id_)
       .Build();
 }

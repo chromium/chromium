@@ -177,35 +177,24 @@ class AppServiceFileTasksTest : public testing::Test {
   void AddChromeApp() {
     extensions::ExtensionBuilder baz_app;
     baz_app.SetManifest(
-        extensions::DictionaryBuilder()
+        base::Value::Dict()
             .Set("name", "Baz")
             .Set("version", "1.0.0")
             .Set("manifest_version", 2)
-            .Set("app",
-                 extensions::DictionaryBuilder()
-                     .Set("background",
-                          extensions::DictionaryBuilder()
-                              .Set("scripts", extensions::ListBuilder()
-                                                  .Append("background.js")
-                                                  .Build())
-                              .Build())
-                     .Build())
-            .Set(
-                "file_handlers",
-                extensions::DictionaryBuilder()
-                    .Set("any", extensions::DictionaryBuilder()
-                                    .Set("extensions", extensions::ListBuilder()
-                                                           .Append("*")
-                                                           .Append("bar")
-                                                           .Build())
-                                    .Build())
-                    .Set("image", extensions::DictionaryBuilder()
-                                      .Set("types", extensions::ListBuilder()
-                                                        .Append("image/*")
-                                                        .Build())
-                                      .Build())
-                    .Build())
-            .Build());
+            .Set("app", base::Value::Dict().Set(
+                            "background",
+                            base::Value::Dict().Set(
+                                "scripts",
+                                base::Value::List().Append("background.js"))))
+            .Set("file_handlers",
+                 base::Value::Dict()
+                     .Set("any",
+                          base::Value::Dict().Set(
+                              "extensions",
+                              base::Value::List().Append("*").Append("bar")))
+                     .Set("image", base::Value::Dict().Set(
+                                       "types", base::Value::List().Append(
+                                                    "image/*")))));
     baz_app.SetID(kChromeAppId);
     auto filters =
         apps_util::CreateIntentFiltersForChromeApp(baz_app.Build().get());
@@ -217,68 +206,49 @@ class AppServiceFileTasksTest : public testing::Test {
   void AddChromeAppWithVerbs() {
     extensions::ExtensionBuilder foo_app;
     foo_app.SetManifest(
-        extensions::DictionaryBuilder()
+        base::Value::Dict()
             .Set("name", "Foo")
             .Set("version", "1.0.0")
             .Set("manifest_version", 2)
-            .Set("app",
-                 extensions::DictionaryBuilder()
-                     .Set("background",
-                          extensions::DictionaryBuilder()
-                              .Set("scripts", extensions::ListBuilder()
-                                                  .Append("background.js")
-                                                  .Build())
-                              .Build())
-                     .Build())
-            .Set(
-                "file_handlers",
-                extensions::DictionaryBuilder()
-                    .Set("any_with_directories",
-                         extensions::DictionaryBuilder()
-                             .Set("include_directories", true)
-                             .Set("types",
-                                  extensions::ListBuilder().Append("*").Build())
-                             .Set("verb", "open_with")
-                             .Build())
-                    .Set("html_handler",
-                         extensions::DictionaryBuilder()
-                             .Set("title", "Html")
-                             .Set("types", extensions::ListBuilder()
-                                               .Append("text/html")
-                                               .Build())
-                             .Set("verb", "open_with")
-                             .Build())
-                    .Set("plain_text",
-                         extensions::DictionaryBuilder()
-                             .Set("title", "Plain")
-                             .Set("types", extensions::ListBuilder()
-                                               .Append("text/plain")
-                                               .Build())
-                             .Build())
-                    .Set("share_plain_text",
-                         extensions::DictionaryBuilder()
-                             .Set("title", "Share Plain")
-                             .Set("types", extensions::ListBuilder()
-                                               .Append("text/plain")
-                                               .Build())
-                             .Set("verb", "share_with")
-                             .Build())
-                    .Set("any_pack", extensions::DictionaryBuilder()
-                                         .Set("types", extensions::ListBuilder()
-                                                           .Append("*")
-                                                           .Build())
-                                         .Set("verb", "pack_with")
-                                         .Build())
-                    .Set("plain_text_add_to",
-                         extensions::DictionaryBuilder()
-                             .Set("title", "Plain")
-                             .Set("types", extensions::ListBuilder()
-                                               .Append("text/plain")
-                                               .Build())
-                             .Set("verb", "add_to")
-                             .Build())
-                    .Build())
-            .Build());
+            .Set("app", base::Value::Dict().Set(
+                            "background",
+                            base::Value::Dict().Set(
+                                "scripts",
+                                base::Value::List().Append("background.js"))))
+            .Set("file_handlers",
+                 base::Value::Dict()
+                     .Set("any_with_directories",
+                          base::Value::Dict()
+                              .Set("include_directories", true)
+                              .Set("types", base::Value::List().Append("*"))
+                              .Set("verb", "open_with"))
+                     .Set("html_handler",
+                          base::Value::Dict()
+                              .Set("title", "Html")
+                              .Set("types",
+                                   base::Value::List().Append("text/html"))
+                              .Set("verb", "open_with"))
+                     .Set("plain_text",
+                          base::Value::Dict()
+                              .Set("title", "Plain")
+                              .Set("types",
+                                   base::Value::List().Append("text/plain")))
+                     .Set("share_plain_text",
+                          base::Value::Dict()
+                              .Set("title", "Share Plain")
+                              .Set("types",
+                                   base::Value::List().Append("text/plain"))
+                              .Set("verb", "share_with"))
+                     .Set("any_pack",
+                          base::Value::Dict()
+                              .Set("types", base::Value::List().Append("*"))
+                              .Set("verb", "pack_with"))
+                     .Set("plain_text_add_to",
+                          base::Value::Dict()
+                              .Set("title", "Plain")
+                              .Set("types",
+                                   base::Value::List().Append("text/plain"))
+                              .Set("verb", "add_to"))));
     foo_app.SetID(kChromeAppWithVerbsId);
     auto filters =
         apps_util::CreateIntentFiltersForChromeApp(foo_app.Build().get());
@@ -291,24 +261,19 @@ class AppServiceFileTasksTest : public testing::Test {
   void AddExtension() {
     extensions::ExtensionBuilder fbh_app;
     fbh_app.SetManifest(
-        extensions::DictionaryBuilder()
+        base::Value::Dict()
             .Set("name", "Fbh")
             .Set("version", "1.0.0")
             .Set("manifest_version", 2)
             .Set("permissions",
-                 extensions::ListBuilder().Append("fileBrowserHandler").Build())
+                 base::Value::List().Append("fileBrowserHandler"))
             .Set("file_browser_handlers",
-                 extensions::ListBuilder()
-                     .Append(extensions::DictionaryBuilder()
-                                 .Set("id", "open")
-                                 .Set("default_title", "open title")
-                                 .Set("file_filters",
-                                      extensions::ListBuilder()
-                                          .Append("filesystem:*.txt")
-                                          .Build())
-                                 .Build())
-                     .Build())
-            .Build());
+                 base::Value::List().Append(
+                     base::Value::Dict()
+                         .Set("id", "open")
+                         .Set("default_title", "open title")
+                         .Set("file_filters", base::Value::List().Append(
+                                                  "filesystem:*.txt")))));
     fbh_app.SetID(kExtensionId);
     auto filters =
         apps_util::CreateIntentFiltersForExtension(fbh_app.Build().get());

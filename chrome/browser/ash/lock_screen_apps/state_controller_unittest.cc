@@ -24,6 +24,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager.h"
@@ -56,7 +57,6 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -68,8 +68,6 @@
 using ash::mojom::CloseLockScreenNoteReason;
 using ash::mojom::LockScreenNoteOrigin;
 using ash::mojom::TrayActionState;
-using extensions::DictionaryBuilder;
-using extensions::ListBuilder;
 using extensions::lock_screen_data::LockScreenItemStorage;
 using lock_screen_apps::FakeLockScreenProfileCreator;
 
@@ -92,23 +90,20 @@ std::unique_ptr<arc::ArcSession> ArcSessionFactory() {
 
 scoped_refptr<const extensions::Extension> CreateTestNoteTakingApp(
     const std::string& app_id) {
-  ListBuilder action_handlers;
-  action_handlers.Append(DictionaryBuilder()
-                             .Set("action", "new_note")
-                             .Set("enabled_on_lock_screen", true)
-                             .Build());
-  DictionaryBuilder background;
-  background.Set("scripts", ListBuilder().Append("background.js").Build());
+  auto action_handlers =
+      base::Value::List().Append(base::Value::Dict()
+                                     .Set("action", "new_note")
+                                     .Set("enabled_on_lock_screen", true));
+  auto background = base::Value::Dict().Set(
+      "scripts", base::Value::List().Append("background.js"));
   return extensions::ExtensionBuilder()
-      .SetManifest(DictionaryBuilder()
+      .SetManifest(base::Value::Dict()
                        .Set("name", "Test App")
                        .Set("version", "1.0")
                        .Set("manifest_version", 2)
-                       .Set("app", DictionaryBuilder()
-                                       .Set("background", background.Build())
-                                       .Build())
-                       .Set("action_handlers", action_handlers.Build())
-                       .Build())
+                       .Set("app", base::Value::Dict().Set(
+                                       "background", std::move(background)))
+                       .Set("action_handlers", std::move(action_handlers)))
       .SetID(app_id)
       .Build();
 }

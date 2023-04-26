@@ -62,14 +62,11 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/switches.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 using ::ash::ProfileHelper;
-using extensions::DictionaryBuilder;
-using extensions::ListBuilder;
 using lock_screen_apps::LockScreenProfileCreator;
 using lock_screen_apps::LockScreenProfileCreatorImpl;
 
@@ -296,30 +293,25 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
 
   // Creates a lock screen enabled note taking app.
   scoped_refptr<const extensions::Extension> CreateTestNoteTakingApp() {
-    base::Value::Dict background =
-        DictionaryBuilder()
-            .Set("scripts", ListBuilder().Append("background.js").Build())
-            .Build();
+    base::Value::Dict background = base::Value::Dict().Set(
+        "scripts", base::Value::List().Append("background.js"));
     base::Value::List action_handlers =
-        ListBuilder()
-            .Append(DictionaryBuilder()
-                        .Set("action", "new_note")
-                        .Set("enabled_on_lock_screen", true)
-                        .Build())
-            .Build();
+        base::Value::List().Append(base::Value::Dict()
+                                       .Set("action", "new_note")
+                                       .Set("enabled_on_lock_screen", true));
 
-    DictionaryBuilder manifest_builder;
-    manifest_builder.Set("name", "Note taking app")
-        .Set("manifest_version", 2)
-        .Set("version", "1.1")
-        .Set("app", DictionaryBuilder()
-                        .Set("background", std::move(background))
-                        .Build())
-        .Set("permissions", ListBuilder().Append("lockScreen").Build())
-        .Set("action_handlers", std::move(action_handlers));
+    auto manifest_builder =
+        base::Value::Dict()
+            .Set("name", "Note taking app")
+            .Set("manifest_version", 2)
+            .Set("version", "1.1")
+            .Set("app",
+                 base::Value::Dict().Set("background", std::move(background)))
+            .Set("permissions", base::Value::List().Append("lockScreen"))
+            .Set("action_handlers", std::move(action_handlers));
 
     return extensions::ExtensionBuilder()
-        .SetManifest(manifest_builder.Build())
+        .SetManifest(std::move(manifest_builder))
         .SetID(crx_file::id_util::GenerateId("test_app"))
         .Build();
   }
