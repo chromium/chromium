@@ -250,6 +250,10 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      EmitTo::kSizeInUmaOnly, nullptr},
     {"iosurface", "IOSurface.DirtyMemory", MetricSize::kLarge,
      "resident_swapped", EmitTo::kSizeInUmaOnly, nullptr},
+    {"ioaccelerator", "IOAccelerator", MetricSize::kLarge, kSize,
+     EmitTo::kSizeInUmaOnly, nullptr},
+    {"ioaccelerator", "IOAccelerator.DirtyMemory", MetricSize::kLarge,
+     "resident_swapped", EmitTo::kSizeInUmaOnly, nullptr},
 #endif
     {"java_heap", "JavaHeap", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetJavaHeap},

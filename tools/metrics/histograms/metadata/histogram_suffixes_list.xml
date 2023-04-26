@@ -4127,6 +4127,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="Extensions.ValueStore"
       label="Only counting memory used by Extension value store database."/>
   <suffix name="GpuMemory" label="Only counting memory allocated for the GPU."/>
+  <suffix name="IOAccelerator" label="Memory used by IOAccelerator, on macOS."/>
+  <suffix name="IOAccelerator.DirtyMemory"
+      label="Memory used by IOAccelerator, on macOS. Only account for dirty
+             (resident and swapped) memory, which is part of private memory
+             footprint."/>
   <suffix name="IOSurface" label="Memory used for IOSurfaces, on macOS."/>
   <suffix name="IOSurface.DirtyMemory"
       label="Memory used for IOSurfaces, on macOS. Only account for dirty
