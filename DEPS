@@ -3935,7 +3935,7 @@ deps = {
        'version': 't_NvwnUKA4rZ6mbhiyG-E4cyDaI0YuNL8IrtJ8CHywgC',
     }],
     'dep_type': 'cipd',
-    'condition': 'checkout_mac',
+    'condition': 'checkout_mac or checkout_ios',
   },
 }
 
