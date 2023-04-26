@@ -145,8 +145,9 @@ constexpr char kTestAppName[] = "test_app_name";
 Browser* FindBrowser(int32_t window_id) {
   for (auto* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
-    if (window->GetProperty(app_restore::kRestoreWindowIdKey) == window_id)
+    if (window->GetProperty(app_restore::kRestoreWindowIdKey) == window_id) {
       return browser;
+    }
   }
   return nullptr;
 }
@@ -159,8 +160,9 @@ aura::Window* FindBrowserWindow(int32_t window_id) {
 std::vector<GURL> GetURLsForBrowserWindow(Browser* browser) {
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   std::vector<GURL> urls;
-  for (int i = 0; i < tab_strip_model->count(); ++i)
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
     urls.push_back(tab_strip_model->GetWebContentsAt(i)->GetVisibleURL());
+  }
   return urls;
 }
 
@@ -300,8 +302,9 @@ void ClickSaveDeskAsTemplateButton(bool wait_for_ui) {
       ash::GetSaveDeskAsTemplateButton();
   DCHECK(save_desk_as_template_button);
   ClickButton(save_desk_as_template_button);
-  if (wait_for_ui)
+  if (wait_for_ui) {
     ash::WaitForSavedDeskUI();
+  }
   // Clicking the save template button selects the newly created template's name
   // field. We can press enter or escape or click to select out of it.
   ash::SendKey(ui::VKEY_RETURN);
@@ -396,8 +399,9 @@ class BrowsersAddedObserver : public BrowserListObserver {
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override {
     --num_browser_adds_left_;
-    if (num_browser_adds_left_ == 0)
+    if (num_browser_adds_left_ == 0) {
       run_loop_.Quit();
+    }
   }
 
   void OnBrowserRemoved(Browser* browser) override {}
@@ -424,8 +428,9 @@ class BrowsersRemovedObserver : public BrowserListObserver {
 
   void OnBrowserRemoved(Browser* browser) override {
     --browser_removes_left_;
-    if (browser_removes_left_ == 0)
+    if (browser_removes_left_ == 0) {
       run_loop_.Quit();
+    }
   }
 
  private:
@@ -541,9 +546,10 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
-    if (!launch_in_browser)
+    if (!launch_in_browser) {
       web_app_info->user_display_mode =
           web_app::mojom::UserDisplayMode::kStandalone;
+    }
     web_app_info->title = u"A Web App";
     const web_app::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
@@ -1804,10 +1810,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   for (auto* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
     const std::u16string title = window->GetTitle();
-    if (title == settings_title)
+    if (title == settings_title) {
       settings_window = window;
-    if (title == help_title)
+    }
+    if (title == help_title) {
       help_window = window;
+    }
   }
   ASSERT_TRUE(settings_window);
   ASSERT_TRUE(help_window);
@@ -2389,8 +2397,9 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
       [kDeskUuid, &first_run](const std::u16string& desk_name) {
         SCOPED_TRACE(desk_name);
 
-        if (!first_run)
+        if (!first_run) {
           ClickExpandedStateTemplatesButton();
+        }
 
         ClickFirstTemplateItem();
         content::RunAllTasksUntilIdle();
@@ -2855,20 +2864,6 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskByInvalidDeskId) {
             DesksClient::DeskActionError::kResourceNotFoundError);
 }
 
-// Tests that floating workspace template can be captured with fixed uuid.
-IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureFloatingWorkspaceTemplateTest) {
-  // Create a new browser and add a few tabs to it.
-  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
-  std::unique_ptr<ash::DeskTemplate> desk_template =
-      CaptureActiveDeskAndSaveTemplate(
-          ash::DeskTemplateType::kFloatingWorkspace);
-  EXPECT_TRUE(desk_template->uuid().is_valid());
-  EXPECT_EQ(
-      desk_template->uuid(),
-      base::Uuid::ParseLowercase(
-          desks_storage::desk_template_util::kFloatingWorkspaceTemplateUuid));
-}
-
 // Tests that floating workspace templates do not count towards template counts
 // for saved desks functionality.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, FloatingWorkspaceOnSavedDesksUI) {
@@ -2878,10 +2873,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, FloatingWorkspaceOnSavedDesksUI) {
       CaptureActiveDeskAndSaveTemplate(
           ash::DeskTemplateType::kFloatingWorkspace);
   EXPECT_TRUE(desk_template->uuid().is_valid());
-  EXPECT_EQ(
-      desk_template->uuid(),
-      base::Uuid::ParseLowercase(
-          desks_storage::desk_template_util::kFloatingWorkspaceTemplateUuid));
+  EXPECT_EQ(desk_template->type(), ash::DeskTemplateType::kFloatingWorkspace);
 
   auto* desk_model = DesksClient::Get()->GetDeskModel();
   ASSERT_EQ(0u, desk_model->GetEntryCount());
@@ -2911,15 +2903,17 @@ class DesksTemplatesClientLacrosTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   void SetUpInProcessBrowserTestFixture() override {
-    if (!ash_starter_.HasLacrosArgument())
+    if (!ash_starter_.HasLacrosArgument()) {
       return;
+    }
 
     ASSERT_TRUE(ash_starter_.PrepareEnvironmentForLacros());
   }
 
   void SetUpOnMainThread() override {
-    if (!ash_starter_.HasLacrosArgument())
+    if (!ash_starter_.HasLacrosArgument()) {
       return;
+    }
 
     // `StartLacros()` will bring up one lacros browser. There will also be one
     // classic browser from `InProcessBrowserTest` that can be accessed with
@@ -2954,12 +2948,14 @@ class DesksTemplatesClientLacrosTest : public InProcessBrowserTest {
     // aura::WindowObserver::
     void OnWindowVisibilityChanged(aura::Window* window,
                                    bool visible) override {
-      if (!visible || !crosapi::browser_util::IsLacrosWindow(window))
+      if (!visible || !crosapi::browser_util::IsLacrosWindow(window)) {
         return;
+      }
 
       windows_.push_back(window);
-      if (windows_.size() < expected_count_)
+      if (windows_.size() < expected_count_) {
         return;
+      }
 
       run_loop_.Quit();
     }
@@ -2982,8 +2978,9 @@ class DesksTemplatesClientLacrosTest : public InProcessBrowserTest {
 
 // Tests launching a template with a browser window.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest, SystemUILaunchBrowser) {
-  if (!ash_starter_.HasLacrosArgument())
+  if (!ash_starter_.HasLacrosArgument()) {
     return;
+  }
 
   ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
 
@@ -3003,8 +3000,9 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest, SystemUILaunchBrowser) {
   ClickFirstTemplateItem();
   aura::Window::Windows launched_windows = waiter.Wait(/*expected_count=*/2u);
   ASSERT_EQ(2u, launched_windows.size());
-  for (auto* window : launched_windows)
+  for (auto* window : launched_windows) {
     EXPECT_TRUE(window->GetProperty(app_restore::kWindowInfoKey));
+  }
 
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();

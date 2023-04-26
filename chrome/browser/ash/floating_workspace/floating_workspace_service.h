@@ -69,6 +69,9 @@ class FloatingWorkspaceService : public KeyedService,
 
   void TryRestoreMostRecentlyUsedSession();
 
+  void CaptureAndUploadActiveDeskForTest(
+      std::unique_ptr<DeskTemplate> desk_template);
+
   // desks_storage::DeskModelObserver overrides:
   void DeskModelLoaded() override {}
   void OnDeskModelDestroying() override;
@@ -128,7 +131,12 @@ class FloatingWorkspaceService : public KeyedService,
   // Callback function that is run after a floating workspace template is
   // captured by `desks_storage::DeskSyncBridge`.
   void OnTemplateCaptured(absl::optional<DesksClient::DeskActionError> error,
-                          std::unique_ptr<DeskTemplate>);
+                          std::unique_ptr<DeskTemplate> desk_template);
+
+  // Upload floating workspace desk template after detecting that it's a
+  // different template. Virtual for testing.
+  virtual void UploadFloatingWorkspaceTemplateToDeskModel(
+      std::unique_ptr<DeskTemplate> desk_template);
 
   void OnTemplateUploaded(
       desks_storage::DeskModel::AddOrUpdateEntryStatus status,
@@ -158,6 +166,10 @@ class FloatingWorkspaceService : public KeyedService,
 
   // Indicate if it is a testing class.
   bool is_testing_ = false;
+
+  // The uuid associated with this device's floating workspace template. This is
+  // populated when we first capture a floating workspace template.
+  absl::optional<base::GUID> floating_workspace_uuid_;
 
   // Weak pointer factory used to provide references to this service.
   base::WeakPtrFactory<FloatingWorkspaceService> weak_pointer_factory_{this};

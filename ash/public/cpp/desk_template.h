@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/app_restore/restore_data.h"
+#include "components/sync_device_info/device_info.h"
 
 namespace aura {
 class Window;
@@ -68,6 +69,7 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   static constexpr char kIncognitoWindowIdentifier[] = "incognito_window";
 
   const base::Uuid& uuid() const { return uuid_; }
+  void set_uuid(base::Uuid uuid) { uuid_ = std::move(uuid); }
   DeskTemplateSource source() const { return source_; }
   base::Time created_time() const { return created_time_; }
 
@@ -98,6 +100,20 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   void set_launch_id(int32_t launch_id) { launch_id_ = launch_id; }
   int32_t launch_id() const { return launch_id_; }
 
+  void set_client_cache_guid(std::string client_cache_guid) {
+    client_cache_guid_ = client_cache_guid;
+  }
+  const std::string& client_cache_guid() const { return client_cache_guid_; }
+
+  const syncer::DeviceInfo::FormFactor& device_form_factor() const {
+    return device_form_factor_;
+  }
+
+  void set_device_form_factor(
+      const syncer::DeviceInfo::FormFactor& device_form_factor) {
+    device_form_factor_ = device_form_factor;
+  }
+
   // Used in cases where copies of a DeskTemplate are needed to be made.
   // This specifically used in the DeskSyncBridge which requires a map
   // of DeskTemplate unique pointers to be valid and needs to pass
@@ -117,7 +133,8 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // Indicates whether this template can be modified by user.
   bool IsModifiable() const { return source_ == DeskTemplateSource::kUser; }
 
-  // Sets `desk_index` as the desk to launch on for all windows in the template.
+  // Sets `desk_index` as the desk to launch on for all windows in the
+  // template.
   void SetDeskIndex(int desk_index);
 
   // Returns `this` in string format. Used for feedback logs.
@@ -127,12 +144,13 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   std::string ToDebugString() const;
 
  private:
-  // Returns a string containing basic information for `this`. It could be used
-  // for `ToString` and `ToDebugString` according to the given `for_debugging`.
+  // Returns a string containing basic information for `this`. It could be
+  // used for `ToString` and `ToDebugString` according to the given
+  // `for_debugging`.
   std::string GetDeskTemplateInfo(bool for_debugging) const;
 
-  const base::Uuid uuid_;  // We utilize the string based base::Uuid to uniquely
-                           // identify the template.
+  base::Uuid uuid_;  // We utilize the string based base::Uuid to uniquely
+                     // identify the template.
 
   // Indicates the source where this desk template originates from.
   const DeskTemplateSource source_;
@@ -152,6 +170,13 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // The id associated with a particular launch of this template. Must be
   // positive when launching.
   int32_t launch_id_ = 0;
+
+  // The device sync id associated with this desk template. This is only set
+  // for templates saved via `DeskSyncBridge`.
+  std::string client_cache_guid_;
+
+  // Form Factor of device this template is from.
+  syncer::DeviceInfo::FormFactor device_form_factor_;
 
   // Contains the app launching and window information that can be used to
   // create a new desk instance with the same set of apps/windows specified in

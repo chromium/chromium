@@ -71,10 +71,8 @@ std::unique_ptr<ash::DeskTemplate> MakeTestFloatingWorkspaceDeskTemplate(
     std::string name) {
   std::unique_ptr<ash::DeskTemplate> desk_template =
       std::make_unique<ash::DeskTemplate>(
-          base::Uuid::ParseCaseInsensitive(
-              "c098bdcf-5803-484b-9bfd-d3a9a4b497ab"),
-          ash::DeskTemplateSource::kUser, name, base::Time::Now(),
-          DeskTemplateType::kFloatingWorkspace);
+          base::Uuid::GenerateRandomV4(), ash::DeskTemplateSource::kUser, name,
+          base::Time::Now(), DeskTemplateType::kFloatingWorkspace);
   std::unique_ptr<app_restore::RestoreData> restore_data =
       CreateRestoreData(std::vector<int>(10, 1));
   desk_template->set_desk_restore_data(std::move(restore_data));
@@ -168,6 +166,9 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
   const DeskTemplate* GetRestoredFloatingWorkspaceTemplate() {
     return restored_floating_workspace_template_;
   }
+  DeskTemplate* GetUploadedFloatingWorkspaceTemplate() {
+    return uploaded_desk_template_.get();
+  }
 
  private:
   sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate() override {
@@ -178,10 +179,15 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
       const DeskTemplate* desk_template) override {
     restored_floating_workspace_template_ = desk_template;
   }
+  void UploadFloatingWorkspaceTemplateToDeskModel(
+      std::unique_ptr<DeskTemplate> desk_template) override {
+    uploaded_desk_template_ = std::move(desk_template);
+  }
 
   const sync_sessions::SyncedSession* restored_session_ = nullptr;
   raw_ptr<const DeskTemplate, ExperimentalAsh>
       restored_floating_workspace_template_ = nullptr;
+  std::unique_ptr<DeskTemplate> uploaded_desk_template_ = nullptr;
   std::unique_ptr<MockOpenTabsUIDelegate> mock_open_tabs_;
 };
 
@@ -462,6 +468,31 @@ TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLaunchTimeout) {
       static_cast<int>(floating_workspace_metrics_util::
                            LaunchTemplateTimeoutType::kPassedWaitPeriod),
       1u);
+}
+
+TEST_F(FloatingWorkspaceServiceTest,
+       UploadTemplateOverridesCorrespondingTemplateForDevice) {
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV2Enabled);
+  const std::string template_name = "floating_workspace_template";
+  std::unique_ptr<DeskTemplate> floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(template_name);
+  const base::GUID device_uuid = floating_workspace_template->uuid();
+  test_floating_workspace_service_v2.CaptureAndUploadActiveDeskForTest(
+      std::move(floating_workspace_template));
+  const std::string template_name2 = "floating_workspace_template2";
+  std::unique_ptr<DeskTemplate> floating_workspace_template2 =
+      MakeTestFloatingWorkspaceDeskTemplate(template_name2);
+  ASSERT_NE(floating_workspace_template2->uuid(), device_uuid);
+  test_floating_workspace_service_v2.CaptureAndUploadActiveDeskForTest(
+      std::move(floating_workspace_template2));
+  ASSERT_NE(
+      test_floating_workspace_service_v2.GetUploadedFloatingWorkspaceTemplate(),
+      nullptr);
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetUploadedFloatingWorkspaceTemplate()
+          ->uuid(),
+      device_uuid);
 }
 
 }  // namespace ash

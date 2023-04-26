@@ -32,6 +32,10 @@ DeskModel* DeskSyncService::GetDeskModel() {
   return bridge_.get();
 }
 
+DeskSyncBridge* DeskSyncService::GetDeskSyncBridge() {
+  return bridge_.get();
+}
+
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 DeskSyncService::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();

@@ -366,6 +366,9 @@ WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecificsWithoutDeskType(
   FillExampleChromeAppWindow(desk->add_apps());
   FillExampleProgressiveWebAppWindow(desk->add_apps());
   FillExampleSystemWebAppWindow(desk->add_apps());
+  specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   return specifics;
 }
 
@@ -380,6 +383,9 @@ WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
       ExampleWorkspaceDeskSpecificsWithoutDeskType(
           uuid, template_name, created_time, number_of_tabs);
   specifics.set_desk_type(desk_type);
+  specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   return specifics;
 }
 
@@ -412,6 +418,9 @@ WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
   FillExampleChromeAppWindow(desk->add_apps());
   FillExampleProgressiveWebAppWindow(desk->add_apps());
   FillExampleSystemWebAppWindow(desk->add_apps());
+  specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   return specifics;
 }
 
@@ -438,6 +447,21 @@ WorkspaceDeskSpecifics CreateWorkspaceDeskWithoutDeskType() {
       /*number_of_tabs=*/2);
 }
 
+WorkspaceDeskSpecifics CreateFloatingWorkspaceTemplateExpectedValue(
+    std::string cache_guid) {
+  WorkspaceDeskSpecifics expected_desk_specifics =
+      ExampleWorkspaceDeskSpecifics(
+          MakeTestUuid(TestUuidId(1)).AsLowercaseString(),
+          base::StringPrintf(kNameFormat, 1), base::Time::Now(),
+          /*number_of_tabs=*/2,
+          SyncDeskType::WorkspaceDeskSpecifics_DeskType_FLOATING_WORKSPACE);
+  expected_desk_specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
+  expected_desk_specifics.set_client_cache_guid(cache_guid);
+  return expected_desk_specifics;
+}
+
 WorkspaceDeskSpecifics CreateBrowserTemplateExpectedValue(
     int template_index,
     const base::Time& created_time) {
@@ -450,6 +474,9 @@ WorkspaceDeskSpecifics CreateBrowserTemplateExpectedValue(
       created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   expected_desk_specifics.set_desk_type(
       SyncDeskType::WorkspaceDeskSpecifics_DeskType_TEMPLATE);
+  expected_desk_specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   Desk* expected_desk = expected_desk_specifics.mutable_desk();
   WorkspaceDeskSpecifics_App* app = expected_desk->add_apps();
   app->set_window_id(kBrowserWindowId);
@@ -476,6 +503,9 @@ WorkspaceDeskSpecifics CreatePwaTemplateExpectedValue(
       created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   expected_desk_specifics.set_desk_type(
       SyncDeskType::WorkspaceDeskSpecifics_DeskType_TEMPLATE);
+  expected_desk_specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   Desk* expected_desk = expected_desk_specifics.mutable_desk();
   WorkspaceDeskSpecifics_App* app = expected_desk->add_apps();
   app->set_window_id(kPwaWindowId);
@@ -504,6 +534,9 @@ WorkspaceDeskSpecifics CreateChromeAppTemplateExpectedValue(
       created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   expected_desk_specifics.set_desk_type(
       SyncDeskType::WorkspaceDeskSpecifics_DeskType_TEMPLATE);
+  expected_desk_specifics.set_device_form_factor(
+      sync_pb::SyncEnums::DeviceFormFactor::
+          SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
   Desk* expected_desk = expected_desk_specifics.mutable_desk();
   WorkspaceDeskSpecifics_App* app = expected_desk->add_apps();
   app->set_window_id(window_id);
@@ -624,8 +657,8 @@ class DeskSyncBridgeTest : public testing::Test {
   }
 
   // Helper method to reduce duplicated code between tests. Wraps the given
-  // specifics objects in an EntityData and EntityChange of type ACTION_ADD, and
-  // returns an EntityChangeList containing them all. Order is maintained.
+  // specifics objects in an EntityData and EntityChange of type ACTION_ADD,
+  // and returns an EntityChangeList containing them all. Order is maintained.
   EntityChangeList EntityAddList(
       const std::vector<WorkspaceDeskSpecifics>& specifics_list) {
     EntityChangeList changes;
@@ -675,8 +708,8 @@ class DeskSyncBridgeTest : public testing::Test {
   }
 
   void AddTwoTemplatesWithDuplicatedNames() {
-    // These two templates will have new UUIDs but with names that collides with
-    // "template 1"
+    // These two templates will have new UUIDs but with names that collides
+    // with "template 1"
     auto desk_template1 =
         desk_template_conversion::FromSyncProto(ExampleWorkspaceDeskSpecifics(
             MakeTestUuid(TestUuidId(8)).AsLowercaseString(), "template 1",
@@ -926,6 +959,21 @@ TEST_F(DeskSyncBridgeTest, TabGroupInfoConversionShouldBeLossless) {
   }
 }
 
+TEST_F(DeskSyncBridgeTest, FloatingWorkspaceConversionShouldBeLossless) {
+  CreateBridge();
+  WorkspaceDeskSpecifics desk_proto =
+      CreateFloatingWorkspaceTemplateExpectedValue("cache_guid");
+  std::unique_ptr<DeskTemplate> desk_template =
+      desk_template_conversion::FromSyncProto(desk_proto);
+  WorkspaceDeskSpecifics converted_desk_proto =
+      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache());
+
+  std::unique_ptr<DeskTemplate> converted_desk_template =
+      desk_template_conversion::FromSyncProto(converted_desk_proto);
+
+  EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
+}
+
 // Tests that URLs are saved properly when converting a DeskTemplate
 // to its Protobuf form.
 TEST_F(DeskSyncBridgeTest, EnsureAshBrowserWindowsSavedProperly) {
@@ -1091,8 +1139,8 @@ TEST_F(DeskSyncBridgeTest, EnsureUnsupportedAppCanBeIgnored) {
           kChromeAppWindowId, desk_test_util::kTestChromeAppId)));
 }
 
-// Tests that the sync bridge appropriately handles explicitly unknown desk type
-// as invalid.
+// Tests that the sync bridge appropriately handles explicitly unknown desk
+// type as invalid.
 TEST_F(DeskSyncBridgeTest, EnsureGracefulHandlingOfUnknownDeskTypes) {
   WorkspaceDeskSpecifics unknown_desk = CreateUnknownDeskType();
   std::unique_ptr<DeskTemplate> desk_template =

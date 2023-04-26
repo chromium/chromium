@@ -22,6 +22,8 @@ void RecordFloatingWorkspaceV2TemplateLaunchFailureType(
                                 type);
 }
 
+// TODO(b/274501763): rename for better clarity since this does not just record
+// for timeout reasons.
 void RecordFloatingWorkspaceV2TemplateLaunchTimeout(
     LaunchTemplateTimeoutType type) {
   base::UmaHistogramEnumeration(kFloatingWorkspaceV2TemplateLaunchTimedOut,

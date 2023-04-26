@@ -32,6 +32,7 @@ class DeskSyncService : public KeyedService {
   ~DeskSyncService() override;
 
   virtual DeskModel* GetDeskModel();
+  virtual DeskSyncBridge* GetDeskSyncBridge();
 
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate();
