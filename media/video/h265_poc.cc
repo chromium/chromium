@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "media/video/h265_parser.h"
 #include "media/video/h265_poc.h"

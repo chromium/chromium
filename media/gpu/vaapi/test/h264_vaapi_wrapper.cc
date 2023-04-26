@@ -4,7 +4,11 @@
 
 #include "media/gpu/vaapi/test/h264_vaapi_wrapper.h"
 
-#include "base/cxx17_backports.h"
+#include <va/va.h>
+
+#include <algorithm>
+#include <memory>
+
 #include "base/trace_event/trace_event.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/test/h264_dpb.h"
@@ -14,9 +18,6 @@
 #include "media/gpu/vaapi/test/shared_va_surface.h"
 #include "media/gpu/vaapi/test/vaapi_device.h"
 #include "media/video/h264_parser.h"
-
-#include <va/va.h>
-#include <memory>
 
 namespace media::vaapi_test {
 

@@ -4,13 +4,13 @@
 
 #include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 
+#include <va/va.h>
+
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <tuple>
 
-#include <va/va.h>
-
-#include "base/cxx17_backports.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"

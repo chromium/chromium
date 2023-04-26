@@ -13,12 +13,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstring>
 #include <iomanip>
 #include <limits>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
