@@ -21,8 +21,7 @@ namespace {
 
 class NGAbstractInlineTextBoxCache final {
  public:
-  static scoped_refptr<NGAbstractInlineTextBox> GetOrCreate(
-      const NGInlineCursor& cursor) {
+  static NGAbstractInlineTextBox* GetOrCreate(const NGInlineCursor& cursor) {
     if (!s_instance_)
       s_instance_ = new NGAbstractInlineTextBoxCache();
     return s_instance_->GetOrCreateInternal(cursor);
@@ -35,34 +34,37 @@ class NGAbstractInlineTextBoxCache final {
   }
 
  private:
-  scoped_refptr<NGAbstractInlineTextBox> GetOrCreateInternal(
-      const NGInlineCursor& cursor) {
+  NGAbstractInlineTextBoxCache() : map_(MakeGarbageCollected<MapType>()) {}
+
+  NGAbstractInlineTextBox* GetOrCreateInternal(const NGInlineCursor& cursor) {
     const NGFragmentItem& fragment = *cursor.CurrentItem();
     DCHECK(&fragment);
-    const auto it = map_.find(&fragment);
+    const auto it = map_->find(&fragment);
     auto* const layout_text = To<LayoutText>(fragment.GetMutableLayoutObject());
-    if (it != map_.end()) {
+    if (it != map_->end()) {
       CHECK(layout_text->HasAbstractInlineTextBox());
       return it->value;
     }
-    scoped_refptr<NGAbstractInlineTextBox> obj =
-        base::AdoptRef(new NGAbstractInlineTextBox(cursor));
-    map_.Set(&fragment, obj);
+    auto* obj = MakeGarbageCollected<NGAbstractInlineTextBox>(cursor);
+    map_->Set(&fragment, obj);
     layout_text->SetHasAbstractInlineTextBox();
     return obj;
   }
 
   void WillDestroyInternal(const NGFragmentItem* fragment) {
-    const auto it = map_.find(fragment);
-    if (it == map_.end())
+    const auto it = map_->find(fragment);
+    if (it == map_->end()) {
       return;
+    }
     it->value->Detach();
-    map_.erase(fragment);
+    map_->erase(fragment);
   }
 
   static NGAbstractInlineTextBoxCache* s_instance_;
 
-  HashMap<const NGFragmentItem*, scoped_refptr<NGAbstractInlineTextBox>> map_;
+  using MapType =
+      HeapHashMap<const NGFragmentItem*, Member<NGAbstractInlineTextBox>>;
+  Persistent<MapType> map_;
 };
 
 NGAbstractInlineTextBoxCache* NGAbstractInlineTextBoxCache::s_instance_ =
@@ -70,7 +72,7 @@ NGAbstractInlineTextBoxCache* NGAbstractInlineTextBoxCache::s_instance_ =
 
 }  // namespace
 
-scoped_refptr<NGAbstractInlineTextBox> NGAbstractInlineTextBox::GetOrCreate(
+NGAbstractInlineTextBox* NGAbstractInlineTextBox::GetOrCreate(
     const NGInlineCursor& cursor) {
   if (!cursor)
     return nullptr;
@@ -85,8 +87,8 @@ void NGAbstractInlineTextBox::WillDestroy(const NGInlineCursor& cursor) {
 }
 
 NGAbstractInlineTextBox::NGAbstractInlineTextBox(const NGInlineCursor& cursor)
-    : layout_text_(To<LayoutText>(cursor.Current().GetMutableLayoutObject())),
-      fragment_item_(cursor.CurrentItem()),
+    : fragment_item_(cursor.CurrentItem()),
+      layout_text_(To<LayoutText>(cursor.Current().GetMutableLayoutObject())),
       root_box_fragment_(&cursor.ContainerFragment()) {
   DCHECK(fragment_item_->IsText()) << fragment_item_;
 }
@@ -95,6 +97,11 @@ NGAbstractInlineTextBox::~NGAbstractInlineTextBox() {
   DCHECK(!fragment_item_);
   DCHECK(!root_box_fragment_);
   DCHECK(!layout_text_);
+}
+
+void NGAbstractInlineTextBox::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_text_);
+  visitor->Trace(root_box_fragment_);
 }
 
 void NGAbstractInlineTextBox::Detach() {
@@ -196,8 +203,7 @@ bool NGAbstractInlineTextBox::NeedsTrailingSpace() const {
   return mapping_unit.GetLayoutObject() == layout_object;
 }
 
-scoped_refptr<NGAbstractInlineTextBox>
-NGAbstractInlineTextBox::NextInlineTextBox() const {
+NGAbstractInlineTextBox* NGAbstractInlineTextBox::NextInlineTextBox() const {
   NGInlineCursor next = GetCursor();
   if (!next)
     return nullptr;
@@ -501,8 +507,7 @@ bool NGAbstractInlineTextBox::IsLast() const {
   return !cursor;
 }
 
-scoped_refptr<NGAbstractInlineTextBox> NGAbstractInlineTextBox::NextOnLine()
-    const {
+NGAbstractInlineTextBox* NGAbstractInlineTextBox::NextOnLine() const {
   NGInlineCursor cursor = GetCursorOnLine();
   if (!cursor)
     return nullptr;
@@ -513,8 +518,7 @@ scoped_refptr<NGAbstractInlineTextBox> NGAbstractInlineTextBox::NextOnLine()
   return nullptr;
 }
 
-scoped_refptr<NGAbstractInlineTextBox> NGAbstractInlineTextBox::PreviousOnLine()
-    const {
+NGAbstractInlineTextBox* NGAbstractInlineTextBox::PreviousOnLine() const {
   NGInlineCursor cursor = GetCursorOnLine();
   if (!cursor)
     return nullptr;

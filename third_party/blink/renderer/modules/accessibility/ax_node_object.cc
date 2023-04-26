@@ -4087,9 +4087,9 @@ void AXNodeObject::AddInlineTextBoxChildren(bool force) {
   }
 
   auto* layout_text = To<LayoutText>(GetLayoutObject());
-  for (auto box = layout_text->FirstAbstractInlineTextBox(); box.get();
+  for (auto* box = layout_text->FirstAbstractInlineTextBox(); box;
        box = box->NextInlineTextBox()) {
-    AXObject* ax_box = AXObjectCache().GetOrCreate(box.get(), this);
+    AXObject* ax_box = AXObjectCache().GetOrCreate(box, this);
     if (!ax_box)
       continue;
 

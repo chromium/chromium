@@ -255,7 +255,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void RemoveAndDestroyTextBoxes();
 
-  scoped_refptr<NGAbstractInlineTextBox> FirstAbstractInlineTextBox();
+  NGAbstractInlineTextBox* FirstAbstractInlineTextBox();
 
   bool HasAbstractInlineTextBox() const {
     NOT_DESTROYED();

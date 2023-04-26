@@ -1305,8 +1305,7 @@ void LayoutText::MomentarilyRevealLastTypedCharacter(
   secure_text_timer->RestartWithNewText(last_typed_character_offset);
 }
 
-scoped_refptr<NGAbstractInlineTextBox>
-LayoutText::FirstAbstractInlineTextBox() {
+NGAbstractInlineTextBox* LayoutText::FirstAbstractInlineTextBox() {
   NOT_DESTROYED();
   DCHECK(IsInLayoutNGInlineFormattingContext());
   NGInlineCursor cursor;

@@ -43,7 +43,8 @@ class AXObjectCacheImpl;
 // accessibility tree.
 class AXInlineTextBox final : public AXObject {
  public:
-  AXInlineTextBox(scoped_refptr<NGAbstractInlineTextBox>, AXObjectCacheImpl&);
+  AXInlineTextBox(NGAbstractInlineTextBox*, AXObjectCacheImpl&);
+  void Trace(Visitor* visitor) const override;
 
   AXInlineTextBox(const AXInlineTextBox&) = delete;
   AXInlineTextBox& operator=(const AXInlineTextBox&) = delete;
@@ -88,7 +89,7 @@ class AXInlineTextBox final : public AXObject {
  private:
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 
-  scoped_refptr<NGAbstractInlineTextBox> inline_text_box_;
+  Member<NGAbstractInlineTextBox> inline_text_box_;
 };
 
 }  // namespace blink

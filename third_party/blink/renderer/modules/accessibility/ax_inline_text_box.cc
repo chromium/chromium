@@ -52,10 +52,14 @@
 
 namespace blink {
 
-AXInlineTextBox::AXInlineTextBox(
-    scoped_refptr<NGAbstractInlineTextBox> inline_text_box,
-    AXObjectCacheImpl& ax_object_cache)
-    : AXObject(ax_object_cache), inline_text_box_(std::move(inline_text_box)) {}
+AXInlineTextBox::AXInlineTextBox(NGAbstractInlineTextBox* inline_text_box,
+                                 AXObjectCacheImpl& ax_object_cache)
+    : AXObject(ax_object_cache), inline_text_box_(inline_text_box) {}
+
+void AXInlineTextBox::Trace(Visitor* visitor) const {
+  visitor->Trace(inline_text_box_);
+  AXObject::Trace(visitor);
+}
 
 void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
                                         gfx::RectF& out_bounds_in_container,
@@ -206,7 +210,7 @@ Document* AXInlineTextBox::GetDocument() const {
 }
 
 NGAbstractInlineTextBox* AXInlineTextBox::GetInlineTextBox() const {
-  return inline_text_box_.get();
+  return inline_text_box_;
 }
 
 AXObject* AXInlineTextBox::NextOnLine() const {
@@ -216,11 +220,9 @@ AXObject* AXInlineTextBox::NextOnLine() const {
   if (inline_text_box_->IsLast())
     return ParentObject()->NextOnLine();
 
-  scoped_refptr<NGAbstractInlineTextBox> next_on_line =
-      inline_text_box_->NextOnLine();
-  if (next_on_line)
-    return AXObjectCache().GetOrCreate(next_on_line.get(), nullptr);
-
+  if (NGAbstractInlineTextBox* next_on_line = inline_text_box_->NextOnLine()) {
+    return AXObjectCache().GetOrCreate(next_on_line, nullptr);
+  }
   return nullptr;
 }
 
@@ -231,10 +233,10 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
   if (inline_text_box_->IsFirst())
     return ParentObject()->PreviousOnLine();
 
-  scoped_refptr<NGAbstractInlineTextBox> previous_on_line =
+  NGAbstractInlineTextBox* previous_on_line =
       inline_text_box_->PreviousOnLine();
   if (previous_on_line)
-    return AXObjectCache().GetOrCreate(previous_on_line.get(), nullptr);
+    return AXObjectCache().GetOrCreate(previous_on_line, nullptr);
 
   return nullptr;
 }

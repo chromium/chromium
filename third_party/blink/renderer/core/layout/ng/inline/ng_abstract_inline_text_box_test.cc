@@ -21,7 +21,7 @@ TEST_F(NGAbstractInlineTextBoxTest, GetTextWithCollapsedWhiteSpace) {
 
   const Element& target = *GetDocument().getElementById("target");
   auto& layout_text = *To<LayoutText>(target.firstChild()->GetLayoutObject());
-  auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
+  auto* inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
   EXPECT_EQ("abc", inline_text_box->GetText());
   EXPECT_EQ(3u, inline_text_box->Len());
@@ -37,7 +37,7 @@ TEST_F(NGAbstractInlineTextBoxTest, GetTextWithLineBreakAtCollapsedWhiteSpace) {
 
   const Element& label = *GetDocument().getElementById("label");
   auto& layout_text = *To<LayoutText>(label.firstChild()->GetLayoutObject());
-  auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
+  auto* inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
   EXPECT_EQ("abc:", inline_text_box->GetText());
   EXPECT_EQ(4u, inline_text_box->Len());
@@ -54,7 +54,7 @@ TEST_F(NGAbstractInlineTextBoxTest,
 
   const Element& target = *GetDocument().getElementById("target");
   auto& layout_text = *To<LayoutText>(target.firstChild()->GetLayoutObject());
-  auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
+  auto* inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
   EXPECT_EQ("012 ", inline_text_box->GetText());
   EXPECT_EQ(4u, inline_text_box->Len());
@@ -71,7 +71,7 @@ TEST_F(NGAbstractInlineTextBoxTest,
 
   const Element& target1 = *GetDocument().getElementById("t1");
   auto& layout_text1 = *To<LayoutText>(target1.firstChild()->GetLayoutObject());
-  auto inline_text_box1 = layout_text1.FirstAbstractInlineTextBox();
+  auto* inline_text_box1 = layout_text1.FirstAbstractInlineTextBox();
 
   EXPECT_EQ("012", inline_text_box1->GetText());
   EXPECT_EQ(3u, inline_text_box1->Len());
@@ -79,7 +79,7 @@ TEST_F(NGAbstractInlineTextBoxTest,
 
   const Element& target2 = *GetDocument().getElementById("t2");
   auto& layout_text2 = *To<LayoutText>(target2.firstChild()->GetLayoutObject());
-  auto inline_text_box2 = layout_text2.FirstAbstractInlineTextBox();
+  auto* inline_text_box2 = layout_text2.FirstAbstractInlineTextBox();
 
   EXPECT_EQ(nullptr, inline_text_box2)
       << "We don't have inline box when <span> "
@@ -95,7 +95,7 @@ TEST_F(NGAbstractInlineTextBoxTest, GetTextWithLineBreakAtTrailingWhiteSpace) {
 
   const Element& label = *GetDocument().getElementById("label");
   auto& layout_text = *To<LayoutText>(label.firstChild()->GetLayoutObject());
-  auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
+  auto* inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
   EXPECT_EQ("abc: ", inline_text_box->GetText());
   EXPECT_EQ(5u, inline_text_box->Len());
@@ -128,7 +128,7 @@ TEST_F(NGAbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
   // both LayoutNG and Legacy, even though Legacy doesn't collapse the
   // white spaces at the end of an NGAbstractInlineTextBox. White spaces at the
   // beginning of the third and fifth inline text box should be collapsed.
-  auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
+  auto* inline_text_box = layout_text.FirstAbstractInlineTextBox();
   String text = "First sentence";
   EXPECT_EQ(text, inline_text_box->GetText());
   EXPECT_EQ(6u, inline_text_box->TextOffsetInFormattingContext(0));
@@ -161,7 +161,7 @@ TEST_F(NGAbstractInlineTextBoxTest, CharacterWidths) {
 
   const Element& div = *GetDocument().getElementById("div");
   auto& layout_text = *To<LayoutText>(div.firstChild()->GetLayoutObject());
-  auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
+  auto* inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
   Vector<float> widths;
   inline_text_box->CharacterWidths(widths);
