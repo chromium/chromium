@@ -215,12 +215,11 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
   auto encode_start = base::TimeTicks::Now();
 
   // Calculate the frame interval before dropping or queueing frames.
-  auto frame_timestamp =
-      base::Time::NowFromSystemTime().ToDeltaSinceWindowsEpoch();
-  if (!last_frame_received_timestamp_.is_zero()) {
-    current_frame_interval_ =
-        std::clamp(frame_timestamp - last_frame_received_timestamp_,
-                   kMinFrameDuration, kMaxFrameDuration);
+  base::Time frame_timestamp = base::Time::NowFromSystemTime();
+  if (!last_frame_received_timestamp_.is_null()) {
+    current_frame_interval_ = std::clamp(
+        base::TimeDelta(frame_timestamp - last_frame_received_timestamp_),
+        kMinFrameDuration, kMaxFrameDuration);
   }
   last_frame_received_timestamp_ = frame_timestamp;
 

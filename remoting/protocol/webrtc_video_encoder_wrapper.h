@@ -168,7 +168,7 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   base::TimeDelta current_frame_interval_ = base::Hertz(kTargetFrameRate);
 
   // Stores the timestamp of the last frame that was sent for encoding.
-  base::TimeDelta last_frame_received_timestamp_;
+  base::Time last_frame_received_timestamp_;
 
   // Represents the screen which is being encoded by this instance. Initialized
   // after the first captured frame has been received.
