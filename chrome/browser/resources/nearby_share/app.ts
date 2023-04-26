@@ -129,6 +129,11 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
       link.href = 'chrome://theme/colors.css?sets=legacy,sys';
       document.head.appendChild(link);
       document.body.classList.add('jelly-enabled');
+
+      const fontLink = document.createElement('link');
+      fontLink.rel = 'stylesheet';
+      fontLink.href = 'chrome://theme/typography.css';
+      document.head.appendChild(fontLink);
       startColorChangeUpdater();
     }
   }

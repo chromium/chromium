@@ -78,13 +78,17 @@ suite('ShareAppTest', function() {
 
             sharedSetup(/*enabled=*/ true, /*isOnboardingComplete=*/ true);
 
-            const linkEl = document.querySelector(
+            const colorLink = document.querySelector(
                 'link[href*=\'chrome://theme/colors.css\']');
+            const fontLink = document.querySelector(
+                'link[href*=\'chrome://theme/typography.css\']');
             if (isJellyEnabled) {
-              assertTrue(!!linkEl);
+              assertTrue(!!colorLink);
+              assertTrue(!!fontLink);
               assertTrue(document.body.classList.contains('jelly-enabled'));
             } else {
-              assertEquals(null, linkEl);
+              assertEquals(null, colorLink);
+              assertEquals(null, fontLink);
               assertFalse(document.body.classList.contains('jelly-enabled'));
             }
           });
