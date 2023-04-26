@@ -1724,57 +1724,57 @@
   {
     "name": "eche-launcher",
     "owners": [ "jonmann" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "eche-launcher-app-icon-in-more-apps-button",
     "owners": ["joeantonetti@google.com"],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "eche-launcher-list-view",
     "owners": ["pushi"],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "eche-network-connection-state",
     "owners": ["jonmann@chromium.org", "chromeos-cross-device-eng@google.com"],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "eche-swa",
     "owners": [ "nayebi@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "eche-swa-check-android-network-info",
     "owners": [ "dhnishi", "corakwue@google.com", "ftsui@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "eche-swa-debug-mode",
     "owners": [ "nayebi@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "eche-swa-disable-stun-server",
     "owners": [ "nayebi@google.com", "mavishsu@google.com", "ftsui@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 140
   },
   {
     "name": "eche-swa-measure-latency",
     "owners": [ "paulzchen@google.com", "guanrulee@google.com", "nayebi@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "eche-swa-process-android-accessibility-tree",
     "owners": [ "corakwue@google.com", "nayebi@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "eche-swa-send-start-signaling",
     "owners": [ "nayebi@google.com", "mavishsu@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "edit-context",
