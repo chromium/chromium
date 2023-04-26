@@ -11,6 +11,9 @@ import threading
 
 from lib.results import result_types  # pylint: disable=import-error
 
+# This must match the source adding the suffix: bit.ly/3Zmwwyx
+_MULTIPROCESS_SUFFIX = '__multiprocess_mode'
+
 
 class ResultType:
   """Class enumerating test types.
@@ -54,6 +57,7 @@ class BaseTestResult:
     self._log = log
     self._failure_reason = failure_reason
     self._links = {}
+    self._webview_multiprocess_mode = name.endswith(_MULTIPROCESS_SUFFIX)
 
   def __str__(self):
     return self._name
@@ -84,7 +88,13 @@ class BaseTestResult:
 
   def GetNameForResultSink(self):
     """Get the test name to be reported to resultsink."""
-    return self._name
+    raw_name = self.GetName()
+    if self._webview_multiprocess_mode:
+      assert raw_name.endswith(
+          _MULTIPROCESS_SUFFIX
+      ), 'multiprocess mode test raw name should have the corresponding suffix'
+      return raw_name[:-len(_MULTIPROCESS_SUFFIX)]
+    return raw_name
 
   def SetType(self, test_type):
     """Set the test result type."""
@@ -131,8 +141,10 @@ class BaseTestResult:
     """Get dict containing links to test result data."""
     return self._links
 
-  def GetVariantForResultSink(self):  # pylint: disable=no-self-use
+  def GetVariantForResultSink(self):
     """Get the variant dict to be reported to result sink."""
+    if self._webview_multiprocess_mode:
+      return {'webview_multiprocess_mode': 'Yes'}
     return None
 
 
