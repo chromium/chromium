@@ -2313,7 +2313,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       !self.regularTabsBottomMessage.view.hidden) {
     inset.bottom += self.regularTabsBottomMessage.view.bounds.size.height;
   }
-  if (IsPinnedTabsEnabled() && !self.pinnedTabsViewController.view.hidden) {
+  if (IsPinnedTabsEnabled() && self.pinnedTabsViewController.visible) {
     CGFloat pinnedViewHeight =
         self.pinnedTabsViewController.view.bounds.size.height;
     inset.bottom += pinnedViewHeight + kPinnedViewBottomPadding;
