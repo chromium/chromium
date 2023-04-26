@@ -1768,7 +1768,7 @@
       },
       'win10-code-coverage': {
         'swarming': {
-          'shards': 4,
+          'shards': 6,
         },
       },
     },
