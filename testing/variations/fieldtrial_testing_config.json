@@ -5946,6 +5946,29 @@
             ]
         }
     ],
+    "GoogleLensDesktopV3AndRedirectFixDisabledM102AndAbove": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230421",
+                    "params": {
+                        "lens-homepage-url": "https://lens.google.com/v3/",
+                        "lens-html-redirect-fix": "false"
+                    },
+                    "enable_features": [
+                        "LensStandalone"
+                    ]
+                }
+            ]
+        }
+    ],
     "GoogleLensHybridIOS": [
         {
             "platforms": [
