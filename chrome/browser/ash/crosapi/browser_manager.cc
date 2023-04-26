@@ -739,6 +739,9 @@ void BrowserManager::InitializeAndStartIfNeeded() {
   }
   DCHECK_EQ(state_, State::NOT_INITIALIZED);
 
+  // Ensure this isn't run multiple times.
+  session_manager::SessionManager::Get()->RemoveObserver(this);
+
   PrepareLacrosPolicies();
 
   // Perform the UMA recording for the current Lacros mode of operation.
@@ -1376,9 +1379,6 @@ void BrowserManager::OnSessionStateChanged() {
       session_manager::SessionState::ACTIVE) {
     return;
   }
-
-  // Ensure this isn't run multiple times.
-  session_manager::SessionManager::Get()->RemoveObserver(this);
 
   if (launch_at_login_screen_ && postlogin_pipe_fd_.is_valid()) {
     // Resume Lacros launch after login, if it was pre-launched.
