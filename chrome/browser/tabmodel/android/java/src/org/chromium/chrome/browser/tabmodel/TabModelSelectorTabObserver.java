@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -24,6 +26,7 @@ public class TabModelSelectorTabObserver
     private boolean mShouldDeferTabRegisterNotifications;
     private List<Tab> mDeferredTabs = new ArrayList<>();
     private boolean mIsDestroyed;
+    private boolean mIsDeferredInitializationFinished;
 
     /**
      * Constructs an observer that should be notified of tab changes for all tabs owned
@@ -53,6 +56,7 @@ public class TabModelSelectorTabObserver
                 onTabRegistered(tab);
             }
             mDeferredTabs.clear();
+            mIsDeferredInitializationFinished = true;
         });
     }
 
@@ -118,5 +122,10 @@ public class TabModelSelectorTabObserver
     public void destroy() {
         mIsDestroyed = true;
         mTabRegistrationObserver.destroy();
+    }
+
+    @VisibleForTesting
+    boolean isDeferredInitializationFinishedForTesting() {
+        return mIsDeferredInitializationFinished;
     }
 }
