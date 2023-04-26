@@ -1,0 +1,59 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef MEDIA_MUXERS_BOX_BYTE_STREAM_H_
+#define MEDIA_MUXERS_BOX_BYTE_STREAM_H_
+
+#include <vector>
+
+#include "base/big_endian.h"
+#include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace media {
+
+// Helper class for writing big endian ISO-BMFF boxes. ISO-BMFF boxes always
+// have the size at the front of the box, so a placeholder value be written
+// and filled in later based on distance from the final box size. Class is
+// not thread safe.
+class MEDIA_EXPORT BoxByteStream {
+ public:
+  // Constructs a `BoxByteStream` and prepares it for writing. `EndWrite()` must
+  // be called prior to destruction even if nothing is written.
+  BoxByteStream();
+  ~BoxByteStream();
+
+  // Writes a uint32_t placeholder value that `EndWrite()` will fill in later.
+  // Only works if the current position is the start of a new box.
+  void WritePlaceholderSizeU32();
+
+  // Writes primitives types in big endian format. If `value` can be larger than
+  // the the type being written, methods will `CHECK()` that `value` fits in the
+  // type.
+  void WriteU8(uint8_t value);
+  void WriteU16(uint16_t value);
+  void WriteU24(uint32_t value);
+  void WriteU32(uint32_t value);
+  void WriteU64(uint64_t value);
+
+  // Ends a writing session. All pending placeholder values in `size_offsets_`
+  // are filled in based on their distance from `position_`.
+  std::vector<uint8_t> EndWrite();
+
+  // TODO(crbug.com/1072056): Investigate if this is a reasonable starting size.
+  static constexpr int kDefaultBufferLimit = 4096;
+
+ private:
+  // Expands the capacity of `buffer_` and reinitializes `writer_`.
+  void GrowWriter();
+
+  std::vector<size_t> size_offsets_;
+  size_t position_ = 0;
+  std::vector<uint8_t> buffer_;
+  absl::optional<base::BigEndianWriter> writer_;
+};
+
+}  // namespace media
+
+#endif  // MEDIA_MUXERS_BOX_BYTE_STREAM_H_
