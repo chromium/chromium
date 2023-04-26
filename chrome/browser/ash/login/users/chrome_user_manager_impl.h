@@ -18,7 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
-#include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/multi_profile_user_controller_delegate.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -167,9 +167,6 @@ class ChromeUserManagerImpl
   friend class WallpaperManagerTest;
   friend class MockRemoveUserManager;
 
-  using UserImageManagerMap =
-      std::map<AccountId, std::unique_ptr<UserImageManager>>;
-
   ChromeUserManagerImpl();
 
   // Retrieves trusted device policies and removes users from the persistent
@@ -240,8 +237,8 @@ class ChromeUserManagerImpl
                           session_manager::SessionManagerObserver>
       session_observation_{this};
 
-  // User avatar managers.
-  UserImageManagerMap user_image_managers_;
+  // TODO(b/278643115): Move this out from ChromeUserManagerImpl.
+  UserImageManagerRegistry user_image_manager_registry_;
 
   // Supervised user manager.
   std::unique_ptr<SupervisedUserManagerImpl> supervised_user_manager_;

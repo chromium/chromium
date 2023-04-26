@@ -46,7 +46,7 @@
 #include "chrome/browser/ash/login/signin/auth_error_observer.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer_factory.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
-#include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
@@ -314,6 +314,7 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
                             : nullptr),
       cros_settings_(CrosSettings::Get()),
       device_local_account_policy_service_(nullptr),
+      user_image_manager_registry_(this),
       supervised_user_manager_(new SupervisedUserManagerImpl(this)),
       mount_performer_(std::make_unique<MountPerformer>()) {
   UpdateNumberOfUsers();
@@ -451,11 +452,8 @@ void ChromeUserManagerImpl::Shutdown() {
   if (device_local_account_policy_service_)
     device_local_account_policy_service_->RemoveObserver(this);
 
-  for (UserImageManagerMap::iterator it = user_image_managers_.begin(),
-                                     ie = user_image_managers_.end();
-       it != ie; ++it) {
-    it->second->Shutdown();
-  }
+  user_image_manager_registry_.Shutdown();
+
   multi_profile_user_controller_.reset();
   cloud_external_data_policy_handlers_.clear();
   session_observation_.Reset();
@@ -468,13 +466,7 @@ ChromeUserManagerImpl::GetMultiProfileUserController() {
 
 UserImageManager* ChromeUserManagerImpl::GetUserImageManager(
     const AccountId& account_id) {
-  UserImageManagerMap::iterator ui = user_image_managers_.find(account_id);
-  if (ui != user_image_managers_.end())
-    return ui->second.get();
-  auto mgr = std::make_unique<UserImageManagerImpl>(account_id, this);
-  UserImageManagerImpl* mgr_raw = mgr.get();
-  user_image_managers_[account_id] = std::move(mgr);
-  return mgr_raw;
+  return user_image_manager_registry_.GetManager(account_id);
 }
 
 SupervisedUserManager* ChromeUserManagerImpl::GetSupervisedUserManager() {
