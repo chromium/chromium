@@ -802,20 +802,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.TargetLanguage.Origin"
-    enum="TranslateTargetLanguageOrigin" expires_after="2023-03-19">
-  <obsolete>
-    Replaced by Translate.PageLoad.InitialTargetLanguage.Origin in M114.
-  </obsolete>
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Where the target language was determined from. Can be the most recent target
-    language, from the language model, the UI language, the user's accept
-    languages, or default to English.
-  </summary>
-</histogram>
-
 <histogram name="Translate.Translate" enum="BooleanTranslate"
     expires_after="2023-10-01">
   <owner>megjablon@google.com</owner>
