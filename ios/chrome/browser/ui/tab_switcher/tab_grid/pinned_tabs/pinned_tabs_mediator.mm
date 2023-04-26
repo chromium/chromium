@@ -49,8 +49,8 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
     DCHECK(web_state_list->IsWebStatePinnedAt(i));
 
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    [items
-        addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
+    [items addObject:[[PinnedWebStateTabSwitcherItem alloc]
+                         initWithWebState:web_state]];
   }
   return items;
 }
@@ -146,7 +146,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
   }
 
   TabSwitcherItem* item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+      [[PinnedWebStateTabSwitcherItem alloc] initWithWebState:webState];
   [self.consumer
           insertItem:item
              atIndex:index
@@ -191,7 +191,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
   }
 
   TabSwitcherItem* newItem =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:newWebState];
+      [[PinnedWebStateTabSwitcherItem alloc] initWithWebState:newWebState];
   [self.consumer replaceItemID:oldWebState->GetStableIdentifier()
                       withItem:newItem];
 
@@ -269,7 +269,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 
   if (webStateList->IsWebStatePinnedAt(index)) {
     TabSwitcherItem* item =
-        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+        [[PinnedWebStateTabSwitcherItem alloc] initWithWebState:webState];
     [self.consumer insertItem:item
                       atIndex:index
                selectedItemID:GetActiveWebStateIdentifier(
@@ -321,7 +321,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
   TabSwitcherItem* item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+      [[PinnedWebStateTabSwitcherItem alloc] initWithWebState:webState];
   [self.consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
 }
 

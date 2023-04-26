@@ -341,7 +341,8 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   faviconView.clipsToBounds = YES;
   faviconView.layer.cornerRadius = kPinnedCellFaviconCornerRadius;
   faviconView.layer.masksToBounds = YES;
-  faviconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+  faviconView.tintColor =
+      GetInterfaceStyleDarkColor([UIColor colorNamed:kTextPrimaryColor]);
 
   [NSLayoutConstraint activateConstraints:@[
     [faviconView.widthAnchor constraintEqualToConstant:kPinnedCellFaviconWidth],
