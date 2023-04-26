@@ -86,12 +86,12 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
             @CardUnmaskChallengeOptionType int authenticatorOptionType) {
         switch (authenticatorOptionType) {
             case CardUnmaskChallengeOptionType.SMS_OTP:
+            case CardUnmaskChallengeOptionType.EMAIL_OTP:
                 return mContext.getResources().getString(
                         R.string.autofill_card_unmask_authentication_selection_dialog_ok_button_label_send);
             case CardUnmaskChallengeOptionType.CVC:
                 return mContext.getResources().getString(
                         R.string.autofill_card_unmask_authentication_selection_dialog_ok_button_label_continue);
-            case CardUnmaskChallengeOptionType.EMAIL_OTP:
             case CardUnmaskChallengeOptionType.UNKNOWN_TYPE:
                 // This will never happen.
                 assert false
