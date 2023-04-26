@@ -1926,11 +1926,6 @@ const char kJourneysLabelsName[] = "History Journeys Labels";
 const char kJourneysLabelsDescription[] =
     "Enables labels for Journeys within the History Journeys UI.";
 
-const char kJourneysNavigationContextClusteringName[] =
-    "History Journeys Navigation Context Clustering";
-const char kJourneysNavigationContextClusteringDescription[] =
-    "Enables context clustering to be done at navigation time";
-
 const char kJourneysOmniboxActionName[] = "History Journeys Omnibox Action";
 const char kJourneysOmniboxActionDescription[] =
     "Enables the History Journeys Omnibox Action.";
@@ -1945,11 +1940,6 @@ const char kJourneysPersistCachesToPrefsName[] =
     "History Journeys Persist Caches to Prefs";
 const char kJourneysPersistCachesToPrefsDescription[] =
     "Enables the persistence of Journeys keyword caches via the pref service.";
-
-const char kJourneysPersistedClustersName[] =
-    "History Journeys Persisted Clusters";
-const char kJourneysPersistedClustersDescription[] =
-    "Enables the persistence of clusters into the history database.";
 
 const char kJourneysShowAllClustersName[] =
     "History Journeys Show All Clusters";
