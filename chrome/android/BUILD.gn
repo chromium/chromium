@@ -1512,7 +1512,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/test:sync_integration_test_support_java",
       "//chrome/test:test_support_java",
       "//chrome/test/android:chrome_java_integration_test_support",
-      "//chrome/test/android:chrome_java_integration_test_support_uncommon",
       "//chrome/test/android:chrome_java_test_pagecontroller",
       "//chrome/test/android/test_trusted_web_activity:test_trusted_web_activity_java",
       "//components/autofill/android:autofill_java",
