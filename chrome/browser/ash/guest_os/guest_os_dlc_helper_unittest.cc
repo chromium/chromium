@@ -29,8 +29,8 @@ TEST_F(GuestOsDlcInstallationTest, Success) {
   base::test::TestFuture<GuestOsDlcInstallation::Result> result;
 
   FakeDlcserviceClient()->set_install_error(dlcservice::kErrorNone);
-  GuestOsDlcInstallation installation("test-dlc", /*retry=*/false,
-                                      result.GetCallback(), base::DoNothing());
+  GuestOsDlcInstallation installation("test-dlc", result.GetCallback(),
+                                      base::DoNothing());
 
   EXPECT_TRUE(result.Get().has_value());
 }
@@ -41,8 +41,8 @@ TEST_F(GuestOsDlcInstallationTest, RetryOnBusyInternal) {
   FakeDlcserviceClient()->set_install_errors({dlcservice::kErrorInternal,
                                               dlcservice::kErrorBusy,
                                               dlcservice::kErrorNone});
-  GuestOsDlcInstallation installation("test-dlc", /*retry=*/true,
-                                      result.GetCallback(), base::DoNothing());
+  GuestOsDlcInstallation installation("test-dlc", result.GetCallback(),
+                                      base::DoNothing());
 
   // After some time we're still retrying.
   task_environment_.FastForwardBy(base::Seconds(5));
@@ -60,31 +60,18 @@ TEST_F(GuestOsDlcInstallationTest, GivesUpAfterMaxRetries) {
       {dlcservice::kErrorBusy, dlcservice::kErrorBusy, dlcservice::kErrorBusy,
        dlcservice::kErrorBusy, dlcservice::kErrorBusy, dlcservice::kErrorBusy,
        dlcservice::kErrorBusy, dlcservice::kErrorNone});
-  GuestOsDlcInstallation installation("test-dlc", /*retry=*/true,
-                                      result.GetCallback(), base::DoNothing());
+  GuestOsDlcInstallation installation("test-dlc", result.GetCallback(),
+                                      base::DoNothing());
 
   task_environment_.FastForwardBy(base::Seconds(99));
   EXPECT_FALSE(result.Get().has_value());
-}
-
-TEST_F(GuestOsDlcInstallationTest, NoRetryAllowed) {
-  base::test::TestFuture<GuestOsDlcInstallation::Result> result;
-
-  FakeDlcserviceClient()->set_install_errors({dlcservice::kErrorInternal,
-                                              dlcservice::kErrorBusy,
-                                              dlcservice::kErrorNone});
-  GuestOsDlcInstallation installation("test-dlc", /*retry=*/false,
-                                      result.GetCallback(), base::DoNothing());
-
-  EXPECT_FALSE(result.Get().has_value());
-  EXPECT_EQ(result.Get().error(), GuestOsDlcInstallation::Error::Internal);
 }
 
 TEST_F(GuestOsDlcInstallationTest, Cancel) {
   base::test::TestFuture<GuestOsDlcInstallation::Result> result;
 
   auto installation = std::make_unique<GuestOsDlcInstallation>(
-      "test-dlc", /*retry=*/false, result.GetCallback(), base::DoNothing());
+      "test-dlc", result.GetCallback(), base::DoNothing());
   EXPECT_FALSE(result.IsReady());
 
   installation.reset();
@@ -103,8 +90,8 @@ TEST_F(GuestOsDlcInstallationTest, Offline) {
   base::test::TestFuture<GuestOsDlcInstallation::Result> result;
 
   FakeDlcserviceClient()->set_install_error(dlcservice::kErrorInternal);
-  GuestOsDlcInstallation installation("test-dlc", /*retry=*/false,
-                                      result.GetCallback(), base::DoNothing());
+  GuestOsDlcInstallation installation("test-dlc", result.GetCallback(),
+                                      base::DoNothing());
 
   EXPECT_FALSE(result.Get().has_value());
   EXPECT_EQ(result.Get().error(), GuestOsDlcInstallation::Error::Offline);

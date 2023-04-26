@@ -150,8 +150,7 @@ class CrostiniManagerTest : public testing::Test {
 
   void EnsureTerminaInstalled() {
     TestFuture<CrostiniResult> result_future;
-    crostini_manager()->InstallTermina(result_future.GetCallback(),
-                                       /*is_initial_install=*/false);
+    crostini_manager()->InstallTermina(result_future.GetCallback());
     EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
   }
 

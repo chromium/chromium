@@ -37,8 +37,8 @@ void TerminaInstaller::CancelInstall() {
   installations_.clear();
 }
 
-void TerminaInstaller::Install(base::OnceCallback<void(InstallResult)> callback,
-                               bool is_initial_install) {
+void TerminaInstaller::Install(
+    base::OnceCallback<void(InstallResult)> callback) {
   // The Remove*IfPresent methods require an unowned UninstallResult pointer to
   // record their success/failure state. This has to be unowned so that in
   // Uninstall it can be accessed further down the callback chain, but here we
@@ -50,11 +50,8 @@ void TerminaInstaller::Install(base::OnceCallback<void(InstallResult)> callback,
       [](std::unique_ptr<UninstallResult> ptr) {}, std::move(ptr));
   RemoveComponentIfPresent(std::move(remove_callback), uninstall_result_ptr);
 
-  // Crostini should retry installation only if it is the first-time
-  // installation (with a cancel button).
-  bool retry = is_initial_install;
   installations_.push_back(std::make_unique<guest_os::GuestOsDlcInstallation>(
-      kCrostiniDlcName, retry,
+      kCrostiniDlcName,
       base::BindOnce(&TerminaInstaller::OnInstallDlc,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       base::DoNothing()));

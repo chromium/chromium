@@ -489,7 +489,6 @@ void PluginVmInstaller::StartDlcDownload() {
 
   dlc_installation_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
       kPitaDlc,
-      /*retry=*/false,
       base::BindOnce(&PluginVmInstaller::OnDlcDownloadCompleted,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PluginVmInstaller::OnDlcDownloadProgressUpdated,

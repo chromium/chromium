@@ -50,11 +50,7 @@ class GuestOsDlcInstallation {
   //
   // During installation |progress_callback| will be invoked repeatedly with a
   // value in [0,1] to indicate the installation's progress.
-  //
-  // If |retry| is set we will attempt to retry the installation for known
-  // transient failure cases.
   GuestOsDlcInstallation(std::string dlc_id,
-                         bool retry,
                          base::OnceCallback<void(Result)> completion_callback,
                          ProgressCallback progress_callback);
 

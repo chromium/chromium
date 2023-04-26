@@ -246,8 +246,9 @@ class PluginVmInstallerTestBase : public testing::Test {
 
     for (InstallingState state : states) {
       EXPECT_CALL(*observer_, OnStateUpdated(state));
-      if (state == end_state)
+      if (state == end_state) {
         return;
+      }
     }
 
     NOTREACHED();
@@ -756,31 +757,6 @@ TEST_F(PluginVmInstallerDriveTest, SuccessfulDriveDownloadTest) {
   StartAndRunToCompletion();
   histogram_tester_->ExpectUniqueSample(kPluginVmDlcUseResultHistogram,
                                         PluginVmDlcUseResult::kDlcSuccess, 1);
-}
-
-TEST_F(PluginVmInstallerDriveTest, InstallingPluingVmDlcInternal) {
-  SetPluginVmImagePref(kDriveUrl, kHash);
-  fake_dlcservice_client_->set_install_error(dlcservice::kErrorInternal);
-
-  ExpectObserverEventsUntil(InstallingState::kDownloadingDlc);
-  EXPECT_CALL(*observer_, OnError(FailureReason::DLC_INTERNAL));
-
-  StartAndRunToCompletion();
-  histogram_tester_->ExpectUniqueSample(kPluginVmDlcUseResultHistogram,
-                                        PluginVmDlcUseResult::kInternalDlcError,
-                                        1);
-}
-
-TEST_F(PluginVmInstallerDriveTest, InstallingPluingVmDlcBusy) {
-  SetPluginVmImagePref(kDriveUrl, kHash);
-  fake_dlcservice_client_->set_install_error(dlcservice::kErrorBusy);
-
-  ExpectObserverEventsUntil(InstallingState::kDownloadingDlc);
-  EXPECT_CALL(*observer_, OnError(FailureReason::DLC_BUSY));
-
-  StartAndRunToCompletion();
-  histogram_tester_->ExpectUniqueSample(kPluginVmDlcUseResultHistogram,
-                                        PluginVmDlcUseResult::kBusyDlcError, 1);
 }
 
 TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcNeedReboot) {

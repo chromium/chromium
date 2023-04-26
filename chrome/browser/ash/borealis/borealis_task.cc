@@ -103,7 +103,6 @@ void MountDlc::RunInternal(BorealisContext* context) {
   // otherwise we will silently download borealis here.
   installation_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
       kBorealisDlcName,
-      /*retry=*/true,
       base::BindOnce(&MountDlc::OnMountDlc, weak_factory_.GetWeakPtr(),
                      context),
       base::DoNothing());

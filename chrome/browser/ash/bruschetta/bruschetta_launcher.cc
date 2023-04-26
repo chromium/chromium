@@ -111,7 +111,7 @@ void BruschettaLauncher::EnsureRunning(
 
 void BruschettaLauncher::EnsureDlcInstalled() {
   in_progress_dlc_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
-      kToolsDlc, /*retry=*/false,
+      kToolsDlc,
       base::BindOnce(&BruschettaLauncher::OnMountDlc,
                      weak_factory_.GetWeakPtr()),
       base::DoNothing());

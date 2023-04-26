@@ -74,11 +74,10 @@ Actionability GetActionability(GuestOsDlcInstallation::Error err) {
 
 GuestOsDlcInstallation::GuestOsDlcInstallation(
     std::string dlc_id,
-    bool retry,
     base::OnceCallback<void(Result)> completion_callback,
     ProgressCallback progress_callback)
     : dlc_id_(std::move(dlc_id)),
-      retries_remaining_(retry ? kMaxRetries : 0),
+      retries_remaining_(kMaxRetries),
       completion_callback_(std::move(completion_callback)),
       progress_callback_(std::move(progress_callback)) {
   // This object represents the installation so begin that installation in

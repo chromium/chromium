@@ -150,7 +150,6 @@ void BruschettaInstallerImpl::InstallToolsDlc() {
 
   in_progress_dlc_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
       kToolsDlc,
-      /*retry=*/false,
       base::BindOnce(&BruschettaInstallerImpl::OnToolsDlcInstalled,
                      weak_ptr_factory_.GetWeakPtr()),
       base::DoNothing());

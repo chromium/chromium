@@ -94,7 +94,6 @@ class BorealisInstallerImpl::Installation
   void InstallDlc() {
     dlc_installation_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
         kBorealisDlcName,
-        /*retry=*/true,
         base::BindOnce(&Installation::OnDlcInstallationCompleted,
                        weak_factory_.GetWeakPtr()),
         base::BindRepeating(&Installation::OnDlcInstallationProgressUpdated,

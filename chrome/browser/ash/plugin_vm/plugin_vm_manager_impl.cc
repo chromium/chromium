@@ -424,7 +424,6 @@ void PluginVmManagerImpl::InstallDlcAndUpdateVmState(
   in_progress_installation_ =
       std::make_unique<guest_os::GuestOsDlcInstallation>(
           kPitaDlc,
-          /*retry=*/false,
           base::BindOnce(&PluginVmManagerImpl::OnInstallPluginVmDlc,
                          weak_ptr_factory_.GetWeakPtr(),
                          std::move(success_callback),
