@@ -419,6 +419,13 @@ inline constexpr uint8_t kAdOcspOid[] = {0x2B, 0x06, 0x01, 0x05,
 // In dotted notation: 2.5.29.31
 inline constexpr uint8_t kCrlDistributionPointsOid[] = {0x55, 0x1d, 0x1f};
 
+// From
+// https://learn.microsoft.com/en-us/windows/win32/seccertenroll/supported-extensions#msapplicationpolicies
+//
+// OID: XCN_OID_APPLICATION_CERT_POLICIES (1.3.6.1.4.1.311.21.10)
+inline constexpr uint8_t kMSApplicationPoliciesOid[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x15, 0x0a};
+
 // Parses the Extensions sequence as defined by RFC 5280. Extensions are added
 // to the map |extensions| keyed by the OID. Parsing guarantees that each OID
 // is unique. Note that certificate verification must consume each extension

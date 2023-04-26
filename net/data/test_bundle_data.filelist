@@ -934,6 +934,10 @@ data/verify_certificate_chain_unittest/target-has-keycertsign-but-not-ca/chain.p
 data/verify_certificate_chain_unittest/target-has-keycertsign-but-not-ca/main.test
 data/verify_certificate_chain_unittest/target-has-pathlen-but-not-ca/chain.pem
 data/verify_certificate_chain_unittest/target-has-pathlen-but-not-ca/main.test
+data/verify_certificate_chain_unittest/target-msapplicationpolicies-and-eku/chain.pem
+data/verify_certificate_chain_unittest/target-msapplicationpolicies-and-eku/main.test
+data/verify_certificate_chain_unittest/target-msapplicationpolicies-no-eku/chain.pem
+data/verify_certificate_chain_unittest/target-msapplicationpolicies-no-eku/main.test
 data/verify_certificate_chain_unittest/target-not-end-entity/chain.pem
 data/verify_certificate_chain_unittest/target-not-end-entity/main.test
 data/verify_certificate_chain_unittest/target-not-end-entity/strict.test
