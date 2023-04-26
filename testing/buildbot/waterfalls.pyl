@@ -6617,6 +6617,16 @@
     'name': 'internal.chrome.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
+      'android-nougat-x86-finch-smoke-chrome': {
+        'mixins': [
+          'chrome-finch-swarming-pool',
+          'linux-bionic',
+          'nougat-x86-emulator',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'android_finch_smoke_tests',
+        },
+      },
       'chromeos-arm-generic-cfi-thin-lto-chrome-reclient': {
         'additional_compile_targets': [
           'chromiumos_preflight',

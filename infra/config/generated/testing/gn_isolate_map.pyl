@@ -1161,6 +1161,10 @@
     "label": "//components/module_installer/android:module_installer_junit_tests",
     "type": "generated_script",
   },
+  "monochrome_internal_webview_finch_smoke_tests": {
+    "label": "//clank/android_webview/components:monochrome_internal_webview_finch_smoke_tests",
+    "type": "generated_script",
+  },
   "monochrome_public_smoke_test": {
     "label": "//chrome/android:monochrome_public_smoke_test",
     "type": "console_test_launcher",
