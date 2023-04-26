@@ -433,3 +433,138 @@ testcase.toolbarSharesheetNoEntrySelected = async () => {
       'removeAllForegroundFakes', appId, []);
   chrome.test.assertEq(1, removedCount);
 };
+
+/**
+ * Tests that the cloud icon does not appear if bulk pinning is disabled.
+ */
+testcase.toolbarCloudIconShouldNotShowWhenBulkPinningDisabled = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
+};
+
+/**
+ * Tests that the cloud icon does not appear if the bulk pinning preference is
+ * disabled and the supplied Stage does not have a UI state in the progress
+ * panel.
+ */
+testcase
+    .toolbarCloudIconShouldNotShowIfPreferenceDisabledAndNoUIStateAvailable =
+    async () => {
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
+
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
+};
+
+/**
+ * Tests that the cloud icon should only show when the bulk pinning is in
+ * progress.
+ */
+testcase.toolbarCloudIconShouldShowForInProgress = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
+
+  // Mock the free space returned by spaced to be 1 GB, the test files
+  // initialized on the Drive root are 92 KB so well below the 1GB space
+  // requirement.
+  await sendTestMessage(
+      {name: 'setSpacedFreeSpace', freeSpace: 1024 * 1024 * 1024});
+
+  // Enable the bulk pinning preference and assert the cloud button is no longer
+  // hidden.
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+  await remoteCall.waitForElementLost(appId, '#cloud-button[hidden]');
+};
+
+/**
+ * Tests that the cloud icon should show when there is not enough disk space
+ * available to pin.
+ */
+testcase.toolbarCloudIconShowsWhenNotEnoughDiskSpaceIsReturned = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
+
+  // Mock the free space available as 100 MB, this will trigger the
+  // `NotEnoughSpace` stage for bulk pinning.
+  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 100 * 1024});
+
+  // Enable the bulk pinning preference and even though the end state is an
+  // error, there is a UI state to show so the toolbar should still be visible.
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+  await remoteCall.waitForElementLost(appId, '#cloud-button[hidden]');
+};
+
+
+/**
+ * Tests that the cloud icon should not show if an error state has been
+ * returned (in this case `CannotGetFreeSpace`).
+ */
+testcase.toolbarCloudIconShouldNotShowWhenCannotGetFreeSpace = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
+
+  // Mock the free space returned by spaced to be 1 GB.
+  await sendTestMessage(
+      {name: 'setSpacedFreeSpace', freeSpace: 1024 * 1024 * 1024});
+
+  // Enable the bulk pinning preference and assert the cloud button is shown.
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+  await remoteCall.waitForElementLost(appId, '#cloud-button[hidden]');
+
+  // Mock the free space available as -1 which indicates an error returned
+  // during the free space retrieval.
+  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: -1});
+
+  // Force the bulk pinning manager to check for free space again (this
+  // currently is done on a 60s poll).
+  await sendTestMessage({name: 'forcePinManagerSpaceCheck'});
+  await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
+};
+
+/**
+ * Tests that when the cloud icon is pressed the xf-cloud-panel moves into space
+ * and resizes correctly.
+ */
+testcase.toolbarCloudIconWhenPressedShouldOpenCloudPanel = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
+
+  // Mock the free space returned by spaced to be 1 GB.
+  await sendTestMessage(
+      {name: 'setSpacedFreeSpace', freeSpace: 1024 * 1024 * 1024});
+
+  // Enable the bulk pinning preference and assert the cloud button is no longer
+  // hidden.
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+  await remoteCall.waitForElementLost(appId, '#cloud-button[hidden]');
+
+  // Ensure at first the cloud panel is not shown.
+  const styles = await remoteCall.waitForElementStyles(
+      appId, ['xf-cloud-panel', 'cr-action-menu', 'dialog'], ['left']);
+  chrome.test.assertEq(styles.renderedHeight, 0);
+  chrome.test.assertEq(styles.renderedWidth, 0);
+  chrome.test.assertEq(styles.renderedTop, 0);
+  chrome.test.assertEq(styles.renderedLeft, 0);
+
+  // Click the cloud icon and wait for the dialog to move into space.
+  await remoteCall.waitAndClickElement(appId, '#cloud-button:not([hidden])');
+  const caller = getCaller();
+  await repeatUntil(async () => {
+    const styles = await remoteCall.waitForElementStyles(
+        appId, ['xf-cloud-panel', 'cr-action-menu', 'dialog'], ['left']);
+
+    if (styles.renderedHeight > 0 && styles.renderedWidth > 0 &&
+        styles.renderedTop > 0 && styles.renderedLeft > 0) {
+      return true;
+    }
+
+    return pending(
+        caller, `Waiting for xf-cloud-panel to appear on left click.`);
+  });
+};

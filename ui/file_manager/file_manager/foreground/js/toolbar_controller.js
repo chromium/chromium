@@ -8,7 +8,10 @@ import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {State} from '../../externs/ts/state.js';
+import {Store} from '../../externs/ts/store.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {FileSelectionHandler} from './file_selection.js';
@@ -110,6 +113,12 @@ export class ToolbarController {
      * @const
      */
     this.pinnedToggle_ = queryRequiredElement('#pinned-toggle', this.toolbar_);
+
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
+    this.cloudButton_ = queryRequiredElement('#cloud-button', this.toolbar_);
 
     /**
      * @private {!Command}
@@ -225,6 +234,12 @@ export class ToolbarController {
      */
     this.a11y_ = a11y;
 
+    /**
+     * @private {!Store}
+     */
+    this.store_ = getStore();
+    this.store_.subscribe(this);
+
     this.selectionHandler_.addEventListener(
         FileSelectionHandler.EventType.CHANGE,
         this.onSelectionChanged_.bind(this));
@@ -253,6 +268,12 @@ export class ToolbarController {
 
     this.sharesheetButton_.addEventListener(
         'click', this.onSharesheetButtonClicked_.bind(this));
+
+    if (util.isDriveFsBulkPinningEnabled()) {
+      const cloudPanel = document.querySelector('xf-cloud-panel');
+      this.cloudButton_.addEventListener(
+          'click', () => cloudPanel.showAt(this.cloudButton_));
+    }
 
     this.togglePinnedCommand_.addEventListener(
         'checkedChange', this.updatePinnedToggle_.bind(this));
@@ -473,5 +494,48 @@ export class ToolbarController {
       this.deleteButton_.hidden = !this.moveToTrashCommand.disabled;
       this.moveToTrashButton_.hidden = this.moveToTrashCommand.disabled;
     }
+  }
+
+  /**
+   * Checks if the cloud icon should be showing or not based on the enablement
+   * of the user preferences, the feature flag and the existing stage.
+   * @param {!State} state latest state from the store.
+   */
+  onStateChanged(state) {
+    this.updateCloudButton_(state);
+  }
+
+  /**
+   * Updates the visibility of the cloud button.
+   * If the bulk pinning feature is on OR has finished with either `PAUSED` or
+   * `NOT_ENOUGH_SPACE` then show the cloud button, don't show otherwise.
+   * @param {!State} state latest state from the store.
+   * @private
+   */
+  updateCloudButton_(state) {
+    if (!util.isDriveFsBulkPinningEnabled()) {
+      // The cloud button is default hidden.
+      return;
+    }
+
+    const bulkPinningStage = state.bulkPinning?.stage;
+    // If the stage is in progress, show the cloud icon.
+    if (util.isBulkPinningInProgress(bulkPinningStage)) {
+      this.cloudButton_.hidden = false;
+      return;
+    }
+
+    // The `PAUSED` stage represents the user being offline and the
+    // `NOT_ENOUGH_SPACE` represents the user not having enough space on disk to
+    // download. Both have states in the progress panel, so show the cloud icon.
+    if (bulkPinningStage === chrome.fileManagerPrivate.BulkPinStage.PAUSED ||
+        bulkPinningStage ===
+            chrome.fileManagerPrivate.BulkPinStage.NOT_ENOUGH_SPACE) {
+      this.cloudButton_.hidden = false;
+      return;
+    }
+
+    // All other states should hide the cloud button.
+    this.cloudButton_.hidden = true;
   }
 }

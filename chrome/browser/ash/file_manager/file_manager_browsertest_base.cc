@@ -107,9 +107,11 @@
 #include "chrome/test/base/test_switches.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/fake_cros_disks_client.h"
+#include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/mount_point.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/smbfs/smbfs_host.h"
@@ -3046,6 +3048,30 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(timestamp.has_value());
     profile()->GetPrefs()->SetTime(prefs::kOfficeFileMovedToGoogleDrive,
                                    base::Time::FromJsTime(timestamp.value()));
+    return;
+  }
+
+  if (name == "setSpacedFreeSpace") {
+    absl::optional<int> free_space = value.FindInt("freeSpace");
+    ASSERT_TRUE(free_space.has_value());
+    ash::FakeSpacedClient::Get()->set_free_disk_space(free_space.value());
+    return;
+  }
+
+  if (name == "forcePinManagerSpaceCheck") {
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(integration_service, nullptr);
+    ASSERT_NE(integration_service->GetPinManager(), nullptr);
+    integration_service->GetPinManager()->CheckFreeSpace();
+    return;
+  }
+
+  if (name == "setBulkPinningEnabledPref") {
+    absl::optional<bool> enabled = value.FindBool("enabled");
+    ASSERT_TRUE(enabled.has_value());
+    profile()->GetPrefs()->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
+                                      enabled.value());
     return;
   }
 

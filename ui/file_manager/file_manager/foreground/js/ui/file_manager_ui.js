@@ -595,14 +595,6 @@ export class FileManagerUI {
     if (targetElement) {
       targetElement.focus();
     }
-
-    if (util.isDriveFsBulkPinningEnabled()) {
-      const cloudBtnEl = document.getElementById('cloud-button');
-      cloudBtnEl.removeAttribute('hidden');
-      const cloudPanelEl = document.querySelector('xf-cloud-panel');
-      cloudBtnEl.addEventListener(
-          'click', () => cloudPanelEl.showAt(cloudBtnEl));
-    }
   }
 
   /**

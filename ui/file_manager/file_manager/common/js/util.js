@@ -1552,4 +1552,20 @@ util.isOneDrive = (volumeInfo) => {
   return false;
 };
 
+/**
+ * Returns whether a bulk pin stage represents an in progress stage or not.
+ * @param {chrome.fileManagerPrivate.BulkPinStage|undefined} stage
+ * @returns {boolean}
+ */
+util.isBulkPinningInProgress = (stage) => {
+  switch (stage) {
+    case chrome.fileManagerPrivate.BulkPinStage.GETTING_FREE_SPACE:
+    case chrome.fileManagerPrivate.BulkPinStage.LISTING_FILES:
+    case chrome.fileManagerPrivate.BulkPinStage.SYNCING:
+      return true;
+    default:
+      return false;
+  }
+};
+
 export {util, UserCanceledError};

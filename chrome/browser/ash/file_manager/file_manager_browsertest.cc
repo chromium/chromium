@@ -8,6 +8,7 @@
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/gtest_prod_util.h"
 #include "base/immediate_crash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -1332,7 +1333,18 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FeatureIds({"screenplay-195b5b1d-2f7f-45ae-be5c-18b9c5d17674",
                          "screenplay-54b29b90-e689-4745-af0d-f8d336be2d13"}),
         TestCase("toolbarSharesheetContextMenuWithSelection"),
-        TestCase("toolbarSharesheetNoEntrySelected")));
+        TestCase("toolbarSharesheetNoEntrySelected"),
+        TestCase("toolbarCloudIconShouldNotShowWhenBulkPinningDisabled"),
+        TestCase("toolbarCloudIconShouldNotShowIfPreferenceDisabledAndNoUIState"
+                 "Available")
+            .EnableBulkPinning(),
+        TestCase("toolbarCloudIconShouldShowForInProgress").EnableBulkPinning(),
+        TestCase("toolbarCloudIconShowsWhenNotEnoughDiskSpaceIsReturned")
+            .EnableBulkPinning(),
+        TestCase("toolbarCloudIconShouldNotShowWhenCannotGetFreeSpace")
+            .EnableBulkPinning(),
+        TestCase("toolbarCloudIconWhenPressedShouldOpenCloudPanel")
+            .EnableBulkPinning()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     QuickView, /* quick_view.js */

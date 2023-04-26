@@ -245,6 +245,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // manager accordingly.
   void SetOnline(bool online);
 
+  // Periodically check for free space.
+  // Used in testing to override the 60s delay in space checks.
+  void CheckFreeSpace();
+
  private:
   // Progress of a file being synced or to be synced.
   struct File {
@@ -308,9 +312,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Invoked once Docs offline has been enabled.
   void OnDocsOfflineEnabled(drive::FileError error);
-
-  // Periodically check for free space.
-  void CheckFreeSpace();
 
   // Invoked on retrieval of free space during the periodic check.
   void OnFreeSpaceRetrieved2(int64_t free_space);

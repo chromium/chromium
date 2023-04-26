@@ -104,6 +104,13 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
   void GetNextPage(GetNextPageCallback callback) override {
     if (!drive_fs_) {
       std::move(callback).Run(drive::FileError::FILE_ERROR_ABORT, {});
+    } else if (next_page_called_) {
+      // If GetNextPage was previously called, on the next request send an empty
+      // array. This is the current way to identify if a query has no more
+      // results, however, this is slightly incorrect and b/277018122 tracks
+      // providing a more robust fix.
+      next_page_called_ = false;
+      std::move(callback).Run(drive::FILE_ERROR_OK, {});
     } else {
       // Default implementation: just search for a file name.
       callback_ = std::move(callback);
@@ -112,6 +119,7 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
           base::BindOnce(&SearchQuery::SearchFiles, drive_fs_->mount_path()),
           base::BindOnce(&SearchQuery::GetMetadata,
                          weak_ptr_factory_.GetWeakPtr()));
+      next_page_called_ = true;
     }
   }
 
@@ -280,6 +288,8 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
   GetNextPageCallback callback_;
   std::vector<drivefs::mojom::QueryItemPtr> results_;
   size_t pending_callbacks_ = 0;
+
+  bool next_page_called_ = false;
 
   base::WeakPtrFactory<SearchQuery> weak_ptr_factory_{this};
 };
