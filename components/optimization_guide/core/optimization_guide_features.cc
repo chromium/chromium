@@ -143,12 +143,6 @@ BASE_FEATURE(kPageEntitiesModelResetOnShutdown,
              "PageEntitiesModelResetOnShutdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This feature flag enables batch entities to only be fetched via one thread
-// hop.
-BASE_FEATURE(kPageEntitiesModelBatchEntityMetadataSimplification,
-             "PageEntitiesModelBatchEntityMetadataSimplification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables push notification of hints.
 BASE_FEATURE(kPushNotifications,
              "OptimizationGuidePushNotifications",
@@ -520,11 +514,6 @@ bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale) {
   return base::FeatureList::IsEnabled(kPageEntitiesPageContentAnnotations) &&
          IsSupportedLocaleForFeature(locale,
                                      kPageEntitiesPageContentAnnotations);
-}
-
-bool ShouldUseBatchEntityMetadataSimplication() {
-  return base::FeatureList::IsEnabled(
-      kPageEntitiesModelBatchEntityMetadataSimplification);
 }
 
 bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale) {

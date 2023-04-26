@@ -651,16 +651,6 @@ void PageContentAnnotationsService::GetMetadataForEntityId(
 #endif
 }
 
-void PageContentAnnotationsService::GetMetadataForEntityIds(
-    const base::flat_set<std::string>& entity_ids,
-    BatchEntityMetadataRetrievedCallback callback) {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  model_manager_->GetMetadataForEntityIds(entity_ids, std::move(callback));
-#else
-  std::move(callback).Run({});
-#endif
-}
-
 void PageContentAnnotationsService::OnURLVisited(
     history::HistoryService* history_service,
     const history::URLRow& url_row,

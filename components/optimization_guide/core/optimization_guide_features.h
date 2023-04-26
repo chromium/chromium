@@ -32,7 +32,6 @@ BASE_DECLARE_FEATURE(kPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageEntitiesPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageEntitiesModelBypassFilters);
 BASE_DECLARE_FEATURE(kPageEntitiesModelResetOnShutdown);
-BASE_DECLARE_FEATURE(kPageEntitiesModelBatchEntityMetadataSimplification);
 BASE_DECLARE_FEATURE(kPageVisibilityPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageTextExtraction);
 BASE_DECLARE_FEATURE(kPushNotifications);
@@ -241,10 +240,6 @@ bool ShouldExtractRelatedSearches();
 // Returns whether the page entities model should be executed on page content
 // for a user using |locale| as their browser language.
 bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale);
-
-// Returns whether to use the simplified path for fetching entity metadata for a
-// batch of entity IDs.
-bool ShouldUseBatchEntityMetadataSimplication();
 
 // Returns whether the page visibility model should be executed on page content
 // for a user using |locale| as their browser language.

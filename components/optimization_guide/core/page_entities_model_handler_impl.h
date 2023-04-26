@@ -78,13 +78,6 @@ class EntityAnnotatorHolder {
       PageEntitiesModelHandler::PageEntitiesModelEntityMetadataRetrievedCallback
           callback);
 
-  // Returns entity metadata from |entity_annotator_| for each entry in
-  // |entity_ids|. Should be invoked on |background_task_runner_|.
-  void GetMetadataForEntityIdsOnBackgroundThread(
-      const base::flat_set<std::string>& entity_ids,
-      PageEntitiesModelHandler::
-          PageEntitiesModelBatchEntityMetadataRetrievedCallback callback);
-
   // Gets the weak ptr to |this| on the background thread.
   base::WeakPtr<EntityAnnotatorHolder> GetBackgroundWeakPtr();
 
@@ -121,9 +114,6 @@ class PageEntitiesModelHandlerImpl : public OptimizationTargetModelObserver,
   void GetMetadataForEntityId(
       const std::string& entity_id,
       PageEntitiesModelEntityMetadataRetrievedCallback callback) override;
-  void GetMetadataForEntityIds(
-      const base::flat_set<std::string>& entity_ids,
-      PageEntitiesModelBatchEntityMetadataRetrievedCallback callback) override;
   void ExecuteModelWithInput(
       const std::string& text,
       PageEntitiesMetadataModelExecutedCallback callback) override;

@@ -4,7 +4,6 @@
 
 #include "components/optimization_guide/core/batch_entity_metadata_task.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
@@ -38,44 +37,15 @@ class TestEntityMetadataProvider : public EntityMetadataProvider {
             },
             entity_id, std::move(callback)));
   }
-  void GetMetadataForEntityIds(
-      const base::flat_set<std::string>& entity_ids,
-      BatchEntityMetadataRetrievedCallback callback) override {
-    main_thread_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](const base::flat_set<std::string>& entity_ids,
-               BatchEntityMetadataRetrievedCallback callback) {
-              base::flat_map<std::string, EntityMetadata> entity_metadata_map;
-              for (const auto& entity_id : entity_ids) {
-                if (entity_id == "nometadata") {
-                  continue;
-                }
-                EntityMetadata metadata;
-                metadata.human_readable_name = entity_id;
-                entity_metadata_map[entity_id] = metadata;
-              }
-              std::move(callback).Run(entity_metadata_map);
-            },
-            entity_ids, std::move(callback)));
-  }
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 };
 
-class BatchEntityMetadataTaskTest : public testing::Test,
-                                    public testing::WithParamInterface<bool> {
+class BatchEntityMetadataTaskTest : public testing::Test {
  public:
-  BatchEntityMetadataTaskTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kPageEntitiesModelBatchEntityMetadataSimplification);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kPageEntitiesModelBatchEntityMetadataSimplification);
-    }
-  }
+  BatchEntityMetadataTaskTest() = default;
+
   void SetUp() override {
     entity_metadata_provider_ = std::make_unique<TestEntityMetadataProvider>(
         task_environment_.GetMainThreadTaskRunner());
@@ -106,19 +76,12 @@ class BatchEntityMetadataTaskTest : public testing::Test,
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<TestEntityMetadataProvider> entity_metadata_provider_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    BatchEntityMetadataTaskTest,
-    /*ShouldUseBatchEntityMetadataSimplification=*/testing::Bool());
-
-TEST_P(BatchEntityMetadataTaskTest, Execute) {
+TEST_F(BatchEntityMetadataTaskTest, Execute) {
   base::flat_map<std::string, EntityMetadata> entity_metadata_map =
       ExecuteBatchEntityMetadataTask({
           "nometadata",

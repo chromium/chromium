@@ -31,12 +31,6 @@ class EntityMetadataProvider {
       const std::string& entity_id,
       EntityMetadataRetrievedCallback callback) = 0;
 
-  // Retrieves the metadata associated for each entry in |entity_ids|. Invokes
-  // |callback| when done.
-  virtual void GetMetadataForEntityIds(
-      const base::flat_set<std::string>& entity_ids,
-      BatchEntityMetadataRetrievedCallback callback) = 0;
-
  protected:
   EntityMetadataProvider() = default;
   virtual ~EntityMetadataProvider() = default;

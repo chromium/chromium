@@ -82,39 +82,6 @@ class TestEntityMetadataProvider
             },
             entity_id, std::move(callback)));
   }
-  void GetMetadataForEntityIds(
-      const base::flat_set<std::string>& entity_ids,
-      optimization_guide::BatchEntityMetadataRetrievedCallback callback)
-      override {
-    main_thread_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](const base::flat_set<std::string>& entity_ids,
-               optimization_guide::BatchEntityMetadataRetrievedCallback
-                   callback) {
-              base::flat_map<std::string, optimization_guide::EntityMetadata>
-                  entity_metadata_map;
-              for (const auto& entity_id : entity_ids) {
-                if (entity_id == "nometadata") {
-                  continue;
-                }
-                optimization_guide::EntityMetadata metadata;
-                metadata.human_readable_name = "rewritten-" + entity_id;
-                // Add it in twice to verify that a category only gets added
-                // once and it takes the max.
-                metadata.human_readable_categories.insert(
-                    {"category-" + entity_id, 0.6});
-                metadata.human_readable_categories.insert(
-                    {"category-" + entity_id, 0.5});
-                metadata.human_readable_categories.insert(
-                    {"toolow-" + entity_id, 0.01});
-                metadata.human_readable_aliases.push_back("alias-" + entity_id);
-                entity_metadata_map[entity_id] = metadata;
-              }
-              std::move(callback).Run(entity_metadata_map);
-            },
-            entity_ids, std::move(callback)));
-  }
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;

@@ -162,9 +162,6 @@ class PageContentAnnotationsService : public KeyedService,
   void GetMetadataForEntityId(
       const std::string& entity_id,
       EntityMetadataRetrievedCallback callback) override;
-  void GetMetadataForEntityIds(
-      const base::flat_set<std::string>& entity_ids,
-      BatchEntityMetadataRetrievedCallback callback) override;
 
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
