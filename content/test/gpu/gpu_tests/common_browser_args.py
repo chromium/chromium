@@ -8,6 +8,7 @@ from __future__ import print_function
 AUTOPLAY_POLICY_NO_USER_GESTURE_REQUIRED =\
     '--autoplay-policy=no-user-gesture-required'
 DISABLE_ACCELERATED_2D_CANVAS = '--disable-accelerated-2d-canvas'
+DISABLE_ACCELERATED_VIDEO_DECODE = '--disable-accelerated-video-decode'
 DISABLE_DEVICE_DISCOVERY_NOTIFICATIONS = '--disable-features=MediaRouter'
 DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS =\
     '--disable_direct_composition_video_overlays=1'
