@@ -169,11 +169,10 @@ void ExtensionTelemetryServiceTest::RegisterExtensionWithExtensionService(
           .SetID(extension_id)
           .SetPath(path)
           .SetLocation(location)
-          .SetManifest(extensions::DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", extension_name)
                            .Set("version", kExtensionVersion)
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .AddFlags(flags)
           .Build();
 
@@ -829,8 +828,8 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyTimestampsInPrefs) {
   // Set up pref dict:
   // extension 0 - empty timestamp string
   // extension 1 - missing timestamp key
-  base::Value::Dict extension_0_dict;
-  extension_0_dict.Set(kFileDataProcessTimestampPref, "");
+  auto extension_0_dict =
+      base::Value::Dict().Set(kFileDataProcessTimestampPref, "");
   base::Value::Dict empty_timestamps_dict;
   empty_timestamps_dict.Set(kExtensionId[0], std::move(extension_0_dict));
   empty_timestamps_dict.Set(kExtensionId[1], base::Value::Dict());

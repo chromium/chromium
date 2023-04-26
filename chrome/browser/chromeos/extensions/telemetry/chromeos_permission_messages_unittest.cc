@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/permissions_test_util.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
@@ -22,7 +23,6 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/permissions_info.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -73,14 +73,11 @@ class ChromeOSPermissionMessageUnittest : public testing::Test {
                .SetManifestKey("permissions", std::move(required_permissions))
                .SetManifestKey("optional_permissions",
                                std::move(optional_permissions))
-               .SetManifestKey(
-                   "externally_connectable",
-                   extensions::DictionaryBuilder()
-                       .Set("matches",
-                            extensions::ListBuilder()
-                                .Append("*://googlechromelabs.github.io/*")
-                                .Build())
-                       .Build())
+               .SetManifestKey("externally_connectable",
+                               base::Value::Dict().Set(
+                                   "matches",
+                                   base::Value::List().Append(
+                                       "*://googlechromelabs.github.io/*")))
                .SetID(kChromeOSSystemExtensionId)  // only allowlisted id
                .SetLocation(ManifestLocation::kInternal)
                .Build();
@@ -141,7 +138,7 @@ class ChromeOSPermissionMessageUnittest : public testing::Test {
 TEST_F(ChromeOSPermissionMessageUnittest, OsAttachedDeviceInfo) {
   CreateAndInstallExtensionWithPermissions(
       base::Value::List(),
-      extensions::ListBuilder().Append("os.attached_device_info").Build());
+      base::Value::List().Append("os.attached_device_info"));
 
   ASSERT_EQ(1U, optional_permissions().size());
   EXPECT_EQ(kAttachedDeviceInfo, optional_permissions()[0]);
@@ -159,8 +156,7 @@ TEST_F(ChromeOSPermissionMessageUnittest, OsAttachedDeviceInfo) {
 
 TEST_F(ChromeOSPermissionMessageUnittest, OsDiagnosticsMessage) {
   CreateAndInstallExtensionWithPermissions(
-      extensions::ListBuilder().Append("os.diagnostics").Build(),
-      base::Value::List());
+      base::Value::List().Append("os.diagnostics"), base::Value::List());
 
   ASSERT_EQ(0U, optional_permissions().size());
   ASSERT_EQ(1U, required_permissions().size());
@@ -171,8 +167,7 @@ TEST_F(ChromeOSPermissionMessageUnittest, OsDiagnosticsMessage) {
 
 TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryMessage) {
   CreateAndInstallExtensionWithPermissions(
-      extensions::ListBuilder().Append("os.telemetry").Build(),
-      base::Value::List());
+      base::Value::List().Append("os.telemetry"), base::Value::List());
 
   ASSERT_EQ(0U, optional_permissions().size());
   ASSERT_EQ(1U, required_permissions().size());
@@ -184,7 +179,7 @@ TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryMessage) {
 TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetrySerialNumber) {
   CreateAndInstallExtensionWithPermissions(
       base::Value::List(),
-      extensions::ListBuilder().Append("os.telemetry.serial_number").Build());
+      base::Value::List().Append("os.telemetry.serial_number"));
 
   ASSERT_EQ(1U, optional_permissions().size());
   EXPECT_EQ(kTelemetrySerialNumberPermissionMessage, optional_permissions()[0]);
@@ -204,7 +199,7 @@ TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetrySerialNumber) {
 TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryNetworkInformation) {
   CreateAndInstallExtensionWithPermissions(
       base::Value::List(),
-      extensions::ListBuilder().Append("os.telemetry.network_info").Build());
+      base::Value::List().Append("os.telemetry.network_info"));
 
   ASSERT_EQ(1U, optional_permissions().size());
   EXPECT_EQ(kTelemetryNetworkInformationPermissionMessage,
@@ -225,8 +220,7 @@ TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryNetworkInformation) {
 
 TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryEvents_ErrorFeatureFlag) {
   CreateAndInstallExtensionWithPermissions(
-      base::Value::List(),
-      extensions::ListBuilder().Append("os.events").Build());
+      base::Value::List(), base::Value::List().Append("os.events"));
 
   EXPECT_EQ(0U, optional_permissions().size());
   EXPECT_EQ(0U, GetInactiveOptionalPermissionMessages().size());
@@ -250,8 +244,7 @@ class ChromeOSPermissionMessageUnittestWithPendingApprovalPermission
 TEST_F(ChromeOSPermissionMessageUnittestWithPendingApprovalPermission,
        OsTelemetryEventsMessage) {
   CreateAndInstallExtensionWithPermissions(
-      base::Value::List(),
-      extensions::ListBuilder().Append("os.events").Build());
+      base::Value::List(), base::Value::List().Append("os.events"));
 
   ASSERT_EQ(1U, optional_permissions().size());
   EXPECT_EQ(kTelemetryEventsPermissionMessage, optional_permissions()[0]);

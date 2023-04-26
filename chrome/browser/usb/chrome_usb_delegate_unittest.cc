@@ -24,13 +24,13 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/command_line.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
@@ -168,16 +168,16 @@ class ChromeUsbDelegateTest : public ChromeRenderViewHostTestHarness {
   // Creates a fake extension with the specified `extension_id` so that it can
   // exercise behaviors that are only enabled for privileged extensions.
   absl::optional<GURL> CreateExtensionWithId(base::StringPiece extension_id) {
-    extensions::DictionaryBuilder manifest;
-    manifest.Set("name", "Fake extension")
-        .Set("description", "For testing.")
-        .Set("version", "0.1")
-        .Set("manifest_version", 2)
-        .Set("web_accessible_resources",
-             extensions::ListBuilder().Append("index.html").Build());
+    auto manifest = base::Value::Dict()
+                        .Set("name", "Fake extension")
+                        .Set("description", "For testing.")
+                        .Set("version", "0.1")
+                        .Set("manifest_version", 2)
+                        .Set("web_accessible_resources",
+                             base::Value::List().Append("index.html"));
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder()
-            .SetManifest(manifest.Build())
+            .SetManifest(std::move(manifest))
             .SetID(std::string(extension_id))
             .Build();
     if (!extension) {

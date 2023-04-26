@@ -13,12 +13,12 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -54,14 +54,14 @@ TEST_F(CreateChooserTitleTest, UrlFrameTree) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(CreateChooserTitleTest, ExtensionsFrameTree) {
-  extensions::DictionaryBuilder manifest;
-  manifest.Set("name", "Chooser Title Subframe Test")
-      .Set("version", "0.1")
-      .Set("manifest_version", 2)
-      .Set("web_accessible_resources",
-           extensions::ListBuilder().Append("index.html").Build());
+  auto manifest = base::Value::Dict()
+                      .Set("name", "Chooser Title Subframe Test")
+                      .Set("version", "0.1")
+                      .Set("manifest_version", 2)
+                      .Set("web_accessible_resources",
+                           base::Value::List().Append("index.html"));
   scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionBuilder().SetManifest(manifest.Build()).Build();
+      extensions::ExtensionBuilder().SetManifest(std::move(manifest)).Build();
   ASSERT_TRUE(extension);
 
   extensions::TestExtensionSystem* extension_system =

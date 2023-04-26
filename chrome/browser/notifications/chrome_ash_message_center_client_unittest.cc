@@ -146,83 +146,62 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
   const std::string kBafId = "dddddddddddddddddddddddddddddddd";
 
   foo_app.SetManifest(
-      extensions::DictionaryBuilder()
+      base::Value::Dict()
           .Set("name", "Foo")
           .Set("version", "1.0.0")
           .Set("manifest_version", 2)
-          .Set("app", extensions::DictionaryBuilder()
-                          .Set("background",
-                               extensions::DictionaryBuilder()
-                                   .Set("scripts", extensions::ListBuilder()
-                                                       .Append("background.js")
-                                                       .Build())
-                                   .Build())
-                          .Build())
-          .Set("permissions",
-               extensions::ListBuilder().Append("notifications").Build())
-          .Build());
+          .Set("app",
+               base::Value::Dict().Set(
+                   "background",
+                   base::Value::Dict().Set(
+                       "scripts", base::Value::List().Append("background.js"))))
+          .Set("permissions", base::Value::List().Append("notifications")));
   foo_app.SetID(kFooId);
   extension_service->AddExtension(foo_app.Build().get());
 
   extensions::ExtensionBuilder bar_app;
   bar_app.SetManifest(
-      extensions::DictionaryBuilder()
+      base::Value::Dict()
           .Set("name", "Bar")
           .Set("version", "1.0.0")
           .Set("manifest_version", 2)
-          .Set("app", extensions::DictionaryBuilder()
-                          .Set("background",
-                               extensions::DictionaryBuilder()
-                                   .Set("scripts", extensions::ListBuilder()
-                                                       .Append("background.js")
-                                                       .Build())
-                                   .Build())
-                          .Build())
-          .Set("permissions",
-               extensions::ListBuilder().Append("notifications").Build())
-          .Build());
+          .Set("app",
+               base::Value::Dict().Set(
+                   "background",
+                   base::Value::Dict().Set(
+                       "scripts", base::Value::List().Append("background.js"))))
+          .Set("permissions", base::Value::List().Append("notifications")));
   bar_app.SetID(kBarId);
   extension_service->AddExtension(bar_app.Build().get());
 
   extensions::ExtensionBuilder baz_app;
   baz_app.SetManifest(
-      extensions::DictionaryBuilder()
+      base::Value::Dict()
           .Set("name", "baz")
           .Set("version", "1.0.0")
           .Set("manifest_version", 2)
-          .Set("app", extensions::DictionaryBuilder()
-                          .Set("background",
-                               extensions::DictionaryBuilder()
-                                   .Set("scripts", extensions::ListBuilder()
-                                                       .Append("background.js")
-                                                       .Build())
-                                   .Build())
-                          .Build())
-          .Build());
+          .Set("app", base::Value::Dict().Set(
+                          "background",
+                          base::Value::Dict().Set(
+                              "scripts",
+                              base::Value::List().Append("background.js")))));
   baz_app.SetID(kBazId);
   extension_service->AddExtension(baz_app.Build().get());
 
   extensions::ExtensionBuilder baf_app;
   baf_app.SetManifest(
-      extensions::DictionaryBuilder()
+      base::Value::Dict()
           .Set("name", "baf")
           .Set("version", "1.0.0")
           .Set("manifest_version", 2)
-          .Set("app",
-               extensions::DictionaryBuilder()
-                   .Set("urls", extensions::ListBuilder()
-                                    .Append("http://localhost/extensions/"
-                                            "hosted_app/main.html")
-                                    .Build())
-                   .Build())
-          .Set("launch",
-               extensions::DictionaryBuilder()
-                   .Set("urls", extensions::ListBuilder()
-                                    .Append("http://localhost/extensions/"
-                                            "hosted_app/main.html")
-                                    .Build())
-                   .Build())
-          .Build());
+          .Set("app", base::Value::Dict().Set("urls",
+                                              base::Value::List().Append(
+                                                  "http://localhost/extensions/"
+                                                  "hosted_app/main.html")))
+          .Set("launch", base::Value::Dict().Set(
+                             "urls", base::Value::List().Append(
+                                         "http://localhost/extensions/"
+                                         "hosted_app/main.html"))));
 
   baf_app.SetID(kBafId);
   extension_service->AddExtension(baf_app.Build().get());

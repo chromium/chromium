@@ -39,12 +39,12 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/command_line.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -230,17 +230,17 @@ class ChromeHidTestHelper {
   // exercise behaviors that are only enabled for privileged extensions.
   scoped_refptr<const extensions::Extension> CreateExtensionWithId(
       base::StringPiece extension_id) {
-    extensions::DictionaryBuilder manifest;
-    manifest.Set("name", "Fake extension")
-        .Set("description", "For testing.")
-        .Set("version", "0.1")
-        .Set("manifest_version", 2)
-        .Set("web_accessible_resources", extensions::ListBuilder()
-                                             .Append(kExtensionDocumentFileName)
-                                             .Build());
+    auto manifest =
+        base::Value::Dict()
+            .Set("name", "Fake extension")
+            .Set("description", "For testing.")
+            .Set("version", "0.1")
+            .Set("manifest_version", 2)
+            .Set("web_accessible_resources",
+                 base::Value::List().Append(kExtensionDocumentFileName));
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder()
-            .SetManifest(manifest.Build())
+            .SetManifest(std::move(manifest))
             .SetID(std::string(extension_id))
             .Build();
     if (!extension) {
