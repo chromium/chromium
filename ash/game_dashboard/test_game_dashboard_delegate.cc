@@ -7,7 +7,7 @@
 namespace ash {
 
 bool TestGameDashboardDelegate::IsGame(const std::string& app_id) const {
-  return false;
+  return app_id == kGameAppId;
 }
 
 }  // namespace ash

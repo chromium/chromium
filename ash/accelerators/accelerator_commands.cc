@@ -521,7 +521,7 @@ bool CanToggleGameDashboard() {
     return false;
   }
   aura::Window* window = GetTargetWindow();
-  return window && GameDashboardController::Get()->IsSupported(window);
+  return window && GameDashboardController::IsGame(window);
 }
 
 bool CanToggleMultitaskMenu() {

@@ -11,6 +11,9 @@ namespace ash {
 
 class TestGameDashboardDelegate : public GameDashboardDelegate {
  public:
+  static constexpr char kGameAppId[] = "gameAppId";
+  static constexpr char kOtherAppId[] = "otherAppId";
+
   TestGameDashboardDelegate() = default;
   TestGameDashboardDelegate(const TestGameDashboardDelegate&) = delete;
   TestGameDashboardDelegate& operator=(const TestGameDashboardDelegate&) =

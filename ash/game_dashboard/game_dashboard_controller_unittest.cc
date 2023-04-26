@@ -8,13 +8,55 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/game_dashboard/test_game_dashboard_delegate.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
+#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 
 namespace ash {
+
+namespace {
+
+class IsGameWindowPropertyObserver : public aura::WindowObserver {
+ public:
+  explicit IsGameWindowPropertyObserver(aura::Window* window)
+      : window_(window) {
+    window_->AddObserver(this);
+    received_on_property_change = false;
+  }
+
+  IsGameWindowPropertyObserver(const IsGameWindowPropertyObserver&) = delete;
+  IsGameWindowPropertyObserver& operator=(const IsGameWindowPropertyObserver&) =
+      delete;
+
+  ~IsGameWindowPropertyObserver() override { window_->RemoveObserver(this); }
+
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    if (key != ash::kIsGameKey) {
+      return;
+    }
+    received_on_property_change = true;
+    run_loop_.Quit();
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  bool received_on_property_change;
+
+ private:
+  aura::Window* window_;
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
 
 class GameDashboardControllerTest : public AshTestBase {
  protected:
@@ -36,24 +78,74 @@ class GameDashboardControllerTest : public AshTestBase {
     base::SysInfo::ResetChromeOSVersionInfoForTest();
   }
 
+  bool IsObservingWindow(aura::Window* window) const {
+    return GameDashboardController::Get()
+        ->window_observations_.IsObservingSource(window);
+  }
+
+  void VerifyIsGameWindowProperty(const char app_id[],
+                                  bool expected_is_game,
+                                  AppType app_type = AppType::NON_APP) {
+    std::unique_ptr<aura::Window> window =
+        CreateAppWindow(gfx::Rect(5, 5, 20, 20), app_type);
+    EXPECT_TRUE(IsObservingWindow(window.get()));
+    const auto observer =
+        std::make_unique<IsGameWindowPropertyObserver>(window.get());
+    EXPECT_FALSE(observer->received_on_property_change);
+    window->SetProperty(kAppIDKey, std::string(app_id));
+    observer->Wait();
+    EXPECT_TRUE(observer->received_on_property_change);
+
+    EXPECT_EQ(expected_is_game, IsObservingWindow(window.get()));
+    EXPECT_EQ(expected_is_game, GameDashboardController::IsGame(window.get()));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests
 // -----------------------------------------------------------------------
-// Verifies that GameDashboard is supported only on ARC apps.
-TEST_F(GameDashboardControllerTest, IsSupported) {
-  // Verifies ARC app windows are supported.
-  auto owned_arc_window =
-      CreateAppWindow(gfx::Rect(5, 5, 20, 20), ash::AppType::ARC_APP);
-  EXPECT_TRUE(
-      GameDashboardController::Get()->IsSupported(owned_arc_window.get()));
+// Verifies a window is a game if ash::kIsGameKey is set to true.
+TEST_F(GameDashboardControllerTest, IsGame) {
+  auto owned_window = CreateAppWindow();
+  EXPECT_FALSE(GameDashboardController::IsGame(owned_window.get()));
+  owned_window->SetProperty(kIsGameKey, true);
+  EXPECT_TRUE(GameDashboardController::IsGame(owned_window.get()));
+}
 
-  // Verifies non-ARC app windows are NOT supported.
-  auto owned_browser_window =
-      CreateAppWindow(gfx::Rect(5, 5, 20, 20), ash::AppType::BROWSER);
-  EXPECT_FALSE(
-      GameDashboardController::Get()->IsSupported(owned_browser_window.get()));
+// Verifies a non-normal window type is not a game and not being observed.
+TEST_F(GameDashboardControllerTest, IsGameWindowProperty_NonNormalWindowType) {
+  auto non_normal_window = CreateTestWindow(
+      gfx::Rect(5, 5, 20, 20), aura::client::WindowType::WINDOW_TYPE_MENU);
+  const auto observer =
+      std::make_unique<IsGameWindowPropertyObserver>(non_normal_window.get());
+  EXPECT_FALSE(observer->received_on_property_change);
+  EXPECT_FALSE(IsObservingWindow(non_normal_window.get()));
+  EXPECT_FALSE(GameDashboardController::IsGame(non_normal_window.get()));
+}
+
+TEST_F(GameDashboardControllerTest, IsGameWindowProperty_GameArcWindow) {
+  // Verifies a game ARC window is a game.
+  VerifyIsGameWindowProperty(TestGameDashboardDelegate::kGameAppId,
+                             true /* expected_is_game */, AppType::ARC_APP);
+}
+
+TEST_F(GameDashboardControllerTest, IsGameWindowProperty_OtherArcWindow) {
+  // Verifies a not-game ARC window is not a game.
+  VerifyIsGameWindowProperty(TestGameDashboardDelegate::kOtherAppId,
+                             false /* expected_is_game */, AppType::ARC_APP);
+}
+
+TEST_F(GameDashboardControllerTest, IsGameWindowProperty_GFNWindows) {
+  // Verifies a GeForceNow window is a game.
+  VerifyIsGameWindowProperty(extension_misc::kGeForceNowAppId,
+                             true /* expected_is_game */);
+}
+
+TEST_F(GameDashboardControllerTest, IsGameWindowProperty_OtherWindows) {
+  // Verifies a non-game non-ARC window is not a game.
+  VerifyIsGameWindowProperty(TestGameDashboardDelegate::kOtherAppId,
+                             false /* expected_is_game */);
 }
 
 }  // namespace ash

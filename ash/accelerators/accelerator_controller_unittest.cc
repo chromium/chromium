@@ -24,6 +24,7 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/game_dashboard/test_game_dashboard_delegate.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/test_ime_controller_client.h"
 #include "ash/media/media_controller_impl.h"
@@ -32,6 +33,7 @@
 #include "ash/public/cpp/ime_info.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/brightness_control_delegate.h"
@@ -3276,24 +3278,22 @@ TEST_F(AcceleratorControllerGameDashboardTests,
   // No active window.
   EXPECT_FALSE(ProcessInController(accelerator));
 
-  // Create a new window.
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
-  wm::ActivateWindow(window.get());
-
   // Verify cannot toggle for unsupported app types.
   const AppType unsupported_window_types[] = {
       AppType::NON_APP,      AppType::BROWSER,    AppType::CHROME_APP,
       AppType::CROSTINI_APP, AppType::SYSTEM_APP, AppType::LACROS};
   for (AppType unsupported_window_type : unsupported_window_types) {
+    std::unique_ptr<aura::Window> window =
+        CreateAppWindow(gfx::Rect(5, 5, 20, 20), unsupported_window_type);
     window->SetProperty(aura::client::kAppType,
                         static_cast<int>(unsupported_window_type));
     EXPECT_FALSE(ProcessInController(accelerator));
   }
 
-  // Set the window's app type to ARC.
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(AppType::ARC_APP));
+  std::unique_ptr<aura::Window> window =
+      CreateAppWindow(gfx::Rect(5, 5, 20, 20), AppType::ARC_APP);
+  window->SetProperty(kAppIDKey,
+                      std::string(TestGameDashboardDelegate::kGameAppId));
   EXPECT_TRUE(ProcessInController(accelerator));
 }
 
