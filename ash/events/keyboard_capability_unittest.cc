@@ -913,6 +913,9 @@ TEST_F(KeyboardCapabilityTest, TopRowLayout1) {
   for (const auto action_key : ui::kLayout1TopRowActionKeys) {
     EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
                                  input_device, action_key));
+    EXPECT_EQ(action_key,
+              keyboard_capability_->GetCorrespondingActionKeyForFKey(
+                  input_device, expected_fkey));
     expected_fkey =
         static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
   }
@@ -938,6 +941,9 @@ TEST_F(KeyboardCapabilityTest, TopRowLayout2) {
   for (const auto action_key : ui::kLayout2TopRowActionKeys) {
     EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
                                  input_device, action_key));
+    EXPECT_EQ(action_key,
+              keyboard_capability_->GetCorrespondingActionKeyForFKey(
+                  input_device, expected_fkey));
     expected_fkey =
         static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
   }
@@ -975,6 +981,12 @@ TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
                                  wilco_device, action_key));
     EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
                                  drallion_device, action_key));
+    EXPECT_EQ(action_key,
+              keyboard_capability_->GetCorrespondingActionKeyForFKey(
+                  wilco_device, expected_fkey));
+    EXPECT_EQ(action_key,
+              keyboard_capability_->GetCorrespondingActionKeyForFKey(
+                  drallion_device, expected_fkey));
     expected_fkey =
         static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
   }
@@ -1124,6 +1136,9 @@ TEST_P(TopRowLayoutCustomTest, TopRowLayout) {
   for (const auto action_key : top_row_action_keys_) {
     EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
                                  keyboard, action_key));
+    EXPECT_EQ(action_key,
+              keyboard_capability_->GetCorrespondingActionKeyForFKey(
+                  keyboard, expected_fkey));
     expected_fkey =
         static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
   }

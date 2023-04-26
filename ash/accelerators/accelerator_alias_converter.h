@@ -33,9 +33,12 @@ class ASH_EXPORT AcceleratorAliasConverter {
       const ui::Accelerator& accelerator) const;
 
  private:
-  // Create accelerator alias for |top_row_key| for all currently connected
-  // keyboards.
+  // Create accelerator alias for |top_row_key| for the priority keyboard.
   std::vector<ui::Accelerator> CreateTopRowAliases(
+      const ui::Accelerator& accelerator) const;
+
+  // Create accelerator alias for |function_key| for the priority keyboard.
+  std::vector<ui::Accelerator> CreateFunctionKeyAliases(
       const ui::Accelerator& accelerator) const;
 
   // Create accelerator alias for |six_pack_key|. Result could be either zero or

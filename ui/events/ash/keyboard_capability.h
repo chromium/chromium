@@ -258,6 +258,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
   static absl::optional<TopRowActionKey> ConvertToTopRowActionKey(
       ui::KeyboardCode key_code);
 
+  // Converts the given `action_key` to the corresponding `KeyboardCode` VKEY.
+  static absl::optional<KeyboardCode> ConvertToKeyboardCode(
+      TopRowActionKey action_key);
+
   void AddObserver(Observer* observer);
 
   void RemoveObserver(Observer* observer);
@@ -287,8 +291,8 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // kReversedSixPackKeyToSystemKeyMap.
   static bool IsReversedSixPackKey(const KeyboardCode& key_code);
 
-  // Find the mapped function key if the given key code is a top row key for the
-  // given keyboard.
+  // Find the mapped function key if the given key code is a top row key for
+  // the given keyboard.
   // TODO(zhangwenyu): Support custom vivaldi layouts.
   absl::optional<KeyboardCode> GetMappedFKeyIfExists(
       const KeyboardCode& key_code,
@@ -370,6 +374,12 @@ class KeyboardCapability : public InputDeviceEventObserver {
   absl::optional<KeyboardCode> GetCorrespondingFunctionKey(
       const InputDevice& keyboard,
       TopRowActionKey action_key) const;
+
+  // Gets the corresponding action key for the given `key_code` which must be an
+  // F-Key in the range of F1 to F24 for the given `keyboard`
+  absl::optional<TopRowActionKey> GetCorrespondingActionKeyForFKey(
+      const InputDevice& keyboard,
+      KeyboardCode key_code) const;
 
   const base::flat_map<int, KeyboardInfo>& keyboard_info_map() const {
     return keyboard_info_map_;

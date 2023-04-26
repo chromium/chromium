@@ -275,6 +275,12 @@ INSTANTIATE_TEST_SUITE_P(
          {ui::Accelerator{ui::VKEY_BROWSER_BACK,
                           ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
+        // For layout 1, remap F1 to back key.
+        {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL},
+         {kKbdTopRowLayout1Tag},
+         ui::Accelerator{ui::VKEY_F1, ui::EF_ALT_DOWN},
+         {ui::Accelerator{ui::VKEY_BROWSER_BACK, ui::EF_ALT_DOWN}}},
+
         // For internal keyboard only, layout1 doesn't have
         // VKEY_MEDIA_PLAY_PAUSE key.
         {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL},
@@ -288,6 +294,12 @@ INSTANTIATE_TEST_SUITE_P(
          {kKbdTopRowLayout2Tag},
          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_ALT_DOWN},
          {}},
+
+        // For layout2, remap F2 to refresh key.
+        {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL},
+         {kKbdTopRowLayout2Tag},
+         ui::Accelerator{ui::VKEY_F2, ui::EF_ALT_DOWN},
+         {ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_ALT_DOWN}}},
 
         // Layout2 doesn't have VKEY_ALL_APPLICATIONS key.
         {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL},

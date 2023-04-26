@@ -82,6 +82,13 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
     return FilterAliasBySupportedKeys(aliases);
   }
 
+  // For |function_key|, replace the base accelerator with the action key
+  // remapped accelerator if the priority keyboard is a ChromeOS keyboard.
+  aliases = CreateFunctionKeyAliases(accelerator);
+  if (!aliases.empty()) {
+    return FilterAliasBySupportedKeys(aliases);
+  }
+
   // For |six_pack_key| and |reversed_six_pack_key|, show both the base
   // accelerator and the remapped accelerator if applicable. Otherwise, only
   // show base accelerator.
@@ -97,6 +104,75 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
   // Add base accelerator.
   aliases.push_back(accelerator);
   return FilterAliasBySupportedKeys(aliases);
+}
+
+std::vector<ui::Accelerator>
+AcceleratorAliasConverter::CreateFunctionKeyAliases(
+    const ui::Accelerator& accelerator) const {
+  // TODO(dpad): Handle the case when meta + top row key rewrite is
+  // suppressed.
+  // Avoid remapping if [Search] is part of the original accelerator.
+  if (accelerator.IsCmdDown()) {
+    return {};
+  }
+
+  // Only attempt to alias if the provided accelerator is for an F-Key.
+  if (accelerator.key_code() < ui::VKEY_F1 ||
+      accelerator.key_code() > ui::VKEY_F24) {
+    return {};
+  }
+
+  absl::optional<ui::InputDevice> priority_keyboard = GetPriorityKeyboard();
+  if (!priority_keyboard.has_value()) {
+    return {};
+  }
+
+  const bool top_row_are_fkeys = [&]() -> bool {
+    if (features::IsInputDeviceSettingsSplitEnabled()) {
+      const auto* settings =
+          Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
+              priority_keyboard->id);
+      return settings && settings->top_row_are_fkeys;
+    }
+    return Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys();
+  }();
+
+  // Attempt to get the corresponding `ui::TopRowActionKey` for the given F-Key.
+  absl::optional<ui::TopRowActionKey> action_key =
+      Shell::Get()->keyboard_capability()->GetCorrespondingActionKeyForFKey(
+          *priority_keyboard, accelerator.key_code());
+  if (!action_key) {
+    return {};
+  }
+
+  // Convert the `ui::TopRowActionKey` to the corresponding `ui::KeyboardCode`
+  absl::optional<ui::KeyboardCode> action_vkey =
+      ui::KeyboardCapability::ConvertToKeyboardCode(*action_key);
+  if (!action_vkey) {
+    return {};
+  }
+
+  if (IsChromeOSKeyboard(*priority_keyboard)) {
+    // If `priority_keyboard` is a ChromeOS keyboard, the UI should show the
+    // corresponding action key, the the F-Key glyph.
+    if (top_row_are_fkeys) {
+      return {ui::Accelerator(*action_vkey, accelerator.modifiers(),
+                              accelerator.key_state())};
+    } else {
+      return {ui::Accelerator(*action_vkey,
+                              accelerator.modifiers() | ui::EF_COMMAND_DOWN,
+                              accelerator.key_state())};
+    }
+  } else {
+    // On a non-chromeos keyboard, UI should show the F-Key instead.
+    if (top_row_are_fkeys) {
+      return {accelerator};
+    } else {
+      return {ui::Accelerator(accelerator.key_code(),
+                              accelerator.modifiers() | ui::EF_COMMAND_DOWN,
+                              accelerator.key_state())};
+    }
+  }
 }
 
 std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(

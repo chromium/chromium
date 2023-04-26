@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
@@ -66,6 +67,32 @@ constexpr KeyboardCode kFunctionKeys[] = {
 constexpr KeyboardCode kMaxCustomTopRowLayoutFKeyCode = VKEY_F15;
 constexpr size_t kNumCustomTopRowFKeys =
     (kMaxCustomTopRowLayoutFKeyCode - VKEY_F1) + 1;
+
+// Map used to convert VKEY -> TopRowActionKey and vice versa.
+constexpr auto kVKeyToTopRowActionKeyMap =
+    base::MakeFixedFlatMap<ui::KeyboardCode, TopRowActionKey>({
+        {VKEY_BROWSER_BACK, TopRowActionKey::kBack},
+        {VKEY_BROWSER_FORWARD, TopRowActionKey::kForward},
+        {VKEY_BROWSER_REFRESH, TopRowActionKey::kRefresh},
+        {VKEY_ZOOM, TopRowActionKey::kFullscreen},
+        {VKEY_MEDIA_LAUNCH_APP1, TopRowActionKey::kOverview},
+        {VKEY_SNAPSHOT, TopRowActionKey::kScreenshot},
+        {VKEY_BRIGHTNESS_DOWN, TopRowActionKey::kScreenBrightnessDown},
+        {VKEY_BRIGHTNESS_UP, TopRowActionKey::kScreenBrightnessUp},
+        {VKEY_MICROPHONE_MUTE_TOGGLE, TopRowActionKey::kMicrophoneMute},
+        {VKEY_VOLUME_MUTE, TopRowActionKey::kVolumeMute},
+        {VKEY_VOLUME_DOWN, TopRowActionKey::kVolumeDown},
+        {VKEY_VOLUME_UP, TopRowActionKey::kVolumeUp},
+        {VKEY_KBD_BACKLIGHT_TOGGLE, TopRowActionKey::kKeyboardBacklightToggle},
+        {VKEY_KBD_BRIGHTNESS_DOWN, TopRowActionKey::kKeyboardBacklightDown},
+        {VKEY_KBD_BRIGHTNESS_UP, TopRowActionKey::kKeyboardBacklightUp},
+        {VKEY_MEDIA_NEXT_TRACK, TopRowActionKey::kNextTrack},
+        {VKEY_MEDIA_PREV_TRACK, TopRowActionKey::kPreviousTrack},
+        {VKEY_MEDIA_PLAY_PAUSE, TopRowActionKey::kPlayPause},
+        {VKEY_ALL_APPLICATIONS, TopRowActionKey::kAllApplications},
+        {VKEY_EMOJI_PICKER, TopRowActionKey::kEmojiPicker},
+        {VKEY_DICTATE, TopRowActionKey::kDictation},
+    });
 
 class StubKeyboardCapabilityDelegate : public KeyboardCapability::Delegate {
  public:
@@ -478,35 +505,21 @@ KeyboardCapability::CreateEventDeviceInfoFromInputDevice(
 // static
 absl::optional<TopRowActionKey> KeyboardCapability::ConvertToTopRowActionKey(
     ui::KeyboardCode key_code) {
-  static constexpr auto kVKeyToTopRowActionKeyMap =
-      base::MakeFixedFlatMap<ui::KeyboardCode, TopRowActionKey>({
-          {VKEY_BROWSER_BACK, TopRowActionKey::kBack},
-          {VKEY_BROWSER_FORWARD, TopRowActionKey::kForward},
-          {VKEY_BROWSER_REFRESH, TopRowActionKey::kRefresh},
-          {VKEY_ZOOM, TopRowActionKey::kFullscreen},
-          {VKEY_MEDIA_LAUNCH_APP1, TopRowActionKey::kOverview},
-          {VKEY_SNAPSHOT, TopRowActionKey::kScreenshot},
-          {VKEY_BRIGHTNESS_DOWN, TopRowActionKey::kScreenBrightnessDown},
-          {VKEY_BRIGHTNESS_UP, TopRowActionKey::kScreenBrightnessUp},
-          {VKEY_MICROPHONE_MUTE_TOGGLE, TopRowActionKey::kMicrophoneMute},
-          {VKEY_VOLUME_MUTE, TopRowActionKey::kVolumeMute},
-          {VKEY_VOLUME_DOWN, TopRowActionKey::kVolumeDown},
-          {VKEY_VOLUME_UP, TopRowActionKey::kVolumeUp},
-          {VKEY_KBD_BACKLIGHT_TOGGLE,
-           TopRowActionKey::kKeyboardBacklightToggle},
-          {VKEY_KBD_BRIGHTNESS_DOWN, TopRowActionKey::kKeyboardBacklightDown},
-          {VKEY_KBD_BRIGHTNESS_UP, TopRowActionKey::kKeyboardBacklightUp},
-          {VKEY_MEDIA_NEXT_TRACK, TopRowActionKey::kNextTrack},
-          {VKEY_MEDIA_PREV_TRACK, TopRowActionKey::kPreviousTrack},
-          {VKEY_MEDIA_PLAY_PAUSE, TopRowActionKey::kPlayPause},
-          {VKEY_ALL_APPLICATIONS, TopRowActionKey::kAllApplications},
-          {VKEY_EMOJI_PICKER, TopRowActionKey::kEmojiPicker},
-          {VKEY_DICTATE, TopRowActionKey::kDictation},
-      });
   const auto* action_key = kVKeyToTopRowActionKeyMap.find(key_code);
   return (action_key != kVKeyToTopRowActionKeyMap.end())
              ? absl::make_optional<TopRowActionKey>(action_key->second)
              : absl::nullopt;
+}
+
+// static
+absl::optional<KeyboardCode> KeyboardCapability::ConvertToKeyboardCode(
+    TopRowActionKey action_key) {
+  for (const auto& [key_code, mapped_action_key] : kVKeyToTopRowActionKeyMap) {
+    if (mapped_action_key == action_key) {
+      return key_code;
+    }
+  }
+  return absl::nullopt;
 }
 
 void KeyboardCapability::AddObserver(Observer* observer) {
@@ -592,6 +605,27 @@ absl::optional<KeyboardCode> KeyboardCapability::GetCorrespondingFunctionKey(
 
   return kFunctionKeys[std::distance(keyboard_info->top_row_action_keys.begin(),
                                      iter)];
+}
+
+absl::optional<TopRowActionKey>
+KeyboardCapability::GetCorrespondingActionKeyForFKey(
+    const InputDevice& keyboard,
+    KeyboardCode key_code) const {
+  auto* keyboard_info = GetKeyboardInfo(keyboard);
+  if (!keyboard_info) {
+    return absl::nullopt;
+  }
+
+  if (key_code > VKEY_F24 || key_code < VKEY_F1) {
+    return absl::nullopt;
+  }
+
+  const size_t index = key_code - VKEY_F1;
+  if (keyboard_info->top_row_action_keys.size() <= index) {
+    return absl::nullopt;
+  }
+
+  return keyboard_info->top_row_action_keys[index];
 }
 
 bool KeyboardCapability::HasLauncherButton(
