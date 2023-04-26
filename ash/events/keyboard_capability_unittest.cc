@@ -539,6 +539,24 @@ TEST_F(KeyboardCapabilityTest, TestHasCalculatorKey) {
   EXPECT_TRUE(keyboard_capability_->HasCalculatorKey(external_keyboard));
 }
 
+TEST_F(KeyboardCapabilityTest, TestHasBrowserSearchKey) {
+  ui::InputDevice internal_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard1");
+  internal_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard,
+                                          kKbdTopRowLayout1Tag);
+  EXPECT_FALSE(keyboard_capability_->HasBrowserSearchKey(internal_keyboard));
+
+  ui::InputDevice external_keyboard(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard2");
+  external_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(external_keyboard,
+                                          kKbdTopRowLayoutUnspecified);
+  EXPECT_TRUE(keyboard_capability_->HasBrowserSearchKey(external_keyboard));
+}
+
 TEST_F(KeyboardCapabilityTest, TestHasPrivacyScreenKey) {
   ui::InputDevice internal_keyboard_layout1(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,

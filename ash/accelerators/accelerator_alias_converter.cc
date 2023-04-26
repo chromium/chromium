@@ -286,6 +286,13 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
       continue;
     }
 
+    if (accelerator.key_code() == ui::VKEY_BROWSER_SEARCH) {
+      if (keyboard_capability->HasBrowserSearchKeyOnAnyKeyboard()) {
+        filtered_accelerators.push_back(accelerator);
+      }
+      continue;
+    }
+
     // If the accelerator is pressing Search + Alt to do capslock, only Alt +
     // Search should be shown in the shortcuts app.
     if (accelerator.key_code() == ui::VKEY_MENU &&

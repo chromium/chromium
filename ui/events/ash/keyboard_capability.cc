@@ -867,6 +867,28 @@ bool KeyboardCapability::HasCalculatorKeyOnAnyKeyboard() const {
   return false;
 }
 
+bool KeyboardCapability::HasBrowserSearchKey(
+    const InputDevice& keyboard) const {
+  const KeyboardInfo* keyboard_info = GetKeyboardInfo(keyboard);
+  if (!keyboard_info) {
+    return false;
+  }
+
+  // TODO(dpad): Many external keyboards do not have this key, but currently we
+  // do not have a good way to detect these situations.
+  return !IsInternalKeyboard(keyboard);
+}
+
+bool KeyboardCapability::HasBrowserSearchKeyOnAnyKeyboard() const {
+  for (const ui::InputDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (HasBrowserSearchKey(keyboard)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool KeyboardCapability::HasPrivacyScreenKey(
     const InputDevice& keyboard) const {
   return GetTopRowLayout(keyboard) ==

@@ -361,6 +361,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
   bool HasPrivacyScreenKey(const InputDevice& keyboard) const;
   bool HasPrivacyScreenKeyOnAnyKeyboard() const;
 
+  // Check if the browser search key exists on the given keyboard.
+  bool HasBrowserSearchKey(const InputDevice& keyboard) const;
+  bool HasBrowserSearchKeyOnAnyKeyboard() const;
+
   // Gets the corresponding function key for the given `action_key` on the
   // given `keyboard`.
   absl::optional<KeyboardCode> GetCorrespondingFunctionKey(
