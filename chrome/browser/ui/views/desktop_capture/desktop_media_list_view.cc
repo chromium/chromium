@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"

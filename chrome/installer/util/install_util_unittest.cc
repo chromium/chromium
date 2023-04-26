@@ -6,13 +6,13 @@
 
 #include <Aclapi.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"

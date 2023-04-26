@@ -61,7 +61,6 @@
 #include <map>
 
 #include "base/base64.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/borealis/borealis_credits.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"

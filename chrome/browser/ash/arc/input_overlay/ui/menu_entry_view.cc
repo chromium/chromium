@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/menu_entry_view.h"
 
+#include <algorithm>
+
 #include "ash/app_list/app_list_util.h"
 #include "ash/style/style_util.h"
-#include "base/cxx17_backports.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"

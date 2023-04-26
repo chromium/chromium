@@ -7,9 +7,9 @@
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/singleton.h"

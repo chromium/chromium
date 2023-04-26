@@ -21,12 +21,12 @@
 #include <stdlib.h>
 #include <wbemidl.h>
 
+#include <algorithm>
 #include <iomanip>
 #include <memory>
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
