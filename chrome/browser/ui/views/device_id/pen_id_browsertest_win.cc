@@ -77,8 +77,6 @@ class PenIdBrowserTest : public InProcessBrowserTest {
 };
 
 void PenIdBrowserTest::SetUpOnMainThread() {
-  LOG(INFO) << "windows kernel32version = "
-            << static_cast<int>(base::win::OSInfo::Kernel32Version());
   if (base::win::OSInfo::Kernel32Version() < base::win::Version::WIN10_21H2 ||
       (base::win::OSInfo::Kernel32Version() == base::win::Version::WIN10_21H2 &&
        base::win::OSInfo::GetInstance()->version_number().patch < 1503)) {

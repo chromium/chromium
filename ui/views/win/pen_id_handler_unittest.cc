@@ -5,6 +5,7 @@
 #include "ui/views/win/pen_id_handler.h"
 
 #include "base/win/scoped_winrt_initializer.h"
+#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/win/test_support/fake_ipen_device.h"
@@ -52,6 +53,11 @@ class PenIdHandlerTest : public ::testing::Test {
 };
 
 void PenIdHandlerTest::SetUp() {
+  if (base::win::OSInfo::Kernel32Version() < base::win::Version::WIN10_21H2 ||
+      (base::win::OSInfo::Kernel32Version() == base::win::Version::WIN10_21H2 &&
+       base::win::OSInfo::GetInstance()->version_number().patch < 1503)) {
+    GTEST_SKIP() << "Pen Device Api not supported on this machine";
+  }
   ASSERT_TRUE(scoped_winrt_initializer_.Succeeded());
 }
 

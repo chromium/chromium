@@ -17,8 +17,10 @@ namespace {
 
 bool PenDeviceApiSupported() {
   // PenDevice API only works properly on WIN11 or Win10 post v19044.
-  return base::win::GetVersion() > base::win::Version::WIN10_21H2 ||
-         (base::win::GetVersion() == base::win::Version::WIN10_21H2 &&
+  return base::win::OSInfo::Kernel32Version() >
+             base::win::Version::WIN10_21H2 ||
+         (base::win::OSInfo::Kernel32Version() ==
+              base::win::Version::WIN10_21H2 &&
           base::win::OSInfo::GetInstance()->version_number().patch >= 1503);
 }
 
