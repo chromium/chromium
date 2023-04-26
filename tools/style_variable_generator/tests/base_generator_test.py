@@ -319,12 +319,13 @@ class BaseGeneratorTest(unittest.TestCase):
     def testAlias(self):
         self.generator.AddJSONToModel('''
         {
-          aliases: {
+          legacy_mappings: {
             legacy: "$white",
           },
         }
         ''')
-        self.assertEqual(self.generator.model.aliases['legacy'], '$white')
+        self.assertEqual(self.generator.model.legacy_mappings['legacy'],
+                         '$white')
         self.generator.model.Validate()
 
 
