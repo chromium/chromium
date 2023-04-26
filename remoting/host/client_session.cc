@@ -187,6 +187,8 @@ void ClientSession::ControlVideo(const protocol::VideoControl& video_control) {
     for (const auto& [_, video_stream] : video_streams_) {
       video_stream->SetTargetFramerate(target_framerate_);
     }
+    // TODO(joedow): Need to plumb this interval through IPC to work on Windows.
+    mouse_shape_pump_->SetCursorCaptureInterval(base::Hertz(target_framerate_));
   }
 
   if (video_control.has_framerate_boost()) {
