@@ -1156,6 +1156,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(should_update_opacity)));
 
+  const bool is_in_count_down = IsInCountDownAnimation();
   ui::KeyboardCode key_code = event->key_code();
   switch (key_code) {
     case ui::VKEY_ESCAPE: {
@@ -1164,7 +1165,6 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
 
       // We only dismiss the settings / recording type menus or clear the focus
       // on ESC key if the count down is not in progress.
-      const bool is_in_count_down = IsInCountDownAnimation();
       if (recording_type_menu_widget_ && !is_in_count_down)
         SetRecordingTypeMenuShown(false);
       else if (capture_mode_settings_widget_ && !is_in_count_down)
@@ -1179,8 +1179,16 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
 
     case ui::VKEY_RETURN: {
       event->StopPropagation();
-      if (!IsInCountDownAnimation())
+      if (!is_in_count_down) {
+        // Pressing enter while an item is focused should behave exactly like
+        // pressing the space bar on it.
+        if (focus_cycler_->OnSpacePressed()) {
+          *should_update_opacity_ptr = true;
+          return;
+        }
+
         DoPerformCapture();  // `this` can be deleted after this.
+      }
       return;
     }
 

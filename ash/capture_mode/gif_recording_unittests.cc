@@ -325,6 +325,44 @@ TEST_F(GifRecordingTest, TabNavigation) {
             test_api.GetCurrentFocusedView()->GetView());
 }
 
+TEST_F(GifRecordingTest, PressingEnterOnAFocusedItemBehavesLikeSpace) {
+  auto* controller = StartRegionVideoCapture();
+
+  // Tab 16 times until we reach the drop down button.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/16);
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(GetRecordingTypeDropDownButton(),
+            test_api.GetCurrentFocusedView()->GetView());
+
+  // Pressing the enter should open the menu, and we should be in the
+  // `kPendingRecordingType` focus group.
+  SendKey(ui::VKEY_RETURN, event_generator);
+  EXPECT_TRUE(GetRecordingTypeMenuWidget());
+  EXPECT_EQ(FocusGroup::kPendingRecordingType, test_api.GetCurrentFocusGroup());
+
+  // Then tab twice to reach the GIF recording option.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/2);
+  EXPECT_EQ(FocusGroup::kRecordingTypeMenu, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  auto* recording_type_menu_view = GetRecordingTypeMenuView();
+  EXPECT_EQ(recording_type_menu_view->GetGifOptionForTesting(),
+            test_api.GetCurrentFocusedView()->GetView());
+
+  // Pressing the enter key should select GIF, and close the menu.
+  SendKey(ui::VKEY_RETURN, event_generator);
+  EXPECT_FALSE(GetRecordingTypeMenuWidget());
+  EXPECT_EQ(RecordingType::kGif, controller->recording_type());
+
+  // The focus is moved back to the drop down button.
+  EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(GetRecordingTypeDropDownButton(),
+            test_api.GetCurrentFocusedView()->GetView());
+}
 TEST_F(GifRecordingTest, CloseRecordingMenuWhileFocusIsSomewhereElse) {
   auto* controller = StartRegionVideoCapture();
 
