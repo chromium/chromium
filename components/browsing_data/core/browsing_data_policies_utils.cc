@@ -117,11 +117,8 @@ void DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
                       PrefValueMap* prefs,
                       const std::string& policy_name,
                       std::string& log_message) {
-  for (const syncer::UserSelectableType type_name : types_set) {
-    const char* pref = syncer::SyncPrefs::GetPrefNameForType(type_name);
-    if (pref) {
-      prefs->SetValue(pref, base::Value(false));
-    }
+  for (const syncer::UserSelectableType type : types_set) {
+    syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs, type);
   }
   log_message =
       types_set.Size() > 0

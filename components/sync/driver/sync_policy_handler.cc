@@ -23,9 +23,7 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
   absl::optional<UserSelectableType> type =
       GetUserSelectableTypeFromString(type_name);
   if (type.has_value()) {
-    const char* pref = SyncPrefs::GetPrefNameForType(*type);
-    if (pref)
-      prefs->SetValue(pref, base::Value(false));
+    syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs, *type);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -34,9 +32,7 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
   absl::optional<UserSelectableOsType> os_type =
       GetUserSelectableOsTypeFromString(type_name);
   if (os_type.has_value()) {
-    const char* os_pref = SyncPrefs::GetPrefNameForOsType(*os_type);
-    if (os_pref)
-      prefs->SetValue(os_pref, base::Value(false));
+    syncer::SyncPrefs::SetOsTypeDisabledByPolicy(prefs, *os_type);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

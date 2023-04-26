@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/pref_value_map.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 
@@ -228,6 +229,14 @@ const char* SyncPrefs::GetPrefNameForOsType(UserSelectableOsType type) {
   NOTREACHED();
   return nullptr;
 }
+
+// static
+void SyncPrefs::SetOsTypeDisabledByPolicy(PrefValueMap* policy_prefs,
+                                          UserSelectableOsType type) {
+  const char* pref_name = syncer::SyncPrefs::GetPrefNameForOsType(type);
+  CHECK(pref_name);
+  policy_prefs->SetValue(pref_name, base::Value(false));
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -297,6 +306,14 @@ const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
   }
   NOTREACHED();
   return nullptr;
+}
+
+// static
+void SyncPrefs::SetTypeDisabledByPolicy(PrefValueMap* policy_prefs,
+                                        UserSelectableType type) {
+  const char* pref_name = syncer::SyncPrefs::GetPrefNameForType(type);
+  CHECK(pref_name);
+  policy_prefs->SetValue(pref_name, base::Value(false));
 }
 
 void SyncPrefs::OnSyncManagedPrefChanged() {

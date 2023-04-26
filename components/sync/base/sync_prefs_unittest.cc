@@ -9,9 +9,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
-#include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_value_store.h"
+#include "components/prefs/pref_value_map.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -179,6 +178,38 @@ TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSyncedAndPolicyRestricted) {
   }
 }
 
+TEST_F(SyncPrefsTest, SetTypeDisabledByPolicy) {
+  // By default, data types are enabled, and not policy-controlled.
+  ASSERT_TRUE(
+      sync_prefs_->GetSelectedTypes().Has(UserSelectableType::kBookmarks));
+  ASSERT_FALSE(
+      sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kBookmarks));
+  ASSERT_TRUE(
+      sync_prefs_->GetSelectedTypes().Has(UserSelectableType::kAutofill));
+  ASSERT_FALSE(
+      sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kAutofill));
+
+  // Set up a policy to disable bookmarks.
+  PrefValueMap policy_prefs;
+  SyncPrefs::SetTypeDisabledByPolicy(&policy_prefs,
+                                     UserSelectableType::kBookmarks);
+  // Copy the policy prefs map over into the PrefService.
+  for (const auto& policy_pref : policy_prefs) {
+    pref_service_.SetManagedPref(policy_pref.first, policy_pref.second.Clone());
+  }
+
+  // The policy should take effect and disable bookmarks.
+  EXPECT_FALSE(
+      sync_prefs_->GetSelectedTypes().Has(UserSelectableType::kBookmarks));
+  EXPECT_TRUE(
+      sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kBookmarks));
+  // Other types should be unaffected.
+  EXPECT_TRUE(
+      sync_prefs_->GetSelectedTypes().Has(UserSelectableType::kAutofill));
+  EXPECT_FALSE(
+      sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kAutofill));
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncPrefsTest, IsSyncAllOsTypesEnabled) {
   EXPECT_TRUE(sync_prefs_->IsSyncAllOsTypesEnabled());
@@ -261,6 +292,38 @@ TEST_F(SyncPrefsTest,
     expected_type_set.Remove(UserSelectableOsType::kOsPreferences);
     EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedOsTypes());
   }
+}
+
+TEST_F(SyncPrefsTest, SetOsTypeDisabledByPolicy) {
+  // By default, data types are enabled, and not policy-controlled.
+  ASSERT_TRUE(
+      sync_prefs_->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
+  ASSERT_FALSE(
+      sync_prefs_->IsOsTypeManagedByPolicy(UserSelectableOsType::kOsApps));
+  ASSERT_TRUE(sync_prefs_->GetSelectedOsTypes().Has(
+      UserSelectableOsType::kOsPreferences));
+  ASSERT_FALSE(sync_prefs_->IsOsTypeManagedByPolicy(
+      UserSelectableOsType::kOsPreferences));
+
+  // Set up a policy to disable apps.
+  PrefValueMap policy_prefs;
+  SyncPrefs::SetOsTypeDisabledByPolicy(&policy_prefs,
+                                       UserSelectableOsType::kOsApps);
+  // Copy the policy prefs map over into the PrefService.
+  for (const auto& policy_pref : policy_prefs) {
+    pref_service_.SetManagedPref(policy_pref.first, policy_pref.second.Clone());
+  }
+
+  // The policy should take effect and disable apps.
+  EXPECT_FALSE(
+      sync_prefs_->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
+  EXPECT_TRUE(
+      sync_prefs_->IsOsTypeManagedByPolicy(UserSelectableOsType::kOsApps));
+  // Other types should be unaffected.
+  EXPECT_TRUE(sync_prefs_->GetSelectedOsTypes().Has(
+      UserSelectableOsType::kOsPreferences));
+  EXPECT_FALSE(sync_prefs_->IsOsTypeManagedByPolicy(
+      UserSelectableOsType::kOsPreferences));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

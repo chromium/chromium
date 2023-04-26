@@ -21,6 +21,7 @@
 
 class PrefRegistrySimple;
 class PrefService;
+class PrefValueMap;
 
 namespace syncer {
 
@@ -103,9 +104,14 @@ class SyncPrefs {
                           UserSelectableOsTypeSet registered_types,
                           UserSelectableOsTypeSet selected_types);
 
-  // Maps |type| to its corresponding preference name. Returns nullptr if |type|
-  // isn't an OS type.
+  // Maps |type| to its corresponding preference name.
+  // TODO(crbug.com/1435427): Make this private.
   static const char* GetPrefNameForOsType(UserSelectableOsType type);
+
+  // Sets |type| as disabled in the given |policy_prefs|, which should
+  // correspond to the "managed" (aka policy-controlled) pref store.
+  static void SetOsTypeDisabledByPolicy(PrefValueMap* policy_prefs,
+                                        UserSelectableOsType type);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -117,7 +123,13 @@ class SyncPrefs {
   bool IsSyncClientDisabledByPolicy() const;
 
   // Maps |type| to its corresponding preference name.
+  // TODO(crbug.com/1435427): Make this private.
   static const char* GetPrefNameForType(UserSelectableType type);
+
+  // Sets |type| as disabled in the given |policy_prefs|, which should
+  // correspond to the "managed" (aka policy-controlled) pref store.
+  static void SetTypeDisabledByPolicy(PrefValueMap* policy_prefs,
+                                      UserSelectableType type);
 
   // Gets the local sync backend enabled state.
   bool IsLocalSyncEnabled() const;
