@@ -477,11 +477,15 @@ void ImmersiveModeController::ImmersiveModeViewWillMoveToWindow(
     window.delegate = immersive_mode_mapper_.get();
 
     // Attach overlay_widget to NSToolbarFullScreen so that children are placed
-    // on top of the toolbar. When exitting fullscreeen, we don't re-parent the
+    // on top of the toolbar. When exiting fullscreen, we don't re-parent the
     // overlay window back to the browser window because it seems to trigger
-    // re-entrancy in AppKit and cause crash.  This is safe because sub-widgets
+    // re-entrancy in AppKit and cause crash. This is safe because sub-widgets
     // will be re-parented to the browser window and therefore the overlay
     // window won't have any observable effect.
+    // Also, explicitly remove the overlay window from the browser window.
+    // Leaving a dangling reference to the overlay window on the browser window
+    // causes odd behavior.
+    [browser_window_ removeChildWindow:overlay_window()];
     [window addChildWindow:overlay_window() ordered:NSWindowAbove];
 
     NSView* view = GetNSTitlebarContainerViewFromWindow(window);

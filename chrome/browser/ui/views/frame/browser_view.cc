@@ -3429,6 +3429,7 @@ views::View* BrowserView::CreateMacOverlayView() {
     params.type = views::Widget::InitParams::TYPE_POPUP;
     params.child = true;
     params.parent = parent->GetNativeView();
+    params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     OverlayWidget* overlay_widget = new OverlayWidget(GetWidget());
     overlay_widget->Init(std::move(params));
     overlay_widget->SetNativeWindowProperty(kBrowserViewKey, this);
