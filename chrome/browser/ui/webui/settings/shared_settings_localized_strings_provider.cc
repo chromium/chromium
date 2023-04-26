@@ -192,8 +192,10 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
     {"sync", IDS_SETTINGS_SYNC},
     {"manageSyncedDataTitle",
      IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"manageSyncedDataSubtitle",
      IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_SUBTITLE_UNIFIED_CONSENT},
+#endif
     {"manageBrowserSyncedDataTitle",
      IDS_SETTINGS_NEW_MANAGE_BROWSER_SYNCED_DATA_TITLE},
     {"syncAdvancedDevicePageTitle",
@@ -215,6 +217,14 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+    html_source->AddLocalizedString(
+        "manageSyncedDataSubtitle",
+        IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_SUBTITLE_UNIFIED_CONSENT);
+  }
+#endif
 
   std::string sync_dashboard_url =
       google_util::AppendGoogleLocaleParam(
@@ -256,6 +266,9 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean("shouldShowLacrosSideBySideWarning",
                           ShouldShowLacrosSideBySideWarningInLacros());
+  html_source->AddBoolean(
+      "showSyncSettingsRevamp",
+      base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing));
 #endif
 
   html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);

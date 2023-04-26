@@ -156,9 +156,17 @@ suite('SyncSettingsTests', function() {
         syncPage.shadowRoot!.querySelector<HTMLElement>(
                                 '#sync-separator')!.hidden);
     assertTrue(otherItems.classList.contains('list-frame'));
-    assertEquals(
-        otherItems.querySelectorAll(':scope > cr-expand-button').length, 1);
-    assertEquals(otherItems.querySelectorAll(':scope > cr-link-row').length, 3);
+    assertEquals(otherItems.querySelectorAll('cr-expand-button').length, 1);
+
+    // <if expr="not chromeos_lacros">
+    assertEquals(otherItems.querySelectorAll('cr-link-row').length, 3);
+    // </if>
+
+    // <if expr="chromeos_lacros">
+    assertEquals(otherItems.querySelectorAll('cr-link-row').length, 4);
+    assertTrue(!!otherItems.querySelector('#os-sync-device-row'));
+    // </if>
+
 
     // Test sync paused state.
     syncPage.syncStatus = {

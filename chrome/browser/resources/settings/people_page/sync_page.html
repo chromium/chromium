@@ -140,16 +140,30 @@
           <cr-link-row id="sync-advanced-row"
               label="$i18n{syncAdvancedPageTitle}"
               role-description="$i18n{subpageArrowRoleDescription}"
-              on-click="onSyncAdvancedClick_"></cr-link-row>
+              on-click="onSyncAdvancedClick_">
+          </cr-link-row>
+
+<if expr="chromeos_lacros">
+          <cr-link-row id="os-sync-device-row" class="hr"
+              label="$i18n{syncAdvancedDevicePageTitle}"
+              hidden="[[!showSyncSettingsRevamp_]]"
+              on-click="onOsSyncSettingsLinkClick_"
+              external>
+          </cr-link-row>
+</if>
 
           <cr-link-row class="hr"
               label="$i18n{personalizeGoogleServicesTitle}"
-              on-click="onActivityControlsClick_" external></cr-link-row>
+              on-click="onActivityControlsClick_" external>
+          </cr-link-row>
 
           <cr-link-row id="syncDashboardLink" class="hr"
               label="$i18n{manageSyncedDataTitle}"
+              sub-label="[[getManageSyncedDataSubtitle_(
+                      showSyncSettingsRevamp_)]]"
               on-click="onSyncDashboardLinkClick_"
-              hidden="[[syncStatus.supervisedUser]]" external></cr-link-row>
+              hidden="[[syncStatus.supervisedUser]]" external>
+          </cr-link-row>
 
           <cr-expand-button id="encryptionDescription"
               hidden="[[syncPrefs.passphraseRequired]]"

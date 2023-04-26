@@ -1497,20 +1497,32 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
 
 void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"syncingTo", IDS_SETTINGS_PEOPLE_SYNCING_TO_ACCOUNT},
-      {"peopleSignIn", IDS_PROFILES_DICE_SIGNIN_BUTTON},
-      {"syncPaused", IDS_SETTINGS_PEOPLE_SYNC_PAUSED},
-      {"turnOffSync", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
-      {"settingsCheckboxLabel", IDS_SETTINGS_SETTINGS_CHECKBOX_LABEL},
-      {"syncNotWorking", IDS_SETTINGS_PEOPLE_SYNC_NOT_WORKING},
-      {"syncDisabled", IDS_PROFILES_DICE_SYNC_DISABLED_TITLE},
-      {"syncPasswordsNotWorking",
-       IDS_SETTINGS_PEOPLE_SYNC_PASSWORDS_NOT_WORKING},
-      {"peopleSignOut", IDS_SETTINGS_PEOPLE_SIGN_OUT},
-      {"useAnotherAccount", IDS_SETTINGS_PEOPLE_SYNC_ANOTHER_ACCOUNT},
-      {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
+    {"syncingTo", IDS_SETTINGS_PEOPLE_SYNCING_TO_ACCOUNT},
+    {"peopleSignIn", IDS_PROFILES_DICE_SIGNIN_BUTTON},
+    {"syncPaused", IDS_SETTINGS_PEOPLE_SYNC_PAUSED},
+    {"turnOffSync", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
+    {"settingsCheckboxLabel", IDS_SETTINGS_SETTINGS_CHECKBOX_LABEL},
+    {"syncNotWorking", IDS_SETTINGS_PEOPLE_SYNC_NOT_WORKING},
+    {"syncDisabled", IDS_PROFILES_DICE_SYNC_DISABLED_TITLE},
+    {"syncPasswordsNotWorking", IDS_SETTINGS_PEOPLE_SYNC_PASSWORDS_NOT_WORKING},
+    {"peopleSignOut", IDS_SETTINGS_PEOPLE_SIGN_OUT},
+    {"useAnotherAccount", IDS_SETTINGS_PEOPLE_SYNC_ANOTHER_ACCOUNT},
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
+#endif
+
   };
+
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  html_source->AddLocalizedString(
+      "syncAdvancedPageTitle",
+      base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)
+          ? IDS_SETTINGS_NEW_SYNC_ADVANCED_BROWSER_PAGE_TITLE
+          : IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE);
+#endif
 }
 
 void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
