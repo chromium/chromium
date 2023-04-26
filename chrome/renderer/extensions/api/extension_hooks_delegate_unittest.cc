@@ -10,7 +10,6 @@
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"

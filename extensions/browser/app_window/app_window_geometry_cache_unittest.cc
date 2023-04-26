@@ -19,7 +19,6 @@
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 
 namespace extensions {
 

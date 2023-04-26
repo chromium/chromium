@@ -23,7 +23,6 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
 
 class SettingsOverriddenParamsProvidersBrowserTest

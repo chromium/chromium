@@ -13,7 +13,6 @@
 #include "extensions/browser/api/feedback_private/feedback_service.h"
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
 #include "extensions/browser/api/feedback_private/mock_feedback_service.h"
-#include "extensions/common/value_builder.h"
 
 namespace extensions {
 

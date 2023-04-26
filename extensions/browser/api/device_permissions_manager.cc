@@ -24,7 +24,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/permissions/api_permission.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "services/device/public/cpp/usb/usb_ids.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
