@@ -14,7 +14,7 @@ from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import ChromeOptions
 
-def pytest_addoption(parser: pytest.Parser):
+def pytest_addoption(parser):
   # By default, running on the hosted platform.
   parser.addoption('--target-platform',
                    default=test_utils.get_hosted_platform(),
@@ -35,7 +35,7 @@ def pytest_addoption(parser: pytest.Parser):
 
 # pylint: disable=redefined-outer-name
 @pytest.fixture(scope="session")
-def chromedriver_path(pytestconfig: pytest.Config) -> str:
+def chromedriver_path(pytestconfig) -> str:
   """Returns a path to the chromedriver."""
   if cd_path := pytestconfig.getoption('chromedriver'):
     cd_path = os.path.abspath(cd_path)

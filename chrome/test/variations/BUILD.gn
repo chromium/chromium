@@ -1,0 +1,7 @@
+import("//build/config/python.gni")
+
+python_library("test_utils") {
+  testonly = true
+
+  data = [ "//chrome/test/variations/test_utils/" ]
+}
