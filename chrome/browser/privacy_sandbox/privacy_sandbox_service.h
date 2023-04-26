@@ -128,7 +128,9 @@ class PrivacySandboxService : public KeyedService {
     // User migrated from ROW to EEA, but had already disabled Topics from
     // settings.
     kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration = 7,
-    kMaxValue = kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration,
+    // The user is restricted with a guardian, so a direct notice is shown.
+    kNoticeShownToGuardian = 8,
+    kMaxValue = kNoticeShownToGuardian,
   };
 
   PrivacySandboxService(

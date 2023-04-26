@@ -4230,3 +4230,160 @@ TEST_F(PrivacySandboxServiceM1Test, DisablePrivacySandboxAdMeasurementPolicy) {
                   static_cast<int>(PromptSuppressedReason::kNone)},
                  {OutputKey::kIsAttributionReportingAllowed, false}});
 }
+
+// TODO(crbug.com/1428506): consider parameterizing other tests for the various
+// feature flags, particularly `kPrivacySandboxSettings4RestrictedNotice`.
+class PrivacySandboxServiceM1RestrictedNoticePromptTest
+    : public PrivacySandboxServiceM1PromptTest {
+ public:
+  std::unique_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+  CreateMockDelegate() override {
+    auto mock_delegate = std::make_unique<testing::NiceMock<
+        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
+    mock_delegate->SetUpIsSubjectToM1NoticeRestrictedResponse(
+        /*is_subject_to_restricted_notice=*/true);
+    return mock_delegate;
+  }
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxSettings4,
+        {{"consent-required", "false"},
+         {"notice-required", "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+          "true"}});
+  }
+};
+
+TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest, RestrictedNotice) {
+  // Ensure that kM1NoticeRestricted is returned when configured to do so.
+  RunTestCase(TestState{{StateKey::kM1PromptSuppressedReason,
+                         static_cast<int>(PromptSuppressedReason::kNone)},
+                        {StateKey::kTrialsNoticeDisplayed, false}},
+              TestInput{{InputKey::kForceChromeBuild, true}},
+              TestOutput{{OutputKey::kPromptType,
+                          static_cast<int>(PromptType::kM1NoticeRestricted)},
+                         {OutputKey::kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest,
+       RestrictedNoticeAlreadyAcknowledged) {
+  // If the user already acknowledged the notice, don't show it, or the ROW
+  // notice, again.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kTrialsNoticeDisplayed, false},
+                {StateKey::kM1RestrictedNoticeAcknowledged, true}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest,
+       ROWNoticeAlreadyAcknowledged) {
+  // If the user already acknowledged a different notice, don't show it again.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kTrialsNoticeDisplayed, false},
+                {StateKey::kM1RowNoticeAcknowledged, true}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest,
+       EEANoticeAlreadyAcknowledged) {
+  // If the user already acknowledged a different notice, don't show the
+  // restricted notice again. Ensure the existing suppression reason is
+  // respected.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kTrialsNoticeDisplayed, false},
+                {StateKey::kM1ConsentDecisionMade, true},
+                {StateKey::kM1EEANoticeAcknowledged, true}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{
+          {OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+          {OutputKey::kM1PromptSuppressedReason,
+           static_cast<int>(
+               PromptSuppressedReason::kEEAFlowCompletedBeforeRowMigration)}});
+}
+
+class PrivacySandboxServiceM1RestrictedNoticeShownToGuardianTest
+    : public PrivacySandboxServiceM1PromptTest {
+ public:
+  std::unique_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+  CreateMockDelegate() override {
+    auto mock_delegate = std::make_unique<testing::NiceMock<
+        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
+    mock_delegate->SetUpIsPrivacySandboxRestrictedResponse(
+        /*restricted=*/true);
+    return mock_delegate;
+  }
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxSettings4,
+        {{"consent-required", "false"},
+         {"notice-required", "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+          "true"}});
+  }
+};
+
+TEST_F(PrivacySandboxServiceM1RestrictedNoticeShownToGuardianTest,
+       NotSubjectToNoticeButIsRestricted) {
+  // Ensure that kNoticeShownToGuardian, with no prompt, is returned in the
+  // event that the user is not subject to the m1 notice restricted prompt.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kTrialsNoticeDisplayed, false}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{
+          {OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+          {OutputKey::kM1PromptSuppressedReason,
+           static_cast<int>(PromptSuppressedReason::kNoticeShownToGuardian)}});
+}
+
+class PrivacySandboxServiceM1RestrictedNoticeEnabledNoRestrictionsTest
+    : public PrivacySandboxServiceM1PromptTest {
+ public:
+  std::unique_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+  CreateMockDelegate() override {
+    auto mock_delegate = std::make_unique<testing::NiceMock<
+        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
+    mock_delegate->SetUpIsPrivacySandboxRestrictedResponse(
+        /*restricted=*/false);
+    mock_delegate->SetUpIsSubjectToM1NoticeRestrictedResponse(
+        /*is_subject_to_restricted_notice=*/false);
+    return mock_delegate;
+  }
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxSettings4,
+        {{"consent-required", "false"},
+         {"notice-required", "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+          "true"}});
+  }
+};
+
+TEST_F(PrivacySandboxServiceM1RestrictedNoticeEnabledNoRestrictionsTest,
+       VerifyPromptType) {
+  // The restricted notice feature is enabled, but the account is not subject to
+  // the restrictions, and the privacy sandbox is not otherwise restricted. The
+  // ROW notice is still applicable, however.
+  RunTestCase(TestState{{StateKey::kM1PromptSuppressedReason,
+                         static_cast<int>(PromptSuppressedReason::kNone)},
+                        {StateKey::kTrialsNoticeDisplayed, false}},
+              TestInput{{InputKey::kForceChromeBuild, true}},
+              TestOutput{{OutputKey::kPromptType,
+                          static_cast<int>(PromptType::kM1NoticeROW)},
+                         {OutputKey::kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
+}

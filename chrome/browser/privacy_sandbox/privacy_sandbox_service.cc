@@ -695,6 +695,11 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
           PromptStartupState::kROWNoticeFlowCompleted);
       return;
     }
+
+    // TODO(b/278877945): handle PromptSuppressedReason::kNoticeShownToGuardian.
+    case PromptSuppressedReason::kNoticeShownToGuardian: {
+      return;
+    }
   }
 
   // Prompt was not suppressed explicitly at this point.
@@ -1349,11 +1354,33 @@ PrivacySandboxService::GetRequiredPromptTypeInternalM1(
 
   // If the Privacy Sandbox is restricted, set the suppression reason as such,
   // and do not show a prompt.
-  if (privacy_sandbox_settings->IsPrivacySandboxRestricted()) {
+  if (privacy_sandbox_settings->IsPrivacySandboxRestricted() &&
+      !privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
     pref_service->SetInteger(
         prefs::kPrivacySandboxM1PromptSuppressed,
         static_cast<int>(PromptSuppressedReason::kRestricted));
     return PromptType::kNone;
+  }
+
+  if (privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
+    CHECK(privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get() ||
+          privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get());
+    if (!pref_service->GetBoolean(
+            prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged) &&
+        !pref_service->GetBoolean(
+            prefs::kPrivacySandboxM1EEANoticeAcknowledged) &&
+        !pref_service->GetBoolean(
+            prefs::kPrivacySandboxM1RowNoticeAcknowledged)) {
+      if (privacy_sandbox_settings->IsSubjectToM1NoticeRestricted()) {
+        return PromptType::kM1NoticeRestricted;
+      }
+      if (privacy_sandbox_settings->IsPrivacySandboxRestricted()) {
+        pref_service->SetInteger(
+            prefs::kPrivacySandboxM1PromptSuppressed,
+            static_cast<int>(PromptSuppressedReason::kNoticeShownToGuardian));
+        return PromptType::kNone;
+      }
+    }
   }
 
   if (privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
@@ -1400,9 +1427,11 @@ PrivacySandboxService::GetRequiredPromptTypeInternalM1(
     return PromptType::kNone;
   }
 
-  // If the notice has already been acknowledged, do not show a prompt.
-  // Else, show the row notice prompt.
-  if (pref_service->GetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged)) {
+  // If either the ROW notice or the restricted notice has already been
+  // acknowledged, do not show a prompt. Else, show the row notice prompt.
+  if (pref_service->GetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged) ||
+      pref_service->GetBoolean(
+          prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged)) {
     return PromptType::kNone;
   } else {
     return PromptType::kM1NoticeROW;

@@ -18,6 +18,9 @@ const char kPrivacySandboxM1EEANoticeAcknowledged[] =
 const char kPrivacySandboxM1RowNoticeAcknowledged[] =
     "privacy_sandbox.m1.row_notice_acknowledged";
 
+const char kPrivacySandboxM1RestrictedNoticeAcknowledged[] =
+    "privacy_sandbox.m1.restricted_notice_acknowledged";
+
 const char kPrivacySandboxM1PromptSuppressed[] =
     "privacy_sandbox.m1.prompt_suppressed";
 
@@ -112,6 +115,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1RowNoticeAcknowledged,
                                 false);
+  registry->RegisterBooleanPref(
+      prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged, false);
   registry->RegisterIntegerPref(prefs::kPrivacySandboxM1PromptSuppressed, 0);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1TopicsEnabled, false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1FledgeEnabled, false);

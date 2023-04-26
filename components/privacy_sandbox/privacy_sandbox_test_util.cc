@@ -229,6 +229,13 @@ void ApplyTestState(
           base::Value(GetItemValue<bool>(value)));
       return;
     }
+    case (StateKey::kM1RestrictedNoticeAcknowledged): {
+      SCOPED_TRACE("State Setup: M1 restricted notice acknowledged");
+      testing_pref_service->SetUserPref(
+          prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged,
+          base::Value(GetItemValue<bool>(value)));
+      return;
+    }
     case (StateKey::kM1PromptSuppressedReason): {
       SCOPED_TRACE("State Setup: M1 prompt suppressed value");
       testing_pref_service->SetUserPref(

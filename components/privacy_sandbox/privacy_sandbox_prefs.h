@@ -16,6 +16,9 @@ extern const char kPrivacySandboxM1EEANoticeAcknowledged[];
 // Un-synced boolean pref indicating whether the notice shown in ROW was
 // acknowledged.
 extern const char kPrivacySandboxM1RowNoticeAcknowledged[];
+// Un-synced boolean pref indicating whether the restricted notice was
+// acknowledged.
+extern const char kPrivacySandboxM1RestrictedNoticeAcknowledged[];
 // Un-synced integer pref indicating PromptSuppressedReason for the prompt.
 extern const char kPrivacySandboxM1PromptSuppressed[];
 // Un-synced boolean pref indicating if Topics API is enabled.

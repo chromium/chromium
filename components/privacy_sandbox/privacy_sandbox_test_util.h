@@ -73,6 +73,13 @@ class MockPrivacySandboxSettingsDelegate
     });
   }
 
+  void SetUpIsSubjectToM1NoticeRestrictedResponse(
+      bool is_subject_to_restricted_notice) {
+    ON_CALL(*this, IsSubjectToM1NoticeRestricted).WillByDefault([=]() {
+      return is_subject_to_restricted_notice;
+    });
+  }
+
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
   MOCK_METHOD(bool, IsIncognitoProfile, (), (const, override));
   MOCK_METHOD(bool, HasAppropriateTopicsConsent, (), (const, override));
@@ -108,6 +115,7 @@ enum class StateKey {
   kM1FledgeDisabledByPolicy = 22,
   kM1AdMesaurementDisabledByPolicy = 23,
   kHasAppropriateTopicsConsent = 24,
+  kM1RestrictedNoticeAcknowledged = 25,
 };
 
 // Defines the input to the functions under test.
