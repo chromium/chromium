@@ -58,6 +58,14 @@ copy("copy_mojo") {
   outputs = [ "$preprocessed_folder/{{source_file_part}}" ]
 }
 
+generate_grd("build_fuse_grdp") {
+  grd_prefix = "emoji_picker"
+  out_grd = "$target_gen_dir/fuse_resources.grdp"
+  input_files = [ "fuse.js" ]
+  input_files_base_dir = rebase_path(preprocessed_folder, root_build_dir)
+  deps = [ ":copy_fuse" ]
+}
+
 copy("copy_fuse") {
   sources = [ "//third_party/fusejs/dist/fuse.basic.esm.min.js" ]
   outputs = [ "$preprocessed_folder/fuse.js" ]
@@ -208,7 +216,7 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
   in_files = web_component_files + non_component_ts_files + html_wrapper_files +
-             mojo_files + [ "fuse.js" ]
+             mojo_files
   definitions = [ "$target_gen_dir/preprocessed/fuse.d.ts" ]
   deps = [
     "//third_party/polymer/v3_0:library",
@@ -218,7 +226,6 @@ ts_library("build_ts") {
   ]
   extra_deps = [
     ":copy_checked_in_ts_js_files",
-    ":copy_fuse",
     ":copy_fuse_dts",
     ":copy_mojo",
     ":html_wrapper_files",
@@ -227,7 +234,10 @@ ts_library("build_ts") {
 }
 
 generate_grd("build_grd") {
-  deps = [ ":build_ts" ]
+  deps = [
+    ":build_fuse_grdp",
+    ":build_ts",
+  ]
   grd_prefix = "emoji_picker"
   out_grd = resources_grd_file
   input_files = [
@@ -240,7 +250,10 @@ generate_grd("build_grd") {
     "no_results.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  grdp_files = [ "emoji_ordering.grdp" ]
+  grdp_files = [
+    "emoji_ordering.grdp",
+    "$target_gen_dir/fuse_resources.grdp",
+  ]
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
