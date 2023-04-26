@@ -1305,17 +1305,21 @@ bool NavigationManagerImpl::WKWebViewCache::IsAttachedToWebView() const {
 void NavigationManagerImpl::WKWebViewCache::DetachFromWebView() {
   if (IsAttachedToWebView()) {
     cached_current_item_index_ = GetCurrentItemIndex();
-    cached_items_.resize(GetBackForwardListItemCount());
+    cached_items_.reserve(GetBackForwardListItemCount());
     for (size_t index = 0; index < GetBackForwardListItemCount(); index++) {
-      cached_items_[index].reset(new NavigationItemImpl(
-          *GetNavigationItemImplAtIndex(index, true /* create_if_missing */)));
+      std::unique_ptr<NavigationItemImpl> clone =
+          GetNavigationItemImplAtIndex(index, /* create_if_missing = */ true)
+              ->Clone();
+
       // Don't put restore URL's into `cached_items`, extract them first.
-      GURL url = cached_items_[index]->GetURL();
+      const GURL& url = clone->GetURL();
       if (wk_navigation_util::IsRestoreSessionUrl(url)) {
         GURL extracted_url;
         if (wk_navigation_util::ExtractTargetURL(url, &extracted_url))
-          cached_items_[index]->SetURL(extracted_url);
+          clone->SetURL(extracted_url);
       }
+
+      cached_items_.push_back(std::move(clone));
     }
   }
   attached_to_web_view_ = false;

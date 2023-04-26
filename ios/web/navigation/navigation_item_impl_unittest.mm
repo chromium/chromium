@@ -65,9 +65,9 @@ TEST_F(NavigationItemTest, Description) {
 }
 #endif
 
-// Tests that copied NavigationItemImpls create copies of data members that are
+// Tests that cloning NavigationItemImpls create copies of data members that are
 // objects.
-TEST_F(NavigationItemTest, Copy) {
+TEST_F(NavigationItemTest, Clone) {
   // Create objects to be copied.
   NSString* postData0 = @"postData0";
   NSMutableData* mutablePostData =
@@ -77,8 +77,8 @@ TEST_F(NavigationItemTest, Copy) {
   NSMutableString* mutableState = [state0 mutableCopy];
   item_->SetSerializedStateObject(mutableState);
 
-  // Create copy.
-  web::NavigationItemImpl copy(*item_.get());
+  // Clone.
+  std::unique_ptr<web::NavigationItemImpl> clone = item_->Clone();
 
   // Modify the objects.
   NSString* postData1 = @"postData1";
@@ -91,11 +91,11 @@ TEST_F(NavigationItemTest, Copy) {
               item_->GetPostData());
   EXPECT_NSEQ(state1, item_->GetSerializedStateObject());
   EXPECT_NSEQ([postData0 dataUsingEncoding:NSUTF8StringEncoding],
-              copy.GetPostData());
-  EXPECT_NSEQ(state0, copy.GetSerializedStateObject());
+              clone -> GetPostData());
+  EXPECT_NSEQ(state0, clone->GetSerializedStateObject());
 
   // Ensure that HTTP headers are still mutable after the copying.
-  copy.AddHttpRequestHeaders(@{});
+  clone->AddHttpRequestHeaders(@{});
 }
 
 // Tests whether `NavigationItem::AddHttpRequestHeaders()` adds the passed
@@ -134,15 +134,15 @@ TEST_F(NavigationItemTest, RemoveHttpRequestHeaderForKey) {
   EXPECT_FALSE(item_->GetHttpRequestHeaders());
 }
 
-// Tests the getter, setter, and copy constructor for the original request URL.
+// Tests the getter, setter, and cloning for the original request URL.
 TEST_F(NavigationItemTest, OriginalURL) {
   GURL original_url = GURL(kItemURLString);
   EXPECT_EQ(original_url, item_->GetOriginalRequestURL());
-  web::NavigationItemImpl copy(*item_);
+  std::unique_ptr<web::NavigationItemImpl> clone = item_->Clone();
   GURL new_url = GURL("http://new_url.test");
   item_->SetOriginalRequestURL(new_url);
   EXPECT_EQ(new_url, item_->GetOriginalRequestURL());
-  EXPECT_EQ(original_url, copy.GetOriginalRequestURL());
+  EXPECT_EQ(original_url, clone->GetOriginalRequestURL());
 }
 
 // Tests the behavior of GetVirtualURL().

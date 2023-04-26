@@ -30,8 +30,8 @@ class NavigationItemImpl : public web::NavigationItem {
   NavigationItemImpl();
   ~NavigationItemImpl() override;
 
-  // Explicit copy constructor since the super class is not copyable.
-  NavigationItemImpl(const NavigationItemImpl& item);
+  // Clones the current object.
+  std::unique_ptr<NavigationItemImpl> Clone();
 
   // NavigationItem implementation:
   int GetUniqueID() const override;
@@ -120,6 +120,10 @@ class NavigationItemImpl : public web::NavigationItem {
   // The NavigationManItemStorageBuilder functions require access to
   // private variables of NavigationItemImpl.
   friend NavigationItemStorageBuilder;
+
+  // Explicit copy constructor since the super class is not copyable.
+  // Used to implement Clone().
+  NavigationItemImpl(const NavigationItemImpl& item);
 
   const int unique_id_;
   GURL original_request_url_;
