@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_SCREENSAVER_IMAGES_POLICY_HANDLER_H_
-#define CHROME_BROWSER_ASH_POLICY_HANDLERS_SCREENSAVER_IMAGES_POLICY_HANDLER_H_
+#ifndef ASH_AMBIENT_MANAGED_SCREENSAVER_IMAGES_POLICY_HANDLER_H_
+#define ASH_AMBIENT_MANAGED_SCREENSAVER_IMAGES_POLICY_HANDLER_H_
 
 #include <memory>
 
+#include "ash/ambient/managed/screensaver_image_downloader.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_managed_photo_source.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -16,19 +17,18 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/policy/handlers/screensaver_image_downloader.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
-namespace policy {
+namespace ash {
 
 // Observes the policy that provides image sources for the managed screensaver
 // feature in order to download and cache the images.
 class ASH_EXPORT ScreensaverImagesPolicyHandler
-    : public ash::AmbientManagedPhotoSource,
-      public ash::SessionObserver {
+    : public AmbientManagedPhotoSource,
+      public SessionObserver {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -61,10 +61,10 @@ class ASH_EXPORT ScreensaverImagesPolicyHandler
   std::unique_ptr<ScreensaverImageDownloader> image_downloader_;
 
   ScreensaverImagesRepeatingCallback on_images_updated_callback_;
-  ash::ScopedSessionObserver scoped_session_observer_{this};
+  ScopedSessionObserver scoped_session_observer_{this};
   base::WeakPtrFactory<ScreensaverImagesPolicyHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace policy
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_POLICY_HANDLERS_SCREENSAVER_IMAGES_POLICY_HANDLER_H_
+#endif  // ASH_AMBIENT_MANAGED_SCREENSAVER_IMAGES_POLICY_HANDLER_H_

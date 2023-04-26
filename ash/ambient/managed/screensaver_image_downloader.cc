@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/handlers/screensaver_image_downloader.h"
+#include "ash/ambient/managed/screensaver_image_downloader.h"
 
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
@@ -11,7 +11,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace policy {
+namespace ash {
 
 namespace {
 
@@ -233,4 +233,4 @@ void ScreensaverImageDownloader::FinishDownloadJob(
   }
 }
 
-}  // namespace policy
+}  // namespace ash

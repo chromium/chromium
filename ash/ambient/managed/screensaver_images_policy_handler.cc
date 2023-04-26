@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/handlers/screensaver_images_policy_handler.h"
+#include "ash/ambient/managed/screensaver_images_policy_handler.h"
 
+#include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/shell.h"
 #include "base/base64url.h"
+#include "base/base_paths.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/hash/sha1.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
+#include "base/path_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace policy {
+namespace ash {
 
 namespace {
 
@@ -36,13 +37,19 @@ std::string GetHashedNameForUrl(const std::string& url) {
   return hashed_url + kCacheFileExt;
 }
 
+base::FilePath GetDownloaderRootPath() {
+  base::FilePath home_dir;
+  CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
+  return home_dir.Append(FILE_PATH_LITERAL(kCacheDirectoryName));
+}
+
 }  // namespace
 
 // static
 void ScreensaverImagesPolicyHandler::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterListPref(
-      ash::ambient::prefs::kAmbientModeManagedScreensaverImages);
+      ambient::prefs::kAmbientModeManagedScreensaverImages);
 }
 
 ScreensaverImagesPolicyHandler::ScreensaverImagesPolicyHandler() = default;
@@ -63,7 +70,7 @@ void ScreensaverImagesPolicyHandler::
   // jobs.
 
   const base::Value::List& urls_list = user_pref_service_->GetList(
-      ash::ambient::prefs::kAmbientModeManagedScreensaverImages);
+      ambient::prefs::kAmbientModeManagedScreensaverImages);
   for (size_t i = 0; i < kMaxUrlsToProcessFromPolicy && i < urls_list.size();
        ++i) {
     const base::Value& url = urls_list[i];
@@ -107,7 +114,7 @@ ScreensaverImagesPolicyHandler::GetScreensaverImages() {
 void ScreensaverImagesPolicyHandler::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   if (pref_service !=
-      ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService()) {
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService()) {
     return;
   }
 
@@ -115,24 +122,16 @@ void ScreensaverImagesPolicyHandler::OnActiveUserPrefServiceChanged(
     return;
   }
 
+  AmbientClient& ambient_client = CHECK_DEREF(AmbientClient::Get());
+  image_downloader_ = std::make_unique<ScreensaverImageDownloader>(
+      ambient_client.GetURLLoaderFactory(), GetDownloaderRootPath());
+
   user_pref_service_ = pref_service;
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
 
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  CHECK(primary_user);
-  Profile* user_profile =
-      ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
-  CHECK(user_profile);
-
-  const base::FilePath cache_root_directory =
-      user_profile->GetPath().AppendASCII(kCacheDirectoryName);
-  image_downloader_ = std::make_unique<ScreensaverImageDownloader>(
-      user_profile->GetURLLoaderFactory(), cache_root_directory);
-
   pref_change_registrar_->Add(
-      ash::ambient::prefs::kAmbientModeManagedScreensaverImages,
+      ambient::prefs::kAmbientModeManagedScreensaverImages,
       base::BindRepeating(&ScreensaverImagesPolicyHandler::
                               OnAmbientModeManagedScreensaverImagesPrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -140,4 +139,4 @@ void ScreensaverImagesPolicyHandler::OnActiveUserPrefServiceChanged(
   OnAmbientModeManagedScreensaverImagesPrefChanged();
 }
 
-}  // namespace policy
+}  // namespace ash

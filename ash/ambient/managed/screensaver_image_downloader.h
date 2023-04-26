@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_SCREENSAVER_IMAGE_DOWNLOADER_H_
-#define CHROME_BROWSER_ASH_POLICY_HANDLERS_SCREENSAVER_IMAGE_DOWNLOADER_H_
+#ifndef ASH_AMBIENT_MANAGED_SCREENSAVER_IMAGE_DOWNLOADER_H_
+#define ASH_AMBIENT_MANAGED_SCREENSAVER_IMAGE_DOWNLOADER_H_
 
 #include <memory>
 #include <string>
 
+#include "ash/ash_export.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -20,7 +21,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace policy {
+namespace ash {
 
 enum class ScreensaverImageDownloadResult {
   kSuccess,
@@ -31,7 +32,7 @@ enum class ScreensaverImageDownloadResult {
 
 // Provides a service to download external image files that will be displayed in
 // the managed screensaver feature.
-class ScreensaverImageDownloader {
+class ASH_EXPORT ScreensaverImageDownloader {
  private:
   // Expresses the state of the downloading job queue. It only has two possible
   // states:
@@ -128,6 +129,6 @@ class ScreensaverImageDownloader {
   base::WeakPtrFactory<ScreensaverImageDownloader> weak_ptr_factory_{this};
 };
 
-}  // namespace policy
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_POLICY_HANDLERS_SCREENSAVER_IMAGE_DOWNLOADER_H_
+#endif  // ASH_AMBIENT_MANAGED_SCREENSAVER_IMAGE_DOWNLOADER_H_

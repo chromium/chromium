@@ -25,7 +25,6 @@ class GameModeController;
 
 namespace policy {
 class DisplaySettingsHandler;
-class ScreensaverImagesPolicyHandler;
 }
 
 class AccessibilityControllerClient;
@@ -109,8 +108,6 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
       in_session_auth_token_provider_;
   std::unique_ptr<ScreenOrientationDelegateChromeos>
       screen_orientation_delegate_;
-  std::unique_ptr<policy::ScreensaverImagesPolicyHandler>
-      screensaver_images_policy_handler_;
   std::unique_ptr<SessionControllerClientImpl> session_controller_client_;
   std::unique_ptr<SystemTrayClientImpl> system_tray_client_;
   std::unique_ptr<TabClusterUIClient> tab_cluster_ui_client_;

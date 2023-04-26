@@ -2,38 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/handlers/screensaver_images_policy_handler.h"
+#include "ash/ambient/managed/screensaver_images_policy_handler.h"
 
 #include <algorithm>
 #include <memory>
 #include <vector>
 
-#include "ash/public/cpp/ambient/ambient_managed_photo_source.h"
+#include "ash/ambient/managed/screensaver_image_downloader.h"
+#include "ash/ambient/test/ambient_ash_test_helper.h"
+#include "ash/ambient/test/test_ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/base64url.h"
+#include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/sha1.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/repeating_test_future.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/handlers/screensaver_image_downloader.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/browser_task_environment.h"
-#include "screensaver_image_downloader.h"
+#include "base/test/scoped_path_override.h"
+#include "components/prefs/testing_pref_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace policy {
+namespace ash {
 
 namespace {
 
-constexpr char kTestProfileDirectoryName[] = "test_profile";
 constexpr char kUserEmail[] = "user@mail.com";
 constexpr char kFakeFilePath1[] = "/path/to/file1";
 constexpr char kFakeFilePath2[] = "/path/to/file2";
@@ -50,7 +49,7 @@ constexpr size_t kMaxUrlsToProcessFromPolicy = 25u;
 
 }  // namespace
 
-class ScreensaverImagesPolicyHandlerTest : public testing::Test {
+class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
  public:
   ScreensaverImagesPolicyHandlerTest() = default;
 
@@ -61,31 +60,19 @@ class ScreensaverImagesPolicyHandlerTest : public testing::Test {
 
   ~ScreensaverImagesPolicyHandlerTest() override = default;
 
-  // testing::Test:
+  // AshTestBase:
   void SetUp() override {
-    ash_test_helper_.SetUp(ash::AshTestHelper::InitParams());
-
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    fake_user_manager_ = fake_user_manager.get();
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    AshTestBase::SetUp();
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-
-    fake_profile_dir_ =
-        temp_dir_.GetPath().AppendASCII(kTestProfileDirectoryName);
-
-    profile_ = TestingProfile::Builder()
-                   .SetProfileName(kUserEmail)
-                   .SetSharedURLLoaderFactory(
-                       base::MakeRefCounted<
-                           network::WeakWrapperSharedURLLoaderFactory>(
-                           &url_loader_factory_))
-                   .SetPath(fake_profile_dir_)
-                   .Build();
+    scoped_path_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_HOME, temp_dir_.GetPath());
   }
 
-  void TearDown() override { policy_handler_.reset(); }
+  void TearDown() override {
+    policy_handler_.reset();
+    AshTestBase::TearDown();
+  }
 
   void TriggerOnDownloadJobCompleted(ScreensaverImageDownloadResult result,
                                      absl::optional<base::FilePath> path) {
@@ -93,44 +80,29 @@ class ScreensaverImagesPolicyHandlerTest : public testing::Test {
     policy_handler_->OnDownloadJobCompleted(result, path);
   }
 
-  void RegisterUser(const AccountId& account_id,
-                    std::unique_ptr<PrefService> pref_service) {
-    ASSERT_TRUE(profile_);
-    const user_manager::User* user =
-        fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-            account_id, false, user_manager::USER_TYPE_REGULAR, profile_.get());
-    fake_user_manager_->UserLoggedIn(
-        user->GetAccountId(), user->username_hash(), true /* browser_restart */,
-        false /* is_child */);
-    fake_user_manager_->SwitchActiveUser(account_id);
-
-    ash::TestSessionControllerClient* session_controller_client =
-        ash_test_helper_.test_session_controller_client();
-    session_controller_client->Reset();
-    session_controller_client->AddUserSession(kUserEmail,
-                                              user_manager::USER_TYPE_REGULAR,
-                                              /*provide_pref_service =*/false);
-    session_controller_client->SetUserPrefService(account_id,
-                                                  std::move(pref_service));
-    session_controller_client->SwitchActiveUser(account_id);
-    session_controller_client->SetSessionState(
-        session_manager::SessionState::ACTIVE);
-  }
-
   void CreateHandlerInstanceWithUserProfile() {
     policy_handler_ = std::make_unique<ScreensaverImagesPolicyHandler>();
 
-    // Verify that the handler is instantiated without an image donwloader.
+    // Verify that the handler is instantiated without an image downloader.
     EXPECT_FALSE(policy_handler_->image_downloader_);
 
     // Create a fake user prefs map.
     auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-    ash::RegisterUserProfilePrefs(user_prefs->registry(), /*for_test=*/true);
-    ScreensaverImagesPolicyHandler::RegisterPrefs(user_prefs->registry());
+    RegisterUserProfilePrefs(user_prefs->registry(), /*for_test=*/true);
 
     // Keep a raw pointer to the user prefs before transferring ownership.
     user_prefs_ = user_prefs.get();
-    RegisterUser(AccountId::FromUserEmail(kUserEmail), std::move(user_prefs));
+
+    GetSessionControllerClient()->Reset();
+    GetSessionControllerClient()->AddUserSession(
+        kUserEmail, user_manager::USER_TYPE_REGULAR,
+        /*provide_pref_service=*/false);
+    GetSessionControllerClient()->SetUserPrefService(
+        AccountId::FromUserEmail(kUserEmail), std::move(user_prefs));
+    GetSessionControllerClient()->SwitchActiveUser(
+        AccountId::FromUserEmail(kUserEmail));
+    GetSessionControllerClient()->SetSessionState(
+        session_manager::SessionState::ACTIVE);
 
     // Verify that the policy handler detected the new user and created a new
     // image downloader instance.
@@ -144,7 +116,8 @@ class ScreensaverImagesPolicyHandlerTest : public testing::Test {
                           &file_name);
     file_name += kCacheFileExt;
 
-    return fake_profile_dir_.AppendASCII(kCacheDirectoryName)
+    return temp_dir_.GetPath()
+        .AppendASCII(kCacheDirectoryName)
         .AppendASCII(file_name);
   }
 
@@ -153,27 +126,23 @@ class ScreensaverImagesPolicyHandlerTest : public testing::Test {
     return user_prefs_;
   }
 
-  network::TestURLLoaderFactory* url_loader_factory() {
-    return &url_loader_factory_;
+  network::TestURLLoaderFactory& url_loader_factory() {
+    return GetAmbientAshTestHelper()
+        ->ambient_client()
+        .test_url_loader_factory();
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
-
-  ash::AshTestHelper ash_test_helper_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
-      nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
+  // Temp directory to simulate user home directory.
   base::ScopedTempDir temp_dir_;
-  base::FilePath fake_profile_dir_;
-  std::unique_ptr<TestingProfile> profile_;
+
+  // Used to override the user home dir to |temp_dir_|
+  std::unique_ptr<base::ScopedPathOverride> scoped_path_override_;
 
   // Ownership of this pref service is transferred to the session controller
   raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> user_prefs_ = nullptr;
 
-  network::TestURLLoaderFactory url_loader_factory_;
-
+  // Class under test
   std::unique_ptr<ScreensaverImagesPolicyHandler> policy_handler_;
 };
 
@@ -234,13 +203,11 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, DownloadImagesTest) {
 
   // Fill the pref service to trigger the logic under test.
   user_prefs()->SetManagedPref(
-      ash::ambient::prefs::kAmbientModeManagedScreensaverImages,
-      image_urls.Clone());
+      ambient::prefs::kAmbientModeManagedScreensaverImages, image_urls.Clone());
 
   // Verify that the first request is resolved
   {
-    url_loader_factory()->AddResponse(image_urls[0].GetString(),
-                                      kFileContents1);
+    url_loader_factory().AddResponse(image_urls[0].GetString(), kFileContents1);
     EXPECT_TRUE(test_future.Wait());
     std::vector<base::FilePath> file_paths = test_future.Take();
     ASSERT_EQ(1u, file_paths.size());
@@ -249,8 +216,7 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, DownloadImagesTest) {
 
   // Verify that the second request is resolved and both file paths are present.
   {
-    url_loader_factory()->AddResponse(image_urls[1].GetString(),
-                                      kFileContents2);
+    url_loader_factory().AddResponse(image_urls[1].GetString(), kFileContents2);
     EXPECT_TRUE(test_future.Wait());
     std::vector<base::FilePath> file_paths = test_future.Take();
     ASSERT_EQ(2u, file_paths.size());
@@ -277,13 +243,12 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, VerifyPolicyLimit) {
   image_urls.Append(kImageUrl2);
 
   // Add both responses in the URL factory.
-  url_loader_factory()->AddResponse(image_urls[0].GetString(), kFileContents1);
-  url_loader_factory()->AddResponse(image_urls[1].GetString(), kFileContents2);
+  url_loader_factory().AddResponse(image_urls[0].GetString(), kFileContents1);
+  url_loader_factory().AddResponse(image_urls[1].GetString(), kFileContents2);
 
   // Fill the pref service to trigger the logic under test.
   user_prefs()->SetManagedPref(
-      ash::ambient::prefs::kAmbientModeManagedScreensaverImages,
-      image_urls.Clone());
+      ambient::prefs::kAmbientModeManagedScreensaverImages, image_urls.Clone());
 
   const base::FilePath expected_file_path = GetExpectedFilePath(kImageUrl1);
   for (size_t i = 0; i < kMaxUrlsToProcessFromPolicy; ++i) {
@@ -297,4 +262,4 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, VerifyPolicyLimit) {
   }
 }
 
-}  // namespace policy
+}  // namespace ash

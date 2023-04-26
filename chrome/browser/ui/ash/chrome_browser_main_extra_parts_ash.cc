@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
-#include "chrome/browser/ash/policy/handlers/screensaver_images_policy_handler.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
@@ -225,11 +224,6 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
           std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
   wallpaper_controller_client_->Init();
 
-  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    screensaver_images_policy_handler_ =
-        std::make_unique<policy::ScreensaverImagesPolicyHandler>();
-  }
-
   session_controller_client_ = std::make_unique<SessionControllerClientImpl>();
   session_controller_client_->Init();
   // By this point ash shell should have initialized its D-Bus signal
@@ -393,7 +387,6 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   g_browser_process->SetGeolocationManager(nullptr);
   system_tray_client_.reset();
   session_controller_client_.reset();
-  screensaver_images_policy_handler_.reset();
   ime_controller_client_.reset();
   in_session_auth_dialog_client_.reset();
   arc_open_url_delegate_impl_.reset();

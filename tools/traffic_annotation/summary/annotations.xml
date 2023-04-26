@@ -415,7 +415,7 @@ Refer to README.md for content description and update process.
  <item id="safe_browsing_ohttp_key_fetch" added_in_milestone="113" content_hash_code="0309cb19" os_list="linux,windows,android,chromeos" file_path="components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.cc" />
  <item id="glanceables_tasks_integration" added_in_milestone="113" content_hash_code="06e038c9" os_list="chromeos" file_path="chrome/browser/ui/ash/glanceables/glanceables_tasks_client_impl.cc" />
  <item id="bookmarks_image_fetcher" added_in_milestone="114" content_hash_code="01dd68ad" os_list="chromeos,linux,windows" file_path="chrome/browser/ui/views/bookmarks/bookmark_bubble_view.cc" />
- <item id="screensaver_image_downloader" added_in_milestone="114" content_hash_code="05ebc454" os_list="chromeos" file_path="chrome/browser/ash/policy/handlers/screensaver_image_downloader.cc" />
+ <item id="screensaver_image_downloader" added_in_milestone="114" content_hash_code="05ebc454" os_list="chromeos" file_path="ash/ambient/managed/screensaver_image_downloader.cc" />
  <item id="back_navigation_cache_query" added_in_milestone="114" content_hash_code="052f4fec" os_list="linux,windows,android,chromeos" file_path="content/browser/preloading/prerender/prerender_host_registry.cc" />
  <item id="cws_info_service" added_in_milestone="114" content_hash_code="02e1a061" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/cws_info_service.cc" />
  <item id="promise_app_service" added_in_milestone="114" content_hash_code="07856112" os_list="chromeos" file_path="chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.cc" />

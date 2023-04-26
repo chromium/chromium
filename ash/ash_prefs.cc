@@ -7,6 +7,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/calendar/calendar_controller.h"
@@ -121,6 +122,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   PrivacyScreenController::RegisterProfilePrefs(registry);
   ProjectorControllerImpl::RegisterProfilePrefs(registry);
   quick_pair::Mediator::RegisterProfilePrefs(registry);
+  ScreensaverImagesPolicyHandler::RegisterPrefs(registry);
   ShelfController::RegisterProfilePrefs(registry);
   SnoopingProtectionController::RegisterProfilePrefs(registry);
   TabletModeTuckEducation::RegisterProfilePrefs(registry);

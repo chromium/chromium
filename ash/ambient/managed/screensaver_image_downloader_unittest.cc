@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/handlers/screensaver_image_downloader.h"
+#include "ash/ambient/managed/screensaver_image_downloader.h"
 #include "build/build_config.h"
 
 #include <memory>
@@ -19,7 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace policy {
+namespace ash {
 
 namespace {
 constexpr char kImageUrl1[] = "http://example.com/image1.jpg";
@@ -193,4 +193,4 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   VerifyDownloadingQueueSize(0u);
 }
 
-}  // namespace policy
+}  // namespace ash
