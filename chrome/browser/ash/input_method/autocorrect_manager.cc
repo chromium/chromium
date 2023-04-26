@@ -785,6 +785,10 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     return false;
   }
 
+  if (event.code() == ui::DomCode::ESCAPE) {
+    HideUndoWindow();
+    return true;
+  }
   if (event.code() == ui::DomCode::ARROW_UP ||
       event.code() == ui::DomCode::TAB) {
     HighlightButtons(/*should_highlight_undo=*/true,
