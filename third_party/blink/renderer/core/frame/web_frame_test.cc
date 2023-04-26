@@ -13534,61 +13534,6 @@ TEST_F(WebFrameTest, AltTextOnAboutBlankPage) {
   EXPECT_EQ("foo alt", text.Utf8());
 }
 
-TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
-  const char* histogramName =
-      "RendererScheduler.UpdateForSameDocumentNavigationCount";
-  frame_test_helpers::WebViewHelper web_view_helper;
-  HistogramTester tester;
-  web_view_helper.InitializeAndLoad("about:blank");
-  auto* frame =
-      To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
-
-  DocumentLoader& document_loader = *web_view_helper.GetWebView()
-                                         ->MainFrameImpl()
-                                         ->GetFrame()
-                                         ->GetDocument()
-                                         ->Loader();
-  scoped_refptr<SerializedScriptValue> message =
-      SerializeString("message", ToScriptStateForMainWorld(frame));
-  tester.ExpectTotalCount(histogramName, 0);
-  document_loader.UpdateForSameDocumentNavigation(
-      ToKURL("about:blank"), nullptr,
-      mojom::blink::SameDocumentNavigationType::kHistoryApi, message,
-      WebFrameLoadType::kReplaceCurrentItem,
-      frame->DomWindow()->GetSecurityOrigin(),
-      /*is_browser_initiated=*/false,
-      /*is_synchronously_committed=*/true,
-      /*soft_navigation_heuristics_task_id=*/absl::nullopt);
-  // The bucket index corresponds to the definition of
-  // |SinglePageAppNavigationType|.
-  tester.ExpectBucketCount(histogramName,
-                           kSPANavTypeHistoryPushStateOrReplaceState, 1);
-  document_loader.UpdateForSameDocumentNavigation(
-      ToKURL("about:blank"), MakeGarbageCollected<HistoryItem>(),
-      mojom::blink::SameDocumentNavigationType::kFragment, message,
-      WebFrameLoadType::kBackForward, frame->DomWindow()->GetSecurityOrigin(),
-      /*is_browser_initiated=*/false,
-      /*is_synchronously_committed=*/true,
-      /*soft_navigation_heuristics_task_id=*/absl::nullopt);
-  tester.ExpectBucketCount(histogramName,
-                           kSPANavTypeSameDocumentBackwardOrForward, 1);
-  document_loader.UpdateForSameDocumentNavigation(
-      ToKURL("about:blank"), nullptr,
-      mojom::blink::SameDocumentNavigationType::kFragment, message,
-      WebFrameLoadType::kReplaceCurrentItem,
-      frame->DomWindow()->GetSecurityOrigin(),
-      /*is_browser_initiated=*/false,
-      /*is_synchronously_committed=*/true,
-      /*soft_navigation_heuristics_task_id=*/absl::nullopt);
-  tester.ExpectBucketCount(histogramName, kSPANavTypeOtherFragmentNavigation,
-                           1);
-  // mojom::blink::SameDocumentNavigationType::kHistoryApi and
-  // WebFrameLoadType::kBackForward is an illegal combination, which has been
-  // caught by DCHECK in UpdateForSameDocumentNavigation().
-
-  tester.ExpectTotalCount(histogramName, 3);
-}
-
 static void TestFramePrinting(WebLocalFrameImpl* frame) {
   WebPrintParams print_params;
   gfx::Size page_size(500, 500);

@@ -768,33 +768,6 @@ WebHistoryCommitType LoadTypeToCommitType(WebFrameLoadType type) {
   return kWebHistoryInertCommit;
 }
 
-static SinglePageAppNavigationType CategorizeSinglePageAppNavigation(
-    mojom::blink::SameDocumentNavigationType same_document_navigation_type,
-    WebFrameLoadType frame_load_type) {
-  // |SinglePageAppNavigationType| falls into this grid according to different
-  // combinations of |WebFrameLoadType| and |SameDocumentNavigationType|:
-  //
-  //                 HistoryApi           Default
-  //  kBackForward   illegal              otherFragmentNav
-  // !kBackForward   sameDocBack/Forward  historyPushOrReplace
-  switch (same_document_navigation_type) {
-    case mojom::blink::SameDocumentNavigationType::kFragment:
-      if (frame_load_type == WebFrameLoadType::kBackForward) {
-        return kSPANavTypeSameDocumentBackwardOrForward;
-      }
-      return kSPANavTypeOtherFragmentNavigation;
-    case mojom::blink::SameDocumentNavigationType::kHistoryApi:
-      // It's illegal to have both kHistoryApi and
-      // WebFrameLoadType::kBackForward.
-      DCHECK(frame_load_type != WebFrameLoadType::kBackForward);
-      return kSPANavTypeHistoryPushStateOrReplaceState;
-    case mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept:
-      return kSPANavTypeNavigationApiIntercept;
-  }
-  NOTREACHED();
-  return kSPANavTypeSameDocumentBackwardOrForward;
-}
-
 void DocumentLoader::RunURLAndHistoryUpdateSteps(
     const KURL& new_url,
     HistoryItem* history_item,
@@ -826,12 +799,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     absl::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
   DCHECK_EQ(IsBackForwardLoadType(type), !!history_item);
-
-  SinglePageAppNavigationType single_page_app_navigation_type =
-      CategorizeSinglePageAppNavigation(same_document_navigation_type, type);
-  UMA_HISTOGRAM_ENUMERATION(
-      "RendererScheduler.UpdateForSameDocumentNavigationCount",
-      single_page_app_navigation_type, kSPANavTypeCount);
 
   TRACE_EVENT1("blink", "FrameLoader::updateForSameDocumentNavigation", "url",
                new_url.GetString().Ascii());

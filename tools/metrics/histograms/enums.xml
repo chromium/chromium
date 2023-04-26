@@ -96271,13 +96271,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Spec compliant"/>
 </enum>
 
-<enum name="SinglePageAppNavigationType">
-  <int value="0" label="History push state or replace state"/>
-  <int value="1" label="Same document backward or forward"/>
-  <int value="2" label="Other fragment navigation"/>
-  <int value="3" label="Navigation API intercept"/>
-</enum>
-
 <enum name="SingleWebFeedEntryPoint">
   <int value="0" label="Menu"/>
   <int value="1" label="Attribtuion"/>
