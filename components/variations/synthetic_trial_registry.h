@@ -12,7 +12,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/observer_list.h"
-#include "base/scoped_observation_traits.h"
 #include "components/variations/synthetic_trials.h"
 
 namespace metrics {
@@ -44,10 +43,10 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   ~SyntheticTrialRegistry();
 
   // Adds an observer to be notified when the synthetic trials list changes.
-  void AddSyntheticTrialObserver(SyntheticTrialObserver* observer);
+  void AddObserver(SyntheticTrialObserver* observer);
 
   // Removes an existing observer of synthetic trials list changes.
-  void RemoveSyntheticTrialObserver(SyntheticTrialObserver* observer);
+  void RemoveObserver(SyntheticTrialObserver* observer);
 
   // Specifies the mode of RegisterExternalExperiments() operation.
   enum OverrideMode {
@@ -146,24 +145,5 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
 };
 
 }  // namespace variations
-
-namespace base {
-
-// TODO(crbug.com/1430486): the methods in SyntheticTrialRegistry to remove
-// these traits.
-template <>
-struct ScopedObservationTraits<variations::SyntheticTrialRegistry,
-                               variations::SyntheticTrialObserver> {
-  static void AddObserver(variations::SyntheticTrialRegistry* source,
-                          variations::SyntheticTrialObserver* observer) {
-    source->AddSyntheticTrialObserver(observer);
-  }
-  static void RemoveObserver(variations::SyntheticTrialRegistry* source,
-                             variations::SyntheticTrialObserver* observer) {
-    source->RemoveSyntheticTrialObserver(observer);
-  }
-};
-
-}  // namespace base
 
 #endif  // COMPONENTS_VARIATIONS_SYNTHETIC_TRIAL_REGISTRY_H_

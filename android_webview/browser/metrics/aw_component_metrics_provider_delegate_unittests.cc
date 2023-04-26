@@ -14,6 +14,7 @@
 #include "android_webview/common/components/aw_apps_package_names_allowlist_component_utils.h"
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -56,6 +57,7 @@ class AwComponentMetricsProviderDelegateTest : public testing::Test {
   AwMetricsServiceClient* GetClient() { return client_.get(); }
 
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<AwMetricsServiceClient> client_;
