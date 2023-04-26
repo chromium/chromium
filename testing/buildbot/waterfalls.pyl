@@ -783,7 +783,6 @@
         'test_suites': {
           'gtest_tests': 'android_marshmallow_gtests',
           'junit_tests': 'chromium_junit_tests_no_swarming',
-          'isolated_scripts': 'monochrome_public_apk_checker_isolated_script',
         },
         'os_type': 'android',
       },

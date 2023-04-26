@@ -22504,34 +22504,6 @@
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
       }
     ],
-    "isolated_scripts": [
-      {
-        "isolate_name": "monochrome_public_apk_checker",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "monochrome_public_apk_checker",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "device_os": null,
-              "device_os_flavor": null,
-              "device_playstore_version": null,
-              "device_type": null,
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/android/monochrome:monochrome_public_apk_checker/"
-      }
-    ],
     "junit_tests": [
       {
         "name": "android_webview_junit_tests",
