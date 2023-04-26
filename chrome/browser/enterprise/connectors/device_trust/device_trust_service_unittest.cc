@@ -117,7 +117,7 @@ class DeviceTrustServiceTest
                           base::Value(base::Value::List()));
   }
 
-  std::unique_ptr<DeviceTrustService> CreateService() {
+  DeviceTrustService* CreateService() {
     connector_ = std::make_unique<DeviceTrustConnectorService>(&prefs_);
 
     auto mock_attestation_service = std::make_unique<MockAttestationService>();
@@ -126,9 +126,10 @@ class DeviceTrustServiceTest
     auto mock_signals_service = std::make_unique<MockSignalsService>();
     mock_signals_service_ = mock_signals_service.get();
 
-    return std::make_unique<DeviceTrustService>(
+    device_trust_service_ = std::make_unique<DeviceTrustService>(
         std::move(mock_attestation_service), std::move(mock_signals_service),
         connector_.get());
+    return device_trust_service_.get();
   }
 
   bool is_attestation_flow_enabled() {
@@ -139,7 +140,7 @@ class DeviceTrustServiceTest
   bool is_policy_enabled() { return std::get<1>(GetParam()); }
 
   void TestFailToParseChallenge(std::string serialized_signed_challenge) {
-    auto device_trust_service = CreateService();
+    auto* device_trust_service = CreateService();
 
     EXPECT_CALL(*mock_signals_service_, CollectSignals(_)).Times(0);
 
@@ -162,6 +163,7 @@ class DeviceTrustServiceTest
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<DeviceTrustConnectorService> connector_;
+  std::unique_ptr<DeviceTrustService> device_trust_service_;
   raw_ptr<MockAttestationService> mock_attestation_service_;
   raw_ptr<MockSignalsService> mock_signals_service_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
@@ -171,13 +173,13 @@ class DeviceTrustServiceTest
 // Tests that IsEnabled returns true only when the feature flag is enabled and
 // the policy has some URLs.
 TEST_P(DeviceTrustServiceTest, IsEnabled) {
-  auto device_trust_service = CreateService();
+  auto* device_trust_service = CreateService();
   EXPECT_EQ(is_attestation_flow_enabled(), device_trust_service->IsEnabled());
 }
 
 // Tests that the service kicks off the attestation flow properly.
 TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
-  auto device_trust_service = CreateService();
+  auto* device_trust_service = CreateService();
 
   std::string fake_display_name = "fake_display_name";
   EXPECT_CALL(*mock_signals_service_, CollectSignals(_))
@@ -221,7 +223,7 @@ TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
 }
 
 TEST_P(DeviceTrustServiceTest, AttestationFailure) {
-  auto device_trust_service = CreateService();
+  auto* device_trust_service = CreateService();
 
   std::string fake_display_name = "fake_display_name";
   EXPECT_CALL(*mock_signals_service_, CollectSignals(_))
