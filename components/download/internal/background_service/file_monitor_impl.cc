@@ -4,6 +4,7 @@
 
 #include "components/download/internal/background_service/file_monitor_impl.h"
 
+#include "base/debug/alias.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -49,6 +50,10 @@ void DeleteFilesOnFileThread(const std::set<base::FilePath>& paths,
   int num_delete_attempted = 0;
   int num_delete_failed = 0;
   int num_delete_by_external = 0;
+  int num_files = paths.size();
+  // Lock variables on the stack for investigating https://crbug.com/1428815
+  base::debug::Alias(&num_files);
+  base::debug::Alias(&num_delete_attempted);
   for (const base::FilePath& path : paths) {
     if (!base::PathExists(path)) {
       num_delete_by_external++;
