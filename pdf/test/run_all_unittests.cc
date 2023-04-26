@@ -19,7 +19,6 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/blink.h"
-#include "third_party/skia/include/core/SkGraphics.h"
 #include "tools/v8_context_snapshot/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
@@ -81,8 +80,6 @@ class PdfTestSuite final : public base::TestSuite {
                       platform_->GetMainThreadScheduler());
 
     InitializeResourceBundle();
-
-    SkGraphics::SetPathAnalyticAADecider([](const SkPath&) { return true; });
   }
 
   void Shutdown() override {
