@@ -106,49 +106,52 @@ gfx::Size ParsePaperSize(base::StringPiece value) {
 }
 
 #if BUILDFLAG(USE_CUPS)
-gfx::Rect PrintableAreaFromSizeAndPwgMargins(const gfx::Size& size_um,
-                                             int bottom_pwg,
-                                             int left_pwg,
-                                             int right_pwg,
-                                             int top_pwg) {
+PrinterSemanticCapsAndDefaults::Paper ParsePaper(
+    base::StringPiece value,
+    const CupsPrinter::CupsMediaMargins& margins) {
+  std::vector<base::StringPiece> pieces = GetStringPiecesIfValid(value);
+  if (pieces.empty()) {
+    return PrinterSemanticCapsAndDefaults::Paper();
+  }
+
+  base::StringPiece dimensions = pieces.back();
+
+  PrinterSemanticCapsAndDefaults::Paper paper;
+  paper.vendor_id = std::string(value);
+  paper.size_um = DimensionsToMicrons(dimensions);
+  if (paper.size_um.IsEmpty()) {
+    return PrinterSemanticCapsAndDefaults::Paper();
+  }
+
   // The margins of the printable area are expressed in PWG units (100ths of
-  // mm) in the IPP 'media-col-database' attribute.
-  int printable_area_left_um = left_pwg * kMicronsPerPwgUnit;
-  int printable_area_bottom_um = bottom_pwg * kMicronsPerPwgUnit;
+  // mm).
+  int printable_area_left_um = margins.left * kMicronsPerPwgUnit;
+  int printable_area_bottom_um = margins.bottom * kMicronsPerPwgUnit;
   int printable_area_width_um =
-      size_um.width() - ((left_pwg + right_pwg) * kMicronsPerPwgUnit);
-  int printable_area_height_um =
-      size_um.height() - ((top_pwg + bottom_pwg) * kMicronsPerPwgUnit);
-  return gfx::Rect(printable_area_left_um, printable_area_bottom_um,
-                   printable_area_width_um, printable_area_height_um);
-}
+      paper.size_um.width() -
+      ((margins.left + margins.right) * kMicronsPerPwgUnit);
+  int printable_area_length_um =
+      paper.size_um.height() -
+      ((margins.top + margins.bottom) * kMicronsPerPwgUnit);
+  paper.printable_area_um =
+      gfx::Rect(printable_area_left_um, printable_area_bottom_um,
+                printable_area_width_um, printable_area_length_um);
 
-void PwgMarginsFromSizeAndPrintableArea(const gfx::Size& size_um,
-                                        const gfx::Rect& printable_area_um,
-                                        int* bottom_pwg,
-                                        int* left_pwg,
-                                        int* right_pwg,
-                                        int* top_pwg) {
-  DCHECK(bottom_pwg);
-  DCHECK(left_pwg);
-  DCHECK(right_pwg);
-  DCHECK(top_pwg);
+  // Default to the paper size if printable area is empty.
+  // We've seen some drivers have a printable area that goes out of bounds
+  // of the paper size. In those cases, set the printable area to be the
+  // size. (See crbug.com/1412305.)
+  const gfx::Rect size_um_rect = gfx::Rect(paper.size_um);
+  if (paper.printable_area_um.IsEmpty() ||
+      !size_um_rect.Contains(paper.printable_area_um)) {
+    paper.printable_area_um = size_um_rect;
+  }
 
-  // These values in microns were obtained in the first place by converting
-  // from PWG units, so we can losslessly convert them back.
-  int bottom_um = printable_area_um.y();
-  int left_um = printable_area_um.x();
-  int right_um = size_um.width() - printable_area_um.right();
-  int top_um = size_um.height() - printable_area_um.bottom();
-  DCHECK_EQ(bottom_um % kMicronsPerPwgUnit, 0);
-  DCHECK_EQ(left_um % kMicronsPerPwgUnit, 0);
-  DCHECK_EQ(right_um % kMicronsPerPwgUnit, 0);
-  DCHECK_EQ(top_um % kMicronsPerPwgUnit, 0);
+  // Omits the final token describing the media dimensions.
+  pieces.pop_back();
+  paper.display_name = base::JoinString(pieces, " ");
 
-  *bottom_pwg = bottom_um / kMicronsPerPwgUnit;
-  *left_pwg = left_um / kMicronsPerPwgUnit;
-  *right_pwg = right_um / kMicronsPerPwgUnit;
-  *top_pwg = top_um / kMicronsPerPwgUnit;
+  return paper;
 }
 #endif  // BUILDFLAG(USE_CUPS)
 
