@@ -18,14 +18,13 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/page_transition_types.h"
@@ -110,9 +109,6 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
 
   // Opens a new page in the background, and returns its index in the tab strip.
   int OpenNewBackgroundPage() {
-    content::WindowedNotificationObserver load(
-        content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-        content::NotificationService::AllSources());
     // Load a page with title and favicon so that some tests can manipulate
     // them.
     content::OpenURLParams page(
@@ -120,10 +116,12 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
         content::Referrer(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui::PAGE_TRANSITION_TYPED, false);
     content::WebContents* contents = browser()->OpenURL(page);
+    content::TestNavigationObserver observer(contents);
+    observer.set_expected_initial_url(page.url);
 
     // Wait for the page and the initial favicon to finish loading.
     FaviconWatcher favicon_watcher(contents);
-    load.Wait();
+    observer.Wait();
     favicon_watcher.Wait();
 
     return browser()->tab_strip_model()->GetIndexOfWebContents(contents);

@@ -10,10 +10,10 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -94,15 +94,12 @@ IN_PROC_BROWSER_TEST_F(PageTimelineMonitorBrowserTest,
                        TestDiscardedTabsRecordedInCorrectState) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  content::WindowedNotificationObserver load(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  content::OpenURLParams page(embedded_test_server()->GetURL("/title1.html"),
-                              content::Referrer(),
-                              WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                              ui::PAGE_TRANSITION_TYPED, false);
-  auto* contents = browser()->OpenURL(page);
-  load.Wait();
+  content::RenderFrameHost* frame_host = NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title1.html"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(frame_host);
+  auto* contents = content::WebContents::FromRenderFrameHost(frame_host);
 
   // Expect 2 entries (one for the background and one for the foreground page).
   // The background page is what we care about, it should be in the "background"
@@ -147,15 +144,12 @@ IN_PROC_BROWSER_TEST_F(PageTimelineMonitorBrowserTest,
                        TestFrozenToDiscardedTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  content::WindowedNotificationObserver load(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  content::OpenURLParams page(embedded_test_server()->GetURL("/title1.html"),
-                              content::Referrer(),
-                              WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                              ui::PAGE_TRANSITION_TYPED, false);
-  auto* contents = browser()->OpenURL(page);
-  load.Wait();
+  content::RenderFrameHost* frame_host = NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title1.html"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(frame_host);
+  auto* contents = content::WebContents::FromRenderFrameHost(frame_host);
 
   // Expect 2 entries (one for the background and one for the foreground page).
   // The background page is what we care about, it should be in the "background"
