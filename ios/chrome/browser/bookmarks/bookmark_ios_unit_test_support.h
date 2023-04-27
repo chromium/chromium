@@ -6,7 +6,9 @@
 #define IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_IOS_UNIT_TEST_SUPPORT_H_
 
 #import <Foundation/Foundation.h>
+
 #include <memory>
+#include <string>
 
 #include "base/test/scoped_feature_list.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -31,11 +33,12 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   void SetUp() override;
   const bookmarks::BookmarkNode* AddBookmark(
       const bookmarks::BookmarkNode* parent,
-      NSString* title);
+      const std::u16string& title);
   const bookmarks::BookmarkNode* AddFolder(
       const bookmarks::BookmarkNode* parent,
-      NSString* title);
-  void ChangeTitle(NSString* title, const bookmarks::BookmarkNode* node);
+      const std::u16string& title);
+  void ChangeTitle(const std::u16string& title,
+                   const bookmarks::BookmarkNode* node);
   bookmarks::BookmarkModel* GetBookmarkModelForNode(
       const bookmarks::BookmarkNode* node);
 

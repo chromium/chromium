@@ -106,7 +106,7 @@ TEST_F(BookmarkActivityTest, ActivityTitle_AddBookmark) {
 TEST_F(BookmarkActivityTest, ActivityTitle_EditBookmark) {
   // Add a bookmark.
   const bookmarks::BookmarkNode* bookmark =
-      AddBookmark(profile_bookmark_model_->mobile_node(), @"activity_test");
+      AddBookmark(profile_bookmark_model_->mobile_node(), u"activity_test");
   ASSERT_TRUE(profile_bookmark_model_->IsBookmarked(bookmark->url()));
 
   BookmarkActivity* activity = CreateActivity(bookmark->url());

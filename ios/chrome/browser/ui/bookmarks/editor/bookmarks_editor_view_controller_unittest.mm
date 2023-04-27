@@ -56,7 +56,7 @@ TEST_F(BookmarksEditorViewControllerTest, CanSyncBeforeLoad) {
 
   const bookmarks::BookmarkNode* mobile_node =
       profile_bookmark_model_->mobile_node();
-  const bookmarks::BookmarkNode* bookmark = AddBookmark(mobile_node, @"foo");
+  const bookmarks::BookmarkNode* bookmark = AddBookmark(mobile_node, u"foo");
   BookmarksEditorMediator* mediator = [[BookmarksEditorMediator alloc]
       initWithProfileBookmarkModel:profile_bookmark_model_
               accountBookmarkModel:nullptr

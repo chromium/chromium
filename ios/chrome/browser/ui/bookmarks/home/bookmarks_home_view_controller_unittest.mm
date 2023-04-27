@@ -68,7 +68,7 @@ TEST_P(BookmarksHomeViewControllerTest,
 
     const bookmarks::BookmarkNode* mobileNode =
         profile_bookmark_model_->mobile_node();
-    AddBookmark(mobileNode, @"foo");
+    AddBookmark(mobileNode, u"foo");
     controller.displayedFolderNode = mobileNode;
     // sections: Bookmarks, root profile, root account, message.
     EXPECT_EQ(4, [controller numberOfSectionsInTableView:controller.tableView]);
@@ -127,7 +127,7 @@ TEST_P(BookmarksHomeViewControllerTest,
         profile_bookmark_model_->root_node();
     const bookmarks::BookmarkNode* mobileNode =
         profile_bookmark_model_->mobile_node();
-    AddBookmark(mobileNode, @"foo");  // Ensure there are bookmarks
+    AddBookmark(mobileNode, u"foo");  // Ensure there are bookmarks
     controller.displayedFolderNode = rootNode;
     // sections: Promo, Bookmarks, root profile, root account, message.
     EXPECT_EQ(5, [controller numberOfSectionsInTableView:controller.tableView]);

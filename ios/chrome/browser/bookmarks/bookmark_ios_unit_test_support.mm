@@ -63,26 +63,23 @@ void BookmarkIOSUnitTestSupport::SetUp() {
 
 const BookmarkNode* BookmarkIOSUnitTestSupport::AddBookmark(
     const BookmarkNode* parent,
-    NSString* title) {
+    const std::u16string& title) {
   bookmarks::BookmarkModel* model = GetBookmarkModelForNode(parent);
-  std::u16string c_title = base::SysNSStringToUTF16(title);
-  GURL url(base::SysNSStringToUTF16(@"http://example.com/bookmark") + c_title);
-  return model->AddURL(parent, parent->children().size(), c_title, url);
+  GURL url(u"http://example.com/bookmark" + title);
+  return model->AddURL(parent, parent->children().size(), title, url);
 }
 
 const BookmarkNode* BookmarkIOSUnitTestSupport::AddFolder(
     const BookmarkNode* parent,
-    NSString* title) {
+    const std::u16string& title) {
   bookmarks::BookmarkModel* model = GetBookmarkModelForNode(parent);
-  std::u16string c_title = base::SysNSStringToUTF16(title);
-  return model->AddFolder(parent, parent->children().size(), c_title);
+  return model->AddFolder(parent, parent->children().size(), title);
 }
 
-void BookmarkIOSUnitTestSupport::ChangeTitle(NSString* title,
+void BookmarkIOSUnitTestSupport::ChangeTitle(const std::u16string& title,
                                              const BookmarkNode* node) {
   bookmarks::BookmarkModel* model = GetBookmarkModelForNode(node);
-  std::u16string c_title = base::SysNSStringToUTF16(title);
-  model->SetTitle(node, c_title, bookmarks::metrics::BookmarkEditSource::kUser);
+  model->SetTitle(node, title, bookmarks::metrics::BookmarkEditSource::kUser);
 }
 
 bookmarks::BookmarkModel* BookmarkIOSUnitTestSupport::GetBookmarkModelForNode(

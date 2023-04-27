@@ -114,7 +114,7 @@ TEST_F(BookmarkModelBridgeObserverTest,
        NotifyBookmarkNodeChildrenChangedDespiteSelfDestruction) {
   @autoreleasepool {
     const BookmarkNode* mobile_node = profile_bookmark_model_->mobile_node();
-    const BookmarkNode* folder = AddFolder(mobile_node, @"title");
+    const BookmarkNode* folder = AddFolder(mobile_node, u"title");
 
     TestBookmarkModelBridgeOwner* owner = [[TestBookmarkModelBridgeOwner alloc]
         initWithModel:profile_bookmark_model_
