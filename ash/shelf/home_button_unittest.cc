@@ -33,6 +33,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -229,6 +230,7 @@ TEST_F(HomeButtonWithQuickAppAccess, NonExistentApp) {
 // Test that when setting a quick app with no icon, the quick app button doesn't
 // show until an icon is loaded.
 TEST_F(HomeButtonWithQuickAppAccess, AppWithNoIconThenLoaded) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(IsQuickAppVisible());
 
   const std::string quick_app_id = "Quick App Item";
@@ -248,6 +250,8 @@ TEST_F(HomeButtonWithQuickAppAccess, AppWithNoIconThenLoaded) {
   item->SetDefaultIconAndColor(
       CreateSolidColorTestImage(gfx::Size(32, 32), SK_ColorRED), IconColor());
   EXPECT_TRUE(IsQuickAppVisible());
+
+  histogram_tester.ExpectTotalCount("Apps.QuickAppIconLoadTime", 1);
 }
 
 // Test that the quick app button image changes when setting a new quick app

@@ -2708,6 +2708,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.QuickAppIconLoadTime" units="ms"
+    expires_after="2023-10-26">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>src/ash/app_list/OWNERS</owner>
+  <summary>
+    The amount of time it takes for a quick app's icon to be loaded (The quick
+    app is an app icon button that, when set, appears directly next to the home
+    button). This is logged any time an icon is null and gets loaded for a newly
+    set quick app.
+  </summary>
+</histogram>
+
 <histogram name="Apps.RestoreArcAppsResult" enum="RestoreResult"
     expires_after="2023-10-24">
   <owner>nancylingwang@chromium.org</owner>
