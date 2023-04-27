@@ -16,7 +16,6 @@
 class GoogleServiceAuthError;
 
 namespace policy {
-class ActiveDirectoryJoinDelegate;
 struct EnrollmentConfig;
 enum class LicenseType;
 class EnrollmentStatus;
@@ -67,7 +66,6 @@ class EnterpriseEnrollmentHelper {
   // Factory method. Caller takes ownership of the returned object.
   static std::unique_ptr<EnterpriseEnrollmentHelper> Create(
       EnrollmentStatusConsumer* status_consumer,
-      policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
       const policy::EnrollmentConfig& enrollment_config,
       const std::string& enrolling_user_domain,
       policy::LicenseType license_type);
@@ -128,8 +126,7 @@ class EnterpriseEnrollmentHelper {
   EnterpriseEnrollmentHelper();
 
   // This method is called once from Create method.
-  virtual void Setup(policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
-                     const policy::EnrollmentConfig& enrollment_config,
+  virtual void Setup(const policy::EnrollmentConfig& enrollment_config,
                      const std::string& enrolling_user_domain,
                      policy::LicenseType license_type) = 0;
 

@@ -15,7 +15,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace policy {
-class ActiveDirectoryJoinDelegate;
 class EnrollmentStatus;
 }
 
@@ -73,12 +72,6 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   // `asset_id` / `location` should be sent back to server.
   void ExpectAttributePromptUpdate(const std::string& asset_id,
                                    const std::string& location);
-
-  // Forces the Active Directory domain join flow during enterprise enrollment.
-  void SetupActiveDirectoryJoin(policy::ActiveDirectoryJoinDelegate* delegate,
-                                const std::string& expected_domain,
-                                const std::string& domain_join_config,
-                                const std::string& dm_token);
 
   // InProcessBrowserTestMixin:
   void SetUpInProcessBrowserTestFixture() override;

@@ -46,8 +46,7 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
   void GetDeviceAttributeUpdatePermission() override;
   void UpdateDeviceAttributes(const std::string& asset_id,
                               const std::string& location) override;
-  void Setup(policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
-             const policy::EnrollmentConfig& enrollment_config,
+  void Setup(const policy::EnrollmentConfig& enrollment_config,
              const std::string& enrolling_user_domain,
              policy::LicenseType license_type) override;
   bool InProgress() const override;
@@ -103,8 +102,6 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
   bool oauth_data_cleared_ = false;
   policy::DMAuth auth_data_;
   bool success_ = false;
-  raw_ptr<policy::ActiveDirectoryJoinDelegate, ExperimentalAsh>
-      ad_join_delegate_ = nullptr;
 
   std::unique_ptr<policy::PolicyOAuth2TokenFetcher> oauth_fetcher_;
 

@@ -251,7 +251,7 @@ bool EnrollmentScreen::AdvanceToNextAuth() {
 void EnrollmentScreen::CreateEnrollmentHelper() {
   if (!enrollment_helper_) {
     enrollment_helper_ = EnterpriseEnrollmentHelper::Create(
-        this, this, config_, enrolling_user_domain_, license_type_to_use_);
+        this, config_, enrolling_user_domain_, license_type_to_use_);
   }
 }
 
