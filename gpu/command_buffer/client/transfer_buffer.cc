@@ -119,7 +119,7 @@ void TransferBuffer::AllocateRingBuffer(unsigned int size) {
   for (;size >= min_buffer_size_; size /= 2) {
     int32_t id = -1;
     scoped_refptr<gpu::Buffer> buffer =
-        helper_->command_buffer()->CreateTransferBuffer(size, &id);
+        helper_->command_buffer()->CreateTransferBuffer(size, &id, alignment_);
     if (id != -1) {
       last_allocated_size_ = size;
       DCHECK(buffer.get());

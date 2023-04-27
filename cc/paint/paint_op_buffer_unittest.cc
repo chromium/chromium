@@ -3319,8 +3319,10 @@ TEST(PaintOpBufferTest, RecordPaintFilterDeserializationInvalidPaintOp) {
                                               SkRect::MakeWH(100, 100));
 
   TestOptionsProvider options_provider;
-  std::vector<uint8_t> memory(kDefaultSerializedBufferSize);
-  PaintOpWriter writer(memory.data(), memory.size(),
+  const size_t memory_size = kDefaultSerializedBufferSize;
+  auto memory = AllocateSerializedBuffer(memory_size);
+  std::memset(memory.get(), 0x5A, memory_size);
+  PaintOpWriter writer(memory.get(), memory_size,
                        options_provider.serialize_options(), false);
   writer.Write(filter.get(), SkM44());
   ASSERT_GT(writer.size(), sizeof(float));
@@ -3328,14 +3330,14 @@ TEST(PaintOpBufferTest, RecordPaintFilterDeserializationInvalidPaintOp) {
   // Replace the first occurrence of rect_size with NaN to make the ClipRectOp
   // invalid.
   for (size_t i = 0; i < writer.size(); i += sizeof(float)) {
-    float* f = reinterpret_cast<float*>(memory.data() + i);
+    float* f = reinterpret_cast<float*>(memory.get() + i);
     if (*f == rect_size) {
       *f = std::numeric_limits<float>::quiet_NaN();
       break;
     }
   }
   sk_sp<PaintFilter> deserialized_filter;
-  PaintOpReader reader(memory.data(), writer.size(),
+  PaintOpReader reader(memory.get(), writer.size(),
                        options_provider.deserialize_options(), false);
   reader.Read(&deserialized_filter);
   EXPECT_FALSE(deserialized_filter);
