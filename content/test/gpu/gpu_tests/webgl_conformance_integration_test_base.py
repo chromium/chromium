@@ -102,13 +102,6 @@ class WebGLConformanceIntegrationTestBase(
     return {
         # crbug.com/1347970.
         'conformance/textures/misc/texture-video-transparent.html',
-        # Specifically when using Metal, this test can be rather slow. When run
-        # in parallel, even a minute is not long enough for it to reliably run,
-        # as it does not properly send heartbeats (possibly due to a large
-        # amount of work being done). Instead of increasing the heartbeat
-        # timeout further, run it serially. Can potentially be removed depending
-        # on the response to crbug.com/1363349.
-        'conformance/glsl/bugs/complex-glsl-does-not-crash.html',
     }
 
   @classmethod

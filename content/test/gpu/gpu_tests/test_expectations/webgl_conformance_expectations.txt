@@ -333,16 +333,6 @@ crbug.com/1432243 [ debug angle-vulkan passthrough ] conformance/uniforms/no-ove
 # The "Slow" expectations in this section are expected to stick around, i.e.
 # they are not attributed to some known issue that needs resolving.
 
-# Seems to do enough JavaScript work that heartbeats are not reliably sent.
-crbug.com/1432580 [ android android-Pixel-2 ] conformance2/misc/uninitialized-test-2.html [ Slow ]
-crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/misc/uninitialized-test-2.html [ Slow ]
-crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/oes-texture-half-float-linear.html [ Slow ]
-crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
-crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/reading/read-pixels-test.html [ Slow ]
-
-# Timeouts on Windows + debug + VANGLE
-crbug.com/1432294 [ debug angle-vulkan passthrough win ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Slow ]
-
 ###################
 # Failures/Flakes #
 ###################
@@ -460,8 +450,6 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/glsl/functions/glsl-function-faceforward.html [ Failure ]
 
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
-
-crbug.com/1364333 [ win debug angle-vulkan passthrough ] conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
 
 crbug.com/1439591 [ win10 intel angle-vulkan passthrough ] conformance/uniforms/uniform-samplers-test.html [ RetryOnFailure ]
 
@@ -629,10 +617,6 @@ crbug.com/1372155 [ android android-sm-a135m ] conformance/offscreencanvas/conte
 crbug.com/1372155 [ android android-sm-a135m no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1372155 [ android android-sm-a135m ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/rendering/blending.html [ Failure ]
-
-crbug.com/1426793 [ android android-sm-a135m ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
-crbug.com/1426793 [ android android-sm-a135m ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Slow ]
-crbug.com/1426793 [ android android-sm-a135m ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Slow ]
 
 
 ############
