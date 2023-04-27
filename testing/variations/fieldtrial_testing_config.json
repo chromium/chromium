@@ -8177,31 +8177,6 @@
             ]
         }
     ],
-    "MemoryCacheStrongReference": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AllResourceTypesAllPages_20230426",
-                    "enable_features": [
-                        "MemoryCacheStrongReference"
-                    ],
-                    "disable_features": [
-                        "MemoryCacheStrongReferenceFilterImages",
-                        "MemoryCacheStrongReferenceFilterScripts",
-                        "MemoryCacheStrongReferenceSingleUnload"
-                    ]
-                }
-            ]
-        }
-    ],
     "MerchantWidePromotion": [
         {
             "platforms": [
