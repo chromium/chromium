@@ -6837,9 +6837,6 @@ crbug.com/1432100 [ Linux ] inspector-protocol/memory/sampling-native-profile-bl
 # Fails on newer Ubuntu versions.
 crbug.com/1432272 [ Linux ] virtual/unsafe_webgpu/regress/regress-1104580.html [ Crash Pass ]
 
-# TODO(crbug.com/1432448, crbug.com/1273291): Re-enable or move off waterfall.
-crbug.com/1432448 external/wpt/webnn/* [ Failure ]
-
 # Sheriff 2023-04-13
 crbug.com/1432763 [ Linux ] external/wpt/fetch/metadata/generated/element-picture.https.sub.html [ Crash Pass Timeout ]
 

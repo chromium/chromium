@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+FAIL linear float32 1D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL linear float32 2D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL linear float32 3D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL linear float32 4D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL linear float32 5D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL linear float32 4D tensor specified options.alpha and default options.beta / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL linear float32 positive 4D tensor specified positive options.beta and default options.alpha / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL linear float32 negative 4D tensor specified negative options.beta and default options.alpha / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL linear float32 positive 4D tensor all options (positive options.alpha and positive options.beta) / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL linear float32 positive 4D tensor all options (negative options.alpha and negative options.beta) / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL linear float32 negative 4D tensor all options (positive options.alpha and negative options.beta) / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+Harness: the test ran to completion.
+
