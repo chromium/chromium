@@ -359,6 +359,10 @@ static_library("browser") {
     deps += [ ":vector_icons" ]
   }
 
+  if (is_chrome_branded) {
+    deps += [ "//components/vector_icons" ]
+  }
+
   if (!is_android) {
     deps += [ "//components/keep_alive_registry" ]
   }
@@ -802,7 +806,7 @@ source_set("unit_tests") {
     deps += [
       ":buildflags",
       "//components/omnibox/browser:vector_icons",
-      "//components/vector_icons:vector_icons",
+      "//components/vector_icons",
     ]
   }
 
