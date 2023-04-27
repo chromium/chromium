@@ -6,7 +6,6 @@
 
 #import <memory>
 #import <ostream>
-#import <set>
 
 #import "base/check_op.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -24,40 +23,6 @@
 #endif
 
 namespace {
-
-// Given a set of `browsers`, finds the one with `tab_id`. Returns the browser
-// and `tab_index` of the tab within the returned browser’s WebStateList.
-Browser* FindBrowser(NSString* tab_id,
-                     const std::set<Browser*>& browsers,
-                     int& tab_index) {
-  for (Browser* browser : browsers) {
-    WebStateList* web_state_list = browser->GetWebStateList();
-    for (int i = 0; i < web_state_list->count(); ++i) {
-      web::WebState* web_state = web_state_list->GetWebStateAt(i);
-      NSString* current_tab_id = web_state->GetStableIdentifier();
-      if ([current_tab_id isEqualToString:tab_id]) {
-        tab_index = i;
-        return browser;
-      }
-    }
-  }
-  tab_index = WebStateList::kInvalidIndex;
-  return nullptr;
-}
-
-// Finds the browser in `browser_list` containing a tab with `tab_id`. Searches
-// incognito browsers if `incognito` is true, otherwise searches regular
-// browsers. Returns the browser and `tab_index` of the tab within the returned
-// browser's WebStateList.
-Browser* FindBrowser(NSString* tab_id,
-                     BrowserList* browser_list,
-                     bool incognito,
-                     int& tab_index) {
-  return incognito ? FindBrowser(tab_id, browser_list->AllIncognitoBrowsers(),
-                                 tab_index)
-                   : FindBrowser(tab_id, browser_list->AllRegularBrowsers(),
-                                 tab_index);
-}
 
 // Moves snapshot associated with `snapshot_id` from `source_browser` to
 // `destination_browser`'s snapshot cache.
@@ -133,15 +98,18 @@ void MoveTabToBrowser(NSString* tab_id,
   ChromeBrowserState* browser_state = destination_browser->GetBrowserState();
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state);
-  int source_tab_index = WebStateList::kInvalidIndex;
-  Browser* source_browser = FindBrowser(
-      tab_id, browser_list, browser_state->IsOffTheRecord(), source_tab_index);
-  if (!source_browser) {
+  const std::set<Browser*>& browsers =
+      browser_state->IsOffTheRecord() ? browser_list->AllIncognitoBrowsers()
+                                      : browser_list->AllRegularBrowsers();
+
+  BrowserAndIndex tab_info = FindBrowserAndIndex(tab_id, browsers);
+
+  if (!tab_info.browser) {
     NOTREACHED() << "Either the tab_id is incorrect, or the user is attempting "
                     "to move a tab across profiles (incognito <-> regular)";
     return;
   }
-  MoveTabFromBrowserToBrowser(source_browser, source_tab_index,
+  MoveTabFromBrowserToBrowser(tab_info.browser, tab_info.tab_index,
                               destination_browser, destination_tab_index,
                               flags);
 }
@@ -151,4 +119,22 @@ void MoveTabToBrowser(NSString* tab_id,
                       int destination_tab_index) {
   MoveTabToBrowser(tab_id, destination_browser, destination_tab_index,
                    WebStateList::InsertionFlags::INSERT_NO_FLAGS);
+}
+
+BrowserAndIndex FindBrowserAndIndex(NSString* tab_id,
+                                    const std::set<Browser*>& browsers) {
+  for (Browser* browser : browsers) {
+    WebStateList* web_state_list = browser->GetWebStateList();
+    for (int i = 0; i < web_state_list->count(); ++i) {
+      web::WebState* web_state = web_state_list->GetWebStateAt(i);
+      NSString* current_tab_id = web_state->GetStableIdentifier();
+      if ([current_tab_id isEqualToString:tab_id]) {
+        return BrowserAndIndex{
+            .browser = browser,
+            .tab_index = i,
+        };
+      }
+    }
+  }
+  return BrowserAndIndex{};
 }

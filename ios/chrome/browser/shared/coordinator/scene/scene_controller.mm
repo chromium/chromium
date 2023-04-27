@@ -134,6 +134,7 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_scene_agent.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
@@ -473,7 +474,19 @@ void InjectNTP(Browser* browser) {
                withUrlLoadParams:params
              tabOpenedCompletion:nil];
     } else if (ActivityIsTabMove(activity)) {
-      [self handleTabMoveActivity:activity];
+      if ([self isTabActivityValid:activity]) {
+        [self handleTabMoveActivity:activity];
+      } else {
+        // If the tab does not exist, open a new tab.
+        UrlLoadParams params =
+            UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
+        ApplicationMode mode = self.currentInterface.incognito
+                                   ? ApplicationMode::INCOGNITO
+                                   : ApplicationMode::NORMAL;
+        [self openOrReuseTabInMode:mode
+                 withUrlLoadParams:params
+               tabOpenedCompletion:nil];
+      }
     } else if (!activityWithCompletion) {
       // Completion involves user interaction.
       // Only one can be triggered.
@@ -1267,6 +1280,22 @@ void InjectNTP(Browser* browser) {
 - (BOOL)isIncognitoForced {
   return IsIncognitoModeForced(
       self.incognitoInterface.browser->GetBrowserState()->GetPrefs());
+}
+
+// Returns 'YES' if the tabID from the given `activity` is valid.
+- (BOOL)isTabActivityValid:(NSUserActivity*)activity {
+  NSString* tabID = GetTabIDFromActivity(activity);
+
+  ChromeBrowserState* browserState = self.currentInterface.browserState;
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(browserState);
+  const std::set<Browser*>& browsers = self.currentInterface.incognito
+                                           ? browserList->AllIncognitoBrowsers()
+                                           : browserList->AllRegularBrowsers();
+
+  BrowserAndIndex tabInfo = FindBrowserAndIndex(tabID, browsers);
+
+  return tabInfo.tab_index != WebStateList::kInvalidIndex;
 }
 
 // Sets a LocalState pref marking the TOS EULA as accepted.
