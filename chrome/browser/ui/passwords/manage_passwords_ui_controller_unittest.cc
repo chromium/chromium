@@ -48,7 +48,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #include "components/device_reauth/mock_device_authenticator.h"
 #endif
 
@@ -126,7 +126,7 @@ class TestPasswordManagerClient
                base::OnceCallback<void(ReauthSucceeded)>),
               (override));
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override {
     return mock_authenticator_.get();
@@ -144,7 +144,7 @@ class TestPasswordManagerClient
 
  private:
   scoped_refptr<MockPasswordStoreInterface> mock_profile_store_;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_authenticator_;
 #endif
 };
@@ -1751,7 +1751,7 @@ TEST_F(ManagePasswordsUIControllerTest, ReauthenticateFailsBeforeMove) {
 
 TEST_F(ManagePasswordsUIControllerTest, IsDeviceAuthenticatorObtained) {
   base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   EXPECT_CALL(result_callback, Run(/*success=*/true));
 #else
   scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_authenticator =
