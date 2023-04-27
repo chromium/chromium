@@ -76,6 +76,7 @@ if (ios_enable_credential_provider_extension) {
       ":credential_provider",
       "//base/test:test_support",
       "//components/autofill/core/common",
+      "//components/favicon/core",
       "//components/password_manager/core/browser:test_support",
       "//components/password_manager/core/common",
       "//components/prefs",

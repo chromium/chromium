@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
@@ -44,7 +43,6 @@ CredentialProviderServiceFactory::CredentialProviderServiceFactory()
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
   DependsOn(IOSChromePasswordStoreFactory::GetInstance());
-  DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IOSChromeFaviconLoaderFactory::GetInstance());
@@ -60,8 +58,6 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
       IOSChromePasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS);
-  AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
   ArchivableCredentialStore* credential_store =
       [[ArchivableCredentialStore alloc]
           initWithFileURL:CredentialProviderSharedArchivableStoreURL()];
@@ -75,7 +71,6 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
       IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state);
 
   return std::make_unique<CredentialProviderService>(
-      browser_state->GetPrefs(), password_store, authentication_service,
-      credential_store, identity_manager, sync_service, affiliation_service,
-      favicon_loader);
+      browser_state->GetPrefs(), password_store, credential_store,
+      identity_manager, sync_service, affiliation_service, favicon_loader);
 }

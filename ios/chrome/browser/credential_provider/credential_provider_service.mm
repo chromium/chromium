@@ -135,40 +135,35 @@ void SyncASIdentityStore(id<CredentialStore> credential_store) {
 CredentialProviderService::CredentialProviderService(
     PrefService* prefs,
     scoped_refptr<PasswordStoreInterface> password_store,
-    AuthenticationService* authentication_service,
     id<MutableCredentialStore> credential_store,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
     password_manager::AffiliationService* affiliation_service,
     FaviconLoader* favicon_loader)
     : password_store_(password_store),
-      authentication_service_(authentication_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
       affiliated_helper_(
           std::make_unique<AffiliatedMatchHelper>(affiliation_service)),
       favicon_loader_(favicon_loader),
       credential_store_(credential_store) {
-  DCHECK(password_store_);
+  CHECK(password_store_);
+  CHECK(identity_manager_);
+  CHECK(sync_service_);
+  CHECK(favicon_loader_);
+  CHECK(credential_store_);
+
   password_store_->AddObserver(this);
 
-  DCHECK(authentication_service_);
   UpdateAccountId();
   UpdateUserEmail();
 
-  if (identity_manager_) {
-    identity_manager_->AddObserver(this);
-  }
-
-  bool is_sync_active = false;
-  if (sync_service_) {
-    sync_service_->AddObserver(this);
-    is_sync_active = sync_service_->IsSyncFeatureActive();
-  }
+  identity_manager_->AddObserver(this);
+  sync_service_->AddObserver(this);
 
   // If Sync is active, wait for the configuration to finish before syncing.
   // This will wait for affiliated_match_helper to be available.
-  if (!is_sync_active) {
+  if (!sync_service_->IsSyncFeatureActive()) {
     RequestSyncAllCredentialsIfNeeded();
   }
 
@@ -186,12 +181,8 @@ CredentialProviderService::~CredentialProviderService() {}
 
 void CredentialProviderService::Shutdown() {
   password_store_->RemoveObserver(this);
-  if (identity_manager_) {
-    identity_manager_->RemoveObserver(this);
-  }
-  if (sync_service_) {
-    sync_service_->RemoveObserver(this);
-  }
+  identity_manager_->RemoveObserver(this);
+  sync_service_->RemoveObserver(this);
 }
 
 void CredentialProviderService::RequestSyncAllCredentials() {
@@ -273,11 +264,11 @@ void CredentialProviderService::RemoveCredentials(
 }
 
 void CredentialProviderService::UpdateAccountId() {
-  id<SystemIdentity> identity = authentication_service_->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
-  if (authentication_service_->HasPrimaryIdentityManaged(
-          signin::ConsentLevel::kSignin)) {
-    account_id_ = identity.gaiaID;
+  CoreAccountInfo account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (!account.IsEmpty() &&
+      identity_manager_->FindExtendedAccountInfo(account).IsManaged()) {
+    account_id_ = base::SysUTF8ToNSString(account.gaia);
   } else {
     account_id_ = nil;
   }
@@ -294,9 +285,9 @@ void CredentialProviderService::UpdateUserEmail() {
 
   NSString* user_email = nil;
   if (sync_enabled && passwords_sync_enabled) {
-    id<SystemIdentity> identity = authentication_service_->GetPrimaryIdentity(
-        signin::ConsentLevel::kSync);
-    user_email = identity.userEmail;
+    user_email = base::SysUTF8ToNSString(
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email);
   }
 
   [app_group::GetGroupUserDefaults()
