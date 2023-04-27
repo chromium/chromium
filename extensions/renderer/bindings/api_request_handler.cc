@@ -5,7 +5,6 @@
 #include "extensions/renderer/bindings/api_request_handler.h"
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
