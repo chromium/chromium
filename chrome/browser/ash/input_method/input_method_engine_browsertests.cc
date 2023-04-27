@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -41,6 +43,7 @@
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -298,7 +301,10 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
       extensions::ProcessManager::Get(profile())->GetBackgroundHostForExtension(
           extension_->id());
   ASSERT_TRUE(host);
-
+  GURL test_url = ui_test_utils::GetTestUrl(
+      base::FilePath("extensions/api_test/input_method/typing/"),
+      base::FilePath("test_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   engine_handler->Focus(
       CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT));
 
@@ -1174,6 +1180,27 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
           "onFocus:text:true:true:true:false");
       engine_handler->Focus(
           CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT));
+      ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
+      ASSERT_TRUE(focus_listener.was_satisfied());
+    }
+    {
+      // Verify that onfocus is called as if it is a password field, when the
+      // text field was a password field in the past, but is now a text field.
+      ExtensionTestMessageListener focus_listener(
+          "onFocus:password:true:true:true:true");
+
+      constexpr base::StringPiece password_field_change_to_text_script = R"(
+        const input = document.createElement('input');
+        document.body.appendChild(input);
+        input.type = 'password';
+        input.type = 'text';
+        input.focus();
+      )";
+
+      ASSERT_TRUE(content::ExecuteScript(
+          browser()->tab_strip_model()->GetActiveWebContents(),
+          password_field_change_to_text_script.data()));
+
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }
