@@ -8,11 +8,11 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "google_apis/google_api_keys.h"
 #include "remoting/host/pin_hash.h"
@@ -203,7 +203,7 @@ void HostStarter::StartHostProcess() {
 
 void HostStarter::OnLocalHostStopped() {
   if (host_id_.empty()) {
-    host_id_ = base::GenerateGUID();
+    host_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
   }
   key_pair_ = RsaKeyPair::Generate();
 

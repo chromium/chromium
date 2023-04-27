@@ -10,10 +10,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -154,7 +154,7 @@ void RdpClientTest::CloseRdpClient() {
 
 // Creates a loopback RDP connection.
 TEST_F(RdpClientTest, Basic) {
-  terminal_id_ = base::GenerateGUID();
+  terminal_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   // An ability to establish a loopback RDP connection depends on many factors
   // including OS SKU and having RDP enabled. Accept both successful connection
