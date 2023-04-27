@@ -1624,8 +1624,19 @@ ONC configuration of of **Cellular** networks is not yet supported.
 
 * **SMDPAddress**
     * (optional, read-only) - **string**
-    * When set with the address of an SMDP+ server, indicates that eSIM profile
-      for this network should be downloaded and installed using this address.
+    * When set with the address of an SMDP+ server, indicates that the eSIM
+      profile for this network should be downloaded and installed using this
+      address. This field is mutually exclusive with SMDSAddress.
+
+* **SMDSAddress**
+    * (optional, read-only) - **string**
+    * When set with the address of an SMDS server, indicates that the eSIM
+      profile for this network should be downloaded and installed using this
+      address. This field is mutually exclusive with SMDPAddress and is expected
+      to be formatted according to the GSMA specification. Policies that do not
+      conform to the GSMA specification will fail. Learn more about the
+      specification at
+      https://www.gsma.com/newsroom/wp-content/uploads/SGP.22_v2.2.pdf.
 
 * **SupportNetworkScan**
     * (optional, read-only) - **boolean**

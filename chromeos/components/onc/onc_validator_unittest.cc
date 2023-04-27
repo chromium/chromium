@@ -242,6 +242,14 @@ INSTANTIATE_TEST_SUITE_P(
                   &kNetworkConfigurationSignature,
                   true,
                   ::onc::ONC_SOURCE_DEVICE_POLICY),
+        OncParams("cellular_with_smds.onc",
+                  &kNetworkConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
+        OncParams("cellular_with_neither_smdp_nor_smds.onc",
+                  &kNetworkConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
         OncParams("translation_of_shill_ethernet_with_ipconfig.onc",
                   &kNetworkWithStateSignature,
                   true),
@@ -332,10 +340,11 @@ TEST_P(ONCValidatorTestRepairable, StrictValidation) {
            onc.is_managed, onc.onc_source);
   std::string location_of_repaired =
       GetParam().second.location_of_strict_repaired;
-  if (location_of_repaired.empty())
+  if (location_of_repaired.empty()) {
     ExpectInvalid();
-  else
+  } else {
     ExpectRepairWithWarnings(GetDictionaryFromTestFile(location_of_repaired));
+  }
 }
 
 TEST_P(ONCValidatorTestRepairable, LiberalValidation) {
@@ -347,10 +356,11 @@ TEST_P(ONCValidatorTestRepairable, LiberalValidation) {
   } else {
     std::string location_of_repaired =
         GetParam().second.location_of_liberal_repaired;
-    if (location_of_repaired.empty())
+    if (location_of_repaired.empty()) {
       ExpectInvalid();
-    else
+    } else {
       ExpectRepairWithWarnings(GetDictionaryFromTestFile(location_of_repaired));
+    }
   }
 }
 
@@ -633,10 +643,15 @@ INSTANTIATE_TEST_SUITE_P(
                                  &kScopeSignature,
                                  true),
                        ExpectBothNotValid("", "")),
+        std::make_pair(OncParams("invalid-scope-due-to-missing-type",
+                                 &kScopeSignature,
+                                 true),
+                       ExpectBothNotValid("",
+                                          "invalid-scope-due-to-missing-type")),
         std::make_pair(
-            OncParams("invalid-scope-due-to-missing-type",
-                      &kScopeSignature,
+            OncParams("invalid-cellular-due-to-having-both-smdp-and-smds",
+                      &kCellularSignature,
                       true),
-            ExpectBothNotValid("", "invalid-scope-due-to-missing-type"))));
+            ExpectBothNotValid("", ""))));
 
 }  // namespace chromeos::onc

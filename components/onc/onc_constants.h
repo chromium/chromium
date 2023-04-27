@@ -156,6 +156,7 @@ COMPONENT_EXPORT(ONC) extern const char kSignalStrength[];
 COMPONENT_EXPORT(ONC) extern const char kSIMLockStatus[];
 COMPONENT_EXPORT(ONC) extern const char kSIMPresent[];
 COMPONENT_EXPORT(ONC) extern const char kSMDPAddress[];
+COMPONENT_EXPORT(ONC) extern const char kSMDSAddress[];
 COMPONENT_EXPORT(ONC) extern const char kSupportNetworkScan[];
 COMPONENT_EXPORT(ONC) extern const char kTechnologyCdma1Xrtt[];
 COMPONENT_EXPORT(ONC) extern const char kTechnologyEdge[];

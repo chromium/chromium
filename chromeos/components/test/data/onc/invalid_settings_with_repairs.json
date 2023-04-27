@@ -692,5 +692,11 @@
     },
     "invalid-scope-due-to-missing-type": {
       "Id": "ngjobkbdodapjbbncmagbccommkggmnj"
+    },
+    "invalid-cellular-due-to-having-both-smdp-and-smds": {
+      "AllowRoaming": true,
+      "AutoConnect": false,
+      "SMDPAddress" : "BogusSMDPAddress",
+      "SMDSAddress" : "BogusSMDSAddress"
     }
 }
