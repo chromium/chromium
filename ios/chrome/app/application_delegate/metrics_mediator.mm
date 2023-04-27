@@ -18,6 +18,7 @@
 #import "components/crash/core/common/crash_keys.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_service.h"
+#import "components/metrics/metrics_switches.h"
 #import "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/signin/public/identity_manager/tribool.h"
@@ -609,6 +610,9 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 }
 
 - (BOOL)areMetricsEnabled {
+  if (metrics::IsMetricsReportingForceEnabled()) {
+    return YES;
+  }
 // If this if-def changes, it needs to be changed in
 // IOSChromeMainParts::IsMetricsReportingEnabled and settings_egtest.mm.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
