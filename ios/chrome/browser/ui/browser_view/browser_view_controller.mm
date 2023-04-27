@@ -340,26 +340,23 @@ enum HeaderBehaviour {
 @property(nonatomic, strong)
     ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
 
-// Command handler for omnibox commands
-@property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
-
-// Command handler for text zoom commands
+// Command handler for text zoom commands.
 @property(nonatomic, weak) id<TextZoomCommands> textZoomHandler;
 
-// Command handler for help commands
+// Command handler for help commands.
 @property(nonatomic, weak) id<HelpCommands> helpHandler;
 
-// Command handler for popup menu commands
+// Command handler for popup menu commands.
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
 
-// Command handler for application commands
+// Command handler for application commands.
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
 
-// Command handler for browser coordinator commands
+// Command handler for browser coordinator commands.
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorCommandsHandler;
 
-// Command handler for find in page commands
+// Command handler for find in page commands.
 @property(nonatomic, weak) id<FindInPageCommands> findInPageCommandsHandler;
 
 // The FullscreenController.
@@ -454,7 +451,6 @@ enum HeaderBehaviour {
     self.browserCoordinatorCommandsHandler =
         dependencies.browserCoordinatorCommandsHandler;
     self.findInPageCommandsHandler = dependencies.findInPageCommandsHandler;
-    self.omniboxCommandsHandler = dependencies.omniboxCommandsHandler;
     _isOffTheRecord = dependencies.isOffTheRecord;
     _urlLoadingBrowserAgent = dependencies.urlLoadingBrowserAgent;
     _urlLoadingNotifierBrowserAgent =

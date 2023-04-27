@@ -460,6 +460,7 @@ enum class ToolbarKind {
   id<VoiceSearchController> _voiceSearchController;
   UrlLoadingNotifierBrowserAgent* _urlLoadingNotifierBrowserAgent;
   id<LoadQueryCommands> _loadQueryCommandsHandler;
+  id<OmniboxCommands> _omniboxCommandsHandler;
 }
 
 #pragma mark - ChromeCoordinator
@@ -878,10 +879,6 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
   _viewControllerDependencies.findInPageCommandsHandler =
       HandlerForProtocol(_dispatcher, FindInPageCommands);
-  // TODO(crbug.com/1413769) Typecast should be performed using
-  // HandlerForProtocol method.
-  _viewControllerDependencies.omniboxCommandsHandler =
-      static_cast<id<OmniboxCommands>>(_dispatcher);
   _viewControllerDependencies.isOffTheRecord =
       self.browser->GetBrowserState()->IsOffTheRecord();
   _viewControllerDependencies.urlLoadingBrowserAgent =
@@ -936,6 +933,8 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, LoadQueryCommands);
   _viewController.loadQueryCommandsHandler = _loadQueryCommandsHandler;
   _voiceSearchController.dispatcher = _loadQueryCommandsHandler;
+  _omniboxCommandsHandler = HandlerForProtocol(_dispatcher, OmniboxCommands);
+  _viewController.omniboxCommandsHandler = _omniboxCommandsHandler;
 
   _legacyTabStripCoordinator.baseViewController = self.viewController;
   _NTPCoordinator.baseViewController = self.viewController;
@@ -965,7 +964,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.applicationCommandsHandler = nil;
   _viewControllerDependencies.browserCoordinatorCommandsHandler = nil;
   _viewControllerDependencies.findInPageCommandsHandler = nil;
-  _viewControllerDependencies.omniboxCommandsHandler = nil;
   _viewControllerDependencies.voiceSearchController = nil;
   _viewControllerDependencies.secondaryToolbarContainerCoordinator = nil;
   _viewControllerDependencies.safeAreaProvider = nil;
@@ -981,6 +979,7 @@ enum class ToolbarKind {
   _secondaryToolbarCoordinator = nil;
   _primaryToolbarCoordinator = nil;
   _loadQueryCommandsHandler = nil;
+  _omniboxCommandsHandler = nil;
 
   [_dispatcher stopDispatchingToTarget:_bubblePresenter];
   [_bubblePresenter stop];
