@@ -26,7 +26,6 @@ import {PrinterListEntry} from './cups_printer_types.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryListMixin} from './cups_printers_entry_list_mixin.js';
 import {getTemplate} from './cups_saved_printers.html.js';
-import {computePrinterOnlineState, PrinterStatus} from './printer_status.js';
 
 /**
  * If the Show more button is visible, the minimum number of printers we show
@@ -126,7 +125,6 @@ export class SettingsCupsSavedPrintersElement extends
     return [
       'onSearchOrPrintersChanged_(savedPrinters.*, searchTerm,' +
           'hasShowMoreBeenTapped_, newPrinters_.*)',
-      'fetchPrinterStatuses_(savedPrinters.splices)',
     ];
   }
 
@@ -335,51 +333,6 @@ export class SettingsCupsSavedPrintersElement extends
 
   private getFilteredPrintersLength_(): number {
     return this.filteredPrinters_.length;
-  }
-
-  /** Query each saved printer for its printer status. */
-  private fetchPrinterStatuses_() {
-    this.savedPrinters.forEach(printer => {
-      this.browserProxy_
-          .requestPrinterStatusUpdate(printer.printerInfo.printerId)
-          .then(printerStatus => this.onPrinterStatusReceived_(printerStatus));
-    });
-  }
-
-  /**
-   * For each printer status received, search for its respective saved printer
-   * and update its state.
-   */
-  private onPrinterStatusReceived_(printerStatus: PrinterStatus) {
-    if (!printerStatus) {
-      return;
-    }
-
-    // Calculate the printer's online state.
-    const printerOnlineState = computePrinterOnlineState(printerStatus);
-
-    // Find the associated printer and set its online state.
-    const index = this.savedPrinters.findIndex(
-        printer => printer.printerInfo.printerId === printerStatus.printerId);
-    if (index === -1) {
-      return;
-    }
-
-    this.savedPrinters[index].printerInfo.printerOnlineState =
-        printerOnlineState;
-
-
-    // Even though the online state is set on `savedPrinters`, the actual
-    // printer entries displayed are from `filteredPrinters_`. So notify the
-    // specific filtered printer entry to update its icon.
-    const filteredIndex = this.filteredPrinters_.findIndex(
-        printer => printer.printerInfo.printerId === printerStatus.printerId);
-    if (filteredIndex === -1) {
-      return;
-    }
-
-    this.notifyPath(
-        `filteredPrinters_.${filteredIndex}.printerInfo.printerOnlineState`);
   }
 }
 

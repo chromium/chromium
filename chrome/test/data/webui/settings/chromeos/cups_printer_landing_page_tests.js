@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CupsPrintersBrowserProxyImpl, PrinterOnlineState, PrinterStatusReason, PrinterStatusSeverity, PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {CupsPrintersBrowserProxyImpl, PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertNotReached} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createCupsPrinterInfo, createPrinterListEntry, getPrinterEntries} from './cups_printer_test_utils.js';
@@ -653,52 +652,6 @@ suite('CupsSavedPrintersTests', function() {
     assertEquals(
         deepLinkElement, activeDeepLink,
         'First saved printer menu button should be focused for settingId=1401.');
-  });
-
-  test('SavedPrintersStatusUpdates', async () => {
-    createCupsPrinterPage([
-      createCupsPrinterInfo('test1', '1', 'id1'),
-      createCupsPrinterInfo('test2', '2', 'id2'),
-      createCupsPrinterInfo('test2', '2', 'id3'),
-    ]);
-
-    // Printer `id1` should show an online state.
-    cupsPrintersBrowserProxy.addPrinterStatus(
-        'id1', PrinterStatusReason.LOW_ON_INK, PrinterStatusSeverity.ERROR);
-    // Printer `id2` should show an offline state.
-    cupsPrintersBrowserProxy.addPrinterStatus(
-        'id2', PrinterStatusReason.PRINTER_UNREACHABLE,
-        PrinterStatusSeverity.ERROR);
-
-    await cupsPrintersBrowserProxy.whenCalled('getCupsSavedPrintersList');
-    await flushTasks();
-
-    savedPrintersElement =
-        page.shadowRoot.querySelector('settings-cups-saved-printers');
-    assertTrue(!!savedPrintersElement);
-
-    // For each of the 3 saved printers verify it gets the correct online state
-    // based on the printer status previously set.
-    const printerListEntries = getPrinterEntries(savedPrintersElement);
-    assertEquals(3, printerListEntries.length);
-    for (const entry of printerListEntries) {
-      let expectedOnlineState;
-      const printerInfo = entry.printerEntry.printerInfo;
-      switch (printerInfo.printerId) {
-        case 'id1':
-          expectedOnlineState = PrinterOnlineState.ONLINE;
-          break;
-        case 'id2':
-          expectedOnlineState = PrinterOnlineState.OFFLINE;
-          break;
-        case 'id3':
-          expectedOnlineState = PrinterOnlineState.UNKNOWN;
-          break;
-        default:
-          assertNotReached();
-      }
-      assertEquals(expectedOnlineState, printerInfo.printerOnlineState);
-    }
   });
 
   test('ShowMoreButtonIsInitiallyHiddenAndANewPrinterIsAdded', function() {

@@ -49,19 +49,6 @@ export enum PrinterOnlineState {
   ONLINE = 2,
 }
 
-/** Calculates a printer's online state from its printer status. */
-export function computePrinterOnlineState(printerStatus: PrinterStatus):
-    PrinterOnlineState {
-  switch (getStatusReasonFromPrinterStatus(printerStatus)) {
-    case PrinterStatusReason.UNKNOWN_REASON:
-      return PrinterOnlineState.UNKNOWN;
-    case PrinterStatusReason.PRINTER_UNREACHABLE:
-      return PrinterOnlineState.OFFLINE;
-    default:
-      return PrinterOnlineState.ONLINE;
-  }
-}
-
 interface StatusReasonEntry {
   reason: PrinterStatusReason;
   severity: PrinterStatusSeverity;

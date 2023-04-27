@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {computePrinterOnlineState, getStatusReasonFromPrinterStatus, PrinterOnlineState, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {getStatusReasonFromPrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('PrinterStatus', function() {
@@ -91,49 +91,5 @@ suite('PrinterStatus', function() {
     assertEquals(
         PrinterStatusReason.PAPER_JAM,
         getStatusReasonFromPrinterStatus(printerStatus));
-  });
-
-  // Verify printer online states are calculated correctly.
-  test('computePrinterOnlineState', () => {
-    const onlinePrinterStatus = {
-      printerId: 'printerId',
-      statusReasons: [
-        {
-          reason: PrinterStatusReason.LOW_ON_INK,
-          severity: PrinterStatusSeverity.WARNING,
-        },
-      ],
-      timestamp: 0,
-    };
-    const offlinePrinterStatus = {
-      printerId: 'printerId',
-      statusReasons: [
-        {
-          reason: PrinterStatusReason.PRINTER_UNREACHABLE,
-          severity: PrinterStatusSeverity.WARNING,
-        },
-      ],
-      timestamp: 0,
-    };
-    const unknownPrinterStatus = {
-      printerId: 'printerId',
-      statusReasons: [
-        {
-          reason: PrinterStatusReason.UNKNOWN_REASON,
-          severity: PrinterStatusSeverity.WARNING,
-        },
-      ],
-      timestamp: 0,
-    };
-
-    assertEquals(
-        PrinterOnlineState.ONLINE,
-        computePrinterOnlineState(onlinePrinterStatus));
-    assertEquals(
-        PrinterOnlineState.OFFLINE,
-        computePrinterOnlineState(offlinePrinterStatus));
-    assertEquals(
-        PrinterOnlineState.UNKNOWN,
-        computePrinterOnlineState(unknownPrinterStatus));
   });
 });
