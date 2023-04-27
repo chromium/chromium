@@ -54,6 +54,7 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kSyncFirstSetupComplete, false);
   registry->RegisterBooleanPref(prefs::kSyncRequested, false);
   registry->RegisterBooleanPref(prefs::kSyncKeepEverythingSynced, true);
+  registry->RegisterBooleanPref(prefs::kBookmarksAccountStorageOptIn, false);
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     RegisterTypeSelectedPref(registry, type);
   }
@@ -172,6 +173,20 @@ void SyncPrefs::SetSelectedTypes(bool keep_everything_synced,
     observer.OnPreferredDataTypesPrefChange();
   }
 }
+
+#if BUILDFLAG(IS_IOS)
+void SyncPrefs::SetBookmarksAccountStorageOptIn(bool value) {
+  pref_service_->SetBoolean(prefs::kBookmarksAccountStorageOptIn, value);
+
+  for (SyncPrefObserver& observer : sync_pref_observers_) {
+    observer.OnPreferredDataTypesPrefChange();
+  }
+}
+
+bool SyncPrefs::IsOptedInForBookmarksAccountStorage() {
+  return pref_service_->GetBoolean(prefs::kBookmarksAccountStorageOptIn);
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool SyncPrefs::IsSyncAllOsTypesEnabled() const {

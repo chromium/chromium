@@ -19,6 +19,13 @@ inline constexpr char kSyncFirstSetupComplete[] = "sync.has_setup_completed";
 inline constexpr char kSyncKeepEverythingSynced[] =
     "sync.keep_everything_synced";
 
+// Boolean specifying whether the user has opted in account storage for
+// bookmarks or not. This pref and the following preferences
+// (kSyncBookmarks, kSyncReadingList) should be both true to enable bookmarks
+// and reading lists for signed-in, non-syncing users only.
+inline constexpr char kBookmarksAccountStorageOptIn[] =
+    "sync.bookmarks_in_transport";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean pref that records whether OS sync preferences were migrated due to
 // SyncSettingsCategorization rollout.

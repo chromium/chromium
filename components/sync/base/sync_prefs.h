@@ -94,6 +94,14 @@ class SyncPrefs {
                         UserSelectableTypeSet registered_types,
                         UserSelectableTypeSet selected_types);
 
+#if BUILDFLAG(IS_IOS)
+  // Sets the transport bookmarks pref on opt in/out.
+  void SetBookmarksAccountStorageOptIn(bool value);
+
+  // Gets the transport bookmarks pref.
+  bool IsOptedInForBookmarksAccountStorage();
+#endif  // BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS provides a separate settings UI surface for sync of OS types,
   // including a separate "Sync All" toggle for OS types.

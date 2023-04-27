@@ -26,10 +26,12 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   // Both |crypto| and |prefs| must not be null, and must outlive this object.
   // |preference_provider| can be null, but must outlive this object if not
   // null.
-  SyncUserSettingsImpl(SyncServiceCrypto* crypto,
-                       SyncPrefs* prefs,
-                       const SyncTypePreferenceProvider* preference_provider,
-                       ModelTypeSet registered_types);
+  SyncUserSettingsImpl(
+      SyncServiceCrypto* crypto,
+      SyncPrefs* prefs,
+      const SyncTypePreferenceProvider* preference_provider,
+      ModelTypeSet registered_types,
+      base::RepeatingCallback<bool()> use_transport_only_mode_callback);
   ~SyncUserSettingsImpl() override;
 
   // SyncUserSettings implementation.
@@ -40,6 +42,9 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   bool IsTypeManagedByPolicy(UserSelectableType type) const override;
   void SetSelectedTypes(bool sync_everything,
                         UserSelectableTypeSet types) override;
+#if BUILDFLAG(IS_IOS)
+  void SetBookmarksAccountStorageOptIn(bool value);
+#endif  // BUILDFLAG(IS_IOS)
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsSyncAllOsTypesEnabled() const override;
@@ -78,7 +83,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   const raw_ptr<SyncPrefs> prefs_;
   const raw_ptr<const SyncTypePreferenceProvider> preference_provider_;
   const ModelTypeSet registered_model_types_;
-  base::RepeatingCallback<void(bool)> sync_allowed_by_platform_changed_cb_;
+  base::RepeatingCallback<bool()> use_transport_only_mode_callback_;
 };
 
 }  // namespace syncer

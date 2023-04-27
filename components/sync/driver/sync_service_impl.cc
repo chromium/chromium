@@ -205,9 +205,13 @@ void SyncServiceImpl::Initialize() {
   data_type_controllers_ =
       BuildDataTypeControllerMap(sync_client_->CreateDataTypeControllers(this));
 
+  // It's safe to pass a raw ptr, since SyncServiceImpl outlives
+  // SyncUserSettingsImpl.
   user_settings_ = std::make_unique<SyncUserSettingsImpl>(
       &crypto_, &sync_prefs_, sync_client_->GetPreferenceProvider(),
-      GetRegisteredDataTypes());
+      GetRegisteredDataTypes(),
+      base::BindRepeating(&SyncServiceImpl::UseTransportOnlyMode,
+                          base::Unretained(this)));
 
   sync_prefs_.AddSyncPrefObserver(this);
 
