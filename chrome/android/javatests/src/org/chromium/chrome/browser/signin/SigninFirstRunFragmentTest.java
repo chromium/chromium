@@ -337,7 +337,7 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.Q, message = "https://crbug.com/1434098")
+    @DisabledTest(message = "https://crbug.com/1434098")
     public void testFragmentWhenSigninIsDisabledByPolicy() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -392,7 +392,7 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.Q, message = "https://crbug.com/1434098")
+    @DisabledTest(message = "https://crbug.com/1434098")
     public void testFragmentWhenAddingAccountDynamicallyAndSigninIsDisabledByPolicy() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
