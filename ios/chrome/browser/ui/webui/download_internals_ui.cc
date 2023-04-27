@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/weak_ptr.h"
+#include "base/uuid.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/logger.h"
@@ -118,7 +118,7 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
     }
 
     download::DownloadParams params;
-    params.guid = base::GenerateGUID();
+    params.guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     params.client = download::DownloadClient::DEBUGGING;
     params.request_params.method = "GET";
     params.request_params.url = url;

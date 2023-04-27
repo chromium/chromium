@@ -6,8 +6,8 @@
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
-#import "base/guid.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
@@ -84,8 +84,9 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
     std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile> delegate =
         autofill::AutofillSaveCardInfoBarDelegateMobile::CreateForUploadSave(
             autofill::AutofillClient::SaveCreditCardOptions(),
-            autofill::CreditCard(base::GenerateGUID(),
-                                 "https://www.example.com/"),
+            autofill::CreditCard(
+                base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                "https://www.example.com/"),
             base::DoNothing(), legal_message_lines, AccountInfo());
     delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
