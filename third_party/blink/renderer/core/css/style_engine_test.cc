@@ -4237,6 +4237,42 @@ TEST_F(StyleEngineTest, NoFastRejectForMultipleIs) {
   EXPECT_EQ(0u, stats->rules_fast_rejected);
 }
 
+TEST_F(StyleEngineTest, ScrollbarPartPseudoDoesNotMatchElement) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .parent ::-webkit-scrollbar-button { background-color: red; }
+      .parent ::-webkit-scrollbar-corner { background-color: red; }
+      .parent ::-webkit-scrollbar-thumb { background-color: red; }
+      .parent ::-webkit-scrollbar-track { background-color: red; }
+      .parent ::-webkit-scrollbar-track-piece { background-color: red; }
+    </style>
+    <div class="parent">
+      <div class="child"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  StyleEngine& engine = GetStyleEngine();
+  // Even if the Stats() were already enabled, the following resets it to 0.
+  engine.SetStatsEnabled(true);
+
+  StyleResolverStats* stats = engine.Stats();
+  ASSERT_TRUE(stats);
+  EXPECT_EQ(0u, stats->rules_matched);
+
+  Element* div = GetDocument().QuerySelector(".child");
+  ASSERT_TRUE(div);
+  div->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  GetStyleEngine().RecalcStyle();
+
+  // We have one UA rule for <div> that matches.
+  // None of the ::-webkit-scrollbar-* rules should match.
+  EXPECT_EQ(1u, stats->rules_matched);
+}
+
 TEST_F(StyleEngineTest, AudioUAStyleNameSpace) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <audio id="html-audio"></audio>
