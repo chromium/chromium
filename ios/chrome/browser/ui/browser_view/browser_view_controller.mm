@@ -340,9 +340,6 @@ enum HeaderBehaviour {
 @property(nonatomic, strong)
     ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
 
-// Command handler for load query commands
-@property(nonatomic, weak) id<LoadQueryCommands> loadQueryCommandsHandler;
-
 // Command handler for omnibox commands
 @property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
 
@@ -457,7 +454,6 @@ enum HeaderBehaviour {
     self.browserCoordinatorCommandsHandler =
         dependencies.browserCoordinatorCommandsHandler;
     self.findInPageCommandsHandler = dependencies.findInPageCommandsHandler;
-    self.loadQueryCommandsHandler = dependencies.loadQueryCommandsHandler;
     self.omniboxCommandsHandler = dependencies.omniboxCommandsHandler;
     _isOffTheRecord = dependencies.isOffTheRecord;
     _urlLoadingBrowserAgent = dependencies.urlLoadingBrowserAgent;

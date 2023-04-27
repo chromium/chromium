@@ -94,7 +94,6 @@ typedef struct {
   id<ApplicationCommands> applicationCommandsHandler;
   id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler;
   id<FindInPageCommands> findInPageCommandsHandler;
-  id<LoadQueryCommands> loadQueryCommandsHandler;
   LayoutGuideCenter* layoutGuideCenter;
   id<OmniboxCommands> omniboxCommandsHandler;
   BOOL isOffTheRecord;
@@ -162,6 +161,9 @@ typedef struct {
 // Presentation delegate for the non-modal default browser promo.
 @property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>
     nonModalPromoPresentationDelegate;
+
+// Command handler for load query commands
+@property(nonatomic, weak) id<LoadQueryCommands> loadQueryCommandsHandler;
 
 // Whether the receiver is currently the primary BVC.
 - (void)setPrimary:(BOOL)primary;

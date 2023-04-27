@@ -459,6 +459,7 @@ enum class ToolbarKind {
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
   UrlLoadingNotifierBrowserAgent* _urlLoadingNotifierBrowserAgent;
+  id<LoadQueryCommands> _loadQueryCommandsHandler;
 }
 
 #pragma mark - ChromeCoordinator
@@ -845,15 +846,8 @@ enum class ToolbarKind {
   _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
   _urlLoadingNotifierBrowserAgent =
       UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
-
-  // TODO(crbug.com/1413769) Typecast should be performed using
-  // HandlerForProtocol method. LocationBarCoordinator isn't started yet
-  // therefore not dispatching LoadQueryCommands.
-  id<LoadQueryCommands> _loadQueryCommandsHandler =
-      static_cast<id<LoadQueryCommands>>(_dispatcher);
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
-  _voiceSearchController.dispatcher = _loadQueryCommandsHandler;
 
   _viewControllerDependencies.prerenderService = prerenderService;
   _viewControllerDependencies.bubblePresenter = _bubblePresenter;
@@ -884,8 +878,6 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
   _viewControllerDependencies.findInPageCommandsHandler =
       HandlerForProtocol(_dispatcher, FindInPageCommands);
-  _viewControllerDependencies.loadQueryCommandsHandler =
-      _loadQueryCommandsHandler;
   // TODO(crbug.com/1413769) Typecast should be performed using
   // HandlerForProtocol method.
   _viewControllerDependencies.omniboxCommandsHandler =
@@ -940,6 +932,11 @@ enum class ToolbarKind {
 
   [_primaryToolbarCoordinator start];
 
+  _loadQueryCommandsHandler =
+      HandlerForProtocol(_dispatcher, LoadQueryCommands);
+  _viewController.loadQueryCommandsHandler = _loadQueryCommandsHandler;
+  _voiceSearchController.dispatcher = _loadQueryCommandsHandler;
+
   _legacyTabStripCoordinator.baseViewController = self.viewController;
   _NTPCoordinator.baseViewController = self.viewController;
 
@@ -968,7 +965,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.applicationCommandsHandler = nil;
   _viewControllerDependencies.browserCoordinatorCommandsHandler = nil;
   _viewControllerDependencies.findInPageCommandsHandler = nil;
-  _viewControllerDependencies.loadQueryCommandsHandler = nil;
   _viewControllerDependencies.omniboxCommandsHandler = nil;
   _viewControllerDependencies.voiceSearchController = nil;
   _viewControllerDependencies.secondaryToolbarContainerCoordinator = nil;
@@ -984,6 +980,7 @@ enum class ToolbarKind {
   _toolbarCoordinatorAdaptor = nil;
   _secondaryToolbarCoordinator = nil;
   _primaryToolbarCoordinator = nil;
+  _loadQueryCommandsHandler = nil;
 
   [_dispatcher stopDispatchingToTarget:_bubblePresenter];
   [_bubblePresenter stop];
