@@ -612,7 +612,8 @@ Request* Request::CreateRequestWithRequestOrString(
 
     request->SetAttributionReportingEligibility(
         ConvertAttributionReportingRequestOptionsToMojom(
-            *init->attributionReporting()));
+            *init->attributionReporting(), *execution_context,
+            exception_state));
   }
 
   // "Let |r| be a new Request object associated with |request| and a new
