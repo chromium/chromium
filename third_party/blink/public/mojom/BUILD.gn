@@ -48,7 +48,6 @@ mojom("mojom_platform") {
     "context_menu/context_menu.mojom",
     "conversions/attribution_data_host.mojom",
     "conversions/attribution_reporting.mojom",
-    "conversions/attribution_reporting_automation.mojom",
     "conversions/conversions.mojom",
     "cookie_manager/cookie_manager_automation.mojom",
     "cookie_store/cookie_store.mojom",

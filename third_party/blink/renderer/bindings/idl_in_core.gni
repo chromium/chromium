@@ -765,7 +765,6 @@ static_idl_files_in_core_for_testing = get_path_info(
           "//third_party/blink/renderer/core/dom/testing/internals_storage_access.idl",
           "//third_party/blink/renderer/core/fetch/testing/internals_fetch.idl",
           "//third_party/blink/renderer/core/fetch/testing/worker_internals_fetch.idl",
-          "//third_party/blink/renderer/core/testing/attribution_reporting_automation.idl",
           "//third_party/blink/renderer/core/testing/callback_function_test.idl",
           "//third_party/blink/renderer/core/testing/death_aware_script_wrappable.idl",
           "//third_party/blink/renderer/core/testing/dictionary_test.idl",

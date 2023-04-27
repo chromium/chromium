@@ -353,11 +353,6 @@ class CONTENT_EXPORT StoragePartition {
   virtual leveldb_proto::ProtoDatabaseProvider*
   GetProtoDatabaseProviderForTesting() = 0;
 
-  // Resets all state associated with the Attribution Reporting API for use in
-  // hermetic tests.
-  virtual void ResetAttributionManagerForTesting(
-      base::OnceCallback<void(bool success)> callback) = 0;
-
   // The value pointed to by |settings| should remain valid until the
   // the function is called again with a new value or a nullptr.
   static void SetDefaultQuotaSettingsForTesting(

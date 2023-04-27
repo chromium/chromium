@@ -6,11 +6,7 @@ const blankURL = (base = location.origin) => new URL('/wpt_internal/attribution-
 
 const attribution_reporting_promise_test = (f, name) =>
     promise_test(async t => {
-      await Promise.all([
-        internals.resetAttributionReporting(),
-        resetWptServer(),
-      ]);
-
+      await resetWptServer();
       return f(t);
     }, name);
 
@@ -23,7 +19,6 @@ const resetWptServer = () =>
           resetAttributionReports(aggregatableDebugReportsUrl),
           resetAttributionReports(verboseDebugReportsUrl),
           resetRegisteredSources(),
-          clearCookies(),
         ]);
 
 const eventLevelReportsUrl =
@@ -65,23 +60,6 @@ const blankURLWithHeaders = (headers, origin, status) => {
  */
 const resetRegisteredSources = () => {
   return fetch(`${blankURL()}?clear-stash=true`);
-}
-
-const clearCookies = async () => {
-  const headers = [{ name: 'Clear-Site-Data', value: '"cookies"'}];
-  await fetch(blankURLWithHeaders(headers, location.origin));
-
-  // If the test isn't configured to get a cross origin (does not import
-  // get-host-info.js), there is no need or way to clear its cookies.
-  if (typeof get_host_info != "function") {
-    return;
-  }
-
-  const crossOrigin = get_host_info().HTTPS_REMOTE_ORIGIN;
-  const params = getFetchParams(crossOrigin);
-  return fetch(
-      blankURLWithHeaders(params.headers.concat(headers), crossOrigin),
-      {credentials: params.credentials});
 }
 
 /**

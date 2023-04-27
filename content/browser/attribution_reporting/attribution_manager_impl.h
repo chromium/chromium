@@ -108,11 +108,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       StoragePartitionImpl* storage_partition,
       scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
 
-  static std::unique_ptr<AttributionManagerImpl> CreateWithNewDbForTesting(
-      StoragePartitionImpl* storage_partition,
-      const base::FilePath& user_data_directory,
-      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
-
   static network::mojom::AttributionSupport GetSupport();
 
 #if BUILDFLAG(IS_ANDROID)

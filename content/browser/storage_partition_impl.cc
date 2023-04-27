@@ -2884,20 +2884,6 @@ void StoragePartitionImpl::ClearBluetoothAllowedDevicesMapForTesting() {
   bluetooth_allowed_devices_map_->Clear();
 }
 
-void StoragePartitionImpl::ResetAttributionManagerForTesting(
-    base::OnceCallback<void(bool)> callback) {
-  DCHECK(initialized_);
-
-  // Reset the existing manager first to ensure that the underlying DB is only
-  // accessed by one instance at a time.
-  attribution_manager_.reset();
-
-  attribution_manager_ = AttributionManagerImpl::CreateWithNewDbForTesting(
-      this, partition_path_, special_storage_policy_);
-
-  std::move(callback).Run(/*success=*/!!attribution_manager_);
-}
-
 void StoragePartitionImpl::AddObserver(DataRemovalObserver* observer) {
   data_removal_observers_.AddObserver(observer);
 }

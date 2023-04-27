@@ -593,12 +593,6 @@ base::FilePath DatabasePath(const base::FilePath& user_data_directory) {
 
 }  // namespace
 
-// static
-bool AttributionStorageSql::DeleteStorageForTesting(
-    const base::FilePath& user_data_directory) {
-  return sql::Database::Delete(DatabasePath(user_data_directory));
-}
-
 AttributionStorageSql::AttributionStorageSql(
     const base::FilePath& user_data_directory,
     std::unique_ptr<AttributionStorageDelegate> delegate)

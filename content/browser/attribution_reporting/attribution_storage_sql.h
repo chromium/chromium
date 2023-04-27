@@ -57,9 +57,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   static_assert(kCompatibleVersionNumber <= kCurrentVersionNumber);
   static_assert(kDeprecatedVersionNumber < kCompatibleVersionNumber);
 
-  [[nodiscard]] static bool DeleteStorageForTesting(
-      const base::FilePath& user_data_directory);
-
   // If `user_data_directory` is empty, the DB is created in memory and no data
   // is persisted to disk.
   AttributionStorageSql(const base::FilePath& user_data_directory,

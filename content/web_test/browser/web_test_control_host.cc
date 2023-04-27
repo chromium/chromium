@@ -34,8 +34,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -708,7 +710,7 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
   SetBluetoothManualChooser(false);
   SetDatabaseQuota(content::kDefaultDatabaseQuota);
 
-  // Delete all cookies.
+  // Delete all cookies and Attribution Reporting data.
   {
     BrowserContext* browser_context =
         ShellContentBrowserClient::Get()->browser_context();
@@ -716,6 +718,16 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
         browser_context->GetDefaultStoragePartition();
     storage_partition->GetCookieManagerForBrowserProcess()->DeleteCookies(
         network::mojom::CookieDeletionFilter::New(), base::DoNothing());
+
+    if (auto* manager =
+            AttributionManager::FromBrowserContext(browser_context)) {
+      manager->ClearData(
+          /*delete_begin=*/base::Time::Min(), /*delete_end=*/base::Time::Max(),
+          /*filter=*/StoragePartition::StorageKeyMatcherFunction(),
+          /*filter_builder=*/nullptr,
+          /*delete_rate_limit_data=*/true,
+          /*done=*/base::DoNothing());
+    }
   }
 
   ui::SelectFileDialog::SetFactory(nullptr);

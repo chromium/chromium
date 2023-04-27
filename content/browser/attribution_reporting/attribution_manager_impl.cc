@@ -29,7 +29,6 @@
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -408,24 +407,6 @@ ScopedUseInMemoryStorageForTesting::ScopedUseInMemoryStorageForTesting()
 
 ScopedUseInMemoryStorageForTesting::~ScopedUseInMemoryStorageForTesting() {
   g_run_in_memory = previous_;
-}
-
-// static
-std::unique_ptr<AttributionManagerImpl>
-AttributionManagerImpl::CreateWithNewDbForTesting(
-    StoragePartitionImpl* storage_partition,
-    const base::FilePath& user_data_directory,
-    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy) {
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    if (!AttributionStorageSql::DeleteStorageForTesting(user_data_directory)) {
-      return nullptr;
-    }
-  }
-
-  return std::make_unique<AttributionManagerImpl>(
-      storage_partition, user_data_directory,
-      std::move(special_storage_policy));
 }
 
 bool AttributionManagerImpl::IsReportAllowed(

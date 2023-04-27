@@ -97,8 +97,6 @@ static_library("web_test_browser") {
     "browser/mojo_web_test_helper.h",
     "browser/test_info_extractor.cc",
     "browser/test_info_extractor.h",
-    "browser/web_test_attribution_manager.cc",
-    "browser/web_test_attribution_manager.h",
     "browser/web_test_background_fetch_delegate.cc",
     "browser/web_test_background_fetch_delegate.h",
     "browser/web_test_bluetooth_adapter_provider.cc",
