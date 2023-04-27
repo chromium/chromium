@@ -32,6 +32,24 @@ steps:
     # TODO(dmiller): this might race with the linux build, we should store these under separate paths
     # artifact_paths:
     #   - "build_id/**"
+  - label: "Build chromium - Windows"
+    key: "build-chromium-windows"
+    # TODO(dmiller): remove this once we have a windows build that doesn't fail
+    soft_fail: true
+    plugins:
+      # Necessary to override this until https://github.com/thedyrt/skip-checkout-buildkite-plugin/pull/6 is merged
+      - https://github.com/jazzdan/skip-checkout-buildkite-plugin.git#jazzdan/windows-support: ~
+    command: "cd C:\\Users\\Administrator\\chromium\\src && node buildWindows.mjs &&  node replay_build_scripts/upload_build_artifacts.mjs"
+    env:
+      GOMA_SERVER_HOST: simpsonite.goma.engflow.com
+      GOMACTL_USE_PROXY: false
+    agents:
+      - "runtimeType=chromiumbuild"
+      - "os=windows"
+      - "queue=runtime"
+    # TODO(dmiller): this might race with the linux build, we should store these under separate paths
+    # artifact_paths:
+    #   - "build_id/**"
   - trigger: "testing-runtime-e2e"
     label: ":hammer: Trigger Runtime Tests"
     depends_on: "build-chromium-linux"
