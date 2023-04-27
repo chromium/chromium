@@ -23,20 +23,21 @@
  * DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DELAY_DSP_KERNEL_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DELAY_DSP_KERNEL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_DELAY_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_DELAY_H_
 
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
-#include "third_party/blink/renderer/platform/audio/audio_dsp_kernel.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
-class PLATFORM_EXPORT AudioDelayDSPKernel {
+// Implementation of a generic delay line with no dependencies.  It does not
+// have any thread affinity and there is no consideration on thread safety.
+class PLATFORM_EXPORT Delay {
  public:
-  AudioDelayDSPKernel(double max_delay_time,
-                      float sample_rate,
-                      unsigned render_quantum_frames);
+  Delay(double max_delay_time,
+        float sample_rate,
+        unsigned render_quantum_frames);
 
   // Handles k-rate processing.  Call `SetDelayFrames()` or `SetDelayTime()` to
   // set the delay before calling this function.
@@ -86,9 +87,6 @@ class PLATFORM_EXPORT AudioDelayDSPKernel {
                  uint32_t frames_to_process,
                  float max_time);
 
-  AudioDelayDSPKernel(AudioDSPKernelProcessor*,
-                      size_t processing_size_in_frames);
-
   double DelayTime(float sample_rate);
 
   size_t BufferLengthForDelay(double delay_time,
@@ -115,4 +113,4 @@ class PLATFORM_EXPORT AudioDelayDSPKernel {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DELAY_DSP_KERNEL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_DELAY_H_

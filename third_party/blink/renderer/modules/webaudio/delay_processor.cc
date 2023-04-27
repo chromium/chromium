@@ -27,8 +27,9 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/platform/audio/audio_delay_dsp_kernel.h"
+#include "third_party/blink/renderer/platform/audio/audio_dsp_kernel.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
+#include "third_party/blink/renderer/platform/audio/delay.h"
 
 namespace blink {
 
@@ -99,7 +100,7 @@ class DelayDSPKernel final : public AudioDSPKernel {
     return static_cast<DelayProcessor*>(Processor());
   }
 
-  AudioDelayDSPKernel delay_;
+  Delay delay_;
 };
 
 }  // namespace

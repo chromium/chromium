@@ -307,8 +307,6 @@ component("platform") {
     "audio/audio_callback_metric_reporter.h",
     "audio/audio_channel.cc",
     "audio/audio_channel.h",
-    "audio/audio_delay_dsp_kernel.cc",
-    "audio/audio_delay_dsp_kernel.h",
     "audio/audio_destination.cc",
     "audio/audio_destination.h",
     "audio/audio_dsp_kernel.cc",
@@ -334,6 +332,8 @@ component("platform") {
     "audio/cpu/x86/vector_math_sse.cc",
     "audio/cpu/x86/vector_math_sse.h",
     "audio/cpu/x86/vector_math_x86.h",
+    "audio/delay.cc",
+    "audio/delay.h",
     "audio/denormal_disabler.h",
     "audio/direct_convolver.cc",
     "audio/direct_convolver.h",
@@ -1813,12 +1813,12 @@ component("platform") {
 
   if (current_cpu == "x86" || current_cpu == "x64") {
     deps += [ ":blink_x86_avx" ]
-    sources += [ "audio/cpu/x86/audio_delay_dsp_kernel_sse2.cc" ]
+    sources += [ "audio/cpu/x86/delay_sse2.cc" ]
     allow_circular_includes_from += [ ":blink_x86_avx" ]
   }
 
   if (current_cpu == "arm64" || (current_cpu == "arm" && arm_use_neon)) {
-    sources += [ "audio/cpu/arm/audio_delay_dsp_kernel_neon.cc" ]
+    sources += [ "audio/cpu/arm/delay_neon.cc" ]
   }
 
   if (use_webaudio_ffmpeg) {

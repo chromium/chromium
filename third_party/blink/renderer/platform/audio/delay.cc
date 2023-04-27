@@ -23,7 +23,7 @@
  * DAMAGE.
  */
 
-#include "third_party/blink/renderer/platform/audio/audio_delay_dsp_kernel.h"
+#include "third_party/blink/renderer/platform/audio/delay.h"
 
 #include <cmath>
 
@@ -64,9 +64,9 @@ void CopyToCircularBuffer(float* buffer,
 
 }  // namespace
 
-AudioDelayDSPKernel::AudioDelayDSPKernel(double max_delay_time,
-                                         float sample_rate,
-                                         unsigned render_quantum_frames)
+Delay::Delay(double max_delay_time,
+             float sample_rate,
+             unsigned render_quantum_frames)
     : max_delay_time_(max_delay_time),
       delay_times_(render_quantum_frames),
       temp_buffer_(render_quantum_frames),
@@ -82,10 +82,9 @@ AudioDelayDSPKernel::AudioDelayDSPKernel(double max_delay_time,
   buffer_.Zero();
 }
 
-size_t AudioDelayDSPKernel::BufferLengthForDelay(
-    double max_delay_time,
-    double sample_rate,
-    unsigned render_quantum_frames) const {
+size_t Delay::BufferLengthForDelay(double max_delay_time,
+                                   double sample_rate,
+                                   unsigned render_quantum_frames) const {
   // Compute the length of the buffer needed to handle a max delay of
   // `maxDelayTime`. Add an additional render quantum frame size so we can
   // vectorize the delay processing.  The extra space is needed so that writes
@@ -95,13 +94,13 @@ size_t AudioDelayDSPKernel::BufferLengthForDelay(
                                             audio_utilities::kRoundUp);
 }
 
-double AudioDelayDSPKernel::DelayTime(float sample_rate) {
+double Delay::DelayTime(float sample_rate) {
   return desired_delay_frames_ / sample_rate;
 }
 
 #if !(defined(ARCH_CPU_X86_FAMILY) || defined(CPU_ARM_NEON))
 // Default scalar versions if simd/neon are not available.
-std::tuple<unsigned, int> AudioDelayDSPKernel::ProcessARateVector(
+std::tuple<unsigned, int> Delay::ProcessARateVector(
     float* destination,
     uint32_t frames_to_process) const {
   // We don't have a vectorized version, so just do nothing and return the 0 to
@@ -109,20 +108,21 @@ std::tuple<unsigned, int> AudioDelayDSPKernel::ProcessARateVector(
   return std::make_tuple(0, write_index_);
 }
 
-void AudioDelayDSPKernel::HandleNaN(float* delay_times,
-                                    uint32_t frames_to_process,
-                                    float max_time) {
+void Delay::HandleNaN(float* delay_times,
+                      uint32_t frames_to_process,
+                      float max_time) {
   for (unsigned k = 0; k < frames_to_process; ++k) {
-    if (std::isnan(delay_times[k]))
+    if (std::isnan(delay_times[k])) {
       delay_times[k] = max_time;
+    }
   }
 }
 #endif
 
-int AudioDelayDSPKernel::ProcessARateScalar(unsigned start,
-                                            int w_index,
-                                            float* destination,
-                                            uint32_t frames_to_process) const {
+int Delay::ProcessARateScalar(unsigned start,
+                              int w_index,
+                              float* destination,
+                              uint32_t frames_to_process) const {
   const int buffer_length = buffer_.size();
   const float* buffer = buffer_.Data();
 
@@ -170,9 +170,9 @@ int AudioDelayDSPKernel::ProcessARateScalar(unsigned start,
   return w_index;
 }
 
-void AudioDelayDSPKernel::ProcessARate(const float* source,
-                                       float* destination,
-                                       uint32_t frames_to_process) {
+void Delay::ProcessARate(const float* source,
+                         float* destination,
+                         uint32_t frames_to_process) {
   int buffer_length = buffer_.size();
   float* buffer = buffer_.Data();
 
@@ -202,9 +202,9 @@ void AudioDelayDSPKernel::ProcessARate(const float* source,
   }
 }
 
-void AudioDelayDSPKernel::ProcessKRate(const float* source,
-                                       float* destination,
-                                       uint32_t frames_to_process) {
+void Delay::ProcessKRate(const float* source,
+                         float* destination,
+                         uint32_t frames_to_process) {
   int buffer_length = buffer_.size();
   float* buffer = buffer_.Data();
 
@@ -298,7 +298,7 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
   }
 }
 
-void AudioDelayDSPKernel::Reset() {
+void Delay::Reset() {
   buffer_.Zero();
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/audio/audio_delay_dsp_kernel.h"
+#include "third_party/blink/renderer/platform/audio/delay.h"
 
 #include <arm_neon.h>
 
@@ -49,7 +49,7 @@ ALWAYS_INLINE static float32x4_t WrapPositionVector(
                        reinterpret_cast<uint32x4_t>(v_buffer_length), cmp)));
 }
 
-std::tuple<unsigned, int> AudioDelayDSPKernel::ProcessARateVector(
+std::tuple<unsigned, int> Delay::ProcessARateVector(
     float* destination,
     uint32_t frames_to_process) const {
   const int buffer_length = buffer_.size();
@@ -134,15 +134,16 @@ std::tuple<unsigned, int> AudioDelayDSPKernel::ProcessARateVector(
   // Update |w_index| based on how many frames we processed here, wrapping
   // around if needed.
   w_index = write_index_ + k;
-  if (w_index >= buffer_length)
+  if (w_index >= buffer_length) {
     w_index -= buffer_length;
+  }
 
   return std::make_tuple(k, w_index);
 }
 
-void AudioDelayDSPKernel::HandleNaN(float* delay_times,
-                                    uint32_t frames_to_process,
-                                    float max_time) {
+void Delay::HandleNaN(float* delay_times,
+                      uint32_t frames_to_process,
+                      float max_time) {
   unsigned k = 0;
   int number_of_loops = frames_to_process / 4;
 
@@ -179,8 +180,9 @@ void AudioDelayDSPKernel::HandleNaN(float* delay_times,
 
   // Handle any frames not done in the loop above.
   for (; k < frames_to_process; ++k) {
-    if (std::isnan(delay_times[k]))
+    if (std::isnan(delay_times[k])) {
       delay_times[k] = max_time;
+    }
   }
 }
 #endif
