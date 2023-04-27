@@ -671,13 +671,7 @@ TEST_F(ScheduledFeatureTest, SunsetSunrise) {
 
 // Tests that scheduled start time and end time of sunset-to-sunrise feature
 // are updated correctly if the geoposition changes.
-// TODO(crbug.com/1334047) Fix flakiness and re-enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SunsetSunriseGeoposition DISABLED_SunsetSunriseGeoposition
-#else
-#define MAYBE_SunsetSunriseGeoposition SunsetSunriseGeoposition
-#endif
-TEST_F(ScheduledFeatureTest, MAYBE_SunsetSunriseGeoposition) {
+TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
   constexpr double kFakePosition1_Latitude = 23.5;
   constexpr double kFakePosition1_Longitude = 55.88;
   constexpr double kFakePosition2_Latitude = 23.5;
@@ -720,13 +714,17 @@ TEST_F(ScheduledFeatureTest, MAYBE_SunsetSunriseGeoposition) {
   EXPECT_FALSE(feature()->GetEnabled());
   EXPECT_TRUE(IsFeatureObservingGeoposition());
 
+  // A small delta used to help forwarding the time to be a little bit behind
+  // the target time. Used to avoid test flaky because of the time issue.
+  const base::TimeDelta delta = base::Minutes(5);
   // Simulate reaching sunset.
-  FastForwardBy(base::Hours(4));  // Now is sunset time of the position1.
+  FastForwardBy(base::Hours(4) +
+                delta);  // Now is sunset time of the position1.
   EXPECT_TRUE(feature()->GetEnabled());
 
   // Simulate reaching sunrise.
   FastForwardTo(TimeOfDay::FromTime(
-      sunrise_time1));  // Now is sunrise time of the position1
+      sunrise_time1 + delta));  // Now is sunrise time of the position1
   EXPECT_FALSE(feature()->GetEnabled());
 
   // Now simulate user changing position.
@@ -762,7 +760,7 @@ TEST_F(ScheduledFeatureTest, MAYBE_SunsetSunriseGeoposition) {
 
   // Simulate reaching sunrise.
   FastForwardTo(TimeOfDay::FromTime(
-      sunrise_time2));  // Now is sunrise time of the position2.
+      sunrise_time2 + delta));  // Now is sunrise time of the position2.
   EXPECT_FALSE(feature()->GetEnabled());
   // Timer is running scheduling the start at the sunset of the next day.
   FastForwardTo(TimeOfDay::FromTime(sunrise_time2));
