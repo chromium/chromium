@@ -43,12 +43,11 @@ QUERY = """
         b.start_time,
       FROM
         `cr-buildbucket.chromium.builds` b
-      INNER JOIN `chrome-trooper-analytics.metrics.cq_builders` cq_builders
-        ON b.builder.builder = cq_builders.builder
       WHERE
         b.start_time > '{lookback_start_date}'
         AND b.start_time <= '{lookback_end_date}'
         AND b.builder.bucket = 'try'
+        AND JSON_VALUE(b.input.properties, '$.cq') = 'required'
         AND JSON_QUERY(b.output.properties, '$.rts_was_used') IS NULL
         AND b.status = 'SUCCESS'
     ),
@@ -279,7 +278,11 @@ def _run_query(lookback_start_date, lookback_end_date, desired_runtime,
       "--max_rows=100000", "--nouse_legacy_sql", query
   ]
 
-  output = subprocess.check_output(args)
+  try:
+    output = subprocess.check_output(args)
+  except subprocess.CalledProcessError as e:
+    print(e.output)
+    raise (e)
   return json.loads(output)
 
 
