@@ -82,9 +82,6 @@ int main(int argc, char** argv) {
                                    "800,800");
 #endif
 
-  // Temporarily force the CPU backend to use AAA. (https://crbug.com/1421297)
-  command_line->AppendSwitch(switches::kForceSkiaAnalyticAntialiasing);
-
   ChromeTestSuiteRunner runner;
   ChromeTestLauncherDelegate delegate(&runner);
   return LaunchChromeTests(parallel_jobs, &delegate, argc, argv);
