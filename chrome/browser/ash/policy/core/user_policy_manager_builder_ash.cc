@@ -19,7 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_store_ash.h"
@@ -85,12 +84,9 @@ void CreateConfigurationPolicyProvider(
     bool force_immediate_load,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     std::unique_ptr<UserCloudPolicyManagerAsh>*
-        user_cloud_policy_manager_ash_out,
-    std::unique_ptr<ActiveDirectoryPolicyManager>*
-        active_directory_policy_manager_out) {
+        user_cloud_policy_manager_ash_out) {
   // Clear the two out parameters. Default return will be nullptr for both.
   *user_cloud_policy_manager_ash_out = nullptr;
-  *active_directory_policy_manager_out = nullptr;
 
   // Don't initialize cloud policy for the signin and the lock screen profile.
   if (!ash::ProfileHelper::IsUserProfile(profile)) {
@@ -109,8 +105,6 @@ void CreateConfigurationPolicyProvider(
   // User policy exists for enterprise accounts:
   // - For regular cloud-managed users (those who have a GAIA account), a
   //   |UserCloudPolicyManagerAsh| is created here.
-  // - For Active Directory managed users, an |ActiveDirectoryPolicyManager|
-  //   is created.
   // - For device-local accounts, policy is provided by
   //   |DeviceLocalAccountPolicyService|.
   // For non-enterprise accounts only for users with type USER_TYPE_CHILD
@@ -131,7 +125,6 @@ void CreateConfigurationPolicyProvider(
 
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  bool is_active_directory = false;
   switch (account_id.GetAccountType()) {
     case AccountType::UNKNOWN:
     case AccountType::GOOGLE:
@@ -141,14 +134,9 @@ void CreateConfigurationPolicyProvider(
         DLOG(WARNING) << "No policy for users without Gaia accounts";
         return;
       }
-      is_active_directory = false;
       break;
     case AccountType::ACTIVE_DIRECTORY:
-      // Active Directory users only exist on devices whose install attributes
-      // are locked into Active Directory mode.
-      CHECK(connector->GetInstallAttributes()->IsActiveDirectoryManaged());
-      is_active_directory = true;
-      break;
+      NOTREACHED_NORETURN();
   }
 
   const ProfileRequiresPolicy requires_policy_user_property =
@@ -164,7 +152,7 @@ void CreateConfigurationPolicyProvider(
   // If this is true, then |policy_required| must be false.
   const bool policy_check_required =
       (requires_policy_user_property == ProfileRequiresPolicy::kUnknown) &&
-      !is_stub_user && !is_active_directory &&
+      !is_stub_user &&
       !command_line->HasSwitch(ash::switches::kProfileRequiresPolicy) &&
       !command_line->HasSwitch(ash::switches::kAllowFailedPolicyFetchForTest);
 
@@ -188,8 +176,7 @@ void CreateConfigurationPolicyProvider(
   // in the known_user database).
   const bool policy_required =
       !command_line->HasSwitch(ash::switches::kAllowFailedPolicyFetchForTest) &&
-      (is_active_directory ||
-       (requires_policy_user_property ==
+      ((requires_policy_user_property ==
         ProfileRequiresPolicy::kPolicyRequired) ||
        (command_line->GetSwitchValueASCII(
             ash::switches::kProfileRequiresPolicy) == "true"));
@@ -267,39 +254,30 @@ void CreateConfigurationPolicyProvider(
   if (force_immediate_load)
     store->LoadImmediately();
 
-  if (is_active_directory) {
-    auto manager = std::make_unique<UserActiveDirectoryPolicyManager>(
-        account_id, policy_required, policy_refresh_timeout,
-        base::BindOnce(&OnUserPolicyFatalError, account_id), std::move(store),
-        std::move(external_data_manager));
-    manager->Init(profile->GetPolicySchemaRegistryService()->registry());
-    *active_directory_policy_manager_out = std::move(manager);
-  } else {
-    std::unique_ptr<UserCloudPolicyManagerAsh> manager =
-        std::make_unique<UserCloudPolicyManagerAsh>(
-            profile, std::move(store), std::move(external_data_manager),
-            component_policy_cache_dir, enforcement_type,
-            g_browser_process->local_state(), policy_refresh_timeout,
-            base::BindOnce(&OnUserPolicyFatalError, account_id), account_id,
-            base::SingleThreadTaskRunner::GetCurrentDefault());
+  std::unique_ptr<UserCloudPolicyManagerAsh> manager =
+      std::make_unique<UserCloudPolicyManagerAsh>(
+          profile, std::move(store), std::move(external_data_manager),
+          component_policy_cache_dir, enforcement_type,
+          g_browser_process->local_state(), policy_refresh_timeout,
+          base::BindOnce(&OnUserPolicyFatalError, account_id), account_id,
+          base::SingleThreadTaskRunner::GetCurrentDefault());
 
-    bool wildcard_match = false;
-    if (connector->IsDeviceEnterpriseManaged() &&
-        ash::CrosSettings::Get()->IsUserAllowlisted(
-            account_id.GetUserEmail(), &wildcard_match, user->GetType()) &&
-        wildcard_match &&
-        signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-            account_id.GetUserEmail()) == signin::AccountManagedStatusFinder::
-                                              EmailEnterpriseStatus::kUnknown) {
-      manager->EnableWildcardLoginCheck(account_id.GetUserEmail());
-    }
-
-    manager->Init(profile->GetPolicySchemaRegistryService()->registry());
-    manager->ConnectManagementService(
-        device_management_service,
-        g_browser_process->shared_url_loader_factory());
-    *user_cloud_policy_manager_ash_out = std::move(manager);
+  bool wildcard_match = false;
+  if (connector->IsDeviceEnterpriseManaged() &&
+      ash::CrosSettings::Get()->IsUserAllowlisted(
+          account_id.GetUserEmail(), &wildcard_match, user->GetType()) &&
+      wildcard_match &&
+      signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+          account_id.GetUserEmail()) ==
+          signin::AccountManagedStatusFinder::EmailEnterpriseStatus::kUnknown) {
+    manager->EnableWildcardLoginCheck(account_id.GetUserEmail());
   }
+
+  manager->Init(profile->GetPolicySchemaRegistryService()->registry());
+  manager->ConnectManagementService(
+      device_management_service,
+      g_browser_process->shared_url_loader_factory());
+  *user_cloud_policy_manager_ash_out = std::move(manager);
 }
 
 }  // namespace policy
