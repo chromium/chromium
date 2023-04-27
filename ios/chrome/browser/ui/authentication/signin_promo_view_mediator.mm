@@ -647,7 +647,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 - (void)dealloc {
-  DCHECK_EQ(ios::SigninPromoViewState::Invalid, _signinPromoViewState);
+  DCHECK_EQ(ios::SigninPromoViewState::Invalid, _signinPromoViewState)
+      << base::SysNSStringToUTF8([self description]);
 }
 
 - (SigninPromoViewConfigurator*)createConfigurator {
