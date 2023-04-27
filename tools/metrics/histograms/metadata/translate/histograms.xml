@@ -625,13 +625,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.PageScheme" enum="TranslateScheme"
-    expires_after="M77">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>Counts translation target page schemes.</summary>
-</histogram>
-
 <histogram name="Translate.PartialTranslateBubbleUiEvent"
     enum="PartialTranslateBubbleUiEvent" expires_after="2023-08-31">
   <owner>cuianthony@google.com</owner>

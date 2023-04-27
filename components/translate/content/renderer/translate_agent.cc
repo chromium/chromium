@@ -474,9 +474,6 @@ void TranslateAgent::TranslateFrame(const std::string& translate_script,
 
   ReportUserActionDuration(language_determined_time_, base::TimeTicks::Now());
 
-  GURL url(main_frame->GetDocument().Url());
-  ReportPageScheme(url.scheme());
-
   // Set up v8 isolated world.
   EnsureIsolatedWorldInitialized(world_id_);
 

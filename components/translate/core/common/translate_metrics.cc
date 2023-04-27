@@ -24,7 +24,6 @@ const char kTranslateTimeToLoad[] = "Translate.Translation.TimeToLoad";
 const char kTranslateTimeToTranslate[] =
     "Translate.Translation.TimeToTranslate";
 const char kTranslateUserActionDuration[] = "Translate.UserActionDuration";
-const char kTranslatePageScheme[] = "Translate.PageScheme";
 const char kTranslateLanguageDeterminedDuration[] =
     "Translate.LanguageDeterminedDuration";
 const char kTranslatedLanguageDetectionContentLength[] =
@@ -59,16 +58,6 @@ void ReportTimeToTranslate(double time_in_msec) {
 void ReportUserActionDuration(base::TimeTicks begin, base::TimeTicks end) {
   UMA_HISTOGRAM_LONG_TIMES(metrics_internal::kTranslateUserActionDuration,
                            end - begin);
-}
-
-void ReportPageScheme(const std::string& scheme) {
-  SchemeType type = SCHEME_OTHERS;
-  if (scheme == url::kHttpScheme)
-    type = SCHEME_HTTP;
-  else if (scheme == url::kHttpsScheme)
-    type = SCHEME_HTTPS;
-  UMA_HISTOGRAM_ENUMERATION(metrics_internal::kTranslatePageScheme, type,
-                            SCHEME_MAX);
 }
 
 void ReportLanguageDeterminedDuration(base::TimeTicks begin,
