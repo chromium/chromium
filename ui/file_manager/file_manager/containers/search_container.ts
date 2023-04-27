@@ -45,6 +45,110 @@ function isInRecent(dir: CurrentDirectory|undefined): boolean {
 }
 
 /**
+ * Creates location options. These always consist of 'Everywhere' and the
+ * local folder. However, if the local folder has a parent, that is different
+ * from it, we also add the parent between Everywhere and the local folder.
+ */
+function createLocationOptions(state: State): XfOption[] {
+  const dir = state.currentDirectory;
+  const dirPath = dir?.pathComponents || [];
+  const options: XfOption[] = [
+    {
+      value: SearchLocation.EVERYWHERE,
+      text: str('SEARCH_OPTIONS_LOCATION_EVERYWHERE'),
+      default: !dirPath,
+    },
+  ];
+  if (dirPath) {
+    if (dir?.rootType === VolumeManagerCommon.RootType.DRIVE) {
+      // For Google Drive we currently do not have the ability to search a
+      // specific folder. Thus the only options shown, when the user is
+      // triggering search from a location in Drive, is Everywhere (set up
+      // above) and Drive.
+      options.push({
+        value: SearchLocation.ROOT_FOLDER,
+        text: str('DRIVE_DIRECTORY_LABEL'),
+        default: true,
+      });
+    } else if (isInRecent(dir)) {
+      options.push({
+        value: SearchLocation.THIS_FOLDER,
+        text: dirPath[dirPath.length - 1]?.label ||
+            str('SEARCH_OPTIONS_LOCATION_THIS_FOLDER'),
+        default: true,
+      });
+    } else {
+      options.push({
+        value: dirPath.length > 1 ? SearchLocation.ROOT_FOLDER :
+                                    SearchLocation.THIS_FOLDER,
+        text: dirPath[0]?.label || str('SEARCH_OPTIONS_LOCATION_THIS_VOLUME'),
+        default: dirPath.length === 1,
+      });
+      if (dirPath.length > 1) {
+        options.push({
+          value: SearchLocation.THIS_FOLDER,
+          text: dirPath[dirPath.length - 1]?.label ||
+              str('SEARCH_OPTIONS_LOCATION_THIS_FOLDER'),
+          default: true,
+        });
+      }
+    }
+  }
+  return options;
+}
+
+/**
+ * Creates Recency options. Depending on the current directory these have either
+ * ANYTIME or LAST_MONTH selected as the default.
+ */
+function createRecencyOptions(state: State): XfOption[] {
+  const recencyOptions: XfOption[] = [
+    {
+      value: SearchRecency.ANYTIME,
+      text: str('SEARCH_OPTIONS_RECENCY_ALL_TIME'),
+    },
+    {
+      value: SearchRecency.TODAY,
+      text: str('SEARCH_OPTIONS_RECENCY_TODAY'),
+    },
+    {
+      value: SearchRecency.YESTERDAY,
+      text: str('SEARCH_OPTIONS_RECENCY_YESTERDAY'),
+    },
+    {
+      value: SearchRecency.LAST_WEEK,
+      text: str('SEARCH_OPTIONS_RECENCY_LAST_WEEK'),
+    },
+    {
+      value: SearchRecency.LAST_MONTH,
+      text: str('SEARCH_OPTIONS_RECENCY_LAST_MONTH'),
+    },
+    {
+      value: SearchRecency.LAST_YEAR,
+      text: str('SEARCH_OPTIONS_RECENCY_LAST_YEAR'),
+    },
+  ];
+  const index = isInRecent(state.currentDirectory) ? 4 : 0;
+  recencyOptions[index]!.default = true;
+  return recencyOptions;
+}
+
+/**
+ * Updates visibility of recency options based on the current directory.
+ */
+function updateRecencyOptionsVisibility(
+    state: State, element: XfSearchOptionsElement, options: SearchOptions) {
+  if (isInRecent(state.currentDirectory)) {
+    const recencySelector = element.getRecencySelector();
+    if (options.location === SearchLocation.EVERYWHERE) {
+      recencySelector.toggleAttribute('hidden', false);
+    } else {
+      recencySelector.toggleAttribute('hidden', true);
+    }
+  }
+}
+
+/**
  * The controller for the search UI elements. The controller takes care of the
  * behavior of UI elements. It must not deal with the look-and-feel. It finds
  * them, hooks to the UI events and drives the business logic based on those UI
@@ -369,94 +473,12 @@ export class SearchContainer extends EventTarget {
     return this.searchOptions_;
   }
 
-  /**
-   * Creates location options. These always consist of 'Everywhere' and the
-   * local folder. However, if the local folder has a parent, that is different
-   * from it, we also add the parent between Everywhere and the local folder.
-   */
-  private createLocationOptions_(state: State): XfOption[] {
-    const dir = state.currentDirectory;
-    const dirPath = dir?.pathComponents || [];
-    const options: XfOption[] = [
-      {
-        value: SearchLocation.EVERYWHERE,
-        text: str('SEARCH_OPTIONS_LOCATION_EVERYWHERE'),
-        default: !dirPath,
-      },
-    ];
-    if (dirPath) {
-      if (dir?.rootType === VolumeManagerCommon.RootType.DRIVE) {
-        // For Google Drive we currently do not have the ability to search a
-        // specific folder. Thus the only options shown, when the user is
-        // triggering search from a location in Drive, is Everywhere (set up
-        // above) and Drive.
-        options.push({
-          value: SearchLocation.ROOT_FOLDER,
-          text: str('DRIVE_DIRECTORY_LABEL'),
-          default: true,
-        });
-      } else if (isInRecent(dir)) {
-        options.push({
-          value: SearchLocation.THIS_FOLDER,
-          text: dirPath[dirPath.length - 1]?.label ||
-              str('SEARCH_OPTIONS_LOCATION_THIS_FOLDER'),
-          default: true,
-        });
-      } else {
-        options.push({
-          value: dirPath.length > 1 ? SearchLocation.ROOT_FOLDER :
-                                      SearchLocation.THIS_FOLDER,
-          text: dirPath[0]?.label || str('SEARCH_OPTIONS_LOCATION_THIS_VOLUME'),
-          default: dirPath.length === 1,
-        });
-        if (dirPath.length > 1) {
-          options.push({
-            value: SearchLocation.THIS_FOLDER,
-            text: dirPath[dirPath.length - 1]?.label ||
-                str('SEARCH_OPTIONS_LOCATION_THIS_FOLDER'),
-            default: true,
-          });
-        }
-      }
-    }
-    return options;
-  }
-
   private createSearchOptionsElement_(state: State): XfSearchOptionsElement {
     const element = document.createElement('xf-search-options');
     this.optionsContainer_.appendChild(element);
     element.id = 'search-options';
-    element.getLocationSelector().options = this.createLocationOptions_(state);
-    if (isInRecent(state.currentDirectory)) {
-      element.getRecencySelector().setAttribute('hidden', '');
-    } else {
-      element.getRecencySelector().options = [
-        {
-          value: SearchRecency.ANYTIME,
-          text: str('SEARCH_OPTIONS_RECENCY_ALL_TIME'),
-        },
-        {
-          value: SearchRecency.TODAY,
-          text: str('SEARCH_OPTIONS_RECENCY_TODAY'),
-        },
-        {
-          value: SearchRecency.YESTERDAY,
-          text: str('SEARCH_OPTIONS_RECENCY_YESTERDAY'),
-        },
-        {
-          value: SearchRecency.LAST_WEEK,
-          text: str('SEARCH_OPTIONS_RECENCY_LAST_WEEK'),
-        },
-        {
-          value: SearchRecency.LAST_MONTH,
-          text: str('SEARCH_OPTIONS_RECENCY_LAST_MONTH'),
-        },
-        {
-          value: SearchRecency.LAST_YEAR,
-          text: str('SEARCH_OPTIONS_RECENCY_LAST_YEAR'),
-        },
-      ];
-    }
+    element.getLocationSelector().options = createLocationOptions(state);
+    element.getRecencySelector().options = createRecencyOptions(state);
     element.getFileTypeSelector().options = [
       {
         value: chrome.fileManagerPrivate.FileCategory.ALL,
@@ -479,6 +501,7 @@ export class SearchContainer extends EventTarget {
         text: str('SEARCH_OPTIONS_TYPES_VIDEOS'),
       },
     ];
+    this.updateSearchOptions_(state);
     element.addEventListener(
         SEARCH_OPTIONS_CHANGED, this.onOptionsChanged_.bind(this));
     this.searchOptions_ = element;
@@ -488,12 +511,13 @@ export class SearchContainer extends EventTarget {
   private onOptionsChanged_(event: SearchOptionsChangedEvent) {
     const kind = event.detail.kind;
     const value = event.detail.value;
+    const state = this.store_.getState();
     switch (kind) {
       case OptionKind.LOCATION: {
         const location = value as unknown as SearchLocation;
         if (location !== this.currentOptions_.location) {
           this.currentOptions_.location = location;
-          this.updateSearchOptions_();
+          this.updateSearchOptions_(state);
         }
         break;
       }
@@ -501,7 +525,7 @@ export class SearchContainer extends EventTarget {
         const recency = value as unknown as SearchRecency;
         if (recency !== this.currentOptions_.recency) {
           this.currentOptions_.recency = recency;
-          this.updateSearchOptions_();
+          this.updateSearchOptions_(state);
         }
         break;
       }
@@ -510,7 +534,7 @@ export class SearchContainer extends EventTarget {
             value as unknown as chrome.fileManagerPrivate.FileCategory;
         if (category !== this.currentOptions_.fileCategory) {
           this.currentOptions_.fileCategory = category;
-          this.updateSearchOptions_();
+          this.updateSearchOptions_(state);
         }
         break;
       }
@@ -523,8 +547,10 @@ export class SearchContainer extends EventTarget {
   /**
    * Updates search options in the store.
    */
-  private updateSearchOptions_() {
+  private updateSearchOptions_(state: State) {
     if (util.isSearchV2Enabled()) {
+      updateRecencyOptionsVisibility(
+          state, this.getSearchOptionsElement_()!, this.currentOptions_);
       this.store_.dispatch(updateSearch({
         query: this.getQuery(),
         status: undefined,  // do not change
