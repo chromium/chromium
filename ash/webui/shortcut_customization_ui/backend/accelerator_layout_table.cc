@@ -440,8 +440,10 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_Z, ui::EF_CONTROL_DOWN)})},
           {NonConfigurableActions::kAmbientRedo,
-           NonConfigurableAcceleratorDetails({ui::Accelerator(
-               ui::VKEY_Z, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_Z,
+                                ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN),
+                ui::Accelerator(ui::VKEY_Y, ui::EF_CONTROL_DOWN)})},
           {NonConfigurableActions::kAmbientContentContextSelectAll,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_A, ui::EF_CONTROL_DOWN)})},
