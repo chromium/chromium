@@ -42180,6 +42180,14 @@ Called by update_use_counter_feature_enum.py.-->
       label="ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest"/>
   <int value="4549" label="FlexIntrinsicSizesCacheMiss"/>
   <int value="4550" label="CSSStyleContainerQuery"/>
+  <int value="4551" label="CSSValueAppearanceMediaSlider"/>
+  <int value="4552" label="CSSValueAppearanceMediaSliderthumb"/>
+  <int value="4553" label="CSSValueAppearanceMediaVolumeSlider"/>
+  <int value="4554" label="CSSValueAppearanceMediaVolumeSliderthumb"/>
+  <int value="4555" label="CSSValueAppearanceSliderHorizontal"/>
+  <int value="4556" label="CSSValueAppearanceSliderVertical"/>
+  <int value="4557" label="CSSValueAppearanceSliderthumbHorizontal"/>
+  <int value="4558" label="CSSValueAppearanceSliderthumbVertical"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

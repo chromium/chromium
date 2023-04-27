@@ -3889,6 +3889,14 @@ enum WebFeature {
   kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest = 4548,
   kFlexIntrinsicSizesCacheMiss = 4549,
   kCSSStyleContainerQuery = 4550,
+  kCSSValueAppearanceMediaSlider = 4551,
+  kCSSValueAppearanceMediaSliderthumb = 4552,
+  kCSSValueAppearanceMediaVolumeSlider = 4553,
+  kCSSValueAppearanceMediaVolumeSliderthumb = 4554,
+  kCSSValueAppearanceSliderHorizontal = 4555,
+  kCSSValueAppearanceSliderVertical = 4556,
+  kCSSValueAppearanceSliderthumbHorizontal = 4557,
+  kCSSValueAppearanceSliderthumbVertical = 4558,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
