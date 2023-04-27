@@ -443,6 +443,11 @@ void MaybeRegisterChromeFeaturePromos(
                     IDS_BACK_NAVIGATION_MENU_PROMO_ACCESSIBLE_TEXT,
                     FeaturePromoSpecification::AcceleratorInfo())
                     .SetBubbleArrow(HelpBubbleArrow::kLeftTop)));
+
+  // kIPHPriceTrackingChipFeature:
+  registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
+      &feature_engagement::kIPHPriceTrackingChipFeature,
+      kPriceTrackingChipElementId, IDS_PRICE_TRACKING_CHIP_IPH));
 }
 
 void MaybeRegisterChromeTutorials(

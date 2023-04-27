@@ -35,7 +35,8 @@ BASE_DECLARE_FEATURE(kCommercePriceTrackingChipExperiment);
 // This indicates the Price Tracking chip experiment variation.
 enum class PriceTrackingChipExperimentVariation {
   kDefault = 0,
-  kDelayChip = 1
+  kDelayChip = 1,
+  kWithChipIPH = 2
 };
 
 // Price tracking variations for Android.

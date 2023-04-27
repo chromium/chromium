@@ -280,6 +280,8 @@ DEFINE_VARIATION_PARAM(kIPHPerformanceNewBadgeFeature,
                        "IPH_PerformanceNewBadge");
 DEFINE_VARIATION_PARAM(kIPHPowerBookmarksSidePanelFeature,
                        "IPH_PowerBookmarksSidePanel");
+DEFINE_VARIATION_PARAM(kIPHPriceTrackingChipFeature,
+                       "IPH_PriceTrackingChipFeature");
 DEFINE_VARIATION_PARAM(kIPHPriceTrackingPageActionIconLabelFeature,
                        "IPH_PriceTrackingPageActionIconLabelFeature");
 DEFINE_VARIATION_PARAM(kIPHReadingListDiscoveryFeature,
@@ -462,6 +464,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHPasswordsWebAppProfileSwitchFeature),
         VARIATION_ENTRY(kIPHPerformanceNewBadgeFeature),
         VARIATION_ENTRY(kIPHPowerBookmarksSidePanelFeature),
+        VARIATION_ENTRY(kIPHPriceTrackingChipFeature),
         VARIATION_ENTRY(kIPHPriceTrackingPageActionIconLabelFeature),
         VARIATION_ENTRY(kIPHReadingListDiscoveryFeature),
         VARIATION_ENTRY(kIPHReadingListEntryPointFeature),
