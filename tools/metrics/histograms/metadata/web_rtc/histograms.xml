@@ -977,6 +977,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebRTC.DesktopCapture.FrameRate.{CapturerType}" units="fps"
+    expires_after="2024-04-25">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    An integer value is recorded to this histogram for each captured video frame
+    where the desktop media source is given by {CapturerType}. The value is an
+    estimation of the current frame capture rate and the unit is in frames per
+    second.
+  </summary>
+  <token key="CapturerType">
+    <variant name="Screen" summary="Screen capture type"/>
+    <variant name="Window" summary="Window capture type"/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.DesktopCapture.IsZeroHzActive.{CapturerType}"
     enum="BooleanActive" expires_after="2024-02-03">
   <owner>henrika@chromium.org</owner>

@@ -68,6 +68,10 @@ namespace {
 // UI responsive.
 const int kDefaultMaximumCpuConsumptionPercentage = 50;
 
+// Constant which sets the cutoff frequency in an an exponential moving average
+// (EMA) filter used to calculate the current frame rate (in frames per second).
+constexpr float kAlpha = 0.1;
+
 webrtc::DesktopRect ComputeLetterboxRect(
     const webrtc::DesktopSize& max_size,
     const webrtc::DesktopSize& source_size) {
@@ -130,6 +134,17 @@ void LogDesktopCaptureFrameIsRefresh(DesktopMediaID::Type capturer_type,
   } else {
     UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.FrameIsRefresh.Window",
                           is_refresh_frame);
+  }
+}
+
+void LogDesktopCaptureFrameRate(DesktopMediaID::Type capturer_type,
+                                int frame_rate_fps) {
+  if (capturer_type == DesktopMediaID::TYPE_SCREEN) {
+    UMA_HISTOGRAM_COUNTS_100("WebRTC.DesktopCapture.FrameRate.Screen",
+                             frame_rate_fps);
+  } else {
+    UMA_HISTOGRAM_COUNTS_100("WebRTC.DesktopCapture.FrameRate.Window",
+                             frame_rate_fps);
   }
 }
 
@@ -205,6 +220,11 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   // Inverse of the requested frame rate.
   base::TimeDelta requested_frame_duration_;
 
+  // Contains the actual (measured) frame rate using an exponential moving
+  // average (EMA) filter. Uses a simple filter with 0.1 weight of the current
+  // sample. Unit is in frames per second (fps).
+  float frame_rate_;
+
   // Records time of last call to CaptureFrame.
   base::TimeTicks capture_start_time_;
 
@@ -260,6 +280,11 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   // The system time when we receive the first frame.
   base::TimeTicks first_ref_time_;
 
+  // The time when Core::CaptureFrame() is called. Used to derive the delta
+  // time since last call. The delta time then drives the frame-rate filter
+  // which results in an average capture frame rate in `frame_rate_`.
+  base::TimeTicks last_capture_time_;
+
   // TODO(jiayl): Remove wake_lock_ when there is an API to keep the
   // screen from sleeping for the drive-by web.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
@@ -300,6 +325,7 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
 
   client_ = std::move(client);
   requested_frame_rate_ = params.requested_format.frame_rate;
+  frame_rate_ = requested_frame_rate_;
   requested_frame_duration_ = base::Microseconds(static_cast<int64_t>(
       static_cast<double>(base::Time::kMicrosecondsPerSecond) /
           requested_frame_rate_ +
@@ -313,7 +339,10 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
                                      constraints.fixed_aspect_ratio);
   VLOG(2) << __func__ << " (requested_frame_rate=" << requested_frame_rate_
           << ", max_frame_size=" << constraints.max_frame_size.ToString()
-          << ")";
+          << ", requested_frame_duration="
+          << requested_frame_duration_.InMilliseconds()
+          << ", max_cpu_consumption_percentage="
+          << max_cpu_consumption_percentage_ << ")";
 
   DCHECK(!wake_lock_);
   RequestWakeLock();
@@ -577,6 +606,28 @@ void DesktopCaptureDevice::Core::CaptureFrame() {
   capture_start_time_ = NowTicks();
   capture_in_progress_ = true;
 
+  if (last_capture_time_.is_null()) {
+    last_capture_time_ = capture_start_time_;
+  } else {
+    const base::TimeDelta delta_ms = capture_start_time_ - last_capture_time_;
+    // We use an exponential moving average (EMA) filter to calculate the
+    // current frame rate (in frames per second). The filter has the following
+    // difference (time-domain) equation:
+    //   y[i]=α⋅x[i]+(1-α)⋅y[i−1]
+    // where
+    //   y is the output, [i] denotes the sample number, x is the input, and α
+    //   is a constant which sets the cutoff frequency (a value between 0 and
+    //   1 where 1 corresponds to "no filtering").
+    // A value of α=0.1 results in a suitable amount of smoothing.
+    const float input_frame_rate_fps = (1000.0 / delta_ms.InMillisecondsF());
+    frame_rate_ = kAlpha * input_frame_rate_fps + (1.0 - kAlpha) * frame_rate_;
+    last_capture_time_ = capture_start_time_;
+    VLOG(2) << " delta_ms=" << delta_ms.InMillisecondsF()
+            << ", frame_rate=" << frame_rate_ << " [fps]";
+    const int frame_rate_fps = base::saturated_cast<int>(frame_rate_ + 0.5);
+    LogDesktopCaptureFrameRate(capturer_type_, frame_rate_fps);
+  }
+
   desktop_capturer_->CaptureFrame();
 }
 
@@ -593,6 +644,7 @@ void DesktopCaptureDevice::Core::ScheduleNextCaptureFrame() {
       std::max((last_capture_duration * 100) / max_cpu_consumption_percentage_,
                requested_frame_duration_);
 
+  VLOG(2) << "  capture_period=" << capture_period.InMilliseconds();
   VLOG(2) << "  timer(dT="
           << (capture_period - last_capture_duration).InMilliseconds() << ")";
   // Schedule a task for the next frame.
