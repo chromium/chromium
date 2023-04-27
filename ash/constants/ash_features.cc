@@ -2257,7 +2257,7 @@ BASE_FEATURE(kWallpaperFastRefresh,
 // Enable using google photos shared albums for wallpaper.
 BASE_FEATURE(kWallpaperGooglePhotosSharedAlbums,
              "WallpaperGooglePhotosSharedAlbums",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable different wallpapers per desk.
 BASE_FEATURE(kWallpaperPerDesk,
