@@ -13831,6 +13831,32 @@
             ]
         }
     ],
+    "V8NoTurbofan": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Turbofan_20230227",
+                    "enable_features": [
+                        "V8Turbofan"
+                    ]
+                },
+                {
+                    "name": "NoTurbofan_20230227",
+                    "disable_features": [
+                        "V8Turbofan"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8SlowHistograms": [
         {
             "platforms": [
