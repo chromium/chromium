@@ -1859,7 +1859,7 @@ void BackendImpl::IncreaseNumEntries() {
 void BackendImpl::DecreaseNumEntries() {
   data_->header.num_entries--;
   if (data_->header.num_entries < 0) {
-    NOTREACHED();
+    STRESS_NOTREACHED();
     data_->header.num_entries = 0;
   }
 }
