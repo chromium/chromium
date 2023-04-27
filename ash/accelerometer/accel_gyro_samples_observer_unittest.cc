@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accelerometer/accelerometer_samples_observer.h"
+#include "ash/accelerometer/accel_gyro_samples_observer.h"
 
 #include <memory>
 #include <utility>
@@ -21,13 +21,15 @@ namespace {
 
 constexpr int kFakeAccelerometerId = 1;
 
+constexpr int kFakeGyroscopeId = 2;
+
 constexpr int64_t kFakeSampleData[] = {1, 2, 3};
 
 constexpr double kFakeScaleValue = 10.0;
 
-class AccelerometerSamplesObserverTest : public ::testing::Test {
+class AccelGryoSamplesObserverTest : public ::testing::Test {
  protected:
-  void SetChannels(uint32_t num_of_axes) {
+  void SetAccelerometerChannels(uint32_t num_of_axes) {
     CHECK_LE(num_of_axes, kNumberOfAxes);
     std::vector<chromeos::sensors::FakeSensorDevice::ChannelData> channels_data(
         num_of_axes);
@@ -40,20 +42,41 @@ class AccelerometerSamplesObserverTest : public ::testing::Test {
         std::move(channels_data));
   }
 
-  void SetObserver(
+  void SetGyroscopeChannels(uint32_t num_of_axes) {
+    CHECK_LE(num_of_axes, kNumberOfAxes);
+    std::vector<chromeos::sensors::FakeSensorDevice::ChannelData> channels_data(
+        num_of_axes);
+    for (uint32_t i = 0; i < num_of_axes; ++i) {
+      channels_data[i].id = kGyroscopeChannels[i];
+      channels_data[i].sample_data = kFakeSampleData[i];
+    }
+
+    sensor_device_ = std::make_unique<chromeos::sensors::FakeSensorDevice>(
+        std::move(channels_data));
+  }
+
+  void SetAccelerometerObserver(
       mojo::Remote<chromeos::sensors::mojom::SensorDevice> accelerometer) {
-    observer_ = std::make_unique<AccelerometerSamplesObserver>(
+    observer_ = std::make_unique<AccelGryoSamplesObserver>(
         kFakeAccelerometerId, std::move(accelerometer), kFakeScaleValue,
-        base::BindRepeating(
-            &AccelerometerSamplesObserverTest::OnSampleUpdatedCallback,
-            base::Unretained(this)));
+        base::BindRepeating(&AccelGryoSamplesObserverTest::OnSampleUpdatedCallback,
+                            base::Unretained(this)));
+  }
+
+  void SetGyroscopeObserver(
+      mojo::Remote<chromeos::sensors::mojom::SensorDevice> gyroscope) {
+    observer_ = std::make_unique<AccelGryoSamplesObserver>(
+        kFakeGyroscopeId, std::move(gyroscope), kFakeScaleValue,
+        base::BindRepeating(&AccelGryoSamplesObserverTest::OnSampleUpdatedCallback,
+                            base::Unretained(this)),
+        chromeos::sensors::mojom::DeviceType::ANGLVEL);
   }
 
   void OnSampleUpdatedCallback(int iio_device_id, std::vector<float> sample) {
-    EXPECT_EQ(iio_device_id, kFakeAccelerometerId);
     EXPECT_EQ(sample.size(), kNumberOfAxes);
-    for (uint32_t i = 0; i < kNumberOfAxes; ++i)
+    for (uint32_t i = 0; i < kNumberOfAxes; ++i) {
       EXPECT_EQ(sample[i], kFakeSampleData[i] * kFakeScaleValue);
+    }
 
     ++num_samples_;
   }
@@ -63,19 +86,19 @@ class AccelerometerSamplesObserverTest : public ::testing::Test {
   }
 
   std::unique_ptr<chromeos::sensors::FakeSensorDevice> sensor_device_;
-  std::unique_ptr<AccelerometerSamplesObserver> observer_;
+  std::unique_ptr<AccelGryoSamplesObserver> observer_;
 
   int num_samples_ = 0;
 
   base::test::SingleThreadTaskEnvironment task_environment;
 };
 
-TEST_F(AccelerometerSamplesObserverTest, MissingChannels) {
-  SetChannels(kNumberOfAxes - 1);
+TEST_F(AccelGryoSamplesObserverTest, MissingChannels) {
+  SetAccelerometerChannels(kNumberOfAxes - 1);
 
   mojo::Remote<chromeos::sensors::mojom::SensorDevice> accelerometer;
   sensor_device_->AddReceiver(accelerometer.BindNewPipeAndPassReceiver());
-  SetObserver(std::move(accelerometer));
+  SetAccelerometerObserver(std::move(accelerometer));
 
   // Wait until the mojo connection is reset.
   base::RunLoop().RunUntilIdle();
@@ -83,8 +106,8 @@ TEST_F(AccelerometerSamplesObserverTest, MissingChannels) {
   EXPECT_FALSE(sensor_device_->HasReceivers());
 }
 
-TEST_F(AccelerometerSamplesObserverTest, StartReadingTwiceError) {
-  SetChannels(kNumberOfAxes);
+TEST_F(AccelGryoSamplesObserverTest, StartReadingTwiceError) {
+  SetAccelerometerChannels(kNumberOfAxes);
 
   mojo::Remote<chromeos::sensors::mojom::SensorDevice> accelerometer;
   sensor_device_->AddReceiver(accelerometer.BindNewPipeAndPassReceiver());
@@ -94,7 +117,7 @@ TEST_F(AccelerometerSamplesObserverTest, StartReadingTwiceError) {
   auto null_receiver = pending_remote.InitWithNewPipeAndPassReceiver();
   accelerometer->StartReadingSamples(std::move(pending_remote));
 
-  SetObserver(std::move(accelerometer));
+  SetAccelerometerObserver(std::move(accelerometer));
 
   // Wait until the mojo connection is reset.
   base::RunLoop().RunUntilIdle();
@@ -102,14 +125,14 @@ TEST_F(AccelerometerSamplesObserverTest, StartReadingTwiceError) {
   EXPECT_FALSE(sensor_device_->HasReceivers());
 }
 
-TEST_F(AccelerometerSamplesObserverTest, GetSamples) {
-  SetChannels(kNumberOfAxes);
+TEST_F(AccelGryoSamplesObserverTest, GetAcceleratorSamples) {
+  SetAccelerometerChannels(kNumberOfAxes);
 
   mojo::Remote<chromeos::sensors::mojom::SensorDevice> accelerometer;
   auto id =
       sensor_device_->AddReceiver(accelerometer.BindNewPipeAndPassReceiver());
 
-  SetObserver(std::move(accelerometer));
+  SetAccelerometerObserver(std::move(accelerometer));
   observer_->SetEnabled(true);
 
   // Wait until a sample is received.
@@ -138,6 +161,38 @@ TEST_F(AccelerometerSamplesObserverTest, GetSamples) {
   EXPECT_TRUE(sensor_device_->HasReceivers());
 }
 
+TEST_F(AccelGryoSamplesObserverTest, GetGyroscopeSamples) {
+  SetGyroscopeChannels(kNumberOfAxes);
+
+  mojo::Remote<chromeos::sensors::mojom::SensorDevice> gyroscope;
+  auto id = sensor_device_->AddReceiver(gyroscope.BindNewPipeAndPassReceiver());
+
+  SetGyroscopeObserver(std::move(gyroscope));
+  observer_->SetEnabled(true);
+
+  // Wait until a sample is received.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(sensor_device_->HasReceivers());
+  EXPECT_EQ(num_samples_, 1);
+
+  DisableFirstChannel(id);
+
+  // Wait until a sample is received.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(sensor_device_->HasReceivers());
+  // The updated sample is not sent to |OnSampleUpdatedCallback|.
+  EXPECT_EQ(num_samples_, 1);
+
+  // Simulate a disconnection of the observer's mojo channel in IIO Service.
+  sensor_device_->ResetObserverRemote(id);
+
+  // Wait until the disconnection is done.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(sensor_device_->HasReceivers());
+}
 }  // namespace
 
 }  // namespace ash

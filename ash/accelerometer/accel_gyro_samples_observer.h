@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ACCELEROMETER_ACCELEROMETER_SAMPLES_OBSERVER_H_
-#define ASH_ACCELEROMETER_ACCELEROMETER_SAMPLES_OBSERVER_H_
+#ifndef ASH_ACCELEROMETER_ACCEL_GYRO_SAMPLES_OBSERVER_H_
+#define ASH_ACCELEROMETER_ACCEL_GYRO_SAMPLES_OBSERVER_H_
 
 #include <stdint.h>
 #include <memory>
@@ -20,26 +20,25 @@
 
 namespace ash {
 
-// A SamplesObserver for an accelerometer device. When a sample is updated from
-// IIO Service, it's sent to the AccelerometerProviderMojo via the callback
-// |on_sample_udpated_callback_| registered in the constructor.
-// AccelerometerSamplesObserver should only be used on the UI thread.
-class ASH_EXPORT AccelerometerSamplesObserver
+// A AccelGryoSamplesObserver for an accelerometer/gyroscope device.
+// AccelGryoSamplesObserver should only be used on the UI thread.
+class ASH_EXPORT AccelGryoSamplesObserver
     : public chromeos::sensors::mojom::SensorDeviceSamplesObserver {
  public:
   using OnSampleUpdatedCallback =
       base::RepeatingCallback<void(int iio_device_id,
                                    std::vector<float> sample)>;
 
-  AccelerometerSamplesObserver(
+  AccelGryoSamplesObserver(
       int iio_device_id,
       mojo::Remote<chromeos::sensors::mojom::SensorDevice> sensor_device_remote,
       float scale,
-      OnSampleUpdatedCallback on_sample_updated_callback);
-  AccelerometerSamplesObserver(const AccelerometerSamplesObserver&) = delete;
-  AccelerometerSamplesObserver& operator=(const AccelerometerSamplesObserver&) =
-      delete;
-  ~AccelerometerSamplesObserver() override;
+      OnSampleUpdatedCallback on_sample_updated_callback,
+      chromeos::sensors::mojom::DeviceType device_type =
+          chromeos::sensors::mojom::DeviceType::ACCEL);
+  AccelGryoSamplesObserver(const AccelGryoSamplesObserver&) = delete;
+  AccelGryoSamplesObserver& operator=(const AccelGryoSamplesObserver&) = delete;
+  ~AccelGryoSamplesObserver() override;
 
   // Sets the observer |enabled| by setting the frequency to iioservice.
   // Should be called on |task_runner_|.
@@ -73,6 +72,8 @@ class ASH_EXPORT AccelerometerSamplesObserver
 
   double scale_;
 
+  const chromeos::sensors::mojom::DeviceType device_type_;
+
   // Callback to send samples to the owner of this class.
   OnSampleUpdatedCallback on_sample_updated_callback_;
 
@@ -92,9 +93,9 @@ class ASH_EXPORT AccelerometerSamplesObserver
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<AccelerometerSamplesObserver> weak_factory_{this};
+  base::WeakPtrFactory<AccelGryoSamplesObserver> weak_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_ACCELEROMETER_ACCELEROMETER_SAMPLES_OBSERVER_H_
+#endif  // ASH_ACCELEROMETER_ACCEL_GYRO_SAMPLES_OBSERVER_H_
