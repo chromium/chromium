@@ -506,6 +506,7 @@ source_set("unit_tests") {
     ":cpp",
     ":test_support",
     "//ash:test_support",
+    "//ash/public/cpp/holding_space:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/ui/vector_icons",

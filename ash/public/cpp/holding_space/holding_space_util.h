@@ -7,13 +7,31 @@
 
 #include <set>
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace ash {
-namespace holding_space_util {
+namespace base {
+class FilePath;
+}  // namespace base
+
+namespace ui {
+class OSExchangeData;
+}  // namespace ui
+
+namespace ash::holding_space_util {
+
+// Returns the file paths extracted from the specified `data` at one of two
+// possible storage locations, either:
+// (a) the file system sources storage location used by the Files app, or
+// (b) the filenames storage location if and only if:
+//     * no file paths were extracted from (a), and
+//     * `fallback_to_filenames` is `true`.
+ASH_PUBLIC_EXPORT std::vector<base::FilePath> ExtractFilePaths(
+    const ui::OSExchangeData& data,
+    bool fallback_to_filenames);
 
 // Returns the maximum image size required for a holding space item of `type`.
 ASH_PUBLIC_EXPORT gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type);
@@ -40,7 +58,6 @@ ASH_PUBLIC_EXPORT bool ExecuteInProgressCommand(
 // Returns the string representation of the specified holding space item `type`.
 ASH_PUBLIC_EXPORT std::string ToString(HoldingSpaceItem::Type type);
 
-}  // namespace holding_space_util
-}  // namespace ash
+}  // namespace ash::holding_space_util
 
 #endif  // ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_UTIL_H_
