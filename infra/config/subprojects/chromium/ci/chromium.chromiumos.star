@@ -915,7 +915,7 @@ ci.builder(
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "simple|release",
+        category = "default|cfm",
         short_name = "cfm",
     ),
     main_console_view = "main",
