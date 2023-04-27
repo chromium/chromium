@@ -65,7 +65,7 @@ void AshPixelTestHelper::SetWallpaper() {
     case pixel_test::WallpaperInitType::kRegular: {
       gfx::ImageSkia wallpaper_image = CreateSolidColorTestImage(
           {kWallpaperSize, kWallpaperSize}, kWallpaperColor);
-      controller->set_allow_blur_for_testing();
+      controller->blur_manager()->set_allow_blur_for_testing();
       controller->set_allow_shield_for_testing();
 
       // Use the one shot wallpaper to ensure that the custom wallpaper set by

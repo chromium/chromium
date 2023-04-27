@@ -28,6 +28,7 @@
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/test_wallpaper_drivefs_delegate.h"
 #include "ash/wallpaper/test_wallpaper_image_downloader.h"
+#include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/wallpaper/wallpaper_view.h"
@@ -2517,7 +2518,8 @@ TEST_F(WallpaperControllerTest,
 TEST_F(WallpaperControllerTest, WallpaperBlur) {
   TestWallpaperControllerObserver observer(controller_);
 
-  ASSERT_TRUE(controller_->IsBlurAllowedForLockState());
+  ASSERT_TRUE(controller_->blur_manager()->IsBlurAllowedForLockState(
+      controller_->GetWallpaperType()));
   ASSERT_FALSE(controller_->IsWallpaperBlurredForLockState());
 
   SetSessionState(SessionState::ACTIVE);
@@ -2561,7 +2563,8 @@ TEST_F(WallpaperControllerTest, WallpaperBlurDuringLockScreenTransition) {
 
   TestWallpaperControllerObserver observer(controller_);
 
-  ASSERT_TRUE(controller_->IsBlurAllowedForLockState());
+  ASSERT_TRUE(controller_->blur_manager()->IsBlurAllowedForLockState(
+      controller_->GetWallpaperType()));
   ASSERT_FALSE(controller_->IsWallpaperBlurredForLockState());
 
   ASSERT_EQ(2u, wallpaper_view()->layer()->parent()->children().size());
@@ -2645,7 +2648,8 @@ TEST_F(WallpaperControllerTest, OnlyShowDevicePolicyWallpaperOnLoginScreen) {
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_TRUE(IsDevicePolicyWallpaper());
   // Verify the device policy wallpaper shouldn't be blurred.
-  ASSERT_FALSE(controller_->IsBlurAllowedForLockState());
+  ASSERT_FALSE(controller_->blur_manager()->IsBlurAllowedForLockState(
+      controller_->GetWallpaperType()));
   ASSERT_FALSE(controller_->IsWallpaperBlurredForLockState());
 
   // Verify the device policy wallpaper is replaced when session state is no
@@ -3323,7 +3327,8 @@ TEST_F(WallpaperControllerTest, ShowOneShotWallpaper) {
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kOneShotWallpaperColor, GetWallpaperColor());
   EXPECT_EQ(WallpaperType::kOneShot, controller_->GetWallpaperType());
-  EXPECT_FALSE(controller_->IsBlurAllowedForLockState());
+  EXPECT_FALSE(controller_->blur_manager()->IsBlurAllowedForLockState(
+      controller_->GetWallpaperType()));
   EXPECT_FALSE(controller_->ShouldApplyShield());
 
   // Verify that we can reload wallpaer without losing it.
@@ -3333,7 +3338,8 @@ TEST_F(WallpaperControllerTest, ShowOneShotWallpaper) {
   EXPECT_EQ(2, GetWallpaperCount());  // Reload increments count.
   EXPECT_EQ(kOneShotWallpaperColor, GetWallpaperColor());
   EXPECT_EQ(WallpaperType::kOneShot, controller_->GetWallpaperType());
-  EXPECT_FALSE(controller_->IsBlurAllowedForLockState());
+  EXPECT_FALSE(controller_->blur_manager()->IsBlurAllowedForLockState(
+      controller_->GetWallpaperType()));
   EXPECT_FALSE(controller_->ShouldApplyShield());
 
   // Verify the user wallpaper info is unaffected, and the one-shot wallpaper

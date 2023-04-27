@@ -24,6 +24,7 @@
 #include "ash/shell_observer.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/wallpaper/online_wallpaper_variant_info_fetcher.h"
+#include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -187,10 +188,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // and add user screens.
   bool ShouldApplyShield() const;
 
-  // Returns whether the current wallpaper is allowed to be blurred on
-  // lock/login screen. See https://crbug.com/775591.
-  bool IsBlurAllowedForLockState() const;
-
   // True if the wallpaper is set.
   bool is_wallpaper_set() const { return !!current_wallpaper_.get(); }
 
@@ -228,6 +225,8 @@ class ASH_EXPORT WallpaperControllerImpl
   // Returns false when the color extraction algorithm shouldn't be run based on
   // system state (e.g. wallpaper image, SessionState, etc.).
   bool ShouldCalculateColors() const;
+
+  WallpaperBlurManager* blur_manager() { return blur_manager_.get(); }
 
   // WallpaperController:
   void SetClient(WallpaperControllerClient* client) override;
@@ -376,8 +375,6 @@ class ASH_EXPORT WallpaperControllerImpl
   void ClearPrefChangeObserverForTesting();
 
   void set_bypass_decode_for_testing() { bypass_decode_for_testing_ = true; }
-
-  void set_allow_blur_for_testing() { allow_blur_for_testing_ = true; }
 
   void set_allow_shield_for_testing() { allow_shield_for_testing_ = true; }
 
@@ -807,6 +804,9 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Delegate to resolve online wallpaper variants.
   std::unique_ptr<OnlineWallpaperVariantInfoFetcher> variant_info_fetcher_;
+
+  // Manages the state of wallpaper blur.
+  const std::unique_ptr<WallpaperBlurManager> blur_manager_;
 
   // The calculated colors extracted from the current wallpaper.
   // Empty state is used to denote when colors have not yet been calculated.

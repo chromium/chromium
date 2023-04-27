@@ -31,6 +31,7 @@
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
+#include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "ash/wallpaper/wallpaper_image_downloader.h"
 #include "ash/wallpaper/wallpaper_metrics_manager.h"
@@ -512,6 +513,7 @@ WallpaperControllerImpl::WallpaperControllerImpl(
     std::unique_ptr<WallpaperImageDownloader> image_downloader)
     : pref_manager_(std::move(pref_manager)),
       variant_info_fetcher_(std::move(online_fetcher)),
+      blur_manager_(std::make_unique<WallpaperBlurManager>()),
       color_profiles_(GetProminentColorProfiles()),
       wallpaper_reload_delay_(kWallpaperReloadDelay),
       wallpaper_image_downloader_(std::move(image_downloader)),
@@ -681,8 +683,9 @@ void WallpaperControllerImpl::ShowWallpaperImage(const gfx::ImageSkia& image,
 }
 
 void WallpaperControllerImpl::UpdateWallpaperBlurForLockState(bool blur) {
-  if (!IsBlurAllowedForLockState())
+  if (!blur_manager_->IsBlurAllowedForLockState(GetWallpaperType())) {
     return;
+  }
 
   bool changed = is_wallpaper_blurred_for_lock_state_ != blur;
   // is_wallpaper_blurrred_for_lock_state_ may already be updated in
@@ -704,8 +707,9 @@ void WallpaperControllerImpl::UpdateWallpaperBlurForLockState(bool blur) {
 }
 
 void WallpaperControllerImpl::RestoreWallpaperBlurForLockState(float blur) {
-  if (!IsBlurAllowedForLockState())
+  if (!blur_manager_->IsBlurAllowedForLockState(GetWallpaperType())) {
     return;
+  }
 
   // |is_wallpaper_blurrred_for_lock_state_| may already be updated in
   // InstallDesktopController. Always try to update, then invoke observer
@@ -734,11 +738,6 @@ bool WallpaperControllerImpl::ShouldApplyShield() const {
   }
 
   return needs_shield && (!IsOneShotWallpaper() || allow_shield_for_testing_);
-}
-
-bool WallpaperControllerImpl::IsBlurAllowedForLockState() const {
-  return !IsDevicePolicyWallpaper() &&
-         (!IsOneShotWallpaper() || allow_blur_for_testing_);
 }
 
 bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
@@ -1824,7 +1823,7 @@ void WallpaperControllerImpl::UpdateWallpaperForRootWindow(
   if (lock_state_changed || new_root) {
     const bool is_wallpaper_blurred_for_lock_state =
         Shell::Get()->session_controller()->IsUserSessionBlocked() &&
-        IsBlurAllowedForLockState();
+        blur_manager_->IsBlurAllowedForLockState(GetWallpaperType());
     if (is_wallpaper_blurred_for_lock_state_ !=
         is_wallpaper_blurred_for_lock_state) {
       is_wallpaper_blurred_for_lock_state_ =
