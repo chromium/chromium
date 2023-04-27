@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -343,6 +344,9 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   base::MemoryPressureListener memory_pressure_listener_;
 
   base::ObserverList<Observer> observers_;
+
+  // Ensures this instance lives on the UI thread.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PrerenderHostRegistry> weak_factory_{this};
 };
