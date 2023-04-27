@@ -191,6 +191,10 @@ BASE_DECLARE_FEATURE(kIPHiOSPromoWhatsNewFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoPostRestoreFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoCredentialProviderExtensionFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoDefaultBrowserFeature);
+BASE_DECLARE_FEATURE(kIPHiOSNewTabToolbarItemFeature);
+BASE_DECLARE_FEATURE(kIPHiOSTabGridToolbarItemFeature);
+BASE_DECLARE_FEATURE(kIPHiOSHistoryOnOverflowMenuFeature);
+BASE_DECLARE_FEATURE(kIPHiOSShareToolbarItemFeature);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

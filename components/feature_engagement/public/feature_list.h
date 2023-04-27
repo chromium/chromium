@@ -243,6 +243,14 @@ DEFINE_VARIATION_PARAM(kIPHiOSPromoCredentialProviderExtensionFeature,
                        "IPH_iOSPromoCredentialProviderExtension");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoDefaultBrowserFeature,
                        "IPH_iOSPromoDefaultBrowser");
+DEFINE_VARIATION_PARAM(kIPHiOSNewTabToolbarItemFeature,
+                       "IPH_iOSNewTabToolbarItemFeature");
+DEFINE_VARIATION_PARAM(kIPHiOSTabGridToolbarItemFeature,
+                       "IPH_iOSTabGridToolbarItemFeature");
+DEFINE_VARIATION_PARAM(kIPHiOSHistoryOnOverflowMenuFeature,
+                       "IPH_iOSHistoryOnOverflowMenuFeature");
+DEFINE_VARIATION_PARAM(kIPHiOSShareToolbarItemFeature,
+                       "IPH_iOSShareToolbarItemFeature");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -432,6 +440,10 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSPromoPostRestoreFeature),
         VARIATION_ENTRY(kIPHiOSPromoCredentialProviderExtensionFeature),
         VARIATION_ENTRY(kIPHiOSPromoDefaultBrowserFeature),
+        VARIATION_ENTRY(kIPHiOSNewTabToolbarItemFeature),
+        VARIATION_ENTRY(kIPHiOSTabGridToolbarItemFeature),
+        VARIATION_ENTRY(kIPHiOSHistoryOnOverflowMenuFeature),
+        VARIATION_ENTRY(kIPHiOSShareToolbarItemFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),

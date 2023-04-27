@@ -89,6 +89,12 @@ const char kBlueDotPromoSettingsDismissed[] =
     "blue_dot_promo_settings_dismissed";
 const char kCredentialProviderExtensionPromoSnoozed[] =
     "credential_provider_extension_promo_snoozed";
+const char kOpenUrlFromOmnibox[] = "open_url_from_omnibox";
+const char kNewTabToolbarItemUsed[] = "new_tab_toolbar_item_used";
+const char kTabGridToolbarItemUsed[] = "tab_grid_toolbar_item_used";
+const char kHistoryOnOverflowMenuUsed[] = "history_on_overflow_menu_used";
+const char kShareToolbarItemUsed[] = "share_toolbar_item_used";
+
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
