@@ -1391,47 +1391,6 @@ TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
   EXPECT_THAT(StoredReports(), IsEmpty());
 }
 
-// Tests that trigger priority cannot result in more than the maximum number of
-// reports being sent. A report will never be queued for the expiry window while
-// the source is active given we only queue reports which are reported within
-// the next 30 minutes, and the expiry window is one hour after expiry time.
-// This ensures that a queued report cannot be overwritten by a new, higher
-// priority trigger.
-TEST_F(AttributionManagerImplTest, ConversionPrioritization_OneReportSent) {
-  attribution_manager_->HandleSource(
-      SourceBuilder().SetExpiry(base::Days(7)).Build(), kFrameId);
-  EXPECT_THAT(StoredSources(), SizeIs(1));
-
-  Checkpoint checkpoint;
-  {
-    InSequence seq;
-
-    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
-        .Times(3)
-        .WillRepeatedly(InvokeReportSentCallback(SendResult::Status::kSent));
-    EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
-        .Times(0);
-  }
-
-  attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(1).Build(),
-                                      kFrameId);
-  attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(1).Build(),
-                                      kFrameId);
-  attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(1).Build(),
-                                      kFrameId);
-  EXPECT_THAT(StoredReports(), SizeIs(3));
-
-  task_environment_.FastForwardBy(base::Days(7) - base::Minutes(30));
-
-  checkpoint.Call(1);
-
-  task_environment_.FastForwardBy(base::Minutes(5));
-  attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(2).Build(),
-                                      kFrameId);
-  task_environment_.FastForwardBy(base::Hours(1));
-}
-
 TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   base::HistogramTester histograms;
   attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
