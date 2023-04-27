@@ -28,6 +28,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -56,6 +57,7 @@
 
 namespace blink {
 
+class AttributionReportingRequestOptions;
 class Blob;
 class BlobDataHandle;
 class DOMArrayBuffer;
@@ -146,6 +148,8 @@ class CORE_EXPORT XMLHttpRequest final
                         const AtomicString& value,
                         ExceptionState&);
   void setPrivateToken(const PrivateToken*, ExceptionState&);
+  void setAttributionReporting(const AttributionReportingRequestOptions*,
+                               ExceptionState&);
   void overrideMimeType(const AtomicString& override, ExceptionState&);
   String getAllResponseHeaders() const;
   const AtomicString& getResponseHeader(const AtomicString&) const;
@@ -371,6 +375,10 @@ class CORE_EXPORT XMLHttpRequest final
   bool with_credentials_ = false;
 
   bool deprecated_browsing_topics_ = false;
+
+  network::mojom::AttributionReportingEligibility
+      attribution_reporting_eligibility_ =
+          network::mojom::AttributionReportingEligibility::kUnset;
 
   // Used to skip m_responseDocument creation if it's done previously. We need
   // this separate flag since m_responseDocument can be 0 for some cases.

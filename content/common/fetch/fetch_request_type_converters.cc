@@ -100,6 +100,8 @@ blink::mojom::FetchAPIRequestPtr TypeConverter<
   }
   output->target_address_space =
       static_cast<network::mojom::IPAddressSpace>(input.target_address_space);
+  output->attribution_reporting_eligibility =
+      input.attribution_reporting_eligibility;
   return output;
 }
 

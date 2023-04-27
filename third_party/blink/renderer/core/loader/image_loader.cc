@@ -25,6 +25,7 @@
 #include <memory>
 #include <utility>
 
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -63,7 +64,6 @@
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -509,9 +509,9 @@ void ImageLoader::DoUpdateFromElement(
         frame->GetAttributionSrcLoader()->CanRegister(
             url, To<HTMLImageElement>(GetElement()),
             /*request_id=*/absl::nullopt)) {
-      resource_request.SetHttpHeaderField(
-          http_names::kAttributionReportingEligible,
-          kAttributionEligibleEventSourceAndTrigger);
+      resource_request.SetAttributionReportingEligibility(
+          network::mojom::AttributionReportingEligibility::
+              kEventSourceOrTrigger);
     }
 
     bool page_is_being_dismissed =

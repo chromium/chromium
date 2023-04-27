@@ -224,6 +224,8 @@ bool StructTraits<
   out->target_ip_address_space = data.target_ip_address_space();
   out->has_storage_access = data.has_storage_access();
   out->attribution_reporting_support = data.attribution_reporting_support();
+  out->attribution_reporting_eligibility =
+      data.attribution_reporting_eligibility();
   return true;
 }
 

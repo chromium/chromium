@@ -93,6 +93,8 @@ generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_assigned_nodes_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_assigned_nodes_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_attribution_reporting_request_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_attribution_reporting_request_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_base_keyframe.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_base_keyframe.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_base_property_indexed_keyframe.cc",

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -52,19 +53,16 @@ class AttributionRequestHelper {
   // Creates an AttributionRequestHelper instance if needed.
   //
   // It is needed when it's to be hooked to a request related to attribution;
-  // for now only trigger registration ping (i.e. has an
-  // "Attribution-Reporting-Eligible" header which includes "trigger").
-  // `request_headers` should contain the headers associated to the request to
-  // which the helper would be hooked.
+  // for now only trigger registration ping.
   static std::unique_ptr<AttributionRequestHelper> CreateIfNeeded(
-      const net::HttpRequestHeaders& request_headers,
+      mojom::AttributionReportingEligibility,
       const TrustTokenKeyCommitmentGetter* key_commitment_getter);
 
   // Test method which allows to instantiate an AttributionRequestHelper with
   // dependency injection (i.e. `CreateIfNeeded` builds `create_mediator`, this
   // method receives it).
   static std::unique_ptr<AttributionRequestHelper> CreateForTesting(
-      const net::HttpRequestHeaders& request_headers,
+      mojom::AttributionReportingEligibility,
       base::RepeatingCallback<AttributionAttestationMediator()>
           create_mediator);
 
@@ -131,9 +129,9 @@ class AttributionRequestHelper {
       base::OnceClosure done,
       absl::optional<std::string> maybe_redemption_token);
 
-  // A mediator can perform a single attesation operation. Each redirect does an
-  // attestation. We use this callback to generate a new mediator instance per
-  // attestation operation.
+  // A mediator can perform a single attestation operation. Each redirect does
+  // an attestation. We use this callback to generate a new mediator instance
+  // per attestation operation.
   base::RepeatingCallback<AttributionAttestationMediator()> create_mediator_;
 
   // One request can lead to multiple attestation operations as each redirect

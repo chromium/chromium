@@ -49,7 +49,6 @@ enum class AttributionReportingIssueType {
   kInsecureContext,
   kInvalidRegisterSourceHeader,
   kInvalidRegisterTriggerHeader,
-  kInvalidEligibleHeader,
   kSourceAndTriggerHeaders,
   kSourceIgnored,
   kTriggerIgnored,

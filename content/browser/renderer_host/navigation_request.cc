@@ -191,8 +191,6 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "content/browser/attribution_reporting/attribution_manager.h"
-#include "services/network/public/cpp/attribution_utils.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
 #endif
@@ -385,8 +383,7 @@ void AddAdditionalRequestHeaders(
     const std::string& user_agent_override,
     const absl::optional<url::Origin>& initiator_origin,
     blink::mojom::Referrer* referrer,
-    FrameTreeNode* frame_tree_node,
-    bool has_attribution_src_token) {
+    FrameTreeNode* frame_tree_node) {
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
 
@@ -441,14 +438,6 @@ void AddAdditionalRequestHeaders(
   if (frame_tree_node->frame_tree().is_prerendering()) {
     headers->SetHeader("Sec-Purpose", "prefetch;prerender");
     headers->SetHeader("Purpose", "prefetch");
-  }
-
-  if (has_attribution_src_token
-#if BUILDFLAG(IS_ANDROID)
-      && network::HasAttributionSupport(AttributionManager::GetSupport())
-#endif
-  ) {
-    headers->SetHeader("Attribution-Reporting-Eligible", "navigation-source");
   }
 }
 
@@ -1940,8 +1929,7 @@ NavigationRequest::NavigationRequest(
         ui::PageTransitionFromInt(common_params_->transition),
         controller->GetBrowserContext(), common_params_->method,
         GetUserAgentOverride(), common_params_->initiator_origin,
-        common_params_->referrer.get(), frame_tree_node,
-        begin_params_->impression.has_value());
+        common_params_->referrer.get(), frame_tree_node);
 
     if (begin_params_->is_form_submission) {
       // During form resubmit, `commit_params_->post_content_type` is populated

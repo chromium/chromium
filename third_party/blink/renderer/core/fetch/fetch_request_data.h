@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
@@ -165,6 +166,15 @@ class CORE_EXPORT FetchRequestData final
     trust_token_params_ = std::move(trust_token_params);
   }
 
+  network::mojom::AttributionReportingEligibility
+  AttributionReportingEligibility() const {
+    return attribution_reporting_eligibility_;
+  }
+  void SetAttributionReportingEligibility(
+      network::mojom::AttributionReportingEligibility eligibility) {
+    attribution_reporting_eligibility_ = eligibility;
+  }
+
   void Trace(Visitor*) const;
 
  private:
@@ -212,6 +222,9 @@ class CORE_EXPORT FetchRequestData final
   bool keepalive_ = false;
   bool browsing_topics_ = false;
   bool is_history_navigation_ = false;
+  network::mojom::AttributionReportingEligibility
+      attribution_reporting_eligibility_ =
+          network::mojom::AttributionReportingEligibility::kUnset;
   // A specific factory that should be used for this request instead of whatever
   // the system would otherwise decide to use to load this request.
   // Currently used for blob: URLs, to ensure they can still be loaded even if

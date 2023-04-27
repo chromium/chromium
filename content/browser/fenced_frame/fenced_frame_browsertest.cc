@@ -4711,16 +4711,6 @@ class FencedFrameReportEventBrowserTest
     return response;
   }
 
-  // For cross-origin reporting destination, a preflight request is sent before
-  // the actual request.
-  void VerifyPreflightRequest(const net::test_server::HttpRequest* request) {
-    EXPECT_EQ(request->method, net::test_server::HttpMethod::METHOD_OPTIONS);
-    EXPECT_TRUE(base::Contains(request->headers, "Origin"));
-    EXPECT_TRUE(
-        base::Contains(request->headers.at(cors::kAccessControlRequestHeaders),
-                       "attribution-reporting-eligible"));
-  }
-
   void SendBasicRequest(GURL url,
                         absl::optional<std::string> content = absl::nullopt) {
     // Construct the resource request.
@@ -4795,17 +4785,6 @@ class FencedFrameReportEventBrowserTest
         responses.emplace_back(
             std::make_unique<net::test_server::ControllableHttpResponse>(
                 https_server(), kReportingURL));
-        std::string final_destination_origin =
-            step.redirects.empty() ? step.destination.origin
-                                   : step.redirects.back().origin;
-        if (final_destination_origin != reporting_origin &&
-            step.expect_attribution_reporting_allowed) {
-          // The reporting beacon is cross-origin. Two requests will be sent.
-          // First is the preflight request, the second is the actual request.
-          responses.emplace_back(
-              std::make_unique<net::test_server::ControllableHttpResponse>(
-                  https_server(), kReportingURL));
-        }
         if (step.is_target_nested_iframe) {
           ASSERT_FALSE(step.is_embedder_initiated);
           ASSERT_FALSE(step.is_opaque);
@@ -4991,27 +4970,6 @@ class FencedFrameReportEventBrowserTest
 
       // If relevant, check that the event report succeeded.
       if (step.report_event_result == Step::Result::kSuccess) {
-        std::string final_destination_origin =
-            step.redirects.empty() ? step.destination.origin
-                                   : step.redirects.back().origin;
-        if (final_destination_origin != reporting_origin &&
-            step.expect_attribution_reporting_allowed) {
-          auto& preflight_response = *responses[response_index];
-          // Verify the preflight request contains the eligibility header under
-          // "Access-Control-Request-Headers".
-          preflight_response.WaitForRequest();
-          VerifyPreflightRequest(preflight_response.http_request());
-
-          // Send response with extra headers.
-          std::unique_ptr<net::test_server::BasicHttpResponse>
-              access_allow_response = GetResponseWithAccessAllowHeaders(
-                  preflight_response.http_request());
-          access_allow_response->AddCustomHeader("Content-Type",
-                                                 "text/plain;charset=UTF-8");
-          preflight_response.Send(access_allow_response->ToResponseString());
-          preflight_response.Done();
-          ++response_index;
-        }
         auto& response = *responses[response_index];
         response.WaitForRequest();
 
@@ -5473,8 +5431,6 @@ IN_PROC_BROWSER_TEST_F(
 // Remove this test once the FLEDGE origin trial stops supporting iframes.
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        IframeReportingMetadata) {
-  net::test_server::ControllableHttpResponse preflight_response(https_server(),
-                                                                kReportingURL);
   net::test_server::ControllableHttpResponse reporting_response(https_server(),
                                                                 kReportingURL);
   ASSERT_TRUE(https_server()->Start());
@@ -5535,19 +5491,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                                             "  eventData: $1,"
                                             "  destination: ['buyer']});",
                                             event_data)));
-
-  // Verify the preflight request contains the eligibility header under
-  // "Access-Control-Request-Headers".
-  preflight_response.WaitForRequest();
-  VerifyPreflightRequest(preflight_response.http_request());
-
-  // Send response with extra headers.
-  std::unique_ptr<net::test_server::BasicHttpResponse> access_allow_response =
-      GetResponseWithAccessAllowHeaders(preflight_response.http_request());
-  access_allow_response->AddCustomHeader("Content-Type",
-                                         "text/plain;charset=UTF-8");
-  preflight_response.Send(access_allow_response->ToResponseString());
-  preflight_response.Done();
 
   reporting_response.WaitForRequest();
   // Verify the request has the correct content.
@@ -5688,22 +5631,16 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
 
 // The reportEvent beacon is a POST request. Upon receiving a 302 redirect
 // response, the request is changed to a GET request. In this test case, the
-// reporting url is cross-origin.  There are preflight requests.
-// 1. A preflight request is sent to the reporting destination.
-// 2. A response with 200 OK is sent back to the requester.
-// 3. A POST request is sent to the reporting destination.
-// 4. A response with 302 redirect is sent back to the requester.
-// 5. A preflight request is sent to the redirected destination.
-// 6. A response with 200 OK is sent back to the requester.
-// 7. A GET request is sent to the redirected destination.
+// reporting url is cross-origin.
+// 1. A response with 200 OK is sent back to the requester.
+// 2. A POST request is sent to the reporting destination.
+// 3. A response with 302 redirect is sent back to the requester.
+// 4. A response with 200 OK is sent back to the requester.
+// 5. A GET request is sent to the redirected destination.
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        CrossOriginReportEventPost302RedirectGet) {
-  net::test_server::ControllableHttpResponse preflight_response(https_server(),
-                                                                kReportingURL);
   net::test_server::ControllableHttpResponse reporting_response(https_server(),
                                                                 kReportingURL);
-  net::test_server::ControllableHttpResponse redirect_preflight_response(
-      https_server(), "/redirect.html");
   net::test_server::ControllableHttpResponse redirect_response(
       https_server(), "/redirect.html");
   ASSERT_TRUE(https_server()->Start());
@@ -5770,21 +5707,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   EXPECT_TRUE(ExecJs(fenced_frame_root_node, report_event_script));
 
   {
-    // Verify the preflight request.
-    preflight_response.WaitForRequest();
-    VerifyPreflightRequest(preflight_response.http_request());
-
-    // Send response with extra headers.
-    std::unique_ptr<net::test_server::BasicHttpResponse> access_allow_response =
-        GetResponseWithAccessAllowHeaders(preflight_response.http_request());
-    access_allow_response->AddCustomHeader("Content-Type",
-                                           "text/plain;charset=UTF-8");
-    preflight_response.Send(access_allow_response->ToResponseString());
-
-    preflight_response.Done();
-  }
-
-  {
     reporting_response.WaitForRequest();
     EXPECT_EQ(reporting_response.http_request()->method,
               net::test_server::HttpMethod::METHOD_POST);
@@ -5811,36 +5733,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
         {base::StrCat({cors::kAccessControlAllowOrigin, ": *"}),
          base::StrCat({"Location: ", redirect_url.spec()})});
     reporting_response.Done();
-  }
-
-  {
-    // Verify the preflight request of the redirect.
-    redirect_preflight_response.WaitForRequest();
-    VerifyPreflightRequest(preflight_response.http_request());
-    EXPECT_EQ(redirect_preflight_response.http_request()->headers.at("Origin"),
-              "null");
-    // Check that POST-specific headers were stripped.
-    EXPECT_FALSE(base::Contains(
-        redirect_preflight_response.http_request()->headers, "Content-Length"));
-    EXPECT_FALSE(base::Contains(
-        redirect_preflight_response.http_request()->headers, "Content-Type"));
-    // Check that the content body was stripped.
-    EXPECT_TRUE(redirect_preflight_response.http_request()->content.empty());
-    // These extra request headers were not stripped.
-    EXPECT_EQ(redirect_preflight_response.http_request()->headers.at(
-                  cors::kAccessControlRequestHeaders),
-              "attribution-reporting-eligible");
-
-    // Send response with extra headers.
-    std::unique_ptr<net::test_server::BasicHttpResponse>
-        redirect_access_allow_response = GetResponseWithAccessAllowHeaders(
-            redirect_preflight_response.http_request());
-    redirect_access_allow_response->AddCustomHeader("Content-Type",
-                                                    "text/plain;charset=UTF-8");
-    redirect_preflight_response.Send(
-        redirect_access_allow_response->ToResponseString());
-
-    redirect_preflight_response.Done();
   }
 
   {
@@ -6052,12 +5944,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest,
     ReportEventCrossOriginSetsSupportHeader) {
-  // For cross-origin reportEvent beacon, a preflight request is sent before the
-  // actual request. `preflight_response` is used to handle the preflight
-  // request. `reporting_response` is used to handle the actual request. Note
-  // ControllableHttpResponse is used in the order they are created.
-  net::test_server::ControllableHttpResponse preflight_response(https_server(),
-                                                                kReportingURL);
   net::test_server::ControllableHttpResponse reporting_response(https_server(),
                                                                 kReportingURL);
   ASSERT_TRUE(https_server()->Start());
@@ -6122,22 +6008,6 @@ IN_PROC_BROWSER_TEST_F(
       )",
                                               event_data);
   EXPECT_TRUE(ExecJs(fenced_frame_root_node, report_event_script));
-
-  {
-    // Verify the preflight request contains the eligibility header under
-    // "Access-Control-Request-Headers".
-    preflight_response.WaitForRequest();
-    VerifyPreflightRequest(preflight_response.http_request());
-
-    // Send response with extra headers.
-    std::unique_ptr<net::test_server::BasicHttpResponse> access_allow_response =
-        GetResponseWithAccessAllowHeaders(preflight_response.http_request());
-    access_allow_response->AddCustomHeader("Content-Type",
-                                           "text/plain;charset=UTF-8");
-    preflight_response.Send(access_allow_response->ToResponseString());
-
-    preflight_response.Done();
-  }
 
   // Verify the request contains the eligibility header.
   {
@@ -6374,16 +6244,6 @@ class FencedFrameAutomaticBeaconBrowserTest
     return response;
   }
 
-  // For cross-origin reporting destination, a preflight request is sent before
-  // the actual request.
-  void VerifyPreflightRequest(const net::test_server::HttpRequest* request) {
-    EXPECT_EQ(request->method, net::test_server::HttpMethod::METHOD_OPTIONS);
-    EXPECT_TRUE(base::Contains(request->headers, "Origin"));
-    EXPECT_TRUE(
-        base::Contains(request->headers.at(cors::kAccessControlRequestHeaders),
-                       "attribution-reporting-eligible"));
-  }
-
   scoped_refptr<FencedFrameReporter> CreateFencedFrameReporter() {
     return FencedFrameReporter::CreateForFledge(
         web_contents()
@@ -6405,8 +6265,6 @@ class FencedFrameAutomaticBeaconBrowserTest
   void RunTest(Config& config) {
     // In order to check events reported over the network, we register an HTTP
     // response interceptor for each successful reportEvent request we expect.
-    net::test_server::ControllableHttpResponse preflight_response(
-        https_server(), kReportingURL);
     net::test_server::ControllableHttpResponse response(https_server(),
                                                         kReportingURL);
 
@@ -6544,34 +6402,11 @@ class FencedFrameAutomaticBeaconBrowserTest
       // possible automatic beacon, implies the automatic beacon was not sent as
       // a result of the top navigation, as expected.
       SendBasicRequest(https_server()->GetURL("c.test", kReportingURL),
-                       "preflight_response");
-      preflight_response.WaitForRequest();
-      EXPECT_TRUE(preflight_response.has_received_request());
-      EXPECT_EQ(preflight_response.http_request()->content,
-                "preflight_response");
-
-      SendBasicRequest(https_server()->GetURL("c.test", kReportingURL),
                        "response");
       response.WaitForRequest();
       EXPECT_TRUE(response.has_received_request());
       EXPECT_EQ(response.http_request()->content, "response");
       return;
-    }
-
-    if (config.navigation_url.origin != reporting_origin) {
-      // Verify the preflight request contains the eligibility header under
-      // "Access-Control-Request-Headers".
-      preflight_response.WaitForRequest();
-      VerifyPreflightRequest(preflight_response.http_request());
-
-      // Send response with extra headers.
-      std::unique_ptr<net::test_server::BasicHttpResponse>
-          access_allow_response = GetResponseWithAccessAllowHeaders(
-              preflight_response.http_request());
-      access_allow_response->AddCustomHeader("Content-Type",
-                                             "text/plain;charset=UTF-8");
-      preflight_response.Send(access_allow_response->ToResponseString());
-      preflight_response.Done();
     }
 
     response.WaitForRequest();

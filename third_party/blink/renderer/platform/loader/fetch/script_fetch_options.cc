@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -104,9 +104,8 @@ FetchParameters ScriptFetchOptions::CreateFetchParameters(
   // TODO(crbug.com/1338976): Add correct spec comments here.
   if (attribution_reporting_eligibility_ ==
       AttributionReportingEligibility::kEligible) {
-    params.MutableResourceRequest().SetHttpHeaderField(
-        http_names::kAttributionReportingEligible,
-        kAttributionEligibleEventSourceAndTrigger);
+    params.MutableResourceRequest().SetAttributionReportingEligibility(
+        network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
   }
 
   return params;

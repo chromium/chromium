@@ -707,6 +707,7 @@ experimental domain Audits
       # TODO(apaseltiner): Rename this to InvalidRegisterSourceHeader
       InvalidHeader
       InvalidRegisterTriggerHeader
+      # TODO(apaseltiner): Remove this issue once DevTools stops referencing it.
       InvalidEligibleHeader
       SourceAndTriggerHeaders
       SourceIgnored

@@ -17,7 +17,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "net/http/structured_headers.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
@@ -54,6 +53,8 @@
 namespace blink {
 
 namespace {
+
+using ::network::mojom::AttributionReportingEligibility;
 
 using blink::url_test_helpers::RegisterMockedErrorURLLoad;
 using blink::url_test_helpers::RegisterMockedURLLoad;
@@ -286,8 +287,8 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithTriggerHeader) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
   ResourceRequest request(test_url);
-  request.SetHttpHeaderField(http_names::kAttributionReportingEligible,
-                             "trigger");
+  request.SetAttributionReportingEligibility(
+      AttributionReportingEligibility::kTrigger);
   auto* resource = MakeGarbageCollected<MockResource>(test_url);
   ResourceResponse response(test_url);
   response.SetHttpStatusCode(200);
@@ -312,8 +313,8 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithSourceTriggerHeader) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
   ResourceRequest request(test_url);
-  request.SetHttpHeaderField(http_names::kAttributionReportingEligible,
-                             "event-source, trigger");
+  request.SetAttributionReportingEligibility(
+      AttributionReportingEligibility::kEventSourceOrTrigger);
   auto* resource = MakeGarbageCollected<MockResource>(test_url);
   ResourceResponse response(test_url);
   response.SetHttpStatusCode(200);
@@ -338,8 +339,8 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerOsHeadersIgnored) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
   ResourceRequest request(test_url);
-  request.SetHttpHeaderField(http_names::kAttributionReportingEligible,
-                             "event-source, trigger");
+  request.SetAttributionReportingEligibility(
+      AttributionReportingEligibility::kEventSourceOrTrigger);
   auto* resource = MakeGarbageCollected<MockResource>(test_url);
   ResourceResponse response(test_url);
   response.SetHttpStatusCode(200);
@@ -493,16 +494,8 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_Register) {
 
   url_test_helpers::ServeAsynchronousRequests();
 
-  const AtomicString& eligible = client_->request_head().HttpHeaderField(
-      http_names::kAttributionReportingEligible);
-  EXPECT_EQ(eligible, "event-source, trigger");
-
-  absl::optional<net::structured_headers::Dictionary> dict =
-      net::structured_headers::ParseDictionary(eligible.Utf8());
-  ASSERT_TRUE(dict);
-  ASSERT_EQ(dict->size(), 2u);
-  EXPECT_TRUE(dict->contains("event-source"));
-  EXPECT_TRUE(dict->contains("trigger"));
+  EXPECT_EQ(client_->request_head().GetAttributionReportingEligibility(),
+            AttributionReportingEligibility::kEventSourceOrTrigger);
 
   EXPECT_TRUE(client_->request_head()
                   .HttpHeaderField(kAttributionReportingSupport)
@@ -519,15 +512,8 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
 
   url_test_helpers::ServeAsynchronousRequests();
 
-  const AtomicString& eligible = client_->request_head().HttpHeaderField(
-      http_names::kAttributionReportingEligible);
-  EXPECT_EQ(eligible, "navigation-source");
-
-  absl::optional<net::structured_headers::Dictionary> dict =
-      net::structured_headers::ParseDictionary(eligible.Utf8());
-  ASSERT_TRUE(dict);
-  ASSERT_EQ(dict->size(), 1u);
-  EXPECT_TRUE(dict->contains("navigation-source"));
+  EXPECT_EQ(client_->request_head().GetAttributionReportingEligibility(),
+            AttributionReportingEligibility::kNavigationSource);
 
   EXPECT_TRUE(client_->request_head()
                   .HttpHeaderField(kAttributionReportingSupport)

@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
@@ -16,7 +17,6 @@
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/script/document_write_intervention.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
-#include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -119,9 +119,8 @@ Resource* PreloadRequest::Start(Document* document) {
       document->domWindow()->GetFrame()->GetAttributionSrcLoader()->CanRegister(
           url, /*element=*/nullptr,
           /*request_id=*/absl::nullopt, /*log_issues=*/false)) {
-    resource_request.SetHttpHeaderField(
-        http_names::kAttributionReportingEligible,
-        kAttributionEligibleEventSourceAndTrigger);
+    resource_request.SetAttributionReportingEligibility(
+        network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
   }
 
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());

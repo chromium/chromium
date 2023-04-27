@@ -843,6 +843,8 @@ void FetchManager::Loader::PerformHTTPFetch() {
   }
 
   request.SetBrowsingTopics(fetch_request_data_->BrowsingTopics());
+  request.SetAttributionReportingEligibility(
+      fetch_request_data_->AttributionReportingEligibility());
 
   request.SetOriginalDestination(fetch_request_data_->OriginalDestination());
 
