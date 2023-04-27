@@ -10,11 +10,11 @@
 #import "base/debug/stack_trace.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
-#import "base/guid.h"
 #import "base/json/json_reader.h"
 #import "base/json/json_writer.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/uuid.h"
 #import "base/values.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/test/wpt/cwt_constants.h"
@@ -314,7 +314,7 @@ base::Value CWTRequestHandler::InitializeSession() {
       base::SysNSStringToUTF8([CWTWebDriverAppInterface currentTabID]);
 
   base::Value::Dict result;
-  session_id_ = base::GenerateGUID();
+  session_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
   result.Set(kWebDriverSessionIdValueField, session_id_);
 
   base::Value::Dict capabilities;
