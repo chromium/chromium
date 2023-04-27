@@ -7,16 +7,20 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+/*
+Style Module that defines color overrides for cr-elements on ChromeOS. This
+file plumbs semantic colors into cr-elements.
 
-/* Style Module that defines color overrides for cr-elements on Chrome OS.
-
-This file plumbs semantic colors from cros_styles.css into cr-elements.
-
-To get Chrome OS System Colors, an element must:
+To get ChromeOS System colors, an element must:
 - be beneath a <html> element with a "cros" attribute
 - have a <style include="cros-color-overrides"> module in its style module list
 - import the following URL in JS/TS
   //resources/cr_elements/chromeos/cros_color_overrides.css.js
+
+To get ChromeOS Jelly colors, an element must:
+- have an ancestor <body> element with the "jelly-enabled" class
+- include "cros-color-overrides" style module in HTML
+- import "//resources/cr_elements/chromeos/cros_color_overrides.css.js" in JS/TS
 */
 
 :host-context([cros]) a:not(.item)[href] {
