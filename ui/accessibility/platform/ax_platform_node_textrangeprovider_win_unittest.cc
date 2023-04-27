@@ -1038,6 +1038,112 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderClone) {
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider_clone, L"some text");
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest, CompareWithInvalidatedPositions) {
+  TestAXTreeUpdate initial_state(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="aa"
+    ++++++3 kInlineTextBox name="aa"
+  )HTML"));
+
+  Init(initial_state);
+
+  AXNode* root_node = GetRoot();
+  AXNode* st_node = root_node->children()[0];
+
+  ComPtr<ITextRangeProvider> text_range_provider_a;
+  GetTextRangeProviderFromTextNode(text_range_provider_a, st_node);
+
+  AXNodePosition::AXPositionInstance range_start =
+      CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 0,
+                         /* affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  // This will put the end of the position past the `MaxTextOffset` of "aa",
+  // making the position invalid.
+  AXNodePosition::AXPositionInstance range_end =
+      CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 3,
+                         /* affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  ComPtr<ITextRangeProvider> text_range_provider_b =
+      AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+          static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(st_node)),
+          std::move(range_start), std::move(range_end));
+
+  BOOL are_same;
+  text_range_provider_a->Compare(text_range_provider_b.Get(), &are_same);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       CompareEndpointsWithInvalidatedPositions) {
+  TestAXTreeUpdate initial_state(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="aa"
+    ++++++3 kInlineTextBox name="aa"
+  )HTML"));
+
+  Init(initial_state);
+
+  AXNode* root_node = GetRoot();
+  AXNode* st_node = root_node->children()[0];
+
+  ComPtr<ITextRangeProvider> text_range_provider_a;
+  GetTextRangeProviderFromTextNode(text_range_provider_a, st_node);
+
+  AXNodePosition::AXPositionInstance range_start =
+      CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 0,
+                         /* affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  // This will put the end of the position past the `MaxTextOffset` of "aa",
+  // making the position invalid.
+  AXNodePosition::AXPositionInstance range_end =
+      CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 3,
+                         /* affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  ComPtr<ITextRangeProvider> text_range_provider_b =
+      AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+          static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(st_node)),
+          std::move(range_start), std::move(range_end));
+
+  int result;
+  text_range_provider_a->CompareEndpoints(
+      TextPatternRangeEndpoint_End, text_range_provider_b.Get(),
+      TextPatternRangeEndpoint_End, &result);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest, MoveByRangeInvalidatedPositions) {
+  TestAXTreeUpdate initial_state(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="aa"
+    ++++++3 kInlineTextBox name="aa"
+  )HTML"));
+
+  Init(initial_state);
+
+  AXNode* root_node = GetRoot();
+  AXNode* st_node = root_node->children()[0];
+
+  ComPtr<ITextRangeProvider> text_range_provider_a;
+  GetTextRangeProviderFromTextNode(text_range_provider_a, st_node);
+
+  AXNodePosition::AXPositionInstance range_start =
+      CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 0,
+                         /* affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  // This will put the end of the position past the `MaxTextOffset` of "aa",
+  // making the position invalid.
+  AXNodePosition::AXPositionInstance range_end =
+      CreateTextPosition(/* anchor */ *st_node, /* text_offset*/ 3,
+                         /* affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  ComPtr<ITextRangeProvider> text_range_provider_b =
+      AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
+          static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(st_node)),
+          std::move(range_start), std::move(range_end));
+
+  text_range_provider_a->MoveEndpointByRange(TextPatternRangeEndpoint_End,
+                                             text_range_provider_b.Get(),
+                                             TextPatternRangeEndpoint_End);
+}
+
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderCompareEndpoints) {
   Init(BuildTextDocument({"some text", "more text"},
