@@ -2676,7 +2676,7 @@
   {
     "name": "enable-hostname-setting",
     "owners": [ "khorimoto", "cros-connectivity@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "enable-image-reader",
