@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
@@ -90,8 +89,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
                                     WebStateListObserving> {
   // The UI consumer to which updates are made.
   __weak id<TabCollectionConsumer, InactiveTabsInfoConsumer> _consumer;
-  // The handler for commands related to Inactive Tabs.
-  __weak id<InactiveTabsCommands> _commandHandler;
   // The list of inactive tabs.
   WebStateList* _webStateList;
   // The snapshot cache of _webStateList.
@@ -129,7 +126,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 - (instancetype)
            initWithConsumer:
                (id<TabCollectionConsumer, InactiveTabsInfoConsumer>)consumer
-             commandHandler:(id<InactiveTabsCommands>)commandHandler
                webStateList:(WebStateList*)webStateList
                 prefService:(PrefService*)prefService
     sessionRestorationAgent:
@@ -138,7 +134,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
           tabRestoreService:(sessions::TabRestoreService*)tabRestoreService {
   CHECK(IsInactiveTabsEnabled());
   CHECK(consumer);
-  CHECK(commandHandler);
   CHECK(webStateList);
   CHECK(prefService);
   CHECK(sessionRestorationAgent);
@@ -148,7 +143,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   self = [super init];
   if (self) {
     _consumer = consumer;
-    _commandHandler = commandHandler;
     _webStateList = webStateList;
 
     // Observe the web state list.
@@ -243,10 +237,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     NSInteger daysThreshold =
         _prefService->GetInteger(prefs::kInactiveTabsTimeThreshold);
     [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
-
-    if (daysThreshold == kInactiveTabsDisabledByUser) {
-      [_commandHandler inactiveTabsExplicitlyDisabledByUser];
-    }
   }
 }
 
