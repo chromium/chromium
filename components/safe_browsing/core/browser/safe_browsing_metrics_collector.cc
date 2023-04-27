@@ -466,38 +466,6 @@ std::string SafeBrowsingMetricsCollector::GetUserStateMetricSuffix(
   }
 }
 
-std::string SafeBrowsingMetricsCollector::GetEventTypeMetricSuffix(
-    const EventType& event_type) {
-  switch (event_type) {
-    case EventType::USER_STATE_DISABLED:
-      return "UserStateDisabled";
-    case EventType::USER_STATE_ENABLED:
-      return "UserStateEnabled";
-    case EventType::DATABASE_INTERSTITIAL_BYPASS:
-      return "DatabaseInterstitialBypass";
-    case EventType::CSD_INTERSTITIAL_BYPASS:
-      return "CsdInterstitialBypass";
-    case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
-      return "RealTimeInterstitialBypass";
-    case EventType::DANGEROUS_DOWNLOAD_BYPASS:
-      return "DangerousDownloadBypass";
-    case EventType::PASSWORD_REUSE_MODAL_BYPASS:
-      return "PasswordReuseModalBypass";
-    case EventType::EXTENSION_ALLOWLIST_INSTALL_BYPASS:
-      return "ExtensionAllowlistInstallBypass";
-    case EventType::NON_ALLOWLISTED_EXTENSION_RE_ENABLED:
-      return "NonAllowlistedExtensionReEnabled";
-    case EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL:
-      return "SafeBrowsingInterstitial";
-    case EventType::SECURITY_SENSITIVE_SSL_INTERSTITIAL:
-      return "SSLInterstitial";
-    case EventType::SECURITY_SENSITIVE_PASSWORD_PROTECTION:
-      return "PasswordProtection";
-    case EventType::SECURITY_SENSITIVE_DOWNLOAD:
-      return "Download";
-  }
-}
-
 std::string SafeBrowsingMetricsCollector::GetTimesDisabledSuffix() {
   const absl::optional<Event> latest_enabled_event =
       GetLatestEventFromEventType(UserState::kEnhancedProtection,
