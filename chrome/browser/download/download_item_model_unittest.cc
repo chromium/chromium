@@ -1016,10 +1016,8 @@ TEST_F(DownloadItemModelTest, GetBubbleStatusMessageWithBytes) {
           base::WideToUTF16(arabic_bytes), base::WideToUTF16(arabic_status),
           false);
   std::vector<int> expected_arabic =
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_POSIX)
       {8207, 8235, 53, 32, 1578, 32, 8226, 32, 1605, 8236, 8207};
-#elif BUILDFLAG(IS_POSIX)
-      {8207, 8235, 8207, 53, 32, 1578, 32, 8226, 32, 1605, 8236, 8207};
 #else
       {8235, 53, 32, 1578, 32, 8226, 32, 1605, 8236};
 #endif
@@ -1031,11 +1029,8 @@ TEST_F(DownloadItemModelTest, GetBubbleStatusMessageWithBytes) {
       GetBubbleStatusMessageWithBytes(u"5 MB", base::WideToUTF16(hebrew_status),
                                       false);
   std::vector<int> expected_hebrew =
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_POSIX)
       {8207, 8235, 8234, 53, 32, 77, 66, 8236, 32, 8226, 32, 1488, 8236, 8207};
-#elif BUILDFLAG(IS_POSIX)
-      {8207, 8235, 8207, 8234, 53,   32,   77,  66,
-       8236, 32,   8226, 32,   1488, 8236, 8207};
 #else
       {8235, 8234, 53, 32, 77, 66, 8236, 32, 8226, 32, 1488, 8236};
 #endif

@@ -823,11 +823,12 @@ std::u16string FormatString(const std::u16string& format_string,
   }
 #endif
 
-  std::u16string formatted =
-      base::ReplaceStringPlaceholders(format_string, replacements, offsets);
+  // AdjustParagraphDirectionality() may append extra characters. Therefore,
+  // it's important to AdjustParagraphDirectionality() before computing the
+  // offsets in ReplaceStringPlaceholders(). Otherwise, offsets might be wrong.
+  std::u16string formatted = format_string;
   AdjustParagraphDirectionality(&formatted);
-
-  return formatted;
+  return base::ReplaceStringPlaceholders(formatted, replacements, offsets);
 }
 
 std::u16string GetStringFUTF16(int message_id,
