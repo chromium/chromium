@@ -2516,7 +2516,7 @@
   {
     "name": "enable-feed-position-on-ntp",
     "owners": ["clank-start","hanxi"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-feed-synthetic-capabilities",
@@ -2707,7 +2707,7 @@
   {
     "name": "enable-instant-start",
     "owners": [ "hanxi", "wychen" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 130
   },
   {
     "name": "enable-iph",
@@ -3198,7 +3198,7 @@
   {
     "name": "enable-search-resumption-module",
     "owners": ["clank-start","hanxi"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-service-workers-for-chrome-untrusted",
@@ -3229,7 +3229,7 @@
   {
     "name": "enable-show-scrollable-mvt-on-ntp",
     "owners": ["clank-start","hanxi"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-site-isolation-for-password-sites",
@@ -3260,32 +3260,32 @@
   {
     "name": "enable-start-surface",
     "owners": [ "hanxi", "wychen" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 140
   },
   {
     "name": "enable-start-surface-disabled-feed-improvement",
     "owners": [ "hanxi", "clank-start" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 130
   },
   {
     "name": "enable-start-surface-on-tablet",
     "owners": [ "hanxi", "xinyiji", "clank-start" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 130
   },
   {
     "name": "enable-start-surface-refactor",
     "owners": [ "hanxi", "clank-start" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 130
   },
   {
     "name": "enable-start-surface-return-time",
     "owners": [ "hanxi", "clank-start" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 140
   },
   {
     "name": "enable-start-surface-with-accessibility",
     "owners": [ "hanxi", "xinyiji", "clank-start" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 130
   },
   {
     "name": "enable-storage-pressure-event",
