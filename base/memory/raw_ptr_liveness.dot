@@ -1,0 +1,46 @@
+digraph {
+  graph[bgcolor=transparent]
+  node[shape=box]
+
+  component[label="Is it a\ncomponent\nbuild?"]
+  target_fanout[label="What target?"]
+  disabled_lacking_pae[label="PA-E is not\navailable"]
+
+  component->disabled_lacking_pae[label="yes"]
+  component->target_fanout[label="no"]
+
+  is_asan[label="Is the build\nASan?"]
+  disabled_in_asan[label="disabled per\ncrbug/1413674"]
+  is_bot[label="Is this a bot?"]
+  browser_tests_enabled[label="BRP is live by default via\ntesting/variations/fieldtrial_testing_config.json"]
+  is_chrome_branded[label="is_chrome_branded?"]
+  enabled_by_feature[label="enabled on most platforms via\npartition_alloc_features.cc"]
+  enabled_by_field_trial[label="enabled by default via\nfieldtrial_testing_config.json"]
+  enabled_in_unit_tests[label="enabled by default via\nenable_backup_ref_ptr_feature_flag"]
+
+  target_fanout->is_asan[label="unit\ntest"]
+  target_fanout->browser_tests_enabled[label="browser\ntest"]
+  target_fanout->is_chrome_branded[label="Chromium\ntarget"]
+
+  is_asan->is_bot[label="no"]
+  is_asan->disabled_in_asan[label="yes"]
+  disabled_in_asan->noop
+  browser_tests_enabled->live_brp
+  is_chrome_branded->enabled_by_feature[label="yes"]
+  is_chrome_branded->enabled_by_field_trial[label="no"]
+
+  {rank=same noop, inert_brp, live_brp}
+  noop[label="raw_ptr is\nRawPtrNoOpImpl"]
+  live_brp[label="BRP is live"]
+  inert_brp[label="BRP is inert"]
+  unit_tests_inert_brp[label="BRP is inert by\ndefault; enable with\nenable_backup_ref_ptr_feature_flag"]
+
+  disabled_lacking_pae->noop
+  is_bot->enabled_in_unit_tests[label="yes"]
+  is_bot->unit_tests_inert_brp[label="no"]
+
+  enabled_in_unit_tests->live_brp
+  unit_tests_inert_brp->inert_brp
+  enabled_by_feature->live_brp
+  enabled_by_field_trial->live_brp
+}

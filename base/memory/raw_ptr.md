@@ -615,3 +615,34 @@ with an increased quarantine capacity as follows:
 ```
 ASAN_OPTIONS=quarantine_size_mb=1024 path/to/chrome
 ```
+
+## Appendix: Is raw\_ptr Live?
+
+![Diagram showing how both code support and feature flag must be present
+  for raw_ptr to be BRP.](./raw_ptr_liveness.png)
+
+Note that
+
+*   [`RawPtrNoOpImpl`][raw-ptr-noop-impl] is thought to have no
+    overhead. However, this has yet to be verified.
+
+*   "Inert BackupRefPtr" _has_ overhead - once BRP support is compiled
+    in, every `raw_ptr` will (at assignment) perform the
+    check that asks, ["is BRP protection active?"][is-brp-active]
+
+As for general BRP enablement,
+
+*   BRP is live in most browser tests and Chromium targets.
+
+    *   This is nuanced by platform type and process type.
+
+*   In unit tests,
+
+    *   `raw_ptr` is the no-op impl when the build is ASan.
+
+    *   `raw_ptr` is live BRP on bots.
+
+    *   `raw_ptr` is inert BRP otherwise (see https://crbug.com/1440658).
+
+[raw-ptr-noop-impl]: https://source.chromium.org/search?q=class:RawPtrNoOpImpl&ss=chromium
+[is-brp-active]: https://source.chromium.org/search?q=func:RawPtrBackupRefImpl::IsSupportedAndNotNull&ss=chromium
