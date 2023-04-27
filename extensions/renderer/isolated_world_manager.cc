@@ -21,6 +21,11 @@
 
 namespace extensions {
 
+IsolatedWorldManager::IsolatedWorldInfo::IsolatedWorldInfo() = default;
+IsolatedWorldManager::IsolatedWorldInfo::~IsolatedWorldInfo() = default;
+IsolatedWorldManager::IsolatedWorldInfo::IsolatedWorldInfo(
+    IsolatedWorldInfo&&) = default;
+
 IsolatedWorldManager::IsolatedWorldManager() = default;
 IsolatedWorldManager::~IsolatedWorldManager() = default;
 
@@ -54,7 +59,26 @@ void IsolatedWorldManager::RemoveIsolatedWorlds(const std::string& host_id) {
 
 void IsolatedWorldManager::SetUserScriptWorldCsp(std::string host_id,
                                                  std::string csp) {
-  user_script_world_csps_.emplace(std::move(host_id), std::move(csp));
+  user_script_world_csps_.emplace(host_id, csp);
+
+  // Check if there are currently isolated worlds associated with the host. If
+  // there are, we need to manually update them. This *won't* update already-
+  // created worlds (CSPs are cached on the LocalDomWindow), but is necessary
+  // to allow newly-created worlds to get the proper CSP before any injection
+  // happens. Otherwise, new windows may eagerly create CSP for isolated worlds
+  // (before the scripts have a chance to inject), resulting in stale values
+  // even though the CSP should be updated.
+  for (const auto& [world_id, world_info] : isolated_worlds_) {
+    if (world_info.host_id == host_id &&
+        world_info.execution_world == mojom::ExecutionWorld::kUserScript) {
+      blink::WebIsolatedWorldInfo info;
+      info.security_origin = blink::WebSecurityOrigin::Create(world_info.url);
+      info.human_readable_name = blink::WebString::FromUTF8(world_info.name);
+      info.stable_id = blink::WebString::FromUTF8(host_id);
+      info.content_security_policy = blink::WebString::FromUTF8(csp);
+      blink::SetIsolatedWorldInfo(world_id, info);
+    }
+  }
 }
 
 int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
@@ -70,6 +94,7 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
       ExtensionsRendererClient::Get()->GetLowestIsolatedWorldId();
 
   int world_id = 0;
+  IsolatedWorldInfo* world_info = nullptr;
   const std::string& host_id = injection_host.id().id;
 
   auto iter = base::ranges::find_if(
@@ -80,6 +105,7 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
 
   if (iter != isolated_worlds_.end()) {
     world_id = iter->first;
+    world_info = &iter->second;
   } else {
     world_id = g_next_isolated_world_id++;
     // This map will tend to pile up over time, but realistically, you're never
@@ -87,15 +113,12 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
     // TODO(crbug/1429408): Are we sure about that? Processes can stick around
     // awhile.... (and this could be affected by introducing user script
     // worlds).
-    IsolatedWorldInfo& info = isolated_worlds_[world_id];
-    info.host_id = host_id;
-    info.execution_world = execution_world;
+    world_info = &isolated_worlds_[world_id];
+    world_info->host_id = host_id;
+    world_info->execution_world = execution_world;
+    world_info->url = injection_host.url();
+    world_info->name = injection_host.name();
   }
-
-  blink::WebIsolatedWorldInfo info;
-  info.security_origin = blink::WebSecurityOrigin::Create(injection_host.url());
-  info.human_readable_name = blink::WebString::FromUTF8(injection_host.name());
-  info.stable_id = blink::WebString::FromUTF8(host_id);
 
   // Initialize CSP for the new world. First, check if we have a dedicated
   // user script CSP.
@@ -112,19 +135,30 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
     csp = injection_host.GetContentSecurityPolicy();
   }
 
-  // If we found a CSP, apply it to the world.
-  if (csp) {
-    info.content_security_policy = blink::WebString::FromUTF8(*csp);
-  }
+  // If we found a CSP, apply it to the world. Otherwise, explicitly clear out
+  // any old CSP.
+  world_info->csp = csp ? absl::optional<std::string>(*csp) : absl::nullopt;
 
   // Even though there may be an existing world for this `injection_host`'s id,
   // the properties may have changed (e.g. due to an extension update).
   // Overwrite any existing entries.
-  // TODO(https://crbug.com/1429408): This doesn't work for CSP. See comment in
-  // //chrome/browser/extensions/user_script_world_browsertest.cc.
-  blink::SetIsolatedWorldInfo(world_id, info);
+  UpdateBlinkIsolatedWorldInfo(world_id, *world_info);
 
   return world_id;
+}
+
+void IsolatedWorldManager::UpdateBlinkIsolatedWorldInfo(
+    int world_id,
+    const IsolatedWorldInfo& world_info) {
+  blink::WebIsolatedWorldInfo blink_info;
+  blink_info.security_origin = blink::WebSecurityOrigin::Create(world_info.url);
+  blink_info.human_readable_name = blink::WebString::FromUTF8(world_info.name);
+  blink_info.stable_id = blink::WebString::FromUTF8(world_info.host_id);
+  if (world_info.csp) {
+    blink_info.content_security_policy =
+        blink::WebString::FromUTF8(*world_info.csp);
+  }
+  blink::SetIsolatedWorldInfo(world_id, blink_info);
 }
 
 }  // namespace extensions

@@ -23,6 +23,19 @@
 
 namespace extensions {
 
+namespace {
+
+constexpr char kCheckIfEvalAllowedScriptSource[] =
+    R"(var result;
+       try {
+         eval('result = "allowed eval"');
+       } catch (e) {
+         result = 'disallowed eval';
+       }
+       result;)";
+
+}  // namespace
+
 class UserScriptWorldBrowserTest : public ExtensionApiTest {
  public:
   UserScriptWorldBrowserTest() = default;
@@ -175,9 +188,9 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
 }
 
 // Tests that, by default, the user script world's CSP is the same as the
-// extension's CSP.
+// extension's CSP, but it can be updated to a more relaxed value.
 IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
-                       DefaultCspIsExtensionDefault) {
+                       UserScriptWorldCspDefaultsToExtensionsAndCanBeUpdated) {
   // Load a simple extension with permission to example.com and navigate a new
   // tab to example.com.
   const Extension* extension =
@@ -185,58 +198,86 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
 
   NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
 
-  // Execute a script that attempts to eval() some code. This should fail, since
-  // by default the user script world CSP is the same as the extension's CSP
-  // (which prevents eval).
-  static constexpr char kScriptSource[] =
-      R"(var result;
-         try {
-           eval('result = "allowed eval"');
-         } catch (e) {
-           result = 'disallowed eval';
-         }
-         result;)";
-  base::Value script_result =
-      ExecuteScriptInUserScriptWorld(kScriptSource, *extension);
+  // Execute a script that attempts to eval() some code.
+  base::Value script_result = ExecuteScriptInUserScriptWorld(
+      kCheckIfEvalAllowedScriptSource, *extension);
 
+  // This should fail, since by default the user script world CSP is the same
+  // as the extension's CSP (which prevents eval).
   EXPECT_EQ(script_result, "disallowed eval");
+
+  // Update the user script world CSP to allow unsafe eval.
+  RendererStartupHelperFactory::GetForBrowserContext(profile())
+      ->SetUserScriptWorldCsp(*extension, "script-src 'unsafe-eval'");
+  // Navigate to create a new isolated world.
+  NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  // Now, eval should be allowed.
+  script_result = ExecuteScriptInUserScriptWorld(
+      kCheckIfEvalAllowedScriptSource, *extension);
+  EXPECT_EQ(script_result, "allowed eval");
 }
 
-// Tests that the user script world CSP can be updated to allow unsafe
-// directives, like `unsafe-eval`.
-// TODO(https://crbug.com/1429408): This is currently a separate test than the
-// above because re-setting the isolated world CSP in blink doesn't work. This
-// is due to the caching code here [1], which prevents a lookup if a world has
-// already been created. We'll need to fix this, since otherwise isolated world
-// CSP would be sticky per renderer process.
-// [1]:
-// https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/frame/local_dom_window.cc;l=374-391;drc=8ce14ef97f8607b1b57f8d02da575ed5150eea9e
-IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest, CanSetCustomCsp) {
+// Tests that an update to the user script world's CSP does not apply to any
+// already-created user script worlds.
+IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
+                       CspUpdatesDoNotApplyToExistingUserScriptWorlds) {
   // Load a simple extension with permission to example.com and navigate a new
   // tab to example.com.
   const Extension* extension =
       LoadExtensionWithHostPermission("http://example.com/*");
 
   NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  base::Value script_result = ExecuteScriptInUserScriptWorld(
+      kCheckIfEvalAllowedScriptSource, *extension);
+  EXPECT_EQ(script_result, "disallowed eval");
 
   // Update the user script world CSP to allow unsafe eval.
   RendererStartupHelperFactory::GetForBrowserContext(profile())
       ->SetUserScriptWorldCsp(*extension, "script-src 'unsafe-eval'");
 
-  // Execute a script that attempts to eval() some code. This should succeed,
-  // since the CSP has been updated.
-  static constexpr char kScriptSource[] =
-      R"(var result;
-         try {
-           eval('result = "allowed eval"');
-         } catch (e) {
-           result = 'disallowed eval';
-         }
-         result;)";
-  base::Value script_result =
-      ExecuteScriptInUserScriptWorld(kScriptSource, *extension);
+  // Re-evaluate the script. Eval should still be disallowed since CSP updates
+  // do not apply to existing isolated worlds (by design).
+  script_result = ExecuteScriptInUserScriptWorld(
+      kCheckIfEvalAllowedScriptSource, *extension);
+  EXPECT_EQ(script_result, "disallowed eval");
+}
 
-  EXPECT_EQ(script_result, "allowed eval");
+// Tests that newly-created documents may greedily initialize isolated world CSP
+// values.
+IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
+                       CspMayBeGreedilyInitializedOnDocumentCreation) {
+  // Load a simple extension with permission to example.com and navigate a new
+  // tab to example.com.
+  const Extension* extension =
+      LoadExtensionWithHostPermission("http://example.com/*");
+
+  NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  base::Value script_result = ExecuteScriptInUserScriptWorld(
+      kCheckIfEvalAllowedScriptSource, *extension);
+  EXPECT_EQ(script_result, "disallowed eval");
+
+  // Navigate to create a new document. At this point, no user script code has
+  // injected in this new document.
+  NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
+  // Update the user script world CSP to allow unsafe eval.
+  RendererStartupHelperFactory::GetForBrowserContext(profile())
+      ->SetUserScriptWorldCsp(*extension, "script-src 'unsafe-eval'");
+
+  // Re-evaluate the script. Somewhat surprisingly, eval is still disallowed.
+  // This is because the new document greedily instantiates CSP for the current
+  // execution world, which, in this case, is the isolated world. This results
+  // in the isolated world CSP for the document being set when we navigate,
+  // which is before the new CSP is set. While not necessarily desirable, this
+  // is largely okay -- the proper CSP will be set whenever a new world is
+  // created, and we document that setting the CSP doesn't affect any existing
+  // isolated worlds. This test is mostly here for documentation and to
+  // highlight behavior changes.
+  script_result = ExecuteScriptInUserScriptWorld(
+      kCheckIfEvalAllowedScriptSource, *extension);
+  EXPECT_EQ(script_result, "disallowed eval");
 }
 
 // Tests sending a message from a user script. This is sent via
