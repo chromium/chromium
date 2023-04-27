@@ -22,6 +22,7 @@
 #include "content/public/common/referrer.h"
 #include "ipc/ipc_message.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -29,10 +30,6 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
-
-namespace network {
-class SharedURLLoaderFactory;
-}
 
 namespace content {
 

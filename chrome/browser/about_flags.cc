@@ -3183,6 +3183,16 @@ constexpr FeatureEntry::FeatureVariation kLensImageFormatVariations[] = {
      std::size(kLensFormatOptimizationWebp), nullptr},
 };
 
+constexpr FeatureEntry::FeatureParam kPingLensSequentially[] = {
+    {"ping-lens-sequentially", "true"}};
+constexpr FeatureEntry::FeatureParam kLensPingURL[] = {
+    {"lens-ping-url", "https://lens.google.com/_/LensWebStandaloneUi/gen204/"}};
+constexpr FeatureEntry::FeatureVariation kLensPingVariations[] = {
+    {"ping sequentially", kPingLensSequentially,
+     std::size(kPingLensSequentially), nullptr},
+    {"ping url", kLensPingURL, std::size(kLensPingURL), nullptr},
+};
+
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 constexpr FeatureEntry::FeatureParam kCscVariation[] = {
     {"companion-homepage-url",
@@ -8635,6 +8645,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-lens-image-translate", flag_descriptions::kLensImageTranslateName,
      flag_descriptions::kLensImageTranslateDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kEnableImageTranslate)},
+
+    {"enable-lens-ping", flag_descriptions::kEnableLensPingName,
+     flag_descriptions::kEnableLensPingDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(lens::features::kEnableLensPing,
+                                    kLensPingVariations,
+                                    "EnableLensPing")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-log-controller-for-diagnostics-app",
