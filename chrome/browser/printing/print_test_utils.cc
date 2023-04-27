@@ -115,7 +115,9 @@ std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
 
 void StartPrint(content::WebContents* contents) {
   printing::StartPrint(contents,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                        /*print_renderer=*/mojo::NullAssociatedRemote(),
+#endif
                        /*print_preview_disabled=*/false,
                        /*has_selection=*/false);
 }

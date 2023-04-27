@@ -4,6 +4,7 @@
 
 #include "chrome/browser/printing/print_view_manager_common.h"
 
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/buildflags/buildflags.h"
 #include "pdf/buildflags.h"
@@ -45,7 +46,9 @@ content::RenderFrameHost* GetRenderFrameHostToUse(
 
 void StartPrint(
     content::WebContents* contents,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
+#endif
     bool print_preview_disabled,
     bool has_selection) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -65,15 +68,17 @@ void StartPrint(
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   if (!print_preview_disabled) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (print_renderer) {
       print_view_manager->PrintPreviewWithPrintRenderer(
           rfh_to_use, std::move(print_renderer));
-    } else {
-      print_view_manager->PrintPreviewNow(rfh_to_use, has_selection);
+      return;
     }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    print_view_manager->PrintPreviewNow(rfh_to_use, has_selection);
     return;
   }
-#endif  // ENABLE_PRINT_PREVIEW
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
   print_view_manager->PrintNow(rfh_to_use);
 }

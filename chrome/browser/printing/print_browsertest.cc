@@ -619,7 +619,9 @@ void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady(
                                                   params.pages_per_sheet);
 
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
              /*print_renderer=*/mojo::NullAssociatedRemote(),
+#endif
              /*print_preview_disabled=*/false, params.print_only_selection);
 
   print_preview_observer.WaitUntilPreviewIsReady();
@@ -638,7 +640,9 @@ void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded(
                                                   params.pages_per_sheet);
 
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
              /*print_renderer=*/mojo::NullAssociatedRemote(),
+#endif
              /*print_preview_disabled=*/false, params.print_only_selection);
 
   print_preview_observer.WaitUntilPreviewIsReady();
@@ -2084,7 +2088,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
           web_contents);
 
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
              /*print_renderer=*/mojo::NullAssociatedRemote(),
+#endif
              /*print_preview_disabled=*/true,
              /*has_selection=*/false);
 

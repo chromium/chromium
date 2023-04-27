@@ -3946,7 +3946,10 @@ void RenderViewContextMenu::ExecPrint() {
   }
 
   printing::StartPrint(
-      source_web_contents_, mojo::NullAssociatedRemote(),
+      source_web_contents_,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      mojo::NullAssociatedRemote(),
+#endif
       GetPrefs(browser_context_)->GetBoolean(prefs::kPrintPreviewDisabled),
       !params_.selection_text.empty());
 #endif  // BUILDFLAG(ENABLE_PRINTING)

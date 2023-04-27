@@ -139,14 +139,20 @@ bool PrintViewManager::BasicPrint(content::RenderFrameHost* rfh) {
 
 bool PrintViewManager::PrintPreviewNow(content::RenderFrameHost* rfh,
                                        bool has_selection) {
-  return PrintPreview(rfh, mojo::NullAssociatedRemote(), has_selection);
+  return PrintPreview(rfh,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                      mojo::NullAssociatedRemote(),
+#endif
+                      has_selection);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool PrintViewManager::PrintPreviewWithPrintRenderer(
     content::RenderFrameHost* rfh,
     mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer) {
-  return PrintPreview(rfh, std::move(print_renderer), false);
+  return PrintPreview(rfh, std::move(print_renderer), /*has_selection=*/false);
 }
+#endif
 
 void PrintViewManager::PrintPreviewForWebNode(content::RenderFrameHost* rfh) {
   if (print_preview_state_ != NOT_PREVIEWING)
@@ -300,7 +306,9 @@ void PrintViewManager::SetReceiverImplForTesting(PrintManager* impl) {
 
 bool PrintViewManager::PrintPreview(
     content::RenderFrameHost* rfh,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
+#endif
     bool has_selection) {
   // Users can send print commands all they want and it is beyond
   // PrintViewManager's control. Just ignore the extra commands.
@@ -312,8 +320,11 @@ bool PrintViewManager::PrintPreview(
   if (IsCrashed() || !rfh->IsRenderFrameLive())
     return false;
 
-  GetPrintRenderFrame(rfh)->InitiatePrintPreview(std::move(print_renderer),
-                                                 has_selection);
+  GetPrintRenderFrame(rfh)->InitiatePrintPreview(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      std::move(print_renderer),
+#endif
+      has_selection);
 
   SetPrintPreviewRenderFrameHost(rfh);
   print_preview_state_ = USER_INITIATED_PREVIEW;

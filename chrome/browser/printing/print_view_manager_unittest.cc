@@ -225,8 +225,11 @@ class TestPrintViewManager : public PrintViewManagerBase {
 
     mojo::AssociatedRemote<mojom::PrintRenderFrame> print_render_frame;
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&print_render_frame);
-    print_render_frame->InitiatePrintPreview(mojo::NullAssociatedRemote(),
-                                             has_selection);
+    print_render_frame->InitiatePrintPreview(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        mojo::NullAssociatedRemote(),
+#endif
+        has_selection);
     return true;
   }
 

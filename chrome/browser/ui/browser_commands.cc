@@ -1527,9 +1527,12 @@ void Print(Browser* browser) {
 #if BUILDFLAG(ENABLE_PRINTING)
   auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
   printing::StartPrint(
-      web_contents, mojo::NullAssociatedRemote() /* print_renderer */,
+      web_contents,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      /*print_renderer=*/mojo::NullAssociatedRemote(),
+#endif
       browser->profile()->GetPrefs()->GetBoolean(prefs::kPrintPreviewDisabled),
-      false /* has_selection? */);
+      /*has_selection=*/false);
 #endif
 }
 

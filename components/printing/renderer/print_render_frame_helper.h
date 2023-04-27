@@ -261,7 +261,9 @@ class PrintRenderFrameHelper
   void SetPrintPreviewUI(
       mojo::PendingAssociatedRemote<mojom::PrintPreviewUI> preview) override;
   void InitiatePrintPreview(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
+#endif
       bool has_selection) override;
   void PrintPreview(base::Value::Dict settings) override;
   void OnPrintPreviewDialogClosed() override;
