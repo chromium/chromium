@@ -250,13 +250,11 @@ void VideoCaptureClient::OnBufferReady(
     const size_t frame_allocation_size = media::VideoFrame::AllocationSize(
         buffer->info->pixel_format, buffer->info->coded_size);
     if (mapping.IsValid() && mapping.size() >= frame_allocation_size) {
-      // TODO(https://crbug.com/1316810): This code should not be casting
-      // const-ness away from ReadOnlySharedMemoryRegion...
       frame = media::VideoFrame::WrapExternalData(
           buffer->info->pixel_format, buffer->info->coded_size,
           buffer->info->visible_rect, buffer->info->visible_rect.size(),
-          const_cast<uint8_t*>(mapping.GetMemoryAs<uint8_t>()),
-          frame_allocation_size, buffer->info->timestamp);
+          mapping.GetMemoryAs<uint8_t>(), frame_allocation_size,
+          buffer->info->timestamp);
     }
     buffer_finished_callback =
         base::BindPostTaskToCurrentDefault(base::BindOnce(
