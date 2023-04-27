@@ -952,9 +952,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Returns a RenderProcessHost that is rendering a URL corresponding to
   // |site_instance| in one of its frames, or that is expecting a navigation to
-  // that SiteInstance.
+  // that SiteInstance. `main_frame_threshold` is an optional parameter to
+  // limit the maximum number of main frames a RenderProcessHost can host.
   static RenderProcessHost* FindReusableProcessHostForSiteInstance(
-      SiteInstanceImpl* site_instance);
+      SiteInstanceImpl* site_instance,
+      absl::optional<size_t> main_frame_threshold = absl::nullopt);
 
   void NotifyRendererOfLockedStateUpdate();
 
