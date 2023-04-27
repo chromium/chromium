@@ -6039,7 +6039,7 @@
   {
     "name": "paint-preview-demo",
     "owners": [ "ckitagawa", "fredmello", "chrome-fdt@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "partitioned-cookies",
