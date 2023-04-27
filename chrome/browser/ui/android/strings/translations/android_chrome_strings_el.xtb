@@ -120,6 +120,7 @@
 <translation id="1571304935088121812">Αντιγραφή ονόματος χρήστη</translation>
 <translation id="1592864538817356322">Βασική ασφάλεια:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> προτεινόμενα στοιχεία στην παρακάτω λίστα.</translation>
+<translation id="1598163867407640634">Χρησιμοποιήστε το <ph name="SITE_ETLD_PLUS_ONE" /> με το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Πώς μπορείτε να διαχειριστείτε τα δεδομένα σας:<ph name="END_BOLD" /> Για την προστασία του απορρήτου σας, διαγράφουμε αυτόματα τα ενδιαφέροντα που είναι παλαιότερα των 4 εβδομάδων. Καθώς συνεχίζετε την περιήγηση, ενδέχεται να εμφανιστεί ξανά ένα ενδιαφέρον στη λίστα. Εναλλακτικά, μπορείτε να καταργήσετε τα ενδιαφέροντα που δεν θέλετε να λαμβάνει υπόψη το Chrome.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Κατάργηση 1 επιλεγμένου στοιχείου}other{Κατάργηση # επιλεγμένων στοιχείων}}</translation>
 <translation id="1633659023549081553">Ανακαλύψτε νέο περιεχόμενο στην αρχική σελίδα του Chrome</translation>
@@ -546,6 +547,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# ω.}other{# ω.}}</translation>
 <translation id="4035877632587724847">Να μην επιτραπεί</translation>
 <translation id="4036177530563778041">Συνεχίστε εύκολα από εκεί που σταματήσατε</translation>
+<translation id="4042941173059740150">Συνέχεια σε <ph name="SITE_ETLD_PLUS_ONE" /> με <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4045764304651014138">Δεδομένα χρήσης</translation>
 <translation id="405399507749852140">Λάβετε ειδοποιήσεις σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο</translation>
 <translation id="4056223980640387499">Σέπια</translation>
@@ -849,6 +851,7 @@
 <translation id="5628604359369369630">Μη αναγνωσμένα - Διαθέσιμα εκτός σύνδεσης</translation>
 <translation id="5639724618331995626">Να επιτρέπονται όλοι οι ιστότοποι</translation>
 <translation id="5641456720590409793">Το <ph name="BEGIN_LINK1" />Ιστορικό αναζήτησης<ph name="END_LINK1" /> και <ph name="BEGIN_LINK2" />άλλες μορφές δραστηριότητας<ph name="END_LINK2" /> ενδέχεται να αποθηκεύονται στον Λογαριασμό σας Google.</translation>
+<translation id="564667659802381754">Οδηγός απορρήτου <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Τελευταίες 7 ημέρες</translation>
 <translation id="5655963694829536461">Αναζήτηση λήψεων</translation>
 <translation id="5659593005791499971">Ηλεκτρονικό ταχυδρομείο</translation>
@@ -1211,6 +1214,7 @@
 <translation id="7482656565088326534">Καρτέλα προεπισκόπησης</translation>
 <translation id="7484997419527351112">Discover - ανενεργό</translation>
 <translation id="7485033510383818941">Για ανανέωση του περιεχομένου της ροής, τραβήξτε τη σελίδα προς τα κάτω.</translation>
+<translation id="7486953194485875763">Τα παρακάτω δεδομένα από τα τελευταία 15 λεπτά θα διαγραφούν:</translation>
 <translation id="749294055653435199">Το Google Lens δεν είναι διαθέσιμο σε αυτήν τη συσκευή</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Ενημέρωση στις <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Το θέμα προστέθηκε ξανά στα πιθανά θέματα</translation>
@@ -1454,6 +1458,7 @@
 <translation id="8664215986015753476">Χρησιμοποιήστε το Chrome όπως εσείς θέλετε</translation>
 <translation id="8664979001105139458">Το αρχείο υπάρχει ήδη</translation>
 <translation id="8666759526542103597">Σχετικά με την εξατομίκευση διαφημίσεων βάσει προγράμματος περιήγησης</translation>
+<translation id="8676276370198826499">Εγγραφείτε στο <ph name="SITE_ETLD_PLUS_ONE" /> με το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Επαληθεύσεις σύνδεσης</translation>
 <translation id="8683039184091909753">εικόνα</translation>
 <translation id="869891660844655955">Ημερομηνία λήξης</translation>

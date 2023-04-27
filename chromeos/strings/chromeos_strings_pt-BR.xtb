@@ -29,6 +29,7 @@
 <translation id="1201402288615127009">Próxima</translation>
 <translation id="1204296502688602597">Latência de DNS</translation>
 <translation id="1207734034680156868">As sugestões são baseadas na sua descrição</translation>
+<translation id="121090498480012229">reproduzir ou pausar mídia</translation>
 <translation id="123124571410524056">Portal suspeito</translation>
 <translation id="1238612778414822719">Latência de HTTPS</translation>
 <translation id="1264369926465113395">Conheça a nova revista digital do Chromebook para criadores de conteúdo</translation>
@@ -63,6 +64,7 @@
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1491076385728777984">Atualizando firmware no <ph name="DEVICE_NAME" /></translation>
+<translation id="1499041187027566160">aumentar o volume</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gerencia o usuário. Esse administrador pode controlar as configurações e monitorar a atividade do usuário remotamente.</translation>
 <translation id="150962533380566081">PUK inválida.</translation>
 <translation id="1510238584712386396">Iniciador</translation>
@@ -121,10 +123,12 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Desativar o modo escuro</translation>
 <translation id="1881188606372070653">Acesse a <ph name="BEGIN_LINK1" />página de Ajuda do Jurídico<ph name="END_LINK1" /> para pedir mudanças no conteúdo por questões legais. Talvez alguns dados sobre a conta e o sistema sejam enviados ao Google. As informações que você fornecer vão ser usadas para ajudar a resolver problemas técnicos e melhorar nossos serviços, conforme descrito na <ph name="BEGIN_LINK2" />Política de Privacidade<ph name="END_LINK2" /> e nos <ph name="BEGIN_LINK3" />Termos de Serviço<ph name="END_LINK3" />.</translation>
+<translation id="1885577615937958993">avançar mídia</translation>
 <translation id="1887850431809612466">Revisão do hardware</translation>
 <translation id="1904932688895783618">Veja outros recursos úteis:</translation>
 <translation id="1905710495812624430">O número máximo de tentativas permitidas foi excedido.</translation>
 <translation id="1908234395526491708">Falhas de solicitações UDP</translation>
+<translation id="1908394185991500139">seta para a esquerda</translation>
 <translation id="1923388006036088459">Cores de destaque</translation>
 <translation id="1947737735496445907">Impresso</translation>
 <translation id="1951012854035635156">Assistente</translation>
@@ -151,6 +155,7 @@
 <translation id="2138109643290557664">Flutue</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
+<translation id="2157660087437850958">seletor de emojis</translation>
 <translation id="2157959690810728433">EM FILA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar novamente</translation>
 <translation id="2161394479394250669">Cancelar trabalho de impressão</translation>
@@ -194,8 +199,10 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2498950423397131220">Flutuante</translation>
 <translation id="2505327257735685095">Atualizar o plano de fundo atual</translation>
+<translation id="2512979179176933762">mostrar janelas</translation>
 <translation id="2513396635448525189">Imagem de login</translation>
 <translation id="2517472476991765520">Verificar</translation>
+<translation id="2521835766824839541">faixa anterior</translation>
 <translation id="2526590354069164005">Área de trabalho</translation>
 <translation id="253029298928638905">Reiniciando…</translation>
 <translation id="2533048460510040082">Conteúdo de ajuda sugerido</translation>
@@ -208,6 +215,7 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Imagem de login</translation>
 <translation id="2640549051766135490">Álbum <ph name="TITLE" /> <ph name="DESC" /> selecionado</translation>
+<translation id="267442004702508783">atualizar</translation>
 <translation id="2712812801627182647">Chave de autenticação do TLS</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2717139507051041123">Ativar o modo de cor escuro</translation>
@@ -266,6 +274,8 @@
 <translation id="3310640316857623290">Latência do DNS significativamente acima do limite permitido</translation>
 <translation id="3328783797891415197">Teste em execução</translation>
 <translation id="3340011300870565703">O fone direito tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
+<translation id="3340978935015468852">configurações</translation>
+<translation id="3359218928534347896">ativar ou desativar o som do microfone</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369013195428705271">Tem certeza de que quer limpar todo o histórico? Os trabalhos de impressão atuais não serão apagados.</translation>
@@ -284,7 +294,7 @@
 <translation id="3486220673238053218">definição</translation>
 <translation id="3488065109653206955">Ativado parcialmente</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />dados de rastreamento de performance<ph name="END_LINK1" /></translation>
-<translation id="3517001332549868749">Atualização do Chrome OS</translation>
+<translation id="3517001332549868749">Atualização do ChromeOS</translation>
 <translation id="3527036260304016759">Falha - Erro desconhecido</translation>
 <translation id="3532980081107202182">Aproximadamente <ph name="MIN_REMAINING" /> minutos restantes</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
@@ -326,6 +336,7 @@
 <translation id="387301095347517405">O número de vezes que a bateria passou por um ciclo completo de carregamento</translation>
 <translation id="3885327323343477505">Mudar o protetor de tela</translation>
 <translation id="391412459402535266">Não foi possível testar o dispositivo. Mude para o modo laptop para testar.</translation>
+<translation id="3916998944874125962">fazer captura de tela</translation>
 <translation id="3923184630988645767">Uso de dados</translation>
 <translation id="3932043219784172185">Nenhum dispositivo conectado</translation>
 <translation id="3941014780699102620">Falha na resolução do host</translation>
@@ -361,6 +372,7 @@
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4170180284036919717">Tirar uma foto</translation>
 <translation id="4170700058716978431">FALHA</translation>
+<translation id="4171077696775491955">diminuir brilho</translation>
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4176659219503619100">Painel de controle</translation>
 <translation id="420283545744377356">Desativar o protetor de tela</translation>
@@ -388,6 +400,7 @@
 <translation id="4394049700291259645">Desativar</translation>
 <translation id="439429847087949098">Reiniciando <ph name="DEVICE_NAME" /></translation>
 <translation id="4415951057168511744">Avatar atual</translation>
+<translation id="4422041425070339732">seta para baixo</translation>
 <translation id="4425149324548788773">Meu Drive</translation>
 <translation id="4428374560396076622">A rede <ph name="NETWORK_NAME" /> está desativada</translation>
 <translation id="4429881212383817840">O tíquete do Kerberos expirará em breve</translation>
@@ -398,6 +411,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha no ping do gateway de rede não padrão</translation>
 <translation id="4503223151711056411">Seta para a esquerda</translation>
+<translation id="4507392511610824664">aumentar o brilho</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Correspondência do nome alternativo do assunto</translation>
 <translation id="4522570452068850558">Saiba mais</translation>
@@ -464,6 +478,7 @@
 <translation id="4937657825850660613">Metade</translation>
 <translation id="4950314376641394653">O firmware do <ph name="DEVICE_NAME" /> foi atualizado para a versão <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Parcial</translation>
+<translation id="4972592110715526173">mudar o modo</translation>
 <translation id="498186245079027698">Confira o scanner e tente novamente. Confirme se há armazenamento local suficiente para salvar os arquivos digitalizados.</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -476,6 +491,7 @@
 <translation id="5049856988445523908">Chip bloqueado (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
 <translation id="5051044138948155788">Essa é a única página. Se você removê-la, a tela inicial de digitalização será aberta.</translation>
+<translation id="5087864757604726239">voltar</translation>
 <translation id="5088172560898466307">Nome do host do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -541,13 +557,16 @@
 <translation id="5649768706273821470">Ouvir</translation>
 <translation id="5655283760733841251">Aumentar o brilho do teclado</translation>
 <translation id="5659593005791499971">E-mail</translation>
+<translation id="5662240986744577912">ativar ou desativar a tela de privacidade</translation>
 <translation id="5669267381087807207">Ativando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
 <translation id="5695599963893094957">Pressione qualquer tecla. Você pode pressionar até quatro teclas ao mesmo tempo.</translation>
 <translation id="5701381305118179107">Centralizar</translation>
+<translation id="5703716265115423771">diminuir o volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Atualizar o <ph name="DEVICE_NAME" /></translation>
+<translation id="5757187557809630523">próxima faixa</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
 <translation id="576835345334454681">Aumentar o brilho da tela</translation>
 <translation id="57838592816432529">Desativar som</translation>
@@ -589,6 +608,7 @@
 <translation id="6050189528197190982">Escala de cinza</translation>
 <translation id="6058625436358447366">Para concluir, insira a senha antiga e a nova</translation>
 <translation id="6061772781719867950">Falha em solicitações HTTP</translation>
+<translation id="6073292342939316679">diminuir brilho do teclado</translation>
 <translation id="6075872808778243331">(Android) Latência do HTTP</translation>
 <translation id="6104112872696127344">A digitalização foi cancelada</translation>
 <translation id="6106186594183574873">Para concluir, insira sua senha antiga</translation>
@@ -634,6 +654,7 @@
 <translation id="6410257289063177456">Arquivos de imagem</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
 <translation id="6412715219990689313">Teclado integrado</translation>
+<translation id="6417265370957905582">Google Assistente</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Fraco (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Acessar as configurações da conta</translation>
@@ -667,6 +688,7 @@
 <translation id="6650062777702288430">Alternar entre o teclado kana e o alfanumérico</translation>
 <translation id="6657585470893396449">Senha</translation>
 <translation id="6659594942844771486">Guia</translation>
+<translation id="6673898378497337661">aumentar brilho do teclado</translation>
 <translation id="6692996468359469499">Veja informações relacionadas à sua seleção</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6723839937902243910">Energia</translation>
@@ -692,6 +714,7 @@
 <translation id="6911383237894364323">Não foi possível se conectar aos servidores de mídia</translation>
 <translation id="6943893908656559156">Identidade remota (opcional)</translation>
 <translation id="6957231940976260713">Nome do serviço</translation>
+<translation id="695776212669661671">seta para a direita</translation>
 <translation id="6961170852793647506">Para começar, coloque o documento no scanner</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
@@ -735,6 +758,7 @@
 <translation id="7297226631177386107">O firewall impediu a conexão a sites HTTPS</translation>
 <translation id="7297726121602187087">Verde-escuro</translation>
 <translation id="7302860742311162920">ICCID</translation>
+<translation id="7305236594389852547">ativar ou desativar o ditado</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Pergunte aos especialistas no Fórum de Ajuda do Chromebook</translation>
 <translation id="7311368985037279727">cor do teclado</translation>
@@ -806,6 +830,7 @@
 <translation id="7936303884198020182">Nenhum servidor de nomes encontrado</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7943235353293548836">Intervalo de sinal de atividade permanente</translation>
+<translation id="7944562637040950644">ativar ou desativar a luz de fundo do teclado</translation>
 <translation id="7953669802889559161">Entradas</translation>
 <translation id="7955587717700691983">Teclado Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
@@ -848,7 +873,9 @@
 <translation id="8294431847097064396">Origem</translation>
 <translation id="8297006494302853456">Fraco</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
+<translation id="8312330582793120272">reproduzir mídia</translation>
 <translation id="8318753676953949627">Sem imagens</translation>
+<translation id="8329018942023753850">app calculadora</translation>
 <translation id="8336739000755212683">Alterar imagem da conta do dispositivo</translation>
 <translation id="8347227221149377169">Trabalhos de impressão</translation>
 <translation id="8351855506390808906">Ponto de contato do mapeamento de atalhos</translation>
@@ -880,8 +907,10 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Pode ser necessário ativar esta opção para se conectar à rede da sua operadora. Entre em contato com a operadora para mais informações.</translation>
 <translation id="8576249514688522074">Não inicializado</translation>
+<translation id="8593058461203131755">pausar mídia</translation>
 <translation id="8620617069779373398">Status do roaming</translation>
 <translation id="86356131183441916">Roxo-claro</translation>
+<translation id="8651481478098336970">desativar o som</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Compartilhar URL:</translation>
 <translation id="8660881923941176839">libras</translation>
@@ -916,6 +945,7 @@
 <translation id="8876270629542503161">Este dispositivo é um tablet.</translation>
 <translation id="8881098542468797602">Teste bem sucedido</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
+<translation id="8909114361904403025">seta para cima</translation>
 <translation id="8910721771319628100">Rede padrão acima do limite de latência</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Falha - Bandeja ausente</translation>
@@ -933,6 +963,7 @@
 <translation id="8997710128084572139">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% bateria.</translation>
 <translation id="8998289560386111590">Indisponível no seu dispositivo</translation>
 <translation id="9003704114456258138">Frequência</translation>
+<translation id="9024331582947483881">tela cheia</translation>
 <translation id="9025198690966128418">Usar como dispositivo pessoal</translation>
 <translation id="902638246363752736">Configurações do teclado</translation>
 <translation id="9028832514430399253">Ative o modo ambiente para selecionar as opções de protetor de tela</translation>

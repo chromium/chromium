@@ -120,6 +120,7 @@
 <translation id="1571304935088121812">ഉപയോക്തൃനാമം പകർത്തുക</translation>
 <translation id="1592864538817356322">സ്‌റ്റാൻഡേർഡ് പരിരക്ഷ:</translation>
 <translation id="1594635596540195766">ചുവടെയുള്ള ലിസ്റ്റിൽ <ph name="SUGGESTIONS_COUNT" /> ഇനങ്ങൾ നിർദ്ദേശിച്ചിരിക്കുന്നു.</translation>
+<translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> ഉപയോഗിക്കുക</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />നിങ്ങളുടെ ഡാറ്റ എങ്ങനെ മാനേജ് ചെയ്യാം:<ph name="END_BOLD" /> നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കുന്നതിന് 4 ആഴ്‌ചയിലധികം പഴക്കമുള്ള താൽപ്പര്യങ്ങൾ ഞങ്ങൾ സ്വയമേവ ഇല്ലാതാക്കുന്നു. നിങ്ങൾ ബ്രൗസ് ചെയ്യുന്നത് തുടരുമ്പോൾ, ഒരു താൽപ്പര്യം ലിസ്റ്റിൽ വീണ്ടും ദൃശ്യമായേക്കാം. അല്ലെങ്കിൽ Chrome പരിഗണിക്കരുതെന്ന് നിങ്ങൾ ആഗ്രഹിക്കുന്ന താൽപ്പര്യങ്ങൾ നിങ്ങൾക്ക് നീക്കം ചെയ്യാം.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{തിരഞ്ഞെടുത്ത ഒരു ഇനം നീക്കംചെയ്യുക}other{തിരഞ്ഞെടുത്ത # ഇനങ്ങൾ നീക്കംചെയ്യുക}}</translation>
 <translation id="1633659023549081553">Chrome-ന്റെ ഹോം പേജിൽ പുതിയ ഉള്ളടക്കം കണ്ടെത്തുക</translation>
@@ -546,6 +547,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# മണിക്കൂർ}other{# മണിക്കൂർ}}</translation>
 <translation id="4035877632587724847">അനുവദിക്കരുത്</translation>
 <translation id="4036177530563778041">നിങ്ങൾ നിർത്തിയ ഇടത്തുനിന്നും എളുപ്പത്തിൽ തുടരുക</translation>
+<translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> ഉപയോഗിക്കുന്നത് തുടരുക</translation>
 <translation id="4045764304651014138">ഉപയോഗ ഡാറ്റ</translation>
 <translation id="405399507749852140">ഏതെങ്കിലും സൈറ്റിൽ വിലക്കുറവ് ഉണ്ടെങ്കിൽ അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="4056223980640387499">സിപിയ</translation>
@@ -559,7 +561,7 @@
 <translation id="4101475238162928417">മറ്റ് ഉപകരണങ്ങളിൽ നിങ്ങളുടെ പാസ്‌വേഡുകളും ബുക്ക്‌മാർക്കുകളും മറ്റും ലഭിക്കാൻ സമന്വയിപ്പിക്കുക</translation>
 <translation id="410351446219883937">സ്വയമേവ പ്ലേ ചെയ്യൽ</translation>
 <translation id="4106587138345390261">നിങ്ങളുടെ കുറച്ച് വിവരങ്ങൾ മാത്രം ഉപയോഗിച്ച്, സമാന ബ്രൗസിംഗ് അനുഭവം നൽകാൻ സൈറ്റുകളെ അനുവദിക്കുന്ന പുതിയ ഫീച്ചറുകൾ കണ്ടെത്താൻ Chrome ശ്രമിക്കുകയാണ്</translation>
-<translation id="4108314971463891922">പിന്തുടരുക</translation>
+<translation id="4108314971463891922">ഫോളോ ചെയ്യുക</translation>
 <translation id="4108998448622696017">അപകടകരമായ ഇവന്റുകൾ നടക്കുമ്പോൾ അവ കണ്ടെത്തുകയും നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുകയും ചെയ്യുന്നു.</translation>
 <translation id="4116038641877404294">ഓഫ്‌ലൈനായി ഉപയോഗിക്കാൻ പേജുകൾ ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="4124152339699379357">അറിയിപ്പ് അനുമതി ഫ്ലോ മുഴുവനായും തുറന്നിരിക്കുന്നു</translation>
@@ -738,7 +740,7 @@
 <translation id="4988526792673242964">പേജുകള്‍</translation>
 <translation id="4991110219272367918">അടച്ച വെബ്‌സൈറ്റ് അംഗീകരിക്കാനോ നിരസിക്കാനോ ഉള്ള ഓപ്ഷൻ</translation>
 <translation id="499724277181351974">നാവിഗേറ്റ് ചെയ്യുക: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
-<translation id="5001388021414335527">ഈ സൈറ്റ് ഇവിടെ പിന്തുടരുക</translation>
+<translation id="5001388021414335527">ഈ സൈറ്റ് ഇവിടെ ഫോളോ ചെയ്യുക</translation>
 <translation id="5004416275253351869">Google പ്രവർത്തന നിയന്ത്രണങ്ങൾ</translation>
 <translation id="5005498671520578047">പാസ്‌വേഡ് പകർത്തുക</translation>
 <translation id="5010886807652684893">വിഷ്വൽ കാഴ്ച</translation>
@@ -849,6 +851,7 @@
 <translation id="5628604359369369630">വായിക്കാത്തവ - ഓഫ്‌ലൈനിൽ ലഭ്യമാണ്</translation>
 <translation id="5639724618331995626">എല്ലാ സൈറ്റുകളെയും അനുവദിക്കുക</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />തിരയൽ ചരിത്രവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />മറ്റ് തരത്തിലുള്ള ആക്റ്റിവിറ്റിയും<ph name="END_LINK2" /> നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിച്ചേക്കാം</translation>
+<translation id="564667659802381754">സ്വകാര്യതാ ഗൈഡ് <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">കഴിഞ്ഞ 7 ദിവസം</translation>
 <translation id="5655963694829536461">നിങ്ങളുടെ ഡൗൺലോഡുകൾ തിരയുക</translation>
 <translation id="5659593005791499971">ഇമെയില്‍</translation>
@@ -899,7 +902,7 @@
 <translation id="5865733239029070421">Google-ലേക്ക് സ്വയമേവ ഉപയോഗ വിവരക്കണക്കുകളും ക്രാഷ് റിപ്പോര്‍ട്ടുകളും അയയ്ക്കുന്നു</translation>
 <translation id="5869522115854928033">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
 <translation id="5876496397064130037">ടാസ്‌ക് പുനരാരംഭിച്ചു</translation>
-<translation id="587735546353481577">ഒരു സൈറ്റ് പിന്തുടരാൻ, സൈറ്റിലേക്ക് പോയി Chrome മെനു തുറന്ന് 'പിന്തുടരുക' ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="587735546353481577">ഒരു സൈറ്റ് പിന്തുടരാൻ, സൈറ്റിലേക്ക് പോയി Chrome മെനു തുറന്ന് 'ഫോളോ ചെയ്യുക' ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="5879072387416556377">മെച്ചപ്പെട്ട നിർദ്ദേശങ്ങൾ നേടുക</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5919204609460789179">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, <ph name="PRODUCT_NAME" /> അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
@@ -917,7 +920,7 @@
 <translation id="5979084224081478209">പാസ്‌വേഡ് പരിശോധിക്കൂ</translation>
 <translation id="5995726099713306770">പേജ് വീണ്ടും ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="6000066717592683814">Google ഉപയോഗിക്കുക</translation>
-<translation id="6000203700195075278">വീണ്ടും പിന്തുടരുക</translation>
+<translation id="6000203700195075278">വീണ്ടും ഫോളോ ചെയ്യുക</translation>
 <translation id="6002122790816966947">നിങ്ങളുടെ ഉപകരണങ്ങൾ</translation>
 <translation id="6005538289190791541">നിർദ്ദേശിച്ച പാസ്‌വേഡ്</translation>
 <translation id="6011308810877101166">തിരയൽ നിർദ്ദേശങ്ങൾ മെച്ചപ്പെടുത്തുക</translation>
@@ -1211,6 +1214,7 @@
 <translation id="7482656565088326534">പ്രിവ്യു ടാബ്</translation>
 <translation id="7484997419527351112">Discover - ഓഫാണ്</translation>
 <translation id="7485033510383818941">ഫീഡ് ഉള്ളടക്കം റീഫ്രഷ് ചെയ്യാൻ പേജ് താഴേക്ക് വലിക്കുക</translation>
+<translation id="7486953194485875763">കഴിഞ്ഞ 15 മിനിറ്റിലെ ഇനിപ്പറയുന്ന ഡാറ്റ ഇല്ലാതാക്കും:</translation>
 <translation id="749294055653435199">ഈ ഉപകരണത്തിൽ Google Lens ലഭ്യമല്ല</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (അപ്‌ഡേറ്റ് ചെയ്‌തു, <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">ലഭ്യമായ വിഷയങ്ങളുടെ ലിസ്‌റ്റിലേക്ക് ഈ വിഷയം തിരികെ ചേർത്തു</translation>
@@ -1261,6 +1265,7 @@
 <translation id="7709918231054955894">നിങ്ങളുടെ എല്ലാ ടാബുകളും നേടുക</translation>
 <translation id="772434085369393266">നാവിഗേഷനുകൾ HTTPS-ലേക്ക് അപ്ഗ്രേഡ് ചെയ്യുക, അതിനെ പിന്തുണയ്ക്കാത്ത സൈറ്റുകൾ ലോഡ് ചെയ്യുന്നതിന് മുമ്പ് നിങ്ങൾക്ക് മുന്നറിയിപ്പ് ലഭിക്കും. വിപുലമായ പരിരക്ഷ പ്രവർത്തനക്ഷമമാക്കിയതിനാൽ നിങ്ങൾക്ക് ഈ ക്രമീകരണം മാറ്റാനാകില്ല.</translation>
 <translation id="7725024127233776428">നിങ്ങൾ ബുക്ക്‌മാർക്ക് ചെയ്യുന്ന പേജുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
+<translation id="7733878270780732638">ഉപകരണത്തിൽ ആവശ്യത്തിന് ഇടമില്ല.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് പങ്കിട്ട ടെക്‌സ്റ്റ്</translation>
 <translation id="7762668264895820836">SD കാർഡ് <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">വിലാസം ചേർക്കുക</translation>
@@ -1454,6 +1459,7 @@
 <translation id="8664215986015753476">നിങ്ങൾക്ക് ഇഷ്ടമുള്ള രീതിയിൽ Chrome ഉപയോഗിക്കുക</translation>
 <translation id="8664979001105139458">ഫയലിന്റെ പേര് ഇതിനകം നിലവിലുണ്ട്</translation>
 <translation id="8666759526542103597">ബ്രൗസർ അധിഷ്‌ഠിത പരസ്യം വ്യക്തിപരമാക്കലിനെക്കുറിച്ച്</translation>
+<translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിൽ സൈനപ്പ് ചെയ്യുക</translation>
 <translation id="8676789164135894283">സൈൻ ഇൻ പരിശോധിച്ചുറപ്പിക്കലുകൾ</translation>
 <translation id="8683039184091909753">ചിത്രം</translation>
 <translation id="869891660844655955">കാലഹരണപ്പെടല്‍‌ തീയതി</translation>

@@ -120,6 +120,7 @@
 <translation id="1571304935088121812">பயனர்பெயரை நகலெடுக்கும்</translation>
 <translation id="1592864538817356322">நிலையான பாதுகாப்பு:</translation>
 <translation id="1594635596540195766">இந்தப் பட்டியலில் <ph name="SUGGESTIONS_COUNT" /> பரிந்துரைகள் உள்ளன.</translation>
+<translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இணையதளத்தைப் பயன்படுத்துங்கள்</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />உங்கள் தரவை நீங்கள் எப்படி நிர்வகிக்கலாம்?<ph name="END_BOLD" /> உங்கள் தனியுரிமையைப் பாதுகாக்க, 4 வாரங்களுக்கு முந்தைய ஆர்வங்களைத் தானாக நீக்குவோம். நீங்கள் தொடர்ந்து உலாவும்போது, ஏதேனுமொரு ஆர்வம் மீண்டும் பட்டியலில் காட்டப்படக்கூடும். Chrome கருத்தில்கொள்ள வேண்டாம் என நீங்கள் நினைக்கும் ஆர்வங்களை நீங்களாகவும் அகற்றலாம்.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{தேர்ந்தெடுத்த 1 உருப்படியை அகற்றும்}other{தேர்ந்தெடுத்த # உருப்படிகளை அகற்றும்}}</translation>
 <translation id="1633659023549081553">Chromeமின் முகப்புப் பக்கத்தில் புதிய உள்ளடக்கத்தைக் கண்டறியலாம்</translation>
@@ -546,6 +547,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# மணிநேரம்}other{# மணிநேரம்}}</translation>
 <translation id="4035877632587724847">வேண்டாம்</translation>
 <translation id="4036177530563778041">விட்ட இடத்திலிருந்து எளிதாகத் தொடரலாம்</translation>
+<translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இணையதளத்தில் தொடருங்கள்</translation>
 <translation id="4045764304651014138">உபயோகத் தரவு</translation>
 <translation id="405399507749852140">எந்தத் தளத்திலாவது விலை குறைந்தால் அதுகுறித்து அறிவிப்பைப் பெறுவீர்கள்</translation>
 <translation id="4056223980640387499">செபியா</translation>
@@ -849,6 +851,7 @@
 <translation id="5628604359369369630">படிக்காதவை - ஆஃப்லைனில் படிக்கலாம்</translation>
 <translation id="5639724618331995626">எல்லாத் தளங்களையும் அனுமதி</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />இதுவரை தேடியவையும்<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />பிற வகையான செயல்பாடுகளும்<ph name="END_LINK2" /> உங்கள் Google கணக்கில் சேமிக்கப்பட்டிருக்கலாம்</translation>
+<translation id="564667659802381754">தனியுரிமை வழிகாட்டி <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">கடந்த 7 நாட்கள்</translation>
 <translation id="5655963694829536461">உங்கள் பதிவிறக்கங்களைத் தேடுக</translation>
 <translation id="5659593005791499971">மின்னஞ்சல்</translation>
@@ -1211,6 +1214,7 @@
 <translation id="7482656565088326534">மாதிரிக்காட்சித் தாவல்</translation>
 <translation id="7484997419527351112">Discover - முடக்கத்தில்</translation>
 <translation id="7485033510383818941">ஊட்ட உள்ளடக்கத்தை ரெஃப்ரெஷ் செய்ய பக்கத்தைக் கீழே இழுங்கள்</translation>
+<translation id="7486953194485875763">கடந்த 15 நிமிடத்திற்கான பின்வரும் தரவு நீக்கப்படும்:</translation>
 <translation id="749294055653435199">இந்தச் சாதனத்தில் Google Lensஸைப் பயன்படுத்த முடியாது</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (புதுப்பித்தது: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">கருத்தில் எடுத்துக்கொள்ளக்கூடிய தலைப்பாக மீண்டும் சேர்க்கப்பட்டது</translation>
@@ -1454,6 +1458,7 @@
 <translation id="8664215986015753476">உங்கள் தரவுகள் அனைத்தையும் Chromeமில் பெறுங்கள்</translation>
 <translation id="8664979001105139458">ஃபைல் பெயர் ஏற்கனவே உள்ளது</translation>
 <translation id="8666759526542103597">உலாவி அடிப்படையிலான விளம்பரப் பிரத்தியேகமாக்கல் குறித்த ஓர் அறிமுகம்</translation>
+<translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இணையதளத்தில் பதிவு செய்யுங்கள்</translation>
 <translation id="8676789164135894283">உள்நுழைவுச் சரிபார்ப்புகள்</translation>
 <translation id="8683039184091909753">படம்</translation>
 <translation id="869891660844655955">காலாவதியாகும் தேதி</translation>

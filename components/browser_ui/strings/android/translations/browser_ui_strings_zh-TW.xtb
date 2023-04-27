@@ -226,7 +226,6 @@
 <translation id="5197729504361054390">系統會將你選取的聯絡人資訊提供給 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
 <translation id="5216942107514965959">上次造訪日期：今天</translation>
 <translation id="5225463052809312700">開啟攝影機</translation>
-<translation id="5229337741799419985">不必提供身分識別資訊或授權讓網站查看瀏覽記錄，系統也能執行這項設定</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5264323282659631142">移除「<ph name="CHIP_LABEL" />」</translation>
 <translation id="528192093759286357">從頂端拖曳並輕觸返回按鈕即可結束全螢幕模式。</translation>
@@ -313,7 +312,6 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6689172468748959065">個人資料相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>
-<translation id="6701547804986694515">你造訪的網站可將資訊儲存在 Chrome，用來證明你不是機器人。你隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資訊，確認你應該是真人</translation>
 <translation id="6722828510648505498">封鎖身分識別服務的登入提示。</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="6749077623962119521">要重設權限嗎？</translation>

@@ -120,6 +120,7 @@
 <translation id="1571304935088121812">प्रयोगकर्ता नामको कपी गर्नुहोस्</translation>
 <translation id="1592864538817356322">मानक सुरक्षा:</translation>
 <translation id="1594635596540195766">तलको सूचीमा सिफारिस गरिएका <ph name="SUGGESTIONS_COUNT" /> वटा वस्तु छन्।</translation>
+<translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />तपाईं आफ्नो जानकारी कसरी व्यवस्थापन गर्न सक्नुहुन्छ:<ph name="END_BOLD" /> तपाईंको गोपनीयताको सुरक्षार्थ हामी ४ हप्ताभन्दा पुराना तपाईंका रुचिहरू स्वतः मेटाउँछौँ। तपाईंले विभिन्न साइटहरू ब्राउज गरिराख्ने क्रममा कुनै रुचि यो सूचीमा फेरि देखिन सक्छ। अथवा तपाईं Chrome ले कुनै रुचिसँग सम्बन्धित सामग्री नदेखाओस् भन्ने चाहनुहुन्छ भने तपाईं उक्त रुचि हटाउन सक्नुहुन्छ।</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{चयन गरिएको १ वस्तु हटाउनुहोस्}other{चयन गरिएका # वस्तुहरू हटाउनुहोस्}}</translation>
 <translation id="1633659023549081553">Chrome को होमपेजमा नयाँ नयाँ सामग्री भेट्टाउनुहोस्</translation>
@@ -546,6 +547,7 @@
 <translation id="4034817413553209278">{HOURS,plural, =1{# घन्टा}other{# घन्टा}}</translation>
 <translation id="4035877632587724847">अनुमति नदिनुहोस्</translation>
 <translation id="4036177530563778041">आफूले छाडेकै ठाउँबाट सजिलैसँग जारी राख्नुहोस्</translation>
+<translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="4045764304651014138">प्रयोगसम्बन्धी डेटा</translation>
 <translation id="405399507749852140">कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="4056223980640387499">सेपिया</translation>
@@ -1211,6 +1213,7 @@
 <translation id="7482656565088326534">पूर्वावलोकन ट्याब</translation>
 <translation id="7484997419527351112">Discover - अफ छ</translation>
 <translation id="7485033510383818941">फिडमा भएका सामग्री रिफ्रेस गर्न पेज तलतिर तान्नुहोस्</translation>
+<translation id="7486953194485875763">पछिल्ला १५ मिनेटको निम्न डेटा मेटाइने छ:</translation>
 <translation id="749294055653435199">यो डिभाइसमा Google लेन्स उपलब्ध छैन</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (अद्यावधिक गरियो <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">यो विषयलाई सम्भावित विषयहरूको सूचीमा फेरि थपिएको छ</translation>
@@ -1454,6 +1457,7 @@
 <translation id="8664215986015753476">आफूले चाहे जसरी Chrome प्रयोग गर्नुहोस्</translation>
 <translation id="8664979001105139458">यो नामको फाइल पहिलेदेखि नै विद्यमान छ</translation>
 <translation id="8666759526542103597">ब्राउजरमा आधारित विज्ञापनको पर्सनलाइजेसनका बारेमा जानकारी</translation>
+<translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन अप गर्नुहोस्</translation>
 <translation id="8676789164135894283">साइन इन गर्न कार्यको पुष्टिसम्बन्धी सूचना</translation>
 <translation id="8683039184091909753">फोटो</translation>
 <translation id="869891660844655955">समाप्ति मिति</translation>

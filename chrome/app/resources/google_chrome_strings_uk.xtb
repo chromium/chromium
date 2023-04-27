@@ -411,7 +411,6 @@
 <translation id="9054037008353851982">Перезапустити, щоб оновити – вкладки відкриються знову</translation>
 <translation id="911206726377975832">Також видалити дані веб-перегляду?</translation>
 <translation id="9138603949443464873">Щоб застосувати зміни, перезапустіть Chrome</translation>
-<translation id="9190003950176692491">{NUM_DEVICES,plural, =0{Google Chrome мав доступ до пристрою HID}=1{Google Chrome має доступ до пристрою HID}one{Google Chrome має доступ до пристроїв HID}few{Google Chrome має доступ до пристроїв HID}many{Google Chrome має доступ до пристроїв HID}other{Google Chrome має доступ до пристроїв HID}}</translation>
 <translation id="9195993889682885387">Chrome оцінює ваші інтереси на основі історії веб-перегляду за останні кілька тижнів. Ця інформація залишається на вашому пристрої.</translation>
 <translation id="919706545465235479">Щоб почати синхронізацію, оновіть Chrome</translation>
 <translation id="922152298093051471">Налаштувати Chrome</translation>

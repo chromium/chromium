@@ -186,6 +186,7 @@
 <translation id="2242467532204595597">Օգտագործեք Chrome-ը՝ հաղորդագրություններում, փաստաթղթերում և այլ հավելվածներում առկա հղումները բացելու համար։</translation>
 <translation id="22508856139286506">Թաքցված նախազգուշացումներ (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Ընտրացանկ → Պատմություն</translation>
+<translation id="2252674110805316998">Որոնել համացանցում</translation>
 <translation id="2256933947031277845">Ձեր կազմակերպությունում հնարավոր է մուտք գործել միայն որոշակի հաշիվներ։</translation>
 <translation id="225943865679747347">Սխալի կոդ` <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Ավելացնել հաշիվ</translation>
@@ -349,7 +350,6 @@
 <translation id="3244271242291266297">ամիս</translation>
 <translation id="3245744387817103524">Փոփոխությունը չհաջողվեց պահել։</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" />-ը <ph name="NUM_SUGGESTIONS" />-ից</translation>
-<translation id="3260117527409269737">Այս հասցեն պահված է միայն Chrome-ում։ Պահեք հասցեն Google հաշվում, որպեսզի այն օգտագործեք Google-ի տարբեր արտադրանքներում (<ph name="USER_EMAIL" />)։</translation>
 <translation id="3264775633254836593">Գաղտնաբառերի ինքնալրացում</translation>
 <translation id="3268451620468152448">Բաց ներդիրները</translation>
 <translation id="3272527697863656322">Չեղարկել</translation>
@@ -488,6 +488,7 @@
 <translation id="4272631900155121838">QR կոդն օգտագործելու համար կարգավորումներում միացրեք ֆոտոխցիկը</translation>
 <translation id="4277990410970811858">Անվտանգ դիտարկում</translation>
 <translation id="4281844954008187215">Օգտագործման պայմաններ</translation>
+<translation id="4293080268407233932">Որոնել</translation>
 <translation id="4304713468139749426">Գաղտնաբառերի կառավարիչ</translation>
 <translation id="430793432425771671">Համաժամացնել բոլորը</translation>
 <translation id="4309403553630140242">Կրկնակի հպեք՝ լրացուցիչ տեղեկություններ ստանալու համար</translation>
@@ -743,6 +744,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5951816930277761335">Կիսվեք հղումով</translation>
 <translation id="5955891643922670672">Անցանց տարբերակի դիտում</translation>
 <translation id="5957613098218939406">Լրացուցիչ ընտրանքներ</translation>
+<translation id="595769230373966252">Որոնել <ph name="SEARCH_PROVIDER" />-ում</translation>
 <translation id="5963939892571022323">Չհաջողվեց ստեղծել ընդգծված տեքստի հղումը։</translation>
 <translation id="5965679971710331625">Դուք մուտք եք գործել</translation>
 <translation id="5979837087407522202">Գաղտնաբառերի որոնում</translation>
@@ -1266,7 +1268,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="948048872540558976">Ստեղծել նոր ներդիր</translation>
 <translation id="952704832371081537">Չեղարկել</translation>
 <translation id="953008885340860025">Դուք դուրս եք գրվել Chrome-ից</translation>
-<translation id="953673009604363306">Նախազգուշացումը կարող եք ավելի ուշ նորից գտնել «Անտեսված նախազգուշացումներ» բաժնի «Կոտրված գաղտնաբառեր» բաժնում։</translation>
 <translation id="959066944189734975">Դուք հետևում եք <ph name="CHANNEL_NAME" /> կայքին</translation>
 <translation id="973493300226275298">Հետագծեք ապրանքի գները տարբեր առցանց խանութներում։ Երբ գնիջեցում լինի, դուք ծանուցում կստանաք այդ մասին։</translation>
 <translation id="981498610235328462">Ձեր կազմակերպությունում հնարավոր է մուտք գործել միայն որոշակի հաշիվներ։ Հաշիվները, որոնց մուտքն արգելված է, կթաքցվեն։</translation>

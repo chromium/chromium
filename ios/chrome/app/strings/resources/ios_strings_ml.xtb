@@ -127,13 +127,13 @@
 <translation id="1757699834933698436">{count,plural, =1{ദുർബലമായ {count} പാസ്‌വേഡ്}other{ദുർബലമായ {count} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1789803444939621101">വീണ്ടും സ്വാഗതം, <ph name="USER_NAME" /></translation>
-<translation id="179367147360747549">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമാണെന്ന് ഉറപ്പാക്കുക, അവ അപഹരിക്കപ്പെട്ടുവെന്ന് കണ്ടെത്തിയാൽ ഓൺലൈനിൽ നിങ്ങളെ സുരക്ഷിതരാക്കാൻ സഹായിക്കുന്ന ഉപദേശം നേടുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക.<ph name="END_LINK" /></translation>
 <translation id="1803264062614276815">കാർഡ് ഉടമയുടെ പേര്</translation>
 <translation id="1809939268435598390">ഫോൾഡർ ഇല്ലാതാക്കുക</translation>
 <translation id="1813414402673211292">ബ്രൌസിംഗ് ഡാറ്റാ മായ്ക്കുക...</translation>
 <translation id="1815941218935345331">പാസ്‌കോഡ്</translation>
 <translation id="1820259098641718022">വായനാ ലിസ്റ്റിൽ ചേർത്തു</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ}=1{അപഹരിക്കപ്പെട്ട {COUNT} പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട {COUNT} പാസ്‌വേഡുകൾ}}</translation>
+<translation id="1830634592642484976">ഈ വിലാസം നിലവിൽ Chrome-ൽ സംരക്ഷിച്ചിരിക്കുന്നു. Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാൻ, ഇത് നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന Google Account-ൽ സംരക്ഷിക്കുക.</translation>
 <translation id="1832848789136765277">സമന്വയിപ്പിക്കുന്ന ഡാറ്റ നിങ്ങൾക്ക് എപ്പോഴും ആക്‌സസ് ചെയ്യാനാകുമെന്ന് ഉറപ്പാക്കാൻ ഇത് നിങ്ങളാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="1836891464494477513">{count,plural, =1{{email} എന്ന നിങ്ങളുടെ Google Account-ൽ ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു}other{{email} എന്ന നിങ്ങളുടെ Google Account-ൽ ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു}}</translation>
 <translation id="1870148520156231997">പാസ്‌വേഡ് വെളിപ്പെടുത്തുക</translation>
@@ -187,6 +187,7 @@
 <translation id="2242467532204595597">സന്ദേശങ്ങൾ, ഡോക്യുമെന്റുകൾ, മറ്റ് ആപ്പുകൾ എന്നിവയിലെ ലിങ്കുകൾ ക്ലിക്ക് ചെയ്യുമ്പോഴെല്ലാം Chrome ഉപയോഗിക്കുക.</translation>
 <translation id="22508856139286506">ഡിസ്‌മിസ് ചെയ്‌ത മുന്നറിയിപ്പുകൾ (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">മെനു → ചരിത്രം</translation>
+<translation id="2252674110805316998">വെബ് തിരയൽ</translation>
 <translation id="2256933947031277845">ചില അക്കൗണ്ടുകൾ ഉപയോഗിച്ച് മാത്രമേ സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കൂ.</translation>
 <translation id="225943865679747347">പിശക് കോഡ്: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">അക്കൗണ്ട് ചേർക്കുക</translation>
@@ -298,7 +299,7 @@
 <translation id="2898963176829412617">പുതിയ ഫോൾഡർ…</translation>
 <translation id="2902684821701498619">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിൽ ചേർക്കുക</translation>
 <translation id="291754862089661335">ഈ ഫ്രെയിമിൽ QR കോഡോ ബാർ‌കോഡോ സ്ഥാപിക്കുക</translation>
-<translation id="2920866371965792875">ഈ സൈറ്റിൽ നിന്നുള്ള അപ്ഡേറ്റുകൾ കാണാൻ ഇവിടെ അത് പിന്തുടരുക.</translation>
+<translation id="2920866371965792875">ഈ സൈറ്റിൽ നിന്നുള്ള അപ്ഡേറ്റുകൾ കാണാൻ ഇവിടെ അത് ഫോളോ ചെയ്യുക.</translation>
 <translation id="2921219216347069551">പേജ് പങ്കിടാൻ കഴിയില്ല</translation>
 <translation id="2923448633003185837">ഒട്ടിച്ചാൽ മാത്രം മതി</translation>
 <translation id="292639812446257861">വായിക്കാത്തതായി അടയാളപ്പെടുത്തുക</translation>
@@ -350,7 +351,6 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">നിങ്ങൾ വരുത്തിയ മാറ്റം സംരക്ഷിക്കാനായില്ല.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3260117527409269737">ഈ വിലാസം Chrome-ൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാൻ, ഇത് നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന Google Account-ൽ സംരക്ഷിക്കുക.</translation>
 <translation id="3264775633254836593">പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="3268451620468152448">ഓപ്പൺ ടാബുകൾ</translation>
 <translation id="3272527697863656322">റദ്ദാക്കുക</translation>
@@ -418,7 +418,7 @@
 <translation id="3775743491439407556">സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="3779810277399252432">ഇന്റർനെറ്റ് കണക്ഷനില്ല.</translation>
 <translation id="3783017676699494206">ചിത്രം സംരക്ഷിക്കുക</translation>
-<translation id="3789294999358192700">ചുവടെയുള്ള ഘട്ടങ്ങൾ പിന്തുടരുക:</translation>
+<translation id="3789294999358192700">ചുവടെയുള്ള ഘട്ടങ്ങൾ ഫോളോ ചെയ്യുക:</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="380329542618494757">പേര്</translation>
 <translation id="3803696231112616155">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>
@@ -489,6 +489,7 @@
 <translation id="4272631900155121838">QR കോഡ് സ്‌കാൻ ചെയ്യാൻ, ക്രമീകരണത്തിൽ നിന്ന് ക്യാമറ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="4277990410970811858">സുരക്ഷിതമായ ബ്രൗസ് ചെയ്യൽ</translation>
 <translation id="4281844954008187215">സേവന നിബന്ധനകൾ</translation>
+<translation id="4293080268407233932">തിരയുക</translation>
 <translation id="4304713468139749426">പാസ്‌വേഡ് മാനേജർ</translation>
 <translation id="430793432425771671">എല്ലാം സമന്വയിപ്പിക്കുക</translation>
 <translation id="4309403553630140242">കൂടുതൽ വിവരങ്ങൾക്ക് ഡബിൾ ടാപ്പ് ചെയ്യുക</translation>
@@ -545,6 +546,7 @@
 <translation id="4636930964841734540">വിവരം</translation>
 <translation id="4642472735733036929">നിരക്ക് ട്രാക്ക് ചെയ്യൽ നിർത്തി</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ആയി തുടരുക</translation>
+<translation id="4652817563047461855">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമാണെന്ന് ഉറപ്പാക്കുക, അവ അപഹരിക്കപ്പെട്ടുവെന്ന് കണ്ടെത്തിയാൽ ഓൺലൈനിൽ സ്വയം പരിരക്ഷിക്കുന്നതിനുള്ള ഉപദേശം നേടുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്യുമ്പോൾ ഈ ഫീച്ചർ ഓണാകും.</translation>
 <translation id="4659667755519643272">ടാബ് സ്വിച്ചർ നൽകുക</translation>
 <translation id="46614316059270592">പാസ്‌വേഡ് സംരക്ഷിക്കുക</translation>
@@ -697,6 +699,7 @@
 <translation id="5669617676038747374">QR കോഡ് സൃഷ്ടിക്കുക</translation>
 <translation id="567881659373499783">പതിപ്പ് <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കാനും അവ ഉപയോഗിക്കാനും, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക.</translation>
+<translation id="5684761169742812828">ഇന്റർനെറ്റിലെ ഡാറ്റാ ലംഘനത്തിന്റെ ഭാഗമായി ഈ പാസ്‌വേഡ് വെളിപ്പെട്ടു. നിങ്ങൾക്ക് ഇപ്പോൾ ഇത് മാറ്റാൻ സമയമില്ലെങ്കിൽ, പിന്നീട് സ്വയം ഓർമ്മപ്പെടുത്തുന്നതിന് ഈ മുന്നറിയിപ്പ് നിലനിർത്താൻ Google നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="5690398455483874150">{count,plural, =1{ഇപ്പോൾ ഒരു Chrome വിൻഡോ കാണിക്കുന്നു}other{ഇപ്പോൾ {count} Chrome വിൻഡോകൾ കാണിക്കുന്നു}}</translation>
 <translation id="5701270923492462699">ക്യാമറ ആക്‌സസ് അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="5704908597376970822">സൈൻ ഇൻ ചെയ്യാനാകുന്നില്ല.</translation>
@@ -744,6 +747,7 @@
 <translation id="5951816930277761335">ലിങ്ക് പങ്കിടുക</translation>
 <translation id="5955891643922670672">ഓഫ്‌ലൈൻ പതിപ്പ് കാണുന്നു</translation>
 <translation id="5957613098218939406">കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
+<translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="5963939892571022323">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല.</translation>
 <translation id="5965679971710331625">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തു</translation>
 <translation id="5979837087407522202">പാസ്‌വേഡുകൾ തിരയുക</translation>
@@ -818,7 +822,7 @@
 <translation id="634878792104344809">നിങ്ങളുടെ പാസ്‌വേഡുകളും ചരിത്രവും മറ്റും എല്ലാ ഉപകരണങ്ങളിലും സമന്വയിപ്പിക്കുക</translation>
 <translation id="6348855835728304880">ഈ ഉപകരണത്തിലെ മറ്റ് ആപ്പുകളിലുടനീളം നിങ്ങളുടെ Chrome പാസ്‌വേഡുകളും മറ്റും ആക്‌സസ് ചെയ്യുക.</translation>
 <translation id="6355820205320395730">ദുർബലമായ പാസ്‌വേഡുകൾ ഊഹിക്കാൻ എളുപ്പമാണ്. നിങ്ങൾ സൃഷ്‌ടിക്കുന്നത് ശക്തമായ പാസ്‌വേഡുകളാണെന്ന് ഉറപ്പാക്കുക. <ph name="BEGIN_LINK" />കൂടുതൽ സുരക്ഷാ നുറുങ്ങുകൾ കാണുക.<ph name="END_LINK" /></translation>
-<translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> പിന്തുടരുക</translation>
+<translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> ഫോളോ ചെയ്യുക</translation>
 <translation id="6362362396625799311">ആൾമാറാട്ട ടാബുകളൊന്നുമില്ല</translation>
 <translation id="6363526231572697780">ഉപയോക്തൃനാമമില്ല</translation>
 <translation id="6366190659675876144">സ്‌റ്റാൻഡേർഡ് പരിരക്ഷ</translation>
@@ -864,7 +868,7 @@
 <translation id="6524918542306337007">അദൃശ്യ മോഡ് ലഭ്യമല്ല</translation>
 <translation id="6530992499366869131">പാസ്‌വേഡുകൾ, ഡാറ്റാ ലംഘനത്തിന്റെ ഭാഗമായി വെളിപ്പെട്ടാൽ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു</translation>
 <translation id="6537746030088321027">example.com</translation>
-<translation id="6540120577248033958">ഒരു സൈറ്റ് സന്ദർശിച്ച ശേഷം Chrome മെനുവിലെ പിന്തുടരുക ക്ലിക്ക് ചെയ്യുക</translation>
+<translation id="6540120577248033958">ഒരു സൈറ്റ് സന്ദർശിച്ച ശേഷം Chrome മെനുവിലെ ഫോളോ ചെയ്യുക ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="6550675742724504774">ഓപ്ഷനുകൾ</translation>
 <translation id="6561262006871132942">സൂം ഇൻ ചെയ്യുക</translation>
 <translation id="6583087784430677195">ഓഫാക്കാൻ, <ph name="BEGIN_LINK" />ക്രമീകരണം<ph name="END_LINK" /> തുറന്ന് പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കൽ എന്നതിലേക്ക് പോകുക.</translation>
@@ -1221,6 +1225,7 @@
 <translation id="8952559610785099500">പാസ്‌വേഡ് ചേർക്കുക</translation>
 <translation id="8953046091948372197">നിങ്ങളുടെ പാസ്‌വേഡുകൾ ഇവിടെ കാണാം</translation>
 <translation id="895541991026785598">ഒരു പ്രശ്നം റിപ്പോര്‍ട്ട് ചെയ്യുക</translation>
+<translation id="8961757677053809960">മുന്നറിയിപ്പ് ഡിസ്‌മിസ് ചെയ്യണോ?</translation>
 <translation id="8971545611707025079">വീണ്ടും പരിശോധിക്കുക</translation>
 <translation id="8974714402877957201">1. iPad ക്രമീകരണം തുറക്കുക</translation>
 <translation id="8976382372951310360">സഹായം</translation>
@@ -1267,7 +1272,6 @@
 <translation id="948048872540558976">പുതിയ ടാബ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="952704832371081537">റദ്ദാക്കുക</translation>
 <translation id="953008885340860025">Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്തു</translation>
-<translation id="953673009604363306">അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ വിഭാഗത്തിൽ ഡിസ്‌മിസ് ചെയ്ത മുന്നറിയിപ്പുകൾക്ക് കീഴിൽ മുന്നറിയിപ്പ് വീണ്ടും കാണാം.</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> എന്നത് നിങ്ങൾ പിന്തുടരുന്നു</translation>
 <translation id="973493300226275298">ഓൺലൈൻ സ്റ്റോറുകളിലുടനീളം ഒരു ഉൽപ്പന്നത്തിന്റെ നിരക്ക് ട്രാക്ക് ചെയ്യുക. നിരക്ക് കുറയുമ്പോൾ നിങ്ങൾക്ക് അലേർട്ടുകൾ ലഭിക്കും.</translation>
 <translation id="981498610235328462">ചില അക്കൗണ്ടുകൾ ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യാൻ മാത്രമേ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കൂ. അനുവദനീയമല്ലാത്ത അക്കൗണ്ടുകൾ മറച്ചിരിക്കുന്നു.</translation>
