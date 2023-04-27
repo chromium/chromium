@@ -401,11 +401,18 @@ apps::PromiseAppRegistryCache* AppServiceProxyAsh::PromiseAppRegistryCache() {
   return promise_app_service_->PromiseAppRegistryCache();
 }
 
+apps::PromiseAppService* AppServiceProxyAsh::PromiseAppService() {
+  if (!promise_app_service_) {
+    return nullptr;
+  }
+  return promise_app_service_.get();
+}
+
 void AppServiceProxyAsh::OnPromiseApp(PromiseAppPtr delta) {
-  if (!PromiseAppRegistryCache()) {
+  if (!promise_app_service_) {
     return;
   }
-  PromiseAppRegistryCache()->OnPromiseApp(std::move(delta));
+  PromiseAppService()->OnPromiseApp(std::move(delta));
 }
 
 void AppServiceProxyAsh::Shutdown() {

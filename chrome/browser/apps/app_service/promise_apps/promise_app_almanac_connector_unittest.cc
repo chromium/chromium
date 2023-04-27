@@ -51,8 +51,6 @@ class PromiseAppAlmanacConnectorTest : public testing::Test {
     return url_loader_factory_.get();
   }
 
-  Profile* profile() { return profile_.get(); }
-
  private:
   std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;

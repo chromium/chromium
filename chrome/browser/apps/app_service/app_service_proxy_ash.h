@@ -145,6 +145,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // apps.
   apps::PromiseAppRegistryCache* PromiseAppRegistryCache();
 
+  // Get pointer to the Promise App Service which manages all promise apps.
+  apps::PromiseAppService* PromiseAppService();
+
   // Add or update a promise app in the Promise App Registry Cache.
   void OnPromiseApp(PromiseAppPtr delta);
 

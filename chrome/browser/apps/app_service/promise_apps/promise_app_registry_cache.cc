@@ -6,6 +6,7 @@
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_wrapper.h"
 
 namespace apps {
 
@@ -17,20 +18,23 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Check that there isn't an update currently being processed. We do not allow
-  // an update to trigger an observer to send another update.
+  // an update to trigger an observer to send and execute another update before
+  // the current call completes.
   DCHECK(!update_in_progress_);
   update_in_progress_ = true;
 
   // Retrieve the current promise app state.
   apps::PromiseApp* state = FindPromiseApp(delta->package_id);
 
-  // Update the promise app with the delta or add the new promise app instance
-  // to the registry.
+  // Update the existing promise app if it exists.
   if (state) {
     PromiseAppUpdate::Merge(state, delta.get());
-  } else {
-    promise_app_map_[delta->package_id] = delta->Clone();
+    update_in_progress_ = false;
+    return;
   }
+
+  // Add the promise app instance to the cache if it isn't registered yet.
+  promise_app_map_[delta->package_id] = delta->Clone();
 
   // TODO(b/261907495): Notify observers.
 
@@ -44,6 +48,10 @@ std::vector<PromiseAppPtr> PromiseAppRegistryCache::GetAllPromiseApps() const {
     promise_apps.push_back(promise_pair.second.get()->Clone());
   }
   return promise_apps;
+}
+
+bool PromiseAppRegistryCache::HasPromiseApp(const PackageId& package_id) {
+  return FindPromiseApp(package_id) != nullptr;
 }
 
 const PromiseApp* PromiseAppRegistryCache::GetPromiseAppForTesting(

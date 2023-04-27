@@ -26,7 +26,9 @@ PromiseAppPtr PromiseApp::Clone() const {
     promise_app->progress = progress;
   }
   promise_app->status = status;
-  promise_app->should_show = should_show;
+  if (should_show.has_value()) {
+    promise_app->should_show = should_show;
+  }
   return promise_app;
 }
 
@@ -39,7 +41,8 @@ std::ostream& operator<<(std::ostream& out, const PromiseApp& promise_app) {
               : "N/A")
       << std::endl;
   out << "- Status: " << EnumToString(promise_app.status) << std::endl;
-  out << "- Should Show: " << promise_app.should_show << std::endl;
+  out << "- Should Show: " << promise_app.should_show.value_or(false)
+      << std::endl;
   return out;
 }
 

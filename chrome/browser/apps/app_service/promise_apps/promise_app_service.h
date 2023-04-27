@@ -14,8 +14,12 @@ class Profile;
 
 namespace apps {
 
-class PromiseAppRegistryCache;
+struct PromiseApp;
+using PromiseAppPtr = std::unique_ptr<PromiseApp>;
+class PackageId;
 class PromiseAppAlmanacConnector;
+class PromiseAppRegistryCache;
+class PromiseAppWrapper;
 
 // This service is responsible for registering and managing promise apps,
 // including retrieving any data required to populate a promise app object.
@@ -31,13 +35,29 @@ class PromiseAppService {
 
   apps::PromiseAppRegistryCache* PromiseAppRegistryCache();
 
+  // Adds or updates a promise app in the Promise App Registry Cache with the
+  // fields provided in `delta`. For new promise app registrations, we send a
+  // request to the Almanac API to retrieve additional promise app info.
+  void OnPromiseApp(PromiseAppPtr delta);
+
+  // Allows us to skip Almanac implementation when running unit tests that don't
+  // care about Almanac responses.
+  void SetSkipAlmanacForTesting(bool skip_almanac);
+
  private:
+  // Update a promise app's fields with the info retrieved from the Almanac API.
+  void OnGetPromiseAppInfoCompleted(
+      const PackageId& package_id,
+      absl::optional<PromiseAppWrapper> promise_app_info);
+
   // The cache that contains all the promise apps in the system.
   std::unique_ptr<apps::PromiseAppRegistryCache> promise_app_registry_cache_;
 
-  // Used to retrieve information from the Almanac Promise App API about the
+  // Retrieves information from the Almanac Promise App API about the
   // packages being installed.
   std::unique_ptr<PromiseAppAlmanacConnector> promise_app_almanac_connector_;
+
+  bool skip_almanac_for_testing_ = false;
 
   base::WeakPtrFactory<PromiseAppService> weak_ptr_factory_{this};
 };

@@ -35,7 +35,11 @@ struct PromiseApp {
   absl::optional<std::string> name;
   absl::optional<float> progress;
   PromiseStatus status = PromiseStatus::kUnknown;
-  bool should_show = true;
+
+  // Hide the promise app from the Launcher/ Shelf by default. Only show
+  // it when we have enough information about the installing package (e.g. name,
+  // icon).
+  absl::optional<bool> should_show;
 
   std::unique_ptr<PromiseApp> Clone() const;
 };

@@ -32,8 +32,10 @@ void PromiseAppUpdate::Merge(PromiseApp* state, const PromiseApp* delta) {
     return;
   }
 
+  SET_OPTIONAL_VALUE(name);
   SET_OPTIONAL_VALUE(progress);
   SET_ENUM_VALUE(status, PromiseStatus::kUnknown);
+  SET_OPTIONAL_VALUE(should_show);
 
   // When adding new fields to the PromiseApp struct, this function should also
   // be updated.
@@ -85,11 +87,11 @@ bool PromiseAppUpdate::StatusChanged() const {
 }
 
 bool PromiseAppUpdate::ShouldShow() const {
-  GET_VALUE_WITH_DEFAULT_VALUE(should_show, false);
+  GET_VALUE_WITH_FALLBACK(should_show, false);
 }
 
 bool PromiseAppUpdate::ShouldShowChanged() const {
-  IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(should_show, false);
+  RETURN_OPTIONAL_VALUE_CHANGED(should_show);
 }
 
 }  // namespace apps
