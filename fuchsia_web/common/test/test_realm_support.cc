@@ -108,10 +108,14 @@ void AddFontService(RealmBuilder& realm_builder, base::StringPiece child_name) {
   AddSyslogRoutesFromParent(realm_builder, kFontsService);
   ChildRef child_ref{std::string_view(child_name.data(), child_name.size())};
   realm_builder
-      .AddRoute(Route{
-          .capabilities = {Directory{.name = "config-data", .subdir = "fonts"}},
-          .source = ParentRef{},
-          .targets = {ChildRef{kFontsService}}})
+      .AddRoute(
+          Route{.capabilities =
+                    {
+                        Directory{.name = "config-data", .subdir = "fonts"},
+                        Protocol{"fuchsia.tracing.provider.Registry"},
+                    },
+                .source = ParentRef{},
+                .targets = {ChildRef{kFontsService}}})
       .AddRoute(Route{.capabilities = {Protocol{"fuchsia.fonts.Provider"}},
                       .source = ChildRef{kFontsService},
                       .targets = {std::move(child_ref)}});
