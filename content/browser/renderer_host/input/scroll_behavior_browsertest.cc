@@ -204,20 +204,16 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     observer.WaitForHitTestData();
   }
 
-  double ExecuteScriptAndExtractDouble(const std::string& script) {
-    return EvalJs(shell(), script).ExtractDouble();
-  }
-
   gfx::SizeF GetViewportSize() {
     return gfx::SizeF(
-        ExecuteScriptAndExtractDouble("window.visualViewport.width"),
-        ExecuteScriptAndExtractDouble("window.visualViewport.height"));
+        EvalJs(shell(), "window.visualViewport.width").ExtractDouble(),
+        EvalJs(shell(), "window.visualViewport.height").ExtractDouble());
   }
 
   gfx::SizeF GetContainerSize(const std::string& container_expr) {
     return gfx::SizeF(
-        ExecuteScriptAndExtractDouble(container_expr + ".clientWidth"),
-        ExecuteScriptAndExtractDouble(container_expr + ".clientHeight"));
+        EvalJs(shell(), container_expr + ".clientWidth").ExtractDouble(),
+        EvalJs(shell(), container_expr + ".clientHeight").ExtractDouble());
   }
 
   WebContentsImpl* web_contents() const {
@@ -270,8 +266,9 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     // send the second scroll to interrupt the current smooth scroll.
     constexpr int kExpectedScrollTop = 5;
     MainThreadFrameObserver frame_observer(GetWidgetHost());
-    while (ExecuteScriptAndExtractDouble(script) < kExpectedScrollTop)
+    while (EvalJs(shell(), script).ExtractDouble() < kExpectedScrollTop) {
       frame_observer.Wait();
+    }
   }
 
   void WaitUntilLessThan(const std::string& script,
@@ -279,7 +276,7 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     // For the scroll interruption, we want to make sure that the first smooth
     // scroll animation stops right away, and the second scroll starts.
     MainThreadFrameObserver frame_observer(GetWidgetHost());
-    double current = ExecuteScriptAndExtractDouble(script);
+    double current = EvalJs(shell(), script).ExtractDouble();
 
     // If the animation doesn't reverse within this number of pixels we fail the
     // test.
@@ -287,7 +284,7 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     while (current >= starting_scroll_top) {
       ASSERT_LT(current, starting_scroll_top + kThreshold);
       frame_observer.Wait();
-      current = ExecuteScriptAndExtractDouble(script);
+      current = EvalJs(shell(), script).ExtractDouble();
     }
   }
 
@@ -297,7 +294,7 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     MainThreadFrameObserver frame_observer(GetWidgetHost());
     int frame_count = 10;
     while (frame_count > 0) {
-      ASSERT_EQ(ExecuteScriptAndExtractDouble(scroll_top_script), scroll_top);
+      ASSERT_EQ(EvalJs(shell(), scroll_top_script).ExtractDouble(), scroll_top);
       frame_observer.Wait();
       frame_count--;
     }
@@ -308,7 +305,7 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     int frame_count = 0;
     double scroll_top = -1;
     while (true) {
-      double new_scroll_top = ExecuteScriptAndExtractDouble(script);
+      double new_scroll_top = EvalJs(shell(), script).ExtractDouble();
       if (new_scroll_top == scroll_top) {
         frame_count++;
         // Return when the scroll top value holds steady for 10 frames.
@@ -361,7 +358,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   std::string scroll_top_script = "element.scrollTop";
   WaitForScrollToStart(scroll_top_script);
 
-  double scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
+  double scroll_top = EvalJs(shell(), scroll_top_script).ExtractDouble();
   ASSERT_GT(scroll_top, 0);
 
   // When interrupted by an instant scroll, the in-progress smooth scrolls stop.
@@ -429,7 +426,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   std::string scroll_top_script = "element.scrollTop";
   WaitForScrollToStart(scroll_top_script);
 
-  double scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
+  double scroll_top = EvalJs(shell(), scroll_top_script).ExtractDouble();
   ASSERT_GT(scroll_top, 0);
 
   // When interrupted by a smooth scroll, the in-progress smooth scrolls stop.
@@ -437,7 +434,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
                      "element.scrollTo({top: 0, behavior: 'smooth'});"));
 
   WaitUntilLessThan(scroll_top_script, scroll_top);
-  double new_scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
+  double new_scroll_top = EvalJs(shell(), scroll_top_script).ExtractDouble();
   EXPECT_LT(new_scroll_top, scroll_top);
 }
 
@@ -460,7 +457,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   std::string scroll_top_script = "element.scrollTop";
   WaitForScrollToStart(scroll_top_script);
 
-  double scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
+  double scroll_top = EvalJs(shell(), scroll_top_script).ExtractDouble();
   ASSERT_GT(scroll_top, 0);
   ASSERT_LT(scroll_top, kIntermediateScrollOffset);
 
@@ -492,7 +489,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   std::string scroll_top_script = "element.scrollTop";
   WaitForScrollToStart(scroll_top_script);
 
-  double scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
+  double scroll_top = EvalJs(shell(), scroll_top_script).ExtractDouble();
   ASSERT_GT(scroll_top, 0);
   ASSERT_LT(scroll_top, kIntermediateScrollOffset);
 
@@ -506,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   ValueHoldsAt(scroll_top_script, 0);
 #else
   WaitUntilLessThan(scroll_top_script, scroll_top);
-  double new_scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
+  double new_scroll_top = EvalJs(shell(), scroll_top_script).ExtractDouble();
   EXPECT_LT(new_scroll_top, scroll_top);
   EXPECT_GT(new_scroll_top, 0);
 #endif
@@ -524,7 +521,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   std::string scroll_top_script = "document.scrollingElement.scrollTop";
   WaitForScrollToStart(scroll_top_script);
 
-  double scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
+  double scroll_top = EvalJs(shell(), scroll_top_script).ExtractDouble();
   ASSERT_GT(scroll_top, 0);
 
   // When interrupted by a smooth scroll, the in-progress smooth scrolls stop.
@@ -532,7 +529,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
                      "window.scrollTo({top: 0, behavior: 'smooth'});"));
 
   WaitUntilLessThan(scroll_top_script, scroll_top);
-  double new_scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
+  double new_scroll_top = EvalJs(shell(), scroll_top_script).ExtractDouble();
   EXPECT_LT(new_scroll_top, scroll_top);
 }
 
@@ -551,7 +548,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
       "subframe.contentDocument.scrollingElement.scrollTop";
   WaitForScrollToStart(scroll_top_script);
 
-  double scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
+  double scroll_top = EvalJs(shell(), scroll_top_script).ExtractDouble();
   ASSERT_GT(scroll_top, 0);
 
   // When interrupted by a smooth scroll, the in-progress smooth scrolls stop.
@@ -560,7 +557,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
              "subframe.contentWindow.scrollTo({top: 0, behavior: 'smooth'});"));
 
   WaitUntilLessThan(scroll_top_script, scroll_top);
-  double new_scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
+  double new_scroll_top = EvalJs(shell(), scroll_top_script).ExtractDouble();
   EXPECT_LT(new_scroll_top, scroll_top);
 }
 

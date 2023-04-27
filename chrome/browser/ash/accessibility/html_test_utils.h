@@ -18,10 +18,6 @@ namespace ash {
 // Helper methods for browser tests that need to get HTML element bounds
 // and execute Javascript.
 
-void ExecuteScriptAndExtractInt(content::WebContents* web_contents,
-                                const std::string& script,
-                                int* result);
-
 void ExecuteScript(content::WebContents* web_contents,
                    const std::string& script);
 

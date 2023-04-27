@@ -233,10 +233,6 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
     return value.GetInt();
   }
 
-  int ExecuteScriptAndExtractInt(const std::string& script) {
-    return EvalJs(shell(), script).ExtractInt();
-  }
-
   RenderViewHost* GetRenderViewHost() const {
     RenderViewHost* const rvh =
         shell()->web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
@@ -969,9 +965,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
     WaitAFrame();
 
     if (!navigated)
-      EXPECT_EQ(10, ExecuteScriptAndExtractInt("touchmoveCount"));
+      EXPECT_EQ(10, EvalJs(shell(), "touchmoveCount"));
     else
-      EXPECT_GT(10, ExecuteScriptAndExtractInt("touchmoveCount"));
+      EXPECT_GT(10, EvalJs(shell(), "touchmoveCount"));
   }
 }
 

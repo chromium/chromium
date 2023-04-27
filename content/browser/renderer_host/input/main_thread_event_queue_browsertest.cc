@@ -111,10 +111,6 @@ class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
     observer.WaitForHitTestData();
   }
 
-  int ExecuteScriptAndExtractInt(const std::string& script) {
-    return EvalJs(shell(), script).ExtractInt();
-  }
-
   void DoMouseMove() {
     // Send a click event to cause some jankiness. This is done via a click
     // event as ExecuteScript is synchronous.
@@ -141,15 +137,11 @@ class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
 
     int mouse_move_count = 0;
     while (mouse_move_count <= 0)
-      mouse_move_count = ExecuteScriptAndExtractInt("window.mouseMoveCount");
+      mouse_move_count = EvalJs(shell(), "window.mouseMoveCount").ExtractInt();
     EXPECT_EQ(1, mouse_move_count);
 
-    int last_mouse_x =
-        ExecuteScriptAndExtractInt("window.lastMouseMoveEvent.x");
-    int last_mouse_y =
-        ExecuteScriptAndExtractInt("window.lastMouseMoveEvent.y");
-    EXPECT_EQ(20, last_mouse_x);
-    EXPECT_EQ(25, last_mouse_y);
+    EXPECT_EQ(20, EvalJs(shell(), "window.lastMouseMoveEvent.x"));
+    EXPECT_EQ(25, EvalJs(shell(), "window.lastMouseMoveEvent.y"));
   }
 
   void DoTouchMove() {
@@ -184,15 +176,13 @@ class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
 
     int touch_move_count = 0;
     while (touch_move_count <= 0)
-      touch_move_count = ExecuteScriptAndExtractInt("window.touchMoveCount");
+      touch_move_count = EvalJs(shell(), "window.touchMoveCount").ExtractInt();
     EXPECT_EQ(1, touch_move_count);
 
-    int last_touch_x = ExecuteScriptAndExtractInt(
-        "window.lastTouchMoveEvent.touches[0].pageX");
-    int last_touch_y = ExecuteScriptAndExtractInt(
-        "window.lastTouchMoveEvent.touches[0].pageY");
-    EXPECT_EQ(35, last_touch_x);
-    EXPECT_EQ(40, last_touch_y);
+    EXPECT_EQ(35,
+              EvalJs(shell(), "window.lastTouchMoveEvent.touches[0].pageX"));
+    EXPECT_EQ(40,
+              EvalJs(shell(), "window.lastTouchMoveEvent.touches[0].pageY"));
   }
 };
 

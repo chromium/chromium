@@ -199,10 +199,6 @@ class TouchActionBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::PostRunTestOnMainThread();
   }
 
-  int ExecuteScriptAndExtractInt(const std::string& script) {
-    return EvalJs(shell(), script).ExtractInt();
-  }
-
   void JankMainThread(base::TimeDelta delta) {
     std::string script = "var end = performance.now() + ";
     script.append(std::to_string(delta.InMilliseconds()));
@@ -210,17 +206,14 @@ class TouchActionBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(ExecJs(shell(), script));
   }
 
-  double ExecuteScriptAndExtractDouble(const std::string& script) {
-    return EvalJs(shell(), script).ExtractDouble();
-  }
-
   double GetScrollTop() {
-    return ExecuteScriptAndExtractDouble("document.scrollingElement.scrollTop");
+    return EvalJs(shell(), "document.scrollingElement.scrollTop")
+        .ExtractDouble();
   }
 
   double GetScrollLeft() {
-    return ExecuteScriptAndExtractDouble(
-        "document.scrollingElement.scrollLeft");
+    return EvalJs(shell(), "document.scrollingElement.scrollLeft")
+        .ExtractDouble();
   }
 
   bool URLLoaded() {
@@ -292,9 +285,8 @@ class TouchActionBrowserTest : public ContentBrowserTest {
       int expected_scroll_height_after_scroll,
       const gfx::Vector2d& expected_scroll_position_after_scroll,
       const base::TimeDelta& jank_time) {
-    int scroll_height =
-        ExecuteScriptAndExtractInt("document.documentElement.scrollHeight");
-    EXPECT_EQ(expected_scroll_height_after_scroll, scroll_height);
+    EXPECT_EQ(expected_scroll_height_after_scroll,
+              EvalJs(shell(), "document.documentElement.scrollHeight"));
     DoTouchScroll(point, distance, wait_until_scrolled,
                   expected_scroll_position_after_scroll, jank_time);
   }
@@ -502,10 +494,10 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_DefaultAuto) {
                                     wait_until_scrolled, 10200,
                                     gfx::Vector2d(0, 45), kNoJankTime);
 
-  EXPECT_EQ(1, ExecuteScriptAndExtractInt("eventCounts.touchstart"));
-  EXPECT_GE(ExecuteScriptAndExtractInt("eventCounts.touchmove"), 1);
-  EXPECT_EQ(1, ExecuteScriptAndExtractInt("eventCounts.touchend"));
-  EXPECT_EQ(0, ExecuteScriptAndExtractInt("eventCounts.touchcancel"));
+  EXPECT_EQ(1, EvalJs(shell(), "eventCounts.touchstart"));
+  EXPECT_GE(EvalJs(shell(), "eventCounts.touchmove").ExtractInt(), 1);
+  EXPECT_EQ(1, EvalJs(shell(), "eventCounts.touchend"));
+  EXPECT_EQ(0, EvalJs(shell(), "eventCounts.touchcancel"));
 }
 
 // Verify that touching a touch-action: none region disables scrolling and
@@ -525,10 +517,10 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_TouchActionNone) {
                                     wait_until_scrolled, 10200,
                                     gfx::Vector2d(0, 0), kNoJankTime);
 
-  EXPECT_EQ(1, ExecuteScriptAndExtractInt("eventCounts.touchstart"));
-  EXPECT_GE(ExecuteScriptAndExtractInt("eventCounts.touchmove"), 1);
-  EXPECT_EQ(1, ExecuteScriptAndExtractInt("eventCounts.touchend"));
-  EXPECT_EQ(0, ExecuteScriptAndExtractInt("eventCounts.touchcancel"));
+  EXPECT_EQ(1, EvalJs(shell(), "eventCounts.touchstart"));
+  EXPECT_GE(EvalJs(shell(), "eventCounts.touchmove").ExtractInt(), 1);
+  EXPECT_EQ(1, EvalJs(shell(), "eventCounts.touchend"));
+  EXPECT_EQ(0, EvalJs(shell(), "eventCounts.touchcancel"));
 }
 
 // TODO(crbug.com/1357167): Fix Mac failures.
@@ -724,11 +716,11 @@ const std::string kDoubleTapZoomDataURL = R"HTML(
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, BlockDoubleTapDragZoom) {
   LoadURL(kDoubleTapZoomDataURL.c_str());
 
-  ASSERT_EQ(1, ExecuteScriptAndExtractDouble("window.visualViewport.scale"));
+  ASSERT_EQ(1, EvalJs(shell(), "window.visualViewport.scale"));
 
   DoDoubleTapDragZoom();
 
-  EXPECT_EQ(1, ExecuteScriptAndExtractDouble("window.visualViewport.scale"));
+  EXPECT_EQ(1, EvalJs(shell(), "window.visualViewport.scale"));
 }
 
 namespace {
@@ -855,21 +847,18 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
     return;
   LoadURL(kContentEditableDataURL.c_str());
 
-  EXPECT_EQ(32,
-            ExecuteScriptAndExtractInt("window.getSelection().anchorOffset"));
-  EXPECT_EQ(32,
-            ExecuteScriptAndExtractInt("window.getSelection().focusOffset"));
+  EXPECT_EQ(32, EvalJs(shell(), "window.getSelection().anchorOffset"));
+  EXPECT_EQ(32, EvalJs(shell(), "window.getSelection().focusOffset"));
 
   DoTouchScroll(gfx::Point(85, 5), gfx::Vector2d(40, 0),
                 /* wait_until_scrolled*/ false, gfx::Vector2d(0, 0),
                 kNoJankTime);
 
   const int anchor_offset =
-      ExecuteScriptAndExtractInt("window.getSelection().anchorOffset");
-  const int focus_offset =
-      ExecuteScriptAndExtractInt("window.getSelection().focusOffset");
+      EvalJs(shell(), "window.getSelection().anchorOffset").ExtractInt();
 
-  EXPECT_EQ(anchor_offset, focus_offset);
+  EXPECT_EQ(anchor_offset,
+            EvalJs(shell(), "window.getSelection().focusOffset"));
   EXPECT_GT(32, anchor_offset);
 }
 
@@ -883,24 +872,22 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
     return;
   LoadURL(kContentEditableHorizontalScrollableDataURL.c_str());
 
-  EXPECT_EQ(32,
-            ExecuteScriptAndExtractInt("window.getSelection().anchorOffset"));
-  EXPECT_EQ(32,
-            ExecuteScriptAndExtractInt("window.getSelection().focusOffset"));
+  EXPECT_EQ(32, EvalJs(shell(), "window.getSelection().anchorOffset"));
+  EXPECT_EQ(32, EvalJs(shell(), "window.getSelection().focusOffset"));
 
   DoTouchScroll(gfx::Point(85, 5), gfx::Vector2d(40, 0),
                 /* wait_until_scrolled*/ false, gfx::Vector2d(0, 0),
                 kNoJankTime);
 
   const int anchor_offset =
-      ExecuteScriptAndExtractInt("window.getSelection().anchorOffset");
-  const int focus_offset =
-      ExecuteScriptAndExtractInt("window.getSelection().focusOffset");
+      EvalJs(shell(), "window.getSelection().anchorOffset").ExtractInt();
 
-  EXPECT_EQ(anchor_offset, focus_offset);
+  EXPECT_EQ(anchor_offset,
+            EvalJs(shell(), "window.getSelection().focusOffset"));
   EXPECT_EQ(32, anchor_offset);
-  EXPECT_LT(0.f, ExecuteScriptAndExtractDouble(
-                     "document.getElementById('scroller').scrollLeft"));
+  EXPECT_LT(0.f,
+            EvalJs(shell(), "document.getElementById('scroller').scrollLeft")
+                .ExtractDouble());
 }
 
 // Perform a horizontal swipe over an editable element from right to left
@@ -911,21 +898,18 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
     return;
   LoadURL(kContentEditableNonPassiveHandlerDataURL.c_str());
 
-  EXPECT_EQ(32,
-            ExecuteScriptAndExtractInt("window.getSelection().anchorOffset"));
-  EXPECT_EQ(32,
-            ExecuteScriptAndExtractInt("window.getSelection().focusOffset"));
+  EXPECT_EQ(32, EvalJs(shell(), "window.getSelection().anchorOffset"));
+  EXPECT_EQ(32, EvalJs(shell(), "window.getSelection().focusOffset"));
 
   DoTouchScroll(gfx::Point(85, 5), gfx::Vector2d(40, 0),
                 /* wait_until_scrolled*/ false, gfx::Vector2d(0, 0),
                 kNoJankTime);
 
   const int anchor_offset =
-      ExecuteScriptAndExtractInt("window.getSelection().anchorOffset");
-  const int focus_offset =
-      ExecuteScriptAndExtractInt("window.getSelection().focusOffset");
+      EvalJs(shell(), "window.getSelection().anchorOffset").ExtractInt();
 
-  EXPECT_EQ(anchor_offset, focus_offset);
+  EXPECT_EQ(anchor_offset,
+            EvalJs(shell(), "window.getSelection().focusOffset"));
   EXPECT_EQ(32, anchor_offset);
 }
 
@@ -939,19 +923,17 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
   // input size larger than the text size, not horizontally scrollable.
   LoadURL(base::StringPrintf(kInputTagCursorControl.c_str(), 40).c_str());
 
-  EXPECT_EQ(32, ExecuteScriptAndExtractInt("container.selectionStart"));
-  EXPECT_EQ(32, ExecuteScriptAndExtractInt("container.selectionEnd"));
+  EXPECT_EQ(32, EvalJs(shell(), "container.selectionStart"));
+  EXPECT_EQ(32, EvalJs(shell(), "container.selectionEnd"));
 
   DoTouchScroll(gfx::Point(85, 5), gfx::Vector2d(40, 0),
                 /* wait_until_scrolled*/ false, gfx::Vector2d(0, 0),
                 kNoJankTime);
 
   const int selection_start =
-      ExecuteScriptAndExtractInt("container.selectionStart");
-  const int selection_end =
-      ExecuteScriptAndExtractInt("container.selectionEnd");
+      EvalJs(shell(), "container.selectionStart").ExtractInt();
 
-  EXPECT_EQ(selection_start, selection_end);
+  EXPECT_EQ(selection_start, EvalJs(shell(), "container.selectionEnd"));
   EXPECT_GT(32, selection_start);
 }
 
@@ -965,19 +947,17 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
   // scrollable.
   LoadURL(base::StringPrintf(kInputTagCursorControl.c_str(), 20).c_str());
 
-  EXPECT_EQ(32, ExecuteScriptAndExtractInt("container.selectionStart"));
-  EXPECT_EQ(32, ExecuteScriptAndExtractInt("container.selectionEnd"));
+  EXPECT_EQ(32, EvalJs(shell(), "container.selectionStart"));
+  EXPECT_EQ(32, EvalJs(shell(), "container.selectionEnd"));
 
   DoTouchScroll(gfx::Point(85, 5), gfx::Vector2d(40, 0),
                 /* wait_until_scrolled*/ false, gfx::Vector2d(0, 0),
                 kNoJankTime);
 
   const int selection_start =
-      ExecuteScriptAndExtractInt("container.selectionStart");
-  const int selection_end =
-      ExecuteScriptAndExtractInt("container.selectionEnd");
+      EvalJs(shell(), "container.selectionStart").ExtractInt();
 
-  EXPECT_EQ(selection_start, selection_end);
+  EXPECT_EQ(selection_start, EvalJs(shell(), "container.selectionEnd"));
   EXPECT_EQ(32, selection_start);
 }
 
