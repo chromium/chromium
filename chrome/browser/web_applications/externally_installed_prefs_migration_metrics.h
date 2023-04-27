@@ -62,7 +62,7 @@ const char kPrefDataPresentDBDataPresent[] =
 const char kPlaceholderMigrationHistogram[] =
     "WebApp.ExternalPrefs.PlaceholderMigrationState";
 const char kInstallURLMigrationHistogram[] =
-    "WebApp.ExternalPrefs.TypeOfMigrationSyncStatus";
+    "WebApp.ExternalPrefs.InstallURLMigrationState";
 const char kPreinstalledAppMigrationHistogram[] =
     "WebApp.ExternalPrefs.UserUninstalledPreinstalledAppMigrationState";
 

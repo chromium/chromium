@@ -815,7 +815,7 @@ BASE_FEATURE(kMetricsSettingsAndroid,
 
 BASE_FEATURE(kMigrateExternalPrefsToWebAppDB,
              "MigrateExternalPrefsToWebAppDB",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMoveWebApp,
              "MoveWebApp",
