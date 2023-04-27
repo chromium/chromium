@@ -39,13 +39,6 @@ constexpr bool ThreadSafe = true;
 template <bool thread_safe>
 struct SlotSpanMetadata;
 
-#if (BUILDFLAG(PA_DCHECK_IS_ON) ||                    \
-     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-void CheckThatSlotOffsetIsZero(uintptr_t address);
-#endif
-
 // This type trait verifies a type can be used as a pointer offset.
 //
 // We support pointer offsets in signed (ptrdiff_t) or unsigned (size_t) values.
