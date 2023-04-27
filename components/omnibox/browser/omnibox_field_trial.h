@@ -737,6 +737,11 @@ extern const base::FeatureParam<int> kInspireMeAdditionalTrendingQueries;
 extern const base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion;
 // <- Actions In Suggest
 // ---------------------------------------------------------
+// Android UI Revamp ->
+extern const base::FeatureParam<bool>
+    kOmniboxModernizeVisualUpdateMergeClipboardOnNTP;
+// <- Android UI Revamp
+// ---------------------------------------------------------
 
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:

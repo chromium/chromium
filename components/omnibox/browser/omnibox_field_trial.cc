@@ -1196,6 +1196,13 @@ const base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion(
     false);
 // <- Actions In Suggest
 // ---------------------------------------------------------
+// Android UI Revamp ->
+const base::FeatureParam<bool> kOmniboxModernizeVisualUpdateMergeClipboardOnNTP(
+    &omnibox::kOmniboxModernizeVisualUpdate,
+    "modernize_visual_update_merge_clipboard_on_ntp",
+    false);
+// <- Android UI Revamp
+// ---------------------------------------------------------
 
 }  // namespace OmniboxFieldTrial
 

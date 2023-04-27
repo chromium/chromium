@@ -138,6 +138,7 @@ BASE_DECLARE_FEATURE(kUseExistingAutocompleteClient);
 // Omnibox & Suggestions UI - these affect both the omnibox and the suggestions
 // popup.
 BASE_DECLARE_FEATURE(kClosePopupWithEscape);
+BASE_DECLARE_FEATURE(kOmniboxModernizeVisualUpdate);
 
 // Settings Page - these affect the appearance of the Search Engines settings
 // page

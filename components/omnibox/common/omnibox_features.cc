@@ -628,6 +628,11 @@ BASE_FEATURE(kClosePopupWithEscape,
              "OmniboxClosePopupWithEscape",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable new Omnibox & Suggestions visual style.
+BASE_FEATURE(kOmniboxModernizeVisualUpdate,
+             "OmniboxModernizeVisualUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, adds a "starter pack" of @history, @bookmarks, and @settings
 // scopes to Site Search/Keyword Mode.
 BASE_FEATURE(kSiteSearchStarterPack,
