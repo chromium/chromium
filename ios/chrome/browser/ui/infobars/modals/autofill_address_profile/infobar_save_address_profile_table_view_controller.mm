@@ -630,19 +630,19 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 }
 
 - (TableViewTextItem*)saveFooterItem {
-  // TODO(crbug.com/1407666): Align the text with the icon of the other fields.
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
-  item.text =
-      l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
-                              base::SysNSStringToUTF16(self.syncingUserEmail));
+  int footerTextId = self.currentAddressProfileSaved
+                         ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
+                         : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER;
+  item.text = l10n_util::GetNSStringF(
+      footerTextId, base::SysNSStringToUTF16(self.syncingUserEmail));
   item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   item.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return item;
 }
 
 - (TableViewTextItem*)updateFooterItem {
-  // TODO(crbug.com/1407666): Align the text with the icon of the other fields.
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
   item.text = l10n_util::GetNSStringF(
@@ -656,9 +656,11 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 - (TableViewTextItem*)migrationPromptFooterItem {
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
+  int footerTextId = self.currentAddressProfileSaved
+                         ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
+                         : IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER;
   item.text = l10n_util::GetNSStringF(
-      IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER,
-      base::SysNSStringToUTF16(self.syncingUserEmail));
+      footerTextId, base::SysNSStringToUTF16(self.syncingUserEmail));
   item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   item.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return item;
