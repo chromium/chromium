@@ -346,12 +346,17 @@ IN_PROC_BROWSER_TEST_P(ResourceCacheBFCacheTest,
 
   ASSERT_TRUE(FetchScript(render_frame_host4, kScriptUrl2));
 
-  // Histograms should be recorded twice with a cache hit because R2 and R4
-  // fetched `kScriptUrl2`, in addition to `kScriptUrl` in R1 and R2 above.
+  // If R2 and R4 share the same process, histograms should not be incremented.
+  // If not, histograms should be recorded twice with a cache hit because R2 and
+  // R4 fetched `kScriptUrl2`, in addition to `kScriptUrl` in R1 and R2 above.
   FetchHistogramsFromChildProcesses();
-  histograms.ExpectUniqueSample(kHistogramIsInCacheScript, true, 2);
-  histograms.ExpectTotalCount(kHistogramIPCSendDelay, 2);
-  histograms.ExpectTotalCount(kHistogramIPCRecvDelay, 2);
+  const int kExpectedHistogramCount =
+      render_frame_host2->GetProcess() == render_frame_host4->GetProcess() ? 1
+                                                                           : 2;
+  histograms.ExpectUniqueSample(kHistogramIsInCacheScript, true,
+                                kExpectedHistogramCount);
+  histograms.ExpectTotalCount(kHistogramIPCSendDelay, kExpectedHistogramCount);
+  histograms.ExpectTotalCount(kHistogramIPCRecvDelay, kExpectedHistogramCount);
 }
 
 // TODO(https://crbug.com/141426): Add following tests.
