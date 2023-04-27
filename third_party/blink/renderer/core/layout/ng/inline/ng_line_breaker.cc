@@ -340,9 +340,9 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
       is_initial_letter_box_(node.IsInitialLetterBox()),
       is_svg_text_(node.IsSvgText()),
       is_text_combine_(node.IsTextCombine()),
-      is_first_formatted_line_((!break_token || (!break_token->ItemIndex() &&
-                                                 !break_token->TextOffset())) &&
-                               node.CanContainFirstFormattedLine()),
+      is_first_formatted_line_(
+          (!break_token || break_token->ItemTextIndex().IsZero()) &&
+          node.CanContainFirstFormattedLine()),
       use_first_line_style_(is_first_formatted_line_ &&
                             node.UseFirstLineStyle()),
       sticky_images_quirk_(mode != NGLineBreakerMode::kContent &&
@@ -625,7 +625,7 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   const NGInlineItemResults& item_results = line_info->Results();
   DCHECK(item_results.empty());
 
-  if (current_.item_index) {
+  if (!current_.IsZero()) {
     // We're past the first line
     previous_line_had_forced_break_ = is_after_forced_break_;
     is_after_forced_break_ = false;
@@ -1435,6 +1435,12 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
   if (start_offset != line_info->StartOffset() &&
       start_offset == item.StartOffset())
     return false;
+  if (UNLIKELY(line_info->TextIndent())) {
+    // If this line has the `text-indent`, following lines will have different
+    // indentation. Compute this line as a separate line by falling back to
+    // |HandleText()|.
+    return false;
+  }
   // If this is the last part of the text, it may form a word with the next
   // item. Fallback to |HandleText()|.
   if (fast_min_content_item_ == &item)
