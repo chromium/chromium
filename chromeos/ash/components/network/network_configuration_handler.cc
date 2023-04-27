@@ -12,12 +12,12 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
@@ -298,7 +298,8 @@ void NetworkConfigurationHandler::SetShillProperties(
   if (guid.empty()) {
     const NetworkState* network_state =
         network_state_handler_->GetNetworkState(service_path);
-    guid = network_state ? network_state->guid() : base::GenerateGUID();
+    guid = network_state ? network_state->guid()
+                         : base::Uuid::GenerateRandomV4().AsLowercaseString();
     properties_to_set.Set(shill::kGuidProperty, guid);
   }
 
@@ -366,7 +367,7 @@ void NetworkConfigurationHandler::CreateShillConfiguration(
   // Make sure that the GUID is saved to Shill when configuring networks.
   std::string guid = GetString(properties_to_set, shill::kGuidProperty);
   if (guid.empty()) {
-    guid = base::GenerateGUID();
+    guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     properties_to_set.Set(shill::kGuidProperty, guid);
   }
 

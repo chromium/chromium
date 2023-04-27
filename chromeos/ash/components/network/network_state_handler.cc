@@ -15,13 +15,13 @@
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
@@ -1900,7 +1900,7 @@ void NetworkStateHandler::UpdateGuid(NetworkState* network) {
   if (guid_iter != specifier_guid_map_.end()) {
     guid = guid_iter->second;
   } else {
-    guid = base::GenerateGUID();
+    guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     specifier_guid_map_[specifier] = guid;
   }
   network->SetGuid(guid);
