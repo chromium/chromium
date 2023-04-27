@@ -2844,9 +2844,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled15_20230420",
+                    "name": "Holdback",
                     "params": {
-                        "critical_threshold_percentage": "1500"
+                        "critical_threshold_percentage": "520"
                     },
                     "enable_features": [
                         "ChromeOSMemoryPressureSignalStudyNonArc"
