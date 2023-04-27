@@ -149,14 +149,18 @@ idl::PrinterStatus PrinterStatusToIdl(chromeos::PrinterErrorCode status) {
 std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
     base::Value::Dict ticket) {
   cloud_devices::CloudDeviceDescription description;
-  if (!description.InitFromValue(std::move(ticket)))
+  if (!description.InitFromValue(std::move(ticket))) {
+    LOG(ERROR) << "Unable to initialize CDD from print ticket.";
     return nullptr;
+  }
 
   auto settings = std::make_unique<printing::PrintSettings>();
 
   cloud_devices::printer::ColorTicketItem color;
-  if (!color.LoadFrom(description))
+  if (!color.LoadFrom(description)) {
+    LOG(ERROR) << "Unable to load color from print ticket.";
     return nullptr;
+  }
   switch (color.value().type) {
     case cloud_devices::printer::ColorType::STANDARD_MONOCHROME:
     case cloud_devices::printer::ColorType::CUSTOM_MONOCHROME:
@@ -175,8 +179,10 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
   }
 
   cloud_devices::printer::DuplexTicketItem duplex;
-  if (!duplex.LoadFrom(description))
+  if (!duplex.LoadFrom(description)) {
+    LOG(ERROR) << "Unable to load duplex from print ticket.";
     return nullptr;
+  }
   switch (duplex.value()) {
     case cloud_devices::printer::DuplexType::NO_DUPLEX:
       settings->set_duplex_mode(printing::mojom::DuplexMode::kSimplex);
@@ -193,8 +199,10 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
   }
 
   cloud_devices::printer::OrientationTicketItem orientation;
-  if (!orientation.LoadFrom(description))
+  if (!orientation.LoadFrom(description)) {
+    LOG(ERROR) << "Unable to load orientation from print ticket.";
     return nullptr;
+  }
   switch (orientation.value()) {
     case cloud_devices::printer::OrientationType::LANDSCAPE:
       settings->SetOrientation(/*landscape=*/true);
@@ -208,22 +216,29 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
   }
 
   cloud_devices::printer::CopiesTicketItem copies;
-  if (!copies.LoadFrom(description) || copies.value() < 1)
+  if (!copies.LoadFrom(description) || copies.value() < 1) {
+    LOG(ERROR) << "Unable to load copies from print ticket.";
     return nullptr;
+  }
   settings->set_copies(copies.value());
 
   cloud_devices::printer::DpiTicketItem dpi;
-  if (!dpi.LoadFrom(description))
+  if (!dpi.LoadFrom(description)) {
+    LOG(ERROR) << "Unable to load DPI from print ticket.";
     return nullptr;
+  }
   settings->set_dpi_xy(dpi.value().horizontal, dpi.value().vertical);
 
   cloud_devices::printer::MediaTicketItem media;
-  if (!media.LoadFrom(description))
+  if (!media.LoadFrom(description)) {
+    LOG(ERROR) << "Unable to load media from print ticket.";
     return nullptr;
+  }
   cloud_devices::printer::Media media_value = media.value();
   printing::PrintSettings::RequestedMedia requested_media;
   if (media_value.size_um.width() <= 0 || media_value.size_um.height() <= 0 ||
       media_value.vendor_id.empty()) {
+    LOG(ERROR) << "Loaded invalid media from print ticket.";
     return nullptr;
   }
   requested_media.size_microns = media_value.size_um;
@@ -231,8 +246,10 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
   settings->set_requested_media(requested_media);
 
   cloud_devices::printer::CollateTicketItem collate;
-  if (!collate.LoadFrom(description))
+  if (!collate.LoadFrom(description)) {
+    LOG(ERROR) << "Unable to load collate from print ticket.";
     return nullptr;
+  }
   settings->set_collate(collate.value());
 
   // These items are optional - don't fail if they don't exist.  However, if
