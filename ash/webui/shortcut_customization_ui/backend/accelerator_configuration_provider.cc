@@ -342,15 +342,20 @@ AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
 void AcceleratorConfigurationProvider::IsMutable(
     ash::mojom::AcceleratorSource source,
     IsMutableCallback callback) {
-  if (source == ash::mojom::AcceleratorSource::kBrowser) {
-    // Browser shortcuts are not mutable.
-    std::move(callback).Run(/*is_mutable=*/false);
-    return;
+  bool is_mutable = false;
+  switch (source) {
+    case ash::mojom::AcceleratorSource::kAsh:
+      is_mutable = ash_accelerator_configuration_->IsMutable();
+      break;
+    case ash::mojom::AcceleratorSource::kBrowser:
+    case ash::mojom::AcceleratorSource::kAmbient:
+    case ash::mojom::AcceleratorSource::kAndroid:
+    case ash::mojom::AcceleratorSource::kEventRewriter:
+      // The sources above are not mutable.
+      break;
   }
 
-  // TODO(jimmyxgong): Add more cases for other source types when they're
-  // available.
-  std::move(callback).Run(/*is_mutable=*/true);
+  std::move(callback).Run(is_mutable);
 }
 
 void AcceleratorConfigurationProvider::HasLauncherButton(

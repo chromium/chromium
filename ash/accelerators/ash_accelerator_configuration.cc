@@ -140,8 +140,7 @@ AshAcceleratorConfiguration::GetAcceleratorsForAction(
 }
 
 bool AshAcceleratorConfiguration::IsMutable() const {
-  // TODO(longbowei): Implement this function as this is only stub for now.
-  return false;
+  return ::features::IsShortcutCustomizationEnabled();
 }
 
 bool AshAcceleratorConfiguration::IsDeprecated(
