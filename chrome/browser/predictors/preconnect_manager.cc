@@ -96,6 +96,9 @@ void PreconnectManager::Start(const GURL& url,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsEnabled())
     return;
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
   PreresolveInfo* info;
   if (preresolve_info_.find(url) == preresolve_info_.end()) {
     auto iterator_and_whether_inserted = preresolve_info_.emplace(
@@ -139,6 +142,9 @@ void PreconnectManager::StartPreresolveHosts(
     return;
   // Push jobs in front of the queue due to higher priority.
   for (const GURL& url : base::Reversed(urls)) {
+    if (!url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
     PreresolveJobId job_id = preresolve_jobs_.Add(
         std::make_unique<PreresolveJob>(url.DeprecatedGetOriginAsURL(), 0,
                                         kAllowCredentialsOnPreconnectByDefault,
