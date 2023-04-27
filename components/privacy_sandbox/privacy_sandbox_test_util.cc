@@ -625,6 +625,14 @@ void CheckOutput(
                               prefs::kPrivacySandboxM1RowNoticeAcknowledged));
       return;
     }
+    case (OutputKey::kM1RestrictedNoticeAcknowledged): {
+      SCOPED_TRACE("Check Output: M1 restricted notice acknowledged");
+      bool expected = GetItemValue<bool>(output_value);
+      EXPECT_EQ(expected,
+                testing_pref_service->GetBoolean(
+                    prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged));
+      return;
+    }
     case (OutputKey::kM1TopicsEnabled): {
       SCOPED_TRACE("Check Output: M1 topics enabled");
       bool expected = GetItemValue<bool>(output_value);

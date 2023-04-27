@@ -371,9 +371,14 @@ void PrivacySandboxService::PromptActionOccurredM1(
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
     RecordUpdatedTopicsConsent(
         privacy_sandbox::TopicsConsentUpdateSource::kConfirmation, false);
+  } else if (PromptAction::kRestrictedNoticeAcknowledge == action ||
+             PromptAction::kRestrictedNoticeOpenSettings == action) {
+    CHECK(privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get());
+    pref_service_->SetBoolean(
+        prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged, true);
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                              true);
   }
-  // TODO(crbug.com/1428506): Handle PromptAction::kRestrictedNoticeAcknowledge
-  // and PromptAction::kRestrictedNoticeOpenSettings.
 }
 
 // static

@@ -3611,6 +3611,37 @@ TEST_F(PrivacySandboxServiceM1Test, RecordPrivacySandbox4StartupMetrics_APIs) {
   }
 }
 
+class PrivacySandboxServiceM1RestrictedNoticeTest
+    : public PrivacySandboxServiceM1Test {
+ public:
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxSettings4,
+        {{"notice-required", "true"}, {"restricted-notice", "true"}});
+  }
+};
+
+TEST_F(PrivacySandboxServiceM1RestrictedNoticeTest,
+       RestrictedPromptActionsUpdatePrefs) {
+  // Prompt acknowledge action should update the prefs accordingly.
+  RunTestCase(
+      TestState{{StateKey::kM1AdMeasurementEnabledUserPrefValue, false},
+                {StateKey::kM1RestrictedNoticeAcknowledged, false}},
+      TestInput{{InputKey::kPromptAction,
+                 static_cast<int>(PromptAction::kRestrictedNoticeAcknowledge)}},
+      TestOutput{{OutputKey::kM1AdMeasurementEnabled, true},
+                 {OutputKey::kM1RestrictedNoticeAcknowledged, true}});
+
+  // Open settings action should update the prefs accordingly.
+  RunTestCase(TestState{{StateKey::kM1AdMeasurementEnabledUserPrefValue, false},
+                        {StateKey::kM1RestrictedNoticeAcknowledged, false}},
+              TestInput{{InputKey::kPromptAction,
+                         static_cast<int>(
+                             PromptAction::kRestrictedNoticeOpenSettings)}},
+              TestOutput{{OutputKey::kM1AdMeasurementEnabled, true},
+                         {OutputKey::kM1RestrictedNoticeAcknowledged, true}});
+}
+
 class PrivacySandboxServiceM1DelayCreation
     : public PrivacySandboxServiceM1Test {
  public:
@@ -3853,7 +3884,9 @@ TEST_F(PrivacySandboxServiceM1PromptTest, PromptActionsSentimentService) {
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{"consent-required", "true"}, {"notice-required", "true"}});
+      {{"consent-required", "true"},
+       {"notice-required", "true"},
+       {"restricted-notice", "true"}});
 
   std::map<PromptAction, TrustSafetySentimentService::FeatureArea>
       expected_feature_areas;

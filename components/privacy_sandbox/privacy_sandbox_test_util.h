@@ -165,6 +165,7 @@ enum class OutputKey {
   kM1AdMeasurementEnabled = 28,
   kIsAttributionReportingEverAllowed = 29,
   kIsAttributionReportingEverAllowedMetric = 30,
+  kM1RestrictedNoticeAcknowledged = 31,
 };
 
 // To allow multiple input keys to map to the same value, without having to
