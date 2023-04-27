@@ -976,8 +976,6 @@ component("ash") {
     "shelf/assistant_overlay.h",
     "shelf/back_button.cc",
     "shelf/back_button.h",
-    "shelf/desk_button_widget.cc",
-    "shelf/desk_button_widget.h",
     "shelf/drag_handle.cc",
     "shelf/drag_handle.h",
     "shelf/drag_window_from_shelf_controller.cc",
