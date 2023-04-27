@@ -10,6 +10,8 @@
 
 namespace {
 
+const char kEnabledKey[] = "enabled";
+
 // All SSL decisions are per host (and are shared arcoss schemes), so this
 // canonicalizes all hosts into a secure scheme GURL to use with content
 // settings. The returned GURL will be the passed in host with an empty path and
@@ -37,13 +39,32 @@ void HttpsOnlyModeEnforcelist::EnforceForHost(const std::string& host,
     return;
   }
 
-  // We don't store when the HTTP enforcelist entry for this host should expire,
-  // but we still make this a dict to be future-proof.
+  // We want to count how many HTTPS-enforced hosts accumulate over time, so
+  // use a dictionary here.
   GURL url = GetSecureGURLForHost(host);
-  auto dict = std::make_unique<base::Value>(base::Value::Type::DICT);
+  base::Value::Dict dict;
+  dict.Set(kEnabledKey, true);
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::HTTPS_ENFORCED,
-      base::Value::FromUniquePtrValue(std::move(dict)));
+      base::Value(std::move(dict)));
+}
+
+void HttpsOnlyModeEnforcelist::UnenforceForHost(const std::string& host,
+                                                bool is_nondefault_storage) {
+  if (is_nondefault_storage) {
+    // Decisions for non-default storage partitions are stored in memory only.
+    enforce_https_hosts_for_non_default_storage_partitions_.erase(host);
+    return;
+  }
+  GURL url = GetSecureGURLForHost(host);
+
+  // We want to count how many HTTPS-enforced hosts accumulate over time, so
+  // don't remove the value, just set it to false.
+  base::Value::Dict dict;
+  dict.Set(kEnabledKey, false);
+  host_content_settings_map_->SetWebsiteSettingDefaultScope(
+      url, GURL(), ContentSettingsType::HTTPS_ENFORCED,
+      base::Value(std::move(dict)));
 }
 
 bool HttpsOnlyModeEnforcelist::IsEnforcedForHost(
@@ -60,7 +81,8 @@ bool HttpsOnlyModeEnforcelist::IsEnforcedForHost(
   if (!value.is_dict()) {
     return false;
   }
-  return true;
+  const auto& dict = value.GetDict();
+  return dict.FindBool(kEnabledKey).value_or(false);
 }
 
 void HttpsOnlyModeEnforcelist::RevokeEnforcements(const std::string& host) {
@@ -76,6 +98,7 @@ void HttpsOnlyModeEnforcelist::Clear(
     base::Time delete_begin,
     base::Time delete_end,
     const HostContentSettingsMap::PatternSourcePredicate& pattern_filter) {
+  // This clears accumulated hosts as well.
   host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::HTTPS_ENFORCED, delete_begin, delete_end,
       pattern_filter);

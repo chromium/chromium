@@ -82,8 +82,9 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
   bool IsHttpAllowedForHost(
       const std::string& host,
       content::StoragePartition* storage_partition) override;
-  void EnforceHttpsForHost(
+  void SetHttpsEnforcementForHost(
       const std::string& host,
+      bool enforce,
       content::StoragePartition* storage_partition) override;
   bool IsHttpsEnforcedForHost(
       const std::string& host,

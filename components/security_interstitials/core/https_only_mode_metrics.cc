@@ -16,6 +16,9 @@ const char kEventHistogramWithEngagementHeuristic[] =
 const char kNavigationRequestSecurityLevelHistogram[] =
     "Security.NavigationRequestSecurityLevel";
 
+const char kSiteEngagementHeuristicStateHistogram[] =
+    "Security.HttpsFirstModeWithEngagementHeuristic.State";
+
 // TODO(crbug.com/1394910): Rename these metrics now that they apply to both
 // HTTPS-First Mode and HTTPS Upgrades.
 void RecordHttpsFirstModeNavigation(
@@ -36,6 +39,10 @@ void RecordNavigationRequestSecurityLevel(
     NavigationRequestSecurityLevel level) {
   base::UmaHistogramEnumeration(kNavigationRequestSecurityLevelHistogram,
                                 level);
+}
+
+void RecordSiteEngagementHeuristicState(SiteEngagementHeuristicState state) {
+  base::UmaHistogramEnumeration(kSiteEngagementHeuristicStateHistogram, state);
 }
 
 }  // namespace security_interstitials::https_only_mode

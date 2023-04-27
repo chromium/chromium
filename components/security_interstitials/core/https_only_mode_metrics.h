@@ -16,6 +16,10 @@ extern const char kEventHistogramWithEngagementHeuristic[];
 
 extern const char kNavigationRequestSecurityLevelHistogram[];
 
+// Histogram that records enabled/disabled states for sites. If HFM gets enabled
+// or disabled due to Site Engagement on a site, records an entry.
+extern const char kSiteEngagementHeuristicStateHistogram[];
+
 // Recorded by HTTPS-First Mode and HTTPS-Upgrade logic when a navigation is
 // upgraded, or is eligible to be upgraded but wasn't.
 //
@@ -98,6 +102,25 @@ enum class NavigationRequestSecurityLevel {
   kMaxValue = kNonUniqueHostname,
 };
 
+// Recorded by the Site Engagement Heuristic logic, recording whether HFM should
+// be enabled on a site due to its HTTP and HTTPS site engagement scores. Only
+// recorded if the enabled/disabled state changes.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Values may be added to offer greater
+// specificity in the future. Keep in sync with SiteEngagementHeuristicState
+// in enums.xml.
+enum class SiteEngagementHeuristicState {
+  // HFM was not enabled and is now enabled on this site because its HTTPS score
+  // is high and HTTP score is low.
+  kEnabled = 0,
+  // HFM was enabled and is now disabled on this site because its HTTPS score is
+  // low or HTTP score is high.
+  kDisabled = 1,
+
+  kMaxValue = kDisabled,
+};
+
 // Stores the parameters to decide whether to show an interstitial for the
 // current site.
 struct HttpInterstitialState {
@@ -116,6 +139,9 @@ void RecordHttpsFirstModeNavigation(
 
 // Helper to record a navigation request security level.
 void RecordNavigationRequestSecurityLevel(NavigationRequestSecurityLevel level);
+
+// Helper to record Site Engagement Heuristic enabled state.
+void RecordSiteEngagementHeuristicState(SiteEngagementHeuristicState state);
 
 }  // namespace security_interstitials::https_only_mode
 

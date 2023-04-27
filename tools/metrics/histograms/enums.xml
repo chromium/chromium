@@ -96299,6 +96299,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Other"/>
 </enum>
 
+<enum name="SiteEngagementHeuristicState">
+  <int value="0"
+      label="HTTPS-First Mode got enabled on this site because its HTTPS
+             score is high and HTTP score is low."/>
+  <int value="1"
+      label="HTTPS-First Mode got disabled on this site because its HTTPS
+             score is low or HTTP score is high."/>
+</enum>
+
 <enum name="SiteEngagementLevel">
   <int value="0" label="None"/>
   <int value="1" label="Minimal"/>

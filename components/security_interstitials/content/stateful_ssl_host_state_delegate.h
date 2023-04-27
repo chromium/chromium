@@ -82,8 +82,9 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   bool HasAllowException(const std::string& host,
                          content::StoragePartition* storage_partition) override;
 
-  void EnforceHttpsForHost(
+  void SetHttpsEnforcementForHost(
       const std::string& host,
+      bool enforced,
       content::StoragePartition* storage_partition) override;
   bool IsHttpsEnforcedForHost(
       const std::string& host,
