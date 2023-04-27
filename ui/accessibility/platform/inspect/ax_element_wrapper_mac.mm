@@ -67,8 +67,7 @@ id AXElementWrapper::AsId() const {
 }
 
 std::string AXElementWrapper::DOMId() const {
-  const id domid_value =
-      *GetAttributeValue(base::SysUTF8ToNSString("AXDOMIdentifier"));
+  const id domid_value = *GetAttributeValue(@"AXDOMIdentifier");
   return base::SysNSStringToUTF8(static_cast<NSString*>(domid_value));
 }
 
