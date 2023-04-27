@@ -3680,9 +3680,6 @@ extern const char kTerminalAlternativeEmulatorDescription[];
 extern const char kTerminalDevName[];
 extern const char kTerminalDevDescription[];
 
-extern const char kTerminalMultiProfileName[];
-extern const char kTerminalMultiProfileDescription[];
-
 extern const char kTerminalTmuxIntegrationName[];
 extern const char kTerminalTmuxIntegrationDescription[];
 

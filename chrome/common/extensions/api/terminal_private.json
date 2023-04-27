@@ -242,10 +242,6 @@
                   "description": "True if alternative emulator flag is enabled.",
                   "type": "boolean"
                 },
-                "multi_profile": {
-                  "description": "True if multi profile settings is enabled.",
-                  "type": "boolean"
-                },
                 "tast": {
                   "description": "True if tast extension is installed.",
                   "type": "boolean"

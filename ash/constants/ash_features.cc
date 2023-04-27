@@ -2122,11 +2122,6 @@ BASE_FEATURE(kTerminalAlternativeEmulator,
 // Only works in dev and canary channels.
 BASE_FEATURE(kTerminalDev, "TerminalDev", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables multi-profile theme support for Terminal..
-BASE_FEATURE(kTerminalMultiProfile,
-             "TerminalMultiProfile",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables tmux integration in the Terminal System App.
 BASE_FEATURE(kTerminalTmuxIntegration,
              "TerminalTmuxIntegration",

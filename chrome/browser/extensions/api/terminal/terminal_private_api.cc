@@ -737,8 +737,6 @@ ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
   info.Set("alternative_emulator",
            base::FeatureList::IsEnabled(
                ash::features::kTerminalAlternativeEmulator));
-  info.Set("multi_profile",
-           base::FeatureList::IsEnabled(ash::features::kTerminalMultiProfile));
   info.Set("tast", extensions::ExtensionRegistry::Get(browser_context())
                        ->enabled_extensions()
                        .Contains(extension_misc::kGuestModeTestExtensionId));
