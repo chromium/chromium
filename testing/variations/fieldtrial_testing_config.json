@@ -13381,6 +13381,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UseBoringSSLForRandBytes"
+                    ],
+                    "disable_features": [
+                        "UseGetrandomForRandBytes"
                     ]
                 }
             ]
