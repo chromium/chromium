@@ -399,6 +399,44 @@ TEST_F(GifRecordingTest, CloseRecordingMenuWhileFocusIsSomewhereElse) {
             test_api.GetCurrentFocusedView()->GetView());
 }
 
+TEST_F(GifRecordingTest, GifIsNotSupportedForFullscreenOrWindow) {
+  struct {
+    const char* const scope_name;
+    CaptureModeSource source;
+  } kTestCases[] = {
+      {"Testing fullscreen", CaptureModeSource::kFullscreen},
+      {"Testing window", CaptureModeSource::kWindow},
+  };
+
+  auto window = CreateTestWindow(gfx::Rect(200, 200));
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_name);
+    auto* controller = StartRegionVideoCapture();
+    controller->SetRecordingType(RecordingType::kGif);
+
+    // Switch to another source than region.
+    controller->SetSource(test_case.source);
+    // The recording type remains the same, and is still set as GIF. However,
+    // the recording will be forced to webm, since GIF is only supported for
+    // `kRegion`.
+    EXPECT_EQ(controller->recording_type(), RecordingType::kGif);
+
+    // This is needed for window recording.
+    GetEventGenerator()->MoveMouseToCenterOf(window.get());
+
+    StartVideoRecordingImmediately();
+
+    EXPECT_TRUE(controller->is_recording_in_progress());
+    CaptureModeTestApi().FlushRecordingServiceForTesting();
+    controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+
+    // The resulting file should have a ".webm" extension.
+    const auto file = WaitForCaptureFileToBeSaved();
+    EXPECT_TRUE(file.MatchesExtension(".webm"));
+  }
+}
+
 TEST_F(GifRecordingTest, RecordingTypeIsRespected) {
   auto* controller = StartRegionVideoCapture();
   controller->SetRecordingType(RecordingType::kGif);

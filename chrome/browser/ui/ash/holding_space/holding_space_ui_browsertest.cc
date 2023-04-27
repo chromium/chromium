@@ -2967,7 +2967,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceScreenRecordingUiBrowserTest,
   ASSERT_FALSE(test_api().IsShowing());
   ash::CaptureModeTestApi capture_mode_test_api;
   capture_mode_test_api.SetRecordingType(recording_type());
-  capture_mode_test_api.StartForFullscreen(/*for_video=*/true);
+  capture_mode_test_api.StartForRegion(/*for_video=*/true);
+  capture_mode_test_api.SetUserSelectedRegion(gfx::Rect(200, 200));
   capture_mode_test_api.PerformCapture();
   // Record a 100 ms long video.
   base::RunLoop video_recording_time;

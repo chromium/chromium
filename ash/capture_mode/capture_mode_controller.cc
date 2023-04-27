@@ -132,11 +132,16 @@ enum VideoNotificationButtonIndex {
   BUTTON_DELETE_VIDEO = 0,
 };
 
-// Returns the file extension for the given `recording_type`.
-std::string GetVideoExtension(RecordingType recording_type) {
+// Returns the file extension for the given `recording_type` and the current
+// capture `source`.
+std::string GetVideoExtension(RecordingType recording_type,
+                              CaptureModeSource source) {
   switch (recording_type) {
     case RecordingType::kGif:
-      return "gif";
+      // Currently, we only support recording GIF for partial regions, so we
+      // ignore the recording type if the source is fullscreen or window, and
+      // force recording in webm.
+      return source == CaptureModeSource::kRegion ? "gif" : "webm";
     case RecordingType::kWebM:
       return "webm";
   }
@@ -1479,7 +1484,7 @@ base::FilePath CaptureModeController::BuildImagePath() const {
 
 base::FilePath CaptureModeController::BuildVideoPath() const {
   return BuildPathNoExtension(kVideoFileNameFmtStr, base::Time::Now())
-      .AddExtension(GetVideoExtension(recording_type_));
+      .AddExtension(GetVideoExtension(recording_type_, source_));
 }
 
 base::FilePath CaptureModeController::BuildImagePathForDisplay(
