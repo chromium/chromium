@@ -542,6 +542,12 @@ const char kCjt[] = R"(
           "document_sheet_back": "MANUAL_TUMBLE",
           "reverse_order_streaming": true
         },
+        "vendor_ticket_item": [
+          {
+            "id": "label-mode-configured",
+            "value": "cutter"
+          }
+        ],
         "color": {
           "type": "STANDARD_MONOCHROME"
         },
@@ -1242,6 +1248,7 @@ TEST(PrinterDescriptionTest, CjtInit) {
             NormalizeJson(description.ToStringForTesting()));
 
   PwgRasterConfigTicketItem pwg_raster_config;
+  VendorTicketItems vendor_items;
   ColorTicketItem color;
   DuplexTicketItem duplex;
   OrientationTicketItem orientation;
@@ -1255,6 +1262,7 @@ TEST(PrinterDescriptionTest, CjtInit) {
   ReverseTicketItem reverse;
 
   EXPECT_FALSE(pwg_raster_config.LoadFrom(description));
+  EXPECT_FALSE(vendor_items.LoadFrom(description));
   EXPECT_FALSE(color.LoadFrom(description));
   EXPECT_FALSE(duplex.LoadFrom(description));
   EXPECT_FALSE(orientation.LoadFrom(description));
@@ -1278,6 +1286,7 @@ TEST(PrinterDescriptionTest, CjtSetAll) {
   CloudDeviceDescription description;
 
   PwgRasterConfigTicketItem pwg_raster_config;
+  VendorTicketItems vendor_items;
   ColorTicketItem color;
   DuplexTicketItem duplex;
   OrientationTicketItem orientation;
@@ -1295,6 +1304,8 @@ TEST(PrinterDescriptionTest, CjtSetAll) {
   custom_raster.reverse_order_streaming = true;
   custom_raster.rotate_all_pages = false;
   pwg_raster_config.set_value(custom_raster);
+  VendorItem label_cutter("label-mode-configured", "cutter");
+  vendor_items.AddOption(std::move(label_cutter));
   color.set_value(Color(ColorType::STANDARD_MONOCHROME));
   duplex.set_value(DuplexType::NO_DUPLEX);
   orientation.set_value(OrientationType::LANDSCAPE);
@@ -1312,6 +1323,7 @@ TEST(PrinterDescriptionTest, CjtSetAll) {
   reverse.set_value(true);
 
   pwg_raster_config.SaveTo(&description);
+  vendor_items.SaveTo(&description);
   color.SaveTo(&description);
   duplex.SaveTo(&description);
   orientation.SaveTo(&description);
@@ -1332,6 +1344,7 @@ TEST(PrinterDescriptionTest, CjtGetAll) {
   CloudDeviceDescription description;
   ASSERT_TRUE(description.InitFromString(kCjt));
 
+  VendorTicketItems vendor_items;
   ColorTicketItem color;
   DuplexTicketItem duplex;
   OrientationTicketItem orientation;
@@ -1346,6 +1359,7 @@ TEST(PrinterDescriptionTest, CjtGetAll) {
   PwgRasterConfigTicketItem pwg_raster_config;
 
   EXPECT_TRUE(pwg_raster_config.LoadFrom(description));
+  EXPECT_TRUE(vendor_items.LoadFrom(description));
   EXPECT_TRUE(color.LoadFrom(description));
   EXPECT_TRUE(duplex.LoadFrom(description));
   EXPECT_TRUE(orientation.LoadFrom(description));
@@ -1363,6 +1377,9 @@ TEST(PrinterDescriptionTest, CjtGetAll) {
             pwg_raster_config.value().document_sheet_back);
   EXPECT_TRUE(pwg_raster_config.value().reverse_order_streaming);
   EXPECT_FALSE(pwg_raster_config.value().rotate_all_pages);
+  ASSERT_EQ(vendor_items.size(), 1u);
+  EXPECT_EQ(vendor_items[0].id, "label-mode-configured");
+  EXPECT_EQ(vendor_items[0].value, "cutter");
   EXPECT_EQ(color.value(), Color(ColorType::STANDARD_MONOCHROME));
   EXPECT_EQ(duplex.value(), DuplexType::NO_DUPLEX);
   EXPECT_EQ(orientation.value(), OrientationType::LANDSCAPE);

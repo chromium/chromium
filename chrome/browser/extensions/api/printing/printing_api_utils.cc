@@ -9,7 +9,10 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
@@ -42,6 +45,24 @@ bool DoesPrinterMatchDefaultPrinterRules(
           RE2::FullMatch(printer.id, rules->id_pattern)) &&
          (rules->name_pattern.empty() ||
           RE2::FullMatch(printer.name, rules->name_pattern));
+}
+
+// Return true if the given item is in the allow list, else return false.
+bool ValidateVendorItem(const cloud_devices::printer::VendorItem& vendor_item) {
+  // A map containing the allowed vendor items.  The key is an IPP attribute,
+  // and the value is a set of allowable values for that attribute.
+  static const base::NoDestructor<
+      base::flat_map<base::StringPiece, base::flat_set<base::StringPiece>>>
+      kVendorItemAllowList({
+          {"label-mode-configured", {"cutter", "tear-off"}},
+      });
+
+  const auto& item = kVendorItemAllowList->find(vendor_item.id);
+  if (item == kVendorItemAllowList->end()) {
+    return false;
+  }
+
+  return item->second.contains(vendor_item.value);
 }
 
 }  // namespace
@@ -213,6 +234,20 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
   if (!collate.LoadFrom(description))
     return nullptr;
   settings->set_collate(collate.value());
+
+  // These items are optional - don't fail if they don't exist.  However, if
+  // they do exist, this will fail if they are not an allowed vendor item.
+  cloud_devices::printer::VendorTicketItems vendor_items;
+  if (vendor_items.LoadFrom(description)) {
+    for (const auto& item : vendor_items) {
+      if (!ValidateVendorItem(item)) {
+        LOG(ERROR) << "Invalid vendor item/value: " << item.id << "/"
+                   << item.value << ".";
+        return nullptr;
+      }
+      settings->advanced_settings().emplace(item.id, item.value);
+    }
+  }
 
   return settings;
 }

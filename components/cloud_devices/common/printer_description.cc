@@ -66,6 +66,7 @@ extern constexpr char kOptionRangeCapability[] = "range_cap";
 extern constexpr char kOptionSelectCapability[] = "select_cap";
 extern constexpr char kOptionTypedValueCapability[] = "typed_value_cap";
 extern constexpr char kOptionVendorCapability[] = "vendor_capability";
+extern constexpr char kOptionVendorItem[] = "vendor_ticket_item";
 #if BUILDFLAG(IS_CHROMEOS)
 extern constexpr char kOptionPin[] = "pin";
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -892,6 +893,19 @@ bool Color::IsValid() const {
   return !vendor_id.empty() && !custom_display_name.empty();
 }
 
+VendorItem::VendorItem() = default;
+
+VendorItem::VendorItem(const std::string& id, const std::string& value)
+    : id(id), value(value) {}
+
+bool VendorItem::IsValid() const {
+  return !id.empty() && !value.empty();
+}
+
+bool VendorItem::operator==(const VendorItem& other) const {
+  return id == other.id && value == other.value;
+}
+
 Margins::Margins()
     : type(MarginsType::STANDARD_MARGINS),
       top_um(0),
@@ -1466,6 +1480,30 @@ class ReverseTraits : public NoValueValidation,
   }
 };
 
+class VendorItemTraits : public ItemsTraits<kOptionVendorItem> {
+ public:
+  static bool IsValid(const VendorItem& option) { return option.IsValid(); }
+
+  static bool Load(const base::Value::Dict& dict, VendorItem* option) {
+    const std::string* id = dict.FindString(kKeyId);
+    if (!id) {
+      return false;
+    }
+    const std::string* value = dict.FindString(kKeyValue);
+    if (!value) {
+      return false;
+    }
+    option->id = *id;
+    option->value = *value;
+    return true;
+  }
+
+  static void Save(const VendorItem& option, base::Value::Dict* dict) {
+    dict->Set(kKeyId, option.id);
+    dict->Set(kKeyValue, option.value);
+  }
+};
+
 #if BUILDFLAG(IS_CHROMEOS)
 class PinTraits : public NoValueValidation, public ItemsTraits<kOptionPin> {
  public:
@@ -1523,5 +1561,7 @@ template class TicketItem<int32_t, printer::CopiesTicketItemTraits>;
 template class TicketItem<printer::PageRange, printer::PageRangeTraits>;
 template class TicketItem<bool, printer::CollateTraits>;
 template class TicketItem<bool, printer::ReverseTraits>;
+template class ListCapability<printer::VendorItem, printer::VendorItemTraits>;
+template class ListTicketItem<printer::VendorItem, printer::VendorItemTraits>;
 
 }  // namespace cloud_devices
