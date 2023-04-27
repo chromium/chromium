@@ -1392,8 +1392,8 @@ body:not(.mode-switching):not(.streaming).view-expert-settings .spinner {
 
 .panel {
   backdrop-filter: blur(10px);
-  background: rgba(var(--grey-900-rgb), 0.9);
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
+  background: var(--cros-sys-base_elevated);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
 
