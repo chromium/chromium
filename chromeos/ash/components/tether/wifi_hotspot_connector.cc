@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
+#include "base/uuid.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_connect.h"
@@ -78,7 +78,7 @@ void WifiHotspotConnector::ConnectToWifiHotspot(
   ssid_ = ssid;
   password_ = password;
   tether_network_guid_ = tether_network_guid;
-  wifi_network_guid_ = base::GenerateGUID();
+  wifi_network_guid_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
   callback_ = std::move(callback);
   timer_->Start(FROM_HERE, base::Seconds(kConnectionTimeoutSeconds),
                 base::BindOnce(&WifiHotspotConnector::OnConnectionTimeout,
