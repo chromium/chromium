@@ -265,9 +265,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, UpdatesLaunchStats) {
       << "Expect app to exist";
 }
 
-// The helper methods in this class uses ExecuteScriptXXX instead of ExecJs and
-// EvalJs because of some quirks surrounding origin trials and content security
-// policies.
 class SystemWebAppManagerFileHandlingBrowserTestBase
     : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
@@ -304,8 +301,9 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
 
   // Must be called before WaitAndExposeLaunchParamsToWindow. This sets up the
   // promise used to wait for launchParam callback.
-  bool PrepareToReceiveLaunchParams(content::WebContents* web_contents) {
-    return content::ExecuteScript(
+  [[nodiscard]] ::testing::AssertionResult PrepareToReceiveLaunchParams(
+      content::WebContents* web_contents) {
+    return content::ExecJs(
         web_contents,
         "window.launchParamsPromise = new Promise(resolve => {"
         "  window.resolveLaunchParamsPromise = resolve;"
@@ -319,23 +317,15 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
   // Must be called after PrepareToReceiveLaunchParams. This method waits for
   // launchParams being received, the stores it to a |js_property_name| on JS
   // window object.
-  bool WaitAndExposeLaunchParamsToWindow(
+  [[nodiscard]] ::testing::AssertionResult WaitAndExposeLaunchParamsToWindow(
       content::WebContents* web_contents,
       const std::string js_property_name = "launchParams") {
-    return content::EvalJs(
-               web_contents,
-               content::JsReplace(
-                   "window.launchParamsPromise.then(launchParams => {"
-                   "  window[$1] = launchParams;"
-                   "  return true;"
-                   "});",
-                   js_property_name))
-        .ExtractBool();
-  }
-
-  std::string GetJsStatementValueAsString(content::WebContents* web_contents,
-                                          const std::string& js_statement) {
-    return content::EvalJs(web_contents, js_statement).ExtractString();
+    return content::ExecJs(
+        web_contents,
+        content::JsReplace("window.launchParamsPromise.then(launchParams => {"
+                           "  window[$1] = launchParams"
+                           "})",
+                           js_property_name));
   }
 
  private:
@@ -368,9 +358,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
   // Check the App is launched with the correct launch file.
   EXPECT_TRUE(PrepareToReceiveLaunchParams(web_contents));
   EXPECT_TRUE(WaitAndExposeLaunchParamsToWindow(web_contents, "launchParams1"));
-  EXPECT_EQ(temp_file_path.BaseName().AsUTF8Unsafe(),
-            GetJsStatementValueAsString(web_contents,
-                                        "window.launchParams1.files[0].name"));
+  EXPECT_EQ(
+      temp_file_path.BaseName().AsUTF8Unsafe(),
+      content::EvalJs(web_contents, "window.launchParams1.files[0].name"));
 
   // Second launch.
   base::FilePath temp_file_path2;
@@ -384,9 +374,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
   EXPECT_TRUE(WaitAndExposeLaunchParamsToWindow(web_contents, "launchParams2"));
 
   // Second launch_files are correct.
-  EXPECT_EQ(temp_file_path2.BaseName().AsUTF8Unsafe(),
-            GetJsStatementValueAsString(web_contents,
-                                        "window.launchParams2.files[0].name"));
+  EXPECT_EQ(
+      temp_file_path2.BaseName().AsUTF8Unsafe(),
+      content::EvalJs(web_contents, "window.launchParams2.files[0].name"));
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
@@ -414,9 +404,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromOtherApp", 1);
 }
 
-// The helper methods in this class uses ExecuteScriptXXX instead of ExecJs and
-// EvalJs because of some quirks surrounding origin trials and content security
-// policies.
 class SystemWebAppManagerLaunchDirectoryBrowserTest
     : public SystemWebAppManagerFileHandlingBrowserTestBase {
  public:
@@ -425,53 +412,44 @@ class SystemWebAppManagerLaunchDirectoryBrowserTest
             IncludeLaunchDirectory::kYes) {}
 
   // Returns the content of |file_handle_or_promise| file handle.
-  std::string ReadContentFromJsFileHandle(
+  [[nodiscard]] content::EvalJsResult ReadContentFromJsFileHandle(
       content::WebContents* web_contents,
       const std::string& file_handle_or_promise) {
     return content::EvalJs(web_contents,
                            "Promise.resolve(" + file_handle_or_promise + ")" +
-                               ".then(async (fileHandle) => {"
+                               ".then(async fileHandle => {"
                                "  const file = await fileHandle.getFile();"
-                               "  const content = await file.text();"
-                               "  return content;"
-                               "});")
-        .ExtractString();
+                               "  return file.text();"
+                               "})");
   }
 
-  // Writes |content_to_write| to |file_handle_or_promise| file handle. Returns
-  // whether JavaScript execution finishes.
-  bool WriteContentToJsFileHandle(content::WebContents* web_contents,
-                                  const std::string& file_handle_or_promise,
-                                  const std::string& content_to_write) {
-    return content::EvalJs(
-               web_contents,
-               content::JsReplace(
-                   "Promise.resolve(" + file_handle_or_promise + ")" +
-                       ".then(async (fileHandle) => {"
-                       "  const writable = await fileHandle.createWritable();"
-                       "  await writable.write($1);"
-                       "  await writable.close();"
-                       "  return true;"
-                       "});",
-                   content_to_write))
-        .ExtractBool();
+  // Writes |content_to_write| to |file_handle_or_promise| file handle.
+  [[nodiscard]] ::testing::AssertionResult WriteContentToJsFileHandle(
+      content::WebContents* web_contents,
+      const std::string& file_handle_or_promise,
+      const std::string& content_to_write) {
+    return content::ExecJs(
+        web_contents,
+        content::JsReplace(
+            "Promise.resolve(" + file_handle_or_promise + ")" +
+                ".then(async (fileHandle) => {"
+                "  const writable = await fileHandle.createWritable();"
+                "  await writable.write($1);"
+                "  await writable.close();"
+                "})",
+            content_to_write));
   }
 
   // Remove file by |file_name| from |dir_handle_or_promise| directory handle.
-  // Returns whether JavaScript execution finishes.
-  bool RemoveFileFromJsDirectoryHandle(content::WebContents* web_contents,
-                                       const std::string& dir_handle_or_promise,
-                                       const std::string& file_name) {
-    return content::EvalJs(
-               web_contents,
-               content::JsReplace("Promise.resolve(" + dir_handle_or_promise +
-                                      ")" +
-                                      ".then(async (dir_handle) => {"
-                                      "  await dir_handle.removeEntry($1);"
-                                      "  return true;"
-                                      "});",
-                                  file_name))
-        .ExtractBool();
+  [[nodiscard]] ::testing::AssertionResult RemoveFileFromJsDirectoryHandle(
+      content::WebContents* web_contents,
+      const std::string& dir_handle_or_promise,
+      const std::string& file_name) {
+    return content::ExecJs(
+        web_contents, content::JsReplace(
+                          "Promise.resolve(" + dir_handle_or_promise + ")" +
+                              ".then(dir_handle => dir_handle.removeEntry($1))",
+                          file_name));
   }
 
   std::string ReadFileContent(const base::FilePath& path) {
@@ -570,17 +548,16 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
   EXPECT_TRUE(WaitAndExposeLaunchParamsToWindow(web_contents, "launchParams1"));
 
   // Check launch directory and launch files are correct.
-  EXPECT_EQ("directory",
-            GetJsStatementValueAsString(web_contents,
-                                        "window.launchParams1.files[0].kind"));
-  EXPECT_EQ(temp_directory.GetPath().BaseName().AsUTF8Unsafe(),
-            GetJsStatementValueAsString(web_contents,
-                                        "window.launchParams1.files[0].name"));
-  EXPECT_EQ("file", GetJsStatementValueAsString(
-                        web_contents, "window.launchParams1.files[1].kind"));
-  EXPECT_EQ(temp_file_path.BaseName().AsUTF8Unsafe(),
-            GetJsStatementValueAsString(web_contents,
-                                        "window.launchParams1.files[1].name"));
+  EXPECT_EQ("directory", content::EvalJs(web_contents,
+                                         "window.launchParams1.files[0].kind"));
+  EXPECT_EQ(
+      temp_directory.GetPath().BaseName().AsUTF8Unsafe(),
+      content::EvalJs(web_contents, "window.launchParams1.files[0].name"));
+  EXPECT_EQ("file", content::EvalJs(web_contents,
+                                    "window.launchParams1.files[1].kind"));
+  EXPECT_EQ(
+      temp_file_path.BaseName().AsUTF8Unsafe(),
+      content::EvalJs(web_contents, "window.launchParams1.files[1].name"));
 
   // Second launch.
   base::ScopedTempDir temp_directory2;
@@ -596,17 +573,16 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
   EXPECT_TRUE(WaitAndExposeLaunchParamsToWindow(web_contents, "launchParams2"));
 
   // Check the second launch directory and launch files are correct.
-  EXPECT_EQ("directory",
-            GetJsStatementValueAsString(web_contents,
-                                        "window.launchParams2.files[0].kind"));
-  EXPECT_EQ(temp_directory2.GetPath().BaseName().AsUTF8Unsafe(),
-            GetJsStatementValueAsString(web_contents,
-                                        "window.launchParams2.files[0].name"));
-  EXPECT_EQ("file", GetJsStatementValueAsString(
-                        web_contents, "window.launchParams2.files[1].kind"));
-  EXPECT_EQ(temp_file_path2.BaseName().AsUTF8Unsafe(),
-            GetJsStatementValueAsString(web_contents,
-                                        "window.launchParams2.files[1].name"));
+  EXPECT_EQ("directory", content::EvalJs(web_contents,
+                                         "window.launchParams2.files[0].kind"));
+  EXPECT_EQ(
+      temp_directory2.GetPath().BaseName().AsUTF8Unsafe(),
+      content::EvalJs(web_contents, "window.launchParams2.files[0].name"));
+  EXPECT_EQ("file", content::EvalJs(web_contents,
+                                    "window.launchParams2.files[1].kind"));
+  EXPECT_EQ(
+      temp_file_path2.BaseName().AsUTF8Unsafe(),
+      content::EvalJs(web_contents, "window.launchParams2.files[1].name"));
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
@@ -641,58 +617,51 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
 class SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest
     : public SystemWebAppManagerLaunchDirectoryBrowserTest {
  public:
-  bool CheckFileIsGif(content::WebContents* web_contents,
-                      const std::string& file_handle_or_promise) {
+  [[nodiscard]] content::EvalJsResult FileHandleIsGif(
+      content::WebContents* web_contents,
+      const std::string& file_handle_or_promise) {
     return content::EvalJs(
-               web_contents,
-               "Promise.resolve(" + file_handle_or_promise + ")" +
-                   ".then(async file => {"
-                   "  const arrayBuf = await file.arrayBuffer();"
-                   "  const bytes = new Uint8Array(arrayBuf.slice(0, 3));"
-                   "  const isGifSignature = bytes[0] === 0x47        /* G */"
-                   "                         && bytes[1] === 0x49     /* I */ "
-                   "                         && bytes[2] === 0x46;    /* F */"
-                   "  return isGifSignature;"
-                   "});")
-        .ExtractBool();
+        web_contents,
+        "Promise.resolve(" + file_handle_or_promise + ")" +
+            ".then(async fileHandle => {"
+            "  const file = await fileHandle.getFile();"
+            "  const arrayBuf = await file.arrayBuffer();"
+            "  const bytes = new Uint8Array(arrayBuf.slice(0, 3));"
+            "  return bytes[0] === 0x47     /* G */"
+            "      && bytes[1] === 0x49     /* I */"
+            "      && bytes[2] === 0x46;    /* F */"
+            "});");
   }
 
-  bool CheckFileIsPng(content::WebContents* web_contents,
-                      const std::string& file_handle_or_promise) {
+  [[nodiscard]] content::EvalJsResult FileHandleIsPng(
+      content::WebContents* web_contents,
+      const std::string& file_handle_or_promise) {
     return content::EvalJs(
-               web_contents,
-               "Promise.resolve(" + file_handle_or_promise + ")" +
-                   ".then(async file => {"
-                   "  const arrayBuf = await file.arrayBuffer();"
-                   "  const bytes = new Uint8Array(arrayBuf.slice(0, 4));"
-                   "  const isPngSignature = bytes[0] === 0x89        /* 0x89 "
-                   "*/"
-                   "                         && bytes[1] === 0x50     /* P */"
-                   "                         && bytes[2] === 0x4E     /* N */"
-                   "                         && bytes[3] === 0x47;    /* G */"
-                   "  return isPngSignature;"
-                   "});")
-        .ExtractBool();
+        web_contents,
+        "Promise.resolve(" + file_handle_or_promise + ")" +
+            ".then(async fileHandle => {"
+            "  const file = await fileHandle.getFile();"
+            "  const arrayBuf = await file.arrayBuffer();"
+            "  const bytes = new Uint8Array(arrayBuf.slice(0, 4));"
+            "  return bytes[0] === 0x89     /* 0x89 */"
+            "      && bytes[1] === 0x50     /* P */"
+            "      && bytes[2] === 0x4E     /* N */"
+            "      && bytes[3] === 0x47;    /* G */"
+            "});");
   }
 
   // Returns whether the file is written.
-  bool CheckCanWriteFile(content::WebContents* web_contents,
-                         const std::string& file_handle_or_promise) {
-    return content::EvalJs(
-               web_contents,
-               "Promise.resolve(" + file_handle_or_promise + ")" +
-                   ".then(async fileHandle => {"
-                   "  try {"
-                   "    const writable = await fileHandle.createWritable();"
-                   "    await writable.write('test');"
-                   "    await writable.close();"
-                   "    return true;"
-                   "  } catch(err) {"
-                   "    console.error('write failed: ' + err.message);"
-                   "    return false;"
-                   "  }"
-                   "});")
-        .ExtractBool();
+  [[nodiscard]] ::testing::AssertionResult CanWriteFile(
+      content::WebContents* web_contents,
+      const std::string& file_handle_or_promise) {
+    return content::ExecJs(
+        web_contents,
+        "Promise.resolve(" + file_handle_or_promise + ")" +
+            ".then(async fileHandle => {"
+            "  const writable = await fileHandle.createWritable();"
+            "  await writable.write('test');"
+            "  await writable.close();"
+            "});");
   }
 
   void InstallTestFileSystemProvider(Profile* profile) {
@@ -727,31 +696,28 @@ IN_PROC_BROWSER_TEST_P(
 
   // Check the launch file is the one we expect, and we can read the file.
   EXPECT_EQ(kTestGifFile,
-            GetJsStatementValueAsString(web_contents,
-                                        "window.launchParams.files[1].name"));
-  EXPECT_TRUE(
-      CheckFileIsGif(web_contents, "window.launchParams.files[1].getFile()"));
+            content::EvalJs(web_contents, "window.launchParams.files[1].name"));
+  EXPECT_EQ(true,
+            FileHandleIsGif(web_contents, "window.launchParams.files[1]"));
 
   // Check we can list the directory.
-  std::string file_names =
-      content::EvalJs(
-          web_contents,
-          "(async function() {"
-          "  let fileNames = [];"
-          "  const files = await window.launchParams.files[0].keys();"
-          "  for await (const name of files)"
-          "    fileNames.push(name);"
-          "  return fileNames.sort().join(';');"
-          "})();")
-          .ExtractString();
-  EXPECT_EQ(base::StrCat({kTestPngFile, ";", kTestGifFile}), file_names);
+  EXPECT_EQ(base::StrCat({kTestPngFile, ";", kTestGifFile}),
+            content::EvalJs(
+                web_contents,
+                "(async function() {"
+                "  let fileNames = [];"
+                "  const files = await window.launchParams.files[0].keys();"
+                "  for await (const name of files)"
+                "    fileNames.push(name);"
+                "  return fileNames.sort().join(';');"
+                "})();"));
 
   // Verify we can read a file (other than launch file) inside the directory.
-  EXPECT_TRUE(CheckFileIsPng(
-      web_contents,
-      content::JsReplace("window.launchParams.files[0].getFileHandle($1).then("
-                         "  fileHandle => fileHandle.getFile())",
-                         kTestPngFile)));
+  EXPECT_EQ(true, FileHandleIsPng(
+                      web_contents,
+                      content::JsReplace(
+                          "window.launchParams.files[0].getFileHandle($1)",
+                          kTestPngFile)));
 }
 
 // Test that the File System Access implementation doesn't cause a crash when
@@ -771,11 +737,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(WaitAndExposeLaunchParamsToWindow(web_contents, "launchParams"));
 
   // Try to write the file.
-  EXPECT_FALSE(CheckCanWriteFile(web_contents, "window.launchParams.files[1]"));
+  EXPECT_FALSE(CanWriteFile(web_contents, "window.launchParams.files[1]"));
 
   // Do a no-op JavaScript to check the page is still operational. If the page
   // crashed, the following call will fail.
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "(function() {})();"));
+  EXPECT_TRUE(content::ExecJs(web_contents, "(function(){})();"));
 }
 
 // Test that the File System Access implementation doesn't cause a crash when
@@ -794,17 +760,15 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(PrepareToReceiveLaunchParams(web_contents));
   EXPECT_TRUE(WaitAndExposeLaunchParamsToWindow(web_contents, "launchParams"));
 
-  // Try to delete the file.
-  EXPECT_EQ(false,
-            content::EvalJs(web_contents,
-                            content::JsReplace(
-                                "window.launchParams.files[0].removeEntry($1)"
-                                ".then(_ => true, error => false);",
-                                "readonly.png")));
+  // Deleting the file should fail.
+  EXPECT_FALSE(content::ExecJs(
+      web_contents,
+      content::JsReplace("window.launchParams.files[0].removeEntry($1)",
+                         "readonly.png")));
 
   // Do a no-op JavaScript to check the page is still operational. If the page
   // crashed, the following call will fail.
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "(function() {})();"));
+  EXPECT_TRUE(content::ExecJs(web_contents, "(function() {})();"));
 }
 
 class SystemWebAppManagerNotShownInLauncherTest
