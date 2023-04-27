@@ -33,7 +33,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -143,7 +142,6 @@ public class TracingSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "crbug.com/1111655")
     public void testRecordTrace() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         mSettingsActivityTestRule.startSettingsActivity();
