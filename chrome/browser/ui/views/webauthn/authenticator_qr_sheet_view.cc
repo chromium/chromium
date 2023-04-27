@@ -49,7 +49,6 @@ class AuthenticatorQRViewCentered : public views::View {
     qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
         qrcode_generator::mojom::GenerateQRCodeRequest::New();
     request->data = qr_string;
-    request->should_render = true;
     request->center_image = qrcode_generator::mojom::CenterImage::PASSKEY_ICON;
 
     request->render_module_style =

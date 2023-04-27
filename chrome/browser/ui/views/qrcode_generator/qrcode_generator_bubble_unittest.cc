@@ -225,7 +225,6 @@ TEST_F(QRCodeGeneratorBubbleUITest, ImageShowsAfterErrorState) {
   auto ok_response = mojom::GenerateQRCodeResponse::New();
   ok_response->error_code = mojom::QRCodeGeneratorError::NONE;
   ok_response->bitmap.allocN32Pixels(16, 16);
-  ok_response->data.resize(16 * 16);
   ok_response->data_size = gfx::Size(16, 16);
 
   {
@@ -262,7 +261,6 @@ TEST_F(QRCodeGeneratorBubbleUITest,
   ok_response->error_code = mojom::QRCodeGeneratorError::NONE;
   ok_response->bitmap.allocN32Pixels(16, 16);
   ok_response->bitmap.eraseColor(SK_ColorRED);
-  ok_response->data.resize(16 * 16);
   ok_response->data_size = gfx::Size(16, 16);
 
   // The UI regenerates the QR code when the user types new text, so synthesize

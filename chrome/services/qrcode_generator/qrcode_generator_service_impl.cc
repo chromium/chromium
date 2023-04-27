@@ -199,9 +199,6 @@ void QRCodeGeneratorServiceImpl::RenderBitmap(
     const gfx::Size data_size,
     const mojom::GenerateQRCodeRequestPtr& request,
     mojom::GenerateQRCodeResponsePtr* response) {
-  if (!request->should_render)
-    return;
-
   // Setup: create colors and clear canvas.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(data_size.width() * kModuleSizePixels,
@@ -307,10 +304,9 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
     byte &= 1;
   }
 
-  response->data = std::move(qr_data->data);
   response->data_size = {qr_data->qr_size, qr_data->qr_size};
   response->error_code = mojom::QRCodeGeneratorError::NONE;
-  RenderBitmap(base::make_span(response->data), response->data_size, request,
+  RenderBitmap(base::make_span(qr_data->data), response->data_size, request,
                &response);
 
   std::move(callback).Run(std::move(response));

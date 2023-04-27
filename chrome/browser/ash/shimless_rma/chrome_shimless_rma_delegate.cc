@@ -60,7 +60,6 @@ void ChromeShimlessRmaDelegate::GenerateQrCode(
   qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
       qrcode_generator::mojom::GenerateQRCodeRequest::New();
   request->data = url;
-  request->should_render = true;
   request->center_image = qrcode_generator::mojom::CenterImage::CHROME_DINO;
 
   if (!qrcode_service_remote_) {

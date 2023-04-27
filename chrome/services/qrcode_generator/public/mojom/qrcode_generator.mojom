@@ -44,9 +44,6 @@ struct GenerateQRCodeRequest {
   // Data to generate the QR code.
   string data;
 
-  // Whether to render the QR code. If false, provides data back to the caller.
-  bool should_render;
-
   // Style for the individual modules. Does not apply to locators.
   ModuleStyle render_module_style;
 
@@ -62,15 +59,11 @@ struct GenerateQRCodeResponse {
   // Return code stating success or failure.
   QRCodeGeneratorError error_code;
 
-  // Image data for generated QR code. May be null on error, or if rendering
-  // was not requested.
+  // Image data for generated QR code. May be null on error.
   skia.mojom.BitmapN32? bitmap;
 
-  // QR Code data.
-  array<uint8> data;
-
-  // 2-D size of |data| in elements. Note |bitmap| will be upscaled, so this
-  // does not represent the returned image size.
+  // Size of the generated QR code in elements. Note that |bitmap| will be
+  // upscaled, so this does not represent the returned image size.
   gfx.mojom.Size data_size;
 };
 
@@ -78,8 +71,8 @@ struct GenerateQRCodeResponse {
 // This is usually run outside the browser process if the data is untrusted.
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface QRCodeGeneratorService {
-  // Tries to generate a QR code for |data|.
-  // Populates |response.error| on error; if kNone then |response.data|
+  // Tries to generate a QR code for |request.data|.
+  // Populates |response.error| on error; if kNone then |response.bitmap|
   // should be considered valid.
   GenerateQRCode(GenerateQRCodeRequest request)
       => (GenerateQRCodeResponse response);
