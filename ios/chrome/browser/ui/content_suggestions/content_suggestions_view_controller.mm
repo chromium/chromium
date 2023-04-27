@@ -52,12 +52,17 @@ namespace {
 // The bottom padding for the vertical stack view.
 const float kBottomStackViewPadding = 6.0f;
 
+// The minimum scroll velocity in order to swipe between modules in the Magic
+// Stack.
+const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
+
 }  // namespace
 
 @interface ContentSuggestionsViewController () <
     UIGestureRecognizerDelegate,
     ContentSuggestionsSelectionActions,
-    URLDropDelegate>
+    URLDropDelegate,
+    UIScrollViewDelegate>
 
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 
@@ -478,6 +483,17 @@ const float kBottomStackViewPadding = 6.0f;
   }
 }
 
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint*)targetContentOffset {
+  DCHECK(IsMagicStackEnabled());
+  targetContentOffset->x =
+      [self getNextPageOffsetForOffset:scrollView.contentOffset.x
+                              velocity:velocity.x];
+}
+
 #pragma mark - Private
 
 - (void)addUIElement:(UIView*)view withCustomBottomSpacing:(CGFloat)spacing {
@@ -560,6 +576,7 @@ const float kBottomStackViewPadding = 6.0f;
   _magicStackScrollView = [[UIScrollView alloc] init];
   [_magicStackScrollView setShowsHorizontalScrollIndicator:NO];
   _magicStackScrollView.clipsToBounds = NO;
+  _magicStackScrollView.delegate = self;
   [self addUIElement:_magicStackScrollView
       withCustomBottomSpacing:kMostVisitedBottomMargin];
 
@@ -598,6 +615,30 @@ const float kBottomStackViewPadding = 6.0f;
         constraintEqualToAnchor:_magicStackScrollView.heightAnchor],
     _magicStackScrollViewWidthAnchor
   ]];
+}
+
+// Determines the final page offset given the scroll `offset` and the `velocity`
+// scroll. If the drag is slow enough, then the closest page is the final state.
+// If the drag is in the negative direction, then go to the page previous to the
+// closest current page. If the drag is in the positive direction, then go to
+// the page after the closest current page.
+- (CGFloat)getNextPageOffsetForOffset:(CGFloat)offset
+                             velocity:(CGFloat)velocity {
+  CGFloat moduleWidth = [MagicStackModuleContainer
+      moduleWidthForHorizontalTraitCollection:self.traitCollection];
+  NSUInteger moduleCount = [_magicStackModuleOrder count];
+
+  // Find closest page to the current scroll offset.
+  CGFloat closestPage = roundf(offset / moduleWidth);
+  closestPage = fminf(closestPage, moduleCount);
+
+  if (fabs(velocity) < kMagicStackMinimumPaginationScrollVelocity) {
+    return closestPage * moduleWidth;
+  }
+  if (velocity < 0) {
+    return (closestPage - 1) * moduleWidth;
+  }
+  return (closestPage + 1) * moduleWidth;
 }
 
 @end
