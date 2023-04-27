@@ -7224,11 +7224,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "tab-hover-card-images",
-    "owners": [ "dfried", "corising", "//chrome/browser/ui/views/tabs/OWNERS" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "tab-inactivity-threshold",
     "owners": [ "alionadangla", "lpromero", "bling-flags@google.com" ],
     "expiry_milestone": 120
