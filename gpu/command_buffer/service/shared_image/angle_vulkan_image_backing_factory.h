@@ -6,14 +6,12 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_ANGLE_VULKAN_IMAGE_BACKING_FACTORY_H_
 
 #include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
-#include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
 
 class SharedContextState;
 
-class GPU_GLES2_EXPORT AngleVulkanImageBackingFactory
-    : public GLCommonImageBackingFactory {
+class AngleVulkanImageBackingFactory : public GLCommonImageBackingFactory {
  public:
   AngleVulkanImageBackingFactory(const GpuPreferences& gpu_preferences,
                                  const GpuDriverBugWorkarounds& workarounds,

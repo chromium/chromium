@@ -463,8 +463,6 @@ void VulkanInstance::Destroy() {
     base::UnloadNativeLibrary(loader_library_);
     loader_library_ = nullptr;
   }
-
-  gpu::GetVulkanFunctionPointers()->Reset();
 }
 
 }  // namespace gpu
