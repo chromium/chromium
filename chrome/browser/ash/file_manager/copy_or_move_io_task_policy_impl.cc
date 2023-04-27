@@ -174,6 +174,12 @@ void CopyOrMoveIOTaskPolicyImpl::MaybeScanForDisallowedFiles(size_t idx) {
   DCHECK_LE(idx, progress_->sources.size());
   if (idx == progress_->sources.size()) {
     // Scanning is complete.
+
+    // Set the error if there were any.
+    if (has_blocked_files_) {
+      progress_->security_error = SecurityErrorType::kEnterpriseConnectors;
+    }
+
     StartTransfer();
     return;
   }
@@ -226,6 +232,8 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
           enterprise_connectors::FileTransferAnalysisDelegate::RESULT_UNKNOWN ||
       result ==
           enterprise_connectors::FileTransferAnalysisDelegate::RESULT_BLOCKED);
+
+  has_blocked_files_ = true;
 
   std::move(callback).Run(base::File::FILE_ERROR_SECURITY);
 }

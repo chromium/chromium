@@ -680,6 +680,16 @@ void SystemNotificationManager::HandleIOTaskProgress(
     return;
   }
 
+  if (status.state == io_task::State::kWarning) {
+    // Process warning.
+    return;
+  }
+
+  if (status.security_error.has_value()) {
+    // Process security errors.
+    return;
+  }
+
   // From here state is kQueued, kInProgress, or kPaused.
   const bool paused = status.IsPaused();
 
