@@ -6,15 +6,11 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
@@ -62,7 +58,7 @@ class ClippingObserver : public ui::ImplicitAnimationObserver,
 
 SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
     : is_right_or_bottom_(is_right_or_bottom) {
-  SetPaintToLayer(ui::LAYER_TEXTURED);
+  SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
