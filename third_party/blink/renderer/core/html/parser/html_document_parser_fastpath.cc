@@ -155,6 +155,11 @@ class HTMLFastPathParser {
   STACK_ALLOCATED();
   using Span = base::span<const Char>;
   using USpan = base::span<const UChar>;
+  // 32 matches that used by HTMLToken::Attribute.
+  typedef std::conditional<std::is_same_v<Char, UChar>,
+                           UCharLiteralBuffer<32>,
+                           LCharLiteralBuffer<32>>::type LiteralBufferType;
+  typedef UCharLiteralBuffer<32> UCharLiteralBufferType;
   static_assert(std::is_same_v<Char, UChar> || std::is_same_v<Char, LChar>);
 
  public:
@@ -220,13 +225,11 @@ class HTMLFastPathParser {
   // Used to limit how deep a hierarchy can be created. Also note that
   // HTMLConstructionSite ends up flattening when this depth is reached.
   unsigned element_depth_ = 0;
-  // 32 matches that used by HTMLToken::Attribute.
-  Vector<Char, 32> char_buffer_;
-  Vector<UChar> uchar_buffer_;
+  LiteralBufferType char_buffer_;
+  UCharLiteralBufferType uchar_buffer_;
   // Used if the attribute name contains upper case ascii (which must be
   // mapped to lower case).
-  // 32 matches that used by HTMLToken::Attribute.
-  Vector<Char, 32> attribute_name_buffer_;
+  LiteralBufferType attribute_name_buffer_;
   Vector<Attribute, kAttributePrealloc> attribute_buffer_;
   Vector<StringImpl*> attribute_names_;
   HtmlFastPathResult parse_result_ = HtmlFastPathResult::kSucceeded;
@@ -535,7 +538,7 @@ class HTMLFastPathParser {
   // Slow-path of `ScanText()`, which supports escape sequences by copying to a
   // separate buffer.
   USpan ScanEscapedText() {
-    uchar_buffer_.resize(0);
+    uchar_buffer_.clear();
     while (pos_ != end_ && *pos_ != '<') {
       if (*pos_ == '&') {
         ScanHTMLCharacterReference(&uchar_buffer_);
@@ -548,12 +551,12 @@ class HTMLFastPathParser {
         if (pos_ + 1 != end_ && pos_[1] == '\n') {
           ++pos_;
         }
-        uchar_buffer_.push_back('\n');
+        uchar_buffer_.AddChar('\n');
         ++pos_;
       } else if (UNLIKELY(*pos_ == '\0')) {
         return Fail(HtmlFastPathResult::kFailedContainsNull, USpan{});
       } else {
-        uchar_buffer_.push_back(*pos_);
+        uchar_buffer_.AddChar(*pos_);
         ++pos_;
       }
     }
@@ -568,7 +571,7 @@ class HTMLFastPathParser {
     }
     if (pos_ == end_ || !IsCharAfterTagnameOrAttribute(*pos_)) {
       // Try parsing a case-insensitive tagname.
-      char_buffer_.resize(0);
+      char_buffer_.clear();
       pos_ = start;
       while (pos_ != end_) {
         Char c = *pos_;
@@ -578,7 +581,7 @@ class HTMLFastPathParser {
           break;
         }
         ++pos_;
-        char_buffer_.push_back(c);
+        char_buffer_.AddChar(c);
       }
       if (pos_ == end_ || !IsCharAfterTagnameOrAttribute(*pos_)) {
         return Fail(HtmlFastPathResult::kFailedParsingTagName, Span{});
@@ -609,14 +612,14 @@ class HTMLFastPathParser {
     // At this point name does not contain lowercase. It may contain upper-case,
     // which requires mapping. Assume it does.
     pos_ = start;
-    attribute_name_buffer_.resize(0);
+    attribute_name_buffer_.clear();
     Char c;
     // IsValidAttributeNameChar() returns false if end of input is reached.
     while (c = GetNext(), IsValidAttributeNameChar(c)) {
       if ('A' <= c && c <= 'Z') {
         c = c - ('A' - 'a');
       }
-      attribute_name_buffer_.push_back(c);
+      attribute_name_buffer_.AddChar(c);
       ++pos_;
     }
     return Span(attribute_name_buffer_.data(),
@@ -663,7 +666,7 @@ class HTMLFastPathParser {
   USpan ScanEscapedAttrValue() {
     Span result;
     SkipWhitespace();
-    uchar_buffer_.resize(0);
+    uchar_buffer_.clear();
     const Char* start = pos_;
     if (Char quote_char = GetNext(); quote_char == '"' || quote_char == '\'') {
       start = ++pos_;
@@ -679,10 +682,10 @@ class HTMLFastPathParser {
           if (pos_ + 1 != end_ && pos_[1] == '\n') {
             ++pos_;
           }
-          uchar_buffer_.push_back('\n');
+          uchar_buffer_.AddChar('\n');
           ++pos_;
         } else {
-          uchar_buffer_.push_back(*pos_);
+          uchar_buffer_.AddChar(*pos_);
           ++pos_;
         }
       }
@@ -705,7 +708,7 @@ class HTMLFastPathParser {
     return USpan{uchar_buffer_.data(), uchar_buffer_.size()};
   }
 
-  void ScanHTMLCharacterReference(Vector<UChar>* out) {
+  void ScanHTMLCharacterReference(UCharLiteralBufferType* out) {
     DCHECK_EQ(*pos_, '&');
     ++pos_;
     const Char* start = pos_;
@@ -764,17 +767,17 @@ class HTMLFastPathParser {
       DecodedHTMLEntity entity;
       AppendLegalEntityFor(res, entity);
       for (size_t i = 0; i < entity.length; ++i) {
-        out->push_back(entity.data[i]);
+        out->AddChar(entity.data[i]);
       }
       // Handle the most common named references.
     } else if (reference == "amp") {
-      out->push_back('&');
+      out->AddChar('&');
     } else if (reference == "lt") {
-      out->push_back('<');
+      out->AddChar('<');
     } else if (reference == "gt") {
-      out->push_back('>');
+      out->AddChar('>');
     } else if (reference == "nbsp") {
-      out->push_back(0xa0);
+      out->AddChar(0xa0);
     } else {
       // This handles uncommon named references.
       // This does not use `reference` as `reference` does not contain the `;`,
@@ -788,7 +791,7 @@ class HTMLFastPathParser {
         return Fail(HtmlFastPathResult::kFailedParsingCharacterReference);
       }
       for (size_t i = 0; i < entity.length; ++i) {
-        out->push_back(entity.data[i]);
+        out->AddChar(entity.data[i]);
       }
       // ConsumeHTMLEntity() may not have consumed all the input.
       const unsigned remaining_length = input_segmented.length();
