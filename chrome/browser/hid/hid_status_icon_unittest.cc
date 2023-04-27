@@ -271,4 +271,29 @@ TEST_F(HidStatusIconTest, NumCommandIdOverLimitExtensionOrigin) {
 TEST_F(HidStatusIconTest, ExtensionRemoval) {
   TestExtensionRemoval();
 }
+
+TEST_F(HidStatusIconTest, ProfileUserName) {
+  std::vector<HidSystemTrayIconTestBase::ProfileItem> profile_connection_counts;
+  std::string profile_name = base::StringPrintf("user 1");
+  auto* profile = CreateTestingProfile(profile_name);
+  auto extension = CreateExtensionWithName("Test Extension");
+  AddExtensionToProfile(profile, extension.get());
+  auto* connection_tracker =
+      HidConnectionTrackerFactory::GetForProfile(profile,
+                                                 /*create=*/true);
+  connection_tracker->IncrementConnectionCount(extension->origin());
+  profile_connection_counts.push_back(
+      {profile, {{extension->origin(), 1, extension->name()}}});
+  CheckIcon(profile_connection_counts);
+
+  const auto* status_tray = static_cast<MockStatusTray*>(
+      TestingBrowserProcess::GetGlobal()->status_tray());
+  ASSERT_TRUE(status_tray);
+  EXPECT_EQ(status_tray->GetStatusIconsForTest().size(), 1u);
+  const auto* status_icon = static_cast<MockStatusIcon*>(
+      status_tray->GetStatusIconsForTest().back().get());
+
+  auto* menu_item = status_icon->menu_item();
+  CheckMenuItemLabel(menu_item, 3, base::UTF8ToUTF16(profile_name));
+}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

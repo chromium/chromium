@@ -72,16 +72,6 @@ void HidSystemTrayIconTestBase::TearDown() {
   BrowserWithTestWindowTest::TearDown();
 }
 
-std::u16string HidSystemTrayIconTestBase::GetExpectedButtonTitleForProfile(
-    Profile* profile) {
-  const std::string profile_name = profile->GetProfileUserName();
-  if (profile_name.empty()) {
-    return u"Manage HID devices";
-  }
-  return base::UTF8ToUTF16(
-      base::StringPrintf("Manage HID devices for %s", profile_name.c_str()));
-}
-
 std::u16string HidSystemTrayIconTestBase::GetExpectedTitle(
     size_t num_origins,
     size_t num_connections) {
