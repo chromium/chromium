@@ -285,7 +285,7 @@ void DownloadToolbarButtonView::Disable() {
 }
 
 void DownloadToolbarButtonView::UpdateDownloadIcon(bool show_animation) {
-  if (show_animation && gfx::Animation::ShouldRenderRichAnimation()) {
+  if (show_animation) {
     has_pending_download_started_animation_ = true;
     // Invalidate the layout to show the animation in Layout().
     PreferredSizeChanged();
@@ -553,6 +553,10 @@ void DownloadToolbarButtonView::ShowPendingDownloadStartedAnimation() {
   if (!has_pending_download_started_animation_) {
     return;
   }
+  has_pending_download_started_animation_ = false;
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
+    return;
+  }
   content::WebContents* const web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!web_contents ||
@@ -565,7 +569,6 @@ void DownloadToolbarButtonView::ShowPendingDownloadStartedAnimation() {
       web_contents, image()->GetBoundsInScreen(),
       color_provider->GetColor(kColorDownloadToolbarButtonAnimationForeground),
       color_provider->GetColor(kColorDownloadToolbarButtonAnimationBackground));
-  has_pending_download_started_animation_ = false;
 }
 
 SkColor DownloadToolbarButtonView::GetIconColor() const {
