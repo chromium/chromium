@@ -53,19 +53,6 @@ CryptohomeRecoveryScreen::CryptohomeRecoveryScreen(
 
 CryptohomeRecoveryScreen::~CryptohomeRecoveryScreen() = default;
 
-bool CryptohomeRecoveryScreen::MaybeSkip(WizardContext& context) {
-  CHECK(context.user_context);
-  auto* user = user_manager::UserManager::Get()->FindUser(
-      context.user_context->GetAccountId());
-  CHECK(user);
-  // TODO(272474463): remove the child user check.
-  if (user->IsChild()) {
-    exit_callback_.Run(Result::kNotApplicable);
-    return true;
-  }
-  return false;
-}
-
 void CryptohomeRecoveryScreen::ShowImpl() {
   if (!view_)
     return;
@@ -108,6 +95,18 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
                << error->get_cryptohome_code();
     context()->user_context = std::move(user_context);
     view_->OnRecoveryFailed();
+    return;
+  }
+
+  // TODO(b/272474463): remove the child user check.
+  // TODO(b/278780685): add browser test for the password change flow for child
+  // accounts.
+  auto* user =
+      user_manager::UserManager::Get()->FindUser(user_context->GetAccountId());
+  CHECK(user);
+  if (user->IsChild()) {
+    context()->user_context = std::move(user_context);
+    exit_callback_.Run(Result::kNotApplicable);
     return;
   }
 
