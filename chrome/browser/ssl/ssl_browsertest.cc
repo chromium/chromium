@@ -2540,10 +2540,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
 
   // Load the insecure image.
-  bool js_result = false;
-  EXPECT_TRUE(
-      content::ExecuteScriptAndExtractBool(tab, "loadBadImage();", &js_result));
-  EXPECT_TRUE(js_result);
+  EXPECT_EQ(true, content::EvalJs(tab, "loadBadImage();"));
 
   // We should now have insecure content.
   ssl_test_util::CheckSecurityState(tab, CertError::NONE,

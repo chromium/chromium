@@ -572,11 +572,9 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithAutoupgradesDisabled,
       security_state::SECURE, false, false, false,
       false /* expect cert status error */);
   // Load the insecure image.
-  bool js_result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(), "loadBadImage();",
-      &js_result));
-  EXPECT_TRUE(js_result);
+  EXPECT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "loadBadImage();"));
   CheckSecurityInfoForSecure(
       browser()->tab_strip_model()->GetActiveWebContents(),
       security_state::WARNING, false, true, false,
@@ -665,11 +663,9 @@ IN_PROC_BROWSER_TEST_F(
       security_state::SECURE, false, false, false,
       false /* expect cert status error */);
   // Load the insecure image.
-  bool js_result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(), "loadBadImage();",
-      &js_result));
-  EXPECT_TRUE(js_result);
+  EXPECT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "loadBadImage();"));
   CheckSecurityInfoForSecure(
       browser()->tab_strip_model()->GetActiveWebContents(),
       security_state::WARNING, false, true, false,
@@ -795,11 +791,9 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithAutoupgradesDisabled,
       security_state::NONE, true, false, false,
       false /* expect cert status error */);
   // Load the insecure image.
-  bool js_result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(), "loadBadImage();",
-      &js_result));
-  EXPECT_TRUE(js_result);
+  EXPECT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "loadBadImage();"));
   CheckSecurityInfoForSecure(
       browser()->tab_strip_model()->GetActiveWebContents(),
       security_state::NONE, true, true, false,

@@ -4,18 +4,13 @@
 <script>
   function loadBadImage() {
     var image = document.getElementById("my_image");
-    image.src = "http://REPLACE_WITH_HOST_AND_PORT/ssl/google_files/logo.gif";
-    checkForLoadFinished();
-  }
-
-  function checkForLoadFinished() {
-    var image = document.getElementById("my_image");
-    if (image.complete) {
-      document.getElementById("status_text").innerHTML = "Bad image loaded";
-      window.domAutomationController.send(true);
-    } else {
-      setTimeout("checkForLoadFinished()", 500);
-    }
+    return new Promise(resolve => {
+      image.addEventListener('load', () => {
+        document.getElementById("status_text").innerHTML = "Bad image loaded";
+        resolve(true);
+      });
+      image.src = "http://REPLACE_WITH_HOST_AND_PORT/ssl/google_files/logo.gif";
+    });
   }
 </script>
 
