@@ -55,7 +55,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#include "components/signin/core/browser/active_directory_account_reconcilor_delegate.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1476,75 +1475,6 @@ INSTANTIATE_TEST_SUITE_P(
     MirrorTableMultilogin,
     AccountReconcilorTestMirrorMultilogin,
     ::testing::ValuesIn(GenerateTestCasesFromParams(kMirrorParams)));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class AccountReconcilorTestActiveDirectory : public AccountReconcilorTestTable {
- public:
-  AccountReconcilorTestActiveDirectory() = default;
-
-  AccountReconcilorTestActiveDirectory(
-      const AccountReconcilorTestActiveDirectory&) = delete;
-  AccountReconcilorTestActiveDirectory& operator=(
-      const AccountReconcilorTestActiveDirectory&) = delete;
-
-  void SetUp() override {
-    SetAccountConsistency(signin::AccountConsistencyMethod::kMirror);
-  }
-
-  void CreateReconclior() override {
-    DeleteReconcilor();
-    CreateMockReconcilor(
-        std::make_unique<signin::ActiveDirectoryAccountReconcilorDelegate>());
-  }
-
- private:
-  ash::ScopedStubInstallAttributes install_attributes_{
-      ash::StubInstallAttributes::CreateActiveDirectoryManaged("realm.com",
-                                                               "device_id")};
-};
-
-// clang-format off
-const std::vector<AccountReconcilorTestTableParam> kActiveDirectoryParams = {
-// This table encodes the initial state and expectations of a reconcile.
-// See kDiceParams for documentation of the syntax.
-// -----------------------------------------------------------------------------
-// Tokens  |Cookies |First Run             |Gaia calls|Tokens aft.|Cookies aft |
-// -----------------------------------------------------------------------------
-{  "ABC",   "ABC",   IsFirstReconcile::kBoth, "" ,     "ABC",      "ABC"      },
-{  "ABC",   "",      IsFirstReconcile::kBoth, "UABC",  "ABC",      "ABC"      },
-{  "",      "ABC",   IsFirstReconcile::kBoth, "X",     "",         ""         },
-{  "",      "",      IsFirstReconcile::kBoth, "",      "",         ""         },
-// Order of Gaia accounts can be different from chrome accounts.
-{  "ABC",   "CBA",   IsFirstReconcile::kBoth, "" ,     "ABC",      "CBA"      },
-{  "ABC",   "CB",    IsFirstReconcile::kBoth, "UCBA",  "ABC",      "CBA"      },
-// Gaia accounts which are not present in chrome accounts should be removed. In
-// this case Gaia accounts are going to be in the same order as chrome accounts.
-{  "A",     "AB",    IsFirstReconcile::kBoth, "UA",    "A",        "A"        },
-{  "AB",    "CBA",   IsFirstReconcile::kBoth, "UAB",   "AB",       "AB"       },
-{  "AB",    "C",     IsFirstReconcile::kBoth, "UAB",   "AB",       "AB"       },
-// Cookies can be refreshed in pace, without logout.
-{  "AB",    "xAxB",  IsFirstReconcile::kBoth, "UAB",   "AB",       "AB"       },
-// Token error on the account - remove it from cookies
-{  "AxB",   "AB",    IsFirstReconcile::kBoth, "UA",    "AxB",      "A"        },
-{  "xAxB",  "AB",    IsFirstReconcile::kBoth, "X",     "xAxB",     ""         },
-// For idempotency checks.
-{  "A",     "A",     IsFirstReconcile::kBoth, "",      "A",        "A"        },
-{  "AB",    "AB",    IsFirstReconcile::kBoth, "",      "AB",       "AB"       },
-{  "AxB",   "A",     IsFirstReconcile::kBoth, "",      "AxB",      "A"        },
-{  "xAxB",  "",      IsFirstReconcile::kBoth, "",      "xAxB",     ""         },
-};
-// clang-format on
-
-TEST_P(AccountReconcilorTestActiveDirectory, TableRowTestMultilogin) {
-  CheckReconcileIdempotent(kActiveDirectoryParams, GetParam());
-  RunRowTest(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ActiveDirectoryTable,
-    AccountReconcilorTestActiveDirectory,
-    ::testing::ValuesIn(GenerateTestCasesFromParams(kActiveDirectoryParams)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that reconcile cannot start before the tokens are loaded, and is
 // automatically started when tokens are loaded.
