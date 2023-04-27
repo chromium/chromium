@@ -637,6 +637,9 @@ export class Video extends ModeBase {
         duration: this.gifRecordTime.inMilliseconds(),
       })];
     } else if (this.recordingType === RecordType.TIME_LAPSE) {
+      // TODO(b/279865370): Don't pause when the confirm dialog is shown.
+      window.addEventListener('beforeunload', beforeUnloadListener);
+
       this.recordTime.start({resume: false});
       let timeLapseSaver: TimeLapseSaver|null = null;
       try {
@@ -645,6 +648,7 @@ export class Video extends ModeBase {
       } finally {
         state.set(state.State.RECORDING, false);
         this.recordTime.stop({pause: false});
+        window.removeEventListener('beforeunload', beforeUnloadListener);
       }
 
       if (this.recordTime.inMilliseconds() <
