@@ -58,8 +58,8 @@ class RequestHandlerTest : public testing::Test {
     config_ = test_utils::CreateTestConfig("test_client", kSegmentId);
     auto provider = std::make_unique<MockResultProvider>();
     result_provider_ = provider.get();
-    request_handler_ =
-        RequestHandler::Create(*config_, std::move(provider), nullptr);
+    request_handler_ = RequestHandler::Create(*config_, std::move(provider),
+                                              &execution_service_);
   }
 
   void OnGetClassificationResult(base::RepeatingClosure closure,
@@ -70,6 +70,7 @@ class RequestHandlerTest : public testing::Test {
     std::move(closure).Run();
   }
 
+  ExecutionService execution_service_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<Config> config_;

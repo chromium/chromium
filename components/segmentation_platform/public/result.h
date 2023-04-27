@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "components/segmentation_platform/public/trigger.h"
 
 namespace segmentation_platform {
 
@@ -41,6 +42,10 @@ struct ClassificationResult {
   // label from one of the bin depending on where the score from the model
   // evaluation lies.
   std::vector<std::string> ordered_labels;
+
+  // The request ID used for identifying a specific training data inputs. Can be
+  // null if training data was not uploaded for that execution.
+  TrainingRequestId request_id;
 };
 
 // RegressionResult is returned when Predictor specified by the client in

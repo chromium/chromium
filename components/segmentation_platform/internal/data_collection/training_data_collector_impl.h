@@ -21,6 +21,7 @@
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "components/segmentation_platform/public/trigger.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -47,9 +48,9 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   void OnModelMetadataUpdated() override;
   void OnServiceInitialized() override;
   void ReportCollectedContinuousTrainingData() override;
-  void OnDecisionTime(proto::SegmentId id,
-                      scoped_refptr<InputContext> input_context,
-                      DecisionType type) override;
+  TrainingRequestId OnDecisionTime(proto::SegmentId id,
+                                   scoped_refptr<InputContext> input_context,
+                                   DecisionType type) override;
 
   void OnObservationTrigger(const absl::optional<ImmediaCollectionParam>& param,
                             TrainingRequestId request_id,

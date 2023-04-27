@@ -15,6 +15,7 @@
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/proto/prediction_result.pb.h"
+#include "components/segmentation_platform/public/trigger.h"
 
 namespace segmentation_platform {
 namespace {
@@ -58,6 +59,9 @@ class RequestHandlerImpl : public RequestHandler {
       scoped_refptr<InputContext> input_context,
       ClassificationResultCallback classification_callback,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
+
+  TrainingRequestId CollectTrainingData(
+      scoped_refptr<InputContext> input_context);
 
   // The config for providing client config params.
   const raw_ref<const Config> config_;
@@ -118,6 +122,7 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
   PostProcessor post_processor;
   PredictionStatus status = PredictionStatus::kFailed;
   proto::PredictionResult pred_result;
+  absl::optional<TrainingRequestId> request_id;
   if (result) {
     stats::RecordSegmentSelectionFailure(
         *config_, stats::GetSuccessOrFailureReason(result->state));
@@ -125,13 +130,9 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
     pred_result = result->result;
     stats::RecordClassificationResultComputed(*config_, pred_result);
 
-    // Collect training data. The execution service and training data collector
-    // might be null in testing.
-    if (execution_service_ && execution_service_->training_data_collector()) {
-      execution_service_->training_data_collector()->OnDecisionTime(
-          config_->segments.begin()->first, input_context,
-          proto::TrainingOutputs::TriggerConfig::ONDEMAND);
-    }
+    // Collect training data. The training data collector might be null in
+    // testing.
+    request_id = CollectTrainingData(input_context);
   } else {
     stats::RecordSegmentSelectionFailure(
         *config_, stats::SegmentationSelectionFailureReason::
@@ -139,9 +140,25 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
   }
   ClassificationResult classification_result =
       post_processor.GetPostProcessedClassificationResult(pred_result, status);
+
+  if (request_id && !request_id.value().is_null()) {
+    classification_result.request_id = request_id.value();
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(classification_callback),
                                 classification_result));
+}
+
+TrainingRequestId RequestHandlerImpl::CollectTrainingData(
+    scoped_refptr<InputContext> input_context) {
+  if (!execution_service_->training_data_collector()) {
+    return TrainingRequestId();
+  }
+
+  return execution_service_->training_data_collector()->OnDecisionTime(
+      config_->segments.begin()->first, input_context,
+      proto::TrainingOutputs::TriggerConfig::ONDEMAND);
 }
 
 }  // namespace
