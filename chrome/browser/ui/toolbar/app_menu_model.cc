@@ -61,6 +61,7 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/performance_manager/public/features.h"
@@ -76,6 +77,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/profiling.h"
+#include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -167,6 +169,11 @@ absl::optional<std::u16string> GetInstallPWAAppMenuItemName(Browser* browser) {
     return absl::nullopt;
   return l10n_util::GetStringFUTF16(IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
                                     ui::EscapeMenuLabelAmpersands(app_name));
+}
+
+bool IsPasswordManagerPage(const GURL& url) {
+  return url.SchemeIs(content::kChromeUIScheme) &&
+         url.DomainIs(password_manager::kChromeUIPasswordManagerHost);
 }
 
 }  // namespace
@@ -1061,7 +1068,10 @@ void AppMenuModel::Build() {
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_BOOKMARKS_MENU).value(),
                            kBookmarksMenuItem);
   }
-  if (!browser_->profile()->IsOffTheRecord() &&
+  WebContents* web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!browser_->profile()->IsOffTheRecord() && web_contents &&
+      !IsPasswordManagerPage(web_contents->GetURL()) &&
       base::FeatureList::IsEnabled(
           password_manager::features::kPasswordManagerRedesign)) {
     AddItemWithStringId(IDC_VIEW_PASSWORDS, IDS_VIEW_PASSWORDS);

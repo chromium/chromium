@@ -249,3 +249,12 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerMenuItemInteractiveTest,
                     EnsureNotPresent(AppMenuModel::kPasswordManagerMenuItem));
   }
 }
+
+IN_PROC_BROWSER_TEST_P(PasswordManagerMenuItemInteractiveTest,
+                       NoMenuItemOnPasswordManagerPage) {
+  RunTestSequence(
+      AddInstrumentedTab(kPrimaryTabPageElementId,
+                         GURL("chrome://password-manager/passwords")),
+      PressButton(kAppMenuButtonElementId),
+      EnsureNotPresent(AppMenuModel::kPasswordManagerMenuItem));
+}
