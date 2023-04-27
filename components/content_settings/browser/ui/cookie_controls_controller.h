@@ -70,7 +70,7 @@ class CookieControlsController
     TabObserver& operator=(const TabObserver&) = delete;
 
     // PageSpecificContentSettings::SiteDataObserver:
-    void OnSiteDataAccessed() override;
+    void OnSiteDataAccessed(const AccessDetails& access_details) override;
 
    private:
     raw_ptr<CookieControlsController> cookie_controls_;

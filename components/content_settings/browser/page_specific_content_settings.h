@@ -31,6 +31,7 @@
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
+#include "url/gurl.h"
 
 namespace blink {
 class StorageKey;
@@ -46,6 +47,43 @@ class Origin;
 }  // namespace url
 
 namespace content_settings {
+
+enum class SiteDataType {
+  kUnknown,
+  kStorage,
+  kCookies,
+  kServiceWorker,
+  kSharedWorker,
+  kInterestGroup,
+  kTopic,
+  kTrustToken,
+};
+
+enum class AccessType {
+  // This value represents situations where by the PSCS doesn't have enough
+  // information to assess the accurate nature of site data access.
+  kUnknown,
+  kRead,
+  kWrite,
+};
+
+// Holds extra details about the site data access deemed useful by PSCS
+// observers.
+struct AccessDetails {
+  AccessDetails();
+  AccessDetails(SiteDataType site_data_type,
+                AccessType access_type,
+                GURL url,
+                bool blocked_by_policy,
+                content::RenderFrameHost* render_frame_host);
+  ~AccessDetails();
+
+  SiteDataType site_data_type = SiteDataType::kUnknown;
+  AccessType access_type = AccessType::kUnknown;
+  GURL url;
+  bool blocked_by_policy = false;
+  raw_ptr<content::RenderFrameHost> render_frame_host;
+};
 
 // TODO(msramek): Media is storing their state in PageSpecificContentSettings:
 // |microphone_camera_state_| without being tied to a single content setting.
@@ -175,7 +213,7 @@ class PageSpecificContentSettings
     virtual ~SiteDataObserver();
 
     // Called whenever site data is accessed.
-    virtual void OnSiteDataAccessed() = 0;
+    virtual void OnSiteDataAccessed(const AccessDetails& access_details) = 0;
 
     content::WebContents* web_contents() { return web_contents_; }
 
@@ -350,6 +388,7 @@ class PageSpecificContentSettings
       mojom::ContentSettingsManager::StorageType storage_type,
       const GURL& url,
       bool blocked_by_policy,
+      content::RenderFrameHost* rfh = nullptr,
       content::Page* originating_page = nullptr);
   void OnSharedWorkerAccessed(const GURL& worker_url,
                               const std::string& name,
@@ -420,6 +459,7 @@ class PageSpecificContentSettings
 
     std::vector<base::OnceClosure> delegate_updates;
     bool site_data_accessed = false;
+    AccessDetails access_details;
   };
 
   explicit PageSpecificContentSettings(content::Page& page, Delegate* delegate);
@@ -465,7 +505,7 @@ class PageSpecificContentSettings
   // Notifies observers. Like |NotifyDelegate|, the notification is delayed for
   // prerendering pages until the page is activated. Embedded pages will not
   // notify observers directly and rely on the outermost page to do so.
-  void MaybeNotifySiteDataObservers();
+  void MaybeNotifySiteDataObservers(const AccessDetails& access_details);
 
   // Tells the delegate to update the location bar. This method is a no-op if
   // the page is currently prerendering or is embedded.

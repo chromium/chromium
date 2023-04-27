@@ -48,6 +48,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -118,7 +119,7 @@ class WebContentsHandler
   void RemoveSiteDataObserver(SiteDataObserver* observer);
 
   // Notifies all registered |SiteDataObserver|s.
-  void NotifySiteDataObservers();
+  void NotifySiteDataObservers(const AccessDetails& access_details);
 
   // Queues update sent while the navigation is still in progress. The update
   // is run after the navigation completes (DidFinishNavigation).
@@ -400,9 +401,10 @@ void WebContentsHandler::RemoveSiteDataObserver(SiteDataObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void WebContentsHandler::NotifySiteDataObservers() {
+void WebContentsHandler::NotifySiteDataObservers(
+    const AccessDetails& access_details) {
   for (SiteDataObserver& observer : observer_list_)
-    observer.OnSiteDataAccessed();
+    observer.OnSiteDataAccessed(access_details);
 }
 
 void WebContentsHandler::AddPendingCommitUpdate(
@@ -417,6 +419,20 @@ void WebContentsHandler::AddPendingCommitUpdate(
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsHandler);
+
+AccessDetails::AccessDetails() = default;
+AccessDetails::AccessDetails(SiteDataType site_data_type,
+                             AccessType access_type,
+                             GURL url,
+                             bool blocked_by_policy,
+                             content::RenderFrameHost* render_frame_host)
+    : site_data_type(site_data_type),
+      access_type(access_type),
+      url(url),
+      blocked_by_policy(blocked_by_policy),
+      render_frame_host(render_frame_host) {}
+
+AccessDetails::~AccessDetails() = default;
 
 PageSpecificContentSettings::SiteDataObserver::SiteDataObserver(
     content::WebContents* web_contents)
@@ -535,7 +551,7 @@ void PageSpecificContentSettings::StorageAccessed(StorageType storage_type,
     return;
   PageSpecificContentSettings* settings = GetForFrame(rfh);
   if (settings)
-    settings->OnStorageAccessed(storage_type, url, blocked_by_policy);
+    settings->OnStorageAccessed(storage_type, url, blocked_by_policy, rfh);
 }
 
 // static
@@ -784,6 +800,7 @@ void PageSpecificContentSettings::OnStorageAccessed(
     StorageType storage_type,
     const GURL& url,
     bool blocked_by_policy,
+    content::RenderFrameHost* rfh,
     content::Page* originating_page) {
   originating_page = originating_page ? originating_page : &page();
   if (blocked_by_policy) {
@@ -797,8 +814,13 @@ void PageSpecificContentSettings::OnStorageAccessed(
   }
 
   MaybeUpdateParent(&PageSpecificContentSettings::OnStorageAccessed,
-                    storage_type, url, blocked_by_policy, originating_page);
-  MaybeNotifySiteDataObservers();
+                    storage_type, url, blocked_by_policy, rfh,
+                    originating_page);
+
+  AccessDetails access_details{SiteDataType::kStorage, AccessType::kUnknown,
+                               url, blocked_by_policy, rfh};
+
+  MaybeNotifySiteDataObservers(access_details);
 }
 
 void PageSpecificContentSettings::OnCookiesAccessed(
@@ -819,7 +841,15 @@ void PageSpecificContentSettings::OnCookiesAccessed(
 
   MaybeUpdateParent(&PageSpecificContentSettings::OnCookiesAccessed, details,
                     originating_page);
-  MaybeNotifySiteDataObservers();
+
+  AccessDetails access_details{
+      SiteDataType::kCookies,
+      details.type == network::mojom::CookieAccessDetails::Type::kChange
+          ? AccessType::kWrite
+          : AccessType::kRead,
+      details.url, details.blocked_by_policy, nullptr};
+
+  MaybeNotifySiteDataObservers(access_details);
 }
 
 void PageSpecificContentSettings::OnServiceWorkerAccessed(
@@ -884,7 +914,12 @@ void PageSpecificContentSettings::OnInterestGroupJoined(
   }
   MaybeUpdateParent(&PageSpecificContentSettings::OnInterestGroupJoined,
                     api_origin, blocked_by_policy);
-  MaybeNotifySiteDataObservers();
+
+  // Joining an interest is by default modifying data so this is considered an
+  // `AccessType::kWrite`.
+  AccessDetails access_details{SiteDataType::kInterestGroup, AccessType::kWrite,
+                               api_origin.GetURL(), blocked_by_policy, nullptr};
+  MaybeNotifySiteDataObservers(access_details);
 }
 
 void PageSpecificContentSettings::OnTopicAccessed(
@@ -914,7 +949,11 @@ void PageSpecificContentSettings::OnTrustTokenAccessed(
   }
   MaybeUpdateParent(&PageSpecificContentSettings::OnTrustTokenAccessed,
                     api_origin, blocked);
-  MaybeNotifySiteDataObservers();
+
+  AccessDetails access_details{SiteDataType::kTrustToken, AccessType::kUnknown,
+                               api_origin.GetURL(), blocked, nullptr};
+
+  MaybeNotifySiteDataObservers(access_details);
 }
 
 void PageSpecificContentSettings::OnBrowsingDataAccessed(
@@ -933,7 +972,12 @@ void PageSpecificContentSettings::OnBrowsingDataAccessed(
   }
   MaybeUpdateParent(&PageSpecificContentSettings::OnBrowsingDataAccessed,
                     data_key, storage_type, blocked);
-  MaybeNotifySiteDataObservers();
+
+  // TODO(njeunje): Look into populating an actual url for this access details.
+  // Could be obtained from the `data_key`.
+  AccessDetails access_details{SiteDataType::kUnknown, AccessType::kUnknown,
+                               GURL(), blocked, nullptr};
+  MaybeNotifySiteDataObservers(access_details);
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
@@ -1203,21 +1247,24 @@ void PageSpecificContentSettings::OnPrerenderingPageActivation() {
 
   if (updates_queued_during_prerender_->site_data_accessed) {
     WebContentsHandler::FromWebContents(GetWebContents())
-        ->NotifySiteDataObservers();
+        ->NotifySiteDataObservers(
+            updates_queued_during_prerender_->access_details);
   }
 
   updates_queued_during_prerender_.reset();
 }
 
-void PageSpecificContentSettings::MaybeNotifySiteDataObservers() {
+void PageSpecificContentSettings::MaybeNotifySiteDataObservers(
+    const AccessDetails& access_details) {
   if (IsEmbeddedPage())
     return;
   if (IsPagePrerendering()) {
     updates_queued_during_prerender_->site_data_accessed = true;
+    updates_queued_during_prerender_->access_details = access_details;
     return;
   }
   WebContentsHandler::FromWebContents(GetWebContents())
-      ->NotifySiteDataObservers();
+      ->NotifySiteDataObservers(access_details);
 }
 
 void PageSpecificContentSettings::MaybeUpdateLocationBar() {
