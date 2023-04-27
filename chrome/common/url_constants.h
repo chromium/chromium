@@ -340,7 +340,10 @@ extern const char kChromeAccessibilityHelpURL[];
 extern const char kChromeOSAssetHost[];
 extern const char kChromeOSAssetPath[];
 
+// Source for chrome://os-credits. On some devices, this will be compressed.
+// Check both.
 extern const char kChromeOSCreditsPath[];
+extern const char kChromeOSCreditsCompressedPath[];
 
 // Chrome OS tablet gestures education help link for Chrome.
 extern const char kChromeOSGestureEducationHelpURL[];

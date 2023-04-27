@@ -369,6 +369,9 @@ const char kChromeOSAssetPath[] = "/usr/share/chromeos-assets/";
 const char kChromeOSCreditsPath[] =
     "/opt/google/chrome/resources/about_os_credits.html";
 
+const char kChromeOSCreditsCompressedPath[] =
+    "/opt/google/chrome/resources/about_os_credits.html.gz";
+
 // TODO(carpenterr): Have a solution for plink mapping in Help App.
 // The magic numbers in this url are the topic and article ids currently
 // required to navigate directly to a help article in the Help App.

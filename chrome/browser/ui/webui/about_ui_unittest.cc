@@ -32,6 +32,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "third_party/zlib/google/compression_utils.h"
+#endif
+
 namespace {
 
 class TestDataReceiver {
@@ -158,3 +162,96 @@ TEST_F(ChromeOSTermsTest, NoData) {
   EXPECT_FALSE(privacy_policy_data_receiver.data_received());
   EXPECT_EQ("", privacy_policy_data_receiver.data());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Base class for ChromeOS offline terms tests.
+class ChromeOSCreditsTest : public testing::Test {
+ public:
+  ChromeOSCreditsTest(const ChromeOSCreditsTest&) = delete;
+  ChromeOSCreditsTest& operator=(const ChromeOSCreditsTest&) = delete;
+
+ protected:
+  ChromeOSCreditsTest() {}
+  ~ChromeOSCreditsTest() override = default;
+
+  void SetUp() override {
+    ASSERT_TRUE(resources_dir_.CreateUniqueTempDir());
+
+    tested_html_source_ = std::make_unique<AboutUIHTMLSource>(
+        chrome::kChromeUIOSCreditsHost, nullptr);
+    tested_html_source_->SetOSCreditsPrefixForTesting(resources_dir_.GetPath());
+  }
+
+  bool CreateHtmlCredits() {
+    return base::WriteFile(
+        resources_dir_.GetPath().Append(
+            base::FilePath(chrome::kChromeOSCreditsPath).BaseName()),
+        kTestHtml);
+  }
+
+  bool CreateCompressedHtmlCredits() {
+    std::string compressed;
+    if (!compression::GzipCompress(std::string(kTestHtml), &compressed)) {
+      return false;
+    }
+    return base::WriteFile(
+        resources_dir_.GetPath().Append(
+            base::FilePath(chrome::kChromeOSCreditsCompressedPath).BaseName()),
+        compressed);
+  }
+
+  // Starts data request with the |request_url|.
+  void StartRequest(TestDataReceiver* data_receiver) {
+    content::WebContents::Getter wc_getter;
+    tested_html_source_->StartDataRequest(
+        GURL(base::StrCat({"chrome://", chrome::kChromeUIOSCreditsHost, "/"})),
+        std::move(wc_getter),
+        base::BindOnce(&TestDataReceiver::OnDataReceived,
+                       base::Unretained(data_receiver)));
+    task_environment_.RunUntilIdle();
+  }
+
+ protected:
+  static constexpr char kTestHtml[] = "<html><body>test</body></html>";
+
+ private:
+  base::ScopedTempDir resources_dir_;
+
+  content::BrowserTaskEnvironment task_environment_;
+
+  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
+
+  std::unique_ptr<AboutUIHTMLSource> tested_html_source_;
+};
+
+// Verify that it reads decompressed html file
+TEST_F(ChromeOSCreditsTest, Decompressed) {
+  ASSERT_TRUE(CreateHtmlCredits());
+  TestDataReceiver data_receiver;
+  StartRequest(&data_receiver);
+
+  EXPECT_TRUE(data_receiver.data_received());
+  EXPECT_EQ(data_receiver.data(), kTestHtml);
+}
+
+// Verify that it reads compressed html file
+TEST_F(ChromeOSCreditsTest, Compressed) {
+  ASSERT_TRUE(CreateCompressedHtmlCredits());
+  TestDataReceiver data_receiver;
+  StartRequest(&data_receiver);
+
+  EXPECT_TRUE(data_receiver.data_received());
+  EXPECT_EQ(data_receiver.data(), kTestHtml);
+}
+
+// Verify that it falls back to a default
+TEST_F(ChromeOSCreditsTest, Neither) {
+  TestDataReceiver data_receiver;
+  StartRequest(&data_receiver);
+
+  EXPECT_TRUE(data_receiver.data_received());
+  EXPECT_NE(data_receiver.data(), kTestHtml);
+  EXPECT_FALSE(data_receiver.data().empty());
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
