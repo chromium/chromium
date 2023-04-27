@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
+import("//components/signin/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
@@ -112,6 +113,13 @@ static_library("renderer") {
       "supervised_user/supervised_user_error_page_controller_delegate.h",
       "supervised_user/supervised_user_error_page_controller_delegate_impl.cc",
       "supervised_user/supervised_user_error_page_controller_delegate_impl.h",
+    ]
+  }
+
+  if (enable_bound_session_credentials) {
+    sources += [
+      "bound_session_credentials/bound_session_request_throttled_in_renderer_manager.cc",
+      "bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h",
     ]
   }
 

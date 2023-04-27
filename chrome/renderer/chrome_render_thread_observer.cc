@@ -58,6 +58,10 @@
 #include "chrome/renderer/ash_merge_session_loader_throttle.h"
 #endif
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
+#endif
+
 using blink::WebCache;
 using blink::WebSecurityPolicy;
 using content::RenderThread;
@@ -179,6 +183,14 @@ void ChromeRenderThreadObserver::SetInitialConfiguration(
         ChromeOSListener::Create(std::move(chromeos_listener_receiver));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (bound_session_request_throttled_listener) {
+    bound_session_request_throttled_in_renderer_manager_ =
+        BoundSessionRequestThrottledInRendererManager::Create(
+            std::move(bound_session_request_throttled_listener));
+  }
+#endif
 }
 
 void ChromeRenderThreadObserver::SetConfiguration(

@@ -13,6 +13,7 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -22,6 +23,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/renderer/chromeos_delayed_callback_group.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+class BoundSessionRequestThrottledInRendererManager;
+#endif
 
 namespace visitedlink {
 class VisitedLinkReader;
@@ -144,6 +149,11 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
   // was started.
   scoped_refptr<ChromeOSListener> chromeos_listener_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  scoped_refptr<BoundSessionRequestThrottledInRendererManager>
+      bound_session_request_throttled_in_renderer_manager_;
+#endif
 };
 
 #endif  // CHROME_RENDERER_CHROME_RENDER_THREAD_OBSERVER_H_

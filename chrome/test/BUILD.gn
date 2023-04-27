@@ -6605,6 +6605,7 @@ test("unit_tests") {
       "../browser/signin/bound_session_credentials/bound_session_test_cookie_manager.cc",
       "../browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h",
       "../browser/signin/bound_session_credentials/registration_token_helper_unittest.cc",
+      "../renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager_unittest.cc",
     ]
   }
 
