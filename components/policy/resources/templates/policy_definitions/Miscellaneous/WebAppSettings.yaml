@@ -22,7 +22,7 @@ owners:
 - mjackson@microsoft.com
 - cmp@chromium.org
 - file://chrome/browser/web_applications/OWNERS
-- tapted@chromium.org
+- dmurph@chromium.org
 schema:
   items:
     properties:
