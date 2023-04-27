@@ -20,7 +20,7 @@ public class OptimizationGuideBridgeFactory {
     private final List<HintsProto.OptimizationType> mOptimizationTypes;
 
     /**
-     * Creates an instance of this class with no observed optimization types.
+     * Creates an instance of this class with no optimization types to be called per navigation.
      */
     public OptimizationGuideBridgeFactory() {
         this(new ArrayList<HintsProto.OptimizationType>());

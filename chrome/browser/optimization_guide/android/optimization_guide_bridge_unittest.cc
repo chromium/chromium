@@ -72,6 +72,13 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
                    const GURL& gurl,
                    optimization_guide::proto::OptimizationType,
                    optimization_guide::OptimizationMetadata* metadata));
+  MOCK_METHOD4(
+      CanApplyOptimizationOnDemand,
+      void(const std::vector<GURL>&,
+           const base::flat_set<optimization_guide::proto::OptimizationType>&,
+           optimization_guide::proto::RequestContext,
+           optimization_guide::
+               OnDemandOptimizationGuideDecisionRepeatingCallback));
 };
 
 class OptimizationGuideBridgeTest : public testing::Test {
@@ -177,6 +184,50 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationHasHint) {
                 Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   Java_OptimizationGuideBridgeNativeUnitTest_testCanApplyOptimizationHasHint(
+      env_, j_test_);
+}
+
+TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationOnDemand) {
+  optimization_guide::proto::LoadingPredictorMetadata lp_metadata;
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.SetAnyMetadataForTesting(lp_metadata);
+
+  optimization_guide::proto::StringValue ds_metadata;
+  optimization_guide::OptimizationMetadata metadata2;
+  metadata2.SetAnyMetadataForTesting(ds_metadata);
+
+  base::flat_map<optimization_guide::proto::OptimizationType,
+                 optimization_guide::OptimizationGuideDecisionWithMetadata>
+      url1_decisions = {
+          {optimization_guide::proto::LOADING_PREDICTOR,
+           {optimization_guide::OptimizationGuideDecision::kTrue, metadata}},
+          {optimization_guide::proto::DEFER_ALL_SCRIPT,
+           {optimization_guide::OptimizationGuideDecision::kFalse}},
+      };
+  base::flat_map<optimization_guide::proto::OptimizationType,
+                 optimization_guide::OptimizationGuideDecisionWithMetadata>
+      url2_decisions = {
+          {optimization_guide::proto::LOADING_PREDICTOR,
+           {optimization_guide::OptimizationGuideDecision::kFalse}},
+          {optimization_guide::proto::DEFER_ALL_SCRIPT,
+           {optimization_guide::OptimizationGuideDecision::kTrue, metadata2}},
+      };
+
+  EXPECT_CALL(
+      *optimization_guide_keyed_service_,
+      CanApplyOptimizationOnDemand(
+          UnorderedElementsAre(GURL("https://example.com/"),
+                               GURL("https://example2.com/")),
+          UnorderedElementsAre(optimization_guide::proto::LOADING_PREDICTOR,
+                               optimization_guide::proto::DEFER_ALL_SCRIPT),
+          optimization_guide::proto::CONTEXT_NEW_TAB_PAGE,
+          base::test::IsNotNullCallback()))
+      .WillOnce(DoAll(base::test::RunCallback<3>(GURL("https://example.com/"),
+                                                 ByRef(url1_decisions)),
+                      base::test::RunCallback<3>(GURL("https://example2.com/"),
+                                                 ByRef(url2_decisions))));
+
+  Java_OptimizationGuideBridgeNativeUnitTest_testCanApplyOptimizationOnDemand(
       env_, j_test_);
 }
 
