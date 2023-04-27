@@ -3,11 +3,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from collections import defaultdict
 import csv
+from io import StringIO
 import os
+import tempfile
 from typing import List, Set
+import shutil
+import sys
 import unittest
 
+from file_reading import get_and_maybe_delete_tests_in_browsertest
 from file_reading import read_actions_file, read_enums_file
 from file_reading import read_platform_supported_actions
 from file_reading import read_unprocessed_coverage_tests_file
@@ -17,7 +23,11 @@ from models import ActionsByName
 from models import ActionType
 from models import CoverageTest
 from models import CoverageTestsByPlatform
+from models import CoverageTestsByPlatformSet
+from models import TestIdsByPlatformSet
+from models import TestPartitionDescription
 from models import TestPlatform
+from test_analysis import compare_and_print_tests_to_remove_and_add
 from test_analysis import expand_parameterized_tests
 from test_analysis import partition_framework_tests_per_platform_combination
 
@@ -32,6 +42,34 @@ def CreateDummyAction(id: str):
 
 def CreateCoverageTest(id: str, platforms: Set[TestPlatform]):
     return CoverageTest([CreateDummyAction(id)], platforms)
+
+
+def CreateNewDummyTestByPlatformSet(
+        platforms: Set[TestPlatform]) -> CoverageTestsByPlatformSet:
+    new_test_by_platform: CoverageTestsByPlatform = {}
+    for platform in platforms:
+        # Add the simple dummy test of an action "a" to all platforms.
+        new_test_by_platform[platform] = ([
+            CreateCoverageTest("a", {platform})
+        ])
+    return partition_framework_tests_per_platform_combination(
+        new_test_by_platform)
+
+
+def GetExistingTestIdsByPlatformSet(
+        filename: str, required_tests: Set[str],
+        delete_in_place: bool) -> TestIdsByPlatformSet:
+    # Read in existing tests from a file.
+    platforms = frozenset(
+        TestPlatform.get_platforms_from_browsertest_filename(filename))
+    existing_tests_in_file = get_and_maybe_delete_tests_in_browsertest(
+        filename,
+        required_tests=required_tests,
+        delete_in_place=delete_in_place)
+    existing_tests: TestIdsByPlatformSet = defaultdict(lambda: set())
+    for test_id in existing_tests_in_file.keys():
+        existing_tests[platforms].add(test_id)
+    return existing_tests
 
 
 class TestAnalysisTest(unittest.TestCase):
@@ -118,6 +156,126 @@ class TestAnalysisTest(unittest.TestCase):
                               [([action.name
                                  for action in test.actions], test.platforms)
                                for test in expected_processed_tests])
+
+    def test_compare_and_print_tests_to_remove_and_add_add_to_existing_file(
+            self):
+        with tempfile.TemporaryDirectory(dir=TEST_DATA_DIR) as tmpdirname:
+            original_file = os.path.join(TEST_DATA_DIR,
+                                         "tests_for_deletion_addition.cc")
+            test_file = os.path.join(tmpdirname,
+                                     "tests_for_deletion_addition.cc")
+            shutil.copyfile(original_file, test_file)
+            test_platforms: Set[TestPlatform] = {
+                TestPlatform.WINDOWS,
+                TestPlatform.MAC,
+                TestPlatform.LINUX,
+                TestPlatform.CHROME_OS,
+            }
+            new_test_required_by_platform_set: CoverageTestsByPlatformSet = (
+                CreateNewDummyTestByPlatformSet(test_platforms))
+            existing_tests: TestIdsByPlatformSet = (
+                GetExistingTestIdsByPlatformSet(
+                    filename=test_file,
+                    required_tests={"3Chicken_1Chicken_2ChickenGreen"},
+                    delete_in_place=False))
+            default_partition = TestPartitionDescription(
+                action_name_prefixes=set(),
+                browsertest_dir=tmpdirname,
+                test_file_prefix="tests_for_deletion_addition",
+                test_fixture="TestName")
+            compare_and_print_tests_to_remove_and_add(
+                existing_tests,
+                new_test_required_by_platform_set,
+                test_partitions=[],
+                default_partition=default_partition,
+                add_to_file=True)
+            expected_file = os.path.join(TEST_DATA_DIR, "expected_test_txt",
+                                         "tests_change_for_adding_test.cc")
+            with open(expected_file, "r") as f, open(test_file, "r") as f2:
+                self.assertEqual(f.read(), f2.read())
+
+    def test_compare_and_print_tests_to_remove_and_add_delete_and_add_to_file(
+            self):
+        with tempfile.TemporaryDirectory(dir=TEST_DATA_DIR) as tmpdirname:
+            original_file = os.path.join(TEST_DATA_DIR,
+                                         "tests_for_deletion_addition.cc")
+            test_file = os.path.join(tmpdirname,
+                                     "tests_for_deletion_addition.cc")
+            shutil.copyfile(original_file, test_file)
+
+            test_platforms: Set[TestPlatform] = {
+                TestPlatform.WINDOWS,
+                TestPlatform.MAC,
+                TestPlatform.LINUX,
+                TestPlatform.CHROME_OS,
+            }
+            new_test_required_by_platform_set: CoverageTestsByPlatformSet = (
+                CreateNewDummyTestByPlatformSet(test_platforms))
+            existing_tests: TestIdsByPlatformSet = (
+                GetExistingTestIdsByPlatformSet(
+                    filename=test_file,
+                    required_tests={},
+                    delete_in_place=True))
+
+            default_partition = TestPartitionDescription(
+                action_name_prefixes=set(),
+                browsertest_dir=tmpdirname,
+                test_file_prefix="tests_for_deletion_addition",
+                test_fixture="TestName")
+            compare_and_print_tests_to_remove_and_add(
+                existing_tests,
+                new_test_required_by_platform_set,
+                test_partitions=[],
+                default_partition=default_partition,
+                add_to_file=True)
+
+            expected_file = os.path.join(
+                TEST_DATA_DIR, "expected_test_txt",
+                "tests_change_for_deleting_adding_test.cc")
+            with open(expected_file, "r") as f, open(test_file, "r") as f2:
+                self.assertEqual(f.read(), f2.read())
+
+    def test_compare_and_print_tests_to_remove_and_add_add_to_new_file(self):
+        with tempfile.TemporaryDirectory(dir=TEST_DATA_DIR) as tmpdirname:
+            original_file = os.path.join(TEST_DATA_DIR,
+                                         "tests_for_deletion_addition.cc")
+            test_file = os.path.join(tmpdirname,
+                                     "tests_for_deletion_addition.cc")
+            shutil.copyfile(original_file, test_file)
+
+            test_platforms: Set[TestPlatform] = {
+                TestPlatform.WINDOWS, TestPlatform.MAC
+            }
+            new_test_required_by_platform_set: CoverageTestsByPlatformSet = (
+                CreateNewDummyTestByPlatformSet(test_platforms))
+            existing_tests: TestIdsByPlatformSet = (
+                GetExistingTestIdsByPlatformSet(test_file, {}, True))
+
+            default_partition = TestPartitionDescription(
+                action_name_prefixes=set(),
+                browsertest_dir=tmpdirname,
+                test_file_prefix="tests_for_deletion_addition",
+                test_fixture="WebAppIntegration")
+
+            captured_output = StringIO()
+            sys.stdout = captured_output
+            compare_and_print_tests_to_remove_and_add(
+                existing_tests,
+                new_test_required_by_platform_set,
+                test_partitions=[],
+                default_partition=default_partition,
+                add_to_file=True)
+            console_output_str = captured_output.getvalue()
+            sys.stdout = sys.__stdout__
+
+            expected_file = os.path.join(
+                TEST_DATA_DIR, "expected_test_txt",
+                "tests_change_for_deletion_addition_mac_win.txt")
+            test_output_file = os.path.join(
+                    tmpdirname, "tests_for_deletion_addition_mac_win.cc")
+            with open(expected_file, "r") as f:
+                self.assertEqual(f.read() % test_output_file,
+                                 console_output_str)
 
 
 if __name__ == '__main__':
