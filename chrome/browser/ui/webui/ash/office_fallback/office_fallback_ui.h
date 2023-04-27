@@ -14,6 +14,11 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 namespace ash::office_fallback {
 
@@ -51,6 +56,10 @@ class OfficeFallbackUI : public ui::MojoWebDialogUI,
   void BindInterface(
       mojo::PendingReceiver<mojom::PageHandlerFactory> pending_receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
   // mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler) override;
@@ -60,6 +69,7 @@ class OfficeFallbackUI : public ui::MojoWebDialogUI,
 
   std::unique_ptr<OfficeFallbackPageHandler> page_handler_;
   mojo::Receiver<mojom::PageHandlerFactory> factory_receiver_{this};
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
