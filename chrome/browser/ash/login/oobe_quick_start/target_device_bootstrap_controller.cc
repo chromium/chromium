@@ -100,11 +100,17 @@ void TargetDeviceBootstrapController::StopAdvertising() {
 }
 
 void TargetDeviceBootstrapController::PrepareForUpdate() {
-  if (status_.step != Step::CONNECTED) {
+  if (status_.step != Step::CONNECTED || !authenticated_connection_) {
     return;
   }
 
-  // TODO(b/234655072): Trigger message to notify source device of update.
+  // Arbitrary session ID.
+  int32_t session_id = 1;
+
+  // TODO: Currently using an arbitrary session ID. Update this by generating
+  // a session ID to use as a param of NotifySourceOfUpdate().
+  authenticated_connection_->NotifySourceOfUpdate(session_id);
+
   // TODO(b/234655072): Implement timeout for connection to close.
   // If the source device successfully receives this message, it drops the
   // connection. The target device waits 1-3 seconds for the connection to close
@@ -145,6 +151,7 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
   constexpr Step kPossibleSteps[] = {Step::QR_CODE_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
+  authenticated_connection_ = authenticated_connection;
   status_.step = Step::CONNECTED;
   status_.payload.emplace<absl::monostate>();
   NotifyObservers();

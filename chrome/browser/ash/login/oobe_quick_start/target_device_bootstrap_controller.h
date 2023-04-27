@@ -110,6 +110,9 @@ class TargetDeviceBootstrapController
 
   Status status_;
 
+  base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
+      authenticated_connection_;
+
   base::WeakPtrFactory<TargetDeviceBootstrapController>
       weak_ptr_factory_for_clients_{this};
 

@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_quick_start_decoder.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
@@ -102,13 +101,13 @@ void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
       .session_id = RandomSessionId(),
       .shared_secret = kSharedSecret,
       .secondary_shared_secret = kSecondarySharedSecret};
-  auto connection_factory = std::make_unique<Connection::Factory>();
-  auto connection = connection_factory->Create(
+  connection_factory_ = std::make_unique<Connection::Factory>();
+  connection_ = connection_factory_->Create(
       nearby_connection, session_context, base::DoNothing(),
       base::BindOnce(
           &FakeTargetDeviceConnectionBroker::OnConnectionAuthenticated,
           weak_ptr_factory_.GetWeakPtr()));
-  connection->MarkConnectionAuthenticated();
+  connection_->MarkConnectionAuthenticated();
 }
 
 void FakeTargetDeviceConnectionBroker::RejectConnection() {
