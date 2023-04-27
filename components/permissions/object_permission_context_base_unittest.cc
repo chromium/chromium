@@ -31,18 +31,18 @@ class TestObjectPermissionContext : public ObjectPermissionContextBase {
             PermissionsClient::Get()->GetSettingsMap(browser_context)) {}
   ~TestObjectPermissionContext() override = default;
 
-  bool IsValidObject(const base::Value& object) override {
-    const base::Value::Dict& dict = object.GetDict();
+  bool IsValidObject(const base::Value::Dict& dict) override {
     return dict.size() == 2 && dict.Find(kRequiredKey1) &&
            dict.Find(kRequiredKey2);
   }
 
-  std::u16string GetObjectDisplayName(const base::Value& object) override {
+  std::u16string GetObjectDisplayName(
+      const base::Value::Dict& object) override {
     return {};
   }
 
-  std::string GetKeyForObject(const base::Value& object) override {
-    return *object.GetDict().FindString(kRequiredKey1);
+  std::string GetKeyForObject(const base::Value::Dict& object) override {
+    return *object.FindString(kRequiredKey1);
   }
 };
 
@@ -55,13 +55,11 @@ class ObjectPermissionContextBaseTest : public testing::Test {
         url2_("https://chromium.org"),
         origin1_(url::Origin::Create(url1_)),
         origin2_(url::Origin::Create(url2_)),
-        object1_(base::Value::Type::DICT),
-        object2_(base::Value::Type::DICT),
         context_(browser_context()) {
-    object1_.GetDict().Set(kRequiredKey1, "value1");
-    object1_.GetDict().Set(kRequiredKey2, "value2");
-    object2_.GetDict().Set(kRequiredKey1, "value3");
-    object2_.GetDict().Set(kRequiredKey2, "value4");
+    object1_.Set(kRequiredKey1, "value1");
+    object1_.Set(kRequiredKey2, "value2");
+    object2_.Set(kRequiredKey1, "value3");
+    object2_.Set(kRequiredKey2, "value4");
   }
 
   ~ObjectPermissionContextBaseTest() override = default;
@@ -78,8 +76,8 @@ class ObjectPermissionContextBaseTest : public testing::Test {
   const GURL url2_;
   const url::Origin origin1_;
   const url::Origin origin2_;
-  base::Value object1_;
-  base::Value object2_;
+  base::Value::Dict object1_;
+  base::Value::Dict object2_;
   TestObjectPermissionContext context_;
 };
 
@@ -310,7 +308,7 @@ TEST_F(ObjectPermissionContextBaseTest, GrantAndUpdateObjectPermission_Keyed) {
   // Update the object without changing the key.
   std::string new_value("new_value");
   auto new_object = objects[0]->value.Clone();
-  new_object.SetStringKey(kRequiredKey2, new_value);
+  new_object.Set(kRequiredKey2, new_value);
   EXPECT_NE(new_object, objects[0]->value);
 
   testing::Mock::VerifyAndClearExpectations(&mock_observer);

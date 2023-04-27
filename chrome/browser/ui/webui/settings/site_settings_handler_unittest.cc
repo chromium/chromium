@@ -4096,12 +4096,14 @@ class SiteSettingsHandlerHidTest
 
   base::Value GetPersistentDeviceValueForOrigin(
       const url::Origin& origin) override {
-    return HidChooserContext::DeviceInfoToValue(*persistent_device_);
+    return base::Value(
+        HidChooserContext::DeviceInfoToValue(*persistent_device_));
   }
 
   base::Value GetUserGrantedDeviceValueForOrigin(
       const url::Origin& origin) override {
-    return HidChooserContext::DeviceInfoToValue(*user_granted_device_);
+    return base::Value(
+        HidChooserContext::DeviceInfoToValue(*user_granted_device_));
   }
 
   std::string GetAllDevicesDisplayName() override { return "Any HID device"; }
@@ -4340,12 +4342,14 @@ class SiteSettingsHandlerSerialTest
 
   base::Value GetPersistentDeviceValueForOrigin(
       const url::Origin& origin) override {
-    return SerialChooserContext::PortInfoToValue(*persistent_port_);
+    return base::Value(
+        SerialChooserContext::PortInfoToValue(*persistent_port_));
   }
 
   base::Value GetUserGrantedDeviceValueForOrigin(
       const url::Origin& origin) override {
-    return SerialChooserContext::PortInfoToValue(*user_granted_port_);
+    return base::Value(
+        SerialChooserContext::PortInfoToValue(*user_granted_port_));
   }
 
   std::string GetAllDevicesDisplayName() override { return "Any serial port"; }
@@ -4542,12 +4546,14 @@ class SiteSettingsHandlerUsbTest
 
   base::Value GetPersistentDeviceValueForOrigin(
       const url::Origin& origin) override {
-    return UsbChooserContext::DeviceInfoToValue(*persistent_device_);
+    return base::Value(
+        UsbChooserContext::DeviceInfoToValue(*persistent_device_));
   }
 
   base::Value GetUserGrantedDeviceValueForOrigin(
       const url::Origin& origin) override {
-    return UsbChooserContext::DeviceInfoToValue(*user_granted_device_);
+    return base::Value(
+        UsbChooserContext::DeviceInfoToValue(*user_granted_device_));
   }
 
   std::string GetAllDevicesDisplayName() override {

@@ -89,12 +89,12 @@ class BluetoothChooserContext : public ObjectPermissionContextBase {
       uint16_t manufacturer_code);
 
   static blink::WebBluetoothDeviceId GetObjectDeviceId(
-      const base::Value& object);
+      const base::Value::Dict& object);
 
   // ObjectPermissionContextBase;
-  std::string GetKeyForObject(const base::Value& object) override;
-  bool IsValidObject(const base::Value& object) override;
-  std::u16string GetObjectDisplayName(const base::Value& object) override;
+  std::string GetKeyForObject(const base::Value::Dict& object) override;
+  bool IsValidObject(const base::Value::Dict& object) override;
+  std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
 
  private:
   static bool IsValidDict(const base::Value::Dict& dict);

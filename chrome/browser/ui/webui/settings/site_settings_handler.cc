@@ -1900,7 +1900,8 @@ void SiteSettingsHandler::HandleResetChooserExceptionForSite(
 
   permissions::ObjectPermissionContextBase* chooser_context =
       chooser_type->get_context(profile_);
-  chooser_context->RevokeObjectPermission(url::Origin::Create(origin), args[2]);
+  chooser_context->RevokeObjectPermission(url::Origin::Create(origin),
+                                          args[2].GetDict());
 }
 
 void SiteSettingsHandler::HandleIgnoreOriginsForNotificationPermissionReview(

@@ -511,8 +511,8 @@ void PageInfoMainView::OnPermissionChanged(
 
 void PageInfoMainView::OnChosenObjectDeleted(
     const PageInfoUI::ChosenObjectInfo& info) {
-  presenter_->OnSiteChosenObjectDeleted(*info.ui_info,
-                                        info.chooser_object->value);
+  presenter_->OnSiteChosenObjectDeleted(
+      *info.ui_info, base::Value(info.chooser_object->value.Clone()));
   PreferredSizeChanged();
 }
 

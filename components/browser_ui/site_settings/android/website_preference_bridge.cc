@@ -511,7 +511,8 @@ static void JNI_WebsitePreferenceBridge_RevokeObjectPermission(
   permissions::ObjectPermissionContextBase* context = GetChooserContext(
       jbrowser_context_handle,
       static_cast<ContentSettingsType>(content_settings_type));
-  context->RevokeObjectPermission(url::Origin::Create(origin), *object);
+  context->RevokeObjectPermission(url::Origin::Create(origin),
+                                  object->GetDict());
 }
 
 namespace {

@@ -33,12 +33,12 @@ class FederatedIdentityIdentityProviderRegistrationContext
   void UnregisterIdP(const GURL& origin);
 
   // permissions::ObjectPermissionContextBase:
-  std::string GetKeyForObject(const base::Value& object) override;
+  std::string GetKeyForObject(const base::Value::Dict& object) override;
 
  private:
   // permissions::ObjectPermissionContextBase:
-  bool IsValidObject(const base::Value& object) override;
-  std::u16string GetObjectDisplayName(const base::Value& object) override;
+  bool IsValidObject(const base::Value::Dict& object) override;
+  std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION_CONTEXT_H_

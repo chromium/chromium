@@ -792,20 +792,19 @@ TEST_F(DeviceLoginScreenWebUsbChooserContextTest,
 
 namespace {
 
-void ExpectDeviceObjectInfo(const base::Value& actual,
+void ExpectDeviceObjectInfo(const base::Value::Dict& actual,
                             int vendor_id,
                             int product_id,
                             const std::string& name) {
-  const absl::optional<int> actual_vendor_id = actual.FindIntKey(kVendorIdKey);
+  const absl::optional<int> actual_vendor_id = actual.FindInt(kVendorIdKey);
   ASSERT_TRUE(actual_vendor_id);
   EXPECT_EQ(*actual_vendor_id, vendor_id);
 
-  const absl::optional<int> actual_product_id =
-      actual.FindIntKey(kProductIdKey);
+  const absl::optional<int> actual_product_id = actual.FindInt(kProductIdKey);
   ASSERT_TRUE(actual_product_id);
   EXPECT_EQ(*actual_product_id, product_id);
 
-  const std::string* actual_device_name = actual.FindStringKey(kDeviceNameKey);
+  const std::string* actual_device_name = actual.FindString(kDeviceNameKey);
   ASSERT_TRUE(actual_device_name);
   EXPECT_EQ(*actual_device_name, name);
 }

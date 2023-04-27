@@ -654,8 +654,8 @@ TEST_F(PageInfoTest, OnChosenObjectDeleted) {
 
   ASSERT_EQ(1u, last_chosen_object_info().size());
   const PageInfoUI::ChosenObjectInfo* info = last_chosen_object_info()[0].get();
-  page_info()->OnSiteChosenObjectDeleted(*info->ui_info,
-                                         info->chooser_object->value);
+  page_info()->OnSiteChosenObjectDeleted(
+      *info->ui_info, base::Value(info->chooser_object->value.Clone()));
 
   EXPECT_FALSE(store->HasDevicePermission(origin(), *device_info));
   EXPECT_EQ(0u, last_chosen_object_info().size());

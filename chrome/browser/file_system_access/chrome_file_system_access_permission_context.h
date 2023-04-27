@@ -67,9 +67,9 @@ class ChromeFileSystemAccessPermissionContext
   std::vector<std::unique_ptr<Object>> GetGrantedObjects(
       const url::Origin& origin) override;
   std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;
-  std::string GetKeyForObject(const base::Value& object) override;
-  bool IsValidObject(const base::Value& object) override;
-  std::u16string GetObjectDisplayName(const base::Value& object) override;
+  std::string GetKeyForObject(const base::Value::Dict& object) override;
+  bool IsValidObject(const base::Value::Dict& object) override;
+  std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
 
   // content::FileSystemAccessPermissionContext:
   scoped_refptr<content::FileSystemAccessPermissionGrant>

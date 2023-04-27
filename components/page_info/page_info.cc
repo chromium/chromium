@@ -688,7 +688,7 @@ void PageInfo::OnSiteChosenObjectDeleted(const ChooserUIInfo& ui_info,
   permissions::ObjectPermissionContextBase* context =
       delegate_->GetChooserContext(ui_info.content_settings_type);
   const auto origin = url::Origin::Create(site_url_);
-  context->RevokeObjectPermission(origin, object);
+  context->RevokeObjectPermission(origin, object.GetDict());
   show_info_bar_ = true;
 
   // Refresh the UI to reflect the changed settings.

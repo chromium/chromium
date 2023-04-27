@@ -45,13 +45,20 @@ ObjectPermissionContextBase::~ObjectPermissionContextBase() {
 
 ObjectPermissionContextBase::Object::Object(
     const url::Origin& origin,
-    base::Value value,
+    base::Value::Dict value,
     content_settings::SettingSource source,
     bool incognito)
     : origin(origin.GetURL()),
       value(std::move(value)),
       source(source),
       incognito(incognito) {}
+
+ObjectPermissionContextBase::Object::Object(
+    const url::Origin& origin,
+    base::Value value,
+    content_settings::SettingSource source,
+    bool incognito)
+    : Object(origin, std::move(value.GetDict()), source, incognito) {}
 
 ObjectPermissionContextBase::Object::~Object() = default;
 
@@ -152,7 +159,7 @@ ObjectPermissionContextBase::GetAllGrantedObjects() {
 
 void ObjectPermissionContextBase::GrantObjectPermission(
     const url::Origin& origin,
-    base::Value object) {
+    base::Value::Dict object) {
   DCHECK(IsValidObject(object));
 
   const std::string key = GetKeyForObject(object);
@@ -168,8 +175,8 @@ void ObjectPermissionContextBase::GrantObjectPermission(
 
 void ObjectPermissionContextBase::UpdateObjectPermission(
     const url::Origin& origin,
-    const base::Value& old_object,
-    base::Value new_object) {
+    const base::Value::Dict& old_object,
+    base::Value::Dict new_object) {
   auto origin_objects_it = objects().find(origin);
   if (origin_objects_it == objects().end()) {
     return;
@@ -190,7 +197,7 @@ void ObjectPermissionContextBase::UpdateObjectPermission(
 
 void ObjectPermissionContextBase::RevokeObjectPermission(
     const url::Origin& origin,
-    const base::Value& object) {
+    const base::Value::Dict& object) {
   DCHECK(IsValidObject(object));
 
   RevokeObjectPermission(origin, GetKeyForObject(object));
@@ -344,7 +351,7 @@ ObjectPermissionContextBase::GetWebsiteSettingObjects() {
     }
 
     for (auto& object : *objects) {
-      if (!IsValidObject(object)) {
+      if (!IsValidObject(object.GetDict())) {
         continue;
       }
 

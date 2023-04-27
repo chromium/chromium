@@ -56,12 +56,12 @@ class FederatedIdentityAccountKeyedPermissionContext
                         const std::string& account_id);
 
   // permissions::ObjectPermissionContextBase:
-  std::string GetKeyForObject(const base::Value& object) override;
+  std::string GetKeyForObject(const base::Value::Dict& object) override;
 
  private:
   // permissions::ObjectPermissionContextBase:
-  bool IsValidObject(const base::Value& object) override;
-  std::u16string GetObjectDisplayName(const base::Value& object) override;
+  bool IsValidObject(const base::Value::Dict& object) override;
+  std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
 
   const std::string idp_origin_key_;
 };

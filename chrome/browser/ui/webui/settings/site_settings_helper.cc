@@ -874,7 +874,7 @@ void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,
 
   for (const auto& grant : grants) {
     const std::string url = grant->origin.spec();
-    auto* const optional_path = grant->value.GetDict().Find(
+    auto* const optional_path = grant->value.Find(
         ChromeFileSystemAccessPermissionContext::kPermissionPathKey);
 
     // Ensure that the file path is found for the given kPermissionPathKey.
@@ -1014,8 +1014,8 @@ base::Value::List GetChooserExceptionListFromProfile(
       continue;
 
     std::u16string name = chooser_context->GetObjectDisplayName(object->value);
-    auto& chooser_exception_details =
-        all_chooser_objects[std::make_pair(name, object->value.Clone())];
+    auto& chooser_exception_details = all_chooser_objects[std::make_pair(
+        name, base::Value(object->value.Clone()))];
 
     std::string source = GetSourceStringForChooserException(
         profile, content_type, object->source);

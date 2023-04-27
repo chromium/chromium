@@ -1453,8 +1453,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
-  EXPECT_EQ(base::ValueToTime(objects[0]->value.GetDict().Find("time")),
-            advance_once);
+  EXPECT_EQ(base::ValueToTime(objects[0]->value.Find("time")), advance_once);
 
   grant.reset();
 
@@ -1467,8 +1466,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
-  EXPECT_EQ(base::ValueToTime(objects[0]->value.GetDict().Find("time")),
-            advance_once);
+  EXPECT_EQ(base::ValueToTime(objects[0]->value.Find("time")), advance_once);
 
   // |grant| should now be expired, but not revokable until after grace period.
   Advance(ChromeFileSystemAccessPermissionContext::
@@ -1510,8 +1508,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
-  EXPECT_EQ(base::ValueToTime(objects[0]->value.GetDict().Find("time")),
-            advance_once);
+  EXPECT_EQ(base::ValueToTime(objects[0]->value.Find("time")), advance_once);
 
   grant.reset();
 
@@ -1524,8 +1521,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
-  EXPECT_EQ(base::ValueToTime(objects[0]->value.GetDict().Find("time")),
-            advance_once);
+  EXPECT_EQ(base::ValueToTime(objects[0]->value.Find("time")), advance_once);
 
   // |grant| should now be expired, but not revokable until after grace period.
   Advance(ChromeFileSystemAccessPermissionContext::
@@ -1660,9 +1656,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   ASSERT_EQ(objects.size(), 2u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
   EXPECT_EQ(objects[1]->origin, kTestOrigin2.GetURL());
-  EXPECT_EQ(base::ValueToTime(objects[0]->value.GetDict().Find("time")),
-            initial_time);
-  EXPECT_EQ(base::ValueToTime(objects[1]->value.GetDict().Find("time")), Now());
+  EXPECT_EQ(base::ValueToTime(objects[0]->value.Find("time")), initial_time);
+  EXPECT_EQ(base::ValueToTime(objects[1]->value.Find("time")), Now());
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -1691,8 +1686,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto objects = permission_context()->GetAllGrantedOrExpiredObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(objects[0]->origin, kTestOrigin.GetURL());
-  EXPECT_EQ(base::ValueToTime(objects[0]->value.GetDict().Find("time")),
-            initial_time);
+  EXPECT_EQ(base::ValueToTime(objects[0]->value.Find("time")), initial_time);
 
   // Permissions should now be expired and can be revoked.
   Advance(ChromeFileSystemAccessPermissionContext::
