@@ -94092,6 +94092,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="Prompt not shown because the trials were disabled after seeing
              the notice"/>
   <int value="10" label="Prompt not shown because it is managed"/>
+  <int value="11"
+      label="Prompt not shown because of a notice shown to guardian"/>
 </enum>
 
 <enum name="SettingsPrivacySandboxStartupStates">

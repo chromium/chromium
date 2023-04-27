@@ -696,8 +696,11 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
       return;
     }
 
-    // TODO(b/278877945): handle PromptSuppressedReason::kNoticeShownToGuardian.
     case PromptSuppressedReason::kNoticeShownToGuardian: {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          PromptStartupState::
+              kRestrictedNoticeNotShownDueToNoticeShownToGuardian);
       return;
     }
   }

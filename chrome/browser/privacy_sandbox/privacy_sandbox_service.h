@@ -471,10 +471,11 @@ class PrivacySandboxService : public KeyedService {
     kPromptNotShownDueToTrialConsentDeclined = 8,
     kPromptNotShownDueToTrialsDisabledAfterNoticeShown = 9,
     kPromptNotShownDueToManagedState = 10,
+    kRestrictedNoticeNotShownDueToNoticeShownToGuardian = 11,
 
     // Add values above this line with a corresponding label in
     // tools/metrics/histograms/enums.xml
-    kMaxValue = kPromptNotShownDueToManagedState,
+    kMaxValue = kRestrictedNoticeNotShownDueToNoticeShownToGuardian,
   };
 
   // Helper function to log first party sets state.
