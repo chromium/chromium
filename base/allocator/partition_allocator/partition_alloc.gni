@@ -105,6 +105,11 @@ declare_args() {
   # One side effect of this is that `raw_ptr_experimental<T> foo_` must
   # not use `foo_.get()`; this is incoherent when `foo_` is a `T*`.
   # Use `base::to_address()` instead.
+  #
+  # Analogously, the same applies to `raw_ref_experimental<T>` and `T&`.
+  # However, as references are a sort of exotic arcana, a nonstandard
+  # `base::GetRawReference()` is provided in `raw_ref.h`. This fans out
+  # to `raw_ref::get()` or a no-op `T&` reflection as necessary.
   enable_raw_ptr_experimental = enable_backup_ref_ptr_support
 }
 

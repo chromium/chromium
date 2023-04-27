@@ -375,9 +375,31 @@ struct RemoveRawRef<raw_ref<T, Traits>> {
 template <typename T>
 using RemoveRawRefT = typename RemoveRawRef<T>::type;
 
+#if BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
+template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
+using raw_ref_experimental = raw_ref<T, Traits>;
+#else
+template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
+using raw_ref_experimental = T&;
+#endif  // BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
+
+// Accepts a `raw_ref_experimental<T>` and unconditionally turns it
+// into a T&. This is necessary to provide the escape hatch for easily
+// downgrading `raw_ref_experimental` (see `partition_alloc.gni`).
+template <typename T>
+T& GetRawReference(raw_ref_experimental<T> miracle_ref) {
+#if BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
+  return miracle_ref.get();
+#else
+  static_assert(std::is_same_v<decltype(miracle_ref), T&>);
+  return miracle_ref;
+#endif  // BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
+}
+
 }  // namespace base
 
 using base::raw_ref;
+using base::raw_ref_experimental;
 
 namespace std {
 
