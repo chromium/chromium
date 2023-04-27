@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
 #include "ui/gl/scoped_binders.h"
@@ -161,6 +162,17 @@ void GLTextureHolder::Initialize(
   // if available.
   if (format_info.supports_storage) {
     {
+#if BUILDFLAG(IS_ANDROID)
+      // When using angle via enabling passthrough command decoder on android,
+      // disable renderability validation in angle for this texture since it is
+      // being created in ES3 context with a format which could be
+      // invalid/non-renderable in ES2/WEBGL1 context when this texture gets
+      // imported into the ES2/WEBGL1 context.
+      if (gl::g_current_gl_driver->ext.b_GL_ANGLE_renderability_validation) {
+        api->glTexParameteriFn(format_desc_.target,
+                               GL_RENDERABILITY_VALIDATION_ANGLE, GL_FALSE);
+      }
+#endif
       gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
       api->glTexStorage2DEXTFn(format_desc_.target, /*levels=*/1,
                                format_info.adjusted_storage_internal_format,
