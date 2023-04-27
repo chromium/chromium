@@ -476,8 +476,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.ConsumedBatteryPercent" units="%"
-    expires_after="2020-07-01">
-  <owner>fukino@chromium.org</owner>
+    expires_after="2023-10-01">
+  <owner>dlunev@chromium.org</owner>
   <summary>
     The amount of consumed battery level during cryptohome encryption migration.
     This is logged when the battery level decreases during migration, and the
@@ -487,8 +487,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.FirstScreen"
-    enum="MigrationUIFirstScreen" expires_after="2020-07-01">
-  <owner>fukino@chromium.org</owner>
+    enum="MigrationUIFirstScreen" expires_after="2023-10-01">
+  <owner>dlunev@chromium.org</owner>
   <summary>
     The first screen in the encryption migration UI, which is shown when a user
     attempts to log in to the system and old encryption (eCryptfs) is detected.
@@ -496,8 +496,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.MigrationResult"
-    enum="MigrationUIMigrationResult" expires_after="2021-01-17">
-  <owner>fukino@chromium.org</owner>
+    enum="MigrationUIMigrationResult" expires_after="2023-10-01">
+  <owner>dlunev@chromium.org</owner>
   <summary>
     The result of encryption migration from eCryptfs to Ext4 dircrypto. The
     recorded result is what the migration UI in Chrome side is notified from
@@ -506,8 +506,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.RemoveCryptohomeResult"
-    enum="MigrationUIRemoveCryptohomeResult" expires_after="2020-07-01">
-  <owner>fukino@chromium.org</owner>
+    enum="MigrationUIRemoveCryptohomeResult" expires_after="2023-10-01">
+  <owner>dlunev@chromium.org</owner>
   <summary>
     The result of the removal of user's cryptohome. When the migration UI is
     notified that the migration failed, the UI tries to remove the user's
@@ -517,8 +517,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.UserChoice"
-    enum="MigrationUIUserChoice" expires_after="2020-07-01">
-  <owner>fukino@chromium.org</owner>
+    enum="MigrationUIUserChoice" expires_after="2023-10-01">
+  <owner>dlunev@chromium.org</owner>
   <summary>
     User's choice when the system is ready to migrate encryption. The user can
     start migration or skip it. It is used to know how many users have skipped
@@ -527,8 +527,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.VisibleScreen" enum="MigrationUIScreen"
-    expires_after="2020-10-25">
-  <owner>fukino@chromium.org</owner>
+    expires_after="2023-10-01">
+  <owner>dlunev@chromium.org</owner>
   <summary>
     How many times each screen in migration UI is shown to the user. A screen is
     recorded as a visible screen when the screen is kept displayed at least for
