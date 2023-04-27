@@ -31,7 +31,6 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -50,6 +49,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
@@ -617,7 +617,8 @@ File CreateAndOpenTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
   // Although it is nearly impossible to get a duplicate name with GUID, we
   // still use a loop here in case it happens.
   for (int i = 0; i < 100; ++i) {
-    temp_name = dir.Append(FormatTemporaryFileName(UTF8ToWide(GenerateGUID())));
+    temp_name = dir.Append(FormatTemporaryFileName(
+        UTF8ToWide(Uuid::GenerateRandomV4().AsLowercaseString())));
     file.Initialize(temp_name, kFlags);
     if (file.IsValid())
       break;
