@@ -951,8 +951,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 61
-// Next id: 61
+// Next version: 62
+// Next id: 62
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1333,6 +1333,10 @@ struct BrowserInitParams {
   // enabled in Ash.
   [MinVersion=60]
   bool is_upload_office_to_cloud_enabled@60;
+
+  // When this flag is on, the clipboard history refresh feature is enabled.
+  [MinVersion=61]
+  bool enable_clipboard_history_refresh@61;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

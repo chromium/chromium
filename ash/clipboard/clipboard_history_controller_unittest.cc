@@ -288,7 +288,8 @@ class ClipboardHistoryControllerRefreshTest
  public:
   ClipboardHistoryControllerRefreshTest() {
     std::vector<base::test::FeatureRef> refresh_features = {
-        features::kClipboardHistoryRefresh, chromeos::features::kJelly};
+        chromeos::features::kClipboardHistoryRefresh,
+        chromeos::features::kJelly};
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     (IsClipboardHistoryRefreshEnabled() ? enabled_features : disabled_features)
@@ -603,7 +604,8 @@ class ClipboardHistoryControllerShowSourceTest
  public:
   ClipboardHistoryControllerShowSourceTest() {
     std::vector<base::test::FeatureRef> refresh_features = {
-        features::kClipboardHistoryRefresh, chromeos::features::kJelly};
+        chromeos::features::kClipboardHistoryRefresh,
+        chromeos::features::kJelly};
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     (IsClipboardHistoryRefreshEnabled() ? enabled_features : disabled_features)
@@ -748,7 +750,8 @@ class ClipboardHistoryRefreshDisplayFormatTest
  public:
   ClipboardHistoryRefreshDisplayFormatTest() {
     std::vector<base::test::FeatureRef> refresh_features = {
-        features::kClipboardHistoryRefresh, chromeos::features::kJelly};
+        chromeos::features::kClipboardHistoryRefresh,
+        chromeos::features::kJelly};
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     (std::get<0>(GetParam()) ? enabled_features : disabled_features)
@@ -842,7 +845,7 @@ TEST_P(ClipboardHistoryRefreshDisplayFormatTest, TextServicesSubMenu) {
   // history.
   EXPECT_TRUE(target_command_parent_model->IsEnabledAt(target_command_index));
 
-  if (features::IsClipboardHistoryRefreshEnabled()) {
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     // If the refresh feature is enabled, the clipboard history menu item is a
     // submenu item.
     EXPECT_EQ(target_command_parent_model->GetTypeAt(target_command_index),

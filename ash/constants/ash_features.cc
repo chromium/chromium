@@ -348,12 +348,6 @@ BASE_FEATURE(kClipboardHistoryLongpress,
              "ClipboardHistoryLongpress",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables updated UI for the clipboard history menu and new system behavior
-// related to clipboard history. Requires jelly-colors flag to also be enabled.
-BASE_FEATURE(kClipboardHistoryRefresh,
-             "ClipboardHistoryRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, pasting a clipboard history item will cause that item to move to
 // the top of the history list.
 BASE_FEATURE(kClipboardHistoryReorder,
@@ -2540,11 +2534,6 @@ bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
 
 bool IsClipboardHistoryLongpressEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryLongpress);
-}
-
-bool IsClipboardHistoryRefreshEnabled() {
-  return chromeos::features::IsJellyEnabled() &&
-         base::FeatureList::IsEnabled(kClipboardHistoryRefresh);
 }
 
 bool IsClipboardHistoryReorderEnabled() {

@@ -47,6 +47,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
@@ -176,14 +177,14 @@ class ClipboardHistoryControllerImpl::AcceleratorTarget
   ~AcceleratorTarget() override = default;
 
   void OnMenuShown() {
-    CHECK(!features::IsClipboardHistoryRefreshEnabled());
+    CHECK(!chromeos::features::IsClipboardHistoryRefreshEnabled());
     Shell::Get()->accelerator_controller()->Register(
         {delete_selected_, tab_navigation_, shift_tab_navigation_},
         /*accelerator_target=*/this);
   }
 
   void OnMenuClosed() {
-    CHECK(!features::IsClipboardHistoryRefreshEnabled());
+    CHECK(!chromeos::features::IsClipboardHistoryRefreshEnabled());
     Shell::Get()->accelerator_controller()->Unregister(
         delete_selected_, /*accelerator_target=*/this);
     Shell::Get()->accelerator_controller()->Unregister(
@@ -284,7 +285,7 @@ ClipboardHistoryControllerImpl::~ClipboardHistoryControllerImpl() {
 
 void ClipboardHistoryControllerImpl::Shutdown() {
   if (IsMenuShowing()) {
-    if (features::IsClipboardHistoryRefreshEnabled()) {
+    if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
       clipboard_manager_->CancelDialog();
     } else {
       context_menu_->Cancel(/*will_paste_item=*/false);
@@ -294,7 +295,7 @@ void ClipboardHistoryControllerImpl::Shutdown() {
 }
 
 bool ClipboardHistoryControllerImpl::IsMenuShowing() const {
-  return features::IsClipboardHistoryRefreshEnabled()
+  return chromeos::features::IsClipboardHistoryRefreshEnabled()
              ? clipboard_manager_
              : context_menu_ && context_menu_->IsRunning();
 }
@@ -302,7 +303,7 @@ bool ClipboardHistoryControllerImpl::IsMenuShowing() const {
 void ClipboardHistoryControllerImpl::ToggleMenuShownByAccelerator(
     bool is_plain_text_paste) {
   if (IsMenuShowing()) {
-    if (features::IsClipboardHistoryRefreshEnabled()) {
+    if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
       // TODO(b/267694484): Paste rather than just closing here.
       clipboard_manager_->CancelDialog();
     } else {
@@ -366,7 +367,7 @@ bool ClipboardHistoryControllerImpl::ShowMenu(
   last_menu_show_time_ = base::TimeTicks::Now();
   last_menu_source_ = show_source;
 
-  if (features::IsClipboardHistoryRefreshEnabled()) {
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     clipboard_manager_ = ClipboardManagerBubbleView::Create(anchor_rect);
     clipboard_manager_->GetWidget()->AddObserver(this);
     clipboard_manager_->GetWidget()->Show();
@@ -617,7 +618,7 @@ void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
   if (!IsMenuShowing())
     return;
 
-  if (features::IsClipboardHistoryRefreshEnabled()) {
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     clipboard_manager_->CancelDialog();
   } else {
     context_menu_->Cancel(/*will_paste_item=*/false);
@@ -666,7 +667,7 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
       std::u16string label_text =
           base::StrCat({u"[li8n] ", shortcut_key, u"+V"});
 
-      if (features::IsClipboardHistoryRefreshEnabled()) {
+      if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
         Shell::Get()->toast_manager()->Show(ToastData(
             kClipboardCopyToastId, ToastCatalogName::kCopyToClipboardAction,
             u"[li8n] Copied to Clipboard", ToastData::kDefaultToastDuration,

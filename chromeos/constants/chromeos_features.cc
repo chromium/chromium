@@ -17,6 +17,12 @@ BASE_FEATURE(kBluetoothPhoneFilter,
              "BluetoothPhoneFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables updated UI for the clipboard history menu and new system behavior
+// related to clipboard history.
+BASE_FEATURE(kClipboardHistoryRefresh,
+             "ClipboardHistoryRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables cloud game features. A separate flag "LauncherGameSearch" controls
 // launcher-only cloud gaming features, since they can also be enabled on
 // non-cloud-gaming devices.
@@ -85,6 +91,15 @@ BASE_FEATURE(kQuickAnswersRichCard,
 BASE_FEATURE(kUploadOfficeToCloud,
              "UploadOfficeToCloud",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsClipboardHistoryRefreshEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->EnableClipboardHistoryRefresh();
+#else
+  return base::FeatureList::IsEnabled(kClipboardHistoryRefresh) &&
+         IsJellyEnabled();
+#endif
+}
 
 bool IsCloudGamingDeviceEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

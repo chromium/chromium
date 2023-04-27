@@ -134,6 +134,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsUploadOfficeToCloudEnabled() const;
 
+  bool EnableClipboardHistoryRefresh() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

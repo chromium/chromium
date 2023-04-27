@@ -4,8 +4,8 @@
 
 #include "ash/public/cpp/views_text_services_context_menu_ash.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,7 +32,7 @@ ViewsTextServicesContextMenuAsh::ViewsTextServicesContextMenuAsh(
   // If the clipboard history refresh feature is enabled, insert a submenu of
   // clipboard history descriptors; otherwise, insert a menu option to trigger
   // the clipboard history menu.
-  if (features::IsClipboardHistoryRefreshEnabled()) {
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     // The command ids in `submenu_model_` should not conflict any other id in
     // the text services context menu.
     // TODO(b/278903842): Using `views::Textfield::kLastCommandId` does not
@@ -88,7 +88,7 @@ void ViewsTextServicesContextMenuAsh::ExecuteCommand(int command_id,
     // feature is disabled. When the feature is enabled, the menu option
     // corresponding to `IDS_APP_SHOW_CLIPBOARD_HISTORY` is a submenu and this
     // code path should be skipped.
-    CHECK(!features::IsClipboardHistoryRefreshEnabled());
+    CHECK(!chromeos::features::IsClipboardHistoryRefreshEnabled());
 
     auto* clipboard_history_controller = ClipboardHistoryController::Get();
 

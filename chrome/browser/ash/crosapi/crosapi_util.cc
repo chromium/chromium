@@ -619,6 +619,9 @@ void InjectBrowserInitParams(
 
   params->is_upload_office_to_cloud_enabled =
       chromeos::features::IsUploadOfficeToCloudEnabled();
+
+  params->enable_clipboard_history_refresh =
+      chromeos::features::IsClipboardHistoryRefreshEnabled();
 }
 
 template <typename BrowserParams>
