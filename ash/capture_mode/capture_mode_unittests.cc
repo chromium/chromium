@@ -2262,7 +2262,9 @@ TEST_F(CaptureModeTest, CornerRegionWithScreenRotation) {
 // valid (i.e. they have the correct size, and suffer from no letterboxing, even
 // when the window gets resized).
 // This is a regression test for https://crbug.com/1214023.
-TEST_F(CaptureModeTest, VerifyWindowRecordingVideoFrames) {
+//
+// TODO(crbug.com/1439950): This test is flaky.
+TEST_F(CaptureModeTest, DISABLED_VerifyWindowRecordingVideoFrames) {
   auto window = CreateTestWindow(gfx::Rect(100, 50, 200, 200));
   StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
 
