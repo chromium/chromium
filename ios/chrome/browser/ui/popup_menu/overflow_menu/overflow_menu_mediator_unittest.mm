@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
+#import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -474,6 +475,10 @@ TEST_F(OverflowMenuMediatorTest, TestTextZoomDisabled) {
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
 
+  // FontSizeTabHelper requires a web frames manager.
+  web_state_->SetWebFramesManager(
+      FontSizeJavaScriptFeature::GetInstance()->GetSupportedContentWorld(),
+      std::make_unique<web::FakeWebFramesManager>());
   FontSizeTabHelper::CreateForWebState(
       browser_->GetWebStateList()->GetWebStateAt(0));
 

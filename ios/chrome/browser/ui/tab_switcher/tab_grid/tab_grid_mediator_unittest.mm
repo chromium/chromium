@@ -58,6 +58,7 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_client.h"
@@ -197,6 +198,8 @@ class TabGridMediatorTest : public PlatformTest {
     navigation_manager->SetLastCommittedItem(
         navigation_manager->GetItemAtIndex(0));
     web_state->SetNavigationManager(std::move(navigation_manager));
+    web_state->SetWebFramesManager(
+        std::make_unique<web::FakeWebFramesManager>());
     web_state->SetBrowserState(browser_state_.get());
     web_state->SetNavigationItemCount(1);
     web_state->SetCurrentURL(url);
@@ -278,6 +281,7 @@ TEST_F(TabGridMediatorTest, ConsumerPopulateItems) {
 TEST_F(TabGridMediatorTest, ConsumerInsertItem) {
   ASSERT_EQ(3UL, consumer_.items.count);
   auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetWebFramesManager(std::make_unique<web::FakeWebFramesManager>());
   NSString* item_identifier = web_state.get()->GetStableIdentifier();
   browser_->GetWebStateList()->InsertWebState(1, std::move(web_state),
                                               WebStateList::INSERT_FORCE_INDEX,
@@ -314,6 +318,8 @@ TEST_F(TabGridMediatorTest, ConsumerUpdateSelectedItem) {
 // id of the new item.
 TEST_F(TabGridMediatorTest, ConsumerReplaceItem) {
   auto new_web_state = std::make_unique<web::FakeWebState>();
+  new_web_state->SetWebFramesManager(
+      std::make_unique<web::FakeWebFramesManager>());
   NSString* new_item_identifier = new_web_state->GetStableIdentifier();
   @autoreleasepool {
     browser_->GetWebStateList()->ReplaceWebStateAt(1, std::move(new_web_state));

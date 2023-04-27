@@ -114,6 +114,8 @@ FontSizeTabHelper::FontSizeTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   DCHECK(ios::provider::IsTextZoomEnabled());
   web_state->AddObserver(this);
+  FontSizeJavaScriptFeature* feature = FontSizeJavaScriptFeature::GetInstance();
+  feature->GetWebFramesManager(web_state)->AddObserver(this);
   content_size_did_change_observer_ = [NSNotificationCenter.defaultCenter
       addObserverForName:UIContentSizeCategoryDidChangeNotification
                   object:nil
@@ -248,6 +250,8 @@ int FontSizeTabHelper::GetFontSize() const {
 
 void FontSizeTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
+  FontSizeJavaScriptFeature* feature = FontSizeJavaScriptFeature::GetInstance();
+  feature->GetWebFramesManager(web_state)->RemoveObserver(this);
 }
 
 void FontSizeTabHelper::PageLoaded(
@@ -266,10 +270,10 @@ void FontSizeTabHelper::DidFinishNavigation(web::WebState* web_state,
   }
 }
 
-void FontSizeTabHelper::WebFrameDidBecomeAvailable(web::WebState* web_state,
-                                                   web::WebFrame* web_frame) {
+void FontSizeTabHelper::WebFrameBecameAvailable(
+    web::WebFramesManager* web_frames_manager,
+    web::WebFrame* web_frame) {
   // Make sure that any new web frame starts with the correct zoom level.
-  DCHECK_EQ(web_state, web_state_);
   int size = GetFontSize();
   // Prevent any zooming errors by only zooming when necessary. This is mostly
   // when size != 100, but if zooming has happened before, then zooming to 100
