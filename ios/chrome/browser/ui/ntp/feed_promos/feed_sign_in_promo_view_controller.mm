@@ -29,9 +29,9 @@ constexpr CGFloat customSpacingAfterImage = 24;
   self.topAlignedLayout = YES;
 
   self.titleString =
-      l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_PROMO_TITLE);
+      l10n_util::GetNSString(IDS_IOS_FEED_CARD_SYNC_HALF_SHEET_TITLE);
   self.secondaryTitleString =
-      l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_PROMO_DESC);
+      l10n_util::GetNSString(IDS_IOS_FEED_CARD_SYNC_HALF_SHEET_DESC);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_PROMO_CONTINUE_BUTTON);
   self.secondaryActionString =
