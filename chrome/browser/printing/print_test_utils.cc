@@ -10,6 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
@@ -110,6 +111,13 @@ std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
       MakeDefaultPrintSettings(printer_name);
   settings->set_copies(kPrintSettingsCopies + 1);
   return settings;
+}
+
+void StartPrint(content::WebContents* contents) {
+  printing::StartPrint(contents,
+                       /*print_renderer=*/mojo::NullAssociatedRemote(),
+                       /*print_preview_disabled=*/false,
+                       /*has_selection=*/false);
 }
 
 }  // namespace printing::test

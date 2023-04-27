@@ -437,10 +437,7 @@ class SystemAccessProcessPrintBrowserTestBase
   void PrintAfterPreviewIsReadyAndLoaded() {
     // First invoke the Print Preview dialog with `StartPrint()`.
     TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
-    StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-               /*print_renderer=*/mojo::NullAssociatedRemote(),
-               /*print_preview_disabled=*/false,
-               /*has_selection=*/false);
+    test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
     content::WebContents* preview_dialog =
         print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
     ASSERT_TRUE(preview_dialog);
@@ -462,10 +459,7 @@ class SystemAccessProcessPrintBrowserTestBase
   void AdjustMediaAfterPreviewIsReadyAndLoaded() {
     // First invoke the Print Preview dialog with `StartPrint()`.
     TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
-    StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-               /*print_renderer=*/mojo::NullAssociatedRemote(),
-               /*print_preview_disabled=*/false,
-               /*has_selection=*/false);
+    test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
     content::WebContents* preview_dialog =
         print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
     ASSERT_TRUE(preview_dialog);
@@ -492,10 +486,7 @@ class SystemAccessProcessPrintBrowserTestBase
   void SystemPrintFromPreviewOnceReadyAndLoaded(bool wait_for_callback) {
     // First invoke the Print Preview dialog with `StartPrint()`.
     TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
-    StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-               /*print_renderer=*/mojo::NullAssociatedRemote(),
-               /*print_preview_disabled=*/false,
-               /*has_selection=*/false);
+    test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
     content::WebContents* preview_dialog =
         print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
     ASSERT_TRUE(preview_dialog);

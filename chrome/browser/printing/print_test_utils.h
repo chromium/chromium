@@ -53,6 +53,13 @@ std::unique_ptr<PrintSettings> MakeDefaultPrintSettings(
 std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
     const std::string& printer_name);
 
+// Simpler version of StartPrint() provided for convenience with the common
+// defaults:
+// - null `print_renderer`
+// - `print_preview_disabled` set to false
+// - `has_selection` set to false
+void StartPrint(content::WebContents* web_contents);
+
 }  // namespace test
 }  // namespace printing
 

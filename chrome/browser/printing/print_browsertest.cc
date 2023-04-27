@@ -822,10 +822,7 @@ class PrintExtensionBrowserTest : public extensions::ExtensionBrowserTest {
   void PrintAndWaitUntilPreviewIsReady() {
     TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
 
-    StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-               /*print_renderer=*/mojo::NullAssociatedRemote(),
-               /*print_preview_disabled=*/false,
-               /*has_selection=*/false);
+    test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
 
     print_preview_observer.WaitUntilPreviewIsReady();
   }
@@ -1338,9 +1335,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest,
 
   // Adds the observer to get the status for the preview.
   TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false, /*has_selection*/ false);
+  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
 
   // Makes sure that `subframe_rph` is terminated.
   process_watcher.Wait();
@@ -1400,10 +1395,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnAllowed) {
 
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false,
-             /*has_selection=*/false);
+  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kAllowed);
@@ -1427,10 +1419,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnCanceled) {
 
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false,
-             /*has_selection=*/false);
+  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);
@@ -1453,10 +1442,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPBlocked) {
 
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kUnknown);
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false,
-             /*has_selection=*/false);
+  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);
@@ -1668,9 +1654,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false, /*has_selection=*/false);
+  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
   content::WebContents* preview_dialog =
       print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
   ASSERT_TRUE(preview_dialog);
@@ -2131,10 +2115,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintWithPreview) {
       TestPrintViewManagerForContentAnalysis::CreateForWebContents(
           web_contents);
 
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false,
-             /*has_selection=*/false);
+  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
 
   print_view_manager->WaitOnScanning();
   ASSERT_EQ(print_view_manager->preview_allowed(),
@@ -2173,10 +2154,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
           web_contents);
   print_view_manager->set_allowed_by_dlp(false);
 
-  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-             /*print_renderer=*/mojo::NullAssociatedRemote(),
-             /*print_preview_disabled=*/false,
-             /*has_selection=*/false);
+  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
 
   print_view_manager->WaitOnPreview();
   ASSERT_TRUE(print_view_manager->preview_allowed().has_value());
