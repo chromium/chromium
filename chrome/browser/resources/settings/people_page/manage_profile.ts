@@ -184,13 +184,6 @@ export class SettingsManageProfileElement extends
   }
 
   /**
-   * @return Whether the profile name field is disabled.
-   */
-  private isProfileNameDisabled_(syncStatus: SyncStatus): boolean {
-    return !!syncStatus.supervisedUser && !syncStatus.childUser;
-  }
-
-  /**
    * Handler for when the profile shortcut toggle is changed.
    */
   private onHasProfileShortcutChange_() {

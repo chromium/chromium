@@ -49,7 +49,7 @@ export const PrivacyGuideAvailabilityMixin = dedupingMixin(
               'sync-status-changed',
               (syncStatus: SyncStatus) =>
                   this.onPrivacyGuideAvailabilityChanged_(
-                      !syncStatus.childUser));
+                      !syncStatus.supervisedUser));
         }
 
         private onPrivacyGuideAvailabilityChanged_(isAvailable: boolean) {

@@ -909,7 +909,6 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
   }
 
   sync_status.Set("supervisedUser", profile_->IsChild());
-  sync_status.Set("childUser", profile_->IsChild());
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   DCHECK(identity_manager);

@@ -488,20 +488,22 @@ suite('PrivacyGuideRowTests', function() {
         'privacyGuideLinkRow is visible');
   });
 
-  test('privacyGuideRowVisibleChildAccount', function() {
+  test('privacyGuideRowVisibleSupervisedAccount', function() {
     assertTrue(isChildVisible(page, '#privacyGuideLinkRow'));
 
-    // The user signs in to a child user account. This hides the privacy guide
-    // entry point.
-    const syncStatus:
-        SyncStatus = {childUser: true, statusAction: StatusAction.NO_ACTION};
+    // The user signs in to a supervised user account. This hides the privacy
+    // guide entry point.
+    const syncStatus: SyncStatus = {
+      supervisedUser: true,
+      statusAction: StatusAction.NO_ACTION,
+    };
     webUIListenerCallback('sync-status-changed', syncStatus);
     flush();
     assertFalse(isChildVisible(page, '#privacyGuideLinkRow'));
 
-    // The user is no longer signed in to a child user account. This doesn't
-    // show the entry point.
-    syncStatus.childUser = false;
+    // The user is no longer signed in to a supervised user account. This
+    // doesn't show the entry point.
+    syncStatus.supervisedUser = false;
     webUIListenerCallback('sync-status-changed', syncStatus);
     flush();
     assertFalse(isChildVisible(page, '#privacyGuideLinkRow'));
