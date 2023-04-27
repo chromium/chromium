@@ -22,7 +22,6 @@
 namespace content {
 struct FencedFrameConfig;
 struct FencedFrameProperties;
-FORWARD_DECLARE_TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest);
 }  // namespace content
 
 namespace blink::FencedFrame {
@@ -134,9 +133,6 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
       blink::mojom::FencedFrameConfigDataView,
       blink::FencedFrame::RedactedFencedFrameConfig>;
 
-  FRIEND_TEST_ALL_PREFIXES(::content::FencedFrameConfigMojomTraitsTest,
-                           ConfigMojomTraitsTest);
-
   absl::optional<GURL> urn_uuid_;
   absl::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
   absl::optional<RedactedFencedFrameProperty<gfx::Size>> container_size_;
@@ -203,9 +199,6 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   friend struct mojo::StructTraits<
       blink::mojom::FencedFramePropertiesDataView,
       blink::FencedFrame::RedactedFencedFrameProperties>;
-
-  FRIEND_TEST_ALL_PREFIXES(::content::FencedFrameConfigMojomTraitsTest,
-                           ConfigMojomTraitsTest);
 
   absl::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
   absl::optional<RedactedFencedFrameProperty<gfx::Size>> container_size_;
