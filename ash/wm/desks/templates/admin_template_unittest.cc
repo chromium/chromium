@@ -216,36 +216,36 @@ TEST_F(AdminTemplateTest, AdjustAdminTemplateWindowBounds) {
 // Tests that when we have different number of windows the bounds for each
 // window is expected.
 TEST_F(AdminTemplateTest, GetInitialWindowLayout) {
-  const gfx::Rect work_area(0, 0, 1000, 800);
+  const gfx::Size work_area_size(1000, 800);
 
   // Verifies the bounds when there is only one window.
-  EXPECT_THAT(GetInitialWindowLayout(work_area, 1),
+  EXPECT_THAT(GetInitialWindowLayout(work_area_size, 1),
               ElementsAre(gfx::Rect(100, 80, 800, 640)));
 
   // Verifies the bounds when there are two windows.
   EXPECT_THAT(
-      GetInitialWindowLayout(work_area, 2),
+      GetInitialWindowLayout(work_area_size, 2),
       ElementsAre(gfx::Rect(0, 0, 500, 800), gfx::Rect(500, 0, 500, 800)));
 
   // Verifies the bounds when there are three windows.
   EXPECT_THAT(
-      GetInitialWindowLayout(work_area, 3),
+      GetInitialWindowLayout(work_area_size, 3),
       ElementsAre(gfx::Rect(0, 0, 500, 800), gfx::Rect(500, 0, 500, 400),
                   gfx::Rect(500, 400, 500, 400)));
 
   // Verifies the bounds when there are four windows.
   EXPECT_THAT(
-      GetInitialWindowLayout(work_area, 4),
+      GetInitialWindowLayout(work_area_size, 4),
       ElementsAre(gfx::Rect(0, 0, 500, 400), gfx::Rect(500, 0, 500, 400),
-                  gfx::Rect(500, 400, 500, 400), gfx::Rect(0, 400, 500, 400)));
+                  gfx::Rect(0, 400, 500, 400), gfx::Rect(500, 400, 500, 400)));
 
   // Verifies the bounds when there are eight windows.
   EXPECT_THAT(
-      GetInitialWindowLayout(work_area, 8),
+      GetInitialWindowLayout(work_area_size, 8),
       ElementsAre(gfx::Rect(0, 0, 500, 400), gfx::Rect(500, 0, 500, 400),
-                  gfx::Rect(500, 400, 500, 400), gfx::Rect(0, 400, 500, 400),
+                  gfx::Rect(0, 400, 500, 400), gfx::Rect(500, 400, 500, 400),
                   gfx::Rect(0, 0, 500, 400), gfx::Rect(500, 0, 500, 400),
-                  gfx::Rect(500, 400, 500, 400), gfx::Rect(0, 400, 500, 400)));
+                  gfx::Rect(0, 400, 500, 400), gfx::Rect(500, 400, 500, 400)));
 }
 
 TEST_P(AdminTemplateTest, LaunchTemplate) {

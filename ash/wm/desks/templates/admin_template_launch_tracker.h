@@ -14,6 +14,7 @@
 #include "base/observer_list_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 
@@ -50,10 +51,10 @@ ASH_EXPORT void AdjustAdminTemplateWindowBounds(
     const std::vector<gfx::Rect>& existing_bounds,
     gfx::Rect& bounds);
 
-// Returns the number of `window_count` bounds for windows on the
-// `available_bounds` screen.
+// Returns `window_count` bounds for windows automatically laid to fit
+// `work_area_size`.
 ASH_EXPORT std::vector<gfx::Rect> GetInitialWindowLayout(
-    const gfx::Rect& work_area,
+    const gfx::Size& work_area_size,
     const int window_count);
 
 // This class is used to launch an admin template and track the windows that

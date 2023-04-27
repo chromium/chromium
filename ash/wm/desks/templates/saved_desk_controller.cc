@@ -27,7 +27,6 @@ constexpr char kPlaceholderJson[] = R"json(
       "1": {
          "active_tab_index": 0,
          "app_name": "",
-         "current_bounds": [ 100, 50, 640, 480 ],
          "index": 0,
          "title": "Chrome",
          "urls": [ "https://www.google.com/" ],
