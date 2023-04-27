@@ -368,4 +368,7 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1431937
   "tast.lacros.ShelfLaunch.primary",
+
+  # https://crbug.com/1440735
+  "mlservice.WebHandwritingRecognition.lacros",
 ]
