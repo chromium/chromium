@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/ambient/ambient_metrics.h"
+#include "ash/ambient/metrics/ambient_metrics.h"
 
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/elapsed_timer.h"

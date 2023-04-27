@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/ambient/ambient_view_delegate_impl.h"
+#include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 #include "ash/ambient/model/ambient_animation_attribution_provider.h"
 #include "ash/ambient/model/ambient_backend_model.h"
@@ -26,7 +27,6 @@
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"

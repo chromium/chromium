@@ -61,9 +61,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/util/ambient_util.h"
-#include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/utility/cropping_util.h"
 #include "ash/utility/lottie_util.h"
 #include "base/check.h"

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/ui/ambient_animation_view.h"
@@ -14,7 +15,6 @@
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/ambient/util/ambient_util.h"
-#include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "base/check.h"
 #include "ui/aura/window.h"

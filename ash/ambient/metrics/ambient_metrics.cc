@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/ambient/ambient_metrics.h"
+#include "ash/ambient/metrics/ambient_metrics.h"
 
 #include <string>
 
@@ -34,10 +34,11 @@ constexpr int kAmbientModeElapsedTimeHistogramBuckets = 144;
 
 std::string GetHistogramName(const char* prefix, bool tablet_mode) {
   std::string histogram = prefix;
-  if (tablet_mode)
+  if (tablet_mode) {
     histogram += ".TabletMode";
-  else
+  } else {
     histogram += ".ClamshellMode";
+  }
 
   return histogram;
 }
@@ -60,20 +61,24 @@ void RecordEngagementTime(base::StringPiece histogram_name,
 
 AmbientModePhotoSource AmbientSettingsToPhotoSource(
     const AmbientSettings& settings) {
-  if (settings.topic_source == ash::AmbientModeTopicSource::kArtGallery)
+  if (settings.topic_source == ash::AmbientModeTopicSource::kArtGallery) {
     return AmbientModePhotoSource::kArtGallery;
+  }
 
-  if (settings.selected_album_ids.size() == 0)
+  if (settings.selected_album_ids.size() == 0) {
     return AmbientModePhotoSource::kGooglePhotosEmpty;
+  }
 
   bool has_recent_highlights = base::Contains(
       settings.selected_album_ids, ash::kAmbientModeRecentHighlightsAlbumId);
 
-  if (has_recent_highlights && settings.selected_album_ids.size() == 1)
+  if (has_recent_highlights && settings.selected_album_ids.size() == 1) {
     return AmbientModePhotoSource::kGooglePhotosRecentHighlights;
+  }
 
-  if (has_recent_highlights && settings.selected_album_ids.size() > 1)
+  if (has_recent_highlights && settings.selected_album_ids.size() > 1) {
     return AmbientModePhotoSource::kGooglePhotosBoth;
+  }
 
   return AmbientModePhotoSource::kGooglePhotosPersonalAlbum;
 }

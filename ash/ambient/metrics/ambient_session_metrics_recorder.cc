@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
+#include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/shell.h"
 #include "base/check.h"

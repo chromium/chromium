@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_AMBIENT_AMBIENT_METRICS_H_
-#define ASH_PUBLIC_CPP_AMBIENT_AMBIENT_METRICS_H_
+#ifndef ASH_AMBIENT_METRICS_AMBIENT_METRICS_H_
+#define ASH_AMBIENT_METRICS_AMBIENT_METRICS_H_
 
+#include "ash/ash_export.h"
 #include "ash/constants/ambient_theme.h"
-#include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -22,50 +23,36 @@ enum class AmbientUiMode;
 
 namespace ambient {
 
-// These values are persisted in UMA logs, so they should never be renumbered or
-// reused. Used for reporting the histogram |Ash.AmbientMode.PhotoSource|.
-enum class ASH_PUBLIC_EXPORT AmbientModePhotoSource {
-  kUnset = 0,
-  kArtGallery = 1,
-  kGooglePhotosRecentHighlights = 2,
-  kGooglePhotosPersonalAlbum = 3,
-  kGooglePhotosBoth = 4,
-  kGooglePhotosEmpty = 5,
-  kMaxValue = kGooglePhotosEmpty,
-};
-
 // Duration after which ambient mode is considered to have failed to start.
 // See summary in histograms.xml for why 15 seconds is used.
 constexpr base::TimeDelta kMetricsStartupTimeMax = base::Seconds(15);
 
-ASH_PUBLIC_EXPORT AmbientModePhotoSource
+ASH_EXPORT AmbientModePhotoSource
 AmbientSettingsToPhotoSource(const AmbientSettings& settings);
 
-ASH_PUBLIC_EXPORT void RecordAmbientModeActivation(AmbientUiMode ui_mode,
-                                                   bool tablet_mode);
+ASH_EXPORT void RecordAmbientModeActivation(AmbientUiMode ui_mode,
+                                            bool tablet_mode);
 
-ASH_PUBLIC_EXPORT void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
-                                                    bool tablet_mode,
-                                                    AmbientTheme theme);
+ASH_EXPORT void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
+                                             bool tablet_mode,
+                                             AmbientTheme theme);
 
-ASH_PUBLIC_EXPORT void RecordAmbientModeTotalNumberOfAlbums(int num_albums);
+ASH_EXPORT void RecordAmbientModeTotalNumberOfAlbums(int num_albums);
 
-ASH_PUBLIC_EXPORT void RecordAmbientModeSelectedNumberOfAlbums(int num_albums);
+ASH_EXPORT void RecordAmbientModeSelectedNumberOfAlbums(int num_albums);
 
-ASH_PUBLIC_EXPORT void RecordAmbientModeAnimationSmoothness(int smoothness,
-                                                            AmbientTheme theme);
+ASH_EXPORT void RecordAmbientModeAnimationSmoothness(int smoothness,
+                                                     AmbientTheme theme);
 
-ASH_PUBLIC_EXPORT void RecordAmbientModePhotoOrientationMatch(
-    int percentage_match,
-    AmbientTheme theme);
+ASH_EXPORT void RecordAmbientModePhotoOrientationMatch(int percentage_match,
+                                                       AmbientTheme theme);
 
-ASH_PUBLIC_EXPORT void RecordAmbientModeStartupTime(
-    base::TimeDelta startup_time,
-    AmbientTheme theme);
+ASH_EXPORT void RecordAmbientModeStartupTime(base::TimeDelta startup_time,
+                                             AmbientTheme theme);
 
 // Records metrics that track the total usage of each orientation in ambient
 // mode.
-class ASH_PUBLIC_EXPORT AmbientOrientationMetricsRecorder
+class ASH_EXPORT AmbientOrientationMetricsRecorder
     : public views::ViewObserver {
  public:
   AmbientOrientationMetricsRecorder(views::View* root_rendering_view,
@@ -94,4 +81,4 @@ class ASH_PUBLIC_EXPORT AmbientOrientationMetricsRecorder
 }  // namespace ambient
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_AMBIENT_AMBIENT_METRICS_H_
+#endif  // ASH_AMBIENT_METRICS_AMBIENT_METRICS_H_
