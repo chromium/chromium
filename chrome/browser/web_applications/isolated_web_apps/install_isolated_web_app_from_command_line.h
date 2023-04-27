@@ -18,6 +18,7 @@
 
 namespace base {
 class CommandLine;
+enum class TaskPriority : uint8_t;
 }
 
 class Profile;
@@ -31,6 +32,8 @@ void GetIsolatedWebAppLocationFromCommandLine(
     base::OnceCallback<void(
         base::expected<absl::optional<IsolatedWebAppLocation>, std::string>)>
         callback);
+
+bool HasIwaInstallSwitch(const base::CommandLine& command_line);
 
 // This class manages installation of Isolated Web Apps triggered by command
 // line switches (`switches::kInstallIsolatedWebAppFromUrl` and
@@ -63,7 +66,8 @@ class IsolatedWebAppCommandLineInstallManager {
   void InstallFromCommandLine(
       const base::CommandLine& command_line,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive);
+      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+      base::TaskPriority task_priority);
 
   void OnReportInstallationResultForTesting(
       base::RepeatingCallback<void(

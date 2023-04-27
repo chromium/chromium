@@ -138,6 +138,10 @@
 #include "components/headless/policy/headless_mode_policy.h"
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
+#endif
+
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
 
@@ -1115,7 +1119,26 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
       // desired.
     }
   }
-#endif
+
+  if (web_app::HasIwaInstallSwitch(command_line)) {
+    if (profile_info.mode == StartupProfileMode::kProfilePicker) {
+      auto* profile_manager = g_browser_process->profile_manager();
+      LOG(ERROR) << "Command line switches to install IWAs are incompatible "
+                    "with the Profile Picker. If you have multiple profiles, "
+                    "consider using the --"
+                 << switches::kProfileDirectory
+                 << " switch to select a profile (it accepts the name of a "
+                    "profile directory in "
+                 << profile_manager->user_data_dir() << ", such as '"
+                 << profile_manager->GetLastUsedProfileDir().BaseName()
+                 << "').";
+      return false;
+    } else {
+      web_app::MaybeInstallIwaFromCommandLine(command_line,
+                                              *privacy_safe_profile);
+    }
+  }
+#endif  //  !BUILDFLAG(IS_CHROMEOS)
 
   // If --no-startup-window is specified then do not open a new window.
   if (command_line.HasSwitch(switches::kNoStartupWindow)) {

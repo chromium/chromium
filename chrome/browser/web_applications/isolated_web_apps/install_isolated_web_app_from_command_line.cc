@@ -41,11 +41,6 @@ namespace web_app {
 
 namespace {
 
-bool HasIwaInstallSwitch(const base::CommandLine& command_line) {
-  return command_line.HasSwitch(switches::kInstallIsolatedWebAppFromUrl) ||
-         command_line.HasSwitch(switches::kInstallIsolatedWebAppFromFile);
-}
-
 using MaybeIwaLocation =
     base::expected<absl::optional<IsolatedWebAppLocation>, std::string>;
 
@@ -135,6 +130,11 @@ MaybeIwaLocation GetProxyUrlFromCommandLine(
 
 }  // namespace
 
+bool HasIwaInstallSwitch(const base::CommandLine& command_line) {
+  return command_line.HasSwitch(switches::kInstallIsolatedWebAppFromUrl) ||
+         command_line.HasSwitch(switches::kInstallIsolatedWebAppFromFile);
+}
+
 void GetIsolatedWebAppLocationFromCommandLine(
     const base::CommandLine& command_line,
     base::OnceCallback<void(MaybeIwaLocation)> callback) {
@@ -179,7 +179,8 @@ void IsolatedWebAppCommandLineInstallManager::Start() {
   }
 
   InstallFromCommandLine(command_line, std::move(keep_alive),
-                         std::move(optional_profile_keep_alive));
+                         std::move(optional_profile_keep_alive),
+                         base::TaskPriority::BEST_EFFORT);
 #endif
 }
 
@@ -192,14 +193,14 @@ void IsolatedWebAppCommandLineInstallManager::Shutdown() {
 void IsolatedWebAppCommandLineInstallManager::InstallFromCommandLine(
     const base::CommandLine& command_line,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
-    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive) {
+    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+    base::TaskPriority task_priority) {
   CHECK(keep_alive);
 
   if (!HasIwaInstallSwitch(command_line)) {
     return;
   }
-
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+  content::GetUIThreadTaskRunner({task_priority})
       ->PostTask(FROM_HERE,
                  base::BindOnce(
                      &GetIsolatedWebAppLocationFromCommandLine, command_line,
@@ -321,7 +322,13 @@ void MaybeInstallIwaFromCommandLine(const base::CommandLine& command_line,
                  optional_profile_keep_alive) {
             provider.iwa_command_line_install_manager().InstallFromCommandLine(
                 command_line, std::move(keep_alive),
-                std::move(optional_profile_keep_alive));
+                std::move(optional_profile_keep_alive),
+                // Use higher task priority here since the user may be actively
+                // waiting for the installation to finish. Also, using
+                // `base::TaskPriority::BEST_EFFORT` will not work if the
+                // installation is triggered in combination with
+                // `--no-startup-window`.
+                base::TaskPriority::USER_VISIBLE);
           },
           std::ref(*provider), command_line, std::move(keep_alive),
           std::move(optional_profile_keep_alive)));

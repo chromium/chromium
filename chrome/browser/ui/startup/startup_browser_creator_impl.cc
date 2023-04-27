@@ -103,10 +103,6 @@
 #include "chromeos/startup/browser_params_proxy.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
-#endif
-
 namespace {
 
 // Utility functions ----------------------------------------------------------
@@ -210,10 +206,6 @@ void StartupBrowserCreatorImpl::Launch(
     install_chrome_app::InstallChromeApp(
         command_line_->GetSwitchValueASCII(switches::kInstallChromeApp));
   }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  web_app::MaybeInstallIwaFromCommandLine(*command_line_, *profile);
-#endif
 
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
   if (process_startup == chrome::startup::IsProcessStartup::kYes) {

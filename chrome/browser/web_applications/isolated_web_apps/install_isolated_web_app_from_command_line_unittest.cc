@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/task/task_traits.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -199,7 +200,8 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
       KeepAliveRestartOption::DISABLED);
   manager.InstallFromCommandLine(
       CreateCommandLine("http://example.com:12345", absl::nullopt),
-      std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr);
+      std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
+      base::TaskPriority::USER_VISIBLE);
   auto error = future.Take();
   ASSERT_THAT(!error.has_value(), testing::IsTrue());
   EXPECT_THAT(error.error(),
@@ -225,7 +227,8 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
       KeepAliveRestartOption::DISABLED);
   manager.InstallFromCommandLine(
       CreateCommandLine("http://example.com:12345", absl::nullopt),
-      std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr);
+      std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
+      base::TaskPriority::USER_VISIBLE);
   auto error = future.Take();
   ASSERT_THAT(!error.has_value(), testing::IsTrue());
   EXPECT_THAT(
@@ -253,7 +256,8 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
       KeepAliveRestartOption::DISABLED);
   manager.InstallFromCommandLine(
       CreateCommandLine("http://example.com:12345", absl::nullopt),
-      std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr);
+      std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
+      base::TaskPriority::USER_VISIBLE);
   auto error = future.Take();
   ASSERT_THAT(!error.has_value(), testing::IsTrue());
   EXPECT_THAT(
