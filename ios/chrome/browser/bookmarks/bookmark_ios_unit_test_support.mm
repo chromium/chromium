@@ -7,8 +7,10 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
+#import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -22,8 +24,8 @@
 
 using bookmarks::BookmarkNode;
 
-BookmarkIOSUnitTestSupport::BookmarkIOSUnitTestSupport() {}
-BookmarkIOSUnitTestSupport::~BookmarkIOSUnitTestSupport() {}
+BookmarkIOSUnitTestSupport::BookmarkIOSUnitTestSupport() = default;
+BookmarkIOSUnitTestSupport::~BookmarkIOSUnitTestSupport() = default;
 
 void BookmarkIOSUnitTestSupport::SetUp() {
   // Get a BookmarkModel from the test ChromeBrowserState.
@@ -34,6 +36,9 @@ void BookmarkIOSUnitTestSupport::SetUp() {
   test_cbs_builder.AddTestingFactory(
       ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
       ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
+  test_cbs_builder.AddTestingFactory(
+      ios::AccountBookmarkModelFactory::GetInstance(),
+      ios::AccountBookmarkModelFactory::GetDefaultFactory());
   test_cbs_builder.AddTestingFactory(
       ManagedBookmarkServiceFactory::GetInstance(),
       ManagedBookmarkServiceFactory::GetDefaultFactory());
@@ -47,29 +52,45 @@ void BookmarkIOSUnitTestSupport::SetUp() {
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           chrome_browser_state_.get());
   bookmarks::test::WaitForBookmarkModelToLoad(profile_bookmark_model_);
+  account_bookmark_model_ =
+      ios::AccountBookmarkModelFactory::GetForBrowserState(
+          chrome_browser_state_.get());
+  if (account_bookmark_model_) {
+    bookmarks::test::WaitForBookmarkModelToLoad(account_bookmark_model_);
+  }
   browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 }
 
 const BookmarkNode* BookmarkIOSUnitTestSupport::AddBookmark(
     const BookmarkNode* parent,
     NSString* title) {
+  bookmarks::BookmarkModel* model = GetBookmarkModelForNode(parent);
   std::u16string c_title = base::SysNSStringToUTF16(title);
   GURL url(base::SysNSStringToUTF16(@"http://example.com/bookmark") + c_title);
-  return profile_bookmark_model_->AddURL(parent, parent->children().size(),
-                                         c_title, url);
+  return model->AddURL(parent, parent->children().size(), c_title, url);
 }
 
 const BookmarkNode* BookmarkIOSUnitTestSupport::AddFolder(
     const BookmarkNode* parent,
     NSString* title) {
+  bookmarks::BookmarkModel* model = GetBookmarkModelForNode(parent);
   std::u16string c_title = base::SysNSStringToUTF16(title);
-  return profile_bookmark_model_->AddFolder(parent, parent->children().size(),
-                                            c_title);
+  return model->AddFolder(parent, parent->children().size(), c_title);
 }
 
 void BookmarkIOSUnitTestSupport::ChangeTitle(NSString* title,
                                              const BookmarkNode* node) {
+  bookmarks::BookmarkModel* model = GetBookmarkModelForNode(node);
   std::u16string c_title = base::SysNSStringToUTF16(title);
-  profile_bookmark_model_->SetTitle(
-      node, c_title, bookmarks::metrics::BookmarkEditSource::kUser);
+  model->SetTitle(node, c_title, bookmarks::metrics::BookmarkEditSource::kUser);
+}
+
+bookmarks::BookmarkModel* BookmarkIOSUnitTestSupport::GetBookmarkModelForNode(
+    const BookmarkNode* node) {
+  if (node->HasAncestor(profile_bookmark_model_->root_node())) {
+    return profile_bookmark_model_;
+  }
+  DCHECK(account_bookmark_model_ &&
+         node->HasAncestor(account_bookmark_model_->root_node()));
+  return account_bookmark_model_;
 }

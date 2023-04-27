@@ -74,6 +74,7 @@ source_set("test_support") {
   ]
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//ios/chrome/browser/bookmarks",

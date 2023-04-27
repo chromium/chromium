@@ -11,6 +11,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
 #import "testing/gtest_mac.h"
 
@@ -22,14 +23,23 @@ using bookmarks::BookmarkNode;
 
 namespace {
 
-class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport {
+class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport,
+                                 public testing::WithParamInterface<bool> {
  protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        bookmarks::kEnableBookmarksAccountStorage, IsAccountStorageEnabled());
+    BookmarkIOSUnitTestSupport::SetUp();
+  }
+
+  bool IsAccountStorageEnabled() const { return GetParam(); }
+
   base::Time timeFromEpoch(int days, int hours) {
     return base::Time::UnixEpoch() + base::Days(days) + base::Hours(hours);
   }
 };
 
-TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
+TEST_P(BookmarkIOSUtilsUnitTest, DeleteNodes) {
   const BookmarkNode* mobileNode = profile_bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");
   const BookmarkNode* a = AddBookmark(mobileNode, @"a");
@@ -58,7 +68,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
   EXPECT_EQ(0u, child1->children().size());
 }
 
-TEST_F(BookmarkIOSUtilsUnitTest, MoveNodes) {
+TEST_P(BookmarkIOSUtilsUnitTest, MoveNodes) {
   const BookmarkNode* mobileNode = profile_bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");
   const BookmarkNode* a = AddBookmark(mobileNode, @"a");
@@ -87,7 +97,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, MoveNodes) {
   EXPECT_EQ(0u, child1->children().size());
 }
 
-TEST_F(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
+TEST_P(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
   const BookmarkNode* mobileNode = profile_bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");
   NSArray<NSNumber*>* path =
@@ -99,13 +109,13 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
   EXPECT_TRUE([expectedPath isEqualToArray:path]);
 }
 
-TEST_F(BookmarkIOSUtilsUnitTest, TestCreateNilBookmarkPath) {
+TEST_P(BookmarkIOSUtilsUnitTest, TestCreateNilBookmarkPath) {
   NSArray<NSNumber*>* path =
       bookmark_utils_ios::CreateBookmarkPath(profile_bookmark_model_, 999);
   EXPECT_TRUE(path == nil);
 }
 
-TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
+TEST_P(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
   const BookmarkNode* mobileNode = profile_bookmark_model_->mobile_node();
   const BookmarkNode* music = AddFolder(mobileNode, @"music");
 
@@ -155,7 +165,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
   EXPECT_NSEQ(base::SysUTF16ToNSString(result[12]->GetTitle()), @"buildings");
 }
 
-TEST_F(BookmarkIOSUtilsUnitTest, TestIsSubvectorOfNodes) {
+TEST_P(BookmarkIOSUtilsUnitTest, TestIsSubvectorOfNodes) {
   // Empty vectors: [] - [].
   bookmark_utils_ios::NodeVector vector1;
   bookmark_utils_ios::NodeVector vector2;
@@ -223,7 +233,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestIsSubvectorOfNodes) {
   EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
 }
 
-TEST_F(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
+TEST_P(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
   // [] - [].
   bookmark_utils_ios::NodeVector vector1;
   bookmark_utils_ios::NodeVector vector2;
@@ -282,5 +292,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
   EXPECT_EQ(2u, missingNodesIndices[0]);
   EXPECT_EQ(3u, missingNodesIndices[1]);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, BookmarkIOSUtilsUnitTest, ::testing::Bool());
 
 }  // namespace

@@ -25,9 +25,20 @@
 
 namespace {
 
-using BookmarksHomeViewControllerTest = BookmarkIOSUnitTestSupport;
+class BookmarksHomeViewControllerTest
+    : public BookmarkIOSUnitTestSupport,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        bookmarks::kEnableBookmarksAccountStorage, IsAccountStorageEnabled());
+    BookmarkIOSUnitTestSupport::SetUp();
+  }
 
-TEST_F(BookmarksHomeViewControllerTest,
+  bool IsAccountStorageEnabled() const { return GetParam(); }
+};
+
+TEST_P(BookmarksHomeViewControllerTest,
        TableViewPopulatedAfterBookmarkModelLoaded) {
   @autoreleasepool {
     id mockSnackbarCommandHandler =
@@ -84,10 +95,8 @@ TEST_F(BookmarksHomeViewControllerTest,
   }
 }
 
-TEST_F(BookmarksHomeViewControllerTest,
-       TableViewPopulatedAfterBookmarkModelLoadedAtRootLevelNoAccount) {
-  base::test::ScopedFeatureList scope_;
-  scope_.InitWithFeatures({}, {bookmarks::kEnableBookmarksAccountStorage});
+TEST_P(BookmarksHomeViewControllerTest,
+       TableViewPopulatedAfterBookmarkModelLoadedAtRootLevel) {
   @autoreleasepool {
     id mockSnackbarCommandHandler =
         OCMProtocolMock(@protocol(SnackbarCommands));
@@ -137,73 +146,6 @@ TEST_F(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierRootProfile]]);
-    EXPECT_EQ(0, [controller tableView:controller.tableView
-                     numberOfRowsInSection:
-                         [controller.tableViewModel
-                             sectionForSectionIdentifier:
-                                 BookmarksHomeSectionIdentifierRootAccount]]);
-    EXPECT_EQ(0, [controller tableView:controller.tableView
-                     numberOfRowsInSection:
-                         [controller.tableViewModel
-                             sectionForSectionIdentifier:
-                                 BookmarksHomeSectionIdentifierMessages]]);
-  }
-}
-
-TEST_F(BookmarksHomeViewControllerTest,
-       TableViewPopulatedAfterBookmarkModelLoadedAtRootLevelWithAccount) {
-  base::test::ScopedFeatureList scope_;
-  scope_.InitWithFeatures({bookmarks::kEnableBookmarksAccountStorage}, {});
-  @autoreleasepool {
-    id mockSnackbarCommandHandler =
-        OCMProtocolMock(@protocol(SnackbarCommands));
-
-    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
-    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
-    // as well.
-    id mockApplicationCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationCommands));
-    id mockApplicationSettingsCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
-
-    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
-                             forProtocol:@protocol(SnackbarCommands)];
-    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
-                             forProtocol:@protocol(ApplicationCommands)];
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsCommandHandler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
-
-    BookmarksHomeViewController* controller =
-        [[BookmarksHomeViewController alloc] initWithBrowser:browser_.get()];
-    controller.applicationCommandsHandler = mockApplicationCommandHandler;
-    controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
-
-    const bookmarks::BookmarkNode* rootNode =
-        profile_bookmark_model_->root_node();
-    const bookmarks::BookmarkNode* mobileNode =
-        profile_bookmark_model_->mobile_node();
-    AddBookmark(mobileNode, @"foo");  // Ensure there are bookmarks
-    controller.displayedFolderNode = rootNode;
-    // sections: Promo, Bookmarks, root profile, root account, message.
-    EXPECT_EQ(5, [controller numberOfSectionsInTableView:controller.tableView]);
-    EXPECT_EQ(1, [controller tableView:controller.tableView
-                     numberOfRowsInSection:
-                         [controller.tableViewModel
-                             sectionForSectionIdentifier:
-                                 BookmarksHomeSectionIdentifierPromo]]);
-    EXPECT_EQ(0, [controller tableView:controller.tableView
-                     numberOfRowsInSection:
-                         [controller.tableViewModel
-                             sectionForSectionIdentifier:
-                                 BookmarksHomeSectionIdentifierBookmarks]]);
-    EXPECT_EQ(1, [controller tableView:controller.tableView
-                     numberOfRowsInSection:
-                         [controller.tableViewModel
-                             sectionForSectionIdentifier:
-                                 BookmarksHomeSectionIdentifierRootProfile]]);
-    // The user is signed out, account storage section should not be visible.
     EXPECT_EQ(0, [controller tableView:controller.tableView
                      numberOfRowsInSection:
                          [controller.tableViewModel
@@ -218,7 +160,7 @@ TEST_F(BookmarksHomeViewControllerTest,
 }
 
 // Checks that metrics are correctly reported.
-TEST_F(BookmarksHomeViewControllerTest, Metrics) {
+TEST_P(BookmarksHomeViewControllerTest, Metrics) {
   @autoreleasepool {
     id mockSnackbarCommandHandler =
         OCMProtocolMock(@protocol(SnackbarCommands));
@@ -255,5 +197,9 @@ TEST_F(BookmarksHomeViewControllerTest, Metrics) {
     EXPECT_EQ(user_action_tester.GetActionCount(user_action), 1);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BookmarksHomeViewControllerTest,
+                         ::testing::Bool());
 
 }  // namespace
