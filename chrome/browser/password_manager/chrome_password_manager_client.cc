@@ -428,7 +428,8 @@ void ChromePasswordManagerClient::ShowTouchToFill(
 
 scoped_refptr<device_reauth::DeviceAuthenticator>
 ChromePasswordManagerClient::GetDeviceAuthenticator() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
   return ChromeDeviceAuthenticatorFactory::GetDeviceAuthenticator();
 #else
   return nullptr;

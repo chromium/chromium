@@ -5522,6 +5522,10 @@ static_library("browser") {
       "certificate_provider/sign_requests.h",
       "certificate_provider/thread_safe_certificate_map.cc",
       "certificate_provider/thread_safe_certificate_map.h",
+      "device_reauth/chromeos/authenticator_chromeos.cc",
+      "device_reauth/chromeos/authenticator_chromeos.h",
+      "device_reauth/chromeos/device_authenticator_chromeos.cc",
+      "device_reauth/chromeos/device_authenticator_chromeos.h",
       "download/notification/download_item_notification.cc",
       "download/notification/download_item_notification.h",
       "download/notification/download_notification_manager.cc",
@@ -6031,7 +6035,7 @@ static_library("browser") {
     deps += [ "//chrome/browser/privacy:traffic_annotation_proto" ]
   }
 
-  if (is_android || is_mac || is_win) {
+  if (is_android || is_mac || is_win || is_chromeos) {
     sources += [
       "device_reauth/chrome_device_authenticator_common.cc",
       "device_reauth/chrome_device_authenticator_common.h",

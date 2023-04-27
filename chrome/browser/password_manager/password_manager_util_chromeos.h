@@ -17,7 +17,6 @@ namespace password_manager_util_chromeos {
 // `InSessionAuthDialogController::ShowAuthDialog` to authenticate the currently
 // active user using configured auth factors.
 void AuthenticateUser(
-    password_manager::ReauthPurpose purpose,
     password_manager::PasswordAccessAuthenticator::AuthResultCallback callback);
 
 }  // namespace password_manager_util_chromeos

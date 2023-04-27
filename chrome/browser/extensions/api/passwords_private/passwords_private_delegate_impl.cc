@@ -63,7 +63,7 @@
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif
@@ -203,16 +203,18 @@ extensions::api::passwords_private::ImportResults ConvertImportResults(
   return private_results;
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
-using password_manager::prefs::kBiometricAuthenticationBeforeFilling;
-
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
     content::WebContents* web_contents) {
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);
   return client->GetDeviceAuthenticator();
 }
+#endif
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+using password_manager::prefs::kBiometricAuthenticationBeforeFilling;
 
 void ChangeBiometricAuthenticationBeforeFillingSetting(PrefService* prefs,
                                                        bool success) {
@@ -524,8 +526,7 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
                    std::move(callback));
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::features::IsPasswordManagerSystemAuthenticationEnabled()) {
-    password_manager_util_chromeos::AuthenticateUser(purpose,
-                                                     std::move(callback));
+    AuthenticateUser(std::u16string(), std::move(callback));
   } else {
     bool result =
         IsOsReauthAllowedAsh(profile_, GetAuthTokenLifetimeForPurpose(purpose));
@@ -533,8 +534,7 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (chromeos::features::IsPasswordManagerSystemAuthenticationEnabled()) {
-    password_manager_util_chromeos::AuthenticateUser(purpose,
-                                                     std::move(callback));
+    AuthenticateUser(std::u16string(), std::move(callback));
   } else {
     IsOsReauthAllowedLacrosAsync(purpose, std::move(callback));
   }
@@ -1013,7 +1013,7 @@ void PasswordsPrivateDelegateImpl::AuthenticateUser(
     const std::u16string& message,
     password_manager::PasswordAccessAuthenticator::AuthResultCallback
         callback) {
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   NOTIMPLEMENTED();
 #else
   // Cancel any ongoing authentication attempt.

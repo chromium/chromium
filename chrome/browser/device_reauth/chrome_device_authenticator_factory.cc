@@ -14,6 +14,8 @@
 #include "chrome/browser/device_reauth/mac/device_authenticator_mac.h"
 #elif BUILDFLAG(IS_WIN)
 #include "chrome/browser/device_reauth/win/device_authenticator_win.h"
+#elif BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/device_reauth/chromeos/device_authenticator_chromeos.h"
 #endif
 
 // static
@@ -43,6 +45,10 @@ ChromeDeviceAuthenticatorFactory::GetOrCreateDeviceAuthenticator() {
 #elif BUILDFLAG(IS_WIN)
     auto biometric_authenticator = base::WrapRefCounted(
         new DeviceAuthenticatorWin(std::make_unique<AuthenticatorWin>()));
+#elif BUILDFLAG(IS_CHROMEOS)
+    auto biometric_authenticator =
+        base::WrapRefCounted(new DeviceAuthenticatorChromeOS(
+            std::make_unique<AuthenticatorChromeOS>()));
 #else
     static_assert(false);
 #endif

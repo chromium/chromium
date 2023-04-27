@@ -41,7 +41,6 @@ void OnRequestToken(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void AuthenticateUser(
-    password_manager::ReauthPurpose purpose,
     password_manager::PasswordAccessAuthenticator::AuthResultCallback
         callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
