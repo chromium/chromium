@@ -8,6 +8,7 @@ import("//ui/file_manager/base/gn/js_test_type_check.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
 visibility = [
+  "//ui/file_manager/file_manager/common/js:util",
   "//ui/file_manager/file_manager/externs/*",
   "//ui/file_manager/file_manager/foreground/*",
   "//ui/file_manager/file_manager/test/*",

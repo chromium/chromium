@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {NavigationKey, NavigationRoot, NavigationSection, NavigationType, State, Volume, VolumeId} from '../../externs/ts/state.js';
@@ -48,11 +49,13 @@ function getPrefixEntryOrEntry(state: State, volume: Volume): VolumeEntry|
  *  1. Recents.
  *  2. Shortcuts.
  *  3. "My-Files" (grouping), actually Downloads volume.
- *  4. Drive volumes.
- *  5. Other FSP (File System Provider) (when mounted).
- *  6. Other volumes (MTP, ARCHIVE, REMOVABLE).
- *  7. Android apps.
- *  8. Trash.
+ *  4. Google Drive.
+ *  5. ODFS.
+ *  6. SMBs
+ *  7. Other FSP (File System Provider) (when mounted).
+ *  8. Other volumes (MTP, ARCHIVE, REMOVABLE).
+ *  9. Android apps.
+ *  10. Trash.
  */
 export function refreshNavigationRoots(
     currentState: State, _action: RefreshNavigationRootsAction): State {
@@ -114,21 +117,25 @@ export function refreshNavigationRoots(
   });
   processedEntryKeys.add(myFilesEntry.toURL());
 
-  // 4. Drive.
+  // 4. Add Google Drive - the only Drive.
   const driveEntry =
       getEntry(currentState, driveRootEntryListKey) as EntryList | null;
   if (driveEntry) {
     roots.push({
       key: driveEntry.toURL(),
-      section: NavigationSection.CLOUD,
+      section: NavigationSection.GOOGLE_DRIVE,
       separator: true,
       type: NavigationType.DRIVE,
     });
     processedEntryKeys.add(driveEntry.toURL());
   }
 
-  // 5/6. Other volumes.
+
+  // 5/6/7/8 Other volumes.
   const volumesOrder = {
+    // ODFS is a PROVIDED volume type but is a special case to be directly below
+    // Drive.
+    // ODFS : 0
     [VolumeType.SMB]: 1,
     [VolumeType.PROVIDED]: 2,  // FSP.
     [VolumeType.DOCUMENTS_PROVIDER]: 3,
@@ -148,6 +155,13 @@ export function refreshNavigationRoots(
         volume => filteredVolumeIds!.has(volume.volumeId));
   }
 
+  function getVolumeOrder(volume: Volume) {
+    if (util.isOneDriveId(volume.providerId)) {
+      return 0;
+    }
+    return volumesOrder[volume.volumeType] ?? 999;
+  }
+
   const volumes = filteredVolumes
                       .filter((v) => {
                         return (
@@ -160,8 +174,8 @@ export function refreshNavigationRoots(
                               v.volumeType === VolumeType.MEDIA_VIEW));
                       })
                       .sort((v1, v2) => {
-                        const v1Order = volumesOrder[v1.volumeType] ?? 999;
-                        const v2Order = volumesOrder[v2.volumeType] ?? 999;
+                        const v1Order = getVolumeOrder(v1);
+                        const v2Order = getVolumeOrder(v2);
                         return v1Order - v2Order;
                       });
   let lastSection: NavigationSection|null = null;
@@ -173,8 +187,11 @@ export function refreshNavigationRoots(
     const volumeEntry = getPrefixEntryOrEntry(currentState, volume);
 
     if (volumeEntry && !processedEntryKeys.has(volumeEntry.toURL())) {
-      const section =
+      let section =
           sections.get(volume.volumeType) ?? NavigationSection.REMOVABLE;
+      if (util.isOneDriveId(volume.providerId)) {
+        section = NavigationSection.ODFS;
+      }
       const isSectionStart = section !== lastSection;
       roots.push({
         key: volumeEntry.toURL(),
@@ -187,7 +204,7 @@ export function refreshNavigationRoots(
     }
   }
 
-  // 7. Android Apps.
+  // 9. Android Apps.
   Object
       .values(
           androidApps as Record<string, chrome.fileManagerPrivate.AndroidApp>)
@@ -201,7 +218,7 @@ export function refreshNavigationRoots(
         processedEntryKeys.add(app.packageName);
       });
 
-  // 8. Trash
+  // 10. Trash
   const trashEntry =
       getEntry(currentState, trashRootKey) as FilesAppEntry | null;
   if (trashEntry) {

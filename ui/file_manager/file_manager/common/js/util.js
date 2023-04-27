@@ -15,6 +15,7 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {constants} from '../../foreground/js/constants.js';
 
 import {promisify} from './api.js';
 import {createDOMError} from './dom_utils.js';
@@ -1536,17 +1537,17 @@ class UserCanceledError extends Error {}
 util.isNullOrUndefined = (value) => value === null || value === undefined;
 
 /**
- * @param {?VolumeInfo} volumeInfo
+ * @param {string|undefined} providerId
  * @return {boolean}
  */
-util.isOneDrive = (volumeInfo) => {
+util.isOneDriveId = (providerId) => {
   if (
       // App built manually from internal git, used for the early dogfood.
-      volumeInfo?.providerId === 'ajdgmkbkgifbokednjgbmieaemeighkg' ||
+      providerId === 'ajdgmkbkgifbokednjgbmieaemeighkg' ||
       // App built manually from internal repo.
-      volumeInfo?.providerId === 'gcpjnalmmghdoadafjgomdlghfnllceo' ||
+      providerId === 'gcpjnalmmghdoadafjgomdlghfnllceo' ||
       // App from official internal repo.
-      volumeInfo?.providerId === 'gnnndjlaomemikopnjhhnoombakkkkdg') {
+      providerId === constants.ODFS_EXTENSION_ID) {
     return true;
   }
   return false;
@@ -1566,6 +1567,14 @@ util.isBulkPinningInProgress = (stage) => {
     default:
       return false;
   }
+};
+
+/**
+ * @param {?VolumeInfo} volumeInfo
+ * @return {boolean}
+ */
+util.isOneDrive = (volumeInfo) => {
+  return util.isOneDriveId(volumeInfo?.providerId);
 };
 
 export {util, UserCanceledError};

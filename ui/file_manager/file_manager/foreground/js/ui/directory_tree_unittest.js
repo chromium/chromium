@@ -482,7 +482,7 @@ export function testUpdateSubElementsFromListSections() {
   const androidAppItem = treeModel.item(2);
 
   assertEquals(NavigationSection.MY_FILES, myFilesItem.section);
-  assertEquals(NavigationSection.CLOUD, driveItem.section);
+  assertEquals(NavigationSection.GOOGLE_DRIVE, driveItem.section);
   assertEquals(NavigationSection.ANDROID_APPS, androidAppItem.section);
 
   // Populate the directory tree with the mock filesystem.
@@ -505,14 +505,14 @@ export function testUpdateSubElementsFromListSections() {
   // Drive should have section-start, because it's a new section but not the
   // first section.
   assertEquals(
-      NavigationSection.CLOUD,
+      NavigationSection.GOOGLE_DRIVE,
       directoryTree.items[1].getAttribute('section-start'));
 
   // Regenerate so it re-calculates the 'section-start' without creating the
   // DirectoryItem.
   directoryTree.updateSubElementsFromList(false);
   assertEquals(
-      NavigationSection.CLOUD,
+      NavigationSection.GOOGLE_DRIVE,
       directoryTree.items[1].getAttribute('section-start'));
 }
 

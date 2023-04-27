@@ -320,6 +320,7 @@ js_library("util") {
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/foreground/js:constants",
   ]
 
   externs_list = [

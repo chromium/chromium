@@ -266,7 +266,9 @@ export let SearchData;
  *      - MY_FILES: My Files (which includes Downloads, Crostini and Arc++ as
  *                  its children).
  *      - TRASH: trash.
- *      - CLOUD: Drive and FSPs.
+ *      - GOOGLE_DRIVE: Just Google Drive.
+ *      - ODFS: Just ODFS.
+ *      - CLOUD: All other cloud: SMBs, FSPs and Documents Providers.
  *      - ANDROID_APPS: ANDROID picker apps.
  *      - REMOVABLE: Archives, MTPs, Media Views and Removables.
  * @enum {string}
@@ -274,6 +276,8 @@ export let SearchData;
 export const NavigationSection = {
   TOP: 'top',
   MY_FILES: 'my_files',
+  GOOGLE_DRIVE: 'google_drive',
+  ODFS: 'odfs',
   CLOUD: 'cloud',
   TRASH: 'trash',
   ANDROID_APPS: 'android_apps',

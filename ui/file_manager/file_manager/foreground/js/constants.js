@@ -191,3 +191,10 @@ constants.ICON_TYPES = {
   VIDEO: 'video',
   WORD: 'word',
 };
+
+/**
+ * Extension ID for OneDrive FSP, also used as ProviderId.
+ * @const
+ * @type {string}
+ */
+constants.ODFS_EXTENSION_ID = 'gnnndjlaomemikopnjhhnoombakkkkdg';
