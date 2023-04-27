@@ -522,7 +522,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // simple cases but we really should update the whole transform tree otherwise
   // we are ignoring any parent transform node that needs updating and thus our
   // snap amount can be incorrect.
-  const gfx::PointF GetPixelSnappedScrollOffset(int scroll_node_id) const;
+  gfx::PointF GetScrollOffsetForScrollTimeline(const ScrollNode&) const;
 
   // Collects deltas for scroll changes on the impl thread that need to be
   // reported to the main thread during the main frame. As such, should only be

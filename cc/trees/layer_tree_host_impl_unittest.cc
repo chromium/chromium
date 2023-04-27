@@ -18222,8 +18222,10 @@ TEST_F(UnifiedScrollingTest, MainThreadScrollingReasonsScrollOnCompositor) {
 // tree or not. It is parameterized and used by tests below.
 void UnifiedScrollingTest::TestUncompositedScrollingState(
     bool mutates_transform_tree) {
-  TransformTree& tree = GetPropertyTrees()->transform_tree_mutable();
-  TransformNode* transform_node = tree.Node(ScrollerNode()->transform_id);
+  const ScrollTree& scroll_tree = GetPropertyTrees()->scroll_tree();
+  TransformTree& transform_tree = GetPropertyTrees()->transform_tree_mutable();
+  TransformNode* transform_node =
+      transform_tree.Node(ScrollerNode()->transform_id);
 
   // Ensure we're in a clean state to start.
   {
@@ -18233,7 +18235,7 @@ void UnifiedScrollingTest::TestUncompositedScrollingState(
     ASSERT_EQ(gfx::PointF(0, 0), transform_node->scroll_offset);
     ASSERT_FALSE(transform_node->transform_changed);
     ASSERT_FALSE(transform_node->needs_local_transform_update);
-    ASSERT_FALSE(tree.needs_update());
+    ASSERT_FALSE(transform_tree.needs_update());
   }
 
   // Start a scroll, ensure the scroll tree was updated and a commit was
@@ -18254,14 +18256,19 @@ void UnifiedScrollingTest::TestUncompositedScrollingState(
     EXPECT_TRUE(did_request_commit_);
 
     // Ensure the transform tree was updated only if expected.
-    if (mutates_transform_tree)
-      EXPECT_EQ(gfx::PointF(0, 10), transform_node->scroll_offset);
-    else
-      EXPECT_EQ(gfx::PointF(0, 0), transform_node->scroll_offset);
     EXPECT_EQ(mutates_transform_tree, transform_node->transform_changed);
     EXPECT_EQ(mutates_transform_tree,
               transform_node->needs_local_transform_update);
-    EXPECT_EQ(mutates_transform_tree, tree.needs_update());
+    EXPECT_EQ(mutates_transform_tree, transform_tree.needs_update());
+    if (mutates_transform_tree) {
+      EXPECT_EQ(gfx::PointF(0, 10), transform_node->scroll_offset);
+      EXPECT_EQ(gfx::PointF(0, 10),
+                scroll_tree.GetScrollOffsetForScrollTimeline(*ScrollerNode()));
+    } else {
+      EXPECT_EQ(gfx::PointF(0, 0), transform_node->scroll_offset);
+      EXPECT_EQ(gfx::PointF(0, 0),
+                scroll_tree.GetScrollOffsetForScrollTimeline(*ScrollerNode()));
+    }
   }
 
   // Perform animated scroll update. Ensure the same things.
@@ -18280,14 +18287,19 @@ void UnifiedScrollingTest::TestUncompositedScrollingState(
     ASSERT_EQ(gfx::PointF(0, 20), ScrollerOffset());
     EXPECT_TRUE(did_request_commit_);
 
-    if (mutates_transform_tree)
-      EXPECT_EQ(gfx::PointF(0, 20), transform_node->scroll_offset);
-    else
-      EXPECT_EQ(gfx::PointF(0, 0), transform_node->scroll_offset);
     EXPECT_EQ(mutates_transform_tree, transform_node->transform_changed);
     EXPECT_EQ(mutates_transform_tree,
               transform_node->needs_local_transform_update);
-    EXPECT_EQ(mutates_transform_tree, tree.needs_update());
+    EXPECT_EQ(mutates_transform_tree, transform_tree.needs_update());
+    if (mutates_transform_tree) {
+      EXPECT_EQ(gfx::PointF(0, 20), transform_node->scroll_offset);
+      EXPECT_EQ(gfx::PointF(0, 20),
+                scroll_tree.GetScrollOffsetForScrollTimeline(*ScrollerNode()));
+    } else {
+      EXPECT_EQ(gfx::PointF(0, 0), transform_node->scroll_offset);
+      EXPECT_EQ(gfx::PointF(0, 0),
+                scroll_tree.GetScrollOffsetForScrollTimeline(*ScrollerNode()));
+    }
   }
 }
 

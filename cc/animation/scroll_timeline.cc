@@ -91,7 +91,8 @@ absl::optional<base::TimeTicks> ScrollTimeline::CurrentTime(
   const ScrollNode* scroll_node =
       scroll_tree.FindNodeFromElementId(scroller_id);
 
-  gfx::PointF offset = scroll_tree.GetPixelSnappedScrollOffset(scroll_node->id);
+  gfx::PointF offset =
+      scroll_tree.GetScrollOffsetForScrollTimeline(*scroll_node);
   DCHECK_GE(offset.x(), 0);
   DCHECK_GE(offset.y(), 0);
 
