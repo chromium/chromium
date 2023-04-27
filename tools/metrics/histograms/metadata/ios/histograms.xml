@@ -2347,6 +2347,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.TabSwitcher.TimeSpentOpeningExistingTab" units="ms"
+    expires_after="2024-05-14">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>
+    The time it takes for a user to open an existing tab. If the user opens a
+    new tab or closes the tab switcher, this is not recorded.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TabSwitcher.TimeSpentScrolling" units="ms"
     expires_after="2024-05-14">
   <owner>lpromero@chromium.org</owner>
