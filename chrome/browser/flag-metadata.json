@@ -6598,7 +6598,7 @@
   {
     "name": "revamped-password-management-bubble",
     "owners": [ "mamir", "derinel@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 117
   },
   {
     "name": "revoke-notifications-permission-if-disabled-on-app-level",
