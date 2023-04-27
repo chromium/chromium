@@ -467,6 +467,9 @@ int CertVerifyProc::Verify(X509Certificate* cert,
                            const CertificateList& additional_trust_anchors,
                            CertVerifyResult* verify_result,
                            const NetLogWithSource& net_log) {
+  CHECK(cert);
+  CHECK(verify_result);
+
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC, [&] {
     return CertVerifyParams(cert, hostname, ocsp_response, sct_list, flags,
                             crl_set(), additional_trust_anchors);
@@ -485,6 +488,8 @@ int CertVerifyProc::Verify(X509Certificate* cert,
 
   int rv = VerifyInternal(cert, hostname, ocsp_response, sct_list, flags,
                           additional_trust_anchors, verify_result, net_log);
+
+  CHECK(verify_result->verified_cert);
 
   // Check for mismatched signature algorithms and unknown signature algorithms
   // in the chain. Also fills in the has_* booleans for the digest algorithms
