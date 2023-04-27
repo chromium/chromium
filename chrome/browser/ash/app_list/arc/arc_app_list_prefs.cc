@@ -2414,7 +2414,8 @@ void ArcAppListPrefs::OnInstallationStarted(
   if (prefs_->GetBoolean(ash::prefs::kRecordArcAppSyncMetrics) &&
       !(sync_service_ && sync_service_->IsPackageSyncing(*package_name)) &&
       !IsDefaultPackage(*package_name)) {
-    arc_app_metrics_util_->recordAppInstallStartTime(*package_name);
+    arc_app_metrics_util_->recordAppInstallStartTime(
+        *package_name, IsControlledByPolicy(*package_name));
   }
   for (auto& observer : observer_list_)
     observer.OnInstallationStarted(*package_name);
@@ -2442,7 +2443,8 @@ void ArcAppListPrefs::OnInstallationFinished(
         reason = InstallationCounterReasonEnum::POLICY;
       }
       UMA_HISTOGRAM_ENUMERATION("Arc.AppInstalledReason", reason);
-      arc_app_metrics_util_->maybeReportInstallTimeDelta(result->package_name);
+      arc_app_metrics_util_->maybeReportInstallTimeDelta(
+          result->package_name, IsControlledByPolicy(result->package_name));
       packages_to_be_added_.insert(result->package_name);
     }
   }

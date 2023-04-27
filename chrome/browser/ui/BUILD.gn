@@ -2036,6 +2036,8 @@ static_library("ui") {
       "../ash/app_list/arc/arc_app_list_prefs.h",
       "../ash/app_list/arc/arc_app_list_prefs_factory.cc",
       "../ash/app_list/arc/arc_app_list_prefs_factory.h",
+      "../ash/app_list/arc/arc_app_metrics_data.cc",
+      "../ash/app_list/arc/arc_app_metrics_data.h",
       "../ash/app_list/arc/arc_app_metrics_util.cc",
       "../ash/app_list/arc/arc_app_metrics_util.h",
       "../ash/app_list/arc/arc_app_scoped_pref_update.cc",
