@@ -130,10 +130,9 @@ void VEAEncoder::BitstreamBufferReady(
 void VEAEncoder::NotifyErrorStatus(const media::EncoderStatus& status) {
   DVLOG(3) << __func__;
   CHECK(!status.is_ok());
-  UMA_HISTOGRAM_ENUMERATION(
-      "Media.MediaRecorder.VEAError",
-      media::ConvertStatusToVideoEncodeAcceleratorError(status),
-      media::VideoEncodeAccelerator::kErrorMax + 1);
+  DLOG(ERROR) << "NotifyErrorStatus() is called with code="
+              << static_cast<int>(status.code())
+              << ", message=" << status.message();
   on_error_cb_.Run();
   error_notified_ = true;
 }

@@ -3622,13 +3622,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaRecorder.VEAError"
-    enum="VideoDecodeAcceleratorError" expires_after="M95">
-  <owner>mcasas@chromium.org</owner>
-  <owner>wtlee@chromium.org</owner>
-  <summary>The errors HW video encode encounters in MediaRecorder.</summary>
-</histogram>
-
 <histogram name="Media.MediaRecorder.VEAUsed" enum="MediaRecorderVEAUsed"
     expires_after="M95">
   <owner>mcasas@chromium.org</owner>
