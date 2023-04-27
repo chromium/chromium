@@ -67,13 +67,6 @@ void RichAnswersPreTargetHandler::OnMouseEvent(ui::MouseEvent* mouse_event) {
     QuickAnswersController::Get()->DismissQuickAnswers(
         quick_answers::QuickAnswersExitPoint::kUnspecified);
   }
-
-  // While the rich answers view is visible, do not pass on unhandled
-  // mouse events up the hierarchy. The rich answers view should be dismissed
-  // before allowing mouse event handling by other windows and views.
-  if (mouse_event->cancelable()) {
-    mouse_event->StopPropagation();
-  }
 }
 
 void RichAnswersPreTargetHandler::OnScrollEvent(ui::ScrollEvent* scroll_event) {

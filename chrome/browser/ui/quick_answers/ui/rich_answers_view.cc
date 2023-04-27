@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_util.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_definition_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
@@ -18,10 +19,13 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/themed_vector_icon.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -32,6 +36,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -41,14 +46,19 @@ using quick_answers::QuickAnswer;
 using quick_answers::QuickAnswerResultText;
 using quick_answers::ResultType;
 
+constexpr auto kMainViewInsets = gfx::Insets::TLBR(20, 20, 0, 20);
+
 // Buttons view.
-constexpr int kButtonsViewMarginDip = 4;
-constexpr int kButtonsSpacingDip = 4;
-constexpr int kSettingsButtonSizeDip = 14;
-constexpr int kSettingsButtonBorderDip = 3;
+constexpr auto kSettingsButtonInsets = gfx::Insets::TLBR(20, 8, 0, 20);
+constexpr int kSettingsButtonSizeDip = 20;
 
 // Border corner radius.
 constexpr int kBorderCornerRadius = 12;
+
+// Result type icons.
+constexpr int kResultTypeIconContainerRadius = 24;
+constexpr int kResultTypeIconSizeDip = 16;
+constexpr auto kResultTypeIconContainerInsets = gfx::Insets::TLBR(4, 4, 4, 4);
 
 }  // namespace
 
@@ -78,13 +88,14 @@ RichAnswersView::RichAnswersView(
     const quick_answers::QuickAnswer& result)
     : anchor_view_bounds_(anchor_view_bounds),
       controller_(std::move(controller)),
+      result_(result),
       rich_answers_view_handler_(
           std::make_unique<quick_answers::RichAnswersPreTargetHandler>(this)),
       focus_search_(std::make_unique<QuickAnswersFocusSearch>(
           this,
           base::BindRepeating(&RichAnswersView::GetFocusableViews,
                               base::Unretained(this)))) {
-  InitLayout(result);
+  InitLayout();
   InitWidget();
 
   // Focus.
@@ -120,13 +131,6 @@ void RichAnswersView::OnThemeChanged() {
   SetBackground(views::CreateRoundedRectBackground(
       GetColorProvider()->GetColor(ui::kColorPrimaryBackground),
       kBorderCornerRadius, /*for_border_thickness=*/2));
-  if (settings_button_) {
-    settings_button_->SetImage(
-        views::Button::ButtonState::STATE_NORMAL,
-        gfx::CreateVectorIcon(
-            vector_icons::kSettingsOutlineIcon, kSettingsButtonSizeDip,
-            GetColorProvider()->GetColor(ui::kColorIconSecondary)));
-  }
 }
 
 views::FocusTraversable* RichAnswersView::GetPaneFocusTraversable() {
@@ -140,7 +144,7 @@ void RichAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       l10n_util::GetStringUTF8(IDS_RICH_ANSWERS_VIEW_A11Y_NAME_TEXT));
 }
 
-void RichAnswersView::InitLayout(const quick_answers::QuickAnswer& result) {
+void RichAnswersView::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Base view Layout.
@@ -150,27 +154,38 @@ void RichAnswersView::InitLayout(const quick_answers::QuickAnswer& result) {
   base_layout->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
-  // Add util buttons in the top-right corner.
-  AddFrameButtons();
+  main_view_ = base_view_->AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+          .SetInteriorMargin(kMainViewInsets)
+          .Build());
 
-  switch (result.result_type) {
-    case quick_answers::ResultType::kDefinitionResult:
-      content_view_ = base_view_->AddChildView(
-          std::make_unique<RichAnswersDefinitionView>(result));
-      return;
-    case quick_answers::ResultType::kTranslationResult: {
-      content_view_ = base_view_->AddChildView(
-          std::make_unique<RichAnswersTranslationView>(result));
-      return;
+  switch (result_.result_type) {
+    case quick_answers::ResultType::kDefinitionResult: {
+      content_view_ = main_view_->AddChildView(
+          std::make_unique<RichAnswersDefinitionView>(result_));
+      break;
     }
-    case quick_answers::ResultType::kUnitConversionResult:
-      content_view_ = base_view_->AddChildView(
-          std::make_unique<RichAnswersUnitConversionView>(result));
-      return;
+    case quick_answers::ResultType::kTranslationResult: {
+      content_view_ = main_view_->AddChildView(
+          std::make_unique<RichAnswersTranslationView>(result_));
+      break;
+    }
+    case quick_answers::ResultType::kUnitConversionResult: {
+      content_view_ = main_view_->AddChildView(
+          std::make_unique<RichAnswersUnitConversionView>(result_));
+      break;
+    }
     default: {
-      return;
+      break;
     }
   }
+
+  AddResultTypeIcon();
+
+  // Add util buttons in the top-right corner.
+  AddFrameButtons();
 }
 
 void RichAnswersView::InitWidget() {
@@ -189,24 +204,43 @@ void RichAnswersView::InitWidget() {
   UpdateBounds();
 }
 
+void RichAnswersView::AddResultTypeIcon() {
+  // Add the icon representing the quick answers result type as well
+  // as a circle background behind the icon.
+  raw_ptr<views::FlexLayoutView> vector_icon_container =
+      main_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
+  vector_icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysPrimary, kResultTypeIconContainerRadius));
+  vector_icon_container->SetBorder(
+      views::CreateEmptyBorder(kResultTypeIconContainerInsets));
+
+  vector_icon_ =
+      vector_icon_container->AddChildView(std::make_unique<views::ImageView>());
+  vector_icon_->SetImage(
+      ui::ImageModel::FromVectorIcon(GetResultTypeIcon(result_.result_type),
+                                     cros_tokens::kCrosSysSystemBaseElevated,
+                                     /*icon_size=*/kResultTypeIconSizeDip));
+}
+
 void RichAnswersView::AddFrameButtons() {
-  auto* buttons_view = AddChildView(std::make_unique<views::View>());
-  auto* layout =
-      buttons_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-      .SetInteriorMargin(gfx::Insets(kButtonsViewMarginDip))
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets::TLBR(0, kButtonsSpacingDip, 0, 0));
+  auto* buttons_view =
+      AddChildView(views::Builder<views::FlexLayoutView>()
+                       .SetOrientation(views::LayoutOrientation::kHorizontal)
+                       .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+                       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+                       .SetInteriorMargin(kSettingsButtonInsets)
+                       .Build());
 
   settings_button_ = buttons_view->AddChildView(
       std::make_unique<views::ImageButton>(base::BindRepeating(
           &QuickAnswersUiController::OnSettingsButtonPressed, controller_)));
+  settings_button_->SetImageModel(
+      views::Button::ButtonState::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineIcon,
+                                     cros_tokens::kColorPrimary,
+                                     /*icon_size=*/kSettingsButtonSizeDip));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
-  settings_button_->SetBorder(
-      views::CreateEmptyBorder(kSettingsButtonBorderDip));
 }
 
 void RichAnswersView::UpdateBounds() {

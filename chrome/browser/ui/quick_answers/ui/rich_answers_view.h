@@ -12,11 +12,13 @@
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
 #include "ui/events/event_handler.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 namespace views {
 class ImageButton;
+class ImageView;
 }  // namespace views
 
 class QuickAnswersUiController;
@@ -48,8 +50,9 @@ class RichAnswersView : public views::View {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  void InitLayout(const quick_answers::QuickAnswer& result);
+  void InitLayout();
   void InitWidget();
+  void AddResultTypeIcon();
   void AddFrameButtons();
   void UpdateBounds();
 
@@ -61,9 +64,13 @@ class RichAnswersView : public views::View {
 
   base::WeakPtr<QuickAnswersUiController> controller_;
 
+  const quick_answers::QuickAnswer& result_;
+
   raw_ptr<views::View> base_view_ = nullptr;
+  raw_ptr<views::View> main_view_ = nullptr;
   raw_ptr<views::View> content_view_ = nullptr;
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
+  raw_ptr<views::ImageView> vector_icon_ = nullptr;
 
   std::unique_ptr<quick_answers::RichAnswersPreTargetHandler>
       rich_answers_view_handler_;
