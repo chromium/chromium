@@ -123,6 +123,11 @@ struct EntryStatus {
   // May be empty if the entry has not been fully processed yet.
   absl::optional<base::File::Error> error;
 
+  // Type of security error that occurred, if any. Empty otherwise.
+  // Can be set only if Data Leak Prevention or Enterprise Connectors policies
+  // apply.
+  absl::optional<SecurityErrorType> security_error;
+
   // True if entry is a directory when its metadata is processed.
   bool is_directory = false;
 };
@@ -145,6 +150,13 @@ class ProgressStatus {
 
   // True if the task is in a terminal state and won't receive further updates.
   bool IsCompleted() const;
+
+  // True if the task is paused due to a data protection policy warning.
+  bool HasWarning() const;
+
+  // True if the task completed with security errors due to Data Leak Prevention
+  // or Enterprise Connectors policies.
+  bool HasSecurityError() const;
 
   // Returns a default method for obtaining the source name.
   std::string GetSourceName(Profile* profile) const;

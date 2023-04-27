@@ -41,6 +41,14 @@ bool ProgressStatus::IsCompleted() const {
          state == State::kCancelled;
 }
 
+bool ProgressStatus::HasWarning() const {
+  return state == State::kWarning;
+}
+
+bool ProgressStatus::HasSecurityError() const {
+  return security_error.has_value();
+}
+
 std::string ProgressStatus::GetSourceName(Profile* profile) const {
   if (!source_name.empty()) {
     return source_name;
