@@ -2510,9 +2510,6 @@ extern const char kUpdateMenuTypeNone[];
 extern const char kUpdateMenuTypeUpdateAvailable[];
 extern const char kUpdateMenuTypeUnsupportedOSVersion[];
 
-extern const char kUseRealColorSpaceForAndroidVideoName[];
-extern const char kUseRealColorSpaceForAndroidVideoDescription[];
-
 extern const char kUseToastManagerName[];
 extern const char kUseToastManagerDescription[];
 

@@ -4358,11 +4358,6 @@ const char kOmahaMinSdkVersionAndroidMinSdk1Description[] = "Minimum SDK = 1";
 const char kOmahaMinSdkVersionAndroidMinSdk1000Description[] =
     "Minimum SDK = 1000";
 
-const char kUseRealColorSpaceForAndroidVideoName[] =
-    "Use color space from MediaCodec";
-const char kUseRealColorSpaceForAndroidVideoDescription[] =
-    "When enabled video will use real color space instead of srgb.";
-
 const char kVideoTutorialsName[] = "Enable video tutorials";
 const char kVideoTutorialsDescription[] = "Show video tutorials in Chrome";
 

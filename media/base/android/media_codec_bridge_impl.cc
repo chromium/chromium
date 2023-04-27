@@ -302,9 +302,7 @@ MediaCodecBridgeImpl::MediaCodecBridgeImpl(
     base::RepeatingClosure on_buffers_available_cb)
     : codec_type_(codec_type),
       on_buffers_available_cb_(std::move(on_buffers_available_cb)),
-      j_bridge_(std::move(j_bridge)),
-      use_real_color_space_(base::FeatureList::IsEnabled(
-          media::kUseRealColorSpaceForAndroidVideo)) {
+      j_bridge_(std::move(j_bridge)) {
   DCHECK(!j_bridge_.is_null());
 
   if (!on_buffers_available_cb_)
@@ -369,11 +367,6 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputChannelCount(
 
 MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
     gfx::ColorSpace* color_space) {
-  if (!use_real_color_space_) {
-    *color_space = gfx::ColorSpace::CreateSRGB();
-    return MEDIA_CODEC_OK;
-  }
-
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);

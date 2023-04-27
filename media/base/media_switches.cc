@@ -1040,12 +1040,6 @@ BASE_FEATURE(kUsePooledSharedImageVideoProvider,
              "UsePooledSharedImageVideoProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Historically we hardcoded sRGB for color space. This flags controls if we
-// pass real color space to VideoFrame/SharedImages.
-BASE_FEATURE(kUseRealColorSpaceForAndroidVideo,
-             "UseRealColorSpaceForAndroidVideo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
