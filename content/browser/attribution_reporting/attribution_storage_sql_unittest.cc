@@ -97,6 +97,10 @@ struct AttributionAggregatableMetadataRecord {
       coordinator =
           ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud;
   std::vector<Contribution> contributions;
+  absl::optional<
+      proto::AttributionCommonAggregatableMetadata_SourceRegistrationTimeConfig>
+      source_registration_time_config =
+          proto::AttributionCommonAggregatableMetadata::INCLUDE;
 };
 
 struct AttributionNullAggregatableMetadataRecord {
@@ -104,6 +108,10 @@ struct AttributionNullAggregatableMetadataRecord {
       coordinator =
           ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud;
   absl::optional<int64_t> fake_source_time;
+  absl::optional<
+      proto::AttributionCommonAggregatableMetadata_SourceRegistrationTimeConfig>
+      source_registration_time_config =
+          proto::AttributionCommonAggregatableMetadata::INCLUDE;
 };
 
 std::string CreateSerializedFilterData(
@@ -165,6 +173,11 @@ std::string SerializeReportMetadata(
     }
   }
 
+  if (record.source_registration_time_config) {
+    msg.mutable_common_data()->set_source_registration_time_config(
+        *record.source_registration_time_config);
+  }
+
   std::string str;
   bool success = msg.SerializeToString(&str);
   CHECK(success);
@@ -183,6 +196,11 @@ std::string SerializeReportMetadata(
 
   if (record.fake_source_time) {
     msg.set_fake_source_time(*record.fake_source_time);
+  }
+
+  if (record.source_registration_time_config) {
+    msg.mutable_common_data()->set_source_registration_time_config(
+        *record.source_registration_time_config);
   }
 
   std::string str;
@@ -1793,6 +1811,22 @@ TEST_F(AttributionStorageSqlTest,
               },
           .valid = false,
       },
+      {
+          .desc = "missing_source_registration_time_config",
+          .record =
+              AttributionAggregatableMetadataRecord{
+                  .contributions =
+                      {
+                          AttributionAggregatableMetadataRecord::Contribution{
+                              .high_bits = 1,
+                              .low_bits = 2,
+                              .value = 3,
+                          },
+                      },
+                  .source_registration_time_config = absl::nullopt,
+              },
+          .valid = false,
+      },
   };
 
   for (auto test_case : kTestCases) {
@@ -1858,6 +1892,15 @@ TEST_F(AttributionStorageSqlTest,
               AttributionNullAggregatableMetadataRecord{
                   .coordinator = absl::nullopt,
                   .fake_source_time = 12345678900,
+              },
+          .valid = false,
+      },
+      {
+          .desc = "missing_source_registration_time_config",
+          .record =
+              AttributionNullAggregatableMetadataRecord{
+                  .fake_source_time = 12345678900,
+                  .source_registration_time_config = absl::nullopt,
               },
           .valid = false,
       },
