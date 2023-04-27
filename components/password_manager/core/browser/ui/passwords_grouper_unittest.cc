@@ -47,9 +47,11 @@ GroupedFacets GetSingleGroupForForm(PasswordForm form) {
 
 GURL GetIconUrl(const std::string& site) {
   GURL::Replacements replacements;
-  std::string query = "client=PASSWORD_MANAGER&type=FAVICON&size=32&url=" +
-                      base::EscapeQueryParamValue(site,
-                                                  /*use_plus=*/false);
+  std::string query =
+      "client=PASSWORD_MANAGER&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size="
+      "32&url=" +
+      base::EscapeQueryParamValue(site,
+                                  /*use_plus=*/false);
   replacements.SetQueryStr(query);
   return GURL("https://t1.gstatic.com/faviconV2")
       .ReplaceComponents(replacements);
