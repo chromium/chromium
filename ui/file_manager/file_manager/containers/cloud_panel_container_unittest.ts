@@ -161,3 +161,31 @@ export async function testOtherStoreUpdatesDontCauseThisContainerToUpdate(
 
   done();
 }
+
+/**
+ * Tests that when a click event is emitted, the correct subpage in settings is
+ * opened.
+ */
+export async function testWhenSettingsClickEventEmittedSettingsSubpageOpened(
+    done: () => void) {
+  // Mock the fileManagerPrivate API.
+  let pageRequested: string|null = null;
+  chrome.fileManagerPrivate.openSettingsSubpage = (page: string) => {
+    pageRequested = page;
+  };
+
+  // Dispatch an event from the cloud panel indicating the drive settings was
+  // clicked.
+  panel!.dispatchEvent(
+      new CustomEvent(XfCloudPanel.events.DRIVE_SETTINGS_CLICKED, {
+        bubbles: true,
+        composed: true,
+      }));
+
+  // Wait until the page has called the private API and assert it's the correct
+  // page.
+  await waitUntil(() => pageRequested !== null);
+  assertEquals(pageRequested, 'googleDrive');
+
+  done();
+}

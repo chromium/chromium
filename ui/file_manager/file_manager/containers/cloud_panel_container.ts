@@ -11,7 +11,7 @@
 import {util} from '../common/js/util.js';
 import {State} from '../externs/ts/state.js';
 import {getStore, Store} from '../state/store.js';
-import {XfCloudPanel} from '../widgets/xf_cloud_panel.js';
+import {CloudPanelSettingsClickEvent, XfCloudPanel} from '../widgets/xf_cloud_panel.js';
 
 export type BulkPinProgress = chrome.fileManagerPrivate.BulkPinProgress;
 export const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
@@ -43,10 +43,22 @@ export class CloudPanelContainer {
   constructor(private panel_: XfCloudPanel, private test_: boolean = false) {
     this.store_ = getStore();
     this.store_.subscribe(this);
+
+    this.panel_.addEventListener(
+        XfCloudPanel.events.DRIVE_SETTINGS_CLICKED,
+        this.onDriveSettingsClick_.bind(this));
   }
 
   get updates() {
     return this.updates_;
+  }
+
+  /**
+   * When the "Google Drive settings" button is clicked, open OS Settings to the
+   * Google Drive page.
+   */
+  private onDriveSettingsClick_(_: CloudPanelSettingsClickEvent) {
+    chrome.fileManagerPrivate.openSettingsSubpage('googleDrive');
   }
 
   onStateChanged(state: State) {
