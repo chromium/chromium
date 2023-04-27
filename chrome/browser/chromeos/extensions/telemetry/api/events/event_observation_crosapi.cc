@@ -74,6 +74,19 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
             browser_context_);
         break;
       }
+      case crosapi::mojom::internal::TelemetryEventInfo_Data::
+          TelemetryEventInfo_Tag::kSdCardEventInfo: {
+        base::Value::List args;
+        args.Append(
+            converters::ConvertStructPtr<api::os_events::SdCardEventInfo>(
+                std::move(info->get_sd_card_event_info()))
+                .ToValue());
+        event = std::make_unique<extensions::Event>(
+            extensions::events::OS_EVENTS_ON_SD_CARD_EVENT,
+            api::os_events::OnSdCardEvent::kEventName, std::move(args),
+            browser_context_);
+        break;
+      }
     }
 
     extensions::EventRouter::Get(browser_context_)

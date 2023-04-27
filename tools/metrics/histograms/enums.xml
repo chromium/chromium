@@ -34041,6 +34041,7 @@ Called by update_extension_histograms.py.-->
   <int value="511" label="FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS"/>
   <int value="512" label="OS_EVENTS_ON_LID_EVENT"/>
   <int value="513" label="OS_EVENTS_ON_USB_EVENT"/>
+  <int value="514" label="OS_EVENTS_ON_SD_CARD_EVENT"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

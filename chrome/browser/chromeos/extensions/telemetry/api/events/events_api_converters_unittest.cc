@@ -64,6 +64,19 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertUsbState) {
             api::os_events::UsbEvent::kDisconnected);
 }
 
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertSdCardState) {
+  EXPECT_EQ(
+      Convert(
+          crosapi::mojom::TelemetrySdCardEventInfo::State::kUnmappedEnumField),
+      api::os_events::SdCardEvent::kNone);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetrySdCardEventInfo::State::kAdd),
+            api::os_events::SdCardEvent::kConnected);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetrySdCardEventInfo::State::kRemove),
+            api::os_events::SdCardEvent::kDisconnected);
+}
+
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
   EXPECT_EQ(Convert(api::os_events::EventCategory::kNone),
             crosapi::mojom::TelemetryEventCategoryEnum::kUnmappedEnumField);
@@ -76,6 +89,9 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
 
   EXPECT_EQ(Convert(api::os_events::EventCategory::kUsb),
             crosapi::mojom::TelemetryEventCategoryEnum::kUsb);
+
+  EXPECT_EQ(Convert(api::os_events::EventCategory::kSdCard),
+            crosapi::mojom::TelemetryEventCategoryEnum::kSdCard);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertAudioJackEventInfo) {
@@ -120,6 +136,16 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertUsbEventInfo) {
   EXPECT_EQ(result.vid, 1);
   EXPECT_EQ(result.pid, 2);
   EXPECT_EQ(result.categories, categories);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertSdCardEventInfo) {
+  auto input = crosapi::mojom::TelemetrySdCardEventInfo::New();
+  input->state = crosapi::mojom::TelemetrySdCardEventInfo::State::kAdd;
+
+  auto result =
+      ConvertStructPtr<api::os_events::SdCardEventInfo>(std::move(input));
+
+  EXPECT_EQ(result.event, api::os_events::SdCardEvent::kConnected);
 }
 
 }  // namespace chromeos::converters

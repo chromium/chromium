@@ -8,7 +8,8 @@ namespace os.events {
     enum EventCategory {
         audio_jack,
         lid,
-        usb
+        usb,
+        sd_card
     };
 
     enum EventSupportStatus {
@@ -51,6 +52,13 @@ namespace os.events {
         disconnected
     };
 
+    enum SdCardEvent {
+        // A SD card was connected.
+        connected,
+        // A SD card was disconnected.
+        disconnected
+    };
+
     dictionary AudioJackEventInfo {
         AudioJackEvent? event;
         AudioJackDeviceType? deviceType;
@@ -73,6 +81,10 @@ namespace os.events {
         // https://www.usb.org/defined-class-codes
         DOMString[] categories;
         UsbEvent? event;
+    };
+
+    dictionary SdCardEventInfo {
+        SdCardEvent? event;
     };
 
     callback VoidCallback = void();
@@ -107,5 +119,8 @@ namespace os.events {
 
         // Informs the extension that a `Usb` event occured.
         static void onUsbEvent(UsbEventInfo event_info);
+
+        // Informs the extension that a `SD Card` event occured.
+        static void onSdCardEvent(SdCardEventInfo event_info);
     };
 };

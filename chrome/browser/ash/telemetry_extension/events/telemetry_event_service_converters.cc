@@ -31,6 +31,11 @@ crosapi::mojom::TelemetryUsbEventInfoPtr UncheckedConvertPtr(
       Convert(input->state));
 }
 
+crosapi::mojom::TelemetrySdCardEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::SdCardEventInfoPtr input) {
+  return crosapi::mojom::TelemetrySdCardEventInfo::New(Convert(input->state));
+}
+
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input) {
   switch (input->which()) {
@@ -46,6 +51,10 @@ crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
         kUsbEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewUsbEventInfo(
           ConvertStructPtr(std::move(input->get_usb_event_info())));
+    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
+        kSdCardEventInfo:
+      return crosapi::mojom::TelemetryEventInfo::NewSdCardEventInfo(
+          ConvertStructPtr(std::move(input->get_sd_card_event_info())));
     default:
       LOG(WARNING) << "Got event for unsupported category";
       return nullptr;
@@ -159,6 +168,20 @@ crosapi::mojom::TelemetryUsbEventInfo::State Convert(
   NOTREACHED();
 }
 
+crosapi::mojom::TelemetrySdCardEventInfo::State Convert(
+    cros_healthd::mojom::SdCardEventInfo::State input) {
+  switch (input) {
+    case cros_healthd::mojom::SdCardEventInfo_State::kUnmappedEnumField:
+      return crosapi::mojom::TelemetrySdCardEventInfo::State::
+          kUnmappedEnumField;
+    case cros_healthd::mojom::SdCardEventInfo_State::kAdd:
+      return crosapi::mojom::TelemetrySdCardEventInfo::State::kAdd;
+    case cros_healthd::mojom::SdCardEventInfo_State::kRemove:
+      return crosapi::mojom::TelemetrySdCardEventInfo::State::kRemove;
+  }
+  NOTREACHED();
+}
+
 crosapi::mojom::TelemetryExtensionException::Reason Convert(
     cros_healthd::mojom::Exception::Reason input) {
   switch (input) {
@@ -187,6 +210,8 @@ cros_healthd::mojom::EventCategoryEnum Convert(
       return cros_healthd::mojom::EventCategoryEnum::kLid;
     case crosapi::mojom::TelemetryEventCategoryEnum::kUsb:
       return cros_healthd::mojom::EventCategoryEnum::kUsb;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kSdCard:
+      return cros_healthd::mojom::EventCategoryEnum::kSdCard;
   }
   NOTREACHED();
 }

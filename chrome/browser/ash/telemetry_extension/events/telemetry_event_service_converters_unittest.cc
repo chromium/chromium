@@ -51,6 +51,19 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryUsbEventInfo_State) {
 }
 
 TEST(TelemetryEventServiceConvertersTest,
+     ConvertTelemetrySdCardEventInfo_State) {
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::SdCardEventInfo::State::kUnmappedEnumField),
+      crosapi::mojom::TelemetrySdCardEventInfo::State::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::SdCardEventInfo::State::kAdd),
+            crosapi::mojom::TelemetrySdCardEventInfo::State::kAdd);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::SdCardEventInfo::State::kRemove),
+            crosapi::mojom::TelemetrySdCardEventInfo::State::kRemove);
+}
+
+TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetryAudioJackEventInfo_DeviceType) {
   EXPECT_EQ(Convert(cros_healthd::mojom::AudioJackEventInfo::DeviceType::
                         kUnmappedEnumField),
@@ -110,6 +123,9 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
 
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kUsb),
             cros_healthd::mojom::EventCategoryEnum::kUsb);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kSdCard),
+            cros_healthd::mojom::EventCategoryEnum::kSdCard);
 }
 
 TEST(TelemetryEventServiceConvertersTest,
@@ -145,6 +161,15 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryUsbEventInfoPtr) {
             crosapi::mojom::TelemetryUsbEventInfo::New(
                 "test_vendor", "test_name", 1, 2, categories,
                 crosapi::mojom::TelemetryUsbEventInfo::State::kAdd));
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertTelemetrySdCardEventInfoPtr) {
+  auto input = cros_healthd::mojom::SdCardEventInfo::New();
+  input->state = cros_healthd::mojom::SdCardEventInfo::State::kAdd;
+
+  EXPECT_EQ(ConvertStructPtr(std::move(input)),
+            crosapi::mojom::TelemetrySdCardEventInfo::New(
+                crosapi::mojom::TelemetrySdCardEventInfo::State::kAdd));
 }
 
 TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryExtensionException) {

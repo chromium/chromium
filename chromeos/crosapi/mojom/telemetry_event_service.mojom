@@ -96,9 +96,28 @@ struct TelemetryUsbEventInfo {
   State state@5;
 };
 
+// SD card event info. This is emitted when a SD card is plugged in or plugged
+// out.
+//
+// NextMinVersion: 1, NextIndex: 6
+[Stable]
+struct TelemetrySdCardEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // SD card plugged in.
+    kAdd = 1,
+    // SD card plugged out.
+    kRemove = 2,
+  };
+
+  State state@0;
+};
+
 // Union of event info.
 //
-// NextMinVersion: 3, NextIndex: 4
+// NextMinVersion: 4, NextIndex: 5
 [Stable, Extensible]
 union TelemetryEventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -110,11 +129,13 @@ union TelemetryEventInfo {
   [MinVersion=1] TelemetryLidEventInfo lid_event_info@2;
   // Usb event info.
   [MinVersion=2] TelemetryUsbEventInfo usb_event_info@3;
+  // SD card event info.
+  [MinVersion=3] TelemetrySdCardEventInfo sd_card_event_info@4;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 3, NextIndex: 4
+// NextMinVersion: 4, NextIndex: 5
 [Stable, Extensible]
 enum TelemetryEventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -122,6 +143,7 @@ enum TelemetryEventCategoryEnum {
   kAudioJack = 1,
   [MinVersion=1] kLid = 2,
   [MinVersion=2] kUsb = 3,
+  [MinVersion=3] kSdCard = 4,
 };
 
 // Implemented by clients who desire events.
