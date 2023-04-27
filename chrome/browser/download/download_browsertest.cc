@@ -4820,7 +4820,11 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsingNewCsbrrTrigger,
 // use (crbug.com/1323505 is tracking Download Bubble on ChromeOS).
 #if !BUILDFLAG(IS_CHROMEOS)
 // Test that the download surface is shown by starting a download.
-IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadAndWait) {
+//
+// TODO(crbug.com/1440818): This test is flaky. Perhaps because it depends on
+// focus, in which case it should be an interactive ui test instead of a
+// browser test?
+IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_DownloadAndWait) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/downloads/a_zip_file.zip");
