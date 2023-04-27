@@ -78,6 +78,7 @@ public class TouchToFillCreditCardTest {
     private static final String CARD_NAME = "Visa";
     private static final String CARD_NUMBER = "4111111111111111";
     private static final String CARD_EXP_YEAR = "2050";
+    private static final String CARD_EXP_2_DIGIT_YEAR = "50";
     private static final String CARD_EXP_MONTH = "05";
     private static final String MASKED_NUMBER = "• • • • 1111";
     private static final String NETWORK_NAME = "visa";
@@ -158,6 +159,6 @@ public class TouchToFillCreditCardTest {
                 containsString(CARD_NUMBER.substring(CARD_NUMBER.length() - 4)));
         // Check that the expiration month and year are present in the card description
         checkThat(cardDescLayout.getText().toString(), containsString(CARD_EXP_MONTH));
-        checkThat(cardDescLayout.getText().toString(), containsString(CARD_EXP_YEAR));
+        checkThat(cardDescLayout.getText().toString(), containsString(CARD_EXP_2_DIGIT_YEAR));
     }
 }
