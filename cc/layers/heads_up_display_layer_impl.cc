@@ -427,7 +427,6 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
         mailbox_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 
     gl->BindTexture(backing->texture_target, mailbox_texture_id);
-    DCHECK(GLSupportsFormat(pool_resource.format().resource_format()));
     // We should use gl compatible format for skia SW rasterization.
     constexpr GLenum format = SK_B32_SHIFT ? GL_RGBA : GL_BGRA_EXT;
     constexpr GLenum type = GL_UNSIGNED_BYTE;

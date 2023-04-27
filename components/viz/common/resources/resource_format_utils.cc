@@ -559,19 +559,6 @@ ResourceFormat GetResourceFormat(gfx::BufferFormat format) {
   return RGBA_8888;
 }
 
-bool GLSupportsFormat(ResourceFormat format) {
-  switch (format) {
-    case BGR_565:
-    case YVU_420:
-    case YUV_420_BIPLANAR:
-    case YUVA_420_TRIPLANAR:
-    case P010:
-      return false;
-    default:
-      return true;
-  }
-}
-
 #if BUILDFLAG(ENABLE_VULKAN)
 namespace {
 VkFormat ToVkFormatInternal(ResourceFormat format) {

@@ -242,6 +242,14 @@ inline constexpr SharedImageFormat kRGBA_1010102 =
     SharedImageFormat::SinglePlane(ResourceFormat::RGBA_1010102);
 inline constexpr SharedImageFormat kBGRA_1010102 =
     SharedImageFormat::SinglePlane(ResourceFormat::BGRA_1010102);
+
+// All known singleplanar formats.
+constexpr SharedImageFormat kAll[18] = {
+    kRGBA_8888,     kRGBA_4444,    kBGRA_8888,   kALPHA_8, kLUMINANCE_8,
+    kRGB_565,       kBGR_565,      kETC1,        kR_8,     kRG_88,
+    kLUMINANCE_F16, kRGBA_F16,     kR_16,        kRG_1616, kRGBX_8888,
+    kBGRX_8888,     kRGBA_1010102, kBGRA_1010102};
+
 }  // namespace SinglePlaneFormat
 
 // Constants for legacy single-plane representations of multiplanar formats.
