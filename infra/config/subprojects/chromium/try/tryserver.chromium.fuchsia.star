@@ -59,7 +59,20 @@ try_.orchestrator_builder(
         "weetbix.enable_weetbix_exonerations": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
+    tryjob = try_.job(
+        location_filters = [
+            # Covers //fuchsia_web and //fuchsia changes, including
+            # SDK rolls.
+            ".*fuchsia.*",
+
+            # In 04/2022 - 04/2023, there was an independent failure.
+            "media/.+",
+
+            # TODO(crbug.com/1377994): When arm64 graphics are supported on
+            # emulator, fuchsia-arm64-rel tests should be tested.
+            "components/viz/viz.gni",
+        ],
+    ),
 )
 
 try_.compilator_builder(

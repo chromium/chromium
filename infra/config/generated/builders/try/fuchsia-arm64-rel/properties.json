@@ -55,6 +55,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.fuchsia",
-  "cq": "required",
+  "cq": "path-based",
   "recipe": "chromium/orchestrator"
 }
