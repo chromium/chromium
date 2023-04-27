@@ -496,7 +496,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         FeedActionDelegate actionDelegate = new FeedActionDelegateImpl(activity, snackbarManager,
                 mNewTabPageManager.getNavigationDelegate(), BookmarkModel.getForProfile(profile),
-                BrowserUiUtils.HostSurface.NEW_TAB_PAGE) {
+                BrowserUiUtils.HostSurface.NEW_TAB_PAGE, mTabModelSelector) {
             @Override
             public void openHelpPage() {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_CLICKED_LEARN_MORE);

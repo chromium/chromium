@@ -317,6 +317,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                     CreatorIntentConstants.CREATOR_ENTRY_POINT, SingleWebFeedEntryPoint.MENU);
             intent.putExtra(
                     CreatorIntentConstants.CREATOR_FOLLOWING, mChipView == mFollowingChipView);
+            intent.putExtra(CreatorIntentConstants.CREATOR_TAB_ID, mTab.getId());
             mContext.startActivity(intent);
         } catch (Exception e) {
             Log.d(TAG, "Failed to launch CreatorActivity " + e);

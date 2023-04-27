@@ -84,7 +84,7 @@ public class ExploreSurfaceCoordinator {
                 SurfaceType.START_SURFACE, embeddingSurfaceConstructedTimeNs, swipeRefreshLayout,
                 /*overScrollDisabled=*/true, parentView,
                 new ExploreSurfaceActionDelegate(
-                        snackbarManager, BookmarkModel.getForProfile(profile)),
+                        snackbarManager, BookmarkModel.getForProfile(profile), tabModelSelector),
                 HelpAndFeedbackLauncherImpl.getForProfile(profile), tabModelSelector);
 
         mFeedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
@@ -137,9 +137,10 @@ public class ExploreSurfaceCoordinator {
     }
 
     private class ExploreSurfaceActionDelegate extends FeedActionDelegateImpl {
-        ExploreSurfaceActionDelegate(SnackbarManager snackbarManager, BookmarkModel bookmarkModel) {
+        ExploreSurfaceActionDelegate(SnackbarManager snackbarManager, BookmarkModel bookmarkModel,
+                TabModelSelector tabModelSelector) {
             super(mActivity, snackbarManager, mExploreSurfaceNavigationDelegate, bookmarkModel,
-                    BrowserUiUtils.HostSurface.START_SURFACE);
+                    BrowserUiUtils.HostSurface.START_SURFACE, tabModelSelector);
         }
 
         @Override

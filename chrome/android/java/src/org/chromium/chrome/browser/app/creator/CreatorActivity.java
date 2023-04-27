@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.app.creator;
 
+import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
+
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -72,6 +74,8 @@ public class CreatorActivity extends SnackbarActivity {
                 getIntent().getBooleanExtra(CreatorIntentConstants.CREATOR_FOLLOWING, false);
         int entryPoint = getIntent().getIntExtra(
                 CreatorIntentConstants.CREATOR_ENTRY_POINT, SingleWebFeedEntryPoint.OTHER);
+        int mParentTabId =
+                getIntent().getIntExtra(CreatorIntentConstants.CREATOR_TAB_ID, INVALID_TAB_ID);
 
         mActivityTabProvider = new ActivityTabProvider();
         mLifecycleDispatcher = new ActivityLifecycleDispatcherImpl(this);
@@ -105,8 +109,8 @@ public class CreatorActivity extends SnackbarActivity {
                 new ShareDelegateImpl.ShareSheetDelegate(),
                 /* isCustomTab */ false);
         mShareDelegateSupplier.set(shareDelegate);
-        mCreatorActionDelegate =
-                new CreatorActionDelegateImpl(this, mProfile, getSnackbarManager(), coordinator);
+        mCreatorActionDelegate = new CreatorActionDelegateImpl(
+                this, mProfile, getSnackbarManager(), coordinator, mParentTabId);
 
         coordinator.queryFeedStream(mCreatorActionDelegate,
                 HelpAndFeedbackLauncherImpl.getForProfile(mProfile), mShareDelegateSupplier);

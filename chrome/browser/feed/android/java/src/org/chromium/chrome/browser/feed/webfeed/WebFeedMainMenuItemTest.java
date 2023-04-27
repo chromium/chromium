@@ -211,7 +211,7 @@ public final class WebFeedMainMenuItemTest {
         verify(mContext).startActivity(mIntentCaptor.capture());
         Intent intent = mIntentCaptor.getValue();
         assertNotNull(intent);
-        assertEquals(3, intent.getExtras().size());
+        assertEquals(4, intent.getExtras().size());
         assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_URL));
         assertNotNull(intent.getExtras().getString(CreatorIntentConstants.CREATOR_URL));
         assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_ENTRY_POINT));
@@ -219,6 +219,8 @@ public final class WebFeedMainMenuItemTest {
         assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_FOLLOWING));
         assertNotNull(
                 intent.getExtras().getBoolean(CreatorIntentConstants.CREATOR_FOLLOWING, false));
+        assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_TAB_ID));
+        assertNotNull(intent.getExtras().getInt(CreatorIntentConstants.CREATOR_TAB_ID));
     }
 
     @Test

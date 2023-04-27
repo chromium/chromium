@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.feed.signinbottomsheet.SigninBottomSheetCoord
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
@@ -36,14 +37,16 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     private final Context mActivityContext;
     private final Profile mProfile;
     private final SnackbarManager mSnackbarManager;
-    private CreatorCoordinator mCreatorCoordinator;
+    private final CreatorCoordinator mCreatorCoordinator;
+    private final int mParentID;
 
     public CreatorActionDelegateImpl(Context activityContext, Profile profile,
-            SnackbarManager snackbarManager, CreatorCoordinator creatorCoordinator) {
+            SnackbarManager snackbarManager, CreatorCoordinator creatorCoordinator, int parentId) {
         mActivityContext = activityContext;
         mProfile = profile;
         mSnackbarManager = snackbarManager;
         mCreatorCoordinator = creatorCoordinator;
+        mParentID = parentId;
     }
 
     @Override
@@ -54,7 +57,14 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                 || disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
                 || disposition == WindowOpenDisposition.OFF_THE_RECORD) {
             boolean offTheRecord = (disposition == WindowOpenDisposition.OFF_THE_RECORD);
-            new TabDelegate(offTheRecord).createNewTab(params, TabLaunchType.FROM_LINK, null);
+            if (inGroup) {
+                AsyncTabCreationParams asyncParams = new AsyncTabCreationParams(params);
+                new TabDelegate(offTheRecord)
+                        .createNewTab(asyncParams, TabLaunchType.FROM_LINK, mParentID);
+
+            } else {
+                new TabDelegate(offTheRecord).createNewTab(params, TabLaunchType.FROM_LINK, null);
+            }
             return;
         } else if (disposition == WindowOpenDisposition.CURRENT_TAB) {
             mCreatorCoordinator.requestOpenSheet(new GURL(params.getUrl()));
