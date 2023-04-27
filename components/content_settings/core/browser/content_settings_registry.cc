@@ -186,9 +186,6 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
-  // TODO(raymes): We're temporarily making midi sysex unsyncable while we roll
-  // out the kPermissionDelegation feature. We may want to make it syncable
-  // again sometime in the future. See https://crbug.com/879954 for details.
   Register(ContentSettingsType::MIDI_SYSEX, "midi-sysex", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_schemes=*/{},
            /*valid_settings=*/
