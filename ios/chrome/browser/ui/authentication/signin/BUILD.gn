@@ -45,6 +45,7 @@ source_set("signin_impl") {
   deps = [
     ":signin_headers",
     ":signin_protected",
+    ":signin_screen_provider",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",
     "//components/pref_registry",
@@ -58,14 +59,31 @@ source_set("signin_impl") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/ui/authentication/signin:signin_screen_provider",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
     "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin",
     "//ios/chrome/browser/ui/authentication/signin/forced_signin",
     "//ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication",
+    "//ios/chrome/browser/ui/authentication/signin/two_screens_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
+  ]
+}
+
+source_set("signin_screen_provider") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "signin_screen_provider.h",
+    "signin_screen_provider.mm",
+    "signin_sync_screen_provider.h",
+    "signin_sync_screen_provider.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/first_run:field_trial",
+    "//ios/chrome/browser/ui/screen:screen_provider",
+    "//ios/chrome/browser/ui/screen:screen_provider_protected",
+    "//ios/chrome/browser/ui/screen:screen_type",
   ]
 }
 
@@ -151,19 +169,4 @@ source_set("eg2_tests") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("signin_screen_provider") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "signin_screen_provider.h",
-    "signin_screen_provider.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/ui/first_run:field_trial",
-    "//ios/chrome/browser/ui/screen:screen_provider",
-    "//ios/chrome/browser/ui/screen:screen_provider_protected",
-    "//ios/chrome/browser/ui/screen:screen_type",
-  ]
 }

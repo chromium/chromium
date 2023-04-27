@@ -10,18 +10,6 @@
 // Logs metrics for Chrome first-run operations.
 @interface FirstRunSigninLogger : UserSigninLogger
 
-- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
-                        promoAction:(signin_metrics::PromoAction)promoAction
-              accountManagerService:
-                  (ChromeAccountManagerService*)accountManagerService
-    NS_UNAVAILABLE;
-
-// The designated initializer.
-- (instancetype)initWithPromoAction:(signin_metrics::PromoAction)promoAction
-              accountManagerService:
-                  (ChromeAccountManagerService*)accountManagerService
-    NS_DESIGNATED_INITIALIZER;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_USER_SIGNIN_LOGGING_FIRST_RUN_SIGNIN_LOGGER_H_

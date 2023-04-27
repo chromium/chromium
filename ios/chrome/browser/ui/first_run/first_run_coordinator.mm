@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -130,12 +131,16 @@
       return [[SigninScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
-                            showFREConsent:YES
-                                  delegate:self];
+                                  delegate:self
+                               accessPoint:signin_metrics::AccessPoint::
+                                               ACCESS_POINT_START_PAGE
+                               promoAction:signin_metrics::PromoAction::
+                                               PROMO_ACTION_NO_SIGNIN_PROMO];
     case kTangibleSync:
       return [[TangibleSyncScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
+                                  firstRun:YES
                                   delegate:self];
     case kDefaultBrowserPromo:
       return [[DefaultBrowserScreenCoordinator alloc]

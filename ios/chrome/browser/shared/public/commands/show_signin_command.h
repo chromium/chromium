@@ -29,6 +29,11 @@ typedef NS_ENUM(NSInteger, AuthenticationOperation) {
   // Operation to start a forced sign-in operation. The user is presented with
   // the sign-in page with information about the policy and cannot dimiss it.
   AuthenticationOperationForcedSigninAndSync,
+  // Operation to start a sign-in and sync operation. The user is presented with
+  // the sign-in page with the user consent. The views are the newer FRE style
+  // views with the first being a screen that asks the user if they want to
+  // sign in and the second being the "tangible sync" screen.
+  AuthenticationOperationSigninAndSyncWithTwoScreens,
 };
 
 // A command to perform a sign in operation.

@@ -41,8 +41,6 @@
                                        TOSCommands,
                                        UMACoordinatorDelegate>
 
-// Show FRE consent.
-@property(nonatomic, assign) BOOL showFREConsent;
 // First run screen delegate.
 @property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
 // Sign-in screen view controller.
@@ -66,24 +64,29 @@
 
 @end
 
-@implementation SigninScreenCoordinator
+@implementation SigninScreenCoordinator {
+  signin_metrics::AccessPoint _accessPoint;
+  signin_metrics::PromoAction _promoAction;
+}
 
 @synthesize baseNavigationController = _baseNavigationController;
 
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-                                  showFREConsent:(BOOL)showFREConsent
-                                        delegate:(id<FirstRunScreenDelegate>)
-                                                     delegate {
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                            delegate:(id<FirstRunScreenDelegate>)delegate
+                         accessPoint:(signin_metrics::AccessPoint)accessPoint
+                         promoAction:(signin_metrics::PromoAction)promoAction {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
     _baseNavigationController = navigationController;
-    _showFREConsent = showFREConsent;
     _delegate = delegate;
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
+    _accessPoint = accessPoint;
+    _promoAction = promoAction;
   }
   return self;
 }
@@ -118,7 +121,8 @@
                    localPrefService:localPrefService
                         prefService:prefService
                         syncService:syncService
-                     showFREConsent:self.showFREConsent];
+                        accessPoint:_accessPoint
+                        promoAction:_promoAction];
   self.mediator.consumer = self.viewController;
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ self.viewController ]

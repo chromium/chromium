@@ -21,9 +21,10 @@
 
 // Initiates a TangibleSyncCoordinator with `navigationController`,
 // `browser` and `delegate`.
-- (instancetype)initFirstRunWithBaseNavigationController:
+- (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                                 browser:(Browser*)browser
+                                         browser:(Browser*)browser
+                                        firstRun:(BOOL)firstRun
     NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -1688,6 +1688,14 @@ void InjectNTP(Browser* browser) {
           forcedSigninCoordinatorWithBaseViewController:baseViewController
                                                 browser:mainBrowser];
       break;
+    case AuthenticationOperationSigninAndSyncWithTwoScreens:
+      self.signinCoordinator = [SigninCoordinator
+          twoScreensSigninCoordinatorWithBaseViewController:baseViewController
+                                                    browser:mainBrowser
+                                                accessPoint:command.accessPoint
+                                                promoAction:command
+                                                                .promoAction];
+      break;
   }
   [self startSigninCoordinatorWithCompletion:command.callback];
 }

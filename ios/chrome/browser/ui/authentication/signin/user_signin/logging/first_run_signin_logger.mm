@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/first_run/first_run_metrics.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -19,21 +22,14 @@
 
 #pragma mark - Public
 
-- (instancetype)initWithPromoAction:(signin_metrics::PromoAction)promoAction
-              accountManagerService:
-                  (ChromeAccountManagerService*)accountManagerService {
-  return [super
-        initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE
-                promoAction:promoAction
-      accountManagerService:accountManagerService];
-}
-
 - (void)logSigninStarted {
   if (!self.hasRecordedSigninStarted) {
     self.hasRecordedSigninStarted = YES;
     signin_metrics::LogSigninAccessPointStarted(self.accessPoint,
                                                 self.promoAction);
     signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
+    base::UmaHistogramEnumeration("FirstRun.Stage",
+                                  first_run::kWelcomeAndSigninScreenStart);
   }
 }
 

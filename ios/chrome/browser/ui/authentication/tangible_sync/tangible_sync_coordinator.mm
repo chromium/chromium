@@ -55,16 +55,17 @@
 
 @synthesize baseNavigationController = _baseNavigationController;
 
-- (instancetype)initFirstRunWithBaseNavigationController:
+- (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                                 browser:(Browser*)browser {
+                                         browser:(Browser*)browser
+                                        firstRun:(BOOL)firstRun {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
     _baseNavigationController = navigationController;
     _consentStringIDs = [NSMutableArray array];
-    _firstRun = YES;
+    _firstRun = firstRun;
   }
   return self;
 }
