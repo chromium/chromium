@@ -457,16 +457,23 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
   }
 
   auto response = std::make_unique<RTLookupResponse>();
-  bool is_rt_lookup_successful = (net_error == net::OK) &&
-                                 (response_code == net::HTTP_OK) &&
-                                 response->ParseFromString(*response_body);
+  bool is_rt_lookup_successful = false;
+  if (net_error == net::OK && response_code == net::HTTP_OK) {
+    if (response->ParseFromString(*response_body)) {
+      is_rt_lookup_successful = true;
+      backoff_operator_->ReportSuccess();
+    } else {
+      backoff_operator_->ReportError();
+    }
+  } else if (!ErrorIsRetriable(net_error, response_code)) {
+    backoff_operator_->ReportError();
+  }
+
   RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.IsLookupSuccessful",
                                     GetMetricSuffix(), is_rt_lookup_successful);
   base::UmaHistogramBoolean(
       "SafeBrowsing.RT.IsLookupSuccessful" + report_type_suffix,
       is_rt_lookup_successful);
-  is_rt_lookup_successful ? backoff_operator_->ReportSuccess()
-                          : backoff_operator_->ReportError();
 
   MayBeCacheRealTimeUrlVerdict(*response);
 

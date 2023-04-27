@@ -24,10 +24,12 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/platform_test.h"
 
 using ::testing::_;
@@ -186,9 +188,13 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
                                          expected_response_str);
   }
 
-  void SetUpFailureResponse(net::HttpStatusCode status) {
+  void SetUpFailureResponse(net::HttpStatusCode http_status,
+                            net::Error net_error = net::OK) {
     test_url_loader_factory_.ClearResponses();
-    test_url_loader_factory_.AddResponse(kRealTimeLookupUrlPrefix, "", status);
+    auto head = network::CreateURLResponseHead(http_status);
+    network::URLLoaderCompletionStatus status(net_error);
+    test_url_loader_factory_.AddResponse(GURL(kRealTimeLookupUrlPrefix),
+                                         std::move(head), "", status);
   }
 
   RealTimeUrlLookupService* rt_service() { return rt_service_.get(); }
@@ -1038,6 +1044,41 @@ TEST_F(RealTimeUrlLookupServiceTest, TestBackoffMode_UnparseableResponse) {
   perform_failing_lookup();
   EXPECT_FALSE(IsInBackoffMode());
   perform_failing_lookup();
+  EXPECT_TRUE(IsInBackoffMode());
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestRetriableErrors) {
+  EnableMbb();
+  auto perform_failing_lookup = [this](net::Error net_error) {
+    CHECK_NE(net_error, net::OK);
+    GURL url(kTestUrl);
+    SetUpFailureResponse(net::HTTP_OK, net_error);
+    base::MockCallback<RTLookupRequestCallback> request_callback;
+    base::MockCallback<RTLookupResponseCallback> response_callback;
+    rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                              request_callback.Get(), response_callback.Get(),
+                              base::SequencedTaskRunner::GetCurrentDefault());
+    EXPECT_CALL(request_callback, Run(_, _)).Times(1);
+    EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
+                                       /* is_cached_response */ false, _));
+    task_environment_.RunUntilIdle();
+  };
+
+  // Retriable errors should not trigger backoff mode.
+  perform_failing_lookup(net::ERR_INTERNET_DISCONNECTED);
+  perform_failing_lookup(net::ERR_NETWORK_CHANGED);
+  perform_failing_lookup(net::ERR_INTERNET_DISCONNECTED);
+  perform_failing_lookup(net::ERR_NETWORK_CHANGED);
+  perform_failing_lookup(net::ERR_INTERNET_DISCONNECTED);
+  perform_failing_lookup(net::ERR_NETWORK_CHANGED);
+  EXPECT_FALSE(IsInBackoffMode());
+
+  // Retriable errors should not reset the backoff counter back to 0.
+  perform_failing_lookup(net::ERR_FAILED);
+  perform_failing_lookup(net::ERR_FAILED);
+  perform_failing_lookup(net::ERR_INTERNET_DISCONNECTED);
+  EXPECT_FALSE(IsInBackoffMode());
+  perform_failing_lookup(net::ERR_FAILED);
   EXPECT_TRUE(IsInBackoffMode());
 }
 
