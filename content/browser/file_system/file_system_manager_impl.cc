@@ -244,7 +244,6 @@ void FileSystemManagerImpl::ContinueOpen(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!security_check_success) {
-    NOTREACHED();
     std::move(bad_message_callback).Run("FSMI_OPEN_INVALID_ORIGIN");
     return;
   }
