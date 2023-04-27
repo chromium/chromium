@@ -127,9 +127,9 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   // the window to leave room for the visual border that Windows draws.
   int WindowTopY() const;
 
-  // Returns the distance from the leading edge of the window to the leading
-  // edge of the caption buttons.
-  int MinimizeButtonX() const;
+  // Returns the width of the caption buttons region, including visible
+  // system-drawn and custom-drawn caption buttons.
+  int CaptionButtonsRegionWidth() const;
 
   // Returns whether or not the window should display an icon of the specified
   // |type|.

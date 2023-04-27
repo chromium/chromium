@@ -128,12 +128,10 @@ bool BrowserFrameViewWin::CaptionButtonsOnLeadingEdge() const {
 
 gfx::Rect BrowserFrameViewWin::GetBoundsForTabStripRegion(
     const gfx::Size& tabstrip_minimum_size) const {
-  const int x = CaptionButtonsOnLeadingEdge()
-                    ? (width() - frame()->GetMinimizeButtonOffset())
-                    : 0;
+  const int x = CaptionButtonsOnLeadingEdge() ? CaptionButtonsRegionWidth() : 0;
   int end_x = width();
   if (!CaptionButtonsOnLeadingEdge()) {
-    end_x = std::min(MinimizeButtonX(), end_x);
+    end_x = std::min(width() - CaptionButtonsRegionWidth(), end_x);
   }
   return gfx::Rect(x, TopAreaHeight(false), std::max(0, end_x - x),
                    tabstrip_minimum_size.height());
@@ -148,7 +146,7 @@ gfx::Rect BrowserFrameViewWin::GetBoundsForWebAppFrameToolbar(
   if (browser_view()->IsWindowControlsOverlayEnabled()) {
     x = 0;
   }
-  int trailing_x = MinimizeButtonX();
+  int trailing_x = width() - CaptionButtonsRegionWidth();
   return gfx::Rect(x, WindowTopY(), std::max(0, trailing_x - x),
                    caption_button_container_->size().height());
 }
@@ -225,14 +223,9 @@ gfx::Size BrowserFrameViewWin::GetMinimumSize() const {
   gfx::Size min_size(browser_view()->GetMinimumSize());
   min_size.Enlarge(0, GetTopInset(false));
 
-  const int caption_buttons_width =
-      CaptionButtonsOnLeadingEdge()
-          ? width() - frame()->GetMinimizeButtonOffset()
-          : width() - MinimizeButtonX();
-
   gfx::Size titlebar_min_size(
       display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSIZEFRAME) +
-          caption_buttons_width,
+          CaptionButtonsRegionWidth(),
       TitlebarHeight(false));
   if (ShouldShowWindowIcon(TitlebarType::kAny)) {
     titlebar_min_size.Enlarge(
@@ -587,18 +580,16 @@ int BrowserFrameViewWin::WindowTopY() const {
   return IsWebUITabStrip() ? FrameTopBorderThickness(true) : 1;
 }
 
-int BrowserFrameViewWin::MinimizeButtonX() const {
-  // When CaptionButtonsOnLeadingEdge() is true call
-  // frame()->GetMinimizeButtonOffset() directly, because minimize_button_->x()
-  // will give the wrong edge of the button.
-  DCHECK(!CaptionButtonsOnLeadingEdge());
-  // If we're drawing the button we can query the layout directly, otherwise we
-  // need to ask Windows where the minimize button is.
-  // TODO(bsep): Ideally these would always be the same. When we're always
-  // custom drawing the caption buttons, remove GetMinimizeButtonOffset().
-  return ShouldCustomDrawSystemTitlebar() && caption_button_container_
-             ? caption_button_container_->x()
-             : frame()->GetMinimizeButtonOffset();
+int BrowserFrameViewWin::CaptionButtonsRegionWidth() const {
+  int system_caption_buttons_width =
+      width() - frame()->GetMinimizeButtonOffset();
+
+  int total_width = caption_button_container_->size().width();
+  if (!ShouldCustomDrawSystemTitlebar()) {
+    total_width += system_caption_buttons_width;
+  }
+
+  return total_width;
 }
 
 bool BrowserFrameViewWin::ShouldShowWindowIcon(TitlebarType type) const {
@@ -730,7 +721,7 @@ void BrowserFrameViewWin::LayoutTitleBar() {
   if (IsMaximized()) {
     next_leading_x += kMaximizedLeftMargin;
   }
-  int next_trailing_x = MinimizeButtonX();
+  int next_trailing_x = width() - CaptionButtonsRegionWidth();
 
   const int y = window_top + (titlebar_visual_height - icon_size) / 2;
   const gfx::Rect window_icon_bounds =
@@ -757,12 +748,6 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
     return;
   }
 
-  // Non-custom system titlebar already contains caption buttons.
-  if (!ShouldCustomDrawSystemTitlebar()) {
-    caption_button_container_->SetVisible(false);
-    return;
-  }
-
   caption_button_container_->SetVisible(!frame()->IsFullscreen());
 
   const gfx::Size preferred_size =
@@ -777,9 +762,17 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
     height = IsMaximized() ? TitlebarMaximizedVisualHeight()
                            : TitlebarHeight(false) - WindowTopY();
   }
-  caption_button_container_->SetBounds(width() - preferred_size.width(),
-                                       WindowTopY(), preferred_size.width(),
-                                       height);
+
+  const int system_caption_buttons_width =
+      ShouldCustomDrawSystemTitlebar()
+          ? 0
+          : width() - frame()->GetMinimizeButtonOffset();
+
+  caption_button_container_->SetBounds(
+      CaptionButtonsOnLeadingEdge()
+          ? system_caption_buttons_width
+          : width() - system_caption_buttons_width - preferred_size.width(),
+      WindowTopY(), preferred_size.width(), height);
 }
 
 void BrowserFrameViewWin::LayoutClientView() {
