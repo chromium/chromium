@@ -351,14 +351,10 @@ class WPTAdapter:
             'DownloadServiceStudy.Enabled:start_up_delay_ms/0',
         ])
         if options.retry_unexpected is None:
-            if _has_explicit_tests(options):
-                options.retry_unexpected = 0
-                logger.warning('Tests explicitly specified; disabling retries')
-            else:
-                options.retry_unexpected = 3
-                logger.warning(
-                    'Tests not explicitly specified; '
-                    'using %d retries', options.retry_unexpected)
+            options.retry_unexpected = 3
+            logger.warning(
+                'Tests not explicitly specified; '
+                'using %d retries', options.retry_unexpected)
         if not options.mojojs_path:
             options.mojojs_path = self.path_from_output_dir(
                 options.target, 'gen')
