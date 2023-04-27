@@ -130,7 +130,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
         std::move(debug_details),
         /*scheduled_report_time=*/base::Time::FromJavaTime(1234486400000),
         /*report_id=*/
-        base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
+        base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
         /*reporting_origin=*/kExampleOrigin, api_identifier,
         /*context_id=*/absl::nullopt);
     ASSERT_TRUE(actual_report.has_value());
