@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -57,7 +58,6 @@ class DragWindowFromShelfController;
 class HomeToOverviewNudgeController;
 class InAppToHomeNudgeController;
 class PanelLayoutManagerTest;
-class ScopedDragDropObserver;
 class Shelf;
 class ShelfLayoutManagerObserver;
 class ShelfLayoutManagerTestBase;
@@ -480,7 +480,8 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   void UpdateTargetBoundsForGesture(HotseatState target_hotseat_state);
 
   // Updates the auto-hide state for drag-drop actions.
-  void UpdateAutoHideForDragDrop(const ui::DropTargetEvent* event);
+  void UpdateAutoHideForDragDrop(ScopedDragDropObserver::EventType event_type,
+                                 const ui::DropTargetEvent* event);
 
   // Updates the auto-hide state immediately.
   void UpdateAutoHideStateNow();

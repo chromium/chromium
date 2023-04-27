@@ -9,7 +9,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
-#include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -793,10 +792,13 @@ void HoldingSpaceTray::UpdateDefaultTrayIcon() {
       .SetTransform(layer, gfx::Transform(), tween_type);
 }
 
-void HoldingSpaceTray::UpdateDropTargetState(const ui::DropTargetEvent* event) {
+void HoldingSpaceTray::UpdateDropTargetState(
+    ScopedDragDropObserver::EventType event_type,
+    const ui::DropTargetEvent* event) {
   bool is_drop_target = false;
 
-  if (event && !ExtractUnpinnedFilePaths(event->data()).empty()) {
+  if (event_type == ScopedDragDropObserver::EventType::kDragUpdated &&
+      !ExtractUnpinnedFilePaths(event->data()).empty()) {
     // If the `event` contains pinnable files and is within range of this view,
     // indicate this view is a drop target to increase discoverability.
     constexpr int kProximityThreshold = 20;

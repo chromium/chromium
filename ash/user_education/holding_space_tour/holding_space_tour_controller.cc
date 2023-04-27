@@ -116,7 +116,8 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     OnDragOrDropEvent(location_in_screen);
   }
 
-  void OnDropTargetEvent(const ui::DropTargetEvent* event) {
+  void OnDropTargetEvent(ScopedDragDropObserver::EventType event_type,
+                         const ui::DropTargetEvent* event) {
     // This code should only be reached if we are observing a drag-and-drop
     // sequence due to the user dragging a file from the Files app over the
     // wallpaper.
@@ -124,7 +125,7 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
 
     absl::optional<gfx::Point> location_in_screen;
 
-    if (event) {
+    if (event_type == ScopedDragDropObserver::EventType::kDragUpdated) {
       location_in_screen = event->root_location();
       wm::ConvertPointToScreen(
           static_cast<aura::Window*>(event->target())->GetRootWindow(),

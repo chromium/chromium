@@ -18,7 +18,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -2069,9 +2068,10 @@ void ShelfLayoutManager::UpdateTargetBoundsForGesture(
 }
 
 void ShelfLayoutManager::UpdateAutoHideForDragDrop(
+    ScopedDragDropObserver::EventType event_type,
     const ui::DropTargetEvent* event) {
   DCHECK_EQ(visibility_state(), SHELF_AUTO_HIDE);
-  if (!event) {
+  if (event_type != ScopedDragDropObserver::EventType::kDragUpdated) {
     if (!in_mouse_drag_ && in_drag_drop_ &&
         shelf_->shelf_widget()->GetVisibleShelfBounds().Contains(
             last_drag_drop_position_in_screen_)) {

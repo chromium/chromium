@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -174,7 +175,8 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // target. If `event` is `nullptr`, this view is *not* a drop target.
   // Otherwise this view is a drop target if the `event` is located within
   // sufficient range of its bounds and contains pinnable files.
-  void UpdateDropTargetState(const ui::DropTargetEvent* event);
+  void UpdateDropTargetState(ScopedDragDropObserver::EventType event_type,
+                             const ui::DropTargetEvent* event);
 
   // Sets whether tray visibility and previews updates should be animated.
   void SetShouldAnimate(bool should_animate);
