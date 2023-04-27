@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
+#import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
@@ -130,6 +131,12 @@
   return
       [[FeedWrapperViewController alloc] initWithDelegate:delegate
                                        feedViewController:feedViewController];
+}
+
+- (FeedHeaderViewController*)feedHeaderViewControllerWithFollowingDotVisible:
+    (BOOL)followingDotVisible {
+  return [[FeedHeaderViewController alloc]
+      initWithFollowingDotVisible:followingDotVisible];
 }
 
 @end

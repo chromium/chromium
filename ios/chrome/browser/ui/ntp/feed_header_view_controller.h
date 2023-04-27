@@ -30,11 +30,9 @@
 // Feed metrics recorder.
 @property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
 
-// Initializes the header with the currently selected feed and the Following
-// feed's sort type.
-- (instancetype)initWithFollowingFeedSortType:
-                    (FollowingFeedSortType)followingFeedSortType
-                   followingSegmentDotVisible:(BOOL)followingSegmentDotVisible
+// Initializes header with the Following segment dot visibility as
+// `followingDotVisible`.
+- (instancetype)initWithFollowingDotVisible:(BOOL)followingDotVisible
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -56,7 +54,7 @@
 // Updates the unseen content dot in the Following segment. Will only show the
 // dot if there is unseen content and if the user is not currently on the
 // Following feed.
-- (void)updateFollowingSegmentDotForUnseenContent:(BOOL)hasUnseenContent;
+- (void)updateFollowingDotForUnseenContent:(BOOL)hasUnseenContent;
 
 // Updates the header view and re-applies constraints in response to the default
 // search engine changing.

@@ -515,7 +515,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   }
   if ([self doesFollowingFeedHaveContent]) {
     [self.feedHeaderViewController
-        updateFollowingSegmentDotForUnseenContent:hasUnseenContent];
+        updateFollowingDotForUnseenContent:hasUnseenContent];
   }
 }
 
@@ -628,8 +628,32 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 // Creates and configures the feed and feed header based on user prefs.
 - (void)configureFeedAndHeader {
-  DCHECK([self isFeedHeaderVisible]);
-  DCHECK(self.NTPViewController);
+  CHECK([self isFeedHeaderVisible]);
+  CHECK(self.NTPViewController);
+
+  if (!self.feedHeaderViewController) {
+    BOOL followingDotVisible = NO;
+    if (IsDotEnabledForNewFollowedContent() && IsWebChannelsEnabled()) {
+      // Only show the dot if the user follows available publishers.
+      followingDotVisible =
+          [self doesFollowingFeedHaveContent] &&
+          self.discoverFeedService->GetFollowingFeedHasUnseenContent() &&
+          self.selectedFeed != FeedTypeFollowing;
+    }
+
+    self.feedHeaderViewController = [self.componentFactory
+        feedHeaderViewControllerWithFollowingDotVisible:followingDotVisible];
+  }
+
+  self.feedHeaderViewController.feedControlDelegate = self;
+  self.feedHeaderViewController.ntpDelegate = self;
+  self.feedHeaderViewController.feedMetricsRecorder = self.feedMetricsRecorder;
+  self.feedHeaderViewController.followingFeedSortType =
+      self.followingFeedSortType;
+  [self.feedHeaderViewController.menuButton
+             addTarget:self
+                action:@selector(openFeedMenu)
+      forControlEvents:UIControlEventTouchUpInside];
 
   self.NTPViewController.feedHeaderViewController =
       self.feedHeaderViewController;
@@ -966,8 +990,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   if (feedType == FeedTypeFollowing && IsDotEnabledForNewFollowedContent()) {
     // Clears dot and notifies service that the Following feed content has
     // been seen.
-    [self.feedHeaderViewController
-        updateFollowingSegmentDotForUnseenContent:NO];
+    [self.feedHeaderViewController updateFollowingDotForUnseenContent:NO];
     self.discoverFeedService->SetFollowingFeedContentSeen();
   }
 
@@ -1759,33 +1782,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
               IDS_IOS_NTP_FEED_SIGNIN_PROMO_DISABLE_SNACKBAR_MESSAGE)];
 
   [handler showSnackbarMessage:message];
-}
-
-#pragma mark - Getters
-
-- (FeedHeaderViewController*)feedHeaderViewController {
-  DCHECK(!self.browser->GetBrowserState()->IsOffTheRecord());
-  if (!_feedHeaderViewController) {
-    BOOL followingSegmentDotVisible = NO;
-    if (IsDotEnabledForNewFollowedContent() && IsWebChannelsEnabled()) {
-      // Only show the dot if the user follows available publishers.
-      followingSegmentDotVisible =
-          [self doesFollowingFeedHaveContent] &&
-          self.discoverFeedService->GetFollowingFeedHasUnseenContent() &&
-          self.selectedFeed != FeedTypeFollowing;
-    }
-    _feedHeaderViewController = [[FeedHeaderViewController alloc]
-        initWithFollowingFeedSortType:self.followingFeedSortType
-           followingSegmentDotVisible:followingSegmentDotVisible];
-    _feedHeaderViewController.feedControlDelegate = self;
-    _feedHeaderViewController.ntpDelegate = self;
-    _feedHeaderViewController.feedMetricsRecorder = self.feedMetricsRecorder;
-    [_feedHeaderViewController.menuButton
-               addTarget:self
-                  action:@selector(openFeedMenu)
-        forControlEvents:UIControlEventTouchUpInside];
-  }
-  return _feedHeaderViewController;
 }
 
 @end
