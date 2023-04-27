@@ -3684,7 +3684,6 @@ source_set("ash") {
     "//ui/base",
     "//ui/base:features",
     "//ui/base:types",
-    "//ui/base:ui_data_pack",
     "//ui/base/clipboard",
     "//ui/base/idle",
     "//ui/base/ime",

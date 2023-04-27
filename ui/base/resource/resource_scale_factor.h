@@ -5,7 +5,7 @@
 #ifndef UI_BASE_RESOURCE_RESOURCE_SCALE_FACTOR_H_
 #define UI_BASE_RESOURCE_RESOURCE_SCALE_FACTOR_H_
 
-#include "ui/base/resource/data_pack_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -24,8 +24,8 @@ enum ResourceScaleFactor : int {
 };
 
 // Returns the image scale for the scale factor passed in.
-UI_DATA_PACK_EXPORT float GetScaleForResourceScaleFactor(
-    ResourceScaleFactor scale_factor);
+COMPONENT_EXPORT(UI_DATA_PACK)
+float GetScaleForResourceScaleFactor(ResourceScaleFactor scale_factor);
 
 }  // namespace ui
 

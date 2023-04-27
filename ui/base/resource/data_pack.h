@@ -16,12 +16,12 @@
 #include <memory>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
-#include "ui/base/resource/data_pack_export.h"
 #include "ui/base/resource/resource_handle.h"
 
 namespace base {
@@ -32,7 +32,7 @@ class RefCountedStaticMemory;
 namespace ui {
 enum ResourceScaleFactor : int;
 
-class UI_DATA_PACK_EXPORT DataPack : public ResourceHandle {
+class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
  public:
   explicit DataPack(ResourceScaleFactor resource_scale_factor);
 
