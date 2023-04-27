@@ -30,7 +30,8 @@ async function testEncodingConfiguration(name, width, height, count, acc) {
     return;
   }
 
-  let frames = prepareFrames(width, height, count);
+  const warm_up_frames = 5;
+  let frames = prepareFrames(width, height, count + warm_up_frames);
   let is_done = false;
 
   const init = {
@@ -46,15 +47,18 @@ async function testEncodingConfiguration(name, width, height, count, acc) {
 
     PerfTestRunner.addRunTestStartMarker();
 
-    // Encode first frame without timing it, this will given the encoder
-    // chance to finish initialization.
-    encoder.encode(frames[0], { keyFrame: false });
+    // Encode first several frames without timing it, this will given the
+    // encoder chance to finish initialization.
+    for (let i = 0; i < warm_up_frames; i++) {
+      encoder.encode(frames[i], {keyFrame: false});
+    }
+
     await encoder.flush().catch(e => {
       PerfTestRunner.logFatalError("Test error: " + e);
     });
 
     let start_time = PerfTestRunner.now();
-    for (let frame of frames.slice(1)) {
+    for (let frame of frames.slice(warm_up_frames)) {
       encoder.encode(frame, { keyFrame: false });
     }
 
