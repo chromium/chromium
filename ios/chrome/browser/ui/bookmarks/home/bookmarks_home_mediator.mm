@@ -612,7 +612,7 @@ bool IsABookmarkNodeSectionForIdentifier(
       [[TableViewTextHeaderFooterItem alloc]
           initWithType:BookmarksHomeItemTypeHeader];
   profileHeader.text =
-      l10n_util::GetNSString(IDS_IOS_BOOKMARK_ONLY_ON_THIS_DEVICE);
+      l10n_util::GetNSString(IDS_IOS_BOOKMARKS_PROFILE_SECTION_TITLE);
   [self.consumer.tableViewModel
                      setHeader:profileHeader
       forSectionWithIdentifier:BookmarksHomeSectionIdentifierRootProfile];
@@ -623,7 +623,7 @@ bool IsABookmarkNodeSectionForIdentifier(
       [[TableViewTextHeaderFooterItem alloc]
           initWithType:BookmarksHomeItemTypeHeader];
   accountHeader.text =
-      l10n_util::GetNSString(IDS_IOS_BOOKMARK_IN_YOUR_GOOGLE_ACCOUNT);
+      l10n_util::GetNSString(IDS_IOS_BOOKMARKS_ACCOUNT_SECTION_TITLE);
   [self.consumer.tableViewModel
                      setHeader:accountHeader
       forSectionWithIdentifier:BookmarksHomeSectionIdentifierRootAccount];
@@ -655,8 +655,8 @@ bool IsABookmarkNodeSectionForIdentifier(
 - (void)resetSections {
   NSArray<NSNumber*>* sectionsToDelete = @[
     @(BookmarksHomeSectionIdentifierBookmarks),
-    @(BookmarksHomeSectionIdentifierRootProfile),
     @(BookmarksHomeSectionIdentifierRootAccount),
+    @(BookmarksHomeSectionIdentifierRootProfile),
     @(BookmarksHomeSectionIdentifierMessages)
   ];
 

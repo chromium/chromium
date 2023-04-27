@@ -27,10 +27,10 @@ typedef NS_ENUM(NSInteger, BookmarksHomeSectionIdentifier) {
   // * The bookmarks of current search result or
   // * the bookmarks of the currently displayed folder, assuming it’s not root.
   BookmarksHomeSectionIdentifierBookmarks,
-  // Section to display the root folders of the profile. See go/b4b-ios.
-  BookmarksHomeSectionIdentifierRootProfile,
   // Section to display the root folders of the account. See go/b4b-ios.
   BookmarksHomeSectionIdentifierRootAccount,
+  // Section to display the root folders of the profile. See go/b4b-ios.
+  BookmarksHomeSectionIdentifierRootProfile,
   // Section to display a message, such as "no result" for a search.
   BookmarksHomeSectionIdentifierMessages,
 };
