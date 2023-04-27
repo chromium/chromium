@@ -10,7 +10,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/guid.h"
 #include "base/i18n/time_formatting.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
