@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "extensions/common/extension_id.h"
 #include "v8/include/v8-forward.h"
 
 namespace blink {
@@ -16,9 +17,11 @@ class WebLocalFrame;
 }
 
 namespace extensions {
+enum class ChannelType;
 enum class SerializationFormat;
 class ScriptContext;
 struct Message;
+struct MessagingEndpoint;
 
 namespace messaging_util {
 
@@ -29,10 +32,12 @@ extern const char kSendRequestChannel[];
 // Messaging-related events.
 extern const char kOnMessageEvent[];
 extern const char kOnMessageExternalEvent[];
+extern const char kOnUserScriptMessageEvent[];
 extern const char kOnRequestEvent[];
 extern const char kOnRequestExternalEvent[];
 extern const char kOnConnectEvent[];
 extern const char kOnConnectExternalEvent[];
+extern const char kOnUserScriptConnectEvent[];
 extern const char kOnConnectNativeEvent[];
 
 extern const int kNoFrameId;
@@ -102,6 +107,12 @@ void MassageSendMessageArguments(
 // Returns true if the sendRequest-related properties are disabled for the given
 // |script_context|.
 bool IsSendRequestDisabled(ScriptContext* script_context);
+
+// Retrieves the event to dispatch for the given `source_endpoint`,
+// `target_extension_id`, and `channel_name`.
+std::string GetEventForChannel(const MessagingEndpoint& source_endpoint,
+                               const ExtensionId& target_extension_id,
+                               ChannelType channel_type);
 
 }  // namespace messaging_util
 }  // namespace extensions

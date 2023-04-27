@@ -496,6 +496,13 @@ chrome.runtime.onConnect;
 chrome.runtime.onConnectExternal;
 
 /**
+ * Fired when a connection is made from a user script from this extension.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/runtime#event-onUserScriptConnect
+ */
+chrome.runtime.onUserScriptConnect;
+
+/**
  * Fired when a connection is made from a native application. Currently only
  * supported on Chrome OS.
  * @type {!ChromeEvent}
@@ -518,6 +525,14 @@ chrome.runtime.onMessage;
  * @see https://developer.chrome.com/extensions/runtime#event-onMessageExternal
  */
 chrome.runtime.onMessageExternal;
+
+/**
+ * Fired when a message is sent from a user script associated with the same
+ * extension.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/runtime#event-onUserScriptMessage
+ */
+chrome.runtime.onUserScriptMessage;
 
 /**
  * Fired when an app or the device that it runs on needs to be restarted. The

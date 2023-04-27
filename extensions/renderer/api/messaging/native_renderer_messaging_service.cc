@@ -304,30 +304,8 @@ void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
 
   // First, determine the event we'll use to connect.
   std::string target_extension_id = script_context->GetExtensionID();
-  MessagingEndpoint::Relationship relationship =
-      MessagingEndpoint::GetRelationship(info.source_endpoint,
-                                         target_extension_id);
-  bool is_external_event =
-      relationship == MessagingEndpoint::Relationship::kExternalExtension ||
-      relationship == MessagingEndpoint::Relationship::kExternalWebPage;
-  std::string event_name;
-  switch (channel_type) {
-    case ChannelType::kSendRequest:
-      event_name = is_external_event ? messaging_util::kOnRequestExternalEvent
-                                     : messaging_util::kOnRequestEvent;
-      break;
-    case ChannelType::kSendMessage:
-      event_name = is_external_event ? messaging_util::kOnMessageExternalEvent
-                                     : messaging_util::kOnMessageEvent;
-      break;
-    case ChannelType::kConnect:
-      event_name = is_external_event ? messaging_util::kOnConnectExternalEvent
-                                     : messaging_util::kOnConnectEvent;
-      break;
-    case ChannelType::kNative:
-      event_name = messaging_util::kOnConnectNativeEvent;
-      break;
-  }
+  std::string event_name = messaging_util::GetEventForChannel(
+      info.source_endpoint, target_extension_id, channel_type);
 
   // If there are no listeners for the given event, then we know the port won't
   // be used in this context.

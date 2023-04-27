@@ -154,10 +154,30 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
       case MessageTarget::EXTENSION: {
         ExtensionMsg_ExternalConnectionInfo info;
         if (extension && !extension->is_hosted_app()) {
-          info.source_endpoint =
-              script_context->context_type() == Feature::CONTENT_SCRIPT_CONTEXT
-                  ? MessagingEndpoint::ForContentScript(extension->id())
-                  : MessagingEndpoint::ForExtension(extension->id());
+          switch (script_context->context_type()) {
+            case Feature::BLESSED_EXTENSION_CONTEXT:
+            case Feature::UNBLESSED_EXTENSION_CONTEXT:
+            case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+            case Feature::OFFSCREEN_EXTENSION_CONTEXT:
+              info.source_endpoint =
+                  MessagingEndpoint::ForExtension(extension->id());
+              break;
+            case Feature::CONTENT_SCRIPT_CONTEXT:
+              info.source_endpoint =
+                  MessagingEndpoint::ForContentScript(extension->id());
+              break;
+            case Feature::USER_SCRIPT_CONTEXT:
+              info.source_endpoint =
+                  MessagingEndpoint::ForUserScript(extension->id());
+              break;
+            case Feature::UNSPECIFIED_CONTEXT:
+            case Feature::WEB_PAGE_CONTEXT:
+            case Feature::BLESSED_WEB_PAGE_CONTEXT:
+            case Feature::WEBUI_CONTEXT:
+            case Feature::WEBUI_UNTRUSTED_CONTEXT:
+              NOTREACHED_NORETURN() << "Unexpected Context Encountered: "
+                                    << script_context->GetDebugString();
+          }
         } else {
           info.source_endpoint = MessagingEndpoint::ForWebPage();
         }

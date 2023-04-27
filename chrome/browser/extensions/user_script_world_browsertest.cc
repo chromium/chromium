@@ -16,6 +16,8 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -235,6 +237,148 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest, CanSetCustomCsp) {
       ExecuteScriptInUserScriptWorld(kScriptSource, *extension);
 
   EXPECT_EQ(script_result, "allowed eval");
+}
+
+// Tests sending a message from a user script. This is sent via
+// runtime.sendMessage from the user script, and should be received via
+// runtime.onUserScriptMessage in the background script.
+IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest, SendMessageAPI) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "User Script Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "host_permissions": ["http://example.com/*"]
+         })";
+  // The background script will listen for a message from a user script.
+  // Upon receiving one, it will validate the message and sender and respond
+  // with 'pong'.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+           chrome.test.fail(`Unexpected message received: ${msg}`);
+         });
+         chrome.runtime.onMessageExternal.addListener(
+             (msg, sender, sendResponse) => {
+               chrome.test.fail(`Unexpected external message received: ${msg}`);
+             });
+         chrome.runtime.onUserScriptMessage.addListener(
+             (msg, sender, sendResponse) => {
+               chrome.test.assertEq('ping', msg);
+               const url = new URL(sender.url);
+               chrome.test.assertEq('example.com', url.hostname);
+               chrome.test.assertEq('/simple.html', url.pathname);
+               chrome.test.assertEq(0, sender.frameId);
+               chrome.test.assertTrue(!!sender.tab);
+               sendResponse('pong');
+               chrome.test.succeed();
+             });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  // A bit overly nifty: here, we execute a user script that sends a message.
+  // Because this an MV3 extension, sendMessage() will return a promise that
+  // resolves when the other end responds. The ScriptExecutor will wait for
+  // that promise to resolve, so the end value of this script is the response
+  // from the background script.
+  static constexpr char kScriptSource[] =
+      R"(chrome.runtime.sendMessage('ping');)";
+
+  // The ResultCatcher validates the background script checks...
+  ResultCatcher result_catcher;
+
+  base::Value script_result =
+      ExecuteScriptInUserScriptWorld(kScriptSource, *extension);
+
+  // ...And the script result validates the user script expectation.
+  EXPECT_EQ(script_result, "pong");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+// Tests opening a message port from a user script. This is sent via
+// runtime.connect() from the user script, and should be received via
+// runtime.onUserScriptConnect in the background script.
+IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest, ConnectAPI) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "User Script Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "host_permissions": ["http://example.com/*"]
+         })";
+  // The background script will listen for a new connection from a user script.
+  // Upon one opening, it validates the opener and waits for a new message,
+  // then validating the message and responding with 'pong', and then
+  // succeeds when the port is disconnected (after having received the message).
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.runtime.onConnect.addListener((port) => {
+           chrome.test.fail(`Unexpected connection received`);
+         });
+         chrome.runtime.onConnectExternal.addListener((port) => {
+           chrome.test.fail(`Unexpected external connection received`);
+         });
+         chrome.runtime.onUserScriptConnect.addListener((port) => {
+           chrome.test.assertEq('myport', port.name);
+           const sender = port.sender;
+           chrome.test.assertTrue(!!sender);
+           const url = new URL(sender.url);
+           chrome.test.assertEq('example.com', url.hostname);
+           chrome.test.assertEq('/simple.html', url.pathname);
+           chrome.test.assertEq(0, sender.frameId);
+           chrome.test.assertTrue(!!sender.tab);
+           let receivedMsg = false;
+           port.onMessage.addListener((msg) => {
+             receivedMsg = true;
+             chrome.test.assertEq('ping', msg);
+             port.postMessage('pong');
+           });
+           port.onDisconnect.addListener(() => {
+             chrome.test.assertTrue(receivedMsg);
+             chrome.test.succeed();
+           });
+         });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  // The user script will open a port, post 'ping', wait for the responding
+  // 'pong', and then disconnect the port. We execute this in a promise with
+  // the expected resolved value of 'success'.
+  static constexpr char kScriptSource[] =
+      R"(new Promise((resolve) => {
+           let port = chrome.runtime.connect({name: 'myport'});
+           port.onMessage.addListener((msg) => {
+             if (msg != 'pong') {
+               resolve(`Unexpected message: ${msg}`);
+               return;
+             }
+             port.disconnect();
+             resolve('success');
+           });
+           port.postMessage('ping');
+         });)";
+
+  // The ResultCatcher validates the background script checks...
+  ResultCatcher result_catcher;
+
+  base::Value script_result =
+      ExecuteScriptInUserScriptWorld(kScriptSource, *extension);
+
+  // ...And the script result validates the user script expectation.
+  EXPECT_EQ(script_result, "success");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 }  // namespace extensions

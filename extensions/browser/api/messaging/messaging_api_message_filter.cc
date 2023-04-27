@@ -106,6 +106,17 @@ bool IsValidMessagingSource(RenderProcessHost& process,
       return true;
     }
 
+    case MessagingEndpoint::Type::kUserScript: {
+      if (!source_endpoint.extension_id) {
+        bad_message::ReceivedBadMessage(
+            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT);
+        return false;
+      }
+      // TODO(https://crbug.com/1429408): Track user scripts in
+      // ContentScriptTracker and verify them here.
+      return true;
+    }
+
     case MessagingEndpoint::Type::kWebPage:
       // NOTE: We classify hosted apps as kWebPage, but we don't include
       // the extension ID in the source for those messages.

@@ -307,6 +307,7 @@ void MessageService::OpenChannelToExtension(
 
   if (!opener_port) {
     DCHECK(source_endpoint.type == MessagingEndpoint::Type::kContentScript ||
+           source_endpoint.type == MessagingEndpoint::Type::kUserScript ||
            source_endpoint.type == MessagingEndpoint::Type::kWebPage ||
            source_endpoint.type == MessagingEndpoint::Type::kExtension);
     opener_port = ExtensionMessagePort::CreateForEndpoint(
@@ -711,18 +712,8 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   // built using the connect framework (see messaging.js).
   if (target_extension) {
     events::HistogramValue histogram_value = events::UNKNOWN;
-    MessagingEndpoint::Relationship relationship =
-        MessagingEndpoint::GetRelationship(params->source_endpoint,
-                                           params->target_extension_id);
-    bool is_external = false;
-    switch (relationship) {
-      case MessagingEndpoint::Relationship::kInternal:
-        break;
-      case MessagingEndpoint::Relationship::kExternalExtension:
-      case MessagingEndpoint::Relationship::kExternalWebPage:
-      case MessagingEndpoint::Relationship::kExternalNativeApp:
-        is_external = true;
-    }
+    bool is_external = MessagingEndpoint::IsExternal(
+        params->source_endpoint, params->target_extension_id);
 
     if (params->source_endpoint.type == MessagingEndpoint::Type::kNativeApp) {
       histogram_value = events::RUNTIME_ON_CONNECT_NATIVE;

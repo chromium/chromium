@@ -40,6 +40,8 @@ const char* ConvertMessagingSourceTypeToString(
       return "WebPage";
     case MessagingEndpoint::Type::kContentScript:
       return "ContentScript";
+    case MessagingEndpoint::Type::kUserScript:
+      return "UserScript";
     case MessagingEndpoint::Type::kNativeApp:
       return "NativeApp";
   }
@@ -52,6 +54,7 @@ base::debug::ScopedCrashKeyString CreateExtensionIdOrNativeAppNameScopedKey(
   switch (endpoint.type) {
     case MessagingEndpoint::Type::kExtension:
     case MessagingEndpoint::Type::kContentScript:
+    case MessagingEndpoint::Type::kUserScript:
     case MessagingEndpoint::Type::kWebPage:
       return base::debug::ScopedCrashKeyString(
           GetMessagingSourceExtensionIdCrashKey(),
@@ -89,6 +92,14 @@ MessagingEndpoint MessagingEndpoint::ForContentScript(
 }
 
 // static
+MessagingEndpoint MessagingEndpoint::ForUserScript(ExtensionId extension_id) {
+  MessagingEndpoint messaging_endpoint;
+  messaging_endpoint.type = MessagingEndpoint::Type::kUserScript;
+  messaging_endpoint.extension_id = std::move(extension_id);
+  return messaging_endpoint;
+}
+
+// static
 MessagingEndpoint MessagingEndpoint::ForWebPage() {
   MessagingEndpoint messaging_endpoint;
   messaging_endpoint.type = MessagingEndpoint::Type::kWebPage;
@@ -114,10 +125,28 @@ MessagingEndpoint::Relationship MessagingEndpoint::GetRelationship(
       return source_endpoint.extension_id == target_id
                  ? Relationship::kInternal
                  : Relationship::kExternalExtension;
+    case Type::kUserScript:
+      CHECK(source_endpoint.extension_id);
+      CHECK_EQ(target_id, *source_endpoint.extension_id);
+      return Relationship::kInternal;
     case Type::kWebPage:
       return Relationship::kExternalWebPage;
     case Type::kNativeApp:
       return Relationship::kExternalNativeApp;
+  }
+}
+
+bool MessagingEndpoint::IsExternal(const MessagingEndpoint& source_endpoint,
+                                   const std::string& target_id) {
+  Relationship relationship = GetRelationship(source_endpoint, target_id);
+
+  switch (relationship) {
+    case MessagingEndpoint::Relationship::kInternal:
+      return false;
+    case MessagingEndpoint::Relationship::kExternalExtension:
+    case MessagingEndpoint::Relationship::kExternalWebPage:
+    case MessagingEndpoint::Relationship::kExternalNativeApp:
+      return true;
   }
 }
 

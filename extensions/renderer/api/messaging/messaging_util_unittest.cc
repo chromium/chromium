@@ -8,6 +8,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
@@ -65,6 +66,119 @@ TEST_F(MessagingUtilTest, TestParseMessageOptionsFrameId) {
         messaging_util::ParseMessageOptions(context, value.As<v8::Object>(),
                                             messaging_util::PARSE_FRAME_ID);
     EXPECT_EQ(test_case.expected_frame_id, options.frame_id);
+  }
+}
+
+// Tests the result of GetEventForChannel().
+TEST_F(MessagingUtilTest, TestGetEventForChannel) {
+  ExtensionId id1('a', 32);
+  ExtensionId id2('b', 32);
+
+  // Exercise a bunch of possible channel endpoints -> extensions.
+  // This technically isn't exhaustive, but should give us pretty reasonable
+  // coverage.
+
+  // sendRequest, Extension -> Self
+  {
+    EXPECT_EQ(
+        messaging_util::kOnRequestEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForExtension(id1),
+                                           id1, ChannelType::kSendRequest));
+  }
+
+  // sendRequest, Extension 2 -> Extension 1
+  {
+    EXPECT_EQ(
+        messaging_util::kOnRequestExternalEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForExtension(id2),
+                                           id1, ChannelType::kSendRequest));
+  }
+
+  // sendMessage, Extension -> Self
+  {
+    EXPECT_EQ(
+        messaging_util::kOnMessageEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForExtension(id1),
+                                           id1, ChannelType::kSendMessage));
+  }
+
+  // sendMessage, Extension 2 -> Extension 1
+  {
+    EXPECT_EQ(
+        messaging_util::kOnMessageExternalEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForExtension(id2),
+                                           id1, ChannelType::kSendMessage));
+  }
+
+  // sendMessage, Web Page -> Extension
+  {
+    EXPECT_EQ(
+        messaging_util::kOnMessageExternalEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForWebPage(), id1,
+                                           ChannelType::kSendMessage));
+  }
+
+  // sendMessage, Content Script -> Extension
+  {
+    EXPECT_EQ(messaging_util::kOnMessageEvent,
+              messaging_util::GetEventForChannel(
+                  MessagingEndpoint::ForContentScript(id1), id1,
+                  ChannelType::kSendMessage));
+  }
+
+  // sendMessage, User Script -> Extension
+  {
+    EXPECT_EQ(messaging_util::kOnUserScriptMessageEvent,
+              messaging_util::GetEventForChannel(
+                  MessagingEndpoint::ForUserScript(id1), id1,
+                  ChannelType::kSendMessage));
+  }
+
+  // connect, Extension -> Self
+  {
+    EXPECT_EQ(
+        messaging_util::kOnConnectEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForExtension(id1),
+                                           id1, ChannelType::kConnect));
+  }
+
+  // connect, Extension 2 -> Extension 1
+  {
+    EXPECT_EQ(
+        messaging_util::kOnConnectExternalEvent,
+        messaging_util::GetEventForChannel(MessagingEndpoint::ForExtension(id2),
+                                           id1, ChannelType::kConnect));
+  }
+
+  // connect, Web Page -> Extension
+  {
+    EXPECT_EQ(messaging_util::kOnConnectExternalEvent,
+              messaging_util::GetEventForChannel(
+                  MessagingEndpoint::ForWebPage(), id1, ChannelType::kConnect));
+  }
+
+  // connect, Content Script -> Extension
+  {
+    EXPECT_EQ(messaging_util::kOnConnectEvent,
+              messaging_util::GetEventForChannel(
+                  MessagingEndpoint::ForContentScript(id1), id1,
+                  ChannelType::kConnect));
+  }
+
+  // connect, User Script -> Extension
+  {
+    EXPECT_EQ(
+        messaging_util::kOnUserScriptConnectEvent,
+        messaging_util::GetEventForChannel(
+            MessagingEndpoint::ForUserScript(id1), id1, ChannelType::kConnect));
+  }
+
+  // connect, Native App -> Extension
+  {
+    EXPECT_EQ(messaging_util::kOnConnectNativeEvent,
+              messaging_util::GetEventForChannel(
+                  MessagingEndpoint::ForNativeApp("some app"), id1,
+                  ChannelType::kNative));
   }
 }
 

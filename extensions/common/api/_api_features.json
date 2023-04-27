@@ -604,6 +604,12 @@
     "dependencies": ["permission:nativeMessaging"],
     "contexts": ["blessed_extension"]
   },
+  "runtime.onUserScriptConnect": {
+    // NOTE: We can readily open this up to offscreen extensions and
+    // lockscreen extensions, if there's desire. For now, limit it.
+    "contexts": ["blessed_extension"],
+    "min_manifest_version": 3
+  },
   "runtime.onMessage": {
     "contexts": [
       "blessed_extension",
@@ -620,6 +626,12 @@
       "lock_screen_extension",
       "offscreen_extension"
     ]
+  },
+  "runtime.onUserScriptMessage": {
+    // NOTE: We can readily open this up to offscreen extensions and
+    // lockscreen extensions, if there's desire. For now, limit it.
+    "contexts": ["blessed_extension"],
+    "min_manifest_version": 3
   },
   "runtime.sendMessage": [{
     // Everything except WebUI.
