@@ -7,8 +7,8 @@ module side_panel.mojom;
 import "url/mojom/url.mojom";
 
 // Methods called on the browser from the companion UI.
-// TODO(b/274618365): Link documentation for server side counterpart that must
-// be kept in sync.
+// Keep this file in sync with
+// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
 enum MethodType {
   // Methods used in renderer -> browser communication.
   // Method corresponding to `CompanionPageHandler.OnPromoAction`.
@@ -42,8 +42,8 @@ enum MethodType {
 };
 
 // Types of promos shown in the companion UI.
-// TODO(b/274618365): Link documentation for server side counterpart that must
-// be kept in sync.
+// Keep this file in sync with
+// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
 enum PromoType {
   // Promo to sign-in to chrome.
   kSignin = 1,
@@ -56,8 +56,8 @@ enum PromoType {
 };
 
 // User actions taken on a promo.
-// TODO(b/274618365): Link documentation for server side counterpart that must
-// be kept in sync.
+// Keep this file in sync with
+// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
 enum PromoAction {
   // Promo was shown in the companion UI.
   kShown = 1,
@@ -90,6 +90,8 @@ struct ImageQuery {
 };
 
 // Various UI surfaces on the companion page.
+// Keep this file in sync with
+// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
 enum UiSurface {
   kUnknown = 0,
   kPH = 1,

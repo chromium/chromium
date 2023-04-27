@@ -40,13 +40,13 @@ enum ParamType {
   URL_FOR_OPEN_IN_NEW_TAB = 'urlForOpenInNewTab',
 
   // Arguments for MethodType.kRecordUiSurfaceShown.
-  UI_SURFACE = 'ui_surface',
+  UI_SURFACE = 'uiSurface',
 
   // Arguments for MethodType.kRecordUiSurfaceShown.
-  CHILD_ELEMENT_COUNT = 'child_element_count',
+  CHILD_ELEMENT_COUNT = 'childElementCount',
 
   // Arguments for browser -> iframe communication.
-  COMPANION_UPDATE_PARAMS = 'companion_update_params',
+  COMPANION_UPDATE_PARAMS = 'companionUpdateParams',
 
   // Arguments for sending text find results from browser to iframe.
   CQ_TEXT_FIND_RESULTS = 'cqTextFindResults',
