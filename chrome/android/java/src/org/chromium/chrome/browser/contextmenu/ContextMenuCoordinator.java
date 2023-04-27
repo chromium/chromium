@@ -14,6 +14,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.Window;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -133,6 +134,13 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             layout.getLocationOnScreen(layoutScreenLocation);
             x += layoutScreenLocation[0];
             y += layoutScreenLocation[1];
+
+            // Also take the Window offset into account. This is necessary when a partial width/
+            // height window hosts the activity.
+            Window activityWindow = activity.getWindow();
+            var attrs = activityWindow.getAttributes();
+            x += attrs.x;
+            y += attrs.y;
         }
 
         // If drag drop is enabled, the context menu needs to be anchored next to the drag shadow.
