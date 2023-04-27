@@ -119,7 +119,6 @@ class TestHelpBubbleHandler : public HelpBubbleHandlerBase {
 MATCHER_P(MatchesHelpBubbleParams, expected, "") {
   EXPECT_EQ(expected->body_text, arg->body_text);
   EXPECT_EQ(expected->close_button_alt_text, arg->close_button_alt_text);
-  EXPECT_EQ(expected->force_close_button, arg->force_close_button);
   EXPECT_EQ(expected->timeout, arg->timeout);
   EXPECT_EQ(expected->body_icon_name, arg->body_icon_name);
   EXPECT_EQ(expected->body_icon_alt_text, arg->body_icon_alt_text);
@@ -336,7 +335,6 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubbleWithButtonsAndProgress) {
   HelpBubbleParams params;
   params.body_text = u"Help bubble body.";
   params.close_button_alt_text = u"Close button alt text.";
-  params.force_close_button = true;
   params.body_icon = &vector_icons::kLightbulbOutlineIcon;
   params.body_icon_alt_text = u"Body icon alt text.";
   params.arrow = HelpBubbleArrow::kTopCenter;
@@ -354,7 +352,6 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubbleWithButtonsAndProgress) {
   expected->body_text = base::UTF16ToUTF8(params.body_text);
   expected->close_button_alt_text =
       base::UTF16ToUTF8(params.close_button_alt_text);
-  expected->force_close_button = true;
   expected->body_icon_name = "lightbulb_outline";
   expected->body_icon_alt_text = "Body icon alt text.";
   expected->position = help_bubble::mojom::HelpBubbleArrowPosition::TOP_CENTER;
