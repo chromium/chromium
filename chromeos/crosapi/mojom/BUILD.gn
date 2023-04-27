@@ -251,7 +251,7 @@ mojom("mojom") {
         },
         {
           mojom = "crosapi.mojom.GUID"
-          cpp = "::base::GUID"
+          cpp = "::base::Uuid"
         },
         {
           mojom = "crosapi.mojom.TabGroup"
