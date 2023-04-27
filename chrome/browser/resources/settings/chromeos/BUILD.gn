@@ -236,6 +236,7 @@ generate_grd("build_grd") {
     "images/notification_access_setup_dark.svg",
     "images/smart_privacy.svg",
     "images/smart_privacy_dark.svg",
+    "images/smart_privacy_jelly.svg",
     "images/switch_access_setup_guide_assign_next.svg",
     "images/switch_access_setup_guide_assign_next_dark.svg",
     "images/switch_access_setup_guide_assign_previous.svg",
