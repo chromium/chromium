@@ -51763,8 +51763,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="REJECTED_TYPING_PARTIAL"/>
   <int value="9" label="REJECTED_TYPING_FULL_WITH_EXTERNAL"/>
   <int value="10" label="REJECTED_TYPING_PARTIAL_WITH_EXTERNAL"/>
-  <int value="11" label="REJECTED_TYPING_NO_SELECTION"/>
-  <int value="12" label="REJECTED_SELECTED_INVALID_RANGE"/>
+  <int value="11" label="REJECTED_REMOVED_LETTERS"/>
+  <int value="12" label="REJECTED_TYPING_NO_SELECTION"/>
+  <int value="13" label="REJECTED_SELECTED_INVALID_RANGE"/>
 </enum>
 
 <enum name="IMEAutocorrectSuggestionProvider">
