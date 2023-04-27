@@ -9,9 +9,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/security_state/content/content_utils.h"
@@ -114,9 +114,9 @@ void WebLayerWebappsClient::InstallShortcut(
     const webapps::AddToHomescreenParams& params) {
   const webapps::ShortcutInfo& info = *params.shortcut_info;
 
-  webapps::addShortcutToHomescreen(base::GenerateGUID(), info.url,
-                                   info.user_title, params.primary_icon,
-                                   params.has_maskable_primary_icon);
+  webapps::addShortcutToHomescreen(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), info.url,
+      info.user_title, params.primary_icon, params.has_maskable_primary_icon);
 }
 
 void WebLayerWebappsClient::OnInstallFinished(GURL manifest_url,
