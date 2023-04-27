@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/browser_context.h"
@@ -129,7 +129,8 @@ void ParseScriptFiles(const GURL& owner_base_url,
   // code:
   if (items.code) {
     GURL url = owner_base_url.Resolve(base::StringPrintf(
-        "%s%s", kGeneratedScriptFilePrefix, base::GenerateGUID().c_str()));
+        "%s%s", kGeneratedScriptFilePrefix,
+        base::Uuid::GenerateRandomV4().AsLowercaseString().c_str()));
     std::unique_ptr<extensions::UserScript::File> file(
         new extensions::UserScript::File(base::FilePath(), base::FilePath(),
                                          url));
