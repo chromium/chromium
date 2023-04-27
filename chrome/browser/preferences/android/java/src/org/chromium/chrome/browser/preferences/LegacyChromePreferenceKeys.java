@@ -72,7 +72,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.HOMEPAGE_USE_DEFAULT_URI,
                 ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED,
                 ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION,
-                ChromePreferenceKeys.LEGACY_FIRST_RUN_AND_BACKUP_SIGNIN_COMPLETE,
                 ChromePreferenceKeys.LOCALE_MANAGER_AUTO_SWITCH,
                 ChromePreferenceKeys.LOCALE_MANAGER_MISSING_TIMEZONES,
                 ChromePreferenceKeys.LOCALE_MANAGER_PARTNER_PROMO_KEYWORD_SELECTED,

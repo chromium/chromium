@@ -298,8 +298,6 @@ public final class ChromePreferenceKeys {
     // BACKUP_FLOW_SIGNIN_ACCOUNT_NAME used to be employed for the FRE too, thus the "first_run_"
     // prefix. The string should NOT be changed without some sort of migration.
     public static final String BACKUP_FLOW_SIGNIN_ACCOUNT_NAME = "first_run_signin_account_name";
-    public static final String LEGACY_FIRST_RUN_AND_BACKUP_SIGNIN_COMPLETE =
-            "first_run_signin_complete";
     public static final String FIRST_RUN_FLOW_SIGNIN_SETUP = "first_run_signin_setup";
     // Needed by ChromeBackupAgent
     public static final String FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE = "lightweight_first_run_flow";

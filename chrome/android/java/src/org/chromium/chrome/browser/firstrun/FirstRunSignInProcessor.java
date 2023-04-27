@@ -25,12 +25,6 @@ public final class FirstRunSignInProcessor {
         final SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
         if (prefs.readBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP, false)) {
             prefs.removeKey(ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP);
-            // The FRE and backup background sign-ins used to mark completion via the same pref.
-            // Keep writing this pref for a while to support rollbacks, i.e. so background sign-ins
-            // don't suddently trigger because the pref isn't set.
-            // TODO(crbug.com/1318463): Remove after crrev.com/c/3870839 reaches stable safely.
-            prefs.writeBoolean(
-                    ChromePreferenceKeys.LEGACY_FIRST_RUN_AND_BACKUP_SIGNIN_COMPLETE, true);
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
             settingsLauncher.launchSettingsActivity(
                     activity, ManageSyncSettings.class, ManageSyncSettings.createArguments(true));

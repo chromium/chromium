@@ -104,6 +104,7 @@ public class DeprecatedChromePreferenceKeys {
                 "displayed_data_reduction_promo_version",
                 "displayed_data_reduction_snackbar_promo_saved_bytes",
                 "darken_websites_enabled",
+                "first_run_signin_complete",
                 "fre_promo_opt_out",
                 "home_page_button_force_enabled",
                 "homepage_tile_enabled",
