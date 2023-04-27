@@ -636,6 +636,9 @@
       <message name="IDS_CHROMEOS_IME_INFOLIST_WINDOW_TITLE" desc="The title of the infolist window where the meanings and the usages of words are displayed.">
         Information
       </message>
+      <message name="IDS_CHROMEOS_DIACRITIC_NUDGE_TEXT">
+      Want keys to repeat? Turn off accent marks in Keyboard Settings
+      </message>
       <message name="IDS_CHROMEOS_IME_CHINESE_QUICK_SETTINGS_CHINESE" desc="It is the description of whether the current input method is Chinese.">
         Input language is Chinese
       </message>

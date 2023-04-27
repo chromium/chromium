@@ -30,6 +30,7 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace content {
@@ -65,10 +66,8 @@ class DiacriticsNudge : public ash::SystemNudge {
  protected:
   // SystemNudge:
   std::unique_ptr<SystemNudgeLabel> CreateLabelView() const override {
-    // TODO(b/274349603): convert to final copy + internationalise.
     std::u16string label_text =
-        u"Looking for key-repeat? Turn off \"accent mark\" in Keyboard "
-        u"Settings.";
+        l10n_util::GetStringUTF16(IDS_CHROMEOS_DIACRITIC_NUDGE_TEXT);
     // Set the label's text.
     auto label = std::make_unique<SystemNudgeLabel>(label_text, kMinLabelWidth);
     label->set_font_size_delta(2);
