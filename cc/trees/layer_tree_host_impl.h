@@ -938,6 +938,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Virtual for testing.
   virtual bool AnimateLayers(base::TimeTicks monotonic_time,
                              bool is_active_tree);
+  virtual viz::CompositorFrame GenerateCompositorFrame(FrameData* frame);
   void ImageDecodeFinished(int request_id, bool decode_succeeded);
 
   bool is_likely_to_require_a_draw() const {
@@ -954,8 +955,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   BeginFrameTracker current_begin_frame_tracker_;
 
  private:
-  viz::CompositorFrame GenerateCompositorFrame(FrameData* frame);
-
   void CollectScrollbarUpdatesForCommit(
       CompositorCommitData* commit_data) const;
 

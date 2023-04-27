@@ -263,6 +263,12 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
     return r;
   }
 
+  viz::CompositorFrame GenerateCompositorFrame(FrameData* frame) override {
+    auto f = LayerTreeHostImpl::GenerateCompositorFrame(frame);
+    test_hooks_->WillSubmitCompositorFrame(this, f);
+    return f;
+  }
+
   void NotifyReadyToActivate() override {
     if (block_notify_ready_to_activate_for_testing_) {
       notify_ready_to_activate_was_blocked_ = true;
