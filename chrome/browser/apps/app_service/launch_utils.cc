@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/public/cpp/new_window_delegate.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -508,12 +507,8 @@ void MaybeLaunchPreferredAppForUrl(Profile* profile,
       return;
     }
   }
-
-  CHECK(ash::NewWindowDelegate::GetPrimary());
-
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+  NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
+  Navigate(&params);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
