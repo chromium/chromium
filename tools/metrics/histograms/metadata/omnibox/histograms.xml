@@ -2625,7 +2625,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.{SearchPrefetch}.PrefetchServingReason2{PrerenderOrNavigation}"
-    enum="SearchPrefetchServingReason" expires_after="2023-05-02">
+    enum="SearchPrefetchServingReason" expires_after="2023-10-02">
   <owner>ryansturm@chromium.org</owner>
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
