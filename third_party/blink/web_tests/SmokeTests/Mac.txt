@@ -107,6 +107,8 @@ external/wpt/WebCryptoAPI/generateKey/successes_RSA-OAEP.https.any.worker.html?1
 external/wpt/WebCryptoAPI/import_export/ec_importKey.https.any.html
 external/wpt/accelerometer/Accelerometer-enabled-by-feature-policy.https.html
 external/wpt/accessibility/crashtests/activedescendant-crash.html
+external/wpt/acid/acid2/reftest.html
+external/wpt/acid/acid3/test.html
 external/wpt/audio-output/selectAudioOutput-permissions-policy.https.sub.html
 external/wpt/beacon/headers/header-referrer-no-referrer-when-downgrade.https.html
 external/wpt/bluetooth/characteristic/readValue/characteristic-is-removed.https.window.html
@@ -676,7 +678,6 @@ fast/css-generated-content/014.html
 fast/css-generated-content/before-with-first-letter.html
 fast/css-generated-content/quotes-lang.html
 fast/css/008.html
-fast/css/acid2.html
 fast/css/bidi-override-in-anonymous-block.html
 fast/css/clip-zooming.html
 fast/css/content-counter-010.htm
@@ -957,8 +958,6 @@ http/tests/media/media-source/mediasource-duration.html
 http/tests/media/reload-after-dialog.html
 http/tests/media/video-buffered-range-contains-currentTime.html
 http/tests/media/video-frame-size-change.html
-http/tests/misc/acid2.html
-http/tests/misc/acid3.html
 http/tests/misc/hover-state-recomputed-on-main-frame.html
 http/tests/misc/insert-iframe-into-xml-document-before-xsl-transform.html
 http/tests/navigation/location-change-repeated-from-blank.html

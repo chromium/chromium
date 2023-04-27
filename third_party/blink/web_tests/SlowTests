@@ -50,7 +50,6 @@ crbug.com/24182 [ Release ] http/tests/cache/subresource-expiration-1.html [ Slo
 crbug.com/24182 [ Debug Linux ] http/tests/cache/subresource-expiration-2.html [ Slow ]
 crbug.com/24182 [ Debug Mac12 ] http/tests/cache/subresource-expiration-2.html [ Slow ]
 crbug.com/24182 [ Release ] http/tests/cache/subresource-expiration-2.html [ Slow ]
-crbug.com/24182 http/tests/misc/acid3.html [ Slow ]
 crbug.com/24182 [ Release ] http/tests/misc/object-embedding-svg-delayed-size-negotiation-2.htm [ Slow ]
 crbug.com/24182 http/tests/misc/uncacheable-script-repeated.html [ Slow ]
 crbug.com/24182 [ Debug Linux ] http/tests/navigation/slowmetaredirect-basic.html [ Slow ]
