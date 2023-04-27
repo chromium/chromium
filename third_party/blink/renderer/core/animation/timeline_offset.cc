@@ -168,6 +168,12 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
 
 /* static */
 Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
+  // Elements without the computed style don't have a layout box,
+  // so the timeline will be inactive.
+  // See ScrollTimeline::IsResolved.
+  if (!element->GetComputedStyle()) {
+    return Length::Fixed();
+  }
   ElementResolveContext element_resolve_context(*element);
   Document& document = element->GetDocument();
   // TODO(kevers): Re-resolve any value that is not px or % on a style change.
