@@ -128,7 +128,11 @@ component("clipboard") {
   }
 
   if (is_ios) {
-    sources += [ "clipboard_ios.mm" ]
+    sources += [
+      "clipboard_ios.h",
+      "clipboard_ios.mm",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (is_win) {
     sources += [
@@ -229,7 +233,17 @@ source_set("clipboard_test") {
   sources = []
   output_name = "ui_base_clipboard_test"
 
-  if (!is_ios) {
+  if (is_ios) {
+    if (use_blink) {
+      # On other OSs, clipboard platform unit tests are run as part of
+      # interactive_ui_tests. However, since interactive_ui_tests is not yet
+      # ready for Blink iOS, we run them here for now.
+      sources += [
+        "clipboard_test_template.h",
+        "clipboard_unittest.cc",
+      ]
+    }
+  } else {
     sources += [
       "custom_data_helper_unittest.cc",
       "test/test_clipboard_unittest.cc",

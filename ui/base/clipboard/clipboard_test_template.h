@@ -596,7 +596,7 @@ static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
 TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_F16_Premul) {
   constexpr F16x4 kRGBAF16Premul = {0x30c5, 0x2d86, 0x2606, 0x3464};
   constexpr U8x4 kRGBAPremul = {0x26, 0x16, 0x06, 0x46};
-  EXPECT_DEATH(
+  EXPECT_DEATH_IF_SUPPORTED(
       TestBitmapWriteAndPngRead(
           &this->clipboard(),
           SkImageInfo::Make(1, 1, kRGBA_F16_SkColorType, kPremul_SkAlphaType),
@@ -720,7 +720,7 @@ TYPED_TEST(ClipboardTest, MultiplePickleTest) {
 }
 
 // TODO(crbug.com/106449): Implement multiple custom format write on Chrome OS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 TYPED_TEST(ClipboardTest, DataTest) {
   const std::string kFormatString = "web chromium/x-test-format";
   const std::u16string kFormatString16 = u"chromium/x-test-format";
