@@ -165,13 +165,7 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
              RenderFrameHost::kNoFrameTreeNodeId);
   }
 
-  // When `kPrerender2SequentialPrerendering` feature is enabled, the prerender
-  // host can be pending until the host starts or is cancelled. So the outcome
-  // is set here to track the pending status.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPrerender2SequentialPrerendering)) {
-    SetTriggeringOutcome(PreloadingTriggeringOutcome::kTriggeredButPending);
-  }
+  SetTriggeringOutcome(PreloadingTriggeringOutcome::kTriggeredButPending);
 
   scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::Create(web_contents.GetBrowserContext());

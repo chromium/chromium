@@ -4891,8 +4891,7 @@ class PrerenderSequentialPrerenderingBrowserTest : public PrerenderBrowserTest {
         {{blink::features::kPrerender2,
           {{"max_num_of_running_speculation_rules",
             base::NumberToString(MaxNumOfRunningPrerenders())},
-           {"embedder_blocked_hosts", "a.test,b.test,c.test"}}},
-         {blink::features::kPrerender2SequentialPrerendering, {}}},
+           {"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
         {});
   }
 

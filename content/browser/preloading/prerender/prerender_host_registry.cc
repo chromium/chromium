@@ -442,43 +442,33 @@ int PrerenderHostRegistry::CreateAndStartHost(
         std::move(prerender_host);
   }
 
-  // TODO(crbug.com/1355151): Complete the implementation of
-  // `pending_prerenders_` handling such as removing the pending request from
-  // the queue on cancellation to unwrap this feature flag.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPrerender2SequentialPrerendering)) {
-    switch (attributes.trigger_type) {
-      case PrerenderTriggerType::kSpeculationRule:
-      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
-        pending_prerenders_.push_back(frame_tree_node_id);
-        // Start the initial prerendering navigation of the pending request in
-        // the head of the queue if there's no running prerender.
-        if (running_prerender_host_id_ == RenderFrameHost::kNoFrameTreeNodeId) {
-          // No running prerender means that no other prerender is waiting in
-          // the pending queue, because the prerender sequence only stops when
-          // all the pending prerenders are started.
-          CHECK_EQ(pending_prerenders_.size(), 1u);
-          int started_frame_tree_node_id =
-              StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
-          CHECK(started_frame_tree_node_id == frame_tree_node_id ||
-                started_frame_tree_node_id ==
-                    RenderFrameHost::kNoFrameTreeNodeId);
-          frame_tree_node_id = started_frame_tree_node_id;
-        }
-        break;
-      case PrerenderTriggerType::kEmbedder:
-        // The prerendering request from embedder should have high-priority
-        // because embedder prediction is more likely for the user to visit.
-        // Hold the return value of `StartPrerendering` because the requested
-        // prerender might be cancelled due to some restrictions and
-        // `kNoFrameTreeNodeId` should be returned in that case.
-        frame_tree_node_id = StartPrerendering(frame_tree_node_id);
-    }
-  } else {
-    // Hold the return value of `StartPrerendering` because the requested
-    // prerender might be cancelled due to some restrictions and
-    // `kNoFrameTreeNodeId` should be returned in that case.
-    frame_tree_node_id = StartPrerendering(frame_tree_node_id);
+  switch (attributes.trigger_type) {
+    case PrerenderTriggerType::kSpeculationRule:
+    case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+      pending_prerenders_.push_back(frame_tree_node_id);
+      // Start the initial prerendering navigation of the pending request in
+      // the head of the queue if there's no running prerender.
+      if (running_prerender_host_id_ == RenderFrameHost::kNoFrameTreeNodeId) {
+        // No running prerender means that no other prerender is waiting in
+        // the pending queue, because the prerender sequence only stops when
+        // all the pending prerenders are started.
+        CHECK_EQ(pending_prerenders_.size(), 1u);
+        int started_frame_tree_node_id =
+            StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
+        CHECK(started_frame_tree_node_id == frame_tree_node_id ||
+              started_frame_tree_node_id ==
+                  RenderFrameHost::kNoFrameTreeNodeId);
+        frame_tree_node_id = started_frame_tree_node_id;
+      }
+      break;
+    case PrerenderTriggerType::kEmbedder:
+      // The prerendering request from embedder should have high-priority
+      // because embedder prediction is more likely for the user to visit.
+      // Hold the return value of `StartPrerendering` because the requested
+      // prerender might be cancelled due to some restrictions and
+      // `kNoFrameTreeNodeId` should be returned in that case.
+      frame_tree_node_id = StartPrerendering(frame_tree_node_id);
+      break;
   }
 
   return frame_tree_node_id;
@@ -512,8 +502,6 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
   // memory pressure level goes down.
 
   if (frame_tree_node_id == RenderFrameHost::kNoFrameTreeNodeId) {
-    CHECK(base::FeatureList::IsEnabled(
-        blink::features::kPrerender2SequentialPrerendering));
     CHECK_EQ(running_prerender_host_id_, RenderFrameHost::kNoFrameTreeNodeId);
 
     for (auto iter = pending_prerenders_.begin();
@@ -561,34 +549,24 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 
-  // Check the current memory usage and destroy a prerendering if the entire
-  // browser uses excessive memory. This occurs asynchronously.
   switch (prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
               ->trigger_type()) {
     case PrerenderTriggerType::kSpeculationRule:
     case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+      // Check the current memory usage and destroy a prerendering if the entire
+      // browser uses excessive memory. This occurs asynchronously.
       DestroyWhenUsingExcessiveMemory(frame_tree_node_id);
+
+      // Update the `running_prerender_host_id` to the starting prerender's id.
+      running_prerender_host_id_ = frame_tree_node_id;
       break;
     case PrerenderTriggerType::kEmbedder:
       // We don't check the memory usage for embedder triggered prerenderings
       // for now.
-      break;
-  }
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPrerender2SequentialPrerendering)) {
-    // Update the `running_prerender_host_id` to the starting prerender's id.
-    switch (prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
-                ->trigger_type()) {
-      case PrerenderTriggerType::kSpeculationRule:
-      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
-        running_prerender_host_id_ = frame_tree_node_id;
-        break;
-      case PrerenderTriggerType::kEmbedder:
-        // `running_prerender_host_id` only tracks the id for speculation rules
-        // trigger, so we don't update it in the case of embedder.
-        break;
-    }
+      // `running_prerender_host_id` only tracks the id for speculation rules
+      // trigger, so we also don't update it in the case of embedder.
+      break;
   }
 
   RecordPrerenderTriggered(
@@ -648,9 +626,7 @@ std::set<int> PrerenderHostRegistry::CancelHosts(
   }
 
   // Start another prerender if the running prerender is cancelled.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPrerender2SequentialPrerendering) &&
-      running_prerender_host_id_ == RenderFrameHost::kNoFrameTreeNodeId) {
+  if (running_prerender_host_id_ == RenderFrameHost::kNoFrameTreeNodeId) {
     StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
   }
 
@@ -1091,9 +1067,7 @@ void PrerenderHostRegistry::DidFinishNavigation(
 
   prerender_host->DidFinishNavigation(navigation_handle);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPrerender2SequentialPrerendering) &&
-      running_prerender_host_id_ == main_frame_host_id) {
+  if (running_prerender_host_id_ == main_frame_host_id) {
     running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
     StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
   }
@@ -1136,12 +1110,9 @@ void PrerenderHostRegistry::OnVisibilityChanged(Visibility visibility) {
     timeout_timer_for_embedder_.Stop();
     timeout_timer_for_speculation_rules_.Stop();
 
-    if (base::FeatureList::IsEnabled(
-            blink::features::kPrerender2SequentialPrerendering)) {
-      // Start the next prerender if needed.
-      if (running_prerender_host_id_ == RenderFrameHost::kNoFrameTreeNodeId) {
-        StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
-      }
+    // Start the next prerender if needed.
+    if (running_prerender_host_id_ == RenderFrameHost::kNoFrameTreeNodeId) {
+      StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
     }
   }
 }
@@ -1235,8 +1206,6 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   }
 
   if (!host->GetInitialNavigationId().has_value()) {
-    CHECK(base::FeatureList::IsEnabled(
-        blink::features::kPrerender2SequentialPrerendering));
     CancelHost(host->frame_tree_node_id(),
                PrerenderFinalStatus::kActivatedBeforeStarted);
     return RenderFrameHost::kNoFrameTreeNodeId;

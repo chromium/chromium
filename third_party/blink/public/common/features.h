@@ -161,9 +161,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSharedStorageSelectURLBitBudgetPerOriginPerPageLoad;
 
-// Enables the multiple prerendering in a sequential way:
-// https://crbug.com/1355151
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2SequentialPrerendering);
 // Enables the same-origin main frame navigation in a prerendered page.
 // See https://crbug.com/1239281.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2MainFrameNavigation);
