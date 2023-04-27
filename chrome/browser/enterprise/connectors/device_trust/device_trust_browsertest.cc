@@ -146,7 +146,7 @@ constexpr int kHardFailureCode = 400;
 }  // namespace
 
 class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
- public:
+ protected:
   DeviceTrustBrowserTestBase() { ResetState(); }
 
   void SetUpOnMainThread() override {
@@ -323,16 +323,11 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 1);
   }
 
-  virtual void AttestationFullFlowKeyExistsTest(bool key_exists) {
+  virtual void AttestationFullFlowTest() {
     ResetState();
 
     GURL redirect_url = GetRedirectUrl();
     TestNavigationManager first_navigation(web_contents(), redirect_url);
-
-#if !BUILDFLAG(IS_WIN)
-    // "KeyCreation" test case is not available to non-Windows for now.
-    ASSERT_TRUE(key_exists);
-#endif  // BUILDFLAG(IS_WIN)
 
     // Add allowed domain to Prefs and trigger a navigation to it.
     SetPolicy();
@@ -347,6 +342,19 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     challenge_response_request_.reset();
   }
 
+  void VerifyDisabledFeatureFlow() {
+    // If the feature flag is disabled, the attestation flow should not have
+    // been triggered (and that is the end of the test);
+    EXPECT_FALSE(initial_attestation_request_);
+    EXPECT_FALSE(challenge_response_request_);
+
+    histogram_tester_->ExpectTotalCount(kFunnelHistogramName, 0);
+    histogram_tester_->ExpectTotalCount(kResultHistogramName, 0);
+    histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 0);
+    histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 0);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::string test_header_ = kChallenge;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -357,7 +365,6 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
   absl::optional<const net::test_server::HttpRequest>
       challenge_response_request_;
 
- protected:
   void SetPolicyValues(enterprise_management::PolicyData* browser_policy_data,
                        enterprise_management::PolicyData* user_policy_data) {
     browser_policy_data->set_obfuscated_customer_id(kFakeCustomerId);
@@ -438,8 +445,9 @@ class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
 using DeviceTrustBrowserTest = DeviceTrustAshBrowserTest;
 #else
 class DeviceTrustDesktopBrowserTest : public DeviceTrustBrowserTestBase {
- public:
-  DeviceTrustDesktopBrowserTest() {
+ protected:
+  explicit DeviceTrustDesktopBrowserTest(bool create_preexisting_key = true)
+      : create_preexisting_key_(create_preexisting_key) {
     browser_dm_token_storage_ =
         std::make_unique<policy::FakeBrowserDMTokenStorage>();
     browser_dm_token_storage_->SetEnrollmentToken(kFakeEnrollmentToken);
@@ -458,6 +466,10 @@ class DeviceTrustDesktopBrowserTest : public DeviceTrustBrowserTestBase {
     device_trust_test_environment_win_->SetExpectedDMToken(kFakeBrowserDMToken);
     device_trust_test_environment_win_->SetExpectedClientID(
         kFakeBrowserClientId);
+
+    if (create_preexisting_key_) {
+      device_trust_test_environment_win_->SetUpExistingKey();
+    }
 #else  // BUILDFLAG(IS_WIN)
     scoped_persistence_delegate_factory_.emplace();
     scoped_rotation_command_factory_.emplace();
@@ -490,16 +502,9 @@ class DeviceTrustDesktopBrowserTest : public DeviceTrustBrowserTestBase {
   }
 #endif
 
-  void AttestationFullFlowKeyExistsTest(bool key_exists) override {
-    // Windows DT test environment mocks the register and we need to manually
-    // create the DT key first.
-#if BUILDFLAG(IS_WIN)
-    if (key_exists) {
-      device_trust_test_environment_win_->SetUpExistingKey();
-    }
-#endif  // BUILDFLAG(IS_WIN)
-    DeviceTrustBrowserTestBase::AttestationFullFlowKeyExistsTest(key_exists);
-  }
+  // If set to true, will fake as if a key was already persisted on the device
+  // before the browser starts.
+  const bool create_preexisting_key_;
 
 #if BUILDFLAG(IS_WIN)
   absl::optional<DeviceTrustTestEnvironmentWin>
@@ -515,44 +520,30 @@ class DeviceTrustDesktopBrowserTest : public DeviceTrustBrowserTestBase {
 using DeviceTrustBrowserTest = DeviceTrustDesktopBrowserTest;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class DeviceTrustDisabledBrowserTest : public DeviceTrustBrowserTest {
- public:
-  DeviceTrustDisabledBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
-                                              false);
-  }
-
-  void VerifyDisabledFeatureFlow() {
-    // If the feature flag is disabled, the attestation flow should not have
-    // been triggered (and that is the end of the test);
-    EXPECT_FALSE(initial_attestation_request_);
-    EXPECT_FALSE(challenge_response_request_);
-
-    histogram_tester_->ExpectTotalCount(kFunnelHistogramName, 0);
-    histogram_tester_->ExpectTotalCount(kResultHistogramName, 0);
-    histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 0);
-    histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 0);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that the whole attestation flow occurs when navigating to an
 // allowed domain.
 IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationFullFlowKeyExists) {
-  AttestationFullFlowKeyExistsTest(/*key_exists=*/true);
+  AttestationFullFlowTest();
   VerifyAttestationFlowSuccessful();
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationFullFlowKeyExistsV1) {
   SetChallengeHeader(kChallengeV1);
-  AttestationFullFlowKeyExistsTest(/*key_exists=*/true);
+  AttestationFullFlowTest();
   VerifyAttestationFlowFailure();
 }
 
+class DeviceTrustDisabledBrowserTest : public DeviceTrustBrowserTest {
+ protected:
+  DeviceTrustDisabledBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
+                                              false);
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(DeviceTrustDisabledBrowserTest,
                        AttestationFullFlowKeyExists) {
-  AttestationFullFlowKeyExistsTest(/*key_exists=*/true);
+  AttestationFullFlowTest();
   VerifyDisabledFeatureFlow();
 }
 
@@ -680,40 +671,56 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, SignalsContract) {
 }
 
 #if BUILDFLAG(IS_WIN)
+
+// To test "create key" flows, there should be no pre-existing persisted key.
+class DeviceTrustCreateKeyBrowserTest : public DeviceTrustDesktopBrowserTest {
+ protected:
+  DeviceTrustCreateKeyBrowserTest()
+      : DeviceTrustDesktopBrowserTest(/*create_preexisting_key=*/false) {}
+};
+
 // Windows DT test environment mocks the registry and DT key does not exist by
 // default, in this test case a key will be created by DeviceTrustKeyManager.
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationFullFlowKeyCreation) {
-  AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
+IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyBrowserTest,
+                       AttestationFullFlowKeyCreation) {
+  AttestationFullFlowTest();
   VerifyAttestationFlowSuccessful();
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
+IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyBrowserTest,
                        AttestationFullFlowKeyCreationV1) {
   SetChallengeHeader(kChallengeV1);
-  AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
+  AttestationFullFlowTest();
   VerifyAttestationFlowFailure();
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceTrustDisabledBrowserTest,
-                       AttestationFullFlowKeyCreation) {
-  AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
-  VerifyDisabledFeatureFlow();
-  ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
-}
+// To test "create key" flows where the initial upload fails, the response code
+// needs to be mocked before the browser starts.
+class DeviceTrustCreateKeyUploadFailedBrowserTest
+    : public DeviceTrustCreateKeyBrowserTest {
+ protected:
+  DeviceTrustCreateKeyUploadFailedBrowserTest()
+      : DeviceTrustCreateKeyBrowserTest() {}
 
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
+  void SetUpOnMainThread() override {
+    DeviceTrustCreateKeyBrowserTest::SetUpOnMainThread();
+
+    // First attestation flow attempt fails when a DT attestation key does not
+    // exist, and KeyRotationCommand fails to upload the newly created key.
+    device_trust_test_environment_win_->SetUploadResult(kHardFailureCode);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyUploadFailedBrowserTest,
                        AttestationFullFlowSucceedOnThirdAttempt) {
-  // First attestation flow attempt fails when a DT attestation key does not
-  // exist, and KeyRotationCommand fails to upload the newly created key.
-  device_trust_test_environment_win_->SetUploadResult(kHardFailureCode);
-  AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
+  AttestationFullFlowTest();
   VerifyAttestationFlowSuccessful(DTAttestationResult::kSuccessNoSignature);
   // DT attestation key should not be created if attestation fails.
   ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
 
   // Second attestation flow attempt fails when key upload fails again, this is
   // for testing that consecutive failures does not break anything
-  AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
+  AttestationFullFlowTest();
   VerifyAttestationFlowSuccessful(DTAttestationResult::kSuccessNoSignature);
   ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
 
@@ -721,19 +728,17 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
   // for testing that previous failed attempts does not affect new attempts from
   // succeeding AND that metrics is working at the same time.
   device_trust_test_environment_win_->SetUploadResult(kSuccessCode);
-  AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
+  AttestationFullFlowTest();
   VerifyAttestationFlowSuccessful();
   ASSERT_TRUE(device_trust_test_environment_win_->KeyExists());
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
+IN_PROC_BROWSER_TEST_F(DeviceTrustDesktopBrowserTest,
                        RemoteCommandKeyRotationSuccess) {
-  // Create Key before remote command.
-  device_trust_test_environment_win_->SetUpExistingKey();
-
-  // Make sure key presents and stores its current value.
+  // Make sure the key is present and store its current value.
   std::vector<uint8_t> current_key_pair =
       device_trust_test_environment_win_->GetWrappedKey();
+  ASSERT_FALSE(current_key_pair.empty());
 
   auto* key_manager = g_browser_process->browser_policy_connector()
                           ->chrome_browser_cloud_management_controller()
@@ -749,13 +754,12 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
             current_key_pair);
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
+IN_PROC_BROWSER_TEST_F(DeviceTrustDesktopBrowserTest,
                        RemoteCommandKeyRotationFailure) {
-  // Create Key before remote command.
-  device_trust_test_environment_win_->SetUpExistingKey();
   // Make sure key presents and stores its current value.
   std::vector<uint8_t> current_key_pair =
       device_trust_test_environment_win_->GetWrappedKey();
+  ASSERT_FALSE(current_key_pair.empty());
 
   // Force key upload to fail, in turn failing the key rotation
   device_trust_test_environment_win_->SetUploadResult(kHardFailureCode);
@@ -773,6 +777,22 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
   EXPECT_EQ(device_trust_test_environment_win_->GetWrappedKey(),
             current_key_pair);
 }
+
+class DeviceTrustDisabledCreateKeyBrowserTest
+    : public DeviceTrustCreateKeyBrowserTest {
+ protected:
+  DeviceTrustDisabledCreateKeyBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
+                                              false);
+  }
+};
+IN_PROC_BROWSER_TEST_F(DeviceTrustDisabledCreateKeyBrowserTest,
+                       AttestationFullFlowKeyCreation) {
+  AttestationFullFlowTest();
+  VerifyDisabledFeatureFlow();
+  ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
+}
+
 #endif
 
 }  // namespace enterprise_connectors
