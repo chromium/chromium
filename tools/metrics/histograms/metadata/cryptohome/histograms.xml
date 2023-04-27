@@ -1160,10 +1160,15 @@ chromium-metrics-reviews@google.com.
     of error is TPM related.
 
     For this histogram, for every CryptohomeError that occurred, we report the
-    last ErrorLocation and the second last ErrorLocation in the CryptohomeError,
-    if the last ErrorLocation have a TPM Error Code associated with it. The
-    upper and lower 16-bit value of the reported value contains the second last
-    ErrorLocation and the TPM Error Code, correspondingly.
+    last ErrorLocation that does not have a TPM Error Code associated, and
+    optionally the last ErrorLoctaion that have a TPM Error Code associated if
+    one exist. The upper and lower 16-bit value of the reported value contains
+    the last ErrorLocation that does not have a TPM Error Code associated and
+    the TPM Error Code, correspondingly. If the CryptohomeError doesn't have a
+    TPM Error Code associated, we report only the last ErrorLocation in the
+    upper 16-bit value of the reported value, with zero for the other 16-bit. In
+    addition, we might also report success values in this histogram. Success
+    values map to zero.
 
     This histogram is also separated into several {ErrorBucket}s. The most
     standard error bucket is 'Error', which collects the errors populated in
@@ -1173,7 +1178,7 @@ chromium-metrics-reviews@google.com.
 
     This is useful to cryptohome developers because frequently, the last and
     second last ErrorLocation in the stack would be able to uniquely identify
-    the error, and this histogram doesn't involve hashing, so it woul dbe more
+    the error, and this histogram doesn't involve hashing, so it would be more
     convenient for the developers.
   </summary>
   <token key="ErrorBucket">
