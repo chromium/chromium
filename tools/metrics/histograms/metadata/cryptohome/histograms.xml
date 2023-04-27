@@ -988,7 +988,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.{ErrorBucket}.AllLocations"
-    enum="CryptohomeErrorLocation" expires_after="2023-05-01">
+    enum="CryptohomeErrorLocation" expires_after="2023-11-01">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -1026,7 +1026,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.{ErrorBucket}.DevUnexpectedState"
-    enum="CryptohomeErrorLocation" expires_after="2023-09-03">
+    enum="CryptohomeErrorLocation" expires_after="2023-11-01">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -1066,7 +1066,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.{ErrorBucket}.HashedStack"
-    enum="CryptohomeErrorHashed" expires_after="2023-09-03">
+    enum="CryptohomeErrorHashed" expires_after="2023-11-01">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -1104,7 +1104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.{ErrorBucket}.LeafErrorWithoutTPM"
-    enum="CryptohomeErrorLocation" expires_after="2023-09-03">
+    enum="CryptohomeErrorLocation" expires_after="2023-11-01">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -1143,7 +1143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.{ErrorBucket}.LeafErrorWithTPM"
-    enum="CryptohomeErrorLocationWithTPMError" expires_after="2023-09-03">
+    enum="CryptohomeErrorLocationWithTPMError" expires_after="2023-11-01">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
