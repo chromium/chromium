@@ -29,19 +29,20 @@ class TransformPaintPropertyNode;
 // scrollbar layer.
 class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
  public:
-  ScrollbarDisplayItem(DisplayItemClientId,
-                       Type,
-                       scoped_refptr<cc::Scrollbar>,
-                       const gfx::Rect& visual_rect,
-                       const TransformPaintPropertyNode* scroll_translation,
-                       CompositorElementId element_id,
-                       RasterEffectOutset outset,
-                       PaintInvalidationReason paint_invalidation_reason =
-                           PaintInvalidationReason::kJustCreated);
+  ScrollbarDisplayItem(
+      DisplayItemClientId,
+      Type,
+      scoped_refptr<cc::Scrollbar>,
+      const gfx::Rect& visual_rect,
+      scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
+      CompositorElementId element_id,
+      RasterEffectOutset outset,
+      PaintInvalidationReason paint_invalidation_reason =
+          PaintInvalidationReason::kJustCreated);
 
   const TransformPaintPropertyNode* ScrollTranslation() const {
     DCHECK(!IsTombstone());
-    return data_->scroll_translation_;
+    return data_->scroll_translation_.get();
   }
   CompositorElementId ElementId() const {
     DCHECK(!IsTombstone());
@@ -61,13 +62,14 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
   // Records a scrollbar into a GraphicsContext. Must check
   // PaintController::UseCachedItem() before calling this function.
   // |rect| is the bounding box of the scrollbar in the current transform space.
-  static void Record(GraphicsContext&,
-                     const DisplayItemClient&,
-                     DisplayItem::Type,
-                     scoped_refptr<cc::Scrollbar>,
-                     const gfx::Rect& visual_rect,
-                     const TransformPaintPropertyNode* scroll_translation,
-                     CompositorElementId element_id);
+  static void Record(
+      GraphicsContext&,
+      const DisplayItemClient&,
+      DisplayItem::Type,
+      scoped_refptr<cc::Scrollbar>,
+      const gfx::Rect& visual_rect,
+      scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
+      CompositorElementId element_id);
 
   bool IsOpaque() const;
 
@@ -80,7 +82,7 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
 
   struct Data {
     scoped_refptr<cc::Scrollbar> scrollbar_;
-    const TransformPaintPropertyNode* scroll_translation_;
+    scoped_refptr<const TransformPaintPropertyNode> scroll_translation_;
     CompositorElementId element_id_;
     // This is lazily created for non-composited scrollbar.
     mutable PaintRecord record_;
