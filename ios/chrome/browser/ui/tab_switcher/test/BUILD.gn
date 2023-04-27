@@ -18,3 +18,17 @@ source_set("utils") {
     "//net:test_support",
   ]
 }
+
+source_set("fakes") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "fake_drag_session.h",
+    "fake_drag_session.mm",
+    "fake_drop_session.h",
+    "fake_drop_session.mm",
+    "fake_tab_collection_consumer.h",
+    "fake_tab_collection_consumer.mm",
+  ]
+  deps = [ "//ios/chrome/browser/ui/tab_switcher" ]
+  frameworks = [ "UIKit.framework" ]
+}
