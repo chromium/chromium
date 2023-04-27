@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/media/web_media_source_impl.h"
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/mime_util.h"
 #include "media/base/video_decoder_config.h"
@@ -34,7 +34,7 @@ std::unique_ptr<WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
     const WebString& content_type,
     const WebString& codecs,
     WebMediaSource::AddStatus& out_status /* out */) {
-  std::string id = base::GenerateGUID();
+  std::string id = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   out_status = static_cast<WebMediaSource::AddStatus>(
       demuxer_->AddId(id, content_type.Utf8(), codecs.Utf8()));
@@ -48,7 +48,7 @@ std::unique_ptr<WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
 std::unique_ptr<WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
     std::unique_ptr<media::AudioDecoderConfig> audio_config,
     WebMediaSource::AddStatus& out_status /* out */) {
-  std::string id = base::GenerateGUID();
+  std::string id = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   out_status = static_cast<WebMediaSource::AddStatus>(
       demuxer_->AddId(id, std::move(audio_config)));
@@ -62,7 +62,7 @@ std::unique_ptr<WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
 std::unique_ptr<WebSourceBuffer> WebMediaSourceImpl::AddSourceBuffer(
     std::unique_ptr<media::VideoDecoderConfig> video_config,
     WebMediaSource::AddStatus& out_status /* out */) {
-  std::string id = base::GenerateGUID();
+  std::string id = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   out_status = static_cast<WebMediaSource::AddStatus>(
       demuxer_->AddId(id, std::move(video_config)));
