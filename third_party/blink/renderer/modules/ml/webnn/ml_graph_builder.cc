@@ -189,39 +189,6 @@ absl::optional<double> CalculateConv2dOutputSize(
   return checked_output_size.ValueOrDie();
 }
 
-// Calculate the output size for convTranspose2d based on WebNN spec:
-// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-convtranspose2d
-// Return the calculated output size if no error.
-absl::optional<uint32_t> CalculateConvTranspose2dOutputSize(
-    const uint32_t input_size,
-    const uint32_t filter_size,
-    const uint32_t beginning_padding,
-    const uint32_t ending_padding,
-    const uint32_t stride,
-    const uint32_t dilation,
-    const uint32_t output_padding,
-    String& error_message) {
-  // Calculate the dilated filter sizes.
-  auto checked_effective_filter_size =
-      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
-  if (!checked_effective_filter_size.IsValid()) {
-    error_message = "The effective filter size is too large.";
-    return absl::nullopt;
-  }
-  auto checked_output_size =
-      (base::MakeCheckedNum<uint32_t>(input_size) - 1) * stride +
-      checked_effective_filter_size - beginning_padding - ending_padding +
-      output_padding;
-  // Check if the checked_output_size is valid.
-  if (!checked_output_size.IsValid()) {
-    error_message =
-        "The stride is too large or the input size is to small for padding.";
-    return absl::nullopt;
-  }
-
-  return checked_output_size.ValueOrDie();
-}
-
 struct FloatSize2D {
   double height;
   double width;
@@ -334,140 +301,6 @@ absl::optional<FloatSize2D> ValidateAndCalculateConv2dOutputSizes(
 
   return FloatSize2D({.height = float_output_height.value(),
                       .width = float_output_width.value()});
-}
-
-struct Size2D {
-  uint32_t height;
-  uint32_t width;
-};
-
-// Validate and calculate the output spatial dimensions of convTranspose2d given
-// input sizes, filter sizes, padding, strides, dilations and output padding.
-// Return the calculated output sizes in double precision floating point number
-// if no errors.
-absl::optional<Size2D> ValidateAndCalculateConvTranspose2dOutputSizes(
-    const uint32_t input_height,
-    const uint32_t input_width,
-    const uint32_t filter_height,
-    const uint32_t filter_width,
-    const Vector<uint32_t>& padding,
-    const Vector<uint32_t>& strides,
-    const Vector<uint32_t>& dilations,
-    const Vector<uint32_t>& output_padding,
-    const V8MLAutoPad auto_pad,
-    ExceptionState& exception_state) {
-  // Validate padding and get its values.
-  if (padding.size() != 4) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The length of padding should be 4.");
-    return absl::nullopt;
-  }
-  uint32_t padding_beginning_height = padding[0];
-  uint32_t padding_ending_height = padding[1];
-  uint32_t padding_beginning_width = padding[2];
-  uint32_t padding_ending_width = padding[3];
-
-  // Validate strides and get its values.
-  if (strides.size() != 2) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The length of strides should be 2.");
-    return absl::nullopt;
-  }
-  if (base::ranges::any_of(strides, [](uint32_t x) { return x == 0; })) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "All strides should be greater than 0.");
-    return absl::nullopt;
-  }
-  const uint32_t stride_height = strides[0];
-  const uint32_t stride_width = strides[1];
-
-  // Validate dilations and get its values.
-  if (dilations.size() != 2) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The length of dilations should be 2.");
-    return absl::nullopt;
-  }
-  if (base::ranges::any_of(dilations, [](uint32_t x) { return x == 0; })) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "All dilations should be greater than 0.");
-    return absl::nullopt;
-  }
-  const uint32_t dilation_height = dilations[0];
-  const uint32_t dilation_width = dilations[1];
-
-  // Validate output padding and get its values.
-  if (output_padding.size() != 2) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The length of outputPadding should be 2.");
-    return absl::nullopt;
-  }
-  const uint32_t outputPadding_height = output_padding[0];
-  const uint32_t outputPadding_width = output_padding[1];
-  if (outputPadding_height >= stride_height ||
-      outputPadding_width >= stride_width) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The output padding must be smaller than "
-                                      "the stride along the same dimension.");
-    return absl::nullopt;
-  }
-
-  // When the autoPad is other than "explicit", the values in the
-  // options.padding array are ignored and the explicit padding values need to
-  // be calculated.
-  if (auto_pad != V8MLAutoPad::Enum::kExplicit) {
-    auto padding_sizes_height =
-        MLGraphBuilder::CalculateConvTransposed2dPadding(
-            auto_pad.AsEnum(), input_height, filter_height, stride_height,
-            dilation_height, outputPadding_height);
-    if (!padding_sizes_height) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "Overflow occurred when calculating the padding along the height "
-          "dimension.");
-      return absl::nullopt;
-    }
-    padding_beginning_height = padding_sizes_height->begin;
-    padding_ending_height = padding_sizes_height->end;
-    auto padding_sizes_width = MLGraphBuilder::CalculateConvTransposed2dPadding(
-        auto_pad.AsEnum(), input_width, filter_width, stride_width,
-        dilation_width, outputPadding_width);
-    if (!padding_sizes_width) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "Overflow occurred when calculating the padding along the width "
-          "dimension.");
-      return absl::nullopt;
-    }
-    padding_beginning_width = padding_sizes_width->begin;
-    padding_ending_width = padding_sizes_width->end;
-  }
-
-  String error_message;
-  auto output_height = CalculateConvTranspose2dOutputSize(
-      input_height, filter_height, padding_beginning_height,
-      padding_ending_height, stride_height, dilation_height,
-      outputPadding_height, error_message);
-  if (!output_height) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "Failed to calculate the output height: " + error_message);
-    return absl::nullopt;
-  }
-
-  auto output_width = CalculateConvTranspose2dOutputSize(
-      input_width, filter_width, padding_beginning_width, padding_ending_width,
-      stride_width, dilation_width, outputPadding_width, error_message);
-  if (!output_width) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "Failed to calculate the output width: " + error_message);
-    return absl::nullopt;
-  }
-
-  return Size2D(
-      {.height = output_height.value(), .width = output_width.value()});
 }
 
 MLOperand* BuildPool2d(MLGraphBuilder* builder,
@@ -757,6 +590,155 @@ MLGraphBuilder::CalculateConvTransposed2dPadding(
     return absl::nullopt;
   }
   return PaddingSizes({.begin = padding_begin, .end = padding_end});
+}
+
+// Calculate the output size for convTranspose2d based on WebNN spec:
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-convtranspose2d
+// Return the calculated output size if no error.
+absl::optional<uint32_t> CalculateConvTranspose2dOutputSize(
+    const uint32_t input_size,
+    const uint32_t filter_size,
+    const uint32_t beginning_padding,
+    const uint32_t ending_padding,
+    const uint32_t stride,
+    const uint32_t dilation,
+    const uint32_t output_padding,
+    String& error_message) {
+  // Calculate the dilated filter sizes.
+  auto checked_effective_filter_size =
+      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
+  if (!checked_effective_filter_size.IsValid()) {
+    error_message = "The effective filter size is too large.";
+    return absl::nullopt;
+  }
+  auto checked_output_size =
+      (base::MakeCheckedNum<uint32_t>(input_size) - 1) * stride +
+      checked_effective_filter_size - beginning_padding - ending_padding +
+      output_padding;
+  // Check if the checked_output_size is valid.
+  if (!checked_output_size.IsValid()) {
+    error_message =
+        "The stride is too large or the input size is to small for padding.";
+    return absl::nullopt;
+  }
+
+  return checked_output_size.ValueOrDie();
+}
+
+// static
+absl::optional<MLGraphBuilder::Size2D>
+MLGraphBuilder::ValidateAndCalculateConvTranspose2dOutputSizes(
+    const uint32_t input_height,
+    const uint32_t input_width,
+    const uint32_t filter_height,
+    const uint32_t filter_width,
+    const Vector<uint32_t>& padding,
+    const Vector<uint32_t>& strides,
+    const Vector<uint32_t>& dilations,
+    const Vector<uint32_t>& output_padding,
+    const V8MLAutoPad auto_pad,
+    String& error_message) {
+  // Validate padding and get its values.
+  if (padding.size() != 4) {
+    error_message = "The length of padding should be 4.";
+    return absl::nullopt;
+  }
+  uint32_t padding_beginning_height = padding[0];
+  uint32_t padding_ending_height = padding[1];
+  uint32_t padding_beginning_width = padding[2];
+  uint32_t padding_ending_width = padding[3];
+
+  // Validate strides and get its values.
+  if (strides.size() != 2) {
+    error_message = "The length of strides should be 2.";
+    return absl::nullopt;
+  }
+  if (base::ranges::any_of(strides, [](uint32_t x) { return x == 0; })) {
+    error_message = "All strides should be greater than 0.";
+    return absl::nullopt;
+  }
+  const uint32_t stride_height = strides[0];
+  const uint32_t stride_width = strides[1];
+
+  // Validate dilations and get its values.
+  if (dilations.size() != 2) {
+    error_message = "The length of dilations should be 2.";
+    return absl::nullopt;
+  }
+  if (base::ranges::any_of(dilations, [](uint32_t x) { return x == 0; })) {
+    error_message = "All dilations should be greater than 0.";
+    return absl::nullopt;
+  }
+  const uint32_t dilation_height = dilations[0];
+  const uint32_t dilation_width = dilations[1];
+
+  // Validate output padding and get its values.
+  if (output_padding.size() != 2) {
+    error_message = "The length of outputPadding should be 2.";
+    return absl::nullopt;
+  }
+  const uint32_t outputPadding_height = output_padding[0];
+  const uint32_t outputPadding_width = output_padding[1];
+  if (outputPadding_height >= stride_height ||
+      outputPadding_width >= stride_width) {
+    error_message =
+        "The output padding must be smaller than the stride along the same "
+        "dimension.";
+    return absl::nullopt;
+  }
+
+  // When the autoPad is other than "explicit", the values in the
+  // options.padding array are ignored and the explicit padding values need to
+  // be calculated.
+  if (auto_pad != V8MLAutoPad::Enum::kExplicit) {
+    auto padding_sizes_height =
+        MLGraphBuilder::CalculateConvTransposed2dPadding(
+            auto_pad.AsEnum(), input_height, filter_height, stride_height,
+            dilation_height, outputPadding_height);
+    if (!padding_sizes_height) {
+      error_message =
+          "Overflow occurred when calculating the padding along the height "
+          "dimension.";
+      return absl::nullopt;
+    }
+    padding_beginning_height = padding_sizes_height->begin;
+    padding_ending_height = padding_sizes_height->end;
+    auto padding_sizes_width = MLGraphBuilder::CalculateConvTransposed2dPadding(
+        auto_pad.AsEnum(), input_width, filter_width, stride_width,
+        dilation_width, outputPadding_width);
+    if (!padding_sizes_width) {
+      error_message =
+          "Overflow occurred when calculating the padding along the width "
+          "dimension.";
+      return absl::nullopt;
+    }
+    padding_beginning_width = padding_sizes_width->begin;
+    padding_ending_width = padding_sizes_width->end;
+  }
+
+  String output_size_error_message;
+  auto output_height = CalculateConvTranspose2dOutputSize(
+      input_height, filter_height, padding_beginning_height,
+      padding_ending_height, stride_height, dilation_height,
+      outputPadding_height, output_size_error_message);
+  if (!output_height) {
+    error_message =
+        "Failed to calculate the output height: " + output_size_error_message;
+    return absl::nullopt;
+  }
+
+  auto output_width = CalculateConvTranspose2dOutputSize(
+      input_width, filter_width, padding_beginning_width, padding_ending_width,
+      stride_width, dilation_width, outputPadding_width,
+      output_size_error_message);
+  if (!output_width) {
+    error_message =
+        "Failed to calculate the output width: " + output_size_error_message;
+    return absl::nullopt;
+  }
+
+  return Size2D(
+      {.height = output_height.value(), .width = output_width.value()});
 }
 
 MLOperand* MLGraphBuilder::input(String name,
@@ -1194,6 +1176,7 @@ MLOperand* MLGraphBuilder::convTranspose2d(
     }
     // If strides is not present, the values are assumed to be [1,1].
     const auto strides = options->getStridesOr({1, 1});
+    String error_message;
     const auto calculated_output_sizes =
         ValidateAndCalculateConvTranspose2dOutputSizes(
             input_height, input_width, filter_height, filter_width,
@@ -1203,8 +1186,10 @@ MLOperand* MLGraphBuilder::convTranspose2d(
             // If dilations is not present, the values are assumed to be [1, 1].
             options->getDilationsOr({1, 1}),
             // Calculate the output sizes without the output padding.
-            {0, 0}, options->autoPad(), exception_state);
+            {0, 0}, options->autoPad(), error_message);
     if (!calculated_output_sizes) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        error_message);
       return nullptr;
     }
     auto calculated_output_height = calculated_output_sizes->height;
@@ -1226,6 +1211,7 @@ MLOperand* MLGraphBuilder::convTranspose2d(
     ml_context_->LogConsoleWarning(
         "When output sizes are specified, output padding argument is ignored");
   } else {
+    String error_message;
     const auto output_sizes = ValidateAndCalculateConvTranspose2dOutputSizes(
         input_height, input_width, filter_height, filter_width,
         // If padding is not present, the values are assumed to be [0,0,0,0].
@@ -1235,9 +1221,10 @@ MLOperand* MLGraphBuilder::convTranspose2d(
         // If dilations is not present, the values are assumed to be [1, 1].
         options->getDilationsOr({1, 1}),
         // If outputPadding is not present, the values are assumed to be [0, 0].
-        options->getOutputPaddingOr({0, 0}), options->autoPad(),
-        exception_state);
+        options->getOutputPaddingOr({0, 0}), options->autoPad(), error_message);
     if (!output_sizes) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        error_message);
       return nullptr;
     }
     output_height = output_sizes->height;
