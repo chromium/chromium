@@ -105,8 +105,6 @@ BOOL WaitForKeyboardToAppear() {
             (testShowAccountStorageNoticeBeforeFillingBottomSheet)]) {
     config.features_enabled.push_back(
         password_manager::features::kEnablePasswordsAccountStorage);
-    config.features_enabled.push_back(
-        password_manager::features::kIOSShowPasswordStorageInSaveInfobar);
   }
   if ([self
           isRunningTest:@selector(testShowAccountStorageNoticeBeforeFilling)]) {

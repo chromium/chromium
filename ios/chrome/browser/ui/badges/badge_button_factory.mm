@@ -9,7 +9,6 @@
 #import "base/notreached.h"
 #import "build/build_config.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/badges/badge_button.h"
@@ -71,11 +70,8 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
   UIImage* image =
       CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kIOSShowPasswordStorageInSaveInfobar)) {
-    image = CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
-                                      kInfobarSymbolPointSize);
-  }
+  image = CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
+                                    kInfobarSymbolPointSize);
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
   BadgeButton* button = [self createButtonForType:kBadgeTypePasswordSave
                                             image:image];
@@ -93,11 +89,8 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
   UIImage* image =
       CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kIOSShowPasswordStorageInSaveInfobar)) {
-    image = CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
-                                      kInfobarSymbolPointSize);
-  }
+  image = CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
+                                    kInfobarSymbolPointSize);
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
   BadgeButton* button = [self createButtonForType:kBadgeTypePasswordUpdate
                                             image:image];

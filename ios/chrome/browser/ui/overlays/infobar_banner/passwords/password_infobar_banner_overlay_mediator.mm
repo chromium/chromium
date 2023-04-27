@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/password_infobar_banner_overlay_mediator.h"
 
 #import "build/build_config.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -49,11 +48,8 @@
   UIImage* image =
       CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kIOSShowPasswordStorageInSaveInfobar)) {
-    image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
-        kMulticolorPasswordSymbol, kInfobarSymbolPointSize));
-  }
+  image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      kMulticolorPasswordSymbol, kInfobarSymbolPointSize));
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
   return image;
 }
@@ -69,16 +65,9 @@
 
   NSString* title = config->title();
   NSString* subtitle = config->subtitle();
-  NSString* bannerAccessibilityLabel = config->customAccessibilityLabel();
-  if (bannerAccessibilityLabel) {
-    [self.consumer setBannerAccessibilityLabel:bannerAccessibilityLabel];
-  }
   [self.consumer setButtonText:config->button_text()];
   [self.consumer setIconImage:[self iconImageWithConfig:config]];
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kIOSShowPasswordStorageInSaveInfobar)) {
-    [self.consumer setIgnoreIconColorWithTint:NO];
-  }
+  [self.consumer setIgnoreIconColorWithTint:NO];
   [self.consumer setPresentsModal:YES];
   [self.consumer setTitleText:title];
   [self.consumer setSubtitleText:subtitle];

@@ -123,12 +123,6 @@ BASE_FEATURE(kIOSPasswordCheckup,
              "IOSPasswordCheckup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature flag to show local/account storage in save/update password infobar
-// subtitle.
-BASE_FEATURE(kIOSShowPasswordStorageInSaveInfobar,
-             "IOSShowPasswordStorageInSaveInfobar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables password bottom sheet to be displayed (on iOS) when a user is
 // signed-in and taps on a username or password field on a website that has at
 // least one credential saved in their password manager.
