@@ -4,6 +4,7 @@
 
 #include "media/gpu/video_rate_control.h"
 
+#include "base/notreached.h"
 #include "third_party/libaom/source/libaom/av1/ratectrl_rtc.h"
 #include "third_party/libvpx/source/libvpx/vp8/vp8_ratectrl_rtc.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
@@ -11,12 +12,29 @@
 namespace media {
 
 // Template method specialization for VP9.
-// TODO(mcasas): Remove when VP8 also has a GetLoopfilterLevel() method.
+// TODO(b/278162842): Remove when AV1 also has a GetLoopfilterLevel() method.
 template <>
 int VideoRateControl<libvpx::VP9RateControlRtcConfig,
                      libvpx::VP9RateControlRTC,
                      libvpx::VP9FrameParamsQpRTC>::GetLoopfilterLevel() const {
   return impl_->GetLoopfilterLevel();
+}
+
+// Template method specialization for VP8.
+template <>
+int VideoRateControl<libvpx::VP8RateControlRtcConfig,
+                     libvpx::VP8RateControlRTC,
+                     libvpx::VP8FrameParamsQpRTC>::GetLoopfilterLevel() const {
+  return impl_->GetLoopfilterLevel();
+}
+
+// Template method specialization for VP8.
+template <>
+int VideoRateControl<aom::AV1RateControlRtcConfig,
+                     aom::AV1RateControlRTC,
+                     aom::AV1FrameParamsRTC>::GetLoopfilterLevel() const {
+  NOTIMPLEMENTED();
+  return -1;
 }
 
 template <>

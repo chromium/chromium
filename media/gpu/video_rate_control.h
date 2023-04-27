@@ -41,8 +41,7 @@ class VideoRateControl {
     impl_->ComputeQP(frame_params);
     return impl_->GetQP();
   }
-  // GetLoopfilterLevel() is only available for VP9 -- see .cc file.
-  virtual int GetLoopfilterLevel() const { return -1; }
+  virtual int GetLoopfilterLevel() const;
   virtual void PostEncodeUpdate(uint64_t encoded_frame_size,
                                 const U& frame_params);
 

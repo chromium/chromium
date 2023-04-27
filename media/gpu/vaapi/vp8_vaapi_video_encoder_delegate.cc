@@ -130,14 +130,6 @@ Vp8FrameHeader GetDefaultVp8FrameHeader(bool keyframe,
   hdr.frame_type =
       keyframe ? Vp8FrameHeader::KEYFRAME : Vp8FrameHeader::INTERFRAME;
 
-  // TODO(sprang): Make this dynamic. Value based on reference implementation
-  // in libyami (https://github.com/intel/libyami).
-
-  // Sets the highest loop filter level.
-  // TODO(b/188853141): Set a loop filter level computed by a rate controller
-  // every frame once the rate controller supports it.
-  hdr.loopfilter_hdr.level = 63;
-
   // A VA-API driver recommends to set forced_lf_adjustment on keyframe.
   // Set loop_filter_adj_enable to 1 here because forced_lf_adjustment is read
   // only when a macroblock level loop filter adjustment.
@@ -531,8 +523,12 @@ void VP8VaapiVideoEncoderDelegate::SetFrameHeader(
 
   picture.frame_hdr->quantization_hdr.y_ac_qi =
       rate_ctrl_->ComputeQP(frame_params);
+  picture.frame_hdr->loopfilter_hdr.level =
+      base::checked_cast<uint8_t>(rate_ctrl_->GetLoopfilterLevel());
   DVLOGF(4) << "qp="
             << static_cast<int>(picture.frame_hdr->quantization_hdr.y_ac_qi)
+            << ", filter_level="
+            << static_cast<int>(picture.frame_hdr->loopfilter_hdr.level)
             << (keyframe ? " (keyframe)" : "")
             << (picture.metadata_for_encoding
                     ? " temporal id=" +
