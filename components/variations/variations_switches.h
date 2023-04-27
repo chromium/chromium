@@ -43,6 +43,8 @@ COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsSeedFetchInterval[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kEnableFinchSeedDeltaCompression[];
+COMPONENT_EXPORT(VARIATIONS)
+extern const char kAcceptEmptySeedSignatureForTesting[];
 
 }  // namespace switches
 }  // namespace variations
