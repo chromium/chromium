@@ -4346,6 +4346,31 @@
             ]
         }
     ],
+    "DevToolsTabTarget": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DevToolsTabTarget"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "DevToolsTabTarget"
+                    ]
+                }
+            ]
+        }
+    ],
     "DexFixer": [
         {
             "platforms": [
