@@ -77,6 +77,11 @@ bool SiteInstanceGroup::IsRelatedSiteInstanceGroup(SiteInstanceGroup* group) {
   return browsing_instance_id() == group->browsing_instance_id();
 }
 
+bool SiteInstanceGroup::IsCoopRelatedSiteInstanceGroup(
+    SiteInstanceGroup* group) {
+  return GetCoopRelatedGroupId() == group->GetCoopRelatedGroupId();
+}
+
 void SiteInstanceGroup::RenderProcessHostDestroyed(RenderProcessHost* host) {
   DCHECK_EQ(process_->GetID(), host->GetID());
   process_->RemoveObserver(this);
@@ -122,6 +127,10 @@ void SiteInstanceGroup::WriteIntoTrace(
   proto->set_site_instance_group_id(GetId().value());
   proto->set_active_frame_count(active_frame_count());
   proto.Set(TraceProto::kProcess, process());
+}
+
+CoopRelatedGroupId SiteInstanceGroup::GetCoopRelatedGroupId() const {
+  return browsing_instance_->GetCoopRelatedGroupId();
 }
 
 }  // namespace content

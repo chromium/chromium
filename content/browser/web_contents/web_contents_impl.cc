@@ -7583,6 +7583,11 @@ void WebContentsImpl::UpdateWindowPreferredSize(const gfx::Size& pref_size) {
   OnPreferredSizeChanged(old_size);
 }
 
+// TODO(https://crbug.com/1424417): This function is used exclusively for COOP
+// reporting, to determine what other pages might try to access this page, for
+// the purpose of installing and removing access reporters. Update it to handle
+// CoopRelatedGroups instead of BrowsingContextGroups as a part of COOP:
+// restrict-properties reporting implementation.
 std::vector<RenderFrameHostImpl*>
 WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
     RenderFrameHostImpl* render_frame_host) {

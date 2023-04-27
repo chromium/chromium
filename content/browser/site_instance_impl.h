@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "content/browser/coop_related_group.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/site_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
@@ -457,6 +458,11 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // is weaker than IsRelatedSiteInstance: if two SiteInstances belong to the
   // same BrowsingInstance, they are related and COOP related.
   bool IsCoopRelatedSiteInstance(const SiteInstanceImpl* instance) const;
+
+  // Returns the ID of the CoopRelatedGroup this SiteInstance belongs to. Prefer
+  // using IsCoopRelatedSiteInstance() instead of directly comparing IDs to know
+  // if two SiteInstances belong to the same CoopRelatedGroup.
+  CoopRelatedGroupId GetCoopRelatedGroupId() const;
 
   // Returns the unique origin of all top-level documents in this
   // BrowsingInstance. This is only guaranteed by the use of a unique COOP value

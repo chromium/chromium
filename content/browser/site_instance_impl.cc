@@ -1500,6 +1500,10 @@ bool SiteInstanceImpl::IsCoopRelatedSiteInstance(
          browsing_instance_->GetCoopRelatedGroupId();
 }
 
+CoopRelatedGroupId SiteInstanceImpl::GetCoopRelatedGroupId() const {
+  return browsing_instance_->GetCoopRelatedGroupId();
+}
+
 void SiteInstanceImpl::SetProcessForTesting(RenderProcessHost* process) {
   SetProcessInternal(process);
 }

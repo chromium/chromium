@@ -49,10 +49,7 @@ TEST(BrowsingContextGroupSwap, CreateRelatedCoopSwap) {
   EXPECT_EQ(BrowsingContextGroupSwapType::kRelatedCoopSwap,
             related_coop_swap.type());
   EXPECT_TRUE(related_coop_swap.ShouldSwap());
-  // TODO(https://crbug.com/1221127): Once we have the COOP group to support
-  // creating proxies across BrowsingInstances, and we correctly clear them as
-  // well, change the expectatin below to EXPECT_FALSE.
-  EXPECT_TRUE(related_coop_swap.ShouldClearProxiesOnCommit());
+  EXPECT_FALSE(related_coop_swap.ShouldClearProxiesOnCommit());
   EXPECT_TRUE(related_coop_swap.ShouldClearWindowName());
   EXPECT_EQ(ShouldSwapBrowsingInstance::kYes_ForceSwap,
             related_coop_swap.reason());

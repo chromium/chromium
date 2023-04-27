@@ -337,6 +337,66 @@ class CoopRestrictPropertiesBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Same as CoopRestrictPropertiesBrowserTest, but skips on platforms not
+// providing full site isolation, to help test the existence of proxies. Also
+// provides helper functions to leverage FrameTreeVisualizer. Inherits its
+// parametrization for RenderDocument and BackForwardCache.
+class CoopRestrictPropertiesProxiesBrowserTest
+    : public CoopRestrictPropertiesBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    // These tests verify what proxies exist using DepictFrameTree and exact
+    // string comparison. Return early if we would not put cross-origin
+    // iframes and popups in their own processes, which would modify the proxy
+    // structure.
+    if (!AreAllSitesIsolatedForTesting()) {
+      GTEST_SKIP();
+    }
+    CoopRestrictPropertiesBrowserTest::SetUpOnMainThread();
+  }
+
+  std::string DepictFrameTree(FrameTreeNode* node) {
+    return visualizer_.DepictFrameTree(node);
+  }
+
+  WebContentsImpl* OpenPopupAndWaitForInitialRFHDeletion(
+      RenderFrameHostImpl* opener_rfh,
+      const GURL& url,
+      const std::string& name) {
+    // First open a popup to the initial empty document, and then navigate it to
+    // the final url. This allows waiting on the deletion of the initial empty
+    // document proxies and having a clean state for proxy checking.
+    ShellAddedObserver shell_observer;
+    CHECK(ExecJs(opener_rfh, JsReplace("window.open('', $1);", name)));
+    WebContentsImpl* popup_window = static_cast<WebContentsImpl*>(
+        shell_observer.GetShell()->web_contents());
+    RenderFrameHostWrapper initial_popup_rfh(
+        popup_window->GetPrimaryMainFrame());
+    CHECK(NavigateToURLFromRenderer(initial_popup_rfh.get(), url));
+    CHECK(initial_popup_rfh.WaitUntilRenderFrameDeleted());
+    return popup_window;
+  }
+
+ private:
+  FrameTreeVisualizer visualizer_;
+};
+
+// Same as CoopRestrictPropertiesBrowserTest, but uses the new
+// BrowsingContextState mode that swaps BrowsingContextState when navigating
+// cross BrowsingInstance. Inherits its parametrization for RenderDocument and
+// BackForwardCache.
+class CoopRestrictPropertiesWithNewBrowsingContextStateModeBrowserTest
+    : public CoopRestrictPropertiesBrowserTest {
+ public:
+  CoopRestrictPropertiesWithNewBrowsingContextStateModeBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kNewBrowsingContextStateOnBrowsingContextGroupSwap}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Certain features are only active when SiteIsolation is off or restricted.
 // This is the case for example for Default SiteInstances that are used on
 // Android to limit the number of processes. Testing these particularities of
@@ -4173,6 +4233,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                          kTestParams,
                          CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
+                         CoopRestrictPropertiesProxiesBrowserTest,
+                         kTestParams,
+                         CrossOriginOpenerPolicyBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CoopRestrictPropertiesWithNewBrowsingContextStateModeBrowserTest,
+    kTestParams,
+    CrossOriginOpenerPolicyBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(All,
                          NoSiteIsolationCrossOriginIsolationBrowserTest,
                          kTestParams,
                          CrossOriginOpenerPolicyBrowserTest::DescribeParams);
@@ -5850,6 +5919,1462 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
       current_frame_host()->GetSiteInstance());
   EXPECT_FALSE(initial_si->IsRelatedSiteInstance(final_si.get()));
   EXPECT_FALSE(initial_si->IsCoopRelatedSiteInstance(final_si.get()));
+}
+
+// This test verifies that after a simple page opens a popup to a COOP:
+// restrict-properties page, we have two cross-BrowsingInstance proxies.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       SimpleCrossBrowsingInstanceProxy) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+
+  // Start by opening a popup to a COOP: rp page from a regular page.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  WebContentsImpl* popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), coop_rp_page, "");
+  RenderFrameHostImpl* popup_rfh = popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          popup_rfh->GetSiteInstance()));
+
+  // Verify that the opener and openee frames exist as proxies in each other's
+  // SiteInstanceGroup. Note that the actual sites are the same, but they exist
+  // in different SiteInstanceGroups because they are in different
+  // BrowsingInstances.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(popup_rfh->frame_tree_node()));
+}
+
+// This test verifies that a new iframe in a page that opened a popup in a
+// different BrowsingInstance in the same CoopRelatedGroup is not visible to
+// the popup.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       SubframeInMainPageCrossBrowsingInstanceProxy) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+  GURL regular_page_2(https_server()->GetURL("b.test", "/title1.html"));
+
+  // Start with a page that opens a COOP: restrict-properties popup.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  WebContentsImpl* popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), coop_rp_page, "");
+  RenderFrameHostImpl* popup_rfh = popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          popup_rfh->GetSiteInstance()));
+
+  // Now add a cross-origin iframe in the main page.
+  ASSERT_TRUE(ExecJs(current_frame_host(), JsReplace(R"(
+    const frame = document.createElement('iframe');
+    frame.src = $1;
+    document.body.appendChild(frame);
+  )",
+                                                     regular_page_2)));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  // The main frame should have proxies in both the popup's and iframe's
+  // SiteInstanceGroup. The iframe should not have a proxy in the popup's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C\n"
+      "   +--Site B ------- proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  // The popup should only have a proxy in the main frame's SiteInstanceGroup,
+  // but not the iframe's SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site C ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      C = https://a.test/",
+      DepictFrameTree(popup_rfh->frame_tree_node()));
+}
+
+// This test verifies that a new iframe in a popup that lives in a different
+// BrowsingInstance in the same CoopRelatedGroup has visibility of the opener
+// frame and of no other frame in the other BrowsingInstance.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       SubframeInPopupCrossBrowsingInstanceProxy) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL regular_page_2(https_server()->GetURL("b.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+
+  // Start with a page with a cross-origin iframe.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  ASSERT_TRUE(ExecJs(current_frame_host(), JsReplace(R"(
+    const frame = document.createElement('iframe');
+    frame.src = $1;
+    document.body.appendChild(frame);
+  )",
+                                                     regular_page_2)));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  RenderFrameHostImpl* main_page_iframe_rfh =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  // Verify that we have simple parent/child proxies.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "   +--Site B ------- proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+
+  // Now open a COOP: restrict-properties popup in another BrowsingInstance in
+  // the same CoopRelatedGroup.
+  WebContentsImpl* popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), coop_rp_page, "");
+  RenderFrameHostImpl* popup_rfh = popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          popup_rfh->GetSiteInstance()));
+
+  // The main frame should have proxies in both the popup's and iframe's
+  // SiteInstanceGroups. The iframe should not have a proxy in the popup's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C\n"
+      "   +--Site B ------- proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  // The popup should only have a proxy in the main frame's SiteInstanceGroup,
+  // but not the iframe's SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site C ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      C = https://a.test/",
+      DepictFrameTree(popup_rfh->frame_tree_node()));
+
+  // Now create a cross-origin subframe in the popup. We reuse the same url as
+  // for the main page's iframe, but it should not matter since they are in
+  // different BrowsingInstances.
+  ASSERT_TRUE(ExecJs(popup_rfh, JsReplace(R"(
+    const frame = document.createElement('iframe');
+    frame.src = $1;
+    document.body.appendChild(frame);
+  )",
+                                          regular_page_2)));
+  ASSERT_TRUE(WaitForLoadStop(popup_window));
+  RenderFrameHostImpl* popup_iframe_rfh =
+      popup_rfh->child_at(0)->current_frame_host();
+  ASSERT_FALSE(main_page_iframe_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      popup_iframe_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      main_page_iframe_rfh->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          popup_iframe_rfh->GetSiteInstance()));
+
+  // The popup's iframe should only have a proxy in its parent's
+  // SiteInstanceGroup. The popup's iframe's SiteInstanceGroup should have
+  // proxies for the parent frame and the opener, but not the opener's iframe.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C D\n"
+      "   +--Site B ------- proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://a.test/\n"
+      "      D = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site C ------------ proxies for A D\n"
+      "   +--Site D ------- proxies for C\n"
+      "Where A = https://a.test/\n"
+      "      C = https://a.test/\n"
+      "      D = https://b.test/",
+      DepictFrameTree(popup_rfh->frame_tree_node()));
+}
+
+// This test verifies that a subframe opening a popup in another
+// BrowsingInstance in the same CoopRelatedGroup gets the appropriate proxies.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       SubframeOpenerCrossBrowsingInstanceProxy) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL regular_page_2(https_server()->GetURL("b.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "b.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+
+  // Start with a page with a cross-origin iframe.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  ASSERT_TRUE(ExecJs(current_frame_host(), JsReplace(R"(
+    const frame = document.createElement('iframe');
+    frame.src = $1;
+    document.body.appendChild(frame);
+  )",
+                                                     regular_page_2)));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  RenderFrameHostImpl* iframe_rfh =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  // Verify that we have simple parent/child proxies.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "   +--Site B ------- proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+
+  // Now open a COOP: restrict-properties popup from the iframe.
+  WebContentsImpl* popup_window =
+      OpenPopupAndWaitForInitialRFHDeletion(iframe_rfh, coop_rp_page, "");
+  RenderFrameHostImpl* popup_rfh = popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(iframe_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(iframe_rfh->GetSiteInstance()->IsCoopRelatedSiteInstance(
+      popup_rfh->GetSiteInstance()));
+
+  // The main frame should have proxies in the iframe and the popup's
+  // SiteInstanceGroup. The popup cannot reach the main frame, but
+  // we still need a main frame proxy to have the iframe proxy, which cannot
+  // exist by itself. The iframe should have a proxy in the main frame's and the
+  // popup's SiteInstanceGroups.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C\n"
+      "   +--Site B ------- proxies for A C\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  // The popup should have a proxy in the iframe's SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site C ------------ proxies for B\n"
+      "Where B = https://b.test/\n"
+      "      C = https://b.test/",
+      DepictFrameTree(popup_rfh->frame_tree_node()));
+}
+
+// This test verifies that a popup opened from a popup already in a different
+// BrowsingInstance but same CoopRelatedGroup as its opener, cannot see its
+// opener's opener.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       ChainedPopupsCrossBrowsingInstanceProxies) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+  GURL coop_rp_page_2(https_server()->GetURL(
+      "b.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+
+  // Start with a regular page that opens a COOP: restrict-properties popup.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  WebContentsImpl* first_popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), coop_rp_page, "");
+  RenderFrameHostImpl* first_popup_rfh =
+      first_popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      first_popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          first_popup_rfh->GetSiteInstance()));
+
+  // Verify that the opener and openee frames exist as proxies in each other's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+
+  // Open another popup from the first popup. The three pages live in different
+  // BrowsingInstances.
+  WebContentsImpl* second_popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      first_popup_rfh, coop_rp_page_2, "");
+  RenderFrameHostImpl* second_popup_rfh =
+      second_popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      second_popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          second_popup_rfh->GetSiteInstance()));
+  ASSERT_FALSE(first_popup_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      second_popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(first_popup_rfh->GetSiteInstance()->IsCoopRelatedSiteInstance(
+      second_popup_rfh->GetSiteInstance()));
+
+  // The main frame should not have a proxy in the second popup's
+  // SiteInstanceGroup and vice versa. Only the first popup should have two
+  // proxies, one in the main frame's and one in the second popup's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A C\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/\n"
+      "      C = https://b.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+  EXPECT_EQ(
+      " Site C ------------ proxies for B\n"
+      "Where B = https://a.test/\n"
+      "      C = https://b.test/",
+      DepictFrameTree(second_popup_rfh->frame_tree_node()));
+
+  // TODO(https://crbug.com/1221127): Verify what reaching into a non existing
+  // proxy looks like. This will not be possible once the property restriction
+  // is in place, because window.opener is not an allowed property.
+  EXPECT_EQ(true, EvalJs(second_popup_rfh, "window.opener.opener == null"));
+}
+
+// This test verifies that a new popup opened from a popup in the same
+// BrowsingInstance will have visibility of all its BrowsingInstance frames, but
+// will only have visibility of the direct opener frame in a different
+// BrowsingInstance in the same CoopRelatedGroup.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       ChainedPopupsMixedBrowsingInstanceProxies) {
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL regular_page_2(https_server()->GetURL("b.test", "/title1.html"));
+
+  // Start with a COOP: restrict-properties page that opens a regular popup.
+  ASSERT_TRUE(NavigateToURL(shell(), coop_rp_page));
+  WebContentsImpl* first_popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), regular_page, "");
+  RenderFrameHostImpl* first_popup_rfh =
+      first_popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      first_popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          first_popup_rfh->GetSiteInstance()));
+
+  // Verify that the opener and openee frames exist as proxies in each other's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+
+  // Open a cross-origin popup from the first popup. It should live in a
+  // different SiteInstance in the same BrowsingInstance.
+  WebContentsImpl* second_popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      first_popup_rfh, regular_page_2, "");
+  RenderFrameHostImpl* second_popup_rfh =
+      second_popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      second_popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          second_popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(first_popup_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      second_popup_rfh->GetSiteInstance()));
+
+  // The original frame should have proxies in the first and second popup's
+  // SiteInstanceGroups, because they can respectively use opener and
+  // opener.opener to reach the original frame.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/\n"
+      "      C = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  // The first popup frame should have proxies in the original frame's and the
+  // second popup's SiteInstanceGroups, which can both reach it.
+  EXPECT_EQ(
+      " Site B ------------ proxies for A C\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/\n"
+      "      C = https://b.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+  // Finally the second popup frame should only have a proxy in the first
+  // popup's SiteInstanceGroup, because the original frame has no way to reach
+  // it.
+  EXPECT_EQ(
+      " Site C ------------ proxies for B\n"
+      "Where B = https://a.test/\n"
+      "      C = https://b.test/",
+      DepictFrameTree(second_popup_rfh->frame_tree_node()));
+}
+
+// Allows waiting until a frame name change is effective in the Browser process.
+class FrameNameChangedWaiter : public WebContentsObserver {
+ public:
+  explicit FrameNameChangedWaiter(WebContents* web_contents,
+                                  RenderFrameHostImpl* frame,
+                                  const std::string& expected_name)
+      : WebContentsObserver(web_contents),
+        frame_(frame),
+        expected_name_(expected_name) {}
+
+  // This will wait until the given frame, in the given WebContents, changes its
+  // name to the expected name, all given during construction.
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void FrameNameChanged(RenderFrameHost* render_frame_host,
+                        const std::string& name) override {
+    if (render_frame_host == frame_.get() && name == expected_name_) {
+      run_loop_.Quit();
+    }
+  }
+
+  raw_ptr<RenderFrameHostImpl> frame_;
+  std::string expected_name_;
+  base::RunLoop run_loop_;
+};
+
+// This test verifies that proxies usually created to support named targeting
+// are not created for cross-BrowsingInstance frames.
+// TODO(https://crbug.com/1370357): This test will likely need to change if we
+// implement per-BrowsingInstance names. In that case, named targeting would be
+// possible using the per-BrowsingContextGroup names, and proxies should be
+// created.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       NamedTargetingCrossBrowsingInstanceProxies) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL regular_page_2(https_server()->GetURL("b.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+
+  // Start with a regular page, with a cross-origin subframe.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  ASSERT_TRUE(ExecJs(current_frame_host(), JsReplace(R"(
+    const frame = document.createElement('iframe');
+    frame.src = $1;
+    document.body.appendChild(frame);
+  )",
+                                                     regular_page_2)));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Now open a COOP: restrict-properties popup with a name. The name should be
+  // cleared and trigger no extra proxy creation.
+  WebContentsImpl* popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), coop_rp_page, "test_name");
+  RenderFrameHostImpl* popup_rfh = popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          popup_rfh->GetSiteInstance()));
+
+  // Verify that the popup frame is not proxied in the iframe's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C\n"
+      "   +--Site B ------- proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site C ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      C = https://a.test/",
+      DepictFrameTree(popup_rfh->frame_tree_node()));
+
+  // Manually update the popup name. By the time the WebContentsObserver gets
+  // notified of a frame name change, we've run the proxy creation code, so this
+  // should be enough to wait for.
+  FrameNameChangedWaiter frame_name_changed(popup_window, popup_rfh,
+                                            "another_name");
+  ASSERT_TRUE(ExecJs(popup_rfh, "window.name = 'another_name';"));
+  frame_name_changed.Wait();
+
+  // No extra proxy should be created when a name is set.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C\n"
+      "   +--Site B ------- proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site C ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      C = https://a.test/",
+      DepictFrameTree(popup_rfh->frame_tree_node()));
+}
+
+// This test verifies that proxies are created on demand to support postMessage
+// event.source, even cross-BrowsingInstance.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       PostMessageProxiesCrossBrowsingInstance) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+  GURL regular_page_2(https_server()->GetURL("b.test", "/title1.html"));
+
+  // Start from a regular page and open a COOP: restrict-properties popup.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  WebContentsImpl* popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), coop_rp_page, "");
+  RenderFrameHostImpl* popup_rfh = popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          popup_rfh->GetSiteInstance()));
+
+  // Verify that the opener and openee frames exist as proxies in each other's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(popup_rfh->frame_tree_node()));
+
+  // Add a cross-origin iframe to the popup.
+  ASSERT_TRUE(ExecJs(popup_rfh, JsReplace(R"(
+    const frame = document.createElement('iframe');
+    frame.src = $1;
+    document.body.appendChild(frame);
+  )",
+                                          regular_page_2)));
+  ASSERT_TRUE(WaitForLoadStop(popup_window));
+  RenderFrameHostImpl* iframe_rfh =
+      popup_rfh->child_at(0)->current_frame_host();
+
+  // The iframe can see the original frame via parent.opener, but there should
+  // be no proxy for the iframe in the original frame's SiteInstanceGroup,
+  // because the original frame should not be able to access it at this point.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/\n"
+      "      C = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A C\n"
+      "   +--Site C ------- proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/\n"
+      "      C = https://b.test/",
+      DepictFrameTree(popup_rfh->frame_tree_node()));
+
+  // Now send a postMessage from the iframe to the main frame, and wait for it
+  // to be received.
+  ASSERT_TRUE(ExecJs(current_frame_host(), R"(
+      window.future_message = new Promise(r => {
+        onmessage = (event) => {
+          if (event.data == 'test') {
+            window.post_message_source = event.source;
+            r();
+          }
+        }
+      }); 0;)"));  // This avoids waiting on the promise right now.
+  ASSERT_TRUE(ExecJs(iframe_rfh, "window.top.opener.postMessage('test', '*')"));
+  ASSERT_TRUE(ExecJs(current_frame_host(), "window.future_message"));
+
+  // Verify that an iframe proxy was created in the main frame's
+  // SiteInstanceGroup to support event.source.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/\n"
+      "      C = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A C\n"
+      "   +--Site C ------- proxies for A B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/\n"
+      "      C = https://b.test/",
+      DepictFrameTree(popup_rfh->frame_tree_node()));
+
+  // Finally postMessage to event.source to make sure the proxy is functional.
+  ASSERT_TRUE(ExecJs(iframe_rfh, R"(
+      window.future_message = new Promise(r => {
+        onmessage = (event) => {
+          if (event.data == 'test') r();
+        }
+      }); 0;)"));  // This avoids waiting on the promise right now.
+  ASSERT_TRUE(ExecJs(current_frame_host(),
+                     "window.post_message_source.postMessage('test', '*')"));
+  ASSERT_TRUE(ExecJs(iframe_rfh, "window.future_message"));
+}
+
+// This test verifies that proxies are created on demand to support postMessage
+// event.source, even cross-BrowsingInstance, even when the source is an iframe
+// for which the target frame's SiteInstanceGroup does not have a main frame
+// proxy yet.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       SubframePostMessageProxiesCrossBrowsingInstance) {
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL regular_page_2(https_server()->GetURL("b.test", "/title1.html"));
+  GURL regular_page_3(https_server()->GetURL("c.test", "/title1.html"));
+
+  // Start from a COOP: restrict-properties opening a regular popup.
+  ASSERT_TRUE(NavigateToURL(shell(), coop_rp_page));
+  WebContentsImpl* first_popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), regular_page, "");
+  RenderFrameHostImpl* first_popup_rfh =
+      first_popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      first_popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          first_popup_rfh->GetSiteInstance()));
+
+  // Verify that the opener and openee frames exist as proxies in each other's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+
+  // Then open a popup from the popup, in the same BrowsingInstance and add
+  // a cross-origin iframe to it. This setup makes sure that we have an iframe
+  // and a main frame that are unknown to the main page.
+  WebContentsImpl* second_popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      first_popup_rfh, regular_page_2, "");
+  RenderFrameHostImpl* second_popup_rfh =
+      second_popup_window->GetPrimaryMainFrame();
+  ASSERT_TRUE(first_popup_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      second_popup_rfh->GetSiteInstance()));
+
+  ASSERT_TRUE(ExecJs(second_popup_rfh, JsReplace(R"(
+    const frame = document.createElement('iframe');
+    frame.src = $1;
+    document.body.appendChild(frame);
+  )",
+                                                 regular_page_3)));
+  ASSERT_TRUE(WaitForLoadStop(second_popup_window));
+  RenderFrameHostImpl* iframe_rfh =
+      second_popup_rfh->child_at(0)->current_frame_host();
+
+  // The main frame should have proxies in the first popup's, second popup's and
+  // iframe's SiteInstanceGroups.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C D\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/\n"
+      "      C = https://b.test/\n"
+      "      D = https://c.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  // The first popup should have proxies in the main frame's, second popup's and
+  // iframe's SiteInstanceGroups.
+  EXPECT_EQ(
+      " Site B ------------ proxies for A C D\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/\n"
+      "      C = https://b.test/\n"
+      "      D = https://c.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+  // The second popup should have proxies in the first popup's and iframe's
+  // SiteInstanceGroups. The iframe popup should have proxies in the first and
+  // second popup's SiteInstanceGroup. Note that the main frame does not know
+  // about the second popup nor its iframe.
+  EXPECT_EQ(
+      " Site C ------------ proxies for B D\n"
+      "   +--Site D ------- proxies for B C\n"
+      "Where B = https://a.test/\n"
+      "      C = https://b.test/\n"
+      "      D = https://c.test/",
+      DepictFrameTree(second_popup_rfh->frame_tree_node()));
+
+  // Now send a postMessage from the iframe to the main frame, and wait for it
+  // to be received.
+  ASSERT_TRUE(ExecJs(current_frame_host(), R"(
+      window.future_message = new Promise(r => {
+        onmessage = (event) => {
+          if (event.data == 'test') r();
+        }
+      }); 0;)"));  // This avoids waiting on the promise right now.
+  ASSERT_TRUE(
+      ExecJs(iframe_rfh, "window.top.opener.opener.postMessage('test', '*')"));
+  ASSERT_TRUE(ExecJs(current_frame_host(), "window.future_message"));
+
+  // Verify that an iframe proxy and a second popup proxy were created in the
+  // main frame's SiteInstanceGroup to support event.source, and to make sure
+  // the iframe proxy does not float around without a main frame proxy.
+  EXPECT_EQ(
+      " Site C ------------ proxies for A B D\n"
+      "   +--Site D ------- proxies for A B C\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/\n"
+      "      C = https://b.test/\n"
+      "      D = https://c.test/",
+      DepictFrameTree(second_popup_rfh->frame_tree_node()));
+}
+
+// Smoke test for the case where a proxy for a given subframe is created before
+// other subframe proxies, that might be below it in the indexed order.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       SubframesProxiesInWrongOrderSmokeTest) {
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+  GURL regular_page(https_server()->GetURL("b.test", "/title1.html"));
+  GURL regular_page_2(https_server()->GetURL("c.test", "/title1.html"));
+  GURL regular_page_3(https_server()->GetURL("d.test", "/title1.html"));
+  GURL regular_page_4(https_server()->GetURL("e.test", "/title1.html"));
+
+  // Start from a COOP: restrict-properties opening a regular popup.
+  ASSERT_TRUE(NavigateToURL(shell(), coop_rp_page));
+  WebContentsImpl* first_popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), regular_page, "");
+  RenderFrameHostImpl* first_popup_rfh =
+      first_popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      first_popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          first_popup_rfh->GetSiteInstance()));
+
+  // Verify that the opener and openee frames exist as proxies in each other's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+
+  // Then open a popup from the popup, in the same BrowsingInstance and add
+  // a two cross-origin iframes to it. This setup makes sure that we have two
+  // iframes and a main frame that are unknown to the main page.
+  WebContentsImpl* second_popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      first_popup_rfh, regular_page_2, "");
+  RenderFrameHostImpl* second_popup_rfh =
+      second_popup_window->GetPrimaryMainFrame();
+  ASSERT_TRUE(first_popup_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      second_popup_rfh->GetSiteInstance()));
+
+  ASSERT_TRUE(
+      ExecJs(second_popup_rfh, JsReplace(R"(
+    const frame1 = document.createElement('iframe');
+    const frame2 = document.createElement('iframe');
+    frame1.src = $1;
+    frame2.src = $2;
+    document.body.appendChild(frame1);
+    document.body.appendChild(frame2);
+  )",
+                                         regular_page_3, regular_page_4)));
+  ASSERT_TRUE(WaitForLoadStop(second_popup_window));
+  RenderFrameHostImpl* first_iframe_rfh =
+      second_popup_rfh->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* second_iframe_rfh =
+      second_popup_rfh->child_at(1)->current_frame_host();
+
+  // Both iframes should have proxies in their parent's, parent's opener's and
+  // other subframe's SiteInstanceGroup. The original frame should not know
+  // about them at this stage.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C D E\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://c.test/\n"
+      "      D = https://d.test/\n"
+      "      E = https://e.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A C D E\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://c.test/\n"
+      "      D = https://d.test/\n"
+      "      E = https://e.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+  EXPECT_EQ(
+      " Site C ------------ proxies for B D E\n"
+      "   |--Site D ------- proxies for B C E\n"
+      "   +--Site E ------- proxies for B C D\n"
+      "Where B = https://b.test/\n"
+      "      C = https://c.test/\n"
+      "      D = https://d.test/\n"
+      "      E = https://e.test/",
+      DepictFrameTree(second_popup_rfh->frame_tree_node()));
+
+  // Now send a postMessage from the second iframe to the main frame, and wait
+  // for it to be received.
+  ASSERT_TRUE(ExecJs(current_frame_host(), R"(
+      window.future_message = new Promise(r => {
+        onmessage = (event) => {
+          if (event.data == 'test') r();
+        }
+      }); 0;)"));  // This avoids waiting on the promise right now.
+  ASSERT_TRUE(ExecJs(second_iframe_rfh,
+                     "window.top.opener.opener.postMessage('test', '*')"));
+  ASSERT_TRUE(ExecJs(current_frame_host(), "window.future_message"));
+
+  // The second iframe should now have a proxy in the main frame's
+  // SiteInstanceGroup, but the first iframe should not yet.
+  EXPECT_EQ(
+      " Site C ------------ proxies for A B D E\n"
+      "   |--Site D ------- proxies for B C E\n"
+      "   +--Site E ------- proxies for A B C D\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://c.test/\n"
+      "      D = https://d.test/\n"
+      "      E = https://e.test/",
+      DepictFrameTree(second_popup_rfh->frame_tree_node()));
+
+  // Now send a postMessage from the first iframe to the main frame, and wait
+  // for it to be received.
+  ASSERT_TRUE(ExecJs(current_frame_host(), R"(
+      window.future_message = new Promise(r => {
+        onmessage = (event) => {
+          if (event.data == 'test') r();
+        }
+      }); 0;)"));  // This avoids waiting on the promise right now.
+  ASSERT_TRUE(ExecJs(first_iframe_rfh,
+                     "window.top.opener.opener.postMessage('test', '*')"));
+  ASSERT_TRUE(ExecJs(current_frame_host(), "window.future_message"));
+
+  // The first iframe should now have a proxy in the main frame's
+  // SiteInstanceGroup. Creating proxies in the wrong order should not crash or
+  // cause problems.
+  EXPECT_EQ(
+      " Site C ------------ proxies for A B D E\n"
+      "   |--Site D ------- proxies for A B C E\n"
+      "   +--Site E ------- proxies for A B C D\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://c.test/\n"
+      "      D = https://d.test/\n"
+      "      E = https://e.test/",
+      DepictFrameTree(second_popup_rfh->frame_tree_node()));
+}
+
+// This test verifies that a BrowsingInstance swap to a different
+// CoopRelatedGroup clears preexisting proxies to other BrowsingInstances.
+IN_PROC_BROWSER_TEST_P(
+    CoopRestrictPropertiesProxiesBrowserTest,
+    StrictBrowsingInstanceSwapDeletesCrossBrowsingInstanceProxies) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+  GURL coop_so_page(
+      https_server()->GetURL("a.test",
+                             "/set-header"
+                             "?cross-origin-opener-policy: same-origin"));
+
+  // Start by opening a popup to a COOP: restrict-properties page from a regular
+  // page.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  WebContentsImpl* popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), coop_rp_page, "");
+  RenderFrameHostImpl* coop_rp_rfh = popup_window->GetPrimaryMainFrame();
+  scoped_refptr<SiteInstanceImpl> coop_rp_si = coop_rp_rfh->GetSiteInstance();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      coop_rp_si.get()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          coop_rp_si.get()));
+
+  // Verify that the opener and openee frames exist as proxies in each other's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://a.test/",
+      DepictFrameTree(coop_rp_rfh->frame_tree_node()));
+
+  // Navigate the popup to a COOP: same-origin page. This should trigger a swap
+  // to a BrowsingInstance in a different CoopRelatedGroup.
+  RenderFrameDeletedObserver popup_deleted_observer_1(coop_rp_rfh);
+  ASSERT_TRUE(NavigateToURL(popup_window, coop_so_page));
+  RenderFrameHostImpl* coop_so_rfh = popup_window->GetPrimaryMainFrame();
+  scoped_refptr<SiteInstanceImpl> coop_so_si = coop_so_rfh->GetSiteInstance();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      coop_so_si.get()));
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      coop_so_si.get()));
+
+  // Wait for the previous RFH to be deleted so that the proxy count does not
+  // flake.
+  popup_deleted_observer_1.WaitUntilDeleted();
+
+  // The cross-BrowsingInstance proxies should be gone.
+  EXPECT_EQ(0u, current_frame_host()->GetProxyCount());
+  EXPECT_EQ(0u, coop_so_rfh->GetProxyCount());
+
+  // Finally go back. The original COOP: restrict-properties SiteInstance will
+  // be reused.
+  RenderFrameDeletedObserver popup_deleted_observer_2(coop_so_rfh);
+  popup_window->GetController().GoBack();
+  WaitForLoadStop(popup_window);
+  RenderFrameHostImpl* back_rfh = popup_window->GetPrimaryMainFrame();
+  ASSERT_EQ(back_rfh->GetSiteInstance(), coop_rp_si.get());
+  EXPECT_FALSE(
+      back_rfh->GetSiteInstance()->IsCoopRelatedSiteInstance(coop_so_si.get()));
+
+  // BackForwardCache will kick in and store the RenderFrameHost, preventing its
+  // deletion.
+  if (!IsBackForwardCacheEnabled()) {
+    popup_deleted_observer_2.WaitUntilDeleted();
+  }
+
+  // Proxies are not re-created, because the opener was removed by going to
+  // COOP: same-origin, and is not restored when going back, despite the
+  // SiteInstance reuse.
+  EXPECT_EQ(0u, current_frame_host()->GetProxyCount());
+  EXPECT_EQ(0u, back_rfh->GetProxyCount());
+}
+
+// This test verifies that proxies are as expected after a navigation. Start on
+// a page with an existing SiteInstance before navigating to a COOP:
+// restrict-properties page.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       ExistingSiteInstanceNavigationProxies) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL regular_page_2(https_server()->GetURL("b.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "c.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+
+  // Start from a regular page and open a regular cross-origin popup.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  WebContentsImpl* first_popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), regular_page_2, "");
+  RenderFrameHostImpl* first_popup_rfh =
+      first_popup_window->GetPrimaryMainFrame();
+  ASSERT_TRUE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      first_popup_rfh->GetSiteInstance()));
+
+  // Verify that the opener and openee frames exist as proxies in each other's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+
+  // Now open from the first popup a second popup with the same url as the main
+  // page. It should reuse its SiteInstance.
+  WebContentsImpl* second_popup_window =
+      OpenPopupAndWaitForInitialRFHDeletion(first_popup_rfh, regular_page, "");
+  RenderFrameHostImpl* second_popup_rfh =
+      second_popup_window->GetPrimaryMainFrame();
+  ASSERT_EQ(current_frame_host()->GetSiteInstance(),
+            second_popup_rfh->GetSiteInstance());
+
+  // The main frame should have a proxy in the first popup's SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  // The first popup should have a proxy in the main frame's and second popup's
+  // SiteInstanceGroup (which are the same).
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+  // The second popup should have a proxy in the first popup's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(second_popup_rfh->frame_tree_node()));
+
+  // Finally, navigate the second popup to a COOP: restrict-properties page.
+  RenderFrameDeletedObserver initial_popup_rfh_observer(second_popup_rfh);
+  ASSERT_TRUE(NavigateToURL(second_popup_window, coop_rp_page));
+  RenderFrameHostImpl* final_second_popup_rfh =
+      second_popup_window->GetPrimaryMainFrame();
+  initial_popup_rfh_observer.WaitUntilDeleted();
+
+  // The main frame should have a proxy in the first popup's SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  // The first popup should have a proxy in the main frame's and second popup's
+  // SiteInstanceGroups (which are now different).
+  EXPECT_EQ(
+      " Site B ------------ proxies for A C\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://c.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+  // The second popup should have a proxy in the first popup's
+  // SiteInstanceGroup.
+  //
+  // It also exists as a proxy in the main frame's SiteInstanceGroup, because
+  // the page was initially in the same SiteInstance as the main page. When the
+  // cross-site navigation starts, a proxy of the second popup is created in
+  // its own SiteInstanceGroup, which happens to be the same as another frame.
+  // This proxy is never deleted because there is still a frame using the
+  // SiteInstanceGroup after the navigation is finished. This should be fine
+  // because being in the same SiteInstanceGroup in the first place means that
+  // the frame retaining the proxy knew about this frame's existence.
+  EXPECT_EQ(
+      " Site C ------------ proxies for A B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://c.test/",
+      DepictFrameTree(final_second_popup_rfh->frame_tree_node()));
+
+  // To confirm that the second popup is not leaking extra information in the
+  // main frame's SiteInstanceGroup, add an iframe in it and check that it does
+  // not have a proxy in the main frame's SiteInstanceGroup.
+  ASSERT_TRUE(ExecJs(final_second_popup_rfh, JsReplace(R"(
+    const frame = document.createElement('iframe');
+    frame.src = $1;
+    document.body.appendChild(frame);
+  )",
+                                                       regular_page)));
+  ASSERT_TRUE(WaitForLoadStop(second_popup_window));
+
+  // The iframe should not have a proxy in the main frame's SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site C ------------ proxies for A B D\n"
+      "   +--Site D ------- proxies for C\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://c.test/\n"
+      "      D = https://a.test/",
+      DepictFrameTree(final_second_popup_rfh->frame_tree_node()));
+}
+
+// This test verifies that proxies are as expected after a navigation. Start on
+// a page in a related SiteInstance before navigating to a COOP:
+// restrict-properties page.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       RelatedSiteInstanceNavigationProxies) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL regular_page_2(https_server()->GetURL("b.test", "/title1.html"));
+  GURL regular_page_3(https_server()->GetURL("c.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "d.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+
+  // Start from a regular page and open a regular cross-origin popup.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  WebContentsImpl* first_popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), regular_page_2, "");
+  RenderFrameHostImpl* first_popup_rfh =
+      first_popup_window->GetPrimaryMainFrame();
+  ASSERT_TRUE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      first_popup_rfh->GetSiteInstance()));
+
+  // Verify that the opener and openee frames exist as proxies in each other's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+
+  // Now open from the first popup a second popup with a third origin. It should
+  // use a new related SiteInstance.
+  WebContentsImpl* second_popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      first_popup_rfh, regular_page_3, "");
+  RenderFrameHostImpl* second_popup_rfh =
+      second_popup_window->GetPrimaryMainFrame();
+  ASSERT_TRUE(first_popup_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      second_popup_rfh->GetSiteInstance()));
+
+  // The main frame should have a proxy in the first popup's and the second
+  // popup's SiteInstanceGroups.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://c.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  // The first popup should have a proxy in the main frame's and second popup's
+  // SiteInstanceGroups.
+  EXPECT_EQ(
+      " Site B ------------ proxies for A C\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      C = https://c.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+  // The second popup should have a proxy in the first popup's
+  // SiteInstanceGroup. It does not exist as a proxy in the main frame's
+  // SiteInstanceGroup, because the main frame does not have a way to reference
+  // it.
+  EXPECT_EQ(
+      " Site C ------------ proxies for B\n"
+      "Where B = https://b.test/\n"
+      "      C = https://c.test/",
+      DepictFrameTree(second_popup_rfh->frame_tree_node()));
+
+  // Finally, navigate the second popup to a COOP: restrict-properties page.
+  RenderFrameDeletedObserver initial_popup_rfh_observer(second_popup_rfh);
+  ASSERT_TRUE(NavigateToURL(second_popup_window, coop_rp_page));
+  RenderFrameHostImpl* final_second_popup_rfh =
+      second_popup_window->GetPrimaryMainFrame();
+  initial_popup_rfh_observer.WaitUntilDeleted();
+
+  // The main frame should have a proxy in the first popup's SiteInstanceGroup,
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  // The first popup should have a proxy in the main frame's and second popup's
+  // SiteInstanceGroups.
+  EXPECT_EQ(
+      " Site B ------------ proxies for A D\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/\n"
+      "      D = https://d.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+  // The second popup should have a proxy in the first popup's
+  // SiteInstanceGroup. The main frame's SiteInstanceGroup still does not have a
+  // proxy of the second popup's frame, as opposed to the case where they
+  // initially share the same SiteInstance.
+  EXPECT_EQ(
+      " Site D ------------ proxies for B\n"
+      "Where B = https://b.test/\n"
+      "      D = https://d.test/",
+      DepictFrameTree(final_second_popup_rfh->frame_tree_node()));
+}
+
+// This test verifies that proxies are as expected after a navigation. Start on
+// a page in an unrelated SiteInstance before navigating to a COOP:
+// restrict-properties page.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       UnrelatedSiteInstanceNavigationProxies) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL regular_page_2(https_server()->GetURL("b.test", "/title1.html"));
+  GURL coop_so_page(
+      https_server()->GetURL("c.test",
+                             "/set-header"
+                             "?cross-origin-opener-policy: same-origin"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "d.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+
+  // Start from a regular page and open a regular cross-origin popup.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  WebContentsImpl* first_popup_window = OpenPopupAndWaitForInitialRFHDeletion(
+      current_frame_host(), regular_page_2, "");
+  RenderFrameHostImpl* first_popup_rfh =
+      first_popup_window->GetPrimaryMainFrame();
+  ASSERT_TRUE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      first_popup_rfh->GetSiteInstance()));
+
+  // Verify that the opener and openee frames exist as proxies in each other's
+  // SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+
+  // Open a second popup to a COOP: same-origin page. This should trigger a swap
+  // to a BrowsingInstance in a different CoopRelatedGroup.
+  WebContentsImpl* second_popup_window =
+      OpenPopupAndWaitForInitialRFHDeletion(first_popup_rfh, coop_so_page, "");
+  RenderFrameHostImpl* second_popup_rfh =
+      second_popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(first_popup_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      second_popup_rfh->GetSiteInstance()));
+
+  // The main frame should have a proxy in the first popup's SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  // The first popup should have a proxy in the main frame's SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+  // The second popup should have no proxies.
+  EXPECT_EQ(
+      " Site C\n"
+      "Where C = https://c.test/",
+      DepictFrameTree(second_popup_rfh->frame_tree_node()));
+
+  // Finally, navigate the second popup to a COOP: restrict-properties page.
+  RenderFrameDeletedObserver initial_popup_rfh_observer(second_popup_rfh);
+  ASSERT_TRUE(NavigateToURL(second_popup_window, coop_rp_page));
+  RenderFrameHostImpl* final_second_popup_rfh =
+      second_popup_window->GetPrimaryMainFrame();
+
+  // BackForwardCache will kick in and store the RenderFrameHost, preventing its
+  // deletion.
+  if (!IsBackForwardCacheEnabled()) {
+    initial_popup_rfh_observer.WaitUntilDeleted();
+  }
+
+  // No new proxy should have been created.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site B ------------ proxies for A\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+  EXPECT_EQ(
+      " Site D\n"
+      "Where D = https://d.test/",
+      DepictFrameTree(final_second_popup_rfh->frame_tree_node()));
+}
+
+// This test verifies that an opener update does not create extra proxies in
+// SiteInstanceGroups in other BrowsingInstances.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
+                       NoExtraProxyDiscoveredByOpenerUpdate) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "b.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+
+  // Set up a main page with two same-origin popups.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  WebContentsImpl* first_popup_window = static_cast<WebContentsImpl*>(
+      OpenPopup(current_frame_host(), regular_page, "")->web_contents());
+  RenderFrameHostImpl* first_popup_rfh =
+      first_popup_window->GetPrimaryMainFrame();
+  ASSERT_EQ(current_frame_host()->GetSiteInstance(),
+            first_popup_rfh->GetSiteInstance());
+
+  WebContentsImpl* second_popup_window = static_cast<WebContentsImpl*>(
+      OpenPopup(current_frame_host(), regular_page, "second_popup_name")
+          ->web_contents());
+  RenderFrameHostImpl* second_popup_rfh =
+      second_popup_window->GetPrimaryMainFrame();
+  ASSERT_EQ(current_frame_host()->GetSiteInstance(),
+            second_popup_rfh->GetSiteInstance());
+
+  // From the second popup, open a final popup to a COOP: restrict-properties
+  // page.
+  WebContentsImpl* third_popup_window =
+      OpenPopupAndWaitForInitialRFHDeletion(second_popup_rfh, coop_rp_page, "");
+  RenderFrameHostImpl* third_popup_rfh =
+      third_popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(second_popup_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      third_popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(second_popup_rfh->GetSiteInstance()->IsCoopRelatedSiteInstance(
+      third_popup_rfh->GetSiteInstance()));
+
+  // The main page should not be visible by the third popup's SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A\n"
+      "Where A = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  // Neither should the first popup's SiteInstanceGroup.
+  EXPECT_EQ(
+      " Site A\n"
+      "Where A = https://a.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+  // On the other hand, the third popup's SiteInstanceGroup should know about
+  // the second popup.
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(second_popup_rfh->frame_tree_node()));
+
+  // To begin with, window.opener.opener should return null in the second popup,
+  // because its opener is the main page which itself does not have an opener.
+  ASSERT_EQ(true, EvalJs(second_popup_rfh, "window.opener.opener == null;"));
+
+  // Now update the opener of the second popup using named targeting. The second
+  // popup's opener is now the first popup.
+  ASSERT_TRUE(ExecJs(first_popup_rfh,
+                     "window.w = window.open('', 'second_popup_name');"));
+
+  // Verify the opener was properly updated in the second popup.
+  ASSERT_EQ(true,
+            EvalJs(second_popup_rfh, "window.opener.opener.opener == null;"));
+
+  // The COOP: restrict-properties SiteInstanceGroup in the third popup should
+  // still be unaware of the main page and the first popup.
+  EXPECT_EQ(
+      " Site A\n"
+      "Where A = https://a.test/",
+      DepictFrameTree(current_frame_host()->frame_tree_node()));
+  EXPECT_EQ(
+      " Site A\n"
+      "Where A = https://a.test/",
+      DepictFrameTree(first_popup_rfh->frame_tree_node()));
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "Where A = https://a.test/\n"
+      "      B = https://b.test/",
+      DepictFrameTree(second_popup_rfh->frame_tree_node()));
+}
+
+// This test verifies that named targeting does not resolve across
+// BrowsingInstances.
+// TODO(https://crbug.com/1370350): The only way to test that named targeting
+// has not resolved is to wait for the creation of a popup. This will hang until
+// named targeting is properly restricted. Re-Enable this test when that is the
+// case.
+// TODO(https://crbug.com/1370357): Named targeting will evolve in the future,
+// when we're able to have per-BrowsingInstance names. For now, we're simply
+// blocking all named targeting.
+IN_PROC_BROWSER_TEST_P(
+    CoopRestrictPropertiesBrowserTest,
+    DISABLED_NamedTargetingIsBlockedAcrossBrowsingInstances) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+  GURL regular_page_2(https_server()->GetURL("b.test", "/title1.html"));
+
+  // 1. Verify that the set name gets cleared when opening a popup in a
+  // different BrowsingInstance.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  WebContentsImpl* popup_window = static_cast<WebContentsImpl*>(
+      OpenPopup(current_frame_host(), coop_rp_page, "name1")->web_contents());
+  RenderFrameHostImpl* popup_rfh = popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          popup_rfh->GetSiteInstance()));
+
+  EXPECT_EQ("", popup_rfh->GetFrameName());
+  EXPECT_EQ(true, EvalJs(popup_rfh, "window.name == '';"));
+
+  // 2. Verify that setting a new name to the frame still doesn't make the popup
+  // targetable.
+  FrameNameChangedWaiter frame_name_changed(popup_window, popup_rfh, "name2");
+  ASSERT_TRUE(ExecJs(popup_rfh, "window.name = 'name2';"));
+
+  // Note: This waits for the name update to reach the browser, which will send
+  // replication state updates to the renderers processes keeping proxies of
+  // this frame. Because the interfaces are associated, we expect the proxy
+  // update to happen before the script execution below.
+  frame_name_changed.Wait();
+
+  ShellAddedObserver shell_observer;
+  ASSERT_TRUE(ExecJs(current_frame_host(), "window.open('', 'name2')"));
+  shell_observer.GetShell();
+
+  // 3. Verify that a named subframe is similarly not targetable by the opening
+  // context.
+  ASSERT_TRUE(ExecJs(popup_rfh, JsReplace(R"(
+    const frame = document.createElement('iframe');
+    frame.name = 'name3';
+    frame.src = $1;
+    document.body.appendChild(frame);
+  )",
+                                          regular_page_2)));
+  ASSERT_TRUE(WaitForLoadStop(popup_window));
+
+  ShellAddedObserver shell_observer_2;
+  ASSERT_TRUE(ExecJs(current_frame_host(), "window.open('', 'name3')"));
+  shell_observer_2.GetShell();
+}
+
+// Smoke test with kNewBrowsingContextStateOnBrowsingContextGroupSwap enabled.
+// Verifies that nothing breaks when we're dealing with proxies across different
+// BrowsingInstances with COOP: restrict-properties.
+// TODO(1394669): Enable once BrowsingContextState new mode implementation is
+// further down the line. Currently this test crashes even with COOP:
+// same-origin.
+IN_PROC_BROWSER_TEST_P(
+    CoopRestrictPropertiesWithNewBrowsingContextStateModeBrowserTest,
+    DISABLED_BrowsingContextStateNewModeSmokeTest) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+
+  // Start by opening a popup to a COOP: rp page from a regular page.
+  // Note: This currently causes a crash in the renderer.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  WebContentsImpl* popup_window = static_cast<WebContentsImpl*>(
+      OpenPopup(current_frame_host(), coop_rp_page, "")->web_contents());
+  RenderFrameHostImpl* popup_rfh = popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      popup_rfh->GetSiteInstance()));
+
+  popup_window->Close();
 }
 
 IN_PROC_BROWSER_TEST_P(NoSiteIsolationCrossOriginIsolationBrowserTest,
