@@ -5821,6 +5821,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_EXTENSION_SITE_ACCESS_TOGGLE_OFF_TOOLTIP" desc="Tooltip text for the site access toggle of an extensions menu item when is off.">
         Not allowed to request access
       </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE" desc="Text of the site permissions button when extension doesn't have site access to the site">
+        No access needed
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK" desc="Text of the site permissions button when extension has site access only when clicked.">
+        Ask on every visit
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE" desc="Text of the site permissions button when extension always has site access to this site.">
+        Always on this site
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES" desc="Text of the site permissions button when extension always has site access to all sites.">
+        Always on all sites
+      </message>
        <message name="IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SETTINGS_BUTTON" desc="Text of the extension settings button in the site permissions page">
         Manage this extension
       </message>

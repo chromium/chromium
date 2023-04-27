@@ -228,6 +228,8 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state,
     ExtensionMenuItemView::SitePermissionsButtonState
         site_permissions_button_state,
+    ExtensionMenuItemView::SitePermissionsButtonAccess
+        site_permissions_button_access,
     int index) {
   auto item = std::make_unique<ExtensionMenuItemView>(
       browser_, std::move(action_controller),
@@ -237,7 +239,8 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
       base::BindRepeating(
           &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
           base::Unretained(navigation_handler_), extension_id));
-  item->Update(site_access_toggle_state, site_permissions_button_state);
+  item->Update(site_access_toggle_state, site_permissions_button_state,
+               site_permissions_button_access);
   menu_items_->AddChildViewAt(std::move(item), index);
 }
 

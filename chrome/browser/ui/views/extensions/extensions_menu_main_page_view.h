@@ -48,6 +48,8 @@ class ExtensionsMenuMainPageView : public views::View {
       ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state,
       ExtensionMenuItemView::SitePermissionsButtonState
           site_permissions_button_state,
+      ExtensionMenuItemView::SitePermissionsButtonAccess
+          site_permissions_button_access,
       int index);
 
   // Removes the menu item corresponding to `action_id`.

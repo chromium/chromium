@@ -199,6 +199,31 @@ ExtensionMenuItemView::SitePermissionsButtonState GetSitePermissionsButtonState(
              : ExtensionMenuItemView::SitePermissionsButtonState::kDisabled;
 }
 
+// Returns the sites access displayed by the `extension`'s site permissions
+// button.
+ExtensionMenuItemView::SitePermissionsButtonAccess
+GetSitePermissionsButtonAccess(const extensions::Extension& extension,
+                               Profile& profile,
+                               const ToolbarActionsModel& toolbar_model,
+                               content::WebContents& web_contents) {
+  auto site_interaction = SitePermissionsHelper(&profile).GetSiteInteraction(
+      extension, &web_contents);
+  if (site_interaction == SitePermissionsHelper::SiteInteraction::kNone) {
+    return ExtensionMenuItemView::SitePermissionsButtonAccess::kNone;
+  }
+
+  auto site_access = PermissionsManager::Get(&profile)->GetUserSiteAccess(
+      extension, web_contents.GetLastCommittedURL());
+  switch (site_access) {
+    case PermissionsManager::UserSiteAccess::kOnClick:
+      return ExtensionMenuItemView::SitePermissionsButtonAccess::kOnClick;
+    case PermissionsManager::UserSiteAccess::kOnSite:
+      return ExtensionMenuItemView::SitePermissionsButtonAccess::kOnSite;
+    case PermissionsManager::UserSiteAccess::kOnAllSites:
+      return ExtensionMenuItemView::SitePermissionsButtonAccess::kOnAllSites;
+  }
+}
+
 // Returns the state for the `extension`'s site access toggle button.
 ExtensionMenuItemView::SiteAccessToggleState GetSiteAccessToggleState(
     const extensions::Extension& extension,
@@ -348,7 +373,11 @@ void ExtensionsMenuViewController::UpdateMainPage(
     ExtensionMenuItemView::SitePermissionsButtonState
         site_permissions_button_state = GetSitePermissionsButtonState(
             *extension, *browser_->profile(), *toolbar_model_, *web_contents);
-    menu_item->Update(site_access_toggle_state, site_permissions_button_state);
+    ExtensionMenuItemView::SitePermissionsButtonAccess
+        site_permissions_button_access = GetSitePermissionsButtonAccess(
+            *extension, *browser_->profile(), *toolbar_model_, *web_contents);
+    menu_item->Update(site_access_toggle_state, site_permissions_button_state,
+                      site_permissions_button_access);
   }
 }
 
@@ -398,22 +427,27 @@ void ExtensionsMenuViewController::OnToolbarActionAdded(
   std::unique_ptr<ExtensionActionViewController> action_controller =
       ExtensionActionViewController::Create(action_id, browser_,
                                             extensions_container_);
+  auto* web_contents = GetActiveWebContents();
   ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state =
       GetSiteAccessToggleState(*action_controller->extension(),
                                *browser_->profile(), *toolbar_model_,
-                               *GetActiveWebContents());
+                               *web_contents);
   ExtensionMenuItemView::SitePermissionsButtonState
       site_permissions_button_state = GetSitePermissionsButtonState(
           *action_controller->extension(), *browser_->profile(),
-          *toolbar_model_, *GetActiveWebContents());
+          *toolbar_model_, *web_contents);
+  ExtensionMenuItemView::SitePermissionsButtonAccess
+      site_permissions_button_access = GetSitePermissionsButtonAccess(
+          *action_controller->extension(), *browser_->profile(),
+          *toolbar_model_, *web_contents);
 
-  main_page->CreateAndInsertMenuItem(std::move(action_controller), action_id,
-                                     site_access_toggle_state,
-                                     site_permissions_button_state, index);
+  main_page->CreateAndInsertMenuItem(
+      std::move(action_controller), action_id, site_access_toggle_state,
+      site_permissions_button_state, site_permissions_button_access, index);
 
-  // TODO(crbug.com/1390952): Update requests access section once such section
-  // is implemented (if the extension added requests site access, it needs to be
-  // added to such section).
+  // TODO(crbug.com/1390952): Update requests access section once
+  // such section is implemented (if the extension added requests
+  // site access, it needs to be added to such section).
   bubble_delegate_->SizeToContents();
 }
 
@@ -564,18 +598,23 @@ void ExtensionsMenuViewController::PopulateMainPage(
     std::unique_ptr<ExtensionActionViewController> action_controller =
         ExtensionActionViewController::Create(sorted_ids[i], browser_,
                                               extensions_container_);
+    auto* web_contents = GetActiveWebContents();
     ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state =
         GetSiteAccessToggleState(*action_controller->extension(),
                                  *browser_->profile(), *toolbar_model_,
-                                 *GetActiveWebContents());
+                                 *web_contents);
     ExtensionMenuItemView::SitePermissionsButtonState
         site_permissions_button_state = GetSitePermissionsButtonState(
             *action_controller->extension(), *browser_->profile(),
-            *toolbar_model_, *GetActiveWebContents());
+            *toolbar_model_, *web_contents);
+    ExtensionMenuItemView::SitePermissionsButtonAccess
+        site_permissions_button_access = GetSitePermissionsButtonAccess(
+            *action_controller->extension(), *browser_->profile(),
+            *toolbar_model_, *web_contents);
 
-    main_page->CreateAndInsertMenuItem(std::move(action_controller),
-                                       sorted_ids[i], site_access_toggle_state,
-                                       site_permissions_button_state, i);
+    main_page->CreateAndInsertMenuItem(
+        std::move(action_controller), sorted_ids[i], site_access_toggle_state,
+        site_permissions_button_state, site_permissions_button_access, i);
   }
 }
 

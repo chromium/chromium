@@ -75,7 +75,8 @@ class PermissionsManager : public KeyedService {
     bool withheld_all_sites_access = false;
   };
 
-  // The user's selected site access for an extension.
+  // The user's selected site access for an extension. Users will not be able to
+  // change this for enterprise installed extensions.
   enum class UserSiteAccess {
     kOnClick,
     kOnSite,

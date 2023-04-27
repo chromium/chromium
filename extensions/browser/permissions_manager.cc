@@ -144,6 +144,12 @@ std::unique_ptr<PermissionSet> GetAllowedPermissionsAfterWithholding(
       URLPatternSet::IntersectionBehavior::kDetailed);
 }
 
+// Returns whether the extension requests host permissions.
+bool ExtensionRequestsHostPermissions(const Extension& extension) {
+  return !PermissionsParser::GetRequiredPermissions(&extension).IsEmpty() ||
+         !PermissionsParser::GetOptionalPermissions(&extension).IsEmpty();
+}
+
 class PermissionsManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
   PermissionsManagerFactory();
@@ -354,12 +360,10 @@ PermissionsManager::UserSiteAccess PermissionsManager::GetUserSiteAccess(
 
   // Extension with no host permissions but with active tab permission has "on
   // click" access.
-  if (!CanAffectExtension(extension) &&
+  if (!ExtensionRequestsHostPermissions(extension) &&
       HasActiveTabAndCanAccess(extension, gurl)) {
     return UserSiteAccess::kOnClick;
   }
-
-  DCHECK(CanAffectExtension(extension));
 
   ExtensionSiteAccess site_access = GetSiteAccess(extension, gurl);
   if (site_access.has_all_sites_access) {
@@ -376,8 +380,8 @@ PermissionsManager::ExtensionSiteAccess PermissionsManager::GetSiteAccess(
     const GURL& url) const {
   PermissionsManager::ExtensionSiteAccess extension_access;
 
-  // Extension that cannot be affected by host permissions has no access.
-  if (!CanAffectExtension(extension)) {
+  // Extension that doesn't request host permission has no access.
+  if (!ExtensionRequestsHostPermissions(extension)) {
     return extension_access;
   }
 
@@ -451,8 +455,7 @@ bool PermissionsManager::CanAffectExtension(const Extension& extension) const {
 
   // The extension can be affected by runtime host permissions if it requests
   // host permissions.
-  return !PermissionsParser::GetRequiredPermissions(&extension).IsEmpty() ||
-         !PermissionsParser::GetOptionalPermissions(&extension).IsEmpty();
+  return ExtensionRequestsHostPermissions(extension);
 }
 
 bool PermissionsManager::CanUserSelectSiteAccess(
@@ -517,7 +520,6 @@ bool PermissionsManager::HasBroadGrantedHostPermissions(
 
 bool PermissionsManager::HasWithheldHostPermissions(
     const Extension& extension) const {
-  DCHECK(CanAffectExtension(extension));
   return extension_prefs_->GetWithholdingPermissions(extension.id());
 }
 
