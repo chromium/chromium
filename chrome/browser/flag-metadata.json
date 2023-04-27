@@ -310,7 +310,7 @@
   {
     "name": "arc-nearby-share-fuse-box",
     "owners": ["tsergeant", "alanding", "phshah", "cros-sharesheet@google.com"],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "arc-rt-vcpu-dual-core",
