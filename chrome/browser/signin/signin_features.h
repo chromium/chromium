@@ -36,6 +36,4 @@ BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
 
 BASE_DECLARE_FEATURE(kDisallowManagedProfileSignout);
 
-BASE_DECLARE_FEATURE(kPromoGaiaFlow);
-
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_
