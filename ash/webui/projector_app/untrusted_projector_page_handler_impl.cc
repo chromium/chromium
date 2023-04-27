@@ -13,6 +13,20 @@
 
 namespace ash {
 
+namespace {
+
+std::vector<ash::projector::mojom::PendingScreencastPtr>
+GetPendingScreencastsFromContainers(
+    const PendingScreencastContainerSet& pending_screencast_containers) {
+  std::vector<ash::projector::mojom::PendingScreencastPtr> result;
+  for (const auto& container : pending_screencast_containers) {
+    result.push_back(container.pending_screencast().Clone());
+  }
+  return result;
+}
+
+}  // namespace
+
 UntrustedProjectorPageHandlerImpl::UntrustedProjectorPageHandlerImpl(
     mojo::PendingReceiver<projector::mojom::UntrustedProjectorPageHandler>
         receiver,
@@ -44,6 +58,12 @@ void UntrustedProjectorPageHandlerImpl::OnSodaInstalled() {
   projector_remote_->OnSodaInstalled();
 }
 
+void UntrustedProjectorPageHandlerImpl::OnScreencastsPendingStatusChanged(
+    const PendingScreencastContainerSet& pending_screencast_containers) {
+  projector_remote_->OnScreencastsStateChange(
+      GetPendingScreencastsFromContainers(pending_screencast_containers));
+}
+
 void UntrustedProjectorPageHandlerImpl::GetNewScreencastPrecondition(
     projector::mojom::UntrustedProjectorPageHandler::
         GetNewScreencastPreconditionCallback callback) {
@@ -63,6 +83,14 @@ void UntrustedProjectorPageHandlerImpl::InstallSoda(
   ProjectorAppClient::Get()->InstallSoda();
   // We have successfully triggered the request.
   std::move(callback).Run(/*triggered=*/true);
+}
+
+void UntrustedProjectorPageHandlerImpl::GetPendingScreencasts(
+    projector::mojom::UntrustedProjectorPageHandler::
+        GetPendingScreencastsCallback callback) {
+  auto pending_screencast = GetPendingScreencastsFromContainers(
+      ProjectorAppClient::Get()->GetPendingScreencasts());
+  std::move(callback).Run(std::move(pending_screencast));
 }
 
 }  // namespace ash

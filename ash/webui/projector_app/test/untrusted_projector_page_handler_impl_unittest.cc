@@ -36,6 +36,9 @@ class MockUntrustedProjectorPageJs
   MOCK_METHOD1(OnSodaInstallProgressUpdated, void(int32_t));
   MOCK_METHOD0(OnSodaInstalled, void());
   MOCK_METHOD0(OnSodaInstallError, void());
+  MOCK_METHOD1(OnScreencastsStateChange,
+               void(std::vector<projector::mojom::PendingScreencastPtr>
+                        pending_screencasts));
 
   void FlushReceiverForTesting() { receiver_.FlushForTesting(); }
 
@@ -154,6 +157,37 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, InstallSoda) {
   base::test::TestFuture<bool> install_triggered_future;
   page().page_handler()->InstallSoda(install_triggered_future.GetCallback());
   EXPECT_TRUE(install_triggered_future.Get());
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetPendingScreencasts) {
+  const std::string name = "test_pending_screencast";
+  const std::string path = "/root/projector_data/test_pending_screencast";
+  const PendingScreencastContainerSet expected_screencasts{
+      ash::PendingScreencastContainer(
+          /*container_dir=*/base::FilePath(path), /*name=*/name,
+          /*total_size_in_bytes=*/1, /*bytes_transferred=*/0)};
+
+  ON_CALL(mock_app_client(), GetPendingScreencasts())
+      .WillByDefault(testing::ReturnRef(expected_screencasts));
+
+  base::test::TestFuture<
+      std::vector<ash::projector::mojom::PendingScreencastPtr>>
+      install_triggered_future;
+
+  page().page_handler()->GetPendingScreencasts(
+      install_triggered_future.GetCallback());
+  const auto& pending_screencasts = install_triggered_future.Get();
+  EXPECT_EQ(pending_screencasts.size(), 1u);
+  const auto& pending_screencast = pending_screencasts[0];
+  EXPECT_EQ(pending_screencast->name, name);
+  EXPECT_EQ(pending_screencast->upload_failed, false);
+  EXPECT_EQ(pending_screencast->created_time, 0.0);
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, OnScreencastsStateChange) {
+  EXPECT_CALL(page(), OnScreencastsStateChange(testing::_)).Times(1);
+  handler().OnScreencastsPendingStatusChanged(PendingScreencastContainerSet());
+  page().FlushReceiverForTesting();
 }
 
 }  // namespace ash

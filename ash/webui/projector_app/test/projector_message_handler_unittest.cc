@@ -40,15 +40,12 @@ const char kXhrResponseSuccessPath[] = "success";
 const char kXhrResponseErrorPath[] = "error";
 const char kXhrResponseStringPath[] = "response";
 
-const char kWebUIListenerCall[] = "cr.webUIListenerCallback";
 const char kWebUIResponse[] = "cr.webUIResponse";
 const char kGetAccountsCallback[] = "getAccountsCallback";
 const char kStartProjectorSessionCallback[] = "startProjectorSessionCallback";
 const char kGetOAuthTokenCallback[] = "getOAuthTokenCallback";
 const char kSendXhrCallback[] = "sendXhrCallback";
 const char kGetVideoCallback[] = "getVideoCallback";
-
-const char kGetPendingScreencastsCallback[] = "getPendingScreencastsCallback";
 
 const char kOpenFeedbackDialogCallback[] = "openFeedbackDialog";
 
@@ -118,15 +115,6 @@ class ProjectorMessageHandlerUnitTest : public testing::Test {
   }
 
   void TearDown() override { message_handler_.reset(); }
-
-  void ExpectCallToWebUI(const std::string& type,
-                         const std::string& func_name,
-                         size_t count) {
-    EXPECT_EQ(web_ui().call_data().size(), count);
-    const content::TestWebUI::CallData& call_data = FetchCallData(0);
-    EXPECT_EQ(call_data.function_name(), type);
-    EXPECT_EQ(call_data.arg1()->GetString(), func_name);
-  }
 
   const content::TestWebUI::CallData& FetchCallData(int sequence_number) {
     return *(web_ui().call_data()[sequence_number]);
@@ -401,49 +389,6 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
   // Verify error is UNSUPPORTED_URL.
   const std::string* error = arg3_dict.FindString(kXhrResponseErrorPath);
   EXPECT_EQ("UNSUPPORTED_URL", *error);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
-  const std::string name = "test_pending_screecast";
-  const std::string path = "/root/projector_data/test_pending_screecast";
-  const PendingScreencastSet expectedScreencasts{ash::PendingScreencast{
-      /*container_dir=*/base::FilePath(path), /*name=*/name,
-      /*total_size_in_bytes=*/1, /*bytes_untransferred=*/0}};
-
-  ON_CALL(mock_app_client(), GetPendingScreencasts())
-      .WillByDefault(testing::ReturnRef(expectedScreencasts));
-
-  base::Value::List list_args;
-  list_args.Append(kGetPendingScreencastsCallback);
-
-  web_ui().HandleReceivedMessage("getPendingScreencasts", list_args);
-
-  // We expect that there was only one callback to the WebUI.
-  EXPECT_EQ(web_ui().call_data().size(), 1u);
-
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kGetPendingScreencastsCallback);
-
-  // Whether the callback was rejected or not.
-  EXPECT_TRUE(call_data.arg2()->GetBool());
-  ASSERT_TRUE(call_data.arg3()->is_list());
-
-  const base::Value::List& list = call_data.arg3()->GetList();
-  // There is only one screencast.
-  EXPECT_EQ(list.size(), 1u);
-
-  const auto& screencast = list[0].GetDict();
-  EXPECT_EQ(*screencast.FindString("name"), name);
-  EXPECT_EQ(*screencast.FindDouble("createdTime"), 0);
-  EXPECT_EQ(*screencast.FindBool("uploadFailed"), false);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, OnScreencastsStateChange) {
-  message_handler()->OnScreencastsPendingStatusChanged(PendingScreencastSet());
-  ExpectCallToWebUI(kWebUIListenerCall, "onScreencastsStateChange",
-                    /*call_count=*/1u);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, CreationFlowEnabled) {

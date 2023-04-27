@@ -21,6 +21,10 @@ interface UntrustedProjectorPageHandler {
   // is returned via the OnSoda* methods defined in  UntrustedProjectorPage
   // below.
   InstallSoda() => (bool triggered);
+
+  // Requested by the Projector SWA to fetch a list of screencasts pending to
+  // upload or failed to upload.
+  GetPendingScreencasts() => (array<PendingScreencast> pending_screencasts);
 };
 
 // Implemented in Javascript to handle requests from the browser process.
@@ -28,13 +32,21 @@ interface UntrustedProjectorPage {
     // Called by the browser process when the precondition for starting a new
     // projector session changes.
     OnNewScreencastPreconditionChanged(NewScreencastPrecondition precondition);
+
     // Called by the browser process when SODA installation is making progress.
     OnSodaInstallProgressUpdated(int32 progress);
+
     // Called by the browser process when SODA has been installed.
     OnSodaInstalled();
+
     // Called by the browser process when SODA installation has
     // encountered an error.
     OnSodaInstallError();
+
+    // Called by the browser process when the pending
+    // screencasts are being uploaded to google drive change.
+    OnScreencastsStateChange(
+      array<PendingScreencast> pending_screencasts);
 };
 
 // Implemented in C++ in the browser process to set up the communication between

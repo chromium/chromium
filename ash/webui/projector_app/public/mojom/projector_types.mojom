@@ -37,3 +37,23 @@ struct NewScreencastPrecondition {
     NewScreencastPreconditionState state;
     array<NewScreencastPreconditionReason> reasons;
 };
+
+// The pending screencast that is currently being uploaded to
+// Google Drive through DrifeFs. Sent from the browser process to
+// the Javascript world.
+struct PendingScreencast {
+    // The display name of screencast. If `container_dir` is
+    // "/root/projector_data/abc", the `name` is "abc".
+    string name;
+    // The upload progress of the pending screencast.
+    uint32 upload_progress;
+    // The media file created time.
+    double created_time;
+    // True after observing
+    // drivefs::mojom::DriveError::kCantUploadStorageFull for
+    // the first time. Screencast's status might go through
+    // error -> uploading -> error -> ... -> uploaded,
+    // but it will display the error state until
+    // successfully uploaded to avoid over commnucation with user.
+    bool upload_failed;
+};

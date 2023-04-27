@@ -42,7 +42,8 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   network::mojom::URLLoaderFactory* GetUrlLoaderFactory() override;
   void OnNewScreencastPreconditionChanged(
       const ash::NewScreencastPrecondition& precondition) override;
-  const ash::PendingScreencastSet& GetPendingScreencasts() const override;
+  const ash::PendingScreencastContainerSet& GetPendingScreencasts()
+      const override;
   bool ShouldDownloadSoda() const override;
   void InstallSoda() override;
   void OnSodaInstallProgress(int combined_progress) override;
@@ -73,7 +74,7 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
 
  private:
   void NotifyScreencastsPendingStatusChanged(
-      const ash::PendingScreencastSet& pending_screencast);
+      const ash::PendingScreencastContainerSet& pending_screencast_containers);
 
   base::ObserverList<Observer> observers_;
 

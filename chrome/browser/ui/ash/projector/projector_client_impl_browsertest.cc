@@ -97,7 +97,7 @@ class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
     std::move(quit_closure_).Run();
   }
   MOCK_METHOD1(OnScreencastsPendingStatusChanged,
-               void(const PendingScreencastSet&));
+               void(const PendingScreencastContainerSet&));
   MOCK_METHOD1(OnSodaProgress, void(int));
   MOCK_METHOD0(OnSodaError, void());
   MOCK_METHOD0(OnSodaInstalled, void());

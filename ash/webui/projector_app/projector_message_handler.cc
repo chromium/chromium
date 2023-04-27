@@ -78,16 +78,6 @@ std::string ProjectorErrorToString(ProjectorError mode) {
   }
 }
 
-base::Value::List ScreencastListToValue(
-    const PendingScreencastSet& screencasts) {
-  base::Value::List value;
-  value.reserve(screencasts.size());
-  for (const auto& item : screencasts)
-    value.Append(item.ToValue());
-
-  return value;
-}
-
 bool IsUserPrefSupported(const std::string& pref) {
   return pref == ash::prefs::kProjectorCreationFlowEnabled ||
          pref == ash::prefs::kProjectorGalleryOnboardingShowCount ||
@@ -162,13 +152,9 @@ ProjectorMessageHandler::ProjectorMessageHandler(PrefService* pref_service)
     : content::WebUIMessageHandler(),
       xhr_sender_(std::make_unique<ProjectorXhrSender>(
           ProjectorAppClient::Get()->GetUrlLoaderFactory())),
-      pref_service_(pref_service) {
-  ProjectorAppClient::Get()->AddObserver(this);
-}
+      pref_service_(pref_service) {}
 
-ProjectorMessageHandler::~ProjectorMessageHandler() {
-  ProjectorAppClient::Get()->RemoveObserver(this);
-}
+ProjectorMessageHandler::~ProjectorMessageHandler() = default;
 
 base::WeakPtr<ProjectorMessageHandler> ProjectorMessageHandler::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -197,10 +183,6 @@ void ProjectorMessageHandler::RegisterMessages() {
       "sendXhr", base::BindRepeating(&ProjectorMessageHandler::SendXhr,
                                      base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getPendingScreencasts",
-      base::BindRepeating(&ProjectorMessageHandler::GetPendingScreencasts,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "getUserPref", base::BindRepeating(&ProjectorMessageHandler::GetUserPref,
                                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
@@ -213,13 +195,6 @@ void ProjectorMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getVideo", base::BindRepeating(&ProjectorMessageHandler::GetVideo,
                                       base::Unretained(this)));
-}
-
-void ProjectorMessageHandler::OnScreencastsPendingStatusChanged(
-    const PendingScreencastSet& pending_screencast) {
-  AllowJavascript();
-  FireWebUIListener("onScreencastsStateChange",
-                    ScreencastListToValue(pending_screencast));
 }
 
 void ProjectorMessageHandler::GetAccounts(const base::Value::List& args) {
@@ -408,18 +383,6 @@ void ProjectorMessageHandler::OnXhrRequestCompleted(
   response.Set(kXhrError, error);
 
   ResolveJavascriptCallback(base::Value(js_callback_id), response);
-}
-
-void ProjectorMessageHandler::GetPendingScreencasts(
-    const base::Value::List& args) {
-  AllowJavascript();
-  // Check that there is only one argument which is the callback id.
-  DCHECK_EQ(args.size(), 1u);
-
-  const PendingScreencastSet& pending_screencasts =
-      ProjectorAppClient::Get()->GetPendingScreencasts();
-  ResolveJavascriptCallback(args[0],
-                            ScreencastListToValue(pending_screencasts));
 }
 
 void ProjectorMessageHandler::GetVideo(const base::Value::List& args) {

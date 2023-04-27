@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
-#include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -35,8 +34,7 @@ enum class ProjectorError {
 };
 
 // Handles messages from the Projector WebUIs (i.e. chrome://projector).
-class ProjectorMessageHandler : public content::WebUIMessageHandler,
-                                public ProjectorAppClient::Observer {
+class ProjectorMessageHandler : public content::WebUIMessageHandler {
  public:
   explicit ProjectorMessageHandler(PrefService* pref_service);
   ProjectorMessageHandler(const ProjectorMessageHandler&) = delete;
@@ -48,12 +46,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // content::WebUIMessageHandler:
   // TODO(b/237337607): chrome.send() is banned on ash. Migrate to Mojo instead.
   void RegisterMessages() override;
-
-  // ProjectorAppClient::Observer:
-  // Notifies the Projector SWA the pending screencasts' state change and
-  // updates the pending list in Projector SWA.
-  void OnScreencastsPendingStatusChanged(
-      const PendingScreencastSet& pending_screencast) override;
 
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
@@ -102,10 +94,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
                                      const std::string& email,
                                      GoogleServiceAuthError error,
                                      const signin::AccessTokenInfo& info);
-
-  // Requested by the Projector SWA to fetch a list of screencasts pending to
-  // upload or failed to upload.
-  void GetPendingScreencasts(const base::Value::List& args);
 
   // Requested by the Projector SWA to fetch a single video from DriveFS with
   // the Drive item id specified by `args`.

@@ -10,6 +10,8 @@ assert(is_chromeos_ash, "Projector App is ash-chrome only")
 
 static_library("projector_app") {
   sources = [
+    "pending_screencast.cc",
+    "pending_screencast.h",
     "projector_app_client.cc",
     "projector_app_client.h",
     "projector_message_handler.cc",

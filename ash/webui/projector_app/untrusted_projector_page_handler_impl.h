@@ -37,6 +37,8 @@ class UntrustedProjectorPageHandlerImpl
   void OnSodaProgress(int percentage) override;
   void OnSodaError() override;
   void OnSodaInstalled() override;
+  void OnScreencastsPendingStatusChanged(
+      const PendingScreencastContainerSet& pending_screencast) override;
 
   //  projector::mojom::UntrustedProjectorPageHandler:
   void GetNewScreencastPrecondition(
@@ -47,6 +49,9 @@ class UntrustedProjectorPageHandlerImpl
   void InstallSoda(
       projector::mojom::UntrustedProjectorPageHandler::InstallSodaCallback
           callback) override;
+  void GetPendingScreencasts(
+      projector::mojom::UntrustedProjectorPageHandler::
+          GetPendingScreencastsCallback callback) override;
 
  private:
   mojo::Receiver<projector::mojom::UntrustedProjectorPageHandler> receiver_;

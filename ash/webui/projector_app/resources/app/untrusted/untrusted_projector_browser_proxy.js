@@ -33,6 +33,12 @@ export class UntrustedProjectorBrowserProxyImpl {
     const {triggered} = await this.pageHandlerRemote.installSoda();
     return triggered;
   }
+
+  async getPendingScreencasts() {
+    const {pendingScreencasts} =
+        await this.pageHandlerRemote.getPendingScreencasts();
+    return pendingScreencasts;
+  }
 }
 
 /**

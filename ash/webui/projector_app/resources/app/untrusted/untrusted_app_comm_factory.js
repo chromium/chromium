@@ -114,8 +114,7 @@ const CLIENT_DELEGATE = {
    * @return {Promise<Array<projectorApp.PendingScreencast>>}
    */
   getPendingScreencasts() {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'getPendingScreencasts', []);
+    return browserProxy.getPendingScreencasts();
   },
 
   /*
@@ -260,10 +259,11 @@ export class UntrustedAppRequestHandler extends RequestHandler {
     this.callbackRouter_.onSodaInstalled.addListener(() => {
       getAppElement().onSodaInstalled();
     });
+    this.callbackRouter_.onScreencastsStateChange.addListener(
+        (pendingScreencasts) => {
+          getAppElement().onScreencastsStateChange(pendingScreencasts);
+        });
 
-    this.registerMethod('onScreencastsStateChange', (pendingScreencasts) => {
-      getAppElement().onScreencastsStateChange(pendingScreencasts);
-    });
     this.registerMethod('onFileLoaded', (args) => {
       if (args.length !== 3) {
         console.error('Invalid argument to onFileLoaded', args);

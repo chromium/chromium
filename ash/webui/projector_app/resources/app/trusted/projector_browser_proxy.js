@@ -60,14 +60,6 @@ export class ProjectorBrowserProxy {
       accountEmail) {}
 
   /**
-   * Gets the list of pending screencasts that are uploading to drive.
-   * @return {Promise<Array<projectorApp.PendingScreencast>>}
-   */
-  // TODO(b/204372280): return
-  // "Promise<!Array<!projectorApp.PendingScreencast>>"
-  getPendingScreencasts() {}
-
-  /**
    * Returns the value associated with the user preference if it is supported;
    * If the `userPref` is not supported the returned promise will be rejected.
    * @param {string} userPref
@@ -154,11 +146,6 @@ export class ProjectorBrowserProxyImpl {
       headers,
       accountEmail,
     ]);
-  }
-
-  /** @override */
-  getPendingScreencasts() {
-    return sendWithPromise('getPendingScreencasts');
   }
 
   /** @override */
