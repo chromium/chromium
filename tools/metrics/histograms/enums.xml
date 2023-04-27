@@ -53946,6 +53946,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="16" label="Omnibox Most Visited Entry"/>
   <int value="17" label="Pinned Tabs entry"/>
   <int value="18" label="Tab Strip entry"/>
+  <int value="19" label="Inactive Tabs entry"/>
 </enum>
 
 <enum name="IOSMultiWindowConfiguration">
