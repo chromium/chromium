@@ -7,6 +7,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -373,6 +374,10 @@ void CupsPrintersHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "openScanningApp",
       base::BindRepeating(&CupsPrintersHandler::HandleOpenScanningApp,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "requestPrinterStatus",
+      base::BindRepeating(&CupsPrintersHandler::HandleRequestPrinterStatus,
                           base::Unretained(this)));
 }
 
@@ -1490,6 +1495,26 @@ void CupsPrintersHandler::HandleOpenPrintManagementApp(
 void CupsPrintersHandler::HandleOpenScanningApp(const base::Value::List& args) {
   DCHECK(args.empty());
   chrome::ShowScanningApp(profile_);
+}
+
+void CupsPrintersHandler::HandleRequestPrinterStatus(
+    const base::Value::List& args) {
+  CHECK(features::IsPrinterSettingsRevampEnabled());
+  AllowJavascript();
+  CHECK_EQ(2U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const std::string& printer_id = args[1].GetString();
+
+  printers_manager_->FetchPrinterStatus(
+      printer_id, base::BindOnce(&CupsPrintersHandler::OnPrinterStatusReceived,
+                                 weak_factory_.GetWeakPtr(), callback_id));
+}
+
+void CupsPrintersHandler::OnPrinterStatusReceived(
+    const std::string& callback_id,
+    const chromeos::CupsPrinterStatus& printer_status) {
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            printer_status.ConvertToValue());
 }
 
 }  // namespace ash::settings

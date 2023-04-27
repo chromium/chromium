@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "printing/printer_query_result.h"
@@ -263,6 +264,12 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   void HandleOpenPrintManagementApp(const base::Value::List& args);
 
   void HandleOpenScanningApp(const base::Value::List& args);
+
+  void HandleRequestPrinterStatus(const base::Value::List& args);
+
+  void OnPrinterStatusReceived(
+      const std::string& callback_id,
+      const chromeos::CupsPrinterStatus& printer_status);
 
   raw_ptr<Profile, ExperimentalAsh> profile_;
 

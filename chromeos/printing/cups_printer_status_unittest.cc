@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/test/scoped_mock_clock_override.h"
+#include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -96,6 +97,35 @@ TEST_F(CupsPrinterStatusTest, SameReasonSameSeverity) {
       CupsPrinterStatus::CupsPrinterStatusReason(CupsReason::kPaused,
                                                  CupsSeverity::kError)};
   EXPECT_THAT(cups_printer_status.GetStatusReasons(), expected_reasons);
+}
+
+// Ensure printer status can be correctly converted to a base::Value.
+TEST_F(CupsPrinterStatusTest, ConvertToValue) {
+  const std::string printer_id = "printerId";
+  CupsPrinterStatus cups_printer_status(printer_id);
+  cups_printer_status.AddStatusReason(
+      CupsPrinterStatusReason::Reason::kDeviceError,
+      CupsPrinterStatusReason::Severity::kReport);
+  cups_printer_status.AddStatusReason(
+      CupsPrinterStatusReason::Reason::kPaused,
+      CupsPrinterStatusReason::Severity::kWarning);
+
+  base::Value::Dict printer_status_dict = cups_printer_status.ConvertToValue();
+  EXPECT_EQ(printer_id, *printer_status_dict.FindString("printerId"));
+
+  base::Value::List* status_reasons =
+      printer_status_dict.FindList("statusReasons");
+  base::Value::Dict& status_reason_dict1 = (*status_reasons)[0].GetDict();
+  EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Reason::kDeviceError),
+            status_reason_dict1.FindInt("reason"));
+  EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Severity::kReport),
+            status_reason_dict1.FindInt("severity"));
+
+  base::Value::Dict& status_reason_dict2 = (*status_reasons)[1].GetDict();
+  EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Reason::kPaused),
+            status_reason_dict2.FindInt("reason"));
+  EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Severity::kWarning),
+            status_reason_dict2.FindInt("severity"));
 }
 
 }  // namespace chromeos

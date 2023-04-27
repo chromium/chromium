@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 
 namespace chromeos {
@@ -83,6 +84,8 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) CupsPrinterStatus {
                        const CupsPrinterStatusReason::Severity& severity);
 
   void SetAuthenticationInfo(const PrinterAuthenticationInfo& auth_info);
+
+  base::Value::Dict ConvertToValue() const;
 
  private:
   std::string printer_id_;
