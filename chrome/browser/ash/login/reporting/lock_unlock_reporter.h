@@ -14,9 +14,13 @@
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/lock_unlock_event.pb.h"
 
+namespace policy {
+class ReportingUserTracker;
+}  // namespace policy
+
 namespace reporting {
 class UserEventReporterHelper;
-}
+}  // namespace reporting
 
 namespace ash {
 namespace reporting {
@@ -33,11 +37,13 @@ class LockUnlockReporter : public policy::ManagedSessionService::Observer {
 
   // For prod. Uses the default implementation of UserEventReporterHelper.
   static std::unique_ptr<LockUnlockReporter> Create(
+      policy::ReportingUserTracker* reporting_user_tracker,
       policy::ManagedSessionService* managed_session_service);
 
   // For use in testing only. Allows user to pass in a test helper.
   static std::unique_ptr<LockUnlockReporter> CreateForTest(
       std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
+      policy::ReportingUserTracker* reporting_user_tracker,
       policy::ManagedSessionService* managed_session_service,
       base::Clock* clock = base::DefaultClock::GetInstance());
 
@@ -50,6 +56,7 @@ class LockUnlockReporter : public policy::ManagedSessionService::Observer {
  private:
   LockUnlockReporter(
       std::unique_ptr<::reporting::UserEventReporterHelper> helper,
+      policy::ReportingUserTracker* reporting_user_tracker,
       policy::ManagedSessionService* managed_session_service,
       base::Clock* clock = base::DefaultClock::GetInstance());
 
@@ -58,6 +65,9 @@ class LockUnlockReporter : public policy::ManagedSessionService::Observer {
   raw_ptr<base::Clock> const clock_;
 
   std::unique_ptr<::reporting::UserEventReporterHelper> helper_;
+
+  const base::raw_ptr<policy::ReportingUserTracker, ExperimentalAsh>
+      reporting_user_tracker_;
 
   base::ScopedObservation<policy::ManagedSessionService,
                           policy::ManagedSessionService::Observer>

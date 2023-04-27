@@ -18,10 +18,12 @@
 
 class PrefRegistrySimple;
 
+namespace policy {
+class ReportingUserTracker;
+}  // namespace policy
+
 namespace reporting {
-
 class UserEventReporterHelper;
-
 }  // namespace reporting
 
 namespace ash {
@@ -52,11 +54,13 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
   ~LoginLogoutReporter() override;
 
   static std::unique_ptr<LoginLogoutReporter> Create(
+      policy::ReportingUserTracker* reporting_user_tracker,
       policy::ManagedSessionService* managed_session_service);
 
   static std::unique_ptr<LoginLogoutReporter> CreateForTest(
       std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
       std::unique_ptr<Delegate> delegate,
+      policy::ReportingUserTracker* reporting_user_tracker,
       policy::ManagedSessionService* managed_session_service,
       base::Clock* clock = base::DefaultClock::GetInstance());
 
@@ -77,6 +81,7 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
   LoginLogoutReporter(
       std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
       std::unique_ptr<Delegate> delegate,
+      policy::ReportingUserTracker* reporting_user_tracker,
       policy::ManagedSessionService* managed_session_service,
       base::Clock* clock = base::DefaultClock::GetInstance());
 
@@ -87,6 +92,9 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
   std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper_;
 
   std::unique_ptr<Delegate> delegate_;
+
+  const base::raw_ptr<policy::ReportingUserTracker, ExperimentalAsh>
+      reporting_user_tracker_;
 
   base::ScopedObservation<policy::ManagedSessionService,
                           policy::ManagedSessionService::Observer>

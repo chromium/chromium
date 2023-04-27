@@ -82,8 +82,7 @@ class TestHelper {
 
     auto reporter_helper =
         std::make_unique<::reporting::UserEventReporterHelperTesting>(
-            reporting_enabled, /*should_report_user=*/true,
-            /*is_kiosk_user=*/false, std::move(mock_queue));
+            reporting_enabled, /*is_kiosk_user=*/false, std::move(mock_queue));
     return reporter_helper;
   }
 
