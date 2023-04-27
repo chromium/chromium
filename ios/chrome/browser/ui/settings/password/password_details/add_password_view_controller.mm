@@ -721,11 +721,11 @@ const int kMinNoteCharAmountForWarning = 901;
     case ItemTypeUsername:
     case ItemTypePassword:
     case ItemTypeWebsite:
-    case ItemTypeNote:
       return YES;
     case ItemTypeDuplicateCredentialMessage:
     case ItemTypeDuplicateCredentialButton:
     case ItemTypeFooter:
+    case ItemTypeNote:
       return NO;
   };
 }

@@ -13,7 +13,7 @@
 // Returns the indexPath for the currently focused text field when in edit mode.
 - (NSIndexPath*)indexPathForCurrentTextField;
 
-// Returns whether cell at indexPath is editCell.
+// Returns whether cell at indexPath is `TableViewTextEditCell`.
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath;
 
 @end
