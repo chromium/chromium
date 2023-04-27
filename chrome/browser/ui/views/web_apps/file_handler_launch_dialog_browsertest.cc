@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -55,7 +57,23 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
  public:
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
+
+    // The os_hooks_suppress_ is set as part of the WebAppControllerBrowserTest
+    // to prevent OS integrations from being executed. This needs to be reset so
+    // that OS integration can be run.
+    os_hooks_suppress_.reset();
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    override_registration_ =
+        OsIntegrationTestOverrideImpl::OverrideForTesting();
     InstallTestWebApp();
+  }
+
+  void TearDownOnMainThread() override {
+    test::UninstallAllWebApps(browser()->profile());
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      override_registration_.reset();
+    }
   }
 
   void LaunchAppWithFiles(const std::vector<base::FilePath>& paths) {
@@ -165,6 +183,10 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
 
  protected:
   AppId app_id_;
+
+ private:
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest,
