@@ -21,7 +21,10 @@ component("cursor") {
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/gfx/geometry",
   ]
-  deps = [ "//ui/gfx:gfx_skia" ]
+  deps = [
+    "//ui/gfx:gfx_skia",
+    "//ui/gfx/geometry:geometry_skia",
+  ]
 }
 
 source_set("unittests") {

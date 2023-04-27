@@ -39,6 +39,7 @@ source_set("mojom_traits") {
     "//skia",
     "//skia/public/mojom:shared_typemap_traits",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
     "//ui/gfx/geometry/mojom:mojom_traits",
   ]
 }
@@ -58,6 +59,7 @@ source_set("unittests") {
     "//ui/base",
     "//ui/base/cursor",
     "//ui/gfx:gfx_skia",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry/mojom:mojom_traits",
   ]
 }

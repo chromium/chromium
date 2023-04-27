@@ -12,42 +12,6 @@ WebCursor::WebCursor() = default;
 
 WebCursor::~WebCursor() = default;
 
-WebCursor::WebCursor(const ui::Cursor& cursor) {
-  SetCursor(cursor);
-}
-
-bool WebCursor::SetCursor(const ui::Cursor& cursor) {
-  // This value is just large enough to accommodate:
-  // - kMaximumCursorSize in Blink's EventHandler
-  // - kCursorSize in Chrome's DevToolsEyeDropper
-  static constexpr int kMaximumCursorSize = 150;
-  if (cursor.type() == ui::mojom::CursorType::kCustom &&
-      (cursor.image_scale_factor() < 0.01f ||
-       cursor.custom_bitmap().width() / cursor.image_scale_factor() >
-           kMaximumCursorSize ||
-       cursor.custom_bitmap().height() / cursor.image_scale_factor() >
-           kMaximumCursorSize)) {
-    return false;
-  }
-
-#if defined(USE_AURA)
-  custom_cursor_.reset();
-#endif
-
-  if (cursor.type() == ui::mojom::CursorType::kCustom) {
-    cursor_ = ui::Cursor::NewCustom(
-        cursor.custom_bitmap(),
-        // Clamp the hotspot to the custom image's dimensions.
-        gfx::Point(std::max(0, std::min(cursor.custom_bitmap().width() - 1,
-                                        cursor.custom_hotspot().x())),
-                   std::max(0, std::min(cursor.custom_bitmap().height() - 1,
-                                        cursor.custom_hotspot().y()))),
-        cursor.image_scale_factor());
-  } else {
-    cursor_ = cursor;
-  }
-
-  return true;
-}
+WebCursor::WebCursor(const ui::Cursor& cursor) : cursor_(cursor) {}
 
 }  // namespace content

@@ -34,9 +34,6 @@ class CONTENT_EXPORT WebCursor {
 
   const ui::Cursor& cursor() const { return cursor_; }
 
-  // Sets the ui::Cursor |cursor|; returns whether it has reasonable values.
-  bool SetCursor(const ui::Cursor& cursor);
-
   // Returns a native cursor representing the current WebCursor instance.
   gfx::NativeCursor GetNativeCursor();
 
