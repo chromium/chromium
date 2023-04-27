@@ -496,8 +496,12 @@ bool VulkanDeviceQueue::OnMemoryDump(
 
   auto* dump = pmd->CreateAllocatorDump(path);
   auto allocated_used = vma::GetTotalAllocatedAndUsedMemory(vma_allocator());
+  // `allocated_size` is memory allocated from the device, used is what is
+  // actually used.
   dump->AddScalar("allocated_size", "bytes", allocated_used.first);
   dump->AddScalar("used_size", "bytes", allocated_used.second);
+  dump->AddScalar("fragmentation_size", "bytes",
+                  allocated_used.first - allocated_used.second);
   return true;
 }
 
