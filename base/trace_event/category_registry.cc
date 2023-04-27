@@ -130,12 +130,12 @@ bool CategoryRegistry::IsMetaCategory(const TraceCategory* category) {
 }
 
 // static
-CategoryRegistry::Range CategoryRegistry::GetAllCategories() {
+base::span<TraceCategory> CategoryRegistry::GetAllCategories() {
   // The |categories_| array is append only. We have to only guarantee to
   // not return an index to a category which is being initialized by
   // GetOrCreateCategoryByName().
   size_t category_index = category_index_.load(std::memory_order_acquire);
-  return CategoryRegistry::Range(&categories_[0], &categories_[category_index]);
+  return base::make_span(categories_).first(category_index);
 }
 
 // static
