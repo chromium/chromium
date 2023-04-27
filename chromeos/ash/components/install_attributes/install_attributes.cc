@@ -246,8 +246,6 @@ void InstallAttributes::LockDevice(policy::DeviceMode device_mode,
                                    LockResultCallback callback) {
   CHECK((device_mode == policy::DEVICE_MODE_ENTERPRISE && !domain.empty() &&
          realm.empty() && !device_id.empty()) ||
-        (device_mode == policy::DEVICE_MODE_ENTERPRISE_AD && domain.empty() &&
-         !realm.empty() && !device_id.empty()) ||
         (device_mode == policy::DEVICE_MODE_DEMO && !domain.empty() &&
          realm.empty() && !device_id.empty()) ||
         (device_mode == policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH &&
