@@ -577,6 +577,23 @@ TEST_P(ClientControlledShellSurfaceTest, Frame) {
   widget->LayoutRootViewIfNecessary();
   EXPECT_FALSE(frame_view->GetFrameEnabled());
   EXPECT_FALSE(frame_view->GetHeaderView()->in_immersive_mode());
+
+  // Fullscreen (AUTOHIDE) to normal with a single commit.
+  shell_surface->SetGeometry(fullscreen_bounds);
+  shell_surface->SetMaximized();
+  shell_surface->SetFullscreen(true);
+  surface->SetFrame(SurfaceFrameType::AUTOHIDE);
+  surface->Commit();
+
+  shell_surface->SetGeometry(client_bounds);
+  shell_surface->SetRestored();
+  shell_surface->SetFullscreen(false);
+  surface->SetFrame(SurfaceFrameType::NORMAL);
+  surface->Commit();
+  EXPECT_TRUE(frame_view->GetFrameEnabled());
+  EXPECT_EQ(normal_window_bounds, widget->GetWindowBoundsInScreen());
+  EXPECT_EQ(client_bounds,
+            frame_view->GetClientBoundsForWindowBounds(normal_window_bounds));
 }
 
 namespace {

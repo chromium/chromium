@@ -1909,9 +1909,12 @@ void ShellSurfaceBase::CommitWidget() {
     widget_->GetNativeWindow()->ClearProperty(aura::client::kAspectRatio);
   }
 
+  // The calling order matters. The frame type has to be updated before
+  // calculating the bounds because the bounds computation depends on the frame
+  // type (e.g. caption height).
+  UpdateFrameType();
   UpdateWidgetBounds();
   SurfaceTreeHost::UpdateHostWindowBounds();
-  UpdateFrameType();
   gfx::Rect bounds = geometry_;
   if (!bounds.IsEmpty() && !widget_->GetNativeWindow()->GetProperty(
                                aura::client::kUseWindowBoundsForShadow)) {
