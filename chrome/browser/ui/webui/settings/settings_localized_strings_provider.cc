@@ -70,6 +70,7 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/google/core/common/google_util.h"
+#include "components/history/core/common/pref_names.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -238,6 +239,9 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #endif
 
   html_source->AddBoolean("isChildAccount", profile->IsChild());
+  html_source->AddBoolean(
+      "allowDeletingBrowserHistory",
+      profile->GetPrefs()->GetBoolean(prefs::kAllowDeletingBrowserHistory));
 }
 
 void AddA11yStrings(content::WebUIDataSource* html_source) {

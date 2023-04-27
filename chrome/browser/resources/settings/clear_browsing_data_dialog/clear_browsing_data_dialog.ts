@@ -135,10 +135,11 @@ export class SettingsClearBrowsingDataDialogElement extends
         value: false,
       },
 
-      isChildAccount_: {
+      isChildAccountWithDisallowedHistoryDeletion_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isChildAccount');
+          return loadTimeData.getBoolean('isChildAccount') &&
+                 !loadTimeData.getBoolean('allowDeletingBrowserHistory');
         },
       },
 
@@ -225,7 +226,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   private clearingInProgress_: boolean;
   private clearingDataAlertString_: string;
   private clearButtonDisabled_: boolean;
-  private isChildAccount_: boolean;
+  private isChildAccountWithDisallowedHistoryDeletion_: boolean;
   private showHistoryDeletionDialog_: boolean;
   private showPasswordsDeletionDialogLater_: boolean;
   private showPasswordsDeletionDialog_: boolean;
