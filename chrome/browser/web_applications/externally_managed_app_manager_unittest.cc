@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -380,6 +381,9 @@ class ExternallyAppManagerTest : public WebAppTest {
   using UninstallResults = std::map<GURL /*install_url*/, bool /*succeeded*/>;
   using SynchronizeFuture =
       base::test::TestFuture<InstallResults, UninstallResults>;
+  using InstallNowFuture =
+      base::test::TestFuture<const GURL&,
+                             ExternallyManagedAppManager::InstallResult>;
 
   ExternallyAppManagerTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -449,6 +453,7 @@ class ExternallyAppManagerTest : public WebAppTest {
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(install_url);
     install_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+    install_page_state.redirection_url = absl::nullopt;
 
     install_page_state.page_install_info =
         std::make_unique<WebAppInstallInfo>();
@@ -727,6 +732,7 @@ TEST_F(ExternallyAppManagerTest, NoNetworkWithPlaceholder) {
               webapps::InstallResultCode::kSuccessNewInstall, app_id))));
 
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
+
   ASSERT_TRUE(app);
   EXPECT_THAT(app->management_to_external_config_map(),
               ElementsAre(std::make_pair(WebAppManagement::kPolicy,
@@ -744,6 +750,8 @@ TEST_F(ExternallyAppManagerTest, RedirectInstallUrlPlaceholder) {
       GURL(), mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
+
+  // Verify that a redirection causes a placeholder app to be installed.
 
   auto& page_state = web_contents_manager().GetOrCreatePageState(kInstallUrl);
   page_state.redirection_url = kRedirectToUrl;
@@ -777,6 +785,490 @@ TEST_F(ExternallyAppManagerTest, RedirectInstallUrlPlaceholder) {
                                              /*is_placeholder=*/true,
                                              /*install_urls=*/{kInstallUrl},
                                              /*additional_policy_ids=*/{}))));
+}
+
+TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromSynchronize) {
+  const GURL kInstallUrl = GURL("https://www.example.com/install_url.html");
+  const GURL kRedirectToUrl =
+      GURL("https://www.otherorigin.com/redirected.html");
+  const GURL kStartUrl = GURL("https://www.example.com/index.html");
+  const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
+
+  ExternalInstallOptions template_options(
+      GURL(), mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kExternalPolicy);
+  template_options.install_placeholder = true;
+  template_options.reinstall_placeholder = true;
+
+  auto& page_state = web_contents_manager().GetOrCreatePageState(kInstallUrl);
+  page_state.redirection_url = kRedirectToUrl;
+  {
+    SynchronizeFuture result;
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+        CreateExternalInstallOptionsFromTemplate(
+            {kInstallUrl}, ExternalInstallSource::kExternalPolicy,
+            template_options),
+        ExternalInstallSource::kExternalPolicy, result.GetCallback());
+    ASSERT_TRUE(result.Wait());
+  }
+
+  AppId placeholder_app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, kInstallUrl);
+
+  auto app_ids = provider().registrar_unsafe().GetAppIds();
+  EXPECT_THAT(app_ids, ElementsAre(placeholder_app_id));
+
+  // Replace the redirect with an app that resolves.
+  AppId app_id = PopulateBasicInstallPageWithManifest(kInstallUrl, kManifestUrl,
+                                                      kStartUrl);
+
+  // `reinstall_placeholder` option should cause the placeholder app to be
+  // uninstalled & the real one to work.
+  {
+    SynchronizeFuture result;
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+        CreateExternalInstallOptionsFromTemplate(
+            {kInstallUrl}, ExternalInstallSource::kExternalPolicy,
+            template_options),
+        ExternalInstallSource::kExternalPolicy, result.GetCallback());
+    ASSERT_TRUE(result.Wait());
+  }
+
+  app_ids = provider().registrar_unsafe().GetAppIds();
+
+  EXPECT_THAT(app_ids, ElementsAre(app_id));
+}
+
+TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromInstallNow) {
+  const GURL kInstallUrl = GURL("https://www.example.com/install_url.html");
+  const GURL kRedirectToUrl =
+      GURL("https://www.otherorigin.com/redirected.html");
+  const GURL kStartUrl = GURL("https://www.example.com/index.html");
+  const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
+
+  ExternalInstallOptions template_options(
+      GURL(), mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kExternalPolicy);
+  template_options.install_placeholder = true;
+
+  auto& page_state = web_contents_manager().GetOrCreatePageState(kInstallUrl);
+  page_state.redirection_url = kRedirectToUrl;
+  {
+    SynchronizeFuture result;
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+        CreateExternalInstallOptionsFromTemplate(
+            {kInstallUrl}, ExternalInstallSource::kExternalPolicy,
+            template_options),
+        ExternalInstallSource::kExternalPolicy, result.GetCallback());
+    ASSERT_TRUE(result.Wait());
+  }
+
+  AppId placeholder_app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, kInstallUrl);
+
+  auto app_ids = provider().registrar_unsafe().GetAppIds();
+  EXPECT_THAT(app_ids, ElementsAre(placeholder_app_id));
+
+  // Replace the redirect with an app that resolves.
+  AppId app_id = PopulateBasicInstallPageWithManifest(kInstallUrl, kManifestUrl,
+                                                      kStartUrl);
+
+  ExternalInstallOptions options = template_options;
+  options.install_url = kInstallUrl;
+  options.wait_for_windows_closed = false;
+  options.reinstall_placeholder = true;
+  InstallNowFuture install_future;
+  provider().externally_managed_app_manager().InstallNow(
+      std::move(options), install_future.GetCallback());
+  ASSERT_TRUE(install_future.Wait());
+
+  app_ids = provider().registrar_unsafe().GetAppIds();
+  EXPECT_THAT(app_ids, ElementsAre(app_id));
+}
+
+TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlSameSourceInstallNow) {
+  const GURL kInstallUrl = GURL("https://www.example.com/install_url.html");
+  const GURL kStartUrl1 = GURL("https://www.example.com/index1.html");
+  const GURL kStartUrl2 = GURL("https://www.example.com/index2.html");
+  const GURL kManifestUrl1 = GURL("https://www.example.com/manifest1.json");
+  const GURL kManifestUrl2 = GURL("https://www.example.com/manifest2.json");
+
+  ExternalInstallOptions template_options(
+      GURL(), mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kExternalPolicy);
+
+  AppId app_id1 = PopulateBasicInstallPageWithManifest(
+      kInstallUrl, kManifestUrl1, kStartUrl1);
+
+  {
+    ExternalInstallOptions options = template_options;
+    options.install_url = kInstallUrl;
+    base::test::TestFuture<const GURL&,
+                           ExternallyManagedAppManager::InstallResult>
+        install_future;
+    provider().externally_managed_app_manager().InstallNow(
+        std::move(options), install_future.GetCallback());
+    ASSERT_TRUE(install_future.Wait());
+  }
+
+  auto app_ids = provider().registrar_unsafe().GetAppIds();
+  EXPECT_THAT(app_ids, ElementsAre(app_id1));
+
+  AppId app_id2 = PopulateBasicInstallPageWithManifest(
+      kInstallUrl, kManifestUrl2, kStartUrl2);
+
+  {
+    ExternalInstallOptions options = template_options;
+    options.install_url = kInstallUrl;
+    InstallNowFuture install_future;
+    provider().externally_managed_app_manager().InstallNow(
+        std::move(options), install_future.GetCallback());
+    ASSERT_TRUE(install_future.Wait());
+  }
+
+  // TODO(https://crbug.com/1434692): This keeps the original app, but perhaps
+  // should install app_id2.
+  app_ids = provider().registrar_unsafe().GetAppIds();
+  EXPECT_THAT(app_ids, ElementsAre(app_id1));
+}
+
+TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesInstallNow) {
+  const GURL kInstallUrl = GURL("https://www.example.com/install_url.html");
+  const GURL kStartUrl1 = GURL("https://www.example.com/index1.html");
+  const GURL kStartUrl2 = GURL("https://www.example.com/index2.html");
+  const GURL kManifestUrl1 = GURL("https://www.example.com/manifest1.json");
+  const GURL kManifestUrl2 = GURL("https://www.example.com/manifest2.json");
+
+  ExternalInstallOptions template_options(
+      GURL(), mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kExternalPolicy);
+
+  AppId app_id1 = PopulateBasicInstallPageWithManifest(
+      kInstallUrl, kManifestUrl1, kStartUrl1);
+
+  {
+    ExternalInstallOptions options = template_options;
+    options.install_url = kInstallUrl;
+    base::test::TestFuture<const GURL&,
+                           ExternallyManagedAppManager::InstallResult>
+        install_future;
+    provider().externally_managed_app_manager().InstallNow(
+        std::move(options), install_future.GetCallback());
+    ASSERT_TRUE(install_future.Wait());
+  }
+
+  auto app_ids = provider().registrar_unsafe().GetAppIds();
+  EXPECT_THAT(app_ids, ElementsAre(app_id1));
+
+  AppId app_id2 = PopulateBasicInstallPageWithManifest(
+      kInstallUrl, kManifestUrl2, kStartUrl2);
+
+  {
+    ExternalInstallOptions options = template_options;
+    options.install_url = kInstallUrl;
+    options.install_source = ExternalInstallSource::kInternalDefault;
+    InstallNowFuture install_future;
+    provider().externally_managed_app_manager().InstallNow(
+        std::move(options), install_future.GetCallback());
+    ASSERT_TRUE(install_future.Wait());
+  }
+
+  // TODO(https://crbug.com/1434692): Currently, this keeps the original app,
+  // but we should eventually resolve all apps to app_id2.
+  app_ids = provider().registrar_unsafe().GetAppIds();
+  EXPECT_THAT(app_ids, ElementsAre(app_id1));
+}
+
+TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesSynchronize) {
+  const GURL kInstallUrl = GURL("https://www.example.com/install_url.html");
+  const GURL kStartUrl1 = GURL("https://www.example.com/index1.html");
+  const GURL kStartUrl2 = GURL("https://www.example.com/index2.html");
+  const GURL kManifestUrl1 = GURL("https://www.example.com/manifest1.json");
+  const GURL kManifestUrl2 = GURL("https://www.example.com/manifest2.json");
+
+  ExternalInstallOptions template_options(
+      GURL(), mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kExternalPolicy);
+
+  AppId app_id1 = PopulateBasicInstallPageWithManifest(
+      kInstallUrl, kManifestUrl1, kStartUrl1);
+
+  {
+    SynchronizeFuture result;
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+        CreateExternalInstallOptionsFromTemplate(
+            {kInstallUrl}, ExternalInstallSource::kExternalPolicy,
+            template_options),
+        ExternalInstallSource::kExternalPolicy, result.GetCallback());
+    ASSERT_TRUE(result.Wait());
+  }
+
+  auto app_ids = provider().registrar_unsafe().GetAppIds();
+  EXPECT_THAT(app_ids, ElementsAre(app_id1));
+
+  AppId app_id2 = PopulateBasicInstallPageWithManifest(
+      kInstallUrl, kManifestUrl2, kStartUrl2);
+
+  {
+    SynchronizeFuture result;
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+        CreateExternalInstallOptionsFromTemplate(
+            {kInstallUrl}, ExternalInstallSource::kInternalDefault,
+            template_options),
+        ExternalInstallSource::kInternalDefault, result.GetCallback());
+    ASSERT_TRUE(result.Wait());
+  }
+
+  // TODO(https://crbug.com/1434692): Currently this resolves to app_id1, but
+  // should probably eventually resolve to app_id2.
+  app_ids = provider().registrar_unsafe().GetAppIds();
+  EXPECT_THAT(app_ids, UnorderedElementsAre(app_id1));
+}
+
+TEST_F(ExternallyAppManagerTest, PlaceholderFixedBySecondInstallUrlInstallNow) {
+  const GURL kInstallUrl1 = GURL("https://www.example.com/install_url1.html");
+  const GURL kInstallUrl2 = GURL("https://www.example.com/install_url2.html");
+  const GURL kManifestUrl = GURL("https://www.example.com/manifest1.json");
+
+  ExternalInstallOptions template_options(
+      GURL(), mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kExternalPolicy);
+  template_options.install_placeholder = true;
+
+  // The first install creates a placeholder at kInstallUrl1, as that redirects.
+  // The second install doesn't redirect, and the app at kInstallUrl2 points to
+  // kInstallUrl1 as it's start_url (basically - it's identity conflicts with
+  // the placeholder app's default identity).
+
+  auto& page_state = web_contents_manager().GetOrCreatePageState(kInstallUrl1);
+  page_state.redirection_url =
+      GURL("https://www.otherorigin.com/redirect.html");
+
+  AppId app_at_install_url = PopulateBasicInstallPageWithManifest(
+      kInstallUrl2, kManifestUrl, kInstallUrl1);
+
+  {
+    ExternalInstallOptions options = template_options;
+    options.install_url = kInstallUrl1;
+    InstallNowFuture install_future;
+    provider().externally_managed_app_manager().InstallNow(
+        std::move(options), install_future.GetCallback());
+    ASSERT_TRUE(install_future.Wait());
+    EXPECT_THAT(
+        install_future.Get(),
+        Eq(std::make_tuple(kInstallUrl1,
+                           ExternallyManagedAppManager::InstallResult(
+                               webapps::InstallResultCode::kSuccessNewInstall,
+                               app_at_install_url))));
+  }
+
+  {
+    ExternalInstallOptions options = template_options;
+    options.install_url = kInstallUrl2;
+    base::test::TestFuture<const GURL&,
+                           ExternallyManagedAppManager::InstallResult>
+        install_future;
+    provider().externally_managed_app_manager().InstallNow(
+        std::move(options), install_future.GetCallback());
+    ASSERT_TRUE(install_future.Wait());
+    EXPECT_THAT(
+        install_future.Get(),
+        Eq(std::make_tuple(kInstallUrl2,
+                           ExternallyManagedAppManager::InstallResult(
+                               webapps::InstallResultCode::kSuccessNewInstall,
+                               app_at_install_url))));
+  }
+
+  // The current implementation records placeholder information per-source, so
+  // when the second install succeeds, it overrides the `is_placeholder` to
+  // `false`, and thus the first install is considered fully installed now too.
+  // This is in contrast to the behavior if the two installs are different
+  // sources, which will (correctly?) evaluate the manifest served by the
+  // install url of the first install, which could be a different app identity.
+  const WebApp* app =
+      provider().registrar_unsafe().GetAppById(app_at_install_url);
+  ASSERT_TRUE(app);
+  EXPECT_THAT(app->management_to_external_config_map(),
+              ElementsAre(std::make_pair(
+                  WebAppManagement::kPolicy,
+                  WebApp::ExternalManagementConfig(
+                      /*is_placeholder=*/false,
+                      /*install_urls=*/{kInstallUrl1, kInstallUrl2},
+                      /*additional_policy_ids=*/{}))));
+}
+
+TEST_F(ExternallyAppManagerTest,
+       PlaceholderFixedBySecondInstallUrlSynchronize) {
+  const GURL kInstallUrl1 = GURL("https://www.example.com/install_url1.html");
+  const GURL kInstallUrl2 = GURL("https://www.example.com/install_url2.html");
+  const GURL kManifestUrl = GURL("https://www.example.com/manifest1.json");
+
+  // The first install creates a placeholder at kInstallUrl1, as that redirects.
+  // The second install doesn't redirect, and the app at kInstallUrl2 points to
+  // kInstallUrl1 as it's start_url (basically - it's identity conflicts with
+  // the placeholder app's default identity).
+
+  ExternalInstallOptions template_options(
+      GURL(), mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kExternalPolicy);
+  template_options.install_placeholder = true;
+
+  auto& page_state = web_contents_manager().GetOrCreatePageState(kInstallUrl1);
+  page_state.redirection_url =
+      GURL("https://www.otherorigin.com/redirect.html");
+
+  AppId app_at_install_url = PopulateBasicInstallPageWithManifest(
+      kInstallUrl2, kManifestUrl, /*start_url=*/kInstallUrl1);
+
+  SynchronizeFuture result;
+  provider().externally_managed_app_manager().SynchronizeInstalledApps(
+      CreateExternalInstallOptionsFromTemplate(
+          {kInstallUrl1, kInstallUrl2}, ExternalInstallSource::kExternalPolicy,
+          template_options),
+      ExternalInstallSource::kExternalPolicy, result.GetCallback());
+  ASSERT_TRUE(result.Wait());
+
+  // Install should succeed.
+  std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results =
+      result.Get<InstallResults>();
+  EXPECT_THAT(
+      install_results,
+      UnorderedElementsAre(
+          std::make_pair(kInstallUrl1,
+                         ExternallyManagedAppManager::InstallResult(
+                             webapps::InstallResultCode::kSuccessNewInstall,
+                             app_at_install_url)),
+          std::make_pair(kInstallUrl2,
+                         ExternallyManagedAppManager::InstallResult(
+                             webapps::InstallResultCode::kSuccessNewInstall,
+                             app_at_install_url))));
+
+  // The current implementation records placeholder information per-source, so
+  // when the second install succeeds, it overrides the `is_placeholder` to
+  // `false`, and thus the first install is considered fully installed now too.
+  const WebApp* app =
+      provider().registrar_unsafe().GetAppById(app_at_install_url);
+  ASSERT_TRUE(app);
+  EXPECT_THAT(app->management_to_external_config_map(),
+              ElementsAre(std::make_pair(
+                  WebAppManagement::kPolicy,
+                  WebApp::ExternalManagementConfig(
+                      /*is_placeholder=*/false,
+                      /*install_urls=*/{kInstallUrl1, kInstallUrl2},
+                      /*additional_policy_ids=*/{}))));
+}
+
+TEST_F(ExternallyAppManagerTest, PlaceholderFullInstallConflictCanUpdate) {
+  // This test exists to test what happens when a placeholder install conflicts
+  // with a another install from a different source, and then resolves to a
+  // separate app entirely after the placeholder state is fixed.
+
+  // Phase 1 configuration with redirect:
+  // - kInstallUrl1 will redirect & generate a placeholder
+  // - kInstallUrl2 will serve a manifest with kInstallUrl1 as the start_url
+
+  // Phase 2 configuration - redirect removed
+  // - kInstallUrl1 will serve a manifest with kStartUrl as the start_url.
+
+  // What happens when resolving the placeholder at kInstallUrl1? Currently this
+  // updates so that kStartUrl1 is installed.
+
+  const GURL kInstallUrl1 = GURL("https://www.example.com/install_url1.html");
+  const GURL kInstallUrl2 = GURL("https://www.example.com/install_url2.html");
+  const GURL kStartUrl1 = GURL("https://www.example.com/index1.html");
+  const GURL kManifestUrl1 = GURL("https://www.example.com/manifest1.json");
+  const GURL kManifestUrl2 = GURL("https://www.example.com/manifest2.json");
+
+  ExternalInstallOptions template_options(
+      GURL(), mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kExternalPolicy);
+  template_options.install_placeholder = true;
+  template_options.reinstall_placeholder = true;
+
+  // Phase 1 state
+  auto& page_state = web_contents_manager().GetOrCreatePageState(kInstallUrl1);
+  page_state.redirection_url =
+      GURL("https://www.otherorigin.com/redirect.html");
+
+  AppId app_at_install_url = PopulateBasicInstallPageWithManifest(
+      kInstallUrl2, kManifestUrl1, kInstallUrl1);
+
+  {
+    ExternalInstallOptions options = template_options;
+    options.install_url = kInstallUrl1;
+    base::test::TestFuture<const GURL&,
+                           ExternallyManagedAppManager::InstallResult>
+        install_future;
+    provider().externally_managed_app_manager().InstallNow(
+        std::move(options), install_future.GetCallback());
+    ASSERT_TRUE(install_future.Wait());
+    EXPECT_THAT(
+        install_future.Get(),
+        Eq(std::make_tuple(kInstallUrl1,
+                           ExternallyManagedAppManager::InstallResult(
+                               webapps::InstallResultCode::kSuccessNewInstall,
+                               app_at_install_url))));
+  }
+
+  {
+    ExternalInstallOptions options(kInstallUrl2,
+                                   mojom::UserDisplayMode::kStandalone,
+                                   ExternalInstallSource::kInternalDefault);
+    base::test::TestFuture<const GURL&,
+                           ExternallyManagedAppManager::InstallResult>
+        install_future;
+    provider().externally_managed_app_manager().InstallNow(
+        std::move(options), install_future.GetCallback());
+    ASSERT_TRUE(install_future.Wait());
+    EXPECT_THAT(
+        install_future.Get(),
+        Eq(std::make_tuple(kInstallUrl2,
+                           ExternallyManagedAppManager::InstallResult(
+                               webapps::InstallResultCode::kSuccessNewInstall,
+                               app_at_install_url))));
+  }
+
+  const WebApp* app =
+      provider().registrar_unsafe().GetAppById(app_at_install_url);
+  ASSERT_TRUE(app);
+  EXPECT_THAT(
+      app->management_to_external_config_map(),
+      UnorderedElementsAre(std::make_pair(WebAppManagement::kPolicy,
+                                          WebApp::ExternalManagementConfig(
+                                              /*is_placeholder=*/true,
+                                              /*install_urls=*/{kInstallUrl1},
+                                              /*additional_policy_ids=*/{})),
+                           std::make_pair(WebAppManagement::kDefault,
+                                          WebApp::ExternalManagementConfig(
+                                              /*is_placeholder=*/false,
+                                              /*install_urls=*/{kInstallUrl2},
+                                              /*additional_policy_ids=*/{}))));
+  // Phase 2 - undo the redirection, and point to start url.
+  AppId app_at_start_url = PopulateBasicInstallPageWithManifest(
+      kInstallUrl1, kManifestUrl2, kStartUrl1);
+
+  {
+    ExternalInstallOptions options = template_options;
+    options.install_url = kInstallUrl1;
+    base::test::TestFuture<const GURL&,
+                           ExternallyManagedAppManager::InstallResult>
+        install_future;
+    provider().externally_managed_app_manager().InstallNow(
+        std::move(options), install_future.GetCallback());
+    ASSERT_TRUE(install_future.Wait());
+    EXPECT_THAT(
+        install_future.Get(),
+        Eq(std::make_tuple(kInstallUrl1,
+                           ExternallyManagedAppManager::InstallResult(
+                               webapps::InstallResultCode::kSuccessNewInstall,
+                               app_at_start_url))));
+  }
+
+  // This is the current behavior, but it could change if we decide that
+  // 'placeholder' is a per-app state instead of a per-app-and-source state.
+  auto app_ids = provider().registrar_unsafe().GetAppIds();
+  EXPECT_THAT(app_ids,
+              UnorderedElementsAre(app_at_install_url, app_at_start_url));
 }
 
 }  // namespace
