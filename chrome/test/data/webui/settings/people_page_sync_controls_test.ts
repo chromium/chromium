@@ -8,12 +8,16 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SettingsSyncControlsElement} from 'chrome://settings/lazy_load.js';
-import {CrRadioButtonElement, CrToggleElement, Router, StatusAction, SyncBrowserProxyImpl, SyncPrefs} from 'chrome://settings/settings.js';
+import {CrLinkRowElement, CrRadioButtonElement, CrToggleElement, Router, StatusAction, SyncBrowserProxyImpl, SyncPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {getSyncAllPrefs, setupRouterWithSyncRoutes, SyncRoutes} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+
+// <if expr="chromeos_lacros">
+import {loadTimeData} from 'chrome://settings/settings.js';
+// </if>
 
 // clang-format on
 
@@ -91,6 +95,25 @@ suite('SyncControlsTest', async function() {
 
     const prefs = await browserProxy.whenCalled('setSyncDatatypes');
     assertPrefs(prefs, datatypeControls);
+  });
+
+  test('OsSyncSettingsLink', function() {
+    // Check that the os sync settings link
+    // is available only in Lacros and kSyncChromeOSAppsToggleSharing
+    // feature is enabled.
+    const osSyncSettingsLink: CrLinkRowElement =
+        syncControls.shadowRoot!.querySelector('#osSyncSettingsLink')!;
+
+    // <if expr="chromeos_lacros">
+    assertTrue(!!osSyncSettingsLink);
+    const showSyncSettingsRevamp =
+        loadTimeData.getBoolean('showSyncSettingsRevamp');
+    assertEquals(osSyncSettingsLink.hidden, !showSyncSettingsRevamp);
+    // </if>
+
+    // <if expr="not chromeos_lacros">
+    assertFalse(!!osSyncSettingsLink);
+    // </if>
   });
 
   test('SignedIn', function() {

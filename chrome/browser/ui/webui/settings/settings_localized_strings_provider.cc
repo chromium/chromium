@@ -1602,21 +1602,24 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
 
 void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"autofillCheckboxLabel", IDS_SETTINGS_AUTOFILL_CHECKBOX_LABEL},
-      {"historyCheckboxLabel", IDS_SETTINGS_HISTORY_CHECKBOX_LABEL},
-      {"extensionsCheckboxLabel", IDS_SETTINGS_EXTENSIONS_CHECKBOX_LABEL},
-      {"openTabsCheckboxLabel", IDS_SETTINGS_OPEN_TABS_CHECKBOX_LABEL},
-      {"wifiConfigurationsCheckboxLabel",
-       IDS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL},
-      {"syncEverythingCheckboxLabel",
-       IDS_SETTINGS_SYNC_EVERYTHING_CHECKBOX_LABEL},
-      {"appCheckboxLabel", IDS_SETTINGS_APPS_CHECKBOX_LABEL},
-      {"enablePaymentsIntegrationCheckboxLabel",
-       IDS_AUTOFILL_ENABLE_PAYMENTS_INTEGRATION_CHECKBOX_LABEL},
-      {"nonPersonalizedServicesSectionLabel",
-       IDS_SETTINGS_NON_PERSONALIZED_SERVICES_SECTION_LABEL},
-      {"customizeSyncLabel", IDS_SETTINGS_CUSTOMIZE_SYNC},
-      {"syncData", IDS_SETTINGS_SYNC_DATA},
+    {"autofillCheckboxLabel", IDS_SETTINGS_AUTOFILL_CHECKBOX_LABEL},
+    {"historyCheckboxLabel", IDS_SETTINGS_HISTORY_CHECKBOX_LABEL},
+    {"extensionsCheckboxLabel", IDS_SETTINGS_EXTENSIONS_CHECKBOX_LABEL},
+    {"openTabsCheckboxLabel", IDS_SETTINGS_OPEN_TABS_CHECKBOX_LABEL},
+    {"wifiConfigurationsCheckboxLabel",
+     IDS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL},
+    {"syncEverythingCheckboxLabel",
+     IDS_SETTINGS_SYNC_EVERYTHING_CHECKBOX_LABEL},
+    {"appCheckboxLabel", IDS_SETTINGS_APPS_CHECKBOX_LABEL},
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"appCheckboxSublabel", IDS_SETTINGS_APPS_CHECKBOX_SUBLABEL},
+#endif
+    {"enablePaymentsIntegrationCheckboxLabel",
+     IDS_AUTOFILL_ENABLE_PAYMENTS_INTEGRATION_CHECKBOX_LABEL},
+    {"nonPersonalizedServicesSectionLabel",
+     IDS_SETTINGS_NON_PERSONALIZED_SERVICES_SECTION_LABEL},
+    {"customizeSyncLabel", IDS_SETTINGS_CUSTOMIZE_SYNC},
+    {"syncData", IDS_SETTINGS_SYNC_DATA},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
