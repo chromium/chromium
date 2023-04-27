@@ -15,23 +15,20 @@
 
 void WithProfilePickerInteractiveUiTestHelpers::
     SendCloseWindowKeyboardCommand() {
-  // Close window using keyboard.
 #if BUILDFLAG(IS_MAC)
   // Use Cmd-W on Mac.
   bool control = false;
-  bool shift = false;
   bool command = true;
 #else
-  // Use Ctrl-Shift-W on other platforms.
+  // Use Ctrl-W on other platforms. Note: while Ctrl-Shift-W would also work,
+  // Cmd-Shift-W is not supported on Mac for closing non-browser windows.
   bool control = true;
-  bool shift = true;
   bool command = false;
 #endif
-  SendKeyPress(ui::VKEY_W, control, shift, /*alt=*/false, command);
+  SendKeyPress(ui::VKEY_W, control, /*shift=*/false, /*alt=*/false, command);
 }
 
 void WithProfilePickerInteractiveUiTestHelpers::SendBackKeyboardCommand() {
-  // Close window using keyboard.
 #if BUILDFLAG(IS_MAC)
   // Use Cmd-[ on Mac.
   bool alt = false;
@@ -48,7 +45,6 @@ void WithProfilePickerInteractiveUiTestHelpers::SendBackKeyboardCommand() {
 
 void WithProfilePickerInteractiveUiTestHelpers::
     SendToggleFullscreenKeyboardCommand() {
-// Toggle fullscreen with keyboard.
 #if BUILDFLAG(IS_MAC)
   // Use Cmd-Ctrl-F on Mac.
   bool control = true;
