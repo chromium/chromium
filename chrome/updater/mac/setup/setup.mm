@@ -89,6 +89,14 @@ base::scoped_nsobject<NSString> GetWakeLaunchdLabel(UpdaterScope scope) {
       base::mac::CFToNSCast(CopyWakeLaunchdName(scope).release()));
 }
 
+absl::optional<base::FilePath> GetWakeTaskTarget(UpdaterScope scope) {
+  absl::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
+  if (!install_dir) {
+    return absl::nullopt;
+  }
+  return install_dir->Append("Current").Append(GetExecutableRelativePath());
+}
+
 #pragma mark Setup
 bool CopyBundle(UpdaterScope scope) {
   absl::optional<base::FilePath> base_install_dir = GetInstallDirectory(scope);
@@ -233,11 +241,19 @@ int DoSetup(UpdaterScope scope) {
                "cause Gatekeeper to show a prompt to the user.";
   }
 
+  // If there is no Current symlink, create one now.
+  base::FilePath current_symlink = install_dir->Append("Current");
+  if (!base::PathExists(current_symlink)) {
+    if (symlink(kUpdaterVersion, current_symlink.value().c_str())) {
+      return kErrorFailedToLinkLauncher;
+    }
+  }
+
   // If there is no --wake-all task, install one now.
   if (!Launchd::GetInstance()->PlistExists(LaunchdDomain(scope),
                                            ServiceLaunchdType(scope),
                                            CopyWakeLaunchdName(scope))) {
-    absl::optional<base::FilePath> path = GetUpdaterExecutablePath(scope);
+    absl::optional<base::FilePath> path = GetWakeTaskTarget(scope);
     if (!path || !CreateWakeLaunchdJobPlist(scope, *path)) {
       return kErrorFailedToCreateWakeLaunchdJobPlist;
     }
@@ -293,7 +309,8 @@ int PromoteCandidate(UpdaterScope scope) {
     }
   }
 
-  if (!CreateWakeLaunchdJobPlist(scope, *updater_executable_path)) {
+  absl::optional<base::FilePath> wake_path = GetWakeTaskTarget(scope);
+  if (!wake_path || !CreateWakeLaunchdJobPlist(scope, *wake_path)) {
     return kErrorFailedToCreateWakeLaunchdJobPlist;
   }
 
