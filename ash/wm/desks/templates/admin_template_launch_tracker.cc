@@ -332,9 +332,11 @@ std::vector<gfx::Rect> GetInitialWindowLayout(const gfx::Size& work_area_size,
 
 AdminTemplateLaunchTracker::AdminTemplateLaunchTracker(
     std::unique_ptr<DeskTemplate> admin_template,
-    base::RepeatingCallback<void(const DeskTemplate&)> template_update_cb)
+    base::RepeatingCallback<void(const DeskTemplate&)> template_update_cb,
+    base::TimeDelta update_delay)
     : admin_template_(std::move(admin_template)),
-      template_update_cb_(template_update_cb) {}
+      template_update_cb_(template_update_cb),
+      update_delay_(update_delay) {}
 
 AdminTemplateLaunchTracker::~AdminTemplateLaunchTracker() = default;
 
@@ -474,11 +476,26 @@ void AdminTemplateLaunchTracker::OnObserverDone(
 
 void AdminTemplateLaunchTracker::OnUpdate(
     const AdminTemplateWindowUpdate& update) {
-  // TODO(dandersson): Implement throttling of updates so that we don't issue a
-  // ton of updates as a window is dragged around.
   if (MergeAdminTemplateWindowUpdate(*admin_template_, update)) {
-    template_update_cb_.Run(*admin_template_);
+    // If the delay is set to zero, we call the callback synchronously.
+    if (update_delay_.is_zero()) {
+      template_update_cb_.Run(*admin_template_);
+      return;
+    }
+
+    if (update_delay_timer_.IsRunning()) {
+      return;
+    }
+
+    update_delay_timer_.Start(
+        FROM_HERE, update_delay_,
+        base::BindOnce(&AdminTemplateLaunchTracker::OnTimer,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void AdminTemplateLaunchTracker::OnTimer() {
+  template_update_cb_.Run(*admin_template_);
 }
 
 }  // namespace ash

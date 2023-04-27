@@ -252,8 +252,8 @@ TEST_P(AdminTemplateTest, LaunchTemplate) {
   auto admin_template = CreateTemplateFromJson(GetParam());
   ASSERT_TRUE(admin_template);
 
-  AdminTemplateLaunchTracker launch_tracker(std::move(admin_template),
-                                            base::DoNothing());
+  AdminTemplateLaunchTracker launch_tracker(
+      std::move(admin_template), base::DoNothing(), base::TimeDelta());
 
   MockSavedDeskDelegate saved_desk_delegate;
   std::unique_ptr<DeskTemplate> launched_template;

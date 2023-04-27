@@ -19,6 +19,8 @@ namespace ash {
 
 namespace {
 
+constexpr base::TimeDelta kAdminTemplateUpdateDelay = base::Seconds(5);
+
 constexpr char kPlaceholderUuid[] = "2a0fe322-c912-468e-bd9c-5e8fddcc1606";
 constexpr char kPlaceholderName[] = "Test template";
 constexpr char kPlaceholderJson[] = R"json(
@@ -87,15 +89,17 @@ bool SavedDeskController::LaunchAdminTemplate(const base::Uuid& template_uuid,
     return false;
   }
 
-  int64_t launch_id = ++admin_template_launch_id_;
-  admin_template_launch_trackers_[launch_id] =
-      std::make_unique<AdminTemplateLaunchTracker>(
-          std::move(admin_template),
-          base::BindRepeating(&SavedDeskController::OnAdminTemplateUpdate,
-                              base::Unretained(this)));
-
-  admin_template_launch_trackers_[launch_id]->LaunchTemplate(
-      Shell::Get()->saved_desk_delegate(), default_display_id);
+  auto& tracker = admin_template_launch_trackers_[template_uuid];
+  // Note: if there is an existing launch tracker for this template, this will
+  // implicitly destroy it - no more updates will be received from the previous
+  // instance.
+  tracker = std::make_unique<AdminTemplateLaunchTracker>(
+      std::move(admin_template),
+      base::BindRepeating(&SavedDeskController::OnAdminTemplateUpdate,
+                          base::Unretained(this)),
+      kAdminTemplateUpdateDelay);
+  tracker->LaunchTemplate(Shell::Get()->saved_desk_delegate(),
+                          default_display_id);
 
   // TODO(dandersson): Remove the launch tracker when all its windows have been
   // closed.

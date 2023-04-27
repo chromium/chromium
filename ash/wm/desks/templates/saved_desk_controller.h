@@ -58,9 +58,7 @@ class ASH_EXPORT SavedDeskController {
   // Install an admin template that can be used by `LaunchAdminTemplate`.
   void SetAdminTemplateForTesting(std::unique_ptr<DeskTemplate> admin_template);
 
-  int32_t admin_template_launch_id_ = 0;
-
-  base::flat_map<int32_t, std::unique_ptr<AdminTemplateLaunchTracker>>
+  base::flat_map<base::Uuid, std::unique_ptr<AdminTemplateLaunchTracker>>
       admin_template_launch_trackers_;
 
   // An optional admin template used for testing.
