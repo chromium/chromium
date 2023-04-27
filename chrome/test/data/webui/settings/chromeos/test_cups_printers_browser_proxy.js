@@ -25,6 +25,7 @@ export class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
       'removeCupsPrinter',
       'reconfigureCupsPrinter',
       'getEulaUrl',
+      'requestPrinterStatusUpdate',
     ]);
 
     this.printerList = /** @type{?CupsPrintersList} */ ({printerList: []});
@@ -37,6 +38,7 @@ export class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
     this.printerInfo = {};
     this.printerPpdMakeModel =
         /** @type{PrinterPpdMakeModel */ ({ppdManufacturer: '', ppdModel: ''});
+    this.printerStatusMap = {};
 
     /**
      * |eulaUrl_| in conjunction with |setEulaUrl| mimics setting the EULA url
@@ -167,6 +169,11 @@ export class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
     return Promise.resolve(this.printServerPrinters);
   }
 
+  /** @override */
+  requestPrinterStatusUpdate(printerId) {
+    this.methodCalled('requestPrinterStatusUpdate', printerId);
+    return Promise.resolve(this.printerStatusMap[printerId]);
+  }
 
   /** @param {string} eulaUrl */
   setEulaUrl(eulaUrl) {
@@ -186,5 +193,23 @@ export class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
   /** @param {!CupsPrinterInfo} printer */
   setAddDiscoveredPrinterFailure(printer) {
     this.addDiscoveredFailedPrinter_ = printer;
+  }
+
+  /**
+   * @param {string} printerId
+   * @param {!PrinterStatusReason} reason
+   * @param {!PrinterStatusSeverity} severity
+   */
+  addPrinterStatus(printerId, reason, severity) {
+    this.printerStatusMap[printerId] = {
+      printerId: printerId,
+      statusReasons: [
+        {
+          reason: reason,
+          severity: severity,
+        },
+      ],
+      timestamp: 0,
+    };
   }
 }
