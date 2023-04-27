@@ -34,7 +34,7 @@ OneTimePermissionProvider::GetRuleIterator(ContentSettingsType content_type,
   if (!permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type)) {
     return nullptr;
   }
-  return value_map_.GetRuleIterator(content_type, &lock_);
+  return value_map_.GetRuleIterator(content_type, nullptr);
 }
 
 bool OneTimePermissionProvider::SetWebsiteSetting(

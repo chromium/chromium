@@ -82,9 +82,6 @@ class OneTimePermissionProvider
   content_settings::OriginIdentifierValueMap value_map_;
   raw_ptr<OneTimePermissionsTracker> one_time_permissions_tracker_ = nullptr;
 
-  // Used around accesses to the value map objects to guarantee thread safety.
-  mutable base::Lock lock_;
-
   // Unowned
   raw_ptr<const base::Clock> clock_;
 };
