@@ -152,10 +152,10 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 
     // Moves all tabs that might have become inactive since the last launch.
     MoveTabsFromActiveToInactive(_mainBrowser.get(), inactiveBrowser);
-    _mainInterface.inactiveBrowser = inactiveBrowser;
   } else {
     RestoreAllInactiveTabs(inactiveBrowser, _mainBrowser.get());
   }
+  _mainInterface.inactiveBrowser = inactiveBrowser;
 }
 
 #pragma mark - BrowserProviderInterface

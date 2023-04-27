@@ -185,11 +185,12 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
   EXPECT_EQ(wrangler.mainInterface.browser, observer.GetLastAddedBrowser());
   EXPECT_EQ(1UL, browser_list->AllRegularBrowsers().size());
 
-  // Create the inactive browser but as the feature is disabled, ensure it is
-  // not added to the main interface.
+  // Create the inactive browser. Sould be added in the main interface and in
+  // the browser list even if the feature is disabled.
   [wrangler createInactiveBrowser];
   EXPECT_EQ(2UL, browser_list->AllRegularBrowsers().size());
-  EXPECT_EQ(wrangler.mainInterface.inactiveBrowser, nullptr);
+  EXPECT_EQ(wrangler.mainInterface.inactiveBrowser,
+            observer.GetLastAddedBrowser());
 
   // The lazy OTR browser creation should involve an addition to the browser
   // list.
