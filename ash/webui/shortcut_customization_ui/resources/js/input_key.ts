@@ -57,7 +57,7 @@ export const keyToIconNameMap: {[key: string]: string|undefined} = {
   'MediaTrackPrevious': 'last-track',
   'MicrophoneMuteToggle': 'microphone-mute',
   'ModeChange': 'globe',
-  'OpenLauncher': 'open-launcher',
+  'ViewAllApps': 'view-all-apps',
   'Power': 'power',
   'PrintScreen': 'screenshot',
   'PrivacyScreenToggle': 'electronic-privacy-screen',
@@ -159,7 +159,7 @@ export class InputKeyElement extends InputKeyElementBase {
   static getAriaLabelStringId(key: string, hasLauncherButton: boolean): string {
     if (key === META_KEY) {
       return hasLauncherButton ? 'iconLabelOpenLauncher' :
-                                 'iconLabelBrowserSearch';
+                                 'iconLabelOpenSearch';
     }
     return `iconLabel${key}`;  // e.g. iconLabelArrowUp
   }

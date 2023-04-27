@@ -3991,8 +3991,8 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_REFRESH" desc="The text read aloud by the screen reader describing the keyboard icon 'refresh'.">
           refresh
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_SEARCH" desc="The text read aloud by the screen reader describing the keyboard icon 'search'." translateable="false">
-          search
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_SEARCH" desc="The text read aloud by the screen reader describing the keyboard icon 'browser search'.">
+          browser search
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_TOGGLE_DICTATION" desc="The text read aloud by the screen reader describing the keyboard icon 'toggle dictation'.">
           toggle dictation
@@ -4045,8 +4045,11 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MODE_CHANGE" desc="The text read aloud by the screen reader describing the keyboard icon 'mode change'.">
           mode change
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_LAUNCHER" desc="The text read aloud by the screen reader describing the keyboard icon 'launcher'." translateable="false">
-          launcher
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_LAUNCHER" desc="The text read aloud by the screen reader describing the keyboard icon 'open launcher'.">
+          open launcher
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_SEARCH" desc="The text read aloud by the screen reader describing the keyboard icon 'open search'.">
+          open search
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_POWER" desc="The text read aloud by the screen reader describing the keyboard icon 'power'." translateable="false">
           power
@@ -4059,6 +4062,9 @@
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_SETTINGS" desc="The text read aloud by the screen reader describing the keyboard icon 'settings'.">
           settings
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_VIEW_ALL_APPS" desc="The text read aloud by the screen reader describing the keyboard icon 'view all apps'.">
+          view all apps
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ZOOM_TOGGLE" desc="The text read aloud by the screen reader describing the keyboard icon 'full screen'.">
           full screen

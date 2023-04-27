@@ -104,7 +104,7 @@ suite('inputKeyTest', function() {
     assertTrue(isVisible(iconElement));
     assertTrue(isVisible(iconWrapperElement));
     assertEquals('shortcut-customization-keys:launcher', iconElement.icon);
-    assertEquals('launcher', iconWrapperElement.ariaLabel);
+    assertEquals('open launcher', iconWrapperElement.ariaLabel);
   });
 
   test('MetaKeyShowSearchIcon', async () => {
@@ -122,7 +122,7 @@ suite('inputKeyTest', function() {
     assertTrue(isVisible(iconElement2));
     assertTrue(isVisible(iconWrapperElement2));
     assertEquals('shortcut-customization-keys:search', iconElement2.icon);
-    assertEquals('search', iconWrapperElement2.ariaLabel);
+    assertEquals('open search', iconWrapperElement2.ariaLabel);
   });
 
   test('MetaKeyIsAlwaysModifier', async () => {
