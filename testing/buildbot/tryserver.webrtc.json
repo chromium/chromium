@@ -56,6 +56,10 @@
           "-t",
           "Release",
           "external/wpt/webrtc",
+          "external/wpt/webrtc-encoded-transform",
+          "external/wpt/webrtc-extensions",
+          "external/wpt/webrtc-priority",
+          "external/wpt/webrtc-stats",
           "external/wpt/webrtc-svc",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
