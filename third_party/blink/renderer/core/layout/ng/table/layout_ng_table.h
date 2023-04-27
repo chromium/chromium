@@ -225,6 +225,12 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock {
            LayoutNGMixin<LayoutBlock>::IsOfType(type);
   }
 
+  // Table paints background specially.
+  bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
+    NOT_DESTROYED();
+    return false;
+  }
+
  private:
   void InvalidateCachedTableBorders();
 

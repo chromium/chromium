@@ -99,6 +99,12 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGBlock {
     return type == kLayoutObjectTableRow ||
            LayoutNGMixin<LayoutBlock>::IsOfType(type);
   }
+
+  // Table section paints background specially.
+  bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
+    NOT_DESTROYED();
+    return false;
+  }
 };
 
 // wtf/casting.h helper.

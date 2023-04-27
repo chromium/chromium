@@ -113,6 +113,12 @@ class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow {
     return type == kLayoutObjectTableCell || LayoutNGBlockFlow::IsOfType(type);
   }
 
+  // Table cell applies a special clip to its background.
+  bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
+    NOT_DESTROYED();
+    return false;
+  }
+
  private:
   void UpdateColAndRowSpanFlags();
 

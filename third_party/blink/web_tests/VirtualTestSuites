@@ -161,6 +161,7 @@
               "fast/backgrounds",
               "paint/background",
               "paint/invalidation/background",
+              "external/wpt/css/CSS2/backgrounds",
               "external/wpt/css/css-backgrounds",
               "external/wpt/css/css-break/background-image-000.html",
               "external/wpt/css/css-break/background-image-001.html",
