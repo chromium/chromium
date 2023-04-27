@@ -808,6 +808,13 @@ export class Video extends ModeBase {
     const frames = await new Promise<number>((resolve, reject) => {
       let frameCount = 0;
       let writtenFrameCount = 0;
+
+      async function onError(error: unknown) {
+        await saver.cancel();
+        reject(error);
+      }
+      saver.setErrorCallback(onError);
+
       // TODO(b/236800499): Investigate whether we should use async, or use
       // reader.read().then() instead.
       async function updateFrame(): Promise<void> {
@@ -820,17 +827,22 @@ export class Video extends ModeBase {
           return;
         }
         if (frameCount % saver.speed === 0) {
+          let frame: VideoFrame|null = null;
           try {
-            const {done, value: frame} = await reader.read();
+            const {done, value} = await reader.read();
             if (done) {
               resolve(writtenFrameCount);
               return;
             }
+            frame = value;
             saver.write(frame, frameCount);
             writtenFrameCount++;
-            frame.close();
           } catch (e) {
-            reject(e);
+            onError(e);
+          } finally {
+            if (frame !== null) {
+              frame.close();
+            }
           }
         }
         frameCount++;
