@@ -789,18 +789,14 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
   // Persistently open the shared handle by caching it on this backing.
   auto it = dawn_external_image_cache_.find(device);
   if (it == dawn_external_image_cache_.end()) {
-    DCHECK(dxgi_shared_handle_state_);
+    CHECK(dxgi_shared_handle_state_);
     const HANDLE shared_handle = dxgi_shared_handle_state_->GetSharedHandle();
-    DCHECK(base::win::HandleTraits::IsHandleValid(shared_handle));
-
-    D3D11_TEXTURE2D_DESC texture_desc = {};
-    d3d11_texture_->GetDesc(&texture_desc);
+    CHECK(base::win::HandleTraits::IsHandleValid(shared_handle));
+    CHECK(!dxgi_shared_handle_state_->has_keyed_mutex());
 
     ExternalImageDescriptorDXGISharedHandle externalImageDesc;
     externalImageDesc.cTextureDescriptor = &texture_descriptor;
     externalImageDesc.sharedHandle = shared_handle;
-    externalImageDesc.useFenceSynchronization =
-        !(texture_desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX);
 
     DawnExternalImageState state;
     state.external_image =
