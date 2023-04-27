@@ -222,6 +222,7 @@ generate_grd("build_grd") {
     "images/icon_add_wifi.svg",
     "images/icon_pair_bluetooth.svg",
     "images/keyboard_shortcut_dark.svg",
+    "images/keyboard_shortcut_jelly.svg",
     "images/keyboard_shortcut.svg",
     "images/multidevice_permission_setup_connecting.svg",
     "images/multidevice_permission_setup_connecting_dark.svg",

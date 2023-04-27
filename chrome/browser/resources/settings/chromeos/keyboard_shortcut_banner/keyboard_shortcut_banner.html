@@ -17,8 +17,6 @@
     background: center / cover no-repeat;
     background-image: url(chrome://os-settings/images/keyboard_shortcut.svg);
     flex-shrink: 0;
-    height: 48px;
-    width: 48px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -26,6 +24,20 @@
       background-image:
         url(chrome://os-settings/images/keyboard_shortcut_dark.svg);
     }
+  }
+
+  #icon,
+  #keyboardShortcutIllo {
+    height: 48px;
+    width: 48px;
+  }
+
+  :host-context(body.jelly-enabled) #icon {
+    display: none;
+  }
+
+  :host-context(body:not(.jelly-enabled)) #keyboardShortcutIllo {
+    display: none;
   }
 
   #text {
@@ -79,6 +91,10 @@
 </style>
 
 <div id="icon"></div>
+
+<svg id="keyboardShortcutIllo" role="img" viewBox="0 0 48 48">
+  <use href="images/keyboard_shortcut_jelly.svg#export"></use>
+</svg>
 
 <div id="text">
   <h2>[[header]]</h2>
