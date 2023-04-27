@@ -1017,4 +1017,28 @@ TEST_F(RealTimeUrlLookupServiceTest, TestBackoffMode) {
   EXPECT_FALSE(IsInBackoffMode());
 }
 
+TEST_F(RealTimeUrlLookupServiceTest, TestBackoffMode_UnparseableResponse) {
+  EnableMbb();
+  auto perform_failing_lookup = [this]() {
+    GURL url(kTestUrl);
+    test_url_loader_factory_.AddResponse(kRealTimeLookupUrlPrefix,
+                                         "unparseable-response");
+    base::MockCallback<RTLookupRequestCallback> request_callback;
+    base::MockCallback<RTLookupResponseCallback> response_callback;
+    rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                              request_callback.Get(), response_callback.Get(),
+                              base::SequencedTaskRunner::GetCurrentDefault());
+    EXPECT_CALL(request_callback, Run(_, _)).Times(1);
+    EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
+                                       /* is_cached_response */ false, _));
+    task_environment_.RunUntilIdle();
+  };
+
+  perform_failing_lookup();
+  perform_failing_lookup();
+  EXPECT_FALSE(IsInBackoffMode());
+  perform_failing_lookup();
+  EXPECT_TRUE(IsInBackoffMode());
+}
+
 }  // namespace safe_browsing
