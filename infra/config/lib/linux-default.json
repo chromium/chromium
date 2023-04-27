@@ -10,8 +10,12 @@
   },
   "try": {
     "android-12-x64-rel": "Ubuntu-22.04",
+    "android-arm64-rel": "Ubuntu-22.04",
+    "android-nougat-x86-rel": "Ubuntu-22.04",
     "chromeos-amd64-generic-rel": "Ubuntu-22.04",
     "chromeos-amd64-generic-rel-compilator": "Ubuntu-22.04",
+    "fuchsia-arm64-rel": "Ubuntu-22.04",
+    "fuchsia-x64-cast-receiver-rel": "Ubuntu-22.04",
     "linux-chromeos-rel": "Ubuntu-22.04",
     "linux-lacros-rel": "Ubuntu-22.04",
     "linux-rel": "Ubuntu-22.04",
