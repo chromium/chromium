@@ -33,16 +33,8 @@ GetValidProfiles() {
 
 }  // namespace
 
-TEST(EncodingSupportTest, EnablesVp8HardwareEncoderProperly) {
-  constexpr bool is_enabled =
-#if BUILDFLAG(IS_CHROMEOS)
-      false;
-#else
-      true;
-#endif
-
-  EXPECT_EQ(is_enabled,
-            IsHardwareEnabled(Codec::kVideoVp8, GetValidProfiles()));
+TEST(EncodingSupportTest, EnablesVp8HardwareEncoderAlways) {
+  EXPECT_TRUE(IsHardwareEnabled(Codec::kVideoVp8, GetValidProfiles()));
 }
 
 TEST(EncodingSupportTest, EnablesH264HardwareEncoderProperly) {

@@ -58,14 +58,12 @@ bool IsHardwareVP8EncodingEnabled(
     return false;
   }
 
-  // The hardware encoder on ChromeOS has major issues when connecting to a
-  // variety of first and third party devices. See https://crbug.com/1382591.
-  const bool is_enabled_on_platform = !BUILDFLAG(IS_CHROMEOS);
   const bool is_force_enabled =
       command_line.HasSwitch(switches::kCastStreamingForceEnableHardwareVp8);
 
   return IsHardwareEncodingEnabled(profiles, VP8PROFILE_MIN, VP8PROFILE_MAX,
-                                   is_enabled_on_platform, is_force_enabled);
+                                   /*is_enabled_on_platform=*/true,
+                                   is_force_enabled);
 }
 
 // Scan profiles for hardware H.264 encoder support.
