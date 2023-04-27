@@ -192,7 +192,6 @@ class CoordinatorImpl : public Registry,
   mojo::Receiver<mojom::HeapProfilerHelper> heap_profiler_helper_receiver_{
       this};
 
-  const bool use_proto_writer_;
   const bool write_proto_heap_profile_;
 
   THREAD_CHECKER(thread_checker_);

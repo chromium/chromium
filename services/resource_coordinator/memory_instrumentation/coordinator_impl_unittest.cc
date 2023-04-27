@@ -790,7 +790,6 @@ TEST_F(CoordinatorImplTest, VmRegionsForHeapProfiler) {
 // shouldn't add anything into the trace
 TEST_F(CoordinatorImplTest, DumpsArentAddedToTraceUnlessRequested) {
   CoordinatorImpl* coordinator = CoordinatorImpl::GetInstance();
-  ASSERT_TRUE(coordinator->use_proto_writer_);
   tracing::DataSourceTester data_source_tester(
       reinterpret_cast<TracingObserverProto*>(
           coordinator->tracing_observer_.get()));
@@ -842,7 +841,6 @@ TEST_F(CoordinatorImplTest, DumpsArentAddedToTraceUnlessRequested) {
 #endif
 TEST_F(CoordinatorImplTest, MAYBE_DumpsAreAddedToTraceWhenRequested) {
   CoordinatorImpl* coordinator = CoordinatorImpl::GetInstance();
-  ASSERT_TRUE(coordinator->use_proto_writer_);
   tracing::DataSourceTester data_source_tester(
       reinterpret_cast<TracingObserverProto*>(
           coordinator->tracing_observer_.get()));
