@@ -19,7 +19,7 @@ import {getShortcutProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled} from './shortcut_utils.js';
+import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -210,7 +210,9 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!this.hasValidModifiers(e)) {
+    // If the inputted accelerator is not a function key, it must be accompanied
+    // with valid modifiers.
+    if (!this.hasValidModifiers(e) && !isFunctionKey(e.keyCode)) {
       // TODO(jimmyxgong): Fire events for error handling, e.g. Shift cannot be
       // the only modifier.
       this.pendingAcceleratorInfo = createEmptyAcceleratorInfo();
@@ -321,8 +323,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       output.modifiers = output.modifiers | Modifier.SHIFT;
     }
 
-    // Only add non-modifier keys as the pending key.
-    if (!this.isModifierKey(e)) {
+    // Only add non-modifier or function keys as the pending key.
+    if (!this.isModifierKey(e) || isFunctionKey(e.keyCode)) {
       output.keyCode = e.keyCode;
     }
 
@@ -406,10 +408,13 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
   private isValidDefaultAccelerator(accelInfo: StandardAcceleratorInfo):
       boolean {
-    // A valid default accelerator is on that has modifier(s) and a key.
-    return accelInfo.layoutProperties.standardAccelerator.accelerator
-               .modifiers > 0 &&
-        accelInfo.layoutProperties.standardAccelerator.keyDisplay !== '';
+    // A valid default accelerator is on that has modifier(s) and a key or
+    // is function key.
+    const accelerator =
+        accelInfo.layoutProperties.standardAccelerator.accelerator;
+    return (accelerator.modifiers > 0 &&
+            accelInfo.layoutProperties.standardAccelerator.keyDisplay !== '') ||
+        isFunctionKey(accelerator.keyCode);
   }
 
   private showEditView(): boolean {

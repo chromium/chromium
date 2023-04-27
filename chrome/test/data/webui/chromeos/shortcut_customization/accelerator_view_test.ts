@@ -281,4 +281,64 @@ suite('acceleratorViewTest', function() {
         viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
     assertEquals(-1, containerElement.tabIndex);
   });
+
+  test('EditWithFunctionKeyAsOnlyKey', async () => {
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.ALT,
+        /*key=*/ 221,
+        /*keyDisplay=*/ ']');
+
+    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement.source = AcceleratorSource.kAsh;
+    viewElement.action = 1;
+    await flushTasks();
+    // Enable the edit view.
+    viewElement.viewState = ViewState.EDIT;
+
+    await flushTasks();
+
+    const ctrlKey = getInputKey('#ctrlKey');
+    const altKey = getInputKey('#altKey');
+    const shiftKey = getInputKey('#shiftKey');
+    const metaKey = getInputKey('#searchKey');
+    const pendingKey = getInputKey('#pendingKey');
+
+    // By default, no keys should be registered.
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
+    assertEquals('key', pendingKey.key);
+
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflict,
+      shortcutName: {data: [1]},
+    };
+
+    provider.setFakeReplaceAcceleratorResult(fakeResult);
+
+    // Simulate F3.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'F3',
+      keyCode: 114,
+      code: 'F3',
+      ctrlKey: false,
+      altKey: false,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flush();
+
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.ALPHANUMERIC_SELECTED, pendingKey.keyState);
+    assertEquals('f3', pendingKey.key);
+  });
 });
