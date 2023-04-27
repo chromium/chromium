@@ -239,6 +239,7 @@ void Connection::SendPayload(const base::Value::Dict& message_payload) {
 void Connection::SendPayloadAndReadResponse(
     const base::Value::Dict& message_payload,
     PayloadResponseCallback callback) {
+  CHECK(connection_state_ == State::kOpen);
   SendPayload(message_payload);
   nearby_connection_->Read(std::move(callback));
 }
