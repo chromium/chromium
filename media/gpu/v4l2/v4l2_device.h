@@ -26,6 +26,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/small_map.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "media/base/video_codecs.h"
@@ -567,7 +568,7 @@ class MEDIA_GPU_EXPORT V4L2RequestRefBase {
   V4L2RequestRefBase(V4L2Request* request);
   ~V4L2RequestRefBase();
 
-  V4L2Request* request_;
+  raw_ptr<V4L2Request> request_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

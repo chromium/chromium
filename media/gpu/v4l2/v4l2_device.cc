@@ -2465,7 +2465,7 @@ class V4L2Request {
   bool Reset();
 
  private:
-  V4L2RequestsQueue* request_queue_;
+  raw_ptr<V4L2RequestsQueue> request_queue_;
   int ref_counter_ = 0;
   base::ScopedFD request_fd_;
 

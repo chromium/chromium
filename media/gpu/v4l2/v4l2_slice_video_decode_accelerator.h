@@ -15,6 +15,7 @@
 
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
@@ -520,7 +521,7 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
   size_t gl_image_planes_count_;
 
   // Reference to request queue to get free requests.
-  V4L2RequestsQueue* requests_queue_;
+  raw_ptr<V4L2RequestsQueue> requests_queue_;
 
   // The WeakPtrFactory for |weak_this_|.
   base::WeakPtrFactory<V4L2SliceVideoDecodeAccelerator> weak_this_factory_;

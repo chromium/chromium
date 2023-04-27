@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/h265_decoder.h"
 #include "media/gpu/h265_dpb.h"
@@ -72,8 +73,8 @@ class V4L2VideoDecoderDelegateH265 : public H265Decoder::H265Accelerator {
   scoped_refptr<V4L2DecodeSurface> H265PictureToV4L2DecodeSurface(
       H265Picture* pic);
 
-  V4L2DecodeSurfaceHandler* const surface_handler_;
-  V4L2Device* const device_;
+  raw_ptr<V4L2DecodeSurfaceHandler> const surface_handler_;
+  raw_ptr<V4L2Device> const device_;
 };
 
 }  // namespace media

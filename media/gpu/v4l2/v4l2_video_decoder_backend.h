@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_H_
 #define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/decoder_status.h"
 #include "media/base/video_color_space.h"
@@ -117,7 +118,7 @@ class V4L2VideoDecoderBackend {
   // The decoder we are serving. |client_| is the owner of this backend
   // instance, and is guaranteed to live longer than it. Thus it is safe to use
   // a raw pointer here.
-  Client* const client_;
+  raw_ptr<Client> const client_;
   // V4L2 device to use.
   scoped_refptr<V4L2Device> device_;
   // Input and output queued from which to get buffers.

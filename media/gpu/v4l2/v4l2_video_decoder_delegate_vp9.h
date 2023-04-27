@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP9_H_
 #define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP9_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/gpu/vp9_decoder.h"
 
 namespace media {
@@ -38,8 +40,8 @@ class V4L2VideoDecoderDelegateVP9 : public VP9Decoder::VP9Accelerator {
   bool SupportsContextProbabilityReadback() const override;
 
  private:
-  V4L2DecodeSurfaceHandler* const surface_handler_;
-  V4L2Device* const device_;
+  raw_ptr<V4L2DecodeSurfaceHandler> const surface_handler_;
+  raw_ptr<V4L2Device> const device_;
 
   // True if |device_| supports V4L2_CID_STATELESS_VP9_COMPRESSED_HDR. Not all
   // implementations are expected to support it (e.g. MTK8195 doesn't).
