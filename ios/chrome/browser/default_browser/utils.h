@@ -105,9 +105,6 @@ bool IsInCTAOpenLinksGroup();
 // Returns true if the user is in the CTA experiment in the switch group.
 bool IsInCTASwitchGroup();
 
-// Returns true if non modals default browser promos are enabled.
-bool NonModalPromosEnabled();
-
 // Returns true if the user has interacted with the Fullscreen Promo previously.
 // Returns false otherwise.
 bool HasUserInteractedWithFullscreenPromoBefore();

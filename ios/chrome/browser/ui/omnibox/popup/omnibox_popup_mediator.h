@@ -25,7 +25,7 @@
 @class BrowserActionFactory;
 @class CarouselItem;
 @protocol CarouselItemConsumer;
-@class DefaultBrowserPromoNonModalScheduler;
+@class NonModalDefaultBrowserPromoSchedulerSceneAgent;
 class FaviconLoader;
 @class OmniboxPedalAnnotator;
 @class OmniboxPopupMediator;
@@ -100,7 +100,8 @@ class OmniboxPopupMediatorDelegate {
     debugInfoConsumer;
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
 /// Scheduler to notify about events happening in this popup.
-@property(nonatomic, weak) DefaultBrowserPromoNonModalScheduler* promoScheduler;
+@property(nonatomic, weak)
+    NonModalDefaultBrowserPromoSchedulerSceneAgent* promoScheduler;
 @property(nonatomic, assign, getter=isIncognito) BOOL incognito;
 /// Whether the popup is open.
 @property(nonatomic, assign, getter=isOpen) BOOL open;

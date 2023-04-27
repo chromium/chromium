@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
+#import "ios/chrome/browser/ui/main/default_browser_promo_scene_agent.h"
 
 #import "base/test/scoped_feature_list.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
@@ -41,9 +41,9 @@
 #error "This file requires ARC support."
 #endif
 
-class DefaultBrowserSceneAgentTest : public PlatformTest {
+class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
  public:
-  DefaultBrowserSceneAgentTest() : PlatformTest() {}
+  DefaultBrowserPromoSceneAgentTest() : PlatformTest() {}
 
  protected:
   void SetUp() override {
@@ -60,16 +60,16 @@ class DefaultBrowserSceneAgentTest : public PlatformTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
     std::unique_ptr<Browser> browser_ =
         std::make_unique<TestBrowser>(browser_state_.get());
-    id browser_launcher_mock_ =
+    id browser_launcher_mock =
         [OCMockObject mockForProtocol:@protocol(BrowserLauncher)];
-    FakeStartupInformation* startup_information_ =
+    FakeStartupInformation* startup_information =
         [[FakeStartupInformation alloc] init];
-    id main_application_delegate_ =
+    id main_application_delegate =
         [OCMockObject mockForClass:[MainApplicationDelegate class]];
     app_state_ =
-        [[AppState alloc] initWithBrowserLauncher:browser_launcher_mock_
-                               startupInformation:startup_information_
-                              applicationDelegate:main_application_delegate_];
+        [[AppState alloc] initWithBrowserLauncher:browser_launcher_mock
+                               startupInformation:startup_information
+                              applicationDelegate:main_application_delegate];
     app_state_.mainBrowserState = browser_state_.get();
     promos_manager_ = std::make_unique<MockPromosManager>();
     scene_state_ =
@@ -79,7 +79,7 @@ class DefaultBrowserSceneAgentTest : public PlatformTest {
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
 
     dispatcher_ = [[CommandDispatcher alloc] init];
-    agent_ = [[DefaultBrowserSceneAgent alloc]
+    agent_ = [[DefaultBrowserPromoSceneAgent alloc]
         initWithCommandDispatcher:dispatcher_];
     agent_.sceneState = scene_state_;
     agent_.promosManager = promos_manager_.get();
@@ -109,7 +109,7 @@ class DefaultBrowserSceneAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  DefaultBrowserSceneAgent* agent_;
+  DefaultBrowserPromoSceneAgent* agent_;
   FakeSceneState* scene_state_;
   AppState* app_state_;
   std::unique_ptr<MockPromosManager> promos_manager_;
@@ -119,7 +119,7 @@ class DefaultBrowserSceneAgentTest : public PlatformTest {
 
 // Tests that DefaultBrowser was registered with the promo manager when a
 // condition is met for a tailored promo.
-TEST_F(DefaultBrowserSceneAgentTest,
+TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestPromoRegistrationLikelyInterestedTailored) {
   EnableDefaultBrowserPromoRefactoringFlag();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
@@ -135,7 +135,7 @@ TEST_F(DefaultBrowserSceneAgentTest,
 
 // Tests that DefaultBrowser was registered with the promo manager when the
 // condition is met for a default promo.
-TEST_F(DefaultBrowserSceneAgentTest,
+TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestPromoRegistrationLikelyInterestedDefault) {
   EnableDefaultBrowserPromoRefactoringFlag();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
@@ -152,7 +152,7 @@ TEST_F(DefaultBrowserSceneAgentTest,
 // Tests that DefaultBrowser was registered to the promo manager when the
 // conditions (ShouldRegisterPromoWithPromoManager) are met when
 // kDefaultBrowserRefactoringPromoManager is enabled.
-TEST_F(DefaultBrowserSceneAgentTest,
+TEST_F(DefaultBrowserPromoSceneAgentTest,
        TesChromeLikelyDefaultBrowserNoPromoRegistration) {
   EnableDefaultBrowserPromoRefactoringFlag();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
@@ -168,7 +168,7 @@ TEST_F(DefaultBrowserSceneAgentTest,
 // Tests that DefaultBrowser was not registered to the promo manager due to the
 // last shutbown not being clean when kDefaultBrowserRefactoringPromoManager is
 // enabled.
-TEST_F(DefaultBrowserSceneAgentTest,
+TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestLastShutdownNotCleanNoPromoRegistration) {
   EnableDefaultBrowserPromoRefactoringFlag();
   SignIn();
@@ -184,7 +184,7 @@ TEST_F(DefaultBrowserSceneAgentTest,
 // Tests that DefaultBrowser was not registered to the promo manager because the
 // user previously interacted with a default browser tailored fullscreen promo
 // when kDefaultBrowserRefactoringPromoManager is enabled.
-TEST_F(DefaultBrowserSceneAgentTest,
+TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestInteractedTailoredPromoNoPromoRegistration) {
   EnableDefaultBrowserPromoRefactoringFlag();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
@@ -201,7 +201,7 @@ TEST_F(DefaultBrowserSceneAgentTest,
 // Tests that DefaultBrowser was not registered to the promo manager because the
 // user previously interacted with a default browser fullscreen promo when
 // kDefaultBrowserRefactoringPromoManager is enabled.
-TEST_F(DefaultBrowserSceneAgentTest,
+TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestInteractedDefaultPromoNoPromoRegistration) {
   EnableDefaultBrowserPromoRefactoringFlag();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
@@ -217,7 +217,7 @@ TEST_F(DefaultBrowserSceneAgentTest,
 
 // Tests that the DefaultPromoTypeMadeForIOS tailored promo is shown when it was
 // detected that the user is likely interested in the promo.
-TEST_F(DefaultBrowserSceneAgentTest, TestDefaultPromoTypeMadeForIOSShown) {
+TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeMadeForIOSShown) {
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
@@ -238,7 +238,7 @@ TEST_F(DefaultBrowserSceneAgentTest, TestDefaultPromoTypeMadeForIOSShown) {
 
 // Tests that the DefaultPromoTypeStaySafe tailored promo is shown when it was
 // detected that the user is likely interested in the promo.
-TEST_F(DefaultBrowserSceneAgentTest, TestDefaultPromoTypeStaySafeShown) {
+TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeStaySafeShown) {
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
@@ -259,7 +259,7 @@ TEST_F(DefaultBrowserSceneAgentTest, TestDefaultPromoTypeStaySafeShown) {
 
 // Tests that the DefaultPromoTypeAllTabs tailored promo is shown when it was
 // detected that the user is likely interested in the promo.
-TEST_F(DefaultBrowserSceneAgentTest, TestDefaultPromoTypeAllTabsShown) {
+TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeAllTabsShown) {
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
@@ -280,7 +280,7 @@ TEST_F(DefaultBrowserSceneAgentTest, TestDefaultPromoTypeAllTabsShown) {
 
 // Tests that the DefaultPromoTypeGeneral tailored promo is shown when it was
 // detected that the user is likely interested in the promo.
-TEST_F(DefaultBrowserSceneAgentTest, TestDefaultPromoTypeGeneralShown) {
+TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeGeneralShown) {
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))

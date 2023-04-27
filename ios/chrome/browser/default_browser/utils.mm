@@ -457,11 +457,6 @@ bool IsDefaultBrowserVideoPromoFullscreenEnabled() {
       false);
 }
 
-bool NonModalPromosEnabled() {
-  // Default browser isn't enabled until iOS 14.0.1, regardless of flag state.
-  return base::ios::IsRunningOnOrLater(14, 0, 1);
-}
-
 bool HasUserInteractedWithFullscreenPromoBefore() {
   NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
       kUserHasInteractedWithFullscreenPromo);

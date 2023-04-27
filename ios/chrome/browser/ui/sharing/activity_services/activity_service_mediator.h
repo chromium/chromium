@@ -20,7 +20,7 @@ class BookmarkModel;
 @protocol ChromeActivityItemSource;
 @class ChromeActivityURLSource;
 @class ChromeActivityFileSource;
-@class DefaultBrowserPromoNonModalScheduler;
+@class NonModalDefaultBrowserPromoSchedulerSceneAgent;
 @protocol FindInPageCommands;
 class PrefService;
 class ReadingListBrowserAgent;
@@ -53,7 +53,8 @@ class WebNavigationBrowserAgent;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Scheduler to notify about events happening in this activity.
-@property(nonatomic, weak) DefaultBrowserPromoNonModalScheduler* promoScheduler;
+@property(nonatomic, weak)
+    NonModalDefaultBrowserPromoSchedulerSceneAgent* promoScheduler;
 
 // Generates an array of activity items to be shared via an activity view for
 // the given objects in `dataItems`.

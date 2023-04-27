@@ -73,6 +73,7 @@
 #import "ios/chrome/browser/screenshot/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -108,7 +109,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_scene_agent.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/history/history_coordinator_delegate.h"
@@ -117,7 +117,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
-#import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
+#import "ios/chrome/browser/ui/main/default_browser_promo_scene_agent.h"
 #import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/main/wrangled_browser.h"
@@ -410,9 +410,8 @@ void InjectNTP(Browser* browser) {
   self.sceneState.appState.shouldShowDefaultBrowserPromo = shouldShowPromo;
 
   if (parameters.openedViaFirstPartyScheme) {
-    DefaultBrowserSceneAgent* sceneAgent =
-        [DefaultBrowserSceneAgent agentFromScene:self.sceneState];
-    [sceneAgent.nonModalScheduler logUserEnteredAppViaFirstPartyScheme];
+    [[NonModalDefaultBrowserPromoSchedulerSceneAgent
+        agentFromScene:self.sceneState] logUserEnteredAppViaFirstPartyScheme];
     [self notifyFETAppOpenedViaFirstParty];
   }
 }
@@ -838,17 +837,15 @@ void InjectNTP(Browser* browser) {
       PromosManagerFactory::GetForBrowserState(browserState);
 
   // Add scene agents that require CommandDispatcher.
-  DefaultBrowserSceneAgent* defaultBrowserAgent =
-      [[DefaultBrowserSceneAgent alloc]
+  DefaultBrowserPromoSceneAgent* defaultBrowserAgent =
+      [[DefaultBrowserPromoSceneAgent alloc]
           initWithCommandDispatcher:mainCommandDispatcher];
-  defaultBrowserAgent.nonModalScheduler.browser = mainBrowser;
   if (IsDefaultBrowserInPromoManagerEnabled()) {
     defaultBrowserAgent.promosManager = promosManager;
   }
   [self.sceneState addAgent:defaultBrowserAgent];
-  if (defaultBrowserAgent.nonModalScheduler) {
-    [self.sceneState addObserver:defaultBrowserAgent.nonModalScheduler];
-  }
+  [self.sceneState
+      addAgent:[[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init]];
 
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];

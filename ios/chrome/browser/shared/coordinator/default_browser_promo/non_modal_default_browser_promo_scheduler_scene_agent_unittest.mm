@@ -2,19 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 
 #import "base/ios/ios_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/browser_launcher.h"
+#import "ios/chrome/app/application_delegate/fake_startup_information.h"
+#import "ios/chrome/app/main_application_delegate.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
+#import "ios/chrome/browser/main/browser_provider.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
@@ -22,6 +27,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
@@ -42,19 +48,36 @@
 
 namespace {
 
-class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
+class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
  protected:
-  DefaultBrowserPromoNonModalSchedulerTest() {}
+  NonModalDefaultBrowserPromoSchedulerSceneAgentTest() {}
 
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
     std::unique_ptr<TestChromeBrowserState> chrome_browser_state =
         test_cbs_builder.Build();
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state.get());
+    id browser_launcher_mock =
+        [OCMockObject mockForProtocol:@protocol(BrowserLauncher)];
+    FakeStartupInformation* startup_information =
+        [[FakeStartupInformation alloc] init];
+    id main_application_delegate =
+        [OCMockObject mockForClass:[MainApplicationDelegate class]];
+    app_state_ =
+        [[AppState alloc] initWithBrowserLauncher:browser_launcher_mock
+                               startupInformation:startup_information
+                              applicationDelegate:main_application_delegate];
+    app_state_.mainBrowserState = chrome_browser_state.get();
+    scene_state_ =
+        [[FakeSceneState alloc] initWithAppState:app_state_
+                                    browserState:chrome_browser_state.get()];
+    scene_state_.scene = static_cast<UIWindowScene*>(
+        [[[UIApplication sharedApplication] connectedScenes] anyObject]);
 
-    OverlayPresenter::FromBrowser(browser_.get(),
-                                  OverlayModality::kInfobarBanner)
+    browser_ =
+        scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+
+    OverlayPresenter::FromBrowser(browser_, OverlayModality::kInfobarBanner)
         ->SetPresentationContext(&overlay_presentation_context_);
 
     // Add initial web state
@@ -76,23 +99,23 @@ class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
                      forProtocol:@protocol(
                                      DefaultBrowserPromoNonModalCommands)];
 
-    scheduler_ = [[DefaultBrowserPromoNonModalScheduler alloc] init];
-    scheduler_.browser = browser_.get();
-    scheduler_.dispatcher = browser_->GetCommandDispatcher();
+    scheduler_ = [[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init];
+    scheduler_.sceneState = scene_state_;
+
+    [scheduler_ sceneStateDidEnableUI:scene_state_];
 
     // Stub application so the settings panel doesn't actually open.
     application_ = OCMClassMock([UIApplication class]);
     OCMStub([application_ sharedApplication]).andReturn(application_);
   }
 
-  ~DefaultBrowserPromoNonModalSchedulerTest() override {
+  ~NonModalDefaultBrowserPromoSchedulerSceneAgentTest() override {
     [application_ stopMocking];
   }
 
   void TearDown() override {
     ClearDefaultBrowserPromoData();
-    OverlayPresenter::FromBrowser(browser_.get(),
-                                  OverlayModality::kInfobarBanner)
+    OverlayPresenter::FromBrowser(browser_, OverlayModality::kInfobarBanner)
         ->SetPresentationContext(nullptr);
   }
 
@@ -100,16 +123,18 @@ class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   web::FakeWebState* test_web_state_;
-  std::unique_ptr<Browser> browser_;
+  Browser* browser_;
   FakeOverlayPresentationContext overlay_presentation_context_;
   id promo_commands_handler_;
-  DefaultBrowserPromoNonModalScheduler* scheduler_;
+  NonModalDefaultBrowserPromoSchedulerSceneAgent* scheduler_;
   id application_ = nil;
+  AppState* app_state_;
+  FakeSceneState* scene_state_;
 };
 
 // Tests that the omnibox paste event triggers the promo to show.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestOmniboxPasteShowsPromo) {
-
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       TestOmniboxPasteShowsPromo) {
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
@@ -131,9 +156,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestOmniboxPasteShowsPromo) {
 
 // Tests that the entering the app via first party scheme event triggers the
 // promo.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestFirstPartySchemeShowsPromo) {
-
   [scheduler_ logUserEnteredAppViaFirstPartyScheme];
 
   // Finish loading the page.
@@ -154,8 +178,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 }
 
 // Tests that the completed share event triggers the promo.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestShareCompletedShowsPromo) {
-
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       TestShareCompletedShowsPromo) {
   [scheduler_ logUserFinishedActivityFlow];
 
   // Finish loading the page.
@@ -172,8 +196,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestShareCompletedShowsPromo) {
 
 // Tests that the promo dismisses automatically after the dismissal time and
 // the event is stored.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTimeoutDismissesPromo) {
-
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       TestTimeoutDismissesPromo) {
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
@@ -199,8 +223,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTimeoutDismissesPromo) {
 }
 
 // Tests that if the user takes the promo action, that is handled correctly.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestActionDismissesPromo) {
-
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       TestActionDismissesPromo) {
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
@@ -228,9 +252,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestActionDismissesPromo) {
 
 // Tests that if the user switches to a different tab before the post-load timer
 // finishes, the promo does not show.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestTabSwitchPreventsPromoShown) {
-
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
@@ -249,9 +272,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 }
 
 // Tests that if a message is triggered on page load, the promo is not shown.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestMessagePreventsPromoShown) {
-
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
@@ -285,9 +307,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 
 // Tests that backgrounding the app with the promo showing hides the promo but
 // does not update the shown promo count.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestBackgroundingDismissesPromo) {
-
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
@@ -314,8 +335,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 
 // Tests that entering the tab grid with the promo showing hides the promo but
 // does not update the shown promo count.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTabGridDismissesPromo) {
-
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       TestTabGridDismissesPromo) {
   [scheduler_ logUserPastedInOmnibox];
 
   // Finish loading the page.
@@ -340,8 +361,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTabGridDismissesPromo) {
 }
 
 // Tests background cancel metric logs correctly.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestBackgroundCancelMetric) {
-
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       TestBackgroundCancelMetric) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
@@ -361,9 +382,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestBackgroundCancelMetric) {
 }
 
 // Tests background cancel metric is not logged after a promo is shown.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestBackgroundCancelMetricNotLogAfterPromoShown) {
-
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
@@ -393,9 +413,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 }
 
 // Tests background cancel metric is not logged after a promo is dismissed.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestBackgroundCancelMetricNotLogAfterPromoDismiss) {
-
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
@@ -431,9 +450,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 
 // Tests background cancel metric is not logged when a promo can't be shown.
 // Prevents crbug.com/1221379 regression.
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestBackgroundCancelMetricDoesNotLogWhenPromoNotShown) {
-
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
@@ -471,8 +489,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 
 // Tests that if the user currently has Chrome as default, the promo does not
 // show. Prevents regression of crbug.com/1224875
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest, NoPromoIfDefault) {
-
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest, NoPromoIfDefault) {
   // Mark Chrome as currently default
   LogOpenHTTPURLFromExternalURL();
 
@@ -490,8 +507,8 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, NoPromoIfDefault) {
 // Tests that if the promo can't be shown, the state is cleaned up, so a
 // DCHECK is not fired on the next page load. Prevents regression of
 // crbug.com/1224427
-TEST_F(DefaultBrowserPromoNonModalSchedulerTest, NoDCHECKIfPromoNotShown) {
-
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       NoDCHECKIfPromoNotShown) {
   [scheduler_ logUserPastedInOmnibox];
 
   // Switch to a new tab before loading a page. This will prevent the promo from

@@ -2,25 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_PROMO_NON_MODAL_SCHEDULER_H_
-#define IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_PROMO_NON_MODAL_SCHEDULER_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_COORDINATOR_DEFAULT_BROWSER_PROMO_NON_MODAL_DEFAULT_BROWSER_PROMO_SCHEDULER_SCENE_AGENT_H_
+#define IOS_CHROME_BROWSER_SHARED_COORDINATOR_DEFAULT_BROWSER_PROMO_NON_MODAL_DEFAULT_BROWSER_PROMO_SCHEDULER_SCENE_AGENT_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
 class Browser;
 @class CommandDispatcher;
 
-// A scheduler that determines when to show the non-modal default browser
-// promo based on many sources of data.
-@interface DefaultBrowserPromoNonModalScheduler : NSObject <SceneStateObserver>
+// A scene-agent scheduler that determines when to show the non-modal default
+// browser promo based on many sources of data.
+@interface NonModalDefaultBrowserPromoSchedulerSceneAgent : ObservingSceneAgent
 
-@property(nonatomic, weak) CommandDispatcher* dispatcher;
-
-// The browser that this scheduler uses to listen to events, such as page loads
-// and overlay events
-@property(nonatomic, assign) Browser* browser;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 // Handles the user pasting in the omnibox and schedules a promo if necessary.
 - (void)logUserPastedInOmnibox;
@@ -49,4 +45,4 @@ class Browser;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_PROMO_NON_MODAL_SCHEDULER_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_DEFAULT_BROWSER_PROMO_NON_MODAL_DEFAULT_BROWSER_PROMO_SCHEDULER_SCENE_AGENT_H_

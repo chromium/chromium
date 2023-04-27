@@ -40,7 +40,7 @@
 @protocol BrowserCoordinatorCommands;
 @class BubblePresenter;
 @protocol CRWResponderInputView;
-@class DefaultBrowserPromoNonModalScheduler;
+@class NonModalDefaultBrowserPromoSchedulerSceneAgent;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
 class FullscreenController;
@@ -157,7 +157,7 @@ typedef struct {
 // Scheduler for the non-modal default browser promo.
 // TODO(crbug.com/1204120): The BVC should not need this model-level object.
 @property(nonatomic, weak)
-    DefaultBrowserPromoNonModalScheduler* nonModalPromoScheduler;
+    NonModalDefaultBrowserPromoSchedulerSceneAgent* nonModalPromoScheduler;
 
 // Presentation delegate for the non-modal default browser promo.
 @property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>

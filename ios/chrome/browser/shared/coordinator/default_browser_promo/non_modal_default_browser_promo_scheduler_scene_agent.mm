@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer_bridge.h"
+#import "ios/chrome/browser/main/browser_provider.h"
+#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_metrics_util.h"
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
@@ -47,11 +50,13 @@ bool PromoCanBeDisplayed() {
     return false;
   }
 
-  if (IsChromeLikelyDefaultBrowser())
+  if (IsChromeLikelyDefaultBrowser()) {
     return false;
+  }
 
-  if (UserInPromoCooldown())
+  if (UserInPromoCooldown()) {
     return false;
+  }
 
   NSInteger count = UserInteractionWithNonModalPromoCount();
   return count < kPromoShownTimesLimit;
@@ -83,10 +88,11 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
 }  // namespace
 
-@interface DefaultBrowserPromoNonModalScheduler () <WebStateListObserving,
-                                                    CRWWebStateObserver,
-                                                    OverlayPresenterObserving,
-                                                    BrowserObserving> {
+@interface NonModalDefaultBrowserPromoSchedulerSceneAgent () <
+    WebStateListObserving,
+    CRWWebStateObserver,
+    OverlayPresenterObserving,
+    BrowserObserving> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<ActiveWebStateObservationForwarder> _forwarder;
@@ -100,6 +106,8 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
   // Timer for dismissing the promo after it is shown.
   std::unique_ptr<base::OneShotTimer> _dismissPromoTimer;
+
+  __weak id<DefaultBrowserPromoNonModalCommands> _handler;
 }
 
 // Time when a non modal promo was shown on screen, used for metrics only.
@@ -107,9 +115,6 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
 // WebState that the triggering event occured in.
 @property(nonatomic, assign) web::WebState* webStateToListenTo;
-
-// The handler used to respond to the promo show/hide commands.
-@property(nonatomic, readonly) id<DefaultBrowserPromoNonModalCommands> handler;
 
 // Whether or not the promo is currently showing.
 @property(nonatomic, assign) BOOL promoIsShowing;
@@ -125,9 +130,13 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 // The trigger reason for the in-progress promo flow.
 @property(nonatomic, assign) PromoReason currentPromoReason;
 
+// The browser that this scheduler uses to listen to events, such as page loads
+// and overlay events
+@property(nonatomic, assign) Browser* browser;
+
 @end
 
-@implementation DefaultBrowserPromoNonModalScheduler
+@implementation NonModalDefaultBrowserPromoSchedulerSceneAgent
 
 - (instancetype)init {
   if (self = [super init]) {
@@ -221,13 +230,16 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
 - (void)dismissPromoAnimated:(BOOL)animated {
   [self cancelDismissPromoTimer];
-  [self.handler dismissDefaultBrowserNonModalPromoAnimated:animated];
+  [_handler dismissDefaultBrowserNonModalPromoAnimated:animated];
 }
+
+#pragma mark - Accessors
 
 - (void)setBrowser:(Browser*)browser {
   if (_browser) {
     self.webStateList = nullptr;
     self.overlayPresenter = nullptr;
+    _handler = nil;
   }
 
   _browser = browser;
@@ -237,6 +249,8 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
     self.webStateList = _browser->GetWebStateList();
     self.overlayPresenter = OverlayPresenter::FromBrowser(
         _browser, OverlayModality::kInfobarBanner);
+    _handler = HandlerForProtocol(_browser->GetCommandDispatcher(),
+                                  DefaultBrowserPromoNonModalCommands);
   }
 }
 
@@ -263,11 +277,6 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
   if (_overlayPresenter) {
     _overlayPresenter->AddObserver(_overlayObserver.get());
   }
-}
-
-- (id<DefaultBrowserPromoNonModalCommands>)handler {
-  return HandlerForProtocol(self.dispatcher,
-                            DefaultBrowserPromoNonModalCommands);
 }
 
 #pragma mark - WebStateListObserving
@@ -326,8 +335,18 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
     }
     [self cancelShowPromoTimer];
     [self cancelDismissPromoTimer];
-    [self.handler dismissDefaultBrowserNonModalPromoAnimated:NO];
+    [_handler dismissDefaultBrowserNonModalPromoAnimated:NO];
   }
+}
+
+- (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  self.browser = nullptr;
+}
+
+- (void)sceneStateDidEnableUI:(SceneState*)sceneState {
+  self.browser =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  CHECK(self.browser);
 }
 
 #pragma mark - BrowserObserving
@@ -392,7 +411,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
     return;
   }
   _showPromoTimer = nullptr;
-  [self.handler showDefaultBrowserNonModalPromo];
+  [_handler showDefaultBrowserNonModalPromo];
   self.promoIsShowing = YES;
   LogNonModalPromoAction(NonModalPromoAction::kAppear,
                          MetricTypeForPromoReason(self.currentPromoReason),
@@ -429,7 +448,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
     LogNonModalTimeOnScreen(self.promoShownTime);
     self.promoShownTime = base::TimeTicks();
     LogUserInteractionWithNonModalPromo();
-    [self.handler dismissDefaultBrowserNonModalPromoAnimated:YES];
+    [_handler dismissDefaultBrowserNonModalPromoAnimated:YES];
   }
 }
 

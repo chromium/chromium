@@ -48,7 +48,8 @@ class Tracker;
 
 // The favicon loader.
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
-// Scene state used by this mediator to log with DefaultBrowserSceneAgent.
+// Scene state used by this mediator to log with
+// NonModalDefaultBrowserPromoSchedulerSceneAgent.
 @property(nonatomic, weak) SceneState* sceneState;
 
 @end
