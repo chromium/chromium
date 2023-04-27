@@ -385,9 +385,10 @@ public class OmniboxResourceProvider {
 
     /** Gets the margin, in pixels, on either side of an omnibox suggestion. */
     public static @Px int getSideSpacing(@NonNull Context context) {
-        return context.getResources().getDimensionPixelSize(selectMarginDimen(
-                R.dimen.omnibox_suggestion_side_spacing, R.dimen.omnibox_suggestion_side_spacing,
-                R.dimen.omnibox_suggestion_side_spacing_smallest));
+        return context.getResources().getDimensionPixelSize(
+                selectMarginDimen(R.dimen.omnibox_suggestion_side_spacing,
+                        R.dimen.omnibox_suggestion_side_spacing_smaller,
+                        R.dimen.omnibox_suggestion_side_spacing_smallest));
     }
 
     /** Gets the start padding for an omnibox suggestion's decoration icon. */
@@ -418,11 +419,58 @@ public class OmniboxResourceProvider {
     public static int getSuggestionGroupTopMargin(Context context) {
         return context.getResources().getDimensionPixelSize(
                 selectMarginDimen(R.dimen.omnibox_suggestion_group_vertical_margin,
-                        R.dimen.omnibox_suggestion_group_vertical_margin,
-                        R.dimen.omnibox_suggestion_group_vertical_small_margin));
+                        R.dimen.omnibox_suggestion_group_vertical_smaller_margin,
+                        R.dimen.omnibox_suggestion_group_vertical_smallest_margin));
     }
 
-    static @DimenRes int selectMarginDimen(
+    /** Get the top padding for the MV carousel. */
+    public static @Px int getCarouselTopPadding(Context context) {
+        if (OmniboxFeatures.shouldShowSmallerMargins()) {
+            return 0;
+        }
+
+        int topPadding = context.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_carousel_suggestion_padding);
+
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
+            topPadding -= context.getResources().getDimensionPixelSize(
+                    R.dimen.tile_view_icon_background_margin_top_modern);
+        }
+
+        return topPadding;
+    }
+
+    /** Get the bottom padding for the MV carousel. */
+    public static @Px int getCarouselBottomPadding(Context context) {
+        if (OmniboxFeatures.shouldShowSmallerMargins()) {
+            return 0;
+        }
+
+        @DimenRes
+        int dimenRes = OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                ? R.dimen.omnibox_carousel_suggestion_small_bottom_padding
+                : R.dimen.omnibox_carousel_suggestion_padding;
+        return context.getResources().getDimensionPixelSize(dimenRes);
+    }
+
+    /** Get the top margin for first suggestion in the omnibox with "active color" enabled. */
+    public static int getActiveOmniboxTopSmallMargin(Context context) {
+        return context.getResources().getDimensionPixelSize(
+                selectMarginDimen(R.dimen.omnibox_suggestion_list_active_top_small_margin,
+                        R.dimen.omnibox_suggestion_list_active_top_smaller_margin,
+                        R.dimen.omnibox_suggestion_list_active_top_small_margin));
+    }
+
+    /** Gets the start padding for a header suggestion. */
+    public static int getHeaderStartPadding(Context context) {
+        return context.getResources().getDimensionPixelSize(
+                selectMarginDimen(R.dimen.omnibox_suggestion_header_padding_start_modern,
+                        R.dimen.omnibox_suggestion_header_padding_start_modern_smaller,
+                        R.dimen.omnibox_suggestion_header_padding_start_modern_smallest));
+    }
+
+    /** */
+    public static @DimenRes int selectMarginDimen(
             @DimenRes int regular, @DimenRes int smaller, @DimenRes int smallest) {
         if (OmniboxFeatures.shouldShowSmallestMargins()) {
             return smallest;

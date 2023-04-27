@@ -46,8 +46,8 @@ class DropdownItemViewInfoListManager {
         mSourceViewInfoList = Collections.emptyList();
         mManagedModel = managedModel;
 
-        mListActiveOmniboxTopSmallMargin = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_list_active_top_small_margin);
+        mListActiveOmniboxTopSmallMargin =
+                OmniboxResourceProvider.getActiveOmniboxTopSmallMargin(context);
         mListActiveOmniboxTopBigMargin = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_list_active_top_big_margin);
         mListNonActiveOmniboxTopSmallMargin = mContext.getResources().getDimensionPixelSize(
@@ -112,7 +112,7 @@ class DropdownItemViewInfoListManager {
         DropdownItemViewInfo previousItem = null;
         int groupTopMargin = OmniboxResourceProvider.getSuggestionGroupTopMargin(mContext);
         int groupBottomMargin = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_group_vertical_small_margin);
+                R.dimen.omnibox_suggestion_group_vertical_smallest_margin);
         int suggestionVerticalMargin = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_vertical_margin);
 
@@ -163,7 +163,8 @@ class DropdownItemViewInfoListManager {
 
             previousItemWasHeader = item.processor.getViewTypeId() == OmniboxSuggestionUiType.HEADER
                     && shouldShowModernizeVisualUpdate
-                    && OmniboxFeatures.shouldShowSmallestMargins();
+                    && (OmniboxFeatures.shouldShowSmallestMargins()
+                            || OmniboxFeatures.shouldShowSmallerMargins());
 
             suggestionsList.add(item);
         }
@@ -189,13 +190,15 @@ class DropdownItemViewInfoListManager {
      */
     private @Px int getSuggestionListTopMargin(@OmniboxSuggestionUiType int firstSuggestionUiType) {
         if (firstSuggestionUiType == OmniboxSuggestionUiType.EDIT_URL_SUGGESTION) {
-            return 0;
+            return OmniboxFeatures.shouldShowSmallerMargins() ? mListActiveOmniboxTopSmallMargin
+                                                              : 0;
         }
 
         if (OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
             if (OmniboxFeatures.shouldShowSmallestMargins()) {
                 return 0;
-            } else if (OmniboxFeatures.shouldShowSmallBottomMargin()) {
+            } else if (OmniboxFeatures.shouldShowSmallBottomMargin()
+                    || OmniboxFeatures.shouldShowSmallerMargins()) {
                 return mListActiveOmniboxTopSmallMargin;
             } else {
                 return mListActiveOmniboxTopBigMargin;

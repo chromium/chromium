@@ -119,4 +119,21 @@ public class HeaderViewBinderUnitTest {
         verify(mHeaderView, times(1))
                 .setUpdateHeaderPadding(minHeight, paddingStart, paddingTop, paddingBottom);
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void headerView_useModernizedHeaderPadding_smallerMargins() {
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
+        mModel.set(HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING, true);
+
+        int minHeight = mResources.getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_header_height_modern_phase2);
+        int paddingStart = mResources.getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_header_padding_start_modern_smaller);
+        int paddingTop =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_top);
+        int paddingBottom = 0;
+        verify(mHeaderView, times(1))
+                .setUpdateHeaderPadding(minHeight, paddingStart, paddingTop, paddingBottom);
+    }
 }

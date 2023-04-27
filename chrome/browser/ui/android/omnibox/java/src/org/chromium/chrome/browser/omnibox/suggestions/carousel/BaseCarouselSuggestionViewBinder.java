@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -42,9 +43,6 @@ public final class BaseCarouselSuggestionViewBinder {
             final View headerView = view.getHeaderView();
             boolean modernizeVisualUpdate =
                     OmniboxFeatures.shouldShowModernizeVisualUpdate(view.getContext());
-            boolean shouldShowSmallBottomMargin = modernizeVisualUpdate
-                    && (OmniboxFeatures.shouldShowSmallBottomMargin()
-                            || OmniboxFeatures.shouldShowSmallestMargins());
             int topPadding = view.getResources().getDimensionPixelSize(
                     R.dimen.omnibox_carousel_suggestion_padding);
             if (modernizeVisualUpdate) {
@@ -52,9 +50,7 @@ public final class BaseCarouselSuggestionViewBinder {
                         R.dimen.tile_view_icon_background_margin_top_modern);
             }
             final int bottomPadding =
-                    view.getResources().getDimensionPixelSize(shouldShowSmallBottomMargin
-                                    ? R.dimen.omnibox_carousel_suggestion_small_bottom_padding
-                                    : R.dimen.omnibox_carousel_suggestion_padding);
+                    OmniboxResourceProvider.getCarouselBottomPadding(view.getContext());
             if (showTitle) {
                 headerView.setVisibility(View.VISIBLE);
                 view.setPaddingRelative(0, 0, 0, bottomPadding);
