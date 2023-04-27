@@ -21,6 +21,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources_map.h"
+#include "chrome/grit/side_panel_shared_resources.h"
+#include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -104,6 +106,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       base::make_span(kSidePanelCustomizeChromeResources,
                       kSidePanelCustomizeChromeResourcesSize),
       IDR_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_HTML);
+  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
+                                           kSidePanelSharedResourcesSize));
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));
