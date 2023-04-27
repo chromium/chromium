@@ -19,7 +19,7 @@ namespace content {
 
 scoped_refptr<base::SequencedTaskRunner> impl_task_runner() {
   constexpr base::TaskTraits kBlockingTraits = {
-      base::MayBlock(), base::TaskPriority::BEST_EFFORT};
+      base::MayBlock(), base::TaskPriority::USER_VISIBLE};
   static base::LazyThreadPoolSequencedTaskRunner s_sequenced_task_unner =
       LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(kBlockingTraits);
   return s_sequenced_task_unner.Get();
