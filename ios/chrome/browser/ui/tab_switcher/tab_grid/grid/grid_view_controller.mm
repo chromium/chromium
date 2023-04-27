@@ -1291,7 +1291,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   auto completion = ^(BOOL finished) {
     [self deselectAllCollectionViewItemsAnimated:NO];
-    [self selectCollectionViewItemWithID:self.selectedItemID animated:NO];
+    [self selectCollectionViewItemWithID:self.selectedItemID
+                                animated:!self.thumbStripEnabled];
 
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
 
