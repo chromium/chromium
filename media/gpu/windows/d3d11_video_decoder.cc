@@ -967,6 +967,11 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
                                                     : config_.hdr_metadata());
   }
 
+  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
+    frame->set_shared_image_format_type(
+        SharedImageFormatType::kSharedImageFormat);
+  }
+
   // TODO(crbug.com/1236801): WebGPU cannot import and create texture view on
   // correct slice of texture array. Still some works need to be done in both
   // chromium side and dawn side.

@@ -274,11 +274,19 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     DCHECK_EQ(mailboxes.size(), 1u);
     // TODO(crbug.com/1430349): Switch |texture_target| to GL_TEXTURE_2D since
     // it's now supported by ANGLE.
-    shared_image_backings.push_back(gpu::D3DImageBacking::Create(
-        mailboxes[0], DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
-        size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        usage, texture, std::move(dxgi_shared_handle_state),
-        GL_TEXTURE_EXTERNAL_OES, array_slice));
+    std::unique_ptr<gpu::SharedImageBacking> backing =
+        gpu::D3DImageBacking::Create(
+            mailboxes[0], DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
+            size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+            kPremul_SkAlphaType, usage, texture,
+            std::move(dxgi_shared_handle_state), GL_TEXTURE_EXTERNAL_OES,
+            array_slice);
+    if (backing) {
+      // Need to clear the backing since the D3D11 Video Decoder will initialize
+      // the textures.
+      backing->SetCleared();
+      shared_image_backings.push_back(std::move(backing));
+    }
   } else {
     shared_image_backings = gpu::D3DImageBacking::CreateFromVideoTexture(
         mailboxes, dxgi_format, size, usage, texture, array_slice,
