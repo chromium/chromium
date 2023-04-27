@@ -294,8 +294,6 @@ const std::string& DlpContentManager::ScreenShareInfo::label() const {
 
 const std::u16string& DlpContentManager::ScreenShareInfo::application_title()
     const {
-  // TODO(crbug.com/1264793): Don't cache the application name, but compute it
-  // here.
   return application_title_;
 }
 

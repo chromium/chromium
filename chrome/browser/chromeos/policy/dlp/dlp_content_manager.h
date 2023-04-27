@@ -74,7 +74,7 @@ class DlpContentManager : public DlpContentObserver,
   virtual bool IsScreenshotApiRestricted(content::WebContents* web_contents);
 
   // Checks whether screen sharing of content from the |media_id| source with
-  // application |application_name| is restricted or not advised. Depending on
+  // application |application_title| is restricted or not advised. Depending on
   // the result, calls |callback| and passes an indicator whether to proceed or
   // not.
   virtual void CheckScreenShareRestriction(
@@ -242,7 +242,6 @@ class DlpContentManager : public DlpContentObserver,
     std::string label_;
     content::DesktopMediaID media_id_;
     content::DesktopMediaID new_media_id_;
-    // TODO(crbug.com/1264793): Don't cache the application name.
     std::u16string application_title_;
     base::OnceClosure stop_callback_;
     content::MediaStreamUI::StateChangeCallback state_change_callback_;
