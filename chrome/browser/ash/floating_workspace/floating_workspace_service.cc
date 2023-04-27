@@ -82,6 +82,7 @@ void FloatingWorkspaceService::InitForTest(
       // For testings we don't need to add itself to observer list of
       // DeskSyncBridge, tests can be done by calling
       // EntriesAddedOrUpdatedRemotely directly so InitForV2 can be skipped.
+      StartCaptureAndUploadActiveDesk();
       break;
   }
 }
@@ -267,7 +268,7 @@ void FloatingWorkspaceService::StopCaptureAndUploadActiveDesk() {
 }
 
 void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
-  DesksClient::Get()->CaptureActiveDesk(
+  GetDesksClient()->CaptureActiveDesk(
       base::BindOnce(&FloatingWorkspaceService::OnTemplateCaptured,
                      weak_pointer_factory_.GetWeakPtr()),
       DeskTemplateType::kFloatingWorkspace);
@@ -310,11 +311,15 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
 
 void FloatingWorkspaceService::LaunchFloatingWorkspaceTemplate(
     const DeskTemplate* desk_template) {
-  DesksClient::Get()->LaunchDeskTemplate(
+  GetDesksClient()->LaunchDeskTemplate(
       desk_template->uuid(),
       base::BindOnce(&FloatingWorkspaceService::OnTemplateLaunched,
                      weak_pointer_factory_.GetWeakPtr()),
       desk_template->template_name());
+}
+
+DesksClient* FloatingWorkspaceService::GetDesksClient() {
+  return DesksClient::Get();
 }
 
 bool FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(

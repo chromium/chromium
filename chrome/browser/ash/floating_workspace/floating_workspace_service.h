@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FLOATING_WORKSPACE_FLOATING_WORKSPACE_SERVICE_H_
 #define CHROME_BROWSER_ASH_FLOATING_WORKSPACE_FLOATING_WORKSPACE_SERVICE_H_
 
+#include <memory>
 #include "ash/public/cpp/desk_template.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -79,6 +80,9 @@ class FloatingWorkspaceService : public KeyedService,
       const std::vector<const DeskTemplate*>& new_entries) override;
   void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) override {}
 
+ protected:
+  std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
+
  private:
   void InitForV1();
   void InitForV2();
@@ -114,6 +118,9 @@ class FloatingWorkspaceService : public KeyedService,
   // Virtual for testing.
   virtual void LaunchFloatingWorkspaceTemplate(
       const DeskTemplate* desk_template);
+
+  // Return the desk client to be used, in test it will return a mocked one.
+  virtual DesksClient* GetDesksClient();
 
   // Compare currently captured and previous floating workspace desk.
   // Called by CaptureAndUploadActiveDesk before upload.
@@ -161,8 +168,6 @@ class FloatingWorkspaceService : public KeyedService,
   // Convenience pointer to desks_storage::DeskSyncService. Guaranteed to be not
   // null for the duration of `this`.
   raw_ptr<desks_storage::DeskSyncService> desk_sync_service_ = nullptr;
-
-  std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
 
   // Indicate if it is a testing class.
   bool is_testing_ = false;

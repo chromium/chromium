@@ -95,8 +95,9 @@ class DesksClient : public ash::SessionObserver {
   // pointer to the captured desk template, otherwise, `callback` will be
   // invoked with an `DeskActionError` error as the `result` and a nullptr for
   // desk template.
-  void CaptureActiveDesk(CaptureActiveDeskAndSaveTemplateCallback callback,
-                         ash::DeskTemplateType template_type);
+  virtual void CaptureActiveDesk(
+      CaptureActiveDeskAndSaveTemplateCallback callback,
+      ash::DeskTemplateType template_type);
 
   using DeleteDeskTemplateCallback =
       base::OnceCallback<void(absl::optional<DeskActionError> result)>;
