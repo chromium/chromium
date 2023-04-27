@@ -888,6 +888,14 @@ not permitted.
 If the application is already installed, it is registered with the version
 present on disk. If it has not yet been installed, a version of `0` is used.
 
+User-scope updaters will update any application registered with them, except
+apps that are managed by a system-scope updater.
+
+System-scope updaters will update any application registered with them. On
+POSIX platforms, they will additionally lchown the existence checker path
+registered by the application to be owned by the root user. User-scope updaters
+use this as a signal that the application is managed by a system-scope updater.
+
 ### App Activity Reporting
 Applications can report whether they are actively used or not through the
 updater. Update servers can then aggregate this information to produce user
@@ -1130,9 +1138,9 @@ functionality that can be queried and shown in chrome://policy.
 
 ## Uninstallation
 On Mac and Linux, if the application was registered with an existence path
-checker and no file at that path exists (or if the file at that path is owned
-by another user), the updater considers the application uninstalled, sends
-the ping, and stops trying to keep it up to date.
+checker and no file at that path exists, the updater considers the application
+uninstalled, sends the ping, and stops trying to keep it up to date. User-scope
+updaters will also do this if the file is owned by the root user.
 
 On Windows, if the ClientState entry for for the application is deleted, the
 app is considered uninstalled.

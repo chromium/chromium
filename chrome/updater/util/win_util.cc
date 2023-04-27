@@ -425,11 +425,6 @@ base::win::ScopedHandle GetUserTokenFromCurrentSessionId() {
   return token_handle;
 }
 
-bool PathOwnedByUser(const base::FilePath& path) {
-  // TODO(crbug.com/1147094): Implement for Win.
-  return true;
-}
-
 HResultOr<bool> IsTokenAdmin(HANDLE token) {
   SID_IDENTIFIER_AUTHORITY nt_authority = SECURITY_NT_AUTHORITY;
   PSID administrators_group = nullptr;

@@ -921,7 +921,12 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
 
-  ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered("test1"));
+  if (GetTestScope() == UpdaterScope::kSystem) {
+    ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test1"));
+  } else {
+    ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered("test1"));
+  }
+
   ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test2"));
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());

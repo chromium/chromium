@@ -31,6 +31,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
+#include "chrome/updater/change_owners_task.h"
 #include "chrome/updater/check_for_updates_task.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
@@ -301,6 +302,10 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
   new_tasks.push_back(base::BindOnce(&UpdateUsageStatsTask::Run,
                                      base::MakeRefCounted<UpdateUsageStatsTask>(
                                          GetUpdaterScope(), persisted_data_)));
+  new_tasks.push_back(
+      MakeChangeOwnersTask(base::MakeRefCounted<PersistedData>(
+                               GetUpdaterScope(), config_->GetPrefService()),
+                           GetUpdaterScope()));
 
   new_tasks.push_back(base::BindOnce(
       [](scoped_refptr<UpdateServiceImpl> update_service_impl,
