@@ -23,6 +23,14 @@ extern NSString* const kBringAndroidTabsPromptBottomMessageReviewButtonAXId;
 // view controller.
 extern NSString* const kBringAndroidTabsPromptTabListAXId;
 
+// Accessibility identifier for the "cancel" button of the "Bring Android Tabs"
+// tab list.
+extern NSString* const kBringAndroidTabsPromptTabListCancelButtonAXId;
+
+// Accessibility identifier for the "open" button of the "Bring Android Tabs"
+// tab list.
+extern NSString* const kBringAndroidTabsPromptTabListOpenButtonAXId;
+
 // Size of the favicons in the "Bring Android Tabs" tab list.
 extern CGFloat const kBringAndroidTabsFaviconSize;
 
