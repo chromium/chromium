@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -193,18 +194,22 @@ void CastToolbarButton::UpdateIcon() {
 
   const auto* const color_provider = GetColorProvider();
   if (severity == Severity::NOTIFICATION && !has_local_route_) {
-    new_icon = features::IsChromeRefresh2023()
+    new_icon = ShouldShowNewIcons()
                    ? &vector_icons::kMediaRouterIdleChromeRefreshIcon
                    : &vector_icons::kMediaRouterIdleIcon;
     icon_color = gfx::kPlaceholderColor;
   } else if (severity == Severity::WARNING) {
-    new_icon = &vector_icons::kMediaRouterWarningIcon;
-    icon_color = color_provider->GetColor(kColorMediaRouterIconWarning);
-  } else if (is_frozen) {
+    new_icon = ShouldShowNewIcons()
+                   ? &vector_icons::kMediaRouterWarningChromeRefreshIcon
+                   : &vector_icons::kMediaRouterWarningIcon;
+    icon_color = ShouldShowNewIcons()
+                     ? gfx::kPlaceholderColor
+                     : color_provider->GetColor(kColorMediaRouterIconWarning);
+  } else if (is_frozen && ShouldShowNewIcons()) {
     new_icon = &vector_icons::kMediaRouterPausedIcon;
     icon_color = gfx::kPlaceholderColor;
   } else {
-    new_icon = features::IsChromeRefresh2023()
+    new_icon = ShouldShowNewIcons()
                    ? &vector_icons::kMediaRouterActiveChromeRefreshIcon
                    : &vector_icons::kMediaRouterActiveIcon;
     icon_color = color_provider->GetColor(kColorMediaRouterIconActive);
@@ -213,7 +218,10 @@ void CastToolbarButton::UpdateIcon() {
   // This function is called when system theme changes. If an idle icon is
   // present, its color needs update.
   if (icon_color == gfx::kPlaceholderColor) {
-    UpdateIconsWithStandardColors(*new_icon);
+    for (auto state : kButtonStates) {
+      SetImageModel(state, ui::ImageModel::FromVectorIcon(
+                               *new_icon, GetForegroundColor(state)));
+    }
   }
   if (icon_ == new_icon)
     return;
@@ -251,7 +259,7 @@ void CastToolbarButton::ButtonPressed() {
 }
 
 void CastToolbarButton::LogIconChange(const gfx::VectorIcon* icon) {
-  if (icon_ == (features::IsChromeRefresh2023()
+  if (icon_ == (ShouldShowNewIcons()
                     ? &vector_icons::kMediaRouterIdleChromeRefreshIcon
                     : &vector_icons::kMediaRouterIdleIcon)) {
     logger_->LogInfo(
@@ -261,7 +269,9 @@ void CastToolbarButton::LogIconChange(const gfx::VectorIcon* icon) {
   } else if (icon_ == &vector_icons::kMediaRouterErrorIcon) {
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon shows a fatal issue.", "", "", "");
-  } else if (icon_ == &vector_icons::kMediaRouterWarningIcon) {
+  } else if (icon_ == (ShouldShowNewIcons()
+                           ? &vector_icons::kMediaRouterWarningChromeRefreshIcon
+                           : &vector_icons::kMediaRouterWarningIcon)) {
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon shows a warning issue.", "", "", "");
   } else if (icon_ == &vector_icons::kMediaRouterPausedIcon) {
@@ -270,7 +280,7 @@ void CastToolbarButton::LogIconChange(const gfx::VectorIcon* icon) {
         "Cast toolbar icon indicated there is a paused mirroring session.", "",
         "", "");
   } else {
-    CHECK_EQ(icon_, features::IsChromeRefresh2023()
+    CHECK_EQ(icon_, ShouldShowNewIcons()
                         ? &vector_icons::kMediaRouterActiveChromeRefreshIcon
                         : &vector_icons::kMediaRouterActiveIcon);
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
@@ -289,6 +299,11 @@ void CastToolbarButton::StopObservingMirroringMediaControllerHosts() {
     }
   }
   tracked_mirroring_routes_.clear();
+}
+
+bool CastToolbarButton::ShouldShowNewIcons() {
+  return features::IsChromeRefresh2023() ||
+         IsAccessCodeCastFreezeUiEnabled(profile_);
 }
 
 BEGIN_METADATA(CastToolbarButton, ToolbarButton)

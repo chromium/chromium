@@ -84,6 +84,10 @@ class CastToolbarButton : public ToolbarButton,
 
   void StopObservingMirroringMediaControllerHosts();
 
+  // Returns true if the cast toolbar buttons should be displaying Chrome
+  // refresh style icons.
+  bool ShouldShowNewIcons();
+
   const raw_ptr<Browser> browser_;
   const raw_ptr<Profile> profile_;
 

@@ -99,6 +99,7 @@ aggregate_vector_icons("components_vector_icons") {
     "media_router_idle_chrome_refresh.icon",
     "media_router_paused.icon",
     "media_router_warning.icon",
+    "media_router_warning_chrome_refresh.icon",
     "media_seek_backward.icon",
     "media_seek_forward.icon",
     "mic.icon",

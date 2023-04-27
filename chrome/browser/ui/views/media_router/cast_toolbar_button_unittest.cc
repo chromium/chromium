@@ -6,8 +6,10 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,6 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
@@ -113,18 +116,23 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     idle_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterIdleIcon,
         color_provider->GetColor(kColorToolbarButtonIcon)));
+    idle_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
+        vector_icons::kMediaRouterIdleChromeRefreshIcon,
+        color_provider->GetColor(kColorToolbarButtonIcon)));
     warning_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterWarningIcon,
         color_provider->GetColor(kColorMediaRouterIconWarning)));
+    warning_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
+        vector_icons::kMediaRouterWarningChromeRefreshIcon,
+        color_provider->GetColor(kColorToolbarButtonIcon)));
     active_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterActiveIcon,
         color_provider->GetColor(kColorMediaRouterIconActive)));
-    // Paused icon matches the style of Chrome Refresh icons, so its default
-    // size is 20. However, CastToolbarButton icons with standard colors are
-    // always size ToolbarButton::kDefaultIconSize, so match that size here.
+    active_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
+        vector_icons::kMediaRouterActiveChromeRefreshIcon,
+        color_provider->GetColor(kColorMediaRouterIconActive)));
     paused_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterPausedIcon,
-        /* ToolbarButton::kDefaultIconSize */ 16,
         color_provider->GetColor(kColorToolbarButtonIcon)));
   }
 
@@ -152,8 +160,11 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   std::unique_ptr<MirroringMediaControllerHost> mirroring_controller_host_;
 
   gfx::Image idle_icon_;
+  gfx::Image idle_chrome_refresh_icon_;
   gfx::Image warning_icon_;
+  gfx::Image warning_chrome_refresh_icon_;
   gfx::Image active_icon_;
+  gfx::Image active_chrome_refresh_icon_;
   gfx::Image paused_icon_;
 
   const std::vector<MediaRoute> local_display_route_list_ = {
@@ -186,6 +197,27 @@ TEST_F(CastToolbarButtonTest, UpdateIssues) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
 }
 
+TEST_F(CastToolbarButtonTest, UpdateIssuesChromeResfresh) {
+  // Enable the proper features / prefs.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kChromeRefresh2023);
+
+  button_->UpdateIcon();
+  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+
+  button_->OnIssue(Issue(IssueInfo(
+      "title notification", IssueInfo::Severity::NOTIFICATION, "sinkId1")));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+
+  button_->OnIssue(Issue(
+      IssueInfo("title warning", IssueInfo::Severity::WARNING, "sinkId1")));
+  EXPECT_TRUE(
+      gfx::test::AreImagesEqual(warning_chrome_refresh_icon_, GetIcon()));
+
+  button_->OnIssuesCleared();
+  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+}
+
 TEST_F(CastToolbarButtonTest, UpdateRoutes) {
   button_->UpdateIcon();
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
@@ -202,9 +234,35 @@ TEST_F(CastToolbarButtonTest, UpdateRoutes) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
 }
 
-TEST_F(CastToolbarButtonTest, PausedIcon) {
+TEST_F(CastToolbarButtonTest, UpdateRoutesChromeRefresh) {
+  // Enable the proper features / prefs.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kChromeRefresh2023);
+
   button_->UpdateIcon();
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+
+  button_->OnRoutesUpdated(local_display_route_list_);
+  EXPECT_TRUE(
+      gfx::test::AreImagesEqual(active_chrome_refresh_icon_, GetIcon()));
+
+  // The idle icon should be shown when we only have non-local and/or
+  // non-display routes.
+  button_->OnRoutesUpdated(non_local_display_route_list_);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+
+  button_->OnRoutesUpdated({});
+  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+}
+
+TEST_F(CastToolbarButtonTest, PausedIcon) {
+  // Enable the proper features / prefs.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  profile_->GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
+
+  button_->UpdateIcon();
+  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
 
   mirroring_controller_host_.get()->set_is_frozen_for_test(true);
   button_->OnRoutesUpdated(local_display_route_list_);
