@@ -12,16 +12,19 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -72,11 +75,14 @@ EolNoticeQuickSettingsView::EolNoticeQuickSettingsView()
 
   if (features::IsQsRevampEnabled()) {
     views::InkDrop::Get(this)->SetBaseColorId(kColorAshInkDropOpaqueColor);
-    SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(
-            kUpgradeIcon, kColorAshIconColorSecondary, GetIconSize()));
-    SetEnabledTextColorIds(kColorAshTextColorSecondary);
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      kUpgradeIcon, cros_tokens::kCrosSysOnSurfaceVariant,
+                      GetIconSize()));
+    SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurfaceVariant);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                          *label());
+    SetHorizontalAlignment(gfx::ALIGN_CENTER);
   } else {
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(3, 10)));
 
@@ -87,7 +93,10 @@ EolNoticeQuickSettingsView::EolNoticeQuickSettingsView()
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(0), 16);
 
   SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+  views::FocusRing::Get(this)->SetColorId(
+      features::IsQsRevampEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)
+          : ui::kColorAshFocusRing);
 
   Shell::Get()->system_tray_model()->client()->RecordEolNoticeShown();
 }
@@ -112,7 +121,8 @@ void EolNoticeQuickSettingsView::OnThemeChanged() {
 void EolNoticeQuickSettingsView::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   if (features::IsQsRevampEnabled()) {
-    flags.setColor(GetColorProvider()->GetColor(kColorAshSeparatorColor));
+    flags.setColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysSeparator));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
   } else {
     flags.setColor(GetBackgroundColor());
