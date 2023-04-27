@@ -37,9 +37,11 @@ EventRewriterControllerImpl::EventRewriterControllerImpl() {
 EventRewriterControllerImpl::~EventRewriterControllerImpl() {
   aura::Env::GetInstance()->RemoveObserver(this);
   // Remove the rewriters from every root window EventSource.
-  for (const auto& rewriter : rewriters_) {
-    for (auto* window : Shell::GetAllRootWindows())
-      window->GetHost()->GetEventSource()->RemoveEventRewriter(rewriter.get());
+  for (auto* window : Shell::GetAllRootWindows()) {
+    auto* event_source = window->GetHost()->GetEventSource();
+    for (const auto& rewriter : rewriters_) {
+      event_source->RemoveEventRewriter(rewriter.get());
+    }
   }
 }
 
