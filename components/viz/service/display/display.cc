@@ -614,6 +614,9 @@ void DebugDrawFrame(const AggregatedFrame& frame) {
       continue;
     }
 
+    DBG_DRAW_RECT_OPT("frame.render_pass.damage", DBG_OPT_RED,
+                      render_pass->damage_rect);
+
     DBG_LOG_OPT("frame.render_pass.numquads", DBG_OPT_BLUE,
                 "Num render pass quads=%d",
                 static_cast<int>(render_pass->quad_list.size()));
@@ -635,8 +638,6 @@ void DebugDrawFrame(const AggregatedFrame& frame) {
           base::NumberToString(quad->resources.ids[0].GetUnsafeValue()));
 
       DBG_DRAW_RECT("frame.render_pass.quad", display_rect);
-      DBG_DRAW_RECT_OPT("frame.render_pass.damage", DBG_OPT_RED,
-                        render_pass->damage_rect);
     }
   }
 }
