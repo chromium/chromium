@@ -39,8 +39,6 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -174,9 +172,6 @@ SpellcheckService::SpellcheckService(content::BrowserContext* context)
       std::make_unique<SpellcheckCustomDictionary>(context_->GetPath());
   custom_dictionary_->AddObserver(this);
   custom_dictionary_->Load();
-
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 content::NotificationService::AllSources());
 
 #if BUILDFLAG(IS_WIN)
   if (spellcheck::UseBrowserSpellChecker() &&
@@ -546,11 +541,9 @@ bool SpellcheckService::IsSpellcheckEnabled() const {
          (!hunspell_dictionaries_.empty() || enable_if_uninitialized);
 }
 
-void SpellcheckService::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  DCHECK_EQ(content::NOTIFICATION_RENDERER_PROCESS_CREATED, type);
-  InitForRenderer(content::Source<content::RenderProcessHost>(source).ptr());
+void SpellcheckService::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  InitForRenderer(host);
 }
 
 void SpellcheckService::OnCustomDictionaryLoaded() {
