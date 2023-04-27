@@ -5,7 +5,6 @@
 pub mod config;
 pub mod crates;
 pub mod deps;
-pub mod download;
 pub mod gn;
 pub mod manifest;
 pub mod paths;

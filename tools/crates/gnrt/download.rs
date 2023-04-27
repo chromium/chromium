@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 use std::fs;
-use std::io::{Read, Write};
-use std::process::{self, ExitCode};
+use std::io::Write;
+use std::process;
 
 use crate::crates;
 use crate::manifest::CargoManifest;
 use crate::paths;
+use crate::{check_exit_ok, check_output, check_spawn, check_wait_with_output};
+
+use anyhow::{Context, Result};
 
 /// Runs the download subcommand, which downloads a crate from crates.io and
 /// unpacks it into the Chromium tree.
@@ -17,7 +20,7 @@ pub fn download(
     version: semver::Version,
     security: bool,
     paths: &paths::ChromiumPaths,
-) -> ExitCode {
+) -> Result<()> {
     let vendored_crate = crates::ChromiumVendoredCrate {
         name: name.to_string(),
         epoch: crates::Epoch::from_version(&version),
@@ -30,15 +33,11 @@ pub fn download(
         dir = CRATES_IO_DOWNLOAD_URL,
         suffix = CRATES_IO_DOWNLOAD_SUFFIX
     );
-    let curl_out = process::Command::new("curl")
-        .arg("--fail")
-        .arg(url.to_string())
-        .output()
-        .expect("Failed to run curl");
-    if !curl_out.status.success() {
-        eprintln!("gnrt: {}", String::from_utf8(curl_out.stderr).unwrap());
-        return ExitCode::FAILURE;
-    }
+    let curl_out = check_output(
+        &mut process::Command::new("curl").arg("--fail").arg(url.to_string()),
+        "curl",
+    )?;
+    check_exit_ok(&curl_out, "curl")?;
 
     // Makes the directory where the build file will go. The crate's source code
     // will go below it. This directory and its parents are allowed to exist
@@ -49,30 +48,30 @@ pub fn download(
     // exist or we'd be clobbering existing files.
     std::fs::create_dir(&crate_path).expect("Crate directory '{crate_path}' already exists");
 
-    let mut untar = process::Command::new("tar")
-        // Extract and unzip from stdin.
-        .arg("xzf")
-        .arg("-")
-        // Drop the first path component, which is the crate's name-version.
-        .arg("--strip-components=1")
-        // Unzip into the crate's directory in third_party/rust.
-        .arg(format!("--directory={}", crate_path.display()))
-        // The input is the downloaded file.
-        .stdin(process::Stdio::piped())
-        .stdout(process::Stdio::piped())
-        .stderr(process::Stdio::piped())
-        .spawn()
-        .expect("Failed to run tar");
+    let mut untar = check_spawn(
+        &mut process::Command::new("tar")
+            // Extract and unzip from stdin.
+            .arg("xzf")
+            .arg("-")
+            // Drop the first path component, which is the crate's name-version.
+            .arg("--strip-components=1")
+            // Unzip into the crate's directory in third_party/rust.
+            .arg(format!("--directory={}", crate_path.display()))
+            // The input is the downloaded file.
+            .stdin(process::Stdio::piped())
+            .stderr(process::Stdio::piped()),
+        "tar",
+    )?;
 
-    if untar.stdin.take().unwrap().write_all(&curl_out.stdout).is_err() {
-        eprintln!("gnrt: Failed to pipe input to tar, it exited early");
-    }
-
-    if !untar.wait().expect("Failed to wait for tar").success() {
-        let mut stderr_buf = Vec::new();
-        untar.stderr.unwrap().read_to_end(&mut stderr_buf).expect("Failed to read stderr from tar");
-        eprintln!("gnrt: {}", String::from_utf8(stderr_buf).unwrap());
-        return ExitCode::FAILURE;
+    untar
+        .stdin
+        .take()
+        .unwrap()
+        .write_all(&curl_out.stdout)
+        .context("Failed to pipe crate archive to tar")?;
+    {
+        let untar_output = check_wait_with_output(untar, "tar")?;
+        check_exit_ok(&untar_output, "tar")?;
     }
 
     let cargo: CargoManifest = {
@@ -111,7 +110,7 @@ pub fn download(
 
     println!("gnrt: Downloaded {name} {version} to {path}", path = crate_path.display());
 
-    ExitCode::SUCCESS
+    Ok(())
 }
 
 /// Generate the contents of the README.chromium file.

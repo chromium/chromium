@@ -4,6 +4,8 @@
 
 use gnrt_lib::*;
 
+mod download;
+
 use crates::{ChromiumVendoredCrate, StdVendoredCrate};
 use manifest::*;
 
@@ -11,11 +13,12 @@ use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
-use std::process::{self, ExitCode};
+use std::process;
 
+use anyhow::{ensure, format_err, Context, Result};
 use clap::arg;
 
-fn main() -> ExitCode {
+fn main() -> Result<()> {
     let args = clap::Command::new("gnrt")
         .subcommand(
             clap::Command::new("gen")
@@ -45,7 +48,7 @@ fn main() -> ExitCode {
         )
         .get_matches();
 
-    let paths = paths::ChromiumPaths::new().unwrap();
+    let paths = paths::ChromiumPaths::new().context("Could not find chromium checkout paths")?;
 
     match args.subcommand() {
         Some(("gen", args)) => {
@@ -67,17 +70,11 @@ fn main() -> ExitCode {
     }
 }
 
-fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> ExitCode {
+fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
     let manifest_contents =
         String::from_utf8(fs::read(paths.third_party.join("third_party.toml")).unwrap()).unwrap();
-    let mut third_party_manifest: ThirdPartyManifest = match toml::de::from_str(&manifest_contents)
-    {
-        Ok(m) => m,
-        Err(e) => {
-            eprintln!("Failed to parse 'third_party.toml': {e}");
-            return ExitCode::FAILURE;
-        }
-    };
+    let mut third_party_manifest: ThirdPartyManifest =
+        toml::de::from_str(&manifest_contents).context("Could not parse third_party.toml")?;
 
     // Collect special fields from third_party.toml.
     //
@@ -155,7 +152,7 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
 
     if args.get_flag("output-cargo-toml") {
         println!("{}", toml::ser::to_string(&cargo_manifest).unwrap());
-        return ExitCode::SUCCESS;
+        return Ok(());
     }
 
     // Create a fake package: Cargo.toml and an empty main.rs. This allows cargo
@@ -233,9 +230,7 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
         }
     }
 
-    if has_error {
-        return ExitCode::FAILURE;
-    }
+    ensure!(!has_error, "Dependency resolution failed");
 
     let build_files: HashMap<ChromiumVendoredCrate, gn::BuildFile> =
         gn::build_files_from_chromium_deps(
@@ -262,9 +257,7 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
         }
     }
 
-    if has_error {
-        return ExitCode::FAILURE;
-    }
+    ensure!(!has_error, "Generated build rules don't match input dependencies");
 
     // Wipe all previous BUILD.gn files. If we fail, we don't want to leave a
     // mix of old and new build files.
@@ -286,10 +279,10 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
         write_build_file(&build_file_path, build_file_data).unwrap();
     }
 
-    ExitCode::SUCCESS
+    Ok(())
 }
 
-fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> ExitCode {
+fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
     // Load config file, which applies rustenv and cfg flags to some std crates.
     let config_file_contents = std::fs::read_to_string(paths.std_config_file).unwrap();
     let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
@@ -365,36 +358,34 @@ fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> E
             None => continue,
         };
 
-        if !lib.root.canonicalize().unwrap().starts_with(&src_prefix) {
-            println!(
-                "Found dependency that was not locally available: {} {}",
-                dep.package_name, dep.version
-            );
-            println!("{dep:?}");
-            return ExitCode::FAILURE;
-        }
+        ensure!(
+            lib.root.canonicalize().unwrap().starts_with(&src_prefix),
+            "Found dependency that was not locally available: {} {}\n{:?}",
+            dep.package_name,
+            dep.version,
+            dep
+        );
 
-        match vendored_crates.get_key_value(&StdVendoredCrate {
-            name: dep.package_name.clone(),
-            version: dep.version.clone(),
-            // Placeholder value for lookup.
-            is_latest: false,
-        }) {
-            Some(_) => (),
-            None => {
-                println!(
+        vendored_crates
+            .get_key_value(&StdVendoredCrate {
+                name: dep.package_name.clone(),
+                version: dep.version.clone(),
+                // Placeholder value for lookup.
+                is_latest: false,
+            })
+            .ok_or_else(|| {
+                format_err!(
                     "Resolved dependency does not match any vendored crate: {} {}",
-                    dep.package_name, dep.version
-                );
-                return ExitCode::FAILURE;
-            }
-        }
+                    dep.package_name,
+                    dep.version
+                )
+            })?;
     }
 
     let build_file = gn::build_file_from_std_deps(dependencies.iter(), paths, &config);
     write_build_file(&paths.std_build.join("BUILD.gn"), &build_file).unwrap();
 
-    ExitCode::SUCCESS
+    Ok(())
 }
 
 fn build_file_path(crate_id: &ChromiumVendoredCrate, paths: &paths::ChromiumPaths) -> PathBuf {
@@ -405,34 +396,53 @@ fn build_file_path(crate_id: &ChromiumVendoredCrate, paths: &paths::ChromiumPath
     path
 }
 
-fn write_build_file(path: &Path, build_file: &gn::BuildFile) -> io::Result<()> {
-    let output_handle = fs::File::create(path)?;
+fn write_build_file(path: &Path, build_file: &gn::BuildFile) -> Result<()> {
+    let cmd_name = "gn format";
+    let output_handle = fs::File::create(path)
+        .with_context(|| format!("Could not create GN output file {}", path.to_string_lossy()))?;
 
     // Spawn a child process to format GN rules. The formatted GN is written to
     // the file `output_handle`.
-    let mut child = process::Command::new("gn")
-        .arg("format")
-        .arg("--stdin")
-        .stdin(process::Stdio::piped())
-        .stdout(output_handle)
-        .spawn()?;
+    let mut child = check_spawn(
+        &mut process::Command::new("gn")
+            .arg("format")
+            .arg("--stdin")
+            .stdin(process::Stdio::piped())
+            .stdout(output_handle),
+        cmd_name,
+    )?;
 
-    write!(io::BufWriter::new(child.stdin.take().unwrap()), "{}", build_file.display())?;
-    check_exit_status(child.wait()?, "formatting GN output")
+    write!(io::BufWriter::new(child.stdin.take().unwrap()), "{}", build_file.display())
+        .context("Failed to write to GN format process")?;
+    check_exit_ok(&check_wait_with_output(child, cmd_name)?, cmd_name)
 }
 
-fn check_exit_status(status: process::ExitStatus, cmd_msg: &str) -> io::Result<()> {
+fn check_output(cmd: &mut process::Command, cmd_msg: &str) -> Result<process::Output> {
+    cmd.output().with_context(|| format!("failed to start {cmd_msg}"))
+}
+
+fn check_spawn(cmd: &mut process::Command, cmd_msg: &str) -> Result<process::Child> {
+    cmd.spawn().with_context(|| format!("failed to start {cmd_msg}"))
+}
+
+fn check_wait_with_output(child: process::Child, cmd_msg: &str) -> Result<process::Output> {
+    child.wait_with_output().with_context(|| format!("unexpected error while running {cmd_msg}"))
+}
+
+fn check_exit_ok(output: &process::Output, cmd_msg: &str) -> Result<()> {
     use std::fmt::Write;
 
-    if status.success() {
+    if output.status.success() {
         Ok(())
     } else {
         let mut msg: String = format!("{cmd_msg} failed with ");
-        match status.code() {
-            Some(code) => write!(msg, "{code}").unwrap(),
-            None => write!(msg, "no code").unwrap(),
+        match output.status.code() {
+            Some(code) => write!(msg, "{code}.").unwrap(),
+            None => write!(msg, "no code.").unwrap(),
         };
-        Err(io::Error::new(io::ErrorKind::Other, msg))
+        write!(msg, " stderr:\n\n{}", String::from_utf8_lossy(&output.stderr)).unwrap();
+
+        Err(format_err!(msg))
     }
 }
 
