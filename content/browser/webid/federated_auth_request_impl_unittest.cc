@@ -186,6 +186,7 @@ struct IdentityProviderParameters {
   const char* client_id;
   const char* nonce;
   const char* login_hint;
+  std::vector<std::string> scope;
 };
 
 // Parameters for a call to RequestToken.
@@ -262,6 +263,7 @@ struct MockConfiguration {
   AccountsDialogAction accounts_dialog_action;
   IdpSigninStatusMismatchDialogAction idp_signin_status_mismatch_dialog_action;
   bool succeed_with_console_message = false;
+  absl::optional<GURL> continue_on;
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -447,6 +449,15 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                         TokenRequestCallback callback,
                         ContinueOnCallback on_continue) override {
     ++num_fetched_[FetchedEndpoint::TOKEN];
+
+    if (config_.continue_on) {
+      base::OnceCallback bound_callback =
+          base::BindOnce(std::move(on_continue), config_.token_response,
+                         config_.continue_on.value());
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(bound_callback));
+      return;
+    }
 
     std::string delivered_token =
         config_.token_response.parse_status == ParseStatus::kSuccess
@@ -777,6 +788,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       config->client_id = identity_provider.client_id;
       config->nonce = identity_provider.nonce;
       config->login_hint = identity_provider.login_hint;
+      config->scope = std::move(identity_provider.scope);
       blink::mojom::IdentityProviderPtr idp_ptr =
           blink::mojom::IdentityProvider::NewFederated(std::move(config));
       idp_ptrs.push_back(std::move(idp_ptr));
@@ -3606,6 +3618,79 @@ TEST_F(FederatedAuthRequestImplTest, IdTokenInvalidContentType) {
 
   ExpectRequestTokenStatusUKM(TokenStatus::kIdTokenInvalidContentType);
   CheckAllFedCmSessionIDs();
+}
+
+// Test that the implementation ignores the scope parameter when AuthZ is
+// disabled.
+TEST_F(FederatedAuthRequestImplTest, ScopeGetsIgnoredWhenAuthzIsDisabled) {
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].scope = {"calendar.readonly"};
+
+  RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
+
+  // We expect the metadata file to be fetched when scopes are passed
+  // but the AuthZ is disabled.
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
+}
+
+// Test successful AuthZ request that returns tokens without opening
+// pop-up windows.
+TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestNoPopUpWindow) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAuthz);
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].scope = {"calendar.readonly"};
+
+  RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
+
+  // When the authorization is delegated and the feature is enabled
+  // we don't fetch the client metadata endpoint (which is used to
+  // mediate - but not to delegate - the authorization prompt).
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
+}
+
+// Test successful AuthZ request that request the opening of pop-up
+// windows.
+TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAuthz);
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].scope = {"calendar.readonly"};
+
+  MockConfiguration config = kConfigurationValid;
+  // Expect an access token to be produced, rather the typical idtoken.
+  config.token = "an-access-token";
+
+  // Set up the network expectations to return a "continue_on" response
+  // rather than the typical idtoken response.
+  GURL continue_on("/more-permissions.php");
+  config.continue_on = std::move(continue_on);
+
+  // Set up the UI dialog controller to show a pop-up window, rather
+  // than the typical mediated authorization prompt that generates
+  // an idtoken.
+  auto dialog_controller =
+      std::make_unique<WeakTestDialogController>(kConfigurationValid);
+  base::WeakPtr<WeakTestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  // When the pop-up window is opened, resolve it immediately by
+  // producing an access token.
+  EXPECT_CALL(*weak_dialog_controller, ShowPopUpWindow(_, _, _))
+      .WillOnce(::testing::WithArg<1>(
+          [&](IdentityRequestDialogController::TokenCallback on_resolve) {
+            std::move(on_resolve).Run("an-access-token");
+          }));
+
+  RunAuthTest(parameters, kExpectationSuccess, config);
+
+  // When the authorization is delegated and the feature is enabled
+  // we don't fetch the client metadata endpoint (which is used to
+  // mediate - but not to delegate - the authorization prompt).
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
 }
 
 }  // namespace content

@@ -961,6 +961,10 @@ bool HasScope(const std::vector<std::string>& scope, std::string name) {
 }
 
 bool ShouldRequestPermission(const std::vector<std::string>& scope) {
+  if (!IsFedCmAuthzEnabled()) {
+    return true;
+  }
+
   if (scope.size() == 0) {
     // If "scope" is not passed, defaults the parameter to
     // ["sub", "name", "email" and "picture"].
@@ -978,11 +982,7 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
 
   const GURL& idp_config_url = idp_info->provider->config_url;
 
-  bool request_permission = true;
-
-  if (IsFedCmAuthzEnabled()) {
-    request_permission = ShouldRequestPermission(idp_info->provider->scope);
-  }
+  bool request_permission = ShouldRequestPermission(idp_info->provider->scope);
 
   const std::string idp_for_display = FormatUrlForDisplay(idp_config_url);
   idp_info->data = IdentityProviderData(
@@ -1305,13 +1305,16 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       ComputeLoginStateAndReorderAccounts(idp_info->provider, accounts);
 
       bool need_client_metadata = false;
-      for (const IdentityRequestAccount& account : accounts) {
-        // ComputeLoginStateAndReorderAccounts() should have populated
-        // IdentityRequestAccount::login_state.
-        DCHECK(account.login_state);
-        if (*account.login_state == LoginState::kSignUp) {
-          need_client_metadata = true;
-          break;
+
+      if (ShouldRequestPermission(idp_info->provider->scope)) {
+        for (const IdentityRequestAccount& account : accounts) {
+          // ComputeLoginStateAndReorderAccounts() should have populated
+          // IdentityRequestAccount::login_state.
+          DCHECK(account.login_state);
+          if (*account.login_state == LoginState::kSignUp) {
+            need_client_metadata = true;
+            break;
+          }
         }
       }
 

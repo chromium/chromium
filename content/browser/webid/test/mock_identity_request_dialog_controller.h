@@ -40,6 +40,8 @@ class MockIdentityRequestDialogController
                     const std::string&,
                     const content::IdentityProviderMetadata&,
                     DismissCallback));
+  MOCK_METHOD3(ShowPopUpWindow,
+               void(const GURL&, TokenCallback, DismissCallback));
 };
 
 }  // namespace content
