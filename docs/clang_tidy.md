@@ -276,6 +276,6 @@ thakis@chromium.org, or gbiv@chromium.org.
 
 Questions about the Gerrit flow? Email tricium-dev@google.com or
 infra-dev+tricium@chromium.org, or file a bug against `Infra>LUCI>BuildService>PreSubmit>Tricium`.
-Please CC gbiv@chromium.org on any of these.
+Please CC gbiv@chromium.org and dcheng@chromium.org on any of these.
 
 Discoveries? Update the doc!
