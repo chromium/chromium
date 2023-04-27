@@ -464,7 +464,6 @@ WGPUTexture DawnIOSurfaceRepresentation::BeginAccess(WGPUTextureUsage usage) {
   descriptor.cTextureDescriptor = &texture_descriptor;
   descriptor.isInitialized = IsCleared();
   descriptor.ioSurface = io_surface_.get();
-  descriptor.plane = 0;
 
   // Synchronize with all of the MTLSharedEvents that have been
   // stored in the backing as a consequence of earlier BeginAccess/
