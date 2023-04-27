@@ -250,6 +250,15 @@ BASE_FEATURE(kOnBeginFrameAcks,
              "OnBeginFrameAcks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, and kOnBeginFrameAcks is also enabled, then if we issue an
+// CompositorFrameSinkClient::OnBeginFrame, while we are pending an Ack. If the
+// Ack arrives before the next OnBeginFrame we will send it immediately, instead
+// of batching it. This is to support a frame submission/draw that occurs right
+// near the OnBeginFrame boundary.
+BASE_FEATURE(kOnBeginFrameAllowLateAcks,
+             "OnBeginFrameAllowLateAcks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSharedBitmapToSharedImage,
              "SharedBitmapToSharedImage",
              base::FEATURE_DISABLED_BY_DEFAULT);

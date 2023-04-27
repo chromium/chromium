@@ -756,8 +756,19 @@ void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
     return;
   }
 
+  // When we want to merge OnBeginFrame signals with Acks, we want to enqueue
+  // the Ack here, and exit. An exception to this are when the frame was
+  // submitted with a manual BeginFrameSource, as that is driven by the client,
+  // and not by our `begin_frame_source_`.
+  //
+  // The other exception is when we have just sent an OnBeginFrame, however
+  // there was an Ack pending at that time. This typically occurs when a client
+  // submits a frame right before the next VSync. In this case we do want to
+  // send a separate Ack, so they can unthrottle and begin frame production.
   if (ShouldMergeBeginFrameWithAcks() &&
-      !was_pending_manual_begin_frame_source_) {
+      !was_pending_manual_begin_frame_source_ &&
+      (!base::FeatureList::IsEnabled(features::kOnBeginFrameAllowLateAcks) ||
+       !ack_pending_during_on_begin_frame_)) {
     ack_queued_for_client_count_++;
     return;
   }
@@ -889,10 +900,12 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
 
     last_frame_time_ = adjusted_args.frame_time;
     if (ShouldMergeBeginFrameWithAcks()) {
+      bool frame_ack = ack_queued_for_client_count_ > 0;
+      ack_pending_during_on_begin_frame_ =
+          !frame_ack && ack_pending_from_surface_count_;
       client_->OnBeginFrame(adjusted_args, std::move(frame_timing_details_),
-                            /*frame_ack=*/ack_queued_for_client_count_ > 0,
-                            std::move(surface_returned_resources_));
-      if (ack_queued_for_client_count_ > 0) {
+                            frame_ack, std::move(surface_returned_resources_));
+      if (frame_ack) {
         ack_queued_for_client_count_--;
       }
       surface_returned_resources_.clear();
