@@ -1268,11 +1268,11 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
           screen_rect, transformed_bounds, top_view_inset, kHeaderHeightDp);
 
   if (chromeos::features::IsJellyrollEnabled()) {
-    // Adjust the `overview_item_bounds` if the window has normal dimensions
-    // type to make sure it's aligned with overview item header view after the
-    // transform.
-    if (transform_window_.type() == OverviewGridWindowFillMode::kNormal &&
-        overview_item_bounds.width() != transformed_bounds.width()) {
+    // Adjust the `overview_item_bounds` if the window has normal or letter
+    // dimensions type to make sure it's aligned with overview item header view
+    // after the transform.
+    if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
+        transform_window_.type() == OverviewGridWindowFillMode::kLetterBoxed) {
       overview_item_bounds.set_x(transformed_bounds.x());
       overview_item_bounds.set_width(transformed_bounds.width());
     }
