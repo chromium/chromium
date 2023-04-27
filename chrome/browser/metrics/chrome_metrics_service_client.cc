@@ -156,6 +156,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/web_applications/personalization_app/keyboard_backlight_color_metrics_provider.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_theme_metrics_provider.h"
 #include "chrome/browser/metrics/ambient_mode_metrics_provider.h"
 #include "chrome/browser/metrics/assistant_service_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_family_link_user_metrics_provider.h"
@@ -235,7 +236,8 @@ const uint32_t kSystemProfileMinidumpStreamType = 0x4B6B0003;
 // Ownership must be maintained after registration as the crash reporter does
 // not assume it.
 // TODO(manzagop): revisit this if the Crashpad API evolves.
-base::LazyInstance<std::string>::Leaky g_environment_for_crash_reporter;
+base::LazyInstance<std::string>::Leaky g_environment_for_crash_reporter =
+    LAZY_INSTANCE_INITIALIZER;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 
 void RegisterFileMetricsPreferences(PrefRegistrySimple* registry) {
@@ -930,6 +932,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<KeyboardBacklightColorMetricsProvider>());
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<PersonalizationAppThemeMetricsProvider>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

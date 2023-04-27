@@ -4422,6 +4422,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Personalization.DynamicColor.ColorScheme.Settled"
+    enum="PersonalizationDynamicColorColorScheme" expires_after="2024-04-05">
+  <owner>ericamlee@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records the color scheme that the user has settled on. Emitted once for
+    every UMA upload.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Personalization.DynamicColor.ColorSchemeButton"
     enum="PersonalizationDynamicColorColorScheme" expires_after="2024-04-05">
   <owner>ericamlee@google.com</owner>
@@ -4429,6 +4439,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Emitted when a user clicks a button to choose a color scheme for dynamic
     color in personalization hub.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Personalization.DynamicColor.StaticColor.Settled"
+    enum="PersonalizationDynamicColorStaticColor" expires_after="2024-04-05">
+  <owner>ericamlee@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records the static color that the user has settled on. Emitted once for
+    every UMA upload.
   </summary>
 </histogram>
 

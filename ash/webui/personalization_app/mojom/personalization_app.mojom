@@ -348,6 +348,8 @@ interface WallpaperProvider {
 
 // Color scheme options used to generate the system UI's color palette.
 // These options are based off the user's wallpaper.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum ColorScheme {
   kStatic = 0,
   kTonalSpot = 1,
@@ -358,6 +360,8 @@ enum ColorScheme {
 
 // Static color options used to generate the system UI's color palette. These
 // options are not based off the user's wallpaper.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum StaticColor {
   kUnknown = 0,
   kGoogleBlue = 1,
