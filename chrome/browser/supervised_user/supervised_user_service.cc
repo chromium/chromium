@@ -27,7 +27,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -40,11 +39,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
@@ -227,7 +221,6 @@ void SupervisedUserService::RemoveObserver(
 
 SupervisedUserService::SupervisedUserService(
     Profile* profile,
-    signin::IdentityManager* identity_manager,
     KidsChromeManagementClient* kids_chrome_management_client,
     PrefService& user_prefs,
     supervised_user::SupervisedUserSettingsService& settings_service,
@@ -239,7 +232,6 @@ SupervisedUserService::SupervisedUserService(
       settings_service_(settings_service),
       sync_service_(sync_service),
       profile_(profile),
-      identity_manager_(identity_manager),
       kids_chrome_management_client_(kids_chrome_management_client),
       delegate_(nullptr),
       url_filter_(std::move(check_webstore_url_callback),

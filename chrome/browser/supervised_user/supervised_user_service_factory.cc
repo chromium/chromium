@@ -8,7 +8,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -69,7 +68,7 @@ SupervisedUserServiceFactory* SupervisedUserServiceFactory::GetInstance() {
 // static
 KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
   return new SupervisedUserService(
-      profile, IdentityManagerFactory::GetInstance()->GetForProfile(profile),
+      profile,
       KidsChromeManagementClientFactory::GetInstance()->GetForProfile(profile),
       *profile->GetPrefs(),
       *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
@@ -87,7 +86,6 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 #endif
-  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(KidsChromeManagementClientFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());

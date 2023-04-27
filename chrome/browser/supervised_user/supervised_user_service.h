@@ -49,10 +49,6 @@ class Extension;
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
 namespace supervised_user {
 class SupervisedUserSettingsService;
 }  // namespace supervised_user
@@ -217,7 +213,6 @@ class SupervisedUserService
   // an instance of this service.
   SupervisedUserService(
       Profile* profile,
-      signin::IdentityManager* identity_manager,
       KidsChromeManagementClient* kids_chrome_management_client,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
@@ -321,8 +316,6 @@ class SupervisedUserService
 
   // Owns us via the KeyedService mechanism.
   raw_ptr<Profile> profile_;
-
-  raw_ptr<signin::IdentityManager> identity_manager_;
 
   raw_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
 
