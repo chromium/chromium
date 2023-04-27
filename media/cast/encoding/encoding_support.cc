@@ -79,15 +79,6 @@ bool IsHardwareH264EncodingEnabled(
   // TODO(crbug.com/1015482): hardware encoder broken on Windows, Apple OSes.
   bool is_enabled_on_platform = !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN);
 
-// TODO(b/169533953): hardware encoder broken on AMD chipsets on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_amd = cpuid->vendor_name() == "AuthenticAMD";
-  if (is_amd) {
-    is_enabled_on_platform = false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   const bool is_force_enabled =
       command_line.HasSwitch(switches::kCastStreamingForceEnableHardwareH264);
 

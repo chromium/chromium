@@ -38,18 +38,9 @@ TEST(EncodingSupportTest, EnablesVp8HardwareEncoderAlways) {
 }
 
 TEST(EncodingSupportTest, EnablesH264HardwareEncoderProperly) {
-#if BUILDFLAG(IS_CHROMEOS)
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_amd = cpuid->vendor_name() == "AuthenticAMD";
-#endif
-
   static const bool is_enabled =
-// On ChromeOS only, disable hardware encoder on AMD chipsets due to
-// failure on Chromecast chipsets to decode.
-#if BUILDFLAG(IS_CHROMEOS)
-      !is_amd;
 // The hardware encoder also has major issues on Mac OSX and on Windows.
-#elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
       false;
 #else
       true;
