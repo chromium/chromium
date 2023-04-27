@@ -273,8 +273,8 @@ NGFragmentItemsBuilder::AddPreviousItems(
           current_items_data = items_data;
         else
           current_items_data = items_data = &node_.ItemsData(false);
-        if (UNLIKELY(!current_items_data->IsValidOffset(
-                break_token->ItemIndex(), break_token->TextOffset()))) {
+        if (UNLIKELY(
+                !current_items_data->IsValidOffset(break_token->Start()))) {
           NOTREACHED();
           break;
         }

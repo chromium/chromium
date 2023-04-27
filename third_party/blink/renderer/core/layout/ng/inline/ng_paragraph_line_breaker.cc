@@ -76,7 +76,7 @@ struct LineBreakResults {
       lines_.push_back(LineBreakResult{line_info.Width()});
       DCHECK_LE(lines_.size(), kMaxLinesToBalance);
       if (!break_token_ ||
-          (stop_at && break_token_->IsAtEqualOrAfter(*stop_at))) {
+          (stop_at && break_token_->Start() >= stop_at->Start())) {
         return Status::kFinished;
       }
       if (!--max_lines) {

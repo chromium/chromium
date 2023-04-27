@@ -341,7 +341,7 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
       is_svg_text_(node.IsSvgText()),
       is_text_combine_(node.IsTextCombine()),
       is_first_formatted_line_(
-          (!break_token || break_token->ItemTextIndex().IsZero()) &&
+          (!break_token || break_token->Start().IsZero()) &&
           node.CanContainFirstFormattedLine()),
       use_first_line_style_(is_first_formatted_line_ &&
                             node.UseFirstLineStyle()),
@@ -389,15 +389,15 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
     // beginning of the block. In that case, the line is still the first
     // formatted line, and the line initial style should be computed from the
     // containing block.
-    DCHECK_EQ(break_token->ItemIndex(), 0u);
-    DCHECK_EQ(break_token->TextOffset(), 0u);
+    DCHECK_EQ(break_token->StartItemIndex(), 0u);
+    DCHECK_EQ(break_token->StartTextOffset(), 0u);
     DCHECK(!break_token->IsForcedBreak());
-    DCHECK_EQ(current_, break_token->ItemTextIndex());
+    DCHECK_EQ(current_, break_token->Start());
     DCHECK_EQ(is_after_forced_break_, break_token->IsForcedBreak());
     return;
   }
 
-  current_ = break_token->ItemTextIndex();
+  current_ = break_token->Start();
   break_iterator_.SetStartOffset(current_.text_offset);
   is_after_forced_break_ = break_token->IsForcedBreak();
   items_data_.AssertOffset(current_);

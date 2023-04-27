@@ -41,6 +41,9 @@ struct CORE_EXPORT NGInlineItemsData
   bool IsValidOffset(unsigned index, unsigned offset) const {
     return index < items.size() && items[index].IsValidOffset(offset);
   }
+  bool IsValidOffset(const NGInlineItemTextIndex& index) const {
+    return IsValidOffset(index.item_index, index.text_offset);
+  }
 
   void AssertOffset(unsigned index, unsigned offset) const {
     items[index].AssertOffset(offset);
