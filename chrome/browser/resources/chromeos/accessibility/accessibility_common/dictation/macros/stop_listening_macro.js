@@ -12,12 +12,6 @@ export class StopListeningMacro extends Macro {
   }
 
   /** @override */
-  checkContext() {
-    return this.createSuccessCheckContextResult_(
-        /*willImmediatelyDisambiguate=*/ false);
-  }
-
-  /** @override */
   run() {
     chrome.accessibilityPrivate.toggleDictation();
     return this.createRunMacroResult_(/*isSuccess=*/ true);

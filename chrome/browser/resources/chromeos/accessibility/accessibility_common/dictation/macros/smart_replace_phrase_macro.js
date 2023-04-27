@@ -26,11 +26,7 @@ export class SmartReplacePhraseMacro extends Macro {
     /** @private {string} */
     this.insertPhrase_ = insertPhrase;
   }
-  /** @override */
-  checkContext() {
-    return this.createSuccessCheckContextResult_(
-        /*willImmediatelyDisambiguate=*/ false);
-  }
+
   /** @override */
   run() {
     if (!this.inputController_.isActive()) {

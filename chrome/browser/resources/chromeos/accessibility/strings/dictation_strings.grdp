@@ -78,4 +78,22 @@
   <message name="DICTATION_COMMAND_NAV_PREV_SENT" desc="A spoken command to move the cursor to the previous sentence." is_accessibility_with_no_ui="true">
     move to the previous sentence
   </message>
+  <message name="IDS_DICTATION_COMMAND_FAILED_GENERIC" desc="An error message displayed to the user when a command fails.">
+    Can't <ph name="command">$1<ex>unselect</ex></ph>, try again
+  </message>
+  <message name="IDS_DICTATION_COMMAND_FAILED_WITH_REASON" desc="An error message displayed to the user when a command fails with a specific reason.">
+    Can't <ph name="command">$1<ex>unselect</ex></ph>, <ph name="reason">$2<ex>no current selection</ex></ph>
+  </message>
+  <message name="IDS_DICTATION_CONTEXT_ERROR_REASON_INACTIVE_INPUT_CONTROLLER" desc="An error message displayed to the user when a command fails because an editable field isn't focused.">
+    no focused text field
+  </message>
+  <message name="IDS_DICTATION_CONTEXT_ERROR_REASON_EMPTY_EDITABLE" desc="An error message displayed to the user when a command fails because the editable field is empty.">
+    text field is empty
+  </message>
+  <message name="IDS_DICTATION_CONTEXT_ERROR_REASON_NO_SELECTION" desc="An error message displayed to the user when a command fails because there is no selection.">
+    no selected text
+  </message>
+  <message name="IDS_DICTATION_CONTEXT_ERROR_REASON_INVALID_INPUT" desc="An error message displayed to the user when a command fails because of unrecognized input. ">
+    unrecognized input
+  </message>
 </grit-part>

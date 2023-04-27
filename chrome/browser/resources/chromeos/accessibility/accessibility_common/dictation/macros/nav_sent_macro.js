@@ -17,12 +17,6 @@ export class NavNextSentMacro extends Macro {
   }
 
   /** @override */
-  checkContext() {
-    return this.createSuccessCheckContextResult_(
-        /*willImmediatelyDisambiguate=*/ false);
-  }
-
-  /** @override */
   run() {
     if (!this.inputController_.isActive()) {
       return this.createRunMacroResult_(
@@ -45,12 +39,6 @@ export class NavPrevSentMacro extends Macro {
     super(MacroName.NAV_PREV_SENT);
     /** @private {!InputController} */
     this.inputController_ = inputController;
-  }
-
-  /** @override */
-  checkContext() {
-    return this.createSuccessCheckContextResult_(
-        /*willImmediatelyDisambiguate=*/ false);
   }
 
   /** @override */

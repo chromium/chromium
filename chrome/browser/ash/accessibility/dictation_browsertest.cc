@@ -2070,8 +2070,19 @@ class DictationContextCheckingTest : public DictationTest {
     DictationTest::TearDownOnMainThread();
   }
 
-  void WaitForVisibleIcon(DictationBubbleIconType icon) {
+  void WaitForProperties(
+      bool visible,
+      DictationBubbleIconType icon,
+      const absl::optional<std::u16string>& text,
+      const absl::optional<std::vector<std::u16string>>& hints) {
+    dictation_bubble_test_helper_->WaitForVisibility(visible);
     dictation_bubble_test_helper_->WaitForVisibleIcon(icon);
+    if (text.has_value()) {
+      dictation_bubble_test_helper_->WaitForVisibleText(text.value());
+    }
+    if (hints.has_value()) {
+      dictation_bubble_test_helper_->WaitForVisibleHints(hints.value());
+    }
   }
 
  private:
@@ -2099,14 +2110,34 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectEmptyEditable) {
   SendFinalResultAndWait("unselect");
-  WaitForVisibleIcon(DictationBubbleIconType::kMacroFail);
+  WaitForProperties(
+      /*visible=*/true,
+      /*icon=*/DictationBubbleIconType::kMacroFail,
+      /*text=*/u"Can't unselect, text field is empty",
+      /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectNoSelection) {
   std::string text = "Hello world";
   SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWait("unselect");
-  WaitForVisibleIcon(DictationBubbleIconType::kMacroFail);
+  WaitForProperties(
+      /*visible=*/true,
+      /*icon=*/DictationBubbleIconType::kMacroFail,
+      /*text=*/
+      u"Can't unselect, no selected text",
+      /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectSuccessful) {
+  std::string text = "Hello world";
+  SendFinalResultAndWaitForEditableValue(text, text);
+  SendFinalResultAndWaitForSelectionChanged("Select all");
+  SendFinalResultAndWaitForSelectionChanged("Unselect");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kMacroSuccess,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
 class NotificationCenterDictationTest : public DictationTest {

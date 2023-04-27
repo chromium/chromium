@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 
 import {Macro, MacroError} from './macro.js';
@@ -13,26 +14,17 @@ import {MacroName} from './macro_names.js';
 export class InputTextViewMacro extends Macro {
   /**
    * @param {string} text
-   * @param {InputController} inputController
+   * @param {!InputController} inputController
    * @param {MacroName=} macroName
    */
   constructor(text, inputController, macroName = MacroName.INPUT_TEXT_VIEW) {
-    super(macroName);
+    super(macroName, new ContextChecker(inputController));
 
     /** @private {string} */
     this.text_ = text;
 
-    /** @private {InputController} */
+    /** @private {!InputController} */
     this.inputController_ = inputController;
-  }
-
-  /** @override */
-  checkContext() {
-    if (!this.inputController_.isActive()) {
-      return this.createFailureCheckContextResult_(MacroError.FAILED_ACTUATION);
-    }
-    return this.createSuccessCheckContextResult_(
-        /*willImmediatelyDisambiguate=*/ false);
   }
 
   /** @override */
@@ -50,9 +42,7 @@ export class InputTextViewMacro extends Macro {
  * Macro to type a new line character.
  */
 export class NewLineMacro extends InputTextViewMacro {
-  /**
-   * @param {InputController} inputController
-   */
+  /** @param {!InputController} inputController */
   constructor(inputController) {
     super('\n', inputController, MacroName.NEW_LINE);
   }

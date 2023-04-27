@@ -28,12 +28,6 @@ export class SmartInsertBeforeMacro extends Macro {
   }
 
   /** @override */
-  checkContext() {
-    return this.createSuccessCheckContextResult_(
-        /*willImmediatelyDisambiguate=*/ false);
-  }
-
-  /** @override */
   run() {
     if (!this.inputController_.isActive()) {
       return this.createRunMacroResult_(

@@ -4,8 +4,10 @@
 
 import {EventGenerator} from '../../../common/event_generator.js';
 import {KeyCode} from '../../../common/key_code.js';
+import {Context, ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 import {LocaleInfo} from '../locale_info.js';
+
 import {Macro, MacroError} from './macro.js';
 import {MacroName} from './macro_names.js';
 
@@ -19,9 +21,10 @@ export class RepeatableKeyPressMacro extends Macro {
    * @param {MacroName} macroName The name of the macro.
    * @param {string|number} repeat The number of times to repeat the key press.
    *     May be 3 or '3'.
+   * @param {!ContextChecker=} checker
    */
-  constructor(macroName, repeat) {
-    super(macroName);
+  constructor(macroName, repeat, checker) {
+    super(macroName, checker);
 
     /** @private {number} */
     this.repeat_ = parseInt(repeat, /*base=*/ 10);
@@ -29,17 +32,20 @@ export class RepeatableKeyPressMacro extends Macro {
 
   /** @override */
   checkContext() {
+    const checkContextResult = super.checkContext();
+    if (!checkContextResult.canTryAction) {
+      return checkContextResult;
+    }
+
     if (isNaN(this.repeat_)) {
       // This might occur if the numbers grammar did not recognize the
       // spoken number, so we could get a string like "three" instead of
       // the number 3.
       return this.createFailureCheckContextResult_(
-          MacroError.INVALID_USER_INTENT);
+          MacroError.INVALID_USER_INTENT, Context.INVALID_INPUT);
     }
-    // TODO(crbug.com/1264544): Actually check the context and make this
-    // abstract.
-    return this.createSuccessCheckContextResult_(
-        /*willImmediatelyDisambiguate=*/ false);
+
+    return this.createSuccessCheckContextResult_();
   }
 
   /** @override */
@@ -199,35 +205,17 @@ export class SelectAllTextMacro extends RepeatableKeyPressMacro {
 export class UnselectTextMacro extends RepeatableKeyPressMacro {
   /** @param {!InputController} inputController */
   constructor(inputController) {
-    super(MacroName.UNSELECT_TEXT, /*repeat=*/ 1);
-    /** @private {!InputController} */
-    this.inputController_ = inputController;
+    super(
+        MacroName.UNSELECT_TEXT, /*repeat=*/ 1,
+        new ContextChecker(inputController)
+            .add(Context.EMPTY_EDITABLE)
+            .add(Context.NO_SELECTION));
   }
 
   /** @override */
   doKeyPress() {
     EventGenerator.sendKeyPress(
         LocaleInfo.isRTLLocale() ? KeyCode.LEFT : KeyCode.RIGHT);
-  }
-
-  /** @override */
-  checkContext() {
-    const checkContextResult = super.checkContext();
-    if (!checkContextResult.canTryAction) {
-      return checkContextResult;
-    }
-
-    if (!this.inputController_.isActive()) {
-      return this.createFailureCheckContextResult_(MacroError.BAD_CONTEXT);
-    }
-
-    const data = this.inputController_.getEditableNodeData();
-    if (!data || !data.value || data.selStart === data.selEnd) {
-      return this.createFailureCheckContextResult_(MacroError.BAD_CONTEXT);
-    }
-
-    return this.createSuccessCheckContextResult_(
-        /*willImmediatelyDisambiguate=*/ false);
   }
 }
 
