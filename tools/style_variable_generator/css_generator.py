@@ -150,6 +150,9 @@ class CSSStyleGenerator(BaseGenerator):
         if isinstance(c, ColorRGBVar):
             return 'var(%s-rgb)' % self.ToCSSVarName(c.ToVar())
 
+        if isinstance(c, ColorBlend):
+            return 'TODO(b/278121949)'
+
         return '%d, %d, %d' % (c.r, c.g, c.b)
 
     def CSSBlendInputColor(self, c):

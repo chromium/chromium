@@ -4,7 +4,7 @@
 
 import re
 import collections
-from style_variable_generator.color import Color, ParseColor, ColorBlend, ColorRGBVar, ColorVar
+from style_variable_generator.color import ColorRGB, ParseColor, ColorBlend, ColorRGBVar, ColorVar
 from style_variable_generator.opacity import Opacity
 from abc import ABC, abstractmethod
 
@@ -229,7 +229,7 @@ class ColorModel(ModeKeyedModel):
             return self._BlendColors(color.blended_colors[0],
                                      color.blended_colors[1], mode)
 
-        result = Color()
+        result = ColorRGB()
         assert color.opacity
         result.opacity = self.opacity_model.ResolveOpacity(color.opacity, mode)
 
@@ -281,13 +281,11 @@ class ColorModel(ModeKeyedModel):
         b_out = round(
             (b_a * alpha_a + b_b * alpha_b * (1 - alpha_a)) / alpha_out)
 
-        result = Color()
-        (result.r, result.g, result.b) = (r_out, g_out, b_out)
-        result.opacity = Opacity(alpha_out)
-        return result
+        return ColorRGB((r_out, g_out, b_out), Opacity(alpha_out))
 
     def _CreateValue(self, value):
-        return ParseColor(value) or Color()
+        return ParseColor(value) or ColorRGB()
+
 
 class SimpleModel(collections.OrderedDict, Submodel):
     def __init__(self, variable_type, check_func=None):

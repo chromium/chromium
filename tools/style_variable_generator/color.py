@@ -6,6 +6,7 @@
 import re
 import textwrap
 from style_variable_generator.opacity import Opacity
+from abc import ABC, abstractmethod
 
 
 def split_args(arg_str):
@@ -28,23 +29,13 @@ def split_args(arg_str):
     yield arg_str[prev_index:].strip()
 
 
-def from_rgb(rgb):
-    for v in rgb:
-        if not (0 <= v <= 255):
-            raise ValueError('RGB value out of bounds')
-
-    color = Color()
-    (color.r, color.g, color.b) = rgb
-    return color
-
-
 # Attempts to parse special variables, returns the Color if successful.
 def from_white_black(var):
     if var == 'white':
-        return from_rgb([255, 255, 255])
+        return ColorRGB([255, 255, 255])
 
     if var == 'black':
-        return from_rgb([0, 0, 0])
+        return ColorRGB([0, 0, 0])
 
     return None
 
@@ -68,16 +59,13 @@ def ParseColor(value):
         match = re.match(r'^#([0-9a-f]*)$', value)
         if not match:
             return None
-        color = Color()
 
         value = match.group(1)
         if len(value) != 6:
             raise ValueError('Expected #RRGGBB')
 
-        color = from_rgb([int(x, 16) for x in textwrap.wrap(value, 2)])
-        color.opacity = Opacity(1)
-
-        return color
+        return ColorRGB([int(x, 16) for x in textwrap.wrap(value, 2)],
+                        Opacity(1))
 
     def ParseRGB(value):
         match = re.match(r'^rgb\((.*)\)$', value)
@@ -91,9 +79,7 @@ def ParseColor(value):
             return color
 
         if len(values) == 3:
-            color = from_rgb([int(x) for x in values])
-            color.opacity = Opacity(1)
-            return color
+            return ColorRGB([int(x) for x in values], Opacity(1))
 
         raise ValueError('rgb() expected to have either 1 reference or 3 ints')
 
@@ -109,9 +95,7 @@ def ParseColor(value):
             return color
 
         if len(values) == 4:
-            color = from_rgb([int(x) for x in values[0:3]])
-            color.opacity = Opacity(values[3])
-            return color
+            return ColorRGB([int(x) for x in values[0:3]], Opacity(values[3]))
 
         raise ValueError('rgba() expected to have either'
                          '1 reference + alpha, or 3 ints + alpha')
@@ -190,12 +174,27 @@ class Color:
     with '.rgb'.
     '''
 
-    def __init__(self):
-        self.r = -1
-        self.g = -1
-        self.b = -1
+    def __init__(self, opacity=None):
+        self.opacity = opacity
 
-        self.opacity = None
+    @abstractmethod
+    def GetFormula(self):
+        pass
+
+    @abstractmethod
+    def __repr__(self):
+        pass
+
+
+class ColorRGB(Color):
+    def __init__(self, rgb=None, opacity=None):
+        super().__init__(opacity)
+        if rgb is None:
+            (self.r, self.g, self.b) = [-1, -1, -1]
+        else:
+            if not all([(0 <= v <= 255) for v in rgb]):
+                raise ValueError(f'RGB value out of bounds: {rgb}')
+            (self.r, self.g, self.b) = rgb
 
     def GetFormula(self):
         a = repr(self.opacity)
