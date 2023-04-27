@@ -198,13 +198,7 @@ void ImmersiveModeTabbedController::TitlebarHide() {
 
 void ImmersiveModeTabbedController::OnTitlebarFrameDidChange(NSRect frame) {
   ImmersiveModeController::OnTitlebarFrameDidChange(frame);
-
-  // Find the tab overlay view's point on screen (bottom left).
-  NSPoint point_in_window = [tab_content_view_ convertPoint:NSZeroPoint
-                                                     toView:nil];
-  NSPoint point_on_screen =
-      [tab_content_view_.window convertPointToScreen:point_in_window];
-  [tab_window_ setFrameOrigin:point_on_screen];
+  LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
 }
 
 void ImmersiveModeTabbedController::OnChildWindowAdded(NSWindow* child) {

@@ -97,6 +97,13 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
     last_used_style_ = style;
   }
 
+  // Layout the `window` on top of the `anchor_view`. The `window` will occupy
+  // the same place on screen as the `anchor_view`, completely occluding the
+  // `anchor_view`. The `window` is clear but needs to overlay the `anchor_view`
+  // to handle drag events.
+  // If the `anchor_view` is offscreen, the `window` will be moved offscreen.
+  void LayoutWindowWithAnchorView(NSWindow* window, NSView* anchor_view);
+
  private:
   bool enabled_ = false;
 

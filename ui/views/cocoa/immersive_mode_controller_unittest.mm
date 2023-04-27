@@ -237,7 +237,13 @@ TEST_F(CocoaImmersiveModeControllerTest, TitlebarObserver) {
     [titlebar_container_view
         setFrame:NSMakeRect(0, kOverlayViewHeight + 1, kOverlayViewWidth,
                             kOverlayViewHeight)];
-    EXPECT_EQ(overlay().frame.origin.y, -kOverlayViewHeight);
+    if (@available(macOS 12.0, *)) {
+      EXPECT_EQ(overlay().frame.origin.y,
+                browser().screen.frame.size.height +
+                    browser().screen.safeAreaInsets.top);
+    } else {
+      EXPECT_EQ(overlay().frame.origin.y, browser().screen.frame.size.height);
+    }
 
     // Remove the clip and make sure the overlay window moves back.
     [titlebar_container_view
