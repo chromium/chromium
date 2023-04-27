@@ -1416,7 +1416,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4451135742916150903">Puede solicitar permiso para conectarse a dispositivos HID</translation>
 <translation id="4451684391620232683">Texto que se muestra al usuario:</translation>
 <translation id="4452328064229197696">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de asegurar tu cuenta, el Administrador de contraseñas de Google te recomienda revisar las contraseñas guardadas.</translation>
-<translation id="4460315069258617173">Se permite hasta que cierres las pestañas para este sitio.</translation>
 <translation id="4464826014807964867">Sitios web con información de tu organización</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Este formulario no es seguro. Se desactivó la función Autocompletar.</translation>
@@ -2021,7 +2020,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5967592137238574583">Editar la información de contacto</translation>
 <translation id="5967867314010545767">Eliminar del historial</translation>
 <translation id="5968022600320704045">La búsqueda no arrojó resultados.</translation>
-<translation id="5968793460449681917">En cada visita</translation>
 <translation id="5974052231147553524">Sexto rollo</translation>
 <translation id="5975083100439434680">Alejar</translation>
 <translation id="5979084224081478209">Revisar contraseñas</translation>
@@ -2389,7 +2387,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6897140037006041989">Usuario-agente</translation>
 <translation id="6898699227549475383">Organización (O)</translation>
 <translation id="6899000063526916106">Ingresa un código de <ph name="NUMBER_OF_DIGITS" /> dígitos</translation>
-<translation id="6907293445143367439">Permitir a <ph name="SITE_NAME" />:</translation>
 <translation id="6907458757809079309">Ejercicio</translation>
 <translation id="6910240653697687763"><ph name="URL" /> desea obtener el control total de tus dispositivos MIDI</translation>
 <translation id="691024665142758461">Descargar varios archivos</translation>
@@ -2568,7 +2565,6 @@ Detalles adicionales:
 <translation id="733923710415886693">El certificado del servidor no se divulgó mediante el Certificado de transparencia.</translation>
 <translation id="7341357280245177602">Vehículos usados</translation>
 <translation id="7346048084945669753">Se afilió:</translation>
-<translation id="7349921148288539306">Se permite hasta que cierres esta pestaña.</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7353601530677266744">Línea de comandos</translation>
 <translation id="7354880545102894991">Viajes de bajo costo y de último minuto</translation>
@@ -3044,7 +3040,6 @@ Detalles adicionales:
 <translation id="8433057134996913067">Si realizas esta acción, saldrás de la mayoría de los sitios web.</translation>
 <translation id="8434840396568290395">Mascotas</translation>
 <translation id="8437238597147034694">&amp;Deshacer Mover</translation>
-<translation id="8438476240229491014">Recordar esta configuración</translation>
 <translation id="8438786541497918448">¿Quieres permitir el uso de la cámara y el micrófono?</translation>
 <translation id="8438923942245957911">Tu organización marcó este sitio</translation>
 <translation id="8443613539889492016">Rap y hip-hop</translation>

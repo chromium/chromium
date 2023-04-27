@@ -186,6 +186,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2242467532204595597">Utiliza Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="22508856139286506">Advertencias ignoradas (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
+<translation id="2252674110805316998">Busca web</translation>
 <translation id="2256933947031277845">A túa organización só che permite iniciar sesión con certas contas.</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Engadir conta</translation>
@@ -487,6 +488,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4272631900155121838">Para escanear un código QR, activa a cámara na configuración</translation>
 <translation id="4277990410970811858">Navegación segura</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
+<translation id="4293080268407233932">Buscar</translation>
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
 <translation id="430793432425771671">Sincronizar todo</translation>
 <translation id="4309403553630140242">Toca dúas veces para obter máis información</translation>
@@ -742,6 +744,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5951816930277761335">Comparte a ligazón</translation>
 <translation id="5955891643922670672">Visualizando a versión sen conexión</translation>
 <translation id="5957613098218939406">Máis opcións</translation>
+<translation id="595769230373966252">Buscar resultados con <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Non se puido crear unha ligazón ao texto destacado.</translation>
 <translation id="5965679971710331625">Iniciaches sesión</translation>
 <translation id="5979837087407522202">Buscar contrasinais</translation>

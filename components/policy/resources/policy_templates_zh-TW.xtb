@@ -2866,6 +2866,15 @@
 <translation id="3623332696371971798">禁止個人化應用程式存取 Google 相簿</translation>
 <translation id="3627678165642179114">啟用或停用拼字檢查網路服務</translation>
 <translation id="3628480121685794414">啟用單面列印</translation>
+<translation id="3634117682099473917">所需 DNS-over-HTTPS 解析器的 URI 範本。如要指定多個 DNS-over-HTTPS 解析器，請以半形空格分隔對應的 URI 範本。這項政策與 <ph name="DOH_TEMPLATES_POLICY_NAME" /> 很相似，如果指定這項政策，系統將覆寫後者。兩項政策的差異之處，在於前者支援指定身分資訊。
+
+如果將 <ph name="DOH_MODE_POLICY_NAME" /> 設為 <ph name="SECURE_DNS_MODE_SECURE" />，就必須設定這項政策或 <ph name="DOH_TEMPLATES_POLICY_NAME" />，且不得留空。
+
+如果將 <ph name="DOH_MODE_POLICY_NAME" /> 設為 <ph name="SECURE_DNS_MODE_AUTOMATIC" />，且設定了這項政策，系統就會使用指定的 URI 範本。如果不設定這項政策，系統會使用硬式編碼對應，嘗試將使用者目前的 DNS 解析器升級為相同供應商提供的 DoH 解析器。
+
+如果 URI 範本包含 <ph name="HTTP_VARIABLE_DNS" /> 變數，系統會使用 <ph name="HTTP_METHOD_GET" /> 對解析器發出要求。如果不包含這項變數，則會使用 <ph name="HTTP_METHOD_POST" />。
+
+在 114 以上版本中，如果設定了這項政策，就不一定要設定 <ph name="DOH_SALT_POLICY_NAME" /> 政策。</translation>
 <translation id="3634125384445314047">允許他人透過 Phone Hub 存取手機上最近拍攝的相片和影片。</translation>
 <translation id="3642557248926713561">停用安全瀏覽擴充功能防護功能</translation>
 <translation id="3643284063603988867">啟用「記住密碼」功能</translation>
@@ -3749,6 +3758,7 @@
 <translation id="45036050223225148">停用經過 TLS 加密的 ClientHello 實驗</translation>
 <translation id="4503935079903510542">用於在 x86_64 裝置上安裝 VM 的 UEFI 開機磁碟映像檔。</translation>
 <translation id="4508728400492074981">控管 First-Party Sets 功能的相關政策。</translation>
+<translation id="4510131075424939993">指定評估身分資訊時要在 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> 中使用的鹽值</translation>
 <translation id="4510923771103268849">允許使用者擁有 Crostini 容器的 Root 權限</translation>
 <translation id="4512407512989846472">允許禁止在特定網址上將資料複製到剪貼簿</translation>
 <translation id="4513691822411041977">不強制啟用 Google 搜尋的安全搜尋功能和中度以上的 YouTube 嚴格篩選模式</translation>
@@ -5467,6 +5477,11 @@
 
       注意：這項政策會影響所有音訊輸出，包括語音無障礙功能的音訊。如果使用者需要螢幕閱讀器，請勿停用這項政策。</translation>
 <translation id="6221175752766085998">允許由本機信任錨點核發但缺少 subjectAlternativeName 擴充功能的憑證</translation>
+<translation id="6221327862246049151">對 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> 字串內含的識別資訊進行雜湊處理時，系統會使用這段鹽字串做為鹽值。
+
+鹽字串的長度介於 8 至 32 個半形字元之間。
+
+在 114 以上版本中，如果設定了 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> 政策，就不一定要設定這項政策。如果不設定這項政策，系統對透過 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> 政策設定的範本 URI ID 進行雜湊處理時，就不會加鹽。</translation>
 <translation id="6224070048795197148">允許使用者在不登入的情況下使用瀏覽器</translation>
 <translation id="6224304369267200483">自動允許直接安全金鑰認證的網址/網域</translation>
 <translation id="6225938950222983458">這項政策已淘汰，因此系統不再支援，請改用 <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />。</translation>

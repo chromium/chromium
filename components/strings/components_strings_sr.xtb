@@ -1229,6 +1229,7 @@
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
 <translation id="4040350669425716613">Колеџи и универзитети</translation>
 <translation id="4047351652147966654">18×24 in</translation>
+<translation id="4050392779074832022">Моћи ћете да је користите у свим Google производима</translation>
 <translation id="405399507749852140">Добијајте обавештења када се цена снизи на било ком сајту</translation>
 <translation id="4056223980640387499">Сепија</translation>
 <translation id="4063063121357725926">Дозволите Google-у да вам помогне у проналажењу попуста за корпе</translation>
@@ -1419,7 +1420,6 @@
 <translation id="4451135742916150903">Може да тражи да се повезује са HID уређајима</translation>
 <translation id="4451684391620232683">Текст представљен кориснику:</translation>
 <translation id="4452328064229197696">Лозинка коју сте управо користили је пронађена при повреди података. Да бисте заштитили налоге, Google менаџер лозинки препоручује да проверите сачуване лозинке.</translation>
-<translation id="4460315069258617173">Дозвољено док не затворите картице овог сајта</translation>
 <translation id="4464826014807964867">Веб-сајтови са подацима из ваше организације</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Овај образац није безбедан. Аутоматско попуњавање је искључено.</translation>
@@ -2024,7 +2024,6 @@
 <translation id="5967592137238574583">Измените контакт информације</translation>
 <translation id="5967867314010545767">Уклони из историје</translation>
 <translation id="5968022600320704045">Нема резултата претраге</translation>
-<translation id="5968793460449681917">При свакој посети</translation>
 <translation id="5974052231147553524">Шести котур</translation>
 <translation id="5975083100439434680">Умањивање</translation>
 <translation id="5979084224081478209">Провери лозинке</translation>
@@ -2391,7 +2390,6 @@
 <translation id="6897140037006041989">Кориснички агент</translation>
 <translation id="6898699227549475383">Организација (O)</translation>
 <translation id="6899000063526916106">Унесите <ph name="NUMBER_OF_DIGITS" />-цифрени кôд</translation>
-<translation id="6907293445143367439">Дозволите да <ph name="SITE_NAME" />:</translation>
 <translation id="6907458757809079309">Фитнес</translation>
 <translation id="6910240653697687763"><ph name="URL" /> жели да у потпуности контролише MIDI уређаје</translation>
 <translation id="691024665142758461">да преузме више датотека</translation>
@@ -2572,7 +2570,6 @@
 <translation id="733923710415886693">Сертификат сервера није откривен помоћу Транспарентности сертификата.</translation>
 <translation id="7341357280245177602">Половна возила</translation>
 <translation id="7346048084945669753">Повезан је:</translation>
-<translation id="7349921148288539306">Дозвољено док не затворите ову картицу</translation>
 <translation id="7352651011704765696">Нешто није у реду</translation>
 <translation id="7353601530677266744">Командна линија</translation>
 <translation id="7354880545102894991">Јефтина путовања и путовања у последњем тренутку</translation>
@@ -3049,7 +3046,6 @@
 <translation id="8433057134996913067">Овако ћете се одјавити са већине веб-сајтова.</translation>
 <translation id="8434840396568290395">Кућни љубимци</translation>
 <translation id="8437238597147034694">&amp;Опозови премештање</translation>
-<translation id="8438476240229491014">Запамти ово подешавање</translation>
 <translation id="8438786541497918448">Дозволићете коришћење камере и микрофона?</translation>
 <translation id="8438923942245957911">Ваша организација је обележила овај сајт</translation>
 <translation id="8443613539889492016">Реп и хип-хоп</translation>

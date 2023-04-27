@@ -315,6 +315,7 @@
 <translation id="1689333818294560261">उपनाम</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />तपाईं आफ्नो जानकारी कसरी व्यवस्थापन गर्न सक्नुहुन्छ:<ph name="END_BOLD" /> Chrome ले ४ हप्ताभन्दा पुराना विषयहरू स्वतः मेटाउँछ। तपाईंले विभिन्न साइटहरू ब्राउज गरिराख्ने क्रममा कुनै विषय यो सूचीमा फेरि देखिन सक्छ। तपाईं जुनसुकै बेला Chrome का सेटिङमा गई तपाईं Chrome ले साइटहरूसँग जुन जुन विषयहरू सेयर नगरोस् भन्ने चाहनुहुन्छ ती विषय ब्लक गर्नुका साथै विज्ञापनका विषयहरू अफ गर्न पनि सक्नुहुन्छ।</translation>
 <translation id="1697532407822776718">तपाईंहरू सबैले सेट हुनभयो!</translation>
+<translation id="1699651774646344471">तपाईं अब आफ्नो Google खातामा भएका ठेगानाहरू प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">जुमका स्तरहरू</translation>
@@ -537,6 +538,7 @@
 <translation id="2224337661447660594">इन्टरनेट छैन</translation>
 <translation id="2225927550500503913">भर्चुअल कार्ड अन गरिएको छ</translation>
 <translation id="2226636330183131181">Wi-Fi नेटवर्कमा <ph name="BEGIN_LINK" />साइन इन गर्ने तरिका<ph name="END_LINK" /></translation>
+<translation id="2228057197024893428">यो ठेगाना हाल Chrome मा सेभ गरिएको छ। तपाईं यो ठेगाना Google का विभिन्न उत्पादनहरूमा प्रयोग गर्न चाहनुहुन्छ भने यसलाई आफ्नो Google खाता (<ph name="ACCOUNT" />) मा सेभ गर्नुहोस्।</translation>
 <translation id="2239100178324503013">अहिले पठाउनुहोस्</translation>
 <translation id="2241693394036365668">फाइल डाउनलोड गरिँदा</translation>
 <translation id="2246264294482514010">१० x १२ इन्च</translation>
@@ -656,6 +658,7 @@
 <translation id="2547466893236767989">वेब डिजाइन तथा विकास</translation>
 <translation id="254947805923345898">नीतिको मान मान्य छैन।</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ले अमान्य प्रतिक्रिया पठायो।</translation>
+<translation id="2551608178605132291">ठेगाना: <ph name="ADDRESS" />।</translation>
 <translation id="2552246211866555379">हागाकी</translation>
 <translation id="2552295903035773204">अबदेखि कार्डहरू पुष्टि गर्न स्क्रिन लक प्रयोग गर्नुहोस्</translation>
 <translation id="2553853292994445426">आफ्नो सुरक्षित DNS सेटिङको जाँच गर्नुहोस्। तपाईंले जोड्न नसकिएका सुरक्षित DNS सर्भर कन्फिगर गर्नुभएको हुन सक्छ।</translation>
@@ -853,6 +856,7 @@
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />सुरक्षित DNS कन्फिगुरेसनको जाँच गर्दै<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">बिचको ट्रे</translation>
 <translation id="3109728660330352905">तपाईंलाई यस पृष्ठ हेर्न अधिकार छैन।</translation>
+<translation id="3112892588078695695">फोन नम्बर: <ph name="PHONE" />।</translation>
 <translation id="3113284927548439113">तेस्रो सिफ्ट</translation>
 <translation id="3114040155724590991">Android सिस्टम अपडेट हुँदै छ
     तपाईंको एप खुल्न अरू बेलाको भन्दा बढी समय लाग्न सक्छ।</translation>
@@ -1222,6 +1226,7 @@
 <translation id="4031179711345676612">माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4040350669425716613">कलेज तथा विश्वविद्यालयहरू</translation>
 <translation id="4047351652147966654">१८ x २४ इन्च</translation>
+<translation id="4050392779074832022">तपाईं यो ठेगाना Google का विभिन्न उत्पादनहरूमा प्रयोग गर्न सक्नु हुने छ</translation>
 <translation id="405399507749852140">कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4063063121357725926">Google लाई तपाईंका कार्टहरूका हकमा छुट खोज्ने अनुमति दिनुहोस्</translation>
@@ -1412,7 +1417,6 @@
 <translation id="4451135742916150903">HID डिभाइसमा कनेक्ट गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="4451684391620232683">प्रयोगकर्तालाई देखाइएको टेक्स्ट:</translation>
 <translation id="4452328064229197696">तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएको छ। Google पासवर्ड म्यानेजरले तपाईंका खाता सुरक्षित राख्ने प्रयोजनका लागि तपाईंले सेभ गरेका पासवर्डहरू सुरक्षित छन् कि छैनन् जाँच्न सिफारिस गर्छ।</translation>
-<translation id="4460315069258617173">तपाईंले यो साइटका ट्याबहरू बन्द नगरुन्जेल अनुमति दिइन्छ</translation>
 <translation id="4464826014807964867">तपाईंको सङ्गठनले प्रदान गरेको जानकारी भएका वेबसाइटहरू</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />। <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">यो फारम सुरक्षित छैन। अटोफिल सुविधा अफ गरिएको छ।</translation>
@@ -2017,7 +2021,6 @@
 <translation id="5967592137238574583">सम्पर्कसम्बन्धी जानकारी सम्पादन गर्नुहोस्</translation>
 <translation id="5967867314010545767">इतिहासबाट हटाउनुहोस्</translation>
 <translation id="5968022600320704045">कुनै पनि खोज परिणाम भेटिएन</translation>
-<translation id="5968793460449681917">साइट खोल्दैपिच्छे</translation>
 <translation id="5974052231147553524">छैठौँ रोल</translation>
 <translation id="5975083100439434680">जुम आउट</translation>
 <translation id="5979084224081478209">पासवर्डहरूको जाँच गर्नुहोस्</translation>
@@ -2385,7 +2388,6 @@
 <translation id="6897140037006041989">प्रयोगकर्ता एजेन्ट</translation>
 <translation id="6898699227549475383">संगठन (सं)</translation>
 <translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" /> अङ्कको कोड हाल्नुहोस्</translation>
-<translation id="6907293445143367439"><ph name="SITE_NAME" /> लाई निम्न कार्यहरू गर्न दिनुहोस्:</translation>
 <translation id="6907458757809079309">तन्दुरुस्ती</translation>
 <translation id="6910240653697687763"><ph name="URL" /> तपाईंका MIDI यन्त्रहरूमाथि पूर्ण नियन्त्रण प्राप्त गर्न चाहन्छ</translation>
 <translation id="691024665142758461">बहुविध फाइलहरू डाउनलोड गर्नुहोस्।</translation>
@@ -2462,6 +2464,7 @@
 <translation id="7083258188081898530">ट्रे ९</translation>
 <translation id="7086090958708083563">प्रयोगकर्ताले अनुरोध गरेको अपलोड</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई अनुमति तथा विभिन्न साइटहरूमा भण्डारण गरिएका डेटा व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
+<translation id="7096341143397839437">इमेल ठेगाना: <ph name="EMAIL" />।</translation>
 <translation id="7096937462164235847">यो वेबसाइटको पहिचान पुष्टि गरिएको छैन।</translation>
 <translation id="7101893872976785596">तर्साउने चलचित्रहरू</translation>
 <translation id="7102079138917191645">निर्माण तथा मर्मतसम्भार</translation>
@@ -2540,6 +2543,7 @@
 <translation id="7256634549594854023">पछाडिको ट्रे</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />मा एक निजी जडान स्थापना गर्न सक्दैन किनकि तपाईँको कम्प्युटरको मिति र समय (<ph name="DATE_AND_TIME" />) गलत छन्।</translation>
 <translation id="7260504762447901703">पहुँच रद्द गर्नुहोस्</translation>
+<translation id="7265608370113700582">यो ठेगाना यस डिभाइसमा मात्र उपलब्ध छ</translation>
 <translation id="7275334191706090484">व्यवस्थित पृष्ठमञ्जूषाहरू</translation>
 <translation id="7277998515889183784">मेकअप र सौन्दर्य प्रसाधन</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Google खाताको पासवर्ड बदल्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
@@ -2564,7 +2568,6 @@
 <translation id="733923710415886693">प्रमाणपत्रको पारदर्शिता नीति मार्फत सर्भरको प्रमाणपत्रको खुलासा भएन।</translation>
 <translation id="7341357280245177602">पुराना सवारी साधनहरू</translation>
 <translation id="7346048084945669753">सम्बद्ध प्रयोगकर्ता हो कि होइन:</translation>
-<translation id="7349921148288539306">तपाईंले यो ट्याब बन्द नगरुन्जेल अनुमति दिइन्छ</translation>
 <translation id="7352651011704765696">कुनै त्रुटि भयो</translation>
 <translation id="7353601530677266744">आदेश रेखा</translation>
 <translation id="7354880545102894991">सस्ता र अन्तिम समयमा उपलब्ध यात्रासम्बन्धी अफरहरू</translation>
@@ -2963,6 +2966,7 @@
 <translation id="8245703462678310750">फुल स्क्रिन मोडबाट बाहिरिन र डाउनलोड गरिएका सामग्री हेर्न |<ph name="ACCELERATOR" />| मा थिचिराख्नुहोस्।</translation>
 <translation id="8249296373107784235">रद्द गर्नुहोस्</translation>
 <translation id="8249463483885748674">सीप परीक्षण तथा प्रवेश परीक्षाहरू</translation>
+<translation id="8250094606476360498">यो ठेगाना हाल यस डिभाइसमा सेभ गरिएको छ। तपाईं यो ठेगाना Google का विभिन्न उत्पादनहरूमा प्रयोग गर्न चाहनुहुन्छ भने यसलाई आफ्नो Google खाता (<ph name="ACCOUNT" />) मा सेभ गर्नुहोस्।</translation>
 <translation id="8252991034201168845">"एक्सेसिबिलिटी सेटिङ मिलाउनुहोस्" नामक बटन, तपाईं ChromeOS का सेटिङमा गई एक्सेसिबिलिटी टुलहरू पर्सनलाइज गर्न चाहनुहुन्छ भने इन्टर थिच्नुहोस्</translation>
 <translation id="8253091569723639551">बिल पठाउने ठेगाना आवश्यक छ</translation>
 <translation id="8257387598443225809">यो एप मोबाइलमा चलाउने प्रयोजनले बनाइएको हो</translation>
@@ -3040,7 +3044,6 @@
 <translation id="8433057134996913067">यसले तपाईँलाई अधिकांश साइटहरूबाट साइन आउट गराउनेछ।</translation>
 <translation id="8434840396568290395">पाल्तु जनावरहरू</translation>
 <translation id="8437238597147034694">सार्ने कार्यलाई &amp;पूर्ववत गर्नुहोस्</translation>
-<translation id="8438476240229491014">यो सेटिङ याद राखियोस्</translation>
 <translation id="8438786541497918448">क्यामेरा र माइक्रोफोन प्रयोग गर्ने हो?</translation>
 <translation id="8438923942245957911">तपाईंको सङ्गठनले यो साइट फ्ल्याग गरेको छ</translation>
 <translation id="8443613539889492016">र्‍याप तथा हिप-हप</translation>

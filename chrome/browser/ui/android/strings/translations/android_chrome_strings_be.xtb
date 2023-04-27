@@ -387,7 +387,6 @@
 <translation id="3091010850649238832">Паказаць змесціва буфера абмену</translation>
 <translation id="3098745985164956033">Некаторыя відарысы адпраўляюцца ў Google, каб палепшыць іх апісанне</translation>
 <translation id="3114507951000454849">Чытайце сённяшнія навіны <ph name="NEWS_ICON" /></translation>
-<translation id="311958134571892113">картка звязана з наступнай карткай:</translation>
 <translation id="3123734510202723619">Апавяшчэнні</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Галоўная старонка Chrome</translation>
@@ -787,7 +786,6 @@
 <translation id="5235196193381275927">Нешта пайшло не так падчас уваходу</translation>
 <translation id="5246093389635966745">Змяніць кнопку-ярлык на панэлі інструментаў</translation>
 <translation id="5271967389191913893">Прылада не можа адкрыць змесціва для спампоўвання.</translation>
-<translation id="5274286919938458946">Картка звязана з наступнай карткай: <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Адпраўка на прыладу</translation>
 <translation id="5300426565656326054">Персаналізацыя рэкламы на аснове даных браўзера</translation>
 <translation id="5304593522240415983">Гэта поле не можа быць пустым</translation>
@@ -851,6 +849,7 @@
 <translation id="5628604359369369630">Непрачытана – Даступна па-за сеткай</translation>
 <translation id="5639724618331995626">Дазволіць усе сайты</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Гісторыя пошуку<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />звесткі пра іншыя дзеянні<ph name="END_LINK2" /> могуць захоўвацца ва Уліковым запісе Google</translation>
+<translation id="564667659802381754">Дапаможнік па прыватнасці <ph name="BEGIN_NEW" />Новае<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">За апошнія 7 дзён</translation>
 <translation id="5655963694829536461">Шукаць у спампоўках</translation>
 <translation id="5659593005791499971">Адрас электроннай пошты</translation>
@@ -1213,6 +1212,7 @@
 <translation id="7482656565088326534">Укладка перадпрагляду</translation>
 <translation id="7484997419527351112">Рэкамендацыі выключаны</translation>
 <translation id="7485033510383818941">Каб абнавіць змесціва стужкі, пацягніце старонку ўніз</translation>
+<translation id="7486953194485875763">Прыведзеныя ніжэй даныя за апошнія 15 хвілін будуць выдалены:</translation>
 <translation id="749294055653435199">Google Аб'ектыў недаступны на гэтай прыладзе</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (абноўлена <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Тэма зноў дададзена ў спіс патэнцыйных</translation>

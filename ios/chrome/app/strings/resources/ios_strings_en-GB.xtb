@@ -133,6 +133,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1815941218935345331">Passcode</translation>
 <translation id="1820259098641718022">Added to Reading List</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
+<translation id="1830634592642484976">This address is currently saved to Chrome. To use it across Google products, save it in your Google Account, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bookmark saved in your Google Account, {email}}other{Bookmarks saved in your Google Account, {email}}}</translation>
 <translation id="1870148520156231997">Reveal password</translation>
@@ -186,6 +187,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2242467532204595597">Use Chrome anytime that you tap links in messages, documents and other apps.</translation>
 <translation id="22508856139286506">Dismissed warnings (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → History</translation>
+<translation id="2252674110805316998">Web Search</translation>
 <translation id="2256933947031277845">Your organisation allows you to sign in only with certain accounts.</translation>
 <translation id="225943865679747347">Error code: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Add Account</translation>
@@ -487,6 +489,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4272631900155121838">To scan a QR code, enable the camera from settings</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
+<translation id="4293080268407233932">Search</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="430793432425771671">Sync Everything</translation>
 <translation id="4309403553630140242">Double-tap for more information</translation>
@@ -543,6 +546,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4636930964841734540">Info</translation>
 <translation id="4642472735733036929">Price tracking stopped</translation>
 <translation id="4650125387981512669">Continue as <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Make sure that your passwords are safe, find out if they've been compromised and get advice to help protect yourself online. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">When you sign in to your Google account, this feature is turned on.</translation>
 <translation id="4659667755519643272">Enter Tab Switcher</translation>
 <translation id="46614316059270592">Save password</translation>
@@ -695,6 +699,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5669617676038747374">Create a QR Code</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">To use and save passwords in your Google Account, verify that it's you.</translation>
+<translation id="5684761169742812828">This password was exposed in a data breach on the Internet. If you don't have time to change it right now, Google recommends keeping this warning to remind yourself later.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Now showing 1 Chrome window}other{Now showing {count} Chrome windows}}</translation>
 <translation id="5701270923492462699">Camera access allowed</translation>
 <translation id="5704908597376970822">Can't sign in.</translation>
@@ -742,6 +747,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5951816930277761335">Share the link</translation>
 <translation id="5955891643922670672">Viewing Offline Version</translation>
 <translation id="5957613098218939406">More Options</translation>
+<translation id="595769230373966252">Search with <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">A link to the highlight cannot be created.</translation>
 <translation id="5965679971710331625">You're signed in</translation>
 <translation id="5979837087407522202">Search passwords</translation>
@@ -1219,6 +1225,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8952559610785099500">Add password</translation>
 <translation id="8953046091948372197">You'll find your passwords here</translation>
 <translation id="895541991026785598">Report an Issue</translation>
+<translation id="8961757677053809960">Dismiss warning?</translation>
 <translation id="8971545611707025079">Check again</translation>
 <translation id="8974714402877957201">1. Open iPad settings</translation>
 <translation id="8976382372951310360">Help</translation>

@@ -387,7 +387,6 @@
 <translation id="3091010850649238832">Показване на съдържанието в буферната памет</translation>
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
 <translation id="3114507951000454849">Прочетете днешните новини <ph name="NEWS_ICON" /></translation>
-<translation id="311958134571892113">свързано с(ъс)</translation>
 <translation id="3123734510202723619">Съобщения</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Началната страница на Chrome</translation>
@@ -787,7 +786,6 @@
 <translation id="5235196193381275927">Нещо се обърка при влизането в профила</translation>
 <translation id="5246093389635966745">Редактиране на пряк път в лентата с инструменти</translation>
 <translation id="5271967389191913893">Устройството не може да отвори съдържанието за изтегляне.</translation>
-<translation id="5274286919938458946">Свързана с(ъс) <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Изпращане до</translation>
 <translation id="5300426565656326054">Персонализиране на рекламите въз основа на браузъра</translation>
 <translation id="5304593522240415983">Това поле трябва да се попълни</translation>
@@ -851,6 +849,7 @@
 <translation id="5628604359369369630">Непрочетено – налице офлайн</translation>
 <translation id="5639724618331995626">Разрешаване на всички сайтове</translation>
 <translation id="5641456720590409793">Възможно е <ph name="BEGIN_LINK1" />историята на търсенията<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други видове активност<ph name="END_LINK2" /> да се запазват в профила ви в Google</translation>
+<translation id="564667659802381754">Ръководство за поверителност <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
 <translation id="5655963694829536461">Търсете в изтеглянията</translation>
 <translation id="5659593005791499971">Имейл</translation>
@@ -1213,6 +1212,7 @@
 <translation id="7482656565088326534">Раздел за визуализация</translation>
 <translation id="7484997419527351112">Discover – изключено</translation>
 <translation id="7485033510383818941">За да опресните съдържанието в емисията, дръпнете страницата надолу</translation>
+<translation id="7486953194485875763">Следните данни от последните 15 минути ще бъдат изтрити:</translation>
 <translation id="749294055653435199">Google Обектив не е налице на устройството</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Актуализирано: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Темата отново бе добавена към потенциалните теми</translation>

@@ -1415,7 +1415,6 @@
 <translation id="4451135742916150903">HID 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="4451684391620232683">사용자에게 표시되는 텍스트:</translation>
 <translation id="4452328064229197696">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하기 위해 Google 비밀번호 관리자에서 저장된 비밀번호를 확인하시기 바랍니다.</translation>
-<translation id="4460315069258617173">이 사이트의 탭을 닫을 때까지 허용</translation>
 <translation id="4464826014807964867">조직의 정보가 포함된 웹사이트</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">안전하지 않은 양식입니다. 자동 완성이 사용 중지되었습니다.</translation>
@@ -2020,7 +2019,6 @@
 <translation id="5967592137238574583">연락처 정보 수정</translation>
 <translation id="5967867314010545767">기록에서 삭제</translation>
 <translation id="5968022600320704045">검색결과 없음</translation>
-<translation id="5968793460449681917">방문할 때마다</translation>
 <translation id="5974052231147553524">6번째 롤</translation>
 <translation id="5975083100439434680">축소</translation>
 <translation id="5979084224081478209">비밀번호 확인</translation>
@@ -2388,7 +2386,6 @@
 <translation id="6897140037006041989">사용자 에이전트</translation>
 <translation id="6898699227549475383">조직(O)</translation>
 <translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" />자리 코드 입력</translation>
-<translation id="6907293445143367439"><ph name="SITE_NAME" />의 다음 작업 허용:</translation>
 <translation id="6907458757809079309">피트니스</translation>
 <translation id="6910240653697687763"><ph name="URL" />에서 MIDI 기기를 완전히 제어하려고 합니다.</translation>
 <translation id="691024665142758461">여러 파일 다운로드</translation>
@@ -2567,7 +2564,6 @@
 <translation id="733923710415886693">서버 인증서가 인증서 투명성 정책을 사용하여 공개되지 않았습니다.</translation>
 <translation id="7341357280245177602">중고차</translation>
 <translation id="7346048084945669753">연결됨:</translation>
-<translation id="7349921148288539306">이 탭을 닫을 때까지 허용</translation>
 <translation id="7352651011704765696">문제가 발생한 경우</translation>
 <translation id="7353601530677266744">명령줄</translation>
 <translation id="7354880545102894991">저가 및 잔여 상품 할인 여행</translation>
@@ -3042,7 +3038,6 @@
 <translation id="8433057134996913067">이 작업을 수행하면 대부분의 웹사이트에서 로그아웃됩니다.</translation>
 <translation id="8434840396568290395">반려동물</translation>
 <translation id="8437238597147034694">이동 실행 취소(&amp;U)</translation>
-<translation id="8438476240229491014">이 설정 저장</translation>
 <translation id="8438786541497918448">카메라 및 마이크를 사용하시겠습니까?</translation>
 <translation id="8438923942245957911">조직에서 신고한 사이트입니다.</translation>
 <translation id="8443613539889492016">랩 및 힙합</translation>

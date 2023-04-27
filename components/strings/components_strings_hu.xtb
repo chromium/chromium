@@ -1413,7 +1413,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4451135742916150903">Engedélyt kérhet a HID-eszközökhöz való csatlakozásra</translation>
 <translation id="4451684391620232683">A felhasználónak megjelenített szöveg:</translation>
 <translation id="4452328064229197696">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonságának megőrzése érdekében a Google Jelszókezelő a mentett jelszavak ellenőrzését javasolja.</translation>
-<translation id="4460315069258617173">Engedélyezve van, amíg Ön be nem zárja az ehhez a webhelyhez tartozó lapokat</translation>
 <translation id="4464826014807964867">Webhelyek, amelyek a szervezetétől származó adatokkal rendelkeznek</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ez az űrlap nem biztonságos. Az automatikus kitöltés funkciót a rendszer kikapcsolta.</translation>
@@ -2018,7 +2017,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5967592137238574583">Kapcsolattartási adatok szerkesztése</translation>
 <translation id="5967867314010545767">Eltávolítás az előzmények közül</translation>
 <translation id="5968022600320704045">Nincsenek keresési találatok</translation>
-<translation id="5968793460449681917">Minden látogatáskor</translation>
 <translation id="5974052231147553524">6. tekercs</translation>
 <translation id="5975083100439434680">Kicsinyítés</translation>
 <translation id="5979084224081478209">Jelszavak ellenőrzése</translation>
@@ -2386,7 +2384,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Szervezet (O)</translation>
 <translation id="6899000063526916106">Adja meg a kapott, <ph name="NUMBER_OF_DIGITS" /> számjegyből álló kódot</translation>
-<translation id="6907293445143367439">A következő engedélyezése a(z) <ph name="SITE_NAME" /> számára:</translation>
 <translation id="6907458757809079309">Fitnesz</translation>
 <translation id="6910240653697687763">A(z) <ph name="URL" /> webhely teljes hozzáférést kér a MIDI-eszközökhöz</translation>
 <translation id="691024665142758461">Több fájl letöltése</translation>
@@ -2565,7 +2562,6 @@ További részletek:
 <translation id="733923710415886693">A szerver tanúsítványát nem A tanúsítványok átláthatósága keretrendszeren keresztül hozták nyilvánosságra.</translation>
 <translation id="7341357280245177602">Használt járművek</translation>
 <translation id="7346048084945669753">Társult felhasználó:</translation>
-<translation id="7349921148288539306">Engedélyezve van, amíg Ön be nem zárja ezt a lapot.</translation>
 <translation id="7352651011704765696">Valami nem működik</translation>
 <translation id="7353601530677266744">Parancssor</translation>
 <translation id="7354880545102894991">Költségkímélő és last minute utazás</translation>
@@ -3041,7 +3037,6 @@ További részletek:
 <translation id="8433057134996913067">Ezzel kijelentkezik a legtöbb webhelyről.</translation>
 <translation id="8434840396568290395">Házi kedvencek</translation>
 <translation id="8437238597147034694">&amp;Áthelyezés visszavonása</translation>
-<translation id="8438476240229491014">Jegyezze meg ezt a beállítást</translation>
 <translation id="8438786541497918448">Engedélyezi a kamera és a mikrofon használatát?</translation>
 <translation id="8438923942245957911">Szervezete megjelölte ezt a webhelyet</translation>
 <translation id="8443613539889492016">Rap és hip-hop</translation>

@@ -1415,7 +1415,6 @@
 <translation id="4451135742916150903">สามารถขอเชื่อมต่อกับอุปกรณ์ HID ได้</translation>
 <translation id="4451684391620232683">ข้อความที่แสดงต่อผู้ใช้:</translation>
 <translation id="4452328064229197696">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เพื่อรักษาความปลอดภัยของบัญชี เครื่องมือจัดการรหัสผ่านบน Google แนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้</translation>
-<translation id="4460315069258617173">อนุญาตจนกว่าคุณจะปิดแท็บของเว็บไซต์นี้</translation>
 <translation id="4464826014807964867">เว็บไซต์ที่มีข้อมูลจากองค์กรของคุณ</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" /> <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ฟอร์มนี้ไม่ปลอดภัย ปิดการป้อนข้อความอัตโนมัติแล้ว</translation>
@@ -2020,7 +2019,6 @@
 <translation id="5967592137238574583">แก้ไขข้อมูลติดต่อ</translation>
 <translation id="5967867314010545767">ลบจากประวัติการเข้าชม</translation>
 <translation id="5968022600320704045">ไม่พบผลการค้นหา</translation>
-<translation id="5968793460449681917">ทุกครั้งที่เข้าชม</translation>
 <translation id="5974052231147553524">ม้วนกระดาษ 6</translation>
 <translation id="5975083100439434680">ย่อ</translation>
 <translation id="5979084224081478209">ตรวจสอบรหัสผ่าน</translation>
@@ -2388,7 +2386,6 @@
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">องค์กร (O)</translation>
 <translation id="6899000063526916106">ป้อนรหัส <ph name="NUMBER_OF_DIGITS" /> หลัก</translation>
-<translation id="6907293445143367439">อนุญาตให้ <ph name="SITE_NAME" /></translation>
 <translation id="6907458757809079309">ฟิตเนส</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ต้องการที่จะได้รับสิทธิ์ควบคุมอุปกรณ์ MIDI เต็มรูปแบบ</translation>
 <translation id="691024665142758461">ดาวน์โหลดหลายไฟล์</translation>
@@ -2567,7 +2564,6 @@
 <translation id="733923710415886693">ไม่มีการเปิดเผยใบรับรองของเซิร์ฟเวอร์ผ่านความโปร่งใสของใบรับรอง</translation>
 <translation id="7341357280245177602">ยานพาหนะมือสอง</translation>
 <translation id="7346048084945669753">เป็นพาร์ทเนอร์:</translation>
-<translation id="7349921148288539306">อนุญาตจนกว่าคุณจะปิดแท็บนี้</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7353601530677266744">บรรทัดคำสั่ง </translation>
 <translation id="7354880545102894991">การท่องเที่ยวต้นทุนต่ำที่จองในนาทีสุดท้าย</translation>
@@ -3043,7 +3039,6 @@
 <translation id="8433057134996913067">วิธีนี้จะทำให้คุณออกจากระบบของเว็บไซต์ส่วนใหญ่</translation>
 <translation id="8434840396568290395">สัตว์เลี้ยง</translation>
 <translation id="8437238597147034694">&amp;เลิกทำการย้าย</translation>
-<translation id="8438476240229491014">จำการตั้งค่านี้</translation>
 <translation id="8438786541497918448">ใช้กล้องและไมโครโฟนไหม</translation>
 <translation id="8438923942245957911">องค์กรของคุณติดธงคำเตือนเว็บไซต์นี้ไว้</translation>
 <translation id="8443613539889492016">แร็ปและฮิปฮอป</translation>

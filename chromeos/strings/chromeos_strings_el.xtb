@@ -29,6 +29,7 @@
 <translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1204296502688602597">Λανθάνων χρόνος DNS</translation>
 <translation id="1207734034680156868">Οι προτάσεις βασίζονται στην περιγραφή σας</translation>
+<translation id="121090498480012229">αναπαραγωγή ή παύση μέσων</translation>
 <translation id="123124571410524056">Πιθανή ύπαρξη πύλης</translation>
 <translation id="1238612778414822719">Λανθάνων χρόνος HTTPS</translation>
 <translation id="1264369926465113395">Δείτε το νέο ψηφιακό περιοδικό του Chromebook για δημιουργούς</translation>
@@ -122,10 +123,12 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Απενεργοποίηση λειτουργίας χαμηλού φωτισμού</translation>
 <translation id="1881188606372070653">Πηγαίνετε στη <ph name="BEGIN_LINK1" />σελίδα Βοήθεια για νομικά ζητήματα<ph name="END_LINK1" />, για να ζητήσετε αλλαγές περιεχομένου για νομικούς λόγους. Ορισμένες πληροφορίες λογαριασμού και συστήματος θα σταλούν στην Google. Θα χρησιμοποιήσουμε τις πληροφορίες που μας παρέχετε για να αντιμετωπίσουμε τεχνικά ζητήματα και να βελτιώσουμε τις υπηρεσίες μας, σύμφωνα με την <ph name="BEGIN_LINK2" />Πολιτική απορρήτου<ph name="END_LINK2" /> και τους <ph name="BEGIN_LINK3" />Όρους Παροχής Υπηρεσιών<ph name="END_LINK3" />.</translation>
+<translation id="1885577615937958993">γρήγορη προώθηση μέσου</translation>
 <translation id="1887850431809612466">Έκδοση υλικού</translation>
 <translation id="1904932688895783618">Ακολουθούν μερικοί ακόμη χρήσιμοι πόροι:</translation>
 <translation id="1905710495812624430">Έγινε υπέρβαση του μέγιστου αριθμού επιτρεπόμενων προσπαθειών.</translation>
 <translation id="1908234395526491708">Σφάλματα αιτήματος UDP</translation>
+<translation id="1908394185991500139">αριστερό βέλος</translation>
 <translation id="1923388006036088459">Χρώματα έμφασης</translation>
 <translation id="1947737735496445907">Εκτυπώθηκε</translation>
 <translation id="1951012854035635156">Βοηθός</translation>
@@ -152,6 +155,7 @@
 <translation id="2138109643290557664">Ακολουθήστε το ρεύμα</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> φωτογραφίες</translation>
+<translation id="2157660087437850958">εργαλείο επιλογής emoji</translation>
 <translation id="2157959690810728433">ΣΤΗΝ ΟΥΡΑ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Επανάληψη</translation>
 <translation id="2161394479394250669">Ακύρωση εργασίας εκτύπωσης</translation>
@@ -195,8 +199,10 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2498950423397131220">Κινούμενο</translation>
 <translation id="2505327257735685095">Ανανέωση της τρέχουσας εικόνας ταπετσαρίας</translation>
+<translation id="2512979179176933762">προβολή παραθύρων</translation>
 <translation id="2513396635448525189">Εικόνα σύνδεσης</translation>
 <translation id="2517472476991765520">Σάρωση</translation>
+<translation id="2521835766824839541">προηγούμενο κομμάτι</translation>
 <translation id="2526590354069164005">Επιφάνεια εργασίας</translation>
 <translation id="253029298928638905">Επανεκκίνηση…</translation>
 <translation id="2533048460510040082">Προτεινόμενο περιεχόμενο βοήθειας</translation>
@@ -269,6 +275,7 @@
 <translation id="3328783797891415197">Η δοκιμή εκτελείται</translation>
 <translation id="3340011300870565703">Η μπαταρία δεξιού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ρυθμίσεις</translation>
+<translation id="3359218928534347896">εναλλαγή σίγασης μικροφώνου.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
 <translation id="3369013195428705271">Είστε βέβαιοι ότι θέλετε να διαγράψετε όλο το ιστορικό εκτύπωσης; Οι τρέχουσες εργασίες εκτύπωσης δεν θα διαγραφούν.</translation>
@@ -329,6 +336,7 @@
 <translation id="387301095347517405">Ο αριθμός των φορών που η μπαταρία σας ολοκλήρωσε έναν πλήρη κύκλο φόρτισης</translation>
 <translation id="3885327323343477505">Αλλαγή προφύλαξης οθόνης</translation>
 <translation id="391412459402535266">Δεν είναι δυνατή η δοκιμή της συσκευής. Μεταβείτε στη λειτουργία φορητού υπολογιστή για δοκιμή.</translation>
+<translation id="3916998944874125962">λήψη στιγμιότυπου οθόνης</translation>
 <translation id="3923184630988645767">Χρήση δεδομένων</translation>
 <translation id="3932043219784172185">Δεν υπάρχει συνδεδεμένη συσκευή</translation>
 <translation id="3941014780699102620">Αποτυχία επίλυσης κεντρικού υπολογιστή</translation>
@@ -364,6 +372,7 @@
 <translation id="4159784952369912983">Μοβ</translation>
 <translation id="4170180284036919717">Λήψη φωτογραφίας</translation>
 <translation id="4170700058716978431">ΑΠΕΤΥΧΕ</translation>
+<translation id="4171077696775491955">μείωση φωτεινότητας</translation>
 <translation id="4176463684765177261">Απενεργοποιημένο</translation>
 <translation id="4176659219503619100">Πίνακας ελέγχου</translation>
 <translation id="420283545744377356">Απενεργοποίηση προφύλαξης οθόνης</translation>
@@ -391,6 +400,7 @@
 <translation id="4394049700291259645">Απενεργοποίηση</translation>
 <translation id="439429847087949098">Επανεκκίνηση <ph name="DEVICE_NAME" /></translation>
 <translation id="4415951057168511744">Τρέχον avatar</translation>
+<translation id="4422041425070339732">κάτω βέλος</translation>
 <translation id="4425149324548788773">Το Drive μου</translation>
 <translation id="4428374560396076622">Το δίκτυο <ph name="NETWORK_NAME" /> είναι εκτός λειτουργίας.</translation>
 <translation id="4429881212383817840">Το εισιτήριο Kerberos θα λήξει σύντομα</translation>
@@ -401,6 +411,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
 <translation id="4503223151711056411">Αριστερό βέλος</translation>
+<translation id="4507392511610824664">αύξηση φωτεινότητας</translation>
 <translation id="4511264077854731334">Πύλη</translation>
 <translation id="4521826082652183069">Αντιστοιχία εναλλακτικού ονόματος υποκειμένου</translation>
 <translation id="4522570452068850558">Λεπτομέρειες</translation>
@@ -467,6 +478,7 @@
 <translation id="4937657825850660613">Μισό</translation>
 <translation id="4950314376641394653">Το υλικολογισμικό της συσκευής <ph name="DEVICE_NAME" /> έχει ενημερωθεί στην έκδοση <ph name="VERSION" /></translation>
 <translation id="4971925105143343452">Μερική</translation>
+<translation id="4972592110715526173">αλλαγή λειτουργίας</translation>
 <translation id="498186245079027698">Ελέγξτε τον σαρωτή και δοκιμάστε ξανά. Βεβαιωθείτε ότι υπάρχει αρκετός τοπικός αποθηκευτικός χώρος για την αποθήκευση των αρχείων που σαρώνονται.</translation>
 <translation id="4985509611418653372">Εκτέλεση</translation>
 <translation id="4987769320337599931">Τείχος προστασίας</translation>
@@ -545,6 +557,7 @@
 <translation id="5649768706273821470">Ακρόαση</translation>
 <translation id="5655283760733841251">Αύξηση φωτεινότητας πληκτρολογίου</translation>
 <translation id="5659593005791499971">Ηλεκτρονικό ταχυδρομείο</translation>
+<translation id="5662240986744577912">εναλλαγή οθόνης απορρήτου</translation>
 <translation id="5669267381087807207">Ενεργοπ.</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Οικογένεια</translation>
@@ -553,6 +566,7 @@
 <translation id="5703716265115423771">μείωση έντασης ήχου</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> από <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Ενημέρωση της συσκευής <ph name="DEVICE_NAME" /></translation>
+<translation id="5757187557809630523">επόμενο κομμάτι</translation>
 <translation id="5760715441271661976">Κατάσταση πύλης</translation>
 <translation id="576835345334454681">Αύξηση φωτεινότητας οθόνης</translation>
 <translation id="57838592816432529">Σίγαση</translation>
@@ -594,6 +608,7 @@
 <translation id="6050189528197190982">Κλίμακα του γκρι</translation>
 <translation id="6058625436358447366">Για να τελειώσετε, εισαγάγετε τον παλιό και τον νέο κωδικό πρόσβασης</translation>
 <translation id="6061772781719867950">Αποτυχημένα αιτήματα HTTP</translation>
+<translation id="6073292342939316679">μείωση φωτεινότητας πληκτρολογίου</translation>
 <translation id="6075872808778243331">(Android) Λανθάνων χρόνος HTTP</translation>
 <translation id="6104112872696127344">Η σάρωση ακυρώθηκε</translation>
 <translation id="6106186594183574873">Για να τελειώσετε, εισαγάγετε τον παλιό κωδικό πρόσβασης</translation>
@@ -673,6 +688,7 @@
 <translation id="6650062777702288430">Εναλλαγή Kana/αλφαριθμητικών χαρακτήρων</translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6659594942844771486">Καρτέλα</translation>
+<translation id="6673898378497337661">αύξηση φωτεινότητας πληκτρολογίου</translation>
 <translation id="6692996468359469499">Λάβετε πληροφορίες σχετικά με την επιλογή σας.</translation>
 <translation id="6704062477274546131">Επίλυση DNS</translation>
 <translation id="6723839937902243910">Ενεργοποίηση</translation>
@@ -698,6 +714,7 @@
 <translation id="6911383237894364323">Δεν είναι δυνατή η σύνδεση σε διακομιστές πολυμέσων.</translation>
 <translation id="6943893908656559156">Απομακρυσμένη ταυτότητα (προαιρετικό)</translation>
 <translation id="6957231940976260713">Όνομα υπηρεσίας</translation>
+<translation id="695776212669661671">δεξί βέλος</translation>
 <translation id="6961170852793647506">Για να ξεκινήσετε, τοποθετήστε το έγγραφό σας στον σαρωτή</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Συσκευή</translation>
@@ -741,6 +758,7 @@
 <translation id="7297226631177386107">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTPS</translation>
 <translation id="7297726121602187087">Σκούρο πράσινο</translation>
 <translation id="7302860742311162920">ICCID</translation>
+<translation id="7305236594389852547">εναλλαγή υπαγόρευσης</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Ρωτήστε τους ειδικούς στο φόρουμ βοήθειας του Chromebook</translation>
 <translation id="7311368985037279727">χρώμα πληκτρολογίου</translation>
@@ -812,6 +830,7 @@
 <translation id="7936303884198020182">Δεν βρέθηκαν διακομιστές ονομάτων.</translation>
 <translation id="7942349550061667556">Κόκκινο</translation>
 <translation id="7943235353293548836">Χρονικό διάστημα συνεχούς μηνύματος keepalive</translation>
+<translation id="7944562637040950644">εναλλαγή οπίσθιου φωτισμού πληκτρολογίου</translation>
 <translation id="7953669802889559161">Μέθοδοι εισαγωγής</translation>
 <translation id="7955587717700691983">Πληκτρολόγιο Bluetooth</translation>
 <translation id="7960831585769876809">Θερμοκρασία</translation>
@@ -854,7 +873,9 @@
 <translation id="8294431847097064396">Πηγή</translation>
 <translation id="8297006494302853456">Αδύναμο</translation>
 <translation id="8302368968391049045">Τείχος προστασίας HTTPS</translation>
+<translation id="8312330582793120272">αναπαραγωγή μέσων</translation>
 <translation id="8318753676953949627">Δεν υπάρχουν εικόνες</translation>
+<translation id="8329018942023753850">εφαρμογή Αριθμομηχανή</translation>
 <translation id="8336739000755212683">Αλλαγή εικόνας λογαριασμού συσκευής</translation>
 <translation id="8347227221149377169">Εργασίες εκτύπωσης</translation>
 <translation id="8351855506390808906">Σημείο αφής αντιστοίχισης πλήκτρων</translation>
@@ -886,6 +907,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Αυτή η επιλογή μπορεί να απαιτείται από την εταιρεία κινητής τηλεφωνίας σας για σύνδεση στο δίκτυό της. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε για λεπτομέρειες.</translation>
 <translation id="8576249514688522074">Μη προετοιμασμένο</translation>
+<translation id="8593058461203131755">παύση μέσων</translation>
 <translation id="8620617069779373398">Κατάσταση περιαγωγής</translation>
 <translation id="86356131183441916">Ανοιχτό μοβ</translation>
 <translation id="8651481478098336970">σίγαση ήχου</translation>
@@ -923,6 +945,7 @@
 <translation id="8876270629542503161">Η συσκευή είναι tablet.</translation>
 <translation id="8881098542468797602">Επιτυχία δοκιμής</translation>
 <translation id="8898840733695078011">Ισχύς σήματος</translation>
+<translation id="8909114361904403025">επάνω βέλος</translation>
 <translation id="8910721771319628100">Ο λανθάνων χρόνος του προεπιλεγμένου δικτύου έχει υπερβεί το ελάχιστο όριο.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> του/της <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Σφάλμα - Λείπει δίσκος</translation>

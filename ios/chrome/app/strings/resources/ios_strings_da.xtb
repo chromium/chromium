@@ -133,6 +133,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1815941218935345331">Adgangskode</translation>
 <translation id="1820259098641718022">Føjet til læseliste</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Kompromitterede adgangskoder}=1{{COUNT} kompromitteret adgangskode}one{{COUNT} kompromitteret adgangskode}other{{COUNT} kompromitterede adgangskoder}}</translation>
+<translation id="1830634592642484976">Denne adresse gemmes i øjeblikket i Chrome. Hvis du vil bruge den i Google-produkter, skal du gemme den på din Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Verificer din identitet for at sikre, at du altid har adgang til dine synkroniserede data</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}}one{Bogmærket er gemt på din Google-konto, {email}}other{Bogmærkerne er gemt på din Google-konto, {email}}}</translation>
 <translation id="1870148520156231997">Vis adgangskode</translation>
@@ -186,6 +187,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2242467532204595597">Brug Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="22508856139286506">Afviste advarsler (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Historik</translation>
+<translation id="2252674110805316998">Websøgning</translation>
 <translation id="2256933947031277845">Din organisation tillader kun login med bestemte konti.</translation>
 <translation id="225943865679747347">Fejlkode: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Tilføj konto</translation>
@@ -487,6 +489,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4272631900155121838">Aktivér kameraet i Indstillinger for at scanne en QR-kode</translation>
 <translation id="4277990410970811858">Beskyttet browsing</translation>
 <translation id="4281844954008187215">Servicevilkår</translation>
+<translation id="4293080268407233932">Søg</translation>
 <translation id="4304713468139749426">Adgangskodeadministrator</translation>
 <translation id="430793432425771671">Synkroniser alt</translation>
 <translation id="4309403553630140242">Tryk to gange for at få flere oplysninger</translation>
@@ -543,6 +546,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4636930964841734540">Oplysninger</translation>
 <translation id="4642472735733036929">Prisovervågning er stoppet</translation>
 <translation id="4650125387981512669">Fortsæt som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Sørg for, at dine adgangskoder er beskyttet, find ud af, om de er blevet kompromitteret, og få gode råd til, hvordan du beskytter dig selv online. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Når du logger ind på din Google-konto, er denne funktion aktiveret.</translation>
 <translation id="4659667755519643272">Åbn Faneskift</translation>
 <translation id="46614316059270592">Gem adgangskode</translation>
@@ -695,6 +699,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5669617676038747374">Create a QR Code [Opret en QR-kode]</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Verificer din identitet for at bruge og gemme adgangskoder på din Google-konto.</translation>
+<translation id="5684761169742812828">Denne adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden på internettet. Hvis du ikke har tid til at ændre den lige nu, anbefaler Google, at du gemmer denne advarsel for at minde dig selv om det senere.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Viser nu 1 Chrome-vindue}one{Viser nu {count} Chrome-vindue}other{Viser nu {count} Chrome-vinduer}}</translation>
 <translation id="5701270923492462699">Der er givet adgang til kameraet</translation>
 <translation id="5704908597376970822">Det lykkedes ikke at logge ind.</translation>
@@ -742,6 +747,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5951816930277761335">Del linket</translation>
 <translation id="5955891643922670672">Viser offlineversion</translation>
 <translation id="5957613098218939406">Flere valgmuligheder</translation>
+<translation id="595769230373966252">Søg med <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Der kan ikke oprettes et link til fremhævningen.</translation>
 <translation id="5965679971710331625">Du er logget ind</translation>
 <translation id="5979837087407522202">Søg i adgangskoder</translation>
@@ -1219,6 +1225,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8952559610785099500">Tilføj adgangskode</translation>
 <translation id="8953046091948372197">Her finder du dine adgangskoder</translation>
 <translation id="895541991026785598">Rapportér et problem</translation>
+<translation id="8961757677053809960">Vil du afvise advarslen?</translation>
 <translation id="8971545611707025079">Tjek igen</translation>
 <translation id="8974714402877957201">1. Åbn iPad-indstillingerne</translation>
 <translation id="8976382372951310360">Hjælp</translation>

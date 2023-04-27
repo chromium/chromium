@@ -186,6 +186,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2242467532204595597">Utiliza Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="22508856139286506">Advertencias cerradas (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
+<translation id="2252674110805316998">Búsqueda web</translation>
 <translation id="2256933947031277845">Tu organización solo te permite iniciar sesión con determinadas cuentas.</translation>
 <translation id="225943865679747347">Código de error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Añadir cuenta</translation>
@@ -487,6 +488,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4272631900155121838">Para escanear un código QR, habilita la cámara en Configuración</translation>
 <translation id="4277990410970811858">Navegación segura</translation>
 <translation id="4281844954008187215">Términos del Servicio</translation>
+<translation id="4293080268407233932">Buscar</translation>
 <translation id="4304713468139749426">Gestor de contraseñas</translation>
 <translation id="430793432425771671">Sincronizar todo</translation>
 <translation id="4309403553630140242">Toca dos veces para consultar más información</translation>
@@ -742,6 +744,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5951816930277761335">Comparte el enlace</translation>
 <translation id="5955891643922670672">Viendo versión sin conexión</translation>
 <translation id="5957613098218939406">Más opciones</translation>
+<translation id="595769230373966252">Buscar con <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">No se puede crear un enlace al texto destacado.</translation>
 <translation id="5965679971710331625">Has iniciado sesión</translation>
 <translation id="5979837087407522202">Buscar contraseñas</translation>

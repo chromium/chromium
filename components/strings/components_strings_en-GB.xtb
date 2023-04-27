@@ -315,6 +315,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> Chrome auto-deletes topics that are older than four weeks. As you keep browsing, a topic might reappear on the list. You can also block topics that you don’t want Chrome to share with sites and turn ad topics off at any time in Chrome settings.</translation>
 <translation id="1697532407822776718">You're all set!</translation>
+<translation id="1699651774646344471">You can now use addresses from your Google Account</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Zoom levels</translation>
@@ -537,6 +538,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="2225927550500503913">Virtual card turned on</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Signing in<ph name="END_LINK" /> to the Wi-Fi network</translation>
+<translation id="2228057197024893428">This address is currently saved to Chrome. To use it across Google products, save it in your Google Account, <ph name="ACCOUNT" />.</translation>
 <translation id="2239100178324503013">Send now</translation>
 <translation id="2241693394036365668">File is downloaded</translation>
 <translation id="2246264294482514010">10 in x 12 in</translation>
@@ -656,6 +658,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2547466893236767989">Web design and development</translation>
 <translation id="254947805923345898">Policy value is not valid.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> sent an invalid response.</translation>
+<translation id="2551608178605132291">Address: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Use screen lock to confirm cards from now on</translation>
 <translation id="2553853292994445426">Check your secure DNS settings. You may have configured a secure DNS server to which connections are failing.</translation>
@@ -853,6 +856,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Checking the secure DNS configuration<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Middle tray</translation>
 <translation id="3109728660330352905">You don't have authorisation to view this page.</translation>
+<translation id="3112892588078695695">Phone number: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Third shift</translation>
 <translation id="3114040155724590991">Updating Android System
     Starting your app may take longer than usual.</translation>
@@ -1416,7 +1420,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4451135742916150903">Can ask to connect to HID devices</translation>
 <translation id="4451684391620232683">Text presented to user:</translation>
 <translation id="4452328064229197696">The password that you just used was found in a data breach. To secure your accounts, Google Password Manager recommends checking your saved passwords.</translation>
-<translation id="4460315069258617173">Allowed until you close tabs for this site</translation>
 <translation id="4464826014807964867">Websites with info from your organisation</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">This form is not secure. Auto-fill has been turned off.</translation>
@@ -2021,7 +2024,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5967592137238574583">Edit Contact Info</translation>
 <translation id="5967867314010545767">Remove from history</translation>
 <translation id="5968022600320704045">No search results</translation>
-<translation id="5968793460449681917">On every visit</translation>
 <translation id="5974052231147553524">Sixth roll</translation>
 <translation id="5975083100439434680">Zoom out</translation>
 <translation id="5979084224081478209">Check passwords</translation>
@@ -2389,7 +2391,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6899000063526916106">Enter <ph name="NUMBER_OF_DIGITS" />-digit code</translation>
-<translation id="6907293445143367439">Allow <ph name="SITE_NAME" /> to:</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="6910240653697687763"><ph name="URL" /> wants to get full control of your MIDI devices</translation>
 <translation id="691024665142758461">Download multiple files</translation>
@@ -2466,6 +2467,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7083258188081898530">Tray 9</translation>
 <translation id="7086090958708083563">Upload requested by user</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage permissions and data stored across sites in Chrome settings</translation>
+<translation id="7096341143397839437">Email: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">The identity of this website hasn't been verified.</translation>
 <translation id="7101893872976785596">Horror movies</translation>
 <translation id="7102079138917191645">Construction and maintenance</translation>
@@ -2544,6 +2546,7 @@ Additional details:
 <translation id="7256634549594854023">Rear tray</translation>
 <translation id="725866823122871198">A private connection to <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> can't be established because your computer's date and time (<ph name="DATE_AND_TIME" />) are incorrect.</translation>
 <translation id="7260504762447901703">Revoke access</translation>
+<translation id="7265608370113700582">Address is only available on this device</translation>
 <translation id="7275334191706090484">Managed Bookmarks</translation>
 <translation id="7277998515889183784">Make-up and cosmetics</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to change your Google Account password</translation>
@@ -2568,7 +2571,6 @@ Additional details:
 <translation id="733923710415886693">The server's certificate was not disclosed via Certificate Transparency.</translation>
 <translation id="7341357280245177602">Used vehicles</translation>
 <translation id="7346048084945669753">Is affiliated:</translation>
-<translation id="7349921148288539306">Allowed until you close this tab</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7353601530677266744">Command Line</translation>
 <translation id="7354880545102894991">Low cost and last minute travel</translation>
@@ -2967,6 +2969,7 @@ Additional details:
 <translation id="8245703462678310750">Press and hold |<ph name="ACCELERATOR" />| to exit full screen and see download.</translation>
 <translation id="8249296373107784235">Abort</translation>
 <translation id="8249463483885748674">Standardised and admissions tests</translation>
+<translation id="8250094606476360498">This address is currently saved to this device. To use it across Google products, save it in your Google Account, <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Manage accessibility settings button, Enter to personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="8253091569723639551">Billing address required</translation>
 <translation id="8257387598443225809">This app is designed for mobile</translation>
@@ -3044,7 +3047,6 @@ Additional details:
 <translation id="8433057134996913067">This will sign you out of most websites.</translation>
 <translation id="8434840396568290395">Pets</translation>
 <translation id="8437238597147034694">&amp;Undo move</translation>
-<translation id="8438476240229491014">Remember this setting</translation>
 <translation id="8438786541497918448">Use camera and microphone?</translation>
 <translation id="8438923942245957911">This site is flagged by your organisation</translation>
 <translation id="8443613539889492016">Rap and hip-hop</translation>

@@ -387,7 +387,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3091010850649238832">Show clipboard contents</translation>
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
-<translation id="311958134571892113">linked with</translation>
 <translation id="3123734510202723619">Announcements</translation>
 <translation id="3134784203083076891">'</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
@@ -787,7 +786,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5235196193381275927">Something went wrong during sign-in</translation>
 <translation id="5246093389635966745">Edit toolbar shortcut</translation>
 <translation id="5271967389191913893">Device cannot open the content to be downloaded.</translation>
-<translation id="5274286919938458946">Linked with <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Send to</translation>
 <translation id="5300426565656326054">Browser-based ad personalisation</translation>
 <translation id="5304593522240415983">This field cannot be blank</translation>
@@ -1214,6 +1212,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7482656565088326534">Preview tab</translation>
 <translation id="7484997419527351112">Discover – off</translation>
 <translation id="7485033510383818941">To refresh the feed content, pull down the page</translation>
+<translation id="7486953194485875763">The following data from the last 15 minutes will be deleted:</translation>
 <translation id="749294055653435199">Google Lens is not available on this device</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Updated <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Added topic back to potential topics</translation>

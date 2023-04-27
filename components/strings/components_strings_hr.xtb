@@ -1228,6 +1228,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4031179711345676612">Mikrofon je dopušten</translation>
 <translation id="4040350669425716613">Koledži i sveučilišta</translation>
 <translation id="4047351652147966654">18 x 24 inča</translation>
+<translation id="4050392779074832022">Moći ćete je upotrebljavati na svim Googleovim proizvodima</translation>
 <translation id="405399507749852140">Dobivajte upozorenja ako se cijena snizi na bilo kojoj web-lokaciji</translation>
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4063063121357725926">Dopustite Googleu da vam pomogne pronaći popuste za vaše košarice</translation>
@@ -1418,7 +1419,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4451135742916150903">Može tražiti dopuštenje za povezivanje s HID uređajima</translation>
 <translation id="4451684391620232683">Tekst koji se prikazuje korisniku:</translation>
 <translation id="4452328064229197696">Zaporka koju ste upravo upotrijebili otkrivena je u povredi podataka. Radi zaštite vaših računa Google upravitelj zaporki preporučuje da provjerite svoje spremljene zaporke.</translation>
-<translation id="4460315069258617173">Dopušteno dok ne zatvorite kartice za ovu web-lokaciju</translation>
 <translation id="4464826014807964867">Web-lokacije s podacima iz vaše organizacije</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ovaj obrazac nije siguran. Automatsko popunjavanje je isključeno.</translation>
@@ -2023,7 +2023,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5967592137238574583">Uredite podatke za kontakt</translation>
 <translation id="5967867314010545767">Ukloni iz povijesti</translation>
 <translation id="5968022600320704045">Nema rezultata pretraživanja</translation>
-<translation id="5968793460449681917">Pri svakom posjetu</translation>
 <translation id="5974052231147553524">Šesti kolut</translation>
 <translation id="5975083100439434680">Smanji</translation>
 <translation id="5979084224081478209">Provjeri zaporke</translation>
@@ -2391,7 +2390,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6897140037006041989">Korisnički agent</translation>
 <translation id="6898699227549475383">Organizacija (O)</translation>
 <translation id="6899000063526916106">Unesite <ph name="NUMBER_OF_DIGITS" />-znamenkasti kôd</translation>
-<translation id="6907293445143367439">Web-lokaciji <ph name="SITE_NAME" /> dopusti sljedeće:</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="6910240653697687763"><ph name="URL" /> želi dobiti potpuni nadzor nad vašim MIDI uređajima</translation>
 <translation id="691024665142758461">preuzeti više datoteka</translation>
@@ -2572,7 +2570,6 @@ Dodatne pojedinosti:
 <translation id="733923710415886693">Certifikat poslužitelja nije otkriven putem Transparentnosti certifikata.</translation>
 <translation id="7341357280245177602">Rabljena vozila</translation>
 <translation id="7346048084945669753">Korisnik je povezan:</translation>
-<translation id="7349921148288539306">Dopušteno dok ne zatvorite karticu</translation>
 <translation id="7352651011704765696">Nešto nije u redu</translation>
 <translation id="7353601530677266744">Naredbeni redak</translation>
 <translation id="7354880545102894991">Jeftina i last minute putovanja</translation>
@@ -3049,7 +3046,6 @@ Dodatne pojedinosti:
 <translation id="8433057134996913067">Time ćete se odjaviti s većine web-lokacija.</translation>
 <translation id="8434840396568290395">Kućni ljubimci</translation>
 <translation id="8437238597147034694">&amp;Poništi premještanje</translation>
-<translation id="8438476240229491014">Zapamti postavku</translation>
 <translation id="8438786541497918448">Koristiti kameru i mikrofon?</translation>
 <translation id="8438923942245957911">Vaša organizacija označila je ovu web-lokaciju</translation>
 <translation id="8443613539889492016">Rap i hip-hop</translation>

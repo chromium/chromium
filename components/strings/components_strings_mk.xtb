@@ -315,6 +315,7 @@
 <translation id="1689333818294560261">Прекар</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Како може да управувате со вашите податоци:<ph name="END_BOLD" /> Chrome автоматски ги брише темите што се постари од 4 седмици. Со понатамошното прелистување, некоја тема може одново да се појави на списокот. Може и да ги блокирате темите што не сакате Chrome да ги споделува со сајтови и да ги исклучите темите за реклами во секое време во поставките за Chrome.</translation>
 <translation id="1697532407822776718">Подготвени сте.</translation>
+<translation id="1699651774646344471">Сега може да користите адреси од вашата сметка на Google</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Нивоа на зумирање</translation>
@@ -537,6 +538,7 @@
 <translation id="2224337661447660594">Нема интернет</translation>
 <translation id="2225927550500503913">Вклучена е виртуелна картичка</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Најавување<ph name="END_LINK" /> на Wi-Fi мрежата.</translation>
+<translation id="2228057197024893428">Во моментов, адресава е зачувана на Chrome. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2239100178324503013">Испрати сега</translation>
 <translation id="2241693394036365668">Преземена е датотека</translation>
 <translation id="2246264294482514010">10 x 12 инчи</translation>
@@ -656,6 +658,7 @@
 <translation id="2547466893236767989">Веб-дизајн и програмирање</translation>
 <translation id="254947805923345898">Вредноста на правилото не е важечка.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> испрати неважечки одговор.</translation>
+<translation id="2551608178605132291">Адреса: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Хагаки</translation>
 <translation id="2552295903035773204">Отсега користете заклучување екран за потврдување на картичките</translation>
 <translation id="2553853292994445426">Проверете ги поставките за безбеден DNS. Можеби имате конфигурирано безбеден DNS-сервер и врските со него не успеваат.</translation>
@@ -853,6 +856,7 @@
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />да ја проверите конфигурацијата на безбедниот DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Средна фиока</translation>
 <translation id="3109728660330352905">Немате авторизација да ја видите страницата.</translation>
+<translation id="3112892588078695695">Телефонски број: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Трета смена</translation>
 <translation id="3114040155724590991">Се ажурира системот на Android
     Стартувањето на апликацијата може да трае подолго од вообичаено.</translation>
@@ -1225,6 +1229,7 @@
 <translation id="4031179711345676612">Микрофон е дозволен</translation>
 <translation id="4040350669425716613">Факултети и универзитети</translation>
 <translation id="4047351652147966654">18 x 24 инчи</translation>
+<translation id="4050392779074832022">Ќе може да ја користите на производите на Google</translation>
 <translation id="405399507749852140">Добивајте предупредувања ако цената се намали на кој било сајт</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Дозволете Google да ви помогне да најдете попусти за вашите кошнички</translation>
@@ -1415,7 +1420,6 @@
 <translation id="4451135742916150903">Може да прашува за да се поврзува со HID-уреди</translation>
 <translation id="4451684391620232683">Текст прикажан на корисникот:</translation>
 <translation id="4452328064229197696">Отркиено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. За да ја задржите безбедноста на сметките, „Управникот со лозинки на Google“ препорачува да ги проверите зачуваните лозинки.</translation>
-<translation id="4460315069258617173">Дозволено додека да ги затворите картичките за сајтов</translation>
 <translation id="4464826014807964867">Веб-сајтови со информации од вашата организација</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Формуларов не е безбеден. Автоматското пополнување е исклучено.</translation>
@@ -2020,7 +2024,6 @@
 <translation id="5967592137238574583">Изменете ги информациите за контакт</translation>
 <translation id="5967867314010545767">Отстрани од историјата</translation>
 <translation id="5968022600320704045">Нема резултати од пребарувањето</translation>
-<translation id="5968793460449681917">При секоја посета</translation>
 <translation id="5974052231147553524">Шеста ролна</translation>
 <translation id="5975083100439434680">Одзумирај</translation>
 <translation id="5979084224081478209">Провери ги лозинките</translation>
@@ -2388,7 +2391,6 @@
 <translation id="6897140037006041989">Кориснички агент</translation>
 <translation id="6898699227549475383">Организација (O)</translation>
 <translation id="6899000063526916106">Внесете го <ph name="NUMBER_OF_DIGITS" />-цифрениот код</translation>
-<translation id="6907293445143367439">Дозволете <ph name="SITE_NAME" /> да:</translation>
 <translation id="6907458757809079309">Фитнес</translation>
 <translation id="6910240653697687763"><ph name="URL" /> сака да добие целосна контрола над вашите MIDI-уреди</translation>
 <translation id="691024665142758461">преземе повеќе датотеки</translation>
@@ -2465,6 +2467,7 @@
 <translation id="7083258188081898530">Фиока 9</translation>
 <translation id="7086090958708083563">Побарано е прикачување од корисникот</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да управувате со дозволите и податоците коишто се складираат на сајтовите во поставките за Chrome</translation>
+<translation id="7096341143397839437">Е-пошта: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Идентитетот на веб-страницава не е потврден.</translation>
 <translation id="7101893872976785596">Хорор филмови</translation>
 <translation id="7102079138917191645">Градежништво и одржување</translation>
@@ -2543,6 +2546,7 @@
 <translation id="7256634549594854023">Задна фиока</translation>
 <translation id="725866823122871198">Не може да се воспостави приватна врска до <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> бидејќи датумот и времето на вашиот компјутер (<ph name="DATE_AND_TIME" />) се погрешни.</translation>
 <translation id="7260504762447901703">Отповикај пристап</translation>
+<translation id="7265608370113700582">Адресата е достапна само на овој уред</translation>
 <translation id="7275334191706090484">Управувани обележувачи</translation>
 <translation id="7277998515889183784">Шминка и козметика</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да ја промените лозинката за сметката на Google</translation>
@@ -2567,7 +2571,6 @@
 <translation id="733923710415886693">Сертификатот на серверот не е откриен преку Транспарентност на сертификати.</translation>
 <translation id="7341357280245177602">Користени возила</translation>
 <translation id="7346048084945669753">Е поврзан:</translation>
-<translation id="7349921148288539306">Дозволено додека да ја затворите картичкава</translation>
 <translation id="7352651011704765696">Нешто не е во ред</translation>
 <translation id="7353601530677266744">Командна линија</translation>
 <translation id="7354880545102894991">Евтини патувања и аранжмани во последна минута</translation>
@@ -2966,6 +2969,7 @@
 <translation id="8245703462678310750">Притиснете и задржете |<ph name="ACCELERATOR" />| за да излезете од целиот екран и да го видите преземањето.</translation>
 <translation id="8249296373107784235">Прекини</translation>
 <translation id="8249463483885748674">Стандардизирани и приемни тестови</translation>
+<translation id="8250094606476360498">Во моментов, адресава е зачувана на овој уред. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Копче „Управувајте со поставките за пристапност“, притиснете Enter за да ги персонализирате алатките за пристапност во поставките за Chrome OS</translation>
 <translation id="8253091569723639551">Адресата за наплата е задолжителна</translation>
 <translation id="8257387598443225809">Апликацијава е дизајнирана за мобилен</translation>
@@ -3043,7 +3047,6 @@
 <translation id="8433057134996913067">Ова ќе ве одјави од повеќето веб-сајтови.</translation>
 <translation id="8434840396568290395">Миленици</translation>
 <translation id="8437238597147034694">&amp;Врати преместување</translation>
-<translation id="8438476240229491014">Запомни ја поставкава</translation>
 <translation id="8438786541497918448">Да се користат камерата и микрофонот?</translation>
 <translation id="8438923942245957911">Овој сајт е означен од вашата организација</translation>
 <translation id="8443613539889492016">Рап и хип-хоп</translation>

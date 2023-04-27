@@ -51,7 +51,7 @@
 <translation id="1195412055398077112">ఓవర్‌స్కాన్</translation>
 <translation id="119944043368869598">అన్ని క్లియర్ చేయండి</translation>
 <translation id="1199716647557067911">స్విచ్ యాక్సెస్‌ను మీరు ఆఫ్ చేయాలనుకుంటున్నారా?</translation>
-<translation id="1201402288615127009">తరువాత</translation>
+<translation id="1201402288615127009">తర్వాత</translation>
 <translation id="1210557957257435379">స్క్రీన్ రికార్డింగ్</translation>
 <translation id="121097972571826261">ఒక పదం ముందుకు</translation>
 <translation id="1217633719248931900">యాప్‌నకు వెళ్లండి</translation>
@@ -410,7 +410,7 @@
 <translation id="2942516765047364088">అర స్థానం</translation>
 <translation id="2946119680249604491">కనెక్షన్‌ని జోడించండి</translation>
 <translation id="2960314608273155470">క్యాప్చర్ మోడ్, ఆటోమేటిక్ సెట్టింగ్ <ph name="SOURCE" /> <ph name="TYPE" />. కీబోర్డ్ నావిగేషన్ కోసం Tabను నొక్కండి.</translation>
-<translation id="2961963223658824723">ఏదో తప్పు జరిగింది. కొన్ని క్షణాల తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
+<translation id="2961963223658824723">ఏదో తప్పు జరిగింది. కొన్ని క్షణాల తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">మైక్రోఫోన్ యాక్సెస్‌ను ఆన్ చేయాలా?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> స్పీచ్ ఫైల్‌లను డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు</translation>
@@ -893,7 +893,7 @@
 <translation id="5104236669533825617">స్క్రీన్‌కాస్ట్‌ను క్రియేట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="5107522548814527560">వెబ్</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5117590920725113268">తరువాత నెలను చూపుతుంది</translation>
+<translation id="5117590920725113268">తర్వాత నెలను చూపుతుంది</translation>
 <translation id="5121628974188116412">పేజీ దిగువకు వెళ్లండి</translation>
 <translation id="5136175204352732067">వేరే కీబోర్డ్ కనెక్ట్ చేయబడింది</translation>
 <translation id="5147567197700016471">అన్‌లాక్ చేయబడింది</translation>
@@ -1301,7 +1301,7 @@
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> అనే పేరుతో ఉన్న పరికరానికి కనెక్ట్ చేయబడింది</translation>
 <translation id="7015766095477679451">తిరిగి <ph name="COME_BACK_TIME" />కి రండి.</translation>
 <translation id="70168403932084660">డెస్క్ 6</translation>
-<translation id="7025325401470358758">తరువాత పేన్</translation>
+<translation id="7025325401470358758">తర్వాత పేన్</translation>
 <translation id="7025533177575372252">మీ <ph name="DEVICE_NAME" />ని మీ ఫోన్‌కి కనెక్ట్ చేయండి</translation>
 <translation id="7026338066939101231">తరుగుదల</translation>
 <translation id="7029814467594812963">సెషన్ నిష్క్రమించండి</translation>
@@ -1319,7 +1319,7 @@
 <translation id="7076293881109082629">సైన్ ఇన్ చేస్తోంది</translation>
 <translation id="7076878155205969899">ధ్వనిని మ్యూట్ చేస్తుంది</translation>
 <translation id="7086931198345821656">ఈ అప్‌డేట్‌కు మీ <ph name="DEVICE_TYPE" />ను పవర్‌వాష్ చేయడం అవసరం. మొత్తం డేటా తొలగించబడుతుంది. తాజా <ph name="SYSTEM_APP_NAME" /> అప్‌డేట్ గురించి మరింత తెలుసుకోండి.</translation>
-<translation id="7088960765736518739">స్విచ్ యాక్సెస్</translation>
+<translation id="7088960765736518739">Switch Access</translation>
 <translation id="709015856939120012">పేజీని జూమ్ - ఇన్ చేయండి</translation>
 <translation id="7098053464892629930">అందుబాటులో ఉన్న అన్ని ఫీచర్‌లను చూడటానికి, Google playలో <ph name="NAME" /> కోసం యాప్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7098389117866926363">USB-C పరికరం (వెనుక భాగంలో ఎడమ పోర్ట్)</translation>

@@ -387,7 +387,6 @@
 <translation id="3091010850649238832">क्लिपबोर्ड का कॉन्टेंट दिखाएं</translation>
 <translation id="3098745985164956033">कुछ इमेज Google को भेजी जाती हैं, ताकि आपको मिलने वाली जानकारी को बेहतर बनाया जा सके</translation>
 <translation id="3114507951000454849">आज की खबरें <ph name="NEWS_ICON" /> पढ़ें</translation>
-<translation id="311958134571892113">इससे जोड़ा गया</translation>
 <translation id="3123734510202723619">एलान</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome का होम पेज</translation>
@@ -787,7 +786,6 @@
 <translation id="5235196193381275927">साइन इन करते समय कोई गड़बड़ी हुई है</translation>
 <translation id="5246093389635966745">टूलबार शॉर्टकट में बदलाव करें</translation>
 <translation id="5271967389191913893">डाउनलोड की जाने वाली सामग्री को डिवाइस नहीं खोल सकता.</translation>
-<translation id="5274286919938458946"><ph name="CARD_DETAIL" /> से जुड़ा है</translation>
 <translation id="5292796745632149097">इस पर भेजें</translation>
 <translation id="5300426565656326054">ब्राउज़र के हिसाब से दिलचस्पी के मुताबिक विज्ञापन दिखाना</translation>
 <translation id="5304593522240415983">यह फ़ील्‍ड खाली नहीं छोड़ी जा सकती</translation>
@@ -851,6 +849,7 @@
 <translation id="5628604359369369630">यह नहीं पढ़ा गया - ऑफ़लाइन उपलब्ध है</translation>
 <translation id="5639724618331995626">सभी साइटों को अनुमति दें</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />खोज इतिहास<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />अन्य तरह की गतिविधि<ph name="END_LINK2" /> को आपके Google खाते में सेव किया जा सकता है</translation>
+<translation id="564667659802381754"><ph name="BEGIN_NEW" />नई<ph name="END_NEW" /> निजता गाइड</translation>
 <translation id="5648166631817621825">पिछले 7 दिन</translation>
 <translation id="5655963694829536461">अपने डाउनलोड में खोजें</translation>
 <translation id="5659593005791499971">ईमेल</translation>

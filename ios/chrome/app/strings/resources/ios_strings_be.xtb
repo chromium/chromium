@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">Код доступу</translation>
 <translation id="1820259098641718022">Дададзена ў Спіс чытання</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Раскрытыя паролі}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
+<translation id="1830634592642484976">Гэты адрас зараз захаваны ў Chrome. Каб выкарыстоўваць яго ў іншых прадуктах Google, захавайце гэты адрас у сваім Уліковым запісе Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Каб не страціць доступ да сваіх сінхранізаваных даных, пацвердзіце сваю асобу</translation>
 <translation id="1836891464494477513">{count,plural, =1{Закладка захавана ў вашым Уліковым запісе Google ({email})}one{Закладкі захаваны ў вашым Уліковым запісе Google ({email})}few{Закладкі захаваны ў вашым Уліковым запісе Google ({email})}many{Закладкі захаваны ў вашым Уліковым запісе Google ({email})}other{Закладкі захаваны ў вашым Уліковым запісе Google ({email})}}</translation>
 <translation id="1870148520156231997">Паказаць пароль</translation>
@@ -186,6 +187,7 @@
 <translation id="2242467532204595597">Выкарыстоўвайце Chrome кожны раз, калі націскаеце на спасылкі ў паведамленнях, дакументах або іншых праграмах.</translation>
 <translation id="22508856139286506">Адхіленыя папярэджанні (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Меню → Гісторыя</translation>
+<translation id="2252674110805316998">Вэб-пошук</translation>
 <translation id="2256933947031277845">Палітыка вашай арганізацыі дазваляе ўваходзіць у сістэмы, выкарыстоўваючы толькі пэўныя ўліковыя запісы.</translation>
 <translation id="225943865679747347">Код памылкі: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Дадаць уліковы запіс</translation>
@@ -487,6 +489,7 @@
 <translation id="4272631900155121838">Каб сканіраваць QR-код, уключыце камеру ў наладах</translation>
 <translation id="4277990410970811858">Бяспечны прагляд</translation>
 <translation id="4281844954008187215">Умовы выкарыстання</translation>
+<translation id="4293080268407233932">Пошук</translation>
 <translation id="4304713468139749426">Менеджар пароляў</translation>
 <translation id="430793432425771671">Сінхранізаваць усе</translation>
 <translation id="4309403553630140242">Двойчы націсніце, каб даведацца больш</translation>
@@ -543,6 +546,7 @@
 <translation id="4636930964841734540">Інфармацыя</translation>
 <translation id="4642472735733036929">Адсочванне цаны прыпынена</translation>
 <translation id="4650125387981512669">Працягнуць як <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Захоўвайце свае паролі ў бяспецы, будзьце ў курсе ў выпадку іх раскрыцця і атрымлівайце парады, якія дапамогуць вам абараніць сябе ў інтэрнэце. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Гэта функцыя будзе ўключацца пры ўваходзе ва Уліковы запіс Google.</translation>
 <translation id="4659667755519643272">Перайсці да пераключальніка ўкладак</translation>
 <translation id="46614316059270592">Захаваць пароль</translation>
@@ -695,6 +699,7 @@
 <translation id="5669617676038747374">Стварыць QR-код</translation>
 <translation id="567881659373499783">Версія <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Каб захоўваць і выкарыстоўваць паролі ва Уліковым запісе Google, пацвердзіце сваю асобу.</translation>
+<translation id="5684761169742812828">Ваш пароль быў раскрыты пры ўцечцы даных у інтэрнэце. Калі ў вас няма часу змяніць яго прама зараз, мы раім захаваць гэта папярэджанне, каб не забыць аб неабходнасці зрабіць гэта пазней.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Зараз паказваецца 1 акно Chrome}one{Зараз паказваецца {count} акно Chrome}few{Зараз паказваецца {count} акны Chrome}many{Зараз паказваецца {count} акон Chrome}other{Зараз паказваецца {count} акна Chrome}}</translation>
 <translation id="5701270923492462699">Доступ да камеры дазволены</translation>
 <translation id="5704908597376970822">Не ўдалося ўвайсці ў сістэму.</translation>
@@ -742,6 +747,7 @@
 <translation id="5951816930277761335">Абагульце спасылку</translation>
 <translation id="5955891643922670672">Паказваецца пазасеткавая версія</translation>
 <translation id="5957613098218939406">Дадатковыя параметры</translation>
+<translation id="595769230373966252">Пошук праз сэрвіс "<ph name="SEARCH_PROVIDER" />"</translation>
 <translation id="5963939892571022323">Не ўдалося стварыць спасылку на вылучаны тэкст.</translation>
 <translation id="5965679971710331625">Вы ўвайшлі</translation>
 <translation id="5979837087407522202">Пошук пароляў</translation>
@@ -1219,6 +1225,7 @@
 <translation id="8952559610785099500">Дадайце пароль</translation>
 <translation id="8953046091948372197">Вашы паролі знаходзяцца тут</translation>
 <translation id="895541991026785598">Паведаміць аб праблеме</translation>
+<translation id="8961757677053809960">Адхіліць папярэджанне?</translation>
 <translation id="8971545611707025079">Паўтарыць праверку</translation>
 <translation id="8974714402877957201">1. Адкрыйце налады iPad.</translation>
 <translation id="8976382372951310360">Даведка</translation>

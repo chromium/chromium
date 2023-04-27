@@ -186,6 +186,7 @@
 <translation id="2242467532204595597">随时可以使用 Chrome 打开消息、文档和其他应用中的链接。</translation>
 <translation id="22508856139286506">已忽略的警告（<ph name="COUNT" /> 条）</translation>
 <translation id="2251686759395008410">菜单 → 历史记录</translation>
+<translation id="2252674110805316998">网页搜索</translation>
 <translation id="2256933947031277845">贵单位要求您只能使用特定帐号登录。</translation>
 <translation id="225943865679747347">错误代码：<ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">添加帐号</translation>
@@ -487,6 +488,7 @@
 <translation id="4272631900155121838">要扫描 QR 码，请从设置中启用相机功能</translation>
 <translation id="4277990410970811858">安全浏览</translation>
 <translation id="4281844954008187215">服务条款</translation>
+<translation id="4293080268407233932">搜索</translation>
 <translation id="4304713468139749426">密码管理器</translation>
 <translation id="430793432425771671">同步所有内容</translation>
 <translation id="4309403553630140242">点按两次可了解详情</translation>
@@ -742,6 +744,7 @@
 <translation id="5951816930277761335">分享链接</translation>
 <translation id="5955891643922670672">正在查看离线版本</translation>
 <translation id="5957613098218939406">更多选项</translation>
+<translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 进行搜索</translation>
 <translation id="5963939892571022323">无法创建指向突出显示的内容的链接。</translation>
 <translation id="5965679971710331625">您已登录</translation>
 <translation id="5979837087407522202">搜索密码</translation>

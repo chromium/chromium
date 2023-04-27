@@ -133,6 +133,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1815941218935345331">Wagkode</translation>
 <translation id="1820259098641718022">By Leeslys gevoeg</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Gekompromitteerde wagwoorde}=1{{COUNT} gekompromitteerde wagwoord}other{{COUNT} gekompromitteerde wagwoorde}}</translation>
+<translation id="1830634592642484976">Hierdie adres is tans in Chrome gestoor. Stoor dit in jou Google-rekening, <ph name="USER_EMAIL" />, om dit in alle Google-produkte te gebruik.</translation>
 <translation id="1832848789136765277">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
 <translation id="1836891464494477513">{count,plural, =1{Boekmerk is in jou Google-rekening, {email}, gestoor}other{Boekmerke is in jou Google-rekening, {email}, gestoor}}</translation>
 <translation id="1870148520156231997">Wys wagwoord</translation>
@@ -545,6 +546,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4636930964841734540">Inligting</translation>
 <translation id="4642472735733036929">Prysnasporing is gestop</translation>
 <translation id="4650125387981512669">Gaan voort as <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Maak seker dat jou wagwoorde veilig is, vind uit of hulle gekompromitteer is, en kry advies om jouself aanlyn te beskerm. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Hierdie kenmerk word aangeskakel wanneer jy by jou Google-rekening aanmeld.</translation>
 <translation id="4659667755519643272">Gaan na oortjiewisselaar</translation>
 <translation id="46614316059270592">Stoor wagwoord</translation>
@@ -697,6 +699,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5669617676038747374">Skep ’n QR-kode</translation>
 <translation id="567881659373499783">Weergawe <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Verifieer dis jy om wagwoorde in jou Google-rekening te gebruik en te stoor.</translation>
+<translation id="5684761169742812828">Hierdie wagwoord is in ’n dataskending op die internet blootgestel. Google beveel aan dat jy hierdie waarskuwing hou om jouself later te herinner as jy nie dadelik tyd het om dit te verander nie.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Wys nou in 1 Chrome-venster}other{Wys nou in {count} Chrome-vensters}}</translation>
 <translation id="5701270923492462699">Kameratoegang word toegelaat</translation>
 <translation id="5704908597376970822">Kan nie aanmeld nie.</translation>
@@ -1222,6 +1225,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8952559610785099500">Voeg wagwoord by</translation>
 <translation id="8953046091948372197">Jy sal jou wagwoorde hier kry</translation>
 <translation id="895541991026785598">Gee 'n kwessie aan</translation>
+<translation id="8961757677053809960">Maak waarskuwing toe?</translation>
 <translation id="8971545611707025079">Kyk weer</translation>
 <translation id="8974714402877957201">1. Maak iPad Settings oop</translation>
 <translation id="8976382372951310360">Hulp</translation>

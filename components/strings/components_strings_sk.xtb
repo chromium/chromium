@@ -1411,7 +1411,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4451135742916150903">Môže žiadať o povolenie pripájať sa k zariadeniam HID</translation>
 <translation id="4451684391620232683">Text prezentovaný používateľovi:</translation>
 <translation id="4452328064229197696">Heslo, ktoré ste práve použili, bolo nájdené v zozname hesiel odhalených pri porušení ochrany údajov. Ak chcete svoje účty zabezpečiť, správca hesiel od Googlu odporúča skontrolovať uložené heslá.</translation>
-<translation id="4460315069258617173">Povolené, kým nezavriete karty tohto webu</translation>
 <translation id="4464826014807964867">Weby s informáciami od vašej organizácie</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Tento formulár nie je zabezpečený. Automatické dopĺňanie bolo vypnuté.</translation>
@@ -2016,7 +2015,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5967592137238574583">Úprava kontaktných informácií</translation>
 <translation id="5967867314010545767">Odstrániť z histórie</translation>
 <translation id="5968022600320704045">Žiadne výsledky vyhľadávania</translation>
-<translation id="5968793460449681917">Pri každej návšteve</translation>
 <translation id="5974052231147553524">Šiesty kotúč</translation>
 <translation id="5975083100439434680">Oddialiť</translation>
 <translation id="5979084224081478209">Skontrolovať heslá</translation>
@@ -2383,7 +2381,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6897140037006041989">Používateľský agent</translation>
 <translation id="6898699227549475383">Organizácia (O)</translation>
 <translation id="6899000063526916106">Zadajte <ph name="NUMBER_OF_DIGITS" />-miestny kód</translation>
-<translation id="6907293445143367439">Povoliť webu <ph name="SITE_NAME" /> tieto akcie:</translation>
 <translation id="6907458757809079309">Fitnes</translation>
 <translation id="6910240653697687763">Web <ph name="URL" /> chce získať úplnú kontrolu nad zariadeniami MIDI</translation>
 <translation id="691024665142758461">Stiahnuť viacero súborov</translation>
@@ -2562,7 +2559,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="733923710415886693">Certifikát servera nebol zverejnený prostredníctvom pravidla transparentnosti certifikátov.</translation>
 <translation id="7341357280245177602">Jazdené vozidlá</translation>
 <translation id="7346048084945669753">Je pridružený/-á</translation>
-<translation id="7349921148288539306">Povolené, kým túto kartu nezavriete</translation>
 <translation id="7352651011704765696">Vyskytla sa chyba</translation>
 <translation id="7353601530677266744">Príkazový riadok</translation>
 <translation id="7354880545102894991">Nízkorozpočtové cestovanie a cestovanie na poslednú chvíľu</translation>
@@ -3038,7 +3034,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8433057134996913067">Táto možnosť vás odhlási z väčšiny webov.</translation>
 <translation id="8434840396568290395">Domáce zvieratá</translation>
 <translation id="8437238597147034694">&amp;Vrátiť späť presunutie</translation>
-<translation id="8438476240229491014">Zapamätať si toto nastavenie</translation>
 <translation id="8438786541497918448">Chcete používať fotoaparát a mikrofón?</translation>
 <translation id="8438923942245957911">Tento web nahlásila vaša organizácia</translation>
 <translation id="8443613539889492016">Rap a hiphop</translation>

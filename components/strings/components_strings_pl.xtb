@@ -1420,7 +1420,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4451135742916150903">Może prosić o zgodę na połączenie z urządzeniami HID</translation>
 <translation id="4451684391620232683">Tekst wyświetlany użytkownikowi:</translation>
 <translation id="4452328064229197696">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł Google zaleca sprawdzenie zapisanych haseł – pozwoli to zabezpieczyć Twoje konta.</translation>
-<translation id="4460315069258617173">Zezwolono, dopóki nie zamkniesz kart z tą witryną</translation>
 <translation id="4464826014807964867">Witryny z informacjami od Twojej organizacji</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ten formularz nie jest bezpieczny. Autouzupełnianie zostało wyłączone.</translation>
@@ -2025,7 +2024,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5967592137238574583">Edytuj dane kontaktowe</translation>
 <translation id="5967867314010545767">Usuń z historii</translation>
 <translation id="5968022600320704045">Brak wyników wyszukiwania</translation>
-<translation id="5968793460449681917">Podczas każdej wizyty</translation>
 <translation id="5974052231147553524">Rolka 6</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5979084224081478209">Sprawdź hasła</translation>
@@ -2393,7 +2391,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6897140037006041989">Klient</translation>
 <translation id="6898699227549475383">Organizacja (O)</translation>
 <translation id="6899000063526916106">Wpisz <ph name="NUMBER_OF_DIGITS" />-cyfrowy kod</translation>
-<translation id="6907293445143367439">Zezwól stronie <ph name="SITE_NAME" /> na:</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="6910240653697687763"><ph name="URL" /> chce mieć pełny dostęp do sterowania urządzeniami MIDI</translation>
 <translation id="691024665142758461">Pobranie wielu plików</translation>
@@ -2574,7 +2571,6 @@ Dodatkowe informacje:
 <translation id="733923710415886693">Certyfikat serwera nie został ujawniony przez protokół Certificate Transparency.</translation>
 <translation id="7341357280245177602">Pojazdy używane</translation>
 <translation id="7346048084945669753">Jest w tej samej domenie:</translation>
-<translation id="7349921148288539306">Zezwolono, dopóki nie zamkniesz tej karty</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="7353601530677266744">Wiersz poleceń</translation>
 <translation id="7354880545102894991">Tanie podróże i wycieczki last minute</translation>
@@ -3051,7 +3047,6 @@ Dodatkowe informacje:
 <translation id="8433057134996913067">Zostaniesz wylogowany z większości stron internetowych.</translation>
 <translation id="8434840396568290395">Zwierzęta domowe</translation>
 <translation id="8437238597147034694">&amp;Cofnij przeniesienie</translation>
-<translation id="8438476240229491014">Zapamiętaj to ustawienie</translation>
 <translation id="8438786541497918448">Korzystać z kamery i mikrofonu?</translation>
 <translation id="8438923942245957911">Ta witryna została oznaczona przez Twoją organizację</translation>
 <translation id="8443613539889492016">Rap i hip-hop</translation>

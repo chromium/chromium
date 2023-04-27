@@ -315,6 +315,7 @@
 <translation id="1689333818294560261">Название</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Как вы можете управлять своими данными.<ph name="END_BOLD" /> Chrome автоматически удаляет темы, добавленные более четырех недель назад. По мере посещения сайтов тема может снова появиться в списке. В настройках Chrome можно в любое время запретить браузеру делиться определенными темами с сайтами или полностью отключить темы рекламы.</translation>
 <translation id="1697532407822776718">Готово!</translation>
+<translation id="1699651774646344471">Теперь можно использовать адреса из аккаунта Google</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Масштабирование</translation>
@@ -537,6 +538,7 @@
 <translation id="2224337661447660594">Нет подключения к Интернету</translation>
 <translation id="2225927550500503913">Виртуальная карта включена</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Вход<ph name="END_LINK" /> в сеть Wi-Fi</translation>
+<translation id="2228057197024893428">Адрес добавлен в Chrome. Сохраните его в аккаунте Google (<ph name="ACCOUNT" />), чтобы использовать в других продуктах Google.</translation>
 <translation id="2239100178324503013">Отправить</translation>
 <translation id="2241693394036365668">Скачан файл</translation>
 <translation id="2246264294482514010">10 x 12 дюймов</translation>
@@ -656,6 +658,7 @@
 <translation id="2547466893236767989">Веб-разработка и веб-дизайн</translation>
 <translation id="254947805923345898">Недопустимое значение правила.</translation>
 <translation id="255002559098805027">Сайт <ph name="HOST_NAME" /> отправил недействительный ответ.</translation>
+<translation id="2551608178605132291">Адрес: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Использовать способ разблокировки экрана для подтверждения карт</translation>
 <translation id="2553853292994445426">Проверьте параметры безопасных DNS-серверов. Возможно, к настроенному вами DNS-серверу невозможно подключиться.</translation>
@@ -853,6 +856,7 @@
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Проверить настройки безопасного DNS-сервера<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Средний лоток</translation>
 <translation id="3109728660330352905">У вас нет прав для просмотра этой страницы.</translation>
+<translation id="3112892588078695695">Номер телефона: <ph name="PHONE" /></translation>
 <translation id="3113284927548439113">До третьей смены</translation>
 <translation id="3114040155724590991">Выполняется обновление системы Android
     Приложение может запускаться дольше обычного.</translation>
@@ -1414,7 +1418,6 @@
 <translation id="4451135742916150903">Разрешено отправлять запрос на подключение к HID-устройствам</translation>
 <translation id="4451684391620232683">Показанный пользователю текст:</translation>
 <translation id="4452328064229197696">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в Google Менеджере паролей.</translation>
-<translation id="4460315069258617173">Пока вкладки этого сайта открыты, доступ разрешен</translation>
 <translation id="4464826014807964867">Веб-сайты со сведениями от вашей организации</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" />.</translation>
 <translation id="4476953670630786061">Это незащищенная форма. Автозаполнение отключено.</translation>
@@ -2019,7 +2022,6 @@
 <translation id="5967592137238574583">Измените контактную информацию</translation>
 <translation id="5967867314010545767">Удалить из истории</translation>
 <translation id="5968022600320704045">Ничего не найдено.</translation>
-<translation id="5968793460449681917">Всегда</translation>
 <translation id="5974052231147553524">Шестой рулон</translation>
 <translation id="5975083100439434680">Уменьшить</translation>
 <translation id="5979084224081478209">Проверить пароли</translation>
@@ -2387,7 +2389,6 @@
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Организация (O)</translation>
 <translation id="6899000063526916106">Введите <ph name="NUMBER_OF_DIGITS" />-значный код</translation>
-<translation id="6907293445143367439">Предоставьте сайту <ph name="SITE_NAME" /> следующие разрешения:</translation>
 <translation id="6907458757809079309">Фитнес</translation>
 <translation id="6910240653697687763">Сайт <ph name="URL" /> запрашивает полный контроль над MIDI-устройствами.</translation>
 <translation id="691024665142758461">скачивание нескольких файлов</translation>
@@ -2464,6 +2465,7 @@
 <translation id="7083258188081898530">Лоток 9</translation>
 <translation id="7086090958708083563">Загрузка запрошена пользователем</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем – Ввод, чтобы открыть настройки Chrome и задать разрешения для сайтов, а также указать, какие данные они могут хранить.</translation>
+<translation id="7096341143397839437">Адрес электронной почты: <ph name="EMAIL" /></translation>
 <translation id="7096937462164235847">Подлинность этого сайта не подтверждена.</translation>
 <translation id="7101893872976785596">Фильмы ужасов</translation>
 <translation id="7102079138917191645">Строительство и ремонт</translation>
@@ -2542,6 +2544,7 @@
 <translation id="7256634549594854023">Задний лоток</translation>
 <translation id="725866823122871198">Не удалось установить защищенное соединение с доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> из-за неверных настроек системных часов и календаря (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260504762447901703">Запретить доступ</translation>
+<translation id="7265608370113700582">Адрес доступен только на этом устройстве</translation>
 <translation id="7275334191706090484">Управляемые закладки</translation>
 <translation id="7277998515889183784">Макияж и косметика</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы изменить пароль аккаунта Google, нажмите Tab, а затем Ввод.</translation>
@@ -2566,7 +2569,6 @@
 <translation id="733923710415886693">Сертификат сервера не проходил проверку.</translation>
 <translation id="7341357280245177602">Подержанные транспортные средства</translation>
 <translation id="7346048084945669753">Аффилированный пользователь:</translation>
-<translation id="7349921148288539306">Пока эта вкладка открыта, доступ разрешен</translation>
 <translation id="7352651011704765696">Ошибка</translation>
 <translation id="7353601530677266744">Командная строка</translation>
 <translation id="7354880545102894991">Дешевые и горящие туры</translation>
@@ -2965,6 +2967,7 @@
 <translation id="8245703462678310750">Чтобы выйти из полноэкранного режима и посмотреть скачанные файлы, нажмите и удерживайте |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8249296373107784235">Отмена</translation>
 <translation id="8249463483885748674">Стандартные и вступительные экзамены</translation>
+<translation id="8250094606476360498">Адрес добавлен на это устройство. Сохраните его в аккаунте Google (<ph name="ACCOUNT" />), чтобы использовать в других продуктах Google.</translation>
 <translation id="8252991034201168845">Кнопка "Открыть настройки специальных возможностей". Нажмите Ввод, чтобы войти в эти настройки.</translation>
 <translation id="8253091569723639551">Необходимо указать платежный адрес</translation>
 <translation id="8257387598443225809">Это приложение для мобильных устройств</translation>
@@ -3042,7 +3045,6 @@
 <translation id="8433057134996913067">На большинстве сайтов будет выполнен выход из аккаунта.</translation>
 <translation id="8434840396568290395">Домашние животные</translation>
 <translation id="8437238597147034694">&amp;Отменить перемещение</translation>
-<translation id="8438476240229491014">Запомнить настройку</translation>
 <translation id="8438786541497918448">Использовать камеру и микрофон?</translation>
 <translation id="8438923942245957911">Этот сайт помечен вашей организацией</translation>
 <translation id="8443613539889492016">Рэп и хип-хоп</translation>

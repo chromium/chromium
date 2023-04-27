@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">קוד גישה</translation>
 <translation id="1820259098641718022">נוסף לרשימת הקריאה</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{סיסמאות שנחשפו}=1{סיסמה אחת ({COUNT}) שנחשפה}one{{COUNT} סיסמאות שנחשפו}two{{COUNT} סיסמאות שנחשפו}other{{COUNT} סיסמאות שנחשפו}}</translation>
+<translation id="1830634592642484976">‏הכתובת הזו שמורה ב-Chrome. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">כדי לוודא שתמיד תהיה לך גישה לנתונים המסונכרנים שלך, עליך לאמת את זהותך</translation>
 <translation id="1836891464494477513">{count,plural, =1{‏הסימנייה נשמרה בחשבון Google שלך, {email}}one{‏הסימניות נשמרו בחשבון Google שלך, {email}}two{‏הסימניות נשמרו בחשבון Google שלך, {email}}other{‏הסימניות נשמרו בחשבון Google שלך, {email}}}</translation>
 <translation id="1870148520156231997">הצגת הסיסמה</translation>
@@ -186,6 +187,7 @@
 <translation id="2242467532204595597">‏שימוש ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="22508856139286506">אזהרות שנסגרו (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">תפריט ← היסטוריה</translation>
+<translation id="2252674110805316998">‏חיפוש Google</translation>
 <translation id="2256933947031277845">הארגון מאפשר לך להיכנס לדפדפן רק באמצעות חשבונות מסוימים.</translation>
 <translation id="225943865679747347">קוד שגיאה: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">חשבון חדש</translation>
@@ -487,6 +489,7 @@
 <translation id="4272631900155121838">‏כדי לסרוק את קוד ה-QR, יש להפעיל את המצלמה דרך ההגדרות</translation>
 <translation id="4277990410970811858">גלישה בטוחה</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
+<translation id="4293080268407233932">חיפוש</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
 <translation id="430793432425771671">סנכרון הכול</translation>
 <translation id="4309403553630140242">לחיצה פעמיים תציג מידע נוסף</translation>
@@ -543,6 +546,7 @@
 <translation id="4636930964841734540">מידע</translation>
 <translation id="4642472735733036929">המעקב אחר מחירים הופסק</translation>
 <translation id="4650125387981512669">המשך בשם <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">חשוב לוודא שהסיסמאות מאובטחות, לבדוק אם הן נחשפו ולקבל עצות שיעזרו לך להגן על עצמך אונליין. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">‏התכונה הזו מופעלת בעת הכניסה לחשבון Google.</translation>
 <translation id="4659667755519643272">‏כניסה אל Tab Switcher</translation>
 <translation id="46614316059270592">שמירת הסיסמה</translation>
@@ -695,6 +699,7 @@
 <translation id="5669617676038747374">‏יצירת קוד QR</translation>
 <translation id="567881659373499783">גרסה <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">‏כדי להשתמש בסיסמאות ולשמור אותן בחשבון Google, עליך לאמת את הזהות שלך.</translation>
+<translation id="5684761169742812828">‏הסיסמה הזו נחשפה בעקבות פרצה באבטחת מידע באינטרנט. אם אין לך זמן לשנות את ההודעה הזו כרגע, Google ממליצה לשמור את האזהרה הזו כדי להזכיר לך במועד מאוחר יותר.</translation>
 <translation id="5690398455483874150">{count,plural, =1{‏כרגע מוצג חלון Chrome אחד}one{‏כרגע מוצגים {count} חלונות Chrome}two{‏כרגע מוצגים {count} חלונות Chrome}other{‏כרגע מוצגים {count} חלונות Chrome}}</translation>
 <translation id="5701270923492462699">יש הרשאת גישה למצלמה</translation>
 <translation id="5704908597376970822">אי אפשר להיכנס.</translation>
@@ -742,6 +747,7 @@
 <translation id="5951816930277761335">משתפים את הקישור</translation>
 <translation id="5955891643922670672">מוצגת גרסה לא מקוונת</translation>
 <translation id="5957613098218939406">אפשרויות נוספות</translation>
+<translation id="595769230373966252">חיפוש ב-<ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">לא ניתן ליצור קישור לטקסט המודגש.</translation>
 <translation id="5965679971710331625">התחברת לחשבון</translation>
 <translation id="5979837087407522202">חיפוש בסיסמאות</translation>
@@ -1219,6 +1225,7 @@
 <translation id="8952559610785099500">הוספת סיסמה</translation>
 <translation id="8953046091948372197">הסיסמאות יופיעו כאן</translation>
 <translation id="895541991026785598">דיווח על בעיה</translation>
+<translation id="8961757677053809960">לסגור את האזהרה?</translation>
 <translation id="8971545611707025079">בדיקה נוספת</translation>
 <translation id="8974714402877957201">‏1. פותחים את הגדרות ה-iPad</translation>
 <translation id="8976382372951310360">עזרה</translation>

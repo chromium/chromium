@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">Лозинка</translation>
 <translation id="1820259098641718022">Додаено во „Список за читање“</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Компромитирани лозинки}=1{{COUNT} компромитирана лозинка}one{{COUNT} компромитирана лозинка}other{{COUNT} компромитирани лозинки}}</translation>
+<translation id="1830634592642484976">Во моментов, адресава е зачувана на Chrome. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">За да можете секогаш да пристапувате до податоците од синхронизацијата, потврдете дека сте вие</translation>
 <translation id="1836891464494477513">{count,plural, =1{Обележувачот е зачуван во вашата сметка на Google, {email}}one{Обележувачите се зачувани во вашата сметка на Google, {email}}other{Обележувачите се зачувани во вашата сметка на Google, {email}}}</translation>
 <translation id="1870148520156231997">Прикажете ја лозинката</translation>
@@ -186,6 +187,7 @@
 <translation id="2242467532204595597">Користете Chrome секогаш кога ќе допрете линкови во пораки, документи и други апликации.</translation>
 <translation id="22508856139286506">Отфрлени предупредувања (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Мени → Историја</translation>
+<translation id="2252674110805316998">Пребарување на интернет</translation>
 <translation id="2256933947031277845">Вашата организација ви дозволува да се најавите само со одредени сметки.</translation>
 <translation id="225943865679747347">Код на грешка: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Додајте сметка</translation>
@@ -487,6 +489,7 @@
 <translation id="4272631900155121838">За да скенирате QR код, овозможете ја камерата во „Поставки“</translation>
 <translation id="4277990410970811858">Безбедно прелистување</translation>
 <translation id="4281844954008187215">Услови за користење</translation>
+<translation id="4293080268407233932">Пребарување</translation>
 <translation id="4304713468139749426">Управник со лозинки</translation>
 <translation id="430793432425771671">Синхронизирај сѐ</translation>
 <translation id="4309403553630140242">Допрете двапати за повеќе информации</translation>
@@ -543,6 +546,7 @@
 <translation id="4636930964841734540">Информации</translation>
 <translation id="4642472735733036929">Следењето на цените е сопрено</translation>
 <translation id="4650125387981512669">Продолжете како <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Погрижете се лозинките да ви бидат безбедни, дознајте дали се компромитирани и добијте совет како да се заштитите себеси онлајн. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Функцијава е вклучена кога ќе се најавите на сметката на Google.</translation>
 <translation id="4659667755519643272">Влези во менувачот на картички</translation>
 <translation id="46614316059270592">Зачувај ја лозинката</translation>
@@ -695,6 +699,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5669617676038747374">Создајте QR-код</translation>
 <translation id="567881659373499783">Верзија <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">За да користите и зачувувате лозинки во вашата сметка на Google, потврдете го вашиот идентитет.</translation>
+<translation id="5684761169742812828">Лозинкава се изложи во упад во податоци на интернет. Ако немате време да ја промените сега, Google препорачува да го чувате предупредувањево за да се потсетите подоцна.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Сега се прикажува 1 прозорец на Chrome}one{Сега се прикажува {count} прозорец на Chrome}other{Сега се прикажуваат {count} прозорци на Chrome}}</translation>
 <translation id="5701270923492462699">Дозволен е пристап до „Камерата“</translation>
 <translation id="5704908597376970822">Не може да се најавите.</translation>
@@ -742,6 +747,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5951816930277761335">Споделете го линкот</translation>
 <translation id="5955891643922670672">Се прегледува офлајн верзија</translation>
 <translation id="5957613098218939406">Повеќе опции</translation>
+<translation id="595769230373966252">Пребарување со <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Не може да се создаде линк до нагласената ставка.</translation>
 <translation id="5965679971710331625">Најавени сте</translation>
 <translation id="5979837087407522202">Пребарајте лозинки</translation>
@@ -1219,6 +1225,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8952559610785099500">Додајте лозинка</translation>
 <translation id="8953046091948372197">Вашите лозинки ќе ги најдете тука</translation>
 <translation id="895541991026785598">Пријави проблем</translation>
+<translation id="8961757677053809960">Дали да се отфрли предупредувањето?</translation>
 <translation id="8971545611707025079">Проверете повторно</translation>
 <translation id="8974714402877957201">1. Отворете ги поставките за iPad</translation>
 <translation id="8976382372951310360">Помош</translation>

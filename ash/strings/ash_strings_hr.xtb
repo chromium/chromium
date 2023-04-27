@@ -69,7 +69,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1255033239764210633">Kakvo je vrijeme?</translation>
 <translation id="1267032506238418139">Promjena prečaca</translation>
 <translation id="1269405891096105529">Periferni uređaj nije podržan u načinu rada za goste</translation>
-<translation id="1270290102613614947">Tipkovnica na zaslonu onemogućena je</translation>
+<translation id="1270290102613614947">Zaslonska tipkovnica onemogućena je</translation>
 <translation id="1272079795634619415">Zaustavi</translation>
 <translation id="1275285675049378717">Napaja <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
@@ -172,7 +172,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="174102739345480129">Marker je isključen.</translation>
 <translation id="1743570585616704562">Nije prepoznat</translation>
 <translation id="1746730358044914197">Načine unosa konfigurira administrator.</translation>
-<translation id="1747827819627189109">Tipkovnica na zaslonu omogućena je</translation>
+<translation id="1747827819627189109">Zaslonska tipkovnica omogućena je</translation>
 <translation id="1749109475624620922">Prozor <ph name="WINDOW_TITLE" /> dodijeljen je svim radnim površinama</translation>
 <translation id="1750088060796401187">Broj radnih površina ne može biti veći od <ph name="MAX_DESK_LIMIT" />. Uklonite jednu radnu površinu da biste otvorili novu.</translation>
 <translation id="1756833229520115364">Pogreška pri spremanju predloška. Previše prozora ili kartica.</translation>
@@ -1116,7 +1116,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="6137566720514957455">Otvorite dijalog za uklanjanje za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Potvrda preuzimanja</translation>
 <translation id="6154006699632741460">Periferni uređaj nije podržan</translation>
-<translation id="615957422585914272">Prikaži tipkovnicu na zaslonu</translation>
+<translation id="615957422585914272">Prikaži zaslonsku tipkovnicu</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166852626429024716">Pretražite uređaj, aplikacije, postavke, web...</translation>
 <translation id="6168318496333165060">Otvaranje aplikacije Dijagnostika</translation>
@@ -1354,7 +1354,7 @@ Novo instaliranje</translation>
 <translation id="731589979057211264">Shelf Party je uključen.</translation>
 <translation id="7340731148882810149">Izbornik automatskih klikova</translation>
 <translation id="7346909386216857016">Dobro, shvaćam</translation>
-<translation id="7348093485538360975">Tipkovnica na zaslonu</translation>
+<translation id="7348093485538360975">Zaslonska tipkovnica</translation>
 <translation id="735745346212279324">Veza s VPN-om prekinuta</translation>
 <translation id="7360036564632145207">Promjenom postavke zaštite pristupa podacima za periferne uređaje možete optimizirati rad</translation>
 <translation id="736045644501761622">Postavite pozadinu i stil</translation>

@@ -1416,7 +1416,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4451135742916150903">Saa pyytää lupaa yhdistää HID-laitteisiin</translation>
 <translation id="4451684391620232683">Käyttäjälle näkyvä teksti:</translation>
 <translation id="4452328064229197696">Juuri käyttämäsi salasana löytyi tietosuojaloukkauksesta. Tiliesi suojaamiseksi Googlen Salasanojen ylläpito suosittelee, että tarkistat tallennetut salasanasi.</translation>
-<translation id="4460315069258617173">Sallittu, kunnes suljet tämän sivuston välilehdet</translation>
 <translation id="4464826014807964867">Verkkosivustot, joilla on tietoa organisaatiostasi</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Tämä lomake ei ole suojattu. Automaattinen täyttö on laitettu pois päältä.</translation>
@@ -2021,7 +2020,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5967592137238574583">Muokkaa yhteystietoja</translation>
 <translation id="5967867314010545767">Poista historiasta</translation>
 <translation id="5968022600320704045">Ei hakutuloksia</translation>
-<translation id="5968793460449681917">Joka käynnillä</translation>
 <translation id="5974052231147553524">Kuudes rulla</translation>
 <translation id="5975083100439434680">Loitonna</translation>
 <translation id="5979084224081478209">Tarkista salasanat</translation>
@@ -2389,7 +2387,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Organisaatio (O)</translation>
 <translation id="6899000063526916106">Lisää <ph name="NUMBER_OF_DIGITS" />-numeroinen koodi</translation>
-<translation id="6907293445143367439">Salli sivustolle (<ph name="SITE_NAME" />) nämä:</translation>
 <translation id="6907458757809079309">Kuntoilu</translation>
 <translation id="6910240653697687763"><ph name="URL" /> haluaa MIDI-laitteidesi täyden hallintaoikeuden.</translation>
 <translation id="691024665142758461">ladata useita tiedostoja</translation>
@@ -2568,7 +2565,6 @@ Lisätietoja:
 <translation id="733923710415886693">Palvelimen varmenteesta ei ole saatu Certificate Transparencyn vaatimia tietoja.</translation>
 <translation id="7341357280245177602">Käytetyt ajoneuvot</translation>
 <translation id="7346048084945669753">On yhdistetty:</translation>
-<translation id="7349921148288539306">Sallittu, kunnes suljet tämän välilehden</translation>
 <translation id="7352651011704765696">Tapahtui jokin virhe</translation>
 <translation id="7353601530677266744">Komentorivi</translation>
 <translation id="7354880545102894991">Edulliset matkat ja äkkilähdöt</translation>
@@ -3044,7 +3040,6 @@ Lisätietoja:
 <translation id="8433057134996913067">Sinut kirjataan ulos useimmilta verkkosivustoilta.</translation>
 <translation id="8434840396568290395">Lemmikit</translation>
 <translation id="8437238597147034694">K&amp;umoa siirto</translation>
-<translation id="8438476240229491014">Muista tämä asetus</translation>
 <translation id="8438786541497918448">Käytetäänkö kameraa ja mikrofonia?</translation>
 <translation id="8438923942245957911">Organisaatiosi on merkinnyt sivuston</translation>
 <translation id="8443613539889492016">Rap ja hiphop</translation>

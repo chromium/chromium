@@ -2923,6 +2923,15 @@ Bu politikayı her zaman (özellikle de üretim dağıtımı zamanlarında) etki
 <translation id="3623332696371971798">Google Fotoğraflar'ın, kişiselleştirme uygulamasından erişmesini engelle</translation>
 <translation id="3627678165642179114">Yazım denetimi Web hizmetini etkinleştir veya devre dışı bırak</translation>
 <translation id="3628480121685794414">Tek yönlü yazdırmayı etkinleştir</translation>
+<translation id="3634117682099473917">İstenen DNS-over-HTTPS çözümleyicisinin URI şablonu. Birden fazla DNS-over-HTTPS çözümleyicisi belirlemek için karşılık gelen URI şablonlarını boşlukla ayırın. Bu politika, <ph name="DOH_TEMPLATES_POLICY_NAME" /> politikasına çok benzer ve belirtilmesi halinde onu geçersiz kılar. Buna karşılık, kimlik bilgilerini belirtmeyi destekler.
+
+<ph name="DOH_MODE_POLICY_NAME" /> politikası, <ph name="SECURE_DNS_MODE_SECURE" /> değerine ayarlanırsa bu politika veya <ph name="DOH_TEMPLATES_POLICY_NAME" /> ayarlanmalı ve boş bırakılmamalıdır.
+
+<ph name="DOH_MODE_POLICY_NAME" />, <ph name="SECURE_DNS_MODE_AUTOMATIC" /> olarak ayarlandıysa ve bu politika da ayarlanırsa belirtilen URI şablonları kullanılır. Bu politika ayarlanmadan bırakılırsa kullanıcının geçerli DNS çözümleyicisini aynı sağlayıcı tarafından işletilen bir DoH çözümleyiciye yükseltmek için koda gömülmüş eşleşmeler kullanılır.
+
+URI şablonu <ph name="HTTP_VARIABLE_DNS" /> değişkeni içeriyorsa çözümleyiciye gelen istekler <ph name="HTTP_METHOD_GET" /> yöntemini kullanır; aksi takdirde istekler <ph name="HTTP_METHOD_POST" /> yöntemini kullanır.
+
+114 ve sonraki sürümlerde bu politika ayarlanmışsa <ph name="DOH_SALT_POLICY_NAME" /> isteğe bağlıdır.</translation>
 <translation id="3634125384445314047">Telefonda çekilen son fotoğraflara ve videolara Telefon Merkezi aracılığıyla erişime izin ver.</translation>
 <translation id="3642557248926713561">Güvenli Tarama Uzantı Korumasını Devre Dışı Bırak</translation>
 <translation id="3643284063603988867">"Şifreyi hatırla" özelliğini etkinleştir</translation>
@@ -3813,6 +3822,7 @@ Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için 
 <translation id="45036050223225148">TLS Encrypted ClientHello denemesini devre dışı bırak</translation>
 <translation id="4503935079903510542">x86_64 cihazlara sanal makine yüklemek için kullanılan UEFI önyüklenebilir disk görüntüsü.</translation>
 <translation id="4508728400492074981">First-Party Sets özelliğiyle ilgili politikaları kontrol eder.</translation>
+<translation id="4510131075424939993">Kimlik bilgilerini değerlendirirken <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> içinde kullanılacak bir takviye değer belirtin</translation>
 <translation id="4510923771103268849">Kullanıcının, Crostini kapsayıcılarına root erişimi olmasına izin verilir</translation>
 <translation id="4512407512989846472">Belirli URL'lerden panoya kopyalama işleminin engellenmesine izin verir</translation>
 <translation id="4513691822411041977">Google Arama'da Güvenli Arama ve YouTube Kısıtlı Modu kullanımını zorlama</translation>
@@ -5578,6 +5588,11 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
 
       Not: Politika, ses erişilebilirlik özellikleri dahil olmak üzere tüm ses girişlerini etkiler. Kullanıcının ekran okuyucuya ihtiyacı varsa politikayı kapatmayın.</translation>
 <translation id="6221175752766085998">subjectAlternativeName uzantısı olmadan yerel güven bağlantıları tarafından yayınlanan sertifikalara izin ver</translation>
+<translation id="6221327862246049151">Bu takviye, <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> dizesindeki kimlik bilgilerine karma oluşturma işlemi uygulanırken takviye değer olarak kullanılır.
+
+Bu takviye 8 ile 32 karakter arasında bir dize olmalıdır.
+
+114 ve sonraki sürümlerde <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> politikası ayarlanmışsa bu politika isteğe bağlıdır. Bu politika ayarlanmazsa <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> politikası aracılığıyla yapılandırılan şablon URI'larındaki tanımlayıcılara takviye olmadan karma oluşturma işlemi uygulanır.</translation>
 <translation id="6224070048795197148">Kullanıcının oturum açmadan tarayıcıyı kullanmasına izin ver</translation>
 <translation id="6224304369267200483">Doğrudan Güvenlik Anahtarı doğrulamasına otomatik olarak izin verilen URL'ler/alan adları</translation>
 <translation id="6225938950222983458">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" /> politikasını kullanın.</translation>

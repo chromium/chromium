@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">Код за достъп</translation>
 <translation id="1820259098641718022">Добавихте към списъка за четене</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Компрометирани пароли}=1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
+<translation id="1830634592642484976">Понастоящем този адрес е запазен в Chrome. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Потвърдете, че сте вие, за да имате постоянен достъп до синхронизираните си данни</translation>
 <translation id="1836891464494477513">{count,plural, =1{Отметката е запазена в профила ви в Google {email}}other{Отметките са запазени в профила ви в Google {email}}}</translation>
 <translation id="1870148520156231997">Показване на паролата</translation>
@@ -186,6 +187,7 @@
 <translation id="2242467532204595597">Използвайте Chrome всеки път, когато докоснете връзки в съобщения, документи и други приложения.</translation>
 <translation id="22508856139286506">Отхвърлени предупреждения (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">„Меню → История“</translation>
+<translation id="2252674110805316998">Търсене в мрежата</translation>
 <translation id="2256933947031277845">Организацията ви разрешава да влизате само с определени профили.</translation>
 <translation id="225943865679747347">Код на грешката: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Добавяне на профил</translation>
@@ -487,6 +489,7 @@
 <translation id="4272631900155121838">За да сканирате код за бърза реакция, активирайте камерата от настройките</translation>
 <translation id="4277990410970811858">Безопасно сърфиране</translation>
 <translation id="4281844954008187215">Условия за ползване</translation>
+<translation id="4293080268407233932">Търсене</translation>
 <translation id="4304713468139749426">Мениджър на паролите</translation>
 <translation id="430793432425771671">Синхронизиране на всичко</translation>
 <translation id="4309403553630140242">Докоснете два пъти за повече информация</translation>
@@ -543,6 +546,7 @@
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4642472735733036929">Проследяването на цената спря</translation>
 <translation id="4650125387981512669">Продължаване като <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Уверете се, че паролите ви са защитени, разберете дали са били компрометирани и получете съвет за това как да се предпазите онлайн. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Когато влезете в профила си в Google, тази функция се включва.</translation>
 <translation id="4659667755519643272">Влизане в превключвателя на раздели</translation>
 <translation id="46614316059270592">Запазване на паролата</translation>
@@ -695,6 +699,7 @@
 <translation id="5669617676038747374">Създаване на QR код</translation>
 <translation id="567881659373499783">Версия <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Потвърдете, че това сте вие, за да използвате и запазвате паролите в профила си в Google.</translation>
+<translation id="5684761169742812828">Тази парола бе разкрита при нарушение на сигурността на данните в интернет. Ако нямате време да я промените сега, Google препоръчва да запазите това предупреждение, за да ви послужи като напомняне по-късно.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Показва се 1 прозорец на Chrome}other{Показват се {count} прозореца на Chrome}}</translation>
 <translation id="5701270923492462699">Достъпът до камерата е разрешен</translation>
 <translation id="5704908597376970822">Влизането в профила не е възможно.</translation>
@@ -742,6 +747,7 @@
 <translation id="5951816930277761335">Споделете връзката.</translation>
 <translation id="5955891643922670672">Гледате офлайн версията</translation>
 <translation id="5957613098218939406">Още опции</translation>
+<translation id="595769230373966252">Търсене с(ъс) <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Не може да се създаде връзка към откроения текст.</translation>
 <translation id="5965679971710331625">Влезли сте в профил</translation>
 <translation id="5979837087407522202">Търсене в паролите</translation>
@@ -1219,6 +1225,7 @@
 <translation id="8952559610785099500">Добавяне на парола</translation>
 <translation id="8953046091948372197">Тук ще се показват паролите ви</translation>
 <translation id="895541991026785598">Подаване на сигнал за проблем</translation>
+<translation id="8961757677053809960">Да се отхвърли ли предупреждението?</translation>
 <translation id="8971545611707025079">Повторна проверка</translation>
 <translation id="8974714402877957201">1. Отворете настройките на iPad.</translation>
 <translation id="8976382372951310360">Помощ</translation>

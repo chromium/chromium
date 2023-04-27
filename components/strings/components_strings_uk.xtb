@@ -1415,7 +1415,6 @@
 <translation id="4451135742916150903">Може просити дозвіл підключатися до пристроїв HID</translation>
 <translation id="4451684391620232683">Текст, який бачать користувачі:</translation>
 <translation id="4452328064229197696">Введений пароль розкрито через порушення безпеки даних. Щоб захистити ваші облікові записи, Менеджер паролів Google радить перевірити збережені паролі.</translation>
-<translation id="4460315069258617173">Дозволено, доки ви не закриєте всі вкладки для цього сайту</translation>
 <translation id="4464826014807964867">Веб-сайти, які отримали інформацію від вашої організації</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ця форма незахищена. Автозаповнення вимкнено.</translation>
@@ -2020,7 +2019,6 @@
 <translation id="5967592137238574583">Змініть контактну інформацію</translation>
 <translation id="5967867314010545767">Видалити з історії</translation>
 <translation id="5968022600320704045">Нічого не знайдено</translation>
-<translation id="5968793460449681917">Щоразу</translation>
 <translation id="5974052231147553524">Шостий рулон</translation>
 <translation id="5975083100439434680">Зменшити масштаб</translation>
 <translation id="5979084224081478209">Перевірити паролі</translation>
@@ -2388,7 +2386,6 @@
 <translation id="6897140037006041989">Агент користувача</translation>
 <translation id="6898699227549475383">Організація (О)</translation>
 <translation id="6899000063526916106">Введіть <ph name="NUMBER_OF_DIGITS" />-значний код</translation>
-<translation id="6907293445143367439">Дозволити сайту <ph name="SITE_NAME" />:</translation>
 <translation id="6907458757809079309">Фітнес</translation>
 <translation id="6910240653697687763">Сайт <ph name="URL" /> хоче повністю контролювати ваші пристрої MIDI</translation>
 <translation id="691024665142758461">завантажити кілька файлів</translation>
@@ -2567,7 +2564,6 @@
 <translation id="733923710415886693">Сертифікат сервера не надав інформацію про перевірку.</translation>
 <translation id="7341357280245177602">Уживані автомобілі</translation>
 <translation id="7346048084945669753">Зв'язано:</translation>
-<translation id="7349921148288539306">Дозволено, доки ви не закриєте цю вкладку</translation>
 <translation id="7352651011704765696">Виникли проблеми</translation>
 <translation id="7353601530677266744">Командний рядок</translation>
 <translation id="7354880545102894991">Дешеві подорожі та "гарячі" тури</translation>
@@ -3043,7 +3039,6 @@
 <translation id="8433057134996913067">Ви вийдете з облікового запису на більшості веб-сайтів.</translation>
 <translation id="8434840396568290395">Домашні тварини</translation>
 <translation id="8437238597147034694">&amp;Відмінити переміщення</translation>
-<translation id="8438476240229491014">Запам’ятати це налаштування</translation>
 <translation id="8438786541497918448">Використовувати камеру та мікрофон?</translation>
 <translation id="8438923942245957911">Ваша організація поскаржилася на цей сайт</translation>
 <translation id="8443613539889492016">Реп і хіп-хоп</translation>

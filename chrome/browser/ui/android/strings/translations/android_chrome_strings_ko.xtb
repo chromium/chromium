@@ -387,7 +387,6 @@
 <translation id="3091010850649238832">클립보드 내용 표시</translation>
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
-<translation id="311958134571892113">다음 카드와 연결됨</translation>
 <translation id="3123734510202723619">공지사항</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome 홈페이지</translation>
@@ -787,7 +786,6 @@
 <translation id="5235196193381275927">로그인 중에 문제가 발생했습니다</translation>
 <translation id="5246093389635966745">툴바 바로가기 수정</translation>
 <translation id="5271967389191913893">기기에서 다운로드하려는 콘텐츠를 열 수 없습니다.</translation>
-<translation id="5274286919938458946">연결된 카드: <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">전송할 기기</translation>
 <translation id="5300426565656326054">브라우저 기반 광고 개인 최적화</translation>
 <translation id="5304593522240415983">필수 입력란입니다.</translation>
@@ -851,6 +849,7 @@
 <translation id="5628604359369369630">읽지 않음 - 오프라인에서 사용 가능</translation>
 <translation id="5639724618331995626">모든 사이트 허용</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />검색 기록<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />다른 활동 형식<ph name="END_LINK2" />이 Google 계정에 저장될 수 있습니다.</translation>
+<translation id="564667659802381754">개인 정보 보호 가이드 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">지난 7일</translation>
 <translation id="5655963694829536461">다운로드 항목 검색</translation>
 <translation id="5659593005791499971">이메일</translation>
@@ -1213,6 +1212,7 @@
 <translation id="7482656565088326534">미리보기 탭</translation>
 <translation id="7484997419527351112">디스커버 - 사용 안함</translation>
 <translation id="7485033510383818941">피드 콘텐츠를 새로고침하려면 페이지를 아래로 당기세요</translation>
+<translation id="7486953194485875763">지난 15분 동안의 다음 데이터가 삭제됩니다.</translation>
 <translation id="749294055653435199">이 기기에서는 Google 렌즈를 사용할 수 없습니다.</translation>
 <translation id="7493994139787901920"><ph name="VERSION" />(<ph name="TIME_SINCE_UPDATE" />에 업데이트됨)</translation>
 <translation id="7497755084107113646">잠재적 주제에 주제를 다시 추가했습니다.</translation>

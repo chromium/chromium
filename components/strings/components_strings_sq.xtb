@@ -315,6 +315,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1689333818294560261">Pseudonimi</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin në mënyrë automatike temat që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një temë mund të shfaqet përsëri në listë. Mund t'i bllokosh po ashtu temat që nuk dëshiron që Chrome t'i ndajë me sajtet dhe të çaktivizosh temat e reklamave në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="1697532407822776718">Je gati!</translation>
+<translation id="1699651774646344471">Tani mund të përdorësh adresat nga "Llogaria jote e Google"</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Nivelet e zmadhimit</translation>
@@ -537,6 +538,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2224337661447660594">Nuk ka internet</translation>
 <translation id="2225927550500503913">Karta virtuale është aktivizuar</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Identifikohu<ph name="END_LINK" /> në rrjetin WiFi</translation>
+<translation id="2228057197024893428">Kjo adresë është ruajtur aktualisht në Chrome. Për ta përdorur atë nëpër produktet e Google, ruaje atë në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
 <translation id="2239100178324503013">Dërgo tani</translation>
 <translation id="2241693394036365668">Skedari është shkarkuar</translation>
 <translation id="2246264294482514010">10 x 12 inç</translation>
@@ -656,6 +658,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2547466893236767989">Dizajnimi dhe zhvillimi i uebit</translation>
 <translation id="254947805923345898">Vlera e politikës nuk është e vlefshme.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> dërgoi një përgjigje të pavlefshme.</translation>
+<translation id="2551608178605132291">Adresa: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Përdor kyçjen e ekranit për të konfirmuar kartat nga tani e tutje</translation>
 <translation id="2553853292994445426">Kontrollo cilësimet e DNS-së së sigurt. Mund të kesh konfiguruar një server të sigurt të DNS-së me të cilin ka pasur dështime të lidhjeve.</translation>
@@ -853,6 +856,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Po kontrollon konfigurimin e DNS-së së sigurt<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Tabakaja e mesit</translation>
 <translation id="3109728660330352905">Nuk ke autorizim për të parë këtë faqe.</translation>
+<translation id="3112892588078695695">Numri i telefonit: <ph name="PHONE" /></translation>
 <translation id="3113284927548439113">Turni i tretë</translation>
 <translation id="3114040155724590991">Sistemi Android po përditësohet
     Nisja e aplikacionit tënd mund të zgjasë më shumë se zakonisht</translation>
@@ -1415,7 +1419,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4451135742916150903">Mund të kërkojë të lidhet me pajisjet HID</translation>
 <translation id="4451684391620232683">Teksti i prezantuar për përdoruesin:</translation>
 <translation id="4452328064229197696">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve i Google" rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
-<translation id="4460315069258617173">Lejohet derisa të mbyllësh skedat për këtë faqe</translation>
 <translation id="4464826014807964867">Sajtet e uebit me informacione nga organizata jote</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ky formular nuk është i sigurt. Plotësimi automatik është çaktivizuar.</translation>
@@ -2020,7 +2023,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5967592137238574583">Modifiko informacionet e kontaktit</translation>
 <translation id="5967867314010545767">Hiqe nga historiku</translation>
 <translation id="5968022600320704045">Asnjë rezultat kërkimi</translation>
-<translation id="5968793460449681917">Në çdo vizitë</translation>
 <translation id="5974052231147553524">Ruli i gjashtë</translation>
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5979084224081478209">Kontrollo fjalëkalimet</translation>
@@ -2387,7 +2389,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6897140037006041989">Agjenti i përdoruesit</translation>
 <translation id="6898699227549475383">Organizata (O)</translation>
 <translation id="6899000063526916106">Fut kodin <ph name="NUMBER_OF_DIGITS" />-shifror</translation>
-<translation id="6907293445143367439">Lejo <ph name="SITE_NAME" /> te:</translation>
 <translation id="6907458757809079309">Palestra</translation>
 <translation id="6910240653697687763"><ph name="URL" /> kërkon të marrë nën kontroll të plotë pajisjet e tua MIDI</translation>
 <translation id="691024665142758461">Shkarko shumë skedarë</translation>
@@ -2464,6 +2465,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7083258188081898530">Tabakaja 9</translation>
 <translation id="7086090958708083563">Përditësimi u kërkua nga përdoruesi</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
+<translation id="7096341143397839437">Email-i: <ph name="EMAIL" /></translation>
 <translation id="7096937462164235847">Identiteti i këtij sajti uebi nuk është i verifikuar.</translation>
 <translation id="7101893872976785596">Filmat horror</translation>
 <translation id="7102079138917191645">Ndërtimi dhe mirëmbajtja</translation>
@@ -2542,6 +2544,7 @@ Detaje shtesë:
 <translation id="7256634549594854023">Tabakaja e pasme</translation>
 <translation id="725866823122871198">Nuk mund të vendoset një lidhje private me <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sepse data dhe ora (<ph name="DATE_AND_TIME" />) e kompjuterit tënd nuk janë të sakta.</translation>
 <translation id="7260504762447901703">Revoko qasjen</translation>
+<translation id="7265608370113700582">Adresa ofrohet vetëm në këtë pajisje</translation>
 <translation id="7275334191706090484">Faqeshënuesit e menaxhuar</translation>
 <translation id="7277998515889183784">Grimi dhe kozmetika</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të ndryshuar fjalëkalimin e "Llogarisë sate të Google"</translation>
@@ -2566,7 +2569,6 @@ Detaje shtesë:
 <translation id="733923710415886693">Certifikata e serverit nuk është zbuluar përmes "Transparencës së certifikatave".</translation>
 <translation id="7341357280245177602">Automjetet e përdorura</translation>
 <translation id="7346048084945669753">Është i lidhur:</translation>
-<translation id="7349921148288539306">Lejohet deri sa ta mbyllësh këtë skedë</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
 <translation id="7353601530677266744">Linja e komandave</translation>
 <translation id="7354880545102894991">Udhëtimet me kosto të ulët dhe të momentit të fundit</translation>
@@ -2965,6 +2967,7 @@ Detaje shtesë:
 <translation id="8245703462678310750">Shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />| për të dalë nga ekrani i plotë dhe për të parë shkarkimin.</translation>
 <translation id="8249296373107784235">Ndërprite</translation>
 <translation id="8249463483885748674">Testet e standardizuara dhe të pranimit</translation>
+<translation id="8250094606476360498">Kjo adresë është ruajtur aktualisht në këtë pajisje. Për ta përdorur atë nëpër produktet e Google, ruaje atë në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Butoni "Menaxho cilësimet e qasshmërisë"; shtyp "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e ChromeOS</translation>
 <translation id="8253091569723639551">Adresa e faturimit është e detyrueshme</translation>
 <translation id="8257387598443225809">Ky aplikacion është projektuar për celular</translation>
@@ -3042,7 +3045,6 @@ Detaje shtesë:
 <translation id="8433057134996913067">Kjo do të bëjë të dalësh nga shumica e sajteve të uebit.</translation>
 <translation id="8434840396568290395">Kafshët shtëpiake</translation>
 <translation id="8437238597147034694">&amp;Zhbëj zhvendosjen</translation>
-<translation id="8438476240229491014">Kujtoje këtë cilësim</translation>
 <translation id="8438786541497918448">Të përdoret kamera dhe mikrofoni?</translation>
 <translation id="8438923942245957911">Ky sajt është raportuar nga organizata jote</translation>
 <translation id="8443613539889492016">Muzika rap dhe hip-hop</translation>

@@ -387,7 +387,6 @@
 <translation id="3091010850649238832">ক্লিপব'ৰ্ডৰ সমল দেখুৱাওক</translation>
 <translation id="3098745985164956033">আপোনাৰ বাবে বিৱৰণ উন্নত কৰিবলৈ Googleলৈ কিছুমান প্ৰতিচ্ছবি পঠিওৱা হয়</translation>
 <translation id="3114507951000454849">আজিৰ বাতৰি পঢ়ক <ph name="NEWS_ICON" /></translation>
-<translation id="311958134571892113">ইয়াৰ সৈতে লিংক কৰা হ’ল</translation>
 <translation id="3123734510202723619">ঘোষণাসমূহ</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chromeৰ গৃহপৃষ্ঠা</translation>
@@ -787,7 +786,6 @@
 <translation id="5235196193381275927">ছাইন ইন কৰি থাকোঁতে কিবা ভুল হ’ল</translation>
 <translation id="5246093389635966745">টুলবাৰৰ শ্বৰ্টকাট সম্পাদনা কৰক</translation>
 <translation id="5271967389191913893">ডাউনল'ড কৰিবলগীয়া সমল ডিভাইচে খুলিব নোৱাৰে।</translation>
-<translation id="5274286919938458946"><ph name="CARD_DETAIL" />ৰ সৈতে লিংক কৰা হ’ল</translation>
 <translation id="5292796745632149097">এইটোলৈ পঠিয়াওক</translation>
 <translation id="5300426565656326054">ব্ৰাউজাৰৰ ভিত্তিত বিজ্ঞাপন ব্যক্তিগতকৃত কৰা</translation>
 <translation id="5304593522240415983">এই ঠাই খালী ৰাখিব নোৱাৰি</translation>
@@ -1214,6 +1212,7 @@
 <translation id="7482656565088326534">টেবটো পূৰ্বদৰ্শন কৰক</translation>
 <translation id="7484997419527351112">Discover- অফ আছে</translation>
 <translation id="7485033510383818941">ফীডৰ সমলটো ৰিফ্ৰেশ্ব কৰিবলৈ, পৃষ্ঠাখন তললৈ টানক</translation>
+<translation id="7486953194485875763">যোৱা ১৫ মিনিটৰ তলত দিয়া ডেটাখিনি মচি পেলোৱা হ’ব:</translation>
 <translation id="749294055653435199">এই ডিভাইচটোত Google Lens উপলব্ধ নহয়</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> ( <ph name="TIME_SINCE_UPDATE" />ত আপডে'ট কৰা হৈছিল)</translation>
 <translation id="7497755084107113646">বিষয়বস্তুটো সম্ভাব্য বিষয়বস্তুৰ সূচীত পুনৰ যোগ দিয়া হৈছে</translation>

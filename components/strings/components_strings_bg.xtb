@@ -315,6 +315,7 @@
 <translation id="1689333818294560261">Псевдоним</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Как можете да управлявате данните си<ph name="END_BOLD" />: Chrome автоматично изтрива темите, които са по-стари от 4 седмици. Докато сърфирате, дадена тема може отново да се покаже в списъка. Също така можете да блокирате темите, които не искате Chrome да споделя със сайтовете, и да изключвате рекламни теми по всяко време от настройките на браузъра.</translation>
 <translation id="1697532407822776718">Готово!</translation>
+<translation id="1699651774646344471">Вече можете да използвате адреси от профила си в Google</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Нива на мащаба</translation>
@@ -537,6 +538,7 @@
 <translation id="2224337661447660594">Няма достъп до интернет</translation>
 <translation id="2225927550500503913">Виртуалната карта е включена</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Влизане в профила<ph name="END_LINK" /> в Wi-Fi мрежата</translation>
+<translation id="2228057197024893428">Понастоящем този адрес е запазен в Chrome. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2239100178324503013">Изпращане сега</translation>
 <translation id="2241693394036365668">Изтегляне на файл</translation>
 <translation id="2246264294482514010">10 x 12 инча</translation>
@@ -656,6 +658,7 @@
 <translation id="2547466893236767989">Уеб дизайн и разработка</translation>
 <translation id="254947805923345898">Стойността на правилото не е валидна.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> изпрати невалиден отговор.</translation>
+<translation id="2551608178605132291">Адрес: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">От сега нататък да се използва опцията за заключване на екрана за потвърждаване на картите</translation>
 <translation id="2553853292994445426">Проверете настройките си за защитен DNS. Възможно е да сте конфигурирали защитен DNS сървър, с който не може да бъде установена връзка.</translation>
@@ -853,6 +856,7 @@
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Проверете конфигурацията за защитения DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Средна тава</translation>
 <translation id="3109728660330352905">Нямате пълномощия за преглед на тази страница.</translation>
+<translation id="3112892588078695695">Телефонен номер: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Трета смяна</translation>
 <translation id="3114040155724590991">Системата Android се актуализира
 Стартирането на приложението ви може да отнеме повече време от обикновено.</translation>
@@ -1225,6 +1229,7 @@
 <translation id="4031179711345676612">Достъпът до микрофона е разрешен</translation>
 <translation id="4040350669425716613">Колежи и университети</translation>
 <translation id="4047351652147966654">18 x 24 инча</translation>
+<translation id="4050392779074832022">Ще можете да го използвате в продуктите на Google</translation>
 <translation id="405399507749852140">Получаване на сигнали при понижение на цената в който и да е сайт</translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4063063121357725926">Позволете на Google да ви помага да намирате отстъпки за кошниците си</translation>
@@ -1415,7 +1420,6 @@
 <translation id="4451135742916150903">Може да поиска разрешение да се свързва с HID устройства</translation>
 <translation id="4451684391620232683">Показан на потребителя текст:</translation>
 <translation id="4452328064229197696">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, мениджърът на паролите в Google ви препоръчва да проверите запазените си пароли.</translation>
-<translation id="4460315069258617173">Разрешено, докато не затворите разделите със сайта</translation>
 <translation id="4464826014807964867">Уебсайтове, които разполагат с информация от организацията ви</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Този формуляр не е защитен. Автоматичното попълване е изключено.</translation>
@@ -2020,7 +2024,6 @@
 <translation id="5967592137238574583">Редактиране на информацията за връзка</translation>
 <translation id="5967867314010545767">Премахване от историята</translation>
 <translation id="5968022600320704045">Няма резултати от търсенето</translation>
-<translation id="5968793460449681917">При всяко посещение</translation>
 <translation id="5974052231147553524">Шеста ролка</translation>
 <translation id="5975083100439434680">Намаляване на мащаба</translation>
 <translation id="5979084224081478209">Проверка на паролите</translation>
@@ -2388,7 +2391,6 @@
 <translation id="6897140037006041989">Потребителски агент</translation>
 <translation id="6898699227549475383">Организация (О)</translation>
 <translation id="6899000063526916106">Въведете <ph name="NUMBER_OF_DIGITS" />-цифрения код</translation>
-<translation id="6907293445143367439">Разрешаване на <ph name="SITE_NAME" /> да:</translation>
 <translation id="6907458757809079309">Фитнес</translation>
 <translation id="6910240653697687763"><ph name="URL" /> иска да получи пълен контрол над MIDI устройствата ви</translation>
 <translation id="691024665142758461">Изтегляне на няколко файла</translation>
@@ -2465,6 +2467,7 @@
 <translation id="7083258188081898530">Тава 9</translation>
 <translation id="7086090958708083563">Качване, заявено от потребител</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате разрешенията и съхраняваните данни от сайтовете от настройките на Chrome</translation>
+<translation id="7096341143397839437">Имейл: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Идентичността на този уебсайт е потвърдена.</translation>
 <translation id="7101893872976785596">Филми на ужасите</translation>
 <translation id="7102079138917191645">Строителство и поддръжка</translation>
@@ -2543,6 +2546,7 @@
 <translation id="7256634549594854023">Задна тава</translation>
 <translation id="725866823122871198">Не може да се установи частна връзка с/ъс <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, тъй като датата и часът на компютъра ви (<ph name="DATE_AND_TIME" />) са неправилни.</translation>
 <translation id="7260504762447901703">Отмяна на достъпа</translation>
+<translation id="7265608370113700582">Адресът е налице само на това устройство</translation>
 <translation id="7275334191706090484">Управлявани отметки</translation>
 <translation id="7277998515889183784">Грим и козметика</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да промените паролата за профила си в Google</translation>
@@ -2567,7 +2571,6 @@
 <translation id="733923710415886693">Сертификатът на сървъра не е разкрит чрез Прозрачност на сертификатите.</translation>
 <translation id="7341357280245177602">Употребявани превозни средства</translation>
 <translation id="7346048084945669753">Потребителят е вътрешен:</translation>
-<translation id="7349921148288539306">Разрешено, докато не затворите раздела</translation>
 <translation id="7352651011704765696">Нещо се обърка</translation>
 <translation id="7353601530677266744">Команден ред</translation>
 <translation id="7354880545102894991">Нискобюджетни пътувания и пътувания в последния момент</translation>
@@ -2966,6 +2969,7 @@
 <translation id="8245703462678310750">Натиснете и задръжте |<ph name="ACCELERATOR" />|, за да излезете от режима на цял екран и да видите изтеглянето.</translation>
 <translation id="8249296373107784235">Прекратяване</translation>
 <translation id="8249463483885748674">Стандартизирани тестове и тестове за прием</translation>
+<translation id="8250094606476360498">Понастоящем адресът е запазен на това устройство. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="ACCOUNT" />).</translation>
 <translation id="8252991034201168845">Бутон „Управление на настройките за достъпност“. Натиснете Enter, за да персонализирате инструментите за достъпност в настройките на Chrome OS</translation>
 <translation id="8253091569723639551">Адресът за фактуриране е задължителен</translation>
 <translation id="8257387598443225809">Това приложение е предназначено за мобилни устройства</translation>
@@ -3043,7 +3047,6 @@
 <translation id="8433057134996913067">Ще излезете от повечето уебсайтове.</translation>
 <translation id="8434840396568290395">Домашни любимци</translation>
 <translation id="8437238597147034694">&amp;Отмяна на преместването</translation>
-<translation id="8438476240229491014">Запомняне на тази настройка</translation>
 <translation id="8438786541497918448">Да се използват ли камерата и микрофонът?</translation>
 <translation id="8438923942245957911">Организацията ви е подала сигнал за този сайт</translation>
 <translation id="8443613539889492016">Рап и хип-хоп</translation>

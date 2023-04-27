@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">Код доступа</translation>
 <translation id="1820259098641718022">Добавлено в список чтения</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Раскрытые пароли}=1{{COUNT} раскрытый пароль}one{{COUNT} раскрытый пароль}few{{COUNT} раскрытых пароля}many{{COUNT} раскрытых паролей}other{{COUNT} раскрытого пароля}}</translation>
+<translation id="1830634592642484976">Адрес добавлен в Chrome. Сохраните его в аккаунте Google (<ph name="USER_EMAIL" />), чтобы использовать в других продуктах Google.</translation>
 <translation id="1832848789136765277">Чтобы никогда не терять доступ к синхронизированным данным, подтвердите свою личность.</translation>
 <translation id="1836891464494477513">{count,plural, =1{Закладка сохранена в аккаунте Google ({email}).}one{Закладки сохранены в аккаунте Google ({email}).}few{Закладки сохранены в аккаунте Google ({email}).}many{Закладки сохранены в аккаунте Google ({email}).}other{Закладки сохранены в аккаунте Google ({email}).}}</translation>
 <translation id="1870148520156231997">Показать пароль</translation>
@@ -186,6 +187,7 @@
 <translation id="2242467532204595597">Открывайте ссылки в сообщениях, документах и других приложениях с помощью Chrome.</translation>
 <translation id="22508856139286506">Закрытые предупреждения (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Меню → История</translation>
+<translation id="2252674110805316998">Веб-поиск</translation>
 <translation id="2256933947031277845">Согласно правилам, установленным организацией, выполнить вход можно только с одобренным аккаунтом.</translation>
 <translation id="225943865679747347">Код ошибки: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Добавить аккаунт</translation>
@@ -487,6 +489,7 @@
 <translation id="4272631900155121838">Чтобы отсканировать QR-код, разрешите доступ к камере в настройках.</translation>
 <translation id="4277990410970811858">Безопасный просмотр</translation>
 <translation id="4281844954008187215">Условия использования</translation>
+<translation id="4293080268407233932">Поиск</translation>
 <translation id="4304713468139749426">Менеджер паролей</translation>
 <translation id="430793432425771671">Синхронизировать все</translation>
 <translation id="4309403553630140242">Чтобы узнать больше, нажмите дважды</translation>
@@ -543,6 +546,7 @@
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4642472735733036929">Отслеживание цен приостановлено.</translation>
 <translation id="4650125387981512669">Продолжить как <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Убедитесь, что пароли в безопасности и не были раскрыты, а также получите совет о защите в интернете. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Эта функция включается, когда вы входите в аккаунт Google.</translation>
 <translation id="4659667755519643272">Открыть переключатель вкладок</translation>
 <translation id="46614316059270592">Сохранить пароль</translation>
@@ -695,6 +699,7 @@
 <translation id="5669617676038747374">Создать QR-код</translation>
 <translation id="567881659373499783">Версия <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Чтобы использовать и сохранять пароли в аккаунте Google, подтвердите свою личность.</translation>
+<translation id="5684761169742812828">Пароль был раскрыт в результате утечки данных в интернете. Если вы не можете заменить его прямо сейчас, Google рекомендует оставить предупреждение, чтобы вы не забыли сделать это позже.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Показано одно окно Chrome}one{Показано {count} окно Chrome}few{Показано {count} окна Chrome}many{Показано {count} окон Chrome}other{Показано {count} окна Chrome}}</translation>
 <translation id="5701270923492462699">Доступ к камере разрешен</translation>
 <translation id="5704908597376970822">Не удается войти.</translation>
@@ -742,6 +747,7 @@
 <translation id="5951816930277761335">Поделитесь ссылкой.</translation>
 <translation id="5955891643922670672">Просматривается в офлайн-режиме</translation>
 <translation id="5957613098218939406">Другое</translation>
+<translation id="595769230373966252">Поиск в <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Не удалось создать ссылку на выделенный текст.</translation>
 <translation id="5965679971710331625">Вы вошли в аккаунт</translation>
 <translation id="5979837087407522202">Поиск паролей</translation>
@@ -1219,6 +1225,7 @@
 <translation id="8952559610785099500">Добавление пароля</translation>
 <translation id="8953046091948372197">Здесь будут ваши пароли</translation>
 <translation id="895541991026785598">Сообщить о проблеме</translation>
+<translation id="8961757677053809960">Закрыть предупреждение?</translation>
 <translation id="8971545611707025079">Проверить снова</translation>
 <translation id="8974714402877957201">1. Откройте настройки устройства iPad.</translation>
 <translation id="8976382372951310360">Справка</translation>

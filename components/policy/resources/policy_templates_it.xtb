@@ -2918,6 +2918,15 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3623332696371971798">Impedisci l'accesso a Google Foto dall'app di personalizzazione</translation>
 <translation id="3627678165642179114">Attiva o disattiva il servizio web di controllo ortografico</translation>
 <translation id="3628480121685794414">Attiva stampa su un lato</translation>
+<translation id="3634117682099473917">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi. Questo criterio è molto simile a <ph name="DOH_TEMPLATES_POLICY_NAME" /> e lo sostituirà se verrà specificato. Al contrario di quel criterio, supporta la specifica di informazioni sull'identità.
+
+Se il criterio <ph name="DOH_MODE_POLICY_NAME" /> viene impostato su <ph name="SECURE_DNS_MODE_SECURE" />, è necessario configurare questo criterio o il criterio <ph name="DOH_TEMPLATES_POLICY_NAME" />.
+
+Se il criterio <ph name="DOH_MODE_POLICY_NAME" /> viene impostato su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e questo criterio viene configurato, verranno usati i modelli URI specificati; se questo criterio non viene configurato, verranno usate le mappature impostate come hardcoded per cercare di eseguire l'upgrade del resolver DNS attuale dell'utente a un resolver DoH gestito dallo stesso fornitore.
+
+Se il modello URI contiene una variabile <ph name="HTTP_VARIABLE_DNS" />, per le richieste al resolver verrà usato il metodo <ph name="HTTP_METHOD_GET" />; in caso contrario verrà usato il metodo <ph name="HTTP_METHOD_POST" /> per le richieste.
+
+Dalla versione 114 in poi, il criterio <ph name="DOH_SALT_POLICY_NAME" /> è facoltativo se viene configurato questo criterio.</translation>
 <translation id="3634125384445314047">Consenti l'accesso tramite Phone Hub a foto e video recenti acquisiti sul telefono.</translation>
 <translation id="3642557248926713561">Disattiva la protezione delle estensioni di Navigazione sicura</translation>
 <translation id="3643284063603988867">Attiva la funzionalità "Ricorda password"</translation>
@@ -3804,6 +3813,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="45036050223225148">Disattiva l'esperimento TLS Encrypted ClientHello</translation>
 <translation id="4503935079903510542">L'immagine del disco di avvio UEFI utilizzata per installare la VM sui dispositivi x86_64.</translation>
 <translation id="4508728400492074981">Controlla i criteri relativi alla funzionalità First-Party Sets.</translation>
+<translation id="4510131075424939993">Specifica un valore di sale da usare nel criterio <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> durante la valutazione delle informazioni sull'identità</translation>
 <translation id="4510923771103268849">L'utente può avere accesso root ai contenitori Crostini</translation>
 <translation id="4512407512989846472">Consente di impedire la copia negli appunti per URL specifici</translation>
 <translation id="4513691822411041977">Non viene forzato l'uso di SafeSearch nella Ricerca Google o nella Modalità con restrizioni di YouTube</translation>
@@ -5567,6 +5577,11 @@ Il salvaschermo del dispositivo mostra le immagini a cui fa riferimento il crite
 
       Nota: il criterio ha effetto su tutti gli output audio, incluse le funzioni di accessibilità audio. Non disattivare il criterio se un utente richiede uno screen reader.</translation>
 <translation id="6221175752766085998">Consenti i certificati privi dell'estensione subjectAlternativeName emessi dai trust anchor locali</translation>
+<translation id="6221327862246049151">Questo sale viene utilizzato come valore di sale quando viene eseguito l'hashing delle informazioni sull'identità incluse nella stringa <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />.
+
+Il sale deve essere una stringa con una lunghezza compresa tra 8 e 32 caratteri.
+
+Dalla versione 114 in poi, questo criterio è facoltativo se viene configurato il criterio <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />. Se il criterio non viene configurato, gli identificatori negli URI del modello configurati tramite il criterio <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> vengono sottoposti ad hashing senza sale.</translation>
 <translation id="6224070048795197148">Consenti agli utenti di usare il browser senza accedere</translation>
 <translation id="6224304369267200483">URL/domini per cui è consentita automaticamente l'attestazione diretta dei token di sicurezza</translation>
 <translation id="6225938950222983458">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.</translation>

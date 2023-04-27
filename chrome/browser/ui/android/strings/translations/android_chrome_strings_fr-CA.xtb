@@ -387,7 +387,6 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="3091010850649238832">Afficher le contenu du presse-papier</translation>
 <translation id="3098745985164956033">Certaines images sont envoyées à Google afin d'améliorer les descriptions pour vous</translation>
 <translation id="3114507951000454849">Actualités du jour <ph name="NEWS_ICON" /></translation>
-<translation id="311958134571892113">lié à</translation>
 <translation id="3123734510202723619">Annonces</translation>
 <translation id="3134784203083076891"> »</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
@@ -787,7 +786,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5235196193381275927">Un problème est survenu lors de la connexion</translation>
 <translation id="5246093389635966745">Modifier le raccourci de la barre d'outils</translation>
 <translation id="5271967389191913893">L'appareil ne peut pas ouvrir le contenu à télécharger.</translation>
-<translation id="5274286919938458946">Associée à <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Envoyer à</translation>
 <translation id="5300426565656326054">Personnalisation des annonces en fonction du navigateur</translation>
 <translation id="5304593522240415983">Ce champ ne peut être vide</translation>
@@ -851,6 +849,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5628604359369369630">Non lus : accessibles hors ligne</translation>
 <translation id="5639724618331995626">Autoriser tous les sites</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />L'historique de recherches<ph name="END_LINK1" /> et <ph name="BEGIN_LINK2" />les autres formes d'activité<ph name="END_LINK2" /> peuvent être enregistrées dans votre compte Google</translation>
+<translation id="564667659802381754"><ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /> Guide sur la confidentialité</translation>
 <translation id="5648166631817621825">Sept derniers jours</translation>
 <translation id="5655963694829536461">Rechercher vos téléchargements</translation>
 <translation id="5659593005791499971">Courriel</translation>

@@ -387,7 +387,6 @@
 <translation id="3091010850649238832">Показать содержимое буфера обмена</translation>
 <translation id="3098745985164956033">Передавать некоторые изображения в Google, чтобы улучшить их описание</translation>
 <translation id="3114507951000454849">Будьте в курсе новостей <ph name="NEWS_ICON" /></translation>
-<translation id="311958134571892113">связана с</translation>
 <translation id="3123734510202723619">Оповещения</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Главная страница Chrome</translation>
@@ -787,7 +786,6 @@
 <translation id="5235196193381275927">Не удалось войти в систему.</translation>
 <translation id="5246093389635966745">Изменить кнопку на панели инструментов</translation>
 <translation id="5271967389191913893">Не удается открыть скачанный контент.</translation>
-<translation id="5274286919938458946">Связана с картой <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Куда отправить</translation>
 <translation id="5300426565656326054">Персонализация рекламы на основе данных браузера</translation>
 <translation id="5304593522240415983">Это поле нужно заполнить</translation>
@@ -851,6 +849,7 @@
 <translation id="5628604359369369630">Не прочитано – доступно в офлайн-режиме</translation>
 <translation id="5639724618331995626">Разрешить доступ ко всем сайтам</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />История поиска<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />сведения о других действиях<ph name="END_LINK2" /> могут сохраняться в аккаунте Google.</translation>
+<translation id="564667659802381754">Руководство по конфиденциальности <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Последние 7 дней</translation>
 <translation id="5655963694829536461">Поиск в загрузках</translation>
 <translation id="5659593005791499971">Эл. почта</translation>
@@ -1213,6 +1212,7 @@
 <translation id="7482656565088326534">Вкладка предпросмотра</translation>
 <translation id="7484997419527351112">Рекомендации отключены</translation>
 <translation id="7485033510383818941">Чтобы обновить ленту, потяните страницу вниз</translation>
+<translation id="7486953194485875763">Указанные ниже данные (собранные за последние 15 минут) будут удалены.</translation>
 <translation id="749294055653435199">Google Объектив недоступен на этом устройстве.</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (последнее обновление: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Эта тема снова может быть рекомендована</translation>

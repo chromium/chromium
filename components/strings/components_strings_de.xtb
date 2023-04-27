@@ -438,6 +438,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2003775180883135320">Vierfache Lochung oben</translation>
 <translation id="201174227998721785">Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen verwalten</translation>
 <translation id="2019607688127825327">Schaltfläche „Einstellungen für Bedienungshilfen verwalten“ – drücke die Eingabetaste, um die Bedienungshilfen in den Chrome-Einstellungen zu personalisieren</translation>
+<translation id="2021333772895814435">Durch diese Richtlinie wird die geräteübergreifende Synchronisierung automatisch deaktiviert für: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 × 19 Zoll</translation>
 <translation id="2025115093177348061">Augmented Reality</translation>
 <translation id="2025186561304664664">Proxy ist auf automatische Konfiguration eingestellt.</translation>
@@ -1222,6 +1223,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4031179711345676612">Mikrofonnutzung zulässig</translation>
 <translation id="4040350669425716613">Hochschulen und Universitäten</translation>
 <translation id="4047351652147966654">18 x 24 Zoll</translation>
+<translation id="4050392779074832022">Du kannst sie dann in anderen Google-Produkten verwenden</translation>
 <translation id="405399507749852140">Du wirst bei einem Preisnachlass benachrichtigt</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Google kann dir helfen, Rabatte für deinen Einkaufswagen zu finden</translation>
@@ -1412,7 +1414,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4451135742916150903">Darf nachfragen, wenn sie eine Verbindung mit HID-Geräten herstellen möchte</translation>
 <translation id="4451684391620232683">Text, der dem Nutzer angezeigt wurde:</translation>
 <translation id="4452328064229197696">Das Passwort, das du gerade verwendet hast, wurde in einer Datenpanne gefunden. Zum besseren Schutz deiner Konten empfiehlt der Google Passwortmanager, deine gespeicherten Passwörter zu prüfen.</translation>
-<translation id="4460315069258617173">Zugelassen, bis du Tabs dieser Website schließt</translation>
 <translation id="4464826014807964867">Websites mit Informationen deiner Organisation</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Dieses Formular ist nicht sicher. „Autofill“ wurde deaktiviert.</translation>
@@ -2017,7 +2018,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5967592137238574583">Kontaktdaten bearbeiten</translation>
 <translation id="5967867314010545767">Aus Verlauf entfernen</translation>
 <translation id="5968022600320704045">Keine Suchergebnisse</translation>
-<translation id="5968793460449681917">Bei jedem Besuch</translation>
 <translation id="5974052231147553524">Sechste Rolle</translation>
 <translation id="5975083100439434680">Verkleinern</translation>
 <translation id="5979084224081478209">Passwörter prüfen</translation>
@@ -2385,7 +2385,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6897140037006041989">User-Agent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" />-stelligen Code eingeben</translation>
-<translation id="6907293445143367439">„<ph name="SITE_NAME" />“ Folgendes gestatten:</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="6910240653697687763"><ph name="URL" /> fordert die vollständige Kontrolle über deine MIDI-Geräte</translation>
 <translation id="691024665142758461">Mehrere Dateien herunterladen</translation>
@@ -2564,7 +2563,6 @@ Weitere Details:
 <translation id="733923710415886693">Das Serverzertifikat wurde nicht über die Zertifikatstransparenz offengelegt.</translation>
 <translation id="7341357280245177602">Gebrauchtwagen</translation>
 <translation id="7346048084945669753">Ist zugehörig:</translation>
-<translation id="7349921148288539306">Zugelassen, bis du diesen Tab schließt</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten.</translation>
 <translation id="7353601530677266744">Befehlszeile</translation>
 <translation id="7354880545102894991">Billig- und Last-Minute-Reisen</translation>
@@ -3040,7 +3038,6 @@ Weitere Details:
 <translation id="8433057134996913067">Dadurch wirst du von den meisten Websites abgemeldet.</translation>
 <translation id="8434840396568290395">Haustiere</translation>
 <translation id="8437238597147034694">&amp;Verschieben rückgängig machen</translation>
-<translation id="8438476240229491014">Einstellung speichern</translation>
 <translation id="8438786541497918448">Kamera und Mikrofon verwenden?</translation>
 <translation id="8438923942245957911">Diese Website wurde von deiner Organisation gemeldet</translation>
 <translation id="8443613539889492016">Rap und Hip-Hop</translation>
