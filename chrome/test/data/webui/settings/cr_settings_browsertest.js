@@ -602,6 +602,50 @@ TEST_F(
       runMochaSuite('enableWebBluetoothNewPermissionsBackend');
     });
 
+var CrSettingsPrivacyPagePrivacySandboxRestrictedTest =
+    class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/privacy_page_test.js';
+  }
+  get featuresWithParameters() {
+    return [{
+      featureName: 'privacy_sandbox::kPrivacySandboxSettings4',
+      parameters: [{name: 'force-restricted-user', value: true}]
+    }];
+  }
+};
+
+TEST_F(
+    'CrSettingsPrivacyPagePrivacySandboxRestrictedTest', 'Restricted',
+    function() {
+      runMochaSuite('PrivacySandbox4EnabledButRestricted');
+    });
+
+var CrSettingsPrivacyPagePrivacySandboxRestrictedWithNoticeTest =
+    class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/privacy_page_test.js';
+  }
+
+  get featuresWithParameters() {
+    return [{
+      featureName: 'privacy_sandbox::kPrivacySandboxSettings4',
+      parameters: [
+        {name: 'force-restricted-user', value: true},
+        {name: 'restricted-notice', value: true}
+      ]
+    }];
+  }
+};
+
+TEST_F(
+    'CrSettingsPrivacyPagePrivacySandboxRestrictedWithNoticeTest',
+    'RestrictedWithNotice', function() {
+      runMochaSuite('PrivacySandbox4EnabledButRestrictedWithNotice');
+    });
+
 var CrSettingsPrivacySandboxPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
