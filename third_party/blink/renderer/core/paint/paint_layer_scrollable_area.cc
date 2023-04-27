@@ -1202,7 +1202,8 @@ mojom::blink::ColorScheme PaintLayerScrollableArea::UsedColorSchemeScrollbars()
       !GetPageScrollbarTheme().UsesOverlayScrollbars()) {
     const Document& document = GetLayoutBox()->GetDocument();
     if (document.documentElement() &&
-        document.documentElement()->ComputedStyleRef().ColorScheme().empty() &&
+        document.documentElement()->GetComputedStyle() &&
+        document.documentElement()->GetComputedStyle()->ColorScheme().empty() &&
         document.GetStyleEngine().GetPageColorSchemes() ==
             static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal) &&
         document.GetPreferredColorScheme() ==
