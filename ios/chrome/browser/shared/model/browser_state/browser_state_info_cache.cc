@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/browser_state/browser_state_info_cache.h"
+#include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 
 #include <stddef.h>
 
@@ -18,14 +18,14 @@
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "ios/chrome/browser/browser_state/browser_state_info_cache_observer.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache_observer.h"
 
 namespace {
 const char kGAIAIdKey[] = "gaia_id";
 const char kIsAuthErrorKey[] = "is_auth_error";
 const char kUserNameKey[] = "user_name";
-}
+}  // namespace
 
 BrowserStateInfoCache::BrowserStateInfoCache(
     PrefService* prefs,
@@ -55,8 +55,9 @@ void BrowserStateInfoCache::AddBrowserState(
   cache.Set(key, std::move(info));
   AddBrowserStateCacheKey(key);
 
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnBrowserStateAdded(browser_state_path);
+  }
 }
 
 void BrowserStateInfoCache::AddObserver(
@@ -83,8 +84,9 @@ void BrowserStateInfoCache::RemoveBrowserState(
   cache.Remove(key);
   sorted_keys_.erase(base::ranges::find(sorted_keys_, key));
 
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnBrowserStateWasRemoved(browser_state_path);
+  }
 }
 
 size_t BrowserStateInfoCache::GetNumberOfBrowserStates() const {
@@ -93,12 +95,14 @@ size_t BrowserStateInfoCache::GetNumberOfBrowserStates() const {
 
 size_t BrowserStateInfoCache::GetIndexOfBrowserStateWithPath(
     const base::FilePath& browser_state_path) const {
-  if (browser_state_path.DirName() != user_data_dir_)
+  if (browser_state_path.DirName() != user_data_dir_) {
     return std::string::npos;
+  }
   std::string search_key = CacheKeyFromBrowserStatePath(browser_state_path);
   for (size_t i = 0; i < sorted_keys_.size(); ++i) {
-    if (sorted_keys_[i] == search_key)
+    if (sorted_keys_[i] == search_key) {
       return i;
+    }
   }
   return std::string::npos;
 }
@@ -156,8 +160,9 @@ void BrowserStateInfoCache::SetAuthInfoOfBrowserStateAtIndex(
 
 void BrowserStateInfoCache::SetBrowserStateIsAuthErrorAtIndex(size_t index,
                                                               bool value) {
-  if (value == BrowserStateIsAuthErrorAtIndex(index))
+  if (value == BrowserStateIsAuthErrorAtIndex(index)) {
     return;
+  }
 
   base::Value::Dict info = GetInfoForBrowserStateAtIndex(index)->Clone();
   info.Set(kIsAuthErrorKey, base::Value(value));

@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "ios/chrome/browser/browser_state/browser_state_info_cache.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 
 class ChromeBrowserStateImpl;
 

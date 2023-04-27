@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
+#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 
 TestChromeBrowserStateManager::TestChromeBrowserStateManager(
     const base::FilePath& user_data_dir)
@@ -39,8 +39,9 @@ ChromeBrowserState* TestChromeBrowserStateManager::GetLastUsedBrowserState() {
 
 ChromeBrowserState* TestChromeBrowserStateManager::GetBrowserState(
     const base::FilePath& path) {
-  if (browser_state_ && browser_state_->GetStatePath() == path)
+  if (browser_state_ && browser_state_->GetStatePath() == path) {
     return browser_state_.get();
+  }
   return nullptr;
 }
 
@@ -52,7 +53,8 @@ TestChromeBrowserStateManager::GetBrowserStateInfoCache() {
 std::vector<ChromeBrowserState*>
 TestChromeBrowserStateManager::GetLoadedBrowserStates() {
   std::vector<ChromeBrowserState*> result;
-  if (browser_state_)
+  if (browser_state_) {
     result.push_back(browser_state_.get());
+  }
   return result;
 }

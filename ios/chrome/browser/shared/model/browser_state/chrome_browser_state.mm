@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 #import <memory>
 #import <utility>
@@ -30,7 +30,7 @@ namespace {
 // object with this key. It can be used to check that a web::BrowserState
 // is effectively a ChromeBrowserState when converting.
 const char kBrowserStateIsChromeBrowserState[] = "IsChromeBrowserState";
-}
+}  // namespace
 
 ChromeBrowserState::ChromeBrowserState(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
@@ -45,8 +45,9 @@ ChromeBrowserState::~ChromeBrowserState() {}
 // static
 ChromeBrowserState* ChromeBrowserState::FromBrowserState(
     web::BrowserState* browser_state) {
-  if (!browser_state)
+  if (!browser_state) {
     return nullptr;
+  }
 
   // Check that the BrowserState is a ChromeBrowserState. It should always
   // be true in production and during tests as the only BrowserState that

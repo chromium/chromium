@@ -1,13 +1,6 @@
 specific_include_rules = {
-  "chrome_browser_state.mm": [
-    # TODO(crbug.com/583685): remove once the //ios/web public API allow
-    # access to that class.
-    "+ios/web/webui/url_data_manager_ios_backend.h"
-  ],
-
   # TODO(crbug.com/1294160): Remove this dependency.
   "^browser_state_keyed_service_factories.mm": [
     "+ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h",
   ],
-
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 
 #import <tuple>
 
@@ -98,8 +98,9 @@ TestChromeBrowserState::~TestChromeBrowserState() {
   // `policy_connector_` depends on `user_cloud_policy_manager_`. The
   // dependencies have to be shut down backward.
   policy_connector_->Shutdown();
-  if (user_cloud_policy_manager_)
+  if (user_cloud_policy_manager_) {
     user_cloud_policy_manager_->Shutdown();
+  }
 
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
@@ -114,14 +115,17 @@ void TestChromeBrowserState::Init() {
   DCHECK(!web::WebThread::IsThreadInitialized(web::WebThread::UI) ||
          web::WebThread::CurrentlyOn(web::WebThread::UI));
 
-  if (state_path_.empty())
+  if (state_path_.empty()) {
     state_path_ = base::CreateUniqueTempDirectoryScopedToTest();
+  }
 
-  if (IsOffTheRecord())
+  if (IsOffTheRecord()) {
     state_path_ = state_path_.Append(FILE_PATH_LITERAL("OTR"));
+  }
 
-  if (!base::PathExists(state_path_))
+  if (!base::PathExists(state_path_)) {
     base::CreateDirectory(state_path_);
+  }
 
   // Normally this would happen during browser startup, but for tests we need to
   // trigger creation of BrowserState-related services.
@@ -162,13 +166,15 @@ bool TestChromeBrowserState::IsOffTheRecord() const {
 }
 
 base::FilePath TestChromeBrowserState::GetStatePath() const {
-  if (!IsOffTheRecord())
+  if (!IsOffTheRecord()) {
     return state_path_;
+  }
 
   base::FilePath otr_stash_state_path =
       state_path_.Append(FILE_PATH_LITERAL("OTR"));
-  if (!base::PathExists(otr_stash_state_path))
+  if (!base::PathExists(otr_stash_state_path)) {
     base::CreateDirectory(otr_stash_state_path);
+  }
   return otr_stash_state_path;
 }
 
@@ -178,8 +184,9 @@ TestChromeBrowserState::GetIOTaskRunner() {
 }
 
 ChromeBrowserState* TestChromeBrowserState::GetOriginalChromeBrowserState() {
-  if (IsOffTheRecord())
+  if (IsOffTheRecord()) {
     return original_browser_state_;
+  }
   return this;
 }
 
@@ -189,11 +196,13 @@ bool TestChromeBrowserState::HasOffTheRecordChromeBrowserState() const {
 
 ChromeBrowserState*
 TestChromeBrowserState::GetOffTheRecordChromeBrowserState() {
-  if (IsOffTheRecord())
+  if (IsOffTheRecord()) {
     return this;
+  }
 
-  if (otr_browser_state_)
+  if (otr_browser_state_) {
     return otr_browser_state_.get();
+  }
 
   return CreateOffTheRecordBrowserStateWithTestingFactories();
 }
@@ -228,8 +237,9 @@ ChromeBrowserStateIOData* TestChromeBrowserState::GetIOData() {
 void TestChromeBrowserState::ClearNetworkingHistorySince(
     base::Time time,
     base::OnceClosure completion) {
-  if (!completion.is_null())
+  if (!completion.is_null()) {
     std::move(completion).Run();
+  }
 }
 
 net::URLRequestContextGetter* TestChromeBrowserState::CreateRequestContext(

@@ -454,7 +454,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/browser_state:browser_state_impl",
     "//ios/chrome/browser/browsing_data",
     "//ios/chrome/browser/commerce/push_notification",
     "//ios/chrome/browser/crash_report",

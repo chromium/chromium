@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
+#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"

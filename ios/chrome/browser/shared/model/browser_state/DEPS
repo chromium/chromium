@@ -1,0 +1,7 @@
+specific_include_rules = {
+  "chrome_browser_state.mm": [
+    # TODO(crbug.com/583685): remove once the //ios/web public API allow
+    # access to that class.
+    "+ios/web/webui/url_data_manager_ios_backend.h"
+  ],
+}
