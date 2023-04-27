@@ -10475,13 +10475,13 @@
                 {
                     "name": "Enabled_20230101",
                     "enable_features": [
-                        "CrosPrivacyHub"
+                        "CrosPrivacyHubV0"
                     ]
                 },
                 {
                     "name": "Enabled_20230101_Dogfood",
                     "enable_features": [
-                        "CrosPrivacyHub"
+                        "CrosPrivacyHubV0"
                     ]
                 }
             ]
