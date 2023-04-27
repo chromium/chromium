@@ -36,7 +36,7 @@ import zlib
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
 CLANG_REVISION = 'llvmorg-17-init-8029-g27f27d15'
-CLANG_SUB_REVISION = 3
+CLANG_SUB_REVISION = 4
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '17'
