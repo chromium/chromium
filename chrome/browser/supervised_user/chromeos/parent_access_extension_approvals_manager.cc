@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
@@ -31,6 +32,7 @@ std::u16string GetActiveUserFirstName() {
   return user->GetGivenName();
 }
 
+extensions::TestExtensionApprovalsManagerObserver* test_observer = nullptr;
 }  // namespace
 
 namespace extensions {
@@ -89,6 +91,9 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
         SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kFailed);
   } else {
     done_callback_ = std::move(callback);
+    if (test_observer) {
+      test_observer->OnTestParentAccessDialogCreated();
+    }
   }
 }
 
@@ -128,6 +133,9 @@ void ParentAccessExtensionApprovalsManager::OnParentAccessDialogClosed(
                    kFailed);
       break;
     case ash::ParentAccessDialog::Result::Status::kDisabled:
+      SupervisedUserExtensionsMetricsRecorder::RecordEnablementUmaMetrics(
+          SupervisedUserExtensionsMetricsRecorder::EnablementState::
+              kFailedToEnable);
       std::move(done_callback_)
           .Run(SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
                    kBlocked);
@@ -143,4 +151,13 @@ ParentAccessExtensionApprovalsManager::GetParentAccessDialogProvider() {
   return dialog_provider_.get();
 }
 
+TestExtensionApprovalsManagerObserver::TestExtensionApprovalsManagerObserver(
+    TestExtensionApprovalsManagerObserver* observer) {
+  test_observer = observer;
+}
+
+TestExtensionApprovalsManagerObserver::
+    ~TestExtensionApprovalsManagerObserver() {
+  test_observer = nullptr;
+}
 }  // namespace extensions

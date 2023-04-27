@@ -54,6 +54,15 @@ class ParentAccessExtensionApprovalsManager {
   SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback
       done_callback_;
 };
+
+// Observes the creation of the ParentAccessDialog for testing purposes.
+class TestExtensionApprovalsManagerObserver {
+ public:
+  explicit TestExtensionApprovalsManagerObserver(
+      TestExtensionApprovalsManagerObserver* observer);
+  ~TestExtensionApprovalsManagerObserver();
+  virtual void OnTestParentAccessDialogCreated() = 0;
+};
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHROMEOS_PARENT_ACCESS_EXTENSION_APPROVALS_MANAGER_H_

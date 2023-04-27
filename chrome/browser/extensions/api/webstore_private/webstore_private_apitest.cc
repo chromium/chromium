@@ -29,6 +29,7 @@
 #include "chrome/common/extensions/extension_test_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -53,14 +54,17 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"  // nogncheck
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "extensions/common/extension_builder.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -320,9 +324,11 @@ static constexpr char kTestAppId[] = "iladmdjkfniedhfhcfoefgojhgaiaccc";
 static constexpr char kTestAppVersion[] = "0.1";
 
 // Test fixture for various cases of installation for child accounts.
-class ExtensionWebstorePrivateApiTestChild
+class SupervisedUserExtensionWebstorePrivateApiTest
     : public ExtensionWebstorePrivateApiTest,
-      public TestParentPermissionDialogViewObserver {
+      public TestParentPermissionDialogViewObserver,
+      public TestExtensionApprovalsManagerObserver,
+      public testing::WithParamInterface<bool> {
  public:
   // The next dialog action to take.
   enum class NextDialogAction {
@@ -330,8 +336,9 @@ class ExtensionWebstorePrivateApiTestChild
     kAccept,
   };
 
-  ExtensionWebstorePrivateApiTestChild()
+  SupervisedUserExtensionWebstorePrivateApiTest()
       : TestParentPermissionDialogViewObserver(this),
+        TestExtensionApprovalsManagerObserver(this),
         embedded_test_server_(std::make_unique<net::EmbeddedTestServer>()),
         logged_in_user_mixin_(
             &mixin_host_,
@@ -342,6 +349,14 @@ class ExtensionWebstorePrivateApiTestChild
             AccountId::FromUserEmailGaiaId(kTestChildEmail, kTestChildGaiaId)) {
     // Suppress regular user login to enable child user login.
     set_chromeos_user_ = false;
+
+    if (IsExtensionApprovalsV2Enabled()) {
+      feature_list_.InitAndEnableFeature(
+          supervised_user::kLocalExtensionApprovalsV2);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          supervised_user::kLocalExtensionApprovalsV2);
+    }
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -410,11 +425,39 @@ class ExtensionWebstorePrivateApiTestChild
           view->CancelDialog();
           break;
         case NextDialogAction::kAccept:
+          // Tell the Reauth API client to return a success for the next reauth
+          // request.
+          SetNextReAuthStatus(
+              GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess);
           view->AcceptDialog();
           break;
       }
     }
   }
+
+  // TestExtensionApprovalsManagerObserver override:
+  void OnTestParentAccessDialogCreated() override {
+    if (next_dialog_action_) {
+      switch (next_dialog_action_.value()) {
+        case NextDialogAction::kCancel:
+          ash::ParentAccessDialog::GetInstance()->SetCanceled();
+          break;
+        case NextDialogAction::kAccept:
+          bool can_request_permission =
+              browser()->profile()->GetPrefs()->GetBoolean(
+                  prefs::kSupervisedUserExtensionsMayRequestPermissions);
+          if (!can_request_permission) {
+            ash::ParentAccessDialog::GetInstance()->SetDisabled();
+            break;
+          }
+          ash::ParentAccessDialog::GetInstance()->SetApproved(
+              "test_token", base::Time::FromDoubleT(123456L));
+          break;
+      }
+    }
+  }
+
+  bool IsExtensionApprovalsV2Enabled() const { return GetParam(); }
 
   void set_next_dialog_action(NextDialogAction action) {
     next_dialog_action_ = action;
@@ -429,18 +472,20 @@ class ExtensionWebstorePrivateApiTestChild
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
   ash::LoggedInUserMixin logged_in_user_mixin_;
   absl::optional<NextDialogAction> next_dialog_action_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         SupervisedUserExtensionWebstorePrivateApiTest,
+                         testing::Bool());
+
 // Tests install for a child when parent permission is granted.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
+IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        ParentPermissionGranted) {
   WebstoreInstallListener listener;
   WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
   set_next_dialog_action(NextDialogAction::kAccept);
 
-  // Tell the Reauth API client to return a success for the next reauth
-  // request.
-  SetNextReAuthStatus(GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess);
   ASSERT_TRUE(RunInstallTest("install_child.html", "app.crx"));
   listener.Wait();
   ASSERT_TRUE(listener.received_success());
@@ -456,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
 
 // Tests no install occurs for a child when the parent permission
 // dialog is canceled.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
+IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        ParentPermissionCanceled) {
   WebstoreInstallListener listener;
   set_next_dialog_action(NextDialogAction::kCancel);
@@ -477,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
 }
 
 // Tests that no parent permission is required for a child to install a theme.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
+IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        NoParentPermissionRequiredForTheme) {
   WebstoreInstallListener listener;
   WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
@@ -490,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
 // Tests that even if the kSupervisedUserInitiatedExtensionInstall feature flag
 // is enabled, supervised user extension installs are blocked if the
 // "Permissions for sites, apps and extensions" toggle is off.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
+IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        InstallBlockedWhenPermissionsToggleOff) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
