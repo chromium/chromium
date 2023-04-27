@@ -652,13 +652,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[0].children[3]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-event-attribution' &&
             table.children[0].children[6]?.innerText === '13' &&
-            table.children[0].children[7]?.innerText === 'yes' &&
+            table.children[0].children[7]?.innerText === 'true' &&
             table.children[0].children[2]?.innerText === 'Pending' &&
             table.children[1].children[6]?.innerText === '11' &&
             table.children[1].children[2]?.innerText ===
               'Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e' &&
             table.children[2].children[6]?.innerText === '0' &&
-            table.children[2].children[7]?.innerText === 'no' &&
+            table.children[2].children[7]?.innerText === 'false' &&
             table.children[2].children[2]?.innerText === 'Sent: HTTP 200' &&
             !table.children[2].classList.contains('send-error') &&
             table.children[3].children[2]?.innerText === 'Prohibited by browser policy' &&
@@ -695,13 +695,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[5].children[3]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-event-attribution' &&
             table.children[5].children[6]?.innerText === '13' &&
-            table.children[5].children[7]?.innerText === 'yes' &&
+            table.children[5].children[7]?.innerText === 'true' &&
             table.children[5].children[2]?.innerText === 'Pending' &&
             table.children[4].children[6]?.innerText === '11' &&
             table.children[4].children[2]?.innerText ===
               'Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e' &&
             table.children[3].children[6]?.innerText === '0' &&
-            table.children[3].children[7]?.innerText === 'no' &&
+            table.children[3].children[7]?.innerText === 'false' &&
             table.children[3].children[2]?.innerText === 'Sent: HTTP 200' &&
             table.children[2].children[2]?.innerText === 'Prohibited by browser policy' &&
             table.children[1].children[2]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED' &&
@@ -734,13 +734,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[0].children[3]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-event-attribution' &&
             table.children[0].children[6]?.innerText === '13' &&
-            table.children[0].children[7]?.innerText === 'yes' &&
+            table.children[0].children[7]?.innerText === 'true' &&
             table.children[0].children[2]?.innerText === 'Pending' &&
             table.children[1].children[6]?.innerText === '11' &&
             table.children[1].children[2]?.innerText ===
               'Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e' &&
             table.children[2].children[6]?.innerText === '0' &&
-            table.children[2].children[7]?.innerText === 'no' &&
+            table.children[2].children[7]?.innerText === 'false' &&
             table.children[2].children[2]?.innerText === 'Sent: HTTP 200' &&
             table.children[3].children[2]?.innerText === 'Prohibited by browser policy' &&
             table.children[4].children[2]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED' &&
@@ -1053,6 +1053,13 @@ IN_PROC_BROWSER_TEST_F(
       /*is_debug_report=*/true,
       SendResult(SendResult::Status::kTransientFailure,
                  net::ERR_INTERNET_DISCONNECTED));
+  manager()->NotifyReportSent(ReportBuilder(AttributionInfoBuilder().Build(),
+                                            SourceBuilder(now).BuildStored())
+                                  .SetReportTime(now + base::Hours(11))
+                                  .BuildNullAggregatable(),
+                              /*is_debug_report=*/false,
+                              SendResult(SendResult::Status::kSent, net::OK,
+                                         /*http_response_code=*/200));
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(AttributionInfoBuilder().Build(),
@@ -1068,13 +1075,14 @@ IN_PROC_BROWSER_TEST_F(
       const table = document.querySelector('#aggregatableReportTable')
           .shadowRoot.querySelector('tbody');
       const obs = new MutationObserver((_, obs) => {
-        if (table.children.length === 6 &&
+        if (table.children.length === 7 &&
             table.children[0].children[3]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-aggregate-attribution' &&
             table.children[0].children[2]?.innerText === 'Pending' &&
             table.children[0].children[6]?.innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
             table.children[0].children[7]?.innerText === '' &&
             table.children[0].children[8]?.innerText === 'aws-cloud' &&
+            table.children[0].children[9]?.innerText === 'false' &&
             table.children[1].children[2]?.innerText === 'Sent: HTTP 200' &&
             table.children[1].children[7]?.innerText === 'abc' &&
             table.children[2].children[2]?.innerText === 'Prohibited by browser policy' &&
@@ -1082,7 +1090,9 @@ IN_PROC_BROWSER_TEST_F(
             table.children[4].children[2]?.innerText === 'Network error: ERR_INVALID_REDIRECT' &&
             table.children[5].children[2]?.innerText === 'Network error: ERR_INTERNET_DISCONNECTED' &&
             table.children[5].children[3]?.innerText ===
-              'https://report.test/.well-known/attribution-reporting/debug/report-aggregate-attribution') {
+              'https://report.test/.well-known/attribution-reporting/debug/report-aggregate-attribution' &&
+            table.children[6].children[6]?.innerText === '[ {  "key": "0x0",  "value": 0 }]' &&
+            table.children[6].children[9]?.innerText === 'true') {
           obs.disconnect();
           document.title = $1;
         }

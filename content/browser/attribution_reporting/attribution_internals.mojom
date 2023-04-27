@@ -37,6 +37,7 @@ struct WebUIReportAggregatableAttributionData {
   array<AggregatableHistogramContribution> contributions;
   string? attestation_token;
   string aggregation_coordinator;
+  bool is_null_report;
 };
 
 union WebUIReportData {

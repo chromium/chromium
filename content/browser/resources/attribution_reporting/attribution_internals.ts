@@ -517,6 +517,7 @@ class AggregatableAttributionReport extends Report {
   contributions: string;
   attestationToken: string;
   aggregationCoordinator: string;
+  isNullReport: boolean;
 
   constructor(mojo: WebUIReport) {
     super(mojo);
@@ -530,6 +531,7 @@ class AggregatableAttributionReport extends Report {
 
     this.aggregationCoordinator =
         mojo.data.aggregatableAttributionData!.aggregationCoordinator;
+    this.isNullReport = mojo.data.aggregatableAttributionData!.isNullReport;
   }
 }
 
@@ -669,9 +671,8 @@ class EventLevelReportTableModel extends ReportTableModel<EventLevelReport> {
         [
           new ValueColumn<EventLevelReport, bigint>(
               'Report Priority', (e) => e.reportPriority),
-          new ValueColumn<EventLevelReport, string>(
-              'Randomized Report',
-              (e) => e.attributedTruthfully ? 'no' : 'yes'),
+          new ValueColumn<EventLevelReport, boolean>(
+              'Randomized Report', (e) => !e.attributedTruthfully),
         ],
         showDebugReportsContainer,
         sendReportsButton,
@@ -692,7 +693,9 @@ class AggregatableAttributionReportTableModel extends
           new ValueColumn<AggregatableAttributionReport, string>(
               'Attestation Token', (e) => e.attestationToken),
           new ValueColumn<AggregatableAttributionReport, string>(
-            'Aggregation Coordinator', (e) => e.aggregationCoordinator),
+              'Aggregation Coordinator', (e) => e.aggregationCoordinator),
+          new ValueColumn<AggregatableAttributionReport, boolean>(
+              'Null Report', (e) => e.isNullReport),
         ],
         showDebugReportsContainer,
         sendReportsButton,

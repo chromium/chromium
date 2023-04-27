@@ -816,6 +816,8 @@ void AttributionManagerImpl::OnReportStored(
 
   scheduler_timer_.MaybeSet(min_new_report_time);
 
+  bool notify_reports_changed = false;
+
   if (result.event_level_status() !=
           AttributionTrigger::EventLevelResult::kInternalError ||
       result.aggregatable_status() ==
@@ -824,10 +826,14 @@ void AttributionManagerImpl::OnReportStored(
     // aggregatable report can cause sources to reach event-level attribution
     // limit or become associated with a dedup key.
     NotifySourcesChanged();
-    NotifyReportsChanged();
+
+    notify_reports_changed = true;
   }
 
-  // TODO(crbug.com/1432558): Notify reports changed for null reports.
+  if (notify_reports_changed ||
+      result.min_null_aggregatable_report_time().has_value()) {
+    NotifyReportsChanged();
+  }
 
   for (auto& observer : observers_) {
     observer.OnTriggerHandled(trigger, cleared_debug_key, result);

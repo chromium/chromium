@@ -2980,9 +2980,15 @@ class AttributionManagerImplNullAggregatableReportTest
 };
 
 TEST_F(AttributionManagerImplNullAggregatableReportTest, ReportSent) {
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
   Checkpoint checkpoint;
   {
     InSequence seq;
+    EXPECT_CALL(observer, OnReportsChanged);
     EXPECT_CALL(*aggregation_service_, AssembleReport).Times(0);
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*aggregation_service_, AssembleReport)
