@@ -419,6 +419,23 @@ void CorsURLLoader::FollowRedirect(
   if (request_.method == net::HttpRequestHeaders::kGetMethod)
     request_.request_body = nullptr;
 
+  // When we follow a redirect, we should not expect the IP address space of
+  // the target server to stay the same. The new target server's IP address
+  // space will be recomputed and Private Network Access checks will apply anew.
+  //
+  // This only affects redirects where a new request is initiated at this layer
+  // instead of being handled in `network::URLLoader`.
+  //
+  // See also: https://crbug.com/1293891
+  request_.target_ip_address_space = mojom::IPAddressSpace::kUnknown;
+
+  // Similarly, when we follow a redirect, we may make a different decision as
+  // to whether and why we should send a preflight request. Maybe the request
+  // is now same-origin when it was cross-origin, or vice-versa. Maybe the
+  // request now does not target the private network. In any case, we will set
+  // this bit back to true if we need to.
+  sending_pna_only_warning_preflight_ = false;
+
   const bool original_fetch_cors_flag = fetch_cors_flag_;
   SetCorsFlagIfNeeded();
 
@@ -564,16 +581,6 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   DCHECK(network_loader_);
   DCHECK(forwarding_client_);
   DCHECK(!deferred_redirect_url_);
-
-  // When a redirect is received, we should not expect the IP address space of
-  // the target server to stay the same. The new target server's IP address
-  // space will be recomputed and Private Network Access checks will apply anew.
-  //
-  // This only affects redirects where a new request is initiated at this layer
-  // instead of being handled in `network::URLLoader`.
-  //
-  // See also: https://crbug.com/1293891
-  request_.target_ip_address_space = mojom::IPAddressSpace::kUnknown;
 
   response_head->private_network_access_preflight_result =
       TakePrivateNetworkAccessPreflightResult();
@@ -839,18 +846,7 @@ absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
   // Private Network Access warning: ignore net and CORS errors.
   if (net_error == net::OK || sending_pna_only_warning_preflight_) {
     CHECK(ShouldIgnorePrivateNetworkAccessErrors());
-
-    // TODO(https://crbug.com/1432684): Upgrade to a CHECK once the reason for
-    // crashes in the wild is understood and fixed, or remove/replace.
-    SCOPED_CRASH_KEY_NUMBER("network", "preflight_reason",
-                            static_cast<int>(*reason));
-#if DCHECK_IS_ON()
-    DCHECK_EQ(*reason, PreflightRequiredReason::kPrivateNetworkAccess);
-#else
-    if (*reason != PreflightRequiredReason::kPrivateNetworkAccess) {
-      base::debug::DumpWithoutCrashing();
-    }
-#endif
+    CHECK_EQ(*reason, PreflightRequiredReason::kPrivateNetworkAccess);
 
     // Record the existence of the warning so that we can report it to
     // `forwarding_client_` in the next `URLResponseHead` we construct.
