@@ -249,21 +249,21 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
 
         self.server.rewriter.rewrite(self)
 
-        request = Request(self)
-        response = Response(self, request)
+        with Request(self) as request:
+            response = Response(self, request)
 
-        if request.method == "CONNECT":
-            self.handle_connect(response)
-            return
+            if request.method == "CONNECT":
+                self.handle_connect(response)
+                return
 
-        if not request_line_is_valid:
-            response.set_error(414)
-            response.write()
-            return
+            if not request_line_is_valid:
+                response.set_error(414)
+                response.write()
+                return
 
-        self.logger.debug(f"{request.method} {request.request_path}")
-        handler = self.server.router.get_handler(request)
-        self.finish_handling(request, response, handler)
+            self.logger.debug(f"{request.method} {request.request_path}")
+            handler = self.server.router.get_handler(request)
+            self.finish_handling(request, response, handler)
 
     def finish_handling(self, request, response, handler):
         # If the handler we used for the request had a non-default base path
