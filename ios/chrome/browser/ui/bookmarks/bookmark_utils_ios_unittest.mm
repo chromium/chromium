@@ -4,16 +4,20 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 
+#import <iterator>
 #import <memory>
 #import <string>
 #import <vector>
 
+#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -23,6 +27,14 @@
 using bookmarks::BookmarkNode;
 
 namespace {
+
+std::vector<std::u16string> GetBookmarkTitles(
+    const std::vector<std::unique_ptr<BookmarkNode>>& nodes) {
+  std::vector<std::u16string> result;
+  base::ranges::transform(nodes, std::back_inserter(result),
+                          [](const auto& node) { return node->GetTitle(); });
+  return result;
+}
 
 class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport,
                                  public testing::WithParamInterface<bool> {
@@ -37,6 +49,34 @@ class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport,
 
   base::Time timeFromEpoch(int days, int hours) {
     return base::Time::UnixEpoch() + base::Days(days) + base::Hours(hours);
+  }
+
+  void TestMovingBookmarks(const BookmarkNode* parent_folder) {
+    const BookmarkNode* f1 = AddFolder(parent_folder, u"f1");
+    const BookmarkNode* a = AddBookmark(parent_folder, u"a");
+    AddBookmark(parent_folder, u"b");
+    const BookmarkNode* f2 = AddFolder(parent_folder, u"f2");
+
+    AddBookmark(f1, u"f1a");
+    AddBookmark(f1, u"f1b");
+    AddBookmark(f1, u"f1c");
+    AddBookmark(f2, u"f2a");
+    const BookmarkNode* f2b = AddBookmark(f2, u"f2b");
+
+    std::set<const BookmarkNode*> to_move;
+    to_move.insert(a);
+    to_move.insert(f2b);
+    to_move.insert(f2);
+
+    bookmark_utils_ios::MoveBookmarks(
+        to_move, GetBookmarkModelForNode(parent_folder), f1);
+    EXPECT_THAT(GetBookmarkTitles(parent_folder->children()),
+                ::testing::UnorderedElementsAre(u"f1", u"b"));
+    EXPECT_THAT(GetBookmarkTitles(f1->children()),
+                ::testing::UnorderedElementsAre(u"f1a", u"f1b", u"f1c", u"a",
+                                                u"f2b", u"f2"));
+    EXPECT_THAT(GetBookmarkTitles(f2->children()),
+                ::testing::ElementsAre(u"f2a"));
   }
 };
 
@@ -69,33 +109,19 @@ TEST_P(BookmarkIOSUtilsUnitTest, DeleteNodes) {
   EXPECT_EQ(0u, child1->children().size());
 }
 
-TEST_P(BookmarkIOSUtilsUnitTest, MoveNodes) {
-  const BookmarkNode* mobileNode = profile_bookmark_model_->mobile_node();
-  const BookmarkNode* f1 = AddFolder(mobileNode, u"f1");
-  const BookmarkNode* a = AddBookmark(mobileNode, u"a");
-  const BookmarkNode* b = AddBookmark(mobileNode, u"b");
-  const BookmarkNode* f2 = AddFolder(mobileNode, u"f2");
+TEST_P(BookmarkIOSUtilsUnitTest, MoveNodesInLocalOrSyncableModel) {
+  const BookmarkNode* local_or_syncable_mobile_node =
+      profile_bookmark_model_->mobile_node();
+  ASSERT_NO_FATAL_FAILURE(TestMovingBookmarks(local_or_syncable_mobile_node));
+}
 
-  AddBookmark(f1, u"f1a");
-  AddBookmark(f1, u"f1b");
-  AddBookmark(f1, u"f1c");
-  AddBookmark(f2, u"f2a");
-  const BookmarkNode* f2b = AddBookmark(f2, u"f2b");
-
-  std::set<const BookmarkNode*> toMove;
-  toMove.insert(a);
-  toMove.insert(f2b);
-  toMove.insert(f2);
-
-  bookmark_utils_ios::MoveBookmarks(toMove, profile_bookmark_model_, f1);
-
-  EXPECT_EQ(2u, mobileNode->children().size());
-  const BookmarkNode* child0 = mobileNode->children()[0].get();
-  EXPECT_EQ(child0, f1);
-  EXPECT_EQ(6u, child0->children().size());
-  const BookmarkNode* child1 = mobileNode->children()[1].get();
-  EXPECT_EQ(child1, b);
-  EXPECT_EQ(0u, child1->children().size());
+TEST_P(BookmarkIOSUtilsUnitTest, MoveNodesInAccountModel) {
+  if (!IsAccountStorageEnabled()) {
+    GTEST_SKIP() << "Need account storage to move bookmarks in it";
+  }
+  const BookmarkNode* account_mobile_node =
+      account_bookmark_model_->mobile_node();
+  ASSERT_NO_FATAL_FAILURE(TestMovingBookmarks(account_mobile_node));
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
