@@ -14,7 +14,9 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/environment.h"
 #include "base/memory/raw_ptr.h"
+#include "base/nix/xdg_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/time/time.h"
@@ -46,6 +48,45 @@
 namespace qt {
 
 namespace {
+
+const char kQtVersionFlag[] = "qt-version";
+
+void* LoadLibrary(const base::FilePath& path) {
+  return dlopen(path.value().c_str(), RTLD_NOW | RTLD_GLOBAL);
+}
+
+void* LoadLibraryOrFallback(const base::FilePath& path,
+                            const char* preferred,
+                            const char* fallback) {
+  if (void* library = LoadLibrary(path.Append(preferred))) {
+    return library;
+  }
+  return LoadLibrary(path.Append(fallback));
+}
+
+bool PreferQt6() {
+  auto* cmd = base::CommandLine::ForCurrentProcess();
+  if (cmd->HasSwitch(kQtVersionFlag)) {
+    std::string qt_version_string = cmd->GetSwitchValueASCII(kQtVersionFlag);
+    unsigned int qt_version = 0;
+    if (base::StringToUint(qt_version_string, &qt_version)) {
+      switch (qt_version) {
+        case 5:
+          return false;
+        case 6:
+          return true;
+        default:
+          LOG(ERROR) << "Unsupported QT version " << qt_version;
+      }
+    } else {
+      LOG(ERROR) << "Unable to parse QT version " << qt_version_string;
+    }
+  }
+
+  auto env = base::Environment::Create();
+  auto desktop = base::nix::GetDesktopEnvironment(env.get());
+  return desktop == base::nix::DESKTOP_ENVIRONMENT_KDE6;
+}
 
 int QtWeightToCssWeight(int weight) {
   struct {
@@ -179,8 +220,10 @@ bool QtUi::Initialize() {
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_MODULE, &path))
     return false;
-  path = path.Append("libqt5_shim.so");
-  void* libqt_shim = dlopen(path.value().c_str(), RTLD_NOW | RTLD_GLOBAL);
+  void* libqt_shim =
+      PreferQt6()
+          ? LoadLibraryOrFallback(path, "libqt6_shim.so", "libqt5_shim.so")
+          : LoadLibraryOrFallback(path, "libqt5_shim.so", "libqt6_shim.so");
   if (!libqt_shim)
     return false;
   void* create_qt_interface = dlsym(libqt_shim, "CreateQtInterface");
