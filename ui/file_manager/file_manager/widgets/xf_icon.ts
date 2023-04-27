@@ -80,7 +80,6 @@ export class XfIcon extends XfBase {
     }
 
     const shouldKeepColor = [
-      constants.ICON_TYPES.DRIVE_LOGO,
       constants.ICON_TYPES.EXCEL,
       constants.ICON_TYPES.POWERPOINT,
       constants.ICON_TYPES.WORD,
@@ -219,7 +218,7 @@ function getCSS() {
     }
 
     :host([type="drive_logo"]) span {
-      background-image: url(../foreground/images/files/ui/drive_logo.svg);
+      -webkit-mask-image: url(../foreground/images/files/ui/drive_logo.svg);
     }
 
     :host([type="excel"]) span {

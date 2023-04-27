@@ -103,6 +103,7 @@ function getCSS() {
     }
 
     cr-dialog [slot="title"] xf-icon {
+      --xf-icon-color: var(--cros-sys-primary);
       margin-right: 16px;
     }
 
