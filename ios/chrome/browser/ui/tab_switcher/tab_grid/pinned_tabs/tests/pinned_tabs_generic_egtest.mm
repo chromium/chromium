@@ -83,6 +83,25 @@ id<GREYMatcher> GetMatcherForUndoButton() {
   return grey_accessibilityID(kTabGridUndoCloseAllButtonIdentifier);
 }
 
+// Matcher for the "Search" button on the Tab Grid.
+id<GREYMatcher> GetMatcherForTabSearchButton() {
+  return grey_allOf(grey_accessibilityID(kTabGridSearchButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Matcher for the "Cancel" button on the Tab Grid.
+id<GREYMatcher> GetMatcherForCancelSearchButton() {
+  return grey_allOf(grey_accessibilityID(kTabGridCancelButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Matcher for the "Search" text field on the Tab Grid.
+id<GREYMatcher> GetMatcherForSearchTabsTextField() {
+  return grey_allOf(grey_accessibilityValue(l10n_util::GetNSStringWithFixup(
+                        IDS_IOS_KEYBOARD_SEARCH_TABS)),
+                    grey_sufficientlyVisible(), nil);
+}
+
 // Matcher for the pinned view.
 id<GREYMatcher> GetMatcherForPinnedView() {
   return grey_allOf(grey_accessibilityID(kPinnedViewIdentifier),
@@ -629,6 +648,73 @@ void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
   // Verify that the last pinned tab is visible.
   [[EarlGrey
       selectElementWithMatcher:GetMatcherForPinnedCellWithTitle(@"PinnedTab0")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests closing the pinned tab from the tab search results.
+- (void)testClosePinnedTabFromTabSearch {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
+                           @"supported on iPhone.");
+  }
+
+  // Create tabs.
+  CreatePinnedTabs(2, self.testServer);
+  CreateRegularTabs(1, self.testServer);
+
+  // Open the Tab Grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Verify that the first pinned tab is visible.
+  [[EarlGrey
+      selectElementWithMatcher:GetMatcherForPinnedCellWithTitle(@"PinnedTab0")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the last pinned tab is visible.
+  [[EarlGrey
+      selectElementWithMatcher:GetMatcherForPinnedCellWithTitle(@"PinnedTab1")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open Tab Search.
+  [[EarlGrey selectElementWithMatcher:GetMatcherForTabSearchButton()]
+      performAction:grey_tap()];
+
+  [self
+      waitForAnimationCompletionWithMacther:GetMatcherForSearchTabsTextField()];
+
+  // Search for the pinned tab.
+  [[EarlGrey selectElementWithMatcher:GetMatcherForSearchTabsTextField()]
+      performAction:grey_typeText(@"PinnedTab")];
+
+  [self waitForAnimationCompletionWithMacther:GetMatcherForRegularCellWithTitle(
+                                                  @"PinnedTab0")];
+
+  // Long tap on the first found pinned tab.
+  [[EarlGrey
+      selectElementWithMatcher:GetMatcherForRegularCellWithTitle(@"PinnedTab0")]
+      performAction:grey_longPress()];
+
+  // Tap on "Close Pinned Tab" context menu action.
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB)]
+      performAction:grey_tap()];
+
+  // Tap "Cancel" Button
+  [[EarlGrey selectElementWithMatcher:GetMatcherForCancelSearchButton()]
+      performAction:grey_tap()];
+
+  [self waitForAnimationCompletionWithMacther:GetMatcherForPinnedCellWithTitle(
+                                                  @"PinnedTab1")];
+
+  // Verify that the first pinned tab is not visible.
+  [[EarlGrey
+      selectElementWithMatcher:GetMatcherForPinnedCellWithTitle(@"PinnedTab0")]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify that the last pinned tab is visible.
+  [[EarlGrey
+      selectElementWithMatcher:GetMatcherForPinnedCellWithTitle(@"PinnedTab1")]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
