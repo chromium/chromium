@@ -58,6 +58,9 @@ template("absl_source_set") {
           # for absl types is enabled.
           "//third_party/googletest/*",
 
+          # Centipede, a fuzz test runner
+          "//third_party/centipede/*",
+
           # WebRTC binary to run PSNR and SSIM video quality analysis. It
           # statically links absl and it is used by "browser_tests" when
           # is_component_build=false but it cannot depend on the absl
