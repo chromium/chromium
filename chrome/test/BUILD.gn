@@ -171,6 +171,8 @@ static_library("test_support") {
     "../browser/policy/messaging_layer/util/test_request_payload.h",
     "../browser/policy/messaging_layer/util/test_response_payload.cc",
     "../browser/policy/messaging_layer/util/test_response_payload.h",
+    "../browser/profiles/keep_alive/profile_keep_alive_waiter.cc",
+    "../browser/profiles/keep_alive/profile_keep_alive_waiter.h",
     "../browser/profiles/profile_test_util.cc",
     "../browser/profiles/profile_test_util.h",
     "../browser/search_engines/template_url_service_factory_test_util.cc",

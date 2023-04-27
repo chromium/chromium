@@ -1286,6 +1286,10 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
 
   info->keep_alives[origin]++;
 
+  for (auto& observer : observers_) {
+    observer.OnKeepAliveAdded(profile, origin);
+  }
+
   VLOG(1) << "AddKeepAlive(" << profile->GetDebugName() << ", " << origin
           << "). keep_alives=" << info->keep_alives;
 

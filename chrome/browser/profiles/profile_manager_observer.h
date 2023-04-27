@@ -8,6 +8,7 @@
 #include "base/observer_list_types.h"
 
 class Profile;
+enum class ProfileKeepAliveOrigin;
 
 class ProfileManagerObserver : public base::CheckedObserver {
  public:
@@ -30,6 +31,11 @@ class ProfileManagerObserver : public base::CheckedObserver {
   // owned by the `BrowserProcessImpl`, this will only be called during
   // shutdown.
   virtual void OnProfileManagerDestroying() {}
+
+  // Called when a keep alive is added to a profile, with the respective keep
+  // alive origin.
+  virtual void OnKeepAliveAdded(const Profile* profile,
+                                ProfileKeepAliveOrigin keep_alive_origin) {}
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_MANAGER_OBSERVER_H_
