@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -125,40 +126,59 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, LaunchWithFileIntent) {
   LaunchExtensionAndCatchResult(*extension);
 }
 
+// Test WFH (Web File Handlers) without a key and again with a QuickOffice key.
+// WFH (Web File Handlers) are an MV3 concept. QO (QuickOffice) should use WFH
+// to open files for Extensions, instead of ChromeApps.
 // Verify window.launchQueue presence.
 IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, SetConsumerCalled) {
-  // Load extension.
-  static constexpr char kManifest[] = R"({
-    "name": "Test",
-    "version": "0.0.1",
-    "manifest_version": 3,
-    "file_handlers": [
-      {
-        "name": "Comma separated values",
-        "action": "/open-csv.html",
-        "accept": {"text/csv": [".csv"]}
-      }
-    ]
-  })";
-  extensions::TestExtensionDir extension_dir;
-  extension_dir.WriteManifest(kManifest);
-  extension_dir.WriteFile("open-csv.js", R"(
-    launchQueue.setConsumer((launchParams) => {
-      chrome.test.assertTrue('launchQueue' in window);
-      chrome.test.succeed();
-    });
-  )");
-  extension_dir.WriteFile("open-csv.html",
-                          R"(<script src="/open-csv.js"></script>"
-                            "<body>Test</body>)");
-  const extensions::Extension* extension =
-      LoadExtension(extension_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-  // TODO(crbug.com/1179530): setConsumer is called, but launchParams is empty
-  // in the test. However, it is populated when run manually. Find a better way
-  // to automate launchParams testing such that it's populated in the test, like
-  // it is when executed manually.
-  LaunchExtensionAndCatchResult(*extension);
+  struct {
+    const char* title;
+    const char* manifest_part;
+  } test_cases[] = {
+      {"Default", ""},
+      {"QuickOffice", R"(,
+      "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4zyYTii0VTKI7W2U6fDeAvs3YCVZeAt7C62IC64IDCMHvWy7SKMpOPjfg5v1PgYkFm+fGsCsVLN8NaF7fzYMVtjLc5bqhqPAi56Qidrqh1HxPAAYhwFQd5BVGhZmh1fySHXFPE8VI2tIHwRrASOtx67jbSEk4nBAcJz6n+eGq8QIDAQAB")"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.title);
+    const std::string manifest = base::StringPrintf(R"({
+      "name": "Test",
+      "version": "0.0.1",
+      "manifest_version": 3,
+      "file_handlers": [
+        {
+          "name": "Comma separated values",
+          "action": "/open-csv.html",
+          "accept": {"text/csv": [".csv"]}
+        }
+      ]
+      %s
+    })",
+                                                    test_case.manifest_part);
+
+    // Load extension.
+    extensions::TestExtensionDir extension_dir;
+    extension_dir.WriteManifest(manifest);
+    extension_dir.WriteFile("open-csv.js", R"(
+      launchQueue.setConsumer((launchParams) => {
+        chrome.test.assertTrue('launchQueue' in window);
+        chrome.test.succeed();
+      });
+    )");
+    extension_dir.WriteFile("open-csv.html",
+                            R"(<script src="/open-csv.js"></script>"
+                              "<body>Test</body>)");
+    const extensions::Extension* extension =
+        LoadExtension(extension_dir.UnpackedPath());
+    ASSERT_TRUE(extension);
+
+    // TODO(crbug.com/1179530): setConsumer is called, but launchParams is empty
+    // in the test. However, it is populated when run manually. Find a better
+    // way to automate launchParams testing such that it's populated in the
+    // test, like it is when executed manually.
+    LaunchExtensionAndCatchResult(*extension);
+  }
 }
 
 }  // namespace apps
