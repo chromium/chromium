@@ -790,6 +790,11 @@ class GestureNavigationScreenTester extends ScreenElementApi {
   getNextButtonName() {
     return loadTimeData.getString('gestureNavigationIntroNextButton');
   }
+
+  /** @return {string} */
+  getSkipButtonName() {
+    return loadTimeData.getString('gestureNavigationIntroSkipButton');
+  }
 }
 
 class ConsolidatedConsentScreenTester extends ScreenElementApi {
