@@ -9,12 +9,12 @@
 
 #import "base/check.h"
 #import "base/functional/bind.h"
-#import "base/guid.h"
 #import "base/memory/ptr_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -159,7 +159,8 @@ void AddBookmarkToFakeSyncServer(std::string url, std::string title) {
 void AddLegacyBookmarkToFakeSyncServer(std::string url,
                                        std::string title,
                                        std::string originator_client_item_id) {
-  DCHECK(!base::IsValidGUID(originator_client_item_id));
+  DCHECK(
+      !base::Uuid::ParseCaseInsensitive(originator_client_item_id).is_valid());
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(
