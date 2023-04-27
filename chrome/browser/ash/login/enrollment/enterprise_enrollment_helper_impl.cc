@@ -101,7 +101,6 @@ void EnterpriseEnrollmentHelperImpl::Setup(
     const policy::EnrollmentConfig& enrollment_config,
     const std::string& enrolling_user_domain,
     policy::LicenseType license_type) {
-  ad_join_delegate_ = ad_join_delegate;
   enrollment_config_ = enrollment_config;
   enrolling_user_domain_ = enrolling_user_domain;
   license_type_ = license_type;
@@ -207,7 +206,7 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
       policy_manager->device_store(), InstallAttributes::Get(),
       connector->GetStateKeysBroker(), attestation_flow, std::move(client),
       policy::BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner(),
-      ad_join_delegate_, enrollment_config_, license_type_, auth_data_.Clone(),
+      enrollment_config_, license_type_, auth_data_.Clone(),
       InstallAttributes::Get()->GetDeviceId(),
       policy::EnrollmentRequisitionManager::GetDeviceRequisition(),
       policy::EnrollmentRequisitionManager::GetSubOrganization(),

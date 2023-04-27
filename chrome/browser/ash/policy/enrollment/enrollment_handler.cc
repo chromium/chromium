@@ -18,7 +18,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
-#include "chrome/browser/ash/policy/active_directory/active_directory_join_delegate.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
 #include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
@@ -173,24 +172,6 @@ absl::optional<int64_t> GetPsmDeterminationTimestamp(
   return psm_determination_timestamp.ToJavaTime();
 }
 
-// Returns binary config which is encrypted by a password that the joining user
-// has to enter.
-std::string GetActiveDirectoryDomainJoinConfig(
-    const base::Value::Dict* config) {
-  if (!config)
-    return std::string();
-  const std::string* base64_value =
-      config->FindString("active_directory_domain_join_config");
-  if (!base64_value)
-    return std::string();
-  std::string result;
-  if (!base::Base64Decode(*base64_value, &result)) {
-    LOG(ERROR) << "Active Directory config is not base64";
-    return std::string();
-  }
-  return result;
-}
-
 }  // namespace
 
 EnrollmentHandler::EnrollmentHandler(
@@ -200,7 +181,6 @@ EnrollmentHandler::EnrollmentHandler(
     ash::attestation::AttestationFlow* attestation_flow,
     std::unique_ptr<CloudPolicyClient> client,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    ActiveDirectoryJoinDelegate* ad_join_delegate,
     const EnrollmentConfig& enrollment_config,
     LicenseType license_type,
     DMAuth dm_auth,
@@ -216,7 +196,6 @@ EnrollmentHandler::EnrollmentHandler(
           std::make_unique<TpmEnrollmentKeySigningServiceProvider>()),
       client_(std::move(client)),
       background_task_runner_(background_task_runner),
-      ad_join_delegate_(ad_join_delegate),
       enrollment_config_(enrollment_config),
       client_id_(client_id),
       sub_organization_(sub_organization),
@@ -568,25 +547,18 @@ void EnrollmentHandler::HandlePolicyValidationResult(
     return;
   }
 
-  if (device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
-    // Don't use robot account for the Active Directory managed devices.
-    skip_robot_auth_ = true;
-    SetStep(STEP_AD_DOMAIN_JOIN);
-    StartJoinAdDomain();
-  } else {
-    domain_ = gaia::ExtractDomainName(gaia::CanonicalizeEmail(username));
-    SetStep(STEP_ROBOT_AUTH_FETCH);
-    device_account_initializer_ =
-        std::make_unique<DeviceAccountInitializer>(client_.get(), this);
-    device_account_initializer_->FetchToken();
-  }
+  domain_ = gaia::ExtractDomainName(gaia::CanonicalizeEmail(username));
+  SetStep(STEP_ROBOT_AUTH_FETCH);
+  device_account_initializer_ =
+      std::make_unique<DeviceAccountInitializer>(client_.get(), this);
+  device_account_initializer_->FetchToken();
 }
 
 void EnrollmentHandler::OnDeviceAccountTokenFetched(bool empty_token) {
   CHECK_EQ(STEP_ROBOT_AUTH_FETCH, enrollment_step_);
   skip_robot_auth_ = empty_token;
-  SetStep(STEP_AD_DOMAIN_JOIN);
-  StartJoinAdDomain();
+  SetStep(STEP_SET_FWMP_DATA);
+  SetFirmwareManagementParametersData();
 }
 
 void EnrollmentHandler::OnDeviceAccountTokenFetchError(
@@ -664,29 +636,6 @@ void EnrollmentHandler::OnFirmwareManagementParametersDataSet(
 
   SetStep(STEP_LOCK_DEVICE);
   StartLockDevice();
-}
-
-void EnrollmentHandler::StartJoinAdDomain() {
-  DCHECK_EQ(STEP_AD_DOMAIN_JOIN, enrollment_step_);
-  if (device_mode_ != DEVICE_MODE_ENTERPRISE_AD) {
-    SetStep(STEP_SET_FWMP_DATA);
-    SetFirmwareManagementParametersData();
-    return;
-  }
-  DCHECK(ad_join_delegate_);
-  ad_join_delegate_->JoinDomain(
-      client_->dm_token(),
-      GetActiveDirectoryDomainJoinConfig(client_->configuration_seed()),
-      base::BindOnce(&EnrollmentHandler::OnAdDomainJoined,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void EnrollmentHandler::OnAdDomainJoined(const std::string& realm) {
-  DCHECK_EQ(STEP_AD_DOMAIN_JOIN, enrollment_step_);
-  CHECK(!realm.empty());
-  realm_ = realm;
-  SetStep(STEP_SET_FWMP_DATA);
-  SetFirmwareManagementParametersData();
 }
 
 void EnrollmentHandler::StartLockDevice() {

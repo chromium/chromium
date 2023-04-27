@@ -702,8 +702,7 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     enrollment_handler_ = std::make_unique<EnrollmentHandler>(
         store_, install_attributes_.get(), &state_keys_broker_,
         &mock_attestation_flow_, std::move(client),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        /*ad_join_delegate=*/nullptr, enrollment_config,
+        base::SingleThreadTaskRunner::GetCurrentDefault(), enrollment_config,
         policy::LicenseType::kEnterprise, std::move(auth),
         install_attributes_->GetDeviceId(),
         EnrollmentRequisitionManager::GetDeviceRequisition(),

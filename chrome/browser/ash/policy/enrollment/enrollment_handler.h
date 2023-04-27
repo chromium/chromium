@@ -41,7 +41,6 @@ class SequencedTaskRunner;
 
 namespace policy {
 
-class ActiveDirectoryJoinDelegate;
 class DeviceCloudPolicyStoreAsh;
 class DMTokenStorage;
 class EnrollmentStatus;
@@ -82,7 +81,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
       ash::attestation::AttestationFlow* attestation_flow,
       std::unique_ptr<CloudPolicyClient> client,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      ActiveDirectoryJoinDelegate* ad_join_delegate,
       const EnrollmentConfig& enrollment_config,
       LicenseType license_type,
       DMAuth dm_auth,
@@ -140,7 +138,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
     STEP_VALIDATION = 5,        // Policy validation.
     STEP_ROBOT_AUTH_FETCH = 6,  // Fetching device API auth code.
     UNUSED_ROBOT_AUTH_REFRESH = 7,  // Fetching device API refresh token.
-    STEP_AD_DOMAIN_JOIN = 8,        // Joining Active Directory domain.
+    UNUSED_AD_DOMAIN_JOIN = 8,      // Joining Active Directory domain.
     STEP_SET_FWMP_DATA = 9,      // Setting the firmware management parameters.
     STEP_LOCK_DEVICE = 10,       // Writing installation-time attributes.
     STEP_STORE_TOKEN = 11,       // Encrypting and storing DM token.
@@ -172,13 +170,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // Handles the policy validation result, proceeding with device lock if
   // successful.
   void HandlePolicyValidationResult(DeviceCloudPolicyValidator* validator);
-
-  // Start joining the Active Directory domain in case the device is enrolling
-  // into Active Directory management mode.
-  void StartJoinAdDomain();
-
-  // Handles successful Active Directory domain join.
-  void OnAdDomainJoined(const std::string& realm);
 
   // Updates the firmware management partition from TPM, setting the flags
   // according to enum FirmwareManagementParametersFlags from rpc.proto if
@@ -231,8 +222,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   std::unique_ptr<SigningServiceProvider> signing_service_provider_;
   std::unique_ptr<CloudPolicyClient> client_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  raw_ptr<ActiveDirectoryJoinDelegate, ExperimentalAsh> ad_join_delegate_ =
-      nullptr;
   std::unique_ptr<DeviceAccountInitializer> device_account_initializer_;
   std::unique_ptr<DMTokenStorage> dm_token_storage_;
 
