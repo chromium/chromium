@@ -803,18 +803,14 @@
     // The order here must match the order in the ControlPart enum in
     // theme_types.h.
     // All appearance values that should be accepted by the parser should be
-    // listed between 'checkbox' and 'textarea'.
+    // listed between 'checkbox' and 'textarea'. This is checked in
+    // CSSParserFastPaths::IsValidKeywordPropertyAndValue.
     "checkbox",
     "radio",
     "push-button",
     "square-button",
     "button",
-    "inner-spin-button",
     "listbox",
-    "media-slider",
-    "media-sliderthumb",
-    "media-volume-slider",
-    "media-volume-sliderthumb",
     "-internal-media-control",
     "menulist",
     "menulist-button",
@@ -822,13 +818,18 @@
     "progress-bar",
     "slider-horizontal",
     "slider-vertical",
-    "sliderthumb-horizontal",
-    "sliderthumb-vertical",
     "searchfield",
-    "searchfield-cancel-button",
     "textfield",
     "textarea",
-
+    // All appearance values that should not be accepted by the parser.
+    "inner-spin-button",
+    "media-slider",
+    "media-sliderthumb",
+    "media-volume-slider",
+    "media-volume-sliderthumb",
+    "sliderthumb-horizontal",
+    "sliderthumb-vertical",
+    "searchfield-cancel-button",
     //
     // border-image
     //

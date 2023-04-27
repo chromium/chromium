@@ -3,6 +3,9 @@
 <script src="../resources/testharnessreport.js"></script>
 <style>
 /* See https://drafts.csswg.org/css-ui-4/#appearance-switching */
+/* TODO(dizhangg): this entire test should be deleted once slider-vertical
+   (crbug.com/924486) and slider-horizontal (crbug.com/crbug.com/924486) are
+   removed. */
 .t {
   appearance: auto;
   appearance: checkbox;
@@ -10,28 +13,28 @@
   appearance: push-button;
   appearance: square-button;
   appearance: button;
-  appearance: inner-spin-button; /* should be warned */
+  appearance: inner-spin-button;
   appearance: listbox;
-  appearance: media-slider; /* should be warned */
-  appearance: media-sliderthumb; /* should be warned */
-  appearance: media-volume-slider; /* should be warned */
-  appearance: media-volume-sliderthumb; /* should be warned */
+  appearance: media-slider;
+  appearance: media-sliderthumb;
+  appearance: media-volume-slider;
+  appearance: media-volume-sliderthumb;
   appearance: menulist;
   appearance: menulist-button;
   appearance: meter;
   appearance: progress-bar;
-  appearance: slider-horizontal;
+  appearance: slider-horizontal; /* should be warned */
   appearance: slider-vertical; /* should be warned */
-  appearance: sliderthumb-horizontal; /* should be warned */
-  appearance: sliderthumb-vertical; /* should be warned */
+  appearance: sliderthumb-horizontal;
+  appearance: sliderthumb-vertical;
   appearance: searchfield;
-  appearance: searchfield-cancel-button; /* should be warned */
+  appearance: searchfield-cancel-button;
   appearance: textfield;
   appearance: textarea;
 }
 </style>
 <script>
 test(() => {
-  assert_true(false, 'This should FAIL to have -expected.txt');
-}, 'There should be consle warnings about non-standard appearance keywords');
+  assert_true(false, 'This should FAIL so we generate a -expected.txt');
+}, 'There should be console warnings about non-standard appearance keywords');
 </script>
