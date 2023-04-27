@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(BrailleDisplayPrivateAPIUserTest, KeyEventOnLockScreen) {
 
   // Send key event to both profiles.
   KeyEvent key_event;
-  key_event.command = KEY_COMMAND_LINE_UP;
+  key_event.command = KeyCommand::kLineUp;
   signin_api.OnBrailleKeyEvent(key_event);
   user_api.OnBrailleKeyEvent(key_event);
   EXPECT_EQ(0, signin_delegate->GetEventCount());

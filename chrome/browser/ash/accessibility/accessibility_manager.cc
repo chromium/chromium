@@ -1734,7 +1734,7 @@ void AccessibilityManager::OnBrailleDisplayStateChanged(
 void AccessibilityManager::OnBrailleKeyEvent(const KeyEvent& event) {
   // Ensure the braille IME is active on braille keyboard (dots) input.
   if ((event.command ==
-       extensions::api::braille_display_private::KEY_COMMAND_DOTS) &&
+       extensions::api::braille_display_private::KeyCommand::kDots) &&
       !braille_ime_current_) {
     input_method::InputMethodManager::Get()
         ->GetActiveIMEState()
