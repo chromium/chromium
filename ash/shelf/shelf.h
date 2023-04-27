@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "ash/shelf/shelf_locking_manager.h"
 #include "base/memory/raw_ptr.h"
@@ -153,6 +154,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   static void UpdateShelfVisibility();
 
   void CreateNavigationWidget(aura::Window* container);
+  void CreateDeskButtonWidget(aura::Window* container);
   void CreateHotseatWidget(aura::Window* container);
   void CreateStatusAreaWidget(aura::Window* status_container);
   void CreateShelfWidget(aura::Window* root);
@@ -263,6 +265,9 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   ShelfNavigationWidget* navigation_widget() const {
     return navigation_widget_.get();
   }
+  DeskButtonWidget* desk_button_widget() const {
+    return desk_button_widget_.get();
+  }
   HotseatWidget* hotseat_widget() const { return hotseat_widget_.get(); }
   StatusAreaWidget* status_area_widget() const {
     return status_area_widget_.get();
@@ -337,6 +342,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
 
   // Pointers to shelf components.
   std::unique_ptr<ShelfNavigationWidget> navigation_widget_;
+  std::unique_ptr<DeskButtonWidget> desk_button_widget_;
   std::unique_ptr<HotseatWidget> hotseat_widget_;
   std::unique_ptr<StatusAreaWidget> status_area_widget_;
   // Null during display teardown, see WindowTreeHostManager::DeleteHost() and

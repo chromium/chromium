@@ -46,6 +46,7 @@
 #include "ash/utility/haptics_tracking_test_input_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/i18n/rtl.h"
@@ -363,13 +364,16 @@ class ShelfViewTest : public AshTestBase {
                        ->GetStatusAreaWidget()
                        ->GetContentsView();
 
-    // The bounds should be big enough for 4 buttons.
-    ASSERT_GE(GetPrimaryShelf()
-                  ->shelf_widget()
-                  ->hotseat_widget()
-                  ->GetWindowBoundsInScreen()
-                  .width(),
-              500);
+    // If the desk button is enabled there will be less space for buttons.
+    if (!features::IsDeskButtonEnabled()) {
+      // The bounds should be big enough for 4 buttons.
+      ASSERT_GE(GetPrimaryShelf()
+                    ->shelf_widget()
+                    ->hotseat_widget()
+                    ->GetWindowBoundsInScreen()
+                    .width(),
+                500);
+    }
 
     test_api_ = std::make_unique<ShelfViewTestAPI>(shelf_view_);
     test_api_->SetAnimationDuration(base::Milliseconds(1));
@@ -3446,6 +3450,8 @@ TEST_F(ShelfViewGestureTapTest, InterruptContextMenuShowByItemRemoval) {
 
   // Initialize the mouse drag on the shelf app button specified by `id2`.
   ShelfAppButton* app_button2 = GetButtonByID(id2);
+  // Wait for app 2 to move in reaction to removing app 1.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   GetEventGenerator()->MoveMouseTo(
       app_button2->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->PressLeftButton();
@@ -3657,6 +3663,102 @@ TEST_P(ShelfPartyTest, DragUnpinnedAppToPin) {
   // End shelf party.
   model_->ToggleShelfParty();
   test_api_->RunMessageLoopUntilAnimationsDone();
+}
+
+// Test class to test the desk button.
+class ShelfViewDeskButtonTest : public ShelfViewTest {
+ public:
+  ShelfViewDeskButtonTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kDeskButton);
+  }
+
+  ShelfViewDeskButtonTest(const ShelfViewDeskButtonTest&) = delete;
+  ShelfViewDeskButtonTest& operator=(const ShelfViewDeskButtonTest&) = delete;
+
+  ~ShelfViewDeskButtonTest() override = default;
+
+  DeskButtonWidget* desk_button_widget() {
+    return test_api_->shelf_view()->shelf_widget()->desk_button_widget();
+  }
+
+  // ShelfViewTest:
+  void SetUp() override {
+    ShelfViewTest::SetUp();
+
+    // With the desk button, there should be space in the hotseat for 6 apps.
+    ASSERT_GE(GetPrimaryShelf()
+                  ->shelf_widget()
+                  ->hotseat_widget()
+                  ->GetWindowBoundsInScreen()
+                  .width(),
+              336);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verify that the desk button is visible normally, and not visible in overview
+// mode.
+TEST_F(ShelfViewDeskButtonTest, OverviewVisibility) {
+  // The button should be normally visible.
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+  const int original_hotseat_width = GetPrimaryShelf()
+                                         ->shelf_widget()
+                                         ->hotseat_widget()
+                                         ->GetWindowBoundsInScreen()
+                                         .width();
+
+  // The button should disappear in overview mode and reappear after.
+  ToggleOverview();
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+  // Since the desk button is hidden, the hotseat should expand to use the space
+  // the desk button was occupying.
+  EXPECT_GT(GetPrimaryShelf()
+                ->shelf_widget()
+                ->hotseat_widget()
+                ->GetWindowBoundsInScreen()
+                .width(),
+            original_hotseat_width);
+  ToggleOverview();
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  // Repeat for vertical alignment.
+  test_api_->shelf_view()->shelf()->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+  ToggleOverview();
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+  ToggleOverview();
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+}
+
+// Verify that the desk button is not visible in tablet mode.
+TEST_F(ShelfViewDeskButtonTest, TabletModeVisibility) {
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  // In tablet mode, the shelf should be visible but the desk button shouldn't.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_EQ(SHELF_VISIBLE, GetPrimaryShelf()->GetVisibilityState());
+  EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
+}
+
+// Verify that the desk button is 136 wide if the screen width is greater than
+// 1280px, and 96 otherwise, and that the button is 36x36 in vertical alignment.
+TEST_F(ShelfViewDeskButtonTest, Position) {
+  test_api_->shelf_view()->shelf()->SetAlignment(ShelfAlignment::kBottom);
+  UpdateDisplay("1281x400");
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 136);
+  UpdateDisplay("400x1281");
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 96);
+  UpdateDisplay("1280x400");
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 96);
+
+  test_api_->shelf_view()->shelf()->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 36);
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().height(), 36);
 }
 
 }  // namespace ash

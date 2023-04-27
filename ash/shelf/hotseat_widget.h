@@ -118,6 +118,9 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   // Calculates space available for app bar if shown inline with shelf.
   gfx::Size CalculateInlineAppBarSize() const;
 
+  // Takes insets to reserve when calculating bounds.
+  void ReserveSpaceForAdjacentWidgets(const gfx::Insets& space);
+
   // ShelfComponent:
   void CalculateTargetBounds() override;
   gfx::Rect GetTargetBounds() const override;
@@ -196,11 +199,13 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
     gfx::Rect bounds;
     float shelf_view_opacity = 0.0f;
     bool is_active_session_state = false;
+    gfx::Insets reserved_space_;
 
     bool operator==(const LayoutInputs& other) const {
       return bounds == other.bounds &&
              shelf_view_opacity == other.shelf_view_opacity &&
-             is_active_session_state == other.is_active_session_state;
+             is_active_session_state == other.is_active_session_state &&
+             reserved_space_ == other.reserved_space_;
     }
   };
 
@@ -266,6 +271,10 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   // on the non visible portion of the hotseat, or events that reach the hotseat
   // during an animation.
   std::unique_ptr<aura::ScopedWindowTargeter> hotseat_window_targeter_;
+
+  // Space reserved by other widgets to exclude when calculating bounds and hit
+  // area.
+  gfx::Insets reserved_space_;
 };
 
 }  // namespace ash

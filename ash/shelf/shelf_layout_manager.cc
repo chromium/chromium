@@ -27,6 +27,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/drag_handle.h"
 #include "ash/shelf/home_to_overview_nudge_controller.h"
 #include "ash/shelf/hotseat_widget.h"
@@ -1441,6 +1442,9 @@ void ShelfLayoutManager::OnLocaleChanged() {
     shelf_->shelf_widget()->HandleLocaleChange();
   shelf_->status_area_widget()->HandleLocaleChange();
   shelf_->navigation_widget()->HandleLocaleChange();
+  if (features::IsDeskButtonEnabled()) {
+    shelf_widget_->desk_button_widget()->HandleLocaleChange();
+  }
 
   // Layout update is needed when language changes between LTR and RTL.
   LayoutShelf();
@@ -1898,6 +1902,9 @@ void ShelfLayoutManager::UpdateBoundsAndOpacity(bool animate) {
   hotseat_widget->UpdateLayout(animate);
   status_widget->UpdateLayout(animate);
   nav_widget->UpdateLayout(animate);
+  if (features::IsDeskButtonEnabled()) {
+    shelf_widget_->desk_button_widget()->UpdateLayout(animate);
+  }
   if (features::IsUseLoginShelfWidgetEnabled()) {
     shelf_->login_shelf_widget()->UpdateLayout(animate);
   }
@@ -1932,7 +1939,21 @@ void ShelfLayoutManager::UpdateTargetBounds(const State& state,
   shelf_->shelf_widget()->CalculateTargetBounds();
   shelf_->status_area_widget()->CalculateTargetBounds();
   shelf_->navigation_widget()->CalculateTargetBounds();
+  // If the desk button should be on the shelf, reserve space for it in the
+  // hotseat before drawing the hotseat.
+  DeskButtonWidget* desk_button = shelf_->desk_button_widget();
+  if (features::IsDeskButtonEnabled() && desk_button->ShouldBeVisible()) {
+    shelf_->hotseat_widget()->ReserveSpaceForAdjacentWidgets(
+        shelf_->IsHorizontalAlignment()
+            ? gfx::Insets::TLBR(0, desk_button->GetPreferredLength(), 0, 0)
+            : gfx::Insets::TLBR(desk_button->GetPreferredLength(), 0, 0, 0));
+  } else {
+    shelf_->hotseat_widget()->ReserveSpaceForAdjacentWidgets(gfx::Insets());
+  }
   shelf_->hotseat_widget()->CalculateTargetBounds();
+  if (features::IsDeskButtonEnabled()) {
+    desk_button->CalculateTargetBounds();
+  }
   if (features::IsUseLoginShelfWidgetEnabled())
     shelf_->login_shelf_widget()->CalculateTargetBounds();
 
@@ -1973,6 +1994,15 @@ void ShelfLayoutManager::UpdateWorkAreaInsetsAndNotifyObservers(
   Shell::Get()
       ->window_tree_host_manager()
       ->UpdateWorkAreaOfDisplayNearestWindow(shelf_native_window, shelf_insets);
+}
+
+void ShelfLayoutManager::HandleScrollableShelfContainerBoundsChange() const {
+  if (ash::features::IsDeskButtonEnabled()) {
+    // The desk button widget bounds depend on the scrollable shelf container
+    // bounds.
+    shelf_widget_->desk_button_widget()->CalculateTargetBounds();
+    shelf_widget_->desk_button_widget()->UpdateLayout(true);
+  }
 }
 
 void ShelfLayoutManager::UpdateTargetBoundsForGesture(

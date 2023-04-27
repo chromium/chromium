@@ -375,6 +375,9 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
       const gfx::Insets& shelf_insets,
       const gfx::Insets& in_session_shelf_insets);
 
+  // Called from the scrollable shelf container when it updates its bounds.
+  void HandleScrollableShelfContainerBoundsChange() const;
+
  private:
   void UpdateWorkAreaInsetsAndNotifyObserversInternal(
       const gfx::Rect& shelf_bounds_for_workarea_calculation,

@@ -232,6 +232,9 @@ void ScrollableShelfContainerView::Layout() {
     shelf_view_bounds.set_y(ShelfConfig::Get()->GetAppIconEndPadding());
 
   shelf_view_->SetBoundsRect(shelf_view_bounds);
+  shelf_view_->shelf()
+      ->shelf_layout_manager()
+      ->HandleScrollableShelfContainerBoundsChange();
 }
 
 bool ScrollableShelfContainerView::DoesIntersectRect(
