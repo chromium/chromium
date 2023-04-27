@@ -31,6 +31,30 @@ class FootnoteContainerView;
 class ImageView;
 
 // The non-client frame view of bubble-styled widgets.
+//  +- BubbleFrameView ------------------+
+//  | +- ProgressBar ------------------+ |
+//  | +-----------------------(-)-(x)-+  |
+//  | | HeaderView                    |  |
+//  | +-------------------------------+  |
+//  | +-------------------------------+  |
+//  | | TitleView                     |  |
+//  | +-------------------------------+  |
+//  | +-- DialogClientView------------+  |
+//  | | <<Dialog Contents View>>      |  |
+//  | | <<OK and Cancel Buttons>>     |  |
+//  | | <<...>>                       |  |
+//  | +-------------------------------+  |
+//  | +-------------------------------+  |
+//  | | FootnoteView                  |  |
+//  | +-------------------------------+  |
+//  +------------------------------------+
+// All views are optional except for DialogClientView. An ImageView
+// `main_image` might optionally occupy the top left corner (not
+// illustrated above).
+// If TitleView exists and HeaderView does not exists, the close
+// and the minimize buttons will be positioned at the end of the
+// title row. Otherwise, they will be positioned closer to the frame
+// edge.
 class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
  public:
   METADATA_HEADER(BubbleFrameView);
@@ -226,6 +250,16 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest, CloseMethods);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest, CreateDelegate);
 
+  // The positioning options for the close button and the minimize button.
+  enum class ButtonsPositioning {
+    // The buttons are positioned at the end of the title row.
+    kInTitleRow,
+    // The buttons are positioned on the upper trailing corner of the
+    // bubble. The distance between buttons and the frame edge will be shorter
+    // than `kInTitleRow`.
+    kOnFrameEdge,
+  };
+
   // Mirrors the bubble's arrow location on the |vertical| or horizontal axis,
   // if the generated window bounds don't fit in the given available bounds.
   void MirrorArrowIfOutOfBounds(bool vertical,
@@ -251,6 +285,12 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   // |title_margins_|, including the icon and title text, but not the close
   // button.
   bool HasTitle() const;
+
+  // Returns the positioning options for the buttons.
+  ButtonsPositioning GetButtonsPositioning() const;
+
+  // Returns true if there're buttons in the title row.
+  bool TitleRowHasButtons() const;
 
   // The insets of the text portion of the title, based on |title_margins_| and
   // whether there is an icon and/or close button. Note there may be no title,
