@@ -5,8 +5,6 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_STYLUS_BUTTON_EVENT_CONVERTER_EVDEV_H_
 #define UI_EVENTS_OZONE_EVDEV_STYLUS_BUTTON_EVENT_CONVERTER_EVDEV_H_
 
-#include <ostream>
-
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -38,8 +36,6 @@ class COMPONENT_EXPORT(EVDEV) StylusButtonEventConverterEvdev
   void OnFileCanReadWithoutBlocking(int fd) override;
 
   void ProcessEvent(const struct input_event& input);
-
-  std::ostream& DescribeForLog(std::ostream& os) const override;
 
  private:
   friend class MockStylusButtonEventConverterEvdev;
