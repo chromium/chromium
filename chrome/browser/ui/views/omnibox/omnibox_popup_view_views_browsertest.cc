@@ -18,12 +18,12 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views_test.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -40,11 +40,6 @@
 #include "ui/views/accessibility/ax_event_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_LINUX)
-#include "ui/linux/linux_ui.h"
-#include "ui/linux/linux_ui_getter.h"
-#endif
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -77,27 +72,6 @@ class ClickTrackingOverlayView : public views::View {
 
  private:
   absl::optional<gfx::Point> last_click_;
-};
-
-// Helper to wait for theme changes. The wait is triggered when an instance of
-// this class goes out of scope.
-class ThemeChangeWaiter {
- public:
-  explicit ThemeChangeWaiter(ThemeService* theme_service)
-      : waiter_(theme_service) {}
-
-  ThemeChangeWaiter(const ThemeChangeWaiter&) = delete;
-  ThemeChangeWaiter& operator=(const ThemeChangeWaiter&) = delete;
-
-  ~ThemeChangeWaiter() {
-    waiter_.WaitForThemeChanged();
-    // Theme changes propagate asynchronously in DesktopWindowTreeHostX11::
-    // FrameTypeChanged(), so ensure all tasks are consumed.
-    content::RunAllPendingInMessageLoop();
-  }
-
- private:
-  test::ThemeServiceChangedWaiter waiter_;
 };
 
 class TestAXEventObserver : public views::AXEventObserver {
@@ -167,101 +141,6 @@ class TestAXEventObserver : public views::AXEventObserver {
 };
 
 }  // namespace
-
-class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
- public:
-  OmniboxPopupViewViewsTest() {}
-
-  OmniboxPopupViewViewsTest(const OmniboxPopupViewViewsTest&) = delete;
-  OmniboxPopupViewViewsTest& operator=(const OmniboxPopupViewViewsTest&) =
-      delete;
-
-  views::Widget* CreatePopupForTestQuery();
-  views::Widget* GetPopupWidget() { return popup_view()->GetWidget(); }
-  OmniboxResultView* GetResultViewAt(int index) {
-    return popup_view()->result_view_at(index);
-  }
-
-  LocationBarView* location_bar() {
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->toolbar()->location_bar();
-  }
-  OmniboxViewViews* omnibox_view() { return location_bar()->omnibox_view(); }
-  OmniboxEditModel* edit_model() { return omnibox_view()->model(); }
-  OmniboxPopupViewViews* popup_view() {
-    return static_cast<OmniboxPopupViewViews*>(edit_model()->get_popup_view());
-  }
-
-  SkColor GetSelectedColor(Browser* browser) {
-    return BrowserView::GetBrowserViewForBrowser(browser)
-        ->GetColorProvider()
-        ->GetColor(kColorOmniboxResultsBackgroundSelected);
-  }
-
-  SkColor GetNormalColor(Browser* browser) {
-    return BrowserView::GetBrowserViewForBrowser(browser)
-        ->GetColorProvider()
-        ->GetColor(kColorOmniboxResultsBackground);
-  }
-
-  void SetUseDarkColor(bool use_dark) {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    browser_view->GetNativeTheme()->set_use_dark_colors(use_dark);
-  }
-
-  void UseDefaultTheme() {
-    // Some test relies on the light/dark variants of the result background to
-    // be different. But when using the system theme on Linux, these colors will
-    // be the same. Ensure we're not using the system theme, which may be
-    // conditionally enabled depending on the environment.
-#if BUILDFLAG(IS_LINUX)
-    // Normally it would be sufficient to call ThemeService::UseDefaultTheme()
-    // which sets the kUsesSystemTheme user pref on the browser's profile.
-    // However BrowserThemeProvider::GetColorProviderColor() currently does not
-    // pass an aura::Window to LinuxUI::GetNativeTheme() - which means that the
-    // NativeThemeGtk instance will always be returned.
-    // TODO(crbug.com/1304441): Remove this once GTK passthrough is fully
-    // supported.
-    ui::LinuxUiGetter::set_instance(nullptr);
-    ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
-
-    ThemeService* theme_service =
-        ThemeServiceFactory::GetForProfile(browser()->profile());
-    if (!theme_service->UsingDefaultTheme()) {
-      ThemeChangeWaiter wait(theme_service);
-      theme_service->UseDefaultTheme();
-    }
-    ASSERT_TRUE(theme_service->UsingDefaultTheme());
-#endif  // BUILDFLAG(IS_LINUX)
-  }
-
-  OmniboxTriggeredFeatureService* triggered_feature_service() {
-    return &triggered_feature_service_;
-  }
-
- private:
-  OmniboxTriggeredFeatureService triggered_feature_service_;
-};
-
-views::Widget* OmniboxPopupViewViewsTest::CreatePopupForTestQuery() {
-  EXPECT_TRUE(edit_model()->result().empty());
-  EXPECT_FALSE(popup_view()->IsOpen());
-  EXPECT_FALSE(GetPopupWidget());
-
-  edit_model()->SetUserText(u"foo");
-  AutocompleteInput input(
-      u"foo", metrics::OmniboxEventProto::BLANK,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  input.set_omit_asynchronous_matches(true);
-  edit_model()->autocomplete_controller()->Start(input);
-
-  EXPECT_FALSE(edit_model()->result().empty());
-  EXPECT_TRUE(popup_view()->IsOpen());
-  views::Widget* popup = GetPopupWidget();
-  EXPECT_TRUE(popup);
-  return popup;
-}
 
 // Tests widget alignment of the different popup types.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, PopupAlignment) {
@@ -425,52 +304,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, MAYBE_ClickOmnibox) {
   // Instantly finish all queued animations.
   GetPopupWidget()->GetLayer()->GetAnimator()->StopAnimating();
   EXPECT_TRUE(GetPopupWidget()->IsClosed());
-}
-
-// Check that the location bar background (and the background of the textfield
-// it contains) changes when it receives focus, and matches the popup background
-// color.
-// Flaky on Linux and Windows. See https://crbug.com/1120701
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_PopupMatchesLocationBarBackground \
-  DISABLED_PopupMatchesLocationBarBackground
-#else
-#define MAYBE_PopupMatchesLocationBarBackground \
-  PopupMatchesLocationBarBackground
-#endif
-IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
-                       MAYBE_PopupMatchesLocationBarBackground) {
-  // In dark mode the omnibox focused and unfocused colors are the same, which
-  // makes this test fail; see comments below.
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->GetNativeTheme()
-      ->set_use_dark_colors(false);
-
-  // Start with the Omnibox unfocused.
-  omnibox_view()->GetFocusManager()->ClearFocus();
-  const SkColor color_before_focus = location_bar()->background()->get_color();
-  EXPECT_EQ(color_before_focus, omnibox_view()->GetBackgroundColor());
-
-  // Give the Omnibox focus and get its focused color.
-  omnibox_view()->RequestFocus();
-  const SkColor color_after_focus = location_bar()->background()->get_color();
-
-  // Sanity check that the colors are different, otherwise this test will not be
-  // testing anything useful. It is possible that a particular theme could
-  // configure these colors to be the same. In that case, this test should be
-  // updated to detect that, or switch to a theme where they are different.
-  EXPECT_NE(color_before_focus, color_after_focus);
-  EXPECT_EQ(color_after_focus, omnibox_view()->GetBackgroundColor());
-
-  // The background is hosted in the view that contains the results area.
-  CreatePopupForTestQuery();
-  views::View* background_host = popup_view()->parent();
-  EXPECT_EQ(color_after_focus, background_host->background()->get_color());
-
-  // Blurring the Omnibox should restore the original colors.
-  omnibox_view()->GetFocusManager()->ClearFocus();
-  EXPECT_EQ(color_before_focus, location_bar()->background()->get_color());
-  EXPECT_EQ(color_before_focus, omnibox_view()->GetBackgroundColor());
 }
 
 // Flaky on Mac: https://crbug.com/1140153.

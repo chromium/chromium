@@ -12,7 +12,6 @@
 -ExternalProtocolDialogBrowserTest.TestFocus
 -FolderUploadConfirmationViewTest.InitiallyFocusesCancel
 -KeepAliveDevToolsTest.KeepsAliveUntilBrowserClose
--OmniboxPopupViewViewsTest.PopupMatchesLocationBarBackground
 -ProfileListDesktopBrowserTest.SwitchToProfile
 -SSLUITest.TestCloseTabWithUnsafePopup
 # crbug.com/1121486
