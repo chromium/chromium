@@ -119,7 +119,7 @@ but the new fuzzer differs in a few ways:
 - It uses [libprotobuf-mutator](https://github.com/google/libprotobuf-mutator)
   (LPM) for generation.
 - The LPM
-  [grammar](https://source.chromium.org/chromium/chromium/src/+/main:testing/libfuzzer/fuzzers/command_buffer_fuzzer/cmd_buf_fuzz.proto)
+  [grammar](https://source.chromium.org/chromium/chromium/src/+/main:testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.proto)
   targets
   [CommandBuffer](https://source.chromium.org/chromium/chromium/src/+/main:gpu/command_buffer/common/command_buffer.h;l=18;drc=e20bf9387f49c3a0b208bad26dc8efc0dc214e96)
   features that are common to all client-service types, making it suitable for
