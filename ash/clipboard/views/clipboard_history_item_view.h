@@ -22,18 +22,15 @@ class ClipboardHistory;
 class ClipboardHistoryDeleteButton;
 class ClipboardHistoryItem;
 class ClipboardHistoryMainButton;
-class ClipboardHistoryResourceManager;
 
 // The base class for menu items of the clipboard history menu.
 class ASH_EXPORT ClipboardHistoryItemView : public views::View {
  public:
   METADATA_HEADER(ClipboardHistoryItemView);
   static std::unique_ptr<ClipboardHistoryItemView>
-  CreateFromClipboardHistoryItem(
-      const base::UnguessableToken& item_id,
-      const ClipboardHistory* clipboard_history,
-      const ClipboardHistoryResourceManager* resource_manager,
-      views::MenuItemView* container);
+  CreateFromClipboardHistoryItem(const base::UnguessableToken& item_id,
+                                 const ClipboardHistory* clipboard_history,
+                                 views::MenuItemView* container);
 
   ClipboardHistoryItemView(const ClipboardHistoryItemView& rhs) = delete;
   ClipboardHistoryItemView& operator=(const ClipboardHistoryItemView& rhs) =

@@ -5,9 +5,9 @@
 #include "ash/clipboard/views/clipboard_history_bitmap_item_view.h"
 
 #include "ash/clipboard/clipboard_history_item.h"
-#include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
+#include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -42,45 +42,41 @@ constexpr base::TimeDelta kFadeInDurationMs = base::Milliseconds(200);
 
 ////////////////////////////////////////////////////////////////////////////////
 // FadeImageView
-// An ImageView which reacts to updates from ClipboardHistoryResourceManager by
-// fading out the old image, and fading in the new image. Used when HTML is done
+// An `ImageView` which reacts to updates from its `ClipboardHistoryItem` by
+// fading out the old image and fading in the new image. Used when HTML is done
 // rendering. Expected to transition at most once in its lifetime.
 class FadeImageView : public views::ImageView,
-                      public ui::ImplicitAnimationObserver,
-                      public ClipboardHistoryResourceManager::Observer {
+                      public ui::ImplicitAnimationObserver {
  public:
   FadeImageView(
       base::RepeatingCallback<const ClipboardHistoryItem*()> item_resolver,
-      const ClipboardHistoryResourceManager* resource_manager,
       base::RepeatingClosure update_callback)
-      : item_resolver_(item_resolver),
-        resource_manager_(resource_manager),
-        update_callback_(update_callback) {
-    DCHECK(item_resolver_);
-    resource_manager_->AddObserver(this);
+      : item_resolver_(item_resolver), update_callback_(update_callback) {
+    CHECK(item_resolver_);
+    CHECK(update_callback_);
+
+    const auto* item = item_resolver_.Run();
+    CHECK(item);
+    // Subscribe to be notified when `item`'s display image updates.
+    // `Unretained(this)` is safe because `this` owns the callback, and `item`
+    // will not notify `this` of display image changes if
+    // `display_image_updated_subscription_` is destroyed.
+    display_image_updated_subscription_ =
+        item->AddDisplayImageUpdatedCallback(base::BindRepeating(
+            &FadeImageView::OnDisplayImageUpdated, base::Unretained(this)));
+
     SetImageFromModel();
-    DCHECK(update_callback_);
   }
 
   FadeImageView(const FadeImageView& rhs) = delete;
 
   FadeImageView& operator=(const FadeImageView& rhs) = delete;
 
-  ~FadeImageView() override {
-    StopObservingImplicitAnimations();
-    resource_manager_->RemoveObserver(this);
-  }
+  ~FadeImageView() override { StopObservingImplicitAnimations(); }
 
-  // ClipboardHistoryResourceManager::Observer:
-  void OnCachedImageModelUpdated(
-      const std::vector<base::UnguessableToken>& item_ids) override {
-    const auto* item = item_resolver_.Run();
-    if (!item || !base::Contains(item_ids, item->id())) {
-      return;
-    }
-
+  void OnDisplayImageUpdated() {
     // Fade the old image out, then swap in the new image.
-    DCHECK_EQ(FadeAnimationState::kNoFadeAnimation, animation_state_);
+    CHECK_EQ(FadeAnimationState::kNoFadeAnimation, animation_state_);
     SetPaintToLayer();
     animation_state_ = FadeAnimationState::kFadeOut;
 
@@ -97,7 +93,7 @@ class FadeImageView : public views::ImageView,
         NOTREACHED();
         return;
       case FadeAnimationState::kFadeOut:
-        DCHECK_EQ(0.0f, layer()->opacity());
+        CHECK_EQ(layer()->opacity(), 0.0f);
         animation_state_ = FadeAnimationState::kFadeIn;
         SetImageFromModel();
         {
@@ -116,7 +112,7 @@ class FadeImageView : public views::ImageView,
 
   void SetImageFromModel() {
     if (const auto* item = item_resolver_.Run()) {
-      DCHECK(item->display_image().has_value());
+      CHECK(item->display_image().has_value());
       SetImage(item->display_image().value());
     }
 
@@ -141,12 +137,11 @@ class FadeImageView : public views::ImageView,
   // represented by this image.
   base::RepeatingCallback<const ClipboardHistoryItem*()> item_resolver_;
 
-  // Owned by `ClipboardHistoryController`.
-  const raw_ptr<const ClipboardHistoryResourceManager, ExperimentalAsh>
-      resource_manager_;
-
-  // Used to notify of image changes.
+  // Used to notify the contents view of image changes.
   base::RepeatingClosure update_callback_;
+
+  // Subscription notified when the clipboard history item's image changes.
+  base::CallbackListSubscription display_image_updated_subscription_;
 };
 
 }  // namespace
@@ -222,14 +217,13 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 
   std::unique_ptr<views::ImageView> BuildImageView() {
     const auto* clipboard_history_item = container_->GetClipboardHistoryItem();
-    DCHECK(clipboard_history_item);
+    CHECK(clipboard_history_item);
     return std::make_unique<FadeImageView>(
         // `Unretained()` is safe because `this` owns the `FadeImageView` being
         // created, and `container_` owns `this`.
         base::BindRepeating(
             &ClipboardHistoryBitmapItemView::GetClipboardHistoryItem,
             base::Unretained(container_)),
-        container_->resource_manager_,
         base::BindRepeating(&BitmapContentsView::UpdateImageViewSize,
                             base::Unretained(this)));
   }
@@ -261,7 +255,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
         break;
     }
 
-    DCHECK_GT(scaling_up_ratio, 0.f);
+    CHECK_GT(scaling_up_ratio, 0.f);
 
     image_view_->SetImageSize(
         gfx::Size(image_size.width() / scaling_up_ratio,
@@ -284,10 +278,8 @@ END_METADATA
 ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
     const base::UnguessableToken& item_id,
     const ClipboardHistory* clipboard_history,
-    const ClipboardHistoryResourceManager* resource_manager,
     views::MenuItemView* container)
     : ClipboardHistoryItemView(item_id, clipboard_history, container),
-      resource_manager_(resource_manager),
       data_format_(GetClipboardHistoryItem()->main_format()) {
   switch (data_format_) {
     case ui::ClipboardInternalFormat::kHtml:

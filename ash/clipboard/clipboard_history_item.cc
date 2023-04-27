@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/clipboard/clipboard_history_util.h"
+#include "base/callback_list.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
@@ -156,10 +157,25 @@ ClipboardHistoryItem::ClipboardHistoryItem(ui::ClipboardData data)
       display_text_(DetermineDisplayText(*this)),
       icon_(DetermineIcon(*this)) {}
 
-ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem&) =
-    default;
+ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem& other)
+    : id_(other.id_),
+      data_(other.data_),
+      time_copied_(other.time_copied_),
+      main_format_(other.main_format_),
+      display_format_(other.display_format_),
+      display_image_(other.display_image_),
+      display_text_(other.display_text_),
+      icon_(other.icon_) {}
 
-ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&&) = default;
+ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&& other)
+    : id_(std::move(other.id_)),
+      data_(std::move(other.data_)),
+      time_copied_(std::move(other.time_copied_)),
+      main_format_(std::move(other.main_format_)),
+      display_format_(std::move(other.display_format_)),
+      display_image_(std::move(other.display_image_)),
+      display_text_(std::move(other.display_text_)),
+      icon_(std::move(other.icon_)) {}
 
 ClipboardHistoryItem::~ClipboardHistoryItem() = default;
 
@@ -172,6 +188,19 @@ ui::ClipboardData ClipboardHistoryItem::ReplaceEquivalentData(
   if (data_.maybe_png() && !new_data.maybe_png())
     new_data.SetPngDataAfterEncoding(*data_.maybe_png());
   return std::exchange(data_, std::move(new_data));
+}
+
+void ClipboardHistoryItem::SetDisplayImage(
+    const ui::ImageModel& display_image) {
+  CHECK(display_image.IsImage());
+  display_image_ = display_image;
+  display_image_updated_callbacks_.Notify();
+}
+
+base::CallbackListSubscription
+ClipboardHistoryItem::AddDisplayImageUpdatedCallback(
+    base::RepeatingClosure callback) const {
+  return display_image_updated_callbacks_.Add(std::move(callback));
 }
 
 }  // namespace ash

@@ -33,7 +33,6 @@ enum class Action;
 class ClipboardHistory;
 class ClipboardHistoryItem;
 class ClipboardHistoryItemView;
-class ClipboardHistoryResourceManager;
 
 // Used to show the clipboard history menu, which holds the last few things
 // copied.
@@ -45,8 +44,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
       ClipboardHistoryController::OnMenuClosingCallback
           on_menu_closing_callback,
       base::RepeatingClosure menu_closed_callback,
-      const ClipboardHistory* clipboard_history,
-      const ClipboardHistoryResourceManager* resource_manager);
+      const ClipboardHistory* clipboard_history);
 
   ClipboardHistoryMenuModelAdapter(const ClipboardHistoryMenuModelAdapter&) =
       delete;
@@ -106,8 +104,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   ClipboardHistoryMenuModelAdapter(
       std::unique_ptr<MenuModelWithWillCloseCallback> model,
       base::RepeatingClosure menu_closed_callback,
-      const ClipboardHistory* clipboard_history,
-      const ClipboardHistoryResourceManager* resource_manager);
+      const ClipboardHistory* clipboard_history);
 
   // Advances the pseduo focus from the selected history item view (backward if
   // `reverse` is true).
@@ -151,11 +148,6 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   ItemViewsByCommandId item_views_by_command_id_;
 
   const raw_ptr<const ClipboardHistory, ExperimentalAsh> clipboard_history_;
-
-  // Resource manager used to fetch image models. Owned by
-  // ClipboardHistoryController.
-  const raw_ptr<const ClipboardHistoryResourceManager, ExperimentalAsh>
-      resource_manager_;
 
   // Indicates the number of item deletion operations in progress. Note that
   // a `ClipboardHistoryItemView` instance is deleted asynchronously.

@@ -76,7 +76,7 @@ void ClipboardHistoryResourceManager::OnImageModelRendered(
 
     DCHECK(item.display_image().has_value());
     if (item.display_image().value() != image_model) {
-      item.set_display_image(image_model);
+      item.SetDisplayImage(image_model);
     }
   }
 
@@ -179,7 +179,7 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
     const auto& existing_preview = it->display_image();
     DCHECK(existing_preview.has_value());
 
-    mutable_item->set_display_image(existing_preview.value());
+    mutable_item->SetDisplayImage(existing_preview.value());
   }
 }
 

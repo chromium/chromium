@@ -87,7 +87,6 @@ std::unique_ptr<ClipboardHistoryItemView>
 ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
     const base::UnguessableToken& item_id,
     const ClipboardHistory* clipboard_history,
-    const ClipboardHistoryResourceManager* resource_manager,
     views::MenuItemView* container) {
   const auto* item = GetClipboardHistoryItemImpl(item_id, clipboard_history);
   const auto display_format = item->display_format();
@@ -102,7 +101,7 @@ ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       return std::make_unique<ClipboardHistoryBitmapItemView>(
-          item_id, clipboard_history, resource_manager, container);
+          item_id, clipboard_history, container);
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       return std::make_unique<ClipboardHistoryFileItemView>(
           item_id, clipboard_history, container);

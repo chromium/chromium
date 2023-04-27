@@ -376,7 +376,7 @@ bool ClipboardHistoryControllerImpl::ShowMenu(
         menu_delegate_.get(), std::move(callback),
         base::BindRepeating(&ClipboardHistoryControllerImpl::OnMenuClosed,
                             base::Unretained(this)),
-        clipboard_history_.get(), resource_manager_.get());
+        clipboard_history_.get());
     context_menu_->Run(anchor_rect, source_type);
 
     DCHECK(IsMenuShowing());
