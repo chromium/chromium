@@ -350,7 +350,7 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
   // Setup PostScript printer with printable area offsets of 0.1in.
   queue->SetupPrinterLanguageType(
       mojom::PrinterLanguageType::kPostscriptLevel2);
-  int offset_in_pixels = static_cast<int>(kTestPrinterDpi * 0.1f);
+  int offset_in_pixels = static_cast<int>(test::kPrinterDpi * 0.1f);
   queue->SetupPrinterOffsets(offset_in_pixels, offset_in_pixels);
   g_browser_process->print_job_manager()->SetQueueForTest(queue);
 
@@ -366,7 +366,8 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
   print_view_manager->PrintPreviewNow(web_contents->GetPrimaryMainFrame(),
                                       false);
 
-  base::Value::Dict print_ticket = GetPrintTicket(mojom::PrinterType::kLocal);
+  base::Value::Dict print_ticket =
+      test::GetPrintTicket(mojom::PrinterType::kLocal);
   const char kTestData[] = "abc";
   auto print_data = base::MakeRefCounted<base::RefCountedStaticMemory>(
       kTestData, sizeof(kTestData));

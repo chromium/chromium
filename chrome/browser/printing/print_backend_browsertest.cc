@@ -149,9 +149,9 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     // tests.
     auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
     default_caps->copies_max = kCopiesMax;
-    default_caps->default_paper = kTestPaperLetter;
-    default_caps->papers.push_back(kTestPaperLetter);
-    default_caps->papers.push_back(kTestPaperLegal);
+    default_caps->default_paper = test::kPaperLetter;
+    default_caps->papers.push_back(test::kPaperLetter);
+    default_caps->papers.push_back(test::kPaperLegal);
     test_print_backend_->AddValidPrinter(
         kDefaultPrinterName, std::move(default_caps),
         std::make_unique<PrinterBasicInfo>(kDefaultPrinterInfo));

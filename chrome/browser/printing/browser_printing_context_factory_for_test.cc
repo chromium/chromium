@@ -25,7 +25,7 @@ std::unique_ptr<TestPrintingContext> MakeDefaultTestPrintingContext(
       std::make_unique<TestPrintingContext>(delegate, skip_system_calls);
 
   context->SetDeviceSettings(printer_name,
-                             MakeDefaultPrintSettings(printer_name));
+                             test::MakeDefaultPrintSettings(printer_name));
   return context;
 }
 
@@ -77,7 +77,7 @@ BrowserPrintingContextFactoryForTest::CreatePrintingContext(
   }
 #endif
 
-  context->SetUserSettings(*MakeUserModifiedPrintSettings(printer_name_));
+  context->SetUserSettings(*test::MakeUserModifiedPrintSettings(printer_name_));
 
   context->SetOnNewDocumentCallback(
       base::BindRepeating(&BrowserPrintingContextFactoryForTest::OnNewDocument,

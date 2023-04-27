@@ -55,7 +55,7 @@ TEST_F(PrintViewManagerBasicTest, CancelJobDuringDestruction) {
   auto queue = g_browser_process->print_job_manager()->queue();
   auto query = queue->CreatePrinterQuery(main_rfh()->GetGlobalId());
   base::RunLoop runloop;
-  query->SetSettings(GetPrintTicket(mojom::PrinterType::kLocal),
+  query->SetSettings(test::GetPrintTicket(mojom::PrinterType::kLocal),
                      runloop.QuitClosure());
   runloop.Run();
   auto cookie = query->cookie();

@@ -120,7 +120,8 @@ PrinterInfo GetEmptyPrinterInfo() {
 }
 
 base::Value::Dict GetPrintPreviewTicket() {
-  base::Value::Dict print_ticket = GetPrintTicket(mojom::PrinterType::kLocal);
+  base::Value::Dict print_ticket =
+      test::GetPrintTicket(mojom::PrinterType::kLocal);
 
   // Make some modifications to match a preview print ticket.
   print_ticket.Set(kSettingPageRange, base::Value());
@@ -442,7 +443,7 @@ class PrintPreviewHandlerTest : public testing::Test {
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(preview_web_contents_.get());
 
-    printers_.push_back(GetSimplePrinterInfo(kDummyPrinterName, true));
+    printers_.push_back(GetSimplePrinterInfo(test::kPrinterName, true));
     auto printer_handler = CreatePrinterHandler(printers_);
     printer_handler_ = printer_handler.get();
 
@@ -737,7 +738,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsSimple) {
   Initialize();
 
   // Verify initial settings were sent.
-  ValidateInitialSettings(*web_ui()->call_data().back(), kDummyPrinterName,
+  ValidateInitialSettings(*web_ui()->call_data().back(), test::kPrinterName,
                           kDummyInitiatorName);
 }
 
@@ -746,8 +747,8 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsHiLocale) {
 
   // Verify initial settings were sent for Hindi.
   ValidateInitialSettingsForLocale(*web_ui()->call_data().back(),
-                                   kDummyPrinterName, kDummyInitiatorName, "hi",
-                                   ",", ".");
+                                   test::kPrinterName, kDummyInitiatorName,
+                                   "hi", ",", ".");
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsRuLocale) {
@@ -755,8 +756,8 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsRuLocale) {
 
   // Verify initial settings were sent for Russian.
   ValidateInitialSettingsForLocale(*web_ui()->call_data().back(),
-                                   kDummyPrinterName, kDummyInitiatorName, "ru",
-                                   "\xC2\xA0", ",");
+                                   test::kPrinterName, kDummyInitiatorName,
+                                   "ru", "\xC2\xA0", ",");
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsNoPolicies) {
@@ -778,7 +779,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsNoAsh) {
   DisableAshChrome();
   Initialize();
   // Verify initial settings were sent.
-  ValidateInitialSettings(*web_ui()->call_data().back(), kDummyPrinterName,
+  ValidateInitialSettings(*web_ui()->call_data().back(), test::kPrinterName,
                           kDummyInitiatorName);
   // Verify policy settings are empty.
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
@@ -1166,7 +1167,7 @@ TEST_F(PrintPreviewHandlerTest, GetPrinterCapabilities) {
     std::string callback_id_in =
         "test-callback-id-" + base::NumberToString(i + 1);
     handler()->reset_calls();
-    SendGetPrinterCapabilities(type, callback_id_in, kDummyPrinterName);
+    SendGetPrinterCapabilities(type, callback_id_in, test::kPrinterName);
     EXPECT_TRUE(handler()->CalledOnlyForType(type));
 
     // Start with 1 call from initial settings, then add 1 more for each loop
@@ -1220,7 +1221,7 @@ TEST_F(PrintPreviewHandlerTest, GetNoDenyListPrinterCapabilities) {
     std::string callback_id_in =
         "test-callback-id-" + base::NumberToString(i + 1);
     handler()->reset_calls();
-    SendGetPrinterCapabilities(type, callback_id_in, kDummyPrinterName);
+    SendGetPrinterCapabilities(type, callback_id_in, test::kPrinterName);
 
     const bool is_allowed_type = type == mojom::PrinterType::kExtension;
     EXPECT_EQ(is_allowed_type, handler()->CalledOnlyForType(type));
@@ -1256,7 +1257,7 @@ TEST_F(PrintPreviewHandlerTest, Print) {
     std::string print_callback_id =
         "test-callback-id-" + base::NumberToString(2 * (i + 1));
     print_args.Append(print_callback_id);
-    base::Value print_ticket(GetPrintTicket(type));
+    base::Value print_ticket(test::GetPrintTicket(type));
     std::string json;
     base::JSONWriter::Write(print_ticket, &json);
     print_args.Append(json);
@@ -1466,7 +1467,7 @@ TEST_F(PrintPreviewHandlerFailingTest, GetPrinterCapabilities) {
     std::string callback_id_in =
         "test-callback-id-" + base::NumberToString(i + 1);
     args.Append(callback_id_in);
-    args.Append(kDummyPrinterName);
+    args.Append(test::kPrinterName);
     args.Append(static_cast<int>(type));
     handler()->HandleGetPrinterCapabilities(args);
     EXPECT_TRUE(handler()->CalledOnlyForType(type));
