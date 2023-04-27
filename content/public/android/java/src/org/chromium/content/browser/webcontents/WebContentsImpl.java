@@ -419,6 +419,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
+    public boolean isFocusedElementEditable() {
+        checkNotDestroyed();
+        return WebContentsImplJni.get().isFocusedElementEditable(mNativeWebContentsAndroid);
+    }
+
+    @Override
     public RenderFrameHost getRenderFrameHostFromId(GlobalRenderFrameHostId id) {
         checkNotDestroyed();
         return WebContentsImplJni.get().getRenderFrameHostFromId(
@@ -1167,6 +1173,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void setTopLevelNativeWindow(long nativeWebContentsAndroid, WindowAndroid windowAndroid);
         RenderFrameHost getMainFrame(long nativeWebContentsAndroid);
         RenderFrameHost getFocusedFrame(long nativeWebContentsAndroid);
+        boolean isFocusedElementEditable(long nativeWebContentsAndroid);
         RenderFrameHost getRenderFrameHostFromId(
                 long nativeWebContentsAndroid, int renderProcessId, int renderFrameId);
         RenderFrameHost[] getAllRenderFrameHosts(long nativeWebContentsAndroid);
