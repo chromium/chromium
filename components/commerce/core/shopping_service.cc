@@ -64,6 +64,10 @@ ProductInfo::ProductInfo() = default;
 ProductInfo::ProductInfo(const ProductInfo&) = default;
 ProductInfo& ProductInfo::operator=(const ProductInfo&) = default;
 ProductInfo::~ProductInfo() = default;
+
+ProductInfoCacheEntry::ProductInfoCacheEntry() = default;
+ProductInfoCacheEntry::~ProductInfoCacheEntry() = default;
+
 MerchantInfo::MerchantInfo() = default;
 MerchantInfo::MerchantInfo(const MerchantInfo&) = default;
 MerchantInfo& MerchantInfo::operator=(const MerchantInfo&) = default;
@@ -196,9 +200,9 @@ void ShoppingService::HandleDidFinishLoadForProductInfo(WebWrapper* web) {
   auto it = product_info_cache_.find(web->GetLastCommittedURL().spec());
   // If there is both an entry in the cache and the javascript fallback needs
   // to run, run it.
-  if (it != product_info_cache_.end() && std::get<1>(it->second)) {
+  if (it != product_info_cache_.end() && it->second->needs_javascript_run) {
     // Since we're about to run the JS, flip the flag in the cache.
-    std::get<1>(it->second) = false;
+    it->second->needs_javascript_run = false;
 
     std::string script =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
@@ -237,7 +241,7 @@ void ShoppingService::OnProductInfoJsonSanitizationCompleted(
   // If there was no entry or the data doesn't need javascript run, do
   // nothing.
   if (it != product_info_cache_.end())
-    MergeProductInfoData(std::get<2>(it->second).get(),
+    MergeProductInfoData(it->second->product_info.get(),
                          result.value().GetDict());
 }
 
@@ -253,10 +257,11 @@ void ShoppingService::UpdateProductInfoCacheForInsertion(const GURL& url) {
 
   auto it = product_info_cache_.find(url.spec());
   if (it != product_info_cache_.end()) {
-    std::get<0>(it->second) = std::get<0>(it->second) + 1;
+    it->second->pages_with_url_open++;
   } else {
-    product_info_cache_[url.spec()] = std::make_tuple(1, false, nullptr);
-    std::get<2>(product_info_cache_[url.spec()]).reset();
+    product_info_cache_.emplace(url.spec(),
+                                std::make_unique<ProductInfoCacheEntry>());
+    product_info_cache_[url.spec()]->pages_with_url_open++;
   }
 }
 
@@ -270,9 +275,8 @@ void ShoppingService::UpdateProductInfoCache(
   if (it == product_info_cache_.end())
     return;
 
-  int count = std::get<0>(it->second);
-  product_info_cache_[url.spec()] =
-      std::make_tuple(count, needs_js, std::move(info));
+  it->second->needs_javascript_run = needs_js;
+  it->second->product_info = std::move(info);
 }
 
 const ProductInfo* ShoppingService::GetFromProductInfoCache(const GURL& url) {
@@ -280,7 +284,7 @@ const ProductInfo* ShoppingService::GetFromProductInfoCache(const GURL& url) {
   if (it == product_info_cache_.end())
     return nullptr;
 
-  return std::get<2>(it->second).get();
+  return it->second->product_info.get();
 }
 
 void ShoppingService::UpdateProductInfoCacheForRemoval(const GURL& url) {
@@ -291,10 +295,10 @@ void ShoppingService::UpdateProductInfoCacheForRemoval(const GURL& url) {
   // the internal count.
   auto it = product_info_cache_.find(url.spec());
   if (it != product_info_cache_.end()) {
-    if (std::get<0>(it->second) <= 1) {
+    if (it->second->pages_with_url_open <= 1) {
       product_info_cache_.erase(it);
     } else {
-      std::get<0>(it->second) = std::get<0>(it->second) - 1;
+      it->second->pages_with_url_open--;
     }
   }
 }

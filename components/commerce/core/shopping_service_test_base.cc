@@ -295,7 +295,7 @@ int ShoppingServiceTestBase::GetProductInfoCacheOpenURLCount(const GURL& url) {
   if (it == shopping_service_->product_info_cache_.end())
     return 0;
 
-  return std::get<0>(it->second);
+  return it->second->pages_with_url_open;
 }
 
 const ProductInfo* ShoppingServiceTestBase::GetFromProductInfoCache(

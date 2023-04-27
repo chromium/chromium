@@ -129,6 +129,24 @@ struct ProductInfo {
   bool server_image_available{false};
 };
 
+// A struct that keeps track of cached product info related data about a url.
+struct ProductInfoCacheEntry {
+ public:
+  ProductInfoCacheEntry();
+  ProductInfoCacheEntry(const ProductInfoCacheEntry&) = delete;
+  ProductInfoCacheEntry& operator=(const ProductInfoCacheEntry&) = delete;
+  ~ProductInfoCacheEntry();
+
+  // The number of pages that have the URL open.
+  size_t pages_with_url_open{0};
+
+  // Whether the fallback javascript needs to run for page.
+  bool needs_javascript_run{false};
+
+  // The product info associated with the URL.
+  std::unique_ptr<ProductInfo> product_info;
+};
+
 // Information returned by the merchant info APIs.
 struct MerchantInfo {
   MerchantInfo();
@@ -427,11 +445,9 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   std::unique_ptr<ShoppingPowerBookmarkDataProvider>
       shopping_power_bookmark_data_provider_;
 
-  // This is a cache that maps URL to a tuple of number of web wrappers the URL
-  // is open in, whether the javascript fallback needs to run, and the product
-  // info associated with the URL, so: <count, run_js, info>.
-  std::unordered_map<std::string,
-                     std::tuple<uint32_t, bool, std::unique_ptr<ProductInfo>>>
+  // This is a cache that maps URL to a cache entry that may or may not contain
+  // product info.
+  std::unordered_map<std::string, std::unique_ptr<ProductInfoCacheEntry>>
       product_info_cache_;
 
   std::unique_ptr<BookmarkUpdateManager> bookmark_update_manager_;
