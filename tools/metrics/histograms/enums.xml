@@ -95591,6 +95591,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     User cleared account cookies when there's no sync consent, which has caused
     sign out.
   </int>
+  <int value="26" label="User tapped on undo right after signin">
+    User tapped on the 'Undo' button in a snackbar shown right after signin
+    through promo in bookmarks and reading list page (iOS only).
+  </int>
 </enum>
 
 <enum name="SigninSSOAuthGetIdentitiesErrorCode">

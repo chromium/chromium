@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#import "base/strings/sys_string_conversions.h"
 
 #import "base/check_op.h"
 #import "base/ios/block_types.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/reading_list/features/reading_list_switches.h"
 #import "ios/chrome/browser/application_context/application_context.h"
@@ -108,6 +109,8 @@ enum AuthenticationState {
   BOOL _shouldShowManagedConfirmation;
   // YES if user policies have to be fetched.
   BOOL _shouldFetchUserPolicy;
+  // YES if user is opted into bookmark and reading list account storage.
+  BOOL _shouldShowSigninSnackbar;
 
   Browser* _browser;
   id<SystemIdentity> _identityToSignIn;
@@ -490,6 +493,10 @@ enum AuthenticationState {
       signInCompletion(success);
     });
   }
+  if (_shouldShowSigninSnackbar) {
+    [_performer showSnackbarWithSignInIdentity:_identityToSignIn
+                                       browser:_browser];
+  }
   [self continueSignin];
 }
 
@@ -540,6 +547,7 @@ enum AuthenticationState {
       << readingListTransportUponSignInEnabled;
   // TODO(crbug.com/1427044): Need to call the right APIs to opt in, as soon as
   // those APIs will be implemented.
+  _shouldShowSigninSnackbar = YES;
   [self continueSignin];
 }
 

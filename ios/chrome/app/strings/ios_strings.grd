@@ -4300,6 +4300,12 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_SIGNIN_PROMO_SETTINGS_WITH_UNITY" desc="Text to inform the user that they can sign in and sync to get tabs shared between devices. [iOS only]">
         To sync and personalize across devices, turn on sync.
       </message>
+      <message name="IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS" desc="This confirmation message is intended to help users understand that they have signed in to Chrome with their Google Account. The confirmation message appears at the bottom of the Bookmarks page after users choose an account to sign in to. The tone should be informative. [iOS only]">
+        Signed in as <ph name="USER_EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_SIGNIN_SNACKBAR_UNDO" desc="This string is found on a button that signs the user out when the user taps it. It is on a confirmation message that users see when they sign in to Chrome with their Google Account. This text is a verb and is short for the longer phrase 'Undo my sign-in.' The tone should be informative. [Length: 15em] [iOS only]">
+        Undo
+      </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_NEW_FOLDER" desc="Text on the bookmarks context bar to create new folder">
         New Folder
       </message>

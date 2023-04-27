@@ -74,6 +74,11 @@ class PrefService;
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser;
 
+// Shows a snackbar confirming sign-in with `identity` and an undo button to
+// sign out the user.
+- (void)showSnackbarWithSignInIdentity:(id<SystemIdentity>)identity
+                               browser:(Browser*)browser;
+
 // Shows `error` to the user and calls `callback` on dismiss.
 - (void)showAuthenticationError:(NSError*)error
                  withCompletion:(ProceduralBlock)callback

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
 #import <memory>
 
 #import "base/check_op.h"
@@ -30,7 +31,9 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/constants.h"
@@ -39,6 +42,7 @@
 #import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
@@ -58,6 +62,8 @@ using signin_ui::CompletionCallback;
 namespace {
 
 const int64_t kAuthenticationFlowTimeoutSeconds = 10;
+NSString* const kAuthenticationSnackbarCategory =
+    @"AuthenticationSnackbarCategory";
 
 }  // namespace
 
@@ -320,6 +326,44 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
                                 style:UIAlertActionStyleDefault];
   [_alertCoordinator setCancelAction:cancelBlock];
   [_alertCoordinator start];
+}
+
+- (void)showSnackbarWithSignInIdentity:(id<SystemIdentity>)identity
+                               browser:(Browser*)browser {
+  DCHECK(browser);
+  base::WeakPtr<Browser> weakBrowser = browser->AsWeakPtr();
+  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  action.handler = ^{
+    if (!weakBrowser.get()) {
+      return;
+    }
+    base::RecordAction(
+        base::UserMetricsAction("Mobile.Signin.SnackbarUndoTapped"));
+    ChromeBrowserState* browserState =
+        weakBrowser->GetBrowserState()->GetOriginalChromeBrowserState();
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForBrowserState(browserState);
+    if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+      authService->SignOut(
+          signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
+          /*force_clear_browsing_data=*/false, nil);
+    }
+  };
+  action.title = l10n_util::GetNSString(IDS_IOS_SIGNIN_SNACKBAR_UNDO);
+  action.accessibilityIdentifier = kSigninSnackbarUndo;
+  NSString* messageText =
+      l10n_util::GetNSStringF(IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS,
+                              base::SysNSStringToUTF16(identity.userEmail));
+  MDCSnackbarMessage* message =
+      [MDCSnackbarMessage messageWithText:messageText];
+  message.action = action;
+  message.category = kAuthenticationSnackbarCategory;
+
+  id<SnackbarCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
+  CHECK(handler);
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+  [handler showSnackbarMessage:message];
 }
 
 - (void)showAuthenticationError:(NSError*)error

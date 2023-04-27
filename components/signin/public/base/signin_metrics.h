@@ -86,9 +86,12 @@ enum class ProfileSignout {
   // User cleared account cookies when there's no sync consent, which has caused
   // sign out.
   kUserDeletedAccountCookies = 25,
+  // User tapped 'Undo' in a snackbar that is shown right after sign-in through
+  // promo in bookmarks and reading list page. (iOS only).
+  kUserTappedUndoRightAfterSignIn = 26,
 
   // Keep this as the last enum.
-  kMaxValue = kUserDeletedAccountCookies
+  kMaxValue = kUserTappedUndoRightAfterSignIn
 };
 
 // Enum values used for use with "AutoLogin.Reverse" histograms.

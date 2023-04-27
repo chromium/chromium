@@ -7,11 +7,14 @@
 
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/test_constants.h"
+#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -52,6 +55,12 @@ using chrome_test_util::SecondarySignInButton;
     config.additional_args.push_back(
         "<dict><key>SyncTypesListDisabled</key><array><string>bookmarks</"
         "string></array></dict>");
+  } else if ([self isRunningTest:@selector
+                   (testSnackbarAfterSignInPromoWithAccount)] ||
+             [self isRunningTest:@selector
+                   (testSnackbarAfterSignInPromoWithoutAccount)]) {
+    config.features_enabled.push_back(
+        bookmarks::kEnableBookmarksAccountStorage);
   }
   return config;
 }
@@ -231,6 +240,86 @@ using chrome_test_util::SecondarySignInButton;
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+}
+
+// Tests that a confirmation snackbar is shown after sign-in with an existing
+// account. The snackbar contains an 'Undo' button that signs-out the user
+// when tapped.
+- (void)testSnackbarAfterSignInPromoWithAccount {
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  // Set up a fake identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Check that promo is visible.
+  [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+
+  // Tap the primary button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Verify the snackbar is shown after sign-in and tap 'Undo'.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+  NSString* snackbarMessage =
+      l10n_util::GetNSStringF(IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS,
+                              base::SysNSStringToUTF16(fakeIdentity.userEmail));
+  [[EarlGrey selectElementWithMatcher:grey_text(snackbarMessage)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kSigninSnackbarUndo),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
+}
+
+// Tests that a confirmation snackbar is shown after sign-in with an account
+// added through the SSO Auth flow. The snackbar contains an 'Undo' button
+// that signs-out the user when tapped.
+- (void)testSnackbarAfterSignInPromoWithoutAccount {
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  // Check that promo is visible.
+  [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+
+  // Tap the primary button to start add account flow.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Set up a fake identity to add and sign-in with.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Make sure the fake SSO view controller is fully removed.
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the snackbar is shown after sign-in and tap 'Undo'.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+  NSString* snackbarMessage =
+      l10n_util::GetNSStringF(IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS,
+                              base::SysNSStringToUTF16(fakeIdentity.userEmail));
+  [[EarlGrey selectElementWithMatcher:grey_text(snackbarMessage)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kSigninSnackbarUndo),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
 }
 
 // Tests that the sign-in promo should not be shown after been shown 19 times.

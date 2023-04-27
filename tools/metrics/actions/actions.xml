@@ -17950,6 +17950,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.Signin.SnackbarUndoTapped">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>chrome-signin-team@google.org</owner>
+  <description>
+    User tapped on 'Undo' button on a snackbar shown right after signin through
+    promos in bookmarks or reading list page (iOS only).
+  </description>
+</action>
+
 <action name="Mobile.SystemNotification.Content.Click.Downloads_Files">
   <owner>chrome-analysis-team@google.com</owner>
   <description>

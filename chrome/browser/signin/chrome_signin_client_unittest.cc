@@ -304,6 +304,7 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu:
     case signin_metrics::ProfileSignout::kAccountEmailUpdated:
     case signin_metrics::ProfileSignout::kSigninManagerUpdateUPA:
+    case signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn:
       return false;
 
     case signin_metrics::ProfileSignout::kAccountRemovedFromDevice:
@@ -452,6 +453,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kGaiaCookieUpdated,
     signin_metrics::ProfileSignout::kAccountReconcilorReconcile,
     signin_metrics::ProfileSignout::kSigninManagerUpdateUPA,
+    signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
 };
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout
 // value is deprecated.
