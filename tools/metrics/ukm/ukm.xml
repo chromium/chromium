@@ -743,6 +743,39 @@ be describing additional metrics about the same event.
       two or greater.
     </summary>
   </metric>
+  <metric name="MaxGenerateBidCodeReadyLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the max time in millis that GenerateBid waited for the Script and/or WASM
+      load. If both Script and WASM were requested, this is the latency of the
+      slower of the two to complete.
+    </summary>
+  </metric>
+  <metric name="MaxGenerateBidConfigPromisesLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the max time in millis that GenerateBid waited for the fulfillment of the
+      config promises.
+    </summary>
+  </metric>
+  <metric name="MaxGenerateBidDirectFromSellerSignalsLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the max time in millis that GenerateBid waited for the download of the
+      DirectFromSellerSignals. This combines the PerBuyerSignals and
+      AuctionSignals, and as such, this is the latency of the slower of the two
+      to complete.
+    </summary>
+  </metric>
+  <metric name="MaxGenerateBidTrustedBiddingSignalsLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the max time in millis that GenerateBid waited for the download of the
+      TrustedBiddingSignals. This includes *all* TrustedBiddingSignals for that
+      buyer, because of how those all need to be available in order to
+      reprioritize InterestGroups and apply per-buyer group limits.
+    </summary>
+  </metric>
   <metric name="MaxGenerateSingleBidLatencyInMillis">
     <summary>
       Aggregated across all components for a multi-seller auctions, this records
@@ -775,6 +808,79 @@ be describing additional metrics about the same event.
       This metric only has a value for entries that represent multi-seller
       auctions, as indicated by a value for the NumSellersWithBidders metric of
       two or greater.
+    </summary>
+  </metric>
+  <metric name="MeanGenerateBidCodeReadyCriticalPathLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean critical path latency in millis, the time after all other
+      GenerateBid dependencies were satisfied that GenerateBid was blocked
+      waiting for the Script and/or WASM load. This combines Script and WASM
+      loads.
+    </summary>
+  </metric>
+  <metric name="MeanGenerateBidCodeReadyLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time in millis that GenerateBid waited for the Script and/or WASM
+      load. If both Script and WASM were requested, this is the latency of the
+      slower of the two to complete.
+    </summary>
+  </metric>
+  <metric name="MeanGenerateBidConfigPromisesCriticalPathLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean critical path latency in millis, the time after all other
+      GenerateBid dependencies were satisfied that GenerateBid was blocked
+      waiting for the fulfillment of the config promises.
+    </summary>
+  </metric>
+  <metric name="MeanGenerateBidConfigPromisesLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time in millis that GenerateBid waited for the fulfillment of the
+      config promises.
+    </summary>
+  </metric>
+  <metric
+      name="MeanGenerateBidDirectFromSellerSignalsCriticalPathLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean critical path latency in millis, the time after all other
+      GenerateBid dependencies were satisfied that GenerateBid was blocked
+      waiting for the download of the DirectFromSellerSignals. This combines the
+      PerBuyerSignals and AuctionSignals since they should arrive at roughly the
+      same time.
+    </summary>
+  </metric>
+  <metric name="MeanGenerateBidDirectFromSellerSignalsLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time in millis that GenerateBid waited for the download of the
+      DirectFromSellerSignals. This combines the PerBuyerSignals and
+      AuctionSignals, and as such, this is the latency of the slower of the two
+      to complete.
+    </summary>
+  </metric>
+  <metric
+      name="MeanGenerateBidTrustedBiddingSignalsCriticalPathLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean critical path latency in millis, the time after all other
+      GenerateBid dependencies were satisfied that GenerateBid was blocked
+      waiting for the download of the TrustedBiddingSignals. This includes *all*
+      TrustedBiddingSignals for that buyer, because of how those all need to be
+      available in order to reprioritize InterestGroups and apply per-buyer
+      group limits.
+    </summary>
+  </metric>
+  <metric name="MeanGenerateBidTrustedBiddingSignalsLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time in millis that GenerateBid waited for the download of the
+      TrustedBiddingSignals. This includes *all* TrustedBiddingSignals for that
+      buyer, because of how those all need to be available in order to
+      reprioritize InterestGroups and apply per-buyer group limits.
     </summary>
   </metric>
   <metric name="MeanGenerateSingleBidLatencyInMillis">
@@ -856,6 +962,38 @@ be describing additional metrics about the same event.
       Also unlike NumOwnersWithInterestGroups, this metric has a value even if
       there are no bidders eligible to participate in this auction, though, in
       this case, that value is likely to be zero.
+    </summary>
+  </metric>
+  <metric name="NumGenerateBidCodeReadyOnCriticalPath">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the number of occurrences in which GenerateBid was blocked waiting for the
+      Script and/or WASM load.
+    </summary>
+  </metric>
+  <metric name="NumGenerateBidConfigPromisesOnCriticalPath">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the number of occurrences in which GenerateBid was blocked waiting for the
+      fulfillment of the config promises.
+    </summary>
+  </metric>
+  <metric name="NumGenerateBidDirectFromSellerSignalsOnCriticalPath">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the number of occurrences in which GenerateBid was blocked waiting for the
+      download of the DirectFromSellerSignals. This combines the PerBuyerSignals
+      and AuctionSignals since they should arrive at roughly the same time.
+    </summary>
+  </metric>
+  <metric name="NumGenerateBidTrustedBiddingSignalsOnCriticalPath">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the number of occurrences in which GenerateBid was blocked waiting for the
+      download of the TrustedBiddingSignals. This includes *all*
+      TrustedBiddingSignals for that buyer, because of how those all need to be
+      available in order to reprioritize InterestGroups and apply per-buyer
+      group limits.
     </summary>
   </metric>
   <metric name="NumInterestGroups">

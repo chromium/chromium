@@ -137,7 +137,10 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       const absl::optional<GURL>& debug_loss_report_url = absl::nullopt,
       const absl::optional<GURL>& debug_win_report_url = absl::nullopt,
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
-          pa_requests = {});
+          pa_requests = {},
+      auction_worklet::mojom::GenerateBidDependencyLatenciesPtr
+          dependency_latencies =
+              auction_worklet::mojom::GenerateBidDependencyLatenciesPtr());
 
   // Waits for ReportWin() to be invoked.
   void WaitForReportWin();

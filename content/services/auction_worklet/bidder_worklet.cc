@@ -29,6 +29,7 @@
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
@@ -83,8 +84,9 @@ bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
                            std::vector<v8::Local<v8::Value>>* args) {
   v8::Isolate* isolate = v8_helper->isolate();
   if (maybe_json) {
-    if (!v8_helper->AppendJsonValue(context, *maybe_json, args))
+    if (!v8_helper->AppendJsonValue(context, *maybe_json, args)) {
       return false;
+    }
   } else {
     args->push_back(v8::Null(isolate));
   }
@@ -137,6 +139,13 @@ bool HasKAnonFailureComponent(
   return false;
 }
 
+absl::optional<base::TimeDelta> NullOptIfZero(base::TimeDelta delta) {
+  if (delta.is_zero()) {
+    return absl::nullopt;
+  }
+  return delta;
+}
+
 }  // namespace
 
 BidderWorklet::BidderWorklet(
@@ -182,8 +191,9 @@ BidderWorklet::BidderWorklet(
       base::OnTaskRunnerDeleter(v8_runner_));
 
   paused_ = pause_for_debugger_on_start;
-  if (!paused_)
+  if (!paused_) {
     Start();
+  }
 }
 
 BidderWorklet::~BidderWorklet() {
@@ -209,8 +219,9 @@ bool BidderWorklet::IsKAnon(
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
     const GURL& script_source_url,
     const mojom::BidderWorkletBidPtr& bid) {
-  if (!bid)
+  if (!bid) {
     return true;
+  }
   if (!BidderWorklet::IsKAnon(
           bidder_worklet_non_shared_params,
           blink::KAnonKeyForAdBid(url::Origin::Create(script_source_url),
@@ -304,8 +315,9 @@ void BidderWorklet::BeginGenerateBid(
 }
 
 void BidderWorklet::SendPendingSignalsRequests() {
-  if (trusted_signals_request_manager_)
+  if (trusted_signals_request_manager_) {
     trusted_signals_request_manager_->StartBatchedTrustedSignalsRequest();
+  }
 }
 
 void BidderWorklet::ReportWin(
@@ -357,9 +369,10 @@ void BidderWorklet::ReportWin(
   report_win_task->browser_signal_seller_origin = browser_signal_seller_origin;
   report_win_task->browser_signal_top_level_seller_origin =
       browser_signal_top_level_seller_origin;
-  if (has_bidding_signals_data_version)
+  if (has_bidding_signals_data_version) {
     report_win_task->bidding_signals_data_version =
         bidding_signals_data_version;
+  }
   report_win_task->callback = std::move(report_win_callback);
   report_win_task->trace_id = trace_id;
 
@@ -1289,8 +1302,9 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
 
 void BidderWorklet::ResumeIfPaused() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  if (!paused_)
+  if (!paused_) {
     return;
+  }
 
   paused_ = false;
   Start();
@@ -1339,8 +1353,9 @@ void BidderWorklet::OnScriptDownloaded(WorkletLoader::Result worklet_script,
     return;
   }
 
-  if (error_msg.has_value())
+  if (error_msg.has_value()) {
     load_code_error_msgs_.push_back(std::move(error_msg.value()));
+  }
 
   v8_runner_->PostTask(FROM_HERE,
                        base::BindOnce(&BidderWorklet::V8State::SetWorkletScript,
@@ -1371,8 +1386,9 @@ void BidderWorklet::OnWasmDownloaded(WorkletWasmLoader::Result wasm_helper,
     return;
   }
 
-  if (error_msg.has_value())
+  if (error_msg.has_value()) {
     load_code_error_msgs_.push_back(std::move(error_msg.value()));
+  }
 
   v8_runner_->PostTask(FROM_HERE,
                        base::BindOnce(&BidderWorklet::V8State::SetWasmHelper,
@@ -1407,8 +1423,9 @@ void BidderWorklet::RunReadyTasks() {
 
   // While reportWin() doesn't use WASM, since we do load it, we wait for it in
   // order to ensure determinism if the load fails.
-  if (!IsCodeReady())
+  if (!IsCodeReady()) {
     return;
+  }
 
   // Run all ReportWin() tasks that are ready. RunReportWinIfReady() does *not*
   // modify `report_win_tasks_` when invoked, so this is safe.
@@ -1558,8 +1575,9 @@ bool BidderWorklet::IsReadyToGenerateBid(const GenerateBidTask& task) const {
 
 void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  if (!IsReadyToGenerateBid(*task))
+  if (!IsReadyToGenerateBid(*task)) {
     return;
+  }
 
   // If there was a trusted signals request, it should have already completed
   // and been cleaned up before `signals_received_callback_invoked` was set to
@@ -1669,8 +1687,9 @@ bool BidderWorklet::IsReadyToReportWin(const ReportWinTask& task) const {
 
 void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  if (!IsReadyToReportWin(*task))
+  if (!IsReadyToReportWin(*task)) {
     return;
+  }
 
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "fledge", "wait_report_win_deps", task->trace_id, "data",
@@ -1743,7 +1762,13 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
       bidding_signals_data_version.has_value(), debug_loss_report_url,
       debug_win_report_url, set_priority.value_or(0), set_priority.has_value(),
       std::move(update_priority_signals_overrides), std::move(pa_requests),
-      std::move(non_kanon_pa_requests), bidding_latency, error_msgs);
+      std::move(non_kanon_pa_requests), bidding_latency,
+      mojom::GenerateBidDependencyLatencies::New(
+          NullOptIfZero(task->wait_code),
+          NullOptIfZero(task->wait_trusted_signals),
+          NullOptIfZero(task->wait_direct_from_seller_signals),
+          NullOptIfZero(task->wait_promises)),
+      error_msgs);
   CleanUpBidTaskOnUserThread(task);
 }
 

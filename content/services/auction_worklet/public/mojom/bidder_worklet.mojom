@@ -141,6 +141,25 @@ struct PrioritySignalsDouble {
   double value;
 };
 
+// Represents the time between BidderWorklet::BeginGenerateBid and each of the
+// dependencies to GenerateBid, which can help to identify the slowest
+// dependency, both in absolute terms and relative to other dependencies.
+// Each of the latencies recorded here may be null if that dependency didn't
+// apply for this call to GenerateBid.
+struct GenerateBidDependencyLatencies {
+  // Load of Script and/or WASM
+  mojo_base.mojom.TimeDelta? code_ready_latency;
+
+  // Fulfillment of config promises
+  mojo_base.mojom.TimeDelta? config_promises_latency;
+
+  // Download of DirectFromSellerSignals
+  mojo_base.mojom.TimeDelta? direct_from_seller_signals_latency;
+
+  // Download of TrustedBiddingSignals
+  mojo_base.mojom.TimeDelta? trusted_bidding_signals_latency;
+};
+
 // Single use client for each GenerateBid() call. Allows deferring generating
 // bids until after a bidder's interest groups have all received priority
 // vectors, which allows for cancelling generate bid calls from lower priority
@@ -234,6 +253,9 @@ interface GenerateBidClient {
   // `bidding_latency` The amount of time taken running all bids (note that
   // there may be 2 bids if the first bid result was not k-anonymous).
   //
+  // `generate_bid_dependency_latencies` The amount of time GenerateBid had to
+  // wait for each of its dependencies to be fulfilled before it could be run.
+  //
   // `errors` The various error messages to be used for debugging. These are too
   //  sensitive for the renderer to see. There may be errors even when a bid
   //  is offered, and there may be no errors when there's no bid. Includes
@@ -251,6 +273,7 @@ interface GenerateBidClient {
       array<PrivateAggregationRequest> pa_requests,
       array<PrivateAggregationRequest> non_kanon_pa_requests,
       mojo_base.mojom.TimeDelta bidding_latency,
+      GenerateBidDependencyLatencies generate_bid_dependency_latencies,
       array<string> errors);
 };
 

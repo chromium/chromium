@@ -48,6 +48,7 @@
 #include "content/browser/interest_group/interest_group_priority_util.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -717,6 +718,8 @@ class InterestGroupAuction::BuyerHelper
       PrivateAggregationRequests pa_requests,
       PrivateAggregationRequests non_kanon_pa_requests,
       base::TimeDelta bidding_latency,
+      auction_worklet::mojom::GenerateBidDependencyLatenciesPtr
+          generate_bid_dependency_latencies,
       const std::vector<std::string>& errors) override {
     BidState* state = generate_bid_client_receiver_set_.current_context();
     const blink::InterestGroup& interest_group = state->bidder->interest_group;
@@ -729,6 +732,8 @@ class InterestGroupAuction::BuyerHelper
     // metric separately and explicitly in OnTimeout.
     auction_->auction_metrics_recorder_->RecordBidForOneInterestGroupLatency(
         base::TimeTicks::Now() - start_generating_bids_time_);
+    auction_->auction_metrics_recorder_->RecordGenerateBidDependencyLatencies(
+        *generate_bid_dependency_latencies);
     OnGenerateBidCompleteInternal(
         state, std::move(mojo_bid), std::move(mojo_kanon_bid),
         bidding_signals_data_version, has_bidding_signals_data_version,
@@ -1981,7 +1986,7 @@ InterestGroupAuction::CreateReporter(
   winning_bid_info.bidding_signals_data_version =
       winner->bid->bidding_signals_data_version;
   if (winner->bid->bid_ad->metadata) {
-    //`metadata` is already in JSON so no quotes are needed.
+    // `metadata` is already in JSON so no quotes are needed.
     winning_bid_info.ad_metadata =
         base::StringPrintf(R"({"render_url":"%s","metadata":%s})",
                            winner->bid->ad_descriptor.url.spec().c_str(),
