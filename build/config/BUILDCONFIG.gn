@@ -398,11 +398,6 @@ if (is_debug) {
 # Static libraries and source sets use only the compiler ones.
 set_defaults("static_library") {
   configs = default_compiler_configs
-
-  # For Rust, a static library involves linking in all dependencies, and it
-  # performs LTO. But since we will perform LTO in the C++ linker which
-  # consumes the library, we defer LTO from Rust into the linker.
-  configs += [ "//build/config/compiler:rust_defer_lto_to_linker" ]
 }
 set_defaults("source_set") {
   configs = default_compiler_configs

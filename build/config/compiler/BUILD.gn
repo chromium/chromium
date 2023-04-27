@@ -908,21 +908,6 @@ config("compiler") {
   }
 }
 
-# Defers LTO optimization to the linker, for use when:
-# * Having the C++ toolchain do the linking against Rust staticlibs, and it
-#   will be using LTO.
-# * Having Rust toolchain invoke the linker, and you're linking Rust and C++
-#   together, so this defers LTO to the linker.
-#
-# Otherwise, Rust does LTO during compilation.
-#
-# https://doc.rust-lang.org/rustc/linker-plugin-lto.html
-config("rust_defer_lto_to_linker") {
-  if (!is_debug && use_thin_lto && is_a_target_toolchain) {
-    rustflags = [ "-Clinker-plugin-lto" ]
-  }
-}
-
 # The BUILDCONFIG file sets this config on targets by default, which means when
 # building with ThinLTO, no optimization is performed in the link step.
 config("thinlto_optimize_default") {
@@ -935,6 +920,9 @@ config("thinlto_optimize_default") {
       ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
     }
 
+    # We always point Rust to a linker that performs LTO, so we don't want Rust
+    # to preemptively do so during compilation too or they conflict. But we do
+    # want Rust to generate LTO metadata in order for the linker to do its job.
     rustflags = [ "-Clinker-plugin-lto=yes" ]
   }
 }
@@ -961,6 +949,9 @@ config("thinlto_optimize_max") {
       ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
     }
 
+    # We always point Rust to a linker that performs LTO, so we don't want Rust
+    # to preemptively do so during compilation too or they conflict. But we do
+    # want Rust to generate LTO metadata in order for the linker to do its job.
     rustflags = [ "-Clinker-plugin-lto=yes" ]
   }
 }
