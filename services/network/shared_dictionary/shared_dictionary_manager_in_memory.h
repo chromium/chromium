@@ -23,7 +23,7 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
 
   // SharedDictionaryManager
   scoped_refptr<SharedDictionaryStorage> CreateStorage(
-      const SharedDictionaryStorageIsolationKey& isolation_key) override;
+      const net::SharedDictionaryStorageIsolationKey& isolation_key) override;
 };
 
 }  // namespace network

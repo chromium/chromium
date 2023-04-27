@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/shared_dictionary/shared_dictionary_storage_isolation_key.h"
+#include "net/extras/shared_dictionary/shared_dictionary_storage_isolation_key.h"
 
 #include "net/base/isolation_info.h"
 
-namespace network {
+namespace net {
 
 // static
 absl::optional<SharedDictionaryStorageIsolationKey>
@@ -46,4 +46,4 @@ SharedDictionaryStorageIsolationKey&
 SharedDictionaryStorageIsolationKey::operator=(
     SharedDictionaryStorageIsolationKey&& other) = default;
 
-}  // namespace network
+}  // namespace net

@@ -19,7 +19,7 @@ SharedDictionaryManager::SharedDictionaryManager() = default;
 SharedDictionaryManager::~SharedDictionaryManager() = default;
 
 scoped_refptr<SharedDictionaryStorage> SharedDictionaryManager::GetStorage(
-    const SharedDictionaryStorageIsolationKey& isolation_key) {
+    const net::SharedDictionaryStorageIsolationKey& isolation_key) {
   auto it = storages_.find(isolation_key);
   if (it != storages_.end()) {
     DCHECK(it->second);
@@ -31,7 +31,7 @@ scoped_refptr<SharedDictionaryStorage> SharedDictionaryManager::GetStorage(
 }
 
 void SharedDictionaryManager::OnStorageDeleted(
-    const SharedDictionaryStorageIsolationKey& isolation_key) {
+    const net::SharedDictionaryStorageIsolationKey& isolation_key) {
   size_t removed_count = storages_.erase(isolation_key);
   DCHECK_EQ(1U, removed_count);
 }

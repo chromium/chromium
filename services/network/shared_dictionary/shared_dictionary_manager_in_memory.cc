@@ -11,7 +11,7 @@ namespace network {
 
 scoped_refptr<SharedDictionaryStorage>
 SharedDictionaryManagerInMemory::CreateStorage(
-    const SharedDictionaryStorageIsolationKey& isolation_key) {
+    const net::SharedDictionaryStorageIsolationKey& isolation_key) {
   return base::MakeRefCounted<SharedDictionaryStorageInMemory>(
       base::ScopedClosureRunner(
           base::BindOnce(&SharedDictionaryManager::OnStorageDeleted,

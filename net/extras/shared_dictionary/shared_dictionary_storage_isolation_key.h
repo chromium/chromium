@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_ISOLATION_KEY_H_
-#define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_ISOLATION_KEY_H_
+#ifndef NET_EXTRAS_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_ISOLATION_KEY_H_
+#define NET_EXTRAS_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_ISOLATION_KEY_H_
 
 #include "base/component_export.h"
 #include "net/base/schemeful_site.h"
@@ -12,12 +12,9 @@
 
 namespace net {
 class IsolationInfo;
-}  // namespace net
-
-namespace network {
 
 // Key used to isolate shared dictionary storages.
-class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorageIsolationKey {
+class COMPONENT_EXPORT(NET_EXTRAS) SharedDictionaryStorageIsolationKey {
  public:
   // Creates a SharedDictionaryStorageIsolationKey. Returns nullopt when
   // `frame_origin` or `top_frame_origin` of `isolation_info` is not set or
@@ -59,6 +56,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorageIsolationKey {
   net::SchemefulSite top_frame_site_;
 };
 
-}  // namespace network
+}  // namespace net
 
-#endif  // SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_ISOLATION_KEY_H_
+#endif  // NET_EXTRAS_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_ISOLATION_KEY_H_
