@@ -8,7 +8,7 @@
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_options.h"
-#include "components/account_manager_core/account_addition_result.h"
+#include "components/account_manager_core/account_upsertion_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GoogleServiceAuthError;
@@ -54,13 +54,13 @@ crosapi::mojom::GoogleServiceAuthErrorPtr ToMojoGoogleServiceAuthError(
     GoogleServiceAuthError error);
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
-absl::optional<account_manager::AccountAdditionResult>
-FromMojoAccountAdditionResult(
-    const crosapi::mojom::AccountAdditionResultPtr& mojo_result);
+absl::optional<account_manager::AccountUpsertionResult>
+FromMojoAccountUpsertionResult(
+    const crosapi::mojom::AccountUpsertionResultPtr& mojo_result);
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
-crosapi::mojom::AccountAdditionResultPtr ToMojoAccountAdditionResult(
-    account_manager::AccountAdditionResult result);
+crosapi::mojom::AccountUpsertionResultPtr ToMojoAccountUpsertionResult(
+    account_manager::AccountUpsertionResult result);
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 absl::optional<account_manager::AccountAdditionOptions>

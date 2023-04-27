@@ -212,21 +212,21 @@ class AccountManagerMojoServiceTest : public ::testing::Test {
         account_manager_mojo_service_->account_manager_ui_.get());
   }
 
-  mojom::AccountAdditionResultPtr ShowAddAccountDialog(
+  mojom::AccountUpsertionResultPtr ShowAddAccountDialog(
       base::OnceClosure quit_closure) {
-    auto add_account_result = mojom::AccountAdditionResult::New();
+    auto upsertion_result = mojom::AccountUpsertionResult::New();
     account_manager_mojo_service_->ShowAddAccountDialog(
         crosapi::mojom::AccountAdditionOptions::New(),
         base::BindOnce(
             [](base::OnceClosure quit_closure,
-               mojom::AccountAdditionResultPtr* add_account_result,
-               mojom::AccountAdditionResultPtr result) {
-              (*add_account_result)->status = result->status;
-              (*add_account_result)->account = std::move(result->account);
+               mojom::AccountUpsertionResultPtr* upsertion_result,
+               mojom::AccountUpsertionResultPtr result) {
+              (*upsertion_result)->status = result->status;
+              (*upsertion_result)->account = std::move(result->account);
               std::move(quit_closure).Run();
             },
-            std::move(quit_closure), &add_account_result));
-    return add_account_result;
+            std::move(quit_closure), &upsertion_result));
+    return upsertion_result;
   }
 
   void ShowReauthAccountDialog(const std::string& email,
@@ -236,7 +236,7 @@ class AccountManagerMojoServiceTest : public ::testing::Test {
   }
 
   void CallAccountAdditionFinished(
-      const account_manager::AccountAdditionResult& result) {
+      const account_manager::AccountUpsertionResult& result) {
     account_manager_mojo_service_->OnAccountAdditionFinished(result);
     GetFakeAccountManagerUI()->CloseDialog();
   }
@@ -404,13 +404,13 @@ TEST_F(AccountManagerMojoServiceTest,
        ShowAddAccountDialogReturnsInProgressIfDialogIsOpen) {
   EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
   GetFakeAccountManagerUI()->SetIsDialogShown(true);
-  mojom::AccountAdditionResultPtr account_addition_result;
+  mojom::AccountUpsertionResultPtr account_upsertion_result;
   account_manager_async_waiter()->ShowAddAccountDialog(
-      crosapi::mojom::AccountAdditionOptions::New(), &account_addition_result);
+      crosapi::mojom::AccountAdditionOptions::New(), &account_upsertion_result);
 
   // Check status.
-  EXPECT_EQ(mojom::AccountAdditionResult::Status::kAlreadyInProgress,
-            account_addition_result->status);
+  EXPECT_EQ(mojom::AccountUpsertionResult::Status::kAlreadyInProgress,
+            account_upsertion_result->status);
   // Check that dialog was not called.
   EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
 }
@@ -421,15 +421,15 @@ TEST_F(AccountManagerMojoServiceTest,
   GetFakeAccountManagerUI()->SetIsDialogShown(false);
 
   base::test::TestFuture<void> future;
-  mojom::AccountAdditionResultPtr account_addition_result =
+  mojom::AccountUpsertionResultPtr account_upsertion_result =
       ShowAddAccountDialog(future.GetCallback());
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   EXPECT_TRUE(future.Wait());
 
   // Check status.
-  EXPECT_EQ(mojom::AccountAdditionResult::Status::kCancelledByUser,
-            account_addition_result->status);
+  EXPECT_EQ(mojom::AccountUpsertionResult::Status::kCancelledByUser,
+            account_upsertion_result->status);
   // Check that dialog was called once.
   EXPECT_EQ(1, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
 }
@@ -440,21 +440,21 @@ TEST_F(AccountManagerMojoServiceTest,
   GetFakeAccountManagerUI()->SetIsDialogShown(false);
 
   base::test::TestFuture<void> future;
-  mojom::AccountAdditionResultPtr account_addition_result =
+  mojom::AccountUpsertionResultPtr account_upsertion_result =
       ShowAddAccountDialog(future.GetCallback());
   // Simulate account addition.
   CallAccountAdditionFinished(
-      account_manager::AccountAdditionResult::FromAccount(kFakeAccount));
+      account_manager::AccountUpsertionResult::FromAccount(kFakeAccount));
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   EXPECT_TRUE(future.Wait());
 
   // Check status.
-  EXPECT_EQ(mojom::AccountAdditionResult::Status::kSuccess,
-            account_addition_result->status);
+  EXPECT_EQ(mojom::AccountUpsertionResult::Status::kSuccess,
+            account_upsertion_result->status);
   // Check account.
   absl::optional<account_manager::Account> account =
-      account_manager::FromMojoAccount(account_addition_result->account);
+      account_manager::FromMojoAccount(account_upsertion_result->account);
   EXPECT_TRUE(account.has_value());
   EXPECT_EQ(kFakeAccount.key, account.value().key);
   EXPECT_EQ(kFakeAccount.raw_email, account.value().raw_email);
@@ -468,29 +468,29 @@ TEST_F(AccountManagerMojoServiceTest,
   GetFakeAccountManagerUI()->SetIsDialogShown(false);
 
   base::test::TestFuture<void> future;
-  mojom::AccountAdditionResultPtr account_addition_result =
+  mojom::AccountUpsertionResultPtr account_upsertion_result =
       ShowAddAccountDialog(future.GetCallback());
 
   base::test::TestFuture<void> future_2;
-  mojom::AccountAdditionResultPtr account_addition_result_2 =
+  mojom::AccountUpsertionResultPtr account_upsertion_result_2 =
       ShowAddAccountDialog(future_2.GetCallback());
   EXPECT_TRUE(future_2.Wait());
   // The second call gets 'kAlreadyInProgress' reply.
-  EXPECT_EQ(mojom::AccountAdditionResult::Status::kAlreadyInProgress,
-            account_addition_result_2->status);
+  EXPECT_EQ(mojom::AccountUpsertionResult::Status::kAlreadyInProgress,
+            account_upsertion_result_2->status);
 
   // Simulate account addition.
   CallAccountAdditionFinished(
-      account_manager::AccountAdditionResult::FromAccount(kFakeAccount));
+      account_manager::AccountUpsertionResult::FromAccount(kFakeAccount));
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   EXPECT_TRUE(future.Wait());
 
-  EXPECT_EQ(mojom::AccountAdditionResult::Status::kSuccess,
-            account_addition_result->status);
+  EXPECT_EQ(mojom::AccountUpsertionResult::Status::kSuccess,
+            account_upsertion_result->status);
   // Check account.
   absl::optional<account_manager::Account> account =
-      account_manager::FromMojoAccount(account_addition_result->account);
+      account_manager::FromMojoAccount(account_upsertion_result->account);
   EXPECT_TRUE(account.has_value());
   EXPECT_EQ(kFakeAccount.key, account.value().key);
   EXPECT_EQ(kFakeAccount.raw_email, account.value().raw_email);
@@ -504,37 +504,37 @@ TEST_F(AccountManagerMojoServiceTest,
   GetFakeAccountManagerUI()->SetIsDialogShown(false);
 
   base::test::TestFuture<void> future;
-  mojom::AccountAdditionResultPtr account_addition_result =
+  mojom::AccountUpsertionResultPtr account_upsertion_result =
       ShowAddAccountDialog(future.GetCallback());
   // Simulate account addition.
   CallAccountAdditionFinished(
-      account_manager::AccountAdditionResult::FromAccount(kFakeAccount));
+      account_manager::AccountUpsertionResult::FromAccount(kFakeAccount));
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   EXPECT_TRUE(future.Wait());
-  EXPECT_EQ(mojom::AccountAdditionResult::Status::kSuccess,
-            account_addition_result->status);
+  EXPECT_EQ(mojom::AccountUpsertionResult::Status::kSuccess,
+            account_upsertion_result->status);
   // Check account.
   absl::optional<account_manager::Account> account =
-      account_manager::FromMojoAccount(account_addition_result->account);
+      account_manager::FromMojoAccount(account_upsertion_result->account);
   EXPECT_TRUE(account.has_value());
   EXPECT_EQ(kFakeAccount.key, account.value().key);
   EXPECT_EQ(kFakeAccount.raw_email, account.value().raw_email);
 
   base::test::TestFuture<void> future_2;
-  mojom::AccountAdditionResultPtr account_addition_result_2 =
+  mojom::AccountUpsertionResultPtr account_upsertion_result_2 =
       ShowAddAccountDialog(future_2.GetCallback());
   // Simulate account addition.
   CallAccountAdditionFinished(
-      account_manager::AccountAdditionResult::FromAccount(kFakeAccount));
+      account_manager::AccountUpsertionResult::FromAccount(kFakeAccount));
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   EXPECT_TRUE(future_2.Wait());
-  EXPECT_EQ(mojom::AccountAdditionResult::Status::kSuccess,
-            account_addition_result_2->status);
+  EXPECT_EQ(mojom::AccountUpsertionResult::Status::kSuccess,
+            account_upsertion_result_2->status);
   // Check account.
   absl::optional<account_manager::Account> account_2 =
-      account_manager::FromMojoAccount(account_addition_result_2->account);
+      account_manager::FromMojoAccount(account_upsertion_result_2->account);
   EXPECT_TRUE(account_2.has_value());
   EXPECT_EQ(kFakeAccount.key, account_2.value().key);
   EXPECT_EQ(kFakeAccount.raw_email, account_2.value().raw_email);
@@ -759,7 +759,7 @@ TEST_F(AccountManagerMojoServiceTest,
   EXPECT_EQ(0, observer.GetNumSigninDialogClosedNotifications());
   GetFakeAccountManagerUI()->SetIsDialogShown(false);
   base::test::TestFuture<void> future;
-  mojom::AccountAdditionResultPtr account_addition_result =
+  mojom::AccountUpsertionResultPtr account_upsertion_result =
       ShowAddAccountDialog(future.GetCallback());
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();

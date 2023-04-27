@@ -20,8 +20,8 @@
 #include "base/strings/stringprintf.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "components/account_manager_core/account_upsertion_result.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
@@ -36,8 +36,8 @@ namespace {
 using RemoteMinVersions = crosapi::mojom::AccountManager::MethodMinVersions;
 
 // UMA histogram names.
-const char kAccountAdditionResultStatus[] =
-    "AccountManager.AccountAdditionResultStatus";
+const char kAccountUpsertionResultStatus[] =
+    "AccountManager.AccountUpsertionResultStatus";
 const char kGetAccountsMojoStatus[] =
     "AccountManager.FacadeGetAccountsMojoStatus";
 const char kMojoDisconnectionsAccountManagerRemote[] =
@@ -378,13 +378,13 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
 void AccountManagerFacadeImpl::ShowAddAccountDialog(
     AccountAdditionSource source,
     base::OnceCallback<
-        void(const account_manager::AccountAdditionResult& result)> callback) {
+        void(const account_manager::AccountUpsertionResult& result)> callback) {
   if (!account_manager_remote_) {
     LOG(WARNING) << "Account Manager remote disconnected";
     FinishAddAccount(
         std::move(callback),
-        AccountAdditionResult::FromStatus(
-            AccountAdditionResult::Status::kMojoRemoteDisconnected));
+        AccountUpsertionResult::FromStatus(
+            AccountUpsertionResult::Status::kMojoRemoteDisconnected));
     return;
   }
 
@@ -394,8 +394,8 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
                  << " for ShowAddAccountDialog.";
     FinishAddAccount(
         std::move(callback),
-        AccountAdditionResult::FromStatus(
-            AccountAdditionResult::Status::kIncompatibleMojoVersions));
+        AccountUpsertionResult::FromStatus(
+            AccountUpsertionResult::Status::kIncompatibleMojoVersions));
     return;
   }
 
@@ -497,8 +497,8 @@ void AccountManagerFacadeImpl::RemoveAccountForTesting(
 
 // static
 std::string AccountManagerFacadeImpl::
-    GetAccountAdditionResultStatusHistogramNameForTesting() {
-  return kAccountAdditionResultStatus;
+    GetAccountUpsertionResultStatusHistogramNameForTesting() {
+  return kAccountUpsertionResultStatus;
 }
 
 // static
@@ -523,14 +523,14 @@ void AccountManagerFacadeImpl::OnReceiverReceived(
 
 void AccountManagerFacadeImpl::OnShowAddAccountDialogFinished(
     base::OnceCallback<
-        void(const account_manager::AccountAdditionResult& result)> callback,
-    crosapi::mojom::AccountAdditionResultPtr mojo_result) {
-  absl::optional<account_manager::AccountAdditionResult> result =
-      account_manager::FromMojoAccountAdditionResult(mojo_result);
+        void(const account_manager::AccountUpsertionResult& result)> callback,
+    crosapi::mojom::AccountUpsertionResultPtr mojo_result) {
+  absl::optional<account_manager::AccountUpsertionResult> result =
+      account_manager::FromMojoAccountUpsertionResult(mojo_result);
   if (!result.has_value()) {
     FinishAddAccount(std::move(callback),
-                     AccountAdditionResult::FromStatus(
-                         AccountAdditionResult::Status::kUnexpectedResponse));
+                     AccountUpsertionResult::FromStatus(
+                         AccountUpsertionResult::Status::kUnexpectedResponse));
     return;
   }
   FinishAddAccount(std::move(callback), result.value());
@@ -538,9 +538,9 @@ void AccountManagerFacadeImpl::OnShowAddAccountDialogFinished(
 
 void AccountManagerFacadeImpl::FinishAddAccount(
     base::OnceCallback<
-        void(const account_manager::AccountAdditionResult& result)> callback,
-    const account_manager::AccountAdditionResult& result) {
-  base::UmaHistogramEnumeration(kAccountAdditionResultStatus, result.status());
+        void(const account_manager::AccountUpsertionResult& result)> callback,
+    const account_manager::AccountUpsertionResult& result) {
+  base::UmaHistogramEnumeration(kAccountUpsertionResultStatus, result.status());
   std::move(callback).Run(result);
 }
 

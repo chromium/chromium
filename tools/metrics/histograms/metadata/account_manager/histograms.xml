@@ -24,7 +24,8 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="AccountManager.AccountAdditionResultStatus"
-    enum="AccountManagerAccountAdditionResultStatus" expires_after="2023-10-31">
+    enum="AccountManagerAccountUpsertionResultStatus"
+    expires_after="2023-10-31">
   <owner>sinhak@chromium.org</owner>
   <owner>anastasiian@chromium.org</owner>
   <summary>

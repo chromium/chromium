@@ -11,8 +11,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/account_upsertion_result.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 // This is a profile-scoped implementation of `AccountManagerFacade`, intended
@@ -71,7 +71,7 @@ class ProfileAccountManager : public KeyedService,
   void ShowAddAccountDialog(AccountAdditionSource source) override;
   void ShowAddAccountDialog(
       AccountAdditionSource source,
-      base::OnceCallback<void(const account_manager::AccountAdditionResult&
+      base::OnceCallback<void(const account_manager::AccountUpsertionResult&
                                   result)> callback) override;
   void ShowReauthAccountDialog(AccountAdditionSource source,
                                const std::string& email,

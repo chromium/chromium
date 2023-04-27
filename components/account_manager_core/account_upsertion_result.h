@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_ADDITION_RESULT_H_
-#define COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_ADDITION_RESULT_H_
+#ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_UPSERTION_RESULT_H_
+#define COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_UPSERTION_RESULT_H_
 
 #include "components/account_manager_core/account.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -12,7 +12,7 @@
 namespace account_manager {
 
 // The result of account addition request.
-class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
+class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountUpsertionResult {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -40,14 +40,14 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
   // Creates result with `status` different from `kSuccess` and `kNetworkError`.
   // `account` is nullopt and `error` is NONE. To create a result with
   // `kSuccess` or `kNetworkError`, use the other constructors.
-  static AccountAdditionResult FromStatus(Status status);
+  static AccountUpsertionResult FromStatus(Status status);
 
   // Creates result with `status` set to `kSuccess`. `error` is NONE.
-  static AccountAdditionResult FromAccount(const Account& account);
+  static AccountUpsertionResult FromAccount(const Account& account);
 
   // Creates result with `status` set to `kNetworkError`. `account` is nullopt,
   // error state must not be NONE.
-  static AccountAdditionResult FromError(const GoogleServiceAuthError& error);
+  static AccountUpsertionResult FromError(const GoogleServiceAuthError& error);
 
   Status status() const { return status_; }
 
@@ -57,14 +57,14 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
   // The error state is NONE unless `status` is set to `kNetworkError`.
   const GoogleServiceAuthError& error() const { return error_; }
 
-  AccountAdditionResult(const AccountAdditionResult&);
-  AccountAdditionResult& operator=(const AccountAdditionResult&);
-  ~AccountAdditionResult();
+  AccountUpsertionResult(const AccountUpsertionResult&);
+  AccountUpsertionResult& operator=(const AccountUpsertionResult&);
+  ~AccountUpsertionResult();
 
  private:
-  AccountAdditionResult(Status status,
-                        const absl::optional<Account>& account,
-                        const GoogleServiceAuthError& error);
+  AccountUpsertionResult(Status status,
+                         const absl::optional<Account>& account,
+                         const GoogleServiceAuthError& error);
 
   Status status_;
   absl::optional<Account> account_;
@@ -73,4 +73,4 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
 
 }  // namespace account_manager
 
-#endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_ADDITION_RESULT_H_
+#endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_UPSERTION_RESULT_H_

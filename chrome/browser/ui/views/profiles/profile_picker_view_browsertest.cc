@@ -483,7 +483,7 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
           MaybeGetAshAccountManagerMojoServiceForTests();
       DCHECK(mojo_service);
       mojo_service->OnAccountAdditionFinishedForTesting(
-          account_manager::AccountAdditionResult::FromAccount(
+          account_manager::AccountUpsertionResult::FromAccount(
               {kAccountKey, email}));
       fake_ui->CloseDialog();
     }

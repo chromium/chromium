@@ -111,9 +111,10 @@ struct AccountAdditionOptions {
 };
 
 // Next id: 3
-[Stable]
-struct AccountAdditionResult {
-  // The result of account addition request, sent from Ash to Lacros.
+[Stable, RenamedFrom="crosapi.mojom.AccountAdditionResult"]
+struct AccountUpsertionResult {
+  // The result of account addition or reauthentication request, sent from Ash
+  // to Lacros.
   // Note: The default value of this enum is `kUnexpectedResponse = 4`, not
   // `kSuccess = 0`. This was changed in MinVersion 11.
   //
@@ -129,7 +130,7 @@ struct AccountAdditionResult {
   };
 
   Status status@0;
-  // The account that was added.
+  // The account that was added or updated.
   Account? account@1;
   // The error is set only if `status` is set to `kNetworkError`.
   GoogleServiceAuthError? error@2;
@@ -233,7 +234,7 @@ interface AccountManager {
   [MinVersion = 3]
   ShowAddAccountDialog@3(
     [MinVersion=8] AccountAdditionOptions? add_account_options) =>
-    (AccountAdditionResult result);
+    (AccountUpsertionResult result);
 
   // Launches account reauthentication dialog for provided `email`.
   [MinVersion = 3]

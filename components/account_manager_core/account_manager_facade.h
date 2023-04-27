@@ -13,7 +13,7 @@
 #include "base/observer_list_types.h"
 #include "build/chromeos_buildflags.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_addition_result.h"
+#include "components/account_manager_core/account_upsertion_result.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 class OAuth2AccessTokenFetcher;
@@ -130,7 +130,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
   // callback. Otherwise `account` will be set to `absl::nullopt`.
   virtual void ShowAddAccountDialog(
       AccountAdditionSource source,
-      base::OnceCallback<void(const AccountAdditionResult& result)>
+      base::OnceCallback<void(const AccountUpsertionResult& result)>
           callback) = 0;
 
   // Launches account reauthentication dialog for provided `email`.
