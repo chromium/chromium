@@ -218,20 +218,16 @@ void CrxCachePutCompleteOnCrxCacheBlockingTaskRunner(
     const CrxCache::Result& result) {
   if (result.error != UnpackerError::kNone) {
     update_client::DeleteFileAndEmptyParentDirectory(crx_path);
-    main_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), ErrorCategory::kUnpack,
-                                  static_cast<int>(result.error), 0));
-    DVLOG(2) << "CrxCache->Put failed: " << static_cast<int>(result.error);
-    return;
+    DVLOG(2) << "crx_cache->Put failed: " << static_cast<int>(result.error);
   } else {
     update_client::DeleteEmptyDirectory(crx_path.DirName());
-    base::ThreadPool::PostTask(
-        FROM_HERE, kTaskTraits,
-        base::BindOnce(&InstallOnBlockingTaskRunner, main_task_runner,
-                       unpack_path, public_key, fingerprint,
-                       std::move(install_params), installer, progress_callback,
-                       std::move(callback)));
   }
+  base::ThreadPool::PostTask(
+      FROM_HERE, kTaskTraits,
+      base::BindOnce(&InstallOnBlockingTaskRunner, main_task_runner,
+                     unpack_path, public_key, fingerprint,
+                     std::move(install_params), installer, progress_callback,
+                     std::move(callback)));
 }
 
 void UnpackCompleteOnBlockingTaskRunner(
