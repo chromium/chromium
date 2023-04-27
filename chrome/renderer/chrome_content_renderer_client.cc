@@ -93,6 +93,7 @@
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_utils.h"
 #include "components/no_state_prefetch/renderer/prerender_render_frame_observer.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -630,9 +631,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
   const bool search_result_extractor_enabled =
       render_frame->IsMainFrame() &&
-      history_clusters::GetConfig().is_journeys_enabled_no_locale_check &&
-      history_clusters::IsApplicationLocaleSupportedByJourneys(
-          RenderThread::Get()->GetLocale());
+      optimization_guide::features::IsPageContentAnnotationEnabled();
   if (search_result_extractor_enabled) {
     continuous_search::SearchResultExtractorImpl::Create(render_frame);
   }
