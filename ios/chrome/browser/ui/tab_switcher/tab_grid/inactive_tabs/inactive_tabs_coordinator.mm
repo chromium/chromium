@@ -462,6 +462,7 @@ NSString* const kInactiveTabsUserEducationShownOnce =
   if (numberOfTabs <= 0) {
     return;
   }
+  base::RecordAction(base::UserMetricsAction("MobileInactiveTabsCloseAll"));
 
   NSString* title;
   if (numberOfTabs > 99) {
@@ -485,11 +486,14 @@ NSString* const kInactiveTabsUserEducationShownOnce =
   __weak __typeof(self) weakSelf = self;
   NSString* closeAllActionTitle = l10n_util::GetNSString(
       IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_OPTION);
-  [actionSheetCoordinator addItemWithTitle:closeAllActionTitle
-                                    action:^{
-                                      [weakSelf closeAllInactiveTabs];
-                                    }
-                                     style:UIAlertActionStyleDestructive];
+  [actionSheetCoordinator
+      addItemWithTitle:closeAllActionTitle
+                action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "MobileInactiveTabsCloseAllConfirm"));
+                  [weakSelf closeAllInactiveTabs];
+                }
+                 style:UIAlertActionStyleDestructive];
 
   [actionSheetCoordinator start];
 }
