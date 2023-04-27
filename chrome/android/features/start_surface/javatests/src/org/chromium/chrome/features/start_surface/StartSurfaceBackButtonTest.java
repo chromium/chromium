@@ -19,7 +19,6 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.test.InstrumentationRegistry;
@@ -40,7 +39,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -59,6 +57,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -352,8 +351,8 @@ public class StartSurfaceBackButtonTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    @DisabledTest(message = "https://crbug.com/1246457")
     @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2, message = "crbug/1436048")
     public void testSwipeBackOnStartSurfaceHomePage() throws ExecutionException {
         // clang-format on
         verifySwipeBackOnStartSurfaceHomePage();
@@ -363,8 +362,8 @@ public class StartSurfaceBackButtonTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    @DisabledTest(message = "https://crbug.com/1246457")
     @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2, message = "crbug/1436048")
     public void testSwipeBackOnStartSurfaceHomePage_BackGestureRefactor()
             throws ExecutionException {
         verifySwipeBackOnStartSurfaceHomePage();
@@ -452,7 +451,10 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.waitForStartSurfaceVisible(mLayoutChangedCallbackHelper,
                 mCurrentlyActiveLayout, mActivityTestRule.getActivity());
 
-        StartSurfaceTestUtils.gestureNavigateBackToBringChromeBackground(mActivityTestRule);
+        StartSurfaceTestUtils.gestureNavigateBack(mActivityTestRule);
+
+        // Back gesture on the start surface puts Chrome background.
+        ChromeApplicationTestUtils.waitUntilChromeInBackground();
     }
 
     /**
