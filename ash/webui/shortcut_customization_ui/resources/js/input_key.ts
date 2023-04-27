@@ -41,7 +41,7 @@ export const keyToIconNameMap: {[key: string]: string|undefined} = {
   'BrowserBack': 'back',
   'BrowserForward': 'forward',
   'BrowserRefresh': 'refresh',
-  'BrowserSearch': 'search',
+  'BrowserSearch': 'browser-search',
   'EmojiPicker': 'emoji-picker',
   'KeyboardBacklightToggle': 'keyboard-brightness-toggle',
   'KeyboardBrightnessUp': 'keyboard-brightness-up',
