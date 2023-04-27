@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

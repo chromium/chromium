@@ -11,7 +11,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 BookmarkRemoverHelper::BookmarkRemoverHelper(ChromeBrowserState* browser_state)
     : browser_state_(browser_state) {

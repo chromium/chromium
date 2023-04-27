@@ -8,10 +8,10 @@
 #error "This file requires ARC support."
 #endif
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 AllWebStateListObservationRegistrar::AllWebStateListObservationRegistrar(
     ChromeBrowserState* browser_state,

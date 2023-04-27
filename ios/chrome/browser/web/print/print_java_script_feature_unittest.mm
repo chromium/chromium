@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/web/print/print_java_script_feature.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/print/web_state_printer.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"

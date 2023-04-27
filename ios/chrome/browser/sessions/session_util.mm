@@ -9,7 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/sessions/core/serialized_navigation_entry.h"
 #import "components/sessions/ios/ios_serialized_navigation_builder.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"

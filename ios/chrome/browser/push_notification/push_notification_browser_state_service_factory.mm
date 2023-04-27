@@ -5,11 +5,11 @@
 #import "ios/chrome/browser/push_notification/push_notification_browser_state_service_factory.h"
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/push_notification/push_notification_browser_state_service.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

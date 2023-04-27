@@ -9,7 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/voice/speech_input_locale_config.h"
 #import "ios/chrome/browser/voice/voice_search_prefs.h"
 #import "net/base/url_util.h"

@@ -10,7 +10,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issue.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_consumer.h"

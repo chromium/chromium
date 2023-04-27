@@ -83,7 +83,6 @@ source_set("signin") {
     "//google_apis",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/bookmarks:bookmarks_utils",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/flags:system_flags",
@@ -91,6 +90,7 @@ source_set("signin") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/reading_list:reading_list_remover",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
@@ -288,7 +288,7 @@ source_set("trusted_vault_factory") {
     "//base",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/public/provider/chrome/browser/signin:trusted_vault_api",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -320,8 +320,8 @@ source_set("test_support") {
     "//components/keyed_service/core",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/sync",
   ]
 }
@@ -378,8 +378,6 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//google_apis",
     "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state:browser_state_impl",
-    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/lens",
@@ -387,6 +385,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",

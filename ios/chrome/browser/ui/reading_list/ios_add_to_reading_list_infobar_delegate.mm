@@ -12,7 +12,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/web/public/web_state.h"
 #import "services/metrics/public/cpp/ukm_builders.h"

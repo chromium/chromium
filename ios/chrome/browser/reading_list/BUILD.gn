@@ -49,12 +49,12 @@ source_set("reading_list") {
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
@@ -90,7 +90,7 @@ source_set("reading_list_remover") {
   deps = [
     "//base",
     "//components/reading_list/core",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state",
   ]
   public_deps = [
     # This is required because this target includes
@@ -140,9 +140,9 @@ source_set("unit_tests") {
     "//components/reading_list/core",
     "//components/reading_list/core:test_support",
     "//components/sync/base",
-    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/dom_distiller",
     "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/web",
     "//ios/web/public",
     "//ios/web/public/test",

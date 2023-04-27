@@ -24,9 +24,9 @@ source_set("layout_guide") {
   ]
   deps = [
     ":layout_guide_scene_agent",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser_state",
   ]
 }
 

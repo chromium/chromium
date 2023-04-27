@@ -11,7 +11,7 @@
 #import "base/memory/ref_counted_memory.h"
 #import "base/time/time.h"
 #import "components/grit/dev_ui_components_resources.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_constants.h"
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"

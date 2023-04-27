@@ -16,9 +16,9 @@ source_set("test") {
     "stub_browser_provider_interface.mm",
   ]
   deps = [
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/main:scene",
     "//ios/chrome/browser/web_state_list",

@@ -18,9 +18,9 @@ source_set("external_files") {
     "//components/keyed_service/ios",
     "//components/sessions",
     "//ios/chrome/browser/bookmarks",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/url",
     "//ios/chrome/browser/web_state_list",
   ]

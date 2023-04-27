@@ -86,12 +86,12 @@ source_set("policy") {
     "//components/version_info:version_info",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/paths",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
@@ -147,11 +147,11 @@ source_set("test_support") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/sync_preferences",
-    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy_url_blocking",
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
   ]
 
   public_deps = [
@@ -213,7 +213,6 @@ source_set("unit_tests") {
     "//google_apis",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/paths",
@@ -223,6 +222,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:fake_system_identity_manager",
@@ -320,9 +320,9 @@ source_set("eg_app_support+eg2") {
     "//components/policy/core/common",
     "//google_apis",
     "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/paths",
     "//ios/chrome/browser/policy_url_blocking",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/test/app:test_support",
   ]
   frameworks = [ "Foundation.framework" ]

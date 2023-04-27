@@ -7,7 +7,7 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_delegate.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_message.h"

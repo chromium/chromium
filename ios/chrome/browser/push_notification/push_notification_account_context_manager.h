@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 
 namespace ios {
 class ChromeBrowserStateManager;

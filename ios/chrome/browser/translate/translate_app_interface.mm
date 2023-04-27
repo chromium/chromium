@@ -16,7 +16,7 @@
 #import "components/translate/core/common/translate_util.h"
 #import "components/translate/ios/browser/js_translate_web_frame_manager.h"
 #import "components/translate/ios/browser/js_translate_web_frame_manager_factory.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"

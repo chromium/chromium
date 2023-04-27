@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 namespace {
 // Global whose address is used as a unique key to find the

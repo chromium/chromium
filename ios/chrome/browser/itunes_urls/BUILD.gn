@@ -28,7 +28,7 @@ source_set("unit_tests") {
     ":itunes_urls",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test/fakes",
     "//ios/web/public",

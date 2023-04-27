@@ -6,7 +6,6 @@
 
 #import <map>
 
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_infobar_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
@@ -20,6 +19,7 @@
 #import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

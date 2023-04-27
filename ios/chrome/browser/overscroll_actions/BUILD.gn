@@ -10,7 +10,7 @@ source_set("overscroll_actions") {
   deps = [
     "//base",
     "//components/keyed_service/ios",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/web/public",
   ]
@@ -25,7 +25,7 @@ source_set("unit_tests") {
     ":overscroll_actions",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/test/fakes",

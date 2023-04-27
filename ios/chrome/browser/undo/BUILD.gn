@@ -11,6 +11,6 @@ source_set("undo") {
     "//base",
     "//components/keyed_service/ios",
     "//components/undo",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state",
   ]
 }

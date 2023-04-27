@@ -65,11 +65,11 @@ source_set("unit_tests") {
   deps = [
     ":infobar_banner",
     "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/browser/ui/settings/sync/utils",

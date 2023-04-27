@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/supervised_user/supervised_user_url_filter_tab_helper.h"
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/net/protocol_handler_util.h"
 #import "net/base/mac/url_conversions.h"
 #import "net/base/net_errors.h"

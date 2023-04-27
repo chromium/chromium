@@ -16,9 +16,9 @@ source_set("push_notification_browser_state_service") {
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/commerce",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/browser_state",
   ]
 }
 
@@ -34,9 +34,9 @@ source_set("push_notification_browser_state_service_factory") {
     ":push_notification_service",
     "//base",
     "//components/keyed_service/ios",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/commerce",
     "//ios/chrome/browser/commerce/push_notification",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
   ]
 }
@@ -64,9 +64,9 @@ source_set("push_notification_service") {
     "//components/pref_registry",
     "//components/prefs",
     "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/commerce/push_notification",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/browser_state",
   ]
 }
 
@@ -94,7 +94,8 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//ios/chrome/browser/application_context",
-    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

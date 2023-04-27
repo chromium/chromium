@@ -34,7 +34,7 @@ source_set("unit_tests") {
   deps = [
     ":web_selection",
     "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/web:web_internal",
     "//ios/web/public/test",

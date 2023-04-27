@@ -8,7 +8,7 @@
 
 #import "components/translate/core/common/translate_util.h"
 #import "components/translate/translate_internals/translate_internals_handler.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/webui/translate_internals/ios_translate_internals_handler.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/grit/ios_resources.h"

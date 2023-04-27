@@ -16,8 +16,8 @@
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

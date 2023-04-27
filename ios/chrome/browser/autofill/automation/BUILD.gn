@@ -47,7 +47,7 @@ source_set("eg_app_support+eg2") {
     "//components/autofill/ios/browser",
     "//components/strings",
     "//ios/chrome/browser/autofill",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",
     "//ios/testing/earl_grey:eg_app_support+eg2",

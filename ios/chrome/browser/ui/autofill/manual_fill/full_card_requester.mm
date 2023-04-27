@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/full_card_requester.h"
 
 #import "components/autofill/core/browser/browser_autofill_manager.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

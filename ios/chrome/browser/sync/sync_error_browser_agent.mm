@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"

@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
 
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"

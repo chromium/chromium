@@ -14,7 +14,7 @@ source_set("geolocation") {
     "//components/prefs",
     "//components/strings",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tabs",
     "//ios/web/public",

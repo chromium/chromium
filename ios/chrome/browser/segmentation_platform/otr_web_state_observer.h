@@ -9,7 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "ios/chrome/browser/browser_state/browser_state_info_cache_observer.h"
+#include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache_observer.h"
 
 class AllWebStateListObservationRegistrar;
 

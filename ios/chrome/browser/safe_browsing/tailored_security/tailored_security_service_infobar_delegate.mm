@@ -7,7 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"

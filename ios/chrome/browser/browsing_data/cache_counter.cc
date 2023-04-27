@@ -5,7 +5,7 @@
 #include "ios/chrome/browser/browsing_data/cache_counter.h"
 #include "base/functional/bind.h"
 #include "components/browsing_data/core/pref_names.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"

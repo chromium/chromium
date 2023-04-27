@@ -9,7 +9,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "components/google/core/common/google_util.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"

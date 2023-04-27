@@ -9,7 +9,7 @@
 #import "base/run_loop.h"
 #import "google_apis/gaia/gaia_constants.h"
 #import "google_apis/gaia/gaia_urls.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"

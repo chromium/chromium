@@ -19,7 +19,7 @@ source_set("unit_tests") {
   sources = [ "ios_task_tab_helper_unittest.mm" ]
   deps = [
     ":complex_tasks",
-    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/web/public:public",
     "//ios/web/public/test:test",
     "//ios/web/public/test:util",
