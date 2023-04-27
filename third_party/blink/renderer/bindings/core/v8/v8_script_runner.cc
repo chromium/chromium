@@ -499,9 +499,15 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     v8::ScriptCompiler::CompileOptions compile_options;
     V8CodeCache::ProduceCacheOptions produce_cache_options;
     v8::ScriptCompiler::NoCacheReason no_cache_reason;
+    Page* page = frame != nullptr ? frame->GetPage() : nullptr;
+    bool might_generate_compile_hints =
+        page ? page->GetV8CrowdsourcedCompileHintsProducer().MightGenerateData()
+             : false;
+
     std::tie(compile_options, produce_cache_options, no_cache_reason) =
         V8CodeCache::GetCompileOptions(execution_context->GetV8CacheOptions(),
-                                       *classic_script);
+                                       *classic_script,
+                                       might_generate_compile_hints);
 
     v8::ScriptOrigin origin = classic_script->CreateScriptOrigin(isolate);
     v8::MaybeLocal<v8::Value> maybe_result;
@@ -559,8 +565,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       }
 
 #if BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
-      Page* page;
-      if (frame != nullptr && (page = frame->GetPage()) != nullptr) {
+      if (page != nullptr) {
         if (compile_options == v8::ScriptCompiler::kProduceCompileHints) {
           // TODO(chromium:1406506): Add a compile hints solution for workers.
           // TODO(chromium:1406506): Add a compile hints solution for fenced

@@ -32,24 +32,31 @@ std::atomic<bool>
 
 V8CrowdsourcedCompileHintsProducer::V8CrowdsourcedCompileHintsProducer(
     Page* page)
-    : page_(page) {}
+    : page_(page) {
+  // Call FeatureList::IsEnabled only once.
+  static bool compile_hints_enabled =
+      base::FeatureList::IsEnabled(features::kProduceCompileHints);
+  if (!compile_hints_enabled) {
+    state_ = State::kDisabled;
+  }
+}
 
 void V8CrowdsourcedCompileHintsProducer::RecordScript(
     Frame* frame,
     ExecutionContext* execution_context,
     const v8::Local<v8::Script> script,
     ScriptState* script_state) {
-  if (state_ == State::kDataGenerationFinished) {
-    // We've already generated data for this V8CrowdsourcedCompileHintsProducer.
-    // Don't record any script compilations happening after it.
+  if (state_ != State::kCollectingData) {
+    // We've already generated data for this V8CrowdsourcedCompileHintsProducer,
+    // or data generation is disabled. Don't record any script compilations.
     return;
   }
   if (data_generated_for_this_process_) {
     // We've already generated data for some other
-    // V8CrowdsourcedCompileHintsProducer, so stop collecting data. The task for
-    // data generation might still run.
+    // V8CrowdsourcedCompileHintsProducer, so stop collecting data.
     state_ = State::kDataGenerationFinished;
     ClearData();
+    return;
   }
 
   v8::Isolate* isolate = execution_context->GetIsolate();
@@ -84,15 +91,8 @@ void V8CrowdsourcedCompileHintsProducer::RecordScript(
 }
 
 void V8CrowdsourcedCompileHintsProducer::GenerateData() {
-  // Call FeatureList::IsEnabled only once.
-  static bool compile_hints_enabled =
-      base::FeatureList::IsEnabled(features::kProduceCompileHints);
-  if (!compile_hints_enabled) {
-    return;
-  }
-
   // Guard against this function getting called repeatedly.
-  if (state_ == State::kDataGenerationFinished) {
+  if (state_ != State::kCollectingData) {
     return;
   }
 
@@ -115,13 +115,32 @@ void V8CrowdsourcedCompileHintsProducer::ClearData() {
   script_name_hashes_.clear();
 }
 
-bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
-  Frame* main_frame = page_->MainFrame();
-  // Because of OOPIF, the main frame is not necessarily a LocalFrame. We cannot
-  // generate good compile hints for those pages, so skip sending them.
-  if (!main_frame->IsLocalFrame()) {
+bool V8CrowdsourcedCompileHintsProducer::MightGenerateData() {
+  if (state_ != State::kCollectingData || data_generated_for_this_process_) {
     return false;
   }
+
+  Frame* main_frame = page_->MainFrame();
+  // Because of OOPIF, the main frame is not necessarily a LocalFrame. We cannot
+  // generate good compile hints, because we cannot retrieve data from other
+  // processes.
+  if (!main_frame->IsLocalFrame()) {
+    state_ = State::kDisabled;
+    ClearData();
+    return false;
+  }
+  return true;
+}
+
+bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
+  // Re-check the main frame, since it might have changed.
+  Frame* main_frame = page_->MainFrame();
+  if (!main_frame->IsLocalFrame()) {
+    state_ = State::kDisabled;
+    ClearData();
+    return false;
+  }
+
   ScriptState* script_state =
       ToScriptStateForMainWorld(DynamicTo<LocalFrame>(main_frame));
   ExecutionContext* execution_context = ExecutionContext::From(script_state);

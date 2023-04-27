@@ -47,6 +47,8 @@ class V8CrowdsourcedCompileHintsProducer
 
   void Trace(Visitor* visitor) const;
 
+  bool MightGenerateData();
+
  private:
   void ClearData();
   bool SendDataToUkm();
@@ -56,14 +58,16 @@ class V8CrowdsourcedCompileHintsProducer
   WTF::Vector<uint32_t> script_name_hashes_;
 
   enum class State {
-    kInitial,
+    kCollectingData,
 
     // We've tried once to send the data to UKM (but we didn't necessarily send
     // it successfully; e.g., because of throttling or because we didn't have
     // enough data).
     kDataGenerationFinished,
+
+    kDisabled
   };
-  State state_ = State::kInitial;
+  State state_ = State::kCollectingData;
 
   // Limit the data collection to happen only once per process (because the data
   // is so large). Not the same as the kDataGenerationFinished state, since we
@@ -97,6 +101,8 @@ class V8CrowdsourcedCompileHintsProducer
   void GenerateData() {}
 
   void Trace(Visitor* visitor) const {}
+
+  bool MightGenerateData() const { return false; }
 };
 
 }  // namespace blink
