@@ -23,9 +23,6 @@ using base::TimeTicks;
 namespace translate {
 namespace {
 
-const int kTrue = 1;
-const int kFalse = 0;
-
 class MetricsRecorder {
  public:
   explicit MetricsRecorder(const char* key) : key_(key) {
@@ -197,19 +194,6 @@ TEST(TranslateMetricsTest, ReportPageScheme) {
   recorder.CheckScheme(1, 1, 0);
   ReportPageScheme("ftp");
   recorder.CheckScheme(1, 1, 1);
-}
-
-TEST(TranslateMetricsTest, ReportSimilarLanguageMatch) {
-  MetricsRecorder recorder(metrics_internal::kTranslateSimilarLanguageMatch);
-  recorder.CheckTotalCount(0);
-  EXPECT_EQ(0, recorder.GetCount(kTrue));
-  EXPECT_EQ(0, recorder.GetCount(kFalse));
-  ReportSimilarLanguageMatch(true);
-  EXPECT_EQ(1, recorder.GetCount(kTrue));
-  EXPECT_EQ(0, recorder.GetCount(kFalse));
-  ReportSimilarLanguageMatch(false);
-  EXPECT_EQ(1, recorder.GetCount(kTrue));
-  EXPECT_EQ(1, recorder.GetCount(kFalse));
 }
 
 TEST(TranslateMetricsTest, ReportTranslatedLanguageDetectionContentLength) {

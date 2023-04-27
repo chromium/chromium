@@ -25,7 +25,6 @@ const char kTranslateTimeToTranslate[] =
     "Translate.Translation.TimeToTranslate";
 const char kTranslateUserActionDuration[] = "Translate.UserActionDuration";
 const char kTranslatePageScheme[] = "Translate.PageScheme";
-const char kTranslateSimilarLanguageMatch[] = "Translate.SimilarLanguageMatch";
 const char kTranslateLanguageDeterminedDuration[] =
     "Translate.LanguageDeterminedDuration";
 const char kTranslatedLanguageDetectionContentLength[] =
@@ -70,11 +69,6 @@ void ReportPageScheme(const std::string& scheme) {
     type = SCHEME_HTTPS;
   UMA_HISTOGRAM_ENUMERATION(metrics_internal::kTranslatePageScheme, type,
                             SCHEME_MAX);
-}
-
-void ReportSimilarLanguageMatch(bool match) {
-  UMA_HISTOGRAM_BOOLEAN(metrics_internal::kTranslateSimilarLanguageMatch,
-                        match);
 }
 
 void ReportLanguageDeterminedDuration(base::TimeTicks begin,

@@ -317,9 +317,7 @@ bool IsSameOrSimilarLanguages(const std::string& page_language,
   // Language code part of |page_language| is matched to one of
   // |model_detected_language|. Country code is ignored here.
   if (page_language_main_part == model_detected_language_main_part) {
-    // Languages are matched strictly. Reports false to metrics, but returns
-    // true.
-    translate::ReportSimilarLanguageMatch(false);
+    // Languages are matched strictly - return true.
     return true;
   }
 
@@ -329,7 +327,6 @@ bool IsSameOrSimilarLanguages(const std::string& page_language,
   bool match = page_code != 0 && page_code == GetSimilarLanguageGroupCode(
                                                   model_detected_language);
 
-  translate::ReportSimilarLanguageMatch(match);
   return match;
 }
 

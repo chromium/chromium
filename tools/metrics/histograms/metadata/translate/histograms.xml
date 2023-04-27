@@ -770,14 +770,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.SimilarLanguageMatch" enum="BooleanMatched"
     expires_after="2023-08-31">
+  <obsolete>
+    Replaced by Translate.LanguageDetection.LanguageVerification in M114.
+  </obsolete>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
-    This metrics is logged whenever a page is loaded. The logged value is
-    &quot;Matched&quot; when the CLD-detected language differs from the page
+    This metric is logged whenever a page is loaded. The logged value is
+    &quot;Matched&quot; when the model-detected language differs from the page
     language code, and the two languages are such similar languages. In that
-    case, Chrome ignore the CLD-determined language and instead uses the page
-    language code. The page language code is decided by Content-Language and
+    case, Chrome ignore the model-determined language and instead uses the page
+    language code. The page language code is decided by its Content-Language and
     HTML lang attribute.
   </summary>
 </histogram>
