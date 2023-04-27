@@ -10,6 +10,7 @@ import {decorate, define as crUiDefine} from '../../../common/js/ui.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
+import {CloudPanelContainer} from '../../../containers/cloud_panel_container.js';
 import {NudgeContainer} from '../../../containers/nudge_container.js';
 import {SearchContainer} from '../../../containers/search_container.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
@@ -522,6 +523,15 @@ export class FileManagerUI {
         volumeManager, queryRequiredElement('#search-wrapper', this.element),
         queryRequiredElement('#search-options-container', this.element),
         queryRequiredElement('#path-display-container', this.element));
+
+    if (util.isDriveFsBulkPinningEnabled()) {
+      /**
+       * @type {!CloudPanelContainer}
+       * @const
+       */
+      this.cloudPanelContainer_ = new CloudPanelContainer(
+          queryRequiredElement('xf-cloud-panel', this.element));
+    }
 
     // Init context menus.
     contextMenuHandler.setContextMenu(grid, this.fileContextMenu);

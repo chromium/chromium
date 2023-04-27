@@ -284,6 +284,7 @@ ts_files = [
 
   # Containers.
   "file_manager/containers/breadcrumb_container.ts",
+  "file_manager/containers/cloud_panel_container.ts",
   "file_manager/containers/nudge_container.ts",
   "file_manager/containers/search_container.ts",
   "file_manager/containers/directory_tree_container.ts",
@@ -333,6 +334,7 @@ ts_test_files = [
 
   # Containers
   "file_manager/containers/breadcrumb_container_unittest.ts",
+  "file_manager/containers/cloud_panel_container_unittest.ts",
   "file_manager/containers/directory_tree_container_unittest.ts",
   "file_manager/containers/nudge_container_unittest.ts",
   "file_manager/containers/search_container_unittest.ts",
