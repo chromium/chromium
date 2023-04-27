@@ -13,10 +13,12 @@
 #include <string>
 #include <vector>
 
+#include <third_party/abseil-cpp/absl/types/optional.h>
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/test/chromedriver/chrome/device_metrics.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/log.h"
 #include "chrome/test/chromedriver/chrome/mobile_device.h"

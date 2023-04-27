@@ -125,6 +125,8 @@ source_set("automation_client_lib") {
     "chrome/chrome_impl.h",
     "chrome/chrome_remote_impl.cc",
     "chrome/chrome_remote_impl.h",
+    "chrome/client_hints.cc",
+    "chrome/client_hints.h",
     "chrome/console_logger.cc",
     "chrome/console_logger.h",
     "chrome/device_manager.cc",

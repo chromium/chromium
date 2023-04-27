@@ -7,12 +7,108 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/strings/pattern.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chrome/test/chromedriver/chrome/client_hints.h"
 #include "chrome/test/chromedriver/chrome/log.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/logging.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::Eq;
+using testing::Pointee;
+
+namespace {
+
+template <int Code>
+testing::AssertionResult StatusCodeIs(const Status& status) {
+  if (status.code() == Code) {
+    return testing::AssertionSuccess();
+  } else {
+    return testing::AssertionFailure() << status.message();
+  }
+}
+
+testing::AssertionResult StatusOk(const Status& status) {
+  return StatusCodeIs<kOk>(status);
+}
+
+void CheckDefaults(const ClientHints& client_hints) {
+  EXPECT_EQ("", client_hints.architecture);
+  EXPECT_EQ(absl::nullopt, client_hints.brands);
+  EXPECT_EQ("", client_hints.bitness);
+  EXPECT_EQ(absl::nullopt, client_hints.full_version_list);
+  EXPECT_EQ("", client_hints.model);
+  EXPECT_EQ("", client_hints.platform_version);
+  EXPECT_FALSE(client_hints.wow64);
+}
+
+// Source: https://www.chromium.org/updates/ua-reduction/
+const char kUserAgentChromeOnWindows[] =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like "
+    "Gecko) "
+    "Chrome/114.0.0.0 Safari/537.36";
+
+// Source: https://www.chromium.org/updates/ua-reduction/
+const char kUserAgentChromeOnMacOS[] =
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) "
+    "Chrome/114.0.0.0 Safari/537.36";
+
+// Source: https://www.chromium.org/updates/ua-reduction/
+const char kUserAgentChromeOnLinux[] =
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/114.0.0.0 Safari/537.36";
+
+// Source: https://www.chromium.org/updates/ua-reduction/
+const char kUserAgentChromeOnChromeOS[] =
+    "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like "
+    "Gecko) "
+    "Chrome/114.0.0.0 Safari/537.36";
+
+// Source: https://www.chromium.org/updates/ua-reduction/
+const char kUserAgentChromeOnFuchsia[] =
+    "Mozilla/5.0 (Fuchsia) AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/114.0.0.0 Safari/537.36";
+
+// Source: https://www.chromium.org/updates/ua-reduction/
+const char kUserAgentMobileChromeOnAndroid[] =
+    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/114.0.0.0 Mobile Safari/537.36";
+
+// Source: https://www.chromium.org/updates/ua-reduction/
+const char kUserAgentNonMobileChromeOnAndroid[] =
+    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/114.0.0.0 Safari/537.36";
+
+// Source: docs/ios/user_agent.md
+const char kUserAgentMobileChromeOnIOS[] =
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) "
+    "AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 "
+    "Mobile/14E5239e Safari/602.1";
+
+// UA used when Request Desktop Site features is enabled.
+// Source: docs/ios/user_agent.md
+const char kUserAgentNonMobileChromeOnIOS[] =
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) "
+    "AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/85 "
+    "Version/11.1.1 Safari/605.1.15";
+
+const std::vector<std::string> kNonMobileUserAgents = {
+    kUserAgentNonMobileChromeOnAndroid,
+    kUserAgentNonMobileChromeOnIOS,
+    kUserAgentChromeOnChromeOS,
+    kUserAgentChromeOnFuchsia,
+    kUserAgentChromeOnLinux,
+    kUserAgentChromeOnMacOS,
+    kUserAgentChromeOnWindows,
+};
+
+}  // namespace
 
 TEST(Switches, Empty) {
   Switches switches;
@@ -690,4 +786,716 @@ TEST(ParseCapabilities, VirtualAuthenticatorsLargeBlobNotBool) {
   base::Value::Dict caps;
   caps.Set("webauthn:extension:largeBlob", "not a bool");
   EXPECT_FALSE(capabilities.Parse(caps).IsOk());
+}
+
+namespace {
+
+base::Value::Dict CreateCapabilitiesDict(const std::string& mobile_emulation) {
+  base::Value::Dict result;
+  absl::optional<base::Value> maybe_mobile_emulation =
+      base::JSONReader::Read(mobile_emulation);
+  EXPECT_TRUE(maybe_mobile_emulation.has_value() &&
+              maybe_mobile_emulation->is_dict());
+  if (!maybe_mobile_emulation.has_value() ||
+      !maybe_mobile_emulation->is_dict()) {
+    return result;
+  }
+  result.SetByDottedPath("goog:chromeOptions.mobileEmulation",
+                         std::move(maybe_mobile_emulation->GetDict()));
+  return result;
+}
+
+}  //  namespace
+
+TEST(ParseClientHints, MinimalistMobileAndroid) {
+  Capabilities capabilities;
+  const std::string mobile_emulation =
+      "{\"deviceMetrics\": {}, \"clientHints\": {\"platform\": \"Android\"}}";
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  ASSERT_FALSE(capabilities.mobile_device->user_agent.has_value());
+  EXPECT_EQ("Android", client_hints.platform);
+  EXPECT_EQ(true, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
+      "114", &reduced_user_agent)));
+  EXPECT_EQ(kUserAgentMobileChromeOnAndroid, reduced_user_agent);
+}
+
+TEST(ParseClientHints, MinimalistTabletAndroid) {
+  Capabilities capabilities;
+  const std::string mobile_emulation =
+      "{\"deviceMetrics\": {\"mobile\": false},"
+      "\"clientHints\": {\"platform\": \"Android\"}}";
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  ASSERT_FALSE(capabilities.mobile_device->user_agent.has_value());
+  EXPECT_EQ("Android", client_hints.platform);
+  EXPECT_EQ(false, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
+      "114", &reduced_user_agent)));
+  EXPECT_EQ(kUserAgentNonMobileChromeOnAndroid, reduced_user_agent);
+}
+
+class ParseClientHintsPerPlatform
+    : public testing::TestWithParam<std::pair<std::string, std::string>> {};
+
+TEST_P(ParseClientHintsPerPlatform, MinimalistDesktop) {
+  const std::string expected_platform = GetParam().first;
+  const std::string expected_user_agent = GetParam().second;
+  Capabilities capabilities;
+  const std::string mobile_emulation = base::StringPrintf(
+      "{\"clientHints\": {\"platform\": \"%s\"}}", expected_platform.c_str());
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  ASSERT_FALSE(capabilities.mobile_device->user_agent.has_value());
+  EXPECT_EQ(expected_platform, client_hints.platform);
+  EXPECT_EQ(false, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
+      "114", &reduced_user_agent)));
+  EXPECT_EQ(expected_user_agent, reduced_user_agent);
+}
+
+TEST_P(ParseClientHintsPerPlatform, MobileDeviceMetrics) {
+  const std::string expected_platform = GetParam().first;
+  const std::string expected_user_agent = GetParam().second;
+  Capabilities capabilities;
+  const std::string mobile_emulation = base::StringPrintf(
+      "{\"deviceMetrics\": {},"
+      "\"clientHints\": {\"platform\": \"%s\"}}",
+      expected_platform.c_str());
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  ASSERT_FALSE(capabilities.mobile_device->user_agent.has_value());
+  EXPECT_EQ(expected_platform, client_hints.platform);
+  EXPECT_EQ(true, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
+      "114", &reduced_user_agent)));
+  EXPECT_EQ(expected_user_agent, reduced_user_agent);
+}
+
+TEST_P(ParseClientHintsPerPlatform, TabletDeviceMetrics) {
+  const std::string expected_platform = GetParam().first;
+  const std::string expected_user_agent = GetParam().second;
+  Capabilities capabilities;
+  const std::string mobile_emulation = base::StringPrintf(
+      "{\"deviceMetrics\": {\"mobile\": false},"
+      "\"clientHints\": {\"platform\": \"%s\"}}",
+      expected_platform.c_str());
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  ASSERT_FALSE(capabilities.mobile_device->user_agent.has_value());
+  EXPECT_EQ(expected_platform, client_hints.platform);
+  EXPECT_EQ(false, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
+      "114", &reduced_user_agent)));
+  EXPECT_EQ(expected_user_agent, reduced_user_agent);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Parsing,
+    ParseClientHintsPerPlatform,
+    testing::Values(std::make_pair("Chrome OS", kUserAgentChromeOnChromeOS),
+                    std::make_pair("Chromium OS", kUserAgentChromeOnChromeOS),
+                    std::make_pair("Fuchsia", kUserAgentChromeOnFuchsia),
+                    std::make_pair("Linux", kUserAgentChromeOnLinux),
+                    std::make_pair("macOS", kUserAgentChromeOnMacOS),
+                    std::make_pair("Windows", kUserAgentChromeOnWindows)));
+
+TEST(ParseClientHints, MinimalistCustomMobile) {
+  Capabilities capabilities;
+  const std::string mobile_emulation = base::StringPrintf(
+      "{\"userAgent\": \"%s\", \"deviceMetrics\": {},"
+      "\"clientHints\": {\"platform\": \"Custom\"}}",
+      kUserAgentMobileChromeOnIOS);
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  EXPECT_EQ("Custom", client_hints.platform);
+  EXPECT_EQ(true, client_hints.mobile);
+  ASSERT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  EXPECT_EQ(kUserAgentMobileChromeOnIOS,
+            capabilities.mobile_device->user_agent.value());
+  std::string reduced_user_agent;
+  EXPECT_TRUE(capabilities.mobile_device
+                  ->GetReducedUserAgent("114", &reduced_user_agent)
+                  .IsError());
+  EXPECT_TRUE(reduced_user_agent.empty());
+}
+
+TEST(ParseClientHints, MinimalistCustomTablet) {
+  Capabilities capabilities;
+  const std::string mobile_emulation = base::StringPrintf(
+      "{\"userAgent\": \"%s\", \"deviceMetrics\": {\"mobile\": false},"
+      "\"clientHints\": {\"platform\": \"Custom\"}}",
+      kUserAgentNonMobileChromeOnIOS);
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  EXPECT_EQ("Custom", client_hints.platform);
+  EXPECT_EQ(false, client_hints.mobile);
+  ASSERT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  EXPECT_EQ(kUserAgentNonMobileChromeOnIOS,
+            capabilities.mobile_device->user_agent.value());
+  std::string reduced_user_agent;
+  EXPECT_TRUE(capabilities.mobile_device
+                  ->GetReducedUserAgent("114", &reduced_user_agent)
+                  .IsError());
+  EXPECT_TRUE(reduced_user_agent.empty());
+}
+
+class InferClientHintsOnAndroid : public testing::TestWithParam<std::string> {};
+
+TEST_P(InferClientHintsOnAndroid, NoDeviceMetrics) {
+  const std::string input_user_agent = GetParam();
+  const std::string mobile_emulation =
+      base::StringPrintf("{\"userAgent\": \"%s\"}", input_user_agent.c_str());
+  Capabilities capabilities;
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  ASSERT_EQ(input_user_agent, capabilities.mobile_device->user_agent.value());
+  EXPECT_EQ("Android", client_hints.platform);
+  // Inferred as non-mobile due to the lack of device metrics
+  EXPECT_EQ(false, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
+      "114", &reduced_user_agent)));
+  EXPECT_EQ(kUserAgentNonMobileChromeOnAndroid, reduced_user_agent);
+}
+
+TEST_P(InferClientHintsOnAndroid, MobileDeviceMetrics) {
+  const std::string input_user_agent = GetParam();
+  const std::string mobile_emulation =
+      base::StringPrintf("{\"userAgent\": \"%s\", \"deviceMetrics\": {}}",
+                         input_user_agent.c_str());
+  Capabilities capabilities;
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  ASSERT_EQ(input_user_agent, capabilities.mobile_device->user_agent.value());
+  EXPECT_EQ("Android", client_hints.platform);
+  // Deriverd from deviceMetrics.mobile that always defaults to true
+  EXPECT_EQ(true, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
+      "114", &reduced_user_agent)));
+  EXPECT_EQ(kUserAgentMobileChromeOnAndroid, reduced_user_agent);
+}
+
+TEST_P(InferClientHintsOnAndroid, TabletDeviceMetrics) {
+  const std::string input_user_agent = GetParam();
+  const std::string mobile_emulation = base::StringPrintf(
+      "{\"userAgent\": \"%s\", \"deviceMetrics\": {\"mobile\": false}}",
+      input_user_agent.c_str());
+  Capabilities capabilities;
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  ASSERT_EQ(input_user_agent, capabilities.mobile_device->user_agent.value());
+  EXPECT_EQ("Android", client_hints.platform);
+  // Deriverd from deviceMetrics.mobile
+  EXPECT_EQ(false, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
+      "114", &reduced_user_agent)));
+  EXPECT_EQ(kUserAgentNonMobileChromeOnAndroid, reduced_user_agent);
+}
+
+INSTANTIATE_TEST_SUITE_P(Inference,
+                         InferClientHintsOnAndroid,
+                         testing::Values(kUserAgentMobileChromeOnAndroid,
+                                         kUserAgentNonMobileChromeOnAndroid));
+
+class InferClientHintsPerPlatform
+    : public testing::TestWithParam<std::pair<std::string, std::string>> {};
+
+TEST_P(InferClientHintsPerPlatform, NoDeviceMetrics) {
+  const std::string expected_platform = GetParam().first;
+  const std::string expected_user_agent = GetParam().second;
+  const std::string mobile_emulation = base::StringPrintf(
+      "{\"userAgent\": \"%s\"}", expected_user_agent.c_str());
+  Capabilities capabilities;
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  ASSERT_EQ(expected_user_agent,
+            capabilities.mobile_device->user_agent.value());
+  EXPECT_EQ(expected_platform, client_hints.platform);
+  // Inferred as non-mobile due to the lack of device metrics
+  EXPECT_EQ(false, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
+      "114", &reduced_user_agent)));
+  EXPECT_EQ(expected_user_agent, reduced_user_agent);
+}
+
+TEST_P(InferClientHintsPerPlatform, MobileDeviceMetrics) {
+  const std::string expected_platform = GetParam().first;
+  const std::string expected_user_agent = GetParam().second;
+  const std::string mobile_emulation =
+      base::StringPrintf("{\"userAgent\": \"%s\", \"deviceMetrics\": {}}",
+                         expected_user_agent.c_str());
+  Capabilities capabilities;
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  ASSERT_EQ(expected_user_agent,
+            capabilities.mobile_device->user_agent.value());
+  EXPECT_EQ(expected_platform, client_hints.platform);
+  // Deriverd from deviceMetrics.mobile that always defaults to true
+  EXPECT_EQ(true, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
+      "114", &reduced_user_agent)));
+  EXPECT_EQ(expected_user_agent, reduced_user_agent);
+}
+
+TEST_P(InferClientHintsPerPlatform, TabletDeviceMetrics) {
+  const std::string expected_platform = GetParam().first;
+  const std::string expected_user_agent = GetParam().second;
+  const std::string mobile_emulation = base::StringPrintf(
+      "{\"userAgent\": \"%s\", \"deviceMetrics\": {\"mobile\": false}}",
+      expected_user_agent.c_str());
+  Capabilities capabilities;
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  ASSERT_EQ(expected_user_agent,
+            capabilities.mobile_device->user_agent.value());
+  EXPECT_EQ(expected_platform, client_hints.platform);
+  // Deriverd from deviceMetrics.mobile
+  EXPECT_EQ(false, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
+      "114", &reduced_user_agent)));
+  EXPECT_EQ(expected_user_agent, reduced_user_agent);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Legacy,
+    InferClientHintsPerPlatform,
+    testing::Values(std::make_pair("Chrome OS", kUserAgentChromeOnChromeOS),
+                    std::make_pair("Fuchsia", kUserAgentChromeOnFuchsia),
+                    std::make_pair("Linux", kUserAgentChromeOnLinux),
+                    std::make_pair("macOS", kUserAgentChromeOnMacOS),
+                    std::make_pair("Windows", kUserAgentChromeOnWindows)));
+
+class InferClientHintsOnCustomPlatform
+    : public testing::TestWithParam<std::string> {};
+
+TEST_P(InferClientHintsOnCustomPlatform, NoDeviceMetrics) {
+  const std::string input_user_agent = GetParam();
+  const std::string mobile_emulation =
+      base::StringPrintf("{\"userAgent\": \"%s\"}", input_user_agent.c_str());
+  Capabilities capabilities;
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  ASSERT_EQ(input_user_agent, capabilities.mobile_device->user_agent.value());
+  EXPECT_EQ("", client_hints.platform);
+  // Inferred as non-mobile due to the lack of device metrics
+  EXPECT_EQ(false, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(capabilities.mobile_device
+                  ->GetReducedUserAgent("114", &reduced_user_agent)
+                  .IsError());
+  EXPECT_EQ("", reduced_user_agent);
+}
+
+TEST_P(InferClientHintsOnCustomPlatform, MobileDeviceMetrics) {
+  const std::string input_user_agent = GetParam();
+  const std::string mobile_emulation =
+      base::StringPrintf("{\"userAgent\": \"%s\", \"deviceMetrics\": {}}",
+                         input_user_agent.c_str());
+  Capabilities capabilities;
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  ASSERT_EQ(input_user_agent, capabilities.mobile_device->user_agent.value());
+  EXPECT_EQ("", client_hints.platform);
+  // Deriverd from deviceMetrics.mobile that always defaults to true
+  EXPECT_EQ(true, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(capabilities.mobile_device
+                  ->GetReducedUserAgent("114", &reduced_user_agent)
+                  .IsError());
+  EXPECT_EQ("", reduced_user_agent);
+}
+
+TEST_P(InferClientHintsOnCustomPlatform, TabletDeviceMetrics) {
+  const std::string input_user_agent = GetParam();
+  const std::string mobile_emulation = base::StringPrintf(
+      "{\"userAgent\": \"%s\", \"deviceMetrics\": {\"mobile\": false}}",
+      input_user_agent.c_str());
+  Capabilities capabilities;
+  base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  const ClientHints& client_hints =
+      capabilities.mobile_device->client_hints.value();
+  CheckDefaults(client_hints);
+  EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  ASSERT_EQ(input_user_agent, capabilities.mobile_device->user_agent.value());
+  EXPECT_EQ("", client_hints.platform);
+  // Deriverd from deviceMetrics.mobile
+  EXPECT_EQ(false, client_hints.mobile);
+  std::string reduced_user_agent;
+  EXPECT_TRUE(capabilities.mobile_device
+                  ->GetReducedUserAgent("114", &reduced_user_agent)
+                  .IsError());
+  EXPECT_EQ("", reduced_user_agent);
+}
+
+INSTANTIATE_TEST_SUITE_P(Inference,
+                         InferClientHintsOnCustomPlatform,
+                         testing::Values(kUserAgentMobileChromeOnIOS,
+                                         "Custom User Agent"));
+
+TEST(ParseClientHints, NoUserAgentNoClientHints) {
+  Capabilities capabilities;
+  base::Value::Dict caps = CreateCapabilitiesDict("{\"deviceMetrics\": {}}");
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  EXPECT_FALSE(capabilities.mobile_device->client_hints.has_value());
+}
+
+TEST(ParseClientHints, EmptyClientHints) {
+  Capabilities capabilities;
+  base::Value::Dict caps;
+  std::string mobile_emulation;
+
+  caps = CreateCapabilitiesDict("{\"clientHints\": {}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  mobile_emulation =
+      base::StringPrintf("{\"userAgent\": \"%s\", \"clientHints\": {}}",
+                         kUserAgentMobileChromeOnAndroid);
+  caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict("{\"deviceMetrics\": {}, \"clientHints\": {}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  mobile_emulation = base::StringPrintf(
+      "{\"userAgent\": \"%s\", \"deviceMetrics\": {}, \"clientHints\": {}}",
+      kUserAgentMobileChromeOnAndroid);
+  caps = CreateCapabilitiesDict(mobile_emulation);
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+}
+
+TEST(ParseClientHints, RequireUserAgentForCustomPlatform) {
+  Capabilities capabilities;
+  base::Value::Dict caps;
+  caps =
+      CreateCapabilitiesDict("{\"clientHints\": {\"platform\": \"Custom\"}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+  caps = CreateCapabilitiesDict(
+      "{\"clientHints\": {\"platform\": \"Custom\", \"mobile\": false}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+  caps = CreateCapabilitiesDict(
+      "{\"clientHints\": {\"platform\": \"Custom\", \"mobile\": true}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+  caps = CreateCapabilitiesDict(
+      "{\"deviceMetrics\": {}, \"clientHints\": {\"platform\": \"Custom\"}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+  caps = CreateCapabilitiesDict(
+      "{\"deviceMetrics\": {\"mobile\": false}, \"clientHints\": "
+      "{\"platform\": \"Custom\"}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+  caps = CreateCapabilitiesDict(
+      "{\"deviceMetrics\": {\"mobile\": true}, \"clientHints\": {\"platform\": "
+      "\"Custom\"}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+}
+
+TEST(ParseClientHints, WrongClientHintsType) {
+  Capabilities capabilities;
+  base::Value::Dict caps =
+      CreateCapabilitiesDict("{\"clientHints\": \"wrong\"}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+}
+
+TEST(ParseClientHints, WrongClientHintsProperties) {
+  Capabilities capabilities;
+  base::Value::Dict caps;
+  caps = CreateCapabilitiesDict(
+      "{\"clientHints\": {\"platform\": 1, \"mobile\": true}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict(
+      "{\"clientHints\": {\"platform\": \"Linux\", \"mobile\": {}}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict(
+      "{\"clientHints\": {\"platform\": \"Linux\", \"mobile\": false, "
+      "\"architecture\": 3}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict(
+      "{\"clientHints\": {\"platform\": \"Linux\", \"mobile\": false, "
+      "\"platformVersion\": 3}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict(
+      "{\"clientHints\": {\"platform\": \"Linux\", \"mobile\": false, "
+      "\"bitness\": 3}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict(
+      "{\"clientHints\": {\"platform\": \"Linux\", \"mobile\": false, "
+      "\"wow64\": 3}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict(
+      "{\"clientHints\": {\"platform\": \"Linux\", \"mobile\": false, "
+      "\"model\": 3}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+}
+
+TEST(ParseClientHints, CustomClientHints) {
+  Capabilities capabilities;
+  base::Value::Dict caps;
+  caps = CreateCapabilitiesDict(
+      "{"
+      "\"userAgent\": \"Custom Mobile User Agent\","
+      "\"deviceMetrics\": {},"
+      "\"clientHints\":{"
+      "\"platform\": \"Custom Platform\","
+      "\"mobile\": true,"
+      "\"platformVersion\": \"11\","
+      "\"architecture\": \"Custom Architecture\","
+      "\"model\": \"Custom Model\","
+      "\"bitness\": \"14\","
+      "\"wow64\": true,"
+      "\"brands\": ["
+      "{\"brand\": \"Ax\", \"version\": \"33\"},"
+      "{\"brand\": \"Bx\", \"version\": \"41\"}"
+      "],"
+      "\"fullVersionList\": ["
+      "{\"brand\": \"Aex\", \"version\": \"33.3.1\"},"
+      "{\"brand\": \"Bex\", \"version\": \"41.2.1\"}"
+      "]"
+      "}}");
+  EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
+  ASSERT_TRUE(capabilities.mobile_device.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  ASSERT_TRUE(capabilities.mobile_device->client_hints.has_value());
+  EXPECT_EQ("Custom Mobile User Agent",
+            capabilities.mobile_device->user_agent.value());
+  EXPECT_EQ("Custom Platform",
+            capabilities.mobile_device->client_hints->platform);
+  EXPECT_EQ(true, capabilities.mobile_device->client_hints->mobile);
+  EXPECT_EQ("11", capabilities.mobile_device->client_hints->platform_version);
+  EXPECT_EQ("Custom Architecture",
+            capabilities.mobile_device->client_hints->architecture);
+  EXPECT_EQ("Custom Model", capabilities.mobile_device->client_hints->model);
+  EXPECT_EQ("14", capabilities.mobile_device->client_hints->bitness);
+  EXPECT_EQ(true, capabilities.mobile_device->client_hints->wow64);
+  ASSERT_TRUE(capabilities.mobile_device->client_hints->brands.has_value());
+  ASSERT_TRUE(
+      capabilities.mobile_device->client_hints->full_version_list.has_value());
+  auto brands = capabilities.mobile_device->client_hints->brands.value();
+  auto full_version_list =
+      capabilities.mobile_device->client_hints->full_version_list.value();
+  ASSERT_EQ(2u, brands.size());
+  ASSERT_EQ(2u, full_version_list.size());
+  EXPECT_EQ("Ax", brands[0].brand);
+  EXPECT_EQ("33", brands[0].version);
+  EXPECT_EQ("Bx", brands[1].brand);
+  EXPECT_EQ("41", brands[1].version);
+  EXPECT_EQ("Aex", full_version_list[0].brand);
+  EXPECT_EQ("33.3.1", full_version_list[0].version);
+  EXPECT_EQ("Bex", full_version_list[1].brand);
+  EXPECT_EQ("41.2.1", full_version_list[1].version);
+}
+
+TEST(ParseClientHints, MalformedBrands) {
+  Capabilities capabilities;
+  base::Value::Dict caps;
+  caps = CreateCapabilitiesDict(
+      "{"
+      "\"userAgent\": \"Custom Mobile User Agent\","
+      "\"deviceMetrics\": {},"
+      "\"clientHints\":{"
+      "\"platform\": \"Custom Platform\","
+      "\"mobile\": true,"
+      "\"brands\": ["
+      "{\"brand\": 3, \"version\": \"33\"}"
+      "]"
+      "}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict(
+      "{"
+      "\"userAgent\": \"Custom Mobile User Agent\","
+      "\"deviceMetrics\": {},"
+      "\"clientHints\":{"
+      "\"platform\": \"Custom Platform\","
+      "\"mobile\": true,"
+      "\"brands\": ["
+      "{\"brand\": \"3\", \"version\": 33}"
+      "]"
+      "}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict(
+      "{"
+      "\"userAgent\": \"Custom Mobile User Agent\","
+      "\"deviceMetrics\": {},"
+      "\"clientHints\":{"
+      "\"platform\": \"Custom Platform\","
+      "\"mobile\": true,"
+      "\"brands\": ["
+      "{\"brand\": \"3\"}"
+      "]"
+      "}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict(
+      "{"
+      "\"userAgent\": \"Custom Mobile User Agent\","
+      "\"deviceMetrics\": {},"
+      "\"clientHints\":{"
+      "\"platform\": \"Custom Platform\","
+      "\"mobile\": true,"
+      "\"brands\": ["
+      "{\"version\": \"3\"}"
+      "]"
+      "}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+}
+
+TEST(ParseClientHints, MalformedFullVersionList) {
+  Capabilities capabilities;
+  base::Value::Dict caps;
+  caps = CreateCapabilitiesDict(
+      "{"
+      "\"userAgent\": \"Custom Mobile User Agent\","
+      "\"deviceMetrics\": {},"
+      "\"clientHints\":{"
+      "\"platform\": \"Custom Platform\","
+      "\"mobile\": true,"
+      "\"fullVersionList\": ["
+      "{\"brand\": 3, \"version\": \"33\"}"
+      "]"
+      "}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict(
+      "{"
+      "\"userAgent\": \"Custom Mobile User Agent\","
+      "\"deviceMetrics\": {},"
+      "\"clientHints\":{"
+      "\"platform\": \"Custom Platform\","
+      "\"mobile\": true,"
+      "\"fullVersionList\": ["
+      "{\"brand\": \"3\", \"version\": 33}"
+      "]"
+      "}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict(
+      "{"
+      "\"userAgent\": \"Custom Mobile User Agent\","
+      "\"deviceMetrics\": {},"
+      "\"clientHints\":{"
+      "\"platform\": \"Custom Platform\","
+      "\"mobile\": true,"
+      "\"fullVersionList\": ["
+      "{\"brand\": \"3\"}"
+      "]"
+      "}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
+
+  caps = CreateCapabilitiesDict(
+      "{"
+      "\"userAgent\": \"Custom Mobile User Agent\","
+      "\"deviceMetrics\": {},"
+      "\"clientHints\":{"
+      "\"platform\": \"Custom Platform\","
+      "\"mobile\": true,"
+      "\"fullVersionList\": ["
+      "{\"version\": \"3\"}"
+      "]"
+      "}}");
+  EXPECT_TRUE(capabilities.Parse(caps).IsError());
 }

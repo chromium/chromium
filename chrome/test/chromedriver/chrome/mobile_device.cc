@@ -10,16 +10,86 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/mobile_device_list.h"
 #include "chrome/test/chromedriver/chrome/status.h"
+
+namespace {
+
+// The values are taken from GetUnifiedPlatform() function
+// in content/common/user_agent.cc file
+const char kAndroidUnifiedPlatformName[] = "Linux; Android 10; K";
+const char kChromeOSUnifiedPlatformName[] = "X11; CrOS x86_64 14541.0.0";
+const char kMacOSUnifiedPlatformName[] = "Macintosh; Intel Mac OS X 10_15_7";
+const char kWindowsUnifiedPlatformName[] = "Windows NT 10.0; Win64; x64";
+const char kFuchsiaUnifiedPlatformName[] = "Fuchsia";
+const char kLinuxUnifiedPlatformName[] = "X11; Linux x86_64";
+const char kFrozenUserAgentTemplate[] =
+    "Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 "
+    "%s"
+    "Safari/537.36";
+
+struct Platform {
+  const char* name;
+  const char* unified_name;
+  bool mobile_support = false;
+};
+
+Platform kAndroidPlatform{"Android", kAndroidUnifiedPlatformName, true};
+
+Platform kChromeOSPlatform{
+    "Chrome OS",
+    kChromeOSUnifiedPlatformName,
+    false,
+};
+
+Platform kChromiumOSPlatform{
+    "Chromium OS",
+    kChromeOSUnifiedPlatformName,
+    false,
+};
+
+Platform kMacOSPlatform{
+    "macOS",
+    kMacOSUnifiedPlatformName,
+    false,
+};
+
+Platform kWindowsPlatform{
+    "Windows",
+    kWindowsUnifiedPlatformName,
+    false,
+};
+
+Platform kFuchsiaPlatform{
+    "Fuchsia",
+    kFuchsiaUnifiedPlatformName,
+    false,
+};
+
+Platform kLinuxPlatform{
+    "Linux",
+    kLinuxUnifiedPlatformName,
+    false,
+};
+
+const Platform* kPlatformsWithReducedUserAgentSupport[] = {
+    &kAndroidPlatform, &kChromeOSPlatform, &kChromiumOSPlatform,
+    &kMacOSPlatform,   &kWindowsPlatform,  &kFuchsiaPlatform,
+    &kLinuxPlatform,
+};
+
+}  // namespace
 
 MobileDevice::MobileDevice() = default;
 MobileDevice::MobileDevice(const MobileDevice&) = default;
 MobileDevice::~MobileDevice() = default;
 MobileDevice& MobileDevice::operator=(const MobileDevice&) = default;
 
-Status FindMobileDevice(std::string device_name, MobileDevice* mobile_device) {
+Status MobileDevice::FindMobileDevice(std::string device_name,
+                                      MobileDevice* mobile_device) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       kMobileDevices, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!parsed_json.has_value())
@@ -73,4 +143,56 @@ Status FindMobileDevice(std::string device_name, MobileDevice* mobile_device) {
 
   *mobile_device = std::move(tmp_mobile_device);
   return Status(kOk);
+}
+
+// The idea is borrowed from
+// https://developer.chrome.com/docs/privacy-sandbox/user-agent/snippets/
+bool MobileDevice::GuessPlatform(const std::string& user_agent,
+                                 std::string* platform) {
+  static const std::vector<std::pair<std::string, std::string>>
+      prefix_to_platform = {
+          std::make_pair("Mozilla/5.0 (Lin", kAndroidPlatform.name),
+          std::make_pair("Mozilla/5.0 (Win", kWindowsPlatform.name),
+          std::make_pair("Mozilla/5.0 (Mac", kMacOSPlatform.name),
+          std::make_pair("Mozilla/5.0 (X11; C", kChromeOSPlatform.name),
+          std::make_pair("Mozilla/5.0 (X11; L", kLinuxPlatform.name),
+          std::make_pair("Mozilla/5.0 (Fuchsia", kFuchsiaPlatform.name),
+      };
+  for (auto p : prefix_to_platform) {
+    if (base::StartsWith(user_agent, p.first)) {
+      *platform = p.second;
+      return true;
+    }
+  }
+  return false;
+}
+
+std::vector<std::string> MobileDevice::GetReducedUserAgentPlatforms() {
+  std::vector<std::string> result;
+  for (const Platform* p : kPlatformsWithReducedUserAgentSupport) {
+    result.push_back(p->name);
+  }
+  return result;
+}
+
+Status MobileDevice::GetReducedUserAgent(std::string major_version,
+                                         std::string* reduced_user_agent) {
+  if (!client_hints.has_value()) {
+    return Status{kUnknownError,
+                  "unable to construct userAgent without client hints"};
+  }
+  for (const Platform* p : kPlatformsWithReducedUserAgentSupport) {
+    if (base::StringPiece(p->name) != client_hints->platform) {
+      continue;
+    }
+    std::string device_compat =
+        client_hints->mobile && p->mobile_support ? "Mobile " : "";
+    *reduced_user_agent =
+        base::StringPrintf(kFrozenUserAgentTemplate, p->unified_name,
+                           major_version.c_str(), device_compat.c_str());
+    return Status{kOk};
+  }
+  return Status{kUnknownError,
+                "unable to construct userAgent for platform: \"" +
+                    client_hints->platform + "\""};
 }

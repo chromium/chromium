@@ -7,12 +7,14 @@
 #include <map>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -20,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/test/chromedriver/chrome/client_hints.h"
 #include "chrome/test/chromedriver/chrome/mobile_device.h"
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -120,7 +123,7 @@ Status ParseLogPath(const base::Value& option, Capabilities* capabilities) {
 Status ParseDeviceName(const std::string& device_name,
                        Capabilities* capabilities) {
   MobileDevice device;
-  Status status = FindMobileDevice(device_name, &device);
+  Status status = MobileDevice::FindMobileDevice(device_name, &device);
 
   if (status.IsError()) {
     return Status(kInvalidArgument,
@@ -128,8 +131,8 @@ Status ParseDeviceName(const std::string& device_name,
   }
 
   // Don't override the user agent if blank (like for notebooks).
-  if (!device.user_agent.empty()) {
-    capabilities->switches.SetSwitch("user-agent", device.user_agent);
+  if (!device.user_agent.value_or("").empty()) {
+    capabilities->switches.SetSwitch("user-agent", *device.user_agent);
   }
 
   capabilities->mobile_device = std::move(device);
@@ -156,6 +159,19 @@ Status ParseMobileEmulation(const base::Value& option,
   }
 
   MobileDevice mobile_device;
+
+  bool mobile_ua = false;
+
+  if (mobile_emulation->Find("userAgent")) {
+    const std::string* user_agent = mobile_emulation->FindString("userAgent");
+    if (!user_agent) {
+      return Status(kInvalidArgument, "'userAgent' must be a string");
+    }
+    mobile_device.user_agent = *user_agent;
+
+    mobile_ua = base::StringPiece{*user_agent}.find("Mobile") !=
+                base::StringPiece::npos;
+  }
 
   if (mobile_emulation->Find("deviceMetrics")) {
     const base::Value::Dict* metrics =
@@ -187,20 +203,286 @@ Status ParseMobileEmulation(const base::Value& option,
     absl::optional<bool> mobile = metrics->FindBool("mobile");
     if (metrics->Find("mobile") && !mobile.has_value())
       return Status(kInvalidArgument, "'mobile' must be a boolean");
+    // We don't infere deviceMetrics.mobile form mobile_ua because
+    // mobile device may have no "Mobile" word in its userAgent.
+    // Example: Lumia 950 (Chrome on Windows 10 Mobile)
+    if (!mobile.has_value()) {
+      // Due to legacy reasons missing 'deviceMetrics.mobile' is inferred as
+      // true.
+      VLOG(0) << "Inferring 'deviceMetrics.mobile' as true";
+      mobile = true;
+    }
+
+    if (mobile_device.user_agent && mobile_ua && !mobile.value()) {
+      // Presence of word Mobile in UserAgent clearly hints that the device is
+      // mobile. The opposite is not true.
+      VLOG(logging::LOGGING_WARNING)
+          << "The mobility in 'userAgent' contradicts "
+             "'deviceMetrics.mobile' value.";
+    }
+
+    if (!touch.has_value()) {
+      VLOG(0) << "Inferring 'deviceMetrics.touch' as true.";
+    }
+    if (!maybe_device_scale_factor.has_value()) {
+      VLOG(0) << "Inferring 'deviceMetrics.pixelRatio' as 0.";
+    }
 
     DeviceMetrics device_metrics{width, height,
                                  maybe_device_scale_factor.value_or(0),
-                                 touch.value_or(true), mobile.value_or(true)};
+                                 touch.value_or(true), mobile.value()};
     mobile_device.device_metrics = std::move(device_metrics);
   }
 
-  if (mobile_emulation->Find("userAgent")) {
-    const std::string* user_agent = mobile_emulation->FindString("userAgent");
-    if (!user_agent)
-      return Status(kInvalidArgument, "'userAgent' must be a string");
+  if (mobile_ua && !mobile_device.device_metrics.has_value()) {
+    VLOG(0) << "The 'userAgent' value corresponds to a mobile UserAgent but "
+               "'deviceMetrics' is not provided.";
+  }
 
-    mobile_device.user_agent = *user_agent;
-    capabilities->switches.SetSwitch("user-agent", *user_agent);
+  if (mobile_emulation->Find("clientHints")) {
+    if (!mobile_emulation->Find("clientHints")->is_dict()) {
+      return Status{kInvalidArgument, "'clientHints' must be a dictionary"};
+    }
+    const base::Value::Dict& client_hints_dict =
+        *mobile_emulation->FindDict("clientHints");
+
+    ClientHints client_hints;
+
+    if (!client_hints_dict.Find("platform")) {
+      return Status(kInvalidArgument,
+                    "'clientHints.platform' must be provided");
+    }
+    const std::string* maybe_platform =
+        client_hints_dict.FindString("platform");
+    if (!maybe_platform) {
+      return Status(kInvalidArgument,
+                    "'clientHints.platform' must be a string");
+    }
+    client_hints.platform = *maybe_platform;
+    std::vector<std::string> supported_platforms =
+        MobileDevice::GetReducedUserAgentPlatforms();
+    if (!mobile_device.user_agent.has_value() &&
+        !base::Contains(supported_platforms, client_hints.platform)) {
+      std::string supported_platforms_str =
+          base::JoinString(supported_platforms, ", ");
+      return Status(kInvalidArgument,
+                    "'userAgent' is required for platforms other than: " +
+                        supported_platforms_str);
+    }
+
+    absl::optional<bool> mobile = client_hints_dict.FindBool("mobile");
+    if (client_hints_dict.Find("mobile") && !mobile.has_value()) {
+      return Status(kInvalidArgument, "'clientHints.mobile' must be a boolean");
+    }
+    if (mobile_device.device_metrics.has_value()) {
+      if (mobile.has_value() &&
+          mobile_device.device_metrics->mobile != mobile.value()) {
+        VLOG(logging::LOGGING_WARNING)
+            << "The mobility in 'deviceMetrics.mobile' contradicts "
+               "'clientHints.mobile' value.";
+      }
+      if (!mobile.has_value()) {
+        VLOG(0) << "Inferring 'clientHints.mobile' as 'deviceMetrics.mobile'.";
+        mobile = mobile_device.device_metrics->mobile;
+      }
+    } else {
+      if (mobile.has_value() && mobile.value()) {
+        VLOG(0) << "User does not provide 'deviceMetrics' while "
+                   "'clintHints.mobile' is true";
+      }
+      // We don't infere deviceMetrics.mobile form mobile_ua because
+      // mobile device may have no "Mobile" word in its userAgent.
+      // Example: Lumia 950 (Chrome on Windows 10 Mobile)
+      if (!mobile.has_value()) {
+        VLOG(0) << "Inferring 'clientHints.mobile' as false";
+        mobile = false;
+      }
+    }
+    // All the paths above assign some value to 'mobile'
+    if (mobile_device.user_agent.has_value() && mobile_ua && !mobile.value()) {
+      // Presence of word Mobile in UserAgent clearly hints that the device is
+      // mobile. The opposite is not true.
+      VLOG(logging::LOGGING_WARNING)
+          << "The mobility in 'userAgent' contradicts "
+             "'clientHints.mobile' value.";
+    }
+    client_hints.mobile = mobile.value();
+
+    if (client_hints_dict.Find("architecture")) {
+      const std::string* architecture =
+          client_hints_dict.FindString("architecture");
+      if (!architecture) {
+        return Status(kInvalidArgument,
+                      "'clientHints.architecture' must be a string");
+      }
+      client_hints.architecture = *architecture;
+    } else {
+      VLOG(0) << "Inferring 'clientHints.architecture' as an empty string.";
+      client_hints.architecture = "";
+    }
+
+    if (client_hints_dict.Find("bitness")) {
+      const std::string* bitness = client_hints_dict.FindString("bitness");
+      if (!bitness) {
+        return Status(kInvalidArgument,
+                      "'clientHints.bitness' must be a string");
+      }
+      client_hints.bitness = *bitness;
+    } else {
+      VLOG(0) << "Inferring 'clientHints.bitness' as an empty string.";
+      client_hints.bitness = "";
+    }
+
+    if (client_hints_dict.Find("brands")) {
+      const base::Value::List* brand_list =
+          client_hints_dict.FindList("brands");
+      if (!brand_list) {
+        return Status(kInvalidArgument,
+                      "'clientHints.brands' must be an array of objects");
+      }
+
+      std::vector<BrandVersion> brands;
+      for (const base::Value& item : *brand_list) {
+        if (!item.is_dict()) {
+          return Status(kInvalidArgument,
+                        "each 'clientHints.brands' entry must be an object");
+        }
+        const std::string* brand = item.GetDict().FindString("brand");
+        if (!brand) {
+          return Status(kInvalidArgument,
+                        "each 'clientHints.brands' entry must have a 'brand' "
+                        "field of type string");
+        }
+        const std::string* version = item.GetDict().FindString("version");
+        if (!version) {
+          return Status(kInvalidArgument,
+                        "each 'clientHints.brands' entry must have a "
+                        "'version' field of type string");
+        }
+
+        brands.emplace_back(*brand, *version);
+      }
+
+      client_hints.brands = std::move(brands);
+    } else {
+      VLOG(0) << "Inferring 'clientHints.brands' as browser defined.";
+    }
+
+    if (client_hints_dict.Find("fullVersionList")) {
+      const base::Value::List* full_version_list_list =
+          client_hints_dict.FindList("fullVersionList");
+      if (!full_version_list_list) {
+        return Status(
+            kInvalidArgument,
+            "'clientHints.fullVersionList' must be an array of objects");
+      }
+
+      std::vector<BrandVersion> full_version_list;
+      for (const base::Value& item : *full_version_list_list) {
+        if (!item.is_dict()) {
+          return Status(
+              kInvalidArgument,
+              "each 'clientHints.fullVersionList' entry must be an object");
+        }
+        const std::string* brand = item.GetDict().FindString("brand");
+        if (!brand) {
+          return Status(kInvalidArgument,
+                        "each 'clientHints.fullVersionList' entry must have "
+                        "a 'brand' field of type string");
+        }
+        const std::string* version = item.GetDict().FindString("version");
+        if (!version) {
+          return Status(kInvalidArgument,
+                        "each 'clientHints.fullVersionList' entry must have "
+                        "a 'version' field of type string");
+        }
+
+        full_version_list.emplace_back(*brand, *version);
+      }
+
+      client_hints.full_version_list = std::move(full_version_list);
+    } else {
+      VLOG(0) << "Inferring 'clientHints.fullversionList' as browser defined.";
+    }
+
+    if (client_hints_dict.Find("model")) {
+      const std::string* model = client_hints_dict.FindString("model");
+      if (!model) {
+        return Status(kInvalidArgument, "'clientHints.model' must be a string");
+      }
+      if (!client_hints.mobile && model->size() > 0) {
+        VLOG(0) << "User provides 'clientHints.model' for a non-mobile "
+                   "platform as indicated by 'clientHints.mobile'";
+      }
+      client_hints.model = *model;
+    } else {
+      VLOG(0) << "Inferring 'clientHints.model' as an empty string.";
+      client_hints.model = "";
+    }
+
+    if (client_hints_dict.Find("platformVersion")) {
+      const std::string* platform_version =
+          client_hints_dict.FindString("platformVersion");
+      if (!platform_version) {
+        return Status(kInvalidArgument,
+                      "'clientHints.platformVersion' must be a string");
+      }
+      client_hints.platform_version = *platform_version;
+    } else {
+      VLOG(0) << "Inferring 'clientHints.platformVersion' as an empty string.";
+      client_hints.platform_version = "";
+    }
+
+    if (client_hints_dict.Find("wow64")) {
+      absl::optional<bool> wow64 = client_hints_dict.FindBool("wow64");
+      if (!wow64.has_value()) {
+        return Status(kInvalidArgument,
+                      "'clientHints.wow64' must be a boolean");
+      }
+      client_hints.wow64 = *wow64;
+    } else {
+      VLOG(0) << "Inferring 'clientHints.wow64' as false.";
+      client_hints.wow64 = false;
+    }
+
+    mobile_device.client_hints = std::move(client_hints);
+  } else if (mobile_device.user_agent.has_value()) {
+    VLOG(0)
+        << "Operating in legacy emulation mode as 'mobileEmulation' contains "
+           "no 'clientHints'.";
+    ClientHints client_hints;
+    client_hints.mobile = mobile_device.device_metrics.has_value()
+                              ? mobile_device.device_metrics->mobile
+                              : false;
+    if (!MobileDevice::GuessPlatform(mobile_device.user_agent.value(),
+                                     &client_hints.platform)) {
+      // In legacy mode we allow platform to be empty.
+      // Otherwise we might break the users' tests.
+      client_hints.platform = "";
+    }
+    // Empty value corresponds to the result of GetCpuArchitecture in
+    // //content/common/user_agent.cc.
+    client_hints.architecture = "";
+    // Empty value corresponds to the result of GetCpuBitness in
+    // //content/common/user_agent.cc.
+    client_hints.bitness = "";
+    client_hints.model = "";
+    client_hints.platform_version = "";
+    client_hints.wow64 = false;
+    VLOG(0) << "No 'clientHints' found. Operating in legacy mode. "
+            << "Inferring clientHints as: "
+            << "{architecture='" << client_hints.architecture << "'"
+            << ", bitness='" << client_hints.bitness << "'"
+            << ", brands=<browser-defined>"
+            << ", fullVersionList=<browser-defined>"
+            << ", mobile=" << std::boolalpha << client_hints.mobile
+            << ", model='" << client_hints.model << "'"
+            << ", platform='" << client_hints.platform << "'"
+            << ", platformVersion='" << client_hints.platform_version << "'"
+            << ", wow64=" << std::boolalpha << client_hints.wow64 << "}";
+    capabilities->switches.SetSwitch("user-agent",
+                                     mobile_device.user_agent.value());
+    mobile_device.client_hints = std::move(client_hints);
   }
 
   capabilities->mobile_device = std::move(mobile_device);
@@ -675,11 +957,11 @@ bool GetChromeOptionsDictionary(const base::Value::Dict& params,
   return false;
 }
 
-Switches::Switches() {}
+Switches::Switches() = default;
 
 Switches::Switches(const Switches& other) = default;
 
-Switches::~Switches() {}
+Switches::~Switches() = default;
 
 void Switches::SetSwitch(const std::string& name) {
   SetSwitch(name, std::string());
@@ -801,10 +1083,9 @@ std::string Switches::ToString() const {
 PerfLoggingPrefs::PerfLoggingPrefs()
     : network(InspectorDomainStatus::kDefaultEnabled),
       page(InspectorDomainStatus::kDefaultEnabled),
-      trace_categories(),
       buffer_usage_reporting_interval(1000) {}
 
-PerfLoggingPrefs::~PerfLoggingPrefs() {}
+PerfLoggingPrefs::~PerfLoggingPrefs() = default;
 
 Capabilities::Capabilities()
     : accept_insecure_certs(false),
@@ -815,7 +1096,7 @@ Capabilities::Capabilities()
       extension_load_timeout(base::Seconds(10)),
       network_emulation_enabled(false) {}
 
-Capabilities::~Capabilities() {}
+Capabilities::~Capabilities() = default;
 
 bool Capabilities::IsAndroid() const {
   return !android_package.empty();
