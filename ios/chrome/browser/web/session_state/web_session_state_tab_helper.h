@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/sequence_checker.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -22,7 +23,8 @@ class WebState;
 // WebSessionStateTabHelper manages WKWebView session state reading, writing and
 // deleting.
 class WebSessionStateTabHelper
-    : public web::WebStateObserver,
+    : public web::WebFramesManager::Observer,
+      public web::WebStateObserver,
       public web::WebStateUserData<WebSessionStateTabHelper> {
  public:
   WebSessionStateTabHelper(const WebSessionStateTabHelper&) = delete;
@@ -50,12 +52,14 @@ class WebSessionStateTabHelper
 
   explicit WebSessionStateTabHelper(web::WebState* web_state);
 
+  // web::WebFramesManager::Observer
+  void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
+                               web::WebFrame* web_frame) override;
+
   // web::WebStateObserver overrides:
   void WebStateDestroyed(web::WebState* web_state) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
-  void WebFrameDidBecomeAvailable(web::WebState* web_state,
-                                  web::WebFrame* web_frame) override;
   void WebStateRealized(web::WebState* web_state) override;
 
   // Helpers used to create and respond to the webState scrollViewProxy.

@@ -91,6 +91,7 @@ bool WebSessionStateTabHelper::IsEnabled() {
 WebSessionStateTabHelper::WebSessionStateTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state_->AddObserver(this);
+  web_state_->GetPageWorldWebFramesManager()->AddObserver(this);
   if (web_state_->IsRealized()) {
     CreateScrollingObserver();
   }
@@ -159,6 +160,7 @@ void WebSessionStateTabHelper::SaveSessionState() {
 
 void WebSessionStateTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
+  web_state_->GetPageWorldWebFramesManager()->RemoveObserver(this);
   if (scroll_observer_) {
     [web_state->GetWebViewProxy().scrollViewProxy
         removeObserver:scroll_observer_];
@@ -181,21 +183,22 @@ void WebSessionStateTabHelper::DidFinishNavigation(
   MarkStale();
 }
 
-void WebSessionStateTabHelper::WebFrameDidBecomeAvailable(
-    web::WebState* web_state,
+void WebSessionStateTabHelper::WebFrameBecameAvailable(
+    web::WebFramesManager* web_frames_manager,
     web::WebFrame* web_frame) {
   if (web_frame->IsMainFrame())
     return;
 
-  // -WebFrameDidBecomeAvailable is called much more often than navigations, so
+  // -WebFrameBecameAvailable is called much more often than navigations, so
   // check if either `item_count_` or `last_committed_item_index_` has changed
   // before marking a page as stale.
   web::NavigationManager* navigation_manager =
-      web_state->GetNavigationManager();
-  if (item_count_ == web_state->GetNavigationItemCount() &&
+      web_state_->GetNavigationManager();
+  if (item_count_ == web_state_->GetNavigationItemCount() &&
       last_committed_item_index_ ==
-          navigation_manager->GetLastCommittedItemIndex())
+          navigation_manager->GetLastCommittedItemIndex()) {
     return;
+  }
 
   MarkStale();
 }
