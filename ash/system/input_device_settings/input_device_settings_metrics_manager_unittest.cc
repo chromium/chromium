@@ -368,4 +368,54 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
       "AssistantRemappedTo.Changed",
       /*expected_count=*/0);
 }
+
+TEST_F(InputDeviceSettingsMetricsManagerTest,
+       RecordModifierRemappingHashMetrics) {
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kExternalKeyboardId;
+  keyboard.is_external = false;
+  keyboard.settings = mojom::KeyboardSettings::New();
+  keyboard.modifier_keys = {
+      ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kControl,
+      ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kCapsLock,
+      ui::mojom::ModifierKey::kEscape,    ui::mojom::ModifierKey::kBackspace,
+      ui::mojom::ModifierKey::kAssistant,
+  };
+  keyboard.settings->modifier_remappings = {
+      {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape},
+      {ui::mojom::ModifierKey::kControl, ui::mojom::ModifierKey::kEscape},
+  };
+  base::HistogramTester histogram_tester;
+
+  SimulateUserLogin(kUser1);
+
+  manager_.get()->RecordKeyboardInitialMetrics(keyboard);
+  // Test the hash code is correct with manually computed value.
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.Hash", 0x7654255,
+      1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.Hash", 1u);
+
+  keyboard.settings->modifier_remappings = {
+      {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kControl},
+      {ui::mojom::ModifierKey::kControl, ui::mojom::ModifierKey::kMeta},
+      {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kEscape},
+      {ui::mojom::ModifierKey::kCapsLock, ui::mojom::ModifierKey::kAssistant},
+      {ui::mojom::ModifierKey::kEscape, ui::mojom::ModifierKey::kCapsLock},
+      {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kAssistant},
+      {ui::mojom::ModifierKey::kAssistant, ui::mojom::ModifierKey::kVoid},
+  };
+
+  SimulateUserLogin(kUser2);
+  manager_.get()->RecordKeyboardInitialMetrics(keyboard);
+
+  // Test the hash code is correct with manually computed value.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.Hash", 0x3747501,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.Hash", 2u);
+}
+
 }  // namespace ash
