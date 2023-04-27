@@ -107,6 +107,8 @@ executable("centipede") {
     "src/hash.cc",
     "src/knobs.cc",
     "src/knobs.h",
+    "src/logging.cc",
+    "src/logging.h",
     "src/minimize_crash.cc",
     "src/remote_file.cc",
     "src/reverse_pc_table.h",
