@@ -1096,13 +1096,7 @@ bool NavigationControllerImpl::CanGoToOffsetWithSkipping(int offset) {
 void NavigationControllerImpl::GoBack() {
   const absl::optional<int> target_index = GetIndexForGoBack();
 
-  // TODO(mcnee): `GoBack` has been permissive about being called when it's not
-  // possible to go back. Fix any callers that do this. If there are no issues,
-  // change this to `DCHECK(CanGoBack())`.
-  if (!target_index.has_value()) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
+  CHECK(target_index.has_value());
 
   GoToIndex(*target_index);
 }
@@ -1113,13 +1107,7 @@ void NavigationControllerImpl::GoForward() {
   // redirect or pushState.
   const absl::optional<int> target_index = GetIndexForGoForward();
 
-  // TODO(mcnee): `GoForward` has been permissive about being called when it's
-  // not possible to go forward. Fix any callers that do this. If there are no
-  // issues, change this to `DCHECK(CanGoForward())`.
-  if (!target_index.has_value()) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
+  CHECK(target_index.has_value());
 
   GoToIndex(*target_index);
 }
