@@ -386,6 +386,9 @@ TEST_F(ResourceFetcherTest, MetricsPerTopFrameSite) {
   EXPECT_EQ(resource_1, resource_2);
 
   // Test histograms.
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite.Mock", 0);
+
   histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Mock",
                                     2);
 
@@ -397,7 +400,7 @@ TEST_F(ResourceFetcherTest, MetricsPerTopFrameSite) {
       0 /* RevalidationPolicy::kUse */, 1);
 
   // Now load the same resource with origin_b as top-frame site. The
-  // histograms should be incremented.
+  // PerTopFrameSite histogram should be incremented.
   auto* fetcher_3 = CreateFetcher();
   ResourceRequestHead request_head_3(url);
   scoped_refptr<const SecurityOrigin> foo_origin_b =
@@ -409,6 +412,11 @@ TEST_F(ResourceFetcherTest, MetricsPerTopFrameSite) {
   Resource* resource_3 =
       MockResource::Fetch(fetch_params_2, fetcher_3, nullptr);
   EXPECT_EQ(resource_1, resource_3);
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite.Mock", 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite.Mock",
+      0 /* RevalidationPolicy::kUse */, 1);
   histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Mock",
                                     3);
   histogram_tester.ExpectBucketCount(
@@ -457,6 +465,9 @@ TEST_F(ResourceFetcherTest, MetricsPerTopFrameSiteOpaqueOrigins) {
   EXPECT_EQ(resource_1, resource_2);
 
   // Test histograms.
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite.Mock", 0);
+
   histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Mock",
                                     2);
 
@@ -468,7 +479,7 @@ TEST_F(ResourceFetcherTest, MetricsPerTopFrameSiteOpaqueOrigins) {
       0 /* RevalidationPolicy::kUse */, 1);
 
   // Now load the same resource with opaque_origin1 as top-frame site. The
-  // histograms should be incremented.
+  // PerTopFrameSite histogram should be incremented.
   auto* fetcher_3 = CreateFetcher();
   ResourceRequestHead request_head_3(url);
   request_head_3.SetTopFrameOrigin(opaque_origin2);
@@ -478,6 +489,11 @@ TEST_F(ResourceFetcherTest, MetricsPerTopFrameSiteOpaqueOrigins) {
   Resource* resource_3 =
       MockResource::Fetch(fetch_params_2, fetcher_3, nullptr);
   EXPECT_EQ(resource_1, resource_3);
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite.Mock", 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite.Mock",
+      0 /* RevalidationPolicy::kUse */, 1);
   histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Mock",
                                     3);
   histogram_tester.ExpectBucketCount(
