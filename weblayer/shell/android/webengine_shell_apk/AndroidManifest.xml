@@ -45,6 +45,12 @@ found in the LICENSE file.
                   android:windowSoftInputMode="adjustResize"
                   android:exported="true">
         </activity>
+        <activity android:name="WebEngineSinglePageActivity"
+                  android:launchMode="singleTask"
+                  android:theme="@style/ShellTheme"
+                  android:windowSoftInputMode="adjustResize"
+                  android:exported="true">
+        </activity>
 
         <meta-data android:name="org.chromium.webengine.shell.BrowserProcessMode"
                    android:value="{{ browser_process_mode }}"/>
