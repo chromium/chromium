@@ -147,7 +147,8 @@ if (is_win) {
       # Linking with shcore.lib causes the shcore api forwarder dll to load.
       "/DELAYLOAD:api-ms-win-shcore-scaling-l1-1-1.dll",
 
-      # Linking with OneCore.lib causes the next two dlls to load.
+      # Linking with OneCore.lib causes the next three dlls to load.
+      "/DELAYLOAD:api-ms-win-core-realtime-l1-1-1.dll",
       "/DELAYLOAD:api-ms-win-power-base-l1-1-0.dll",
       "/DELAYLOAD:api-ms-win-power-setting-l1-1-0.dll",
       "/DELAYLOAD:cfgmgr32.dll",

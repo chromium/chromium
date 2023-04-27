@@ -261,6 +261,10 @@ class TaskEnvironment {
   // FastForwardBy() didn't result in nested calls to time-advancing-methods.
   void FastForwardBy(TimeDelta delta);
 
+  // Similar to `FastForwardBy` but doesn't advance `base::LiveTicks`, behaving
+  // as if the system was suspended for `delta` time and immediately woken up.
+  void SuspendedFastForwardBy(TimeDelta delta);
+
   // Only valid for instances using TimeSource::MOCK_TIME.
   // Short for FastForwardBy(TimeDelta::Max()).
   //
@@ -283,6 +287,10 @@ class TaskEnvironment {
   // specifically handle more time than expected to have passed.
   void AdvanceClock(TimeDelta delta);
 
+  // Similar to `AdvanceClock` but doesn't advance `base::LiveTicks`, behaving
+  // as if the system was suspended for `delta` time and immediately woken up.
+  void SuspendedAdvanceClock(TimeDelta delta);
+
   bool UsesMockTime() const { return !!mock_clock_; }
 
   // Only valid for instances using TimeSource::MOCK_TIME. Returns a
@@ -303,6 +311,13 @@ class TaskEnvironment {
   // This is always equivalent to base::TimeTicks::Now() under
   // TimeSource::MOCK_TIME.
   base::TimeTicks NowTicks() const;
+
+  // Only valid for instances using TimeSource::MOCK_TIME. Returns the current
+  // virtual live time (based on a realistic Now(), sampled when this
+  // TaskEnvironment was created, and manually advanced from that point on).
+  // This is always equivalent to base::LiveTicks::Now() under
+  // TimeSource::MOCK_TIME.
+  base::LiveTicks NowLiveTicks() const;
 
   // Only valid for instances using TimeSource::MOCK_TIME. Returns the number of
   // pending tasks (delayed and non-delayed) of the main thread's TaskRunner.
@@ -446,6 +461,8 @@ class TaskEnvironment {
   void DestroyThreadPool();
 
   void CompleteInitialization();
+
+  void FastForwardByInternal(TimeDelta delta, bool advance_live_ticks);
 
   // The template constructor has to be in the header but it delegates to this
   // constructor to initialize all other members out-of-line.

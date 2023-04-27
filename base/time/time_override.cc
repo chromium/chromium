@@ -15,7 +15,8 @@ bool ScopedTimeClockOverrides::overrides_active_ = false;
 ScopedTimeClockOverrides::ScopedTimeClockOverrides(
     TimeNowFunction time_override,
     TimeTicksNowFunction time_ticks_override,
-    ThreadTicksNowFunction thread_ticks_override) {
+    ThreadTicksNowFunction thread_ticks_override,
+    LiveTicksNowFunction live_ticks_override) {
   DCHECK(!overrides_active_);
   overrides_active_ = true;
   if (time_override) {
@@ -26,6 +27,10 @@ ScopedTimeClockOverrides::ScopedTimeClockOverrides(
   }
   if (time_ticks_override) {
     internal::g_time_ticks_now_function.store(time_ticks_override,
+                                              std::memory_order_relaxed);
+  }
+  if (live_ticks_override) {
+    internal::g_live_ticks_now_function.store(live_ticks_override,
                                               std::memory_order_relaxed);
   }
   if (thread_ticks_override) {
@@ -39,6 +44,7 @@ ScopedTimeClockOverrides::~ScopedTimeClockOverrides() {
   internal::g_time_now_from_system_time_function.store(
       &TimeNowFromSystemTimeIgnoringOverride);
   internal::g_time_ticks_now_function.store(&TimeTicksNowIgnoringOverride);
+  internal::g_live_ticks_now_function.store(&LiveTicksNowIgnoringOverride);
   internal::g_thread_ticks_now_function.store(&ThreadTicksNowIgnoringOverride);
   overrides_active_ = false;
 }
