@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) OutputDevice {
   std::unique_ptr<media::AudioOutputDeviceThreadCallback> audio_callback_;
   std::unique_ptr<media::AudioDeviceThread> audio_thread_;
   media::AudioParameters audio_parameters_;
-  const raw_ptr<media::AudioRendererSink::RenderCallback> render_callback_;
+  raw_ptr<media::AudioRendererSink::RenderCallback> render_callback_;
   mojo::Remote<media::mojom::AudioOutputStream> stream_;
   mojo::Remote<media::mojom::AudioStreamFactory> stream_factory_;
 

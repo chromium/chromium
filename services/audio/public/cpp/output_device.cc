@@ -42,23 +42,17 @@ OutputDevice::~OutputDevice() {
 
 void OutputDevice::Play() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (stream_.is_bound()) {
-    stream_->Play();
-  }
+  stream_->Play();
 }
 
 void OutputDevice::Pause() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (stream_.is_bound()) {
-    stream_->Pause();
-  }
+  stream_->Pause();
 }
 
 void OutputDevice::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (stream_.is_bound()) {
-    stream_->SetVolume(volume);
-  }
+  stream_->SetVolume(volume);
 }
 
 void OutputDevice::StreamCreated(
@@ -87,8 +81,6 @@ void OutputDevice::OnConnectionError() {
   // simpler.
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_thread_join;
   CleanUp();
-
-  render_callback_->OnRenderError();
 }
 
 void OutputDevice::CleanUp() {
