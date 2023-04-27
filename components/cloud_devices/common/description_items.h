@@ -42,6 +42,8 @@ namespace cloud_devices {
 template <class Option, class Traits>
 class ListCapability {
  public:
+  using OptionVector = std::vector<Option>;
+
   ListCapability();
   ListCapability(ListCapability&& other);
 
@@ -69,8 +71,13 @@ class ListCapability {
 
   void AddOption(Option&& option) { options_.emplace_back(std::move(option)); }
 
+  OptionVector::iterator begin() { return options_.begin(); }
+  OptionVector::const_iterator begin() const { return options_.begin(); }
+
+  OptionVector::iterator end() { return options_.end(); }
+  OptionVector::const_iterator end() const { return options_.end(); }
+
  private:
-  using OptionVector = std::vector<Option>;
   OptionVector options_;
 };
 

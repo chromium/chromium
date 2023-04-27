@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/test/values_test_util.h"
@@ -1380,6 +1381,19 @@ TEST(PrinterDescriptionTest, CjtGetAll) {
 
   EXPECT_EQ(NormalizeJson(kCjt),
             NormalizeJson(description.ToStringForTesting()));
+}
+
+TEST(PrinterDescriptionTest, ContentTypesCapabilityIterator) {
+  ContentTypesCapability content_types;
+
+  base::flat_set<ContentType> expected_types{"type1", "type2", "type3"};
+  for (ContentType type : expected_types) {
+    content_types.AddOption(std::move(type));
+  }
+
+  for (const auto& content_type : content_types) {
+    EXPECT_EQ(expected_types.erase(content_type), 1u);
+  }
 }
 
 }  // namespace printer
