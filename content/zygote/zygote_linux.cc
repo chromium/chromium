@@ -133,7 +133,7 @@ bool Zygote::ProcessRequests() {
     if (!r)
       _exit(RESULT_CODE_NORMAL_EXIT);
 #else
-    CHECK(r) << "Sending zygote magic failed";
+    PCHECK(r) << "Sending zygote magic failed";
 #endif
   }
 
