@@ -148,11 +148,8 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
 
   Process process;
   if (BeforeLaunchOnLauncherThread(*files_to_register, options_ptr)) {
-// TODO(crbug.com/1412835): iOS is single process mode for now.
-#if !BUILDFLAG(IS_IOS)
     base::FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
         command_line(), options_ptr);
-#endif
     process =
         LaunchProcessOnLauncherThread(options_ptr, std::move(files_to_register),
 #if BUILDFLAG(IS_ANDROID)

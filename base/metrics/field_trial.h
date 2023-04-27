@@ -91,6 +91,7 @@
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -555,14 +556,14 @@ class BASE_EXPORT FieldTrialList {
   static void CreateFeaturesFromCommandLine(const CommandLine& command_line,
                                             FeatureList* feature_list);
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
   // Populates |command_line| and |launch_options| with the handles and command
   // line arguments necessary for a child process to inherit the shared-memory
   // object containing the FieldTrial configuration.
   static void PopulateLaunchOptionsWithFieldTrialState(
       CommandLine* command_line,
       LaunchOptions* launch_options);
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(USE_BLINK)
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL)
   // On POSIX, we also need to explicitly pass down this file descriptor that
@@ -688,7 +689,7 @@ class BASE_EXPORT FieldTrialList {
   // this class to its friends.
   friend class FieldTrialListIncludingLowAnonymity;
 
-#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
   // Serialization is used to pass information about the shared memory handle
   // to child processes. This is achieved by passing a stringified reference to
   // the relevant OS resources to the child process.
@@ -720,7 +721,7 @@ class BASE_EXPORT FieldTrialList {
   // down to the child process for the shared memory region.
   static bool CreateTrialsFromSwitchValue(const std::string& switch_value,
                                           uint32_t fd_key);
-#endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
 
   // Takes an unmapped ReadOnlySharedMemoryRegion, maps it with the correct size
   // and creates field trials via CreateTrialsFromSharedMemoryMapping(). Returns
