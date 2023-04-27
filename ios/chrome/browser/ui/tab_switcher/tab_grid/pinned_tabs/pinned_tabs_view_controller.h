@@ -74,6 +74,9 @@
 // Tracks if a drop animation is in progress.
 @property(nonatomic, assign) BOOL dropAnimationInProgress;
 
+// Tracks the visibility of the view.
+@property(nonatomic, readonly) BOOL visible;
+
 // Returns YES if the collection has no items.
 @property(nonatomic, readonly, getter=isCollectionEmpty) BOOL collectionEmpty;
 
