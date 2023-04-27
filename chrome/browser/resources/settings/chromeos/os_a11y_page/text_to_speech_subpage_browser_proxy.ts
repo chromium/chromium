@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export interface TextToSpeechPageBrowserProxy {
+export interface TextToSpeechSubpageBrowserProxy {
   /**
    * Request whether ScreenAIInstallState changed. Result is returned by the
    * 'pdf-ocr-state-changed' WebUI listener event.
@@ -25,15 +25,15 @@ export interface TextToSpeechPageBrowserProxy {
   showChromeVoxTutorial(): void;
 }
 
-let instance: TextToSpeechPageBrowserProxy|null = null;
+let instance: TextToSpeechSubpageBrowserProxy|null = null;
 
-export class TextToSpeechPageBrowserProxyImpl implements
-    TextToSpeechPageBrowserProxy {
-  static getInstance(): TextToSpeechPageBrowserProxy {
-    return instance || (instance = new TextToSpeechPageBrowserProxyImpl());
+export class TextToSpeechSubpageBrowserProxyImpl implements
+    TextToSpeechSubpageBrowserProxy {
+  static getInstance(): TextToSpeechSubpageBrowserProxy {
+    return instance || (instance = new TextToSpeechSubpageBrowserProxyImpl());
   }
 
-  static setInstanceForTesting(obj: TextToSpeechPageBrowserProxy): void {
+  static setInstanceForTesting(obj: TextToSpeechSubpageBrowserProxy): void {
     instance = obj;
   }
 

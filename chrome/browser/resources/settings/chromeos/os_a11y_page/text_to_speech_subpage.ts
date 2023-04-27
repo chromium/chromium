@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * 'settings-text-to-speech-page' is the accessibility settings subpage
+ * 'settings-text-to-speech-subpage' is the accessibility settings subpage
  * for text-to-speech accessibility settings.
  */
 
@@ -25,8 +25,8 @@ import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
-import {getTemplate} from './text_to_speech_page.html.js';
-import {TextToSpeechPageBrowserProxy, TextToSpeechPageBrowserProxyImpl} from './text_to_speech_page_browser_proxy.js';
+import {getTemplate} from './text_to_speech_subpage.html.js';
+import {TextToSpeechSubpageBrowserProxy, TextToSpeechSubpageBrowserProxyImpl} from './text_to_speech_subpage_browser_proxy.js';
 
 /**
  * Numerical values should not be changed because they must stay in sync with
@@ -40,13 +40,14 @@ export enum ScreenAiInstallStatus {
   READY = 4,
 }
 
-const SettingsTextToSpeechPageElementBase = DeepLinkingMixin(RouteOriginMixin(
-    PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
+const SettingsTextToSpeechSubpageElementBase =
+    DeepLinkingMixin(RouteOriginMixin(
+        PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-export class SettingsTextToSpeechPageElement extends
-    SettingsTextToSpeechPageElementBase {
+export class SettingsTextToSpeechSubpageElement extends
+    SettingsTextToSpeechSubpageElementBase {
   static get is() {
-    return 'settings-text-to-speech-page';
+    return 'settings-text-to-speech-subpage' as const;
   }
 
   static get template() {
@@ -124,7 +125,7 @@ export class SettingsTextToSpeechPageElement extends
   private pdfOcrProgress_: number;
   private pdfOcrStatus_: ScreenAiInstallStatus;
   private showPdfOcrToggle_: boolean;
-  private textToSpeechBrowserProxy_: TextToSpeechPageBrowserProxy;
+  private textToSpeechBrowserProxy_: TextToSpeechSubpageBrowserProxy;
 
   constructor() {
     super();
@@ -133,7 +134,7 @@ export class SettingsTextToSpeechPageElement extends
     this.route_ = routes.A11Y_TEXT_TO_SPEECH;
 
     this.textToSpeechBrowserProxy_ =
-        TextToSpeechPageBrowserProxyImpl.getInstance();
+        TextToSpeechSubpageBrowserProxyImpl.getInstance();
 
     this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
@@ -269,9 +270,9 @@ export class SettingsTextToSpeechPageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-text-to-speech-page': SettingsTextToSpeechPageElement;
+    [SettingsTextToSpeechSubpageElement.is]: SettingsTextToSpeechSubpageElement;
   }
 }
 
 customElements.define(
-    SettingsTextToSpeechPageElement.is, SettingsTextToSpeechPageElement);
+    SettingsTextToSpeechSubpageElement.is, SettingsTextToSpeechSubpageElement);

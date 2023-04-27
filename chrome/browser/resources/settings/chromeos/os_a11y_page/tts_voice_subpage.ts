@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-tts-subpage' is the collapsible section containing
- * text-to-speech settings.
+ * @fileoverview 'settings-tts-voice-subpage' is the subpage containing
+ * text-to-speech voice settings.
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -27,14 +27,14 @@ import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
-import {getTemplate} from './tts_subpage.html.js';
-import {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './tts_subpage_browser_proxy.js';
+import {getTemplate} from './tts_voice_subpage.html.js';
+import {TtsVoiceSubpageBrowserProxy, TtsVoiceSubpageBrowserProxyImpl} from './tts_voice_subpage_browser_proxy.js';
 
 /**
  * Represents a voice as sent from the TTS Handler class. |languageCode| is
  * the language, not the locale, i.e. 'en' rather than 'en-us'. |name| is the
  * user-facing voice name, and |id| is the unique ID for that voice name (which
- * is generated in tts_subpage.js and not passed from tts_handler.cc).
+ * is generated in tts_voice_subpage.js and not passed from tts_handler.cc).
  * |displayLanguage| is the user-facing display string, i.e. 'English'.
  * |fullLanguageCode| is the code with locale, i.e. 'en-us' or 'en-gb'.
  * |languageScore| is a relative measure of how closely the voice's language
@@ -63,19 +63,20 @@ interface TtsLanguage {
   voices: TtsHandlerVoice[];
 }
 
-export interface SettingsTtsSubpageElement {
+export interface SettingsTtsVoiceSubpageElement {
   $: {
     previewVoiceOptions: DomRepeat,
     previewVoice: HTMLSelectElement,
   };
 }
 
-const SettingsTtsSubpageElementBase = DeepLinkingMixin(
+const SettingsTtsVoiceSubpageElementBase = DeepLinkingMixin(
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
-export class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
+export class SettingsTtsVoiceSubpageElement extends
+    SettingsTtsVoiceSubpageElementBase {
   static get is() {
-    return 'settings-tts-subpage';
+    return 'settings-tts-voice-subpage' as const;
   }
 
   static get template() {
@@ -168,12 +169,12 @@ export class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
   private isPreviewing_: boolean;
   private langBrowserProxy_: LanguagesBrowserProxy;
   private previewText_: string;
-  private ttsBrowserProxy_: TtsSubpageBrowserProxy;
+  private ttsBrowserProxy_: TtsVoiceSubpageBrowserProxy;
 
   constructor() {
     super();
 
-    this.ttsBrowserProxy_ = TtsSubpageBrowserProxyImpl.getInstance();
+    this.ttsBrowserProxy_ = TtsVoiceSubpageBrowserProxyImpl.getInstance();
     this.langBrowserProxy_ = LanguagesBrowserProxyImpl.getInstance();
     this.extensions = [];
   }
@@ -484,8 +485,9 @@ export class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-tts-subpage': SettingsTtsSubpageElement;
+    [SettingsTtsVoiceSubpageElement.is]: SettingsTtsVoiceSubpageElement;
   }
 }
 
-customElements.define(SettingsTtsSubpageElement.is, SettingsTtsSubpageElement);
+customElements.define(
+    SettingsTtsVoiceSubpageElement.is, SettingsTtsVoiceSubpageElement);

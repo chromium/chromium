@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export interface TtsSubpageBrowserProxy {
+export interface TtsVoiceSubpageBrowserProxy {
   /**
    * Requests the updated voice data. Returned by the 'all-voice-data-updated'
    * WebUI Listener event.
@@ -33,14 +33,15 @@ export interface TtsSubpageBrowserProxy {
   refreshTtsVoices(): void;
 }
 
-let instance: TtsSubpageBrowserProxy|null = null;
+let instance: TtsVoiceSubpageBrowserProxy|null = null;
 
-export class TtsSubpageBrowserProxyImpl implements TtsSubpageBrowserProxy {
-  static getInstance(): TtsSubpageBrowserProxy {
-    return instance || (instance = new TtsSubpageBrowserProxyImpl());
+export class TtsVoiceSubpageBrowserProxyImpl implements
+    TtsVoiceSubpageBrowserProxy {
+  static getInstance(): TtsVoiceSubpageBrowserProxy {
+    return instance || (instance = new TtsVoiceSubpageBrowserProxyImpl());
   }
 
-  static setInstanceForTesting(obj: TtsSubpageBrowserProxy): void {
+  static setInstanceForTesting(obj: TtsVoiceSubpageBrowserProxy): void {
     instance = obj;
   }
 

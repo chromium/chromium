@@ -458,15 +458,14 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'os_a11y_page/manage_a11y_subpage_test.js',
  ],
  [
-   'OsA11yPageTextToSpeechPage',
-   'os_a11y_page/text_to_speech_page_test.js',
+   'OsA11yPageTextToSpeechSubpage',
+   'os_a11y_page/text_to_speech_subpage_test.js',
    {enabled: ['features::kPdfOcr']},
  ],
  [
-   'OsA11yPageTextToSpeechSubpage',
-   'os_a11y_page/text_to_speech_subpage_test.js',
+   'OsA11yPageTtsVoiceSubpage',
+   'os_a11y_page/tts_voice_subpage_test.js',
  ],
- ['OsA11yPageTtsSubpage', 'os_a11y_page/tts_subpage_test.js'],
  ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_tests.js'],
  [
    'OsBluetoothPageOsBluetoothChangeDeviceNameDialog',

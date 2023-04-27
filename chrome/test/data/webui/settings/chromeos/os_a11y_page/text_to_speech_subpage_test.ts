@@ -1,126 +1,116 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {SettingsTtsSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {Router, routes, TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {SettingsTextToSpeechSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-class TestTtsSubpageBrowserProxy extends TestBrowserProxy implements
-    TtsSubpageBrowserProxy {
-  constructor() {
-    super([
-      'getAllTtsVoiceData',
-      'getTtsExtensions',
-      'previewTtsVoice',
-      'wakeTtsEngine',
-      'refreshTtsVoices',
-    ]);
-  }
+suite('<settings-text-to-speech-subpage>', function() {
+  let page: SettingsTextToSpeechSubpageElement;
+  let prefElement: SettingsPrefsElement;
 
-  getAllTtsVoiceData(): void {
-    this.methodCalled('getAllTtsVoiceData');
-  }
+  async function initPage() {
+    prefElement = document.createElement('settings-prefs');
+    document.body.appendChild(prefElement);
 
-  getTtsExtensions(): void {
-    this.methodCalled('getTtsExtensions');
-  }
-
-  previewTtsVoice(previewText: string, previewVoice: string): void {
-    this.methodCalled('previewTtsVoice', [previewText, previewVoice]);
-  }
-
-  wakeTtsEngine(): void {
-    this.methodCalled('wakeTtsEngine');
-  }
-
-  refreshTtsVoices(): void {
-    this.methodCalled('refreshTtsVoices');
-  }
-}
-
-suite('<settings-tts-subpage>', function() {
-  let ttsPage: SettingsTtsSubpageElement;
-  let browserProxy: TestTtsSubpageBrowserProxy;
-
-  function getDefaultPrefs() {
-    return {
-      intl: {
-        accept_languages: {
-          key: 'intl.accept_languages',
-          type: chrome.settingsPrivate.PrefType.STRING,
-          value: '',
-        },
-      },
-      settings: {
-        tts: {
-          lang_to_voice_name: {
-            key: 'prefs.settings.tts.lang_to_voice_name',
-            type: chrome.settingsPrivate.PrefType.DICTIONARY,
-            value: {},
-          },
-        },
-      },
-    };
+    await CrSettingsPrefs.initialized;
+    page = document.createElement('settings-text-to-speech-subpage');
+    page.prefs = prefElement.prefs;
+    document.body.appendChild(page);
+    flush();
   }
 
   setup(function() {
-    browserProxy = new TestTtsSubpageBrowserProxy();
-    TtsSubpageBrowserProxyImpl.setInstanceForTesting(browserProxy);
-
-    ttsPage = document.createElement('settings-tts-subpage');
-    ttsPage.prefs = getDefaultPrefs();
-    document.body.appendChild(ttsPage);
-    flush();
+    Router.getInstance().navigateTo(routes.A11Y_TEXT_TO_SPEECH);
   });
 
   teardown(function() {
-    ttsPage.remove();
+    page.remove();
+    prefElement.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('Deep link to text to speech rate', async () => {
-    const params = new URLSearchParams();
-    params.append('settingId', '1503');
-    Router.getInstance().navigateTo(routes.MANAGE_TTS_SETTINGS, params);
+  [{selector: '#ttsSubpageButton', route: routes.MANAGE_TTS_SETTINGS},
+  ].forEach(({selector, route}) => {
+    test(
+        `should focus ${selector} button when returning from ${
+            route.path} subpage`,
+        async () => {
+          await initPage();
+          const router = Router.getInstance();
 
-    flush();
+          const subpageButton =
+              page.shadowRoot!.querySelector<HTMLElement>(selector);
+          assert(subpageButton);
 
-    const deepLinkElement =
-        ttsPage.shadowRoot!.querySelector('#textToSpeechRate')!.shadowRoot!
-            .querySelector<HTMLElement>('cr-slider');
-    assert(deepLinkElement);
-    await waitAfterNextRender(deepLinkElement);
-    assertEquals(
-        deepLinkElement, getDeepActiveElement(),
-        'Text to speech rate slider should be focused for settingId=1503.');
+          subpageButton.click();
+          assertEquals(route, router.currentRoute);
+          assertNotEquals(
+              subpageButton, page.shadowRoot!.activeElement,
+              `${selector} should not be focused`);
+
+          const popStateEventPromise = eventToPromise('popstate', window);
+          router.navigateToPreviousRoute();
+          await popStateEventPromise;
+          await waitBeforeNextRender(page);
+
+          assertEquals(routes.A11Y_TEXT_TO_SPEECH, router.currentRoute);
+          assertEquals(
+              subpageButton, page.shadowRoot!.activeElement,
+              `${selector} should be focused`);
+        });
   });
 
-  test('Deep link to text to speech engines', async () => {
-    ttsPage.extensions = [{
-      name: 'extension1',
-      extensionId: 'extension1_id',
-      optionsPage: 'extension1_page',
-    }];
-    flush();
+  test('only allowed subpages are available in kiosk mode', async function() {
+    loadTimeData.overrideValues({
+      isKioskModeActive: true,
+      showTabletModeShelfNavigationButtonsSettings: true,
+    });
+    await initPage();
 
-    const params = new URLSearchParams();
-    params.append('settingId', '1507');
-    Router.getInstance().navigateTo(routes.MANAGE_TTS_SETTINGS, params);
+    const allowed_subpages = [
+      'chromeVoxSubpageButton',
+      'selectToSpeakSubpageButton',
+      'ttsSubpageButton',
+    ];
 
-    const deepLinkElement = ttsPage.shadowRoot!.querySelector<HTMLElement>(
-        '#extensionOptionsButton_0');
-    assert(deepLinkElement);
-    await waitAfterNextRender(deepLinkElement);
-    assertEquals(
-        deepLinkElement, getDeepActiveElement(),
-        'Text to speech engine options should be focused for settingId=1507.');
+    const subpages = page.root!.querySelectorAll('cr-link-row');
+    subpages.forEach(function(subpage) {
+      if (isVisible(subpage)) {
+        assertTrue(allowed_subpages.includes(subpage.id));
+      }
+    });
   });
+
+  test(
+      'pdf ocr pref enabled when both pdf ocr and screen reader enabled',
+      async function() {
+        // `features::kPdfOcr` is enabled in os_settings_v3_browsertest.js
+        assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
+
+        await initPage();
+        // Simulate enabling the ChromeVox.
+        page.hasScreenReader = true;
+
+        const pdfOcrToggle =
+            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#crosPdfOcrToggle');
+        assert(pdfOcrToggle);
+        assertTrue(isVisible(pdfOcrToggle));
+        assertFalse(pdfOcrToggle.checked);
+        assertFalse(page.prefs.settings.a11y.pdf_ocr_always_active.value);
+        pdfOcrToggle.click();
+
+        await waitAfterNextRender(pdfOcrToggle);
+        assertTrue(pdfOcrToggle.checked);
+        assertTrue(page.prefs.settings.a11y.pdf_ocr_always_active.value);
+      });
 });

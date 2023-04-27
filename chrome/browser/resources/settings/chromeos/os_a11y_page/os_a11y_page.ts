@@ -154,7 +154,7 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     }
     if (routes.A11Y_TEXT_TO_SPEECH) {
       this.addFocusConfig(
-          routes.A11Y_TEXT_TO_SPEECH, '#text-to-speech-page-trigger');
+          routes.A11Y_TEXT_TO_SPEECH, '#textToSpeechSubpageTrigger');
     }
     if (routes.A11Y_DISPLAY_AND_MAGNIFICATION) {
       this.addFocusConfig(
