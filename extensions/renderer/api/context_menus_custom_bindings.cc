@@ -17,7 +17,7 @@ namespace {
 std::atomic<int32_t> menu_counter{0};
 
 void GetNextContextMenuId(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  // TODO(crbug.com/942373): We should use base::UnguessableToken or base::GUID
+  // TODO(crbug.com/942373): We should use base::UnguessableToken or base::Uuid
   // here, and move to using a string for all context menu IDs.
   args.GetReturnValue().Set(++menu_counter);
 }

@@ -7,9 +7,9 @@
 #include <map>
 #include <utility>
 
-#include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/uuid.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
@@ -311,7 +311,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     params->worker_thread_id = worker_thread_id;
     params->service_worker_version_id = service_worker_version_id_;
 
-    std::string guid = base::GenerateGUID();
+    std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     request_id_to_guid_[params->request_id] = guid;
 
     // Keeps the worker alive during extension function call. Balanced in
