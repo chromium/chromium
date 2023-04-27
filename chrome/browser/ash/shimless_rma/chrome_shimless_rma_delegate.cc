@@ -62,16 +62,19 @@ void ChromeShimlessRmaDelegate::GenerateQrCode(
   request->data = url;
   request->center_image = qrcode_generator::mojom::CenterImage::CHROME_DINO;
 
-  if (!qrcode_service_remote_) {
-    qrcode_service_remote_ = qrcode_generator::LaunchQRCodeGeneratorService();
-  }
-  qrcode_generator::mojom::QRCodeGeneratorService* qrcode_service =
-      qrcode_service_remote_.get();
-
-  qrcode_service->GenerateQRCode(
-      std::move(request),
+  auto qrcode_service_callback =
       base::BindOnce(&ChromeShimlessRmaDelegate::OnQrCodeGenerated,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  if (qrcode_service_override_.is_null()) {
+    if (!qrcode_service_) {
+      qrcode_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
+    }
+    qrcode_service_->GenerateQRCode(std::move(request),
+                                    std::move(qrcode_service_callback));
+  } else {
+    qrcode_service_override_.Run(std::move(request),
+                                 std::move(qrcode_service_callback));
+  }
 }
 
 void ChromeShimlessRmaDelegate::OnQrCodeGenerated(
@@ -86,8 +89,11 @@ void ChromeShimlessRmaDelegate::OnQrCodeGenerated(
 }
 
 void ChromeShimlessRmaDelegate::SetQRCodeServiceForTesting(
-    mojo::Remote<qrcode_generator::mojom::QRCodeGeneratorService>&& remote) {
-  qrcode_service_remote_ = std::move(remote);
+    base::RepeatingCallback<
+        void(qrcode_generator::mojom::GenerateQRCodeRequestPtr request,
+             qrcode_generator::QRImageGenerator::ResponseCallback callback)>
+        qrcode_service_override) {
+  qrcode_service_override_ = std::move(qrcode_service_override);
 }
 
 }  // namespace shimless_rma

@@ -11,8 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -74,7 +74,9 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   views::LabelButton* download_button_for_testing() { return download_button_; }
 
   void SetQRCodeServiceForTesting(
-      mojo::Remote<mojom::QRCodeGeneratorService>&& remote);
+      base::RepeatingCallback<void(mojom::GenerateQRCodeRequestPtr request,
+                                   QRImageGenerator::ResponseCallback callback)>
+          qrcode_service_override);
 
  private:
   // Updates and formats QR code, text, and controls.
@@ -119,8 +121,23 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   // Callback for the request to the OOP service to generate a new image.
   void OnCodeGeneratorResponse(const mojom::GenerateQRCodeResponsePtr response);
 
-  // Remote to service instance to generate QR code images.
-  mojo::Remote<mojom::QRCodeGeneratorService> qr_code_service_remote_;
+  // TODO(https://crbug.com/1431991): Remove this field once there is no
+  // internal state (e.g. no `mojo::Remote`) that needs to be maintained by the
+  // `QRImageGenerator` class.
+  std::unique_ptr<QRImageGenerator> qrcode_service_;
+
+  // Unit tests can set `qr_code_service_override_` to intercept QR code
+  // requests and inject test-controlled QR code responses.
+  //
+  // Rationale for using a `RepeatingCallback` instead of implementing
+  // dependency injection using virtual methods: 1) `GenerateQRCode` will become
+  // a free function after shipping https://crbug.com/1431991, 2) in general
+  // `RepeatingCallback` is equivalent to a pure interface with a single method,
+  // (note that `RepeatingCallback` below has the same signature as
+  // `GenerateQRCode`).
+  base::RepeatingCallback<void(mojom::GenerateQRCodeRequestPtr request,
+                               QRImageGenerator::ResponseCallback callback)>
+      qrcode_service_override_;
 
   // URL for which the QR code is being generated.
   // Used for validation.

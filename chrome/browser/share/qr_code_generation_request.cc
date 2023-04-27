@@ -37,20 +37,20 @@ QRCodeGenerationRequest::QRCodeGenerationRequest(
   request->render_locator_style =
       qrcode_generator::mojom::LocatorStyle::ROUNDED;
 
-  remote_ = qrcode_generator::LaunchQRCodeGeneratorService();
+  qrcode_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
 
   // On RPC error, we will still run the handler with a null bitmap.
   // The handler will call destroy() on this native object to clean up.
   // base::Unretained(this) is safe here because the callback won't be invoked
   // after |remote_| is destroyed, and |remote_| will be destroyed if this
   // object is destroyed.
-  remote_.set_disconnect_handler(
+  qrcode_service_->set_disconnect_handler(
       base::BindOnce(&QRCodeGenerationRequest::OnGenerateCodeResponse,
                      base::Unretained(this), nullptr));
 
   auto callback = base::BindOnce(
       &QRCodeGenerationRequest::OnGenerateCodeResponse, base::Unretained(this));
-  remote_.get()->GenerateQRCode(std::move(request), std::move(callback));
+  qrcode_service_->GenerateQRCode(std::move(request), std::move(callback));
 }
 
 QRCodeGenerationRequest::~QRCodeGenerationRequest() {}

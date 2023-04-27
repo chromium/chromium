@@ -29,10 +29,9 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
     request->render_locator_style = locator_style;
 
     mojom::GenerateQRCodeResponsePtr response;
-    mojo::Remote<mojom::QRCodeGeneratorService> qr_service =
-        LaunchQRCodeGeneratorService();
     base::RunLoop run_loop;
-    qr_service->GenerateQRCode(
+    QRImageGenerator generator;
+    generator.GenerateQRCode(
         std::move(request),
         base::BindLambdaForTesting([&](mojom::GenerateQRCodeResponsePtr r) {
           response = std::move(r);

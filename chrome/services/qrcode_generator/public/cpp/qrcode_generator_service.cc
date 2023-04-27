@@ -10,11 +10,25 @@
 
 namespace qrcode_generator {
 
+namespace {
+
 mojo::Remote<mojom::QRCodeGeneratorService> LaunchQRCodeGeneratorService() {
   return content::ServiceProcessHost::Launch<mojom::QRCodeGeneratorService>(
       content::ServiceProcessHost::Options()
           .WithDisplayName(IDS_UTILITY_PROCESS_QRCODE_GENERATOR_SERVICE_NAME)
           .Pass());
+}
+
+}  // namespace
+
+QRImageGenerator::QRImageGenerator()
+    : mojo_service_(LaunchQRCodeGeneratorService()) {}
+
+QRImageGenerator::~QRImageGenerator() = default;
+
+void QRImageGenerator::GenerateQRCode(mojom::GenerateQRCodeRequestPtr request,
+                                      ResponseCallback callback) {
+  mojo_service_->GenerateQRCode(std::move(request), std::move(callback));
 }
 
 }  //  namespace qrcode_generator
