@@ -27,9 +27,7 @@ jobs:
       - name: Install and build npm dependencies
         run: npm ci
       - name: Install Chromium
-        run: |
-          # browsers from @puppeteer/browsers
-          echo "chromium_binary=$(npx browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
+        run: echo "chromium_binary=$(npx @puppeteer/browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
       - name: Set up Python
         uses: actions/setup-python@v4
         with:

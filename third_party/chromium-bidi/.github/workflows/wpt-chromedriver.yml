@@ -36,9 +36,7 @@ jobs:
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
       - name: Install Chromium
-        run: |
-          # browsers from @puppeteer/browsers
-          echo "chromium_binary=$(npx browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
+        run: echo "chromium_binary=$(npx @puppeteer/browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
       - name: Run tests
         timeout-minutes: 20
         run: >
@@ -47,7 +45,7 @@ jobs:
           --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"
           --webdriver-arg="--log-path=out/chromedriver.log"
           --webdriver-arg="--verbose"
-          --binary ${{ env.chromium_binary }}
+          --binary "${{ env.chromium_binary }}"
           --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json
           --metadata wpt-metadata/chromedriver/headless
