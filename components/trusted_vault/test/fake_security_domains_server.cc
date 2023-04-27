@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/fake_security_domains_server.h"
+#include "components/trusted_vault/test/fake_security_domains_server.h"
 
 #include "base/base64url.h"
 #include "base/logging.h"

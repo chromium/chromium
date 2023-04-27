@@ -84,4 +84,21 @@ if (!is_android) {
       "//testing/gtest",
     ]
   }
+
+  static_library("test_support") {
+    testonly = true
+    sources = [
+      "test/fake_security_domains_server.cc",
+      "test/fake_security_domains_server.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//components/trusted_vault/proto",
+      "//net:test_support",
+      "//url",
+    ]
+
+    deps = [ ":trusted_vault" ]
+  }
 }

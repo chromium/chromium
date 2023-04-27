@@ -10652,6 +10652,7 @@ if (!is_android) {
       "//components/sync_bookmarks",
       "//components/sync_device_info:test_support",
       "//components/sync_preferences:common_syncable_prefs_database",
+      "//components/trusted_vault:test_support",
       "//components/undo",
       "//components/webapps/browser",
       "//components/webauthn/core/browser",

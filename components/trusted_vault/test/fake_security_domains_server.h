@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TEST_FAKE_SECURITY_DOMAINS_SERVER_H_
-#define COMPONENTS_SYNC_TEST_FAKE_SECURITY_DOMAINS_SERVER_H_
+#ifndef COMPONENTS_TRUSTED_VAULT_TEST_FAKE_SECURITY_DOMAINS_SERVER_H_
+#define COMPONENTS_TRUSTED_VAULT_TEST_FAKE_SECURITY_DOMAINS_SERVER_H_
 
 #include <map>
 #include <memory>
@@ -23,7 +23,6 @@ namespace trusted_vault {
 
 // Mimics behavior of the security domains server. This class is designed to be
 // used with EmbeddedTestServer via registration of HandleRequest() method.
-// TODO(crbug.com/1423343): move under components/trusted_vault.
 class FakeSecurityDomainsServer {
  public:
   class Observer : public base::CheckedObserver {
@@ -130,4 +129,4 @@ class FakeSecurityDomainsServer {
 
 }  // namespace trusted_vault
 
-#endif  // COMPONENTS_SYNC_TEST_FAKE_SECURITY_DOMAINS_SERVER_H_
+#endif  // COMPONENTS_TRUSTED_VAULT_TEST_FAKE_SECURITY_DOMAINS_SERVER_H_
