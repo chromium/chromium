@@ -21,12 +21,21 @@ bool IsUserFeedbackSupported() {
 
 UIViewController* CreateUserFeedbackViewController(
     UserFeedbackConfiguration* configuration) {
-  NOTREACHED() << "User feedback not supported in unit tests.";
-  return nil;
+  NOTREACHED_NORETURN() << "User feedback not supported in unit tests.";
 }
 
 void UploadAllPendingUserFeedback() {
-  NOTREACHED() << "User feedback not supported in unit tests.";
+  NOTREACHED_NORETURN() << "User feedback not supported in unit tests.";
+}
+
+bool CanUseStartUserFeedbackFlow() {
+  NOTREACHED_NORETURN() << "User feedback not supported in unit tests.";
+}
+
+bool StartUserFeedbackFlow(UserFeedbackConfiguration* configuration,
+                           UIViewController* presenting_view_controller,
+                           NSError** error) {
+  NOTREACHED_NORETURN() << "User feedback not supported in unit tests.";
 }
 
 }  // namespace provider

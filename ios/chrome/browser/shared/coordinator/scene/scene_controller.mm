@@ -153,6 +153,7 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -1556,14 +1557,30 @@ void InjectNTP(Browser* browser) {
   Browser* browser = self.mainInterface.browser;
   id<ApplicationCommands> handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  self.settingsNavigationController =
-      [SettingsNavigationController userFeedbackControllerForBrowser:browser
-                                                            delegate:self
-                                                    userFeedbackData:data
-                                                             handler:handler];
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
+
+  if (ios::provider::CanUseStartUserFeedbackFlow()) {
+    UserFeedbackConfiguration* configuration =
+        [[UserFeedbackConfiguration alloc] init];
+    configuration.data = data;
+    configuration.handler = handler;
+    configuration.singleSignOnService =
+        GetApplicationContext()->GetSSOService();
+
+    NSError* error;
+    ios::provider::StartUserFeedbackFlow(configuration, baseViewController,
+                                         &error);
+    UMA_HISTOGRAM_BOOLEAN("IOS.FeedbackKit.UserFlowStartedSuccess",
+                          error == nil);
+  } else {
+    self.settingsNavigationController =
+        [SettingsNavigationController userFeedbackControllerForBrowser:browser
+                                                              delegate:self
+                                                      userFeedbackData:data
+                                                               handler:handler];
+    [baseViewController presentViewController:self.settingsNavigationController
+                                     animated:YES
+                                   completion:nil];
+  }
 }
 
 - (UserFeedbackData*)createUserFeedbackDataForSender:(UserFeedbackSender)sender
