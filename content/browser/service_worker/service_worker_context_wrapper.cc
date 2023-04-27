@@ -644,12 +644,23 @@ void ServiceWorkerContextWrapper::CheckHasServiceWorker(
     CheckHasServiceWorkerCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!context_core_) {
+  // Checking OriginCanAccessServiceWorkers() is for performance optimization.
+  // Without this check, following FindRegistrationForClientUrl() can detect if
+  // the given URL has service worker registration or not. But
+  // FindRegistrationForClientUrl() takes time to compute. Hence avoid calling
+  // it when the given URL clearly doesn't register service workers.
+  if (!context_core_ || !OriginCanAccessServiceWorkers(url)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   ServiceWorkerCapability::NO_SERVICE_WORKER));
     return;
   }
+
+  DCHECK(url.is_valid());
+  TRACE_EVENT1("ServiceWorker",
+               "ServiceWorkerContextWrapper::CheckHasServiceWorker", "url",
+               url.spec());
+
   context()->CheckHasServiceWorker(net::SimplifyUrlForRequest(url), key,
                                    std::move(callback));
 }
@@ -809,8 +820,6 @@ void ServiceWorkerContextWrapper::StartServiceWorkerForNavigationHint(
     const GURL& document_url,
     const blink::StorageKey& key,
     StartServiceWorkerForNavigationHintCallback callback) {
-  TRACE_EVENT1("ServiceWorker", "StartServiceWorkerForNavigationHint",
-               "document_url", document_url.spec());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context_core_) {
@@ -828,6 +837,10 @@ void ServiceWorkerContextWrapper::StartServiceWorkerForNavigationHint(
                                 NO_SERVICE_WORKER_REGISTRATION);
     return;
   }
+
+  DCHECK(document_url.is_valid());
+  TRACE_EVENT1("ServiceWorker", "StartServiceWorkerForNavigationHint",
+               "document_url", document_url.spec());
 
   context_core_->registry()->FindRegistrationForClientUrl(
       ServiceWorkerRegistry::Purpose::kNotForNavigation,
