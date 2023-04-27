@@ -4,11 +4,11 @@
 
 #include "remoting/signaling/ftl_registration_manager.h"
 
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "remoting/base/fake_oauth_token_getter.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
@@ -41,7 +41,9 @@ MATCHER(IsStatusOk, "") {
 
 void VerifySignInGaiaRequest(const ftl::SignInGaiaRequest& request) {
   ASSERT_EQ(ftl::SignInGaiaMode_Value_DEFAULT_CREATE_ACCOUNT, request.mode());
-  ASSERT_TRUE(base::IsValidGUID(request.register_data().device_id().id()));
+  ASSERT_TRUE(
+      base::Uuid::ParseCaseInsensitive(request.register_data().device_id().id())
+          .is_valid());
   ASSERT_LT(0, request.register_data().caps_size());
 }
 

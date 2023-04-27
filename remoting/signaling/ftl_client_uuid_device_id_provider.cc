@@ -4,12 +4,12 @@
 
 #include "remoting/signaling/ftl_client_uuid_device_id_provider.h"
 
-#include "base/guid.h"
+#include "base/uuid.h"
 
 namespace remoting {
 
 FtlClientUuidDeviceIdProvider::FtlClientUuidDeviceIdProvider()
-    : client_uuid_(base::GenerateGUID()) {}
+    : client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
 
 FtlClientUuidDeviceIdProvider::~FtlClientUuidDeviceIdProvider() = default;
 
