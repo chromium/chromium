@@ -1038,7 +1038,9 @@ void AppMenuModel::Build() {
   AddSeparator(ui::NORMAL_SEPARATOR);
 
   if (!browser_->profile()->IsGuestSession() &&
-      features::IsChromeRefresh2023()) {
+      features::IsChromeRefresh2023() &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManagerRedesign)) {
     sub_menus_.push_back(std::make_unique<AutofillSubMenuModel>(
         this, app_menu_icon_controller_));
     AddSubMenuWithStringId(IDC_AUTOFILL_MENU, IDS_AUTOFILL_MENU,
@@ -1266,6 +1268,7 @@ void AppMenuModel::Build() {
     set_icon(IDC_RECENT_TABS_MENU, kHistoryIcon);
     set_icon(IDC_SHOW_DOWNLOADS, kDownloadMenuIcon);
     set_icon(IDC_BOOKMARKS_MENU, kBookmarksListsMenuIcon);
+    set_icon(IDC_VIEW_PASSWORDS, kKeyChromeRefreshIcon);
     set_icon(IDC_ZOOM_MENU, kZoomInIcon);
     set_icon(IDC_PRINT, kPrintMenuIcon);
     set_icon(IDC_TRANSLATE_PAGE, kTranslateChromeRefreshIcon);
