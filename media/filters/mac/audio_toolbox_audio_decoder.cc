@@ -13,7 +13,9 @@
 #include "base/task/bind_post_task.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_discard_helper.h"
+#include "media/base/channel_layout.h"
 #include "media/base/limits.h"
+#include "media/base/mac/channel_layout_util_mac.h"
 #include "media/base/media_log.h"
 #include "media/base/status.h"
 #include "media/base/timestamp_constants.h"
@@ -234,8 +236,9 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
-  auto output_buffer = AudioBuffer::CopyFrom(sample_rate_, buffer->timestamp(),
-                                             output_bus_.get(), pool_);
+  auto output_buffer =
+      AudioBuffer::CopyFrom(channel_layout_, sample_rate_, buffer->timestamp(),
+                            output_bus_.get(), pool_);
 
   if (num_frames != static_cast<UInt32>(output_bus_->frames()))
     output_buffer->TrimEnd(output_bus_->frames() - num_frames);
@@ -290,7 +293,6 @@ bool AudioToolboxAudioDecoder::CreateAACDecoder(
       kLinearPCMFormatFlagIsFloat | kLinearPCMFormatFlagIsNonInterleaved;
   output_format.mFramesPerPacket = 1;
   output_format.mBitsPerChannel = 32;
-  output_format.mFramesPerPacket = 1;
 
   // We don't want any channel or sample rate conversion.
   sample_rate_ = output_format.mSampleRate = input_format.mSampleRate;
@@ -313,12 +315,58 @@ bool AudioToolboxAudioDecoder::CreateAACDecoder(
 
   if (channel_count_ > kMaxConcurrentChannels) {
     channel_layout_ = CHANNEL_LAYOUT_DISCRETE;
-  } else if (channel_count_ == static_cast<uint32_t>(config.channels())) {
-    channel_layout_ = config.channel_layout();
   } else {
-    // This could be improved to use retrieve the output layout from |decoder_|,
-    // but since we'll almost always have the layout the config just use it.
-    channel_layout_ = GuessChannelLayout(channel_count_);
+    // Get the decoder's output channel layout.
+    UInt32 size;
+    result = AudioConverterGetPropertyInfo(
+        decoder_, kAudioConverterOutputChannelLayout, &size, NULL);
+    if (result != noErr) {
+      OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
+          << "AudioConverterGetPropertyInfo() failed";
+      return false;
+    }
+
+    ScopedAudioChannelLayout output_layout(size);
+    result =
+        AudioConverterGetProperty(decoder_, kAudioConverterOutputChannelLayout,
+                                  &size, output_layout.layout());
+    if (result != noErr) {
+      OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
+          << "AudioConverterGetProperty() failed";
+      return false;
+    }
+
+    // First, try to find a channel layout that matches the layout from decoder.
+    // NOTE: We should retrieve layout from decoder, instead of using
+    // channel layout from audio decoder config. Test result shows that if audio
+    // converter thinks the audio is a 7.1_WIDE one, and we set output layout
+    // to 7.1, this always lead to a loss of left and right channels.
+    if (!AudioChannelLayoutToChannelLayout(*output_layout.layout(),
+                                           &channel_layout_)) {
+      // If we couldn't find a matched layout, use the guess result and hope
+      // for the best.
+      channel_layout_ = GuessChannelLayout(channel_count_);
+    }
+  }
+
+  if (channel_count_ != static_cast<UInt32>(config.channels()) ||
+      channel_layout_ != config.channel_layout()) {
+    MEDIA_LOG(INFO, media_log_)
+        << "Audio config updated: channels: " << channel_count_
+        << ", channel layout: " << ChannelLayoutToString(channel_layout_);
+  }
+
+  // Next, convert back this layout to an audio channel layout with the same
+  // channel order description. This let decoder output correct orders.
+  auto ordered_layout =
+      ChannelLayoutToAudioChannelLayout(channel_layout_, channel_count_);
+  result = AudioConverterSetProperty(
+      decoder_, kAudioConverterOutputChannelLayout,
+      ordered_layout->layout_size(), ordered_layout->layout());
+  if (result != noErr) {
+    OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
+        << "AudioConverterSetProperty() failed";
+    return false;
   }
 
   // Instill the magic!

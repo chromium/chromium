@@ -64,6 +64,16 @@ class MEDIA_EXPORT AudioBuffer
       const base::TimeDelta timestamp,
       scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
 
+  // Create an AudioBuffer from a copy of the data in |audio_bus| and a given
+  // |channel_layout|. For optimal efficiency when many buffers are being
+  // created, a AudioBufferMemoryPool can be provided to avoid thrashing memory.
+  static scoped_refptr<AudioBuffer> CopyFrom(
+      ChannelLayout channel_layout,
+      int sample_rate,
+      const base::TimeDelta timestamp,
+      const AudioBus* audio_bus,
+      scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
+
   // Create an AudioBuffer from a copy of the data in |audio_bus|.
   // For optimal efficiency when many buffers are being created, a
   // AudioBufferMemoryPool can be provided to avoid thrashing memory.

@@ -11,10 +11,14 @@ source_set("mac") {
   # run-time.
   visibility = [
     "//media",
+    "//media/audio",
     "//media/device_monitors",
+    "//media/filters",
   ]
 
   sources = [
+    "channel_layout_util_mac.cc",
+    "channel_layout_util_mac.h",
     "color_space_util_mac.h",
     "color_space_util_mac.mm",
     "video_capture_device_avfoundation_helpers.h",
@@ -26,6 +30,7 @@ source_set("mac") {
   ]
   if (is_apple) {
     frameworks = [
+      "AudioToolbox.framework",
       "AVFoundation.framework",
       "CoreMedia.framework",
       "CoreVideo.framework",  # Required by video_frame_mac.cc.
@@ -42,8 +47,14 @@ source_set("mac") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "video_frame_mac_unittests.cc" ]
-  frameworks = [ "CoreVideo.framework" ]
+  sources = [
+    "channel_layout_util_mac_unittests.cc",
+    "video_frame_mac_unittests.cc",
+  ]
+  frameworks = [
+    "AudioToolbox.framework",
+    "CoreVideo.framework",
+  ]
   configs += [ "//media:media_config" ]
   deps = [
     "//media:test_support",

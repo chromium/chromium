@@ -207,6 +207,7 @@ source_set("filters") {
       "mac/audio_toolbox_audio_encoder.cc",
       "mac/audio_toolbox_audio_encoder.h",
     ]
+    deps += [ "//media/base/mac" ]
   }
   if (is_win && enable_platform_dts_audio) {
     sources += [
