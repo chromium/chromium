@@ -6,8 +6,8 @@
 
 #import <string>
 
-#import "base/guid.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
@@ -25,7 +25,8 @@ class SaveCardInfobarModalInteractionHandlerTest : public PlatformTest {
  public:
   SaveCardInfobarModalInteractionHandlerTest()
       : delegate_factory_(),
-        card_(base::GenerateGUID(), "https://www.example.com/") {
+        card_(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+              "https://www.example.com/") {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveCard,
         MockAutofillSaveCardInfoBarDelegateMobileFactory::

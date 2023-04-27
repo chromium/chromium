@@ -9,7 +9,7 @@
 #endif
 
 #import "base/functional/bind.h"
-#import "base/guid.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/signin/public/identity_manager/account_info.h"
 
@@ -35,7 +35,8 @@ MockAutofillSaveCardInfoBarDelegateMobile::
 
 MockAutofillSaveCardInfoBarDelegateMobileFactory::
     MockAutofillSaveCardInfoBarDelegateMobileFactory()
-    : credit_card_(base::GenerateGUID(), "https://www.example.com/") {}
+    : credit_card_(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                   "https://www.example.com/") {}
 
 MockAutofillSaveCardInfoBarDelegateMobileFactory::
     ~MockAutofillSaveCardInfoBarDelegateMobileFactory() {}

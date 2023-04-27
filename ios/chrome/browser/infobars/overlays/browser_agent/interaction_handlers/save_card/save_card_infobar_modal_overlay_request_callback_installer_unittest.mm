@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_card/save_card_infobar_modal_overlay_request_callback_installer.h"
 
-#import "base/guid.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
@@ -35,7 +35,8 @@ class SaveCardInfobarModalOverlayRequestCallbackInstallerTest
     : public PlatformTest {
  public:
   SaveCardInfobarModalOverlayRequestCallbackInstallerTest()
-      : card_(base::GenerateGUID(), "https://www.example.com/"),
+      : card_(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+              "https://www.example.com/"),
         installer_(&mock_handler_),
         delegate_factory_() {
     // Create the infobar and add it to the WebState's manager.

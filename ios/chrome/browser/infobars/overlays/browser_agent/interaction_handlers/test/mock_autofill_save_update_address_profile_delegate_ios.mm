@@ -9,7 +9,7 @@
 #endif
 
 #import "base/functional/bind.h"
-#import "base/guid.h"
+#import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 
 MockAutofillSaveUpdateAddressProfileDelegateIOS::
@@ -33,7 +33,8 @@ MockAutofillSaveUpdateAddressProfileDelegateIOS::
 
 MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::
     MockAutofillSaveUpdateAddressProfileDelegateIOSFactory()
-    : profile_(base::GenerateGUID(), "https://www.example.com/") {}
+    : profile_(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               "https://www.example.com/") {}
 
 MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::
     ~MockAutofillSaveUpdateAddressProfileDelegateIOSFactory() = default;
