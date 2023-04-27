@@ -90,6 +90,7 @@ class ButtonContainer : public views::Button {
 
     // Label is below the button.
     label_ = AddChildView(std::make_unique<views::Label>(label_text));
+    label_->SetID(video_conference::BubbleViewID::kToggleEffectLabel);
 
     SetTooltipText(l10n_util::GetStringFUTF16(
         VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
