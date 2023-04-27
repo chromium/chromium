@@ -246,10 +246,6 @@
                   "description": "True if multi profile settings is enabled.",
                   "type": "boolean"
                 },
-                "sftp": {
-                  "description": "True if SFTP / mount is enabled.",
-                  "type": "boolean"
-                },
                 "tast": {
                   "description": "True if tast extension is installed.",
                   "type": "boolean"

@@ -739,7 +739,6 @@ ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
                ash::features::kTerminalAlternativeEmulator));
   info.Set("multi_profile",
            base::FeatureList::IsEnabled(ash::features::kTerminalMultiProfile));
-  info.Set("sftp", base::FeatureList::IsEnabled(ash::features::kTerminalSftp));
   info.Set("tast", extensions::ExtensionRegistry::Get(browser_context())
                        ->enabled_extensions()
                        .Contains(extension_misc::kGuestModeTestExtensionId));

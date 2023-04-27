@@ -3683,9 +3683,6 @@ extern const char kTerminalDevDescription[];
 extern const char kTerminalMultiProfileName[];
 extern const char kTerminalMultiProfileDescription[];
 
-extern const char kTerminalSftpName[];
-extern const char kTerminalSftpDescription[];
-
 extern const char kTerminalTmuxIntegrationName[];
 extern const char kTerminalTmuxIntegrationDescription[];
 
