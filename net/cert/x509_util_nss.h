@@ -33,7 +33,7 @@ NET_EXPORT bool IsSameCertificate(const CRYPTO_BUFFER* a, CERTCertificate* b);
 // returned value may reference an already existing CERTCertificate object.
 // Returns NULL on failure.
 NET_EXPORT ScopedCERTCertificate
-CreateCERTCertificateFromBytes(const uint8_t* data, size_t length);
+CreateCERTCertificateFromBytes(base::span<const uint8_t> data);
 
 // Returns a CERTCertificate handle from |cert|. The returned value may
 // reference an already existing CERTCertificate object.  Returns NULL on

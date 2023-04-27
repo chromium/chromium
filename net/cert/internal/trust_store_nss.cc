@@ -172,8 +172,9 @@ void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
   crypto::ScopedCERTCertList found_certs(CERT_CreateSubjectCertList(
       nullptr /* certList */, CERT_GetDefaultCertDB(), &name,
       PR_Now() /* sorttime */, PR_FALSE /* validOnly */));
-  if (!found_certs)
+  if (!found_certs) {
     return;
+  }
 
   for (CERTCertListNode* node = CERT_LIST_HEAD(found_certs);
        !CERT_LIST_END(node, found_certs); node = CERT_LIST_NEXT(node)) {
@@ -507,8 +508,8 @@ CertificateTrust TrustStoreNSS::GetTrustWithSystemTrust(
   // included in the builtin cert list. Therefore, create a temp NSS cert even
   // if no existing cert matches. (Eg, this uses CERT_NewTempCertificate, not
   // CERT_FindCertByDERCert.)
-  ScopedCERTCertificate nss_cert(x509_util::CreateCERTCertificateFromBytes(
-      cert->der_cert().UnsafeData(), cert->der_cert().Length()));
+  ScopedCERTCertificate nss_cert(
+      x509_util::CreateCERTCertificateFromBytes(cert->der_cert().AsSpan()));
   if (!nss_cert) {
     return CertificateTrust::ForUnspecified();
   }
@@ -582,8 +583,9 @@ bool TrustStoreNSS::IsCertAllowedForTrust(CERTCertificate* cert) const {
 
   crypto::ScopedPK11SlotList slots_for_cert(
       PK11_GetAllSlotsForCert(cert, nullptr));
-  if (!slots_for_cert)
+  if (!slots_for_cert) {
     return false;
+  }
 
   for (PK11SlotListElement* slot_element =
            PK11_GetFirstSafe(slots_for_cert.get());

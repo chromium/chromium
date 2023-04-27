@@ -223,7 +223,7 @@ class ClientCertResolverTest : public testing::Test,
     ASSERT_FALSE(pem_tokenizer.GetNext());
 
     test_client_cert_ = net::x509_util::CreateCERTCertificateFromBytes(
-        reinterpret_cast<const uint8_t*>(cert_der.data()), cert_der.size());
+        base::as_bytes(base::make_span(cert_der)));
     ASSERT_TRUE(test_client_cert_);
 
     ASSERT_TRUE(net::ImportClientCertToSlot(test_client_cert_.get(),

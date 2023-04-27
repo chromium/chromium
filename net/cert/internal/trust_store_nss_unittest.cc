@@ -198,7 +198,7 @@ class TrustStoreNSSTestBase : public ::testing::Test {
 
   void AddCertToNSSSlot(const ParsedCertificate* cert, PK11SlotInfo* slot) {
     ScopedCERTCertificate nss_cert(x509_util::CreateCERTCertificateFromBytes(
-        cert->der_cert().UnsafeData(), cert->der_cert().Length()));
+        base::make_span(cert->der_cert().AsSpan())));
     ASSERT_TRUE(nss_cert);
     SECStatus srv = PK11_ImportCert(slot, nss_cert.get(), CK_INVALID_HANDLE,
                                     GetUniqueNickname().c_str(),
@@ -482,8 +482,7 @@ TEST_P(TrustStoreNSSTestWithSlotFilterType, CertsNotPresent) {
 // On other platforms it's not required but doesn't hurt anything.
 TEST_P(TrustStoreNSSTestWithSlotFilterType, TempCertPresent) {
   ScopedCERTCertificate temp_nss_cert(x509_util::CreateCERTCertificateFromBytes(
-      newintermediate_->der_cert().UnsafeData(),
-      newintermediate_->der_cert().Length()));
+      base::make_span(newintermediate_->der_cert().AsSpan())));
   EXPECT_TRUE(TrustStoreContains(target_, {newintermediate_}));
   EXPECT_TRUE(HasTrust({target_}, CertificateTrust::ForUnspecified()));
 }
@@ -546,8 +545,8 @@ TEST_P(TrustStoreNSSTestIgnoreSystemCerts, UnknownCertIgnored) {
 // An NSS CERTCertificate object exists for the cert, but it is not
 // imported into any DB. Should be unspecified trust.
 TEST_P(TrustStoreNSSTestIgnoreSystemCerts, TemporaryCertIgnored) {
-  ScopedCERTCertificate nss_cert(x509_util::CreateCERTCertificateFromBytes(
-      newroot_->der_cert().UnsafeData(), newroot_->der_cert().Length()));
+  ScopedCERTCertificate nss_cert(
+      x509_util::CreateCERTCertificateFromBytes(newroot_->der_cert().AsSpan()));
   EXPECT_TRUE(HasTrust({newroot_}, CertificateTrust::ForUnspecified()));
 }
 
@@ -1053,8 +1052,8 @@ class TrustStoreNSSTestDelegate {
 
   void AddCert(std::shared_ptr<const ParsedCertificate> cert) {
     ASSERT_TRUE(test_nssdb_.is_open());
-    ScopedCERTCertificate nss_cert(x509_util::CreateCERTCertificateFromBytes(
-        cert->der_cert().UnsafeData(), cert->der_cert().Length()));
+    ScopedCERTCertificate nss_cert(
+        x509_util::CreateCERTCertificateFromBytes(cert->der_cert().AsSpan()));
     ASSERT_TRUE(nss_cert);
     SECStatus srv = PK11_ImportCert(
         test_nssdb_.slot(), nss_cert.get(), CK_INVALID_HANDLE,
