@@ -75,7 +75,7 @@ TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
           IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION_UPDATED);
     } else {
       description = l10n_util::GetStringUTF16(
-          IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION_UPDATED);
+          IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION);
     }
     icon_resource_id =
         ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SHIELD);
