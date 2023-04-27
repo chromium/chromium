@@ -2682,21 +2682,6 @@ const char kMacRestoreLocationPermissionsExperimentCount[] =
     "mac_restore_location_permissions_experiment_count";
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Boolean indicating whether the Enrollment ID (EID) has already been uploaded
-// to DM Server. Only used on Chromad devices. If this pref is true, the device
-// is ready for the remote migration to cloud management.
-const char kEnrollmentIdUploadedOnChromad[] = "chromad.enrollment_id_uploaded";
-
-// base::Time value indicating the last timestamp when the
-// ActiveDirectoryMigrationManager tried to trigger the migration. This device
-// migration from AD management into cloud management starts with a powerwash.
-// The goal of this pref is to avoid a loop of failed powerwash requests, by
-// adding a backoff time of 1 day between retries.
-const char kLastChromadMigrationAttemptTime[] =
-    "chromad.last_migration_attempt_time";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_WIN)
 // A list of base::Time value indicating the timestamps when hardware secure
 // decryption was disabled due to errors or crashes. The implementation

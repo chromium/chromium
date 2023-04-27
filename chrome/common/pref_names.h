@@ -913,11 +913,6 @@ extern const char kRelaunchHeadsUpPeriod[];
 extern const char kMacRestoreLocationPermissionsExperimentCount[];
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kEnrollmentIdUploadedOnChromad[];
-extern const char kLastChromadMigrationAttemptTime[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_WIN)
 extern const char kHardwareSecureDecryptionDisabledTimes[];
 #endif  // BUILDFLAG(IS_WIN)

@@ -375,7 +375,6 @@
 #include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/ash/net/network_throttling_observer.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
-#include "chrome/browser/ash/policy/active_directory/active_directory_migration_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
@@ -388,7 +387,6 @@
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_logger.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
-#include "chrome/browser/ash/policy/server_backed_state/active_directory_device_state_uploader.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/metrics_reporter.h"
@@ -817,6 +815,13 @@ const char kProximityAuthIsChromeOSLoginEnabled[] =
     "proximity_auth.is_chromeos_login_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kEnrollmentIdUploadedOnChromad[] = "chromad.enrollment_id_uploaded";
+const char kLastChromadMigrationAttemptTime[] =
+    "chromad.last_migration_attempt_time";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -904,6 +909,13 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Deprecated 04/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterStringPref(kConsolidatedConsentTrial, std::string());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kEnrollmentIdUploadedOnChromad, false);
+  registry->RegisterTimePref(kLastChromadMigrationAttemptTime,
+                             /*default_value=*/base::Time());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1294,8 +1306,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ::onc::RegisterPrefs(registry);
   metrics::structured::ChromeStructuredMetricsRecorder::RegisterLocalStatePrefs(
       registry);
-  policy::ActiveDirectoryDeviceStateUploader::RegisterLocalStatePrefs(registry);
-  policy::ActiveDirectoryMigrationManager::RegisterLocalStatePrefs(registry);
   policy::AdbSideloadingAllowanceModePolicyHandler::RegisterPrefs(registry);
   // TODO(b/265923216): Replace with EnrollmentStateFetcher::RegisterPrefs.
   policy::AutoEnrollmentClientImpl::RegisterPrefs(registry);
@@ -1887,6 +1897,12 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 // Added 04/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   local_state->ClearPref(kConsolidatedConsentTrial);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 04/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kEnrollmentIdUploadedOnChromad);
+  local_state->ClearPref(kLastChromadMigrationAttemptTime);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

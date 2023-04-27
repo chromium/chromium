@@ -42,8 +42,6 @@ class AffiliatedRemoteCommandsInvalidator;
 class BluetoothPolicyHandler;
 class DeviceActiveDirectoryPolicyManager;
 class DeviceCloudPolicyInitializer;
-class ActiveDirectoryDeviceStateUploader;
-class ActiveDirectoryMigrationManager;
 class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
 class DeviceNamePolicyHandler;
@@ -275,10 +273,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
       device_cloud_policy_manager_ = nullptr;
   raw_ptr<DeviceActiveDirectoryPolicyManager, ExperimentalAsh>
       device_active_directory_policy_manager_ = nullptr;
-  std::unique_ptr<ActiveDirectoryDeviceStateUploader>
-      active_directory_device_state_uploader_;
-  std::unique_ptr<ActiveDirectoryMigrationManager>
-      active_directory_migration_manager_;
   raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_ =
       nullptr;
   std::unique_ptr<DeviceCloudPolicyInitializer>
