@@ -5,7 +5,7 @@
 import os
 import math
 import re
-from style_variable_generator.color import Color, ColorVar
+from style_variable_generator.color import Color, ColorVar, ColorRGBVar
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.model import Modes, VariableType
 
@@ -91,10 +91,11 @@ class ViewsStyleGenerator(CSSStyleGenerator):
             return ('ResolveColor(ColorName::%s, is_dark_mode)' %
                     self._ToConstName(c.var))
 
-        if c.rgb_var:
-            return ('SkColorSetA(ResolveColor(' +
-                    'ColorName::%s, is_dark_mode), %s)' % (self._ToConstName(
-                        c.RGBVarToVar()), self._CppOpacity(c.opacity)))
+        if isinstance(c, ColorRGBVar):
+            return (
+                'SkColorSetA(ResolveColor(' +
+                'ColorName::%s, is_dark_mode), %s)' %
+                (self._ToConstName(c.ToVar()), self._CppOpacity(c.opacity)))
 
         if c.opacity.a != 1:
             return 'SkColorSetARGB(%s, 0x%X, 0x%X, 0x%X)' % (self._CppOpacity(

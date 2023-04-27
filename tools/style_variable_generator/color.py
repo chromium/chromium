@@ -58,8 +58,7 @@ def from_rgb_ref(rgb_ref):
 
     color = from_white_black(rgb_var)
     if color is None:
-        color = Color()
-        color.rgb_var = rgb_var + '.rgb'
+        return ColorRGBVar(rgb_var + '.rgb')
 
     return color
 
@@ -192,31 +191,39 @@ class Color:
     '''
 
     def __init__(self):
-        self.rgb_var = None
         self.r = -1
         self.g = -1
         self.b = -1
 
         self.opacity = None
 
-    def RGBVarToVar(self):
-        assert (self.rgb_var)
-        return self.rgb_var.replace('.rgb', '')
-
     def GetFormula(self):
-        if self.rgb_var:
-            a = self.opacity.GetReadableStr()
-            return '%s @ %s' % (self.rgb_var, a)
         a = repr(self.opacity)
         return 'rgba(%d, %d, %d, %s)' % (self.r, self.g, self.b, a)
 
     def __repr__(self):
         a = repr(self.opacity)
-
-        if self.rgb_var:
-            return 'rgba(var(--%s), %s)' % (self.rgb_var, a)
-
         return 'rgba(%d, %d, %d, %s)' % (self.r, self.g, self.b, a)
+
+
+class ColorRGBVar(Color):
+    def __init__(self, rgb_var=None):
+        super().__init__()
+        if not re.match(r'^[\w\.\-]+\.rgb$', rgb_var):
+            raise ValueError(f'"{rgb_var}" is not a valid RGBVar value')
+        self.rgb_var = rgb_var
+
+    def ToVar(self):
+        assert (self.rgb_var)
+        return self.rgb_var.replace('.rgb', '')
+
+    def GetFormula(self):
+        a = self.opacity.GetReadableStr()
+        return '%s @ %s' % (self.rgb_var, a)
+
+    def __repr__(self):
+        a = repr(self.opacity)
+        return 'rgba(var(--%s), %s)' % (self.rgb_var, a)
 
 
 class ColorVar(Color):

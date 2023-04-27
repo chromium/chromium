@@ -4,7 +4,7 @@
 
 import re
 import collections
-from style_variable_generator.color import Color, ParseColor, ColorBlend, ColorVar
+from style_variable_generator.color import Color, ParseColor, ColorBlend, ColorRGBVar, ColorVar
 from style_variable_generator.opacity import Opacity
 from abc import ABC, abstractmethod
 
@@ -234,8 +234,8 @@ class ColorModel(ModeKeyedModel):
         result.opacity = self.opacity_model.ResolveOpacity(color.opacity, mode)
 
         rgb = color
-        if color.rgb_var:
-            rgb = self.ResolveToRGBA(color.RGBVarToVar(), mode)
+        if isinstance(color, ColorRGBVar):
+            rgb = self.ResolveToRGBA(color.ToVar(), mode)
 
         (result.r, result.g, result.b) = (rgb.r, rgb.g, rgb.b)
         return result
@@ -394,8 +394,8 @@ class Model(object):
         def CheckColor(color, name):
             if isinstance(color, ColorVar):
                 CheckColorReference(color.var, name)
-            if color.rgb_var:
-                CheckColorReference(color.RGBVarToVar(), name)
+            if isinstance(color, ColorRGBVar):
+                CheckColorReference(color.ToVar(), name)
             if color.opacity and color.opacity.var:
                 CheckOpacityReference(color.opacity.var, name)
             if isinstance(color, ColorBlend):

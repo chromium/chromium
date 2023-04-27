@@ -4,7 +4,7 @@
 
 from style_variable_generator.base_generator import BaseGenerator
 from style_variable_generator.model import Modes, VariableType
-from style_variable_generator.color import ColorBlend, ColorVar
+from style_variable_generator.color import ColorBlend, ColorVar, ColorRGBVar
 import collections
 
 
@@ -147,8 +147,8 @@ class CSSStyleGenerator(BaseGenerator):
         if isinstance(c, ColorVar):
             return 'var(%s-rgb)' % self.ToCSSVarName(c.var)
 
-        if c.rgb_var:
-            return 'var(%s-rgb)' % self.ToCSSVarName(c.RGBVarToVar())
+        if isinstance(c, ColorRGBVar):
+            return 'var(%s-rgb)' % self.ToCSSVarName(c.ToVar())
 
         return '%d, %d, %d' % (c.r, c.g, c.b)
 

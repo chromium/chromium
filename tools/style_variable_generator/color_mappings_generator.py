@@ -6,7 +6,7 @@ import collections
 import math
 import os
 import re
-from style_variable_generator.color import Color, ColorBlend, ColorVar
+from style_variable_generator.color import Color, ColorBlend, ColorVar, ColorRGBVar
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.model import Modes, VariableType
 
@@ -85,9 +85,9 @@ class ColorMappingsStyleGenerator(CSSStyleGenerator):
         if isinstance(c, ColorVar):
             return '{%s}' % self._ToColorIdName(c.var)
 
-        if c.rgb_var:
+        if isinstance(c, ColorRGBVar):
             return ('ui::SetAlpha({%s}, 0x%X)' % (self._ToColorIdName(
-                c.RGBVarToVar()), self._CppOpacity(c.opacity, mode)))
+                c.ToVar()), self._CppOpacity(c.opacity, mode)))
 
         if c.opacity.a != 1:
             return '{SkColorSetARGB(0x%X, 0x%X, 0x%X, 0x%X)}' % (
