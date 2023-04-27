@@ -62,7 +62,7 @@ CastZeroStateView::CastZeroStateView() {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_ZERO_STATE_SUBTITLE)));
   subtitle->SetMultiLine(true);
   bubble_utils::ApplyStyle(subtitle, TypographyToken::kCrosBody1);
-  subtitle->SetEnabledColorId(cros_tokens::kTextColorSecondary);
+  subtitle->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
   subtitle->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(8, 0, 0, 0));
 }
 
