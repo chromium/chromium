@@ -447,11 +447,6 @@ policy::UserCloudPolicyManagerAsh*
 OffTheRecordProfileImpl::GetUserCloudPolicyManagerAsh() {
   return GetOriginalProfile()->GetUserCloudPolicyManagerAsh();
 }
-
-policy::ActiveDirectoryPolicyManager*
-OffTheRecordProfileImpl::GetActiveDirectoryPolicyManager() {
-  return GetOriginalProfile()->GetActiveDirectoryPolicyManager();
-}
 #else
 policy::UserCloudPolicyManager*
 OffTheRecordProfileImpl::GetUserCloudPolicyManager() {

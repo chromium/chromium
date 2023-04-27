@@ -143,8 +143,6 @@ class ProfileImpl : public Profile {
   policy::SchemaRegistryService* GetPolicySchemaRegistryService() override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManagerAsh() override;
-  policy::ActiveDirectoryPolicyManager* GetActiveDirectoryPolicyManager()
-      override;
 #else
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   policy::ProfileCloudPolicyManager* GetProfileCloudPolicyManager() override;
@@ -255,7 +253,6 @@ class ProfileImpl : public Profile {
   //   which can be:
   //     - |user_cloud_policy_manager_|;
   //     - |user_cloud_policy_manager_ash_|;
-  //     - or |active_directory_policy_manager_|.
   // - configuration_policy_provider() depends on |schema_registry_service_|
 
   std::unique_ptr<policy::SchemaRegistryService> schema_registry_service_;
@@ -265,8 +262,6 @@ class ProfileImpl : public Profile {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<policy::UserCloudPolicyManagerAsh>
       user_cloud_policy_manager_ash_;
-  std::unique_ptr<policy::ActiveDirectoryPolicyManager>
-      active_directory_policy_manager_;
 #else
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
   std::unique_ptr<policy::ProfileCloudPolicyManager>

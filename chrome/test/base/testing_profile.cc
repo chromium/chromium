@@ -847,11 +847,6 @@ policy::UserCloudPolicyManagerAsh*
 TestingProfile::GetUserCloudPolicyManagerAsh() {
   return user_cloud_policy_manager_.get();
 }
-
-policy::ActiveDirectoryPolicyManager*
-TestingProfile::GetActiveDirectoryPolicyManager() {
-  return nullptr;
-}
 #else
 policy::UserCloudPolicyManager* TestingProfile::GetUserCloudPolicyManager() {
   return user_cloud_policy_manager_.get();
