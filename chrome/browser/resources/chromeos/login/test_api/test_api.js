@@ -268,7 +268,7 @@ class AssistantScreenTester extends ScreenElementApi {
   }
   /** @override */
   shouldSkip() {
-    return !loadTimeData.getBoolean('testapi_isLibAssistantEnabled');
+    return loadTimeData.getBoolean('testapi_shouldSkipAssistant');
   }
 
   /**

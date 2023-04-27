@@ -77,13 +77,9 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   dict->Set("testapi_isFingerprintSupported",
             quick_unlock::IsFingerprintSupported());
 
-  dict->Set("testapi_isLibAssistantEnabled",
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-            true
-#else
-            false
-#endif
-  );
+  dict->Set("testapi_shouldSkipAssistant",
+            features::IsOobeSkipAssistantEnabled() ||
+                !BUILDFLAG(ENABLE_CROS_LIBASSISTANT));
 
   dict->Set("testapi_isBrandedBuild",
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

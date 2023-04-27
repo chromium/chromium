@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
@@ -332,14 +333,14 @@ class ScopedAssistantSettings : public assistant::AssistantSettings {
   bool is_minor_user_ = false;
 };
 
-class AssistantOptInFlowTest : public OobeBaseTest {
+class AssistantOptInFlowBaseTest : public OobeBaseTest {
  public:
-  AssistantOptInFlowTest() = default;
-  ~AssistantOptInFlowTest() override = default;
+  AssistantOptInFlowBaseTest() = default;
+  ~AssistantOptInFlowBaseTest() override = default;
 
   void RegisterAdditionalRequestHandlers() override {
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &AssistantOptInFlowTest::HandleRequest, base::Unretained(this)));
+        &AssistantOptInFlowBaseTest::HandleRequest, base::Unretained(this)));
   }
 
   void SetUpOnMainThread() override {
@@ -352,7 +353,7 @@ class AssistantOptInFlowTest : public OobeBaseTest {
     original_callback_ =
         assistant_optin_flow_screen->get_exit_callback_for_testing();
     assistant_optin_flow_screen->set_exit_callback_for_testing(
-        base::BindRepeating(&AssistantOptInFlowTest::HandleScreenExit,
+        base::BindRepeating(&AssistantOptInFlowBaseTest::HandleScreenExit,
                             base::Unretained(this)));
   }
 
@@ -432,7 +433,6 @@ class AssistantOptInFlowTest : public OobeBaseTest {
   // request..
   bool fail_next_value_prop_url_request_ = false;
 
- protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
@@ -464,6 +464,15 @@ class AssistantOptInFlowTest : public OobeBaseTest {
   AssistantOptInFlowScreen::ScreenExitCallback original_callback_;
 
   LoginManagerMixin login_manager_{&mixin_host_};
+};
+
+class AssistantOptInFlowTest : public AssistantOptInFlowBaseTest {
+ public:
+  AssistantOptInFlowTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kOobeSkipAssistant);
+  }
+  ~AssistantOptInFlowTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, Basic) {
@@ -1110,6 +1119,31 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowMinorModeTest,
   histogram_tester_.ExpectTotalCount(kAssistantOptInScreenExitReason, 1);
   histogram_tester_.ExpectTotalCount(kAssistantOptInScreenStepCompletionTime,
                                      1);
+}
+
+class AssistantOptInFlowSkipFeatureTest : public AssistantOptInFlowBaseTest {
+ public:
+  AssistantOptInFlowSkipFeatureTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kOobeSkipAssistant);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AssistantOptInFlowSkipFeatureTest, AssistantSkipped) {
+  AssistantState::Get()->NotifyStatusChanged(assistant::AssistantStatus::READY);
+  ShowAssistantOptInFlowScreen();
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(),
+            AssistantOptInFlowScreen::Result::NOT_APPLICABLE);
+
+  ExpectCollectedOptIns({});
+  histogram_tester_.ExpectTotalCount(kAssistantOptInScreenExitReason, 0);
+  histogram_tester_.ExpectTotalCount(kAssistantOptInScreenStepCompletionTime,
+                                     0);
+
+  PrefService* const prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  EXPECT_FALSE(prefs->GetBoolean(assistant::prefs::kAssistantHotwordEnabled));
+  EXPECT_FALSE(prefs->GetBoolean(assistant::prefs::kAssistantContextEnabled));
 }
 
 }  // namespace
