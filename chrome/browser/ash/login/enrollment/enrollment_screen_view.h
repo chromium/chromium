@@ -37,13 +37,6 @@ class EnrollmentScreenView
     virtual void OnRetry() = 0;
     virtual void OnCancel() = 0;
     virtual void OnConfirmationClosed() = 0;
-    virtual void OnActiveDirectoryCredsProvided(
-        const std::string& machine_name,
-        const std::string& distinguished_name,
-        int encryption_types,
-        const std::string& username,
-        const std::string& password) = 0;
-
     virtual void OnDeviceAttributeProvided(const std::string& asset_id,
                                            const std::string& location) = 0;
     virtual void OnIdentifierEntered(const std::string& email) = 0;

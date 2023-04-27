@@ -564,10 +564,6 @@ void EnrollmentScreen::OnCancel() {
   if (elapsed_timer_)
     UMA_ENROLLMENT_TIME(kMetricEnrollmentTimeCancel, elapsed_timer_);
 
-  on_joined_callback_.Reset();
-  if (authpolicy_login_helper_)
-    authpolicy_login_helper_->CancelRequestsAndRestart();
-
   // The callback passed to ClearAuth is either called immediately or gets
   // wrapped in a callback bound to a weak pointer from `weak_ptr_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
@@ -695,19 +691,6 @@ void EnrollmentScreen::OnAccountStatusFetched(
   view_->ShowSigninScreen();
 }
 
-void EnrollmentScreen::OnActiveDirectoryCredsProvided(
-    const std::string& machine_name,
-    const std::string& distinguished_name,
-    int encryption_types,
-    const std::string& username,
-    const std::string& password) {
-  DCHECK(authpolicy_login_helper_);
-  authpolicy_login_helper_->JoinAdDomain(
-      machine_name, distinguished_name, encryption_types, username, password,
-      base::BindOnce(&EnrollmentScreen::OnActiveDirectoryJoined,
-                     weak_ptr_factory_.GetWeakPtr(), machine_name, username));
-}
-
 void EnrollmentScreen::OnDeviceAttributeProvided(const std::string& asset_id,
                                                  const std::string& location) {
   enrollment_helper_->UpdateDeviceAttributes(asset_id, location);
@@ -823,49 +806,11 @@ void EnrollmentScreen::RecordEnrollmentErrorMetrics() {
     UMA_ENROLLMENT_TIME(kMetricEnrollmentTimeFailure, elapsed_timer_);
 }
 
-void EnrollmentScreen::JoinDomain(
-    const std::string& dm_token,
-    const std::string& domain_join_config,
-    policy::OnDomainJoinedCallback on_joined_callback) {
-  if (!authpolicy_login_helper_)
-    authpolicy_login_helper_ = std::make_unique<AuthPolicyHelper>();
-  authpolicy_login_helper_->set_dm_token(dm_token);
-  on_joined_callback_ = std::move(on_joined_callback);
-  if (view_) {
-    scoped_network_observation_.Reset();
-    view_->ShowActiveDirectoryScreen(
-        domain_join_config, std::string() /* machine_name */,
-        std::string() /* username */, authpolicy::ERROR_NONE);
-  }
-}
-
 void EnrollmentScreen::OnBrowserRestart() {
   // When the browser is restarted, renderers are shutdown and the `view_`
   // wants to know in order to stop trying to use the soon-invalid renderers.
   if (view_)
     view_->Shutdown();
-}
-
-void EnrollmentScreen::OnActiveDirectoryJoined(
-    const std::string& machine_name,
-    const std::string& username,
-    authpolicy::ErrorType error,
-    const std::string& machine_domain) {
-  if (error == authpolicy::ERROR_NONE) {
-    // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
-    // in the logs.
-    LOG(WARNING) << "Joined active directory";
-    if (view_)
-      view_->ShowEnrollmentWorkingScreen();
-    std::move(on_joined_callback_).Run(machine_domain);
-    return;
-  }
-  LOG(ERROR) << "Active directory join error: " << error;
-  if (view_) {
-    scoped_network_observation_.Reset();
-    view_->ShowActiveDirectoryScreen(std::string() /* domain_join_config */,
-                                     machine_name, username, error);
-  }
 }
 
 void EnrollmentScreen::OnUserAction(const base::Value::List& args) {

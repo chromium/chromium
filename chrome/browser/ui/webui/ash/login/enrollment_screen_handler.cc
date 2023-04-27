@@ -126,16 +126,6 @@ base::Value::List GetEncryptionTypesList() {
   return encryption_list;
 }
 
-authpolicy::KerberosEncryptionTypes TranslateEncryptionTypesString(
-    const std::string& string_id) {
-  for (const auto& enc_types : kEncryptionTypes) {
-    if (enc_types.id == string_id)
-      return enc_types.encryption_types;
-  }
-  NOTREACHED();
-  return authpolicy::KerberosEncryptionTypes::ENC_TYPES_STRONG;
-}
-
 std::string GetFlowString(EnrollmentScreenView::FlowType type) {
   switch (type) {
     case EnrollmentScreenView::FlowType::kEnterprise:
@@ -720,10 +710,6 @@ void EnrollmentScreenHandler::DeclareJSCallbacks() {
   AddCallback("oauthEnrollClose", &EnrollmentScreenHandler::HandleClose);
   AddCallback("oauthEnrollCompleteLogin",
               &EnrollmentScreenHandler::HandleCompleteLogin);
-  AddCallback("oauthEnrollAdCompleteLogin",
-              &EnrollmentScreenHandler::HandleAdCompleteLogin);
-  AddCallback("oauthEnrollAdUnlockConfiguration",
-              &EnrollmentScreenHandler::HandleAdUnlockConfiguration);
   AddCallback("enterpriseIdentifierEntered",
               &EnrollmentScreenHandler::HandleIdentifierEntered);
   AddCallback("oauthEnrollRetry", &EnrollmentScreenHandler::HandleRetry);
@@ -905,26 +891,6 @@ void EnrollmentScreenHandler::OnCookieWaitTimeout() {
   // killed so we can not talk to them anymore.
   if (!shutdown_)
     ShowError(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN, true);
-}
-
-void EnrollmentScreenHandler::HandleAdCompleteLogin(
-    const std::string& machine_name,
-    const std::string& distinguished_name,
-    const std::string& encryption_types,
-    const std::string& user_name,
-    const std::string& password) {
-  DCHECK(controller_);
-  controller_->OnActiveDirectoryCredsProvided(
-      machine_name, distinguished_name,
-      TranslateEncryptionTypesString(encryption_types), user_name, password);
-}
-
-void EnrollmentScreenHandler::HandleAdUnlockConfiguration(
-    const std::string& password) {
-  AuthPolicyHelper::DecryptConfiguration(
-      active_directory_domain_join_config_, password,
-      base::BindOnce(&EnrollmentScreenHandler::OnAdConfigurationUnlocked,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EnrollmentScreenHandler::HandleIdentifierEntered(

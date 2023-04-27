@@ -2231,7 +2231,6 @@ source_set("ash") {
     "plugin_vm/plugin_vm_uninstaller_notification.h",
     "plugin_vm/plugin_vm_util.cc",
     "plugin_vm/plugin_vm_util.h",
-    "policy/active_directory/active_directory_join_delegate.h",
     "policy/active_directory/active_directory_policy_manager.cc",
     "policy/active_directory/active_directory_policy_manager.h",
     "policy/active_directory/component_active_directory_policy_retriever.cc",

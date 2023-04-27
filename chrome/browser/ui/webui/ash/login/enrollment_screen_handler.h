@@ -111,12 +111,6 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
       int license_type,
       const net::CookieAccessResultList& cookies,
       const net::CookieAccessResultList& excluded_cookies);
-  void HandleAdCompleteLogin(const std::string& machine_name,
-                             const std::string& distinguished_name,
-                             const std::string& encryption_types,
-                             const std::string& user_name,
-                             const std::string& password);
-  void HandleAdUnlockConfiguration(const std::string& password);
   void HandleIdentifierEntered(const std::string& email);
   void HandleRetry();
   void HandleFrameLoadingCompleted();
