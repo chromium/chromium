@@ -105,16 +105,16 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
 
   switch (canonical_cookie.SameSite()) {
     case net::CookieSameSite::NO_RESTRICTION:
-      cookie.same_site = api::cookies::SAME_SITE_STATUS_NO_RESTRICTION;
+      cookie.same_site = api::cookies::SameSiteStatus::kNoRestriction;
       break;
     case net::CookieSameSite::LAX_MODE:
-      cookie.same_site = api::cookies::SAME_SITE_STATUS_LAX;
+      cookie.same_site = api::cookies::SameSiteStatus::kLax;
       break;
     case net::CookieSameSite::STRICT_MODE:
-      cookie.same_site = api::cookies::SAME_SITE_STATUS_STRICT;
+      cookie.same_site = api::cookies::SameSiteStatus::kStrict;
       break;
     case net::CookieSameSite::UNSPECIFIED:
-      cookie.same_site = api::cookies::SAME_SITE_STATUS_UNSPECIFIED;
+      cookie.same_site = api::cookies::SameSiteStatus::kUnspecified;
       break;
   }
 

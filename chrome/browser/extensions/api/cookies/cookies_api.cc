@@ -434,20 +434,20 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
 
   net::CookieSameSite same_site = net::CookieSameSite::UNSPECIFIED;
   switch (parsed_args_->details.same_site) {
-    case api::cookies::SAME_SITE_STATUS_NO_RESTRICTION:
+    case api::cookies::SameSiteStatus::kNoRestriction:
       same_site = net::CookieSameSite::NO_RESTRICTION;
       break;
-    case api::cookies::SAME_SITE_STATUS_LAX:
+    case api::cookies::SameSiteStatus::kLax:
       same_site = net::CookieSameSite::LAX_MODE;
       break;
-    case api::cookies::SAME_SITE_STATUS_STRICT:
+    case api::cookies::SameSiteStatus::kStrict:
       same_site = net::CookieSameSite::STRICT_MODE;
       break;
     // This is the case if the optional sameSite property is given as
     // "unspecified":
-    case api::cookies::SAME_SITE_STATUS_UNSPECIFIED:
+    case api::cookies::SameSiteStatus::kUnspecified:
     // This is the case if the optional sameSite property is left out:
-    case api::cookies::SAME_SITE_STATUS_NONE:
+    case api::cookies::SameSiteStatus::kNone:
       same_site = net::CookieSameSite::UNSPECIFIED;
       break;
   }
