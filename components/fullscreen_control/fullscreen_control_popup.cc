@@ -104,9 +104,9 @@ FullscreenControlPopup::FullscreenControlPopup(
     std::unique_ptr<views::Widget> popup,
     const base::RepeatingClosure& on_visibility_changed)
     : AnimationDelegateViews(popup->GetRootView()),
-      control_view_(
-          static_cast<FullscreenControlView*>(popup->GetContentsView())),
       popup_(std::move(popup)),
+      control_view_(
+          static_cast<FullscreenControlView*>(popup_->GetContentsView())),
       animation_(std::make_unique<gfx::SlideAnimation>(this)),
       on_visibility_changed_(on_visibility_changed) {
   DCHECK(on_visibility_changed_);
