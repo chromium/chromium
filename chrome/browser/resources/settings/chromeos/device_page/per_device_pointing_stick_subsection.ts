@@ -129,6 +129,11 @@ export class SettingsPerDevicePointingStickSubsectionElement extends
       pointingStickIndex: {
         type: Number,
       },
+
+      isLastDevice: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -163,6 +168,7 @@ export class SettingsPerDevicePointingStickSubsectionElement extends
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
   private pointingStickIndex: number;
+  private isLastDevice: boolean;
 
   private updateSettingsToCurrentPrefs(): void {
     // `updateSettingsToCurrentPrefs` gets called when the `keyboard` object

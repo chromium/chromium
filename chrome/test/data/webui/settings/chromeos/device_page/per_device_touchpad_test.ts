@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {fakeTouchpads, fakeTouchpads2, SettingsPerDeviceTouchpadElement} from 'chrome://os-settings/chromeos/os_settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<settings-per-device-touchpad>', () => {
@@ -25,6 +25,8 @@ suite('<settings-per-device-touchpad>', () => {
     let subsections = perDeviceTouchpadPage.shadowRoot!.querySelectorAll(
         'settings-per-device-touchpad-subsection');
     assertEquals(fakeTouchpads.length, subsections.length);
+    assertFalse(subsections[0]!.get('isLastDevice'));
+    assertTrue(subsections[fakeTouchpads.length - 1]!.get('isLastDevice'));
 
     // Check the number of subsections when the touchpad list is updated.
     perDeviceTouchpadPage.set('touchpads', fakeTouchpads2);
@@ -32,6 +34,7 @@ suite('<settings-per-device-touchpad>', () => {
     subsections = perDeviceTouchpadPage.shadowRoot!.querySelectorAll(
         'settings-per-device-touchpad-subsection');
     assertEquals(fakeTouchpads2.length, subsections.length);
+    assertTrue(subsections[fakeTouchpads2.length - 1]!.get('isLastDevice'));
   });
 
   test(

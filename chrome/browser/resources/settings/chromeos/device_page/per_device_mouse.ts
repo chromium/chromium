@@ -62,6 +62,10 @@ export class SettingsPerDeviceMouseElement extends
       return;
     }
   }
+
+  private computeIsLastDevice(index: number) {
+    return index === this.mice.length - 1;
+  }
 }
 
 declare global {

@@ -173,6 +173,11 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       mouseIndex: {
         type: Number,
       },
+
+      isLastDevice: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -213,6 +218,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
   private mouseIndex: number;
+  private isLastDevice: boolean;
 
   private updateSettingsToCurrentPrefs(): void {
     // `updateSettingsToCurrentPrefs` gets called when the `keyboard` object

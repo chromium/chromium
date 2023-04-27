@@ -4,13 +4,13 @@
 
 import {fakeMice, fakeMice2, SettingsPerDeviceMouseElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<settings-per-device-mouse>', function() {
   let perDeviceMousePage: SettingsPerDeviceMouseElement;
 
-  setup(async function initializePerDevicePointingStickPage() {
+  setup(async function initializePerDeviceMousePage() {
     perDeviceMousePage = document.createElement('settings-per-device-mouse');
     assert(perDeviceMousePage);
     perDeviceMousePage.set('mice', fakeMice);
@@ -30,6 +30,8 @@ suite('<settings-per-device-mouse>', function() {
       const name = subsections[i]!.shadowRoot!.querySelector('h2')!.textContent;
       assertEquals(fakeMice[i]!.name, name);
     }
+    assertFalse(subsections[0]!.get('isLastDevice'));
+    assertTrue(subsections[fakeMice.length - 1]!.get('isLastDevice'));
 
     // Check the number and name of subsections when the mouse list is updated.
     perDeviceMousePage.set('mice', fakeMice2);
@@ -41,5 +43,6 @@ suite('<settings-per-device-mouse>', function() {
       const name = subsections[i]!.shadowRoot!.querySelector('h2')!.textContent;
       assertEquals(fakeMice2[i]!.name, name);
     }
+    assertTrue(subsections[fakeMice2.length - 1]!.get('isLastDevice'));
   });
 });

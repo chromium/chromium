@@ -2,6 +2,7 @@
     as="mouse" index-as="index" restamp>
   <settings-per-device-mouse-subsection mouse="[[mouse]]"
       mouse-policies="[[mousePolicies]]"
-      mouse-index="[[index]]">
+      mouse-index="[[index]]"
+      is-last-device="[[computeIsLastDevice(index, mice.length)]]">
   </settings-per-device-mouse-subsection>
 </template>

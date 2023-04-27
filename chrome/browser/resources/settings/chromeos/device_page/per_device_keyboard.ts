@@ -137,6 +137,10 @@ export class SettingsPerDeviceKeyboardElement extends
   protected hasKeyboards(): boolean {
     return this.keyboards.length > 0;
   }
+
+  private computeIsLastDevice(index: number) {
+    return index === this.keyboards.length - 1;
+  }
 }
 
 declare global {

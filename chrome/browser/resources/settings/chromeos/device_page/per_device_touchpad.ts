@@ -57,6 +57,10 @@ export class SettingsPerDeviceTouchpadElement extends
       return;
     }
   }
+
+  private computeIsLastDevice(index: number) {
+    return index === this.touchpads.length - 1;
+  }
 }
 
 declare global {

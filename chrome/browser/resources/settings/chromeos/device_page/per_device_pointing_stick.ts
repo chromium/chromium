@@ -58,6 +58,10 @@ export class SettingsPerDevicePointingStickElement extends
       return;
     }
   }
+
+  private computeIsLastDevice(index: number) {
+    return index === this.pointingSticks.length - 1;
+  }
 }
 
 declare global {
