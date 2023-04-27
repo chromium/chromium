@@ -51,6 +51,7 @@ export class SpeechParser {
     if (this.pumpkinParseStrategy_.isEnabled()) {
       MetricsUtils.recordPumpkinUsed(true);
       const macro = await this.pumpkinParseStrategy_.parse(text);
+      MetricsUtils.recordPumpkinSucceeded(Boolean(macro));
       if (macro) {
         return macro;
       }
@@ -66,6 +67,7 @@ export class SpeechParser {
     }
 
     // Input text as-is as a catch-all.
+    MetricsUtils.recordPumpkinUsed(false);
     return await /** @type {!Promise<!Macro>} */ (
         this.inputTextStrategy_.parse(text));
   }

@@ -96,7 +96,9 @@ const char* kNetworkListeningDurationMetric =
 const char* kLocaleMetric = "Accessibility.CrosDictation.Language";
 const char* kOnDeviceSpeechMetric =
     "Accessibility.CrosDictation.UsedOnDeviceSpeech";
-const char* kPumpkinMetric = "Accessibility.CrosDictation.UsedPumpkin";
+const char* kPumpkinUsedMetric = "Accessibility.CrosDictation.UsedPumpkin";
+const char* kPumpkinSucceededMetric =
+    "Accessibility.CrosDictation.PumpkinSucceeded";
 const char* kMacroRecognizedMetric =
     "Accessibility.CrosDictation.MacroRecognized";
 const char* kMacroSucceededMetric =
@@ -1559,13 +1561,13 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, Metrics) {
   base::HistogramTester histogram_tester_;
-  HistogramWaiter waiter(kPumpkinMetric);
+  HistogramWaiter waiter(kPumpkinUsedMetric);
   SendFinalResultAndWait("Undo");
   waiter.Wait();
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinMetric,
+  histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinUsedMetric,
                                        /*sample=*/false,
                                        /*expected_bucket_count=*/1);
 }
@@ -2019,13 +2021,18 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Repeat) {
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Metrics) {
   base::HistogramTester histogram_tester_;
-  HistogramWaiter waiter(kPumpkinMetric);
+  HistogramWaiter used_waiter(kPumpkinUsedMetric);
+  HistogramWaiter succeeded_waiter(kPumpkinSucceededMetric);
   SendFinalResultAndWaitForEditableValue("dictate hello", "Hello");
-  waiter.Wait();
+  used_waiter.Wait();
+  succeeded_waiter.Wait();
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinMetric,
+  histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinUsedMetric,
+                                       /*sample=*/true,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinSucceededMetric,
                                        /*sample=*/true,
                                        /*expected_bucket_count=*/1);
 }

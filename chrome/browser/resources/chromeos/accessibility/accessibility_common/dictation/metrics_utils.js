@@ -42,7 +42,13 @@ export class MetricsUtils {
 
   /** @param {boolean} used */
   static recordPumpkinUsed(used) {
-    chrome.metricsPrivate.recordBoolean(MetricsUtils.PUMPKIN_METRIC, used);
+    chrome.metricsPrivate.recordBoolean(MetricsUtils.PUMPKIN_USED_METRIC, used);
+  }
+
+  /** @param {boolean} succeeded */
+  static recordPumpkinSucceeded(succeeded) {
+    chrome.metricsPrivate.recordBoolean(
+        MetricsUtils.PUMPKIN_SUCCEEDED_METRIC, succeeded);
   }
 
   /** Records metrics when speech recognition starts. */
@@ -131,4 +137,12 @@ MetricsUtils.MACRO_FAILED_METRIC = 'Accessibility.CrosDictation.MacroFailed';
  * parsing.
  * @const {string}
  */
-MetricsUtils.PUMPKIN_METRIC = 'Accessibility.CrosDictation.UsedPumpkin';
+MetricsUtils.PUMPKIN_USED_METRIC = 'Accessibility.CrosDictation.UsedPumpkin';
+
+/**
+ * The metric used to record whether or not Pumpkin succeeded in parsing a
+ * command.
+ * @const {string}
+ */
+MetricsUtils.PUMPKIN_SUCCEEDED_METRIC =
+    'Accessibility.CrosDictation.PumpkinSucceeded';

@@ -631,6 +631,16 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded whenever Dictation successfully performs a macro.</summary>
 </histogram>
 
+<histogram name="Accessibility.CrosDictation.PumpkinSucceeded"
+    enum="BooleanUsage" expires_after="2023-11-30">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records whether Pumpkin successfully parsed a command. This histogram is
+    recorded each time Pumpkin is used to parse a command.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosDictation.ToggleDictationMethod"
     enum="CrosDictationToggleDictationMethod" expires_after="2023-11-30">
   <owner>anastasi@google.com</owner>
