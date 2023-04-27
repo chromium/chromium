@@ -202,10 +202,6 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:chromium_libfuzzer",
-)
-
-build_recipe(
     name = "recipe:chromium_rts/create_model",
 )
 
