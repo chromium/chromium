@@ -22,8 +22,11 @@ group("deps") {
 
   # All the rest require Rust.
   if (toolchain_has_rust) {
+    # TODO(crbug/1439611): does not compile on Android platform.
+    if (!is_android) {
+      deps += [ "bindgen_test" ]
+    }
     deps += [
-      "bindgen_test",
       "test_aliased_deps",
       "test_aliased_deps:test_aliased_deps_exe",
       "test_bin_crate",
