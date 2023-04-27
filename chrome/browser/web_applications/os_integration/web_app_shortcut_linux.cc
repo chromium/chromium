@@ -690,14 +690,25 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
   return result;
 }
 
-bool UpdateDesktopShortcuts(base::Environment* env,
-                            const ShortcutInfo& shortcut_info) {
+bool UpdateDesktopShortcuts(
+    base::Environment* env,
+    const ShortcutInfo& shortcut_info,
+    absl::optional<ShortcutLocations> user_specified_locations) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   // Find out whether shortcuts are already installed.
-  ShortcutLocations creation_locations = GetExistingShortcutLocations(
+  ShortcutLocations existing_locations = GetExistingShortcutLocations(
       env, shortcut_info.profile_path, shortcut_info.app_id);
+  ShortcutLocations creation_locations = existing_locations;
+
+  // If an update is triggered due to 2 installs being scheduled on top of one
+  // another, ensure that old user specified locations are still taken into
+  // account during shortcut recreation.
+  if (user_specified_locations.has_value()) {
+    creation_locations =
+        MergeLocations(user_specified_locations.value(), existing_locations);
+  }
 
   // Always create a hidden shortcut in applications if a visible one is not
   // being created. This allows the operating system to identify the app, but
@@ -784,12 +795,16 @@ void DeletePlatformShortcuts(const base::FilePath& web_app_path,
                                     shortcut_info.app_id)));
 }
 
-Result UpdatePlatformShortcuts(const base::FilePath& /*web_app_path*/,
-                               const std::u16string& /*old_app_title*/,
-                               const ShortcutInfo& shortcut_info) {
+Result UpdatePlatformShortcuts(
+    const base::FilePath& /*web_app_path*/,
+    const std::u16string& /*old_app_title*/,
+    absl::optional<ShortcutLocations> user_specified_locations,
+    const ShortcutInfo& shortcut_info) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  return (UpdateDesktopShortcuts(env.get(), shortcut_info) ? Result::kOk
-                                                           : Result::kError);
+  return (
+      UpdateDesktopShortcuts(env.get(), shortcut_info, user_specified_locations)
+          ? Result::kOk
+          : Result::kError);
 }
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {

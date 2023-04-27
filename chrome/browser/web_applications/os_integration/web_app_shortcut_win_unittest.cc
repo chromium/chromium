@@ -255,6 +255,7 @@ TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts) {
   new_shortcut_info.favicon = std::move(image_family);
 
   UpdatePlatformShortcuts(shortcut_dir, base::WideToUTF16(shortcut_name),
+                          /*user_specified_locations=*/absl::nullopt,
                           new_shortcut_info);
   // The shortcut with the old title should be deleted from the shortcut
   // dir, the taskbar dir, and the implicit apps subdir.
@@ -314,6 +315,7 @@ TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcutsAppIdentityChange) {
   new_shortcut_info.favicon = std::move(new_image_family);
 
   UpdatePlatformShortcuts(shortcut_dir, base::WideToUTF16(shortcut_name),
+                          /*user_specified_locations=*/absl::nullopt,
                           new_shortcut_info);
 
   // The shortcut with the old title should have been deleted.

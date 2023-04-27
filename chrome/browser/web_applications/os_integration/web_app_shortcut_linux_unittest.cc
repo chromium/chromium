@@ -844,7 +844,8 @@ TEST_F(WebAppShortcutLinuxTest, UpdateDesktopShortcuts) {
 
   std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
 
-  UpdateDesktopShortcuts(&env, *shortcut_info);
+  UpdateDesktopShortcuts(&env, *shortcut_info,
+                         /*user_specified_locations=*/absl::nullopt);
   EXPECT_EQ(invoke_count, 4);
 
   // At this point, we've already validated creation in the Application menu

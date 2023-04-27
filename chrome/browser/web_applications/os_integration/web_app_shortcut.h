@@ -128,21 +128,32 @@ enum ApplicationsMenuLocation {
 
 // Info about which locations to create app shortcuts in.
 struct ShortcutLocations {
+  ShortcutLocations();
+  ~ShortcutLocations();
+  base::Value ToDebugValue() const;
+
   bool on_desktop = false;
-
   ApplicationsMenuLocation applications_menu_location = APP_MENU_LOCATION_NONE;
-
   // For Windows, this refers to quick launch bar prior to Win7. In Win7,
   // this means "pin to taskbar". For Mac/Linux, this could be used for
   // Mac dock or the gnome/kde application launcher. However, those are not
   // implemented yet.
   bool in_quick_launch_bar = false;
-
   // For Windows, this refers to the Startup folder.
   // For Mac, this refers to the Login Items list.
   // For Linux, this refers to the autostart folder.
   bool in_startup = false;
 };
+
+ShortcutLocations MergeLocations(
+    const ShortcutLocations& user_specified_locations,
+    const ShortcutLocations& existing_locations);
+
+bool operator==(const ShortcutLocations& location1,
+                const ShortcutLocations& location2);
+
+bool operator!=(const ShortcutLocations& location1,
+                const ShortcutLocations& location2);
 
 // This encodes the cause of shortcut creation as the correct behavior in each
 // case is implementation specific.
@@ -235,10 +246,16 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id);
 // platform specific implementation of the UpdateAllShortcuts function, and
 // is executed on the FILE thread. On Windows, this also updates shortcuts in
 // the pinned taskbar directories.
-// Returns true if update was performed successfully and false otherwise
-Result UpdatePlatformShortcuts(const base::FilePath& shortcut_data_path,
-                               const std::u16string& old_app_title,
-                               const ShortcutInfo& shortcut_info);
+// If the |user_specified_locations| are set, then an union of the current
+// shortcut locations and the set values are considered during a shortcut
+// update. If a shortcut does not exist in a specific location, then that is
+// created. By default, the creation locations are not passed. Returns true if
+// update was performed successfully and false otherwise.
+Result UpdatePlatformShortcuts(
+    const base::FilePath& shortcut_data_path,
+    const std::u16string& old_app_title,
+    absl::optional<ShortcutLocations> user_specified_locations,
+    const ShortcutInfo& shortcut_info);
 
 // Run an IO task on a worker thread. Ownership of |shortcut_info| transfers
 // to a closure that deletes it on the UI thread when the task is complete.

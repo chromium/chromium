@@ -51,6 +51,7 @@ class ShortcutSubManager : public OsIntegrationSubManager {
                       base::OnceClosure on_complete,
                       std::unique_ptr<ShortcutInfo> shortcut_info);
   void UpdateShortcut(const AppId& app_id,
+                      absl::optional<SynchronizeOsOptions> synchronize_options,
                       const std::u16string& old_app_title,
                       base::OnceClosure on_complete,
                       std::unique_ptr<ShortcutInfo> shortcut_info);
