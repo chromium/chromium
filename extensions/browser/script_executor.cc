@@ -233,7 +233,20 @@ class Handler : public content::WebContentsObserver {
     DCHECK(frame->IsRenderFrameLive());
     DCHECK(base::Contains(pending_render_frames_, frame));
 
-    ContentScriptTracker::WillExecuteCode(pass_key, frame, host_id_);
+    if (params->injection->is_js()) {
+      ContentScriptTracker::ScriptType script_type =
+          ContentScriptTracker::ScriptType::kContentScript;
+
+      switch (params->injection->get_js()->world) {
+        case mojom::ExecutionWorld::kMain:
+        case mojom::ExecutionWorld::kIsolated:
+          break;  // kContentScript above is correct.
+        case mojom::ExecutionWorld::kUserScript:
+          script_type = ContentScriptTracker::ScriptType::kUserScript;
+      }
+      ContentScriptTracker::WillExecuteCode(pass_key, script_type, frame,
+                                            host_id_);
+    }
     ExtensionWebContentsObserver::GetForWebContents(web_contents())
         ->GetLocalFrame(frame)
         ->ExecuteCode(std::move(params),

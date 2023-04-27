@@ -107,8 +107,16 @@ bool CanRendererActOnBehalfOfExtension(
   if (extension_id.empty())
     return true;
 
-  // Did `render_process_id` run a content script from `extension_id`?
+  // Did `render_process_id` run a content script or user script from
+  // `extension_id`?
+  // TODO(https://crbug.com/1186557): Ideally, we'd only check content script/
+  // user script status if the renderer claimed to be acting on behalf of the
+  // corresponding type (e.g. Feature::CONTENT_SCRIPT_CONTEXT). We evaluate this
+  // later in ProcessMap::CanProcessHostContextType(), but we could be stricter
+  // by including it here.
   if (ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+          render_process_host, extension_id) ||
+      ContentScriptTracker::DidProcessRunUserScriptFromExtension(
           render_process_host, extension_id)) {
     return true;
   }

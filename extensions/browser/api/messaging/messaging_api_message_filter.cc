@@ -112,8 +112,15 @@ bool IsValidMessagingSource(RenderProcessHost& process,
             &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT);
         return false;
       }
-      // TODO(https://crbug.com/1429408): Track user scripts in
-      // ContentScriptTracker and verify them here.
+      bool is_user_script_expected =
+          ContentScriptTracker::DidProcessRunUserScriptFromExtension(
+              process, *source_endpoint.extension_id);
+      if (!is_user_script_expected) {
+        bad_message::ReceivedBadMessage(
+            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT);
+        return false;
+      }
+
       return true;
     }
 

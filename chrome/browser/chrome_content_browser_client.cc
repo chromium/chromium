@@ -7098,8 +7098,10 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
 
   // or (4) origination from a process that at least might be running a
   // content script from an extension with the clipboardRead permission.
-  extensions::ExtensionIdSet extension_ids =
-      extensions::ContentScriptTracker::GetExtensionsThatRanScriptsInProcess(
+  // Note that we currently don't allow clipboard operations based just on user
+  // script injections.
+  extensions::ExtensionIdSet extension_ids = extensions::ContentScriptTracker::
+      GetExtensionsThatRanContentScriptsInProcess(
           *render_frame_host->GetProcess());
   for (const auto& extension_id : extension_ids) {
     const Extension* extension =
