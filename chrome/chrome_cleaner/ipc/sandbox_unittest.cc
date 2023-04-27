@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -45,6 +46,7 @@ class MockSandboxTargetServices : public sandbox::TargetServices {
   MOCK_METHOD0(Init, sandbox::ResultCode());
   MOCK_METHOD0(LowerToken, void());
   MOCK_METHOD0(GetState, sandbox::ProcessState*());
+  MOCK_METHOD0(GetDelegateData, absl::optional<base::span<const uint8_t>>());
 };
 
 class TestSandboxSetupHooks : public SandboxSetupHooks {

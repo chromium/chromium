@@ -172,6 +172,7 @@ class PolicyBase final : public TargetPolicy {
   ResultCode SetStdoutHandle(HANDLE handle) override;
   ResultCode SetStderrHandle(HANDLE handle) override;
   void AddHandleToShare(HANDLE handle) override;
+  void AddDelegateData(base::span<const uint8_t> data) override;
 
   // Creates a Job object with the level specified in a previous call to
   // SetJobLevel().
@@ -232,9 +233,15 @@ class PolicyBase final : public TargetPolicy {
   // Remaining members are unique to this instance and will be configured every
   // time.
 
+  // Returns nullopt if no data has been set, or a view into the data.
+  absl::optional<base::span<const uint8_t>> delegate_data_span();
+
   // The user-defined global policy settings.
   HANDLE stdout_handle_;
   HANDLE stderr_handle_;
+  // An opaque blob of data the delegate uses to prime any pre-sandbox hooks.
+  std::unique_ptr<std::vector<const uint8_t>> delegate_data_;
+
   std::unique_ptr<Dispatcher> dispatcher_;
 
   // Contains the list of handles being shared with the target process.

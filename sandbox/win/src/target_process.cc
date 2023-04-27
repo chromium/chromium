@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -91,7 +92,9 @@ bool CheckImpersonationToken(HANDLE thread) {
 SANDBOX_INTERCEPT DWORD g_sentinel_value_start = 0x53414E44;
 SANDBOX_INTERCEPT HANDLE g_shared_section;
 SANDBOX_INTERCEPT size_t g_shared_IPC_size;
+// The following may be zero if not needed in the child.
 SANDBOX_INTERCEPT size_t g_shared_policy_size;
+SANDBOX_INTERCEPT size_t g_delegate_data_size;
 // 'BOXY'
 SANDBOX_INTERCEPT DWORD g_sentinel_value_end = 0x424F5859;
 
@@ -246,10 +249,12 @@ ResultCode TargetProcess::TransferVariable(const char* name,
 
 // Construct the IPC server and the IPC dispatcher. When the target does
 // an IPC it will eventually call the dispatcher.
-ResultCode TargetProcess::Init(Dispatcher* ipc_dispatcher,
-                               absl::optional<base::span<const uint8_t>> policy,
-                               uint32_t shared_IPC_size,
-                               DWORD* win_error) {
+ResultCode TargetProcess::Init(
+    Dispatcher* ipc_dispatcher,
+    absl::optional<base::span<const uint8_t>> policy,
+    absl::optional<base::span<const uint8_t>> delegate_data,
+    uint32_t shared_IPC_size,
+    DWORD* win_error) {
   ResultCode ret = VerifySentinels();
   if (ret != SBOX_ALL_OK)
     return ret;
@@ -261,14 +266,20 @@ ResultCode TargetProcess::Init(Dispatcher* ipc_dispatcher,
   // the rest, which boils down to calling MapViewofFile()
 
   // We use this single memory pool for IPC and for policy.
-  DWORD shared_mem_size = static_cast<DWORD>(shared_IPC_size);
+  size_t shared_mem_size = shared_IPC_size;
   if (policy.has_value()) {
-    shared_mem_size += static_cast<DWORD>(policy->size());
+    shared_mem_size += policy->size();
+  }
+  if (delegate_data.has_value()) {
+    shared_mem_size += delegate_data->size();
   }
 
-  shared_section_.Set(::CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr,
-                                           PAGE_READWRITE | SEC_COMMIT, 0,
-                                           shared_mem_size, nullptr));
+  // This region should be small, so we only pass dwMaximumSizeLow below.
+  CHECK(shared_mem_size <= std::numeric_limits<DWORD>::max());
+
+  shared_section_.Set(::CreateFileMappingW(
+      INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE | SEC_COMMIT, 0,
+      static_cast<DWORD>(shared_mem_size), nullptr));
   if (!shared_section_.IsValid()) {
     *win_error = ::GetLastError();
     return SBOX_ERROR_CREATE_FILE_MAPPING;
@@ -281,10 +292,24 @@ ResultCode TargetProcess::Init(Dispatcher* ipc_dispatcher,
     return SBOX_ERROR_MAP_VIEW_OF_SHARED_SECTION;
   }
 
+  // The IPC area is just zeros so we skip over it.
+  size_t current_offset = shared_IPC_size;
+  // PolicyGlobal region.
   if (policy.has_value()) {
-    CopyPolicyToTarget(policy.value(), reinterpret_cast<char*>(shared_memory) +
-                                           shared_IPC_size);
+    CopyPolicyToTarget(policy.value(),
+                       reinterpret_cast<char*>(shared_memory) + current_offset);
+    current_offset += policy->size();
   }
+
+  // Delegate Data region.
+  if (delegate_data.has_value()) {
+    memcpy(reinterpret_cast<char*>(shared_memory) + current_offset,
+           delegate_data->data(), delegate_data->size());
+    current_offset += delegate_data->size();
+  }
+
+  // After all regions are written we should be at the end of the allocation.
+  CHECK_EQ(current_offset, shared_mem_size);
 
   // Set the global variables in the target. These are not used on the broker.
   g_shared_IPC_size = shared_IPC_size;
@@ -300,6 +325,16 @@ ResultCode TargetProcess::Init(Dispatcher* ipc_dispatcher,
     ret = TransferVariable("g_shared_policy_size", &g_shared_policy_size,
                            sizeof(g_shared_policy_size));
     g_shared_policy_size = 0;
+    if (SBOX_ALL_OK != ret) {
+      *win_error = ::GetLastError();
+      return ret;
+    }
+  }
+  if (delegate_data.has_value()) {
+    g_delegate_data_size = delegate_data->size();
+    ret = TransferVariable("g_delegate_data_size", &g_delegate_data_size,
+                           sizeof(g_delegate_data_size));
+    g_delegate_data_size = 0;
     if (SBOX_ALL_OK != ret) {
       *win_error = ::GetLastError();
       return ret;

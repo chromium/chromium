@@ -59,6 +59,7 @@ class TargetProcess {
   // IPC server. The IPC server uses the services of the thread_pool.
   ResultCode Init(Dispatcher* ipc_dispatcher,
                   absl::optional<base::span<const uint8_t>> policy,
+                  absl::optional<base::span<const uint8_t>> delegate_data,
                   uint32_t shared_IPC_size,
                   DWORD* win_error);
 

@@ -133,6 +133,7 @@ class TestTargetPolicy : public TargetPolicy {
   ResultCode SetStdoutHandle(HANDLE handle) override { return SBOX_ALL_OK; }
   ResultCode SetStderrHandle(HANDLE handle) override { return SBOX_ALL_OK; }
   void AddHandleToShare(HANDLE handle) override {}
+  void AddDelegateData(base::span<const uint8_t> data) override {}
 
  private:
   TestTargetConfig config_;
