@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser_state") {
+  sources = [
+    "browser_state_info_cache.h",
+    "chrome_browser_state.h",
+    "chrome_browser_state_manager.h",
+  ]
+
+  public_deps = [ "//ios/chrome/browser/browser_state" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [ "test_chrome_browser_state.h" ]
+  public_deps = [ "//ios/chrome/browser/browser_state:test_support" ]
+}
