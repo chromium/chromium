@@ -13,6 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
+#include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/active_network_icon.h"
 #include "ash/system/network/network_icon.h"
@@ -272,6 +273,12 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
     SetupNetworkSubtext();
   }
 
+  if (text_label() && chromeos::features::IsJellyEnabled()) {
+    text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    ash::TypographyProvider::Get()->StyleLabel(
+        ash::TypographyToken::kCrosButton2, *text_label());
+  }
+
   if (IsNetworkDisabled(network_properties)) {
     UpdateDisabledTextColor();
   }
@@ -327,7 +334,7 @@ void NetworkListNetworkItemView::SetupCellularSubtext() {
     return;
   }
 
-  if (text_label()) {
+  if (text_label() && !chromeos::features::IsJellyEnabled()) {
     const SkColor primary_text_color =
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kTextColorPrimary);

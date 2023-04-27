@@ -13,13 +13,16 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/typography.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/label.h"
 
@@ -54,7 +57,14 @@ void SetupConnectedScrollListItem(HoverHighlightView* view,
   }
 
   view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
-  view->sub_text_label()->SetEnabledColorId(kColorAshTextColorPositive);
+
+  if (chromeos::features::IsJellyEnabled()) {
+    view->sub_text_label()->SetEnabledColorId(cros_tokens::kCrosSysPositive);
+    ash::TypographyProvider::Get()->StyleLabel(
+        ash::TypographyToken::kCrosAnnotation1, *view->sub_text_label());
+  } else {
+    view->sub_text_label()->SetEnabledColorId(kColorAshTextColorPositive);
+  }
 }
 
 void SetupConnectingScrollListItem(HoverHighlightView* view) {
@@ -70,6 +80,10 @@ void SetWarningSubText(HoverHighlightView* view, std::u16string subtext) {
   view->SetSubText(subtext);
   view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
   view->sub_text_label()->SetEnabledColorId(kColorAshTextColorWarning);
+  if (chromeos::features::IsJellyEnabled()) {
+    ash::TypographyProvider::Get()->StyleLabel(
+        ash::TypographyToken::kCrosAnnotation1, *view->sub_text_label());
+  }
 }
 
 gfx::Insets GetTrayBubbleInsets() {

@@ -59,6 +59,10 @@ class ASH_EXPORT NetworkInfoBubble : public views::BubbleDialogDelegateView {
   // for the ethernet, WiFi, and cellular devices.
   std::u16string ComputeInfoText();
 
+  // The container for info labels. This is used in the Qs revamped view, in
+  // which the label tile info and address info are in different jelly styles.
+  raw_ptr<views::View> label_container_ = nullptr;
+
   base::WeakPtr<Delegate> delegate_;
 };
 

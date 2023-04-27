@@ -488,6 +488,7 @@ SkColor GetDefaultColorForIconType(const ui::ColorProvider* color_provider,
     case ICON_TYPE_TRAY_OOBE:
       return kIconColorInOobe;
     case ICON_TYPE_FEATURE_POD:
+    case ICON_TYPE_LIST:
       return use_color_provider
                  ? color_provider->GetColor(cros_tokens::kCrosSysOnSurface)
                  : ash_color_provider->GetContentLayerColor(
