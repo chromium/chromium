@@ -338,6 +338,7 @@ src/webgpu/shader/execution/expression/binary/binary.ts
 src/webgpu/shader/execution/expression/binary/bitwise.spec.ts
 src/webgpu/shader/execution/expression/binary/bitwise_shift.spec.ts
 src/webgpu/shader/execution/expression/binary/bool_logical.spec.ts
+src/webgpu/shader/execution/expression/binary/f16_comparison.spec.ts
 src/webgpu/shader/execution/expression/binary/f32_arithmetic.spec.ts
 src/webgpu/shader/execution/expression/binary/f32_comparison.spec.ts
 src/webgpu/shader/execution/expression/binary/f32_matrix_arithmetic.spec.ts
@@ -501,6 +502,7 @@ src/webgpu/shader/validation/parse/comments.spec.ts
 src/webgpu/shader/validation/parse/const.spec.ts
 src/webgpu/shader/validation/parse/const_assert.spec.ts
 src/webgpu/shader/validation/parse/discard.spec.ts
+src/webgpu/shader/validation/parse/enable.spec.ts
 src/webgpu/shader/validation/parse/identifiers.spec.ts
 src/webgpu/shader/validation/parse/literal.spec.ts
 src/webgpu/shader/validation/parse/pipeline_stage.spec.ts
