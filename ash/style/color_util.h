@@ -14,6 +14,10 @@ class Window;
 
 namespace ash {
 
+// Note: Please stop adding functions to this file. Adding them to
+// ash/style/style_util.h file instead. As we are going to merge this class to
+// StyleUtil soon.
+// TODO(b/279613862): Merging this file to ash/style/style_util.h.
 class ASH_EXPORT ColorUtil {
  public:
   // Returns the color provider source for the given `window` if it has
