@@ -428,6 +428,41 @@
     }
   }
 
+  __weak __typeof(self) weakSelf = self;
+
+  ProceduralBlock transitionCompletionBlock = ^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+
+    strongSelf.bvcContainer = nil;
+    [strongSelf.baseViewController contentDidAppear];
+
+    if (shouldDisplayBringAndroidTabsPrompt) {
+      [strongSelf displayBringAndroidTabsPrompt];
+    }
+  };
+
+  ProceduralBlock transitionBlock = ^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+
+    [strongSelf
+        performBrowserToTabGridTransitionWithActivePage:currentActivePage
+                                       animationEnabled:animated
+                                             completion:
+                                                 transitionCompletionBlock];
+    // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s
+    // for the status bar style to update. Work around that delay by taking
+    // the snapshot first (during
+    // `transitionFromBrowser:toTabGrid:activePage:withCompletion`) and then
+    // updating the status bar style afterwards.
+    strongSelf.baseViewController.childViewControllerForStatusBarStyle = nil;
+  };
+
   // If a BVC is currently being presented, dismiss it.  This will trigger any
   // necessary animations.
   if (self.bvcContainer) {
@@ -435,29 +470,7 @@
     // This is done with a dispatch to make sure that the view isn't added to
     // the view hierarchy right away, as it is not the expectations of the
     // API.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      self.transitionHandler = [[TabGridTransitionHandler alloc]
-          initWithLayoutProvider:self.baseViewController];
-      self.transitionHandler.animationDisabled = !animated;
-      [self.transitionHandler
-          transitionFromBrowser:self.bvcContainer
-                      toTabGrid:self.baseViewController
-                     activePage:currentActivePage
-                 withCompletion:^{
-                   self.bvcContainer = nil;
-                   [self.baseViewController contentDidAppear];
-                   if (shouldDisplayBringAndroidTabsPrompt) {
-                     [self displayBringAndroidTabsPrompt];
-                   }
-                 }];
-
-      // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s
-      // for the status bar style to update. Work around that delay by taking
-      // the snapshot first (during
-      // `transitionFromBrowser:toTabGrid:activePage:withCompletion`) and then
-      // updating the status bar style afterwards.
-      self.baseViewController.childViewControllerForStatusBarStyle = nil;
-    });
+    dispatch_async(dispatch_get_main_queue(), transitionBlock);
   } else if (shouldDisplayBringAndroidTabsPrompt) {
     [self displayBringAndroidTabsPrompt];
   }
@@ -563,16 +576,10 @@
 
   [self.baseViewController contentWillDisappearAnimated:animated];
 
-  self.transitionHandler = [[TabGridTransitionHandler alloc]
-      initWithLayoutProvider:self.baseViewController];
-  self.transitionHandler.animationDisabled = !animated;
-  [self.transitionHandler
-      transitionFromTabGrid:self.baseViewController
-                  toBrowser:self.bvcContainer
-                 activePage:self.baseViewController.activePage
-             withCompletion:^{
-               extendedCompletion();
-             }];
+  [self performTabGridToBrowserTransitionWithActivePage:self.baseViewController
+                                                            .activePage
+                                       animationEnabled:animated
+                                             completion:extendedCompletion];
 
   // On iOS 15+, snapshotting views with afterScreenUpdates:YES waits 0.5s for
   // the status bar style to update. Work around that delay by taking the
@@ -620,6 +627,43 @@
       NOTREACHED();
       break;
   }
+}
+
+// Performs the Browser to Tab Grid transition.
+- (void)performBrowserToTabGridTransitionWithActivePage:(TabGridPage)activePage
+                                       animationEnabled:(BOOL)animationEnabled
+                                             completion:
+                                                 (ProceduralBlock)completion {
+  self.transitionHandler =
+      [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
+  [self.transitionHandler transitionFromBrowser:self.bvcContainer
+                                      toTabGrid:self.baseViewController
+                                     activePage:activePage
+                                 withCompletion:completion];
+}
+
+// Performs the Tab Grid to Browser transition.
+- (void)performTabGridToBrowserTransitionWithActivePage:(TabGridPage)activePage
+                                       animationEnabled:(BOOL)animationEnabled
+                                             completion:
+                                                 (ProceduralBlock)completion {
+  self.transitionHandler =
+      [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
+  [self.transitionHandler transitionFromTabGrid:self.baseViewController
+                                      toBrowser:self.bvcContainer
+                                     activePage:activePage
+                                 withCompletion:completion];
+}
+
+// Creates a transition handler with `animationEnabled` parameter.
+- (TabGridTransitionHandler*)createTransitionHanlderWithAnimationEnabled:
+    (BOOL)animationEnabled {
+  TabGridTransitionHandler* transitionHandler =
+      [[TabGridTransitionHandler alloc]
+          initWithLayoutProvider:self.baseViewController];
+  transitionHandler.animationDisabled = !animationEnabled;
+
+  return transitionHandler;
 }
 
 #pragma mark - Private (Thumb Strip)
