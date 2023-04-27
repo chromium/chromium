@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 408 tests; 267 PASS, 141 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 403 tests; 261 PASS, 142 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -82,8 +82,6 @@ PASS Partial interface MLGraphBuilder[33]: original interface defined
 PASS Partial interface MLGraphBuilder[33]: member names are unique
 PASS Partial interface MLGraphBuilder[34]: original interface defined
 PASS Partial interface MLGraphBuilder[34]: member names are unique
-PASS Partial interface MLGraphBuilder[35]: original interface defined
-PASS Partial interface MLGraphBuilder[35]: member names are unique
 PASS Partial interface Navigator: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Navigator includes NavigatorML: member names are unique
@@ -188,7 +186,7 @@ PASS MLGraphBuilder interface: member buildSync
 FAIL MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) assert_own_property: interface prototype object missing non-static operation expected property "batchNormalization" missing
 PASS MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions)
 PASS MLGraphBuilder interface: operation clamp(optional MLClampOptions)
-PASS MLGraphBuilder interface: operation concat(sequence<MLOperand>, unsigned long)
+PASS MLGraphBuilder interface: operation concat(sequence<MLOperand>, long)
 PASS MLGraphBuilder interface: operation conv2d(MLOperand, MLOperand, optional MLConv2dOptions)
 PASS MLGraphBuilder interface: operation convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions)
 PASS MLGraphBuilder interface: operation add(MLOperand, MLOperand)
@@ -224,11 +222,10 @@ FAIL MLGraphBuilder interface: operation linear(optional MLLinearOptions) assert
 FAIL MLGraphBuilder interface: operation lstm(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLLstmOptions) assert_own_property: interface prototype object missing non-static operation expected property "lstm" missing
 FAIL MLGraphBuilder interface: operation lstmCell(MLOperand, MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLLstmCellOptions) assert_own_property: interface prototype object missing non-static operation expected property "lstmCell" missing
 FAIL MLGraphBuilder interface: operation matmul(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "matmul" missing
-PASS MLGraphBuilder interface: operation pad(MLOperand, sequence<unsigned long>, sequence<unsigned long>, optional MLPadOptions)
+FAIL MLGraphBuilder interface: operation pad(MLOperand, MLOperand, optional MLPadOptions) assert_equals: property has wrong .length expected 2 but got 3
 PASS MLGraphBuilder interface: operation averagePool2d(MLOperand, optional MLPool2dOptions)
 FAIL MLGraphBuilder interface: operation l2Pool2d(MLOperand, optional MLPool2dOptions) assert_own_property: interface prototype object missing non-static operation expected property "l2Pool2d" missing
 PASS MLGraphBuilder interface: operation maxPool2d(MLOperand, optional MLPool2dOptions)
-PASS MLGraphBuilder interface: operation prelu(MLOperand, MLOperand)
 FAIL MLGraphBuilder interface: operation reduceL1(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceL1" missing
 FAIL MLGraphBuilder interface: operation reduceL2(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceL2" missing
 FAIL MLGraphBuilder interface: operation reduceLogSum(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceLogSum" missing
@@ -274,8 +271,8 @@ PASS MLGraphBuilder interface: builder must inherit property "clamp(MLOperand, o
 PASS MLGraphBuilder interface: calling clamp(MLOperand, optional MLClampOptions) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "clamp(optional MLClampOptions)" with the proper type
 PASS MLGraphBuilder interface: calling clamp(optional MLClampOptions) on builder with too few arguments must throw TypeError
-PASS MLGraphBuilder interface: builder must inherit property "concat(sequence<MLOperand>, unsigned long)" with the proper type
-PASS MLGraphBuilder interface: calling concat(sequence<MLOperand>, unsigned long) on builder with too few arguments must throw TypeError
+PASS MLGraphBuilder interface: builder must inherit property "concat(sequence<MLOperand>, long)" with the proper type
+PASS MLGraphBuilder interface: calling concat(sequence<MLOperand>, long) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "conv2d(MLOperand, MLOperand, optional MLConv2dOptions)" with the proper type
 PASS MLGraphBuilder interface: calling conv2d(MLOperand, MLOperand, optional MLConv2dOptions) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions)" with the proper type
@@ -345,16 +342,14 @@ FAIL MLGraphBuilder interface: builder must inherit property "lstmCell(MLOperand
 FAIL MLGraphBuilder interface: calling lstmCell(MLOperand, MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLLstmCellOptions) on builder with too few arguments must throw TypeError assert_inherits: property "lstmCell" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "matmul(MLOperand, MLOperand)" with the proper type assert_inherits: property "matmul" not found in prototype chain
 FAIL MLGraphBuilder interface: calling matmul(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "matmul" not found in prototype chain
-PASS MLGraphBuilder interface: builder must inherit property "pad(MLOperand, sequence<unsigned long>, sequence<unsigned long>, optional MLPadOptions)" with the proper type
-PASS MLGraphBuilder interface: calling pad(MLOperand, sequence<unsigned long>, sequence<unsigned long>, optional MLPadOptions) on builder with too few arguments must throw TypeError
+PASS MLGraphBuilder interface: builder must inherit property "pad(MLOperand, MLOperand, optional MLPadOptions)" with the proper type
+PASS MLGraphBuilder interface: calling pad(MLOperand, MLOperand, optional MLPadOptions) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "averagePool2d(MLOperand, optional MLPool2dOptions)" with the proper type
 PASS MLGraphBuilder interface: calling averagePool2d(MLOperand, optional MLPool2dOptions) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "l2Pool2d(MLOperand, optional MLPool2dOptions)" with the proper type assert_inherits: property "l2Pool2d" not found in prototype chain
 FAIL MLGraphBuilder interface: calling l2Pool2d(MLOperand, optional MLPool2dOptions) on builder with too few arguments must throw TypeError assert_inherits: property "l2Pool2d" not found in prototype chain
 PASS MLGraphBuilder interface: builder must inherit property "maxPool2d(MLOperand, optional MLPool2dOptions)" with the proper type
 PASS MLGraphBuilder interface: calling maxPool2d(MLOperand, optional MLPool2dOptions) on builder with too few arguments must throw TypeError
-PASS MLGraphBuilder interface: builder must inherit property "prelu(MLOperand, MLOperand)" with the proper type
-PASS MLGraphBuilder interface: calling prelu(MLOperand, MLOperand) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "reduceL1(MLOperand, optional MLReduceOptions)" with the proper type assert_inherits: property "reduceL1" not found in prototype chain
 FAIL MLGraphBuilder interface: calling reduceL1(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_inherits: property "reduceL1" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "reduceL2(MLOperand, optional MLReduceOptions)" with the proper type assert_inherits: property "reduceL2" not found in prototype chain
