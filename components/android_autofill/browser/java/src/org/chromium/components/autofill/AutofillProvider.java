@@ -501,7 +501,7 @@ public class AutofillProvider {
 
     private void onDatalistPopupDismissed() {
         ViewAndroidDelegate delegate = mWebContents.getViewAndroidDelegate();
-        delegate.removeView(mAnchorView);
+        if (delegate != null) delegate.removeView(mAnchorView);
         mAnchorView = null;
     }
 

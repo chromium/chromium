@@ -679,7 +679,8 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     };
 
     EXPECT_CALL(fake_driver_, ShowPasswordSuggestions(
-                                  _, Eq(username), Truly(show_all_matches), _));
+                                  _, Eq(username), Truly(show_all_matches), _))
+        .Times(testing::AtLeast(1));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -1121,16 +1122,27 @@ TEST_F(PasswordAutofillAgentTest, WaitUsername) {
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
 
+  // Ensure TTF isn't in the foreground while this test simulates a typing user.
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   // No auto-fill should have taken place.
-  CheckTextFieldsSuggestedState(std::string(), false, std::string(), false);
+  CheckTextFieldsSuggestedState(
+      /*username=*/std::string(),
+      /*username_autofilled=*/false,
+      /*password=*/std::string(),
+      /*password_autofilled=*/false);
 
   SimulateUsernameTyping(kAliceUsername);
   // Change focus in between to make sure blur events don't trigger filling.
   SetFocused(password_element_);
   SetFocused(username_element_);
+
   // No autocomplete should happen when text is entered in the username.
-  CheckUsernameDOMStatePasswordSuggestedState(kAliceUsername, false,
-                                              std::string(), false);
+  CheckUsernameDOMStatePasswordSuggestedState(
+      /*username=*/kAliceUsername,
+      /*username_autofilled=*/false,
+      /*password=*/std::string(),
+      /*password_autofilled=*/false);
 
   CheckFirstFillingResult(FillingResult::kWaitForUsername);
 }
@@ -2217,7 +2229,7 @@ TEST_F(PasswordAutofillAgentTest, ShowPopupOnPasswordFieldWithoutSuggestions) {
 
   SimulateElementClick(kPasswordName);
 
-  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
+  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(testing::AtLeast(1));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -2254,7 +2266,7 @@ TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
   // Call SimulateElementClick() to produce a user gesture on the page so
   // autofill will actually fill.
   SimulateElementClick(kUsernameName);
-  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
+  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(testing::AtLeast(1));
   base::RunLoop().RunUntilIdle();
 
   // Simulate a user clicking on the username element. This should produce a
@@ -3886,7 +3898,7 @@ TEST_F(PasswordAutofillAgentTest, SuggestLatestCredentials) {
 
   password_autofill_agent_->SetPasswordFillData(fill_data_);
   SimulateElementClick(kPasswordName);
-  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
+  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(testing::AtLeast(1));
   base::RunLoop().RunUntilIdle();
 
   // Change fill data

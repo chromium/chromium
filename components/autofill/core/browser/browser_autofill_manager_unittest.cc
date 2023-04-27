@@ -1003,6 +1003,22 @@ class BrowserAutofillManagerTest : public testing::Test {
     return ElementsAreArray(matchers);
   }
 
+  virtual int ObfuscationLength() {
+#if BUILDFLAG(IS_ANDROID)
+    return IsKeyboardAccessoryEnabled() ? 2 : 4;
+#else
+    return 4;
+#endif
+  }
+
+  // If keyboard accessory is enabled, always show only the `last_four` digits
+  // of a credit card number. Otherwise,  show "Nickname  ****7777".
+  std::string MakeCardLabel(const std::string& nickname,
+                            const std::string& last_four) {
+    return nickname + "  " +
+           test::ObfuscatedCardDigitsAsUTF8(last_four, ObfuscationLength());
+  }
+
  protected:
   TestPersonalDataManager& personal_data() {
     return *autofill_client_.GetPersonalDataManager();
@@ -1178,7 +1194,7 @@ class CreditCardSuggestionTest : public BrowserAutofillManagerTest,
                                  features::kAutofillEnableCardProductName});
   }
 
-  int ObfuscationLength() {
+  int ObfuscationLength() override {
 #if BUILDFLAG(IS_ANDROID)
     return is_keyboard_accessory_enabled_ ? 2 : 4;
 #else
@@ -2312,12 +2328,7 @@ TEST_F(BrowserAutofillManagerTest,
   {
     GetAutofillSuggestions(form, form.fields[0]);
 
-#if BUILDFLAG(IS_ANDROID)
-    const std::string mastercard_label =
-        std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8("5100");
-    const std::string visa_label =
-        std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456");
-#elif BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     const std::string mastercard_label =
         test::ObfuscatedCardDigitsAsUTF8("5100");
     const std::string visa_label = test::ObfuscatedCardDigitsAsUTF8("3456");
@@ -2344,10 +2355,7 @@ TEST_F(BrowserAutofillManagerTest,
     field.value = u"B";
     GetAutofillSuggestions(form, field);
 
-#if BUILDFLAG(IS_ANDROID)
-    const std::string mastercard_label =
-        std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8("5100");
-#elif BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     const std::string mastercard_label =
         test::ObfuscatedCardDigitsAsUTF8("5100");
 #else
@@ -2368,10 +2376,7 @@ TEST_F(BrowserAutofillManagerTest,
     field.value = u"Cl";
     GetAutofillSuggestions(form, field);
 
-#if BUILDFLAG(IS_ANDROID)
-    const std::string visa_label =
-        std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456");
-#elif BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     const std::string visa_label = test::ObfuscatedCardDigitsAsUTF8("3456");
 #else
     const std::string visa_label = std::string("Visa  ") +
@@ -2391,10 +2396,7 @@ TEST_F(BrowserAutofillManagerTest,
     field.value = u"Jo";
     GetAutofillSuggestions(form, field);
 
-#if BUILDFLAG(IS_ANDROID)
-    const std::string amex_label =
-        std::string("Amex  ") + test::ObfuscatedCardDigitsAsUTF8("0005");
-#elif BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     const std::string amex_label = test::ObfuscatedCardDigitsAsUTF8("0005");
 #else
     const std::string amex_label = std::string("Amex  ") +
@@ -2460,10 +2462,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_NumberMissing) {
   // Query by cardholder name field.
   GetAutofillSuggestions(form, form.fields[0]);
 
-#if BUILDFLAG(IS_ANDROID)
-  const std::string amex_card_label =
-      std::string("Amex  ") + test::ObfuscatedCardDigitsAsUTF8("0005");
-#elif BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const std::string amex_card_label = test::ObfuscatedCardDigitsAsUTF8("0005");
 #else
   const std::string amex_card_label = std::string("Amex  ") +
@@ -2533,6 +2532,7 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
       label1 = "123 Apple St.";
       label2 = "3734 Elvis Presley Blvd.";
   }
+
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(form.fields[0].global_id(),
                    Suggestion("Charles", label1, kAddressEntryIcon, 1),
@@ -2553,13 +2553,10 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
   // Test that we sent the credit card suggestions to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(4)),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
-                 master_card_label, kMasterCard,
+      Suggestion(MakeCardLabel("Visa", "3456"), visa_label, kVisaCard,
+                 browser_autofill_manager_->GetPackedCreditCardID(4)),
+      Suggestion(MakeCardLabel("Mastercard", "8765"), master_card_label,
+                 kMasterCard,
                  browser_autofill_manager_->GetPackedCreditCardID(5)));
 }
 
@@ -3196,6 +3193,15 @@ TEST_F(BrowserAutofillManagerTest,
 // Test that we do not return duplicate values drawn from multiple profiles when
 // filling an already filled field.
 TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
+  // TODO(crbug/1000039): Make this test non-Android or allow refilling.
+  // The method `suggestion_selection::GetPrefixMatchedSuggestions` prevents
+  // that Android users see values that would override already filled fields
+  // due to the narrow surface and a missing preview.
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(features::kAutofillKeyboardAccessory);
+#endif
+
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -8692,9 +8698,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   // Non card number field (cardholder name field).
   GetAutofillSuggestions(form, form.fields[0]);
 
-#if BUILDFLAG(IS_ANDROID)
-  label = std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8("3456");
-#elif BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   label = test::ObfuscatedCardDigitsAsUTF8("3456");
 #else
   label = std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8("3456") +
