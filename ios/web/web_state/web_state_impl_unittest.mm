@@ -261,25 +261,6 @@ TEST_F(WebStateImplTest, ObserverTest) {
   EXPECT_EQ(favicon_url.icon_sizes[0].height(),
             actual_favicon_url.icon_sizes[0].height());
 
-  // Test that WebFrameDidBecomeAvailable() is called.
-  ASSERT_FALSE(observer->web_frame_available_info());
-  auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
-  WebFrame* main_frame_ptr = main_frame.get();
-  web_state_->GetWebFramesManagerImpl(ContentWorld::kPageContentWorld)
-      .AddFrame(std::move(main_frame));
-  ASSERT_TRUE(observer->web_frame_available_info());
-  EXPECT_EQ(web_state_.get(), observer->web_frame_available_info()->web_state);
-  EXPECT_EQ(main_frame_ptr, observer->web_frame_available_info()->web_frame);
-
-  // Test that WebFrameWillBecomeUnavailable() is called.
-  ASSERT_FALSE(observer->web_frame_unavailable_info());
-  web_state_->GetWebFramesManagerImpl(ContentWorld::kPageContentWorld)
-      .RemoveFrameWithId(main_frame_ptr->GetFrameId());
-  ASSERT_TRUE(observer->web_frame_unavailable_info());
-  EXPECT_EQ(web_state_.get(),
-            observer->web_frame_unavailable_info()->web_state);
-  EXPECT_EQ(main_frame_ptr, observer->web_frame_unavailable_info()->web_frame);
-
   // Test that RenderProcessGone() is called.
   SetIgnoreRenderProcessCrashesDuringTesting(true);
   ASSERT_FALSE(observer->render_process_gone_info());

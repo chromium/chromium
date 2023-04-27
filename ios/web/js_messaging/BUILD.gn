@@ -233,7 +233,6 @@ source_set("inttests") {
     "java_script_feature_inttest.mm",
     "java_script_feature_manager_inttest.mm",
     "web_frame_impl_inttest.mm",
-    "web_frame_web_state_observer_inttest.mm",
     "web_frames_manager_inttest.mm",
   ]
 }

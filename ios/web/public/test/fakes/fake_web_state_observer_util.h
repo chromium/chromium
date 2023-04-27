@@ -16,7 +16,6 @@ namespace web {
 class NavigationContext;
 enum Permission : NSUInteger;
 struct SSLStatus;
-class WebFrame;
 class WebState;
 
 // Arguments passed to `WasShown`.
@@ -103,13 +102,6 @@ struct TestUpdateFaviconUrlCandidatesInfo {
   ~TestUpdateFaviconUrlCandidatesInfo();
   WebState* web_state = nullptr;
   std::vector<web::FaviconURL> candidates;
-};
-
-// Arguments passed to `WebFrameDidBecomeAvailable` or
-// `WebFrameWillBecomeUnavailable`.
-struct TestWebFrameAvailabilityInfo {
-  WebState* web_state = nullptr;
-  WebFrame* web_frame = nullptr;
 };
 
 // Arguments passed to `RenderProcessGone`.

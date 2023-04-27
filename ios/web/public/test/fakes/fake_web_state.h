@@ -178,8 +178,6 @@ class FakeWebState : public WebState {
   void OnRenderProcessGone();
   void OnBackForwardStateChanged();
   void OnVisibleSecurityStateChanged();
-  void OnWebFrameDidBecomeAvailable(WebFrame* frame);
-  void OnWebFrameWillBecomeUnavailable(WebFrame* frame);
 
  private:
   BrowserState* browser_state_ = nullptr;

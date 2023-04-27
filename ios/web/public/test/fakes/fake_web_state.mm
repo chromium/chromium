@@ -384,18 +384,6 @@ void FakeWebState::OnVisibleSecurityStateChanged() {
   }
 }
 
-void FakeWebState::OnWebFrameDidBecomeAvailable(WebFrame* frame) {
-  for (auto& observer : observers_) {
-    observer.WebFrameDidBecomeAvailable(this, frame);
-  }
-}
-
-void FakeWebState::OnWebFrameWillBecomeUnavailable(WebFrame* frame) {
-  for (auto& observer : observers_) {
-    observer.WebFrameWillBecomeUnavailable(this, frame);
-  }
-}
-
 void FakeWebState::ShouldAllowRequest(
     NSURLRequest* request,
     WebStatePolicyDecider::RequestInfo request_info,

@@ -169,8 +169,8 @@ class TextFragmentsManagerImplTest : public WebTest {
   void AddMainWebFrame(TextFragmentsManagerImpl* fragments_mgr) {
     web_frames_manager_->AddWebFrame(
         FakeWebFrame::CreateMainWebFrame(GURL("https://chromium.org")));
-    fragments_mgr->WebFrameDidBecomeAvailable(
-        web_state_, web_frames_manager_->GetMainWebFrame());
+    fragments_mgr->WebFrameBecameAvailable(
+        web_frames_manager_, web_frames_manager_->GetMainWebFrame());
   }
 
   MockJSFeature feature_;

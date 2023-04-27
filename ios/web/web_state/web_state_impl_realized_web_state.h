@@ -9,7 +9,6 @@
 
 #import "ios/web/web_state/web_state_impl.h"
 
-#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 
 namespace web {
@@ -28,8 +27,7 @@ class WebUIIOS;
 //
 // A few methods are not part of the API of WebStateImpl and thus will be
 // documented.
-class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate,
-                                             public WebFramesManager::Observer {
+class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
  public:
   // Creates a RealizedWebState with a non-null pointer to the owning
   // WebStateImpl.
@@ -211,12 +209,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate,
   NavigationItemImpl* GetPendingItem() final;
 
  private:
-  // WebFramesManager::Observer:
-  void WebFrameBecameAvailable(WebFramesManager* web_frames_manager,
-                               WebFrame* web_frame) override;
-  void WebFrameBecameUnavailable(WebFramesManager* web_frames_manager,
-                                 const std::string& frame_id) override;
-
   // Creates a WebUIIOS object for `url` that is owned by the called. Returns
   // nullptr if `url` does not correspond to a WebUI page.
   std::unique_ptr<WebUIIOS> CreateWebUIIOS(const GURL& url);
