@@ -1277,6 +1277,7 @@ MATCHER_P2(HasMetricWithValueOrNotIfNullOpt, key, matcher, "") {
   }
   return ExplainMatchResult(arg.at(key), matcher, result_listener);
 }
+
 class AuctionRunnerTest : public RenderViewHostTestHarness,
                           public AuctionWorkletManager::Delegate,
                           public DebuggableAuctionWorkletTracker::Observer {
@@ -2071,6 +2072,17 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                     kMeanGenerateBidDirectFromSellerSignalsCriticalPathLatencyInMillisName,
                 Entry::
                     kMeanGenerateBidTrustedBiddingSignalsCriticalPathLatencyInMillisName,
+                /* Bids queued waiting to begin ScoreAd */
+                Entry::kNumTopLevelBidsQueuedWaitingForConfigPromisesName,
+                Entry::kNumTopLevelBidsQueuedWaitingForSellerWorkletName,
+                Entry::
+                    kMeanTimeTopLevelBidsQueuedWaitingForConfigPromisesInMillisName,
+                Entry::
+                    kMeanTimeTopLevelBidsQueuedWaitingForSellerWorkletInMillisName,
+                Entry::kNumBidsQueuedWaitingForConfigPromisesName,
+                Entry::kNumBidsQueuedWaitingForSellerWorkletName,
+                Entry::kMeanTimeBidsQueuedWaitingForConfigPromisesInMillisName,
+                Entry::kMeanTimeBidsQueuedWaitingForSellerWorkletInMillisName,
             });
 
     EXPECT_THAT(ukm_entries, testing::SizeIs(1));
@@ -2198,6 +2210,30 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       SetHasGenerateSingleBidLatencyMetrics(generated_bids);
     }
 
+    MetricsExpectations& SetNumTopLevelBidsQueuedWaitingForConfigPromises(
+        int64_t value) {
+      num_top_level_bids_queued_waiting_for_config_promises = value;
+      return *this;
+    }
+
+    MetricsExpectations& SetNumTopLevelBidsQueuedWaitingForSellerWorklet(
+        int64_t value) {
+      num_top_level_bids_queued_waiting_for_seller_worklet = value;
+      return *this;
+    }
+
+    MetricsExpectations& SetNumBidsQueuedWaitingForConfigPromises(
+        int64_t value) {
+      num_bids_queued_waiting_for_config_promises = value;
+      return *this;
+    }
+
+    MetricsExpectations& SetNumBidsQueuedWaitingForSellerWorklet(
+        int64_t value) {
+      num_bids_queued_waiting_for_seller_worklet = value;
+      return *this;
+    }
+
     AuctionResult result;
     absl::optional<int64_t> num_interest_groups;
     absl::optional<int64_t> num_owners;
@@ -2217,6 +2253,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     bool has_bid_for_one_interest_group_latency_metrics = false;
     bool has_generate_single_bid_latency_metrics = false;
+
+    int64_t num_top_level_bids_queued_waiting_for_config_promises = 0;
+    int64_t num_top_level_bids_queued_waiting_for_seller_worklet = 0;
+    int64_t num_bids_queued_waiting_for_config_promises = 0;
+    int64_t num_bids_queued_waiting_for_seller_worklet = 0;
   };
 
   // Check histogram values and UKMs.
@@ -2374,6 +2415,53 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         ukm_metrics,
         OnlyHasMetricIf(UkmEntry::kMaxGenerateSingleBidLatencyInMillisName,
                         expectations.has_generate_single_bid_latency_metrics));
+
+    EXPECT_THAT(
+        ukm_metrics,
+        HasMetricWithValue(
+            UkmEntry::kNumTopLevelBidsQueuedWaitingForConfigPromisesName,
+            expectations
+                .num_top_level_bids_queued_waiting_for_config_promises));
+    EXPECT_THAT(
+        ukm_metrics,
+        OnlyHasMetricIf(
+            UkmEntry::
+                kMeanTimeTopLevelBidsQueuedWaitingForConfigPromisesInMillisName,
+            expectations.num_top_level_bids_queued_waiting_for_config_promises >
+                0));
+
+    EXPECT_THAT(
+        ukm_metrics,
+        HasMetricWithValue(
+            UkmEntry::kNumTopLevelBidsQueuedWaitingForSellerWorkletName,
+            expectations.num_top_level_bids_queued_waiting_for_seller_worklet));
+    EXPECT_THAT(
+        ukm_metrics,
+        OnlyHasMetricIf(
+            UkmEntry::
+                kMeanTimeTopLevelBidsQueuedWaitingForSellerWorkletInMillisName,
+            expectations.num_top_level_bids_queued_waiting_for_seller_worklet >
+                0));
+
+    EXPECT_THAT(ukm_metrics,
+                HasMetricWithValue(
+                    UkmEntry::kNumBidsQueuedWaitingForConfigPromisesName,
+                    expectations.num_bids_queued_waiting_for_config_promises));
+    EXPECT_THAT(
+        ukm_metrics,
+        OnlyHasMetricIf(
+            UkmEntry::kMeanTimeBidsQueuedWaitingForConfigPromisesInMillisName,
+            expectations.num_bids_queued_waiting_for_config_promises > 0));
+
+    EXPECT_THAT(ukm_metrics,
+                HasMetricWithValue(
+                    UkmEntry::kNumBidsQueuedWaitingForSellerWorkletName,
+                    expectations.num_bids_queued_waiting_for_seller_worklet));
+    EXPECT_THAT(
+        ukm_metrics,
+        OnlyHasMetricIf(
+            UkmEntry::kMeanTimeBidsQueuedWaitingForSellerWorkletInMillisName,
+            expectations.num_bids_queued_waiting_for_seller_worklet > 0));
   }
 
   AuctionRunner::IsInterestGroupApiAllowedCallback
@@ -7749,12 +7837,26 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
                   testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
       EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
                 result_.winning_group_ad_metadata);
-      CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
-                       .SetNumInterestGroups(2)
-                       .SetNumOwnersAndDistinctOwners(2)
-                       .SetNumSellers(1)
-                       .SetNumBidderWorklets(2)
-                       .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
+      // In the case where no SellerWorklet is available at the start of the
+      // auction, the auction is blocked on scoring the ad until the
+      // SellerWorklet is later released by the test. This doesn't happen if
+      // there are no BidderWorklets available at the start of the auction,
+      // because a BidderWorklet is released by the test after a SellerWorklet
+      // is released.
+      int64_t num_bids_queued = 0;
+      if (seller_worklet_creation_delayed &&
+          num_used_bidder_worklet_processes !=
+              AuctionProcessManager::kMaxBidderProcesses) {
+        num_bids_queued = 2;
+      }
+      CheckMetrics(
+          MetricsExpectations(AuctionResult::kSuccess)
+              .SetNumInterestGroups(2)
+              .SetNumOwnersAndDistinctOwners(2)
+              .SetNumSellers(1)
+              .SetNumBidderWorklets(2)
+              .SetNumInterestGroupsWithOnlyNonKAnonBid(2)
+              .SetNumBidsQueuedWaitingForSellerWorklet(num_bids_queued));
     }
   }
 }
@@ -7953,12 +8055,57 @@ TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
                                                /*bucket=*/10, /*value=*/22),
                                            BuildPrivateAggregationRequest(
                                                /*bucket=*/30, /*value=*/42)))));
+
+      int64_t num_top_level_bids_queued = 0;
+      int64_t num_component_bids_queued = 0;
+
+      // The component auction needs three SellerWorklets in total. In all of
+      // the cases where we're making an insufficient number of these available,
+      // the top-level InterestGroupAuction will need to wait for the
+      // SellerWorklet to become available to rescore the bids.
+      if (num_used_seller_worklet_processes > 0) {
+        num_top_level_bids_queued = 2;
+      }
+
+      // In the case where only one SellerWorklet is available at the start of
+      // the auction, one of the component auctions will get it, and the other
+      // one will have to wait for it, leaving the bid of the second component
+      // auction queued for scoring. This doesn't happen if either no or only
+      // one BidderWorklet is available at the start of the auction, because
+      // then the second component auction has to wait for both the
+      // BidderWorklet and the SellerWorklet to be released by the first
+      // component auction.
+      if (num_used_seller_worklet_processes ==
+              AuctionProcessManager::kMaxSellerProcesses - 1 &&
+          num_used_bidder_worklet_processes == 0) {
+        num_component_bids_queued = 1;
+      }
+
+      // In the case where no SellerWorklet is available at the start of the
+      // auction, both component auctions will have to wait for it to be
+      // released later by the test, above, leaving the bid of both component
+      // auctions queued for scoring. This doesn't happen if there are no
+      // BidderWorklets available at the start of the auction, because a
+      // BidderWorklet is released by the test after a SellerWorklet is
+      // released, but it does happen if even one BidderWorklet is available at
+      // the start of the auction, because the component auctions can share it
+      // before the SellerWorklet is released by the test.
+      if (num_used_seller_worklet_processes ==
+              AuctionProcessManager::kMaxSellerProcesses &&
+          num_used_bidder_worklet_processes <
+              AuctionProcessManager::kMaxBidderProcesses) {
+        num_component_bids_queued = 2;
+      }
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(2)
                        .SetNumOwnersAndDistinctOwners(2)
                        .SetNumSellers(3)
                        .SetNumBidderWorklets(2)
-                       .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
+                       .SetNumInterestGroupsWithOnlyNonKAnonBid(2)
+                       .SetNumTopLevelBidsQueuedWaitingForSellerWorklet(
+                           num_top_level_bids_queued)
+                       .SetNumBidsQueuedWaitingForSellerWorklet(
+                           num_component_bids_queued));
     }
   }
 }
@@ -8138,7 +8285,8 @@ TEST_F(AuctionRunnerTest,
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(3)
                    .SetNumBidderWorklets(2)
-                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
+                   .SetNumTopLevelBidsQueuedWaitingForSellerWorklet(1));
 }
 
 // Test to make sure SendPendingSignalsRequests is called on a seller worklet

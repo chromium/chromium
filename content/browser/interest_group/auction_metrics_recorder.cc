@@ -136,6 +136,30 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
       &UkmEntry::
           SetMeanGenerateBidTrustedBiddingSignalsCriticalPathLatencyInMillis);
 
+  SetNumAndMaybeMeanLatency(
+      top_level_bid_queued_waiting_for_config_promises_aggregator_,
+      /*set_num_function=*/
+      &UkmEntry::SetNumTopLevelBidsQueuedWaitingForConfigPromises,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanTimeTopLevelBidsQueuedWaitingForConfigPromisesInMillis);
+  SetNumAndMaybeMeanLatency(
+      top_level_bid_queued_waiting_for_seller_worklet_aggregator_,
+      /*set_num_function=*/
+      &UkmEntry::SetNumTopLevelBidsQueuedWaitingForSellerWorklet,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanTimeTopLevelBidsQueuedWaitingForSellerWorkletInMillis);
+
+  SetNumAndMaybeMeanLatency(
+      bid_queued_waiting_for_config_promises_aggregator_,
+      /*set_num_function=*/&UkmEntry::SetNumBidsQueuedWaitingForConfigPromises,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanTimeBidsQueuedWaitingForConfigPromisesInMillis);
+  SetNumAndMaybeMeanLatency(
+      bid_queued_waiting_for_seller_worklet_aggregator_,
+      /*set_num_function=*/&UkmEntry::SetNumBidsQueuedWaitingForSellerWorklet,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanTimeBidsQueuedWaitingForSellerWorkletInMillis);
+
   auto* ukm_recorder = ukm::UkmRecorder::Get();
   builder_.Record(ukm_recorder->Get());
 }
@@ -261,6 +285,28 @@ void AuctionMetricsRecorder::RecordGenerateBidDependencyLatencies(
       generate_bid_trusted_bidding_signals_latency_aggregator_, critical_path);
 
   RecordGenerateBidDependencyLatencyCriticalPath(critical_path);
+}
+
+void AuctionMetricsRecorder::RecordTopLevelBidQueuedWaitingForConfigPromises(
+    base::TimeDelta delay) {
+  top_level_bid_queued_waiting_for_config_promises_aggregator_.RecordLatency(
+      delay);
+}
+
+void AuctionMetricsRecorder::RecordTopLevelBidQueuedWaitingForSellerWorklet(
+    base::TimeDelta delay) {
+  top_level_bid_queued_waiting_for_seller_worklet_aggregator_.RecordLatency(
+      delay);
+}
+
+void AuctionMetricsRecorder::RecordBidQueuedWaitingForConfigPromises(
+    base::TimeDelta delay) {
+  bid_queued_waiting_for_config_promises_aggregator_.RecordLatency(delay);
+}
+
+void AuctionMetricsRecorder::RecordBidQueuedWaitingForSellerWorklet(
+    base::TimeDelta delay) {
+  bid_queued_waiting_for_seller_worklet_aggregator_.RecordLatency(delay);
 }
 
 void AuctionMetricsRecorder::LatencyAggregator::RecordLatency(

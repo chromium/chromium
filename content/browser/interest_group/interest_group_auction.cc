@@ -2089,6 +2089,15 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
   for (auto& unscored_bid : unscored_bids_) {
     unscored_bid->wait_promises =
         now - unscored_bid->trace_wait_seller_deps_start;
+
+    if (!component_auctions_.empty()) {
+      auction_metrics_recorder_
+          ->RecordTopLevelBidQueuedWaitingForConfigPromises(
+              unscored_bid->wait_promises);
+    } else {
+      auction_metrics_recorder_->RecordBidQueuedWaitingForConfigPromises(
+          unscored_bid->wait_promises);
+    }
   }
 
   ScoreQueuedBidsIfReady();
@@ -2890,6 +2899,14 @@ void InterestGroupAuction::OnSellerWorkletReceived() {
   for (auto& unscored_bid : unscored_bids_) {
     unscored_bid->wait_worklet =
         now - unscored_bid->trace_wait_seller_deps_start;
+
+    if (!component_auctions_.empty()) {
+      auction_metrics_recorder_->RecordTopLevelBidQueuedWaitingForSellerWorklet(
+          unscored_bid->wait_worklet);
+    } else {
+      auction_metrics_recorder_->RecordBidQueuedWaitingForSellerWorklet(
+          unscored_bid->wait_worklet);
+    }
   }
 
   ScoreQueuedBidsIfReady();

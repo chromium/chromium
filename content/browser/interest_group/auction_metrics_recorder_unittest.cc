@@ -71,7 +71,8 @@ class AuctionMetricsRecorderTest : public testing::Test {
       return absl::nullopt;
     }
 
-    EXPECT_TRUE(entries.at(0).metrics.contains(metric_name));
+    EXPECT_TRUE(entries.at(0).metrics.contains(metric_name))
+        << "Missing expected metric, " << metric_name;
     if (!entries.at(0).metrics.contains(metric_name)) {
       return absl::nullopt;
     }
@@ -849,6 +850,217 @@ TEST_F(AuctionMetricsRecorderTest,
   EXPECT_FALSE(HasMetric(
       UkmEntry::
           kMeanGenerateBidTrustedBiddingSignalsCriticalPathLatencyInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       TopLevelBidsQueuedWaitingForConfigPromisesMetricsWhenNeverRecorded) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumTopLevelBidsQueuedWaitingForConfigPromisesName),
+            0);
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::
+          kMeanTimeTopLevelBidsQueuedWaitingForConfigPromisesInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       TopLevelBidsQueuedWaitingForConfigPromisesMetricWhenRecordedManyTimes) {
+  for (int i = 0; i < 12; ++i) {
+    recorder().RecordTopLevelBidQueuedWaitingForConfigPromises(
+        base::Milliseconds(305));
+    recorder().RecordTopLevelBidQueuedWaitingForConfigPromises(
+        base::Milliseconds(505));
+  }
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 24 becomes 22 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumTopLevelBidsQueuedWaitingForConfigPromisesName),
+            22);
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::
+              kMeanTimeTopLevelBidsQueuedWaitingForConfigPromisesInMillisName),
+      400);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       TopLevelBidsQueuedWaitingForConfigPromisesMetricIgnoresNegativeValues) {
+  for (int i = 0; i < 12; ++i) {
+    recorder().RecordBidQueuedWaitingForConfigPromises(
+        base::Milliseconds(-200));
+    recorder().RecordTopLevelBidQueuedWaitingForConfigPromises(
+        base::Milliseconds(305));
+    recorder().RecordTopLevelBidQueuedWaitingForConfigPromises(
+        base::Milliseconds(505));
+  }
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 24 becomes 22 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumTopLevelBidsQueuedWaitingForConfigPromisesName),
+            22);
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::
+              kMeanTimeTopLevelBidsQueuedWaitingForConfigPromisesInMillisName),
+      400);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       TopLevelBidsQueuedWaitingForSellerWorkletMetricsWhenNeverRecorded) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumTopLevelBidsQueuedWaitingForSellerWorkletName),
+            0);
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::
+          kMeanTimeTopLevelBidsQueuedWaitingForSellerWorkletInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       TopLevelBidsQueuedWaitingForSellerWorkletMetricWhenRecordedManyTimes) {
+  for (int i = 0; i < 12; ++i) {
+    recorder().RecordTopLevelBidQueuedWaitingForSellerWorklet(
+        base::Milliseconds(305));
+    recorder().RecordTopLevelBidQueuedWaitingForSellerWorklet(
+        base::Milliseconds(505));
+  }
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 24 becomes 22 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumTopLevelBidsQueuedWaitingForSellerWorkletName),
+            22);
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::
+              kMeanTimeTopLevelBidsQueuedWaitingForSellerWorkletInMillisName),
+      400);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       TopLevelBidsQueuedWaitingForSellerWorkletMetricIgnoresNegativeValues) {
+  for (int i = 0; i < 12; ++i) {
+    recorder().RecordTopLevelBidQueuedWaitingForSellerWorklet(
+        base::Milliseconds(-200));
+    recorder().RecordTopLevelBidQueuedWaitingForSellerWorklet(
+        base::Milliseconds(305));
+    recorder().RecordTopLevelBidQueuedWaitingForSellerWorklet(
+        base::Milliseconds(505));
+  }
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 24 becomes 22 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumTopLevelBidsQueuedWaitingForSellerWorkletName),
+            22);
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::
+              kMeanTimeTopLevelBidsQueuedWaitingForSellerWorkletInMillisName),
+      400);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       BidsQueuedWaitingForConfigPromisesMetricsWhenNeverRecorded) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kNumBidsQueuedWaitingForConfigPromisesName), 0);
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::kMeanTimeBidsQueuedWaitingForConfigPromisesInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       BidsQueuedWaitingForConfigPromisesMetricWhenRecordedManyTimes) {
+  for (int i = 0; i < 12; ++i) {
+    recorder().RecordBidQueuedWaitingForConfigPromises(base::Milliseconds(305));
+    recorder().RecordBidQueuedWaitingForConfigPromises(base::Milliseconds(505));
+  }
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 24 becomes 22 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kNumBidsQueuedWaitingForConfigPromisesName), 22);
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::kMeanTimeBidsQueuedWaitingForConfigPromisesInMillisName),
+      400);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       BidsQueuedWaitingForConfigPromisesMetricIgnoresNegativeValues) {
+  for (int i = 0; i < 12; ++i) {
+    recorder().RecordBidQueuedWaitingForConfigPromises(
+        base::Milliseconds(-200));
+    recorder().RecordBidQueuedWaitingForConfigPromises(base::Milliseconds(305));
+    recorder().RecordBidQueuedWaitingForConfigPromises(base::Milliseconds(505));
+  }
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 24 becomes 22 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kNumBidsQueuedWaitingForConfigPromisesName), 22);
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::kMeanTimeBidsQueuedWaitingForConfigPromisesInMillisName),
+      400);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       BidsQueuedWaitingForSellerWorkletMetricsWhenNeverRecorded) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumBidsQueuedWaitingForSellerWorkletName),
+            0);
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::kMeanTimeBidsQueuedWaitingForSellerWorkletInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       BidsQueuedWaitingForSellerWorkletMetricWhenRecordedManyTimes) {
+  for (int i = 0; i < 12; ++i) {
+    recorder().RecordBidQueuedWaitingForSellerWorklet(base::Milliseconds(305));
+    recorder().RecordBidQueuedWaitingForSellerWorklet(base::Milliseconds(505));
+  }
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 24 becomes 22 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumBidsQueuedWaitingForSellerWorkletName),
+            22);
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::kMeanTimeBidsQueuedWaitingForSellerWorkletInMillisName),
+      400);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       BidsQueuedWaitingForSellerWorkletMetricIgnoresNegativeValues) {
+  for (int i = 0; i < 12; ++i) {
+    recorder().RecordBidQueuedWaitingForSellerWorklet(base::Milliseconds(-200));
+    recorder().RecordBidQueuedWaitingForSellerWorklet(base::Milliseconds(305));
+    recorder().RecordBidQueuedWaitingForSellerWorklet(base::Milliseconds(505));
+  }
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 24 becomes 22 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumBidsQueuedWaitingForSellerWorkletName),
+            22);
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::kMeanTimeBidsQueuedWaitingForSellerWorkletInMillisName),
+      400);
 }
 
 }  // namespace

@@ -107,6 +107,12 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
       const auction_worklet::mojom::GenerateBidDependencyLatencies&
           generate_bid_dependency_latencies);
 
+  // Records scoring delays due to unavailability of SellerWorklet or promises.
+  void RecordTopLevelBidQueuedWaitingForConfigPromises(base::TimeDelta delay);
+  void RecordTopLevelBidQueuedWaitingForSellerWorklet(base::TimeDelta delay);
+  void RecordBidQueuedWaitingForConfigPromises(base::TimeDelta delay);
+  void RecordBidQueuedWaitingForSellerWorklet(base::TimeDelta delay);
+
  private:
   using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency;
   using EntrySetFunction = UkmEntry& (UkmEntry::*)(int64_t value);
@@ -214,6 +220,12 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
       generate_bid_direct_from_seller_signals_critical_path_aggregator_;
   LatencyAggregator
       generate_bid_trusted_bidding_signals_critical_path_aggregator_;
+
+  LatencyAggregator top_level_bid_queued_waiting_for_seller_worklet_aggregator_;
+  LatencyAggregator
+      top_level_bid_queued_waiting_for_config_promises_aggregator_;
+  LatencyAggregator bid_queued_waiting_for_seller_worklet_aggregator_;
+  LatencyAggregator bid_queued_waiting_for_config_promises_aggregator_;
 };
 
 }  // namespace content

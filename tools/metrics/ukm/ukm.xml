@@ -894,6 +894,38 @@ be describing additional metrics about the same event.
       one that satisfies the kAnon threshold, and one that doesn't.
     </summary>
   </metric>
+  <metric name="MeanTimeBidsQueuedWaitingForConfigPromisesInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time that bids that were ready for scoring before the config
+      promises were fulfilled were blocked waiting on the config promises. For
+      multi-seller auctions, this only includes bids in the component auctions,
+      and not rescoring of bids in the top-level auction.
+    </summary>
+  </metric>
+  <metric name="MeanTimeBidsQueuedWaitingForSellerWorkletInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time that bids that were ready for scoring before the seller
+      worklet became available were blocked waiting on the seller worklet. For
+      multi-seller auctions, this only includes bids in the component auctions,
+      and not rescoring of bids in the top-level auction.
+    </summary>
+  </metric>
+  <metric name="MeanTimeTopLevelBidsQueuedWaitingForConfigPromisesInMillis">
+    <summary>
+      Only recorded for multi-seller auctions, this records the mean time that
+      top-level bids that were ready for rescoring before the config promises
+      were fulfilled were blocked waiting on the config promises.
+    </summary>
+  </metric>
+  <metric name="MeanTimeTopLevelBidsQueuedWaitingForSellerWorkletInMillis">
+    <summary>
+      Only recorded for multi-seller auctions, this records the mean time that
+      top-level bids that were ready for rescoring before the seller worklet
+      became available were blocked waiting on the seller worklet.
+    </summary>
+  </metric>
   <metric name="NumBidderWorklets">
     <summary>
       The number of distinct BidderWorklets. Interest groups with the same owner
@@ -949,6 +981,24 @@ be describing additional metrics about the same event.
       Ads.InterestGroup.Auction.BidFiltered, except that it's aggregated. To
       determine the fraction of bids filtered, compare this against the
       NumInterestGroups metric.
+    </summary>
+  </metric>
+  <metric name="NumBidsQueuedWaitingForConfigPromises">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the total number of bids that were ready for scoring before the config
+      promises were fulfilled. For multi-seller auctions, this only includes
+      bids in the component auctions, and not rescoring of bids in the top-level
+      auction.
+    </summary>
+  </metric>
+  <metric name="NumBidsQueuedWaitingForSellerWorklet">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the total number of bids that were ready for scoring before the seller
+      worklet became available. For multi-seller auctions, this only includes
+      bids in the component auctions, and not rescoring of bids in the top-level
+      auction.
     </summary>
   </metric>
   <metric name="NumDistinctOwnersWithInterestGroups">
@@ -1063,6 +1113,18 @@ be describing additional metrics about the same event.
       metric, Ads.InterestGroup.Auction.NumSellersWithBidders. No value is
       defined for this metric if there are no bidders eligible to participate in
       this auction.
+    </summary>
+  </metric>
+  <metric name="NumTopLevelBidsQueuedWaitingForConfigPromises">
+    <summary>
+      Only recorded for multi-seller auctions, this records the number of bids
+      that were ready for rescoring before the config promises were fulfilled.
+    </summary>
+  </metric>
+  <metric name="NumTopLevelBidsQueuedWaitingForSellerWorklet">
+    <summary>
+      Only recorded for multi-seller auctions, this records the number of bids
+      that were ready for rescoring before the seller worklet became available.
     </summary>
   </metric>
   <metric name="Result" enum="AuctionResult">
