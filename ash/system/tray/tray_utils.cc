@@ -168,12 +168,19 @@ int CalculateMaxTrayBubbleHeight() {
 
   // We calculate the available height from the top of the screen to the top of
   // the bubble's anchor rect. We can not use the bottom of the screen since the
-  // anchor's position is not always exactly at the bottom of the screen.
+  // anchor's position is not always exactly at the bottom of the screen. If
+  // we're in tablet mode then we also need to subtract out any extra padding
+  // that may be present due to the hotseat.
   int anchor_rect_top = shelf->GetSystemTrayAnchorRect().y();
   WorkAreaInsets* work_area =
       WorkAreaInsets::ForWindow(shelf->GetWindow()->GetRootWindow());
   int free_space_height_above_anchor =
       anchor_rect_top - work_area->user_work_area_bounds().y();
+  bool in_tablet_mode = Shell::Get()->tablet_mode_controller() &&
+                        Shell::Get()->tablet_mode_controller()->InTabletMode();
+  if (in_tablet_mode) {
+    free_space_height_above_anchor -= GetBubbleInsetHotseatCompensation();
+  }
   return free_space_height_above_anchor - kBubbleMenuPadding * 2;
 }
 

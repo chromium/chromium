@@ -8,14 +8,18 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/display.h"
@@ -52,6 +56,34 @@ class NotificationCenterBubbleTest : public AshTestBase {
 
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
+
+// Tests that the notification bubble does not get cut off by the top of the
+// screen on the launcher homescreen in tablet mode; see b/278471988.
+TEST_F(NotificationCenterBubbleTest,
+       TopOfBubbleConstrainedByTopOfDisplayInTabletModeHomescreen) {
+  // Set the display to some known size.
+  UpdateDisplay("1200x800");
+
+  // Switch to tablet mode and verify we're on the launcher homescreen.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_EQ(ShelfBackgroundType::kHomeLauncher,
+            GetPrimaryShelf()->GetBackgroundType());
+
+  // Add a large number of notifications to overflow the scroll view in the
+  // notification center.
+  for (int i = 0; i < 100; i++) {
+    test_api()->AddNotification();
+  }
+
+  // Show the notification center bubble.
+  test_api()->ToggleBubble();
+
+  // Verify that the top of the notification center bubble window is not beyond
+  // the top of the display.
+  EXPECT_GE(
+      test_api()->GetBubble()->GetBubbleWidget()->GetWindowBoundsInScreen().y(),
+      0);
+}
 
 TEST_F(NotificationCenterBubbleTest, BubbleHeightConstrainedByDisplay) {
   const int display_height = 800;
