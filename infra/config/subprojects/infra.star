@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the infra bucket."""
 
-load("//lib/builders.star", "builders", "cpu")
+load("//lib/builders.star", "builders", "cpu", "os")
 load("//lib/consoles.star", "consoles")
 
 consoles.console_view(
@@ -15,6 +15,7 @@ consoles.console_view(
 builders.defaults.set(
     bucket = "infra",
     cores = 8,
+    os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
     build_numbers = True,
 )
