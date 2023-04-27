@@ -323,6 +323,10 @@ bool PowerButtonController::IsMenuOpened() const {
   return menu_widget_ && menu_widget_->GetLayer()->GetTargetVisibility();
 }
 
+void PowerButtonController::ShowMenuOnDebugAccelerator() {
+  StartPowerMenuAnimation(ShutdownReason::DEBUG_ACCELERATOR);
+}
+
 void PowerButtonController::DismissMenu() {
   if (IsMenuOpened()) {
     static_cast<PowerButtonMenuScreenView*>(menu_widget_->GetContentsView())

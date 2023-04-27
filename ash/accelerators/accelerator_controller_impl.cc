@@ -629,6 +629,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case DEBUG_TOGGLE_DARK_MODE:
     case DEBUG_TOGGLE_DYNAMIC_COLOR:
     case DEBUG_TOGGLE_GLANCEABLES:
+    case DEBUG_TOGGLE_POWER_BUTTON_MENU:
     case DEBUG_TOGGLE_SHOW_DEBUG_BORDERS:
     case DEBUG_TOGGLE_SHOW_FPS_COUNTER:
     case DEBUG_TOGGLE_SHOW_PAINT_RECTS:
@@ -896,6 +897,7 @@ void AcceleratorControllerImpl::PerformAction(
     case DEBUG_TOGGLE_DARK_MODE:
     case DEBUG_TOGGLE_DYNAMIC_COLOR:
     case DEBUG_TOGGLE_GLANCEABLES:
+    case DEBUG_TOGGLE_POWER_BUTTON_MENU:
     case DEBUG_TOGGLE_VIDEO_CONFERENCE_CAMERA_TRAY_ICON:
     case DEBUG_SYSTEM_UI_STYLE_VIEWER:
       debug::PerformDebugActionIfEnabled(action);

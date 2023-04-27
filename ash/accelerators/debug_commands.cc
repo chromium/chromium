@@ -22,6 +22,7 @@
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/style_viewer/system_ui_components_style_viewer_view.h"
+#include "ash/system/power/power_button_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/video_conference/video_conference_common.h"
@@ -161,6 +162,11 @@ void HandleToggleGlanceables() {
     controller->DestroyUi();
   else
     controller->CreateUi();
+}
+
+void HandleTogglePowerButtonMenu() {
+  auto* controller = Shell::Get()->power_button_controller();
+  controller->ShowMenuOnDebugAccelerator();
 }
 
 void HandleToggleKeyboardBacklight() {
@@ -320,6 +326,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case DEBUG_TOGGLE_GLANCEABLES:
       HandleToggleGlanceables();
+      break;
+    case DEBUG_TOGGLE_POWER_BUTTON_MENU:
+      HandleTogglePowerButtonMenu();
       break;
     case DEBUG_TOGGLE_TOUCH_PAD:
       HandleToggleTouchpad();

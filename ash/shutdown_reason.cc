@@ -20,6 +20,8 @@ const char* ShutdownReasonToString(ShutdownReason reason) {
       return "tray shut down button";
     case ShutdownReason::ARC_POWER_BUTTON:
       return "arc power button";
+    case ShutdownReason::DEBUG_ACCELERATOR:
+      return "debug accelerator";
   }
   NOTREACHED() << "Invalid reason " << static_cast<int>(reason);
   return "invalid";

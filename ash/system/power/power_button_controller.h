@@ -113,6 +113,11 @@ class ASH_EXPORT PowerButtonController
   // True if the menu is opened.
   bool IsMenuOpened() const;
 
+  // Called when DEBUG_TOGGLE_POWER_BUTTON_MENU is pressed. This is used to help
+  // bring up the menu for debugging without pressing the physical power
+  // button. The menu will be shown without pre-shutdown.
+  void ShowMenuOnDebugAccelerator();
+
   // Dismisses the menu.
   void DismissMenu();
 
