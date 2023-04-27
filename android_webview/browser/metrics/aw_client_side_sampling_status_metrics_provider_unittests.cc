@@ -7,7 +7,6 @@
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/common/aw_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -30,7 +29,6 @@ class AwMetricsServiceClientTestDelegate
 }  // namespace
 
 TEST(AwClientSideSamplingStatusMetricsProviderTest, TestSamplingApplied) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_list;
   AwMetricsServiceClient client(
       std::make_unique<AwMetricsServiceClientTestDelegate>());
@@ -48,7 +46,6 @@ TEST(AwClientSideSamplingStatusMetricsProviderTest, TestSamplingApplied) {
 }
 
 TEST(AwClientSideSamplingStatusMetricsProviderTest, TestSamplingNotApplied) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_list;
   AwMetricsServiceClient client(
       std::make_unique<AwMetricsServiceClientTestDelegate>());

@@ -183,9 +183,9 @@ int BrowserMainPartsImpl::PreCreateThreads() {
   auto* synthetic_trial_registry = WebLayerMetricsServiceClient::GetInstance()
                                        ->GetMetricsService()
                                        ->GetSyntheticTrialRegistry();
-  synthetic_trial_registry->AddObserver(
+  synthetic_trial_registry->AddSyntheticTrialObserver(
       variations::VariationsIdsProvider::GetInstance());
-  synthetic_trial_registry->AddObserver(
+  synthetic_trial_registry->AddSyntheticTrialObserver(
       variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
 #endif
 

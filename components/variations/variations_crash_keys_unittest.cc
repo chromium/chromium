@@ -52,7 +52,8 @@ class VariationsCrashKeysTest : public ::testing::Test {
 
 TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
   SyntheticTrialRegistry registry;
-  registry.AddObserver(SyntheticTrialsActiveGroupIdProvider::GetInstance());
+  registry.AddSyntheticTrialObserver(
+      SyntheticTrialsActiveGroupIdProvider::GetInstance());
 
   // Start with 2 trials, one active and one not
   base::FieldTrialList::CreateFieldTrial("Trial1", "Group1")->Activate();

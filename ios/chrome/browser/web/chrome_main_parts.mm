@@ -417,9 +417,9 @@ void IOSChromeMainParts::SetUpFieldTrials(
 
 void IOSChromeMainParts::SetupMetrics() {
   metrics::MetricsService* metrics = application_context_->GetMetricsService();
-  metrics->GetSyntheticTrialRegistry()->AddObserver(
+  metrics->GetSyntheticTrialRegistry()->AddSyntheticTrialObserver(
       variations::VariationsIdsProvider::GetInstance());
-  metrics->GetSyntheticTrialRegistry()->AddObserver(
+  metrics->GetSyntheticTrialRegistry()->AddSyntheticTrialObserver(
       variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
   // Now that field trials have been created, initializes metrics recording.
   metrics->InitializeMetricsRecordingState();

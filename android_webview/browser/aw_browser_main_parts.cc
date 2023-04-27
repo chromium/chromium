@@ -141,9 +141,9 @@ int AwBrowserMainParts::PreCreateThreads() {
 void AwBrowserMainParts::RegisterSyntheticTrials() {
   metrics::MetricsService* metrics =
       AwMetricsServiceClient::GetInstance()->GetMetricsService();
-  metrics->GetSyntheticTrialRegistry()->AddObserver(
+  metrics->GetSyntheticTrialRegistry()->AddSyntheticTrialObserver(
       variations::VariationsIdsProvider::GetInstance());
-  metrics->GetSyntheticTrialRegistry()->AddObserver(
+  metrics->GetSyntheticTrialRegistry()->AddSyntheticTrialObserver(
       variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
 
   static constexpr char kWebViewApkTypeTrial[] = "WebViewApkType";
