@@ -29,6 +29,7 @@
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/clip_recorder.h"
@@ -497,11 +498,17 @@ HoverHighlightView* TrayDetailedView::AddScrollListItem(
   if (icon.is_empty()) {
     item->AddLabelRow(text);
   } else {
-    item->AddIconAndLabel(
-        gfx::CreateVectorIcon(
-            icon, AshColorProvider::Get()->GetContentLayerColor(
-                      AshColorProvider::ContentLayerType::kIconColorPrimary)),
-        text);
+    if (chromeos::features::IsJellyEnabled()) {
+      item->AddIconAndLabel(
+          ui::ImageModel::FromVectorIcon(icon, cros_tokens::kCrosSysOnSurface),
+          text);
+    } else {
+      item->AddIconAndLabel(
+          gfx::CreateVectorIcon(
+              icon, AshColorProvider::Get()->GetContentLayerColor(
+                        AshColorProvider::ContentLayerType::kIconColorPrimary)),
+          text);
+    }
   }
 
   if (features::IsQsRevampEnabled()) {
