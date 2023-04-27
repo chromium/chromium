@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_omnibox_positioning.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -45,8 +44,7 @@ const CGFloat kShiftTilesDownAnimationDuration = 0.2;
 const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 }  // namespace
 
-@interface NewTabPageViewController () <NewTabPageOmniboxPositioning,
-                                        UICollectionViewDelegate,
+@interface NewTabPageViewController () <UICollectionViewDelegate,
                                         UIGestureRecognizerDelegate>
 
 // The overscroll actions controller managing accelerators over the toolbar.
@@ -719,19 +717,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   return YES;
 }
 
-#pragma mark - NewTabPageOmniboxPositioning
-
-- (CGFloat)stickyOmniboxHeight {
-  // Takes the height of the entire header and subtracts the margin to stick the
-  // fake omnibox. Adjusts this for the device by further subtracting the
-  // toolbar height and safe area insets.
-  return [self.headerViewController headerHeight] -
-         ntp_header::kFakeOmniboxScrolledToTopMargin -
-         ToolbarExpandedHeight(
-             [UIApplication sharedApplication].preferredContentSizeCategory) -
-         self.view.safeAreaInsets.top - [self feedHeaderHeight];
-}
-
 #pragma mark - ThumbStripSupporting
 
 - (BOOL)isThumbStripEnabled {
@@ -896,8 +881,21 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 #pragma mark - Private
 
+// Returns the collection view containing all NTP content.
 - (UICollectionView*)collectionView {
   return self.feedWrapperViewController.contentCollectionView;
+}
+
+// Returns the height of the fake omnibox to stick to the top of the NTP.
+- (CGFloat)stickyOmniboxHeight {
+  // Takes the height of the entire header and subtracts the margin to stick the
+  // fake omnibox. Adjusts this for the device by further subtracting the
+  // toolbar height and safe area insets.
+  return [self.headerViewController headerHeight] -
+         ntp_header::kFakeOmniboxScrolledToTopMargin -
+         ToolbarExpandedHeight(
+             [UIApplication sharedApplication].preferredContentSizeCategory) -
+         self.view.safeAreaInsets.top - [self feedHeaderHeight];
 }
 
 // Configures overscroll actions controller.

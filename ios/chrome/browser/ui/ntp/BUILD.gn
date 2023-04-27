@@ -14,7 +14,6 @@ source_set("ntp") {
     "new_tab_page_delegate.h",
     "new_tab_page_follow_delegate.h",
     "new_tab_page_metrics_delegate.h",
-    "new_tab_page_omnibox_positioning.h",
     "new_tab_page_url_loader_delegate.h",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
