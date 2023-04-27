@@ -16,6 +16,34 @@
 
 namespace content {
 
+namespace {
+
+PreloadingPredictor GetPredictor(
+    blink::mojom::SpeculationInjectionWorld world) {
+  switch (world) {
+    case blink::mojom::SpeculationInjectionWorld::kNone:
+      [[fallthrough]];
+    case blink::mojom::SpeculationInjectionWorld::kMain:
+      return content_preloading_predictor::kSpeculationRules;
+    case blink::mojom::SpeculationInjectionWorld::kIsolated:
+      return content_preloading_predictor::kSpeculationRulesFromIsolatedWorld;
+  }
+}
+
+PrerenderTriggerType GetTriggerType(
+    blink::mojom::SpeculationInjectionWorld world) {
+  switch (world) {
+    case blink::mojom::SpeculationInjectionWorld::kNone:
+      [[fallthrough]];
+    case blink::mojom::SpeculationInjectionWorld::kMain:
+      return PrerenderTriggerType::kSpeculationRule;
+    case blink::mojom::SpeculationInjectionWorld::kIsolated:
+      return PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld;
+  }
+}
+
+}  // namespace
+
 struct PrerendererImpl::PrerenderInfo {
   GURL url;
   Referrer referrer;
@@ -183,8 +211,8 @@ bool PrerendererImpl::MaybePrerender(
   PreloadingURLMatchCallback same_url_matcher =
       PreloadingData::GetSameURLMatcher(candidate->url);
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
-      content_preloading_predictor::kSpeculationRules,
-      PreloadingType::kPrerender, std::move(same_url_matcher));
+      GetPredictor(candidate->injection_world), PreloadingType::kPrerender,
+      std::move(same_url_matcher));
 
   auto [begin, end] = base::ranges::equal_range(
       started_prerenders_.begin(), started_prerenders_.end(), candidate->url,
@@ -214,11 +242,7 @@ bool PrerendererImpl::MaybePrerender(
 
   Referrer referrer(*(candidate->referrer));
   PrerenderAttributes attributes(
-      candidate->url,
-      candidate->injection_world !=
-              blink::mojom::SpeculationInjectionWorld::kIsolated
-          ? PrerenderTriggerType::kSpeculationRule
-          : PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld,
+      candidate->url, GetTriggerType(candidate->injection_world),
       /*embedder_histogram_suffix=*/"", referrer, rfhi.GetLastCommittedOrigin(),
       rfhi.GetProcess()->GetID(), web_contents->GetWeakPtr(),
       rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),
