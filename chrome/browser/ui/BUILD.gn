@@ -3156,6 +3156,8 @@ static_library("ui") {
       "webui/settings/ash/os_settings_manager.h",
       "webui/settings/ash/os_settings_manager_factory.cc",
       "webui/settings/ash/os_settings_manager_factory.h",
+      "webui/settings/ash/os_settings_metrics_provider.cc",
+      "webui/settings/ash/os_settings_metrics_provider.h",
       "webui/settings/ash/os_settings_section.cc",
       "webui/settings/ash/os_settings_section.h",
       "webui/settings/ash/os_settings_sections.cc",

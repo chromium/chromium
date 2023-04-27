@@ -166,6 +166,7 @@
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 #include "chrome/browser/metrics/update_engine_metrics_provider.h"
+#include "chrome/browser/ui/webui/settings/ash/os_settings_metrics_provider.h"
 #include "components/metrics/structured/structured_metrics_provider.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -934,6 +935,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<KeyboardBacklightColorMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<PersonalizationAppThemeMetricsProvider>());
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<ash::settings::OsSettingsMetricsProvider>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

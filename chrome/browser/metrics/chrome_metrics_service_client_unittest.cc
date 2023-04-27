@@ -234,8 +234,8 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   // PersonalizationAppThemeMetricsProvider, PrinterMetricsProvider,
   // HashedLoggingMetricsProvider, FamilyUserMetricsProvider,
   // FamilyLinkUserMetricsProvider, UpdateEngineMetricsProvider,
-  // and UserTypeByDeviceTypeMetricsProvider.
-  expected_providers += 12;
+  // OsSettingsMetricsProvider, and UserTypeByDeviceTypeMetricsProvider.
+  expected_providers += 13;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
