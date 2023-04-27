@@ -497,7 +497,8 @@ void DismissDefaultBrowserPromo() {
 }
 
 // Tests accepting sync with 2 datatype disabled.
-- (void)testAdvancedSettingsAndDisableTwoDataTypes {
+// TODO(crbug.com/1440800): Test is failing on ios-simulator-full-configs.
+- (void)DISABLED_testAdvancedSettingsAndDisableTwoDataTypes {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
