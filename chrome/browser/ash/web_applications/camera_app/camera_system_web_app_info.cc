@@ -80,3 +80,7 @@ gfx::Size CameraSystemAppDelegate::GetMinimumWindowSize() const {
 gfx::Rect CameraSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
   return GetDefaultBoundsForCameraApp(browser);
 }
+
+bool CameraSystemAppDelegate::UseSystemThemeColor() const {
+  return false;
+}
