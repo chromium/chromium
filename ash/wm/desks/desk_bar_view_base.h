@@ -61,6 +61,8 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   State state() const { return state_; }
 
+  aura::Window* root() const { return root_; }
+
   void set_is_bounds_animation_on_going(bool value) {
     is_bounds_animation_on_going_ = value;
   }

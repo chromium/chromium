@@ -27,6 +27,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desk_animation_impl.h"
+#include "ash/wm/desks/desk_bar_controller.h"
 #include "ash/wm/desks/desks_animations.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_restore_util.h"
@@ -427,6 +428,10 @@ DesksController::DesksController()
   weekly_active_desks_scheduler_.Start(
       FROM_HERE, base::Days(7), this,
       &DesksController::RecordAndResetNumberOfWeeklyActiveDesks);
+
+  if (ash::features::IsDeskButtonEnabled()) {
+    desk_bar_controller_ = std::make_unique<DeskBarController>();
+  }
 }
 
 DesksController::~DesksController() {
@@ -515,6 +520,7 @@ void DesksController::OnNewUserShown() {
 }
 
 void DesksController::Shutdown() {
+  desk_bar_controller_.reset();
   animation_.reset();
   desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
 }
