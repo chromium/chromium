@@ -407,15 +407,20 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
     return;
   }
 
+  bool disallow_changes;
+
   // If the --force-renderer-accessibility command line flag is present and an
   // AXMode bundle has been provided as an argument, then the AXMode bundle
   // should always be respected. Any attempts to set mode to flags other than
   // the bundle should be ignored.
   if (force_renderer_accessibility_ &&
       (force_renderer_accessibility_ax_mode_flags_.flags() !=
-           ui::AXMode::kNone &&
-       force_renderer_accessibility_ax_mode_flags_ != mode)) {
-    return;
+       ui::AXMode::kNone)) {
+    if (force_renderer_accessibility_ax_mode_flags_ != mode) {
+      return;
+    }
+
+    disallow_changes = true;
   }
 
   // Adding an accessibility mode flag is generally the result of an
@@ -442,6 +447,14 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
 
   // Proxy the AXMode to AXPlatformNode to enable accessibility.
   ui::AXPlatformNode::NotifyAddAXModeFlags(accessibility_mode_);
+
+  // If the --force-renderer-accessibility command line flag is present and an
+  // AXMode bundle has been provided as an argument, then after setting the
+  // correct AXMode for AXPlatformNode, changes to the AXMode in AXPlatformNode
+  // should be disallowed.
+  if (disallow_changes) {
+    ui::AXPlatformNode::DisallowAXModeChanges();
+  }
 
   // Retrieve only newly added modes for the purposes of logging.
   int new_mode_flags = mode.flags() & (~previous_mode.flags());
