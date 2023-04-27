@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/extensions/file_manager/file_stream_md5_digester.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
+#include "chrome/browser/ash/extensions/file_manager/search_by_pattern.h"
 #include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/delete_io_task.h"
@@ -184,77 +185,6 @@ void ComputeChecksumRespondOnUIThread(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(hash)));
-}
-
-// Construct a case-insensitive fnmatch query from |query|. E.g.  for abc123,
-// the result would be *[aA][bB][cC]123*.
-std::string CreateFnmatchQuery(const std::string& query) {
-  std::vector<std::string> query_pieces = {"*"};
-  size_t sequence_start = 0;
-  for (size_t i = 0; i < query.size(); ++i) {
-    if (isalpha(query[i])) {
-      if (sequence_start != i) {
-        query_pieces.push_back(
-            query.substr(sequence_start, i - sequence_start));
-      }
-      std::string piece("[");
-      piece.resize(4);
-      piece[1] = tolower(query[i]);
-      piece[2] = toupper(query[i]);
-      piece[3] = ']';
-      query_pieces.push_back(std::move(piece));
-      sequence_start = i + 1;
-    }
-  }
-  if (sequence_start != query.size()) {
-    query_pieces.push_back(query.substr(sequence_start));
-  }
-  query_pieces.push_back("*");
-
-  return base::StrCat(query_pieces);
-}
-
-std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
-    const base::FilePath& root,
-    const std::string& query,
-    size_t max_results,
-    const base::Time& min_timestamp,
-    ash::RecentSource::FileType file_type) {
-  std::vector<std::pair<base::FilePath, bool>> prefix_matches;
-  std::vector<std::pair<base::FilePath, bool>> other_matches;
-
-  base::FileEnumerator enumerator(
-      root, true,
-      base::FileEnumerator::DIRECTORIES | base::FileEnumerator::FILES,
-      CreateFnmatchQuery(query), base::FileEnumerator::FolderSearchPolicy::ALL);
-
-  for (base::FilePath path = enumerator.Next(); !path.empty();
-       path = enumerator.Next()) {
-    if (enumerator.GetInfo().GetLastModifiedTime() < min_timestamp) {
-      continue;
-    }
-    if (!ash::RecentDiskSource::MatchesFileType(path, file_type)) {
-      continue;
-    }
-    if (base::StartsWith(path.BaseName().value(), query,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      prefix_matches.emplace_back(path, enumerator.GetInfo().IsDirectory());
-      if (max_results && prefix_matches.size() == max_results) {
-        return prefix_matches;
-      }
-      continue;
-    }
-    if (!max_results ||
-        prefix_matches.size() + other_matches.size() < max_results) {
-      other_matches.emplace_back(path, enumerator.GetInfo().IsDirectory());
-    }
-  }
-  prefix_matches.insert(
-      prefix_matches.end(), other_matches.begin(),
-      other_matches.begin() +
-          std::min(max_results - prefix_matches.size(), other_matches.size()));
-
-  return prefix_matches;
 }
 
 ash::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
@@ -1483,8 +1413,8 @@ FileManagerPrivateInternalSearchFilesFunction::Run() {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
           &SearchByPattern, root_path, search_params.query,
-          base::internal::checked_cast<size_t>(search_params.max_results),
-          base::Time::FromJsTime(search_params.timestamp), file_type),
+          base::Time::FromJsTime(search_params.timestamp), file_type,
+          base::internal::checked_cast<size_t>(search_params.max_results)),
       base::BindOnce(
           &FileManagerPrivateInternalSearchFilesFunction::OnSearchByPatternDone,
           this));
