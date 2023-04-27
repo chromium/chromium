@@ -13,6 +13,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/crash/core/common/crash_key.h"
 #import "components/handoff/handoff_utility.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/app_startup_parameters.h"
@@ -80,7 +81,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
       [activityType isEqualToString:kShortcutVoiceSearch] ||
       [activityType isEqualToString:kShortcutQRScanner] ||
       [activityType isEqualToString:kShortcutLens] ||
-      [activityType isEqualToString:kSiriShortcutSearchInChrome]) {
+      [activityType isEqualToString:kSiriShortcutSearchInChrome] ||
+      [activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     return @[ kRegularMode, kIncognitoMode ];
   } else if ([activityType isEqualToString:kSiriShortcutOpenInChrome]) {
     return @[ kRegularMode ];
@@ -88,7 +90,10 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
              [activityType isEqualToString:kSiriShortcutOpenInIncognito]) {
     return @[ kIncognitoMode ];
   } else {
-    NOTREACHED();
+    static crash_reporter::CrashKeyString<4> key("activity");
+    crash_reporter::ScopedCrashKeyString crash_key(
+        &key, base::SysNSStringToUTF8(activityType));
+    base::debug::DumpWithoutCrashing();
   }
   return nil;
 }
