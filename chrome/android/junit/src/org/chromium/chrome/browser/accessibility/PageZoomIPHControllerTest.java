@@ -63,7 +63,6 @@ public class PageZoomIPHControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_IPH, true);
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, true);
         FeatureList.setTestValues(mTestValues);
 
