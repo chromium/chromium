@@ -11,21 +11,23 @@ domAutomationController._frame_request = 0;
 domAutomationController._done = false;
 domAutomationController._failure = false;
 
-// Waits for video element to be loaded before calling
-// requestVideoFrameCallback.
-var observer = new MutationObserver(function(mutationList, observer) {
-  for (const { addedNodes } of mutationList) {
-    for (const node of addedNodes) {
-      if (node.nodeName == "VIDEO") {
-        var video = document.querySelector("video");
-        video.requestVideoFrameCallback(domAutomationController.addFrame);
-        observer.disconnect();
-        break;
-      }
-    }
+function requestVideoFrameCallback() {
+  const video = document.querySelector('video');
+  if (!video) {
+    console.log('Video element could not be found');
+    window.close();
+    return;
   }
-});
-observer.observe(document, { childList: true, subtree: true });
+  video.requestVideoFrameCallback(domAutomationController.addFrame);
+}
+
+// Waits for document to be fully loaded before calling
+// requestVideoFrameCallback.
+document.onreadystatechange = function() {
+  if (document.readystate === 'complete') {
+    requestVideoFrameCallback();
+  }
+}
 
 // Checks termination condition by comparing frame requests and frame count of
 // received frames.
@@ -42,9 +44,9 @@ domAutomationController.checkTermination = function() {
 domAutomationController.addFrame = function(now, metadata) {
   domAutomationController._frame_count++;
   domAutomationController.checkTermination();
-
-  var video = document.querySelector('video');
-  video.requestVideoFrameCallback(domAutomationController.addFrame);
+  if (!this._done) {
+    requestVideoFrameCallback();
+  }
 }
 
 // Tracks frame requests.
