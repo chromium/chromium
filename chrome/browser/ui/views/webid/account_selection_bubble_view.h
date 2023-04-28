@@ -17,6 +17,9 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
+using IdentityRegistryCallback =
+    content::IdentityRequestDialogController::IdentityRegistryCallback;
+
 namespace views {
 class Checkbox;
 class ImageButton;
@@ -62,7 +65,10 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
     virtual void OnCloseButtonClicked(const ui::Event& event) = 0;
 
     // Called when the user clicks "sign in to IDP" button on failure dialog.
-    virtual void ShowModalDialogView(const GURL& url) = 0;
+    virtual void ShowIdpSigninModalDialog(const GURL& url) = 0;
+
+    // Called when IdentityProvider.close() is called from the renderer.
+    virtual void CloseIdpSigninModalDialog() = 0;
   };
 
   METADATA_HEADER(AccountSelectionBubbleView);
@@ -95,13 +101,17 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const std::u16string& top_frame_for_display,
       const absl::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
-      const content::IdentityProviderMetadata& idp_metadata) override;
+      const content::IdentityProviderMetadata& idp_metadata,
+      IdentityRegistryCallback identity_registry_callback) override;
 
   // Populates `idp_images` when an IDP image has been fetched.
   void AddIdpImage(const GURL& image_url, gfx::ImageSkia idp_image);
 
   std::string GetDialogTitle() const override;
   absl::optional<std::string> GetDialogSubtitle() const override;
+
+  bool HasIdentityRegistryCallback() override;
+  IdentityRegistryCallback GetIdentityRegistryCallback() override;
 
  private:
   gfx::Rect GetBubbleBounds() override;
@@ -155,7 +165,10 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   void RemoveNonHeaderChildViews();
 
   // Opens a modal dialog view that renders the given `url`.
-  void ShowModalDialogView(const GURL& url);
+  void ShowIdpSigninModalDialog(const GURL& url);
+
+  // Closes the IDP sign-in modal dialog, if it is shown.
+  void CloseIdpSigninModalDialog();
 
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
@@ -210,6 +223,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // Observes events on AccountSelectionBubbleView.
   raw_ptr<Observer> observer_{nullptr};
+
+  // Callback to create an identity registry.
+  IdentityRegistryCallback identity_registry_callback_;
 
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.

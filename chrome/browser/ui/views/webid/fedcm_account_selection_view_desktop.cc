@@ -132,7 +132,8 @@ void FedCmAccountSelectionView::ShowFailureDialog(
     const std::string& top_frame_etld_plus_one,
     const absl::optional<std::string>& iframe_etld_plus_one,
     const std::string& idp_etld_plus_one,
-    const content::IdentityProviderMetadata& idp_metadata) {
+    const content::IdentityProviderMetadata& idp_metadata,
+    IdentityRegistryCallback identity_registry_callback) {
   state_ = State::IDP_SIGNIN_STATUS_MISMATCH;
   absl::optional<std::u16string> iframe_etld_plus_one_u16 =
       iframe_etld_plus_one ? absl::make_optional<std::u16string>(
@@ -160,7 +161,8 @@ void FedCmAccountSelectionView::ShowFailureDialog(
 
   GetBubbleView()->ShowFailureDialog(
       base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
-      base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
+      base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata,
+      std::move(identity_registry_callback));
 
   if (create_bubble) {
     bubble_widget_->Show();
@@ -351,9 +353,20 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-void FedCmAccountSelectionView::ShowModalDialogView(const GURL& url) {
-  // TODO(crbug.com/1430830): Modal dialog implementation will come in a later
-  // patch.
+void FedCmAccountSelectionView::ShowIdpSigninModalDialog(const GURL& url) {
+  idp_signin_modal_dialog_ = FedCmModalDialogView::ShowFedCmModalDialog(
+      delegate_->GetWebContents(), url);
+  if (GetBubbleView()->HasIdentityRegistryCallback()) {
+    std::move(GetBubbleView()->GetIdentityRegistryCallback())
+        .Run(idp_signin_modal_dialog_->GetWebViewWebContents());
+  }
+}
+
+void FedCmAccountSelectionView::CloseIdpSigninModalDialog() {
+  if (idp_signin_modal_dialog_) {
+    idp_signin_modal_dialog_->CloseFedCmModalDialog();
+    idp_signin_modal_dialog_ = nullptr;
+  }
 }
 
 void FedCmAccountSelectionView::ShowVerifyingSheet(

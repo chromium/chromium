@@ -22,6 +22,7 @@
 #include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/browser/webid/federated_auth_user_info_request.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/mdocs/mdoc_provider.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -400,11 +401,13 @@ FederatedAuthRequestImpl::FederatedAuthRequestImpl(
     FederatedIdentityAutoReauthnPermissionContextDelegate*
         auto_reauthn_permission_context,
     FederatedIdentityPermissionContextDelegate* permission_context,
+    IdentityRegistry* identity_registry,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
     : DocumentService(host, std::move(receiver)),
       api_permission_delegate_(api_permission_context),
       auto_reauthn_permission_delegate_(auto_reauthn_permission_context),
       permission_delegate_(permission_context),
+      identity_registry_(identity_registry),
       token_request_delay_(kDefaultTokenRequestDelay) {}
 
 FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
@@ -447,6 +450,9 @@ void FederatedAuthRequestImpl::Create(
           browser_context->GetFederatedIdentityAutoReauthnPermissionContext();
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_context =
       browser_context->GetFederatedIdentityPermissionContext();
+  raw_ptr<IdentityRegistry> identity_registry =
+      IdentityRegistry::FromWebContents(WebContents::FromRenderFrameHost(host));
+
   if (!api_permission_context || !auto_reauthn_permission_context ||
       !permission_context) {
     return;
@@ -455,9 +461,9 @@ void FederatedAuthRequestImpl::Create(
   // FederatedAuthRequestImpl owns itself. It will self-destruct when a mojo
   // interface error occurs, the RenderFrameHost is deleted, or the
   // RenderFrameHost navigates to a new document.
-  new FederatedAuthRequestImpl(*host, api_permission_context,
-                               auto_reauthn_permission_context,
-                               permission_context, std::move(receiver));
+  new FederatedAuthRequestImpl(
+      *host, api_permission_context, auto_reauthn_permission_context,
+      permission_context, identity_registry, std::move(receiver));
 }
 
 FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
@@ -466,10 +472,11 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
     FederatedIdentityAutoReauthnPermissionContextDelegate*
         auto_reauthn_permission_context,
     FederatedIdentityPermissionContextDelegate* permission_context,
+    IdentityRegistry* identity_registry,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
-  return *new FederatedAuthRequestImpl(host, api_permission_context,
-                                       auto_reauthn_permission_context,
-                                       permission_context, std::move(receiver));
+  return *new FederatedAuthRequestImpl(
+      host, api_permission_context, auto_reauthn_permission_context,
+      permission_context, identity_registry, std::move(receiver));
 }
 
 void FederatedAuthRequestImpl::CompleteMDocRequest(std::string mdoc) {
@@ -1231,7 +1238,20 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
                      weak_ptr_factory_.GetWeakPtr(),
                      FederatedAuthRequestResult::kError,
                      TokenStatus::kNotSignedInWithIdp,
-                     /*should_delay_callback=*/true));
+                     /*should_delay_callback=*/true),
+      base::BindOnce(&FederatedAuthRequestImpl::CreateIdentityRegistry,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FederatedAuthRequestImpl::CreateIdentityRegistry(
+    content::WebContents* web_contents) {
+  IdentityRegistry::CreateForWebContents(web_contents, this, origin());
+}
+
+void FederatedAuthRequestImpl::CloseModalDialogView() {
+  if (identity_registry_) {
+    identity_registry_->Notify(origin());
+  }
 }
 
 void FederatedAuthRequestImpl::OnAccountsResponseReceived(
@@ -1884,6 +1904,10 @@ void FederatedAuthRequestImpl::SetNetworkManagerForTests(
 void FederatedAuthRequestImpl::SetDialogControllerForTests(
     std::unique_ptr<IdentityRequestDialogController> controller) {
   mock_dialog_controller_ = std::move(controller);
+}
+
+void FederatedAuthRequestImpl::NotifyClose() {
+  request_dialog_controller_->CloseIdpSigninModalDialog();
 }
 
 void FederatedAuthRequestImpl::OnRejectRequest() {

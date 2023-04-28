@@ -15,9 +15,11 @@
 #include "base/time/time.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/federated_provider_fetcher.h"
+#include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -45,7 +47,8 @@ class RenderFrameHost;
 class CONTENT_EXPORT FederatedAuthRequestImpl
     : public DocumentService<blink::mojom::FederatedAuthRequest>,
       public FederatedIdentityPermissionContextDelegate::
-          IdpSigninStatusObserver {
+          IdpSigninStatusObserver,
+      public content::FederatedIdentityModalDialogViewDelegate {
  public:
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
@@ -54,6 +57,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       FederatedIdentityApiPermissionContextDelegate*,
       FederatedIdentityAutoReauthnPermissionContextDelegate*,
       FederatedIdentityPermissionContextDelegate*,
+      IdentityRegistry*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   FederatedAuthRequestImpl(const FederatedAuthRequestImpl&) = delete;
@@ -74,6 +78,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                           blink::mojom::IdpSigninStatus status) override;
   void RegisterIdP(const ::GURL& idp, RegisterIdPCallback) override;
   void UnregisterIdP(const ::GURL& idp, UnregisterIdPCallback) override;
+  void CloseModalDialogView() override;
 
   // FederatedIdentityPermissionContextDelegate::IdpSigninStatusObserver:
   void OnIdpSigninStatusChanged(const url::Origin& idp_config_origin,
@@ -84,6 +89,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::unique_ptr<IdpNetworkRequestManager> manager);
   void SetDialogControllerForTests(
       std::unique_ptr<IdentityRequestDialogController> controller);
+
+  // content::FederatedIdentityModalDialogViewDelegate:
+  void NotifyClose() override;
 
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
@@ -154,6 +162,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       FederatedIdentityApiPermissionContextDelegate*,
       FederatedIdentityAutoReauthnPermissionContextDelegate*,
       FederatedIdentityPermissionContextDelegate*,
+      IdentityRegistry*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   bool HasPendingRequest() const;
@@ -290,6 +299,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   bool GetSingleReturningAccount(const IdentityProviderData** out_idp_data,
                                  const IdentityRequestAccount** out_account);
 
+  void CreateIdentityRegistry(content::WebContents* web_contents);
+
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
 
@@ -314,6 +325,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       auto_reauthn_permission_delegate_ = nullptr;
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
       nullptr;
+  raw_ptr<IdentityRegistry> identity_registry_ = nullptr;
 
   // The account that was selected by the user. This is only applicable to the
   // mediation flow.

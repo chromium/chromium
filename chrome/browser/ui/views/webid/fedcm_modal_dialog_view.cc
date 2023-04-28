@@ -10,7 +10,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 
@@ -34,6 +33,15 @@ FedCmModalDialogView* FedCmModalDialogView::ShowFedCmModalDialog(
   return dialog;
 }
 
+void FedCmModalDialogView::CloseFedCmModalDialog() {
+  contents_wrapper_->GetWidget()->Close();
+}
+
+content::WebContents* FedCmModalDialogView::GetWebViewWebContents() {
+  DCHECK(web_view_);
+  return web_view_->GetWebContents();
+}
+
 void FedCmModalDialogView::Init(const GURL& url) {
   constexpr int kDialogMinWidth = 512;
   constexpr int kDialogHeight = 450;
@@ -54,19 +62,18 @@ void FedCmModalDialogView::Init(const GURL& url) {
       contents_wrapper->AddChildView(std::make_unique<views::View>());
   header_view = PopulateSheetHeaderView(header_view, url);
 
-  auto* web_view = contents_wrapper->AddChildView(
+  web_view_ = contents_wrapper->AddChildView(
       std::make_unique<views::WebView>(web_contents_->GetBrowserContext()));
-
-  web_view->SetPreferredSize(gfx::Size(kDialogMinWidth, kDialogHeight));
-  web_view->LoadInitialURL(url);
+  web_view_->SetPreferredSize(gfx::Size(kDialogMinWidth, kDialogHeight));
+  web_view_->LoadInitialURL(url);
 
   web_modal::WebContentsModalDialogManager::CreateForWebContents(
-      web_view->GetWebContents());
+      web_view_->GetWebContents());
   web_modal::WebContentsModalDialogManager::FromWebContents(
-      web_view->GetWebContents())
+      web_view_->GetWebContents())
       ->SetDelegate(this);
 
-  Observe(web_view->GetWebContents());
+  Observe(web_view_->GetWebContents());
 
   contents_wrapper_ = AddChildView(std::move(contents_wrapper));
 }

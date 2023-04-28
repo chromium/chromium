@@ -180,4 +180,7 @@ interface FederatedAuthRequest {
 
   // Unregisters the url as an IdP's configURL of the user's preference.
   UnregisterIdP(url.mojom.Url url) => (bool success);
+
+  // Closes the modal dialog view, if any.
+  CloseModalDialogView();
 };

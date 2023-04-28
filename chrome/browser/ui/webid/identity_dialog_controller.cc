@@ -47,7 +47,8 @@ void IdentityDialogController::ShowFailureDialog(
     const absl::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata,
-    DismissCallback dismiss_callback) {
+    DismissCallback dismiss_callback,
+    IdentityRegistryCallback identity_registry_callback) {
   const GURL rp_url = rp_web_contents->GetLastCommittedURL();
   rp_web_contents_ = rp_web_contents;
   on_dismiss_ = std::move(dismiss_callback);
@@ -58,7 +59,8 @@ void IdentityDialogController::ShowFailureDialog(
   //   sign-in attempt failed.
 
   account_view_->ShowFailureDialog(top_frame_for_display, iframe_for_display,
-                                   idp_for_display, idp_metadata);
+                                   idp_for_display, idp_metadata,
+                                   std::move(identity_registry_callback));
 }
 
 void IdentityDialogController::ShowIdpSigninFailureDialog(
@@ -98,4 +100,8 @@ gfx::NativeView IdentityDialogController::GetNativeView() {
 
 content::WebContents* IdentityDialogController::GetWebContents() {
   return rp_web_contents_;
+}
+
+void IdentityDialogController::CloseIdpSigninModalDialog() {
+  account_view_->CloseIdpSigninModalDialog();
 }

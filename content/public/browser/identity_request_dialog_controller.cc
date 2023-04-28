@@ -73,7 +73,8 @@ void IdentityRequestDialogController::ShowFailureDialog(
     const absl::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const IdentityProviderMetadata& idp_metadata,
-    DismissCallback dismiss_callback) {
+    DismissCallback dismiss_callback,
+    IdentityRegistryCallback identity_registry_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
   }
@@ -103,5 +104,7 @@ void IdentityRequestDialogController::ShowPopUpWindow(
     std::move(dismiss_callback).Run(DismissReason::kOther);
   }
 }
+
+void IdentityRequestDialogController::CloseIdpSigninModalDialog() {}
 
 }  // namespace content

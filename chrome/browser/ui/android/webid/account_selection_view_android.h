@@ -29,9 +29,11 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
-      const content::IdentityProviderMetadata& idp_metadata) override;
+      const content::IdentityProviderMetadata& idp_metadata,
+      IdentityRegistryCallback identity_registry_callback) override;
   std::string GetTitle() const override;
   absl::optional<std::string> GetSubtitle() const override;
+  void CloseIdpSigninModalDialog() override;
 
   void OnAccountSelected(
       JNIEnv* env,

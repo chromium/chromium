@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
+#include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
 #include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/input_event_activation_protector.h"
@@ -57,7 +58,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const std::string& top_frame_etld_plus_one,
       const absl::optional<std::string>& iframe_etld_plus_one,
       const std::string& idp_etld_plus_one,
-      const content::IdentityProviderMetadata& idp_metadata) override;
+      const content::IdentityProviderMetadata& idp_metadata,
+      IdentityRegistryCallback identity_registry_callback) override;
   std::string GetTitle() const override;
   absl::optional<std::string> GetSubtitle() const override;
 
@@ -125,7 +127,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                      const ui::Event& event) override;
   void OnBackButtonClicked() override;
   void OnCloseButtonClicked(const ui::Event& event) override;
-  void ShowModalDialogView(const GURL& url) override;
+  void ShowIdpSigninModalDialog(const GURL& url) override;
+  void CloseIdpSigninModalDialog() override;
 
   void ShowVerifyingSheet(const Account& account,
                           const IdentityProviderDisplayData& idp_display_data);
@@ -155,6 +158,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   base::WeakPtr<views::Widget> bubble_widget_;
 
   std::unique_ptr<views::InputEventActivationProtector> input_protector_;
+
+  raw_ptr<FedCmModalDialogView> idp_signin_modal_dialog_;
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };

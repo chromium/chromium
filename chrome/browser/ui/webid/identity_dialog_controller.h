@@ -19,6 +19,8 @@ using AccountSelectionCallback =
     content::IdentityRequestDialogController::AccountSelectionCallback;
 using DismissCallback =
     content::IdentityRequestDialogController::DismissCallback;
+using IdentityRegistryCallback =
+    content::IdentityRequestDialogController::IdentityRegistryCallback;
 
 // The IdentityDialogController controls the views that are used across
 // browser-mediated federated sign-in flows.
@@ -47,12 +49,14 @@ class IdentityDialogController
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
       DismissCallback dismiss_callback) override;
-  void ShowFailureDialog(content::WebContents* rp_web_contents,
-                         const std::string& top_frame_for_display,
-                         const absl::optional<std::string>& iframe_for_display,
-                         const std::string& idp_for_display,
-                         const content::IdentityProviderMetadata& idp_metadata,
-                         DismissCallback dismiss_callback) override;
+  void ShowFailureDialog(
+      content::WebContents* rp_web_contents,
+      const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_for_display,
+      const std::string& idp_for_display,
+      const content::IdentityProviderMetadata& idp_metadata,
+      DismissCallback dismiss_callback,
+      IdentityRegistryCallback identity_registry_callback) override;
   void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override;
 
   std::string GetTitle() const override;
@@ -64,6 +68,8 @@ class IdentityDialogController
   void OnDismiss(DismissReason dismiss_reason) override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
+
+  void CloseIdpSigninModalDialog() override;
 
  private:
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};

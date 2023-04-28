@@ -2249,6 +2249,8 @@ source_set("browser") {
     "webid/federated_provider_fetcher.h",
     "webid/flags.cc",
     "webid/flags.h",
+    "webid/identity_registry.cc",
+    "webid/identity_registry.h",
     "webid/idp_network_request_manager.cc",
     "webid/idp_network_request_manager.h",
     "webid/mdocs/mdoc_provider.cc",

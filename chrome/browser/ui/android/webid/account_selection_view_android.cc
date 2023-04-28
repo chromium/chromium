@@ -181,7 +181,8 @@ void AccountSelectionViewAndroid::ShowFailureDialog(
     const std::string& top_frame_for_display,
     const absl::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
-    const content::IdentityProviderMetadata& idp_metadata) {
+    const content::IdentityProviderMetadata& idp_metadata,
+    IdentityRegistryCallback identity_registry_callback) {
   // TODO(crbug.com/1357790): add support on Android.
 }
 
@@ -201,6 +202,10 @@ absl::optional<std::string> AccountSelectionViewAndroid::GetSubtitle() const {
     return absl::nullopt;
   }
   return ConvertJavaStringToUTF8(subtitle);
+}
+
+void AccountSelectionViewAndroid::CloseIdpSigninModalDialog() {
+  // TODO(crbug.com/1430830): Support IDP sign-in modal dialog on Android.
 }
 
 void AccountSelectionViewAndroid::OnAccountSelected(

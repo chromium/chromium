@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
 #include "content/public/browser/identity_request_account.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
@@ -88,6 +89,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   using DismissCallback =
       base::OnceCallback<void(DismissReason dismiss_reason)>;
+  using IdentityRegistryCallback =
+      base::OnceCallback<void(WebContents* web_contents)>;
 
   IdentityRequestDialogController() = default;
 
@@ -131,7 +134,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const absl::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
       const IdentityProviderMetadata& idp_metadata,
-      DismissCallback dismiss_callback);
+      DismissCallback dismiss_callback,
+      IdentityRegistryCallback identity_registry_callback);
 
   // Only to be called after a dialog is shown.
   virtual std::string GetTitle() const;
@@ -144,6 +148,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   virtual void ShowPopUpWindow(const GURL& url,
                                TokenCallback on_resolve,
                                DismissCallback dismiss_callback);
+
+  // Closes the IDP sign-in modal dialog.
+  virtual void CloseIdpSigninModalDialog();
 
  protected:
   bool is_interception_enabled_{false};

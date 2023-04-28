@@ -10,6 +10,9 @@
 
 #include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
 
+using IdentityRegistryCallback =
+    content::IdentityRequestDialogController::IdentityRegistryCallback;
+
 namespace content {
 struct IdentityRequestAccount;
 }  // namespace content
@@ -43,10 +46,14 @@ class AccountSelectionBubbleViewInterface {
       const std::u16string& top_frame_for_display,
       const absl::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
-      const content::IdentityProviderMetadata& idp_metadata) = 0;
+      const content::IdentityProviderMetadata& idp_metadata,
+      IdentityRegistryCallback identity_registry_callback) = 0;
 
   virtual std::string GetDialogTitle() const = 0;
   virtual absl::optional<std::string> GetDialogSubtitle() const = 0;
+
+  virtual bool HasIdentityRegistryCallback() = 0;
+  virtual IdentityRegistryCallback GetIdentityRegistryCallback() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_INTERFACE_H_

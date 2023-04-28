@@ -571,7 +571,8 @@ void AccountSelectionBubbleView::ShowFailureDialog(
     const std::u16string& top_frame_for_display,
     const absl::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
-    const content::IdentityProviderMetadata& idp_metadata) {
+    const content::IdentityProviderMetadata& idp_metadata,
+    IdentityRegistryCallback identity_registry_callback) {
   int subtitleLeftPadding = 2 * kLeftRightPadding;
   if (header_icon_view_) {
     ConfigureIdpBrandImageView(header_icon_view_, idp_metadata);
@@ -597,8 +598,9 @@ void AccountSelectionBubbleView::ShowFailureDialog(
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(kTopBottomPadding, kLeftRightPadding)));
+  identity_registry_callback_ = std::move(identity_registry_callback);
   auto button = std::make_unique<ContinueButton>(
-      base::BindRepeating(&Observer::ShowModalDialogView,
+      base::BindRepeating(&Observer::ShowIdpSigninModalDialog,
                           base::Unretained(observer_),
                           idp_metadata.idp_signin_url),
       l10n_util::GetStringUTF16(IDS_IDP_SIGNIN_STATUS_FAILURE_DIALOG_CONTINUE),
@@ -630,6 +632,15 @@ absl::optional<std::string> AccountSelectionBubbleView::GetDialogSubtitle()
   }
 
   return base::UTF16ToUTF8(subtitle_label_->GetText());
+}
+
+bool AccountSelectionBubbleView::HasIdentityRegistryCallback() {
+  return !identity_registry_callback_.is_null();
+}
+
+IdentityRegistryCallback
+AccountSelectionBubbleView::GetIdentityRegistryCallback() {
+  return std::move(identity_registry_callback_);
 }
 
 gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {

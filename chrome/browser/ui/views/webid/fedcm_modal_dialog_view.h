@@ -9,9 +9,11 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
+#include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/window/dialog_delegate.h"
 
 // A dialog allowing the user to complete a flow (e.g. signing in to an identity
@@ -32,6 +34,9 @@ class FedCmModalDialogView : public views::DialogDelegateView,
   static FedCmModalDialogView* ShowFedCmModalDialog(
       content::WebContents* web_contents,
       const GURL& url);
+  void CloseFedCmModalDialog();
+
+  content::WebContents* GetWebViewWebContents();
 
  private:
   views::View* PopulateSheetHeaderView(views::View* container, const GURL& url);
@@ -42,6 +47,7 @@ class FedCmModalDialogView : public views::DialogDelegateView,
 
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<views::View> contents_wrapper_;
+  raw_ptr<views::WebView> web_view_;
   raw_ptr<views::Label> origin_label_;
   url::Origin curr_origin_;
 

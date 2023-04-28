@@ -25,8 +25,10 @@
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_auto_reauthn_permission_delegate.h"
+#include "content/browser/webid/test/mock_identity_registry.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
+#include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/common/content_navigation_policy.h"
@@ -78,6 +80,7 @@ namespace {
 constexpr char kProviderUrlFull[] = "https://idp.example/fedcm.json";
 constexpr char kRpUrl[] = "https://rp.example/";
 constexpr char kRpOtherUrl[] = "https://rp.example/random/";
+constexpr char kIdpUrl[] = "https://idp.example/";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kCrossOriginAccountsEndpoint[] = "https://idp2.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
@@ -600,13 +603,15 @@ class TestDialogController
     }
   }
 
-  void ShowFailureDialog(content::WebContents* rp_web_contents,
-                         const std::string& top_frame_for_display,
-                         const absl::optional<std::string>& iframe_for_display,
-                         const std::string& idp_for_display,
-                         const IdentityProviderMetadata& idp_metadata,
-                         IdentityRequestDialogController::DismissCallback
-                             dismiss_callback) override {
+  void ShowFailureDialog(
+      content::WebContents* rp_web_contents,
+      const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_for_display,
+      const std::string& idp_for_display,
+      const IdentityProviderMetadata& idp_metadata,
+      IdentityRequestDialogController::DismissCallback dismiss_callback,
+      IdentityRequestDialogController::IdentityRegistryCallback
+          identity_registry_callback) override {
     if (!state_) {
       return;
     }
@@ -703,6 +708,21 @@ class TestAutoReauthnPermissionDelegate
   }
 };
 
+class TestIdentityRegistry : public NiceMock<MockIdentityRegistry> {
+ public:
+  bool notified_{false};
+
+  explicit TestIdentityRegistry(
+      content::WebContents* web_contents,
+      FederatedIdentityModalDialogViewDelegate* delegate,
+      const url::Origin& registry_origin)
+      : NiceMock<MockIdentityRegistry>(web_contents,
+                                       delegate,
+                                       registry_origin) {}
+
+  void Notify(const url::Origin& notifier_origin) override { notified_ = true; }
+};
+
 }  // namespace
 
 class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
@@ -719,6 +739,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     test_permission_delegate_ = std::make_unique<TestPermissionDelegate>();
     test_auto_reauthn_permission_delegate_ =
         std::make_unique<TestAutoReauthnPermissionDelegate>();
+    test_identity_registry_ = std::make_unique<TestIdentityRegistry>(
+        web_contents(), federated_auth_request_impl_,
+        url::Origin::Create(GURL(kIdpUrl)));
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
@@ -726,7 +749,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     federated_auth_request_impl_ = &FederatedAuthRequestImpl::CreateForTesting(
         *main_test_rfh(), test_api_permission_delegate_.get(),
         test_auto_reauthn_permission_delegate_.get(),
-        test_permission_delegate_.get(),
+        test_permission_delegate_.get(), test_identity_registry_.get(),
         request_remote_.BindNewPipeAndPassReceiver());
 
     std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
@@ -1146,6 +1169,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<TestPermissionDelegate> test_permission_delegate_;
   std::unique_ptr<TestAutoReauthnPermissionDelegate>
       test_auto_reauthn_permission_delegate_;
+  std::unique_ptr<TestIdentityRegistry> test_identity_registry_;
 
   AuthRequestCallbackHelper auth_helper_;
 
@@ -3691,6 +3715,13 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
   // we don't fetch the client metadata endpoint (which is used to
   // mediate - but not to delegate - the authorization prompt).
   EXPECT_FALSE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
+}
+
+// Test that IdentityRegistry is notified when modal dialog view is closed.
+TEST_F(FederatedAuthRequestImplTest, IdentityRegistryIsNotified) {
+  EXPECT_FALSE(test_identity_registry_->notified_);
+  federated_auth_request_impl_->CloseModalDialogView();
+  EXPECT_TRUE(test_identity_registry_->notified_);
 }
 
 }  // namespace content
