@@ -35,8 +35,7 @@ class DeviceManagementService;
 // `DeviceCloudPolicyManager::StartConnection` with a new `CloudPolicyClient`
 // for a given |DeviceManagementService|. It does so, once
 // - the `DeviceCloudPolicyStoreAsh` is initialized and has policy,
-// - the `ServerBackedStateKeysBroker` is available,
-// - `ash::InstallAttributes::IsActiveDirectoryManaged()` == false.
+// - the `ServerBackedStateKeysBroker` is available.
 //
 // It is expected that the |DeviceCloudPolicyInitializer| will be
 // destroyed soon after it called |StartConnection|, but see

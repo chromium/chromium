@@ -102,11 +102,6 @@ std::unique_ptr<CloudPolicyClient> DeviceCloudPolicyInitializer::CreateClient(
 }
 
 void DeviceCloudPolicyInitializer::TryToStartConnection() {
-  if (install_attributes_->IsActiveDirectoryManaged()) {
-    // This will go away once ChromeAd deprecation is completed.
-    return;
-  }
-
   if (!policy_store_->is_initialized() || !policy_store_->has_policy()) {
     return;
   }
