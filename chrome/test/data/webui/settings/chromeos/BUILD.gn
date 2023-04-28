@@ -81,7 +81,6 @@ build_webui_tests("build") {
     "os_reset_page_test.js",
     "os_saved_devices_list_tests.js",
     "os_saved_devices_subpage_tests.js",
-    "os_search_page_test.js",
     "os_settings_main_test.js",
     "os_settings_menu_test.js",
     "os_settings_page_test.js",
@@ -240,6 +239,7 @@ build_webui_tests("build") {
 
     "os_privacy_page/smart_privacy_subpage_test.ts",
 
+    "os_search_page/os_search_page_test.ts",
     "os_search_page/search_subpage_test.ts",
 
     "os_settings_ui/os_settings_ui_about_page_test.js",

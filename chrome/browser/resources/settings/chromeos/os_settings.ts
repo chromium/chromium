@@ -177,6 +177,7 @@ export {osPageVisibility} from './os_page_visibility.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
+export {OsSettingsSearchPageElement} from './os_search_page/os_search_page.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './os_search_page/search_engines_browser_proxy.js';
 export {OsSettingsMainElement} from './os_settings_main/os_settings_main.js';
 export {OsSettingsPageElement} from './os_settings_page/os_settings_page.js';

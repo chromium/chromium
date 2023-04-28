@@ -35,7 +35,8 @@ import {getTemplate} from './os_search_page.html.js';
 const OsSettingsSearchPageElementBase =
     DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
 
-class OsSettingsSearchPageElement extends OsSettingsSearchPageElementBase {
+export class OsSettingsSearchPageElement extends
+    OsSettingsSearchPageElementBase {
   static get is() {
     return 'os-settings-search-page';
   }

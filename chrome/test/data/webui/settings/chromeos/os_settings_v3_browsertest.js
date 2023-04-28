@@ -513,6 +513,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'OsPrivacyPageSmartPrivacySubpage',
    'os_privacy_page/smart_privacy_subpage_test.js'
  ],
+ ['OsSearchPage', 'os_search_page/os_search_page_test.js'],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
  ['OsSettingsPage', 'os_settings_page_test.js'],
@@ -525,7 +526,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'os_settings_ui/user_action_recorder_test.js'
  ],
  ['OsSettingsMain', 'os_settings_main_test.js'],
- ['OsSearchPage', 'os_search_page_test.js'],
  ['OsSettingsSearchBox', 'os_settings_search_box_test.js'],
  ['OsSettingsMenu', 'os_settings_menu_test.js'],
  ['OsSyncControlsSubpage', 'os_sync_controls_subpage_test.js'],
