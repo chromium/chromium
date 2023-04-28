@@ -9,6 +9,7 @@
 #include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "net/reporting/reporting_header_parser.h"
+#include "services/network/public/cpp/browsing_topics_parser.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/content_language_parser.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -108,6 +109,9 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   if (base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch))
     parsed_headers->no_vary_search_with_parse_error =
         ParseNoVarySearch(*headers);
+
+  parsed_headers->observe_browsing_topics =
+      ParseObserveBrowsingTopicsFromHeader(*headers);
 
   return parsed_headers;
 }

@@ -5181,7 +5181,7 @@ void NavigationRequest::OnRedirectChecksComplete(
     // desired IsPrimary() status and the desired top-level frame that
     // `HandleTopicsEligibleResponse()` is interested in knowing.
     HandleTopicsEligibleResponse(
-        *commit_params_->redirect_response.back().get()->headers.get(),
+        commit_params_->redirect_response.back().get()->parsed_headers,
         url::Origin::Create(commit_params_->redirects.back()),
         *frame_tree_node_->current_frame_host(),
         browsing_topics::ApiCallerSource::kIframeAttribute);
@@ -5674,8 +5674,8 @@ void NavigationRequest::CommitNavigation() {
 
     if (response()) {
       HandleTopicsEligibleResponse(
-          *response()->headers.get(), url::Origin::Create(common_params_->url),
-          *GetRenderFrameHost(),
+          response_head_->parsed_headers,
+          url::Origin::Create(common_params_->url), *GetRenderFrameHost(),
           browsing_topics::ApiCallerSource::kIframeAttribute);
     }
   }

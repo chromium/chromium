@@ -10,6 +10,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "content/test/test_render_view_host.h"
+#include "services/network/public/mojom/parsed_headers.mojom.h"
 
 namespace content {
 
@@ -134,27 +135,13 @@ TEST_F(BrowsingTopicsUtilTest, DeriveTopicsHeaderValue_TwoTopics) {
 }
 
 TEST_F(BrowsingTopicsUtilTest,
-       HandleTopicsEligibleResponse_NoObserveTopicsHeader) {
-  scoped_refptr<net::HttpResponseHeaders> headers =
-      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
-
-  HandleTopicsEligibleResponse(
-      *headers, /*caller_origin=*/url::Origin::Create(GURL("https://bar.com")),
-      *web_contents()->GetPrimaryMainFrame(),
-      browsing_topics::ApiCallerSource::kFetch);
-
-  EXPECT_FALSE(browser_client().handle_topics_web_api_called());
-}
-
-TEST_F(BrowsingTopicsUtilTest,
        HandleTopicsEligibleResponse_TrueValueObserveTopicsHeader) {
-  scoped_refptr<net::HttpResponseHeaders> headers =
-      net::HttpResponseHeaders::TryToCreate(
-          "HTTP/1.1 200 OK\r\n"
-          "Observe-Browsing-Topics: ?1\r\n");
-
+  network::mojom::ParsedHeadersPtr parsed_headers =
+      network::mojom::ParsedHeaders::New();
+  parsed_headers->observe_browsing_topics = true;
   HandleTopicsEligibleResponse(
-      *headers, /*caller_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      parsed_headers,
+      /*caller_origin=*/url::Origin::Create(GURL("https://bar.com")),
       *web_contents()->GetPrimaryMainFrame(),
       browsing_topics::ApiCallerSource::kFetch);
 
@@ -165,60 +152,12 @@ TEST_F(BrowsingTopicsUtilTest,
 
 TEST_F(BrowsingTopicsUtilTest,
        HandleTopicsEligibleResponse_FalseValueObserveTopicsHeader) {
-  scoped_refptr<net::HttpResponseHeaders> headers =
-      net::HttpResponseHeaders::TryToCreate(
-          "HTTP/1.1 200 OK\r\n"
-          "Observe-Browsing-Topics: ?0\r\n");
-
+  network::mojom::ParsedHeadersPtr parsed_headers =
+      network::mojom::ParsedHeaders::New();
+  parsed_headers->observe_browsing_topics = false;
   HandleTopicsEligibleResponse(
-      *headers, /*caller_origin=*/url::Origin::Create(GURL("https://bar.com")),
-      *web_contents()->GetPrimaryMainFrame(),
-      browsing_topics::ApiCallerSource::kFetch);
-
-  EXPECT_FALSE(browser_client().handle_topics_web_api_called());
-}
-
-TEST_F(BrowsingTopicsUtilTest,
-       HandleTopicsEligibleResponse_NotBooleanObserveTopicsHeader) {
-  scoped_refptr<net::HttpResponseHeaders> headers =
-      net::HttpResponseHeaders::TryToCreate(
-          "HTTP/1.1 200 OK\r\n"
-          "Observe-Browsing-Topics: 1\r\n");
-
-  HandleTopicsEligibleResponse(
-      *headers, /*caller_origin=*/url::Origin::Create(GURL("https://bar.com")),
-      *web_contents()->GetPrimaryMainFrame(),
-      browsing_topics::ApiCallerSource::kFetch);
-
-  EXPECT_FALSE(browser_client().handle_topics_web_api_called());
-}
-
-TEST_F(BrowsingTopicsUtilTest,
-       HandleTopicsEligibleResponse_InvalidObserveTopicsHeader) {
-  scoped_refptr<net::HttpResponseHeaders> headers =
-      net::HttpResponseHeaders::TryToCreate(
-          "HTTP/1.1 200 OK\r\n"
-          "Observe-Browsing-Topics: !!!\r\n");
-
-  HandleTopicsEligibleResponse(
-      *headers, /*caller_origin=*/url::Origin::Create(GURL("https://bar.com")),
-      *web_contents()->GetPrimaryMainFrame(),
-      browsing_topics::ApiCallerSource::kFetch);
-
-  EXPECT_FALSE(browser_client().handle_topics_web_api_called());
-}
-
-TEST_F(
-    BrowsingTopicsUtilTest,
-    HandleTopicsEligibleResponse_MultipleObserveTopicsHeader_InvalidNormalizedHeader) {
-  scoped_refptr<net::HttpResponseHeaders> headers =
-      net::HttpResponseHeaders::TryToCreate(
-          "HTTP/1.1 200 OK\r\n"
-          "Observe-Browsing-Topics: ?1\r\n"
-          "Observe-Browsing-Topics: ?1\r\n");
-
-  HandleTopicsEligibleResponse(
-      *headers, /*caller_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      parsed_headers,
+      /*caller_origin=*/url::Origin::Create(GURL("https://bar.com")),
       *web_contents()->GetPrimaryMainFrame(),
       browsing_topics::ApiCallerSource::kFetch);
 
@@ -226,19 +165,18 @@ TEST_F(
 }
 
 TEST_F(BrowsingTopicsUtilTest, HandleTopicsEligibleResponse_InactiveFrame) {
-  scoped_refptr<net::HttpResponseHeaders> headers =
-      net::HttpResponseHeaders::TryToCreate(
-          "HTTP/1.1 200 OK\r\n"
-          "Observe-Browsing-Topics: ?1\r\n");
-
+  network::mojom::ParsedHeadersPtr parsed_headers =
+      network::mojom::ParsedHeaders::New();
+  parsed_headers->observe_browsing_topics = true;
   RenderFrameHostImpl& rfh =
       static_cast<RenderFrameHostImpl&>(*web_contents()->GetPrimaryMainFrame());
   rfh.SetLifecycleState(
       RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted);
 
   HandleTopicsEligibleResponse(
-      *headers, /*caller_origin=*/url::Origin::Create(GURL("https://bar.com")),
-      rfh, browsing_topics::ApiCallerSource::kFetch);
+      parsed_headers,
+      /*caller_origin=*/url::Origin::Create(GURL("https://bar.com")), rfh,
+      browsing_topics::ApiCallerSource::kFetch);
 
   EXPECT_FALSE(browser_client().handle_topics_web_api_called());
 }

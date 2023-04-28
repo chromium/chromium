@@ -307,7 +307,8 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
       in->content_language.has_value()
           ? absl::make_optional(ConvertToBlink(in->content_language.value()))
           : absl::nullopt,
-      ConvertToBlink(in->no_vary_search_with_parse_error));
+      ConvertToBlink(in->no_vary_search_with_parse_error),
+      in->observe_browsing_topics);
 }
 
 }  // namespace mojom

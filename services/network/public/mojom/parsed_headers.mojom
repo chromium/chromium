@@ -119,4 +119,8 @@ struct ParsedHeaders {
   // For more information, see:
   // https://wicg.github.io/nav-speculation/no-vary-search.html#model
   NoVarySearchWithParseError? no_vary_search_with_parse_error;
+
+  // The parsed value of the Observe-Browsing-Topics header. See:
+  // https://patcg-individual-drafts.github.io/topics/#the-observe-browsing-topics-http-response-header-header
+  bool observe_browsing_topics;
 };

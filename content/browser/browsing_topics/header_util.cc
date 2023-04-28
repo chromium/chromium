@@ -36,20 +36,16 @@ std::string DeriveTopicsHeaderValue(
 }
 
 void HandleTopicsEligibleResponse(
-    const net::HttpResponseHeaders& headers,
+    const network::mojom::ParsedHeadersPtr& parsed_headers,
     const url::Origin& caller_origin,
     RenderFrameHost& request_initiator_frame,
     browsing_topics::ApiCallerSource caller_source) {
   DCHECK(caller_source == browsing_topics::ApiCallerSource::kFetch ||
          caller_source == browsing_topics::ApiCallerSource::kIframeAttribute);
 
-  std::string header_value;
-  headers.GetNormalizedHeader("Observe-Browsing-Topics", &header_value);
-
-  absl::optional<net::structured_headers::Item> item =
-      net::structured_headers::ParseBareItem(header_value);
-  if (!item || !item->is_boolean() || !item->GetBoolean())
+  if (!parsed_headers || !parsed_headers->observe_browsing_topics) {
     return;
+  }
 
   // Check the page's IsPrimary() status again in case it has changed since the
   // request time.

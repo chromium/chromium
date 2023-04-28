@@ -32,6 +32,8 @@ component("cpp") {
   sources = [
     "attribution_utils.cc",
     "attribution_utils.h",
+    "browsing_topics_parser.cc",
+    "browsing_topics_parser.h",
     "client_hints.cc",
     "client_hints.h",
     "constants.cc",
@@ -517,6 +519,7 @@ source_set("tests") {
 
   sources = [
     "attribution_utils_unittest.cc",
+    "browsing_topics_parser_unittest.cc",
     "client_hints_unittest.cc",
     "content_language_parser_unittest.cc",
     "content_security_policy/content_security_policy_unittest.cc",

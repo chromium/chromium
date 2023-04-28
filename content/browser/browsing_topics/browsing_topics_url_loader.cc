@@ -38,17 +38,20 @@ bool GetTopicsHeaderValueForSubresourceRequest(
   // TODO(yaoxia): measure how often this happens.
   RenderFrameHost* request_initiator_frame =
       request_initiator_document.AsRenderFrameHostIfValid();
-  if (!request_initiator_frame)
+  if (!request_initiator_frame) {
     return false;
+  }
 
   // Fenced frames disallow most permissions policies which would let this
   // function return false regardless, but adding this check to be more
   // explicit.
-  if (request_initiator_frame->IsNestedWithinFencedFrame())
+  if (request_initiator_frame->IsNestedWithinFencedFrame()) {
     return false;
+  }
 
-  if (!request_initiator_frame->GetPage().IsPrimary())
+  if (!request_initiator_frame->GetPage().IsPrimary()) {
     return false;
+  }
 
   // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals yet.
   // Remove this when it does.
@@ -59,14 +62,16 @@ bool GetTopicsHeaderValueForSubresourceRequest(
   }
 
   url::Origin origin = url::Origin::Create(url);
-  if (origin.opaque())
+  if (origin.opaque()) {
     return false;
+  }
 
   // TODO(yaoxia): should this be `ReportBadMessage`? On the renderer side, the
   // fetch initiator context must be secure. Does it imply that the requested
   // `origin` is always potentially trustworthy?
-  if (!network::IsOriginPotentiallyTrustworthy(origin))
+  if (!network::IsOriginPotentiallyTrustworthy(origin)) {
     return false;
+  }
 
   const blink::PermissionsPolicy* permissions_policy =
       static_cast<RenderFrameHostImpl*>(request_initiator_frame)
@@ -89,23 +94,23 @@ bool GetTopicsHeaderValueForSubresourceRequest(
       /*get_topics=*/true,
       /*observe=*/false, topics);
 
-  if (topics_eligible)
+  if (topics_eligible) {
     header_value = DeriveTopicsHeaderValue(topics);
+  }
 
   return topics_eligible;
 }
 
-void ProcessResponseHeaders(const net::HttpResponseHeaders* response_headers,
-                            WeakDocumentPtr document,
-                            const GURL& url) {
-  if (!response_headers)
-    return;
-
+void ProcessTopicsEligibleResponse(
+    const network::mojom::URLResponseHeadPtr& head,
+    WeakDocumentPtr document,
+    const GURL& url) {
   RenderFrameHost* rfh = document.AsRenderFrameHostIfValid();
-  if (!rfh)
+  if (!rfh) {
     return;
+  }
 
-  HandleTopicsEligibleResponse(*response_headers, url::Origin::Create(url),
+  HandleTopicsEligibleResponse(head->parsed_headers, url::Origin::Create(url),
                                *rfh, browsing_topics::ApiCallerSource::kFetch);
 }
 
@@ -149,8 +154,9 @@ void BrowsingTopicsURLLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const absl::optional<GURL>& new_url) {
-  if (new_url)
+  if (new_url) {
     url_ = new_url.value();
+  }
 
   std::vector<std::string> new_removed_headers = removed_headers;
   net::HttpRequestHeaders new_modified_headers = modified_headers;
@@ -193,7 +199,7 @@ void BrowsingTopicsURLLoader::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body,
     absl::optional<mojo_base::BigBuffer> cached_metadata) {
   if (topics_eligible_) {
-    ProcessResponseHeaders(head->headers.get(), document_, url_);
+    ProcessTopicsEligibleResponse(head, document_, url_);
     topics_eligible_ = false;
   }
 
@@ -205,7 +211,7 @@ void BrowsingTopicsURLLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
   if (topics_eligible_) {
-    ProcessResponseHeaders(head->headers.get(), document_, url_);
+    ProcessTopicsEligibleResponse(head, document_, url_);
     topics_eligible_ = false;
   }
 
