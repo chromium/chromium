@@ -18,7 +18,7 @@ export class XfBulkPinningDialog extends XfBase {
 
   private copy_ = {
     cancel: str('CANCEL_LABEL'),
-    continue: 'Turn on sync',  // TODO: replace with final copy when available.
+    continue: 'Continue',  // TODO: replace with final copy when available.
   };
 
   show() {
@@ -46,27 +46,22 @@ export class XfBulkPinningDialog extends XfBase {
         <div slot="title">
           <xf-icon type="drive_logo" size="large"></xf-icon>
           <div class="title">
-            Make everything in your Google Drive available when you're offline
+            Keep your files available when you’re offline
           </div>
         </div>
         <div slot="body">
           <div class="description">
-            This will automatically download all files in your My Drive,
-            allowing you to access and edit your files without an internet
-            connection.
+            Everything in your My Drive will be synced automatically so you can
+            access your files without an internet connection.
           </div>
           <ul>
             <li>
-              <xf-icon type="check"></xf-icon> Store all My Drive files in the cloud
-              and on your computer
+              <xf-icon type="my_files"></xf-icon>
+              My Drive files are stored in the cloud and on this device
             </li>
             <li>
-              <xf-icon type="check"></xf-icon> Access files from a folder on your
-              computer
-            </li>
-            <li>
-              <xf-icon type="check"></xf-icon> All files are automatically available
-              offline
+              <xf-icon type="offline"></xf-icon>
+              Files will be automatically available offline
             </li>
           </ul>
           <div class="note">
@@ -87,19 +82,17 @@ export class XfBulkPinningDialog extends XfBase {
 function getCSS() {
   return css`
     cr-dialog [slot="body"] {
-      color: var(--cros-text-color-secondary);
+      color: var(--cros-sys-on_surface_variant);
       display: flex;
       flex-direction: column;
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 20px;
+      font: var(--cros-body-1-font);
     }
 
     cr-dialog [slot="title"] {
+      align-items: center;
+      color: var(--cros-sys-on_surface);
       display: flex;
-      font-size: 18px;
-      font-weight: 500;
-      line-height: 24px;
+      font: var(--cros-display-7-font);
     }
 
     cr-dialog [slot="title"] xf-icon {
@@ -120,14 +113,16 @@ function getCSS() {
 
     .note {
       background-color: var(--cros-sys-app_base_shaded);
-      border-radius: 0 0 12px 12px;
-      border-inline-end: 1px solid var(--cros-separator-color);
       border-block-end: 1px solid var(--cros-separator-color);
+      border-inline-end: 1px solid var(--cros-separator-color);
       border-inline-start: 1px solid var(--cros-separator-color);
+      border-radius: 0 0 12px 12px;
+      color: var(--cros-sys-on_surface);
       padding: 16px;
     }
 
     li {
+      color: var(--cros-sys-on_surface);
       display: flex;
     }
 
@@ -136,8 +131,50 @@ function getCSS() {
     }
 
     li > xf-icon {
-      --xf-icon-color: var(--cros-icon-color-green);
+      --xf-icon-color: var(--cros-sys-secondary);
       margin-right: 10px;
+    }
+
+    cr-button {
+      --active-bg: transparent;
+      --active-shadow: none;
+      --active-shadow-action: none;
+      --bg-action: var(--cros-sys-primary);
+      --cr-button-height: 36px;
+      --disabled-bg-action: var(--cros-sys-disabled_container);
+      --disabled-bg: var(--cros-sys-disabled_container);
+      --disabled-text-color: var(--cros-sys-disabled);
+      --hover-bg-action: var(--cros-sys-primary);
+      --hover-bg-color: var(--cros-sys-primary_container);
+      --ink-color: var(--cros-sys-ripple_primary);
+      --ripple-opacity-action: 1;
+      --ripple-opacity: 1;
+      --text-color-action: var(--cros-sys-on_primary);
+      --text-color: var(--cros-sys-on_primary_container);
+      border: none;
+      border-radius: 18px;
+      box-shadow: none;
+      font: var(--cros-button-2-font);
+      position: relative;
+    }
+
+    cr-button.cancel-button {
+      background-color: var(--cros-sys-primary_container);
+    }
+
+    cr-button.cancel-button:hover::part(hoverBackground) {
+      background-color: var(--cros-sys-hover_on_subtle);
+      display: block;
+    }
+
+    cr-button.action-button:hover::part(hoverBackground) {
+      background-color: var(--cros-sys-hover_on_prominent);
+      display: block;
+    }
+
+    :host-context(.focus-outline-visible) cr-button:focus {
+      outline: 2px solid var(--cros-sys-focus_ring);
+      outline-offset: 2px;
     }
   `;
 }
