@@ -315,6 +315,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1689333818294560261">Přezdívka</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Jak můžete svá data spravovat:<ph name="END_BOLD" /> Témata, která jsou starší než 4 týdny, Chrome automaticky maže. S dalším procházením se téma v seznamu může opět objevit. Můžete také zablokovat témata, která Chrome s weby nemá sdílet, a témata reklam můžete v nastavení Chromu také kdykoliv vypnout.</translation>
 <translation id="1697532407822776718">Vše je nastaveno!</translation>
+<translation id="1699651774646344471">Nyní můžete používat adresy ze svého účtu Google</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Úrovně přiblížení</translation>
@@ -537,6 +538,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2224337661447660594">Nejste připojeni k internetu</translation>
 <translation id="2225927550500503913">Virtuální karta je zapnutá</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Přihlášení<ph name="END_LINK" /> k síti Wi-Fi</translation>
+<translation id="2228057197024893428">Tato adresa je aktuálně uložena v Chromu. Pokud ji chcete používat ve službách Google, uložte ji do svého účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="2239100178324503013">Odeslat</translation>
 <translation id="2241693394036365668">Stažení souboru</translation>
 <translation id="2246264294482514010">10 × 12″</translation>
@@ -656,6 +658,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2547466893236767989">Návrhy a vývoj webů</translation>
 <translation id="254947805923345898">Hodnota zásady není platná.</translation>
 <translation id="255002559098805027">Web <ph name="HOST_NAME" /> vrátil neplatnou odpověď.</translation>
+<translation id="2551608178605132291">Adresa: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Od teď potvrzovat karty pomocí zámku obrazovky</translation>
 <translation id="2553853292994445426">Zkontrolujte nastavení zabezpečeného DNS. Je možné, že jste nakonfigurovali zabezpečený server DNS, k němuž se nelze připojit.</translation>
@@ -853,6 +856,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Zkontrolovat konfiguraci zabezpečeného DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Prostřední zásobník</translation>
 <translation id="3109728660330352905">K zobrazení této stránky nemáte oprávnění.</translation>
+<translation id="3112892588078695695">Telefonní číslo: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Třetí směna</translation>
 <translation id="3114040155724590991">Probíhá aktualizace systému Android
     Spuštění aplikace může trvat déle než obvykle.</translation>
@@ -1221,6 +1225,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4031179711345676612">Mikrofon je povolen</translation>
 <translation id="4040350669425716613">Vysoké školy a univerzity</translation>
 <translation id="4047351652147966654">18 × 24 palců</translation>
+<translation id="4050392779074832022">Budete ji moci používat ve všech službách Google</translation>
 <translation id="405399507749852140">Pokud cena na některém webu klesne, dostanete upozornění</translation>
 <translation id="4056223980640387499">Sépie</translation>
 <translation id="4063063121357725926">Nechte Google hledat slevy pro vaše košíky</translation>
@@ -2457,6 +2462,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7083258188081898530">Přihrádka 9</translation>
 <translation id="7086090958708083563">Uživatel požádal o nahrání</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat oprávnění a uložená data webů v nastavení Chromu</translation>
+<translation id="7096341143397839437">E‑mail: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Identita tohoto webu není ověřena.</translation>
 <translation id="7101893872976785596">Horory</translation>
 <translation id="7102079138917191645">Stavby a údržba</translation>
@@ -2534,6 +2540,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7256634549594854023">Zadní zásobník</translation>
 <translation id="725866823122871198">Soukromé připojení k doméně <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nelze navázat, protože máte v počítači nastaveno chybné datum a čas (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260504762447901703">Zrušit přístup</translation>
+<translation id="7265608370113700582">Adresa je dostupná pouze na tomto zařízení</translation>
 <translation id="7275334191706090484">Spravované záložky</translation>
 <translation id="7277998515889183784">Kosmetika a makeup</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter změníte heslo účtu Google</translation>
@@ -2956,6 +2963,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8245703462678310750">Podržením tlačítka |<ph name="ACCELERATOR" />| ukončíte režim celé obrazovky a zobrazíte stažený obsah.</translation>
 <translation id="8249296373107784235">Zrušit</translation>
 <translation id="8249463483885748674">Standardizované a přijímací zkoušky</translation>
+<translation id="8250094606476360498">Tato adresa je aktuálně uložena v tomto zařízení. Pokud ji chcete používat ve službách Google, uložte ji do svého účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Tlačítko správy nastavení přístupnosti. Stisknutím klávesy Enter si v nastavení ChromeOS můžete přizpůsobit nástroje pro usnadnění přístupu</translation>
 <translation id="8253091569723639551">Fakturační adresa je povinná</translation>
 <translation id="8257387598443225809">Tato aplikace je určena pro mobily</translation>

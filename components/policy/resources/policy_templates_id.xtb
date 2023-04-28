@@ -2964,6 +2964,15 @@ Perlu diingat untuk tidak selalu mengaktifkan kebijakan ini, terutama dalam depl
 <translation id="3623332696371971798">Cegah akses Google Foto dari aplikasi personalisasi</translation>
 <translation id="3627678165642179114">Mengaktifkan atau menonaktifkan layanan web memeriksa ejaan</translation>
 <translation id="3628480121685794414">Aktifkan pencetakan simpleks</translation>
+<translation id="3634117682099473917">Template URI pada resolver DNS-over-HTTPS yang diinginkan. Untuk menentukan beberapa resolver DNS-over-HTTPS, pisahkan template URI terkait dengan spasi. Kebijakan ini sangat mirip dengan <ph name="DOH_TEMPLATES_POLICY_NAME" /> yang akan diganti jika ditentukan. Berbeda dengan kebijakan sebelumnya, kebijakan ini mendukung penentuan informasi identitas.
+
+Jika <ph name="DOH_MODE_POLICY_NAME" /> disetel ke <ph name="SECURE_DNS_MODE_SECURE" />, kebijakan ini atau <ph name="DOH_TEMPLATES_POLICY_NAME" /> harus disetel dan tidak boleh kosong.
+
+Jika <ph name="DOH_MODE_POLICY_NAME" /> disetel ke <ph name="SECURE_DNS_MODE_AUTOMATIC" /> dan kebijakan ini disetel, template URI yang ditentukan akan digunakan. Namun, jika kebijakan ini tidak disetel, pemetaan hardcode akan digunakan sebagai upaya untuk mengupgrade DNS resolver pengguna saat ini ke resolver DoH yang dioperasikan oleh penyedia yang sama.
+
+Jika template URI berisi variabel <ph name="HTTP_VARIABLE_DNS" />, permintaan untuk resolver akan menggunakan <ph name="HTTP_METHOD_GET" />. Jika tidak, permintaan akan menggunakan <ph name="HTTP_METHOD_POST" />.
+
+Pada versi 114 dan yang lebih baru, <ph name="DOH_SALT_POLICY_NAME" /> bersifat opsional jika kebijakan ini disetel.</translation>
 <translation id="3634125384445314047">Mengizinkan foto dan video yang terakhir diambil di ponsel untuk diakses melalui Phone Hub.</translation>
 <translation id="3642557248926713561">Nonaktifkan Perlindungan Ekstensi Safe Browsing</translation>
 <translation id="3643284063603988867">Aktifkan fitur 'Ingat sandi'</translation>
@@ -3877,6 +3886,7 @@ Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, li
 <translation id="45036050223225148">Nonaktifkan eksperimen Encrypted ClientHello TLS</translation>
 <translation id="4503935079903510542">Disk image yang dapat di-booting UEFI digunakan untuk menginstal VM di perangkat x86_64p.</translation>
 <translation id="4508728400492074981">Mengontrol kebijakan untuk fitur Set Pihak Pertama.</translation>
+<translation id="4510131075424939993">Menentukan nilai salt yang akan digunakan di <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> saat mengevaluasi informasi identitas</translation>
 <translation id="4510923771103268849">Pengguna diizinkan untuk memiliki akses root ke penampung Crostini</translation>
 <translation id="4512407512989846472">Memungkinkan pemblokiran penyalinan ke papan klip pada URL tertentu</translation>
 <translation id="4513691822411041977">Jangan terapkan penggunaan SafeSearch di Google Penelusuran atau Mode Terbatas YouTube</translation>
@@ -5676,6 +5686,11 @@ Waktu tunggu tidak ada aktivitas untuk memulai screensaver dan interval saat gam
 
       Catatan: Kebijakan ini memengaruhi semua output audio, termasuk fitur aksesibilitas audio. Jangan menonaktifkan kebijakan jika pengguna memerlukan pembaca layar.</translation>
 <translation id="6221175752766085998">Mengizinkan sertifikat yang dikeluarkan oleh trust anchor lokal tanpa ekstensi subjectAlternativeName</translation>
+<translation id="6221327862246049151">Salt ini digunakan sebagai nilai salt saat informasi identitas hashing disertakan dalam string <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />.
+
+Salt harus berupa string antara 8 dan 32 karakter.
+
+Di versi 114 dan yang lebih baru, kebijakan ini bersifat opsional jika kebijakan <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> disetel. Jika kebijakan ini tidak disetel, ID di URI template yang dikonfigurasi melalui kebijakan <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> akan di-hash tanpa salt.</translation>
 <translation id="6224070048795197148">Izinkan pengguna menggunakan browser tanpa login</translation>
 <translation id="6224304369267200483">URL/domain otomatis mengizinkan pengesahan langsung Kunci Keamanan</translation>
 <translation id="6225938950222983458">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.</translation>
@@ -7339,11 +7354,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika kebijakan ini disetel, Kode Akses Orang Tua dapat diverifikasi di perangkat pengguna anak.
       Jika kebijakan ini tidak disetel, Kode Akses Orang Tua tidak dapat diverifikasi di perangkat pengguna anak.</translation>
 <translation id="7623431489198474050">Nonaktifkan pengesahan jarak jauh untuk perlindungan konten</translation>
-<translation id="7627289446617865057">Kebijakan ini memungkinkan admin menentukan setelan untuk aplikasi web terinstal. Kebijakan ini memetakan ID Aplikasi Web ke setelan tertentu. Konfigurasi default dapat disetel menggunakan ID khusus <ph name="DEFAULT_SCOPE" />, yang berlaku untuk semua aplikasi web tanpa konfigurasi khusus dalam kebijakan ini.
-
-Kolom <ph name="MANIFEST_ID_FIELD" /> adalah ID Manifes untuk Aplikasi Web. Lihat <ph name="WEB_APP_ID_REFERENCE_URL" /> guna mendapatkan petunjuk cara menentukan ID Manifes untuk aplikasi web terinstal.
-Kolom <ph name="RUN_ON_OS_LOGIN_FIELD" /> menentukan apakah aplikasi web dapat dijalankan selama login OS. Jika kolom ini disetel ke <ph name="BLOCKED" />, aplikasi web tidak akan dijalankan selama login OS dan pengguna tidak akan dapat mengaktifkannya nanti. Jika kolom ini disetel ke <ph name="RUN_WINDOWED" />, aplikasi web akan dijalankan selama login OS dan pengguna tidak akan dapat menonaktifkannya nanti. Jika kolom ini disetel ke <ph name="ALLOWED" />, pengguna akan dapat mengonfigurasi aplikasi web untuk dijalankan saat login OS. Konfigurasi default hanya mengizinkan nilai <ph name="ALLOWED" /> dan <ph name="BLOCKED" />.      "
-(Sejak versi 115) Kolom <ph name="PREVENT_CLOSE_FIELD" /> menentukan apakah aplikasi web harus dicegah agar tidak ditutup dengan cara apa pun (mis. oleh pengguna, pengelola tugas, API web). Perilaku ini hanya dapat diaktifkan jika <ph name="RUN_ON_OS_LOGIN_FIELD" /> disetel ke <ph name="RUN_WINDOWED" />. Jika aplikasi sudah berjalan, properti ini hanya akan berlaku setelah aplikasi dimulai ulang. Jika kolom ini tidak ditentukan, aplikasi akan dapat ditutup oleh pengguna.</translation>
 <translation id="7628747690141606652">Nonaktifkan Terjemahan Jawaban Instan</translation>
 <translation id="7629840767216985001">Jika kebijakan ditetapkan ke Benar (True), kursor besar akan diaktifkan di layar login. Jika kebijakan ditetapkan ke Salah (False), kursor besar akan dinonaktifkan di layar login.
 

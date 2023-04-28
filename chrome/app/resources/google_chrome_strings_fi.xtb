@@ -114,6 +114,7 @@
 <translation id="2929907241665500097">Chromea ei päivitetty, vaan jotain meni pieleen. <ph name="BEGIN_LINK" />Korjaa Chromen päivitysongelmat ja epäonnistuneet päivitykset<ph name="END_LINK" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon – Chrome</translation>
 <translation id="3019382870990049182">Päivitä &amp;ChromeOS Flex käynnistämällä se uudelleen</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome ‑laajennukset käyttivät HID-laitteita}=1{Google Chrome ‑laajennukset käyttävät HID-laitteita}other{Google Chrome ‑laajennukset käyttävät # HID-laitetta}}</translation>
 <translation id="303514781271618814">Chrome kokeilee uusia ominaisuuksia, joiden avulla sivustot voivat tarjota saman selauskokemuksen vähemmällä datalla.</translation>
 <translation id="3037838751736561277">Google Chrome on käynnissä taustalla.</translation>
 <translation id="3038232873781883849">Asennetaan…</translation>
@@ -207,6 +208,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (saapuva mDNS)</translation>
 <translation id="4771048833395599659">Tämä tiedosto voi olla vaarallinen, joten Chrome on estänyt sen.</translation>
 <translation id="479167709087336770">Tämä käyttää samaa oikeinkirjoituksen tarkistusta kuin Google Haku. Selaimeen kirjoittamasi teksti lähetetään Googlelle. Voit vaihtaa valintasi milloin tahansa asetuksista.</translation>
+<translation id="4828579605166583682">Google Chrome yrittää korvata nykyiset salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="4842397268809523050">ChromeOS Flex ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="4873783916118289636">Tarkista Chromen tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
 <translation id="4891791193823137474">Jätä Google Chrome käyntiin taustalle</translation>
@@ -218,6 +220,7 @@
 <translation id="4970880042055371251">Chrome-käyttöjärjestelmän versio</translation>
 <translation id="4970947549776831107">Chrome on estänyt tiedoston, koska tämäntyyppiset tiedostot ovat vaarallisia</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome ‑laajennus käytti HID-laitteita}=1{Google Chrome ‑laajennus käyttää 1 HID-laitetta}other{Google Chrome ‑laajennus käyttää # HID-laitetta}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Järjestelmänvalvoja sulkee Chromen automaattisesti, jos sitä ei ole käytetty 1 minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}other{Järjestelmänvalvoja sulkee Chromen automaattisesti, jos sitä ei ole käytetty # minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}}</translation>
 <translation id="5098668839038261629">Kun tämä on päällä, sinut kirjataan ulos myös Chromesta</translation>
 <translation id="5132929315877954718">Löydät hienoja sovelluksia, pelejä ja teemoja Google Chromelle.</translation>

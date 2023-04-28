@@ -382,6 +382,7 @@
 <translation id="2791421900609674576">तुम्हाला शिफारशी दिसतील, जेणेकरून तुम्ही जिथे सोडले होते तेथून सुरू ठेवू शकता. तुम्ही शिफारशी काढून टाकण्यासाठी स्पर्श करून धरून ठेवू शकता.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">शेल्फ पार्टी</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" /> निवडले</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2814448776515246190">आंशिक कॅप्चर</translation>
 <translation id="2819276065543622893">आता तुम्हाला साइन आउट केले जाईल.</translation>
@@ -1127,7 +1128,7 @@
 <translation id="619279033188484792">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि सूचना पहा</translation>
 <translation id="619335566042889110">आता पूर्णपणे चार्ज करा</translation>
 <translation id="6193431488227440296">डेव्हलपर</translation>
-<translation id="6199775032047436064">वर्तमान पृष्ठ रीलोड करा</translation>
+<translation id="6199775032047436064">वर्तमान पेज रीलोड करा</translation>
 <translation id="6200515304866777730">अ‍ॅप सपोर्ट करत नाही</translation>
 <translation id="6210042900243040400">याआधी <ph name="EMAIL" /> मध्ये सेव्ह केलेले <ph name="NAME" /> कनेक्ट करा</translation>
 <translation id="6213808132343683860">आंशिक स्क्रीनशॉट किंवा स्क्रीन रेकॉर्डिंग करा</translation>
@@ -1392,6 +1393,7 @@
 <translation id="7497767806359279797">भाषा आणि कीबोर्ड निवडा</translation>
 <translation id="7508690557411636492">मागील महिन्यात उघडलेली</translation>
 <translation id="7509246181739783082">तुमच्या ओळखीची पडताळणी करा</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, निवडले नाही</translation>
 <translation id="7513622367902644023">स्क्रीनशॉट मोड निवडला आहे</translation>
 <translation id="7513922695575567867">कॅलेंडर, सध्या <ph name="DATE" /> आठवड्यामधील, <ph name="SELECTED_DATE" /> निवडली आहे.</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>

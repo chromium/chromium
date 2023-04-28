@@ -317,6 +317,7 @@
 <translation id="1689333818294560261">మారుపేరు</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />మీ డేటాను మీరు ఎలా మేనేజ్ చేయగలరు:<ph name="END_BOLD" /> 4 వారాల కంటే పాతవైన టాపిక్‌లను Chrome ఆటోమేటిక్‌గా తొలగిస్తుంది. మీరు బ్రౌజ్ చేస్తూ ఉన్నప్పుడు, లిస్ట్‌లో ఏదైనా ఒక టాపిక్ మళ్లీ కనిపించవచ్చు. Chrome ఏవైనా టాపిక్‌లను సైట్‌లతో షేర్ చేయకూడదు అని మీరు భావిస్తే, వాటిని మీరు బ్లాక్ చేయవచ్చు. అలాగే Chrome సెట్టింగ్‌లలో ఎప్పుడైనా యాడ్ టాపిక్‌లను ఆఫ్ చేయవచ్చు.</translation>
 <translation id="1697532407822776718">మీరు సిద్ధంగా ఉన్నారు!</translation>
+<translation id="1699651774646344471">మీరు ఇప్పుడు మీ Google ఖాతా నుండి అడ్రస్‌లను ఉపయోగించుకోవచ్చు</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">లెటర్</translation>
 <translation id="1706625117072057435">జూమ్ స్థాయిలు</translation>
@@ -539,6 +540,7 @@
 <translation id="2224337661447660594">ఇంటర్నెట్ లేదు</translation>
 <translation id="2225927550500503913">వర్చువల్ కార్డ్ ఆన్ చేయబడింది</translation>
 <translation id="2226636330183131181">WiFi నెట్‌వర్క్‌కు <ph name="BEGIN_LINK" />సైన్ ఇన్ చేస్తోంది<ph name="END_LINK" /></translation>
+<translation id="2228057197024893428">ఈ అడ్రస్ ప్రస్తుతం Chromeలో సేవ్ అవుతుంది. దీనిని Google ప్రోడక్ట్‌లన్నింటిలో ఉపయోగించాలంటే, మీ Google ఖాతా, <ph name="ACCOUNT" />‌లో దానిని సేవ్ చేయండి.</translation>
 <translation id="2239100178324503013">ఇప్పుడే పంపండి</translation>
 <translation id="2241693394036365668">ఫైల్ డౌన్‌లోడ్ చేసినప్పుడు</translation>
 <translation id="2246264294482514010">10 x 12 అంగుళాలు</translation>
@@ -658,6 +660,7 @@
 <translation id="2547466893236767989">వెబ్ డిజైన్ &amp; డెవలప్‌మెంట్</translation>
 <translation id="254947805923345898">విధానం విలువ చెల్లుబాటు కాదు.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> చెల్లని ప్రతిస్పందనను పంపింది.</translation>
+<translation id="2551608178605132291">అడ్రస్: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">హగాకీ</translation>
 <translation id="2552295903035773204">ఇప్పటి నుండి కార్డ్‌లను నిర్ధారించడానికి స్క్రీన్ లాక్‌ను ఉపయోగించండి</translation>
 <translation id="2553853292994445426">మీ సెక్యూర్ DNS సెట్టింగ్‌లను చెక్ చేయండి. మీరు కాన్ఫిగర్ చేసిన సెక్యూర్ సర్వర్‌కు కనెక్ట్ కావడంలో వైఫల్యం ఎదురవుతూ ఉన్నట్టుంది.</translation>
@@ -855,6 +858,7 @@
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />సెక్యూర్ DNS కాన్ఫిగరేషన్‌ని చెక్ చేస్తోంది<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">మిడిల్ ట్రే</translation>
 <translation id="3109728660330352905">మీకు ఈ పేజీని చూడటానికి అధికారం లేదు.</translation>
+<translation id="3112892588078695695">ఫోన్ నంబర్: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">మూడవ షిఫ్ట్</translation>
 <translation id="3114040155724590991">Android సిస్టమ్‌ను అప్‌డేట్ చేస్తే
     మీ యాప్‌ను ప్రారంభించడానికి సాధారణంగా కంటే ఎక్కువ సమయం పట్టవచ్చు.</translation>
@@ -1341,7 +1345,7 @@
 <translation id="4274173425554582601">కంప్యూటర్‌లు &amp; ఎలక్ట్రానిక్స్</translation>
 <translation id="4275830172053184480">మీ పరికరాన్ని పునఃప్రారంభించండి</translation>
 <translation id="4276974990916607331">వద్దు, థ్యాంక్స్</translation>
-<translation id="4277028893293644418">పాస్‌వర్డ్‌ను రీసెట్ చేయి</translation>
+<translation id="4277028893293644418">పాస్‌వర్డ్‌ను రీసెట్ చేయండి</translation>
 <translation id="4277937682389409325">లోకల్ అడ్రస్</translation>
 <translation id="4278390842282768270">అనుమతించబడింది</translation>
 <translation id="4281998142035485137">{0,plural, =1{గోప్యమైన ఫైల్‌ను తెరవాలా?}other{గోప్యమైన ఫైల్స్‌ను తెరవాలా?}}</translation>
@@ -2406,7 +2410,7 @@
 <translation id="6948874830249067134">A1x3</translation>
 <translation id="6949872517221025916">పాస్‌వర్డ్‌ను రీసెట్ చేయండి</translation>
 <translation id="6950684638814147129">JSON విలువను అన్వయిస్తుండగా ఎర్రర్ ఏర్పడింది: <ph name="ERROR" /></translation>
-<translation id="695140971690006676">అన్నీ రీసెట్ చేయి</translation>
+<translation id="695140971690006676">అన్నీ రీసెట్ చేయండి</translation>
 <translation id="6954049078461159956">హాకీ</translation>
 <translation id="6957887021205513506">సర్వర్ ధృవీకరణ డాక్యుమెంట్‌ చెల్లదు.</translation>
 <translation id="6958564499836457428">మీ Google ఖాతాలో Google గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
@@ -2465,6 +2469,7 @@
 <translation id="7083258188081898530">ట్రే 9</translation>
 <translation id="7086090958708083563">అప్‌లోడ్‌ను యూజర్ రిక్వెస్ట్ చేశారు</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో అనుమతులను మేనేజ్ చేయడానికి, అలాగే సైట్‌ల అంతటా స్టోర్ చేయబడిన డేటాను మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
+<translation id="7096341143397839437">ఈమెయిల్: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">ఈ వెబ్‍సైట్‌కు సంబంధించిన గుర్తింపు వెరిఫై చేయబడలేదు.</translation>
 <translation id="7101893872976785596">భయానక సినిమాలు</translation>
 <translation id="7102079138917191645">నిర్మాణం &amp; నిర్వహణ</translation>
@@ -2543,6 +2548,7 @@
 <translation id="7256634549594854023">రియర్ ట్రే</translation>
 <translation id="725866823122871198">మీ కంప్యూటర్ తేదీ మరియు సమయం (<ph name="DATE_AND_TIME" />) తప్పుగా ఉన్నందున <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />కు ఒక ప్రైవేట్ కనెక్షన్‌ను ఏర్పాటు చేయడం వీలుకాలేదు.</translation>
 <translation id="7260504762447901703">యాక్సెస్‌ను ఉపసంహరించు</translation>
+<translation id="7265608370113700582">అడ్రస్ ఈ పరికరంలో మాత్రమే అందుబాటులో ఉంది</translation>
 <translation id="7275334191706090484">నిర్వహించబడిన బుక్‌మార్క్‌లు</translation>
 <translation id="7277998515889183784">మేకప్ &amp; సౌందర్య సాధనాలు</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతా పాస్‌వర్డ్‌ను మార్చడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
@@ -2965,6 +2971,7 @@
 <translation id="8245703462678310750">ఫుల్ స్క్రీన్ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR" />|ను నొక్కి, పట్టుకోండి, డౌన్‌లోడ్‌ని చూడండి.</translation>
 <translation id="8249296373107784235">రద్దుచేయి</translation>
 <translation id="8249463483885748674">ప్రామాణిక &amp; ప్రవేశ పరీక్షలు</translation>
+<translation id="8250094606476360498">ఈ అడ్రస్ ప్రస్తుతం ఈ పరికరంలో సేవ్ అవుతుంది. దీనిని Google ప్రోడక్ట్‌లన్నింటిలో ఉపయోగించాలంటే, మీ Google ఖాతా, <ph name="ACCOUNT" />‌లో దానిని సేవ్ చేయండి.</translation>
 <translation id="8252991034201168845">'యాక్సెసిబిలిటీ సెట్టింగ్‌లను మేనేజ్ చేయండి' బటన్, ChromeOS సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించడానికి 'Enter'ను నొక్కండి</translation>
 <translation id="8253091569723639551">బిల్లింగ్ అడ్రస్‌ ఆవశ్యకం</translation>
 <translation id="8257387598443225809">ఈ యాప్ మొబైల్ కోసం రూపొందించబడింది</translation>

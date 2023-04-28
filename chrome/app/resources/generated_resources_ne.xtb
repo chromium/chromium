@@ -205,6 +205,7 @@
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> मा संवेदनशील वा खतरनाक डेटा छ। तपाईंका एड्मिन यसो भन्छन्: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> कुनै HID यन्त्रसँग जोडिन चाहन्छ</translation>
 <translation id="1172750555846831341">चौडाइपट्टिको भागबाट पल्टाउनुहोस्</translation>
+<translation id="1173332155861271669">पासपोइन्ट प्रदायकसम्बन्धी विवरणहरू</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1174073918202301297">सर्टकट थपियो</translation>
 <translation id="1174366174291287894">Chrome ले तपाईंको कनेक्सन सुरक्षित छैन भनेको अवस्थामा बाहेक तपाईंको कनेक्सन सधैँ सुरक्षित हुन्छ</translation>
@@ -2214,6 +2215,7 @@
 <translation id="2856776373509145513">नयाँ कन्टेनर बनाउनुहोस्</translation>
 <translation id="2859741939921354763">पासवर्डहरू <ph name="BRAND" /> मा इम्पोर्ट गर्नुहोस्</translation>
 <translation id="2861301611394761800">सिस्टम अपडेट पूरा भयो। कृपया सिस्टमलाई फेरि सुरु गर्नुहोस्।</translation>
+<translation id="2861402191395139055">पासपोइन्टका सदस्यताहरू</translation>
 <translation id="2861941300086904918">स्वदेशी ग्राहक सुरक्षा व्यवस्थापक</translation>
 <translation id="2862815659905780618">Linux डेभलपमेन्ट इनभारमेन्ट हटाउनुहोस्</translation>
 <translation id="2864601841139725659">आफ्नो प्रोफाइल तस्बिर सेट गर्नुहोस्</translation>
@@ -4690,6 +4692,7 @@
 <translation id="5086874064903147617">डिफल्ट गृहपृष्ठलाई पुनर्स्थापना गर्ने हो?</translation>
 <translation id="5087249366037322692">तेस्रो-पक्षद्वारा थपिएको</translation>
 <translation id="5087580092889165836">कार्ड थप्नुहोस्</translation>
+<translation id="5088427648965532275">पासपोइन्ट प्रदायक</translation>
 <translation id="5088534251099454936">RSA को साथमा PKCS #1 SHA-512 गुप्तलेखन</translation>
 <translation id="5089763948477033443">साइड प्यानल रिसाइज ह्यान्डल</translation>
 <translation id="5090637338841444533">तपाईंको क्यामेराको स्थिति ट्र्याक गर्ने अनुमति नदिइएका साइटहरू</translation>
@@ -6491,7 +6494,7 @@
 <translation id="6715803357256707211">तपाईंको Linux एप स्थापना गर्ने क्रममा कुनै त्रुटि भयो। विस्तृत विवरणका लागि सूचनामा क्लिक गर्नुहोस्।</translation>
 <translation id="671619610707606484">यस कार्यले साइटहरूले भण्डारण गरेको <ph name="TOTAL_USAGE" /> डेटा मेटाउने छ</translation>
 <translation id="6716798148881908873">इन्टरनेट चलिरहेको छैन। आफ्नो इन्टरनेट कनेक्सन जाँच्नुहोस् वा कुनै अर्को Wi-Fi नेटवर्कमा कनेक्ट गरी हेर्नुहोस्।</translation>
-<translation id="671928215901716392">स्क्रिन लक गर्नुहोस्</translation>
+<translation id="671928215901716392">लक स्क्रिन</translation>
 <translation id="6721744718589119342">हामी तपाईंलाई इमेल पठाएर थप जानकारी वा अद्यावधिक सूचना माग्न सक्छौँ</translation>
 <translation id="6721972322305477112">&amp;फाइल</translation>
 <translation id="672208878794563299">यो साइटले फेरि अर्को पटक पनि अनुमति माग्ने छ।</translation>
@@ -8541,7 +8544,6 @@
 <translation id="8498214519255567734">आफ्नो स्क्रिनमा हेर्न अझ सजिलो बनाउनुहोस् वा मधुरो प्रकाशमा पढ्नुहोस्</translation>
 <translation id="8498395510292172881">Chrome मा पढिरहनुहोस्</translation>
 <translation id="8499083585497694743">माइक्रोफोन अनम्युट गर्नुहोस्</translation>
-<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />स्वतः भरिने मेटाडेटा<ph name="END_LINK1" /> पठाइयोस्</translation>
 <translation id="8502536196501630039">Google Play का एपहरू प्रयोग गर्न तपाईंले अनिवार्य रूपमा सर्वप्रथम आफ्ना एपहरू रिसेट गर्नु पर्छ । केही डेटा हराएको हुन सक्छ।</translation>
 <translation id="8503813439785031346">एक-पटके टेक्स्ट म्यासेज</translation>
 <translation id="850382998924680137">आज हेरिएको</translation>

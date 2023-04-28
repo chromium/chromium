@@ -210,6 +210,7 @@
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> എന്നതിൽ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ അപകടകരമായതോ ആയ ഡാറ്റയുണ്ട്. നിങ്ങളുടെ അഡ്‌മിൻ പറയുന്നു: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> ഒരു HID ഉപകരണത്തിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="1172750555846831341">ഹ്രസ്വ എഡ്‌ജിൽ ഫ്ലിപ്പ് ചെയ്യുക</translation>
+<translation id="1173332155861271669">Passpoint ദാതാവിന്റെ വിശദാംശങ്ങള്‍</translation>
 <translation id="1173894706177603556">പേരുമാറ്റുക</translation>
 <translation id="1174073918202301297">കുറുക്കുവഴി ചേർത്തു</translation>
 <translation id="1174366174291287894">നിങ്ങളുടെ കണക്ഷൻ സുരക്ഷിതമല്ലെന്ന് Chrome പറഞ്ഞിട്ടില്ലെങ്കിൽ, അത് എല്ലായ്‌പ്പോഴും സുരക്ഷിതമാണ്</translation>
@@ -2218,6 +2219,7 @@
 <translation id="2856776373509145513">പുതിയ കണ്ടെയ്‌നർ സൃഷ്‌ടിക്കുക</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> എന്നതിലേക്ക് പാസ്‌വേഡുകൾ ഇമ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="2861301611394761800">സിസ്റ്റം അപ്ഡേറ്റ് പൂര്‍ത്തിയായി. ദയവായി സിസ്റ്റം റീസ്റ്റാർട്ട് ചെയ്യുക.</translation>
+<translation id="2861402191395139055">Passpoint സബ്‌സ്‌ക്രിപ്ഷനുകൾ</translation>
 <translation id="2861941300086904918">നേറ്റിവ് ക്ലയന്‍റ് സുരക്ഷ മാനേജര്‍</translation>
 <translation id="2862815659905780618">Linux വികസന പരിസ്ഥിതി നീക്കം ചെയ്യുക</translation>
 <translation id="2864601841139725659">നിങ്ങളുടെ പ്രൊഫൈല്‍ ചിത്രം സജ്ജമാക്കുക</translation>
@@ -4697,6 +4699,7 @@
 <translation id="5086874064903147617">ഡിഫോൾട്ട് ഹോം പേജ് പുനഃസ്ഥാപിക്കണോ?</translation>
 <translation id="5087249366037322692">ഒരു മൂന്നാം കക്ഷി ചേർത്തത്</translation>
 <translation id="5087580092889165836">കാർഡ് ചേർക്കുക</translation>
+<translation id="5088427648965532275">Passpoint ദാതാവ്</translation>
 <translation id="5088534251099454936">RSA എന്‍‌ക്രിപ്‌ഷനോടുകൂടിയ PKCS #1 SHA-512</translation>
 <translation id="5089763948477033443">സൈഡ് പാനലിന്റെ വലുപ്പം മാറ്റുന്ന ഹാൻഡിൽ</translation>
 <translation id="5090637338841444533">നിങ്ങളുടെ ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാൻ അനുവാദമില്ല</translation>
@@ -8558,7 +8561,6 @@
 <translation id="8498214519255567734">മങ്ങിയ വെളിച്ചത്തിൽ സ്‌ക്രീൻ നോക്കുന്നതോ വായിക്കുന്നതോ എളുപ്പമാക്കുക</translation>
 <translation id="8498395510292172881">Chrome-ൽ വായന തുടരുക</translation>
 <translation id="8499083585497694743">മൈക്രോഫോൺ അൺമ്യൂട്ട് ചെയ്യുക</translation>
-<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />സ്വയമേവ പൂരിപ്പിക്കൽ മെറ്റാഡാറ്റ<ph name="END_LINK1" /> അയയ്ക്കുക</translation>
 <translation id="8502536196501630039">Google Play-യിൽ നിന്ന് ആപ്പുകൾ ഉപയോഗിക്കാൻ, ആദ്യം നിങ്ങളുടെ ആപ്പുകൾ പുനഃസ്ഥാപിക്കണം. ചില ഡാറ്റ നഷ്‌ടപ്പെട്ടേക്കാം.</translation>
 <translation id="8503813439785031346">ഉപയോക്തൃനാമം</translation>
 <translation id="850382998924680137">ഇന്ന് കണ്ടു</translation>

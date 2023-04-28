@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Страницата ще се отвори в алтернативен браузър след <ph name="COUNTDOWN_SECONDS" /> секунди</translation>
+<translation id="1071735803834535661">външен клавиш meta</translation>
 <translation id="1071917609930274619">Шифроване на данни</translation>
 <translation id="1072700771426194907">Открито е USB устройство</translation>
 <translation id="107278043869924952">Използване на ПИН в допълнение към парола</translation>
@@ -209,6 +210,7 @@
 <translation id="1169435433292653700">Файлът <ph name="FILE_NAME" /> съдържа поверителни или опасни данни. Съобщение от администратора ви: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> иска да се свърже с HID устройство</translation>
 <translation id="1172750555846831341">Обръщане по късата страна</translation>
+<translation id="1173332155861271669">Подробности за доставчика на Passpoint</translation>
 <translation id="1173894706177603556">Преименуване</translation>
 <translation id="1174073918202301297">Прекият път бе добавен</translation>
 <translation id="1174366174291287894">Връзката ви винаги е защитена, освен ако Chrome не ви съобщи друго</translation>
@@ -1375,6 +1377,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2146263598007866206">Сайтовете може автоматично да изтеглят сродни файлове, за да ви спестят време</translation>
 <translation id="2147151613919729065">За да изчистите историята в режим на гост, затворете всички прозорци в този режим.</translation>
 <translation id="2147218225094845757">Скриване на страничния панел</translation>
+<translation id="2147282432401652483">command</translation>
 <translation id="2148219725039824548">Възникна грешка при свързването на посочения дял. Той не бе намерен в мрежата.</translation>
 <translation id="2148756636027685713">Форматирането завърши</translation>
 <translation id="2148892889047469596">Предаване на раздела</translation>
@@ -2228,6 +2231,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2856776373509145513">Създаване на нов контейнер</translation>
 <translation id="2859741939921354763">Импортиране на пароли в <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Системната актуализация е завършена. Моля, рестартирайте системата.</translation>
+<translation id="2861402191395139055">Абонаменти за Passpoint</translation>
 <translation id="2861941300086904918">Диспечер на сигурността за клиенти с директно изпълнение</translation>
 <translation id="2862815659905780618">Премахване на Linux средата на програмиране</translation>
 <translation id="2864601841139725659">Задаване на снимката на потребителския ви профил</translation>
@@ -4706,6 +4710,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5086874064903147617">Да се възстанови ли стандартната начална страница?</translation>
 <translation id="5087249366037322692">Добавено от трета страна</translation>
 <translation id="5087580092889165836">Добавяне на карта</translation>
+<translation id="5088427648965532275">Доставчик на Passpoint</translation>
 <translation id="5088534251099454936">PKCS 1 SHA-512 с RSA шифроване</translation>
 <translation id="5089763948477033443">Манипулатор за преоразмеряване на страничния панел</translation>
 <translation id="5090637338841444533">Сайтове без разрешение за проследяване на позицията на камерата ви</translation>
@@ -4936,6 +4941,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5298219193514155779">Темата е създадена от</translation>
 <translation id="5299109548848736476">Заявка „Do Not Track“</translation>
 <translation id="5299558715747014286">Преглежда и управлява групите ви с раздели</translation>
+<translation id="529986401483187205">деактивирано</translation>
 <translation id="5300287940468717207">Да се нулират ли разрешенията за сайтовете?</translation>
 <translation id="5300426565656326054">Персонализиране на рекламите въз основа на браузъра</translation>
 <translation id="5300589172476337783">Показване</translation>
@@ -6828,6 +6834,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6981982820502123353">Достъпност</translation>
 <translation id="6983507711977005608">Прекратяване на връзката с мрежата за незабавен тетъринг</translation>
 <translation id="6983783921975806247">Регистриран ИДО</translation>
+<translation id="6983890893900549383">escape</translation>
 <translation id="6985235333261347343">Агент за възстановяване на ключ от Microsoft</translation>
 <translation id="698524779381350301">Автоматично разрешаване на достъпа до следните сайтове</translation>
 <translation id="6985607387932385770">Принтери</translation>
@@ -7995,6 +8002,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8009225694047762179">Управление на паролите</translation>
 <translation id="8011372169388649948">Преместихте „<ph name="BOOKMARK_TITLE" />“.</translation>
 <translation id="8011875486979733097">Steam не може да се инсталира</translation>
+<translation id="8012188750847319132">caps lock</translation>
 <translation id="8013993649590906847">Ако няма полезно описание за дадено изображение, Chrome ще се опита да предостави такова. За да бъдат създадени описания, съответните изображения се изпращат до Google.</translation>
 <translation id="8014154204619229810">Актуализиращата програма понастоящем се изпълнява. Опреснете след минута, за да проверите отново.</translation>
 <translation id="8014206674403687691">Предишната инсталирана версия на <ph name="IDS_SHORT_PRODUCT_NAME" /> не може да се възстанови. Моля, опитайте отново да извършите Powerwash на устройството си.</translation>
@@ -8560,7 +8568,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8498214519255567734">Подобряване на видимостта на екрана и улесняване на четенето при слаба светлина</translation>
 <translation id="8498395510292172881">Продължаване на четенето в Chrome</translation>
 <translation id="8499083585497694743">Включване на микрофона</translation>
-<translation id="8499526927826495298">Изпращане на <ph name="BEGIN_LINK1" />метаданни за автоматичното попълване<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">За да използвате приложенията си от Google Play, трябва първо да ги възстановите. Някои данни може да са заличени.</translation>
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="850382998924680137">Прегледано днес</translation>

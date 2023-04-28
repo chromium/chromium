@@ -209,6 +209,7 @@
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> содржи чувствителни или опасни податоци. Порака од администраторот: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> сака да се поврзе со HID-уред</translation>
 <translation id="1172750555846831341">Прелистување од краткиот раб</translation>
+<translation id="1173332155861271669">Детали за оператор на Passpoint</translation>
 <translation id="1173894706177603556">Преименувај</translation>
 <translation id="1174073918202301297">Кратенката е додадена</translation>
 <translation id="1174366174291287894">Вашата врска секогаш е безбедна освен ако Chrome не ви каже поинаку</translation>
@@ -2233,6 +2234,7 @@
 <translation id="2856776373509145513">Создајте нов контејнер</translation>
 <translation id="2859741939921354763">Увезување лозинки на <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Ажурирањето на системот заврши. Рестартирајте го системот.</translation>
+<translation id="2861402191395139055">Претплати на Passpoint</translation>
 <translation id="2861941300086904918">Управник за безбедност на матичен клиент</translation>
 <translation id="2862815659905780618">Отстранете ја Linux-околината за програмирање</translation>
 <translation id="2864601841139725659">Поставете ја сликата на профилот</translation>
@@ -4710,6 +4712,7 @@
 <translation id="5086874064903147617">Да се врати стандардната почетна страница?</translation>
 <translation id="5087249366037322692">Додадено од трето лице</translation>
 <translation id="5087580092889165836">Додајте картичка</translation>
+<translation id="5088427648965532275">Оператор на Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 со RSA шифрирање</translation>
 <translation id="5089763948477033443">Рачка за менување големина на странична табла</translation>
 <translation id="5090637338841444533">Не им е дозволено да ја следат позицијата на камерата</translation>
@@ -8567,7 +8570,6 @@
 <translation id="8498214519255567734">Го олеснува гледањето во екранот или читањето при слаба светлина</translation>
 <translation id="8498395510292172881">Продолжете со читање во Chrome</translation>
 <translation id="8499083585497694743">Вклучи го звукот на микрофонот</translation>
-<translation id="8499526927826495298">Испраќај <ph name="BEGIN_LINK1" />автоматски пополнети метаподатоци<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">За да ги користите апликациите од Google Play, мора прво да ги вратите вашите апликации. Дел од податоците можеби се загубени.</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="850382998924680137">Прегледано денес</translation>

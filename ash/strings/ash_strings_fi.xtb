@@ -382,6 +382,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2791421900609674576">Näet suosituksia, joten voit jatkaa siitä, mihin jäit. Suosituksia voi poistaa koskettamalla pitkään.</translation>
 <translation id="2792498699870441125">Alt + haku</translation>
 <translation id="2797741504905337289">Hyllyryhmä</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, valittu</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2814448776515246190">Osittainen kuvakaappaus</translation>
 <translation id="2819276065543622893">Sinut kirjataan ulos nyt.</translation>
@@ -1392,6 +1393,7 @@ Uusi asennus</translation>
 <translation id="7497767806359279797">Valitse kieli ja näppäimistö</translation>
 <translation id="7508690557411636492">Avattu kuluneen kuukauden aikana</translation>
 <translation id="7509246181739783082">Vahvista henkilöllisyys</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, ei valittu</translation>
 <translation id="7513622367902644023">Kuvakaappaustila valittu</translation>
 <translation id="7513922695575567867">Kalenteri, viikko johon kuuluu <ph name="DATE" />, <ph name="SELECTED_DATE" /> on valittuna.</translation>
 <translation id="7514365320538308">Lataa</translation>

@@ -315,6 +315,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1689333818294560261">Àlies</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Com pots gestionar les teves dades<ph name="END_BOLD" />: Chrome suprimeix automàticament els temes que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que reaparegui un tema a la llista. També pots bloquejar els temes que no vulguis que Chrome comparteixi amb els llocs web i desactivar els temes d'anuncis en qualsevol moment a la configuració de Chrome.</translation>
 <translation id="1697532407822776718">Ja estàs a punt!</translation>
+<translation id="1699651774646344471">Ara pots utilitzar les adreces del teu Compte de Google</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Nivells de zoom</translation>
@@ -537,6 +538,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2224337661447660594">Sense connexió a Internet</translation>
 <translation id="2225927550500503913">La targeta virtual s'ha activat</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Inici de sessió<ph name="END_LINK" /> a la xarxa Wi-Fi</translation>
+<translation id="2228057197024893428">Actualment aquesta adreça està desada a Chrome. Per utilitzar-la en tots els productes de Google, desa-la al teu Compte de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2239100178324503013">Envia ara</translation>
 <translation id="2241693394036365668">Es baixa un fitxer</translation>
 <translation id="2246264294482514010">10 x 12 polzades</translation>
@@ -656,6 +658,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2547466893236767989">Disseny i desenvolupament web</translation>
 <translation id="254947805923345898">El valor de la política no és vàlid.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ha enviat una resposta que no és vàlida.</translation>
+<translation id="2551608178605132291">Adreça: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">A partir d'ara, fes servir el bloqueig de pantalla per confirmar les targetes</translation>
 <translation id="2553853292994445426">Revisa la configuració de DNS segur. Pot ser que hagis configurat un servidor de DNS segur en què fallin les connexions.</translation>
@@ -853,6 +856,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Comprova la configuració de DNS segur<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Safata central</translation>
 <translation id="3109728660330352905">No teniu permís per veure aquesta pàgina.</translation>
+<translation id="3112892588078695695">Número de telèfon: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Tercer torn</translation>
 <translation id="3114040155724590991">S'està actualitzant el sistema d'Android
     L'aplicació pot tardar més del normal a iniciar-se.</translation>
@@ -2463,6 +2467,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7083258188081898530">Safata 9</translation>
 <translation id="7086090958708083563">Pujada sol·licitada per l'usuari</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prem Tab i després Retorn per gestionar els permisos i les dades emmagatzemades als llocs web des de la configuració de Chrome</translation>
+<translation id="7096341143397839437">Adreça electrònica: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">La identitat d'aquest lloc web no s'ha verificat.</translation>
 <translation id="7101893872976785596">Pel·lícules de terror</translation>
 <translation id="7102079138917191645">Construcció i manteniment</translation>
@@ -2541,6 +2546,7 @@ Detalls addicionals:
 <translation id="7256634549594854023">Safata posterior</translation>
 <translation id="725866823122871198">No s'ha pogut establir una connexió privada amb <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perquè la data i l'hora (<ph name="DATE_AND_TIME" />) de l'ordinador no són correctes.</translation>
 <translation id="7260504762447901703">Revoca l'accés</translation>
+<translation id="7265608370113700582">L'adreça només està disponible en aquest dispositiu</translation>
 <translation id="7275334191706090484">Adreces d'interès gestionades</translation>
 <translation id="7277998515889183784">Maquillatge i cosmètica</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per canviar la contrasenya del teu Compte de Google</translation>
@@ -2963,6 +2969,7 @@ Detalls addicionals:
 <translation id="8245703462678310750">Mantén premuda la tecla |<ph name="ACCELERATOR" />| per sortir de la pantalla completa i veure la baixada.</translation>
 <translation id="8249296373107784235">Cancel·la</translation>
 <translation id="8249463483885748674">Proves d'admissions i estandarditzades</translation>
+<translation id="8250094606476360498">Actualment aquesta adreça està desada en aquest dispositiu. Per utilitzar-la en tots els productes de Google, desa-la al teu Compte de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Botó Gestiona la configuració d'accessibilitat: prem Retorn per personalitzar les eines d'accessibilitat a la configuració de Chrome OS</translation>
 <translation id="8253091569723639551">Cal indicar l'adreça de facturació</translation>
 <translation id="8257387598443225809">Aquesta aplicació està dissenyada per a mòbils</translation>

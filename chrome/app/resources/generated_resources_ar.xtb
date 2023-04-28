@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">جارٍ الفتح في متصفِّح بديل خلال <ph name="COUNTDOWN_SECONDS" /> ثانية</translation>
+<translation id="1071735803834535661">‏مفتاح Meta الخارجي</translation>
 <translation id="1071917609930274619">ترميز البيانات</translation>
 <translation id="1072700771426194907">‏تم التعرّف على جهاز USB</translation>
 <translation id="107278043869924952">استخدام رقم التعريف الشخصي بالإضافة إلى كلمة المرور</translation>
@@ -1367,6 +1368,7 @@
 <translation id="2146263598007866206">قد تعمل المواقع الإلكترونية على تنزيل الملفات المتشابهة معًا تلقائيًا لتوفير الوقت.</translation>
 <translation id="2147151613919729065">لمحو سجلّ "وضع الضيف"، أغلِق كل النوافذ المفتوحة في هذا الوضع.</translation>
 <translation id="2147218225094845757">إخفاء اللوحة الجانبية</translation>
+<translation id="2147282432401652483">Command</translation>
 <translation id="2148219725039824548">حدث خطأ في تحميل المشاركة. لم يتم العثور على المشاركة المُحدَّدة في الشبكة.</translation>
 <translation id="2148756636027685713">انتهت عملية التنسيق</translation>
 <translation id="2148892889047469596">علامة التبويب "إرسال"</translation>
@@ -4908,6 +4910,7 @@
 <translation id="5298219193514155779">مظهر أنشأه</translation>
 <translation id="5299109548848736476">عدم التعقب</translation>
 <translation id="5299558715747014286">عرض مجموعات علامات التبويب وإدارتها</translation>
+<translation id="529986401483187205">غير مفعَّل</translation>
 <translation id="5300287940468717207">هل تريد إعادة ضبط أذونات المواقع الإلكترونية هذه؟</translation>
 <translation id="5300426565656326054">تخصيص الإعلانات حسب المتصفِّح</translation>
 <translation id="5300589172476337783">عرض</translation>
@@ -6795,6 +6798,7 @@
 <translation id="6981982820502123353">تسهيل الاستخدام</translation>
 <translation id="6983507711977005608">قطع الاتصال بشبكة "التوصيل الفوري"</translation>
 <translation id="6983783921975806247">‏معرّف الكائنات (OID) المسجل</translation>
+<translation id="6983890893900549383">Escape</translation>
 <translation id="6985235333261347343">‏عامل استرداد مفتاح Microsoft</translation>
 <translation id="698524779381350301">السماح بالوصول إلى المواقع التالية تلقائيًا</translation>
 <translation id="6985607387932385770">الطابعات</translation>
@@ -7954,6 +7958,7 @@
 <translation id="8009225694047762179">إدارة كلمات المرور</translation>
 <translation id="8011372169388649948">تم نقل الإشارة المرجعية "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="8011875486979733097">‏لا يمكن تثبيت تطبيق Steam</translation>
+<translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8013993649590906847">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google.</translation>
 <translation id="8014154204619229810">يتم تشغيل أداة التحديث حاليًا. يمكنك إعادة التحميل بعد دقيقة واحدة للتحقق مجددًا.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> غير قادر على العودة إلى الإصدار المثبت مسبقًا. يُرجى إعادة محاولة إجراء المحو الكامل لبيانات جهازك.</translation>
@@ -8515,7 +8520,6 @@
 <translation id="8498214519255567734">يمكنك تسهيل النظر إلى الشاشة أو القراءة في الضوء الخافت</translation>
 <translation id="8498395510292172881">‏متابعة القراءة في Chrome</translation>
 <translation id="8499083585497694743">إعادة صوت الميكروفون</translation>
-<translation id="8499526927826495298">إرسال <ph name="BEGIN_LINK1" />البيانات الوصفية للملء التلقائي<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">‏لاستخدام التطبيقات من Google Play، عليك استعادة تطبيقاتك أولاً. وقد تلاحظ فقدان بعض بياناتك.</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="850382998924680137">تم العرض اليوم</translation>

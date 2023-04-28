@@ -382,6 +382,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2791421900609674576">You’ll see recommendations so that you can continue where you left off. You can touch &amp; hold to remove recommendations.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, selected</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Partial capture</translation>
 <translation id="2819276065543622893">You will be signed out now.</translation>
@@ -1392,6 +1393,7 @@ New install</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
 <translation id="7508690557411636492">Opened in the past month</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, not selected</translation>
 <translation id="7513622367902644023">Screenshot mode selected</translation>
 <translation id="7513922695575567867">Calendar, week of <ph name="DATE" />, <ph name="SELECTED_DATE" /> is currently selected.</translation>
 <translation id="7514365320538308">Download</translation>

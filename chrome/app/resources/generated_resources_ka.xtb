@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">ალტერნატიულ ბრაუზერში გაიხსნება <ph name="COUNTDOWN_SECONDS" /> წამში</translation>
+<translation id="1071735803834535661">გარე მეტაგასაღები</translation>
 <translation id="1071917609930274619">მონაცემების დაშიფვრა</translation>
 <translation id="1072700771426194907">აღმოჩენილია USB-მოწყობილობა</translation>
 <translation id="107278043869924952">გამოიყენეთ PIN-კოდი პაროლთან ერთად</translation>
@@ -207,6 +208,7 @@
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> შეიცავს სენსიტიურ ან სახიფათო მონაცემებს. თქვენი ადმინისტრატორის შეტყობინება: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> ითხოვს HID მოწყობილობასთან დაკავშირებას</translation>
 <translation id="1172750555846831341">ამობრუნება მოკლე კიდეზე</translation>
+<translation id="1173332155861271669">Passpoint მომწოდებლის დეტალები</translation>
 <translation id="1173894706177603556">სახელის შეცვლა</translation>
 <translation id="1174073918202301297">მალსახმობი დამატებულია</translation>
 <translation id="1174366174291287894">თქვენი კავშირი ყოველთვის დაცულია, სანამ Chrome საწინააღმდეგოზე გამცნობდეთ</translation>
@@ -475,6 +477,7 @@
 <translation id="1410616244180625362">გაგრძელება <ph name="HOST" />-ისთვის კამერაზე წვდომის მიცემით</translation>
 <translation id="1410797069449661718">პირველი ჩანართისკენ გადაადგილება</translation>
 <translation id="1410806973194718079">წესების შემოწმება ვერ ხერხდება</translation>
+<translation id="1411400282355634827">გსურთ Bluetooth მოწყობილობების ყველა ნებართვის გადაყენება?</translation>
 <translation id="1411724932979011919">თქვენი შენატანის ფორმატი უნდა იყოს LPA:1$&lt;smdp მისამართი&gt;$&lt;აქტივაციის კოდი&gt;</translation>
 <translation id="1412681350727866021">დამატებითი გაფართოებები</translation>
 <translation id="1414315029670184034">საიტებისთვის თქვენი კამერის გამოყენების აკრძალვა</translation>
@@ -1366,6 +1369,7 @@
 <translation id="2146263598007866206">საიტებმა შეიძლება ავტომატურად, ერთდროულად ჩამოტვირთოს დაკავშირებული ფაილები, რომ დროის დაზოგვაში დაგეხმაროთ</translation>
 <translation id="2147151613919729065">სტუმრის რეჟიმის ისტორიის წასაშლელად დახურეთ სტუმრის ყველა ფანჯარა.</translation>
 <translation id="2147218225094845757">გვერდითი პანელის დამალვა</translation>
+<translation id="2147282432401652483">ბრძანება</translation>
 <translation id="2148219725039824548">გაზიარების მიერთებისას მოხდა შეცდომა. მითითებული გაზიარება ქველში ვერ მოიძებნა.</translation>
 <translation id="2148756636027685713">ფორმატირება დასრულდა</translation>
 <translation id="2148892889047469596">ჩანართის ტრანსლირება</translation>
@@ -2216,6 +2220,7 @@
 <translation id="2856776373509145513">შექმენით ახალი კონტეინერი</translation>
 <translation id="2859741939921354763">შეასრულეთ პაროლების იმპორტირება <ph name="BRAND" />-ში</translation>
 <translation id="2861301611394761800">სისტემის განახლება დასრულებულია. გთხოვთ გადატვირთეთ სისტემა.</translation>
+<translation id="2861402191395139055">Passpoint გამოწერები</translation>
 <translation id="2861941300086904918">ადგილობრივი კლიენტის უსაფრთხოების მენეჯერი</translation>
 <translation id="2862815659905780618">Linux-ის შემუშავების გარემოს ამოშლა</translation>
 <translation id="2864601841139725659">თქვენი პროფილის სურათის დაყენება</translation>
@@ -4692,6 +4697,7 @@
 <translation id="5086874064903147617">გსურთ ნაგულისხმევი მთავარი გვერდის აღდგენა?</translation>
 <translation id="5087249366037322692">დამატებულია მესამე მხარის მიერ</translation>
 <translation id="5087580092889165836">ბარათის დამატება</translation>
+<translation id="5088427648965532275">Passpoint მომწოდებელი</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512-ით RSA დაშიფვრა</translation>
 <translation id="5089763948477033443">გვერდითი პანელის ზომის შეცვლის სახელური</translation>
 <translation id="5090637338841444533">თქვენი კამერის პოზიციისთვის თვალის მიდევნება დაუშვებელია</translation>
@@ -4787,6 +4793,7 @@
 <translation id="5178667623289523808">წინა ელემენტის ძებნა</translation>
 <translation id="5181140330217080051">ჩამოტვირთვა</translation>
 <translation id="5181172023548002891">Google პაროლების მმართველში <ph name="ACCOUNT" />-ისთვის</translation>
+<translation id="5183344263225877832">გსურთ HID მოწყობილობების ყველა ნებართვის გადაყენება?</translation>
 <translation id="5184063094292164363">&amp;JavaScript კონსოლი</translation>
 <translation id="5184209580557088469">ბილეთი მომხმარებლის ამ სახელით უკვე არსებობს</translation>
 <translation id="5184662919967270437">მიმდინარეობს თქვენი მოწყობილობის განახლება</translation>
@@ -4921,6 +4928,7 @@
 <translation id="5298219193514155779">თემის ავტორი:</translation>
 <translation id="5299109548848736476">არ ადევნო თვალი</translation>
 <translation id="5299558715747014286">თქვენი ჩანართების ჯგუფების ნახვა და მართვა</translation>
+<translation id="529986401483187205">გათიშულია</translation>
 <translation id="5300287940468717207">გსურთ, საიტების ნებართვების გადაყენება?</translation>
 <translation id="5300426565656326054">ბრაუზერზე დაფუძნებული რეკლამის პერსონალიზება</translation>
 <translation id="5300589172476337783">ჩვენება</translation>
@@ -6467,6 +6475,7 @@
 <translation id="6691541770654083180">დედამიწა</translation>
 <translation id="6691936601825168937">&amp;გადამისამართება</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 გვერდი}other{{COUNT} გვერდი}}</translation>
+<translation id="6693820805264897502">არსებული პაროლების ჩანაცვლება</translation>
 <translation id="6697172646384837537">აირჩიეთ, სად გსურთ თქვენი პაროლების იმპორტირება</translation>
 <translation id="6697492270171225480">მსგავსი გვერდების შემოთავაზებების ჩვენება, როცა გვერდი ვერ მოიძებნება</translation>
 <translation id="6697690052557311665">გასაზიარებლად დააწკაპუნეთ მარჯვენა ღილაკით საქაღალდეს ფაილების აპში, შემდეგ კი აირჩიეთ — „Linux-თან გაზიარება“.</translation>
@@ -6811,6 +6820,7 @@
 <translation id="6981982820502123353">სპეციალური შესაძლებლობები</translation>
 <translation id="6983507711977005608">მყისიერი ტეტერინგის ქსელის გათიშვა</translation>
 <translation id="6983783921975806247">რეგისტრირებული OID</translation>
+<translation id="6983890893900549383">Escape</translation>
 <translation id="6985235333261347343">Microsoft გასაღების აღდგენის აგენტი</translation>
 <translation id="698524779381350301">წვდომის ავტომატურად დაშვება მითითებულ საიტებზე</translation>
 <translation id="6985607387932385770">პრინტერები</translation>
@@ -7580,6 +7590,7 @@
 <translation id="7674542105240814168">მდებარეობაზე წვდომა უარყოფილია</translation>
 <translation id="7676119992609591770">მოთხოვნაზე „<ph name="SEARCH_TEXT" />“ მოიძებნა <ph name="NUM" /> ჩანართი</translation>
 <translation id="7676867886086876795">ნებისმიერი ტექსტური ველის კარნახით შესავსებად თქვენი ხმა გაიგზავნება Google-ში.</translation>
+<translation id="7678588695732963732">გსურთ USB მოწყობილობების ყველა ნებართვის გადაყენება?</translation>
 <translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> მართული პრინტერია.</translation>
 <translation id="7680416688940118410">სენსორული ეკრანის კალიბრაცია</translation>
 <translation id="7681095912841365527">საიტს შეუძლია Bluetooth-კავშირის გამოყენება</translation>
@@ -7976,6 +7987,7 @@
 <translation id="8009225694047762179">პაროლების მართვა</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />“ გადატანილია.</translation>
 <translation id="8011875486979733097">Steam ვერ დაინსტალირდა</translation>
+<translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8013993649590906847">თუ სურათს არ ექნება სასარგებლო აღწერილობა, Chrome შეეცდება მის უზრუნველყოფას. აღწერილობების შესაქმნელად სურათები იგზავნება Google-ში.</translation>
 <translation id="8014154204619229810">ამჟამად გაშვებულია განახლების პროგრამა. განაახლეთ გვერდი რამდენიმე წუთში და ისევ ცადეთ.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> ვერ აბრუნებს წინა დაინსტალირებულ ვერსიას. ხელახლა სცადეთ მოწყობილობის Powerwash ფუნქციის გამოყენება.</translation>
@@ -8540,7 +8552,6 @@
 <translation id="8498214519255567734">გაიმარტივეთ ეკრანზე კითხვა ან მისი ყურება მკრთალი განათების პირობებში</translation>
 <translation id="8498395510292172881">კითხვის გაგრძელება Chrome-ში</translation>
 <translation id="8499083585497694743">მიკროფონის დადუმების მოხსნა</translation>
-<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />ავტომატური შევსების მეტამონაცემების<ph name="END_LINK1" /> გაგზავნა</translation>
 <translation id="8502536196501630039">Google Play-ში არსებული აპების გამოსაყენებლად, პირველ რიგში, საჭიროა თქვენი აპის აღდგენა. ზოგიერთი მონაცემი შეიძლებოდა დაკარგულიყო.</translation>
 <translation id="8503813439785031346">მომხმარებლის სახელი</translation>
 <translation id="850382998924680137">ნანახია დღეს</translation>
@@ -9334,6 +9345,7 @@
 <translation id="9192019773545828776">მოისმინეთ გახმოვანებული უკუკავშირი და გამოიყენეთ მოწყობილობა ეკრანზე ყურების საჭიროების გარეშე. ბრაილთან დაკავშირებული უკუკავშირი ხელმისაწვდომია დაკავშირებული მოწყობილობის მეშვეობით. ChromeVox-ის ჩასართავად ან გამოსართავად გამოიყენეთ კლავიშთა კომბინაცია Ctrl + Alt + Z. ნავიგაციისთვის გამოიყენეთ კლავიშთა კომბინაცია Search + მარცხნივ/მარჯვნივ მიმართული ისარი. ასარჩევად (გასააქტიურებლად) გამოიყენეთ კლავიშთა კომბინაცია Search + შორისი.</translation>
 <translation id="919686179725692564">შეიტყვეთ მეტი თქვენი აპების სარეზერვო ასლების შექმნის შესახებ</translation>
 <translation id="9199503643457729322">დააწკაპუნეთ კონფიდენციალურობის სახელმძღვანელოდან გასასვლელად.</translation>
+<translation id="9199695835892108985">გსურთ სერიული პორტების ყველა ნებართვის გადაყენება?</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> შეძლებს, დაარედაქტიროს ფაილები „<ph name="FOLDERNAME" />“-ში</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />-ში ძიება</translation>
 <translation id="9201023452444595544">გასუფთავდება ხაზგარეშე მონაცემები</translation>

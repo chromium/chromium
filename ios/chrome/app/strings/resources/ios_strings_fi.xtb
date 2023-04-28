@@ -133,6 +133,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1815941218935345331">Tunnuskoodi</translation>
 <translation id="1820259098641718022">Lisättiin lukulistalle</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Vaarantuneet salasanat}=1{{COUNT} vaarantunut salasana}other{{COUNT} vaarantunutta salasanaa}}</translation>
+<translation id="1830634592642484976">Tämä osoite on tällä hetkellä tallennettu Chromeen. Jos haluat käyttää sitä Googlen tuotteissa, tallenna se Google-tilillesi (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Todenna henkilöllisyytesi varmistaaksesi, että sinulla on aina pääsy synkronoituun dataasi</translation>
 <translation id="1836891464494477513">{count,plural, =1{Kirjanmerkki tallennettu Google-tilillesi ({email})}other{Kirjanmerkit tallennettu Google-tilillesi ({email})}}</translation>
 <translation id="1870148520156231997">Näytä salasana</translation>
@@ -168,7 +169,6 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2074131957428911366">Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK" />asetuksissa<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Kumoa</translation>
 <translation id="2080769225927880590">Kirjaudu sisään oikealla tilillä</translation>
-<translation id="2090878303988764231">Kirjaudu sisään, niin voit vaikuttaa näkemääsi sisältöön</translation>
 <translation id="2103075008456228677">Avaa history.google.com</translation>
 <translation id="21133533946938348">Kiinnitä välilehti</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> kohdetta siirretty</translation>
@@ -545,6 +545,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4636930964841734540">Tietoja</translation>
 <translation id="4642472735733036929">Hinnan seuranta lopetettu</translation>
 <translation id="4650125387981512669">Jatka tilillä <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Varmista, että salasanasi ovat turvassa ja selvitä, ovatko ne vaarantuneet. Saat myös ohjeita itsesi suojaamiseen verkossa. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Tämä ominaisuus otetaan käyttöön, kun kirjaudut Google-tilillesi.</translation>
 <translation id="4659667755519643272">Avaa välilehtien vaihtaja</translation>
 <translation id="46614316059270592">Tallenna salasana</translation>
@@ -587,7 +588,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4844899002472726590">Katso ja muokkaa aiheita, jotka kiinnostavat sinua</translation>
 <translation id="4848999860252535517">Poistetaanko salasana: <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Määritä tunnuskoodi</translation>
-<translation id="4856498338299082007">Google-tililläsi</translation>
 <translation id="4858786880085262208">Päivitä HTTPS:ään kun mahdollista Turvalliset sivustot voivat upottaa sisältöä, joka ei ole turvallista.</translation>
 <translation id="4860895144060829044">Soita</translation>
 <translation id="4872323082491632254">Tarkista salasanat</translation>
@@ -697,6 +697,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5669617676038747374">QR-koodin luominen</translation>
 <translation id="567881659373499783">Versio <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Vahvista henkilöllisyytesi, jotta voit käyttää ja tallentaa salasanoja Google-tililläsi.</translation>
+<translation id="5684761169742812828">Tämä salasana vaarantui tietosuojaloukkauksessa internetissä. Jos sinulla ei ole aikaa muuttaa sitä juuri nyt, Google suosittelee, että säilytät tämän varoituksen myöhempää varten.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Nyt näytetään 1 Chrome-ikkuna}other{Nyt näytetään {count} Chrome-ikkunaa}}</translation>
 <translation id="5701270923492462699">Pääsy kameraan myönnetty</translation>
 <translation id="5704908597376970822">Sisäänkirjautuminen ei onnistu.</translation>
@@ -1113,13 +1114,11 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8197543752516192074">Käännä sivu</translation>
 <translation id="8205564605687841303">Peru</translation>
 <translation id="8206354486702514201">Järjestelmänvalvojasi hallinnoi tätä asetusta.</translation>
-<translation id="821809831108207540">Jos haluat personoida Discover-fiidiä ja Chromea, kirjaudu sisään ja laita synkronointi päälle.</translation>
 <translation id="8225985093977202398">Välimuistissa olevat kuvat ja tiedostot</translation>
 <translation id="8237382152611443140">Avaa automaattisen täytön salasana-asetukset</translation>
 <translation id="8248969482078657578">Ei-aktiiviset välilehdet auttavat keskittymään</translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8264966119170358612">Osa tallennetuista salasanoistasi on paljastunut Googlen ulkopuolisen tietosuojaloukkauksen yhteydessä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Vain tälle laitteelle</translation>
 <translation id="826614135184049678">Sinut kirjattiin ulos tililtä <ph name="USER_NAME" />, kun iPad nollattiin. Kirjaudu takaisin sisään valitsemalla Jatka.</translation>
 <translation id="8271720166617117963">Hyväksy ja kirjaudu sisään</translation>
 <translation id="8278938988428169257">Lisää sana tai ilmaus</translation>
@@ -1222,6 +1221,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8952559610785099500">Lisää salasana</translation>
 <translation id="8953046091948372197">Näet kirjanmerkkisi täällä</translation>
 <translation id="895541991026785598">Ilmoita ongelmasta</translation>
+<translation id="8961757677053809960">Hylätäänkö varoitus?</translation>
 <translation id="8971545611707025079">Tarkista uudelleen</translation>
 <translation id="8974714402877957201">1. Avaa iPadin asetukset</translation>
 <translation id="8976382372951310360">Ohje</translation>

@@ -169,7 +169,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2074131957428911366">Pode escolher o que pretende sincronizar nas <ph name="BEGIN_LINK" />definições<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anular</translation>
 <translation id="2080769225927880590">Inicie sessão com uma conta válida</translation>
-<translation id="2090878303988764231">Inicie sessão para gerir o conteúdo que vê</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="21133533946938348">Fixar Separador</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> itens movidos</translation>
@@ -589,7 +588,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="4844899002472726590">Veja e edite tópicos nos quais tem interesse</translation>
 <translation id="4848999860252535517">Apagar a palavra-passe de <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Definir um código secreto</translation>
-<translation id="4856498338299082007">Na sua Conta Google</translation>
 <translation id="4858786880085262208">Sempre que possível, atualize para HTTPS. Os sites seguros podem incorporar conteúdo que não é seguro.</translation>
 <translation id="4860895144060829044">Telefonar</translation>
 <translation id="4872323082491632254">Verifique palavras-passe</translation>
@@ -1116,13 +1114,11 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8197543752516192074">Traduzir página</translation>
 <translation id="8205564605687841303">Cancelar</translation>
 <translation id="8206354486702514201">Esta definição é aplicada pelo gestor.</translation>
-<translation id="821809831108207540">Para personalizar o feed do Discover e o Chrome, inicie sessão e ative a sincronização.</translation>
 <translation id="8225985093977202398">Imagens e ficheiros em cache</translation>
 <translation id="8237382152611443140">Abra as Definições do preenchimento automático de palavras-passe</translation>
 <translation id="8248969482078657578">Os separadores inativos ajudam a manter a concentração</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8264966119170358612">Algumas das suas palavras-passe guardadas foram expostas numa violação de dados de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Apenas neste dispositivo</translation>
 <translation id="826614135184049678">Como parte da reposição do iPad, a sua sessão na conta <ph name="USER_NAME" /> foi terminada. Para voltar a iniciar sessão, toque em "Continuar" abaixo.</translation>
 <translation id="8271720166617117963">Aceitar e iniciar sessão</translation>
 <translation id="8278938988428169257">Introduza uma palavra ou uma expressão</translation>

@@ -382,6 +382,7 @@
 <translation id="2791421900609674576">Θα βλέπετε προτάσεις για να συνεχίσετε από εκεί που σταματήσατε. Μπορείτε να αγγίξετε παρατεταμένα για να καταργήσετε προτάσεις.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, επιλεγμένο</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2814448776515246190">Μερική λήψη</translation>
 <translation id="2819276065543622893">Θα αποσυνδεθείτε τώρα.</translation>
@@ -1392,6 +1393,7 @@
 <translation id="7497767806359279797">Επιλογή γλώσσας και πληκτρολογίου</translation>
 <translation id="7508690557411636492">Ανοίχτηκε τον προηγούμενο μήνα</translation>
 <translation id="7509246181739783082">Επαλήθευση της ταυτότητάς σας</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, μη επιλεγμένο</translation>
 <translation id="7513622367902644023">Επιλέχτηκε λειτουργία στιγμιότυπου οθόνης.</translation>
 <translation id="7513922695575567867">Ημερολόγιο, εβδομάδα <ph name="DATE" />, αυτήν τη στιγμή είναι επιλεγμένη η ημερομηνία <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Λήψη</translation>

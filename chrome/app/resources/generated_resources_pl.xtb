@@ -208,6 +208,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1169435433292653700">Plik <ph name="FILE_NAME" /> zawiera dane poufne lub niebezpieczne. Wiadomość od Twojego administratora: „<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> chce się połączyć z urządzeniem HID</translation>
 <translation id="1172750555846831341">Odwróć wzdłuż krótszej krawędzi</translation>
+<translation id="1173332155861271669">Szczegóły dostawcy protokołu Passpoint</translation>
 <translation id="1173894706177603556">Zmień nazwę</translation>
 <translation id="1174073918202301297">Skrót został dodany</translation>
 <translation id="1174366174291287894">Twoje połączenie jest zawsze bezpieczne, chyba że Chrome poinformuje Cię, że jest inaczej</translation>
@@ -2206,6 +2207,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2856776373509145513">Utwórz nowy kontener</translation>
 <translation id="2859741939921354763">Zaimportuj hasła do usługi <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Aktualizacja systemu zakończona. Uruchom system ponownie.</translation>
+<translation id="2861402191395139055">Subskrypcje Passpoint</translation>
 <translation id="2861941300086904918">Menedżer zabezpieczeń klienta rodzimego</translation>
 <translation id="2862815659905780618">Usuń środowisko programistyczne Linuksa</translation>
 <translation id="2864601841139725659">Ustawianie zdjęcia profilowego</translation>
@@ -4682,6 +4684,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5086874064903147617">Przywrócić domyślną stronę główną?</translation>
 <translation id="5087249366037322692">Dodane przez inną firmę</translation>
 <translation id="5087580092889165836">Dodaj kartę</translation>
+<translation id="5088427648965532275">Dostawca protokołu Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1, SHA-512 z szyfrowaniem RSA</translation>
 <translation id="5089763948477033443">Uchwyt zmiany rozmiaru panelu bocznego</translation>
 <translation id="5090637338841444533">Nie zezwolono na śledzenie pozycji kamery</translation>
@@ -8538,7 +8541,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8498214519255567734">Dzięki tej funkcji oczy mniej się męczą podczas patrzenia na ekran lub czytania przy słabym oświetleniu</translation>
 <translation id="8498395510292172881">Czytaj dalej w Chrome</translation>
 <translation id="8499083585497694743">Włącz mikrofon</translation>
-<translation id="8499526927826495298">Wyślij <ph name="BEGIN_LINK1" />metadane autouzupełniania<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Aby używać aplikacji z Google Play, musisz najpierw przywrócić swoje aplikacje. Niektóre dane mogły zostać utracone.</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="850382998924680137">Wyświetlono dzisiaj</translation>

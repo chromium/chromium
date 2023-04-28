@@ -382,6 +382,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2791421900609674576">Näete soovitusi, et saaksite jätkata sealt, kus pooleli jäite. Soovituste eemaldamiseks võite pikalt puudutada.</translation>
 <translation id="2792498699870441125">Alt + otsinguklahv</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, valitud</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="2814448776515246190">Osaline jäädvustamine</translation>
 <translation id="2819276065543622893">Teid logitakse nüüd välja.</translation>
@@ -1393,6 +1394,7 @@ Uus installimine</translation>
 <translation id="7497767806359279797">Valige keel ja klaviatuur</translation>
 <translation id="7508690557411636492">Avatud viimase kuu jooksul</translation>
 <translation id="7509246181739783082">Kinnitage oma isik</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, valimata</translation>
 <translation id="7513622367902644023">Valitud on ekraanipildirežiim</translation>
 <translation id="7513922695575567867">Kalender, kuupäeva <ph name="DATE" /> nädal, <ph name="SELECTED_DATE" /> on praegu valitud.</translation>
 <translation id="7514365320538308">Laadi alla</translation>

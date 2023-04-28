@@ -382,6 +382,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2791421900609674576">Makakakita ka ng mga rekomendasyon para makapagpatuloy ka kung saan ka huminto. Puwede kang pumindot nang matagal para alisin ang mga rekomendasyon.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490">Pinili ang <ph name="BUTTON_LABEL" /></translation>
 <translation id="2805756323405976993">Mga App</translation>
 <translation id="2814448776515246190">Pag-capture ng isang bahagi ng screen</translation>
 <translation id="2819276065543622893">Masa-sign out ka ngayon.</translation>
@@ -1392,6 +1393,7 @@ Kaka-install lang</translation>
 <translation id="7497767806359279797">Pumili ng wika at keyboard</translation>
 <translation id="7508690557411636492">Binuksan sa nakalipas na buwan</translation>
 <translation id="7509246181739783082">I-verify ang iyong pagkakakilanlan</translation>
+<translation id="7512726380443357693">Hindi pinili ang <ph name="BUTTON_LABEL" /></translation>
 <translation id="7513622367902644023">Pinili ang screenshot mode</translation>
 <translation id="7513922695575567867">Kalendaryo, linggo ng <ph name="DATE" />, kasalukuyang pinili ang <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">I-download</translation>

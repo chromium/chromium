@@ -315,6 +315,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1689333818294560261">Apodo</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> Chrome elimina automáticamente los temas que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, los temas pueden volver a aparecer en la lista. Además, puedes bloquear los temas que no quieras que Chrome comparta con los sitios, así como desactivar los temas de anuncios en cualquier momento desde la configuración de Chrome.</translation>
 <translation id="1697532407822776718">¡Listo!</translation>
+<translation id="1699651774646344471">Ya puedes usar direcciones de tu cuenta de Google</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Niveles de zoom</translation>
@@ -537,6 +538,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2224337661447660594">Sin conexión a Internet</translation>
 <translation id="2225927550500503913">Tarjeta virtual activada</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Iniciar sesión<ph name="END_LINK" /> en la red Wi-Fi</translation>
+<translation id="2228057197024893428">Actualmente, esta dirección está guardada en Chrome. Para usarla en los productos de Google, guárdala en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
 <translation id="2239100178324503013">Enviar ahora</translation>
 <translation id="2241693394036365668">Se ha descargado un archivo</translation>
 <translation id="2246264294482514010">10x12 pulgadas</translation>
@@ -656,6 +658,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2547466893236767989">Diseño y desarrollo Web</translation>
 <translation id="254947805923345898">El valor de la política no es válido.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ha enviado una respuesta no válida.</translation>
+<translation id="2551608178605132291">Dirección: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Usar el bloqueo de pantalla para confirmar tarjetas a partir de ahora</translation>
 <translation id="2553853292994445426">Comprueba tu configuración de DNS seguro. Es posible que hayas configurado un servidor DNS seguro cuyas conexiones están fallando.</translation>
@@ -853,6 +856,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Comprobar la configuración de DNS seguro<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Bandeja central</translation>
 <translation id="3109728660330352905">No tienes autorización para ver esta página.</translation>
+<translation id="3112892588078695695">Número de teléfono: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Tercer turno</translation>
 <translation id="3114040155724590991">Actualizando el sistema Android
     Tu aplicación puede tardar más de lo habitual en iniciarse.</translation>
@@ -1225,6 +1229,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4031179711345676612">Micrófono permitido</translation>
 <translation id="4040350669425716613">Universidades</translation>
 <translation id="4047351652147966654">18x24 pulgadas</translation>
+<translation id="4050392779074832022">Podrás usarla en los productos de Google</translation>
 <translation id="405399507749852140">Recibe alertas si el precio baja en algún sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Permite que Google te ayude a encontrar descuentos para tus carritos</translation>
@@ -2462,6 +2467,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7083258188081898530">Bandeja 9</translation>
 <translation id="7086090958708083563">Subida solicitada por el usuario</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para gestionar permisos y datos almacenados en sitios en la configuración de Chrome</translation>
+<translation id="7096341143397839437">Correo electrónico: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">La identidad de este sitio web no se ha verificado.</translation>
 <translation id="7101893872976785596">Películas de terror</translation>
 <translation id="7102079138917191645">Construcción y mantenimiento</translation>
@@ -2540,6 +2546,7 @@ Más información:
 <translation id="7256634549594854023">Bandeja trasera</translation>
 <translation id="725866823122871198">No se puede establecer una conexión privada con <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque la fecha y la hora de tu ordenador (<ph name="DATE_AND_TIME" />) no son correctas.</translation>
 <translation id="7260504762447901703">Revoca el acceso</translation>
+<translation id="7265608370113700582">La dirección solo está disponible en este dispositivo</translation>
 <translation id="7275334191706090484">Marcadores administrados</translation>
 <translation id="7277998515889183784">Maquillaje y cosmética</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para cambiar la contraseña de tu cuenta de Google</translation>
@@ -2962,6 +2969,7 @@ Más información:
 <translation id="8245703462678310750">Mantén pulsado |<ph name="ACCELERATOR" />| para salir de pantalla completa y ver la descarga.</translation>
 <translation id="8249296373107784235">Anular</translation>
 <translation id="8249463483885748674">Pruebas estandarizadas y de admisión</translation>
+<translation id="8250094606476360498">Actualmente, esta dirección está guardada en este dispositivo. Para usarla en los productos de Google, guárdala en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Botón Gestionar la configuración de accesibilidad: pulsa Intro para personalizar tus herramientas de accesibilidad en la configuración de ChromeOS</translation>
 <translation id="8253091569723639551">Se necesita una dirección de facturación</translation>
 <translation id="8257387598443225809">Esta aplicación se ha diseñado para móviles</translation>

@@ -209,6 +209,7 @@
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> эмзэг эсвэл аюултай өгөгдөлтэй байна. Таны администратор "<ph name="CUSTOM_MESSAGE" />" гэж хэлж байна</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> HID төхөөрөмжид холбогдох хүсэлтэй байна</translation>
 <translation id="1172750555846831341">Цаасыг эргүүлж, богино ирмэг (short edge) дээр нь хэвлэх</translation>
+<translation id="1173332155861271669">Passpoint үйлчилгээ үзүүлэгчийн дэлгэрэнгүй</translation>
 <translation id="1173894706177603556">Нэр солих</translation>
 <translation id="1174073918202301297">Товчлол нэмсэн</translation>
 <translation id="1174366174291287894">Chrome таны холболтыг аюултай байна гэж хэлээгүйгээс бусад тохиолдолд энэ нь үргэлж аюулгүй байна</translation>
@@ -2228,6 +2229,7 @@
 <translation id="2856776373509145513">Шинэ контейнер үүсгэх</translation>
 <translation id="2859741939921354763">Нууц үгнүүдийг <ph name="BRAND" /> руу импорт хийх</translation>
 <translation id="2861301611394761800">Системийн шинэчлэлт дууслаа. Системийг дахин эхлүүлнэ үү.</translation>
+<translation id="2861402191395139055">Passpoint-н захиалга</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
 <translation id="2862815659905780618">Linux-н хөгжүүлэлтийн орчныг хасах</translation>
 <translation id="2864601841139725659">Профайл зургаа тохируулах</translation>
@@ -4704,6 +4706,7 @@
 <translation id="5086874064903147617">Өгөгдмөл нүүр хуудсыг идэвхжүүлэх үү?</translation>
 <translation id="5087249366037322692">Гуравдагч талаас нэмсэн</translation>
 <translation id="5087580092889165836">Карт нэмэх</translation>
+<translation id="5088427648965532275">Passpoint-н үйлчилгээ үзүүлэгч</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 With RSA Encryption</translation>
 <translation id="5089763948477033443">Хажуугийн самбарын хэмжээг өөрчлөх бариул</translation>
 <translation id="5090637338841444533">Таны камерын байрлалыг хянахыг зөвшөөрөөгүй</translation>
@@ -8554,7 +8557,6 @@
 <translation id="8498214519255567734">Дэлгэцээ бүдэг гэрэлтэй үед харах эсвэл уншихад илүү хялбар болгоно</translation>
 <translation id="8498395510292172881">Chrome-д үргэлжлүүлэн унших</translation>
 <translation id="8499083585497694743">Микрофоны дууг нээх</translation>
-<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />Автоматаар бөглөх хэсгийн мета өгөгдөл<ph name="END_LINK1" /> илгээх</translation>
 <translation id="8502536196501630039">Та Google Play-н аппуудыг ашиглахын тулд эхлээд аппуудаа сэргээх шаардлагатай. Зарим өгөгдлөө алдаж болзошгүй.</translation>
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
 <translation id="850382998924680137">Өнөөдөр үзсэн</translation>

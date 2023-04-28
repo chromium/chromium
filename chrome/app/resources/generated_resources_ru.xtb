@@ -207,6 +207,7 @@
 <translation id="1169435433292653700">В файле "<ph name="FILE_NAME" />" содержатся конфиденциальные или опасные данные. Сообщение от администратора: "<ph name="CUSTOM_MESSAGE" />".</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> запрашивает разрешение на подключение к HID-устройству</translation>
 <translation id="1172750555846831341">Переплет по короткому краю</translation>
+<translation id="1173332155861271669">Сведения о поставщиках Passpoint</translation>
 <translation id="1173894706177603556">Переименовать</translation>
 <translation id="1174073918202301297">Ярлык добавлен</translation>
 <translation id="1174366174291287894">Если подключение небезопасно, браузер Chrome предупредит вас об этом.</translation>
@@ -2219,9 +2220,11 @@
 <translation id="2856776373509145513">Создайте контейнер</translation>
 <translation id="2859741939921354763">Импортировать пароли в <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Обновление системы завершено. Перезапустите компьютер.</translation>
+<translation id="2861402191395139055">Подписки Passpoint</translation>
 <translation id="2861941300086904918">Менеджер безопасности – Native Client</translation>
 <translation id="2862815659905780618">Удалить среду разработки Linux</translation>
 <translation id="2864601841139725659">Выберите фото профиля</translation>
+<translation id="2865057607286263192">Нажмите и удерживайте клавиши, чтобы увидеть диакритические знаки и специальные символы. Если этот параметр включен, повтор ввода для клавиш с буквами отключается. Доступно только для английского языка (США).</translation>
 <translation id="2865919525181940183">Скриншот с открытыми программами на экране</translation>
 <translation id="286674810810214575">Проверка источников питания…</translation>
 <translation id="2867768963760577682">Открыть в закрепленной вкладке</translation>
@@ -2806,6 +2809,7 @@
 <translation id="3407392651057365886">Предзагружается больше страниц. Этот процесс может выполняться через серверы Google по запросу других сайтов.</translation>
 <translation id="3407967630066378878">Чтобы настроить разблокировку по отпечатку, попросите ребенка приложить палец к сканеру отпечатков на левой боковой части устройства <ph name="DEVICE_TYPE" />. Данные отпечатков пальцев ребенка надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{В Google Менеджер паролей импортирован 1 пароль для <ph name="USER_EMAIL" />.}one{В Google Менеджер паролей импортирован {NUM_PASSWORDS} пароль для <ph name="USER_EMAIL" />.}few{В Google Менеджер паролей импортировано {NUM_PASSWORDS} пароля для <ph name="USER_EMAIL" />.}many{В Google Менеджер паролей импортировано {NUM_PASSWORDS} паролей для <ph name="USER_EMAIL" />.}other{В Google Менеджер паролей импортировано {NUM_PASSWORDS} пароля для <ph name="USER_EMAIL" />.}}</translation>
+<translation id="3409513286451883969">Перевести выделенный текст на <ph name="LANGUAGE" /></translation>
 <translation id="3409785640040772790">Карты</translation>
 <translation id="3412265149091626468">Перейти к выделенному</translation>
 <translation id="3413122095806433232">Издатели центра сертификации: <ph name="LOCATION" /></translation>
@@ -4517,6 +4521,7 @@
 <translation id="4907129260985716018">Укажите, когда расширение может считывать и изменять данные сайтов.</translation>
 <translation id="4907161631261076876">Этот файл скачивают редко. Возможно, он вредоносный.</translation>
 <translation id="4907306957610201395">Категория разрешения</translation>
+<translation id="4908070840805457717">Повтор ввода</translation>
 <translation id="4908811072292128752">Откройте новую вкладку, чтобы перейти на другой сайт, не закрывая предыдущий</translation>
 <translation id="4909038193460299775">Ваш аккаунт управляется доменом <ph name="DOMAIN" />. Все закладки, история, пароли и настройки будут удалены с устройства, однако данные в аккаунте Google сохранятся. Вы можете просмотреть и изменить их в <ph name="BEGIN_LINK" />Личном кабинете Google<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">Переходы в активный режим</translation>
@@ -4692,6 +4697,7 @@
 <translation id="5086874064903147617">Восстановить стартовую страницу Chrome по умолчанию?</translation>
 <translation id="5087249366037322692">Добавлено сторонней программой</translation>
 <translation id="5087580092889165836">Добавить карту</translation>
+<translation id="5088427648965532275">Поставщик Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 с шифрованием RSA</translation>
 <translation id="5089763948477033443">Маркер, который позволяет изменить размер боковой панели</translation>
 <translation id="5090637338841444533">Запретить сайтам отслеживать положение камеры</translation>
@@ -5855,6 +5861,7 @@
 <translation id="6130692320435119637">Добавить сеть Wi-Fi</translation>
 <translation id="6130887916931372608">Клавиша</translation>
 <translation id="6132714462430777655">Пропустить регистрацию в учебном заведении?</translation>
+<translation id="6133850653093419052">Разрешено запрашивать доступ</translation>
 <translation id="6135823405800500595">Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="6135826623269483856">Сайты, которым запрещено управление окнами на всех ваших экранах</translation>
 <translation id="6136114942382973861">Закрыть панель загрузок</translation>
@@ -8257,6 +8264,7 @@
 <translation id="8242370300221559051">Включить Play Маркет</translation>
 <translation id="8242426110754782860">Продолжить</translation>
 <translation id="8243948765190375130">Качество медиаконтента может снизиться</translation>
+<translation id="8244201515061746038">Кнопка для просмотра дополнительных сведений об автозамене. Открывает страницу настроек автозамены. Нажмите Ввод, чтобы нажать на кнопку, или Escape, чтобы выйти.</translation>
 <translation id="8244514732452879619">Пора ложиться спать</translation>
 <translation id="8246776524656196770">Защитите электронный ключ при помощи PIN-кода.</translation>
 <translation id="8248050856337841185">&amp;Вставить</translation>
@@ -8351,6 +8359,7 @@
 <translation id="8323167517179506834">Введите URL</translation>
 <translation id="8323317289166663449">Просмотр и изменение ваших данных на компьютере и всех сайтах.</translation>
 <translation id="8324784016256120271">Сайты могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например, для показа персонализированной рекламы.</translation>
+<translation id="8324819620112450495">Запрещено запрашивать доступ</translation>
 <translation id="8325413836429495820">Запретить сайтам просматривать буфер обмена</translation>
 <translation id="8326478304147373412">PKCS #7, цепочка сертификатов</translation>
 <translation id="8327386430364625757">Математический шрифт</translation>
@@ -8473,6 +8482,7 @@
 <translation id="8428271547607112339">Добавить учебный аккаунт</translation>
 <translation id="8428628598981198790">Невозможно использовать электронный ключ для этого сайта</translation>
 <translation id="84297032718407999">Выход из системы произойдет через <ph name="LOGOUT_TIME_LEFT" /></translation>
+<translation id="8430963319679282846">Если удерживать клавишу, соответствующий символ будет вводится повторно</translation>
 <translation id="8431190899827883166">Визуальный отклик</translation>
 <translation id="8434480141477525001">Порт отладки NaCl</translation>
 <translation id="8437209419043462667">США</translation>
@@ -8546,7 +8556,6 @@
 <translation id="8498214519255567734">Этот режим помогает снизить напряжение глаз при тусклом свете</translation>
 <translation id="8498395510292172881">Продолжить чтение в Chrome</translation>
 <translation id="8499083585497694743">Включить микрофон</translation>
-<translation id="8499526927826495298">Отправить <ph name="BEGIN_LINK1" />метаданные автозаполнения<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Чтобы использовать приложения из Google Play, сначала восстановите свои приложения. Некоторые данные могли быть потеряны.</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="850382998924680137">Просмотрено сегодня</translation>
@@ -9372,6 +9381,7 @@
 <translation id="925270020047573546">Трансляция аудио с компьютера не поддерживается на этом устройстве</translation>
 <translation id="929117907539171075">Офлайн-данные в установленном приложении будут также удалены.</translation>
 <translation id="930268624053534560">Подробные временные метки</translation>
+<translation id="930551443325541578">Повтор ввода и диакритические знаки</translation>
 <translation id="930893132043726269">Сейчас в роуминге</translation>
 <translation id="93140074055951850">Работа приложений Android остановлена</translation>
 <translation id="932327136139879170">Главная страница</translation>

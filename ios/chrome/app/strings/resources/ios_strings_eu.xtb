@@ -169,7 +169,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2074131957428911366">Zer sinkronizatu nahi duzun aukeratzeko, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="2079545284768500474">Desegin</translation>
 <translation id="2080769225927880590">Hasi saioa balio duen kontu batekin</translation>
-<translation id="2090878303988764231">Ikusten duzun edukia kudeatzeko, hasi saioa</translation>
 <translation id="2103075008456228677">Ireki history.google.com</translation>
 <translation id="21133533946938348">Ainguratu fitxa</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementu mugitu dira</translation>
@@ -589,7 +588,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="4844899002472726590">Ikusi eta editatu interesatzen zaizkizun gaiak</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" /> webguneko pasahitza ezabatu nahi duzu?</translation>
 <translation id="4854345657858711387">Ezarri pasakode bat</translation>
-<translation id="4856498338299082007">Zure Google-ko kontuan</translation>
 <translation id="4858786880085262208">Igo mailaz HTTPSra, posible denean. Baliteke webgune seguruek eduki ez-segurua kapsulatzea.</translation>
 <translation id="4860895144060829044">Deitu</translation>
 <translation id="4872323082491632254">Egiaztatu pasahitzak</translation>
@@ -1116,13 +1114,11 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8197543752516192074">Itzuli orria</translation>
 <translation id="8205564605687841303">Utzi</translation>
 <translation id="8206354486702514201">Administratzaileak betearazten du ezarpena.</translation>
-<translation id="821809831108207540">Discover jarioa eta Chrome pertsonalizatzeko, hasi saioa eta aktibatu sinkronizazioa.</translation>
 <translation id="8225985093977202398">Cachean gordetakoak</translation>
 <translation id="8237382152611443140">Ireki AutoFill Password Settings (pasahitzak automatikoki betetzeko aukeraren ezarpenak).</translation>
 <translation id="8248969482078657578">Fitxa inaktiboak atalarekin, errazago kontzentratu ahal izango zara</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8264966119170358612">Gordeta zeneuzkan pasahitzetako batzuk ikusgai jarri dira, datuen isilpekotasuna urratu delako Google-tik kanpo. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Gailu honetan soilik</translation>
 <translation id="826614135184049678">iPad-a berrezarri duzunez, <ph name="USER_NAME" /> kontuko saioa amaitu zaizu. Saioa berriro hasteko, sakatu Egin aurrera.</translation>
 <translation id="8271720166617117963">Onartu eta hasi saioa</translation>
 <translation id="8278938988428169257">Idatzi hitz edo esaldi bat</translation>

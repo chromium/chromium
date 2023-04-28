@@ -2887,6 +2887,15 @@
 <translation id="3623332696371971798">禁止通过个性化设置应用访问 Google 相册</translation>
 <translation id="3627678165642179114">启用或停用拼写检查网络服务</translation>
 <translation id="3628480121685794414">启用单面打印</translation>
+<translation id="3634117682099473917">此政策用于指定所需 DNS-over-HTTPS 解析器的 URI 模板。若要指定多个 DNS-over-HTTPS 解析器，请使用空格分隔相应的 URI 模板。此政策与 <ph name="DOH_TEMPLATES_POLICY_NAME" /> 非常相似，并会覆盖后者（若已指定）。与后者不同的是，此政策支持指定身份信息。
+
+如果 <ph name="DOH_MODE_POLICY_NAME" /> 设为 <ph name="SECURE_DNS_MODE_SECURE" />，则必须设置此政策或 <ph name="DOH_TEMPLATES_POLICY_NAME" />，不得将这两者都留空。
+
+如果 <ph name="DOH_MODE_POLICY_NAME" /> 设为 <ph name="SECURE_DNS_MODE_AUTOMATIC" />，并且此政策已设置，系统将会使用指定的 URI 模板；如果此政策未设置，系统便会使用硬编码映射来尝试将用户的当前 DNS 解析器升级到由同一提供商运营的 DoH 解析器。
+
+如果 URI 模板包含 <ph name="HTTP_VARIABLE_DNS" /> 变量，向解析器发出的请求将会使用 <ph name="HTTP_METHOD_GET" />；否则，这些请求便会使用 <ph name="HTTP_METHOD_POST" />。
+
+在 114 版及更高版本中，如果此政策已设置，<ph name="DOH_SALT_POLICY_NAME" /> 是可选的。</translation>
 <translation id="3634125384445314047">允许通过 Phone Hub 访问手机上近期拍摄的照片和视频。</translation>
 <translation id="3642557248926713561">停用安全浏览扩展程序保护功能</translation>
 <translation id="3643284063603988867">启用“记住密码”功能</translation>
@@ -3773,6 +3782,7 @@
 <translation id="45036050223225148">停用经过 TLS 加密的 ClientHello 实验</translation>
 <translation id="4503935079903510542">用于在 x86_64 设备上安装虚拟机的 UEFI 可启动式磁盘映像。</translation>
 <translation id="4508728400492074981">控制 First-Party Sets 功能的相关政策。</translation>
+<translation id="4510131075424939993">此政策用于指定评估身份信息时要在 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> 中使用的盐值</translation>
 <translation id="4510923771103268849">允许用户拥有 Crostini 容器的 root 权限</translation>
 <translation id="4512407512989846472">允许禁止指定网址向剪贴板中复制数据</translation>
 <translation id="4513691822411041977">不强制在 Google 搜索中使用安全搜索功能，也不强制使用 YouTube 受限模式</translation>
@@ -5511,6 +5521,11 @@
 
       注意：此政策会影响所有类型（包括音频无障碍功能）的音频输出。如果用户需要使用屏幕阅读器，请勿停用此政策。</translation>
 <translation id="6221175752766085998">允许使用由本地信任锚颁发的缺少 subjectAlternativeName 扩展项的证书</translation>
+<translation id="6221327862246049151">在对 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> 字符串包含的身份信息进行哈希处理时，系统会将此盐用作盐值。
+
+此盐必须是一个长度介于 8 到 32 个字符之间的字符串。
+
+在 114 版及更高版本中，如果已设置 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> 政策，此政策是可选的。如果此政策未设置，系统在对通过 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> 政策配置的模板 URI 中的标识符进行哈希处理时不会加盐。</translation>
 <translation id="6224070048795197148">允许用户在不登录的情况下使用浏览器</translation>
 <translation id="6224304369267200483">自动允许直接安全密钥认证的网址/网域</translation>
 <translation id="6225938950222983458">此政策已被弃用且不再受支持，请改用 <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />。</translation>
@@ -7108,11 +7123,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果设置了此政策，则可在未成年用户的设备上验证家长访问码。
       如果未设置此政策，则无法在未成年用户的设备上验证家长访问码。</translation>
 <translation id="7623431489198474050">禁止为保护内容而进行远程认证</translation>
-<translation id="7627289446617865057">此政策让管理员能为已安装的 Web 应用指定设置。使用此政策后，您可将某个 Web 应用 ID 映射到特定设置。您可以使用特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有 Web 应用。
-
-<ph name="MANIFEST_ID_FIELD" /> 字段用于指明相应 Web 应用的清单 ID。如需了解怎样确定某个已安装 Web 应用的清单 ID，请参阅 <ph name="WEB_APP_ID_REFERENCE_URL" />。
-<ph name="RUN_ON_OS_LOGIN_FIELD" /> 字段用于指明相应 Web 应用能否在 OS 登录期间运行。如果此字段设为“<ph name="BLOCKED" />”，Web 应用将不会在 OS 登录期间运行，而且用户无法在日后启用此设置。如果此字段设为“<ph name="RUN_WINDOWED" />”，Web 应用将会在 OS 登录期间运行，但用户无法在日后停用此设置。如果此字段设为“<ph name="ALLOWED" />”，用户将能配置要在 OS 登录期间运行的 Web 应用。默认配置仅接受“<ph name="ALLOWED" />”值和“<ph name="BLOCKED" />”值。"
-（自 115 版起）<ph name="PREVENT_CLOSE_FIELD" /> 字段用于指明是否应阻止以任何方式（例如由用户、任务管理器、Web API）关闭 Web 应用的行为。只有在 <ph name="RUN_ON_OS_LOGIN_FIELD" /> 设为“<ph name="RUN_WINDOWED" />”时，才能启用此行为。如果应用已在运行，只有在重启应用后，该属性才会生效。如果此字段未定义，用户将可以关闭应用。</translation>
 <translation id="7628747690141606652">停用快速解答翻译功能</translation>
 <translation id="7629840767216985001">将此政策设为 True 时，系统会在登录屏幕上开启大号光标。将此政策设为 False 时，系统会在登录屏幕上关闭大号光标。
 

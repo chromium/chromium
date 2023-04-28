@@ -133,6 +133,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1815941218935345331">Jelkód</translation>
 <translation id="1820259098641718022">Hozzáadva az olvasási listához</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Jelszavak, amelyekhez illetéktelenül hozzáfértek}=1{{COUNT} illetéktelen kezekbe került jelszó}other{{COUNT} illetéktelen kezekbe került jelszó}}</translation>
+<translation id="1830634592642484976">A címet jelenleg a Chrome-ba menti a rendszer. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Igazolja személyazonosságát, hogy mindig hozzáférhessen szinkronizált adataihoz</translation>
 <translation id="1836891464494477513">{count,plural, =1{A könyvjelző mentve a Google-fiókjába ({email})}other{A könyvjelzők mentve a Google-fiókjába ({email})}}</translation>
 <translation id="1870148520156231997">Jelszó megjelenítése</translation>
@@ -168,7 +169,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2074131957428911366">A <ph name="BEGIN_LINK" />beállítások<ph name="END_LINK" /> között bármikor módosíthatja a szinkronizálni kívánt elemeket.</translation>
 <translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2080769225927880590">Bejelentkezés érvényes fiókkal</translation>
-<translation id="2090878303988764231">Jelentkezzen be az Önnek megjelenő tartalmak kezeléséhez.</translation>
 <translation id="2103075008456228677">A history.google.com megnyitása</translation>
 <translation id="21133533946938348">Lap rögzítése</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elem áthelyezve</translation>
@@ -545,6 +545,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="4636930964841734540">Információ</translation>
 <translation id="4642472735733036929">Árkövetés leállítva</translation>
 <translation id="4650125387981512669">Folytatás mint <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Meggyőződhet arról, hogy jelszavai biztonságosak, kiderítheti, hogy illetéktelenül hozzájuk fértek-e, és tanácsot kaphat az online biztonság megőrzéséhez. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="4659126640776004816">Amikor bejelentkezik Google-fiókjába, a rendszer bekapcsolja ezt a funkciót.</translation>
 <translation id="4659667755519643272">Lapváltó megnyitása</translation>
 <translation id="46614316059270592">Jelszó mentése</translation>
@@ -587,7 +588,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="4844899002472726590">Megtekintheti és szerkesztheti az Önt érdeklő témákat</translation>
 <translation id="4848999860252535517">Biztosan törli a következőhöz tartozó jelszót: <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Biztonsági kód beállítása</translation>
-<translation id="4856498338299082007">A Google-fiókjában</translation>
 <translation id="4858786880085262208">Lehetőség szerint váltson HTTPS-re. Biztonságos webhelyek beágyazhatnak nem biztonságos tartalmakat.</translation>
 <translation id="4860895144060829044">Hívás</translation>
 <translation id="4872323082491632254">Jelszavak ellenőrzése</translation>
@@ -697,6 +697,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5669617676038747374">QR-kód létrehozása</translation>
 <translation id="567881659373499783">Verzió: <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">A jelszavak Google-fiókban való használatához és mentéséhez igazolja személyazonosságát.</translation>
+<translation id="5684761169742812828">A jelszó nyilvánosságra került egy adatvédelmi incidens során az interneten. Ha jelenleg nincs ideje a módosításra, a Google azt javasolja, hogy tartsa meg ezt a figyelmeztetést, hogy később is emlékezzen rá.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Jelenleg 1 Chrome-ablak jelenik meg}other{Jelenleg {count} Chrome-ablak jelenik meg}}</translation>
 <translation id="5701270923492462699">Kamera-hozzáférés engedélyezve</translation>
 <translation id="5704908597376970822">Nem sikerült a bejelentkezés.</translation>
@@ -1113,13 +1114,11 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8197543752516192074">Oldal lefordítása</translation>
 <translation id="8205564605687841303">Mégse</translation>
 <translation id="8206354486702514201">Ezt a beállítást rendszergazdája lépteti életbe.</translation>
-<translation id="821809831108207540">A Discover-hírcsatorna és a Chrome személyre szabásához jelentkezzen be, és engedélyezze a szinkronizálást.</translation>
 <translation id="8225985093977202398">A gyorsítótárban lévő képek és fájlok</translation>
 <translation id="8237382152611443140">Nyissa meg az automatikus kitöltés jelszóbeállításait.</translation>
 <translation id="8248969482078657578">Az inaktív lapok segítenek az összpontosításban</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8264966119170358612">Egyes mentett jelszavai nyilvánosságra kerültek egy nem a Google-hoz köthető adatvédelmi incidens során. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
-<translation id="8265018477030547118">Csak erre az eszközre</translation>
 <translation id="826614135184049678">Az iPad visszaállításakor a rendszer kijelentkeztette a fiókjából (<ph name="USER_NAME" />). Az újbóli bejelentkezéshez koppintson az alábbi „Folytatás” lehetőségre.</translation>
 <translation id="8271720166617117963">Elfogadás és bejelentkezés</translation>
 <translation id="8278938988428169257">Írjon be egy szót vagy kifejezést</translation>
@@ -1222,6 +1221,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8952559610785099500">Jelszó hozzáadása</translation>
 <translation id="8953046091948372197">Itt láthatja majd a jelszavait</translation>
 <translation id="895541991026785598">Hibabejelentés</translation>
+<translation id="8961757677053809960">Elveti a figyelmeztetést?</translation>
 <translation id="8971545611707025079">Ellenőrzés újra</translation>
 <translation id="8974714402877957201">1. Nyissa meg az iPad Beállítások menüjét.</translation>
 <translation id="8976382372951310360">Súgó</translation>

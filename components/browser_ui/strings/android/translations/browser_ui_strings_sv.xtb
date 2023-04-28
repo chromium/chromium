@@ -148,6 +148,7 @@
 <translation id="3600792891314830896">Stäng av ljudet på webbplatser</translation>
 <translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3628308229821498208">Föreslagna sökningar</translation>
+<translation id="3707034683772193706">En webbplats du besöker kan spara mycket information med Chrome, främst för att kontrollera att du inte är en bot</translation>
 <translation id="3721953990244350188">Ignorera och visa nästa tillgängliga åtgärd</translation>
 <translation id="3744111561329211289">Synkronisering i bakgrunden</translation>
 <translation id="3763247130972274048">Hoppa över 10 s genom att trycka två gånger till vänster/höger på videon</translation>
@@ -344,6 +345,7 @@
 <translation id="7302486331832100261">Du brukar blockera aviseringar. Tryck på Info om du vill tillåta dem.</translation>
 <translation id="7366415735885268578">Lägg till en webbplats</translation>
 <translation id="7383715096023715447">Inställningar för <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Den här inställningen fungerar utan att du identifieras eller att webbplatser tillåts se din webbhistorik, men webbplatser kan dela en del uppgifter som en del av verifieringen</translation>
 <translation id="7423098979219808738">Fråga först</translation>
 <translation id="7423538860840206698">Läsbehörighet till Urklipp har nekats</translation>
 <translation id="7425915948813553151">Mörkt tema för webbplatser</translation>
@@ -433,6 +435,7 @@
 <translation id="8816026460808729765">Blockera webbplatser från att använda enhetens sensorer</translation>
 <translation id="8823559166155093873">Blockera cookies</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">När du fortsätter surfa kan webbplatser kontrollera informationen med Chrome och verifiera med den föregående webbplatsen du besökte att du troligen är en riktig person.</translation>
 <translation id="8899807382908246773">Påträngande annonser</translation>
 <translation id="8903921497873541725">Zooma in</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

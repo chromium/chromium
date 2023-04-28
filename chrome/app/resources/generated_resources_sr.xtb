@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Отвара се у алтернативном прегледачу за <ph name="COUNTDOWN_SECONDS" /> сек</translation>
+<translation id="1071735803834535661">спољни мета тастер</translation>
 <translation id="1071917609930274619">Шифровање података</translation>
 <translation id="1072700771426194907">Откривен је USB уређај</translation>
 <translation id="107278043869924952">Користите PIN поред лозинке</translation>
@@ -207,6 +208,7 @@
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> садржи осетљиве или опасне податке. Администратор каже: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> жели да се повеже са HID уређајем</translation>
 <translation id="1172750555846831341">Окрени по краћој ивици</translation>
+<translation id="1173332155861271669">Детаљи добављача Passpoint-а</translation>
 <translation id="1173894706177603556">Преименуј</translation>
 <translation id="1174073918202301297">Пречица је додата</translation>
 <translation id="1174366174291287894">Веза је увек безбедна ако вам Chrome не каже другачије</translation>
@@ -1366,6 +1368,7 @@
 <translation id="2146263598007866206">Сајтови могу аутоматски да преузимају сродне фајлове заједно да би вам штедели време</translation>
 <translation id="2147151613919729065">Да бисте обрисали историју режима госта, затворите све прозоре режима госта.</translation>
 <translation id="2147218225094845757">Сакриј бочну таблу</translation>
+<translation id="2147282432401652483">команда</translation>
 <translation id="2148219725039824548">Грешка при учитавању дељене датотеке. Наведена дељена датотека није пронађена на мрежи.</translation>
 <translation id="2148756636027685713">Форматирање је завршено</translation>
 <translation id="2148892889047469596">Пребаците картицу</translation>
@@ -2216,6 +2219,7 @@
 <translation id="2856776373509145513">Направите нови контејнер</translation>
 <translation id="2859741939921354763">Увезите лозинке у <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Ажурирање система је довршено. Рестартујте систем.</translation>
+<translation id="2861402191395139055">Претплате на Passpoint</translation>
 <translation id="2861941300086904918">Менаџер безбедности за Native Client</translation>
 <translation id="2862815659905780618">Уклоните Linux окружење за програмирање</translation>
 <translation id="2864601841139725659">Подесите слику профила</translation>
@@ -4692,6 +4696,7 @@
 <translation id="5086874064903147617">Желите да вратите подразумевану почетну страницу?</translation>
 <translation id="5087249366037322692">Додала је трећа страна</translation>
 <translation id="5087580092889165836">Додај картицу</translation>
+<translation id="5088427648965532275">Добављач Passpoint-а</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 са RSA шифровањем</translation>
 <translation id="5089763948477033443">Регулатор за промену величине бочне табле</translation>
 <translation id="5090637338841444533">Није им дозвољено да прате положај камере</translation>
@@ -4922,6 +4927,7 @@
 <translation id="5298219193514155779">Тему је направио/ла</translation>
 <translation id="5299109548848736476">Не прати</translation>
 <translation id="5299558715747014286">Приказ група картица и управљање њима</translation>
+<translation id="529986401483187205">онемогућено</translation>
 <translation id="5300287940468717207">Желите ли да ресетујете дозволе за сајт?</translation>
 <translation id="5300426565656326054">Персонализација огласа на основу прегледача</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -6817,6 +6823,7 @@
 <translation id="6981982820502123353">Приступачност</translation>
 <translation id="6983507711977005608">Прекини везу са мрежом за тренутно привезивање</translation>
 <translation id="6983783921975806247">Регистровани OID</translation>
+<translation id="6983890893900549383">escape</translation>
 <translation id="6985235333261347343">Microsoft агент опоравка кључа</translation>
 <translation id="698524779381350301">Аутоматски дозволи приступ на следећим сајтовима</translation>
 <translation id="6985607387932385770">Штампачи</translation>
@@ -7984,6 +7991,7 @@
 <translation id="8009225694047762179">Управљај лозинкама</translation>
 <translation id="8011372169388649948">Обележивач <ph name="BOOKMARK_TITLE" /> је премештен.</translation>
 <translation id="8011875486979733097">Steam не може да се инсталира</translation>
+<translation id="8012188750847319132">caps lock</translation>
 <translation id="8013993649590906847">Ако слика нема користан опис, Chrome ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа.</translation>
 <translation id="8014154204619229810">Програм за ажурирање је тренутно активан. Сачекајте мало, па освежите и проверите поново.</translation>
 <translation id="8014206674403687691">Није могуће вратити <ph name="IDS_SHORT_PRODUCT_NAME" /> на претходно инсталирану верзију. Покушајте да поново обавите Powerwash уређаја.</translation>
@@ -8549,7 +8557,6 @@
 <translation id="8498214519255567734">Омогућава да лакше прегледате садржај екрана или да читате при пригушеном светлу</translation>
 <translation id="8498395510292172881">Наставите да читате у Chrome-у</translation>
 <translation id="8499083585497694743">Укључи звук микрофона</translation>
-<translation id="8499526927826495298">Шаљи <ph name="BEGIN_LINK1" />метаподатке о аутоматском попуњавању<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Да бисте користили апликације са Google Play-а, прво морате да вратите апликације. Неки подаци су можда изгубљени.</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="850382998924680137">Погледано данас</translation>

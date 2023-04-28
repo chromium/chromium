@@ -315,6 +315,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1689333818294560261">Gælunafn</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />hvernig þú getur stjórnað gögnunum þínum:<ph name="END_BOLD" /> Chrome eyðir umfjöllunarefnum sem eru eldri en 4 vikna sjálfkrafa. Þegar þú heldur áfram að vafra gæti umfjöllunarefni birst aftur á listanum. Þú getur einnig lokað á umfjöllunarefni sem þú vilt ekki að Chrome deili með vefsvæðum og slökkt á umfjöllunarefnum auglýsinga hvenær sem er í stillingum Chrome.</translation>
 <translation id="1697532407822776718">Nú er allt tilbúið!</translation>
+<translation id="1699651774646344471">Nú geturðu notað heimilisföng af Google-reikningnum þínum</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Bréf</translation>
 <translation id="1706625117072057435">Aðdráttarstig</translation>
@@ -537,6 +538,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2224337661447660594">Engin nettenging</translation>
 <translation id="2225927550500503913">Kveikt á sýndarkorti</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Skráir inn<ph name="END_LINK" /> á WiFi-net</translation>
+<translation id="2228057197024893428">Þetta heimilisfang er vistað á Chrome eins og stendur. Til að nota það í Google-vörum skaltu vista það á Google-reikningnum þínum: <ph name="ACCOUNT" />.</translation>
 <translation id="2239100178324503013">Senda núna</translation>
 <translation id="2241693394036365668">Skrá er sótt</translation>
 <translation id="2246264294482514010">10 x 12 to.</translation>
@@ -656,6 +658,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2547466893236767989">Vefhönnun og -forritun</translation>
 <translation id="254947805923345898">Gildi reglunnar er ógilt.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> sendi ógilt svar.</translation>
+<translation id="2551608178605132291">Heimilisfang: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Nota skjálás til að staðfesta spjöld héðan í frá</translation>
 <translation id="2553853292994445426">Athugaðu stillingar fyrir öruggan DNS-þjón. Þú gætir hafa stillt öruggan DNS-netþjón sem ekki tekst að tengjast.</translation>
@@ -853,6 +856,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Athugar stillingar öruggs DNS-þjóns<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Miðjubakki</translation>
 <translation id="3109728660330352905">Þú hefur ekki leyfi til að skoða þessa síðu.</translation>
+<translation id="3112892588078695695">Símanúmer: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Þriðja vakt</translation>
 <translation id="3114040155724590991">Uppfærir Android-kerfi
     Ræsing forritsins tekur hugsanlega lengri tíma en venjulega.</translation>
@@ -1225,6 +1229,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4031179711345676612">Hljóðnemi er leyfður</translation>
 <translation id="4040350669425716613">Sérskólar og háskólar</translation>
 <translation id="4047351652147966654">18 x 24 to.</translation>
+<translation id="4050392779074832022">Þú getur notað það í Google-vörum.</translation>
 <translation id="405399507749852140">Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði</translation>
 <translation id="4056223980640387499">Brúnn blær</translation>
 <translation id="4063063121357725926">Leyfðu Google að hjálpa þér að finna afslætti fyrir körfurnar þínar</translation>
@@ -2462,6 +2467,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7083258188081898530">Bakki 9</translation>
 <translation id="7086090958708083563">Notandi bað um sendingu</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo „Enter“ til að opna stillingar Chrome og stjórna heimildum og gögnum sem eru geymd á vefsvæðum</translation>
+<translation id="7096341143397839437">Tölvupóstur: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Auðkenni þessa vefsvæðis er óstaðfest.</translation>
 <translation id="7101893872976785596">Hryllingsmyndir</translation>
 <translation id="7102079138917191645">Byggingaframkvæmdir og viðhald</translation>
@@ -2540,6 +2546,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7256634549594854023">Aftari bakki</translation>
 <translation id="725866823122871198">Ekki er hægt að koma á lokaðri tengingu við <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> vegna þess að dag- og tímasetning tölvunnar (<ph name="DATE_AND_TIME" />) er röng.</translation>
 <translation id="7260504762447901703">Afturkalla aðgang</translation>
+<translation id="7265608370113700582">Heimilisfangið er eingöngu tiltækt í þessu tæki</translation>
 <translation id="7275334191706090484">Stýrð bókamerki</translation>
 <translation id="7277998515889183784">Förðun og snyrtivörur</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að breyta aðgangsorði Google reikningsins þíns</translation>
@@ -2962,6 +2969,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8245703462678310750">Haltu |<ph name="ACCELERATOR" />| inni til að hætta að nota allan skjáinn og sjá niðurhal.</translation>
 <translation id="8249296373107784235">Hætta</translation>
 <translation id="8249463483885748674">Samræmd próf og inntökupróf</translation>
+<translation id="8250094606476360498">Þetta heimilisfang er vistað í þessu tæki eins og stendur. Til að nota það í Google-vörum skaltu vista það á Google-reikningnum þínum: <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Stjórnaðu hnappi aðgengisstillinga, ýttu á Enter til að sérsníða aðgengisverkfærin þín í stillingum ChromeOS</translation>
 <translation id="8253091569723639551">Heimilisfangs greiðanda er krafist</translation>
 <translation id="8257387598443225809">Þetta forrit er hannað fyrir farsíma</translation>

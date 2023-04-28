@@ -169,7 +169,6 @@
 <translation id="2074131957428911366">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмяна</translation>
 <translation id="2080769225927880590">Влезте с валиден профил</translation>
-<translation id="2090878303988764231">Влезте в профила си, за да управлявате съдържанието, което виждате</translation>
 <translation id="2103075008456228677">Към history.google.com</translation>
 <translation id="21133533946938348">Фиксиране на раздела</translation>
 <translation id="2116625576999540962">Преместихте <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> елемента</translation>
@@ -589,7 +588,6 @@
 <translation id="4844899002472726590">Преглеждайте и редактирайте темите, от които се интересувате</translation>
 <translation id="4848999860252535517">Да се изтрие ли паролата за <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Задайте код за достъп</translation>
-<translation id="4856498338299082007">В профила ви в Google</translation>
 <translation id="4858786880085262208">Надстройте до HTTPS, когато е възможно. В защитените сайтове може да има незащитено вградено съдържание.</translation>
 <translation id="4860895144060829044">Обаждане</translation>
 <translation id="4872323082491632254">Проверка на паролите</translation>
@@ -1116,13 +1114,11 @@
 <translation id="8197543752516192074">Превод на страницата</translation>
 <translation id="8205564605687841303">Отказ</translation>
 <translation id="8206354486702514201">Тази настройка е наложена от администратора ви.</translation>
-<translation id="821809831108207540">За да персонализирате емисията си в Discover и Chrome, влезте в профила си и включете синхронизирането.</translation>
 <translation id="8225985093977202398">Кеширани изображения и файлове</translation>
 <translation id="8237382152611443140">Отворете настройките за автоматично попълване на паролите.</translation>
 <translation id="8248969482078657578">Секцията „Неактивни раздели“ ви помага да се съсредоточите</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8264966119170358612">Някои от запазените ви пароли са били разкрити вследствие на нарушение на сигурността на данните извън Google. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Само на това устройство</translation>
 <translation id="826614135184049678">Излязохте от профила си <ph name="USER_NAME" /> при нулирането на своя iPad. За да влезете отново, докоснете „Напред“ по-долу.</translation>
 <translation id="8271720166617117963">Приемане и вход</translation>
 <translation id="8278938988428169257">Въведете дума или фраза.</translation>

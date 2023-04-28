@@ -315,6 +315,7 @@
 <translation id="1689333818294560261">昵称</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可以随时在 Chrome 设置中屏蔽不希望 Chrome 与网站分享的主题，以及停用广告主题功能。</translation>
 <translation id="1697532407822776718">搞定了！</translation>
+<translation id="1699651774646344471">您现在可以使用您 Google 帐号中的地址</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">缩放级别</translation>
@@ -537,6 +538,7 @@
 <translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2225927550500503913">虚拟卡已开启</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />登录<ph name="END_LINK" /> Wi-Fi 网络</translation>
+<translation id="2228057197024893428">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 帐号 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2239100178324503013">立即发送</translation>
 <translation id="2241693394036365668">下载文件</translation>
 <translation id="2246264294482514010">10 x 12 英寸</translation>
@@ -656,6 +658,7 @@
 <translation id="2547466893236767989">网络设计与开发</translation>
 <translation id="254947805923345898">政策值无效。</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> 发送的响应无效。</translation>
+<translation id="2551608178605132291">地址：<ph name="ADDRESS" />。</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">从现在开始，使用“屏幕锁定”功能确认银行卡</translation>
 <translation id="2553853292994445426">请检查您的安全 DNS 设置。您可能已配置了安全 DNS 服务器但无法连接到它。</translation>
@@ -853,6 +856,7 @@
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />检查安全 DNS 配置<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">中间纸匣</translation>
 <translation id="3109728660330352905">您未获授权，无法查看此网页。</translation>
+<translation id="3112892588078695695">电话号码：<ph name="PHONE" />。</translation>
 <translation id="3113284927548439113">第三批</translation>
 <translation id="3114040155724590991">正在更新 Android 系统
     启动您的应用可能需要比平时多用一些时间。</translation>
@@ -1221,6 +1225,7 @@
 <translation id="4031179711345676612">已允许使用麦克风</translation>
 <translation id="4040350669425716613">学院与大学</translation>
 <translation id="4047351652147966654">18 x 24 英寸</translation>
+<translation id="4050392779074832022">您将能在各种 Google 产品中使用它</translation>
 <translation id="405399507749852140">当任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="4056223980640387499">棕褐色调</translation>
 <translation id="4063063121357725926">让 Google 根据您购物车中的商品为您查找相符的折扣信息</translation>
@@ -2457,6 +2462,7 @@
 <translation id="7083258188081898530">纸匣 9</translation>
 <translation id="7086090958708083563">用户已请求上传</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理各网站的权限及存储的数据</translation>
+<translation id="7096341143397839437">电子邮件地址：<ph name="EMAIL" />。</translation>
 <translation id="7096937462164235847">此网站的身份未经验证。</translation>
 <translation id="7101893872976785596">恐怖片</translation>
 <translation id="7102079138917191645">施工与维护</translation>
@@ -2535,6 +2541,7 @@
 <translation id="7256634549594854023">后端纸匣</translation>
 <translation id="725866823122871198">您计算机的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
 <translation id="7260504762447901703">撤消访问权限</translation>
+<translation id="7265608370113700582">地址只能保存在该设备上</translation>
 <translation id="7275334191706090484">受管理的书签</translation>
 <translation id="7277998515889183784">化妆品</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可更改您的 Google 帐号密码</translation>
@@ -2957,6 +2964,7 @@
 <translation id="8245703462678310750">按住 |<ph name="ACCELERATOR" />| 键即可退出全屏模式以查看下载内容。</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="8249463483885748674">标准考试与入学考试</translation>
+<translation id="8250094606476360498">此地址目前已保存到该设备上。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 帐号 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="8252991034201168845">“管理无障碍设置”按钮，按 Enter 键即可在 Chrome 操作系统设置中定制您的个性化无障碍工具</translation>
 <translation id="8253091569723639551">账单邮寄地址是必填项</translation>
 <translation id="8257387598443225809">此应用是专为移动设备设计的</translation>

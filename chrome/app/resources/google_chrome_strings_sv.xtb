@@ -118,6 +118,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2929907241665500097">Ett fel uppstod och Chrome uppdaterades inte. <ph name="BEGIN_LINK" />Åtgärda uppdateringsproblem och misslyckade uppdateringar i Chrome.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – nätverksinloggning – Chrome</translation>
 <translation id="3019382870990049182">Starta om för att uppdatera &amp;ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome-tillägg hade åtkomst till styrdon}=1{Google Chrome-tillägg har åtkomst till styrdon}other{Google Chrome-tillägg har åtkomst till # styrdon}}</translation>
 <translation id="303514781271618814">Chrome utforskar nya funktioner som gör att webbplatser kan leverera samma upplevelse av webbläsaren med mindre av din data</translation>
 <translation id="3037838751736561277">Google Chrome körs i bakgrundsläge.</translation>
 <translation id="3038232873781883849">Väntar på installation …</translation>
@@ -211,6 +212,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Filen kan vara farlig och har blockerats av Chrome.</translation>
 <translation id="479167709087336770">Detta använder samma stavningskontroll som Google Sök. Text som du skriver i webbläsaren skickas till Google. Du kan när som helst ändra detta i inställningarna.</translation>
+<translation id="4828579605166583682">Google Chrome försöker ersätta befintliga lösenord. Skriv ditt Windows-lösenord om du vill tillåta detta.</translation>
 <translation id="4842397268809523050">Det gick inte att synkronisera data med ChromeOS Flex eftersom synkronisering inte är tillgängligt för din domän.</translation>
 <translation id="4873783916118289636">Granska viktiga integritets- och säkerhetskontroller i Chrome</translation>
 <translation id="4891791193823137474">Låt Google Chrome köras i bakgrunden</translation>
@@ -222,6 +224,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4970880042055371251">Chrome OS-version</translation>
 <translation id="4970947549776831107">Den här filen blockerades av Chrome eftersom den här typen av filer är farliga</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Ett Google Chrome-tillägg hade åtkomst till styrdon}=1{Ett Google Chrome-tillägg har åtkomst till 1 styrdon}other{Ett Google Chrome-tillägg har åtkomst till # styrdon}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Administratören avslutar Chrome automatiskt när det inte använts på en minut. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}other{Administratören avslutar Chrome automatiskt när det inte använts på # minuter. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}}</translation>
 <translation id="5098668839038261629">När inställningen är aktiverad loggas du också ut från Chrome</translation>
 <translation id="5132929315877954718">Upptäck fantastiska program, spel, tillägg och teman för Google Chrome.</translation>

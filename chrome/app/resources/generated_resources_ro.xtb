@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Se deschide în browserul secundar în<ph name="COUNTDOWN_SECONDS" /> secunde</translation>
+<translation id="1071735803834535661">tasta Meta externă</translation>
 <translation id="1071917609930274619">Cifrare de date</translation>
 <translation id="1072700771426194907">S-a detectat un dispozitiv USB</translation>
 <translation id="107278043869924952">Folosește codul PIN pe lângă parolă</translation>
@@ -207,6 +208,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> conține date sensibile sau periculoase. Administratorul rostește <ph name="CUSTOM_MESSAGE" />.</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> vrea să se conecteze la un dispozitiv HID</translation>
 <translation id="1172750555846831341">Răstoarnă pe lățime</translation>
+<translation id="1173332155861271669">Detalii despre furnizorul Passpoint</translation>
 <translation id="1173894706177603556">Redenumește</translation>
 <translation id="1174073918202301297">Comanda rapidă a fost adăugată</translation>
 <translation id="1174366174291287894">Conexiunea este întotdeauna sigură dacă Chrome nu anunță contrariul</translation>
@@ -1368,6 +1370,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2146263598007866206">Site-urile pot descărca automat fișierele conexe împreună pentru a te ajuta să economisești timp</translation>
 <translation id="2147151613919729065">Pentru a șterge istoricul din modul pentru invitați, închide toate ferestrele pentru invitați.</translation>
 <translation id="2147218225094845757">Ascunde panoul lateral</translation>
+<translation id="2147282432401652483">tasta Command</translation>
 <translation id="2148219725039824548">Eroare la montarea dispozitivului de stocare în rețea. Dispozitivul indicat nu a fost găsit în rețea.</translation>
 <translation id="2148756636027685713">Formatarea a fost finalizată</translation>
 <translation id="2148892889047469596">Proiectează fila</translation>
@@ -2218,6 +2221,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2856776373509145513">Creează un container nou</translation>
 <translation id="2859741939921354763">Importă parole în <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Sistemul a fost actualizat. Repornește-l.</translation>
+<translation id="2861402191395139055">Abonamente Passpoint</translation>
 <translation id="2861941300086904918">Manager de securitate Client nativ</translation>
 <translation id="2862815659905780618">Elimină mediul de dezvoltare Linux</translation>
 <translation id="2864601841139725659">Setează fotografia de profil</translation>
@@ -4694,6 +4698,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5086874064903147617">Restabilești pagina principală prestabilită?</translation>
 <translation id="5087249366037322692">Adăugată de o terță parte</translation>
 <translation id="5087580092889165836">Adaugă un card</translation>
+<translation id="5088427648965532275">Furnizor Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 cu criptare RSA</translation>
 <translation id="5089763948477033443">Ghidaj de redimensionare a panoului lateral</translation>
 <translation id="5090637338841444533">Nu au permisiunea de a urmări poziția camerei</translation>
@@ -4924,6 +4929,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5298219193514155779">Temă creată de</translation>
 <translation id="5299109548848736476">Nu urmăriți</translation>
 <translation id="5299558715747014286">să vadă și gestioneze grupurile de file</translation>
+<translation id="529986401483187205">dezactivată</translation>
 <translation id="5300287940468717207">Resetezi permisiunile la nivel de site?</translation>
 <translation id="5300426565656326054">Personalizarea anunțurilor bazată pe browser</translation>
 <translation id="5300589172476337783">Afișează</translation>
@@ -6817,6 +6823,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6981982820502123353">Accesibilitate</translation>
 <translation id="6983507711977005608">Deconectează rețeaua pentru Tethering instantaneu</translation>
 <translation id="6983783921975806247">OID înregistrat</translation>
+<translation id="6983890893900549383">tasta Esc</translation>
 <translation id="6985235333261347343">Agent Microsoft de recuperare a cheilor</translation>
 <translation id="698524779381350301">Permite automat accesul pe următoarele site-uri</translation>
 <translation id="6985607387932385770">Imprimante</translation>
@@ -7984,6 +7991,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8009225694047762179">Gestionează parolele</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />” a fost mutat.</translation>
 <translation id="8011875486979733097">Nu se poate instala Steam</translation>
+<translation id="8012188750847319132">caps lock</translation>
 <translation id="8013993649590906847">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google.</translation>
 <translation id="8014154204619229810">Momentan, rulează instrumentul pentru actualizare. Actualizează într-un minut și verifică din nou.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> nu poate reveni la versiunea instalată anterior. Încearcă să folosești din nou Powerwash pe dispozitivul tău.</translation>
@@ -8549,7 +8557,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8498214519255567734">Mai multă comoditate când privești ecranul sau citești într-o lumină slabă</translation>
 <translation id="8498395510292172881">Continuă să citești în Chrome</translation>
 <translation id="8499083585497694743">Activează sunetul microfonului</translation>
-<translation id="8499526927826495298">Trimite <ph name="BEGIN_LINK1" />metadate pentru completare automată<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Ca să folosești aplicații din Google Play, trebuie mai întâi să restabilești aplicațiile. Este posibil ca unele date să se fi pierdut.</translation>
 <translation id="8503813439785031346">Nume de utilizator</translation>
 <translation id="850382998924680137">Vizualizat azi</translation>

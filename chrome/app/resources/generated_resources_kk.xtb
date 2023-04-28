@@ -208,6 +208,7 @@
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> файлында құпия немесе қауіпті деректер болуы мүмкін. Әкімші хабары: "<ph name="CUSTOM_MESSAGE" />".</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> веб-сайты HID құрылғысына жалғанғысы келеді.</translation>
 <translation id="1172750555846831341">Екі бетіне басып шығару (күнтізбе)</translation>
+<translation id="1173332155861271669">Passpoint провайдерінің мәліметтері</translation>
 <translation id="1173894706177603556">Атын өзгерту</translation>
 <translation id="1174073918202301297">Таңбаша енгізілді</translation>
 <translation id="1174366174291287894">Байланыс қауіпсіз болмаса, Chrome сізге бұл туралы хабарлайды.</translation>
@@ -2216,6 +2217,7 @@
 <translation id="2856776373509145513">Жаңа контейнер жасау</translation>
 <translation id="2859741939921354763">Құпия сөздерді <ph name="BRAND" /> қолданбасына импорттау</translation>
 <translation id="2861301611394761800">Жүйе жаңартылып болды. Жүйені қайта іске қосыңыз.</translation>
+<translation id="2861402191395139055">Passpoint жазылымдары</translation>
 <translation id="2861941300086904918">Native Client қауіпсіздік басқарушысы</translation>
 <translation id="2862815659905780618">Linux әзірлеуші ортасын өшіру</translation>
 <translation id="2864601841139725659">Профиль суретін реттеу</translation>
@@ -4692,6 +4694,7 @@
 <translation id="5086874064903147617">Реттелмелі үлкен курсор қалпына келтірілсін бе?</translation>
 <translation id="5087249366037322692">Үшінші тарап қосқан</translation>
 <translation id="5087580092889165836">Несие картасын қосу</translation>
+<translation id="5088427648965532275">Passpoint провайдері</translation>
 <translation id="5088534251099454936">RSA шифрлауына ие PKCS #1 SHA-512</translation>
 <translation id="5089763948477033443">Бүйірлік панельдің өлшемін өзгерту маркері</translation>
 <translation id="5090637338841444533">Камераңыздың орнын қадағалауға рұқсаты жоқтар</translation>
@@ -8543,7 +8546,6 @@
 <translation id="8498214519255567734">Күңгірт жарық жағдайында экранға қарауды немесе одан оқуды оңайлатады</translation>
 <translation id="8498395510292172881">Chrome браузерінде оқуды жалғастыру</translation>
 <translation id="8499083585497694743">Микрофон дыбысын қосу</translation>
-<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />Автотолтыру метадеректерін<ph name="END_LINK1" /> жіберу</translation>
 <translation id="8502536196501630039">Google Play дүкеніндегі қолданбаларды пайдалану үшін алдымен қолданбаларды қалпына келтіруіңіз қажет. Кейбір деректер жоғалуы мүмкін.</translation>
 <translation id="8503813439785031346">Пайдаланушы аты</translation>
 <translation id="850382998924680137">Бүгін көрілді</translation>

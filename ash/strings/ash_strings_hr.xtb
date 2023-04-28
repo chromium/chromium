@@ -382,6 +382,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2791421900609674576">Primat ćete preporuke kako biste mogli nastaviti tamo gdje ste stali. Preporuke možete ukloniti tako da ih dodirnete i zadržite.</translation>
 <translation id="2792498699870441125">Alt + Pretraživanje</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, odabrano</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2814448776515246190">Djelomično snimanje</translation>
 <translation id="2819276065543622893">Odjavit ćete se sada.</translation>
@@ -1391,6 +1392,7 @@ Novo instaliranje</translation>
 <translation id="7497767806359279797">Odaberite jezik i tipkovnicu</translation>
 <translation id="7508690557411636492">Otvoreno prošli mjesec</translation>
 <translation id="7509246181739783082">Potvrdite svoj identitet</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nije odabrano</translation>
 <translation id="7513622367902644023">Odabran je način snimanja zaslona</translation>
 <translation id="7513922695575567867">Kalendar, tjedan od <ph name="DATE" />, trenutačno je odabran datum <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Preuzmi</translation>

@@ -2907,6 +2907,15 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3623332696371971798">Empêcher l'accès à Google Photos depuis l'appli de personnalisation</translation>
 <translation id="3627678165642179114">Activer ou désactiver le service Web de correction orthographique</translation>
 <translation id="3628480121685794414">Activer l'impression recto</translation>
+<translation id="3634117682099473917">Modèle URI du résolveur DNS-over-HTTPS souhaité. Pour définir plusieurs résolveurs DNS-over-HTTPS, vous devez séparer les modèles URI correspondants à l'aide d'espaces. Cette règle est très semblable à <ph name="DOH_TEMPLATES_POLICY_NAME" />, mais elle sera ignorée si elle est spécifiée. À l'inverse, il est possible de spécifier des informations d'identification.
+
+Si <ph name="DOH_MODE_POLICY_NAME" /> est défini sur <ph name="SECURE_DNS_MODE_SECURE" />, cette règle (ou la règle <ph name="DOH_TEMPLATES_POLICY_NAME" />) doit être définie. Elle ne peut pas rester vide.
+
+Si vous avez configuré cette règle et défini <ph name="DOH_MODE_POLICY_NAME" /> sur <ph name="SECURE_DNS_MODE_AUTOMATIC" />, les modèles URI définis sont appliqués. Si vous n'avez pas configuré cette règle, des correspondances codées en dur sont appliquées pour tenter de passer du résolveur DNS actuel de l'utilisateur à un résolveur DoH géré par le même fournisseur.
+
+Si le modèle URI contient une variable <ph name="HTTP_VARIABLE_DNS" />, les requêtes envoyées au résolveur utilisent la méthode <ph name="HTTP_METHOD_GET" />. Sinon, elles utilisent la méthode <ph name="HTTP_METHOD_POST" />.
+
+À partir de la version 114, <ph name="DOH_SALT_POLICY_NAME" /> est facultatif si cette règle est configurée.</translation>
 <translation id="3634125384445314047">Autoriser l'accès aux photos et vidéos récentes prises sur le téléphone via Phone Hub.</translation>
 <translation id="3642557248926713561">Désactiver la protection des extensions de la navigation sécurisée</translation>
 <translation id="3643284063603988867">Activer la fonctionnalité "Mémoriser le mot de passe"</translation>
@@ -3793,6 +3802,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 <translation id="45036050223225148">Désactiver le test TLS Encrypted ClientHello</translation>
 <translation id="4503935079903510542">Image de disque de démarrage UEFI utilisé pour installer la VM sur des appareils x86_64.</translation>
 <translation id="4508728400492074981">Contrôle les règles pour la fonctionnalité d'ensembles propriétaires.</translation>
+<translation id="4510131075424939993">Spécifier une valeur de salage à utiliser dans <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> lors de l'évaluation des informations d'identification</translation>
 <translation id="4510923771103268849">L'utilisateur est autorisé à accéder à la racine des conteneurs Crostini</translation>
 <translation id="4512407512989846472">Permettre de bloquer la copie dans le presse-papiers sur les URL spécifiées</translation>
 <translation id="4513691822411041977">N'appliquez pas l'utilisation de SafeSearch dans la recherche Google ou du mode restreint sur YouTube</translation>
@@ -5553,6 +5563,11 @@ Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur
 
       Remarque : cette règle concerne toutes les sorties audio, y compris les fonctionnalités d'accessibilité audio. Ne la désactivez pas si un utilisateur a besoin d'un lecteur d'écran.</translation>
 <translation id="6221175752766085998">Autoriser les certificats émis par les ancres d'approbation locales sans l'extension subjectAlternativeName</translation>
+<translation id="6221327862246049151">Ce salage est utilisé comme valeur de salage lors du hachage des informations d'identification incluses dans la chaîne <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />.
+
+Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
+
+À partir de la version 114, cette règle est facultative si la règle <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> est configurée. Si cette règle n'est pas configurée, les identifiants des modèles d'URI configurés via la règle <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> sont hachés sans salage.</translation>
 <translation id="6224070048795197148">Autoriser l'utilisateur à se servir du navigateur sans se connecter</translation>
 <translation id="6224304369267200483">URL/domaines automatiquement autorisés à recevoir une attestation de clé de sécurité</translation>
 <translation id="6225938950222983458">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" /> à la place.</translation>
@@ -7152,11 +7167,6 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
       Lorsque cette règle est activée, le code d'accès parental peut être validé sur l'appareil d'un enfant.
       Lorsqu'elle est désactivée, il est impossible de valider ce code sur l'appareil d'un enfant.</translation>
 <translation id="7623431489198474050">Désactiver l'attestation à distance pour la protection du contenu</translation>
-<translation id="7627289446617865057">Cette règle permet à un administrateur de définir des paramètres pour les applications Web installées. Elle fait correspondre un ID d'application Web à son paramètre spécifique. Une configuration par défaut peut être définie avec l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les applications Web pour lesquelles aucune configuration personnalisée n'est définie dans cette règle.
-
-Le champ <ph name="MANIFEST_ID_FIELD" /> contient l'ID du fichier manifeste pour l'application Web. Pour savoir comment déterminer l'ID du fichier manifeste d'une application Web qui a été installée, consultez la page <ph name="WEB_APP_ID_REFERENCE_URL" />.
-Le champ <ph name="RUN_ON_OS_LOGIN_FIELD" /> indique si une application Web peut être exécutée pendant la connexion au système d'exploitation. Si ce champ est défini sur <ph name="BLOCKED" />, l'application Web ne s'exécutera pas pendant la connexion au système d'exploitation et l'utilisateur ne pourra pas activer ce champ plus tard. S'il est défini sur <ph name="RUN_WINDOWED" />, l'application Web s'exécutera pendant la connexion au système d'exploitation et l'utilisateur ne pourra pas désactiver ce champ plus tard. S'il est défini sur <ph name="ALLOWED" />, l'utilisateur pourra configurer l'application Web pour qu'elle s'exécute pendant la connexion au système d'exploitation. La configuration par défaut n'autorise que les valeurs <ph name="ALLOWED" /> et <ph name="BLOCKED" />.      "
-(Depuis la version 115) Le champ <ph name="PREVENT_CLOSE_FIELD" /> indique si la fermeture de l'application Web doit être empêchée de quelque manière que ce soit (par exemple, par l'utilisateur, le gestionnaire de tâches ou les API Web). Ce comportement ne peut être activé que si <ph name="RUN_ON_OS_LOGIN_FIELD" /> est défini sur <ph name="RUN_WINDOWED" />. Si l'application était déjà en cours d'exécution, cette propriété ne sera prise en compte qu'après avoir redémarré l'application. Si ce champ n'est pas défini, les utilisateurs pourront fermer les applications.</translation>
 <translation id="7628747690141606652">Désactiver la traduction pour Réponses rapides</translation>
 <translation id="7629840767216985001">Définissez cette règle sur "True" pour activer le grand curseur sur l'écran de connexion. Définissez-la sur "False" pour désactiver le grand curseur sur l'écran de connexion.
 

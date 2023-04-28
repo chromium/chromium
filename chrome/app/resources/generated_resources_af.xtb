@@ -210,6 +210,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> het sensitiewe of gevaarlike data. Jou administrateur sê: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> wil aan 'n HID-toestel koppel</translation>
 <translation id="1172750555846831341">Keer om na kort kant</translation>
+<translation id="1173332155861271669">Besonderhede van Passpoint-verskaffer</translation>
 <translation id="1173894706177603556">Hernoem</translation>
 <translation id="1174073918202301297">Kortpad is bygevoeg</translation>
 <translation id="1174366174291287894">Jou verbinding is altyd veilig, tensy Chrome vir jou sê dat dit nie is nie</translation>
@@ -2234,6 +2235,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2856776373509145513">Skep 'n nuwe houer</translation>
 <translation id="2859741939921354763">Voer wagwoorde in na <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Stelselopdatering voltooi. Herbegin asseblief die stelsel.</translation>
+<translation id="2861402191395139055">Passpoint-intekeninge</translation>
 <translation id="2861941300086904918">Toestelspesifieke kliënt se sekuriteitsbestuurder</translation>
 <translation id="2862815659905780618">Verwyder Linux-ontwikkelingomgewing</translation>
 <translation id="2864601841139725659">Stel jou profielfoto</translation>
@@ -4711,6 +4713,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5086874064903147617">Stel verstektuisblad terug?</translation>
 <translation id="5087249366037322692">Bygevoeg deur 'n derde party</translation>
 <translation id="5087580092889165836">Voeg kaart by</translation>
+<translation id="5088427648965532275">Passpoint-verskaffer</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 met RSA-enkripsie</translation>
 <translation id="5089763948477033443">Kantpaneel se handvatsel vir grootteverandering</translation>
 <translation id="5090637338841444533">Mag nie jou kameraposisie naspoor nie</translation>
@@ -8567,7 +8570,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8498214519255567734">Maak dit makliker om in dowwe lig na jou skerm te kyk of dit te lees</translation>
 <translation id="8498395510292172881">Gaan voort om in Chrome te lees</translation>
 <translation id="8499083585497694743">Ontdemp mikrofoon</translation>
-<translation id="8499526927826495298">Stuur <ph name="BEGIN_LINK1" />outovulmetadata<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Jy moet eers jou programme teruglaai voordat jy programme van Google Play af kan gebruik. Van die data is dalk weg.</translation>
 <translation id="8503813439785031346">Gebruikernaam</translation>
 <translation id="850382998924680137">Vandag bekyk</translation>

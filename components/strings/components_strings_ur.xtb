@@ -316,6 +316,7 @@
 <translation id="1689333818294560261">عرفی نام</translation>
 <translation id="1697430960030447570">‏<ph name="BEGIN_BOLD" />آپ کس طرح اپنے ڈیٹا کا نظم کر سکتے ہیں:<ph name="END_BOLD" /> Chrome ‏4 ہفتوں سے زیادہ پرانے موضوعات کو خودکار طور پر حذف کر دیتا ہے۔ جب تک آپ براؤزنگ جاری رکھتے ہیں فہرست پر موضوع دوبارہ ظاہر ہو سکتا ہے۔ آپ ان موضوعات کو بھی مسدود کر سکتے ہیں جن کا آپ چاہتے ہیں کہ Chrome سائٹس کے ساتھ اشتراک نہ کرے اور Chrome کی ترتیبات میں کسی بھی وقت اشتہار کے موضوعات کو بند کر سکتے ہیں۔</translation>
 <translation id="1697532407822776718">آپ بالکل ٹھیک ہیں!</translation>
+<translation id="1699651774646344471">‏اب آپ اپنے Google اکاؤنٹ پر محفوظ پتوں کا استعمال کر سکتے ہیں</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">زوم کی سطحیں</translation>
@@ -538,6 +539,7 @@
 <translation id="2224337661447660594">انٹرنیٹ نہیں ہے</translation>
 <translation id="2225927550500503913">ورچوئل کارڈ آن ہو گیا</translation>
 <translation id="2226636330183131181">‏WiFi نیٹ ورک میں <ph name="BEGIN_LINK" />سائن ان کرنا<ph name="END_LINK" /></translation>
+<translation id="2228057197024893428">‏یہ پتہ فی الحال Chrome پر محفوظ ہے۔ اسے تمام Google پروڈکٹس میں استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="ACCOUNT" /> میں محفوظ کریں۔</translation>
 <translation id="2239100178324503013">ابھی بھیجیں</translation>
 <translation id="2241693394036365668">فائل ڈاؤن لوڈ کی جاتی ہے</translation>
 <translation id="2246264294482514010">‏‎10 x 12 انچ</translation>
@@ -657,6 +659,7 @@
 <translation id="2547466893236767989">ویب ڈیزائن اور ڈیولپمنٹ</translation>
 <translation id="254947805923345898">پالیسی کی قدر درست نہیں ہے۔</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> نے ایک غلط جواب بھیجا۔</translation>
+<translation id="2551608178605132291">پتہ: <ph name="ADDRESS" />۔</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">ابھی سے کارڈز کی توثیق کے لیے اسکرین لاک کا استعمال کریں</translation>
 <translation id="2553853292994445426">‏اپنی محفوظ DNS ترتیبات کو چیک کریں۔ ممکن ہے کہ آپ نے ایک محفوظ DNS سرور ترتیب دیا ہو جس کی وجہ سے کنکشنز ناکام ہو رہے ہیں۔</translation>
@@ -854,6 +857,7 @@
 <translation id="3107591622054137333">‏<ph name="BEGIN_LINK" />محفوظ DNS کنفیگریشن کو چیک کرنے کی کوشش کریں<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">درمیانی ٹرے</translation>
 <translation id="3109728660330352905">آپ کو یہ صفحہ دیکھنے کی اجازت نہیں ہے۔</translation>
+<translation id="3112892588078695695">فون نمبر: <ph name="PHONE" />۔</translation>
 <translation id="3113284927548439113">تیسری شفٹ</translation>
 <translation id="3114040155724590991">‏Android سسٹم کو اپ ڈیٹ کرنا
     آپ کی ایپ کو شروع کرنے میں معمول سے زیادہ وقت لگ سکتا ہے۔</translation>
@@ -1227,6 +1231,7 @@
 <translation id="4031179711345676612">مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="4040350669425716613">کالجز اور یونیورسٹیاں</translation>
 <translation id="4047351652147966654">‏‎18 x 24 انچ</translation>
+<translation id="4050392779074832022">‏آپ اسے تمام Google پروڈکٹس میں استعمال کر سکیں گے</translation>
 <translation id="405399507749852140">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر الرٹس حاصل کریں</translation>
 <translation id="4056223980640387499">سیپیا</translation>
 <translation id="4063063121357725926">‏Google کو اپنی کارٹس کے لیے رعایتیں تلاش کرنے میں آپ کی مدد کرنے دیں</translation>
@@ -2465,6 +2470,7 @@
 <translation id="7083258188081898530">ٹرے 9</translation>
 <translation id="7086090958708083563">صارف کے ذریعے اپ لوڈ کی درخواست کی گئی</translation>
 <translation id="7095139009144195559">‏<ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں موجود تمام سائٹس پر اسٹور کردہ اجازتوں اور ڈیٹا کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
+<translation id="7096341143397839437">ای میل: <ph name="EMAIL" />۔</translation>
 <translation id="7096937462164235847">اس ویب سائٹ کی شناخت توثیق کردہ نہیں ہے۔</translation>
 <translation id="7101893872976785596">ڈراؤنی فلمیں</translation>
 <translation id="7102079138917191645">تعمیر اور رکھ رکھاؤ</translation>
@@ -2543,6 +2549,7 @@
 <translation id="7256634549594854023">پچھلا ٹرے</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> سے ایک نجی کنکشن تشکیل نہیں دیا جا سکتا ہے کیونکہ آپ کے کمپیوٹر کی تاریخ اور وقت (<ph name="DATE_AND_TIME" />) غلط ہیں۔</translation>
 <translation id="7260504762447901703">رسائی کالعدم کریں</translation>
+<translation id="7265608370113700582">پتہ صرف اس آلہ پر دستیاب ہے</translation>
 <translation id="7275334191706090484">منظم کردہ بُک مارکس</translation>
 <translation id="7277998515889183784">میک اپ اور کاسمیٹکس</translation>
 <translation id="7285654172857511148">‏<ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنے Google اکاؤنٹ کا پاس ورڈ تبدیل کرنے کیلئے Tab، پھر Enter دبائیں</translation>
@@ -2965,6 +2972,7 @@
 <translation id="8245703462678310750">فُل اسکرین سے باہر نکلنے اور ڈاؤن لوڈ دیکھنے کے لیے |<ph name="ACCELERATOR" />| چھوئیں اور دبائے رکھیں۔</translation>
 <translation id="8249296373107784235">منسوخ کریں</translation>
 <translation id="8249463483885748674">معیار بند اور داخلہ ٹیسٹس</translation>
+<translation id="8250094606476360498">‏یہ پتہ فی الحال اس آلے میں محفوظ ہے۔ اسے تمام Google پروڈکٹس میں استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="ACCOUNT" /> میں محفوظ کریں۔</translation>
 <translation id="8252991034201168845">‏ایکسیسبیلٹی کی ترتیبات کے بٹن کا نظم کریں ChromeOS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے Enter دبائیں</translation>
 <translation id="8253091569723639551">بلنگ پتہ درکار ہے</translation>
 <translation id="8257387598443225809">یہ ایپ موبائل کے لیے بنائی گئی ہے</translation>

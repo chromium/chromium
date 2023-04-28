@@ -315,6 +315,7 @@
 <translation id="1689333818294560261">বিশেষ নাম</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />আপনি কীভাবে আপনার ডেটা ম্যানেজ করতে পারেন:<ph name="END_BOLD" /> ৪ সপ্তাহের বেশি পুরনো বিষয় Chrome অটোমেটিক মুছে দেয়। আপনি ব্রাউজ করার সাথে সাথে তালিকায় একই বিষয় আবার দেখানো হতে পারে। এছাড়াও আপনি এমন বিষয়গুলিকে ব্লক করতে পারেন যেগুলি আপনি Chrome-এ শেয়ার করতে চান না এবং Chrome-এর সেটিংসে যেকোনও সময় বিজ্ঞাপনের বিষয়গুলি বন্ধ করতে পারেন।</translation>
 <translation id="1697532407822776718">আপনার সমস্ত সেট আছে!</translation>
+<translation id="1699651774646344471">আপনার Google অ্যাকাউন্ট থেকে এখন ঠিকানা ব্যবহার করতে পারবেন</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">জুম লেভেল</translation>
@@ -538,6 +539,7 @@
 <translation id="2224337661447660594">ইন্টারনেট কানেকশন নেই</translation>
 <translation id="2225927550500503913">ভার্চুয়াল কার্ড চালু করা হয়েছে</translation>
 <translation id="2226636330183131181">ওয়াই ফাই নেটওয়ার্কে <ph name="BEGIN_LINK" />সাইন-ইন করুন<ph name="END_LINK" /></translation>
+<translation id="2228057197024893428">এই ঠিকানাটি বর্তমানে Chrome-এ সেভ করা আছে। সব Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে, আপনার Google অ্যাকাউন্টে এটি সেভ করুন, <ph name="ACCOUNT" />।</translation>
 <translation id="2239100178324503013">এখনই পাঠান</translation>
 <translation id="2241693394036365668">ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="2246264294482514010">১০ x ১২ ইঞ্চি</translation>
@@ -657,6 +659,7 @@
 <translation id="2547466893236767989">ওয়েব ডিজাইন ও ডেভেলপমেন্ট</translation>
 <translation id="254947805923345898">নীতির মান সঠিক নয়।</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> একটি ভুল প্রতিক্রিয়া পাঠিয়েছে।</translation>
+<translation id="2551608178605132291">ঠিকানা: <ph name="ADDRESS" />।</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">এখন থেকে কার্ড কনফার্ম করতে স্ক্রিন লক ব্যবহার করুন</translation>
 <translation id="2553853292994445426">আপনার সুরক্ষিত DNS সেটিংস চেক করে দেখুন। আপনি কনফিগার করা DNS সার্ভারটি সুরক্ষিত বলে হয়ত এটির সাথে এখন কানেক্ট করা যাচ্ছে না।</translation>
@@ -854,6 +857,7 @@
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />নিরাপদ DNS কনফিগারেশন চেক করে দেখা হচ্ছে<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">মাঝের ট্রে</translation>
 <translation id="3109728660330352905">আপনার এই পৃষ্ঠাটি দেখার জন্য অনুমোদন নেই।</translation>
+<translation id="3112892588078695695">ফোন নম্বর: <ph name="PHONE" />।</translation>
 <translation id="3113284927548439113">থার্ড শিফ্ট</translation>
 <translation id="3114040155724590991">Android সিস্টেম আপডেট করা হচ্ছে
     আপনার অ্যাপ কাজ করা শুরু করতে স্বাভাবিকের চেয়ে বেশি সময় লাগতে পারে।</translation>
@@ -1226,6 +1230,7 @@
 <translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4040350669425716613">কলেজ ও বিশ্ববিদ্যালয়</translation>
 <translation id="4047351652147966654">১৮ x ২৪ ইঞ্চি</translation>
+<translation id="4050392779074832022">আপনি এটি সমস্ত Google প্রোডাক্ট জুড়ে ব্যবহার করতে পারবেন</translation>
 <translation id="405399507749852140">কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান</translation>
 <translation id="4056223980640387499">সেপিয়া</translation>
 <translation id="4063063121357725926">আপনার কার্টের জন্য ডিসকাউন্ট খুঁজে পেতে Google-কে সাহায্য করুন</translation>
@@ -2462,6 +2467,7 @@
 <translation id="7083258188081898530">ট্রে ৯</translation>
 <translation id="7086090958708083563">ব্যবহারকারী আপলোড করার অনুরোধ জানিয়েছেন</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে বিভিন্ন সাইটের স্টোর করা ডেটা ও অনুমতি ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
+<translation id="7096341143397839437">ইমেল: <ph name="EMAIL" />।</translation>
 <translation id="7096937462164235847">এই ওয়েবসাইটের পরিচয় যাচাই করা যায়নি।</translation>
 <translation id="7101893872976785596">ভূতের সিনেমা</translation>
 <translation id="7102079138917191645">নির্মাণ ও রক্ষণাবেক্ষণ</translation>
@@ -2540,6 +2546,7 @@
 <translation id="7256634549594854023">রিয়ার ট্রে</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> এ একটি ব্যক্তিগত সংযোগ স্থাপন করা যায়নি কারণ আপনার কম্পিউটারের তারিখ এবং সময় (<ph name="DATE_AND_TIME" />) সঠিক নয়৷</translation>
 <translation id="7260504762447901703">অ্যাক্সেস প্রত্যাহার করুন</translation>
+<translation id="7265608370113700582">শুধু এই ডিভাইসে ঠিকানা উপলভ্য হবে</translation>
 <translation id="7275334191706090484">পরিচালিত বুকমার্কগুলি</translation>
 <translation id="7277998515889183784">মেক-আপ ও প্রসাধন</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টের পাসওয়ার্ড পরিবর্তন করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
@@ -2962,6 +2969,7 @@
 <translation id="8245703462678310750">ডাউনলোড দেখতে ফুল স্ক্রিন মোড বন্ধ করার জন্য ।<ph name="ACCELERATOR" />। প্রেস করে ধরে রাখুন।</translation>
 <translation id="8249296373107784235">বাতিল</translation>
 <translation id="8249463483885748674">স্ট্যান্ডার্ড ও অ্যাডমিশন পরীক্ষা</translation>
+<translation id="8250094606476360498">এই ঠিকানাটি বর্তমানে এই ডিভাইসে সেভ করা আছে। সব Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে, আপনার Google অ্যাকাউন্টে এটি সেভ করুন, <ph name="ACCOUNT" />।</translation>
 <translation id="8252991034201168845">'অ্যাক্সেসিবিলিটি সেটিংস ম্যানেজ করুন' বোতাম, ChromeOS সেটিংস থেকে আপনার অ্যাক্সেসিবিলিটি টুল পছন্দ মতো বেছে নিতে Enter প্রেস করুন</translation>
 <translation id="8253091569723639551">বিলিং ঠিকানা প্রয়োজন</translation>
 <translation id="8257387598443225809">এই অ্যাপটি মোবাইলের কথা ভেবে তৈরি করা হয়েছে</translation>

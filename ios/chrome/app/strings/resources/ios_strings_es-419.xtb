@@ -133,6 +133,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1815941218935345331">Contraseña</translation>
 <translation id="1820259098641718022">Se agregó a la lista de lectura</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Contraseñas hackeadas}=1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
+<translation id="1830634592642484976">Actualmente, esta dirección se guarda en Chrome. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Para asegurarte de que siempre puedas acceder a tus datos sincronizados, verifica tu identidad.</translation>
 <translation id="1836891464494477513">{count,plural, =1{Se guardó el favorito en tu Cuenta de Google ({email})}other{Se guardaron los favoritos en tu Cuenta de Google ({email})}}</translation>
 <translation id="1870148520156231997">Mostrar contraseña</translation>
@@ -168,7 +169,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2074131957428911366">En la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2080769225927880590">Accede con una cuenta válida</translation>
-<translation id="2090878303988764231">Accede para administrar el contenido que ves</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="21133533946938348">Fijar pestaña</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos movidos</translation>
@@ -545,6 +545,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4636930964841734540">Información</translation>
 <translation id="4642472735733036929">Se detuvo el seguimiento de precios</translation>
 <translation id="4650125387981512669">Continuar como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Asegúrate de que tus contraseñas sean seguras, descubre si hackearon alguna y obtén consejos para protegerte en línea. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Esta función se activa cuando accedes a tu Cuenta de Google.</translation>
 <translation id="4659667755519643272">Acceder al alternador de pestañas</translation>
 <translation id="46614316059270592">Guardar contraseña</translation>
@@ -587,7 +588,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4844899002472726590">Ver y editar los temas que te interesan</translation>
 <translation id="4848999860252535517">¿Quieres borrar la contraseña de <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Establecer una contraseña</translation>
-<translation id="4856498338299082007">En tu Cuenta de Google</translation>
 <translation id="4858786880085262208">Actualiza a HTTPS cuando sea posible. Es posible que los sitios seguros incluyan contenido no seguro.</translation>
 <translation id="4860895144060829044">Llamar</translation>
 <translation id="4872323082491632254">Revisar contraseñas</translation>
@@ -697,6 +697,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5669617676038747374">Crear un código QR</translation>
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Para usar y guardar contraseñas en tu Cuenta de Google, verifica tu identidad.</translation>
+<translation id="5684761169742812828">Se expuso esta contraseña en una violación de la seguridad de los datos en Internet. Si no tienes tiempo para cambiarla en este momento, Google recomienda conservar esta advertencia para recordar hacerlo más adelante.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Se muestra 1 ventana de Chrome}other{Se muestran {count} ventanas de Chrome}}</translation>
 <translation id="5701270923492462699">Acceso a la cámara permitido</translation>
 <translation id="5704908597376970822">No se puede acceder.</translation>
@@ -1113,13 +1114,11 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8197543752516192074">Traducir página</translation>
 <translation id="8205564605687841303">Cancelar</translation>
 <translation id="8206354486702514201">El administrador controla esta configuración.</translation>
-<translation id="821809831108207540">Para personalizar tu feed de Descubre y Chrome, accede a tu cuenta y activa la sincronización.</translation>
 <translation id="8225985093977202398">Imágenes y archivos almacenados en caché</translation>
 <translation id="8237382152611443140">Ve a Autorrelleno de contraseñas en Configuración.</translation>
 <translation id="8248969482078657578">Las pestañas inactivas te ayudan a concentrarte</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8264966119170358612">Se expusieron algunas de tus contraseñas guardadas en una violación de la seguridad de los datos de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Solo en este dispositivo</translation>
 <translation id="826614135184049678">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPad. Para volver a acceder, presiona "Continuar".</translation>
 <translation id="8271720166617117963">Aceptar y acceder</translation>
 <translation id="8278938988428169257">Ingresa una palabra o frase.</translation>
@@ -1222,6 +1221,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8952559610785099500">Agregar contraseña</translation>
 <translation id="8953046091948372197">Aquí encontrarás tus contraseñas</translation>
 <translation id="895541991026785598">Informar de un problema</translation>
+<translation id="8961757677053809960">¿Quieres descartar la advertencia?</translation>
 <translation id="8971545611707025079">Volver a verificar</translation>
 <translation id="8974714402877957201">1. Abre Configuración en el iPad.</translation>
 <translation id="8976382372951310360">Ayuda</translation>

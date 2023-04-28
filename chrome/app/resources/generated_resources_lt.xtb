@@ -210,6 +210,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1169435433292653700">Faile <ph name="FILE_NAME" /> yra neskelbtinų ar pavojingų duomenų. Administratorius sako: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> nori prisijungti prie HID įrenginio</translation>
 <translation id="1172750555846831341">Versti pagal trumpąjį kraštą</translation>
+<translation id="1173332155861271669">Išsami „Passpoint“ teikėjo informacija</translation>
 <translation id="1173894706177603556">Pervadinti</translation>
 <translation id="1174073918202301297">Spartusis klavišas pridėtas</translation>
 <translation id="1174366174291287894">Jūsų ryšys visada saugus, nebent „Chrome“ nurodo kitaip</translation>
@@ -2237,6 +2238,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2856776373509145513">Naujo sudėtinio failo kūrimas</translation>
 <translation id="2859741939921354763">Slaptažodžių importavimas į „<ph name="BRAND" />“</translation>
 <translation id="2861301611394761800">Sistema atnaujinta. Paleiskite ją iš naujo.</translation>
+<translation id="2861402191395139055">„Passpoint“ prenumeratos</translation>
 <translation id="2861941300086904918">„Native Client“ saugos valdytojas</translation>
 <translation id="2862815659905780618">Pašalinti „Linux“ kūrimo aplinką</translation>
 <translation id="2864601841139725659">Profilio nuotraukos nustatymas</translation>
@@ -4714,6 +4716,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5086874064903147617">Atkurti numatytąjį pagrindinį puslapį?</translation>
 <translation id="5087249366037322692">Pridėjo trečioji šalis</translation>
 <translation id="5087580092889165836">Pridėti kortelę</translation>
+<translation id="5088427648965532275">„Passpoint“ teikėjas</translation>
 <translation id="5088534251099454936">PKCS Nr. 1 SHA-512 su RSA šifruote</translation>
 <translation id="5089763948477033443">Šoninio skydelio dydžio keitimo rankenėlė</translation>
 <translation id="5090637338841444533">Neleidžiama stebėti fotoaparato pozicijos</translation>
@@ -8577,7 +8580,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8498214519255567734">Padaryti, kad būtų patogiau žiūrėti į ekraną ar skaityti prietemoje</translation>
 <translation id="8498395510292172881">Toliau skaitykite naudodami „Chrome“</translation>
 <translation id="8499083585497694743">Įjungti mikrofono garsą</translation>
-<translation id="8499526927826495298">Siųsti <ph name="BEGIN_LINK1" />automatinio pildymo metaduomenis<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Norėdami naudoti programas iš „Google Play“, pirmiausia turite atkurti programas. Kai kurie duomenys gali būti prarasti.</translation>
 <translation id="8503813439785031346">Vartotojo vardas</translation>
 <translation id="850382998924680137">Peržiūrėta šiandien</translation>

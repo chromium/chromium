@@ -210,6 +210,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> indeholder følsomme eller farlige data. Din administrator siger: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> anmoder om at oprette forbindelse til en HID-enhed</translation>
 <translation id="1172750555846831341">Vend ved kort kant</translation>
+<translation id="1173332155861271669">Oplysninger om Passpoint-udbyderen</translation>
 <translation id="1173894706177603556">Omdøb</translation>
 <translation id="1174073918202301297">Genvejen blev tilføjet</translation>
 <translation id="1174366174291287894">Din forbindelse er altid sikker, medmindre Chrome angiver andet.</translation>
@@ -2235,6 +2236,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2856776373509145513">Opret en ny container</translation>
 <translation id="2859741939921354763">Importér adgangskoder til <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Opdateringen af systemet er fuldført. Genstart systemet.</translation>
+<translation id="2861402191395139055">Passpoint-abonnementer</translation>
 <translation id="2861941300086904918">Sikkerhedsadministrator for Native Client</translation>
 <translation id="2862815659905780618">Fjern Linux-udviklingsmiljø</translation>
 <translation id="2864601841139725659">Vælg profilbillede</translation>
@@ -4712,6 +4714,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5086874064903147617">Vil du gendanne standardstartsiden?</translation>
 <translation id="5087249366037322692">Tilføjet af en tredjepart</translation>
 <translation id="5087580092889165836">Tilføj kort</translation>
+<translation id="5088427648965532275">Passpoint-udbyder</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 med RSA-kryptering</translation>
 <translation id="5089763948477033443">Sidepanelets tilpasningshåndtag</translation>
 <translation id="5090637338841444533">Har ikke tilladelse til at spore din kameraposition</translation>
@@ -8569,7 +8572,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8498214519255567734">Gør din skærm mere behagelig at læse eller se på i svag belysning</translation>
 <translation id="8498395510292172881">Fortsæt læsningen i Chrome</translation>
 <translation id="8499083585497694743">Slå mikrofon til</translation>
-<translation id="8499526927826495298">Send <ph name="BEGIN_LINK1" />metadata for autofyld<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Hvis du vil bruge apps fra Google Play, skal du først gendanne dine apps. Nogle data kan være gået tabt.</translation>
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="850382998924680137">Set i dag</translation>

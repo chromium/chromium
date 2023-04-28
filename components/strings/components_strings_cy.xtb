@@ -315,6 +315,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1689333818294560261">Llysenw</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Sut gallwch reoli eich data:<ph name="END_BOLD" /> Mae Chrome yn awtoddileu pynciau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y gall pwnc ailymddangos ar y rhestr. Gallwch hefyd rwystro pynciau nad ydych chi am i Chrome eu rhannu â gwefannau a diffodd pynciau hysbysebion ar unrhyw adeg yng ngosodiadau Chrome.</translation>
 <translation id="1697532407822776718">Rydych yn barod i fynd!</translation>
+<translation id="1699651774646344471">Gallwch bellach ddefnyddio cyfeiriadau o'ch Cyfrif Google</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Llythyr</translation>
 <translation id="1706625117072057435">Lefelau chwyddo</translation>
@@ -537,6 +538,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2224337661447660594">Dim rhyngrwyd</translation>
 <translation id="2225927550500503913">Cerdyn rhithwir wedi'i droi ymlaen</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Mewngofnodwch<ph name="END_LINK" /> i'r rhwydwaith WiFi</translation>
+<translation id="2228057197024893428">Mae'r cyfeiriad hwn wedi'i gadw i Chrome ar hyn o bryd. Er mwyn ei ddefnyddio ar draws cynhyrchion Google, cadwch ef yn eich Cyfrif Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2239100178324503013">Anfon nawr</translation>
 <translation id="2241693394036365668">Mae'r ffeil wedi'i lawrlwytho</translation>
 <translation id="2246264294482514010">10 x 12 modfedd</translation>
@@ -656,6 +658,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2547466893236767989">Dylunio a datblygu gwe</translation>
 <translation id="254947805923345898">Nid yw'r gwerth polisi yn ddilys.</translation>
 <translation id="255002559098805027">Gwnaeth <ph name="HOST_NAME" /> anfon ymateb annilys.</translation>
+<translation id="2551608178605132291">Cyfeiriad: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Mae defnyddio clo sgrîn i gadarnhau cardiau o bellach ymlaen</translation>
 <translation id="2553853292994445426">Gwiriwch eich gosodiadau DNS diogel. Mae'n bosib eich bod wedi ffurfweddu gweinydd DNS diogel y mae cysylltiadau'n methu ag ef.</translation>
@@ -853,6 +856,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Wrthi'n gwirio'r ffurfweddiad DNS diogel<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Hambwrdd Canol</translation>
 <translation id="3109728660330352905">Nid oes gennych awdurdod i weld y dudalen hon.</translation>
+<translation id="3112892588078695695">Rhif ffôn: <ph name="PHONE" /></translation>
 <translation id="3113284927548439113">Trydedd sifft</translation>
 <translation id="3114040155724590991">Wrthi'n diweddaru System Android
     Mae'n bosib y bydd cychwyn eich ap yn cymryd mwy o amser nag arfer.</translation>
@@ -1225,6 +1229,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4031179711345676612">Caniateir meicroffon</translation>
 <translation id="4040350669425716613">Colegau a phrifysgolion</translation>
 <translation id="4047351652147966654">18 x 24 modfedd</translation>
+<translation id="4050392779074832022">Byddwch yn gallu ei ddefnyddio ar draws cynhyrchion Google</translation>
 <translation id="405399507749852140">Cael hysbysiadau os bydd y pris yn gostwng ar unrhyw wefan</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Gadewch i Google eich helpu i ddod o hyd i ostyngiadau ar gyfer eich basgedi</translation>
@@ -2462,6 +2467,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7083258188081898530">Hambwrdd 9</translation>
 <translation id="7086090958708083563">Mae defnyddiwr wedi gofyn i uwchlwytho</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i reoli caniatadau a data sydd wedi'u storio ar draws gwefannau yng ngosodiadau Chrome</translation>
+<translation id="7096341143397839437">E-bost: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Nid yw hunaniaeth y wefan hon wedi'i dilysu.</translation>
 <translation id="7101893872976785596">Ffilmiau arswyd</translation>
 <translation id="7102079138917191645">Adeiladu a chynnal a chadw</translation>
@@ -2540,6 +2546,7 @@ Manylion ychwanegol:
 <translation id="7256634549594854023">Hambwrdd Cefn</translation>
 <translation id="725866823122871198">Ni ellir sefydlu cysylltiad preifat â <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> oherwydd bod dyddiad ac amser eich cyfrifiadur (<ph name="DATE_AND_TIME" />) yn anghywir.</translation>
 <translation id="7260504762447901703">Dirymu mynediad</translation>
+<translation id="7265608370113700582">Mae'r cyfeiriad ar gael ar y ddyfais hon yn unig</translation>
 <translation id="7275334191706090484">Nodau tudalen a Reolir</translation>
 <translation id="7277998515889183784">Colur a chosmetig</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i newid eich cyfrinair Cyfrif Google</translation>
@@ -2962,6 +2969,7 @@ Manylion ychwanegol:
 <translation id="8245703462678310750">Pwyswch a daliwch |<ph name="ACCELERATOR" />| i adael y sgrîn lawn a gweld y lawrlwythiad.</translation>
 <translation id="8249296373107784235">Terfynu</translation>
 <translation id="8249463483885748674">Profion safonol a mynediad</translation>
+<translation id="8250094606476360498">Mae'r cyfeiriad hwn wedi'i gadw i'r ddyfais hon ar hyn o bryd. Er mwyn ei ddefnyddio ar draws cynhyrchion Google, cadwch ef yn eich Cyfrif Google, <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Botwm rheoli gosodiadau hygyrchedd, pwyswch Enter i bersonoleiddio'ch offer hygyrchedd yng ngosodiadau ChromeOS</translation>
 <translation id="8253091569723639551">Mae angen cyfeiriad bilio</translation>
 <translation id="8257387598443225809">Mae'r ap hwn wedi'i ddylunio ar gyfer dyfeisiau symudol</translation>

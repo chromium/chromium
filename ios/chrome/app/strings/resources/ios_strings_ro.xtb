@@ -169,7 +169,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2074131957428911366">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2080769225927880590">Conectează-te cu un cont valid</translation>
-<translation id="2090878303988764231">Conectează-te pentru a gestiona conținutul pe care îl vezi</translation>
 <translation id="2103075008456228677">Deschide history.google.com</translation>
 <translation id="21133533946938348">Fixează fila</translation>
 <translation id="2116625576999540962">Elemente mutate: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -589,7 +588,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4844899002472726590">Vezi și editează subiectele care te interesează</translation>
 <translation id="4848999860252535517">Ștergi parola pentru <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Setează o parolă</translation>
-<translation id="4856498338299082007">În Contul Google</translation>
 <translation id="4858786880085262208">Fă upgrade la HTTPS, dacă este posibil. Site-urile securizate pot încorpora conținut nesigur.</translation>
 <translation id="4860895144060829044">Apelează</translation>
 <translation id="4872323082491632254">Verifică parolele</translation>
@@ -1116,13 +1114,11 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8197543752516192074">Tradu pagina</translation>
 <translation id="8205564605687841303">Anulează</translation>
 <translation id="8206354486702514201">Această setare este impusă de administratorul dvs.</translation>
-<translation id="821809831108207540">Pentru a personaliza feedul Discover și Chrome, conectează-te și activează sincronizarea.</translation>
 <translation id="8225985093977202398">Imaginile și fișierele memorate în cache</translation>
 <translation id="8237382152611443140">Deschide Setările pentru completarea automată a parolei.</translation>
 <translation id="8248969482078657578">Filele inactive te ajută să te concentrezi</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="8264966119170358612">Unele dintre parolele salvate au fost expuse într-o încălcare a securității datelor independentă de Google. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Numai pe acest dispozitiv</translation>
 <translation id="826614135184049678">Te-ai deconectat de la contul <ph name="USER_NAME" /> în cadrul procesului de resetare a dispozitivului iPad. Pentru a te conecta din nou, atinge Continuă mai jos.</translation>
 <translation id="8271720166617117963">Acceptă și conectează-te</translation>
 <translation id="8278938988428169257">Introdu un cuvânt sau o expresie</translation>

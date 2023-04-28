@@ -210,6 +210,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> inneholder sensitive eller farlige data. Administratoren din sier «<ph name="CUSTOM_MESSAGE" />».</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> vil koble til en HID-enhet</translation>
 <translation id="1172750555846831341">Rotér til kortsiden</translation>
+<translation id="1173332155861271669">Passpoint-leverandørdetaljer</translation>
 <translation id="1173894706177603556">Gi nytt navn</translation>
 <translation id="1174073918202301297">Snarveien er lagt til</translation>
 <translation id="1174366174291287894">Tilkoblingen din er alltid sikker så lenge Chrome ikke forteller deg noe annet</translation>
@@ -2229,6 +2230,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2856776373509145513">Opprett en ny beholder</translation>
 <translation id="2859741939921354763">Importer passord til <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Systemoppdateringen er fullført. Start på nytt.</translation>
+<translation id="2861402191395139055">Passpoint-abonnementer</translation>
 <translation id="2861941300086904918">Sikkerhetsadministrator for Native Client</translation>
 <translation id="2862815659905780618">Fjern Linux-utviklingsmiljø</translation>
 <translation id="2864601841139725659">Angi profilbildet ditt</translation>
@@ -4703,6 +4705,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5086874064903147617">Vil du gjenopprette standardstartsiden?</translation>
 <translation id="5087249366037322692">Lagt til av en tredjepart</translation>
 <translation id="5087580092889165836">Legg til et kort</translation>
+<translation id="5088427648965532275">Passpoint-leverandør</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 med RSA-kryptering</translation>
 <translation id="5089763948477033443">Håndtak for endring av størrelsen på sidepanelet</translation>
 <translation id="5090637338841444533">Nettsteder som ikke har lov til å spore kameraposisjonen din</translation>
@@ -6969,7 +6972,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> vare</translation>
 <translation id="7113502843173351041">se e-postadressen din</translation>
 <translation id="7113974454301513811">Legg til den aktive fanen på listen din</translation>
-<translation id="7114054701490058191">Passordene samsvarer ikke</translation>
+<translation id="7114054701490058191">Passordene er ikke like</translation>
 <translation id="7114648273807173152">For å bruke Smart Lock til å logge på Google-kontoen din, gå til Innstillinger &gt; Tilkoblede enheter &gt; Telefonen din &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Ingen kontakter kan nås</translation>
 <translation id="7117228822971127758">Prøv på nytt senere</translation>
@@ -8558,7 +8561,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8498214519255567734">Gjør det lettere å se på skjermen og lese i svakt lys</translation>
 <translation id="8498395510292172881">Forsett å lese i Chrome</translation>
 <translation id="8499083585497694743">Slå på mikrofonen</translation>
-<translation id="8499526927826495298">Send <ph name="BEGIN_LINK1" />autofyll-metadata<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">For å bruke apper fra Google Play må du først gjenopprette appene dine. Noe data kan ha gått tapt.</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="850382998924680137">Sett på i dag</translation>

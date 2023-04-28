@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">รหัสผ่าน</translation>
 <translation id="1820259098641718022">เพิ่มไปยังเรื่องรออ่านแล้ว</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{รหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {COUNT} รหัส}other{มีรหัสผ่านที่ถูกละเมิด {COUNT} รหัส}}</translation>
+<translation id="1830634592642484976">บันทึกที่อยู่นี้ไว้ใน Chrome แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google ของคุณ <ph name="USER_EMAIL" /></translation>
 <translation id="1832848789136765277">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงข้อมูลที่ซิงค์ไว้ได้ทุกเมื่อ</translation>
 <translation id="1836891464494477513">{count,plural, =1{บันทึกบุ๊กมาร์กไว้ในบัญชี Google ของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไว้ในบัญชี Google ของคุณ {email} แล้ว}}</translation>
 <translation id="1870148520156231997">แสดงรหัสผ่าน</translation>
@@ -168,7 +169,6 @@
 <translation id="2074131957428911366">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2080769225927880590">ลงชื่อเข้าใช้ด้วยบัญชีที่ถูกต้อง</translation>
-<translation id="2090878303988764231">ลงชื่อเข้าใช้เพื่อจัดการเนื้อหาที่คุณเห็น</translation>
 <translation id="2103075008456228677">เปิด history.google.com</translation>
 <translation id="21133533946938348">ปักหมุดแท็บ</translation>
 <translation id="2116625576999540962">ย้ายแล้ว <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> รายการ</translation>
@@ -545,6 +545,7 @@
 <translation id="4636930964841734540">ข้อมูล</translation>
 <translation id="4642472735733036929">หยุดติดตามราคาแล้ว</translation>
 <translation id="4650125387981512669">ดำเนินการต่อในชื่อ <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">ตรวจสอบว่ารหัสผ่านปลอดภัย ดูว่ารหัสผ่านถูกละเมิดหรือไม่ และรับคำแนะนำที่จะช่วยปกป้องตัวคุณบนโลกออนไลน์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">ฟีเจอร์นี้จะเปิดเมื่อคุณลงชื่อเข้าใช้บัญชี Google</translation>
 <translation id="4659667755519643272">เข้าสู่มุมมองตัวสลับแท็บ</translation>
 <translation id="46614316059270592">บันทึกรหัสผ่าน</translation>
@@ -587,7 +588,6 @@
 <translation id="4844899002472726590">ดูและแก้ไขหัวข้อที่คุณสนใจ</translation>
 <translation id="4848999860252535517">ลบรหัสผ่านสำหรับ <ph name="WEBSITE" /> ใช่ไหม</translation>
 <translation id="4854345657858711387">ตั้งพาสโค้ด</translation>
-<translation id="4856498338299082007">ในบัญชี Google</translation>
 <translation id="4858786880085262208">อัปเกรดเป็น HTTPS เมื่อทำได้ เว็บไซต์ที่ปลอดภัยอาจฝังเนื้อหาที่ไม่ปลอดภัย</translation>
 <translation id="4860895144060829044">โทร</translation>
 <translation id="4872323082491632254">ตรวจสอบรหัสผ่าน</translation>
@@ -697,6 +697,7 @@
 <translation id="5669617676038747374">สร้างคิวอาร์โค้ด</translation>
 <translation id="567881659373499783">รุ่น <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกรหัสผ่านในบัญชี Google</translation>
+<translation id="5684761169742812828">รหัสผ่านนี้ถูกเปิดเผยจากการละเมิดข้อมูลบนอินเทอร์เน็ต หากคุณยังไม่มีเวลาเปลี่ยนรหัสในตอนนี้ Google ขอแนะนำให้เก็บคำเตือนนี้ไว้เพื่อช่วยเตือนคุณในภายหลัง</translation>
 <translation id="5690398455483874150">{count,plural, =1{กำลังแสดงหน้าต่าง Chrome 1 หน้าต่าง}other{กำลังแสดงหน้าต่าง Chrome {count} หน้าต่าง}}</translation>
 <translation id="5701270923492462699">อนุญาตให้เข้าถึงกล้อง</translation>
 <translation id="5704908597376970822">ลงชื่อเข้าใช้ไม่ได้</translation>
@@ -1113,13 +1114,11 @@
 <translation id="8197543752516192074">แปลหน้าเว็บ</translation>
 <translation id="8205564605687841303">ยกเลิก</translation>
 <translation id="8206354486702514201">ผู้ดูแลระบบของคุณกำหนดให้ใช้การตั้งค่านี้</translation>
-<translation id="821809831108207540">หากต้องการปรับเปลี่ยนฟีด Discover และ Chrome ในแบบของคุณ ให้ลงชื่อเข้าใช้และเปิดการซิงค์</translation>
 <translation id="8225985093977202398">รูปภาพและไฟล์ที่แคชไว้</translation>
 <translation id="8237382152611443140">เปิดการตั้งค่าการป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="8248969482078657578">แท็บที่ไม่ได้ใช้งานจะช่วยให้คุณมีสมาธิจดจ่อ</translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8264966119170358612">รหัสผ่านบางส่วนที่คุณบันทึกไว้มีการรั่วไหลจากการละเมิดข้อมูลที่ไม่ใช่ของ Google <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">เฉพาะในอุปกรณ์นี้</translation>
 <translation id="826614135184049678">คุณออกจากระบบบัญชี <ph name="USER_NAME" /> ในขั้นตอนการรีเซ็ต iPad หากต้องการลงชื่อเข้าใช้อีกครั้ง ให้แตะ "ต่อไป" ด้านล่าง</translation>
 <translation id="8271720166617117963">ยอมรับและลงชื่อเข้าใช้</translation>
 <translation id="8278938988428169257">ป้อนคำหรือวลี</translation>
@@ -1222,6 +1221,7 @@
 <translation id="8952559610785099500">เพิ่มรหัสผ่าน</translation>
 <translation id="8953046091948372197">คุณจะเห็นรหัสผ่านที่นี่</translation>
 <translation id="895541991026785598">รายงานปัญหา</translation>
+<translation id="8961757677053809960">ปิดคำเตือนไหม</translation>
 <translation id="8971545611707025079">ตรวจสอบอีกครั้ง</translation>
 <translation id="8974714402877957201">1. เปิดการตั้งค่า iPad</translation>
 <translation id="8976382372951310360">ความช่วยเหลือ</translation>

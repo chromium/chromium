@@ -315,6 +315,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1689333818294560261">Nama panggilan</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cara untuk mengelola data Anda:<ph name="END_BOLD" /> Chrome otomatis menghapus topik yang tersimpan lebih dari 4 minggu. Saat Anda menjelajah, suatu topik mungkin muncul kembali di daftar. Anda juga dapat memblokir topik dari Chrome yang tidak ingin Anda bagikan ke situs dan menonaktifkan topik iklan kapan saja di setelan Chrome.</translation>
 <translation id="1697532407822776718">Anda sudah siap!</translation>
+<translation id="1699651774646344471">Anda sekarang dapat menggunakan alamat dari Akun Google Anda</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Tingkat perbesar/perkecil</translation>
@@ -537,6 +538,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2224337661447660594">Tidak ada internet</translation>
 <translation id="2225927550500503913">Kartu virtual diaktifkan</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Login<ph name="END_LINK" /> ke jaringan Wi-Fi</translation>
+<translation id="2228057197024893428">Alamat ini disimpan ke Chrome untuk saat ini. Untuk menggunakannya di seluruh produk Google, simpan di Akun Google Anda, <ph name="ACCOUNT" />.</translation>
 <translation id="2239100178324503013">Kirim sekarang</translation>
 <translation id="2241693394036365668">File didownload</translation>
 <translation id="2246264294482514010">10 x 12 inci (25 x 30 cm)</translation>
@@ -656,6 +658,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2547466893236767989">Desain &amp; pengembangan web</translation>
 <translation id="254947805923345898">Nilai kebijakan tidak valid.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> mengirimkan tanggapan yang tidak valid.</translation>
+<translation id="2551608178605132291">Alamat: <ph name="ADDRESS" /></translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Mulai sekarang, gunakan kunci layar untuk mengonfirmasi kartu</translation>
 <translation id="2553853292994445426">Periksa setelan DNS aman Anda. Anda mungkin telah mengonfigurasi server DNS aman yang koneksinya gagal.</translation>
@@ -853,6 +856,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Memeriksa konfigurasi DNS aman<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Baki Tengah</translation>
 <translation id="3109728660330352905">Anda tidak memiliki otorisasi untuk melihat halaman ini.</translation>
+<translation id="3112892588078695695">Nomor telepon: <ph name="PHONE" /></translation>
 <translation id="3113284927548439113">Shift ketiga</translation>
 <translation id="3114040155724590991">Mengupdate Sistem Android
     Memulai aplikasi Anda mungkin memerlukan waktu lebih lama dari biasanya.</translation>
@@ -1224,6 +1228,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4031179711345676612">Mikrofon diizinkan</translation>
 <translation id="4040350669425716613">Perguruan tinggi &amp; universitas</translation>
 <translation id="4047351652147966654">18 x 24 inci (45 x 60 cm)</translation>
+<translation id="4050392779074832022">Anda akan dapat menggunakannya di seluruh produk Google</translation>
 <translation id="405399507749852140">Dapatkan notifikasi jika ada diskon di situs mana pun</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Izinkan Google membantu Anda menemukan diskon untuk keranjang Anda</translation>
@@ -2461,6 +2466,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7083258188081898530">Baki 9</translation>
 <translation id="7086090958708083563">Upload yang diminta oleh pengguna</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola izin dan data yang disimpan di seluruh situs di setelan Chrome</translation>
+<translation id="7096341143397839437">Email: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Identitas situs ini tidak terverifikasi.</translation>
 <translation id="7101893872976785596">Film horor</translation>
 <translation id="7102079138917191645">Konstruksi &amp; pemeliharaan</translation>
@@ -2537,6 +2543,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7256634549594854023">Baki Belakang</translation>
 <translation id="725866823122871198">Sambungan pribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak dapat dibuat karena tanggal dan waktu (<ph name="DATE_AND_TIME" />) komputer Anda tidak benar.</translation>
 <translation id="7260504762447901703">Cabut akses</translation>
+<translation id="7265608370113700582">Alamat hanya tersedia di perangkat ini</translation>
 <translation id="7275334191706090484">Bookmark Terkelola</translation>
 <translation id="7277998515889183784">Tata rias &amp; kosmetik</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengubah sandi Akun Google Anda</translation>
@@ -2959,6 +2966,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8245703462678310750">Tekan dan tahan |<ph name="ACCELERATOR" />| untuk keluar dari layar penuh dan melihat download.</translation>
 <translation id="8249296373107784235">Batalkan</translation>
 <translation id="8249463483885748674">Ujian terstandardisasi &amp; ujian masuk</translation>
+<translation id="8250094606476360498">Alamat ini disimpan ke perangkat ini untuk saat ini. Untuk menggunakannya di seluruh produk Google, simpan di Akun Google Anda, <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Tombol Kelola setelan aksesibilitas, Enter untuk mempersonalisasi alat aksesibilitas Anda di setelan ChromeOS</translation>
 <translation id="8253091569723639551">Perlu alamat penagihan</translation>
 <translation id="8257387598443225809">Aplikasi ini didesain untuk perangkat seluler</translation>

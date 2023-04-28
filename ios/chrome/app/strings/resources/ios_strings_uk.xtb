@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">Код доступу</translation>
 <translation id="1820259098641718022">Додано в список читання</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Зламані паролі}=1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
+<translation id="1830634592642484976">Ця адреса зараз зберігається в Chrome. Збережіть її у своєму обліковому записі Google (<ph name="USER_EMAIL" />), щоб використовувати в усіх продуктах Google.</translation>
 <translation id="1832848789136765277">Щоб не втратити доступ до своїх даних синхронізації, підтвердьте свою особу</translation>
 <translation id="1836891464494477513">{count,plural, =1{Закладку збережено у вашому обліковому записі Google ({email})}one{Закладки збережено у вашому обліковому записі Google ({email})}few{Закладки збережено у вашому обліковому записі Google ({email})}many{Закладки збережено у вашому обліковому записі Google ({email})}other{Закладки збережено у вашому обліковому записі Google ({email})}}</translation>
 <translation id="1870148520156231997">Показати пароль</translation>
@@ -168,7 +169,6 @@
 <translation id="2074131957428911366">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Відмінити</translation>
 <translation id="2080769225927880590">Увійдіть у дійсний обліковий запис</translation>
-<translation id="2090878303988764231">Увійдіть, щоб керувати контентом, який ви бачите</translation>
 <translation id="2103075008456228677">Відкрити history.google.com</translation>
 <translation id="21133533946938348">Закріпити вкладку</translation>
 <translation id="2116625576999540962">Переміщено елементів: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -545,6 +545,7 @@
 <translation id="4636930964841734540">Інформація</translation>
 <translation id="4642472735733036929">Відстеження ціни зупинено</translation>
 <translation id="4650125387981512669">Продовжити як <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Переконайтеся, що ваші паролі надійні й не були викрадені, а також отримайте пораду, як захистити себе в Інтернеті. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Ця функція вмикається, коли ви входите в обліковий запис Google.</translation>
 <translation id="4659667755519643272">Відкрити перемикач вкладок</translation>
 <translation id="46614316059270592">Зберегти пароль</translation>
@@ -587,7 +588,6 @@
 <translation id="4844899002472726590">Переглядайте й редагуйте цікаві вам теми</translation>
 <translation id="4848999860252535517">Видалити пароль для веб-сайту <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Налаштуйте код доступу</translation>
-<translation id="4856498338299082007">У вашому обліковому записі Google</translation>
 <translation id="4858786880085262208">За можливості використовуйте протокол HTTPS. На безпечних сайтах може бути вбудовано незахищений контент.</translation>
 <translation id="4860895144060829044">Зателефонувати</translation>
 <translation id="4872323082491632254">Перевірка паролів</translation>
@@ -697,6 +697,7 @@
 <translation id="5669617676038747374">Створити QR-код</translation>
 <translation id="567881659373499783">Версія <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Щоб використовувати й зберігати паролі в обліковому записі Google, підтвердьте свою особу.</translation>
+<translation id="5684761169742812828">Цей пароль розкрито через порушення безпеки даних в Інтернеті. Якщо у вас немає часу змінити його прямо зараз, радимо не закривати це попередження – воно слугуватиме для вас нагадуванням.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Показано 1 вікно Chrome}one{Показано {count} вікно Chrome}few{Показано {count} вікна Chrome}many{Показано {count} вікон Chrome}other{Показано {count} вікна Chrome}}</translation>
 <translation id="5701270923492462699">Доступ до камери надано</translation>
 <translation id="5704908597376970822">Не вдається ввійти.</translation>
@@ -1113,13 +1114,11 @@
 <translation id="8197543752516192074">Перекласти сторінку</translation>
 <translation id="8205564605687841303">Скасувати</translation>
 <translation id="8206354486702514201">Це налаштування застосовується вашим адміністратором.</translation>
-<translation id="821809831108207540">Щоб персоналізувати стрічку рекомендацій і веб-переглядач Chrome, увійдіть в обліковий запис та ввімкніть синхронізацію.</translation>
 <translation id="8225985093977202398">Кешовані зображення й файли</translation>
 <translation id="8237382152611443140">Відкрийте налаштування автозаповнення паролів</translation>
 <translation id="8248969482078657578">Завдяки розділу "Неактивні вкладки" ви можете зосередитися на найважливішому</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="8264966119170358612">Деякі ваші збережені паролі було розкрито через порушення безпеки даних стороннього сервісу. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Лише на цьому пристрої</translation>
 <translation id="826614135184049678">Ви вийшли з облікового запису <ph name="USER_NAME" />, коли було скинуто налаштування iPad. Щоб увійти знову, натисніть "Продовжити" нижче.</translation>
 <translation id="8271720166617117963">Прийняти й увійти</translation>
 <translation id="8278938988428169257">Введіть слово або фразу</translation>
@@ -1222,6 +1221,7 @@
 <translation id="8952559610785099500">Додати пароль</translation>
 <translation id="8953046091948372197">Тут відображатимуться ваші паролі</translation>
 <translation id="895541991026785598">Повідомити про проблему</translation>
+<translation id="8961757677053809960">Закрити попередження?</translation>
 <translation id="8971545611707025079">Перевірити ще раз</translation>
 <translation id="8974714402877957201">1. Відкрийте Параметри на iPad</translation>
 <translation id="8976382372951310360">Довідка</translation>

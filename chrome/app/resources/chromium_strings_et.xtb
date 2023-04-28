@@ -8,6 +8,7 @@
 <translation id="1104942323762546749">Chromium soovib teie paroole eksportida. Selle lubamiseks sisestage oma Windowsi parool.</translation>
 <translation id="113122355610423240">Chromium on teie vaikebrauser</translation>
 <translation id="1131805035311359397">Kui soovite kontrollida, kas teie paroolid on andmetega seotud rikkumiste ja muude turvaprobleemide eest kaitstud, <ph name="BEGIN_LINK" />logige Chromiumi sisse<ph name="END_LINK" />.</translation>
+<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromiumi laiendused pääsesid juurde HID-seadmele}=1{Chromiumi laiendused pääsevad juurde HID-seadmele}other{Chromiumi laiendused pääsevad juurde # HID-seadmele}}</translation>
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
 <translation id="1202417120496358351">{COUNT,plural, =1{Teie administraator sulgeb Chromiumi automaatselt, kui seda ei kasutata 1 minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}other{Teie administraator sulgeb Chromiumi automaatselt, kui seda ei kasutata # minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}}</translation>
 <translation id="1203500561924088507">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate selle taaskäivitama.</translation>
@@ -58,6 +59,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="2478295928299953161">Chromium sulgub peagi</translation>
 <translation id="2483889755041906834">Chromiumis</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
+<translation id="2554739539410784893">Chromium püüab olemasolevaid paroole asendada. Selle lubamiseks sisestage oma Windowsi parool.</translation>
 <translation id="2560420686485554789">Chromium vajab failide allalaadimiseks juurdepääsu salvestusruumile</translation>
 <translation id="2572494885440352020">Chromiumi abiline</translation>
 <translation id="2583187216237139145">Kõik Chromiumi andmed, mis luuakse selle profiili kasutamise ajal (nt järjehoidjad, ajalugu, paroolid ja muud seaded), saab tööprofiili administraator eemaldada. <ph name="LEARN_MORE" /></translation>
@@ -354,6 +356,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Kuidas neid andmeid kasutame?<ph name="END_BOLD" /> Saidid võivad talletada Chromiumissse teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
 <translation id="8619360774459241877">Chromiumi käivitamine …</translation>
 <translation id="8621669128220841554">Installimine ebaõnnestus tundmatu vea tõttu. Laadige Chromium uuesti alla.</translation>
+<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Chromiumi laiendus pääses juurde HID-seadmetele}=1{Chromiumi laiendus pääseb juurde ühele HID-seadmele}other{Chromiumi laiendus pääseb juurde # HID-seadmele}}</translation>
 <translation id="8697124171261953979">Lisaks juhib see seda, mis leht kuvatakse Chromiumi käivitamisel või omnikastikeses otsingu tegemisel.</translation>
 <translation id="8704119203788522458">See on teie Chromium</translation>
 <translation id="8796602469536043152">Chromium vajab selle saidi puhul luba, et teie kaamerale ja mikrofonile juurde pääseda</translation>

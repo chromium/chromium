@@ -315,6 +315,7 @@
 <translation id="1689333818294560261">Псевдонім</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Як ви можете керувати своїми даними.<ph name="END_BOLD" /> Chrome автоматично видаляє теми через 4 тижні. Під час подальшого веб-перегляду тема може знову з’явитися в списку. Ви також можете будь-коли заблокувати теми оголошень, якими Chrome не має ділитись із сайтами, або вимкнути їх у налаштуваннях Chrome.</translation>
 <translation id="1697532407822776718">Готово!</translation>
+<translation id="1699651774646344471">Тепер ви можете використовувати адреси зі свого облікового запису Google</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Рівні масштабування</translation>
@@ -537,6 +538,7 @@
 <translation id="2224337661447660594">Немає Інтернету</translation>
 <translation id="2225927550500503913">Віртуальну картку ввімкнено</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Вхід<ph name="END_LINK" /> у мережу Wi-Fi</translation>
+<translation id="2228057197024893428">Ця адреса зараз зберігається в Chrome. Збережіть її у своєму обліковому записі Google (<ph name="ACCOUNT" />), щоб використовувати в усіх продуктах Google.</translation>
 <translation id="2239100178324503013">Надіслати</translation>
 <translation id="2241693394036365668">Завантажено файл</translation>
 <translation id="2246264294482514010">10 x 12 дюйм.</translation>
@@ -656,6 +658,7 @@
 <translation id="2547466893236767989">Веб-дизайн і розробка</translation>
 <translation id="254947805923345898">Недійсне значення правила.</translation>
 <translation id="255002559098805027">Хост <ph name="HOST_NAME" /> надіслав недійсну відповідь.</translation>
+<translation id="2551608178605132291">Адреса: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Використовувати блокування екрана, щоб підтверджувати картки</translation>
 <translation id="2553853292994445426">Перевірте налаштування безпеки DNS. Можливо, ви налаштували безпечний DNS-сервер, до якого не вдається підключитися.</translation>
@@ -853,6 +856,7 @@
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />перевірити конфігурацію безпеки DNS-сервера<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Середній лоток</translation>
 <translation id="3109728660330352905">У вас немає дозволу переглядати цю сторінку.</translation>
+<translation id="3112892588078695695">Номер телефону: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Третя зміна</translation>
 <translation id="3114040155724590991">Оновлення системи Android
     Запуск додатка може тривати довше, ніж зазвичай.</translation>
@@ -1225,6 +1229,7 @@
 <translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
 <translation id="4040350669425716613">Коледжі й університети</translation>
 <translation id="4047351652147966654">18 x 24 дюйм.</translation>
+<translation id="4050392779074832022">Ви зможете використовувати цю адресу в усіх продуктах Google</translation>
 <translation id="405399507749852140">Отримувати сповіщення, коли на якомусь сайті знизиться ціна</translation>
 <translation id="4056223980640387499">Сепія</translation>
 <translation id="4063063121357725926">Дозвольте Google знаходити знижки на товари у ваших кошиках</translation>
@@ -2462,6 +2467,7 @@
 <translation id="7083258188081898530">Лоток 9</translation>
 <translation id="7086090958708083563">Запит на завантаження від користувача</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати в налаштуваннях Chrome дозволами й даними, що зберігаються на сайтах</translation>
+<translation id="7096341143397839437">Електронна адреса: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Ідентифікаційні дані цього веб-сайту не підтверджено.</translation>
 <translation id="7101893872976785596">Фільми жахів</translation>
 <translation id="7102079138917191645">Будівництво й обслуговування</translation>
@@ -2540,6 +2546,7 @@
 <translation id="7256634549594854023">Задній лоток</translation>
 <translation id="725866823122871198">Не вдається встановити конфіденційне з’єднання з <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, оскільки на комп’ютері встановлено неправильні дату й час (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260504762447901703">Скасувати доступ</translation>
+<translation id="7265608370113700582">Адреса доступна лише на цьому пристрої</translation>
 <translation id="7275334191706090484">Закладки, якими керує адміністратор</translation>
 <translation id="7277998515889183784">Косметичні засоби</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб змінити пароль облікового запису Google</translation>
@@ -2962,6 +2969,7 @@
 <translation id="8245703462678310750">Утримуйте клавішу |<ph name="ACCELERATOR" />|, щоб вийти з повноекранного режиму й переглянути завантаження.</translation>
 <translation id="8249296373107784235">Скасувати</translation>
 <translation id="8249463483885748674">Стандартизовані та вступні тести</translation>
+<translation id="8250094606476360498">Ця адреса зараз зберігається на поточному пристрої. Збережіть її у своєму обліковому записі Google (<ph name="ACCOUNT" />), щоб використовувати в усіх продуктах Google.</translation>
 <translation id="8252991034201168845">Кнопка "Керувати налаштуваннями спеціальних можливостей"; натисніть Enter, щоб персоналізувати інструменти спеціальних можливостей у налаштуваннях ОС Chrome.</translation>
 <translation id="8253091569723639551">Потрібно вказати платіжну адресу</translation>
 <translation id="8257387598443225809">Цей додаток створено для мобільних пристроїв</translation>

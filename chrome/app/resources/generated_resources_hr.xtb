@@ -208,6 +208,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> sadrži osjetljive ili opasne podatke. Administrator kaže: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> želi se povezati s HID uređajem</translation>
 <translation id="1172750555846831341">Prebaci na kraći rub</translation>
+<translation id="1173332155861271669">Pojedinosti o davatelju Passpointa</translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1174073918202301297">Prečac je dodan</translation>
 <translation id="1174366174291287894">Veza je uvijek sigurna, osim ako Chrome kaže da nije</translation>
@@ -2222,6 +2223,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2856776373509145513">Izrada novog spremnika</translation>
 <translation id="2859741939921354763">Uvoz zaporki na uslugu <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Ažuriranje sustava dovršeno. Ponovno pokrenite sustav.</translation>
+<translation id="2861402191395139055">Pretplate na Passpoint</translation>
 <translation id="2861941300086904918">Sigurnosni upravitelj izvornog klijenta</translation>
 <translation id="2862815659905780618">Uklanjanje razvojnog okruženja za Linux</translation>
 <translation id="2864601841139725659">Postavite profilnu sliku</translation>
@@ -3156,6 +3158,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3706463572498736864">Stranica po listu</translation>
 <translation id="370649949373421643">Omogući Wi-Fi</translation>
 <translation id="370665806235115550">Učitavanje...</translation>
+<translation id="3707034683772193706">Web-lokacija koju posjetite može spremiti male količine podataka pomoću Chromea, uglavnom kako bi potvrdila da niste bot</translation>
 <translation id="3707163604290651814">Trenutačno ste prijavljeni kao <ph name="NAME" /></translation>
 <translation id="3707348585109246684">Otvaranje veze u novoj kartici: <ph name="APP" /></translation>
 <translation id="3708295717182051206">Titlovi</translation>
@@ -3667,6 +3670,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4135746311382563554">Dodatni uvjeti pružanja usluge za Google Chrome i OS Chrome</translation>
 <translation id="4136203100490971508">Noćno svjetlo automatski će se isključiti nakon izlaska sunca</translation>
 <translation id="41365691917097717">Nastavak će omogućiti ADB otklanjanje pogrešaka za izradu i testiranje Android aplikacija. Napominjemo da se time omogućuje instaliranje Android aplikacija koje Google nije potvrdio i da je za onemogućivanje potrebno vraćanje na tvorničke postavke.</translation>
+<translation id="4137923333452716643">Istaknite tekst koji želite otvoriti u načinu čitanja</translation>
 <translation id="4138267921960073861">Prikaži korisnička imena i fotografije na zaslonu za prijavu</translation>
 <translation id="4138598238327913711">Provjera gramatike trenutačno je dostupna samo za engleski</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID uređaj povezan</translation>
@@ -3707,6 +3711,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4180788401304023883">Izbrisati certifikat tijela za izdavanje certifikata "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Jezici</translation>
+<translation id="4182339886482390129">Poboljšano sigurno pregledavanje bolje vas štiti od opasnih web-lokacija, preuzimanja i proširenja</translation>
 <translation id="4184803915913850597">HID uređaj (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Pretraživanje</translation>
 <translation id="4187424053537113647">Postavljanje aplikacije <ph name="APP_NAME" />...</translation>
@@ -3858,6 +3863,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4322394346347055525">Zatvori ostale kartice</translation>
 <translation id="4324577459193912240">Nepotpuna datoteka</translation>
 <translation id="4325237902968425115">Deinstaliranje aplikacije <ph name="LINUX_APP_NAME" />...</translation>
+<translation id="4326146840124313313">Chromeova najjača zaštita čini više toga kako bi vas zaštitila od opasnih web-lokacija, preuzimanja i proširenja</translation>
 <translation id="4330191372652740264">Ledena voda</translation>
 <translation id="4330387663455830245">Nikad ne prevodi <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Postavljanje roditeljskog nadzora</translation>
@@ -4698,6 +4704,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5086874064903147617">Želite li vratiti zadanu početnu stranicu?</translation>
 <translation id="5087249366037322692">Dodala treća strana</translation>
 <translation id="5087580092889165836">Dodaj karticu</translation>
+<translation id="5088427648965532275">Davatelj Passpointa</translation>
 <translation id="5088534251099454936">PKCS br. 1 SHA-512 s RSA enkripcijom</translation>
 <translation id="5089763948477033443">Ručica za promjenu veličine bočne ploče</translation>
 <translation id="5090637338841444533">Nije dopušteno praćenje položaja kamere</translation>
@@ -5511,6 +5518,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5833726373896279253">Ove postavke može izmjenjivati samo vlasnik:</translation>
 <translation id="583431638776747">Web-lokacija nije bila dostupna</translation>
 <translation id="5834581999798853053">Preostalo je oko <ph name="TIME" /> min</translation>
+<translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> pristupa HID uređajima}=2{Proširenja koja pristupaju uređajima: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{Proširenja koja pristupaju uređajima: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> i još {3}}few{Proširenja koja pristupaju uređajima: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> i još {3}}other{Proširenja koja pristupaju uređajima: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> i još {3}}}</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – kamera ili mikrofon snimaju</translation>
 <translation id="583673505367439042">Web-lokacije mogu tražiti dopuštenje za uređivanje datoteka i mapa na vašem uređaju</translation>
 <translation id="5836999627049108525">Jezik s kojega se prevodi</translation>
@@ -7183,6 +7191,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7339763383339757376">PKCS br. 7, jedan certifikat</translation>
 <translation id="7339785458027436441">Provjeravaj pravopis tijekom pisanja</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
+<translation id="7340179705876485790">Da biste se vratili za više od jedne stranice, kliknite i zadržite Natrag.</translation>
 <translation id="7340431621085453413">Stranica <ph name="FULLSCREEN_ORIGIN" /> sada je na cijelom zaslonu.</translation>
 <translation id="7340650977506865820">Web-lokacija dijeli vaš zaslon</translation>
 <translation id="7340757554212515731">Automatski Googleu šalje izvješća o padu programa kao i podatke o upotrebi i dijagnostici</translation>
@@ -7229,6 +7238,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7374376573160927383">Upravljanje USB uređajima</translation>
 <translation id="7376124766545122644">Ta se veza ne može upotrijebiti. Da biste pokušali ponovo, provjerite počinje li veza s "http://" ili "https://".</translation>
 <translation id="7376553024552204454">Istakni pokazivač miša kada se kreće</translation>
+<translation id="7377250337652426186">Da biste se vratili za više od jedne stranice, kliknite i držite gumb Natrag.</translation>
 <translation id="737728204345822099">Na sigurnosnom ključu može se zadržati evidencija vašeg posjeta toj web-lokaciji.</translation>
 <translation id="7377451353532943397">Nastavi blokirati pristup senzorima</translation>
 <translation id="7377481913241237033">Povezivanje pomoću koda</translation>
@@ -7264,6 +7274,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7403642243184989645">Preuzimanje resursa</translation>
 <translation id="7404065585741198296">Telefonom povezanim USB kabelom</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Sigurnosna provjera izvršena je prije sat vremena}one{Sigurnosna provjera izvršena je prije {NUM_HOURS} sata}few{Sigurnosna provjera izvršena je prije {NUM_HOURS} sata}other{Sigurnosna provjera izvršena je prije {NUM_HOURS} sati}}</translation>
+<translation id="7406113532070524618">Ova postavka funkcionira bez identificiranja ili dopuštanja web-lokacijama da vide vašu povijest pregledavanja, no web-lokacije mogu dijeliti malu količinu informacija kao dio potvrde</translation>
 <translation id="740624631517654988">Skočni prozor blokiran</translation>
 <translation id="7406912950279255498">Način inverzije boja</translation>
 <translation id="7407430846095439694">Uvezi i poveži</translation>
@@ -8555,7 +8566,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8498214519255567734">Olakšaj gledanje zaslona ili čitanje pri slabom svjetlu</translation>
 <translation id="8498395510292172881">Nastavite čitati u Chromeu</translation>
 <translation id="8499083585497694743">Uključi mikrofon</translation>
-<translation id="8499526927826495298">Pošalji <ph name="BEGIN_LINK1" />metapodatke o automatskom popunjavanju<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Da biste upotrebljavali aplikacije s Google Playa, prvo morate vratiti aplikacije. Neki su podaci možda izgubljeni.</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="850382998924680137">Pogledano danas</translation>
@@ -8999,6 +9009,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima<ph name="END_BOLD" />: da bismo zaštitili vašu privatnost, automatski brišemo web-lokacije koje su na popisu više od četiri tjedna. Web-lokacija koju ponovo posjetite može se ponovo pojaviti na popisu. Web-lokaciju možete i ukloniti ako ne želite da definira vaše interese.</translation>
 <translation id="8884570509232205463">Uređaj se odsad zaključava u <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8888253246822647887">Aplikacija će se otvoriti kad nadogradnja završi. Nadogradnje mogu trajati nekoliko minuta.</translation>
+<translation id="8889294078294184559">Tijekom vašeg daljnjeg pregledavanja web-lokacije mogu provjeriti u Chromeu i od prethodne web-lokacije koju ste posjetili dobiti potvrdu da ste vjerojatno stvarna osoba</translation>
 <translation id="8889651696183044030">Web-lokacija <ph name="ORIGIN" /> može uređivati sljedeće datoteke i mape</translation>
 <translation id="8890170499370378450">Možda će se naplatiti mobilni podatkovni promet</translation>
 <translation id="8890516388109605451">Izvori</translation>

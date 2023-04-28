@@ -210,6 +210,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> has sensitive or dangerous data. Your administrator says: '<ph name="CUSTOM_MESSAGE" />'</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> wants to connect to a HID device</translation>
 <translation id="1172750555846831341">Flip on short edge</translation>
+<translation id="1173332155861271669">Passpoint provider details</translation>
 <translation id="1173894706177603556">Rename</translation>
 <translation id="1174073918202301297">Shortcut added</translation>
 <translation id="1174366174291287894">Your connection is always secure unless Chrome tells you otherwise</translation>
@@ -2234,6 +2235,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2856776373509145513">Create a new container</translation>
 <translation id="2859741939921354763">Import passwords to <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">System update complete. Please restart the system.</translation>
+<translation id="2861402191395139055">Passpoint subscriptions</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
 <translation id="2862815659905780618">Remove Linux development environment</translation>
 <translation id="2864601841139725659">Set your profile picture</translation>
@@ -3168,6 +3170,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3706463572498736864">Pages per sheet</translation>
 <translation id="370649949373421643">Enable Wi-Fi</translation>
 <translation id="370665806235115550">Loading...</translation>
+<translation id="3707034683772193706">A site that you visit can save a small amount of info with Chrome, mainly to validate that you're not a bot</translation>
 <translation id="3707163604290651814">Currently signed in as <ph name="NAME" /></translation>
 <translation id="3707348585109246684">Open link in new <ph name="APP" /> tab</translation>
 <translation id="3708295717182051206">Closed captions</translation>
@@ -3679,6 +3682,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4135746311382563554">Google Chrome and ChromeOS additional Terms of Service</translation>
 <translation id="4136203100490971508">Night Light will turn off automatically at sunrise</translation>
 <translation id="41365691917097717">Continuing will enable ADB debugging for creating and testing Android apps. Note that this action allows installation of Android apps that haven't been verified by Google, and requires a factory reset to disable.</translation>
+<translation id="4137923333452716643">Highlight the text that you want to open in reading mode</translation>
 <translation id="4138267921960073861">Show usernames and photos on the sign-in screen</translation>
 <translation id="4138598238327913711">Grammar check currently available for English only</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID device connected</translation>
@@ -3719,6 +3723,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4180788401304023883">Delete CA certificate "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Languages</translation>
+<translation id="4182339886482390129">Enhanced Safe Browsing does more to protect you against dangerous websites, downloads and extensions</translation>
 <translation id="4184803915913850597">HID device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
 <translation id="4187424053537113647">Setting up <ph name="APP_NAME" />…</translation>
@@ -3870,6 +3875,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4322394346347055525">Close Other Tabs</translation>
 <translation id="4324577459193912240">File incomplete</translation>
 <translation id="4325237902968425115">Uninstalling <ph name="LINUX_APP_NAME" />…</translation>
+<translation id="4326146840124313313">Chrome’s strongest security does more to protect you against dangerous websites, downloads and extensions</translation>
 <translation id="4330191372652740264">Ice water</translation>
 <translation id="4330387663455830245">Never translate <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Set Up Parental Controls</translation>
@@ -4711,6 +4717,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5086874064903147617">Restore default homepage?</translation>
 <translation id="5087249366037322692">Added by a third party</translation>
 <translation id="5087580092889165836">Add card</translation>
+<translation id="5088427648965532275">Passpoint provider</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 With RSA Encryption</translation>
 <translation id="5089763948477033443">Side panel resize handle</translation>
 <translation id="5090637338841444533">Not allowed to track your camera position</translation>
@@ -5526,6 +5533,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5833726373896279253">These settings may only be modified by the owner:</translation>
 <translation id="583431638776747">Site wasn’t available</translation>
 <translation id="5834581999798853053">About <ph name="TIME" /> minutes left</translation>
+<translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> is accessing HID devices}=2{Extensions accessing devices: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Extensions accessing devices: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> +{3} more}}</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Camera or microphone recording</translation>
 <translation id="583673505367439042">Sites can ask to edit files and folders on your device</translation>
 <translation id="5836999627049108525">Language to translate from</translation>
@@ -7195,6 +7203,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7339763383339757376">PKCS #7, single certificate</translation>
 <translation id="7339785458027436441">Check Spelling While Typing</translation>
 <translation id="7339898014177206373">New window</translation>
+<translation id="7340179705876485790">To go back more than one page, click and hold Back.</translation>
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> is now full screen.</translation>
 <translation id="7340650977506865820">Site is sharing your screen</translation>
 <translation id="7340757554212515731">Automatically sends crash reports as well as diagnostic and usage data to Google</translation>
@@ -7241,6 +7250,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7374376573160927383">Manage USB devices</translation>
 <translation id="7376124766545122644">Can't use this link. Check that your link starts with 'http://' or 'https://' to try again.</translation>
 <translation id="7376553024552204454">Highlight the mouse cursor when it's moving</translation>
+<translation id="7377250337652426186">To go back more than one page, click and hold the Back button.</translation>
 <translation id="737728204345822099">A record of your visit to this site may be kept on your security key.</translation>
 <translation id="7377451353532943397">Continue blocking sensor access</translation>
 <translation id="7377481913241237033">Connect with a code</translation>
@@ -7276,6 +7286,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7403642243184989645">Downloading resources</translation>
 <translation id="7404065585741198296">Your phone with a USB cable</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Safety check ran 1 hour ago}other{Safety check ran {NUM_HOURS} hours ago}}</translation>
+<translation id="7406113532070524618">This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification</translation>
 <translation id="740624631517654988">Pop-up blocked</translation>
 <translation id="7406912950279255498">Colour inversion mode</translation>
 <translation id="7407430846095439694">Import and Bind</translation>
@@ -8567,7 +8578,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8498214519255567734">Make it easier to look at your screen or read in dim light</translation>
 <translation id="8498395510292172881">Continue reading in Chrome</translation>
 <translation id="8499083585497694743">Unmute microphone</translation>
-<translation id="8499526927826495298">Send <ph name="BEGIN_LINK1" />auto-fill metadata<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">To use apps from Google Play, you must first restore your apps. Some data may have been lost.</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="850382998924680137">Viewed today</translation>
@@ -9009,6 +9019,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete sites from the list that are older than four weeks. A site that you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.</translation>
 <translation id="8884570509232205463">Your device now locks at <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8888253246822647887">Your app will open when the upgrade is finished. Upgrades can take a few minutes.</translation>
+<translation id="8889294078294184559">As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> can edit the following files and folders</translation>
 <translation id="8890170499370378450">May incur mobile data charges</translation>
 <translation id="8890516388109605451">Sources</translation>

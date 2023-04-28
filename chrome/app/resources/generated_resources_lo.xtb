@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">ກຳລັງເປີດໂປຣແກຣມທ່ອງເວັບສຳຮອງໃນ <ph name="COUNTDOWN_SECONDS" /> ວິນາທີ</translation>
+<translation id="1071735803834535661">ເມຕາພາຍນອກ</translation>
 <translation id="1071917609930274619">​ການ​ປ່ຽນ​ເປັນ​ລະຫັດ​ຂອງ​ຂໍ້​ມູນ</translation>
 <translation id="1072700771426194907">ກວດພົບອຸປະກອນ USB</translation>
 <translation id="107278043869924952">ໃຊ້ PIN ນອກຈາກລະຫັດຜ່ານ</translation>
@@ -209,6 +210,7 @@
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> ມີຂໍ້ມູນທີ່ລະອຽດອ່ອນ ຫຼື ເປັນອັນຕະລາຍ. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເວົ້າວ່າ: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> ຕ້ອງການເຊື່ອມຕໍ່ອຸປະກອນ HID</translation>
 <translation id="1172750555846831341">ກັບດ້ານຕາມແນວກວ້າງ</translation>
+<translation id="1173332155861271669">ລາຍລະອຽດຜູ້ໃຫ້ບໍລິການ Passpoint</translation>
 <translation id="1173894706177603556">ໃສ່ຊື່ໃໝ່</translation>
 <translation id="1174073918202301297">ເພີ່ມທາງລັດແລ້ວ</translation>
 <translation id="1174366174291287894">ການເຊື່ອມຕໍ່ຂອງທ່ານຈະປອດໄພສະເໝີເວັ້ນເສຍແຕ່ Chrome ຈະບອກທ່ານວ່າບໍ່ແມ່ນ</translation>
@@ -1377,6 +1379,7 @@
 <translation id="2146263598007866206">ເວັບໄຊອາດຈະດາວໂຫຼດໄຟລ໌ທີ່ກ່ຽວຂ້ອງຮວມກັນໂດຍອັດຕະໂນມັດເພື່ອປະຢັດເວລາໃຫ້ທ່ານ</translation>
 <translation id="2147151613919729065">ເພື່ອລຶບລ້າງປະຫວັດໃນໂໝດແຂກ, ກະລຸນາປິດໜ້າຈໍແຂກທັງໝົດ.</translation>
 <translation id="2147218225094845757">ເຊື່ອງແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
+<translation id="2147282432401652483">ຄຳສັ່ງ</translation>
 <translation id="2148219725039824548">ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່ການແບ່ງປັນ. ບໍ່ພົບການແບ່ງປັນທີ່ລະບຸໄວ້ຢູ່ໃນເຄືອຂ່າຍ.</translation>
 <translation id="2148756636027685713">ການຟໍແມັດສໍາເລັດແລ້ວ</translation>
 <translation id="2148892889047469596">​ແຖບຄາສ໌ທ</translation>
@@ -2231,6 +2234,7 @@
 <translation id="2856776373509145513">ສ້າງກ່ອງບັນຈຸໃໝ່</translation>
 <translation id="2859741939921354763">ນຳເຂົ້າລະຫັດຜ່ານໄປໃສ່ <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">ອັບເດດລະບົບສໍາເລັດ. ກະລຸນາປິດເປີດລະບົບຄືນໃໝ່.</translation>
+<translation id="2861402191395139055">ການສະໝັກໃຊ້ Passpoint</translation>
 <translation id="2861941300086904918">ຕົວຈັດການຄວາມປອດໄພລູກຂ່າຍເດີມ</translation>
 <translation id="2862815659905780618">ລຶບສະພາບແວດລ້ອມການພັດທະນາ Linux ອອກ</translation>
 <translation id="2864601841139725659">ຕັ້ງຄ່າຮູບໂປຣໄຟລ໌ຂອງທ່ານ</translation>
@@ -3165,6 +3169,7 @@
 <translation id="3706463572498736864">ໜ້າຕໍ່ແຜ່ນ</translation>
 <translation id="370649949373421643">ເປີດໃຊ້ງານ Wi​-Fi</translation>
 <translation id="370665806235115550">ກໍາລັງໂຫຼດ ...</translation>
+<translation id="3707034683772193706">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງສາມາດບັນທຶກຂໍ້ມູນຈຳນວນໜ້ອຍໜຶ່ງໄດ້ດ້ວຍ Chrome, ສ່ວນໃຫຍ່ແລ້ວແມ່ນໃຊ້ເພື່ອກວດສອບວ່າທ່ານບໍ່ແມ່ນບັອດ</translation>
 <translation id="3707163604290651814">ໃນປັດຈຸບັນເຂົ້າສູ່ລະບົບເປັນ <ph name="NAME" /></translation>
 <translation id="3707348585109246684">ເປີດລິ້ງໃນແຖບ <ph name="APP" /> ໃໝ່</translation>
 <translation id="3708295717182051206">ຄຳບັນຍາຍ</translation>
@@ -3676,6 +3681,7 @@
 <translation id="4135746311382563554">ຂໍ້ກຳນົດບໍລິການ Google Chrome ແລະ ChromeOS ເພີ່ມເຕີມ</translation>
 <translation id="4136203100490971508">ແສງກາງຄືນຈະປິດໂດຍອັດຕະໂນມັດເມື່ອຕາເວັນຂຶ້ນ</translation>
 <translation id="41365691917097717">ການສືບຕໍ່ຈະເປີດນຳໃຊ້ການດີບັກ ADB ສຳລັບການສ້າງ ແລະ ທົດສອບແອັບ Android. ກະລຸນາຮັບຊາບວ່າການດຳເນີນການນີ້ອະນຸຍາດການຕິດຕັ້ງແອັບ Android ທີ່ບໍ່ໄດ້ຜ່ານການກວດຢັ້ງຢືນຈາກ Google ແລະ ຈຳເປັນຕ້ອງຣີເຊັດເປັນຄ່າໂຮງງານເພື່ອປິດນຳໃຊ້.</translation>
+<translation id="4137923333452716643">ໄຮໄລ້ຂໍ້ຄວາມທີ່ທ່ານຕ້ອງການເປີດໃນໂໝດການອ່ານ</translation>
 <translation id="4138267921960073861">ສະແດງຊື່ຜູ້ໃຊ້ ແລະຮຸບຢູ່ໃນໜ້າຈໍລົງຊື່ເຂົ້າໃຊ້</translation>
 <translation id="4138598238327913711">ຕອນນີ້ສາມາດໃຊ້ການກວດສອບໄວຍາກອນສຳລັບພາສາອັງກິດເທົ່ານັ້ນ</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - ເຊື່ອມຕໍ່ອຸປະກອນ HID ແລ້ວ</translation>
@@ -3716,6 +3722,7 @@
 <translation id="4180788401304023883">ລຶບໃບຢັ້ງຢືນ CA "<ph name="CERTIFICATE_NAME" />" ບໍ?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ພາສາ</translation>
+<translation id="4182339886482390129">Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນເຮັດວຽກຫຼາຍຂຶ້ນເພື່ອປົກປ້ອງທ່ານຈາກເວັບໄຊ ແລະ ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ອັນຕະລາຍ</translation>
 <translation id="4184803915913850597">ອຸປະກອນ HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> ຊອກຫາ</translation>
 <translation id="4187424053537113647">ກຳລັງຕັ້ງຄ່າ <ph name="APP_NAME" />...</translation>
@@ -3867,6 +3874,7 @@
 <translation id="4322394346347055525">ເລືອກແຖບອື່ນ</translation>
 <translation id="4324577459193912240">ໄຟລ໌ບໍ່ສົມບູນ</translation>
 <translation id="4325237902968425115">ກໍາລັງຖອນການຕິດຕັ້ງ <ph name="LINUX_APP_NAME" />...</translation>
+<translation id="4326146840124313313">ຄວາມປອດໄພທີ່ເຂັ້ມແຂງທີ່ສຸດຂອງ Chrome ເຮັດວຽກຫຼາຍຂຶ້ນເພື່ອປົກປ້ອງທ່ານຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ</translation>
 <translation id="4330191372652740264">ນໍ້າກ້ອນ</translation>
 <translation id="4330387663455830245">ຢ່າແປ <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">ຕັ້ງຄ່າການຄວບຄຸມສຳລັບພໍ່ແມ່</translation>
@@ -4708,6 +4716,7 @@
 <translation id="5086874064903147617">ກູ້ຄືນໜ້າຫຼັກເລີ່ມຕົ້ນບໍ?</translation>
 <translation id="5087249366037322692">ເພີ່ມໂດຍພາກສ່ວນທີສາມ</translation>
 <translation id="5087580092889165836">ເພີ່ມບັດ</translation>
+<translation id="5088427648965532275">ຜູ້ໃຫ້ບໍລິການ Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
 <translation id="5089763948477033443">ດ້າມຈັບປັບຂະໜາດແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="5090637338841444533">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ຕິດຕາມຕຳແໜ່ງກ້ອງຂອງທ່ານ</translation>
@@ -4938,6 +4947,7 @@
 <translation id="5298219193514155779">ສ້າງເທມຂຶ້ນໂດຍ</translation>
 <translation id="5299109548848736476">ຢ່າຕິດຕາມ</translation>
 <translation id="5299558715747014286">ເບິ່ງ ແລະ ຈັດການກຸ່ມແຖບຂອງທ່ານ</translation>
+<translation id="529986401483187205">ປິດການນຳໃຊ້ແລ້ວ</translation>
 <translation id="5300287940468717207">ຣີເຊັດການອະນຸຍາດເວັບໄຊບໍ?</translation>
 <translation id="5300426565656326054">ການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວໂດຍອ້າງອີງໃສ່ໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="5300589172476337783">ສະ​ແດງ​</translation>
@@ -5521,6 +5531,7 @@
 <translation id="5833726373896279253">ການຕັ້ງຄ່າເຫຼົ່ານີ້ອາດຈະມີແຕ່ເຈົ້າຂອງເທົ່ານັ້ນທີ່ດັດແກ້ໄດ້:</translation>
 <translation id="583431638776747">ບໍ່ສາມາດໃຊ້ເວັບໄຊໄດ້</translation>
 <translation id="5834581999798853053">ຍັງເຫຼືອປະມານ <ph name="TIME" /> ນາ​ທີ</translation>
+<translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> ກຳລັງເຂົ້າເຖິງອຸປະກອນ HID}=2{ສ່ວນຂະຫຍາຍທີ່ເຂົ້າເຖິງອຸປະກອນ: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{ສ່ວນຂະຫຍາຍທີ່ເຂົ້າເຖິງອຸປະກອນ: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> +{3} ເພີ່ມເຕີມ}}</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - ການບັນທຶກກ້ອງຖ່າຍຮູບ ຫຼື ໄມໂຄຣໂຟນ</translation>
 <translation id="583673505367439042">ເວັບໄຊສາມາດຂໍແກ້ໄຂໄຟລ໌ ແລະ ໂຟນເດີໃນອຸປະກອນຂອງທ່ານໄດ້</translation>
 <translation id="5836999627049108525">ພາສາທີ່ຕ້ອງການແປ</translation>
@@ -6828,6 +6839,7 @@
 <translation id="6981982820502123353">ການເຂົ້າ​​ເຖິງ​ໄດ້</translation>
 <translation id="6983507711977005608">ຕັດການເຊື່ອມຕໍ່ເຄືອຂ່າຍການປ່ອຍສັນຍານທັນທີ</translation>
 <translation id="6983783921975806247">ລົງ​ທະ​ບຽນ OID ແລ້ວ</translation>
+<translation id="6983890893900549383">Escape</translation>
 <translation id="6985235333261347343">ຕົວແທນການກູ້ຄືນລະຫັດ Microsoft</translation>
 <translation id="698524779381350301">ອະນຸຍາດສິດເຂົ້າເຖິງໂດຍອັດຕະໂນມັດໃນເວັບໄຊຕໍ່ໄປນີ້</translation>
 <translation id="6985607387932385770">ເຄື່ອງ​ພິມ</translation>
@@ -7189,6 +7201,7 @@
 <translation id="7339763383339757376"># PKCS 7​, ໃບ​ຢັ້ງ​ຢືນ​ດ່ຽວ</translation>
 <translation id="7339785458027436441">ກວດການສະກົດຄໍາໃນຂະນະທີ່ພິມ</translation>
 <translation id="7339898014177206373">ໜ້າ​ຕ່າງໃໝ່</translation>
+<translation id="7340179705876485790">ເພື່ອກັບຄືນໄປຫາຫຼາຍກວ່າ 1 ໜ້າ, ໃຫ້ຄລິກກັບຄືນຄ້າງໄວ້.</translation>
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> ເຕັມໜ້າຈໍດຽວນີ້.</translation>
 <translation id="7340650977506865820">ເວັບໄຊກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="7340757554212515731">ສົ່ງລາຍງານການຂັດຂ້ອງຮວມທັງການວິນິໄສ ແລະ ຂໍ້ມູນການນຳໃຊ້ໄປໃຫ້ Google ໂດຍອັດຕະໂນມັດ</translation>
@@ -7235,6 +7248,7 @@
 <translation id="7374376573160927383">ຈັດການອຸປະກອນ USB</translation>
 <translation id="7376124766545122644">ບໍ່ສາມາດໃຊ້ລິ້ງນີ້ໄດ້. ກະລຸນາກວດສອບວ່າລິ້ງຂອງທ່ານຂຶ້ນຕົ້ນດ້ວຍ 'http://' ຫຼື 'https://' ເພື່ອລອງໃໝ່.</translation>
 <translation id="7376553024552204454">ໝາຍເຄີເຊີເມົ້າໃນເວລາທີ່ມັນເຄື່ອນເໜັງ</translation>
+<translation id="7377250337652426186">ເພື່ອກັບຄືນໄປຫາຫຼາຍກວ່າ 1 ໜ້າ, ໃຫ້ຄລິກປຸ່ມກັບຄືນຄ້າງໄວ້.</translation>
 <translation id="737728204345822099">ບັນທຶກການເຂົ້າເບິ່ງເວັບໄຊນີ້ຂອງທ່ານອາດຈະຖືກຮັກສາໄວ້ໃນກະແຈຄວາມປອດໄພຂອງທ່ານ.</translation>
 <translation id="7377451353532943397">ສືບຕໍ່ບລັອກການເຂົ້າເຖິງເຊັນເຊີ</translation>
 <translation id="7377481913241237033">ເຊື່ອມຕໍ່ດ້ວຍລະຫັດ</translation>
@@ -7270,6 +7284,7 @@
 <translation id="7403642243184989645">ກຳລັງດາວໂຫຼດຊັບພະຍາກອນ</translation>
 <translation id="7404065585741198296">ໂທລະສັບຂອງທ່ານພ້ອມສາຍ USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{ດຳເນີນການກວດສອບຄວາມປອດໄພເມື່ອ 1 ຊົ່ວໂມງກ່ອນ}other{ດຳເນີນການກວດສອບຄວາມປອດໄພເມື່ອ {NUM_HOURS} ຊົ່ວໂມງກ່ອນ}}</translation>
+<translation id="7406113532070524618">ການຕັ້ງຄ່ານີ້ເຮັດວຽກໄດ້ໂດຍບໍ່ຕ້ອງລະບຸຕົວຕົນທ່ານ ຫຼື ອະນຸຍາດໃຫ້ເວັບໄຊເບິ່ງເຫັນປະຫວັດການທ່ອງເວັບຂອງທ່ານ, ເຖິງວ່າເວັບໄຊຈະສາມາດແບ່ງປັນຂໍ້ມູນຈຳນວນເລັກໜ້ອຍເຊິ່ງເປັນສ່ວນໜຶ່ງຂອງການຢັ້ງຢືນ</translation>
 <translation id="740624631517654988">ບລັອກປັອບອັບແລ້ວ</translation>
 <translation id="7406912950279255498">ໂໝດການປີ້ນສີ</translation>
 <translation id="7407430846095439694">ນຳເຂົ້າ ແລະ ຜູກມັດ</translation>
@@ -7993,6 +8008,7 @@
 <translation id="8009225694047762179">ຈັດການລະຫັດຜ່ານ</translation>
 <translation id="8011372169388649948">ຍ້າຍ '<ph name="BOOKMARK_TITLE" />' ແລ້ວ.</translation>
 <translation id="8011875486979733097">ບໍ່ສາມາດຕິດຕັ້ງ Steam ໄດ້</translation>
+<translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8013993649590906847">ຖ້າຮູບບໍ່ມີລາຍລະອຽດທີ່ເປັນປະໂຫຍດ, Chrome ຈະພະຍາຍາມໃຫ້ລາຍລະອຽດແກ່ທ່ານ. ເພື່ອສ້າງລາຍລະອຽດ, ລະບົບຈະສົ່ງຮູບພາບໃຫ້ Google.</translation>
 <translation id="8014154204619229810">ຕົວ​ອັບ​ເດດ​ກຳ​ລັງ​ເຮັດ​ວຽກ​ຢູ່​ໃນ​ປະ​ຈຸ​ບັນ. ອີກ​ໜຶ່ງ​ນາ​ທີໃຫ້​ຣີ​ເຟ​ຣັ​ຊ​ໃໝ່ ເພື່ອກວດ​ເບິ່ງ​ອີກ.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> ບໍ່ສາມາດກັບຄືນໄປຫາລຸ້ນທີ່ຕິດຕັ້ງໄວ້ຜ່ານມາໄດ້. ກະລຸນາລອງໃໝ່ອີກ ເພື່ອ Powerwash ອຸປະກອນຂອງທ່ານ.</translation>
@@ -8557,7 +8573,6 @@
 <translation id="8498214519255567734">ເຮັດໃຫ້ມັນງ່າຍກວ່າໃນການເບິ່ງໜ້າຈໍຂອງທ່ານ ຫຼື ອ່ານໃນແສງທີ່ມືດ</translation>
 <translation id="8498395510292172881">ສືບຕໍ່ການອ່ານໃນ Chrome</translation>
 <translation id="8499083585497694743">ເຊົາປິດສຽງໄມໂຄຣໂຟນ</translation>
-<translation id="8499526927826495298">ສົ່ງ <ph name="BEGIN_LINK1" />ເມຕາເດຕາທີ່ເປັນການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">ເພື່ອໃຊ້ແອັບຕ່າງໆຈາກ Google Play, ກ່ອນອື່ນທ່ານຕ້ອງກູ້ຄືນແອັບຂອງທ່ານ. ອາດຈະສູນເສຍບາງຂໍ້ມູນໄປແລ້ວ.</translation>
 <translation id="8503813439785031346">ຊື່​ຜູ້​ໃຊ້</translation>
 <translation id="850382998924680137">ເບິ່ງແລ້ວມື້ນີ້</translation>
@@ -8999,6 +9014,7 @@
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />ທ່ານຈະຈັດການຂໍ້ມູນຂອງທ່ານແນວໃດ:<ph name="END_BOLD" /> ເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ, ພວກເຮົາຈະລຶບເວັບໄຊອອກຈາກລາຍຊື່ທີ່ເກົ່າກວ່າ 4 ອາທິດໂດຍອັດຕະໂນມັດ. ເວັບໄຊທີ່ທ່ານເຂົ້າອາດປາກົດຢູ່ລາຍຊື່ຄືນໃໝ່. ຫຼື ທ່ານສາມາດລຶບເວັບໄຊໃດໜຶ່ງອອກໄດ້ຫາກທ່ານບໍ່ຕ້ອງການໃຫ້ເວັບໄຊນັ້ນກຳນົດຄວາມສົນໃຈໃຫ້ທ່ານອີກ.</translation>
 <translation id="8884570509232205463">ອຸປະກອນຂອງທ່ານຕອນນີ້ຈະລັອກເວລາ <ph name="UNLOCK_TIME" /></translation>
 <translation id="8888253246822647887">ແອັບຂອງທ່ານຈະເປີດເມື່ອການອັບເກຣດສຳເລັດແລ້ວ. ການອັບເກຣດໃຊ້ເວລາສອງສາມນາທີ.</translation>
+<translation id="8889294078294184559">ໃນຂະນະທີ່ທ່ານທ່ອງເວັບໄປເລື້ອຍໆຢູ່ນັ້ນ, ເວັບໄຊຕ່າງໆສາມາດກວດສອບກັບ Chrome ແລະ ຢັ້ງຢືນກັບເວັບໄຊກ່ອນໜ້າທີ່ທ່ານໄດ້ເຂົ້າເບິ່ງວ່າທ່ານອາດຈະເປັນຄົນທີ່ແທ້ຈິງ</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> ສາມາດແກ້ໄຂໄຟລ໌ ແລະ ໂຟນເດີຕໍ່ໄປນີ້ໄດ້</translation>
 <translation id="8890170499370378450">ອາດມີການຮຽກເກັບຄ່າອິນເຕີເນັດມືຖື</translation>
 <translation id="8890516388109605451">ແຫລ່ງທີ່ມາ</translation>

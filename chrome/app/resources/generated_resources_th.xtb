@@ -208,6 +208,7 @@
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> มีข้อมูลที่ละเอียดอ่อนหรือเป็นอันตราย ผู้ดูแลระบบบอกว่า "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> ต้องการเชื่อมต่อกับอุปกรณ์ HID</translation>
 <translation id="1172750555846831341">กลับด้านตามแนวกว้าง</translation>
+<translation id="1173332155861271669">รายละเอียดผู้ให้บริการ Passpoint</translation>
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
 <translation id="1174073918202301297">เพิ่มทางลัดแล้ว</translation>
 <translation id="1174366174291287894">การเชื่อมต่อของคุณปลอดภัยเสมอ เว้นแต่ Chrome จะบอกเป็นอย่างอื่น</translation>
@@ -476,6 +477,7 @@
 <translation id="1410616244180625362">อนุญาตให้ <ph name="HOST" /> เข้าถึงกล้องต่อไป</translation>
 <translation id="1410797069449661718">เลื่อนไปทางแท็บแรก</translation>
 <translation id="1410806973194718079">ตรวจสอบนโยบายไม่ได้</translation>
+<translation id="1411400282355634827">รีเซ็ตสิทธิ์ทั้งหมดของอุปกรณ์บลูทูธไหม</translation>
 <translation id="1411724932979011919">รหัสที่คุณป้อนต้องอยู่ในรูปแบบ LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1412681350727866021">ส่วนขยายเพิ่มเติม</translation>
 <translation id="1414315029670184034">ไม่อนุญาตให้เว็บไซต์ใช้กล้องของคุณ</translation>
@@ -2218,6 +2220,7 @@
 <translation id="2856776373509145513">สร้างคอนเทนเนอร์ใหม่</translation>
 <translation id="2859741939921354763">นำเข้ารหัสผ่านไปยัง<ph name="BRAND" /></translation>
 <translation id="2861301611394761800">การอัปเดตระบบเสร็จสมบูรณ์ โปรดรีสตาร์ทระบบ</translation>
+<translation id="2861402191395139055">การสมัครใช้บริการ Passpoint</translation>
 <translation id="2861941300086904918">ตัวจัดการความปลอดภัยไคลเอ็นต์ในระบบ</translation>
 <translation id="2862815659905780618">นำสภาพแวดล้อมในการพัฒนาซอฟต์แวร์ Linux ออก</translation>
 <translation id="2864601841139725659">ตั้งรูปโปรไฟล์</translation>
@@ -3955,6 +3958,7 @@
 <translation id="4412632005703201014">แอป Chrome กําลังเปลี่ยนไปเป็น Progressive Web App องค์กรของคุณติดตั้งแอป Chrome นี้ในเบราว์เซอร์ หากต้องการเปิด Progressive Web App จากรายการแอป ก่อนอื่นให้ติดต่อผู้ดูแลระบบเพื่อขอให้ถอนการติดตั้งแอป Chrome และในระหว่างนี้ คุณสามารถไปที่ <ph name="EXTENSION_LAUNCH_URL" /> เพื่อเปิด <ph name="EXTENSION_NAME" /> ในเว็บ</translation>
 <translation id="4412698727486357573">ศูนย์ช่วยเหลือ</translation>
 <translation id="4412992751769744546">อนุญาตคุกกี้ของบุคคลที่สาม</translation>
+<translation id="4413087696295876280">อ่านข้อมูลอุปกรณ์ ChromeOS Flex และข้อมูล</translation>
 <translation id="44141919652824029">อนุญาตให้ "<ph name="APP_NAME" />" เรียกรายการอุปกรณ์ USB ที่เชื่อมต่ออยู่ใช่ไหม</translation>
 <translation id="4414232939543644979">หน้าต่างใหม่&amp;ที่ไม่ระบุตัวตน</translation>
 <translation id="4414648713167199100">ใช้อินเทอร์เน็ตมือถือของ Chromebook และผู้ให้บริการของคุณอาจเรียกเก็บค่าธรรมเนียมเพิ่มเติม อาจมีการใช้งานแบตเตอรี่เพิ่มขึ้น <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4694,6 +4698,7 @@
 <translation id="5086874064903147617">คืนค่าเป็นหน้าแรกเริ่มต้นไหม</translation>
 <translation id="5087249366037322692">เพิ่มโดยบุคคลที่สาม</translation>
 <translation id="5087580092889165836">เพิ่มบัตร</translation>
+<translation id="5088427648965532275">ผู้ให้บริการ Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 พร้อมการเข้ารหัส RSA</translation>
 <translation id="5089763948477033443">แฮนเดิลปรับขนาดแผงด้านข้าง</translation>
 <translation id="5090637338841444533">ไม่ได้รับอนุญาตให้ติดตามตำแหน่งของกล้อง</translation>
@@ -4789,6 +4794,7 @@
 <translation id="5178667623289523808">ค้นหาก่อนหน้านี้</translation>
 <translation id="5181140330217080051">กำลังดาวน์โหลด</translation>
 <translation id="5181172023548002891">ที่เครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="ACCOUNT" /></translation>
+<translation id="5183344263225877832">รีเซ็ตสิทธิ์ทั้งหมดของอุปกรณ์ HID ไหม</translation>
 <translation id="5184063094292164363">&amp;คอนโซล JavaScript</translation>
 <translation id="5184209580557088469">มีตั๋วที่ใช้ชื่อผู้ใช้นี้แล้ว</translation>
 <translation id="5184662919967270437">กำลังอัปเดตอุปกรณ์</translation>
@@ -6467,6 +6473,7 @@
 <translation id="6691541770654083180">โลก</translation>
 <translation id="6691936601825168937">&amp;ส่งต่อ</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 หน้า}other{{COUNT} หน้า}}</translation>
+<translation id="6693820805264897502">แทนที่รหัสผ่านที่มีอยู่</translation>
 <translation id="6697172646384837537">เลือกปลายทางที่ต้องการนำเข้ารหัสผ่าน</translation>
 <translation id="6697492270171225480">แสดงคำแนะนำหน้าที่คล้ายกันเมื่อไม่พบหน้าเว็บ</translation>
 <translation id="6697690052557311665">หากต้องการแชร์ ให้คลิกขวาที่โฟลเดอร์ในแอป Files จากนั้นเลือก "แชร์กับ Linux"</translation>
@@ -6824,6 +6831,7 @@
 <translation id="6993000214273684335">แท็บถูกนำออกจากกลุ่มที่ไม่มีชื่อ - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">กำลังอัปเดตเบราว์เซอร์ Chrome</translation>
 <translation id="6995899638241819463">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
+<translation id="6995984090981858039">อ่านข้อมูลอุปกรณ์ ChromeOS และข้อมูล</translation>
 <translation id="6997553674029032185">ไปที่เว็บไซต์</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - บันทึกกิจกรรม</translation>
 <translation id="6997707937646349884">บนอุปกรณ์ของคุณ:</translation>
@@ -7027,6 +7035,7 @@
 <translation id="7193051357671784796">องค์กรของคุณเป็นผู้เพิ่มแอปนี้ รีสตาร์ทแอปเพื่อติดตั้งให้เสร็จ</translation>
 <translation id="7193374945610105795">ไม่มีรหัสผ่านบันทึกไว้สำหรับ <ph name="ORIGIN" /></translation>
 <translation id="7194873994243265344">องค์กรบล็อกไฟล์นี้เนื่องจากไฟล์มีการเข้ารหัส โปรดขอให้เจ้าของไฟล์ถอดรหัส</translation>
+<translation id="7196107899576756066">{COUNT,plural, =1{อยู่ระหว่างการดาวน์โหลด 1 รายการ}other{อยู่ระหว่างการดาวน์โหลด # รายการ}}</translation>
 <translation id="7196272782924897510">ใช้พาสคีย์จากอุปกรณ์อื่นไหม</translation>
 <translation id="7196913789568937443">สำรองข้อมูลไปยัง Google ไดรฟ์ กู้ข้อมูลคืนหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองจะรวมถึงข้อมูลแอป ระบบจะอัปโหลดข้อมูลสำรองไปยัง Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google ของคุณ <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">ใช้ Google Search และฟีเจอร์เจ๋งๆ จาก Google ทุกครั้งที่ท่องเว็บ</translation>
@@ -7581,6 +7590,7 @@
 <translation id="7674542105240814168">ปฏิเสธไม่ให้เข้าถึงตำแหน่ง</translation>
 <translation id="7676119992609591770">พบ <ph name="NUM" /> แท็บสำหรับ "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">ส่งเสียงของคุณไปยัง Google เพื่อให้พิมพ์ตามคำบอกในช่องข้อความต่างๆ</translation>
+<translation id="7678588695732963732">รีเซ็ตสิทธิ์ทั้งหมดของอุปกรณ์ USB ไหม</translation>
 <translation id="7679171213002716280">มีเครื่องพิมพ์ที่จัดการ <ph name="PRINTER_COUNT" /> เครื่อง</translation>
 <translation id="7680416688940118410">การปรับเทียบหน้าจอสัมผัส</translation>
 <translation id="7681095912841365527">เว็บไซต์ใช้บลูทูธได้</translation>
@@ -8543,7 +8553,6 @@
 <translation id="8498214519255567734">ช่วยให้มองหรืออ่านหน้าจอในแสงสลัวได้ดีขึ้น</translation>
 <translation id="8498395510292172881">อ่านต่อใน Chrome</translation>
 <translation id="8499083585497694743">เปิดเสียงไมโครโฟน</translation>
-<translation id="8499526927826495298">ส่ง<ph name="BEGIN_LINK1" />ข้อมูลเมตาที่ป้อนอัตโนมัติ<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">หากต้องการใช้แอปจาก Google Play คุณต้องคืนค่าแอปก่อน ข้อมูลบางอย่างอาจสูญหาย</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="850382998924680137">ดูวันนี้</translation>
@@ -9337,6 +9346,7 @@
 <translation id="9192019773545828776">ฟังการอธิบายและอ่านออกเสียงเพื่อให้คุณใช้อุปกรณ์ได้โดยไม่ต้องมองหน้าจอ การอธิบายและอ่านออกเสียงอักษรเบรลล์จะพร้อมใช้งานกับอุปกรณ์ที่เชื่อมต่อ ใช้แป้น Ctrl + Alt + Z เพื่อเปิดและปิด ChromeVox ใช้แป้นค้นหา + ลูกศรซ้ายหรือลูกศรขวาเพื่อไปยังส่วนต่างๆ ใช้แป้นค้นหา + เว้นวรรคเพื่อเลือก (เปิดใช้งาน)</translation>
 <translation id="919686179725692564">ดูข้อมูลเพิ่มเติมเกี่ยวกับการสำรองข้อมูลแอป</translation>
 <translation id="9199503643457729322">คลิกเพื่อออกจากคู่มือความเป็นส่วนตัว</translation>
+<translation id="9199695835892108985">รีเซ็ตสิทธิ์ทั้งหมดของพอร์ตอนุกรมไหม</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> จะแก้ไขไฟล์ใน <ph name="FOLDERNAME" /> ได้</translation>
 <translation id="920045321358709304">ค้นหา <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">ระบบจะล้างข้อมูลออฟไลน์ทั้งหมด</translation>

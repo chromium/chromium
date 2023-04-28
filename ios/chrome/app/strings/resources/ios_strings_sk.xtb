@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">Vstupný kód</translation>
 <translation id="1820259098641718022">Pridané do čitateľského zoznamu</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Odhalené heslá}=1{{COUNT} odhalené heslo}few{{COUNT} odhalené heslá}many{{COUNT} Compromised Passwords}other{{COUNT} odhalených hesiel}}</translation>
+<translation id="1830634592642484976">Táto adresa je momentálne uložená v Chrome. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Ak chcete mať neustály prístup k svojim synchronizovaným údajom, overte svoju totožnosť</translation>
 <translation id="1836891464494477513">{count,plural, =1{Záložka bola uložená do vášho účtu Google {email}}few{Záložky boli uložené do vášho účtu Google {email}}many{Záložky boli uložené do vášho účtu Google {email}}other{Záložky boli uložené do vášho účtu Google {email}}}</translation>
 <translation id="1870148520156231997">Odhaliť heslo</translation>
@@ -168,7 +169,6 @@
 <translation id="2074131957428911366">Položky, ktoré chcete synchronizovať, môžete vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Späť</translation>
 <translation id="2080769225927880590">Prihláste sa platným účtom</translation>
-<translation id="2090878303988764231">Ak chcete spravovať zobrazený obsah, prihláste sa</translation>
 <translation id="2103075008456228677">Otvoriť history.google.com</translation>
 <translation id="21133533946938348">Pripnúť kartu</translation>
 <translation id="2116625576999540962">Počet presunutých položiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -545,6 +545,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4636930964841734540">Informácie</translation>
 <translation id="4642472735733036929">Sledovanie ceny bolo deaktivované</translation>
 <translation id="4650125387981512669">Pokračovať ako <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Skontrolujte, či sú vaše heslá bezpečné, či nedošlo k ich odhaleniu, a získajte radu, ako sa chrániť na internete. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Keď sa prihlásite do svojho účtu Google, táto funkcia je zapnutá.</translation>
 <translation id="4659667755519643272">Prejsť do Prepínača kariet</translation>
 <translation id="46614316059270592">Uložiť heslo</translation>
@@ -587,7 +588,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="4844899002472726590">Zobrazujte si a upravujte témy, ktoré vás zaujímajú</translation>
 <translation id="4848999860252535517">Chcete odstrániť heslo webu <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Nastavenie vstupného kódu</translation>
-<translation id="4856498338299082007">V účte Google</translation>
 <translation id="4858786880085262208">Ak je to možné, aktualizujte na protokol HTTP. Na zabezpečených weboch môže byť vložený obsah, ktoré nie je zabezpečený.</translation>
 <translation id="4860895144060829044">Volajte</translation>
 <translation id="4872323082491632254">Kontrola hesiel</translation>
@@ -697,6 +697,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5669617676038747374">Vytvoriť QR kód</translation>
 <translation id="567881659373499783">Verzia <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Ak chcete používať a ukladať heslá vo svojom účte Google, overte svoju totožnosť.</translation>
+<translation id="5684761169742812828">Toto heslo bolo prezradené pri porušení ochrany údajov na internete. Ak si ho momentálne nemôžete zmeniť, Google vám odporúča ponechať si toto upozornenie, aby ste na to nezabudli.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Práve sa zobrazuje 1 okno Chromu}few{Práve sa zobrazujú {count} okná Chromu}many{Now showing {count} Chrome windows}other{Práve sa zobrazuje {count} okien Chromu}}</translation>
 <translation id="5701270923492462699">Prístup ku kamere je povolený</translation>
 <translation id="5704908597376970822">Nepodarilo sa prihlásiť.</translation>
@@ -1113,13 +1114,11 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8197543752516192074">Preložiť stránku</translation>
 <translation id="8205564605687841303">Zrušiť</translation>
 <translation id="8206354486702514201">Toto nastavenie je vynútené správcom.</translation>
-<translation id="821809831108207540">Ak si chcete prispôsobiť kanál Objaviť a Chrome, prihláste sa a zapnite synchronizáciu.</translation>
 <translation id="8225985093977202398">Obrázky a súbory vo vyrovnávacej pamäti</translation>
 <translation id="8237382152611443140">Otvorte nastavenia automatického dopĺňania hesiel</translation>
 <translation id="8248969482078657578">Vďaka sekcii Neaktívne karty si zachováte prehľad</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="8264966119170358612">Pri porušení ochrany údajov tretej strany boli odhalené niektoré vaše heslá. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Iba v tomto zariadení</translation>
 <translation id="826614135184049678">V rámci resetu iPadu vás systém odhlásil z účtu <ph name="USER_NAME" />. Ak sa chcete znova prihlásiť, klepnite nižšie na Pokračovať.</translation>
 <translation id="8271720166617117963">Prijať a prihlásiť sa</translation>
 <translation id="8278938988428169257">Zadajte slovo alebo frázu</translation>
@@ -1222,6 +1221,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8952559610785099500">Pridanie hesla</translation>
 <translation id="8953046091948372197">Tu nájdete svoje heslá</translation>
 <translation id="895541991026785598">Nahlásiť problém</translation>
+<translation id="8961757677053809960">Chcete upozornenie zavrieť?</translation>
 <translation id="8971545611707025079">Skontrolovať znova</translation>
 <translation id="8974714402877957201">1. Otvorte nastavenia iPadu</translation>
 <translation id="8976382372951310360">Pomocník</translation>

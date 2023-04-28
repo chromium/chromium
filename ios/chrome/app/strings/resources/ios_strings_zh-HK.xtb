@@ -133,7 +133,7 @@
 <translation id="1815941218935345331">密碼</translation>
 <translation id="1820259098641718022">已加入閣讀清單</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{被盜用的密碼}=1{{COUNT} 個被盜用的密碼}other{{COUNT} 個被盜用的密碼}}</translation>
-<translation id="1830634592642484976">這個地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用這項資訊，請儲存到你的 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
+<translation id="1830634592642484976">此地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
 <translation id="1836891464494477513">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{書籤已儲存至 Google 帳戶 ({email})}}</translation>
 <translation id="1870148520156231997">顯示密碼</translation>
@@ -169,7 +169,6 @@
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2080769225927880590">請使用有效的帳戶登入</translation>
-<translation id="2090878303988764231">登入帳戶即可管理看到的內容</translation>
 <translation id="2103075008456228677">開啟 history.google.com</translation>
 <translation id="21133533946938348">固定分頁</translation>
 <translation id="2116625576999540962">已移動 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
@@ -546,7 +545,7 @@
 <translation id="4636930964841734540">資料</translation>
 <translation id="4642472735733036929">已停止追蹤價格</translation>
 <translation id="4650125387981512669">以「<ph name="FIRST_RUN_ACCOUNT_NAME" />」的身分繼續</translation>
-<translation id="4652817563047461855">確保密碼安全、檢查密碼是否外洩，並提供可保護上網安全的建議。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="4652817563047461855">確保密碼安全、檢查密碼是否被盜用，並提供可確保網上安全的建議。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">當您登入 Google 帳戶時，系統會啟用此功能</translation>
 <translation id="4659667755519643272">進入分頁切換工具</translation>
 <translation id="46614316059270592">儲存密碼</translation>
@@ -589,7 +588,6 @@
 <translation id="4844899002472726590">查看和編輯您感興趣的主題</translation>
 <translation id="4848999860252535517">要刪除 <ph name="WEBSITE" /> 的密碼嗎？</translation>
 <translation id="4854345657858711387">設定密碼</translation>
-<translation id="4856498338299082007">在 Google 帳戶中</translation>
 <translation id="4858786880085262208">盡可能升級為 HTTPS。即使是安全的網站，仍有可能嵌入不安全的內容。</translation>
 <translation id="4860895144060829044">撥號</translation>
 <translation id="4872323082491632254">檢查密碼</translation>
@@ -699,7 +697,7 @@
 <translation id="5669617676038747374">建立 QR 碼</translation>
 <translation id="567881659373499783">版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">如要將密碼儲存至 Google 帳戶及使用當中的密碼，請驗證身分。</translation>
-<translation id="5684761169742812828">這個密碼已在網際網路資料侵害事件中外洩。如果無法立即變更密碼，Google 建議你保留這則警告，做為日後提醒。</translation>
+<translation id="5684761169742812828">此密碼已在互聯網的資料外洩中洩露。如果無法立即變更密碼，Google 建議您保留此警告，以便稍後提醒自己。</translation>
 <translation id="5690398455483874150">{count,plural, =1{宜家顯示緊 1 個 Chrome 視窗}other{宜家顯示緊 {count} 個 Chrome 視窗}}</translation>
 <translation id="5701270923492462699">已允許存取攝錄機</translation>
 <translation id="5704908597376970822">無法登入。</translation>
@@ -1114,13 +1112,11 @@
 <translation id="8197543752516192074">翻譯網頁</translation>
 <translation id="8205564605687841303">取消</translation>
 <translation id="8206354486702514201">這項設定由管理員執行。</translation>
-<translation id="821809831108207540">如要個人化「探索」動態消息和 Chrome，請登入並開啟同步功能。</translation>
 <translation id="8225985093977202398">快取圖片和檔案</translation>
 <translation id="8237382152611443140">開啟「自動填入密碼」設定</translation>
 <translation id="8248969482078657578">「閒置分頁」可助您保持專注</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8264966119170358612">非 Google 資料外洩中包含部分您儲存的密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">只儲存在此裝置上</translation>
 <translation id="826614135184049678">您已在重設 iPad 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕按下方的 [繼續]。</translation>
 <translation id="8271720166617117963">接受並登入</translation>
 <translation id="8278938988428169257">輸入字詞或詞組</translation>
@@ -1223,7 +1219,7 @@
 <translation id="8952559610785099500">新增密碼</translation>
 <translation id="8953046091948372197">這裡會顯示您的密碼</translation>
 <translation id="895541991026785598">報告問題</translation>
-<translation id="8961757677053809960">要忽略警告嗎？</translation>
+<translation id="8961757677053809960">要關閉警告嗎？</translation>
 <translation id="8971545611707025079">重新檢查</translation>
 <translation id="8974714402877957201">1. 開啟 iPad 的「設定」</translation>
 <translation id="8976382372951310360">說明</translation>

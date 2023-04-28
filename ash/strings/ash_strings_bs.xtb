@@ -382,6 +382,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2791421900609674576">Vidjet ćete preporuke da možete nastaviti gdje ste stali.  Možete dodirnuti i zadržati da uklonite preporuke.</translation>
 <translation id="2792498699870441125">Alt + tipka za pretraživanje</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, odabrano</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2814448776515246190">Djelimično snimanje</translation>
 <translation id="2819276065543622893">Sada ćete se odjaviti.</translation>
@@ -1392,6 +1393,7 @@ Nova instalacija</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
 <translation id="7508690557411636492">Otvoreno u proteklom mjesecu</translation>
 <translation id="7509246181739783082">Potvrdite identitet</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nije odabrano</translation>
 <translation id="7513622367902644023">Odabran je način rada za snimak ekrana</translation>
 <translation id="7513922695575567867">Kalendar, sedmica <ph name="DATE" />, trenutno je odabran datum <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Preuzmi</translation>

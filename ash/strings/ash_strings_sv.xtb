@@ -382,6 +382,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2791421900609674576">Rekommendationer visas så att du kan fortsätta där du slutade. Du kan ta bort rekommendationer genom att trycka länge.</translation>
 <translation id="2792498699870441125">Alt + Sök</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, har valts</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="2814448776515246190">Skärmbild/skärminspelning av en del av skärmen</translation>
 <translation id="2819276065543622893">Du loggas nu ut.</translation>
@@ -1392,6 +1393,7 @@ Nyligen installerad</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
 <translation id="7508690557411636492">Öppnades under den senaste månaden</translation>
 <translation id="7509246181739783082">Verifiera din identitet</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, inte vald</translation>
 <translation id="7513622367902644023">Skärmbildsläget har valts</translation>
 <translation id="7513922695575567867">Kalender, veckan med den <ph name="DATE" />, just nu är <ph name="SELECTED_DATE" /> markerat.</translation>
 <translation id="7514365320538308">Ladda ned</translation>

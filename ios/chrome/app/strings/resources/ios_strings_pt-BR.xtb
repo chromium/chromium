@@ -169,7 +169,6 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="2074131957428911366">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2080769225927880590">Faça login com uma conta válida</translation>
-<translation id="2090878303988764231">Faça login para gerenciar o conteúdo que você recebe</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="21133533946938348">Fixar guia</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> itens movidos</translation>
@@ -187,6 +186,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="2242467532204595597">Use o Chrome sempre que tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="22508856139286506">Avisos dispensados (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Histórico</translation>
+<translation id="2252674110805316998">Pesquisa Google na Web</translation>
 <translation id="2256933947031277845">Sua organização permite que você faça login apenas com determinadas contas.</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Adicionar conta</translation>
@@ -488,6 +488,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4272631900155121838">Para ler um código QR, ative a câmera nas configurações</translation>
 <translation id="4277990410970811858">Navegação segura</translation>
 <translation id="4281844954008187215">Termos de Serviço</translation>
+<translation id="4293080268407233932">Pesquisar</translation>
 <translation id="4304713468139749426">Gerenciador de senhas</translation>
 <translation id="430793432425771671">Sincronizar tudo</translation>
 <translation id="4309403553630140242">Toque duas vezes para ver mais informações</translation>
@@ -587,7 +588,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="4844899002472726590">Ver e editar temas relevantes para você</translation>
 <translation id="4848999860252535517">Excluir a senha de <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Defina uma senha</translation>
-<translation id="4856498338299082007">Na sua Conta do Google</translation>
 <translation id="4858786880085262208">Fazer upgrade para HTTPS, quando possível. Sites seguros podem incorporar conteúdo não seguro.</translation>
 <translation id="4860895144060829044">Ligar</translation>
 <translation id="4872323082491632254">Verificar senhas</translation>
@@ -745,6 +745,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5951816930277761335">Compartilhe o link</translation>
 <translation id="5955891643922670672">Exibindo a versão off-line</translation>
 <translation id="5957613098218939406">Mais opções</translation>
+<translation id="595769230373966252">Pesquisar com o <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Não é possível criar um link para o conteúdo destacado.</translation>
 <translation id="5965679971710331625">Você está conectado</translation>
 <translation id="5979837087407522202">Pesquisar senhas</translation>
@@ -1113,13 +1114,11 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8197543752516192074">Traduzir página</translation>
 <translation id="8205564605687841303">Cancelar</translation>
 <translation id="8206354486702514201">Esta configuração é aplicada por seu administrador.</translation>
-<translation id="821809831108207540">Para personalizar o feed do Discover e o Chrome, faça login e ative a sincronização.</translation>
 <translation id="8225985093977202398">Imagens e arquivos armazenados em cache</translation>
 <translation id="8237382152611443140">Abra o app Ajustes &gt; "Preenchimento automático de senhas"</translation>
 <translation id="8248969482078657578">As guias inativas ajudam você a manter o foco</translation>
 <translation id="8261506727792406068">Excluir</translation>
 <translation id="8264966119170358612">Algumas das suas senhas salvas foram expostas em uma violação de dados de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Somente neste dispositivo</translation>
 <translation id="826614135184049678">Sua conta <ph name="USER_NAME" /> foi desconectada como parte da redefinição do iPad. Para fazer login novamente, toque em "Continuar" abaixo.</translation>
 <translation id="8271720166617117963">Aceitar e fazer login</translation>
 <translation id="8278938988428169257">Insira uma palavra ou frase</translation>

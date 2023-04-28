@@ -117,6 +117,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2929907241665500097">Chrome didn't update. Something went wrong. <ph name="BEGIN_LINK" />Fix Chrome update problems and failed updates.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Network sign-in – Chrome</translation>
 <translation id="3019382870990049182">Relaunch to update Chrome OS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome extensions were accessing HID devices}=1{Google Chrome extensions are accessing 1 HID device}other{Google Chrome extensions are accessing # HID devices}}</translation>
 <translation id="303514781271618814">Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your data</translation>
 <translation id="3037838751736561277">Google Chrome is in background mode.</translation>
 <translation id="3038232873781883849">Waiting to install…</translation>
@@ -222,6 +223,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4970880042055371251">Chrome OS version</translation>
 <translation id="4970947549776831107">Chrome blocked this file because this type of file is dangerous</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{A Google Chrome extension was accessing HID devices}=1{A Google Chrome extension is accessing 1 HID device}other{A Google Chrome extension is accessing # HID devices}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Your administrator automatically closes Chrome when it isn't used for 1 minute. Browsing data is deleted. This could include history, auto-fill and downloads.}other{Your administrator automatically closes Chrome when it isn't used for # minutes. Browsing data is deleted. This could include history, auto-fill and downloads.}}</translation>
 <translation id="5098668839038261629">When on, you'll also be signed out of Chrome</translation>
 <translation id="5132929315877954718">Discover great apps, games, extensions and themes for Google Chrome.</translation>

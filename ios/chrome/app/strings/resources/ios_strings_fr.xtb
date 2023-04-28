@@ -133,6 +133,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1815941218935345331">Code secret</translation>
 <translation id="1820259098641718022">Page ajoutée à la liste de lecture</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Mots de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
+<translation id="1830634592642484976">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser avec d'autres produits Google, enregistrez-la dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Pour toujours avoir accès à vos données synchronisées, confirmez votre identité</translation>
 <translation id="1836891464494477513">{count,plural, =1{Favori enregistré dans votre compte Google ({email})}one{Favori enregistré dans votre compte Google ({email})}other{Favoris enregistrés dans votre compte Google ({email})}}</translation>
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
@@ -168,7 +169,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2074131957428911366">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2080769225927880590">Connectez-vous avec un compte valide</translation>
-<translation id="2090878303988764231">Connectez-vous pour gérer les contenus que vous voyez</translation>
 <translation id="2103075008456228677">Ouvrir history.google.com</translation>
 <translation id="21133533946938348">Épingler l'onglet</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> éléments déplacés.</translation>
@@ -545,6 +545,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4636930964841734540">Infos</translation>
 <translation id="4642472735733036929">Suivi des prix interrompu</translation>
 <translation id="4650125387981512669">Continuer en tant que <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Assurez-vous que vos mots de passe sont protégés, vérifiez s'ils ont été compromis et obtenez des conseils pour vous protéger en ligne. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Lorsque vous vous connectez à votre compte Google, cette fonctionnalité est activée.</translation>
 <translation id="4659667755519643272">Lancer le sélecteur d'onglets</translation>
 <translation id="46614316059270592">Enregistrer le mot de passe</translation>
@@ -587,7 +588,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4844899002472726590">Voir et modifier les thèmes qui vous intéressent</translation>
 <translation id="4848999860252535517">Supprimer le mot de passe pour <ph name="WEBSITE" /> ?</translation>
 <translation id="4854345657858711387">Définir un code secret</translation>
-<translation id="4856498338299082007">Dans votre compte Google</translation>
 <translation id="4858786880085262208">Passez à HTTPS, si possible. Les sites sécurisés peuvent intégrer du contenu non sécurisé.</translation>
 <translation id="4860895144060829044">Appeler</translation>
 <translation id="4872323082491632254">Vérifier les mots de passe</translation>
@@ -697,6 +697,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5669617676038747374">Créer un code QR</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Pour utiliser et enregistrer les mots de passe dans votre compte Google, confirmez votre identité.</translation>
+<translation id="5684761169742812828">Ce mot de passe a été compromis lors d'une violation des données sur Internet. Si vous n'avez pas le temps de le modifier maintenant, Google vous recommande de conserver cet avertissement pour vous en souvenir plus tard.</translation>
 <translation id="5690398455483874150">{count,plural, =1{1 fenêtre Chrome actuellement affichée}one{{count} fenêtre Chrome actuellement affichée}other{{count} fenêtres Chrome actuellement affichées}}</translation>
 <translation id="5701270923492462699">Accès à la caméra autorisé</translation>
 <translation id="5704908597376970822">Impossible de se connecter.</translation>
@@ -1114,13 +1115,11 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8197543752516192074">Traduire la page</translation>
 <translation id="8205564605687841303">Annuler</translation>
 <translation id="8206354486702514201">Ce paramètre est appliqué par votre administrateur.</translation>
-<translation id="821809831108207540">Pour personnaliser votre flux Discover et Chrome, connectez-vous et activez la synchronisation.</translation>
 <translation id="8225985093977202398">Img/fich. en cache</translation>
 <translation id="8237382152611443140">Accédez à "Préremplir les mots de passe"</translation>
 <translation id="8248969482078657578">La grille "Onglets inactifs" vous aide à rester concentré</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8264966119170358612">Certains de vos mots de passe enregistrés ont été divulgués à la suite d'une violation de données non-Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Uniquement sur cet appareil</translation>
 <translation id="826614135184049678">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPad. Pour vous reconnecter, appuyez sur "Continuer" ci-dessous.</translation>
 <translation id="8271720166617117963">Accepter et se connecter</translation>
 <translation id="8278938988428169257">Saisissez un terme ou une expression</translation>
@@ -1223,6 +1222,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8952559610785099500">Ajouter un mot de passe</translation>
 <translation id="8953046091948372197">Vous trouverez vos mots de passe ici</translation>
 <translation id="895541991026785598">Signaler un problème</translation>
+<translation id="8961757677053809960">Fermer l'avertissement ?</translation>
 <translation id="8971545611707025079">Revérifier</translation>
 <translation id="8974714402877957201">1. Ouvrez les réglages de l'iPad</translation>
 <translation id="8976382372951310360">Aide</translation>

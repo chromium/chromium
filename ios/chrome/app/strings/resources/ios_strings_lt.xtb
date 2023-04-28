@@ -169,7 +169,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2074131957428911366">Bet kada galite pasirinkti, ką norite sinchronizuoti, skiltyje <ph name="BEGIN_LINK" />„Nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="2080769225927880590">Prisijungimas naudojant galiojančią paskyrą</translation>
-<translation id="2090878303988764231">Matomo turinio valdymas prisijungus</translation>
 <translation id="2103075008456228677">Atidaryti history.google.com</translation>
 <translation id="21133533946938348">Pažymėti skirtuką</translation>
 <translation id="2116625576999540962">Perkelta elementų: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -589,7 +588,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="4844899002472726590">Peržiūrėkite ir redaguokite jus dominančias temas</translation>
 <translation id="4848999860252535517">Ištrinti <ph name="WEBSITE" /> slaptažodį?</translation>
 <translation id="4854345657858711387">Slaptažodžio nustatymas</translation>
-<translation id="4856498338299082007">„Google“ paskyroje</translation>
 <translation id="4858786880085262208">Naujovinti į HTTPS, kai galima. Saugiose svetainėse gali būti nesaugaus turinio.</translation>
 <translation id="4860895144060829044">Skambinti</translation>
 <translation id="4872323082491632254">Patikrinti slaptažodžius</translation>
@@ -1116,13 +1114,11 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8197543752516192074">Versti puslapį</translation>
 <translation id="8205564605687841303">Atšaukti</translation>
 <translation id="8206354486702514201">Šį nustatymą vykdo jūsų administratorius.</translation>
-<translation id="821809831108207540">Jei norite suasmeninti „Discover“ sklaidos kanalą ir „Chrome“, prisijunkite ir įjunkite sinchronizavimą.</translation>
 <translation id="8225985093977202398">Talp. vaiz. ir fail.</translation>
 <translation id="8237382152611443140">Atidarykite automatinio slaptažodžių pildymo nustatymus</translation>
 <translation id="8248969482078657578">Neaktyvūs skirtukai padeda sutelkti dėmesį</translation>
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="8264966119170358612">Kai kurie jūsų išsaugoti slaptažodžiai buvo atskleisti dėl ne „Google“ duomenų saugos pažeidimo. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Tik šiame įrenginyje</translation>
 <translation id="826614135184049678">Buvote atjungti nuo paskyros <ph name="USER_NAME" /> nustatant „iPad“ iš naujo. Jei norite vėl prisijungti, toliau palieskite „Tęsti“.</translation>
 <translation id="8271720166617117963">Sutikti ir prisijungti</translation>
 <translation id="8278938988428169257">Įveskite žodį ar frazę</translation>

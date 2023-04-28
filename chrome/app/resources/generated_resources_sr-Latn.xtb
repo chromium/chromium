@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Otvara se u alternativnom pregledaču za <ph name="COUNTDOWN_SECONDS" /> sek</translation>
+<translation id="1071735803834535661">spoljni meta taster</translation>
 <translation id="1071917609930274619">Šifrovanje podataka</translation>
 <translation id="1072700771426194907">Otkriven je USB uređaj</translation>
 <translation id="107278043869924952">Koristite PIN pored lozinke</translation>
@@ -207,6 +208,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> sadrži osetljive ili opasne podatke. Administrator kaže: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> želi da se poveže sa HID uređajem</translation>
 <translation id="1172750555846831341">Okreni po kraćoj ivici</translation>
+<translation id="1173332155861271669">Detalji dobavljača Passpoint-a</translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1174073918202301297">Prečica je dodata</translation>
 <translation id="1174366174291287894">Veza je uvek bezbedna ako vam Chrome ne kaže drugačije</translation>
@@ -1366,6 +1368,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2146263598007866206">Sajtovi mogu automatski da preuzimaju srodne fajlove zajedno da bi vam štedeli vreme</translation>
 <translation id="2147151613919729065">Da biste obrisali istoriju režima gosta, zatvorite sve prozore režima gosta.</translation>
 <translation id="2147218225094845757">Sakrij bočnu tablu</translation>
+<translation id="2147282432401652483">komanda</translation>
 <translation id="2148219725039824548">Greška pri učitavanju deljene datoteke. Navedena deljena datoteka nije pronađena na mreži.</translation>
 <translation id="2148756636027685713">Formatiranje je završeno</translation>
 <translation id="2148892889047469596">Prebacite karticu</translation>
@@ -2216,6 +2219,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2856776373509145513">Napravite novi kontejner</translation>
 <translation id="2859741939921354763">Uvezite lozinke u <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Ažuriranje sistema je dovršeno. Restartujte sistem.</translation>
+<translation id="2861402191395139055">Pretplate na Passpoint</translation>
 <translation id="2861941300086904918">Menadžer bezbednosti za Native Client</translation>
 <translation id="2862815659905780618">Uklonite Linux okruženje za programiranje</translation>
 <translation id="2864601841139725659">Podesite sliku profila</translation>
@@ -4692,6 +4696,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5086874064903147617">Želite da vratite podrazumevanu početnu stranicu?</translation>
 <translation id="5087249366037322692">Dodala je treća strana</translation>
 <translation id="5087580092889165836">Dodaj karticu</translation>
+<translation id="5088427648965532275">Dobavljač Passpoint-a</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 sa RSA šifrovanjem</translation>
 <translation id="5089763948477033443">Regulator za promenu veličine bočne table</translation>
 <translation id="5090637338841444533">Nije im dozvoljeno da prate položaj kamere</translation>
@@ -4922,6 +4927,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5298219193514155779">Temu je napravio/la</translation>
 <translation id="5299109548848736476">Ne prati</translation>
 <translation id="5299558715747014286">Prikaz grupa kartica i upravljanje njima</translation>
+<translation id="529986401483187205">onemogućeno</translation>
 <translation id="5300287940468717207">Želite li da resetujete dozvole za sajt?</translation>
 <translation id="5300426565656326054">Personalizacija oglasa na osnovu pregledača</translation>
 <translation id="5300589172476337783">Prikaži</translation>
@@ -6817,6 +6823,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="6983507711977005608">Prekini vezu sa mrežom za trenutno privezivanje</translation>
 <translation id="6983783921975806247">Registrovani OID</translation>
+<translation id="6983890893900549383">escape</translation>
 <translation id="6985235333261347343">Microsoft agent oporavka ključa</translation>
 <translation id="698524779381350301">Automatski dozvoli pristup na sledećim sajtovima</translation>
 <translation id="6985607387932385770">Štampači</translation>
@@ -7984,6 +7991,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8009225694047762179">Upravljaj lozinkama</translation>
 <translation id="8011372169388649948">Obeleživač <ph name="BOOKMARK_TITLE" /> je premešten.</translation>
 <translation id="8011875486979733097">Steam ne može da se instalira</translation>
+<translation id="8012188750847319132">caps lock</translation>
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa.</translation>
 <translation id="8014154204619229810">Program za ažuriranje je trenutno aktivan. Sačekajte malo, pa osvežite i proverite ponovo.</translation>
 <translation id="8014206674403687691">Nije moguće vratiti <ph name="IDS_SHORT_PRODUCT_NAME" /> na prethodno instaliranu verziju. Pokušajte da ponovo obavite Powerwash uređaja.</translation>
@@ -8549,7 +8557,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8498214519255567734">Omogućava da lakše pregledate sadržaj ekrana ili da čitate pri prigušenom svetlu</translation>
 <translation id="8498395510292172881">Nastavite da čitate u Chrome-u</translation>
 <translation id="8499083585497694743">Uključi zvuk mikrofona</translation>
-<translation id="8499526927826495298">Šalji <ph name="BEGIN_LINK1" />metapodatke o automatskom popunjavanju<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Da biste koristili aplikacije sa Google Play-a, prvo morate da vratite aplikacije. Neki podaci su možda izgubljeni.</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="850382998924680137">Pogledano danas</translation>

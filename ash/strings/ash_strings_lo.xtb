@@ -382,6 +382,7 @@
 <translation id="2791421900609674576">ທ່ານຈະເຫັນການແນະນຳເພື່ອໃຫ້ທ່ານສາມາດສືບຕໍ່ຈາກບ່ອນທີ່ເປີດຄ້າງໄວ້ໄດ້. ທ່ານສາມາດແຕະຄ້າງໄວ້ເພື່ອລຶບການແນະນຳອອກໄດ້.</translation>
 <translation id="2792498699870441125">Alt+ຊອກຫາ</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, ເລືອກແລ້ວ</translation>
 <translation id="2805756323405976993">ແອັບ</translation>
 <translation id="2814448776515246190">ຖ່າຍຮູບບາງສ່ວນ</translation>
 <translation id="2819276065543622893">ທ່ານຈະຖືກອອກຈາກລະບົບດຽວນີ້.</translation>
@@ -1392,6 +1393,7 @@
 <translation id="7497767806359279797">ເລືອກພາສາ ແລະ ແປ້ນພິມ</translation>
 <translation id="7508690557411636492">ເປີດເດືອນແລ້ວ</translation>
 <translation id="7509246181739783082">ຢັ້ງຢືນຕົວຕົນຂອງທ່ານ</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, ບໍ່ໄດ້ເລືອກ</translation>
 <translation id="7513622367902644023">ເລືອກໂໝດຮູບໜ້າຈໍແລ້ວ</translation>
 <translation id="7513922695575567867">ປະຕິທິນ, ອາທິດຂອງ <ph name="DATE" />, ຕອນນີ້ເລືອກ <ph name="SELECTED_DATE" /> ຢູ່.</translation>
 <translation id="7514365320538308">ດາວ​ໂຫລດ</translation>

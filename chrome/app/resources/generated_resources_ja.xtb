@@ -207,6 +207,7 @@
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> には機密データまたは危険なデータが含まれています。管理者からのメッセージ:「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> が HID デバイスへの接続を要求しています</translation>
 <translation id="1172750555846831341">短辺とじ</translation>
+<translation id="1173332155861271669">Passpoint プロバイダの詳細</translation>
 <translation id="1173894706177603556">名前を変更</translation>
 <translation id="1174073918202301297">ショートカットを追加しました</translation>
 <translation id="1174366174291287894">接続は常に保護されます（保護されない場合は通知されます）</translation>
@@ -2211,6 +2212,7 @@
 <translation id="2856776373509145513">新しいコンテナの作成</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> にパスワードをインポート</translation>
 <translation id="2861301611394761800">システムの更新が完了しました。システムを再起動してください。</translation>
+<translation id="2861402191395139055">Passpoint の登録</translation>
 <translation id="2861941300086904918">ネイティブ クライアント セキュリティ マネージャ</translation>
 <translation id="2862815659905780618">Linux 開発環境を削除</translation>
 <translation id="2864601841139725659">プロフィール画像の設定</translation>
@@ -4685,6 +4687,7 @@
 <translation id="5086874064903147617">デフォルトのホームページに戻しますか？</translation>
 <translation id="5087249366037322692">サードパーティにより追加</translation>
 <translation id="5087580092889165836">カードを追加</translation>
+<translation id="5088427648965532275">Passpoint プロバイダ</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 with RSA 暗号化</translation>
 <translation id="5089763948477033443">サイドパネルのサイズ変更ハンドル</translation>
 <translation id="5090637338841444533">カメラ位置の追跡を許可しないサイト</translation>
@@ -8532,7 +8535,6 @@
 <translation id="8498214519255567734">薄明かりの下でも画面を見やすくします</translation>
 <translation id="8498395510292172881">Chrome で続きを読む</translation>
 <translation id="8499083585497694743">マイクのミュートを解除</translation>
-<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />自動入力メタデータ<ph name="END_LINK1" />を送信する</translation>
 <translation id="8502536196501630039">Google Play のアプリを使用するには、まずアプリを復元する必要があります。一部のデータは失われている可能性があります。</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="850382998924680137">今日表示</translation>

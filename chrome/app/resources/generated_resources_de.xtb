@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Wird in <ph name="COUNTDOWN_SECONDS" /> Sekunden in einem alternativen Browser geöffnet</translation>
+<translation id="1071735803834535661">Externe Metataste</translation>
 <translation id="1071917609930274619">Datenverschlüsselung</translation>
 <translation id="1072700771426194907">USB-Gerät erkannt</translation>
 <translation id="107278043869924952">Zusätzlich zum Passwort die PIN verwenden</translation>
@@ -207,6 +208,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> enthält vertrauliche oder schädliche Daten. Dein Administrator sagt „<ph name="CUSTOM_MESSAGE" />“.</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> möchte eine Verbindung mit einem HID-Gerät herstellen</translation>
 <translation id="1172750555846831341">Entlang der kurzen Seite wenden</translation>
+<translation id="1173332155861271669">Details zum Passpoint-Anbieter</translation>
 <translation id="1173894706177603556">Umbenennen</translation>
 <translation id="1174073918202301297">Verknüpfung hinzugefügt</translation>
 <translation id="1174366174291287894">Deine Verbindung ist immer sicher, solange Chrome dich nicht auf eine unsichere Verbindung hinweist</translation>
@@ -1363,6 +1365,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2146263598007866206">Websites laden zusammengehörende Dateien möglicherweise automatisch gemeinsam herunter, damit du Zeit sparst</translation>
 <translation id="2147151613919729065">Wenn du den Verlauf des Gastmodus löschen möchtest, musst du zuerst alle Fenster schließen, die darin geöffnet sind.</translation>
 <translation id="2147218225094845757">Seitenleiste ausblenden</translation>
+<translation id="2147282432401652483">Befehlstaste</translation>
 <translation id="2148219725039824548">Fehler beim Bereitstellen der Freigabe. Die angegebene Freigabe wurde im Netzwerk nicht gefunden.</translation>
 <translation id="2148756636027685713">Formatierung beendet</translation>
 <translation id="2148892889047469596">Tab streamen</translation>
@@ -2213,6 +2216,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2856776373509145513">Neuen Container erstellen</translation>
 <translation id="2859741939921354763">Passwörter in <ph name="BRAND" /> importieren</translation>
 <translation id="2861301611394761800">Systemupdate abgeschlossen. Starte das System jetzt neu.</translation>
+<translation id="2861402191395139055">Passpoint-Abos</translation>
 <translation id="2861941300086904918">Sicherheitsmanager für native Clients</translation>
 <translation id="2862815659905780618">Linux-Entwicklungsumgebung entfernen</translation>
 <translation id="2864601841139725659">Profilbild festlegen</translation>
@@ -4689,6 +4693,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5086874064903147617">Standardstartseite wiederherstellen?</translation>
 <translation id="5087249366037322692">Von einem Drittanbieter hinzugefügt</translation>
 <translation id="5087580092889165836">Karte hinzufügen</translation>
+<translation id="5088427648965532275">Passpoint-Anbieter</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 mit RSA-Verschlüsselung</translation>
 <translation id="5089763948477033443">Ziehpunkt zur Größenanpassung der Seitenleiste</translation>
 <translation id="5090637338841444533">Dürfen meine Kameraposition nicht erfassen</translation>
@@ -4918,6 +4923,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5298219193514155779">Design von</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">Tabgruppen ansehen und verwalten</translation>
+<translation id="529986401483187205">deaktiviert</translation>
 <translation id="5300287940468717207">Websiteberechtigungen zurücksetzen?</translation>
 <translation id="5300426565656326054">Browserbasierte personalisierte Werbung</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
@@ -6805,6 +6811,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6981982820502123353">Bedienungshilfen</translation>
 <translation id="6983507711977005608">Verbindung mit Instant Tethering-Netzwerk trennen</translation>
 <translation id="6983783921975806247">Registrierte OID</translation>
+<translation id="6983890893900549383">Esc-Taste</translation>
 <translation id="6985235333261347343">Microsoft Key Recovery Agent</translation>
 <translation id="698524779381350301">Automatisch Zugriff auf die folgenden Websites gewähren</translation>
 <translation id="6985607387932385770">Drucker</translation>
@@ -7971,6 +7978,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8009225694047762179">Passwort verwalten</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />“ verschoben.</translation>
 <translation id="8011875486979733097">Steam kann nicht installiert werden</translation>
+<translation id="8012188750847319132">Feststelltaste</translation>
 <translation id="8013993649590906847">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet.</translation>
 <translation id="8014154204619229810">Der Updater wird momentan ausgeführt. Bitte versuche es in einer Minute erneut, indem du eine Aktualisierung vornimmst.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> konnte die zuvor installierte Version nicht wiederherstellen. Bitte versuche erneut, ein Powerwash für dein Gerät durchzuführen.</translation>
@@ -8536,7 +8544,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8498214519255567734">Der Bildschirm ist bei schwachem Licht nicht störend hell und kann leichter gelesen werden</translation>
 <translation id="8498395510292172881">In Chrome weiterlesen</translation>
 <translation id="8499083585497694743">Mikrofon einschalten</translation>
-<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />Autofill-Metadaten<ph name="END_LINK1" /> senden</translation>
 <translation id="8502536196501630039">Wenn du Apps von Google Play verwenden möchtest, musst du zuerst deine Apps wiederherstellen. Einige Daten sind möglicherweise verloren gegangen.</translation>
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="850382998924680137">Heute angesehen</translation>

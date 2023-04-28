@@ -169,7 +169,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2074131957428911366">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2080769225927880590">Log ind med en gyldig konto</translation>
-<translation id="2090878303988764231">Log ind for at administrere det indhold, du ser</translation>
 <translation id="2103075008456228677">Åbn history.google.com</translation>
 <translation id="21133533946938348">Fastgør fane</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> bogmærker blev flyttet</translation>
@@ -589,7 +588,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4844899002472726590">Se og rediger de emner, du er interesseret i</translation>
 <translation id="4848999860252535517">Vil du slette adgangskoden til <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Angiv en adgangskode</translation>
-<translation id="4856498338299082007">På din Google-konto</translation>
 <translation id="4858786880085262208">Opgrader til HTTPS, når det er muligt. Sikre websites indlejrer muligvis indhold, der ikke er sikkert.</translation>
 <translation id="4860895144060829044">Ring op</translation>
 <translation id="4872323082491632254">Tjek adgangskoder</translation>
@@ -1116,13 +1114,11 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8197543752516192074">Oversæt side</translation>
 <translation id="8205564605687841303">Annuller</translation>
 <translation id="8206354486702514201">Denne indstilling håndhæves af din administrator.</translation>
-<translation id="821809831108207540">Log ind, og aktivér synkronisering for at tilpasse dit Discover-feed og Chrome.</translation>
 <translation id="8225985093977202398">Billeder og filer, der er gemt i cache</translation>
 <translation id="8237382152611443140">Åbn indstillingerne for Autoudfyld adgangskoder</translation>
 <translation id="8248969482078657578">Inaktive faner hjælper dig med at holde fokus</translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8264966119170358612">Nogle af dine gemte adgangskoder er blevet offentliggjort som følge af et brud på datasikkerheden uden for Google. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Kun på denne enhed</translation>
 <translation id="826614135184049678">Du blev logget ud af din konto, <ph name="USER_NAME" />, som en del af nulstillingen af din iPad. Tryk på "Fortsæt" nedenfor for at logge ind igen.</translation>
 <translation id="8271720166617117963">Acceptér og log ind</translation>
 <translation id="8278938988428169257">Angiv et ord eller en sætning</translation>

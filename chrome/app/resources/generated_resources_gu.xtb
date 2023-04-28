@@ -207,6 +207,7 @@
 <translation id="1169435433292653700"><ph name="FILE_NAME" />માં સંવેદનશીલ અથવા જોખમી ડેટા છે. તમારા વ્યવસ્થાપકના કહેવા પ્રમાણે: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> HID ડિવાઇસ સાથે કનેક્ટ કરવા માગે છે</translation>
 <translation id="1172750555846831341">નાની કિનારી પર ફ્લિપ કરો</translation>
+<translation id="1173332155861271669">Passpoint પ્રદાતાની વિગતો</translation>
 <translation id="1173894706177603556">નામ બદલો</translation>
 <translation id="1174073918202301297">શૉર્ટકટ ઉમેર્યો</translation>
 <translation id="1174366174291287894">તમારું કનેક્શન હંમેશાં સુરક્ષિત હોય છે, સિવાય કે Chrome તમને અન્યથા જણાવે</translation>
@@ -2215,6 +2216,7 @@
 <translation id="2856776373509145513">નવું કન્ટેનર બનાવો</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />માં પાસવર્ડ આયાત કરો</translation>
 <translation id="2861301611394761800">સિસ્ટમ અપડેટ પૂર્ણ થયું. કૃપા કરીને સિસ્ટમ પુનઃપ્રારંભ કરો.</translation>
+<translation id="2861402191395139055">Passpointના સબ્સ્ક્રિપ્શન</translation>
 <translation id="2861941300086904918">નેટિવ ક્લાયન્ટ સિક્યુરિટી મેનેજર</translation>
 <translation id="2862815659905780618">Linux ડેવલપમેન્ટ વાતાવરણ કાઢી નાખો</translation>
 <translation id="2864601841139725659">તમારું પ્રોફાઇલ ચિત્ર સેટ કરો</translation>
@@ -4691,6 +4693,7 @@
 <translation id="5086874064903147617">ડિફૉલ્ટ હોમપેજ પુનઃસ્થાપિત કરીએ?</translation>
 <translation id="5087249366037322692">તૃતીય પક્ષ દ્વારા ઉમેરાયેલ</translation>
 <translation id="5087580092889165836">કાર્ડ ઉમેરો</translation>
+<translation id="5088427648965532275">Passpoint પ્રદાતા</translation>
 <translation id="5088534251099454936">RSA એન્ક્રિપ્શનવાળું PKCS #1 SHA-512</translation>
 <translation id="5089763948477033443">બાજુની પૅનલનું કદ બદલવાનું હેન્ડલ</translation>
 <translation id="5090637338841444533">તમારા કૅમેરાનું સ્ટેટસ ટ્રૅક કરવાની મંજૂરી નથી</translation>
@@ -8542,7 +8545,6 @@ USB ડિવાઇસ</translation>
 <translation id="8498214519255567734">ઓછા પ્રકાશમાં તમારી સ્ક્રીન પર જોવાનું અથવા વાંચવાનું સરળ બનાવે છે</translation>
 <translation id="8498395510292172881">Chromeમાં વાંચવાનું ચાલુ રાખો</translation>
 <translation id="8499083585497694743">માઇક્રોફોન અનમ્યૂટ કરો</translation>
-<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />ઑટોમૅટિક રીતે ભરવાનો મેટાડેટા<ph name="END_LINK1" /> મોકલો</translation>
 <translation id="8502536196501630039">Google Playમાંથી ઍપનો ઉપયોગ કરવા માટે, પહેલા તમારે તમારી ઍપ પુનઃપ્રાપ્ત કરવી જરૂરી છે. કેટલોક ડેટા ગુમ થયો હોઈ શકે છે.</translation>
 <translation id="8503813439785031346">વપરાશકર્તાનામ</translation>
 <translation id="850382998924680137">આજે જોવામાં આવી</translation>

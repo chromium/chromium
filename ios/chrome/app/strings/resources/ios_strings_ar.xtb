@@ -170,7 +170,6 @@
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2080769225927880590">التسجيل باستخدام حساب صالح</translation>
-<translation id="2090878303988764231">تسجيل الدخول لإدارة المحتوى الذي تراه</translation>
 <translation id="2103075008456228677">‏فتح history.google.com</translation>
 <translation id="21133533946938348">تثبيت علامة التبويب</translation>
 <translation id="2116625576999540962">تم نقل <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> من العناصر</translation>
@@ -587,7 +586,6 @@
 <translation id="4844899002472726590">يمكنك الاطّلاع على المواضيع التي تحظى باهتمامك وتعديلها.</translation>
 <translation id="4848999860252535517">هل تريد حذف كلمة المرور في <ph name="WEBSITE" />؟</translation>
 <translation id="4854345657858711387">تعيين رمز المرور</translation>
-<translation id="4856498338299082007">‏في حسابك على Google</translation>
 <translation id="4858786880085262208">‏ستتم الترقية إلى بروتوكول HTTPS إذا أمكن. قد تتضمَّن المواقع الإلكترونية الآمنة محتوى غير آمن.</translation>
 <translation id="4860895144060829044">اتصال</translation>
 <translation id="4872323082491632254">التحقّق من كلمات المرور</translation>
@@ -1112,13 +1110,11 @@
 <translation id="8197543752516192074">ترجمة الصفحة</translation>
 <translation id="8205564605687841303">إلغاء</translation>
 <translation id="8206354486702514201">تم فرض هذا الإعداد بواسطة المشرف.</translation>
-<translation id="821809831108207540">‏لتخصيص متصفّح Chrome وخلاصة "اقتراحات"، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="8225985093977202398">الصور والملفات المُخزنة مؤقتًا</translation>
 <translation id="8237382152611443140">‏فتح AutoFill Password Settings (إعدادات الملء التلقائي لكلمات المرور)</translation>
 <translation id="8248969482078657578">الحفاظ على تركيزك من خلال "علامات التبويب غير النشطة"</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8264966119170358612">‏تم رصد بعض كلمات المرور المحفوظة الخاصة بك ضمن عملية اختراق للبيانات من خارج Google. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">سيتم حفظ كلمة المرور على هذا الجهاز فقط.</translation>
 <translation id="826614135184049678">‏تم تسجيل خروج حسابك <ph name="USER_NAME" /> كجزء من عملية إعادة ضبط جهاز iPad. لإعادة تسجيل الدخول، انقر على "متابعة" أدناه.</translation>
 <translation id="8271720166617117963">القبول وتسجيل الدخول</translation>
 <translation id="8278938988428169257">أدخِل كلمة أو عبارة.</translation>

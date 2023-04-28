@@ -315,6 +315,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1689333818294560261">Lempinimi</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Miten voit vaikuttaa dataasi:<ph name="END_BOLD" /> Chrome poistaa yli neljä viikkoa vanhat aiheet automaattisesti. Kun jatkat selaamista, aihe voi näkyä listalla uudelleen. Voit myös estää aiheet, joita et halua Chromen jakavan sivustoille, ja laittaa mainosaiheet pois päältä Chromen asetuksista milloin tahansa.</translation>
 <translation id="1697532407822776718">Kaikki on valmista.</translation>
+<translation id="1699651774646344471">Voit nyt käyttää Google-tililläsi olevia osoitteita</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Kirje</translation>
 <translation id="1706625117072057435">Zoomaustasot</translation>
@@ -537,6 +538,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2224337661447660594">Ei internetyhteyttä</translation>
 <translation id="2225927550500503913">Virtuaalinen kortti on päällä</translation>
 <translation id="2226636330183131181">Wi-Fi-verkkoon <ph name="BEGIN_LINK" />kirjautuminen<ph name="END_LINK" /></translation>
+<translation id="2228057197024893428">Tämä osoite on tällä hetkellä tallennettu Chromeen. Jos haluat käyttää sitä Googlen tuotteissa, tallenna se Google-tilillesi (<ph name="ACCOUNT" />).</translation>
 <translation id="2239100178324503013">Lähetä nyt</translation>
 <translation id="2241693394036365668">Tiedosto on ladattu</translation>
 <translation id="2246264294482514010">10 x 12 tuumaa</translation>
@@ -656,6 +658,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2547466893236767989">Verkkosivustojen suunnittelu ja kehittäminen</translation>
 <translation id="254947805923345898">Käytännön arvo ei kelpaa.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> lähetti virheellisen vastauksen.</translation>
+<translation id="2551608178605132291">Osoite: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Käytä näytön lukitusta korttien vahvistukseen tästä eteenpäin</translation>
 <translation id="2553853292994445426">Tarkista suojatun DNS:n asetukset. Olet saattanut määrittää suojatun DNS-palvelimen, johon muodostettavat yhteydet epäonnistuvat.</translation>
@@ -853,6 +856,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Tarkista suojatun DNS:n määritykset<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Keskilokero</translation>
 <translation id="3109728660330352905">Sinulla ei ole oikeutta tarkastella tätä sivua.</translation>
+<translation id="3112892588078695695">Puhelinnumero: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Kolmas työvuoro</translation>
 <translation id="3114040155724590991">Android-järjestelmää päivitetään
     Sovelluksen käynnistymisessä voi mennä tavallista kauemmin.</translation>
@@ -1226,6 +1230,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4031179711345676612">Mikrofoni sallittu</translation>
 <translation id="4040350669425716613">Colleget ja yliopistot</translation>
 <translation id="4047351652147966654">18 x 24 tuumaa</translation>
+<translation id="4050392779074832022">Voit käyttää sitä Googlen tuotteissa</translation>
 <translation id="405399507749852140">Voit saada ilmoituksen, jos hinta laskee jollakin sivustolla</translation>
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4063063121357725926">Google voi auttaa sinua löytämään tarjouksia ostoskoriin lisäämistäsi tuotteista</translation>
@@ -2463,6 +2468,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7083258188081898530">Lokero 9</translation>
 <translation id="7086090958708083563">Käyttäjä pyysi lataamista</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina sarkainta ja Enter, niin voit ylläpitää sivustoille tallennettuja lupia ja dataa Chromen asetuksista</translation>
+<translation id="7096341143397839437">Sähköposti: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Tämän sivuston identiteettiä ei ole vahvistettu.</translation>
 <translation id="7101893872976785596">Kauhuelokuvat</translation>
 <translation id="7102079138917191645">Rakentaminen ja kunnossapito</translation>
@@ -2541,6 +2547,7 @@ Lisätietoja:
 <translation id="7256634549594854023">Takalokero</translation>
 <translation id="725866823122871198">Verkkotunnukseen <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ei voi muodostaa salattua yhteyttä, koska tietokoneesi aika ja päivämäärä (<ph name="DATE_AND_TIME" />) ovat virheelliset.</translation>
 <translation id="7260504762447901703">Peru käyttöoikeus</translation>
+<translation id="7265608370113700582">Osoite on saatavilla vain tällä laitteella</translation>
 <translation id="7275334191706090484">Hallinnoidut kirjanmerkit</translation>
 <translation id="7277998515889183784">Meikit ja kosmetiikka</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, vaihda Google-tilin salasana painamalla sarkainta ja sitten Enter</translation>
@@ -2963,6 +2970,7 @@ Lisätietoja:
 <translation id="8245703462678310750">Voit poistua koko näytön tilasta ja nähdä latauksen painamalla pitkään |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8249296373107784235">Keskeytä</translation>
 <translation id="8249463483885748674">Standardoidut kokeet ja pääsykokeet</translation>
+<translation id="8250094606476360498">Osoite on tallennettu tälle laitteelle. Jos haluat käyttää sitä Googlen tuotteissa, tallenna se Google-tilillesi (<ph name="ACCOUNT" />).</translation>
 <translation id="8252991034201168845">Muuta saavutettavuusasetuksia ‑painike, personoi esteettömyystyökaluja Chrome-käyttöjärjestelmän asetuksista painamalla Enter</translation>
 <translation id="8253091569723639551">Laskutusosoite tarvitaan</translation>
 <translation id="8257387598443225809">Tämä sovellus on suunniteltu mobiililaitteille</translation>
