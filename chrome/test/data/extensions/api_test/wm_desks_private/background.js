@@ -55,6 +55,9 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // TODO(b/1422369): Bring back getSavedDesks tests after adding test API to
-  // check desk templates cache status.
+  async function testGetSavedDesks() {
+    const saved_desks = await chrome.wmDesksPrivate.getSavedDesks();
+    chrome.test.assertEq(0, saved_desks.length);
+    chrome.test.succeed();
+  }
 ]);

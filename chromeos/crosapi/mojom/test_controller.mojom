@@ -439,4 +439,8 @@ interface TestController {
   TtsSpeak@36(TtsUtterance utterance,
               pending_remote<TtsUtteranceClient> utterance_client);
 
+  // Checks whether local cache for saved desks is still loading.
+  [MinVersion=25]
+  IsSavedDeskStorageReady@37() =>(bool is_saved_desk_storage_ready);
+
 };

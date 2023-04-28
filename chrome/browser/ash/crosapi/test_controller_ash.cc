@@ -39,6 +39,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -701,6 +702,11 @@ void TestControllerAsh::TtsSpeak(
   ash_utterance_event_delegates_.emplace(ash_utterance->GetId(),
                                          std ::move(event_delegate));
   tts_crosapi_util::SpeakForTesting(std::move(ash_utterance));
+}
+
+void TestControllerAsh::IsSavedDeskStorageReady(
+    IsSavedDeskStorageReadyCallback callback) {
+  std::move(callback).Run(DesksClient::Get()->GetDeskModel()->IsReady());
 }
 
 void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {
