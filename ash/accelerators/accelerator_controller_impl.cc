@@ -712,6 +712,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return true;
     case TOGGLE_OVERVIEW:
       return accelerators::CanToggleOverview();
+    case TOGGLE_SNAP_GROUP_WINDOWS_MINIMIZE_AND_RESTORE:
+      return accelerators::CanMinimizeSnapGroupWindows();
     case TOGGLE_MULTITASK_MENU:
       return accelerators::CanToggleMultitaskMenu();
     case TOUCH_HUD_CLEAR:
@@ -1283,6 +1285,11 @@ void AcceleratorControllerImpl::PerformAction(
     case TOGGLE_OVERVIEW:
       base::RecordAction(base::UserMetricsAction("Accel_Overview_F5"));
       accelerators::ToggleOverview();
+      break;
+    case TOGGLE_SNAP_GROUP_WINDOWS_MINIMIZE_AND_RESTORE:
+      base::RecordAction(base::UserMetricsAction(
+          "Accel_Toggle_Snap_Group_Windows_Minimize_Restore"));
+      accelerators::MinimizeWindowsInSnapGroup();
       break;
     case TOGGLE_RESIZE_LOCK_MENU:
       base::RecordAction(

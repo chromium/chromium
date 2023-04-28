@@ -63,6 +63,8 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
@@ -472,6 +474,27 @@ bool CanFocusCameraPreview() {
 
 bool CanLock() {
   return Shell::Get()->session_controller()->CanLockScreen();
+}
+
+bool CanMinimizeSnapGroupWindows() {
+  return Shell::Get()->snap_group_controller();
+}
+
+void MinimizeWindowsInSnapGroup() {
+  aura::Window* top_window = GetTargetWindow();
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  if (!top_window || !snap_group_controller) {
+    return;
+  }
+
+  SnapGroup* snap_group =
+      snap_group_controller->GetSnapGroupForGivenWindow(top_window);
+  if (!snap_group) {
+    return;
+  }
+
+  snap_group->MinimizeWindows();
 }
 
 bool CanMinimizeTopWindowOnBack() {

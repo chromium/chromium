@@ -23,12 +23,17 @@ class SnapGroup : public aura::WindowObserver {
   SnapGroup& operator=(const SnapGroup&) = delete;
   ~SnapGroup() override;
 
+  aura::Window* window1() const { return window1_; }
+  aura::Window* window2() const { return window2_; }
+
+  // Minimizes the windows in the snap group.
+  // TODO(b/279059840): Implement the restore functinalities. Combine the
+  // minimize and restore in one function.
+  void MinimizeWindows();
+
   // aura::WindowObserver:
   // TODO: Implement `OnWindowParentChanged`.
   void OnWindowDestroying(aura::Window* window) override;
-
-  aura::Window* window1() const { return window1_; }
-  aura::Window* window2() const { return window2_; }
 
  private:
   friend class SnapGroupController;

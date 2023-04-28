@@ -35,6 +35,15 @@ SnapGroup::~SnapGroup() {
   StopObservingWindows();
 }
 
+void SnapGroup::MinimizeWindows() {
+  auto* window1_state = WindowState::Get(window1_);
+  auto* window2_state = WindowState::Get(window2_);
+  CHECK(!window1_state->IsMinimized() && !window2_state->IsMinimized());
+
+  window1_state->Minimize();
+  window2_state->Minimize();
+}
+
 void SnapGroup::OnWindowDestroying(aura::Window* window) {
   if (window != window1_ && window != window2_) {
     return;

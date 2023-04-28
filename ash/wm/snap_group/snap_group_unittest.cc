@@ -40,6 +40,7 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -827,6 +828,26 @@ TEST_F(SnapGroupEntryPointArm1Test, SwapWindowsAndUnlockTest) {
   ClickSwapWindowsButtonAndVerify();
   ClickKebabButtonToShowExpandedMenu();
   ClickUnlockButtonAndVerify();
+}
+
+// Tests that the windows in snap group can be minimized together with the
+// keyboard shortcut 'Search + Shift + D'.
+TEST_F(SnapGroupEntryPointArm1Test, UseShortcutToMinimizeWindows) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
+
+  // Press the shortcut first time and the windows will be minimized.
+  GetEventGenerator()->PressAndReleaseKey(
+      ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(w1.get())->IsMinimized());
+  EXPECT_TRUE(WindowState::Get(w2.get())->IsMinimized());
+
+  // Press the shortcut again and the windows state remain the same.
+  GetEventGenerator()->PressAndReleaseKey(
+      ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(w1.get())->IsMinimized());
+  EXPECT_TRUE(WindowState::Get(w2.get())->IsMinimized());
 }
 
 // Tests that the lock widget will not show on the shared edge of two unsnapped

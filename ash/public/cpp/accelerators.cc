@@ -185,6 +185,8 @@ const AcceleratorData kAcceleratorData[] = {
     {true, ui::VKEY_BROWSER_BACK, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
      FOCUS_NEXT_PANE},
     {true, ui::VKEY_BROWSER_BACK, ui::EF_NONE, MINIMIZE_TOP_WINDOW_ON_BACK},
+    {true, ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
+     TOGGLE_SNAP_GROUP_WINDOWS_MINIMIZE_AND_RESTORE},
 
     // Moving active window between displays shortcut.
     {true, ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
