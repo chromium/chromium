@@ -41,9 +41,8 @@ namespace {
 // TODO(b/211783271): Add video_encoder_perf_test_usage.md
 constexpr const char* usage_msg =
     R"(usage: video_encode_accelerator_perf_tests
-           [--codec=<codec>] [--num_spatial_layers=<number>]
-           [--num_temporal_layers=<number>] [--bitrate_mode=(cbr|vbr)]
-           [--reverse] [--bitrate=<bitrate>]
+           [--codec=<codec>] [--svc_mode=<svc scalability mode>]
+           [--bitrate_mode=(cbr|vbr)] [--reverse] [--bitrate=<bitrate>]
            [-v=<level>] [--vmodule=<config>] [--output_folder]
            [--disable_vaapi_lock]
            [--gtest_help] [--help]
@@ -71,6 +70,11 @@ The following arguments are supported:
                         if --codec=vp9 currently.
   --num_temporal_layers the number of temporal layers of the encoded
                         bitstream. A default value is 1.
+  --svc_mode            SVC scalability mode. Spatial SVC encoding is only
+                        supported with --codec=vp9. The valid svc mode is
+                        "L1T1", "L1T2", "L1T3", "L2T1_KEY", "L2T2_KEY",
+                        "L2T3_KEY", "L3T1_KEY", "L3T2_KEY", "L3T3_KEY". The
+                        default value is "L1T1".
   --bitrate_mode        The rate control mode for encoding, one of "cbr"
                         (default) or "vbr".
   --reverse             the stream plays backwards if the stream reaches
@@ -581,7 +585,8 @@ class VideoEncoderTest : public ::testing::Test {
     LOG_ASSERT(!bitstream_processors.empty())
         << "Failed to create bitstream processors";
 
-    VideoEncoderClientConfig config(video, profile, spatial_layers, bitrate,
+    VideoEncoderClientConfig config(video, profile, spatial_layers,
+                                    g_env->InterLayerPredMode(), bitrate,
                                     g_env->Reverse());
     config.input_storage_type =
         VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -862,6 +867,7 @@ int main(int argc, char** argv) {
   bool reverse = false;
   absl::optional<uint32_t> encode_bitrate;
   std::vector<base::test::FeatureRef> disabled_features;
+  std::string svc_mode = "L1T1";
 
   // Parse command line arguments.
   base::FilePath::StringType output_folder = media::test::kDefaultOutputFolder;
@@ -877,6 +883,8 @@ int main(int argc, char** argv) {
       output_folder = it->second;
     } else if (it->first == "codec") {
       codec = it->second;
+    } else if (it->first == "svc_mode") {
+      svc_mode = it->second;
     } else if (it->first == "num_spatial_layers") {
       if (!base::StringToSizeT(it->second, &num_spatial_layers)) {
         std::cout << "invalid number of spatial layers: " << it->second << "\n";
@@ -931,7 +939,7 @@ int main(int argc, char** argv) {
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, false, base::FilePath(output_folder),
-          codec, num_temporal_layers, num_spatial_layers,
+          codec, svc_mode, num_temporal_layers, num_spatial_layers,
           false /* output_bitstream */, encode_bitrate, bitrate_mode, reverse,
           media::test::FrameOutputConfig(),
           /*enabled_features=*/{}, disabled_features);

@@ -44,6 +44,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       bool enable_bitstream_validator,
       const base::FilePath& output_folder,
       const std::string& codec,
+      const std::string& svc_mode,
       size_t num_temporal_layers,
       size_t num_spatial_layers,
       bool save_output_bitstream,
@@ -69,6 +70,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // Get the spatial layers config for SVC. Return empty vector in non SVC mode.
   const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
   SpatialLayers() const;
+  VideoEncodeAccelerator::Config::InterLayerPredMode InterLayerPredMode() const;
   // Get the target bitrate (bits/second).
   const VideoBitrateAllocation& BitrateAllocation() const;
   // Whether the encoded bitstream is saved to disk.
@@ -97,6 +99,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       bool enable_bitstream_validator,
       const base::FilePath& output_folder,
       VideoCodecProfile profile,
+      VideoEncodeAccelerator::Config::InterLayerPredMode inter_layer_pred_mode,
       size_t num_temporal_layers,
       size_t num_spatial_layers,
       const media::Bitrate& bitrate,
@@ -116,12 +119,9 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   const base::FilePath output_folder_;
   // VideoCodecProfile to be produced by VideoEncoder.
   const VideoCodecProfile profile_;
-  // The number of temporal layers of the stream to be produced by VideoEncoder.
-  // This is only for vp9 stream.
-  const size_t num_temporal_layers_;
-  // The number of spatial layers of the stream to be produced by VideoEncoder.
-  // This is only for vp9 stream.
-  const size_t num_spatial_layers_;
+  // Inter layer predict mode.
+  const VideoEncodeAccelerator::Config::InterLayerPredMode
+      inter_layer_pred_mode_;
   // Targeted bitrate (bits/second) of the stream produced by VideoEncoder.
   const VideoBitrateAllocation bitrate_;
   // The spatial layers of the stream which aligned with |num_spatial_layers_|
