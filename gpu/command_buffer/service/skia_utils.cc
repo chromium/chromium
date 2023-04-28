@@ -105,6 +105,7 @@ GrContextOptions GetDefaultGrContextOptions() {
   return options;
 }
 
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
 skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions() {
   skgpu::graphite::ContextOptions options;
   size_t max_resource_cache_bytes;
@@ -114,6 +115,7 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions() {
   options.fGlyphCacheTextureMaximumBytes = glyph_cache_max_texture_bytes;
   return options;
 }
+#endif
 
 GLuint GetGrGLBackendTextureFormat(
     const gles2::FeatureInfo* feature_info,
