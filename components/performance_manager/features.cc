@@ -28,10 +28,6 @@ BASE_FEATURE(kBackgroundTabLoadingFromPerformanceManager,
              "BackgroundTabLoadingFromPerformanceManager",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBatterySaverModeAvailable,
-             "BatterySaverModeAvailable",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPerformanceControlsPerformanceSurvey,
              "PerformanceControlsPerformanceSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -52,19 +48,6 @@ const base::FeatureParam<base::TimeDelta>
     kPerformanceControlsBatterySurveyLookback{
         &kPerformanceControlsBatteryPerformanceSurvey, "battery_lookback",
         base::Days(8)};
-
-// On ChromeOS, the adjustment generally seems to be around 3%, sometimes 2%. We
-// choose 3% because it gets us close enough, or overestimates (which is better
-// than underestimating in this instance).
-const base::FeatureParam<int>
-    kBatterySaverModeThresholdAdjustmentForDisplayLevel {
-  &kBatterySaverModeAvailable, "low_battery_threshold_adjustment",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      3,
-#else
-      0,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-};
 
 BASE_FEATURE(kHeuristicMemorySaver,
              "HeuristicMemorySaver",

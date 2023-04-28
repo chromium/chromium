@@ -29,6 +29,24 @@ UserPerformanceTuningManager* g_user_performance_tuning_manager = nullptr;
 
 constexpr base::TimeDelta kBatteryUsageWriteFrequency = base::Days(1);
 
+// On certain platforms (ChromeOS), the battery level displayed to the user is
+// artificially lower than the actual battery level. Unfortunately, the battery
+// level that Battery Saver Mode looks at is the "actual" level, so users on
+// that platform may see Battery Saver Mode trigger at say 17% rather than the
+// "advertised" 20%. This parameter allows us to heuristically tweak the
+// threshold on those platforms, by being added to the 20% threshold value (so
+// setting this parameter to 3 would result in battery saver being activated at
+// 23% actual battery level).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// On ChromeOS, the adjustment generally seems to be around 3%, sometimes 2%. We
+// choose 3% because it gets us close enough, or overestimates (which is better
+// than underestimating in this instance).
+constexpr int kBatterySaverModeThresholdAdjustmentForDisplayLevel = 3;
+#else
+constexpr int kBatterySaverModeThresholdAdjustmentForDisplayLevel = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 class FrameThrottlingDelegateImpl
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
           FrameThrottlingDelegate {
@@ -511,8 +529,7 @@ void UserPerformanceTuningManager::OnBatteryStateSampled(
   // `power_manager::BatteryPercentageConverter::ConvertActualToDisplay`.
   uint64_t adjusted_low_battery_threshold =
       kLowBatteryThresholdPercent +
-      performance_manager::features::
-          kBatterySaverModeThresholdAdjustmentForDisplayLevel.Get();
+      kBatterySaverModeThresholdAdjustmentForDisplayLevel;
   is_below_low_battery_threshold_ =
       battery_percentage_ < static_cast<int>(adjusted_low_battery_threshold);
 
