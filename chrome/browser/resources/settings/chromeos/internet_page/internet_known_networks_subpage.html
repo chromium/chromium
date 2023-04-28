@@ -69,6 +69,28 @@
   </template>
 </div>
 
+<template is="dom-if"
+    if="[[shouldShowPasspointSection_(passpointSubscriptionsList_)]]">
+  <div class="settings-box settings-box-text">
+    <div class="secondary">$i18n{passpointSectionLabel}</div>
+  </div>
+  <div id="passpointSubscriptionList" class="list-frame vertical-list">
+    <template is="dom-repeat" items="[[passpointSubscriptionsList_]]">
+      <div class="list-item">
+        <cr-link-row embedded label="[[getSubscriptionDisplayName_(item)]]"
+            on-click="onSubscriptionListItemTap_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <div class="separator"></div>
+        <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
+            on-click="onSubscriptionMenuButtonTap_"
+            title="[[getSubscriptionMenuButtonTitle_(item)]]">
+        </cr-icon-button>
+      </div>
+    </template>
+  </div>
+</template>
+
 <cr-action-menu id="dotsMenu" role-description="$i18n{menu}">
   <button class="dropdown-item" hidden="[[!showAddPreferred_]]"
       on-click="onAddPreferredClick_">
@@ -84,3 +106,8 @@
   </button>
 </cr-action-menu>
 
+<cr-action-menu id="subscriptionDotsMenu" role-description="$i18n{menu}">
+  <button class="dropdown-item" on-click="onSubscriptionForgetTap_">
+    $i18n{knownNetworksMenuForget}
+  </button>
+</cr-action-menu>

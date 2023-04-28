@@ -8,6 +8,7 @@ import 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
+import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
@@ -16,6 +17,7 @@ import {CrosNetworkConfigRemote, InhibitReason, MAX_NUM_CUSTOM_APNS, VpnType} fr
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
+import {FakePasspointService} from 'chrome://webui-test/chromeos/fake_passpoint_service_mojom.js';
 import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -32,6 +34,9 @@ suite('InternetPage', function() {
 
   /** @type {?ESimManagerRemote} */
   let eSimManagerRemote;
+
+  /** @type {PasspointServiceInterface} */
+  let passpointService_ = null;
 
   suiteSetup(function() {
     // Disable animations so sub-pages open within one event loop.
@@ -174,6 +179,9 @@ suite('InternetPage', function() {
     MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(eSimManagerRemote);
+    passpointService_ = new FakePasspointService();
+    MojoConnectivityProvider.getInstance().setPasspointServiceForTest(
+        passpointService_);
 
     PolymerTest.clearBody();
   });
@@ -872,6 +880,21 @@ suite('InternetPage', function() {
         assertFalse(!!getApnTooltip());
         assertFalse(getApnButton().disabled);
       });
+
+  test('Nagivate to Passpoint detail page', async () => {
+    await init();
+
+    const params = new URLSearchParams();
+    params.append('id', 'a_passpoint_id');
+
+    // Navigate straight to Passpoint detail subpage.
+    Router.getInstance().navigateTo(routes.PASSPOINT_DETAIL, params);
+    internetPage.currentRouteChanged(routes.PASSPOINT_DETAIL, undefined);
+
+    const passpointDetailPage =
+        internetPage.shadowRoot.querySelector('settings-passpoint-subpage');
+    assertTrue(!!passpointDetailPage);
+  });
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently
   // such tests are flaky.
 });

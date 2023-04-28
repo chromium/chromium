@@ -72,6 +72,7 @@ ts_library("build_ts") {
     "ash_common/i18n_behavior_test.js",
     "chai_assert.js",
     "fake_network_config_mojom.js",
+    "fake_passpoint_service_mojom.ts",
     "mock_controller.js",
     "mock_controller.m.js",
     "set_time_dialog_test.js",

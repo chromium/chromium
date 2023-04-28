@@ -182,6 +182,14 @@
     </os-settings-subpage>
   </template>
 
+  <template is="dom-if" route-path="/passpointDetail" restamp>
+    <os-settings-subpage
+        page-title="[[getPasspointSubscriptionName_(passpointSubscription_)]]">
+      <settings-passpoint-subpage>
+      </settings-passpoint-subpage>
+    </os-settings-subpage>
+  </template>
+
 </os-settings-animated-pages>
 
 <template is="dom-if" if="[[showInternetConfig_]]" restamp>

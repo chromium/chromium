@@ -333,8 +333,12 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['InternetDetailMenu', 'internet_detail_menu_test.js'],
  ['InternetKnownNetworksSubpage', 'internet_known_networks_subpage_tests.js'],
  [
-   'InternetPage', 'internet_page_tests.js',
-   {enabled: ['ash::features::kApnRevamp']}
+   'InternetPage', 'internet_page_tests.js', {
+     enabled: [
+       'ash::features::kApnRevamp', 'ash::features::kPasspointSettings',
+       'ash::features::kPasspointARCSupport'
+     ]
+   }
  ],
  [
    'InternetPageCellularSetupDialog',

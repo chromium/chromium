@@ -36,6 +36,8 @@ import './network_proxy_section.js';
 import './settings_traffic_counters.js';
 import './tether_connection_dialog.js';
 
+import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
+import {PasspointServiceInterface, PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
 import {isActiveSim, processDeviceState} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
@@ -307,6 +309,20 @@ class SettingsInternetDetailPageElement extends
         },
       },
 
+      isPasspointSettingsEnabled_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.valueExists('isPasspointSettingsEnabled') &&
+              loadTimeData.getBoolean('isPasspointSettingsEnabled');
+        },
+      },
+
+      passpointSubscription_: {
+        type: Object,
+        notify: true,
+      },
+
       advancedExpanded_: Boolean,
 
       networkExpanded_: Boolean,
@@ -381,6 +397,7 @@ class SettingsInternetDetailPageElement extends
   private ipAddress_: string;
   private isApnRevampEnabled_: boolean;
   private isPasspointEnabled_: boolean;
+  private isPasspointSettingsEnabled_: boolean;
   private isSecondaryUser_: boolean;
   private isTrafficCountersEnabled_: boolean;
   private isWifiSyncEnabled_: boolean;
@@ -390,6 +407,8 @@ class SettingsInternetDetailPageElement extends
   private networkExpanded_: boolean;
   private osSyncBrowserProxy_: OsSyncBrowserProxy;
   private outOfRange_: boolean;
+  private passpointService_: PasspointServiceInterface;
+  private passpointSubscription_: PasspointSubscription|null;
   private pendingSimLockDeepLink_: boolean;
   private preferNetwork_: boolean;
   private primaryUserEmail_: string;
@@ -436,6 +455,11 @@ class SettingsInternetDetailPageElement extends
 
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+
+    if (this.isPasspointSettingsEnabled_) {
+      this.passpointService_ =
+          MojoConnectivityProvider.getInstance().getPasspointService();
+    }
 
     this.osSyncBrowserProxy_ = OsSyncBrowserProxyImpl.getInstance();
   }
@@ -946,6 +970,12 @@ class SettingsInternetDetailPageElement extends
       const response =
           await this.networkConfig_.getManagedProperties(this.guid);
       this.getPropertiesCallback_(response.result);
+      if (this.isPasspointSettingsEnabled_ &&
+          this.isPasspointWifi_(this.managedProperties_)) {
+        const response = await this.passpointService_.getPasspointSubscription(
+            this.managedProperties_!.typeProperties.wifi!.passpointId!);
+        this.passpointSubscription_ = response.result;
+      }
     }
   }
 
@@ -2133,6 +2163,30 @@ class SettingsInternetDetailPageElement extends
         managedProperties.typeProperties.wifi!.passpointId !== '' &&
         managedProperties.typeProperties.wifi!.passpointMatchType !==
         MatchType.kNoMatch;
+  }
+
+  private shouldShowPasspointProviderRow_(managedProperties: ManagedProperties|
+                                          undefined): boolean {
+    return this.isPasspointSettingsEnabled_ &&
+        this.isPasspointWifi_(managedProperties);
+  }
+
+  private getPasspointSubscriptionName_(subscription: PasspointSubscription|
+                                        null): string {
+    if (!subscription) {
+      return '';
+    }
+    if (subscription.friendlyName && subscription.friendlyName !== '') {
+      return subscription.friendlyName;
+    }
+    return subscription.domains[0];
+  }
+
+  private onPasspointRowClicked_(): void {
+    const showPasspointEvent = new CustomEvent(
+        'show-passpoint-detail',
+        {bubbles: true, composed: true, detail: this.passpointSubscription_});
+    this.dispatchEvent(showPasspointEvent);
   }
 
   private onPasspointRemovalDialogCancel_(): void {
