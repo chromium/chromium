@@ -357,9 +357,10 @@ void AssistiveSuggester::OnBlur() {
   longpress_control_v_suggester_.OnBlur();
 }
 
-bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
+AssistiveSuggesterKeyResult AssistiveSuggester::OnKeyEvent(
+    const ui::KeyEvent& event) {
   if (!focused_context_id_.has_value())
-    return false;
+    return AssistiveSuggesterKeyResult::kNotHandled;
 
   // Auto repeat resets whenever a key is pressed/released as long as its not a
   // repeat event.
@@ -386,12 +387,12 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
           RecordAssistiveSuccess(current_suggester_->GetProposeActionType());
         }
         current_suggester_ = nullptr;
-        return true;
+        return AssistiveSuggesterKeyResult::kHandled;
       case SuggestionStatus::kDismiss:
         current_suggester_ = nullptr;
-        return true;
+        return AssistiveSuggesterKeyResult::kHandled;
       case SuggestionStatus::kBrowsing:
-        return true;
+        return AssistiveSuggesterKeyResult::kHandled;
       default:
         break;
     }
@@ -400,7 +401,7 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
   return AssistiveSuggester::HandleLongpressEnabledKeyEvent(event);
 }
 
-bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
+AssistiveSuggesterKeyResult AssistiveSuggester::HandleLongpressEnabledKeyEvent(
     const ui::KeyEvent& event) {
   const bool is_enabled_diacritic_long_press =
       IsDiacriticsOnPhysicalKeyboardLongpressEnabled() &&
@@ -408,7 +409,7 @@ bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
       enabled_suggestions_from_last_onfocus_->diacritic_suggestions &&
       kDefaultLongpressEnabledKeys.contains(event.GetCharacter());
   if (!is_enabled_diacritic_long_press && !IsLongpressEnabledControlV(event)) {
-    return false;
+    return AssistiveSuggesterKeyResult::kNotHandled;
   }
 
   // Longpress diacritics behaviour overrides the longpress to repeat key
@@ -425,7 +426,7 @@ bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
       auto_repeat_suppress_metric_emitted_ = true;
       RecordLongPressDiacriticAutoRepeatSuppressedMetric();
     }
-    return true;  // Do not propagate this event.
+    return AssistiveSuggesterKeyResult::kHandled;
   }
 
   // Process longpress keydown event.
@@ -441,7 +442,7 @@ bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
         FROM_HERE, kLongpressActivationDelay,
         base::BindOnce(&AssistiveSuggester::OnLongpressDetected,
                        weak_ptr_factory_.GetWeakPtr()));
-    return false;
+    return AssistiveSuggesterKeyResult::kNotHandled;
   }
 
   // Process longpress interrupted event (key press up before timer callback
@@ -452,7 +453,7 @@ bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
     current_longpress_keydown_ = absl::nullopt;
     longpress_timer_.Stop();
   }
-  return false;
+  return AssistiveSuggesterKeyResult::kNotHandled;
 }
 
 void AssistiveSuggester::OnLongpressDetected() {

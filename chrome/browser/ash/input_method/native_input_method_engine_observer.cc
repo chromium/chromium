@@ -1003,10 +1003,13 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
     const ui::KeyEvent& event,
     TextInputMethod::KeyEventDoneCallback callback) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
-    if (assistive_suggester_->OnKeyEvent(event)) {
-      std::move(callback).Run(
-          ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester);
-      return;
+    switch (assistive_suggester_->OnKeyEvent(event)) {
+      case AssistiveSuggesterKeyResult::kHandled:
+        std::move(callback).Run(
+            ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester);
+        return;
+      case AssistiveSuggesterKeyResult::kNotHandled:
+        break;
     }
   }
   if (autocorrect_manager_->OnKeyEvent(event)) {

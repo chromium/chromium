@@ -26,6 +26,17 @@
 
 namespace ash::input_method {
 
+enum class AssistiveSuggesterKeyResult {
+  // The key event was not handled by the assistive suggester.
+  // The key event should be handled via normal key event flow.
+  kNotHandled,
+  // The key event was handled by the assistive suggester.
+  // The key event should not be propagated as-is. Instead, it should be
+  // dispatched as a PROCESS key to prevent the client from triggering the
+  // default behaviour for the key.
+  kHandled,
+};
+
 // An agent to suggest assistive information when the user types, and adopt or
 // dismiss the suggestion according to the user action.
 class AssistiveSuggester : public SuggestionsSource {
@@ -70,8 +81,7 @@ class AssistiveSuggester : public SuggestionsSource {
                                 gfx::Range selection_range);
 
   // Called when the user pressed a key.
-  // Returns true if it should stop further processing of event.
-  bool OnKeyEvent(const ui::KeyEvent& event);
+  AssistiveSuggesterKeyResult OnKeyEvent(const ui::KeyEvent& event);
 
   // Called when suggestions are generated outside of the assistive framework.
   void OnExternalSuggestionsUpdated(
@@ -161,7 +171,8 @@ class AssistiveSuggester : public SuggestionsSource {
   // Returns true if we block the keyevent from passing to IME, and stop
   // dispatch.
   // Returns false, if we want IME to process the event and dispatch it.
-  bool HandleLongpressEnabledKeyEvent(const ui::KeyEvent& key_character);
+  AssistiveSuggesterKeyResult HandleLongpressEnabledKeyEvent(
+      const ui::KeyEvent& key_character);
 
   void HandleEnabledSuggestionsOnFocus(
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
