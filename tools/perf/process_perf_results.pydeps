@@ -468,6 +468,7 @@ benchmarks/benchmark_smoke_unittest.py
 benchmarks/benchmark_unittest.py
 benchmarks/blink_perf.py
 benchmarks/blink_perf_unittest.py
+benchmarks/companion.py
 benchmarks/desktop_ui.py
 benchmarks/dummy_benchmark.py
 benchmarks/jetstream2.py
@@ -605,6 +606,10 @@ measurements/skpicture_printer.py
 page_sets/__init__.py
 page_sets/ad_frames.py
 page_sets/android_screen_restoration_shared_state.py
+page_sets/companion/__init__.py
+page_sets/companion/basic_companion_story.py
+page_sets/companion/browser_element_identifiers.py
+page_sets/companion/companion_stories.py
 page_sets/cros_ui_cases.py
 page_sets/desktop_power.py
 page_sets/desktop_ui/__init__.py
