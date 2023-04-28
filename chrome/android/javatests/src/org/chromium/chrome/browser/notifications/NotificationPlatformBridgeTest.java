@@ -136,6 +136,7 @@ public class NotificationPlatformBridgeTest {
     @LargeTest
     @Feature({"Browser", "Notifications"})
     @Test
+    @DisabledTest(message = "https://crbug.com/1435133")
     public void testPermissionDenied() throws Exception {
         // Notifications permission should initially be prompt, and showing should fail.
         Assert.assertEquals("\"default\"", runJavaScript("Notification.permission"));
