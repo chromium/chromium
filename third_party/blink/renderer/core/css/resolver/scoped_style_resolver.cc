@@ -248,7 +248,7 @@ void ScopedStyleResolver::ForAllStylesheets(const Func& func) {
 
   MatchRequest match_request{&scope_->RootNode()};
   for (auto sheet : style_sheets_) {
-    match_request.AddRuleset(&sheet->Contents()->GetRuleSet(), sheet);
+    match_request.AddRuleset(&sheet->Contents()->GetRuleSet());
     if (match_request.IsFull()) {
       func(match_request);
       match_request.ClearAfterMatching();

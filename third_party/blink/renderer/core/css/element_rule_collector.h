@@ -40,7 +40,6 @@
 
 namespace blink {
 
-class CSSStyleSheet;
 class Element;
 class ElementRuleCollector;
 class HTMLSlotElement;
@@ -68,12 +67,10 @@ class MatchedRule {
   MatchedRule(const RuleData* rule_data,
               unsigned layer_order,
               unsigned proximity,
-              unsigned style_sheet_index,
-              const CSSStyleSheet* parent_style_sheet)
+              unsigned style_sheet_index)
       : rule_data_(rule_data),
         layer_order_(layer_order),
-        proximity_(proximity),
-        parent_style_sheet_(parent_style_sheet) {
+        proximity_(proximity) {
     DCHECK(rule_data_);
     static const unsigned kBitsForPositionInRuleData = 18;
     position_ = (static_cast<uint64_t>(style_sheet_index)
@@ -86,8 +83,6 @@ class MatchedRule {
   unsigned Specificity() const { return GetRuleData()->Specificity(); }
   unsigned LayerOrder() const { return layer_order_; }
   unsigned Proximity() const { return proximity_; }
-  const CSSStyleSheet* ParentStyleSheet() const { return parent_style_sheet_; }
-  void Trace(Visitor* visitor) const { visitor->Trace(parent_style_sheet_); }
 
  private:
   const RuleData* rule_data_;
@@ -95,7 +90,6 @@ class MatchedRule {
   // https://drafts.csswg.org/css-cascade-6/#weak-scoping-proximity
   unsigned proximity_;
   uint64_t position_;
-  Member<const CSSStyleSheet> parent_style_sheet_;
 
   friend class ElementRuleCollector;
   FRIEND_TEST_ALL_PREFIXES(ElementRuleCollectorTest, DirectNesting);
@@ -145,6 +139,10 @@ class CORE_EXPORT ElementRuleCollector {
   void SetMatchingUARules(bool matching_ua_rules) {
     matching_ua_rules_ = matching_ua_rules;
   }
+  void SetMatchingRulesFromNoStyleSheet(
+      bool matching_rules_from_no_style_sheet) {
+    matching_rules_from_no_style_sheet_ = matching_rules_from_no_style_sheet;
+  }
   // If true, :visited will never match. Has no effect otherwise.
   void SetSuppressVisited(bool suppress_visited) {
     suppress_visited_ = suppress_visited;
@@ -160,7 +158,8 @@ class CORE_EXPORT ElementRuleCollector {
   void CollectMatchingPartPseudoRules(const MatchRequest&,
                                       PartNames&,
                                       bool for_shadow_pseudo);
-  void SortAndTransferMatchedRules(bool is_vtt_embedded_style = false);
+  void SortAndTransferMatchedRules(bool is_vtt_embedded_style,
+                                   StyleRuleUsageTracker* tracker);
   void ClearMatchedRules();
   void AddElementStyleProperties(const CSSPropertyValueSet*,
                                  bool is_cacheable = true,
@@ -171,9 +170,11 @@ class CORE_EXPORT ElementRuleCollector {
     result_.FinishAddingPresentationalHints();
   }
   void BeginAddingAuthorRulesForTreeScope(const TreeScope& tree_scope) {
+    current_matching_tree_scope_ = &tree_scope;
     result_.BeginAddingAuthorRulesForTreeScope(tree_scope);
   }
   void FinishAddingAuthorRulesForTreeScope() {
+    current_matching_tree_scope_ = nullptr;
     result_.FinishAddingAuthorRulesForTreeScope();
   }
 
@@ -233,7 +234,6 @@ class CORE_EXPORT ElementRuleCollector {
   void CollectMatchingRulesForListInternal(base::span<const RuleData>,
                                            const MatchRequest&,
                                            const RuleSet*,
-                                           const CSSStyleSheet*,
                                            int,
                                            const SelectorChecker&,
                                            PartRequest* = nullptr);
@@ -241,7 +241,6 @@ class CORE_EXPORT ElementRuleCollector {
   void CollectMatchingRulesForList(base::span<const RuleData>,
                                    const MatchRequest&,
                                    const RuleSet*,
-                                   const CSSStyleSheet*,
                                    int,
                                    const SelectorChecker&,
                                    PartRequest* = nullptr);
@@ -254,16 +253,11 @@ class CORE_EXPORT ElementRuleCollector {
                     const ContainerQuery*,
                     unsigned proximity,
                     const SelectorChecker::MatchResult&,
-                    const CSSStyleSheet* style_sheet,
                     int style_sheet_index);
 
-  // Find the CSSRule within the CSSRuleCollection that corresponds to the
-  // incoming StyleRule. This mapping is needed because Inspector needs to
-  // interact with the CSSOM-wrappers (i.e. CSSRules) of the matched rules, but
-  // ElementRuleCollector's result is a list of StyleRules.
-  template <class CSSRuleCollection>
-  CSSRule* FindStyleRule(CSSRuleCollection*, StyleRule*);
-  void AppendCSSOMWrapperForRule(CSSStyleSheet*, const RuleData*, wtf_size_t);
+  void AppendCSSOMWrapperForRule(const TreeScope* tree_scope_containing_rule,
+                                 const RuleData*,
+                                 wtf_size_t);
 
   void SortMatchedRules();
 
@@ -282,8 +276,11 @@ class CORE_EXPORT ElementRuleCollector {
   SelectorChecker::Mode mode_;
   bool can_use_fast_reject_;
   bool matching_ua_rules_;
+  bool matching_rules_from_no_style_sheet_ =
+      false;  // Document rules and watched selectors.
   bool suppress_visited_;
   EInsideLink inside_link_;
+  const TreeScope* current_matching_tree_scope_ = nullptr;
 
   HeapVector<MatchedRule, 32> matched_rules_;
   ContainerSelectorCache container_selector_cache_;

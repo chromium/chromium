@@ -77,6 +77,9 @@ class CORE_EXPORT ScopedStyleResolver final
   const CascadeLayerMap* GetCascadeLayerMap() const {
     return cascade_layer_map_;
   }
+  const HeapVector<Member<CSSStyleSheet>>& GetStyleSheets() const {
+    return style_sheets_;
+  }
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
   void CollectMatchingElementScopeRules(ElementRuleCollector&);

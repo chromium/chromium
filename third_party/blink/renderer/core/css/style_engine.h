@@ -656,7 +656,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   RuleSet* DefaultViewTransitionStyle() const;
   void InvalidateUAViewTransitionStyle();
 
-  const ActiveStyleSheetVector& ActiveUserStyleSheetsForDebug() const {
+  const ActiveStyleSheetVector& ActiveUserStyleSheets() const {
     return active_user_style_sheets_;
   }
 
