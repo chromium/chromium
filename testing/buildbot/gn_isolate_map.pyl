@@ -499,6 +499,15 @@
     "label": "//chrome/test:variations_smoke_tests",
     "type": "generated_script",
   },
+  "variations_desktop_smoke_tests": {
+    "label": "//chrome/test/variations:variations_desktop_smoke_tests",
+    "type": "script",
+    "script": "//testing/scripts/run_isolated_script_test.py",
+    "args": [
+      "--xvfb",
+      "../../chrome/test/variations/run_variations_tests.py",
+    ],
+  },
   "chromedriver_replay_unittests": {
     "label": "//chrome/test/chromedriver:chromedriver_replay_unittests",
     "type": "script",

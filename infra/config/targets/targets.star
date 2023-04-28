@@ -626,6 +626,16 @@ targets.generated_script(
 )
 
 targets.script(
+    name = "variations_desktop_smoke_tests",
+    label = "//chrome/test/variations:variations_desktop_smoke_tests",
+    script = "//testing/scripts/run_isolated_script_test.py",
+    args = [
+        "--xvfb",
+        "../../chrome/test/variations/run_variations_tests.py",
+    ],
+)
+
+targets.script(
     name = "chromedriver_replay_unittests",
     label = "//chrome/test/chromedriver:chromedriver_replay_unittests",
     script = "//chrome/test/chromedriver/log_replay/client_replay_unittest.py",

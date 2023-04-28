@@ -5,3 +5,21 @@ python_library("test_utils") {
 
   data = [ "//chrome/test/variations/test_utils/" ]
 }
+
+python_library("variations_desktop_smoke_tests") {
+  testonly = true
+
+  data = [
+    "conftest.py",
+    "smoke_test.py",
+    "//chrome/test/data/variations/",
+    "//chrome/test/variations/run_variations_tests.py",
+  ]
+
+  data_deps = [
+    ":test_utils",
+    "//testing:run_isolated_script_test",
+    "//testing:test_scripts_shared",
+    "//third_party/catapult/third_party/gsutil:gsutil",
+  ]
+}

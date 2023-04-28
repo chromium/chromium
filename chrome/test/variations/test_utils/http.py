@@ -14,7 +14,7 @@ SRC_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), *([os.pardir] * 4)))
 
 HTTP_DATA_BASEDIR = os.path.join(
-    SRC_DIR, 'chrome', 'test', 'data', 'chromedriver')
+    SRC_DIR, 'chrome', 'test', 'data', 'variations')
 
 def start_http_server(port:int = 8000,
                       directory: str = None) -> http.server.HTTPServer:

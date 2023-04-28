@@ -66,7 +66,10 @@ if (is_android) {
 # into the build.
 group("test") {
   testonly = true
-  deps = [ "fuzzing:test" ]
+  deps = [
+    "fuzzing:test",
+    "//chrome/test/variations:variations_desktop_smoke_tests",
+  ]
 }
 
 if (is_android) {

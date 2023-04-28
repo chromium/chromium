@@ -13,6 +13,7 @@ from contextlib import contextmanager
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import ChromeOptions
+from selenium.webdriver.chrome.service import Service
 
 def pytest_addoption(parser):
   # By default, running on the hosted platform.
@@ -32,6 +33,13 @@ def pytest_addoption(parser):
   parser.addoption('--chromedriver',
                    help='The path to the existing chromedriver. '
                    'This will ignore --channel and skip downloading.')
+
+@pytest.fixture
+def local_http_server():
+  """Starts and returns a http server."""
+  http_server = test_utils.start_http_server()
+  yield http_server
+  http_server.shutdown()
 
 # pylint: disable=redefined-outer-name
 @pytest.fixture(scope="session")
@@ -63,7 +71,8 @@ def chromedriver_path(pytestconfig) -> str:
   return os.path.join(downloaded_dir, 'chromedriver')
 
 @pytest.fixture
-def driver_factory(chromedriver_path: str,
+def driver_factory(pytestconfig,
+                   chromedriver_path: str,
                    tmp_path_factory: pytest.TempPathFactory):
   """Returns a factory that creates a webdriver."""
   @contextmanager
@@ -74,12 +83,14 @@ def driver_factory(chromedriver_path: str,
     os.environ['BREAKPAD_DUMP_LOCATION'] = str(crash_dump_dir)
 
     chrome_options = chrome_options or ChromeOptions()
-    chrome_options.add_argument("--headless")
+    chrome_options.add_argument(
+      f'fake-variations-channel={pytestconfig.getoption("channel")}')
     chrome_options.add_experimental_option('excludeSwitches',
                                           ['disable-background-networking'])
     driver = None
     try:
-      driver = webdriver.Chrome(chromedriver_path, options=chrome_options)
+      driver = webdriver.Chrome(service=Service(chromedriver_path),
+                                options=chrome_options)
       yield driver
     except WebDriverException as e:
       # Report this to be part of test result.

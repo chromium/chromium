@@ -72,6 +72,36 @@
         "args": [
           "--git-revision=${got_revision}"
         ],
+        "isolate_name": "variations_desktop_smoke_tests",
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "variations_desktop_smoke_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "result_format": "single"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04",
+              "pool": "chrome.tests.finch"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test/variations:variations_desktop_smoke_tests/"
+      },
+      {
+        "args": [
+          "--git-revision=${got_revision}"
+        ],
         "isolate_name": "variations_smoke_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -102,6 +132,37 @@
   },
   "mac-arm64-finch-smoke-chrome": {
     "isolated_scripts": [
+      {
+        "args": [
+          "--git-revision=${got_revision}"
+        ],
+        "isolate_name": "variations_desktop_smoke_tests",
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "variations_desktop_smoke_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "result_format": "single"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-12",
+              "pool": "chrome.tests.finch"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test/variations:variations_desktop_smoke_tests/"
+      },
       {
         "args": [
           "--git-revision=${got_revision}"
@@ -2761,6 +2822,36 @@
   },
   "win-finch-smoke-chrome": {
     "isolated_scripts": [
+      {
+        "args": [
+          "--git-revision=${got_revision}"
+        ],
+        "isolate_name": "variations_desktop_smoke_tests",
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "variations_desktop_smoke_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "result_format": "single"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Windows-10",
+              "pool": "chrome.tests.finch"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test/variations:variations_desktop_smoke_tests/"
+      },
       {
         "args": [
           "--git-revision=${got_revision}"
