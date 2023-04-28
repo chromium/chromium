@@ -5,7 +5,6 @@
 #include "ash/wm/window_state.h"
 
 #include <absl/cleanup/cleanup.h>
-#include <memory>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -37,15 +36,11 @@
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
-#include "ash/wm/wm_metrics.h"
-#include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/time/time.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/wm/features.h"
@@ -59,7 +54,6 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/painter.h"

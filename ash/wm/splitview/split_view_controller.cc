@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/app_types.h"
@@ -30,13 +29,11 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_properties.h"
@@ -45,13 +42,11 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ash/wm/window_util.h"
-#include "ash/wm/wm_event.h"
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"

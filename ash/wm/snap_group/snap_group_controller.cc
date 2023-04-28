@@ -4,8 +4,6 @@
 
 #include "ash/wm/snap_group/snap_group_controller.h"
 
-#include <memory>
-
 #include "ash/shell.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/splitview/split_view_constants.h"

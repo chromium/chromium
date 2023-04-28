@@ -8,8 +8,6 @@
 #include "ash/shell.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk.h"
-#include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"

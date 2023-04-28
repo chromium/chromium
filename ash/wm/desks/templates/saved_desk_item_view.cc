@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/public/cpp/desk_template.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -28,7 +27,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
-#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/i18n/time_formatting.h"

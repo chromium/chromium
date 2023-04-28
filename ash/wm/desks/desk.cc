@@ -27,7 +27,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"

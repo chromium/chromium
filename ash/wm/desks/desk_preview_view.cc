@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <functional>
-#include <memory>
 #include <utility>
 
 #include "ash/public/cpp/window_properties.h"
@@ -32,14 +31,12 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/color/color_provider.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_recorder.h"

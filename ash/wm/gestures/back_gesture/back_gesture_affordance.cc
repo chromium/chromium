@@ -22,7 +22,6 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
-#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"

@@ -4,7 +4,6 @@
 
 #include "ash/wm/lock_layout_manager.h"
 
-#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/wm/lock_window_state.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"

@@ -27,7 +27,6 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/default_tick_clock.h"

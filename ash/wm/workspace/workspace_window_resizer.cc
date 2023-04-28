@@ -46,7 +46,6 @@
 #include "ui/base/class_property.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/gfx/geometry/point_conversions.h"

@@ -16,7 +16,6 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"

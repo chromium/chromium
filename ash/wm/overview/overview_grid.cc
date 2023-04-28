@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <functional>
-#include <memory>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -38,7 +37,6 @@
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
-#include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -48,7 +46,6 @@
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
-#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
@@ -64,7 +61,6 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"

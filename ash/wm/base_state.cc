@@ -14,8 +14,6 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
-#include "ash/wm/window_state.h"
-#include "ash/wm/wm_event.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"

@@ -19,7 +19,6 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"

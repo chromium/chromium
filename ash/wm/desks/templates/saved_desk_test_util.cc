@@ -12,8 +12,6 @@
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
-#include "ash/wm/desks/templates/saved_desk_item_view.h"
-#include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"

@@ -5,7 +5,6 @@
 #include "ash/wm/test_session_state_animator.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"

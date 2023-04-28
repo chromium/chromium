@@ -5,13 +5,11 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 
 #include <algorithm>
-#include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"

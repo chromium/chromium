@@ -6,7 +6,6 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "base/functional/bind.h"

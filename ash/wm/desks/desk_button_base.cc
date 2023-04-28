@@ -9,7 +9,6 @@
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_constants.h"

@@ -4,7 +4,6 @@
 
 #include "ash/wm/workspace/backdrop_controller.h"
 
-#include <memory>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -13,7 +12,6 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -21,15 +19,12 @@
 #include "ash/wm/always_on_top_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "ui/aura/client/aura_constants.h"

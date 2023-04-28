@@ -22,7 +22,6 @@
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_util.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"

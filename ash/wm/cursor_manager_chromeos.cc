@@ -21,7 +21,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager.h"
 
 namespace ash {

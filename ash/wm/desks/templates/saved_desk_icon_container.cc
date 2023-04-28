@@ -13,7 +13,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/saved_desk_constants.h"
-#include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
@@ -22,7 +21,6 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
-#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {

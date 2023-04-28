@@ -10,7 +10,6 @@
 #include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/transient_window_client.h"
-#include "ui/aura/window.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"

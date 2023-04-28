@@ -13,7 +13,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 

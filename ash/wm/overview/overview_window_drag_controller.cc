@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/wm/overview/overview_window_drag_controller.h"
-#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
-#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"

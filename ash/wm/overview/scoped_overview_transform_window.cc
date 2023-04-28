@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/wm/overview/scoped_overview_transform_window.h"
-#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 #include <utility>

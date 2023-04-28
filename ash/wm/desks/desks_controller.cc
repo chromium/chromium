@@ -5,14 +5,12 @@
 #include "ash/wm/desks/desks_controller.h"
 
 #include <algorithm>
-#include <memory>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -29,7 +27,6 @@
 #include "ash/wm/desks/desk_animation_impl.h"
 #include "ash/wm/desks/desk_bar_controller.h"
 #include "ash/wm/desks/desks_animations.h"
-#include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
@@ -59,7 +56,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -67,13 +63,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
-#include "base/uuid.h"
 #include "chromeos/ui/wm/features.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
-#include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/user_manager/user_manager.h"

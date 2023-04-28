@@ -23,7 +23,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
-#include "ui/aura/window_observer.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"

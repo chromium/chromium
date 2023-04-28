@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/wm/toplevel_window_event_handler.h"
-#include "base/memory/raw_ptr.h"
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -22,7 +21,6 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
-#include "ui/aura/window_observer.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"

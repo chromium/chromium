@@ -5,8 +5,6 @@
 #include "ash/wm/screen_pinning_controller.h"
 
 #include <algorithm>
-#include <memory>
-#include <vector>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -17,7 +15,6 @@
 #include "ash/wm/window_state.h"
 #include "base/auto_reset.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"

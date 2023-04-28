@@ -23,7 +23,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/view.h"
 
 namespace ash {
 

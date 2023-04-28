@@ -4,8 +4,6 @@
 
 #include "ash/wm/desks/desk_bar_view_base.h"
 
-#include <memory>
-
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -13,19 +11,14 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/wm/desks/cros_next_default_desk_button.h"
-#include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_mini_view_animations.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_constants.h"
-#include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
-#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_metrics.h"

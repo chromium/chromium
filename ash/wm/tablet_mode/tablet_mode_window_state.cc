@@ -23,7 +23,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_properties.h"
-#include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_state_util.h"
 #include "ash/wm/window_util.h"
@@ -35,7 +34,6 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/wm/core/ime_util_chromeos.h"
 #include "ui/wm/core/window_util.h"
 

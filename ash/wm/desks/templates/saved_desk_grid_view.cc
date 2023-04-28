@@ -25,7 +25,6 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 

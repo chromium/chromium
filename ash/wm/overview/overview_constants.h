@@ -19,7 +19,7 @@ constexpr base::TimeDelta kTransition = base::Milliseconds(300);
 constexpr base::TimeDelta kWindowRestoreDurationCrOSNext =
     base::Milliseconds(350);
 
-// In the conceptual overview table, the space between each item both
+// In the conceptual overview table, the space between two adjacent items
 // horizontally and vertically.
 constexpr int kSpaceBetweenItemsDp = 10;
 
