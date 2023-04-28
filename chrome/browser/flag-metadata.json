@@ -4317,17 +4317,12 @@
   {
     "name": "handwriting-legacy-recognition",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 116
-  },
-  {
-    "name": "handwriting-legacy-recognition-all-lang",
-    "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 118
   },
   {
     "name": "handwriting-library-dlc",
     "owners": [ "shend@google.com", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 118
   },
   {
     "name": "happiness-tracking-surveys-for-desktop-demo",
