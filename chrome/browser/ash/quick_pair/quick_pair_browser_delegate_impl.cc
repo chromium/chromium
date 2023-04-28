@@ -22,9 +22,13 @@
 namespace ash {
 namespace quick_pair {
 
-QuickPairBrowserDelegateImpl::QuickPairBrowserDelegateImpl() = default;
+QuickPairBrowserDelegateImpl::QuickPairBrowserDelegateImpl() {
+  SetInstance(this);
+}
 
-QuickPairBrowserDelegateImpl::~QuickPairBrowserDelegateImpl() = default;
+QuickPairBrowserDelegateImpl::~QuickPairBrowserDelegateImpl() {
+  SetInstance(nullptr);
+}
 
 scoped_refptr<network::SharedURLLoaderFactory>
 QuickPairBrowserDelegateImpl::GetURLLoaderFactory() {

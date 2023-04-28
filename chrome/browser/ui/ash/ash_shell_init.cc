@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/shell.h"
 #include "ash/shell_init_params.h"
 #include "chrome/browser/browser_process.h"
@@ -26,6 +27,8 @@ void CreateShell() {
   shell_init_params.local_state = g_browser_process->local_state();
   shell_init_params.keyboard_ui_factory =
       std::make_unique<ChromeKeyboardUIFactory>();
+  shell_init_params.quick_pair_mediator_factory =
+      std::make_unique<ash::quick_pair::Mediator::FactoryImpl>();
   shell_init_params.dbus_bus = ash::DBusThreadManager::Get()->GetSystemBus();
 
   ash::Shell::CreateInstance(std::move(shell_init_params));

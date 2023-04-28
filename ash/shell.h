@@ -18,6 +18,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
+#include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -855,6 +856,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   void Init(ui::ContextFactory* context_factory,
             PrefService* local_state,
             std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory,
+            std::unique_ptr<ash::quick_pair::Mediator::Factory>
+                quick_pair_mediator_factory,
             scoped_refptr<dbus::Bus> dbus_bus);
 
   // Initializes the display manager and related components.

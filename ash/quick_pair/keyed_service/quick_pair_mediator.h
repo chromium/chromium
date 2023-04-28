@@ -53,12 +53,14 @@ class Mediator final
  public:
   class Factory {
    public:
-    static std::unique_ptr<Mediator> Create();
-    static void SetFactoryForTesting(Factory* factory);
     virtual ~Factory() = default;
-
-   private:
     virtual std::unique_ptr<Mediator> BuildInstance() = 0;
+  };
+
+  class FactoryImpl : public Factory {
+   private:
+    // Mediator::Factory:
+    std::unique_ptr<Mediator> BuildInstance() override;
   };
 
   Mediator(

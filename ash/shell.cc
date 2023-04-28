@@ -317,6 +317,7 @@ Shell* Shell::CreateInstance(ShellInitParams init_params) {
   instance_ = new Shell(std::move(init_params.delegate));
   instance_->Init(init_params.context_factory, init_params.local_state,
                   std::move(init_params.keyboard_ui_factory),
+                  std::move(init_params.quick_pair_mediator_factory),
                   init_params.dbus_bus);
   return instance_;
 }
@@ -1091,6 +1092,8 @@ void Shell::Init(
     ui::ContextFactory* context_factory,
     PrefService* local_state,
     std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory,
+    std::unique_ptr<ash::quick_pair::Mediator::Factory>
+        quick_pair_mediator_factory,
     scoped_refptr<dbus::Bus> dbus_bus) {
   login_unlock_throughput_recorder_ =
       std::make_unique<LoginUnlockThroughputRecorder>();
@@ -1255,7 +1258,7 @@ void Shell::Init(
   // Fast Pair depends on the display manager, so initialize it after
   // display manager was properly initialized.
   if (base::FeatureList::IsEnabled(features::kFastPair)) {
-    quick_pair_mediator_ = quick_pair::Mediator::Factory::Create();
+    quick_pair_mediator_ = quick_pair_mediator_factory->BuildInstance();
   }
 
   // The WindowModalityController needs to be at the front of the input event
