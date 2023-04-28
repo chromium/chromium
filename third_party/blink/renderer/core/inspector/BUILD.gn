@@ -84,6 +84,8 @@ inspector_protocol_generate("protocol_sources") {
     "inspector/protocol/runtime.h",
     "inspector/protocol/security.cc",
     "inspector/protocol/security.h",
+    "inspector/protocol/storage.cc",
+    "inspector/protocol/storage.h",
     "inspector/protocol/web_audio.cc",
     "inspector/protocol/web_audio.h",
   ]

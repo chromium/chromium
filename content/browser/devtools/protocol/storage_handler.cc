@@ -135,11 +135,21 @@ std::unique_ptr<protocol::Storage::StorageBucketInfo> BuildBucketInfo(
       break;
   }
 
+  std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket;
+  if (bucket.is_default()) {
+    storage_bucket = protocol::Storage::StorageBucket::Create()
+                         .SetStorageKey(bucket.storage_key.Serialize())
+                         .Build();
+  } else {
+    storage_bucket = protocol::Storage::StorageBucket::Create()
+                         .SetStorageKey(bucket.storage_key.Serialize())
+                         .SetName(bucket.name)
+                         .Build();
+  }
+
   return protocol::Storage::StorageBucketInfo::Create()
-      .SetStorageKey(bucket.storage_key.Serialize())
+      .SetBucket(std::move(storage_bucket))
       .SetId(base::NumberToString(bucket.id.value()))
-      .SetName(bucket.name)
-      .SetIsDefault(bucket.is_default())
       .SetExpiration(bucket.expiration.ToDoubleT())
       .SetQuota(bucket.quota)
       .SetPersistent(bucket.persistent)
@@ -251,9 +261,7 @@ class StorageHandler::IndexedDBObserver
       return;
     }
 
-    owner_->NotifyIndexedDBListChanged(
-        bucket_locator.storage_key.origin().Serialize(),
-        bucket_locator.storage_key.Serialize());
+    owner_->NotifyIndexedDBListChanged(bucket_locator);
   }
 
   void OnIndexedDBContentChanged(
@@ -270,10 +278,8 @@ class StorageHandler::IndexedDBObserver
       return;
     }
 
-    owner_->NotifyIndexedDBContentChanged(
-        bucket_locator.storage_key.origin().Serialize(),
-        bucket_locator.storage_key.Serialize(), database_name,
-        object_store_name);
+    owner_->NotifyIndexedDBContentChanged(bucket_locator, database_name,
+                                          object_store_name);
   }
 
  private:
@@ -871,21 +877,24 @@ void StorageHandler::NotifyCacheStorageContentChanged(
 }
 
 void StorageHandler::NotifyIndexedDBListChanged(
-    const std::string& origin,
-    const std::string& storage_key) {
+    storage::BucketLocator bucket_locator) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  frontend_->IndexedDBListUpdated(origin, storage_key);
+  frontend_->IndexedDBListUpdated(
+      bucket_locator.storage_key.origin().Serialize(),
+      bucket_locator.storage_key.Serialize(),
+      base::NumberToString(bucket_locator.id.value()));
 }
 
 void StorageHandler::NotifyIndexedDBContentChanged(
-    const std::string& origin,
-    const std::string& storage_key,
+    storage::BucketLocator bucket_locator,
     const std::u16string& database_name,
     const std::u16string& object_store_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  frontend_->IndexedDBContentUpdated(origin, storage_key,
-                                     base::UTF16ToUTF8(database_name),
-                                     base::UTF16ToUTF8(object_store_name));
+  frontend_->IndexedDBContentUpdated(
+      bucket_locator.storage_key.origin().Serialize(),
+      bucket_locator.storage_key.Serialize(),
+      base::NumberToString(bucket_locator.id.value()),
+      base::UTF16ToUTF8(database_name), base::UTF16ToUTF8(object_store_name));
 }
 
 Response StorageHandler::FindStoragePartition(
@@ -1563,17 +1572,20 @@ DispatchResponse StorageHandler::SetStorageBucketTracking(
 }
 
 DispatchResponse StorageHandler::DeleteStorageBucket(
-    const std::string& serialized_storage_key,
-    const std::string& bucket_name) {
+    std::unique_ptr<protocol::Storage::StorageBucket> bucket) {
   storage::QuotaManagerProxy* manager = GetQuotaManagerProxy();
   DCHECK(manager);
 
-  auto storage_key = blink::StorageKey::Deserialize(serialized_storage_key);
+  if (!bucket->HasName()) {
+    return Response::InvalidParams("Can't delete the default bucket.");
+  }
+
+  auto storage_key = blink::StorageKey::Deserialize(bucket->GetStorageKey());
   if (!storage_key.has_value()) {
     return Response::InvalidParams("Invalid Storage Key given.");
   }
 
-  manager->DeleteBucket(storage_key.value(), bucket_name,
+  manager->DeleteBucket(storage_key.value(), bucket->GetName(""),
                         base::SingleThreadTaskRunner::GetCurrentDefault(),
                         base::DoNothing());
   return Response::Success();

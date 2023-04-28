@@ -1,8 +1,15 @@
-Tests that getting metadata works for IndexedDB with storageKey
+Tests that getting metadata works for IndexedDB with storage bucket
 
-Open database, object store
+Open database, object store for default bucket
 database and objectstore created
 
 Get metadata for storage key
 metadata equals {"entriesCount":1,"keyGeneratorValue":1}
+
+Open database, object store for test-bucket bucket
+database and objectstore created
+
+Get metadata for storage key
+metadata equals {"entriesCount":1,"keyGeneratorValue":1}
+
 

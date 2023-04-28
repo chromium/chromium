@@ -4,14 +4,16 @@ Open database, object store and set value
 {
     method : Storage.indexedDBListUpdated
     params : {
+        bucketId : <string>
         origin : http://127.0.0.1:8000
         storageKey : http://127.0.0.1:8000/
     }
     sessionId : <string>
 }
-Title{
+{
     method : Storage.indexedDBContentUpdated
     params : {
+        bucketId : <string>
         databaseName : <string>
         objectStoreName : test-store
         origin : http://127.0.0.1:8000

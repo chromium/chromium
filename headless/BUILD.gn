@@ -206,6 +206,7 @@ devtools_domains = [
   "runtime",
   "security",
   "service_worker",
+  "storage",
   "target",
   "tracing",
 ]

@@ -46,6 +46,9 @@
                 "domain": "DOMStorage"
             },
             {
+                "domain": "Storage"
+            },
+            {
                 "domain": "IndexedDB",
                 "async": ["requestDatabaseNames", "requestDatabase", "requestData", "getMetadata", "deleteObjectStoreEntries", "clearObjectStore", "deleteDatabase"]
             },

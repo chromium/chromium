@@ -1,8 +1,15 @@
-Tests that deleting database works for IndexedDB with storageKey
+Tests that deleting database works for IndexedDB with storage bucket
 
-Open database
+Open database for default bucket
 database created successfuly
 
 Delete database
 database deleted
+
+Open database for test-bucket bucket
+database created successfuly
+
+Delete database
+database deleted
+
 
