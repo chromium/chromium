@@ -17,13 +17,14 @@ namespace segmentation_platform {
 namespace {
 
 // Wrap callback to record metrics.
-ClassificationResultCallback GetWrappedCallback(
+template <typename ResultType>
+base::OnceCallback<void(const ResultType&)> GetWrappedCallback(
     const std::string& segmentation_key,
-    ClassificationResultCallback callback) {
+    base::OnceCallback<void(const ResultType&)> callback) {
   auto wrapped_callback = base::BindOnce(
       [](const std::string& segmentation_key, base::Time start_time,
-         ClassificationResultCallback callback,
-         const ClassificationResult& result) -> void {
+         base::OnceCallback<void(const ResultType&)> callback,
+         const ResultType& result) -> void {
         stats::RecordClassificationRequestTotalDuration(
             segmentation_key, base::Time::Now() - start_time);
         std::move(callback).Run(result);
@@ -66,6 +67,50 @@ void RequestDispatcher::OnPlatformInitialized(
   }
 }
 
+template <typename ResultType, typename Request>
+void RequestDispatcher::GetModelResult(
+    const std::string& segmentation_key,
+    const PredictionOptions& options,
+    scoped_refptr<InputContext> input_context,
+    Request request,
+    base::OnceCallback<void(const ResultType&)> callback) {
+  // TODO(ssid): Support cached results for all APIs.
+  DCHECK(options.on_demand_execution);
+
+  // For on-demand results, we need to run the models for which we need DB
+  // initialization to be complete. Hence cache the request if platform
+  // initialization isn't completed yet.
+  if (!storage_init_status_.has_value()) {
+    // If the platform isn't fully initialized, cache the input arguments to
+    // run later.
+    pending_actions_.push_back(base::BindOnce(
+        &RequestDispatcher::GetModelResult<ResultType, Request>,
+        weak_ptr_factory_.GetWeakPtr(), segmentation_key, options,
+        std::move(input_context), std::move(request), std::move(callback)));
+    return;
+  }
+
+  // If the platform initialization failed, invoke callback to return invalid
+  // results.
+  if (!storage_init_status_.value()) {
+    stats::RecordSegmentSelectionFailure(
+        segmentation_key,
+        stats::SegmentationSelectionFailureReason::kDBInitFailure);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  ResultType(PredictionStatus::kFailed)));
+    return;
+  }
+
+  auto wrapped_callback =
+      GetWrappedCallback(segmentation_key, std::move(callback));
+
+  auto iter = request_handlers_.find(segmentation_key);
+  CHECK(iter != request_handlers_.end());
+  std::move(request).Run(iter->second.get(), options, input_context,
+                         std::move(wrapped_callback));
+}
+
 void RequestDispatcher::GetClassificationResult(
     const std::string& segmentation_key,
     const PredictionOptions& options,
@@ -91,39 +136,19 @@ void RequestDispatcher::GetClassificationResult(
     return;
   }
 
-  // For on-demand results, we need to run the models for which we need DB
-  // initialization to be complete. Hence cache the request if platform
-  // initialization isn't completed yet.
-  if (!storage_init_status_.has_value()) {
-    // If the platform isn't fully initialized, cache the input arguments to
-    // run later.
-    pending_actions_.push_back(
-        base::BindOnce(&RequestDispatcher::GetClassificationResult,
-                       weak_ptr_factory_.GetWeakPtr(), segmentation_key,
-                       options, std::move(input_context), std::move(callback)));
-    return;
-  }
+  GetModelResult(segmentation_key, options, input_context,
+                 base::BindOnce(&RequestHandler::GetClassificationResult),
+                 std::move(callback));
+}
 
-  // If the platform initialization failed, invoke callback to return invalid
-  // results.
-  if (!storage_init_status_.value()) {
-    stats::RecordSegmentSelectionFailure(
-        segmentation_key,
-        stats::SegmentationSelectionFailureReason::kDBInitFailure);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       ClassificationResult(PredictionStatus::kFailed)));
-    return;
-  }
-
-  auto wrapped_callback =
-      GetWrappedCallback(segmentation_key, std::move(callback));
-
-  auto iter = request_handlers_.find(segmentation_key);
-  CHECK(iter != request_handlers_.end());
-  iter->second->GetClassificationResult(options, input_context,
-                                        std::move(wrapped_callback));
+void RequestDispatcher::GetAnnotatedNumericResult(
+    const std::string& segmentation_key,
+    const PredictionOptions& options,
+    scoped_refptr<InputContext> input_context,
+    AnnotatedNumericResultCallback callback) {
+  GetModelResult(segmentation_key, options, input_context,
+                 base::BindOnce(&RequestHandler::GetAnnotatedNumericResult),
+                 std::move(callback));
 }
 
 }  // namespace segmentation_platform

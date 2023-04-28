@@ -80,6 +80,7 @@ static void JNI_ContextualPageActionController_ComputeContextualPageAction(
 
   segmentation_platform::PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
+
   segmentation_platform_service->GetClassificationResult(
       segmentation_platform::kContextualPageActionsKey, prediction_options,
       input_context,

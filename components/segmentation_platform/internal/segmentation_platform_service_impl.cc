@@ -164,6 +164,15 @@ void SegmentationPlatformServiceImpl::GetClassificationResult(
       segmentation_key, prediction_options, input_context, std::move(callback));
 }
 
+void SegmentationPlatformServiceImpl::GetAnnotatedNumericResult(
+    const std::string& segmentation_key,
+    const PredictionOptions& prediction_options,
+    scoped_refptr<InputContext> input_context,
+    AnnotatedNumericResultCallback callback) {
+  request_dispatcher_->GetAnnotatedNumericResult(
+      segmentation_key, prediction_options, input_context, std::move(callback));
+}
+
 SegmentSelectionResult SegmentationPlatformServiceImpl::GetCachedSegmentResult(
     const std::string& segmentation_key) {
   CHECK(segment_selectors_.find(segmentation_key) != segment_selectors_.end());

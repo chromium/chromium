@@ -17,13 +17,33 @@ ClassificationResult::ClassificationResult(const ClassificationResult&) =
 ClassificationResult& ClassificationResult::operator=(
     const ClassificationResult&) = default;
 
-RegressionResult::RegressionResult(PredictionStatus status) : status(status) {}
+AnnotatedNumericResult::AnnotatedNumericResult(PredictionStatus status)
+    : status(status) {}
 
-RegressionResult::~RegressionResult() = default;
+AnnotatedNumericResult::~AnnotatedNumericResult() = default;
 
-RegressionResult::RegressionResult(const RegressionResult&) = default;
-
-RegressionResult& RegressionResult::operator=(const RegressionResult&) =
+AnnotatedNumericResult::AnnotatedNumericResult(const AnnotatedNumericResult&) =
     default;
+
+AnnotatedNumericResult& AnnotatedNumericResult::operator=(
+    const AnnotatedNumericResult&) = default;
+
+absl::optional<float> AnnotatedNumericResult::GetResultForLabel(
+    base::StringPiece label) const {
+  if (status != PredictionStatus::kSucceeded ||
+      !result.output_config().predictor().has_generic_predictor()) {
+    return absl::nullopt;
+  }
+
+  const auto& labels =
+      result.output_config().predictor().generic_predictor().output_labels();
+  DCHECK_EQ(result.result_size(), labels.size());
+  for (int index = 0; index < labels.size(); ++index) {
+    if (labels.at(index) == label) {
+      return result.result().at(index);
+    }
+  }
+  return absl::nullopt;
+}
 
 }  // namespace segmentation_platform

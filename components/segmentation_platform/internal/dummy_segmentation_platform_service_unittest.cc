@@ -10,6 +10,8 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,6 +34,20 @@ class DummySegmentationPlatformServiceTest : public testing::Test {
     std::move(closure).Run();
   }
 
+  void OnGetClassificationResult(base::RepeatingClosure closure,
+                                 const ClassificationResult& result) {
+    ASSERT_EQ(result.status, PredictionStatus::kFailed);
+    EXPECT_TRUE(result.ordered_labels.empty());
+    std::move(closure).Run();
+  }
+
+  void OnGetAnnotatedNumericResult(base::RepeatingClosure closure,
+                                   const AnnotatedNumericResult& result) {
+    ASSERT_EQ(result.status, PredictionStatus::kFailed);
+    EXPECT_TRUE(result.result.result().empty());
+    std::move(closure).Run();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<DummySegmentationPlatformService>
@@ -49,6 +65,28 @@ TEST_F(DummySegmentationPlatformServiceTest, GetSelectedSegment) {
   loop.Run();
   ASSERT_EQ(expected,
             segmentation_platform_service_->GetCachedSegmentResult("test_key"));
+}
+
+TEST_F(DummySegmentationPlatformServiceTest, GetClassificationResult) {
+  base::RunLoop loop;
+  PredictionOptions options;
+  segmentation_platform_service_->GetClassificationResult(
+      "test_key", options, nullptr,
+      base::BindOnce(
+          &DummySegmentationPlatformServiceTest::OnGetClassificationResult,
+          base::Unretained(this), loop.QuitClosure()));
+  loop.Run();
+}
+
+TEST_F(DummySegmentationPlatformServiceTest, GetAnnotatedNumericResult) {
+  base::RunLoop loop;
+  PredictionOptions options;
+  segmentation_platform_service_->GetAnnotatedNumericResult(
+      "test_key", options, nullptr,
+      base::BindOnce(
+          &DummySegmentationPlatformServiceTest::OnGetAnnotatedNumericResult,
+          base::Unretained(this), loop.QuitClosure()));
+  loop.Run();
 }
 
 }  // namespace segmentation_platform

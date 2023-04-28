@@ -51,7 +51,7 @@ message Predictor {
     repeated string class_labels = 2;
 
     // Threshold to get `class_labels` with score above it. Only labels with
-    // score above or equal to threshold are returned. 
+    // score above or equal to threshold are returned.
     optional float threshold = 3;
   }
 
@@ -81,20 +81,24 @@ message Predictor {
   // Describes a regression model.
   message Regressor {}
 
+  // Used when the model does not fit in any of the above descriptions. Contains
+  // basic description about the model output. Model result is vector of floats
+  // with labels.
+  message GenericPredictor {
+    // Label assigned to each corresponding output value returned by the model.
+    // The number of outputs from the model must be equal to the length of this
+    // list.
+    repeated string output_labels = 1;
+  }
+
   // Specifies how to post process the raw model results based on model type,
   // e.g. classification or regression.
   oneof PredictorType {
-    // Model result is classified as boolean/binary.
     BinaryClassifier binary_classifier = 1;
-
-    // Model result is of multi-class type.
     MultiClassClassifier multi_class_classifier = 2;
-
-    // Model result is binned into one of the types.
     BinnedClassifier binned_classifier = 3;
-
-    // Model output is of regression type.
     Regressor regressor = 4;
+    GenericPredictor generic_predictor = 5;
   }
 }
 

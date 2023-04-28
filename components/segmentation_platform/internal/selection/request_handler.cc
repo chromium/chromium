@@ -15,6 +15,7 @@
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/proto/prediction_result.pb.h"
+#include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/trigger.h"
 
 namespace segmentation_platform {
@@ -49,6 +50,10 @@ class RequestHandlerImpl : public RequestHandler {
   void GetClassificationResult(const PredictionOptions& options,
                                scoped_refptr<InputContext> input_context,
                                ClassificationResultCallback callback) override;
+  void GetAnnotatedNumericResult(
+      const PredictionOptions& options,
+      scoped_refptr<InputContext> input_context,
+      AnnotatedNumericResultCallback callback) override;
 
  private:
   void GetModelResult(const PredictionOptions& options,
@@ -58,6 +63,10 @@ class RequestHandlerImpl : public RequestHandler {
   void OnGetModelResultForClassification(
       scoped_refptr<InputContext> input_context,
       ClassificationResultCallback classification_callback,
+      std::unique_ptr<SegmentResultProvider::SegmentResult> result);
+  void OnGetAnnotatedNumericResult(
+      scoped_refptr<InputContext> input_context,
+      AnnotatedNumericResultCallback callback,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
   TrainingRequestId CollectTrainingData(
@@ -97,6 +106,17 @@ void RequestHandlerImpl::GetClassificationResult(
                      weak_ptr_factory_.GetWeakPtr(), input_context,
                      std::move(callback)));
 }
+void RequestHandlerImpl::GetAnnotatedNumericResult(
+    const PredictionOptions& options,
+    scoped_refptr<InputContext> input_context,
+    AnnotatedNumericResultCallback callback) {
+  DCHECK(options.on_demand_execution);
+  GetModelResult(
+      options, input_context,
+      base::BindOnce(&RequestHandlerImpl::OnGetAnnotatedNumericResult,
+                     weak_ptr_factory_.GetWeakPtr(), input_context,
+                     std::move(callback)));
+}
 
 void RequestHandlerImpl::GetModelResult(
     const PredictionOptions& options,
@@ -130,8 +150,6 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
     pred_result = result->result;
     stats::RecordClassificationResultComputed(*config_, pred_result);
 
-    // Collect training data. The training data collector might be null in
-    // testing.
     request_id = CollectTrainingData(input_context);
   } else {
     stats::RecordSegmentSelectionFailure(
@@ -150,12 +168,31 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
                                 classification_result));
 }
 
+void RequestHandlerImpl::OnGetAnnotatedNumericResult(
+    scoped_refptr<InputContext> input_context,
+    AnnotatedNumericResultCallback callback,
+    std::unique_ptr<SegmentResultProvider::SegmentResult> segment_result) {
+  PredictionStatus status = PredictionStatus::kFailed;
+  AnnotatedNumericResult result(status);
+  absl::optional<TrainingRequestId> request_id;
+  if (segment_result) {
+    status = ResultStateToPredictionStatus(segment_result->state);
+    result = PostProcessor().GetAnnotatedNumericResult(segment_result->result,
+                                                       status);
+
+    request_id = CollectTrainingData(input_context);
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+}
+
 TrainingRequestId RequestHandlerImpl::CollectTrainingData(
     scoped_refptr<InputContext> input_context) {
-  if (!execution_service_->training_data_collector()) {
+  // The execution service and training data collector, might be null in
+  // testing.
+  if (!execution_service_ || !execution_service_->training_data_collector()) {
     return TrainingRequestId();
   }
-
   return execution_service_->training_data_collector()->OnDecisionTime(
       config_->segments.begin()->first, input_context,
       proto::TrainingOutputs::TriggerConfig::ONDEMAND);

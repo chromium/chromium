@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "components/segmentation_platform/public/result.h"
 
 namespace segmentation_platform {
 
@@ -190,6 +191,24 @@ base::TimeDelta PostProcessor::GetTTLForPredictedResult(
     return ttl_to_use * metadata_utils::ConvertToTimeDelta(time_unit);
   }
   return base::TimeDelta();
+}
+
+AnnotatedNumericResult PostProcessor::GetAnnotatedNumericResult(
+    const proto::PredictionResult& prediction_result,
+    PredictionStatus status) {
+  if (status != PredictionStatus::kSucceeded) {
+    return AnnotatedNumericResult(status);
+  }
+  if (!IsValidResult(prediction_result)) {
+    return AnnotatedNumericResult(PredictionStatus::kFailed);
+  }
+  DCHECK_EQ(prediction_result.result_size(), prediction_result.output_config()
+                                                 .predictor()
+                                                 .generic_predictor()
+                                                 .output_labels_size());
+  AnnotatedNumericResult result(status);
+  result.result = prediction_result;
+  return result;
 }
 
 }  // namespace segmentation_platform

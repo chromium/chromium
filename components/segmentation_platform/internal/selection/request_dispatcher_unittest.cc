@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,6 +37,10 @@ class MockRequestHandler : public RequestHandler {
                void(const PredictionOptions& options,
                     scoped_refptr<InputContext> input_context,
                     ClassificationResultCallback callback));
+  MOCK_METHOD3(GetAnnotatedNumericResult,
+               void(const PredictionOptions& prediction_options,
+                    scoped_refptr<InputContext> input_context,
+                    AnnotatedNumericResultCallback callback));
 };
 
 class RequestDispatcherTest : public testing::Test {
@@ -72,6 +77,15 @@ class RequestDispatcherTest : public testing::Test {
                                  const ClassificationResult& expected,
                                  const ClassificationResult& actual) {
     EXPECT_EQ(expected.ordered_labels, actual.ordered_labels);
+    EXPECT_EQ(expected.status, actual.status);
+    std::move(closure).Run();
+  }
+
+  void OnGetAnnotatedNumericResult(base::RepeatingClosure closure,
+                                   const AnnotatedNumericResult& expected,
+                                   const AnnotatedNumericResult& actual) {
+    EXPECT_EQ(expected.result.SerializeAsString(),
+              actual.result.SerializeAsString());
     EXPECT_EQ(expected.status, actual.status);
     std::move(closure).Run();
   }
@@ -204,6 +218,38 @@ TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccess) {
       kAdaptiveToolbarClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
                      base::Unretained(this), loop.QuitClosure(), result2));
+  loop.Run();
+  EXPECT_EQ(0, request_dispatcher_->get_pending_actions_size_for_testing());
+}
+
+TEST_F(RequestDispatcherTest, TestAnnotatedNumericResultRequestWithWaiting) {
+  base::RunLoop loop;
+  PredictionOptions options;
+  options.on_demand_execution = true;
+
+  // Request from client 1.
+  AnnotatedNumericResult result1(PredictionStatus::kSucceeded);
+  result1.result.add_result(1.0);
+  EXPECT_CALL(*request_handler1_, GetAnnotatedNumericResult(_, _, _))
+      .WillRepeatedly(Invoke([&](const PredictionOptions& options,
+                                 scoped_refptr<InputContext> input_context,
+                                 AnnotatedNumericResultCallback callback) {
+        std::move(callback).Run(result1);
+      }));
+
+  request_dispatcher_->GetAnnotatedNumericResult(
+      kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
+      base::BindOnce(&RequestDispatcherTest::OnGetAnnotatedNumericResult,
+                     base::Unretained(this), loop.QuitClosure(), result1));
+  EXPECT_EQ(1, request_dispatcher_->get_pending_actions_size_for_testing());
+
+  // Init platform.
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  ExecutionService execution_service;
+  request_dispatcher_->OnPlatformInitialized(true, &execution_service,
+                                             std::move(result_providers));
+
   loop.Run();
   EXPECT_EQ(0, request_dispatcher_->get_pending_actions_size_for_testing());
 }

@@ -20,6 +20,7 @@ struct PredictionOptions;
 // RequestHandler handles client API requests for a single client. Internally,
 // it invokes the result provider for getting raw results and converts them to
 // the postprocessed results as required by the classification/regression API.
+// Only used for on-demand executions.
 class RequestHandler {
  public:
   RequestHandler() = default;
@@ -36,6 +37,12 @@ class RequestHandler {
       const PredictionOptions& options,
       scoped_refptr<InputContext> input_context,
       ClassificationResultCallback callback) = 0;
+
+  // Client API. See SegmentationPlatformService::GetAnnotatedNumericResult`.
+  virtual void GetAnnotatedNumericResult(
+      const PredictionOptions& options,
+      scoped_refptr<InputContext> input_context,
+      AnnotatedNumericResultCallback callback) = 0;
 };
 
 }  // namespace segmentation_platform
