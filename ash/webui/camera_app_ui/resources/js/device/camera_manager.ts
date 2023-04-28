@@ -164,8 +164,8 @@ export class CameraManager implements EventListener {
     return this.preview.getVideo();
   }
 
-  getAudioTrack(): MediaStreamTrack {
-    return this.getPreviewVideo().getStream().getAudioTracks()[0];
+  getAudioTrack(): MediaStreamTrack|null {
+    return this.getPreviewVideo().getStream().getAudioTracks()[0] ?? null;
   }
 
   /**
