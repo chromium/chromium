@@ -316,41 +316,36 @@ bool IsABookmarkNodeSectionForIdentifier(
 - (void)computeBookmarkTableViewDataMatching:(NSString*)searchText
                   orShowMessageWhenNoResults:(NSString*)noResults {
   [self resetSections];
-
-  std::vector<const BookmarkNode*> nodes;
   bookmarks::QueryFields query;
   query.word_phrase_query.reset(new std::u16string);
   *query.word_phrase_query = base::SysNSStringToUTF16(searchText);
-  BOOL shouldDisplayCloudSlashIcon = [self
-      shouldDisplayCloudSlashIconWithBookmarkModel:_profileBookmarkModel.get()];
-  GetBookmarksMatchingProperties(_profileBookmarkModel.get(), query,
-                                 kMaxBookmarksSearchResults, &nodes);
-
-  int count = 0;
-  for (const BookmarkNode* node : nodes) {
-    BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
-        initWithType:BookmarksHomeItemTypeBookmark
-        bookmarkNode:node];
-    nodeItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
-    [self.consumer.tableViewModel
-                        addItem:nodeItem
-        toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
-    count++;
+  // Total count of search result for both models.
+  int totalSearchResultCount = 0;
+  if (bookmark_utils_ios::IsAccountBookmarkModelAvailable(
+          _authenticationService)) {
+    totalSearchResultCount =
+        [self populateNodeItemWithQuery:query
+                          bookmarkModel:_accountBookmarkModel.get()
+                  displayCloudSlashIcon:NO];
   }
-
-  if (count == 0) {
-    TableViewTextItem* item =
-        [[TableViewTextItem alloc] initWithType:BookmarksHomeItemTypeMessage];
-    item.textAlignment = NSTextAlignmentLeft;
-    item.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    item.text = noResults;
-    [self.consumer.tableViewModel
-                        addItem:item
-        toSectionWithIdentifier:BookmarksHomeSectionIdentifierMessages];
+  BOOL displayCloudSlashIcon = [self
+      shouldDisplayCloudSlashIconWithBookmarkModel:_profileBookmarkModel.get()];
+  totalSearchResultCount +=
+      [self populateNodeItemWithQuery:query
+                        bookmarkModel:_profileBookmarkModel.get()
+                displayCloudSlashIcon:displayCloudSlashIcon];
+  if (totalSearchResultCount) {
+    [self updateTableViewBackground];
     return;
   }
-
-  [self updateTableViewBackground];
+  // Add "no result" item.
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:BookmarksHomeItemTypeMessage];
+  item.textAlignment = NSTextAlignmentLeft;
+  item.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  item.text = noResults;
+  [self.consumer.tableViewModel addItem:item
+                toSectionWithIdentifier:BookmarksHomeSectionIdentifierMessages];
 }
 
 - (void)updateTableViewBackground {
@@ -719,6 +714,29 @@ bool IsABookmarkNodeSectionForIdentifier(
       << ", profileBookmarkModel: " << _profileBookmarkModel.get()
       << ", accountBookmarkModel: " << _accountBookmarkModel.get();
   return NO;
+}
+
+// Populates the table view model with BookmarksHomeNodeItem based on the search
+// result done in `model` using `query`.
+// For each BookmarksHomeNodeItem, the cloud icon is displayed or not according
+// to `displayCloudSlashIcon`.
+// Returns the number of added items in the table view model.
+- (int)populateNodeItemWithQuery:(const bookmarks::QueryFields&)query
+                   bookmarkModel:(bookmarks::BookmarkModel*)model
+           displayCloudSlashIcon:(BOOL)displayCloudSlashIcon {
+  std::vector<const BookmarkNode*> nodes;
+  GetBookmarksMatchingProperties(model, query, kMaxBookmarksSearchResults,
+                                 &nodes);
+  for (const BookmarkNode* node : nodes) {
+    BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
+        initWithType:BookmarksHomeItemTypeBookmark
+        bookmarkNode:node];
+    nodeItem.shouldDisplayCloudSlashIcon = displayCloudSlashIcon;
+    [self.consumer.tableViewModel
+                        addItem:nodeItem
+        toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
+  }
+  return nodes.size();
 }
 
 @end
