@@ -7,7 +7,6 @@
 
 #include "base/command_line.h"
 #include "base/environment.h"
-#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
@@ -41,12 +40,6 @@ class UtilitySandboxedProcessLauncherDelegate
   bool ShouldUnsandboxedRunInJob() override;
   bool CetCompatible() override;
   bool AllowWindowsFontsDir() override;
-  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
-  // Set preload libraries to transfer as part of the sandbox delegate data,
-  // which will used in utility_main to preload these libraries before lockdown.
-  void SetPreloadLibraries(const std::vector<base::FilePath>& preloads) {
-    preload_libraries_ = preloads;
-  }
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)
@@ -65,10 +58,6 @@ class UtilitySandboxedProcessLauncherDelegate
 #if BUILDFLAG(IS_POSIX)
   base::EnvironmentMap env_;
 #endif  // BUILDFLAG(IS_POSIX)
-
-#if BUILDFLAG(IS_WIN)
-  std::vector<base::FilePath> preload_libraries_;
-#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)
   absl::optional<raw_ptr<ZygoteCommunication>> zygote_;

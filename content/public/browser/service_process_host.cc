@@ -58,16 +58,6 @@ ServiceProcessHost::Options& ServiceProcessHost::Options::WithProcessCallback(
   return *this;
 }
 
-#if BUILDFLAG(IS_WIN)
-ServiceProcessHost::Options&
-ServiceProcessHost::Options::WithPreloadedLibraries(
-    std::vector<base::FilePath> preloads,
-    base::PassKey<ServiceProcessHostPreloadLibraries> passkey) {
-  preload_libraries = std::move(preloads);
-  return *this;
-}
-#endif  // #if BUILDFLAG(IS_WIN)
-
 ServiceProcessHost::Options ServiceProcessHost::Options::Pass() {
   return std::move(*this);
 }

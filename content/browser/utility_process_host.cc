@@ -201,13 +201,6 @@ void UtilityProcessHost::SetExtraCommandLineSwitches(
   extra_switches_ = std::move(switches);
 }
 
-#if BUILDFLAG(IS_WIN)
-void UtilityProcessHost::SetPreloadLibraries(
-    const std::vector<base::FilePath>& preloads) {
-  preload_libraries_ = preloads;
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 void UtilityProcessHost::AddFileToPreload(
     std::string key,
@@ -442,17 +435,11 @@ bool UtilityProcessHost::StartProcess() {
         std::make_unique<UtilitySandboxedProcessLauncherDelegate>(
             sandbox_type_, env_, *cmd_line);
 
-#if BUILDFLAG(IS_WIN)
-    if (!preload_libraries_.empty()) {
-      delegate->SetPreloadLibraries(preload_libraries_);
-    }
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(USE_ZYGOTE)
     if (zygote_for_testing_.has_value()) {
       delegate->SetZygote(zygote_for_testing_.value());
     }
-#endif  // BUILDFLAG(USE_ZYGOTE)
+#endif
 
     process_->LaunchWithFileData(std::move(delegate), std::move(cmd_line),
                                  std::move(file_data_), true);
