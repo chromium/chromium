@@ -55,6 +55,10 @@ class EncryptionKeyApi : public chrome::mojom::SyncEncryptionKeysExtension,
       return;
     }
 
+    base::UmaHistogramBoolean(
+        "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",
+        sync_service_ == nullptr);
+
     // Guard against incognito (where `sync_service_` is null).
     if (sync_service_) {
       sync_service_->AddTrustedVaultDecryptionKeysFromWeb(

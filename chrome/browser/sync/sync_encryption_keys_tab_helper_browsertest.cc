@@ -246,6 +246,8 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(kConsoleSuccessMessage);
 
+  base::HistogramTester histogram_tester;
+
   // Calling setSyncEncryptionKeys() in the main frame works and it gets
   // the callback by setSyncEncryptionKeys().
   const std::vector<uint8_t> kEncryptionKey = {7};
@@ -253,6 +255,17 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
                               kEncryptionKey);
   ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(1u, console_observer.messages().size());
+
+  // Collect histograms from the renderer process, since otherwise
+  // HistogramTester cannot verify the ones instrumented in the renderer.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultJavascriptSetEncryptionKeysValidArgs", 1 /*Valid*/, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",
+      0 /*Not Incognito*/, 1);
 
   AccountInfo account;
   account.gaia = kFakeGaiaId;
@@ -312,6 +325,8 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   content::WebContentsConsoleObserver console_observer(incognito_web_contents);
   console_observer.SetPattern(kConsoleSuccessMessage);
 
+  base::HistogramTester histogram_tester;
+
   // Calling setSyncEncryptionKeys() in incognito completes successfully,
   // although it does nothing.
   const std::vector<uint8_t> kEncryptionKey = {7};
@@ -319,6 +334,17 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
                               kEncryptionKey);
   ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(1u, console_observer.messages().size());
+
+  // Collect histograms from the renderer process, since otherwise
+  // HistogramTester cannot verify the ones instrumented in the renderer.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultJavascriptSetEncryptionKeysValidArgs", 1 /*Valid*/, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",
+      1 /*Incognito*/, 1);
 
   AccountInfo account;
   account.gaia = kFakeGaiaId;
