@@ -35,6 +35,9 @@ const OobeWelcomeDialogBase =
  */
 OobeWelcomeDialogBase.$;
 
+/**
+ * @polymer
+ */
 export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
   static get is() {
     return 'oobe-welcome-dialog';
@@ -76,6 +79,16 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
           return (
               loadTimeData.valueExists('deviceFlowType') &&
               loadTimeData.getString('deviceFlowType') == 'meet');
+        },
+        readOnly: true,
+      },
+
+      isSimon_: {
+        type: Boolean,
+        value: function() {
+          return (
+              loadTimeData.valueExists('isOobeSimonEnabled') &&
+              loadTimeData.getBoolean('isOobeSimonEnabled'));
         },
         readOnly: true,
       },
@@ -215,12 +228,6 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
     this.setVideoPlay_(visible);
   }
 
-  getProjectSimonProductName() {
-    return loadTimeData.valueExists('kProjectSimonProductName') ?
-        loadTimeData.getString('kProjectSimonProductName') :
-        '';
-  }
-
   /**
    * Play or pause welcome video.
    * @param {boolean} play - whether play or pause welcome video.
@@ -280,6 +287,13 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
       bubbles: true,
       composed: true,
     }));
+  }
+
+  /**
+   * Determines if AnimationSlot is needed for specific flow
+   */
+  showAnimationSlot() {
+    return !this.isSimon_;
   }
 }
 

@@ -202,10 +202,6 @@ void AddProjectSimonResources(content::WebUIDataSource* source) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath(kFirstAnimation, IDR_CROS_OOBE_FIRST_ANIMATION);
   source->AddResourcePath(kWelcomeBackdrop, IDR_CROS_OOBE_WELCOME_BACKDROP);
-  auto product_name =
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-          IDR_CROS_OOBE_PRODUCT_NAME);
-  source->AddString("kProjectSimonProductName", std::string{product_name});
 #endif
 }
 
