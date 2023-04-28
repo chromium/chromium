@@ -1526,16 +1526,8 @@ enum HeaderBehaviour {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE ||
       ![self canShowTabStrip]) {
     topAnchor = self.view.topAnchor;
-    // TODO(crbug.com/1423799): Dchecks added for investigation purposes, remove
-    // once crash root cause is found.
-    DCHECK(self.view);
-    DCHECK(topAnchor);
   } else {
     topAnchor = self.tabStripView.bottomAnchor;
-    // TODO(crbug.com/1423799): Dchecks added for investigation purposes, remove
-    // once crash root cause is found.
-    DCHECK(self.tabStripView);
-    DCHECK(topAnchor);
   }
 
   // Only add leading and trailing constraints once as they are never updated.
@@ -1556,9 +1548,6 @@ enum HeaderBehaviour {
 
   // Create a constraint for the vertical positioning of the toolbar.
   UIView* primaryView = self.primaryToolbarCoordinator.viewController.view;
-  // TODO(crbug.com/1423799): Dcheck added for investigation purposes, remove
-  // once crash root cause is found.
-  DCHECK(primaryView.topAnchor);
   self.primaryToolbarOffsetConstraint =
       [primaryView.topAnchor constraintEqualToAnchor:topAnchor];
 
