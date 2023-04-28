@@ -480,10 +480,6 @@ crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/renderbuffe
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/misc/tex-input-validation.html [ Failure ]
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ RetryOnFailure ]
 
-## Mac / Passthrough command decoder / Metal ##
-
-crbug.com/1363349 [ mac passthrough angle-metal ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Slow ]
-
 ## Mac / M1 / OpenGL ##
 
 # No active browser window, but no crash stack.
