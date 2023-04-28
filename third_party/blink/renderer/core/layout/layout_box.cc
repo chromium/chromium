@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
@@ -250,10 +251,23 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
   float default_label_width = font.Width(ConstructTextRun(
       label, box.StyleRef(), TextRun::kAllowTrailingExpansion));
   if (HTMLInputElement* button = input.UploadButton()) {
-    if (LayoutObject* button_layout_object = button->GetLayoutObject()) {
+    if (auto* button_box = button->GetLayoutBox()) {
+      LayoutUnit max;
+      if (RuntimeEnabledFeatures::RemoveLegacySizeComputationEnabled()) {
+        const ComputedStyle& button_style = button_box->StyleRef();
+        WritingMode mode = button_style.GetWritingMode();
+        NGConstraintSpaceBuilder builder(mode,
+                                         button_style.GetWritingDirection(),
+                                         /* is_new_fc */ true);
+        max = NGBlockNode(button_box)
+                  .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,
+                                      builder.ToConstraintSpace())
+                  .sizes.max_size;
+      } else {
+        max = button_box->PreferredLogicalWidths().max_size;
+      }
       default_label_width +=
-          button_layout_object->PreferredLogicalWidths().max_size +
-          (kAfterButtonSpacing * box.StyleRef().EffectiveZoom());
+          max + (kAfterButtonSpacing * box.StyleRef().EffectiveZoom());
     }
   }
   return LayoutUnit(

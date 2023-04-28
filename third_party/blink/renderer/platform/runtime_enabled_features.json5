@@ -2854,6 +2854,10 @@
       base_feature: "none",
     },
     {
+      name: "RemoveLegacySizeComputation",
+      status: "stable",
+    },
+    {
       name: "RemoveMobileViewportDoubleTap",
       public: true,
       status: "stable",
