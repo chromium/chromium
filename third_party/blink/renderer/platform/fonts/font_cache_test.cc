@@ -169,6 +169,7 @@ TEST_F(FontCacheTest, systemFont) {
 TEST_F(FontCacheTest, Locale) {
   FontCacheKey key1(FontFaceCreationParams(), /* font_size */ 16,
                     /* options */ 0, /* device_scale_factor */ 1.0f,
+                    /* size_adjust */ FontSizeAdjust(),
                     /* variation_settings */ nullptr,
                     /* palette */ nullptr,
                     /* variant_alternates */ nullptr,

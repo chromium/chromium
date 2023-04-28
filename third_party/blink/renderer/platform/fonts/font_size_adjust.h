@@ -27,6 +27,12 @@ class PLATFORM_EXPORT FontSizeAdjust {
     return !operator==(other);
   }
 
+  unsigned GetHash() const {
+    unsigned computed_hash = 0;
+    WTF::AddIntToHash(computed_hash, UNLIKELY(value_ == 0.0) ? 0.0 : value_);
+    return computed_hash;
+  }
+
  private:
   float value_{kFontSizeAdjustNone};
 };

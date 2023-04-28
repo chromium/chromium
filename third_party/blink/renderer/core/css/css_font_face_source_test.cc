@@ -29,8 +29,7 @@ class DummyFontFaceSource : public CSSFontFaceSource {
 
   scoped_refptr<SimpleFontData> GetFontDataForSize(float size) {
     FontDescription font_description;
-    font_description.SetSizeAdjust(FontSizeAdjust(size));
-    font_description.SetAdjustedSize(size);
+    font_description.SetComputedSize(size);
     FontSelectionCapabilities normal_capabilities(
         {NormalWidthValue(), NormalWidthValue()},
         {NormalSlopeValue(), NormalSlopeValue()},
@@ -43,8 +42,7 @@ namespace {
 
 unsigned SimulateHashCalculation(float size) {
   FontDescription font_description;
-  font_description.SetSizeAdjust(FontSizeAdjust(size));
-  font_description.SetAdjustedSize(size);
+  font_description.SetComputedSize(size);
   bool is_unique_match = false;
   bool is_generic_family = false;
   return font_description
@@ -59,7 +57,7 @@ TEST(CSSFontFaceSourceTest, HashCollision) {
   // Even if the hash value collide, fontface cache should return different
   // value for different fonts, values determined experimentally.
   constexpr float kEqualHashesFirst = 2157;
-  constexpr float kEqualHashesSecond = 534;
+  constexpr float kEqualHashesSecond = 5505272;
   EXPECT_EQ(SimulateHashCalculation(kEqualHashesFirst),
             SimulateHashCalculation(kEqualHashesSecond));
   EXPECT_NE(font_face_source.GetFontDataForSize(kEqualHashesFirst),
