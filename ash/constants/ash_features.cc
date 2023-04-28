@@ -1571,6 +1571,9 @@ BASE_FEATURE(kOobeHidDetectionRevamp,
 BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables OOBE Simon features.
+BASE_FEATURE(kFeatureManagementOobeSimon,
+             "FeatureManagementOobeSimon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOobeSimon, "OobeSimon", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Skipping the assistant setup screen in OOBE.
@@ -3060,7 +3063,8 @@ bool IsOobeJellyEnabled() {
 }
 
 bool IsOobeSimonEnabled() {
-  return base::FeatureList::IsEnabled(kOobeSimon);
+  return base::FeatureList::IsEnabled(kFeatureManagementOobeSimon) &&
+         base::FeatureList::IsEnabled(kOobeSimon);
 }
 
 bool IsOobeSkipAssistantEnabled() {
