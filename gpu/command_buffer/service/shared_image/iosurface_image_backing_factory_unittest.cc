@@ -43,14 +43,6 @@
 using testing::AtLeast;
 
 namespace gpu {
-namespace {
-
-bool IsGLSupported(viz::SharedImageFormat format) {
-  return format.is_single_plane() && !format.IsLegacyMultiplanar() &&
-         format != viz::SinglePlaneFormat::kBGR_565;
-}
-
-}  // namespace
 
 class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
  public:
@@ -850,10 +842,8 @@ TEST_F(IOSurfaceImageBackingFactoryScanoutTest, TexImageTexStorageEquivalence) {
                            gles2::DisallowedFeatures());
   const gles2::Validators* validators = feature_info->validators();
 
-  for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
-    auto format = viz::SharedImageFormat::SinglePlane(
-        static_cast<viz::ResourceFormat>(i));
-    if (!IsGLSupported(format) || format.IsCompressed()) {
+  for (auto format : viz::SinglePlaneFormat::kAll) {
+    if (format == viz::SinglePlaneFormat::kBGR_565 || format.IsCompressed()) {
       continue;
     }
     int storage_format = TextureStorageFormat(
