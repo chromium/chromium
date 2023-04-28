@@ -2085,6 +2085,33 @@ class DictationContextCheckingTest : public DictationTest {
     }
   }
 
+  // Attempts to run `command` within an empty editable and waits for the UI to
+  // show the appropriate context-checking failure.
+  void RunEmptyEditableTest(const std::string& command) {
+    SendFinalResultAndWait(command);
+    std::u16string message =
+        u"Can't " + base::ASCIIToUTF16(command) + u", text field is empty";
+    WaitForProperties(
+        /*visible=*/true,
+        /*icon=*/DictationBubbleIconType::kMacroFail,
+        /*text=*/message,
+        /*hints=*/absl::optional<std::vector<std::u16string>>());
+  }
+
+  // Attempts to run `command` on an editable with no selection and waits for
+  // the UI to show the appropriate context-checking failure.
+  void RunNoSelectionTest(const std::string& command) {
+    SendFinalResultAndWaitForEditableValue("Hello world", "Hello world");
+    SendFinalResultAndWait(command);
+    std::u16string message =
+        u"Can't " + base::ASCIIToUTF16(command) + u", no selected text";
+    WaitForProperties(
+        /*visible=*/true,
+        /*icon=*/DictationBubbleIconType::kMacroFail,
+        /*text=*/message,
+        /*hints=*/absl::optional<std::vector<std::u16string>>());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<DictationBubbleTestHelper> dictation_bubble_test_helper_;
@@ -2109,24 +2136,11 @@ INSTANTIATE_TEST_SUITE_P(
                                  EditableType::kContentEditable)));
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectEmptyEditable) {
-  SendFinalResultAndWait("unselect");
-  WaitForProperties(
-      /*visible=*/true,
-      /*icon=*/DictationBubbleIconType::kMacroFail,
-      /*text=*/u"Can't unselect, text field is empty",
-      /*hints=*/absl::optional<std::vector<std::u16string>>());
+  RunEmptyEditableTest("unselect");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectNoSelection) {
-  std::string text = "Hello world";
-  SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWait("unselect");
-  WaitForProperties(
-      /*visible=*/true,
-      /*icon=*/DictationBubbleIconType::kMacroFail,
-      /*text=*/
-      u"Can't unselect, no selected text",
-      /*hints=*/absl::optional<std::vector<std::u16string>>());
+  RunNoSelectionTest("unselect");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectSuccessful) {
@@ -2134,6 +2148,44 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectSuccessful) {
   SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWaitForSelectionChanged("Select all");
   SendFinalResultAndWaitForSelectionChanged("Unselect");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kMacroSuccess,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CutEmptyEditable) {
+  RunEmptyEditableTest("cut");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CutNoSelection) {
+  RunNoSelectionTest("cut");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CutSuccessful) {
+  std::string text = "Hello world";
+  SendFinalResultAndWaitForEditableValue(text, text);
+  SendFinalResultAndWaitForSelectionChanged("Select all");
+  SendFinalResultAndWaitForClipboardChanged("Cut");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kMacroSuccess,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CopyEmptyEditable) {
+  RunEmptyEditableTest("copy");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CopyNoSelection) {
+  RunNoSelectionTest("copy");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CopySuccessful) {
+  std::string text = "Hello world";
+  SendFinalResultAndWaitForEditableValue(text, text);
+  SendFinalResultAndWaitForSelectionChanged("Select all");
+  SendFinalResultAndWaitForClipboardChanged("Copy");
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kMacroSuccess,
                     /*text=*/absl::optional<std::u16string>(),

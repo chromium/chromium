@@ -104,15 +104,17 @@ class SimpleMacroFactory {
 
     const initialArgs = [];
     switch (this.macroName_) {
-      case MacroName.NEW_LINE:
+      case MacroName.COPY_SELECTED_TEXT:
+      case MacroName.CUT_SELECTED_TEXT:
       case MacroName.DELETE_PREV_SENT:
       case MacroName.NAV_NEXT_SENT:
       case MacroName.NAV_PREV_SENT:
-      case MacroName.UNSELECT_TEXT:
+      case MacroName.NEW_LINE:
       case MacroName.SMART_DELETE_PHRASE:
-      case MacroName.SMART_REPLACE_PHRASE:
       case MacroName.SMART_INSERT_BEFORE:
+      case MacroName.SMART_REPLACE_PHRASE:
       case MacroName.SMART_SELECT_BTWN_INCL:
+      case MacroName.UNSELECT_TEXT:
         initialArgs.push(this.inputController_);
         break;
     }

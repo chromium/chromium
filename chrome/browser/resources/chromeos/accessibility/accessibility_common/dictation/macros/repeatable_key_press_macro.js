@@ -131,8 +131,13 @@ export class NavNextLineMacro extends RepeatableKeyPressMacro {
 
 /** Macro to copy selected text. */
 export class CopySelectedTextMacro extends RepeatableKeyPressMacro {
-  constructor() {
-    super(MacroName.COPY_SELECTED_TEXT, /*repeat=*/ 1);
+  /** @param {!InputController} inputController */
+  constructor(inputController) {
+    super(
+        MacroName.COPY_SELECTED_TEXT, /*repeat=*/ 1,
+        new ContextChecker(inputController)
+            .add(Context.EMPTY_EDITABLE)
+            .add(Context.NO_SELECTION));
   }
 
   /** @override */
@@ -155,8 +160,13 @@ export class PasteTextMacro extends RepeatableKeyPressMacro {
 
 /** Macro to cut selected text. */
 export class CutSelectedTextMacro extends RepeatableKeyPressMacro {
-  constructor() {
-    super(MacroName.CUT_SELECTED_TEXT, /*repeat=*/ 1);
+  /** @param {!InputController} inputController */
+  constructor(inputController) {
+    super(
+        MacroName.CUT_SELECTED_TEXT, /*repeat=*/ 1,
+        new ContextChecker(inputController)
+            .add(Context.EMPTY_EDITABLE)
+            .add(Context.NO_SELECTION));
   }
 
   /** @override */

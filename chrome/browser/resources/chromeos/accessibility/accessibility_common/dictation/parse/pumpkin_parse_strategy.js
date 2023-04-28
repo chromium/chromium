@@ -206,11 +206,13 @@ export class PumpkinParseStrategy extends ParseStrategy {
       case MacroName.NAV_NEXT_LINE:
         return new RepeatableKeyPressMacro.NavNextLineMacro(repeat);
       case MacroName.COPY_SELECTED_TEXT:
-        return new RepeatableKeyPressMacro.CopySelectedTextMacro();
+        return new RepeatableKeyPressMacro.CopySelectedTextMacro(
+            this.getInputController());
       case MacroName.PASTE_TEXT:
         return new RepeatableKeyPressMacro.PasteTextMacro();
       case MacroName.CUT_SELECTED_TEXT:
-        return new RepeatableKeyPressMacro.CutSelectedTextMacro();
+        return new RepeatableKeyPressMacro.CutSelectedTextMacro(
+            this.getInputController());
       case MacroName.UNDO_TEXT_EDIT:
         return new RepeatableKeyPressMacro.UndoTextEditMacro();
       case MacroName.REDO_ACTION:
