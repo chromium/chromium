@@ -53,13 +53,25 @@ bool TestRootCerts::Add(X509Certificate* certificate, CertificateTrust trust) {
   return AddImpl(certificate);
 }
 
+void TestRootCerts::AddKnownRoot(base::span<const uint8_t> der_cert) {
+  test_known_roots_.insert(std::string(
+      reinterpret_cast<const char*>(der_cert.data()), der_cert.size()));
+}
+
 void TestRootCerts::Clear() {
   ClearImpl();
   test_trust_store_.Clear();
+  test_known_roots_.clear();
 }
 
 bool TestRootCerts::IsEmpty() const {
   return test_trust_store_.IsEmpty();
+}
+
+bool TestRootCerts::IsKnownRoot(base::span<const uint8_t> der_cert) const {
+  return test_known_roots_.find(
+             base::StringPiece(reinterpret_cast<const char*>(der_cert.data()),
+                               der_cert.size())) != test_known_roots_.end();
 }
 
 TestRootCerts::TestRootCerts() {
@@ -98,6 +110,17 @@ void ScopedTestRoot::Reset(CertificateList certs, CertificateTrust trust) {
   for (const auto& cert : certs)
     TestRootCerts::GetInstance()->Add(cert.get(), trust);
   certs_ = certs;
+}
+
+ScopedTestKnownRoot::ScopedTestKnownRoot() = default;
+
+ScopedTestKnownRoot::ScopedTestKnownRoot(X509Certificate* cert) {
+  TestRootCerts::GetInstance()->AddKnownRoot(
+      x509_util::CryptoBufferAsSpan(cert->cert_buffer()));
+}
+
+ScopedTestKnownRoot::~ScopedTestKnownRoot() {
+  TestRootCerts::GetInstance()->Clear();
 }
 
 }  // namespace net

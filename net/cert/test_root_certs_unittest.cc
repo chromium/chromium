@@ -16,6 +16,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
+#include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -98,6 +99,7 @@ TEST(TestRootCertsTest, OverrideTrust) {
       NetLogWithSource());
   EXPECT_NE(OK, bad_status);
   EXPECT_NE(0u, bad_verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
+  EXPECT_FALSE(bad_verify_result.is_issued_by_known_root);
 
   // Add the root certificate and mark it as trusted.
   scoped_refptr<X509Certificate> root_cert =
@@ -115,6 +117,7 @@ TEST(TestRootCertsTest, OverrideTrust) {
       NetLogWithSource());
   EXPECT_THAT(good_status, IsOk());
   EXPECT_EQ(0u, good_verify_result.cert_status);
+  EXPECT_FALSE(good_verify_result.is_issued_by_known_root);
 
   test_roots->Clear();
   EXPECT_TRUE(test_roots->IsEmpty());
@@ -132,6 +135,56 @@ TEST(TestRootCertsTest, OverrideTrust) {
             restored_verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
   EXPECT_EQ(bad_status, restored_status);
   EXPECT_EQ(bad_verify_result.cert_status, restored_verify_result.cert_status);
+  EXPECT_FALSE(restored_verify_result.is_issued_by_known_root);
+}
+
+TEST(TestRootCertsTest, OverrideKnownRoot) {
+  TestRootCerts* test_roots = TestRootCerts::GetInstance();
+  ASSERT_NE(static_cast<TestRootCerts*>(nullptr), test_roots);
+  EXPECT_TRUE(test_roots->IsEmpty());
+
+  // Use a runtime generated certificate chain so that the cert lifetime is not
+  // too long, and so that it will have an allowable hostname for a publicly
+  // trusted cert.
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+
+  // Add the root certificate and mark it as trusted and as a known root.
+  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  ScopedTestKnownRoot scoped_known_root(root->GetX509Certificate().get());
+  EXPECT_FALSE(test_roots->IsEmpty());
+
+  // Test that the certificate verification sets the `is_issued_by_known_root`
+  // flag.
+  CertVerifyResult good_verify_result;
+  scoped_refptr<CertVerifyProc> verify_proc(CreateCertVerifyProc());
+  int flags = 0;
+  int good_status =
+      verify_proc->Verify(leaf->GetX509Certificate().get(), "www.example.com",
+                          /*ocsp_response=*/std::string(),
+                          /*sct_list=*/std::string(), flags, CertificateList(),
+                          &good_verify_result, NetLogWithSource());
+  EXPECT_THAT(good_status, IsOk());
+  EXPECT_EQ(0u, good_verify_result.cert_status);
+  EXPECT_TRUE(good_verify_result.is_issued_by_known_root);
+
+  test_roots->Clear();
+  EXPECT_TRUE(test_roots->IsEmpty());
+
+  // Ensure that when the TestRootCerts is cleared, the test known root status
+  // revert to their original state, and don't linger. If known root status
+  // lingers, it will likely break other tests in net_unittests.
+  // Trust the root again so that the `is_issued_by_known_root` value will be
+  // calculated, and ensure that it is false now.
+  ScopedTestRoot scoped_root2(root->GetX509Certificate().get());
+  CertVerifyResult restored_verify_result;
+  int restored_status =
+      verify_proc->Verify(leaf->GetX509Certificate().get(), "www.example.com",
+                          /*ocsp_response=*/std::string(),
+                          /*sct_list=*/std::string(), flags, CertificateList(),
+                          &restored_verify_result, NetLogWithSource());
+  EXPECT_THAT(restored_status, IsOk());
+  EXPECT_EQ(0u, restored_verify_result.cert_status);
+  EXPECT_FALSE(restored_verify_result.is_issued_by_known_root);
 }
 
 TEST(TestRootCertsTest, Moveable) {
