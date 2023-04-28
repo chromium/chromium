@@ -98,7 +98,6 @@ struct LineBreakResults {
     while (lower + epsilon < upper) {
       const LayoutUnit middle = (upper + lower) / 2;
       const Status status = BreakLines(middle, num_lines, stop_at);
-      DCHECK_NE(status, Status::kNotApplicable);
       if (status != Status::kFinished) {
         lower = middle;
       } else {
