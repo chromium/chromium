@@ -902,25 +902,12 @@ void PaintArtifactCompositor::Update(
     // properties (see crbug.com/1385575).
     // However, we want to create a cc::ScrollNode regardless of whether the
     // scroller is painted. This ensures that scroll offset animations aren't
-    // affected by becoming unpainted."
-    Vector<const TransformPaintPropertyNode*> scroll_node_only;
+    // affected by becoming unpainted.
     for (auto* node : scroll_translation_nodes) {
-      if (scroll_translation_nodes_.Contains(node)) {
-        property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
-      } else {
-        // We can't ensure ScrollNode-only scroll translation nodes yet because
-        // we don't have a guarantee about the order of
-        // |scroll_translation_nodes|. If an unpainted child is encountered
-        // before its parent, EnsureCompositorScrollNode will create its parent
-        // node with invalid transform_id.
-        scroll_node_only.push_back(node);
-      }
+      property_tree_manager.EnsureCompositorScrollNode(*node);
     }
-
-    // Ensure ScrollNode-only scroll translation nodes.
-    for (auto* node : scroll_node_only) {
-      property_tree_manager.EnsureCompositorScrollNode(*node->ScrollNode(),
-                                                       *node);
+    for (auto* node : scroll_translation_nodes_.Keys()) {
+      property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
     }
   } else {
     // anchor-scroll requires all relevant scroll containers to have their
