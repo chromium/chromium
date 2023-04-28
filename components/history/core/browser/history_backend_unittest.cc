@@ -4679,6 +4679,8 @@ TEST_F(HistoryBackendTest,
   feature_list.InitWithFeatures(
       {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
 
+  backend_->SetCanAddForeignVisitsToSegments(true);
+
   SyncDeviceInfoMap sync_device_info =
       MakeSyncDeviceInfo({"foreign"}, {}, "local");
 
@@ -4748,6 +4750,8 @@ TEST_F(HistoryBackendTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
+
+  backend_->SetCanAddForeignVisitsToSegments(true);
 
   SyncDeviceInfoMap sync_device_info =
       MakeSyncDeviceInfo({"foreign"}, {}, "local");
@@ -4820,6 +4824,8 @@ TEST_F(HistoryBackendTest,
   feature_list.InitWithFeatures(
       {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
 
+  backend_->SetCanAddForeignVisitsToSegments(true);
+
   SyncDeviceInfoMap sync_device_info =
       MakeSyncDeviceInfo({"foreign"}, {}, "local");
 
@@ -4856,6 +4862,8 @@ TEST_F(
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
+
+  backend_->SetCanAddForeignVisitsToSegments(true);
 
   SyncDeviceInfoMap sync_device_info = MakeSyncDeviceInfo({}, {}, "local");
   sync_device_info["foreign-invalid"] =
@@ -4897,6 +4905,8 @@ TEST_F(
   feature_list.InitWithFeatures(
       {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
 
+  backend_->SetCanAddForeignVisitsToSegments(true);
+
   SyncDeviceInfoMap sync_device_info = MakeSyncDeviceInfo({"foreign"}, {});
   sync_device_info["local-invalid"] =
       std::make_pair(syncer::DeviceInfo::OsType::kIOS,
@@ -4935,6 +4945,8 @@ TEST_F(HistoryBackendTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
+
+  backend_->SetCanAddForeignVisitsToSegments(true);
 
   SyncDeviceInfoMap sync_device_info = MakeSyncDeviceInfo({}, {});
   sync_device_info["foreign-invalid"] =

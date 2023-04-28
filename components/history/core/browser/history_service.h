@@ -665,6 +665,10 @@ class HistoryService : public KeyedService,
       syncer::DeviceInfoTracker* device_info_tracker,
       syncer::LocalDeviceInfoProvider* local_device_info_provider);
 
+  // Tells the `HistoryBackend` whether or not foreign history should be
+  // added to segments data.
+  void SetCanAddForeignVisitsToSegmentsOnBackend(bool add_foreign_visits);
+
   // syncer::DeviceInfoTracker::Observer overrides.
   void OnDeviceInfoChange() override;
 

@@ -18,6 +18,7 @@ extern const base::FeatureParam<bool> kPrivilegeRepeatableQueries;
 extern const base::FeatureParam<bool> kRepeatableQueriesIgnoreDuplicateVisits;
 extern const base::FeatureParam<int> kRepeatableQueriesMaxAgeDays;
 extern const base::FeatureParam<int> kRepeatableQueriesMinVisitCount;
+extern const base::FeatureParam<int> kMaxNumNewTabPageDisplays;
 
 // Synced Segments Data
 // NOTE: Use `IsSyncSegmentsDataEnabled()` below to check if `kSyncSegmentsData`
