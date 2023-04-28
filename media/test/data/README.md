@@ -107,6 +107,23 @@ Fragmented audio-only 44.1kHz FLAC in MP4 file, created using:
 ffmpeg -i sfx.flac -map 0:0 -acodec copy -strict -2 -movflags frag_keyframe+empty_moov+default_base_moof sfx-flac_frag.mp4
 ```
 
+### VVC
+
+#### bear_180p.vvc
+Created using FFmpeg/vvencapp with the following commands:
+```
+ffmpeg -i bear.y4m -f rawvideo bear_180P.yuv
+vvencapp --preset medium -i bear_180P.yuv -s 320x180 -r 15 -b 1000000 -p 2 -o bear_180p.vvc
+```
+
+#### bbb_360p.vvc
+Created using FFmpeg/vvencapp with the following commands:
+```
+ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb.y4m
+ffmpeg -i bbb.y4m -vf scale=480x360 bbb_480x360.yuv
+vvencapp --preset medium -i bbb_480x360.yuv -s 480x360 -r 15 -b 1000000 -p 2 -f 60 -o bbb_360p.vvc
+```
+
 ### AV1
 
 Unless noted otherwise, the codec string is `av01.0.04M.08` for 8-bit files,

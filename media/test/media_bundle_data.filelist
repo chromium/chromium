@@ -35,6 +35,7 @@ data/av1-svc-L2T2.ivf
 data/bali_640x360_P420.yuv
 data/bbb-320x240-2video-2audio.mp4
 data/bbb.hevc
+data/bbb_360p.vvc
 data/bear-1280x720-a_frag-cenc-key_rotation.mp4
 data/bear-1280x720-a_frag-cenc.mp4
 data/bear-1280x720-a_frag-cenc_clear-all.mp4
@@ -224,6 +225,7 @@ data/bear.rm
 data/bear.swf
 data/bear.webm
 data/bear0.ts
+data/bear_180p.vvc
 data/bear_192kHz.wav
 data/bear_192x320_270.nv12.yuv
 data/bear_192x320_270.nv12.yuv.json

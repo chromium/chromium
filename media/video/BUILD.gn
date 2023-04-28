@@ -66,6 +66,13 @@ source_set("video") {
     }
   }
 
+  if (enable_platform_vvc) {
+    sources += [
+      "h266_nalu_parser.cc",
+      "h266_nalu_parser.h",
+    ]
+  }
+
   public_deps = [ "//gpu/command_buffer/client:gles2_interface" ]
 
   deps = [
@@ -160,6 +167,9 @@ source_set("unit_tests") {
         "h265_poc_unittest.cc",
       ]
     }
+  }
+  if (enable_platform_vvc) {
+    sources += [ "h266_nalu_parser_unittest.cc" ]
   }
 
   configs += [ "//media:media_config" ]

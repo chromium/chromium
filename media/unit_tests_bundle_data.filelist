@@ -32,6 +32,7 @@
 //media/test/data/bali_640x360_P420.yuv
 //media/test/data/bbb-320x240-2video-2audio.mp4
 //media/test/data/bbb.hevc
+//media/test/data/bbb_360p.vvc
 //media/test/data/bear-1280x720-a_frag-cenc-key_rotation.mp4
 //media/test/data/bear-1280x720-a_frag-cenc.mp4
 //media/test/data/bear-1280x720-a_frag-cenc_clear-all.mp4
@@ -221,6 +222,7 @@
 //media/test/data/bear.swf
 //media/test/data/bear.webm
 //media/test/data/bear0.ts
+//media/test/data/bear_180p.vvc
 //media/test/data/bear_192kHz.wav
 //media/test/data/bear_192x320_270.nv12.yuv
 //media/test/data/bear_192x320_270.nv12.yuv.json

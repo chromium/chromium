@@ -19,45 +19,6 @@
 
 namespace media {
 
-namespace {
-// Converts [|start|, |end|) range with |encrypted_ranges| into a vector of
-// SubsampleEntry. |encrypted_ranges| must be with in the range defined by
-// |start| and |end|.
-// It is OK to pass in empty |encrypted_ranges|; this will return a vector
-// with single SubsampleEntry with clear_bytes set to the size of the buffer.
-std::vector<SubsampleEntry> EncryptedRangesToSubsampleEntry(
-    const uint8_t* start,
-    const uint8_t* end,
-    const Ranges<const uint8_t*>& encrypted_ranges) {
-  std::vector<SubsampleEntry> subsamples;
-  const uint8_t* cur = start;
-  for (size_t i = 0; i < encrypted_ranges.size(); ++i) {
-    SubsampleEntry subsample = {};
-
-    const uint8_t* encrypted_start = encrypted_ranges.start(i);
-    DCHECK_GE(encrypted_start, cur)
-        << "Encrypted range started before the current buffer pointer.";
-    subsample.clear_bytes = encrypted_start - cur;
-
-    const uint8_t* encrypted_end = encrypted_ranges.end(i);
-    subsample.cypher_bytes = encrypted_end - encrypted_start;
-
-    subsamples.push_back(subsample);
-    cur = encrypted_end;
-    DCHECK_LE(cur, end) << "Encrypted range is outside the buffer range.";
-  }
-
-  // If there is more data in the buffer but not covered by encrypted_ranges,
-  // then it must be in the clear.
-  if (cur < end) {
-    SubsampleEntry subsample = {};
-    subsample.clear_bytes = end - cur;
-    subsamples.push_back(subsample);
-  }
-  return subsamples;
-}
-}  // namespace
-
 bool H264SliceHeader::IsPSlice() const {
   return (slice_type % 5 == kPSlice);
 }

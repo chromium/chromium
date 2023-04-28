@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "media/base/media_export.h"
+#include "media/base/ranges.h"
 
 namespace media {
 
@@ -37,6 +38,16 @@ struct SubsampleEntry {
 MEDIA_EXPORT bool VerifySubsamplesMatchSize(
     const std::vector<SubsampleEntry>& subsamples,
     size_t input_size);
+
+// Converts [|start|, |end|) range with |encrypted_ranges| into a vector of
+// SubsampleEntry. |encrypted_ranges| must be within the range defined by
+// |start| and |end|.
+// It is OK to pass in empty |encrypted_ranges|; this will return a vector
+// with single SubsampleEntry with clear_bytes set to the size of the buffer.
+MEDIA_EXPORT std::vector<SubsampleEntry> EncryptedRangesToSubsampleEntry(
+    const uint8_t* start,
+    const uint8_t* end,
+    const Ranges<const uint8_t*>& encrypted_ranges);
 
 }  // namespace media
 

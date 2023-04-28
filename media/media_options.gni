@@ -113,6 +113,10 @@ declare_args() {
   enable_hevc_parser_and_hw_decoder =
       proprietary_codecs &&
       (use_fuzzing_engine || is_win || is_mac || is_android || is_linux)
+
+  # Enable inclusion of VVC/H.266 parser/demuxer, and also enable VVC/H.266 decoding
+  # with hardware acceleration provided by platform. Disabled by default for all builds.
+  enable_platform_vvc = false
 }
 
 # Use another declare_args() to allow dependence on args defined above.
