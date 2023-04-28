@@ -284,9 +284,9 @@ chromium-metrics-reviews@google.com.
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    The duration of time the chromebook sends CrosState request message and
-    completes processing returned PhoneStatusSnapshot message. Emitted when
-    PhoneStatusSnapshot is processed.
+    The duration of time between when the Chromebook sends CrosState request
+    message, and when the Chromebook completes processing returned
+    PhoneStatusSnapshot message. Emitted when PhoneStatusSnapshot is processed.
   </summary>
 </histogram>
 
