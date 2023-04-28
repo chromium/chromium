@@ -60,8 +60,7 @@ bool IsAllowlistedSourceId(SourceId source_id) {
     case ukm::SourceIdObj::Type::REDIRECT_ID:
     case ukm::SourceIdObj::Type::WEB_IDENTITY_ID:
     case ukm::SourceIdObj::Type::CHROMEOS_WEBSITE_ID:
-    case ukm::SourceIdObj::Type::EXTENSION_ID:
-    case ukm::SourceIdObj::Type::SOFT_NAVIGATION_ID: {
+    case ukm::SourceIdObj::Type::EXTENSION_ID: {
       return true;
     }
     case ukm::SourceIdObj::Type::DEFAULT:
@@ -841,7 +840,6 @@ UkmConsentType UkmRecorderImpl::GetConsentType(SourceIdType type) {
     case SourceIdType::WEB_IDENTITY_ID:
     case SourceIdType::CHROMEOS_WEBSITE_ID:
     case SourceIdType::EXTENSION_ID:
-    case SourceIdType::SOFT_NAVIGATION_ID:
       return UkmConsentType::MSBB;
   }
   return UkmConsentType::MSBB;
@@ -905,7 +903,6 @@ void UkmRecorderImpl::MaybeMarkForDeletion(SourceId source_id) {
     case ukm::SourceIdObj::Type::NAVIGATION_ID:
     case ukm::SourceIdObj::Type::WORKER_ID:
     case ukm::SourceIdObj::Type::REDIRECT_ID:
-    case ukm::SourceIdObj::Type::SOFT_NAVIGATION_ID:
       break;
   }
 }
