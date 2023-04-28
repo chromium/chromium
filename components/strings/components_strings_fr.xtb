@@ -315,6 +315,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1689333818294560261">Pseudo</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Comment vous pouvez gérer vos données<ph name="END_BOLD" /> : Chrome supprime automatiquement les thèmes qui datent de plus de quatre semaines. À mesure que vous continuez de naviguer, un thème peut réapparaître dans la liste. Vous pouvez aussi bloquer certains thèmes pour empêcher que Chrome les partage avec les sites, et désactiver les thèmes d'annonces à tout moment dans les paramètres Chrome.</translation>
 <translation id="1697532407822776718">Vous êtes prêt !</translation>
+<translation id="1699651774646344471">Vous pouvez désormais utiliser les adresses de votre compte Google</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Niveaux de zoom</translation>
@@ -537,6 +538,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2224337661447660594">Aucun accès à Internet</translation>
 <translation id="2225927550500503913">Carte virtuelle activée</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Se connecter<ph name="END_LINK" /> au réseau Wi-Fi</translation>
+<translation id="2228057197024893428">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser avec d'autres produits Google, enregistrez-la dans votre compte Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2239100178324503013">Envoyer maintenant</translation>
 <translation id="2241693394036365668">Fichier téléchargé</translation>
 <translation id="2246264294482514010">10 x 12 pouces</translation>
@@ -656,6 +658,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2547466893236767989">Conception et développement Web</translation>
 <translation id="254947805923345898">La valeur de la règle n'est pas valide.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> a envoyé une réponse incorrecte.</translation>
+<translation id="2551608178605132291">Adresse : <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Utiliser le verrouillage de l'écran pour confirmer les cartes à partir de maintenant</translation>
 <translation id="2553853292994445426">Vérifiez les paramètres du DNS sécurisé. L'échec de connexion est peut-être dû à un serveur DNS sécurisé que vous avez configuré.</translation>
@@ -853,6 +856,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Vérifiez la configuration du DNS sécurisé<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Bac intermédiaire</translation>
 <translation id="3109728660330352905">Vous n'êtes pas autorisé à consulter cette page.</translation>
+<translation id="3112892588078695695">Numéro de téléphone : <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Troisième quart de travail</translation>
 <translation id="3114040155724590991">Mise à jour du système Android…
     Votre appli peut prendre plus de temps que d'habitude pour démarrer.</translation>
@@ -1225,6 +1229,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4031179711345676612">Micro autorisé</translation>
 <translation id="4040350669425716613">Écoles et universités</translation>
 <translation id="4047351652147966654">18 x 24 pouces</translation>
+<translation id="4050392779074832022">Vous pourrez l'utiliser dans tous les produits Google</translation>
 <translation id="405399507749852140">Recevez des alertes si le prix baisse sur un site</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4063063121357725926">Demander à Google de vous aider à trouver des remises pour vos paniers</translation>
@@ -2465,6 +2470,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7083258188081898530">Bac 9</translation>
 <translation id="7086090958708083563">Importation demandée par l'utilisateur</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer les autorisations et les données stockées sur les sites dans les paramètres Chrome</translation>
+<translation id="7096341143397839437">Adresse e-mail : <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">L'identité de ce site Web n'a pas été validée.</translation>
 <translation id="7101893872976785596">Films d'horreur</translation>
 <translation id="7102079138917191645">Construction et maintenance</translation>
@@ -2544,6 +2550,7 @@ Informations supplémentaires :
 <translation id="7256634549594854023">Bac arrière</translation>
 <translation id="725866823122871198">Impossible d'établir une connexion privée à <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> : la date et l'heure de votre ordinateur (<ph name="DATE_AND_TIME" />) sont incorrectes.</translation>
 <translation id="7260504762447901703">Révoquer l'accès</translation>
+<translation id="7265608370113700582">L'adresse n'est disponible que sur cet appareil</translation>
 <translation id="7275334191706090484">Favoris gérés</translation>
 <translation id="7277998515889183784">Maquillage et cosmétiques</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour changer le mot de passe de votre compte Google</translation>
@@ -2967,6 +2974,7 @@ Informations supplémentaires :
 <translation id="8245703462678310750">Appuyez de manière prolongée sur |<ph name="ACCELERATOR" />| pour quitter le mode plein écran et voir le téléchargement.</translation>
 <translation id="8249296373107784235">Annuler</translation>
 <translation id="8249463483885748674">Tests d'admission et standardisés</translation>
+<translation id="8250094606476360498">Cette adresse est actuellement enregistrée sur cet appareil. Pour l'utiliser avec d'autres produits Google, enregistrez-la dans votre compte Google (<ph name="ACCOUNT" />).</translation>
 <translation id="8252991034201168845">Bouton "Gérer les paramètres d'accessibilité", appuyez sur Entrée pour personnaliser vos outils d'accessibilité dans les paramètres Chrome OS</translation>
 <translation id="8253091569723639551">Adresse de facturation obligatoire</translation>
 <translation id="8257387598443225809">Cette appli est conçue pour les mobiles</translation>

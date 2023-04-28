@@ -10,6 +10,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1104942323762546749">Lösenorden exporteras från Chromium. Skriv ditt Windows-lösenord om du tillåter detta.</translation>
 <translation id="113122355610423240">Chromium är din standardwebbläsare</translation>
 <translation id="1131805035311359397"><ph name="BEGIN_LINK" />Logga in i Chromium<ph name="END_LINK" /> om du vill kontrollera att dina lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
+<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium-tillägg hade åtkomst till styrdon}=1{Chromium-tillägg har åtkomst till styrdon}other{Chromium-tillägg har åtkomst till # styrdon}}</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1202417120496358351">{COUNT,plural, =1{Administratören avslutar Chromium automatiskt när det inte använts på en minut. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}other{Administratören avslutar Chromium automatiskt när det inte använts på # minuter. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}}</translation>
 <translation id="1203500561924088507">Tack för att du installerat programmet. Du måste starta om webbläsaren innan du använder <ph name="BUNDLE_NAME" />.</translation>
@@ -60,6 +61,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2478295928299953161">Chromium avslutas snart</translation>
 <translation id="2483889755041906834">I Chromium</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
+<translation id="2554739539410784893">Skriv ditt Windows-lösenord om du vill tillåta att de befintliga lösenorden i Chromium ersätts.</translation>
 <translation id="2560420686485554789">Du behöver ge Chromium åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="2572494885440352020">Hjälp för Chromium</translation>
 <translation id="2583187216237139145">All data i Chromium som uppstår när den här profilen används (t.ex. bokmärken, historik, lösenord och andra inställningar) kan tas bort av jobbprofilens administratör. <ph name="LEARN_MORE" /></translation>
@@ -357,6 +359,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Webbplatser kan lagra information om dina intressen i Chromium. Om du till exempel besöker en webbplats för att köpa skor till ett maraton kanske webbplatsen anger att du är intresserad av att springa maraton. Om du sedan besöker en annan webbplats för att registrera dig för ett lopp kan webbplatsen visa en annons för löparskor utifrån dina intressen.</translation>
 <translation id="8619360774459241877">Chromium startas …</translation>
 <translation id="8621669128220841554">Installationen misslyckades på grund av ett okänt fel. Ladda ned Chromium igen.</translation>
+<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Ett Chromium-tillägg hade åtkomst till styrdon}=1{Ett Chromium-tillägg har åtkomst till 1 styrdon}other{Ett Chromium-tillägg har åtkomst till # styrdon}}</translation>
 <translation id="8697124171261953979">Det styr också vilken sida som visas när du startar Chromium eller söker i adressfältet.</translation>
 <translation id="8704119203788522458">Det här är Chromium</translation>
 <translation id="8796602469536043152">Du behöver ge Chromium behörighet att använda kameran och mikrofonen på webbplatsen</translation>

@@ -187,6 +187,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="2242467532204595597">Use o Chrome sempre que tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="22508856139286506">Avisos dispensados (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Histórico</translation>
+<translation id="2252674110805316998">Pesquisa Google na Web</translation>
 <translation id="2256933947031277845">Sua organização permite que você faça login apenas com determinadas contas.</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Adicionar conta</translation>
@@ -488,6 +489,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4272631900155121838">Para ler um código QR, ative a câmera nas configurações</translation>
 <translation id="4277990410970811858">Navegação segura</translation>
 <translation id="4281844954008187215">Termos de Serviço</translation>
+<translation id="4293080268407233932">Pesquisar</translation>
 <translation id="4304713468139749426">Gerenciador de senhas</translation>
 <translation id="430793432425771671">Sincronizar tudo</translation>
 <translation id="4309403553630140242">Toque duas vezes para ver mais informações</translation>
@@ -745,6 +747,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5951816930277761335">Compartilhe o link</translation>
 <translation id="5955891643922670672">Exibindo a versão off-line</translation>
 <translation id="5957613098218939406">Mais opções</translation>
+<translation id="595769230373966252">Pesquisar com o <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Não é possível criar um link para o conteúdo destacado.</translation>
 <translation id="5965679971710331625">Você está conectado</translation>
 <translation id="5979837087407522202">Pesquisar senhas</translation>

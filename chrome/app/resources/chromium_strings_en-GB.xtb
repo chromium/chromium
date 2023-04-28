@@ -10,6 +10,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1104942323762546749">Chromium wants to export your passwords. Type your Windows password to allow this.</translation>
 <translation id="113122355610423240">Chromium is your default browser</translation>
 <translation id="1131805035311359397">To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chromium<ph name="END_LINK" />.</translation>
+<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium extensions were accessing HID devices}=1{Chromium extensions are accessing 1 HID device}other{Chromium extensions are accessing # HID devices}}</translation>
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1202417120496358351">{COUNT,plural, =1{Your administrator automatically closes Chromium when it isn't used for 1 minute. Browsing data is deleted. This could include history, auto-fill and downloads.}other{Your administrator automatically closes Chromium when it isn't used for # minutes. Browsing data is deleted. This could include history, auto-fill and downloads.}}</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
@@ -357,6 +358,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Sites can store information with Chromium about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
 <translation id="8619360774459241877">Launching Chromium...</translation>
 <translation id="8621669128220841554">Installation failed due to unspecified error. Please download Chromium again.</translation>
+<translation id="867492205098279939">{NUM_DEVICES,plural, =0{A Chromium extension was accessing HID devices}=1{A Chromium extension is accessing 1 HID device}other{A Chromium extension is accessing # HID devices}}</translation>
 <translation id="8697124171261953979">It also controls what page is shown when you start Chromium or search from the Omnibox.</translation>
 <translation id="8704119203788522458">This is your Chromium</translation>
 <translation id="8796602469536043152">Chromium needs permission to access your camera and microphone for this site</translation>

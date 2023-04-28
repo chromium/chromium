@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Otvara se u alternativnom pregledaču za <ph name="COUNTDOWN_SECONDS" /> sek</translation>
+<translation id="1071735803834535661">spoljni meta taster</translation>
 <translation id="1071917609930274619">Šifrovanje podataka</translation>
 <translation id="1072700771426194907">Otkriven je USB uređaj</translation>
 <translation id="107278043869924952">Koristite PIN pored lozinke</translation>
@@ -1374,6 +1375,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2146263598007866206">Sajtovi mogu automatski da preuzimaju srodne fajlove zajedno da bi vam štedeli vreme</translation>
 <translation id="2147151613919729065">Da biste obrisali istoriju režima gosta, zatvorite sve prozore režima gosta.</translation>
 <translation id="2147218225094845757">Sakrij bočnu tablu</translation>
+<translation id="2147282432401652483">komanda</translation>
 <translation id="2148219725039824548">Greška pri učitavanju deljene datoteke. Navedena deljena datoteka nije pronađena na mreži.</translation>
 <translation id="2148756636027685713">Formatiranje je završeno</translation>
 <translation id="2148892889047469596">Prebacite karticu</translation>
@@ -4944,6 +4946,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5298219193514155779">Temu je napravio/la</translation>
 <translation id="5299109548848736476">Ne prati</translation>
 <translation id="5299558715747014286">Prikaz grupa kartica i upravljanje njima</translation>
+<translation id="529986401483187205">onemogućeno</translation>
 <translation id="5300287940468717207">Želite li da resetujete dozvole za sajt?</translation>
 <translation id="5300426565656326054">Personalizacija oglasa na osnovu pregledača</translation>
 <translation id="5300589172476337783">Prikaži</translation>
@@ -6849,6 +6852,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="6983507711977005608">Prekini vezu sa mrežom za trenutno privezivanje</translation>
 <translation id="6983783921975806247">Registrovani OID</translation>
+<translation id="6983890893900549383">escape</translation>
 <translation id="6985235333261347343">Microsoft agent oporavka ključa</translation>
 <translation id="698524779381350301">Automatski dozvoli pristup na sledećim sajtovima</translation>
 <translation id="6985607387932385770">Štampači</translation>
@@ -8020,6 +8024,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8009225694047762179">Upravljaj lozinkama</translation>
 <translation id="8011372169388649948">Obeleživač <ph name="BOOKMARK_TITLE" /> je premešten.</translation>
 <translation id="8011875486979733097">Steam ne može da se instalira</translation>
+<translation id="8012188750847319132">caps lock</translation>
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa.</translation>
 <translation id="8014154204619229810">Program za ažuriranje je trenutno aktivan. Sačekajte malo, pa osvežite i proverite ponovo.</translation>
 <translation id="8014206674403687691">Nije moguće vratiti <ph name="IDS_SHORT_PRODUCT_NAME" /> na prethodno instaliranu verziju. Pokušajte da ponovo obavite Powerwash uređaja.</translation>

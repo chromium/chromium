@@ -133,6 +133,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1815941218935345331">Aðgangskóði</translation>
 <translation id="1820259098641718022">Bætt við leslista</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Aðgangsorð í hættu}=1{{COUNT} aðgangsorð í hættu}one{{COUNT} aðgangsorð í hættu}other{{COUNT} aðgangsorð í hættu}}</translation>
+<translation id="1830634592642484976">Þetta heimilisfang er vistað á Chrome eins og stendur. Til að nota það í Google-vörum skaltu vista það á Google-reikningnum þínum: <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Staðfestu að þetta sért þú til að hafa alltaf aðgang að samstillingargögnunum þínum</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bókamerki var vistað á Google-reikningnum þínum: {email}}one{Bókamerki voru vistuð á Google-reikningnum þínum: {email}}other{Bókamerki voru vistuð á Google-reikningnum þínum: {email}}}</translation>
 <translation id="1870148520156231997">Sýna aðgangsorð</translation>
@@ -545,6 +546,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4636930964841734540">Upplýsingar</translation>
 <translation id="4642472735733036929">Verðvöktun hætt</translation>
 <translation id="4650125387981512669">Halda áfram sem <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Vertu viss um að aðgangsorðin þín séu örugg, fáðu tilkynningar ef þau eru í hættu og ráðleggingar um hvernig þú getur varið þig á netinu. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Kveikt er á þessum eiginleika þegar þú skráir þig inn á Google reikninginn þinn.</translation>
 <translation id="4659667755519643272">Fara í flipaval</translation>
 <translation id="46614316059270592">Vista aðgangsorð</translation>
@@ -697,6 +699,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5669617676038747374">Búa til QR-kóða</translation>
 <translation id="567881659373499783">Útgáfa <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Staðfestu að þetta sért þú til að nota og vista aðgangsorð á Google-reikningnum þínum.</translation>
+<translation id="5684761169742812828">Þetta aðgangsorð var afhjúpað í öryggisbroti á netinu. Ef þú hefur ekki tíma til að breyta því strax mælir Google með að þú lokir ekki viðvöruninni til að minna þig á að gera það seinna.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Sýnir núna 1 Chrome glugga}one{Sýnir núna {count} Chrome glugga}other{Sýnir núna {count} Chrome glugga}}</translation>
 <translation id="5701270923492462699">Aðgangur að myndavél leyfður</translation>
 <translation id="5704908597376970822">Innskráning mistókst.</translation>
@@ -1222,6 +1225,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8952559610785099500">Bæta við aðgangsorði</translation>
 <translation id="8953046091948372197">Þú finnur aðgangsorðin þín hér</translation>
 <translation id="895541991026785598">Tilkynna um vandamál</translation>
+<translation id="8961757677053809960">Hunsa viðvörun?</translation>
 <translation id="8971545611707025079">Athuga aftur</translation>
 <translation id="8974714402877957201">1. Opnaðu stillingar iPad</translation>
 <translation id="8976382372951310360">Hjálp</translation>

@@ -477,6 +477,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1410616244180625362"><ph name="HOST" /> saytiga kamerangizdan foydalanishga ruxsat berish</translation>
 <translation id="1410797069449661718">Birinchi varaq tomonga varaqlash</translation>
 <translation id="1410806973194718079">Qoidalar tekshirilmadi</translation>
+<translation id="1411400282355634827">Bluetooth qurilmalari uchun barcha ruxsatlar tiklansinmi?</translation>
 <translation id="1411724932979011919">Xatosiz formatda kiritilishi zarur (LPA:1$&lt;smdp manzili&gt;$&lt;aktivatsiya kodi&gt;</translation>
 <translation id="1412681350727866021">Qoʻshimcha kengaytmalar</translation>
 <translation id="1414315029670184034">Saytlarga kameradan foydalanishni taqiqlash</translation>
@@ -4814,6 +4815,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5178667623289523808">Avvalgisini topish</translation>
 <translation id="5181140330217080051">Yuklab olinmoqda</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> uchun Google Parollar menejerida</translation>
+<translation id="5183344263225877832">HID qurilmalari uchun barcha ruxsatlar tiklansinmi?</translation>
 <translation id="5184063094292164363">&amp;JavaScript konsoli</translation>
 <translation id="5184209580557088469">Ayni shu foydalanuvchi nomidagi chipta mavjud.</translation>
 <translation id="5184662919967270437">Qurilmangiz tizimi yangilanmoqda</translation>
@@ -6504,6 +6506,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6691541770654083180">Yer</translation>
 <translation id="6691936601825168937">&amp;Oldinga</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 sahifa}other{{COUNT} sahifa}}</translation>
+<translation id="6693820805264897502">mavjud parollarni almashtirish</translation>
 <translation id="6697172646384837537">Parollar qayerdan import qilinishini tanlang</translation>
 <translation id="6697492270171225480">Sahifa topilmaganda, unga o‘xshash sahifalar taklif qilinsin</translation>
 <translation id="6697690052557311665">Fayllar ilovasida jild ustida sichqonchaning oʻng tugmasini bosing va “Linux bilan ulashish” bandini tanlang.</translation>
@@ -7623,6 +7626,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7674542105240814168">Joylashuv axborotiga ruxsat rad etildi</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> ta varaqda “<ph name="SEARCH_TEXT" />” topildi</translation>
 <translation id="7676867886086876795">Diktovka istalgan matn maydonida ishlatilishi uchun ovozingiz Google serverlariga yuboriladi.</translation>
+<translation id="7678588695732963732">USB qurilmalar uchun barcha ruxsatlar tiklansinmi?</translation>
 <translation id="7679171213002716280">Boshqariladigan <ph name="PRINTER_COUNT" /> ta printer bor.</translation>
 <translation id="7680416688940118410">Sensorli ekranni kalibrlash</translation>
 <translation id="7681095912841365527">Sayt Bluetooth aloqasidan foydalanishi mumkin</translation>
@@ -9381,6 +9385,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="9192019773545828776">Oʻqib eshittirish orqali qurilmadan ekranga qaramay foydalanish mumkin. Ulangan qurilmada brayl aloqasi ishlaydi. ChromeVoxni yoqib oʻchirish uchun Ctrl+Alt+Z tugmalarini bosing. Yonga harakatlanish uchun Search+Chap strelka yoki Oʻng strelka tugmalarini bosing. Tanlash uchun Search+Boʻshliq (faollashtirish) tugmalarini bosing.</translation>
 <translation id="919686179725692564">Ilovalar zaxiralanishi haqida batafsil</translation>
 <translation id="9199503643457729322">Maxfiylik qoʻllanmasidan chiqish uchun bosing.</translation>
+<translation id="9199695835892108985">Seriyali portlar uchun barcha ruxsatlar tiklansinmi?</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> sayti <ph name="FOLDERNAME" /> jildidagi fayllarni tahrirlay oladi</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> orqali qidirish</translation>
 <translation id="9201023452444595544">Har qanday oflayn axborot tozalab tashlanadi</translation>

@@ -315,6 +315,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1689333818294560261">Kortnamn</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Så här kan du hantera dina uppgifter:<ph name="END_BOLD" /> Chrome raderar automatiskt ämnen som är äldre än fyra veckor. När du surfar kan ett ämne dyka upp på listan igen. Du kan även blockera ämnen som du inte vill att Chrome ska dela med webbplatser och inaktivera annonsämnen när som helst i inställningarna för Chrome.</translation>
 <translation id="1697532407822776718">Färdigt!</translation>
+<translation id="1699651774646344471">Nu kan du använda adresser från ditt Google-konto</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Zoomnivåer</translation>
@@ -537,6 +538,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2224337661447660594">Inget internet</translation>
 <translation id="2225927550500503913">Aktiverat virtuellt kort</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Logga in<ph name="END_LINK" /> på wifi-nätverket</translation>
+<translation id="2228057197024893428">Den här adressen har sparats i Chrome. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot, <ph name="ACCOUNT" />.</translation>
 <translation id="2239100178324503013">Skicka nu</translation>
 <translation id="2241693394036365668">Fil laddas ned</translation>
 <translation id="2246264294482514010">10 x 12 tum</translation>
@@ -656,6 +658,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2547466893236767989">Webbdesign och webbutveckling</translation>
 <translation id="254947805923345898">Principens värde är inte giltigt.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> skickade ett ogiltigt svar.</translation>
+<translation id="2551608178605132291">Adress: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Verifiera kreditkort med skärmlåset från och med nu</translation>
 <translation id="2553853292994445426">Kontrollera inställningarna för den säkra DNS-konfigurationen. Du kan ha konfigurerat en säker DNS-server som det inte går att ansluta till.</translation>
@@ -853,6 +856,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Kontrollera den säkra DNS-konfigurationen<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Mittenfack</translation>
 <translation id="3109728660330352905">Du är inte behörig att se den här sidan.</translation>
+<translation id="3112892588078695695">Telefonnummer: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">tredje skiftet</translation>
 <translation id="3114040155724590991">Uppdaterar Android-systemet
     Det kan ta längre tid än vanligt att starta appen.</translation>
@@ -1225,6 +1229,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4031179711345676612">Mikrofon är tillåten</translation>
 <translation id="4040350669425716613">Högskolor och universitet</translation>
 <translation id="4047351652147966654">18 x 24 tum</translation>
+<translation id="4050392779074832022">Du kan använda den i Googles produkter.</translation>
 <translation id="405399507749852140">Få aviseringar när priset sjunker på en webbplats</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Låt Google hjälpa dig att hitta rabatter för dina kundvagnar</translation>
@@ -2465,6 +2470,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7083258188081898530">Fack 9</translation>
 <translation id="7086090958708083563">Uppladdningsbegäran från användare</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill hantera behörigheter och data som lagras på olika webbplatser i inställningarna för Chrome</translation>
+<translation id="7096341143397839437">E-post: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Webbplatsens identitet har inte verifierats.</translation>
 <translation id="7101893872976785596">Skräckfilmer</translation>
 <translation id="7102079138917191645">Byggnation och underhåll</translation>
@@ -2543,6 +2549,7 @@ Mer information.
 <translation id="7256634549594854023">Bakre fack</translation>
 <translation id="725866823122871198">Det gick inte att upprätta en privat anslutning till <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> eftersom datorns datum och tid (<ph name="DATE_AND_TIME" />) inte stämmer.</translation>
 <translation id="7260504762447901703">Återkalla åtkomst</translation>
+<translation id="7265608370113700582">Adressen är endast tillgänglig på den här enheten</translation>
 <translation id="7275334191706090484">Hanterade bokmärken</translation>
 <translation id="7277998515889183784">Makeup och kosmetika</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill byta lösenord till Google-kontot</translation>
@@ -2966,6 +2973,7 @@ Mer information.
 <translation id="8245703462678310750">Håll |<ph name="ACCELERATOR" />| nedtryckt för att avsluta helskärmsläget och se nedladdningen.</translation>
 <translation id="8249296373107784235">Avbryt</translation>
 <translation id="8249463483885748674">Standardprov och inträdesprov</translation>
+<translation id="8250094606476360498">Den här adressen har sparats på den här enheten. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot, <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Knappen Hantera tillgänglighetsinställningar: tryck på Retur om du vill anpassa tillgänglighetsverktygen i inställningarna för Chrome OS</translation>
 <translation id="8253091569723639551">En faktureringsadress måste anges</translation>
 <translation id="8257387598443225809">Den här appen har utformats för mobila enheter</translation>

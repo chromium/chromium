@@ -2958,6 +2958,15 @@ Recuerda que no debes mantener habilitada esta política todo el tiempo, especia
 <translation id="3623332696371971798">Impedir el acceso a Google Fotos desde la app de personalización</translation>
 <translation id="3627678165642179114">Habilita o inhabilita el servicio web de revisión ortográfica.</translation>
 <translation id="3628480121685794414">Permitir impresión simple</translation>
+<translation id="3634117682099473917">La plantilla de URI del agente de resolución de DNS-over-HTTPS deseado. Para especificar varios agentes de resolución de DNS-over-HTTPS, separa las plantillas de URI correspondientes mediante espacios. Esta política es muy similar a <ph name="DOH_TEMPLATES_POLICY_NAME" /> y, si la específicas, se anulará. A diferencia de eso, permite especificar la información de identificación.
+
+Si se establece <ph name="DOH_MODE_POLICY_NAME" /> como <ph name="SECURE_DNS_MODE_SECURE" />, se debe establecer esta política o <ph name="DOH_TEMPLATES_POLICY_NAME" />, y no debe estar vacía.
+
+Si se establece <ph name="DOH_MODE_POLICY_NAME" /> como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> y se establece esta política, se usarán las plantillas de URI especificadas. Si no se establece, se usarán las asignaciones codificadas para intentar actualizar el agente de resolución de DNS actual del usuario a un agente de resolución de DoH que opere el mismo proveedor.
+
+Si la plantilla de URI contiene una variable <ph name="HTTP_VARIABLE_DNS" />, las solicitudes al agente de resolución usarán <ph name="HTTP_METHOD_GET" />; de lo contrario, las solicitudes usarán <ph name="HTTP_METHOD_POST" />.
+
+En la versión 114 y en versiones posteriores, <ph name="DOH_SALT_POLICY_NAME" /> es opcional si se establece esta política.</translation>
 <translation id="3634125384445314047">Permitir el acceso a las fotos y los videos tomados recientemente del teléfono mediante Phone Hub</translation>
 <translation id="3642557248926713561">Inhabilitar la protección para extensiones que otorga Navegación segura</translation>
 <translation id="3643284063603988867">Habilita la función "Recordar contraseña"</translation>
@@ -3875,6 +3884,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 <translation id="45036050223225148">Inhabilitar el experimento TLS Encrypted ClientHello</translation>
 <translation id="4503935079903510542">La imagen de disco de arranque UEFI que se usa para instalar la VM en dispositivos x86_64.</translation>
 <translation id="4508728400492074981">Controla las políticas para la función First-Party Sets.</translation>
+<translation id="4510131075424939993">Especificar un valor de sal que se usará en <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> cuando se evalúe la información de identidad</translation>
 <translation id="4510923771103268849">El usuario tiene acceso con permisos de administrador a los contenedores de Crostini</translation>
 <translation id="4512407512989846472">No permitir la copia al portapapeles en URLs específicas</translation>
 <translation id="4513691822411041977">No forzar el uso de SafeSearch en la Búsqueda de Google ni en el modo restringido de YouTube</translation>
@@ -5676,6 +5686,11 @@ El tiempo de espera de inactividad para iniciar el protector de pantalla y el in
 
       Nota: La política afecta a todas las entradas de audio, incluidas las funciones de accesibilidad de audio. Si algún usuario necesita un lector de pantalla, no desactives la política.</translation>
 <translation id="6221175752766085998">Permitir los certificados emitidos por anclajes de confianza locales sin la extensión subjectAlternativeName</translation>
+<translation id="6221327862246049151">Esta sal se usa como valor de sal cuando se produce un hash en la información de identidad incluida en la cadena <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />.
+
+La sal debe ser una cadena de entre 8 y 32 caracteres.
+
+En la versión 114 y en versiones posteriores, esta política es opcional si se establece la política <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />. Si no estableces esta política, se generará un hash para los identificadores en las plantillas de URI configuradas mediante la política <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> sin una sal.</translation>
 <translation id="6224070048795197148">Permitir que el usuario utilice el navegador sin acceder</translation>
 <translation id="6224304369267200483">Las URL y los dominios permiten automáticamente la atestación directa de llaves de seguridad</translation>
 <translation id="6225938950222983458">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.</translation>

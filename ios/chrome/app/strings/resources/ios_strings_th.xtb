@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">รหัสผ่าน</translation>
 <translation id="1820259098641718022">เพิ่มไปยังเรื่องรออ่านแล้ว</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{รหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {COUNT} รหัส}other{มีรหัสผ่านที่ถูกละเมิด {COUNT} รหัส}}</translation>
+<translation id="1830634592642484976">บันทึกที่อยู่นี้ไว้ใน Chrome แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google ของคุณ <ph name="USER_EMAIL" /></translation>
 <translation id="1832848789136765277">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงข้อมูลที่ซิงค์ไว้ได้ทุกเมื่อ</translation>
 <translation id="1836891464494477513">{count,plural, =1{บันทึกบุ๊กมาร์กไว้ในบัญชี Google ของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไว้ในบัญชี Google ของคุณ {email} แล้ว}}</translation>
 <translation id="1870148520156231997">แสดงรหัสผ่าน</translation>
@@ -545,6 +546,7 @@
 <translation id="4636930964841734540">ข้อมูล</translation>
 <translation id="4642472735733036929">หยุดติดตามราคาแล้ว</translation>
 <translation id="4650125387981512669">ดำเนินการต่อในชื่อ <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">ตรวจสอบว่ารหัสผ่านปลอดภัย ดูว่ารหัสผ่านถูกละเมิดหรือไม่ และรับคำแนะนำที่จะช่วยปกป้องตัวคุณบนโลกออนไลน์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">ฟีเจอร์นี้จะเปิดเมื่อคุณลงชื่อเข้าใช้บัญชี Google</translation>
 <translation id="4659667755519643272">เข้าสู่มุมมองตัวสลับแท็บ</translation>
 <translation id="46614316059270592">บันทึกรหัสผ่าน</translation>
@@ -697,6 +699,7 @@
 <translation id="5669617676038747374">สร้างคิวอาร์โค้ด</translation>
 <translation id="567881659373499783">รุ่น <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกรหัสผ่านในบัญชี Google</translation>
+<translation id="5684761169742812828">รหัสผ่านนี้ถูกเปิดเผยจากการละเมิดข้อมูลบนอินเทอร์เน็ต หากคุณยังไม่มีเวลาเปลี่ยนรหัสในตอนนี้ Google ขอแนะนำให้เก็บคำเตือนนี้ไว้เพื่อช่วยเตือนคุณในภายหลัง</translation>
 <translation id="5690398455483874150">{count,plural, =1{กำลังแสดงหน้าต่าง Chrome 1 หน้าต่าง}other{กำลังแสดงหน้าต่าง Chrome {count} หน้าต่าง}}</translation>
 <translation id="5701270923492462699">อนุญาตให้เข้าถึงกล้อง</translation>
 <translation id="5704908597376970822">ลงชื่อเข้าใช้ไม่ได้</translation>
@@ -1222,6 +1225,7 @@
 <translation id="8952559610785099500">เพิ่มรหัสผ่าน</translation>
 <translation id="8953046091948372197">คุณจะเห็นรหัสผ่านที่นี่</translation>
 <translation id="895541991026785598">รายงานปัญหา</translation>
+<translation id="8961757677053809960">ปิดคำเตือนไหม</translation>
 <translation id="8971545611707025079">ตรวจสอบอีกครั้ง</translation>
 <translation id="8974714402877957201">1. เปิดการตั้งค่า iPad</translation>
 <translation id="8976382372951310360">ความช่วยเหลือ</translation>

@@ -118,6 +118,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2929907241665500097">Hindi na-update ang Chrome, nagkaproblema. <ph name="BEGIN_LINK" />Ayusin ang mga problema sa pag-update ng Chrome at ang mga hindi naisagawang pag-update dito.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Pag-sign in sa Network - Chrome</translation>
 <translation id="3019382870990049182">Maglunsad ulit para i-update ang &amp;ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Ina-access ng mga extension ng Google Chrome ang mga HID device}=1{Ina-access ng mga extension ng Google Chrome ang mga HID device}one{Ina-access ng mga extension ng Google Chrome ang # HID device}other{Ina-access ng mga extension ng Google Chrome ang # na HID device}}</translation>
 <translation id="303514781271618814">Nag-e-explore ang Chrome ng mga bagong feature na nagbibigay-daan sa mga site na ihatid ang parehong karanasan sa pag-browse nang hindi gaanong gumagamit ng iyong data</translation>
 <translation id="3037838751736561277">Nasa background mode ang Google Chrome.</translation>
 <translation id="3038232873781883849">Naghihintay sa pag-install...</translation>
@@ -223,6 +224,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4970880042055371251">Bersyon ng ChromeOS</translation>
 <translation id="4970947549776831107">Na-block ng Chrome ang file na ito dahil mapanganib ang ganitong uri ng file</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Ina-access ng extension ng Google Chrome ang mga HID device}=1{Ina-access ng extension ng Google Chrome ang 1 HID device}one{Ina-access ng extension ng Google Chrome ang # HID device}other{Ina-access ng extension ng Google Chrome ang # na HID device}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Awtomatikong isinasara ng iyong administrator ang Chrome kapag hindi ito nagamit nang 1 minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}one{Awtomatikong isinasara ng iyong administrator ang Chrome kapag hindi ito nagamit nang # minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}other{Awtomatikong isinasara ng iyong administrator ang Chrome kapag hindi ito nagamit nang # na minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}}</translation>
 <translation id="5098668839038261629">Kapag naka-on, masa-sign out ka rin sa Chrome</translation>
 <translation id="5132929315877954718">Tumuklas ng mahuhusay na app, laro, extension at tema para sa Google Chrome.</translation>

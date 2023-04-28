@@ -115,6 +115,7 @@
 <translation id="2929907241665500097">Chrome'i ei värskendatud, midagi läks valesti. <ph name="BEGIN_LINK" />Lahendage Chrome'i värskendamisprobleemid ja parandage ebaõnnestunud värskendused.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – võrku sisselogimine – Chrome</translation>
 <translation id="3019382870990049182">Taaskäivitage &amp;Chrome OS Flexi värskendamiseks</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome'i laiendused pääsesid juurde HID-seadmetele}=1{Google Chrome'i laiendused pääsevad juurde HID-seadmetele}other{Google Chrome'i laiendused pääsevad juurde # HID-seadmele}}</translation>
 <translation id="303514781271618814">Chrome katsetab uusi funktsioone, mis võimaldaksid saitidel pakkuda väiksema andmemahu juures samasugust sirvimiskogemust</translation>
 <translation id="3037838751736561277">Google Chrome on taustarežiimis.</translation>
 <translation id="3038232873781883849">Installimise ootamine …</translation>
@@ -208,6 +209,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Chrome blokeeris faili, kuna see võib olla ohtlik.</translation>
 <translation id="479167709087336770">See kasutab sama õigekirjakontrolli, mida kasutatakse Google'i otsingus. Brauseris sisestatav tekst saadetakse Google'ile. Seda käitumist saab seadetes alati muuta.</translation>
+<translation id="4828579605166583682">Google Chrome püüab olemasolevaid paroole asendada. Selle lubamiseks sisestage oma Windowsi parool.</translation>
 <translation id="4842397268809523050">Chrome OS Flex ei saa teie andmeid sünkroonida, sest teie domeenis pole sünkroonimine saadaval.</translation>
 <translation id="4873783916118289636">Vaadake üle Chrome'i peamised privaatsus- ja turvaseaded</translation>
 <translation id="4891791193823137474">Luba Google Chrome'i töötamine taustal</translation>
@@ -219,6 +221,7 @@
 <translation id="4970880042055371251">Chrome OS-i versioon</translation>
 <translation id="4970947549776831107">Chrome blokeeris selle faili, kuna see failitüüp on ohtlik</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome'i laiendus pääses juurde HID-seadmetele}=1{Google Chrome'i laiendus pääseb juurde ühele HID-seadmele}other{Google Chrome'i laiendus pääseb juurde # HID-seadmele}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Teie administraator sulgeb Chrome’i automaatselt, kui seda ei kasutata 1 minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}other{Teie administraator sulgeb Chrome’i automaatselt, kui seda ei kasutata # minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}}</translation>
 <translation id="5098668839038261629">Kui see on sisse lülitatud, logitakse teid ka Chrome'ist välja</translation>
 <translation id="5132929315877954718">Avastage Google Chrome'i jaoks suurepäraseid rakendusi, mänge, laiendusi ja teemasid.</translation>

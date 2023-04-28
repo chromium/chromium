@@ -315,6 +315,7 @@
 <translation id="1689333818294560261">புனைப்பெயர்</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />நீங்கள் தரவை நிர்வகிக்கும் விதம்:<ph name="END_BOLD" /> 4 வாரங்களுக்கு முந்தைய தலைப்புகளை Chrome தானாக நீக்கிவிடும். நீங்கள் தொடர்ந்து உலாவும்போது பட்டியலில் ஒரு தலைப்பு மீண்டும் காட்டப்படக்கூடும். எப்போது வேண்டுமானாலும் Chrome அமைப்புகளுக்குச் சென்று, தளங்களுடன் Chrome பகிர விரும்பாத தலைப்புகளைத் தடுக்கலாம், விளம்பரத் தலைப்புகளை முடக்கலாம்.</translation>
 <translation id="1697532407822776718">எல்லாவற்றையும் அமைத்துவிட்டீர்கள்!</translation>
+<translation id="1699651774646344471">இப்போது உங்கள் Google கணக்கில் இருந்து முகவரிகளைப் பயன்படுத்தலாம்</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">அளவுமாற்ற நிலைகள்</translation>
@@ -537,6 +538,7 @@
 <translation id="2224337661447660594">இணைய இணைப்பு இல்லை</translation>
 <translation id="2225927550500503913">விர்ச்சுவல் கார்டு இயக்கப்பட்டுள்ளது</translation>
 <translation id="2226636330183131181">Wi-Fi நெட்வொர்க்கில் <ph name="BEGIN_LINK" />உள்நுழைகிறது<ph name="END_LINK" /></translation>
+<translation id="2228057197024893428">இந்த முகவரி தற்சமயம் Chrome உலாவியில் சேமிக்கப்பட்டுள்ளது. Google தயாரிப்புகள் முழுவதிலும் பயன்படுத்த, உங்கள் Google கணக்கில் (<ph name="ACCOUNT" />) அதைச் சேமிக்கவும்.</translation>
 <translation id="2239100178324503013">இப்போதே அனுப்பு</translation>
 <translation id="2241693394036365668">ஃபைல் பதிவிறக்கப்படும்போது</translation>
 <translation id="2246264294482514010">10 x 12 இன்ச்</translation>
@@ -656,6 +658,7 @@
 <translation id="2547466893236767989">இணையதள வடிவமைப்பு &amp; உருவாக்கம்</translation>
 <translation id="254947805923345898">கொள்கையின் மதிப்பு சரியானதில்லை.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> தவறான பதிலை அனுப்பியது.</translation>
+<translation id="2551608178605132291">முகவரி: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">ஹாகாகி</translation>
 <translation id="2552295903035773204">இனி கார்டுகளை உறுதிப்படுத்த திரைப் பூட்டைப் பயன்படுத்து</translation>
 <translation id="2553853292994445426">உங்கள் பாதுகாப்பான DNS அமைப்புகளைச் சரிபாருங்கள். நீங்கள் பாதுகாப்பான DNS சேவையகத்தை உள்ளமைத்து இருக்கக்கூடும், ஆனால் அதன் இணைப்புகள் தோல்வியடைகின்றன.</translation>
@@ -853,6 +856,7 @@
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />உங்களின் பாதுகாப்பான DNS உள்ளமைவைச் சரிபாருங்கள்<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">நடு டிரே</translation>
 <translation id="3109728660330352905">இந்தப் பக்கத்தைக் காண உங்களுக்கு அங்கீகாரம் அளிக்கப்படவில்லை.</translation>
+<translation id="3112892588078695695">ஃபோன் எண்: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">மூன்றாம் ஷிஃப்ட்</translation>
 <translation id="3114040155724590991">Android சிஸ்டம் புதுப்பிக்கப்படுகிறது
     உங்கள் ஆப்ஸ் தொடங்குவதற்கு வழக்கத்திற்கு மாறாக அதிக நேரம் ஆகலாம்.</translation>
@@ -1221,6 +1225,7 @@
 <translation id="4031179711345676612">மைக்ரோஃபோன் அனுமதிக்கப்பட்டது</translation>
 <translation id="4040350669425716613">கல்லூரிகள் &amp; பல்கலைக்கழகங்கள்</translation>
 <translation id="4047351652147966654">18 x 24 இன்ச்</translation>
+<translation id="4050392779074832022">Google தயாரிப்புகள் முழுவதிலும் நீங்கள் அதைப் பயன்படுத்தலாம்</translation>
 <translation id="405399507749852140">எந்தத் தளத்திலாவது விலை குறைந்தால் அதுகுறித்து அறிவிப்பைப் பெறுவீர்கள்</translation>
 <translation id="4056223980640387499">செபியா</translation>
 <translation id="4063063121357725926">உங்கள் கார்ட்டுக்கான தள்ளுபடிகளை Google கண்டறிய அனுமதியுங்கள்</translation>
@@ -2460,6 +2465,7 @@
 <translation id="7083258188081898530">தட்டு 9</translation>
 <translation id="7086090958708083563">பயனர் கோரிய பதிவேற்றம்</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome அமைப்புகளில் அனுமதிகளையும் தளங்கள் முழுவதும் சேமிக்கப்பட்டுள்ள தரவையும் நிர்வகிக்க, Enter விசையை அழுத்துங்கள்</translation>
+<translation id="7096341143397839437">மின்னஞ்சல் முகவரி: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">இந்த இணையதளத்தின் அடையாளம் சரிபார்க்கப்படவில்லை.</translation>
 <translation id="7101893872976785596">திகில் திரைப்படங்கள்</translation>
 <translation id="7102079138917191645">கட்டுமானம் &amp; பராமரிப்பு</translation>
@@ -2538,6 +2544,7 @@
 <translation id="7256634549594854023">பின்பக்க டிரே</translation>
 <translation id="725866823122871198">உங்கள் கம்ப்யூட்டரின் தேதியும் நேரமும் (<ph name="DATE_AND_TIME" />) தவறாக இருப்பதால் <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> க்கான தனிப்பட்ட இணைப்பை ஏற்படுத்த முடியவில்லை.</translation>
 <translation id="7260504762447901703">அணுகலை ரத்துசெய்</translation>
+<translation id="7265608370113700582">இந்தச் சாதனத்தில் மட்டுமே முகவரி கிடைக்கும்</translation>
 <translation id="7275334191706090484">நிர்வகிக்கப்படும் புக்மார்க்குகள்</translation>
 <translation id="7277998515889183784">மேக்-அப் &amp; அழகுப் பொருட்கள்</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, உங்கள் Google கணக்கின் கடவுச்சொல்லை மாற்ற Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
@@ -2961,6 +2968,7 @@
 <translation id="8245703462678310750">முழுத்திரையில் இருந்து வெளியேறி பதிவிறக்கங்களைப் பார்க்க |<ph name="ACCELERATOR" />| பட்டனை அழுத்திப் பிடித்திருக்கவும்.</translation>
 <translation id="8249296373107784235">கைவிடு</translation>
 <translation id="8249463483885748674">வழக்கமான &amp; சேர்க்கைகளுக்கான தேர்வுகள்</translation>
+<translation id="8250094606476360498">இந்த முகவரி தற்சமயம் இந்தச் சாதனத்தில் சேமிக்கப்பட்டுள்ளது. Google தயாரிப்புகள் முழுவதிலும் பயன்படுத்த, உங்கள் Google கணக்கில் (<ph name="ACCOUNT" />) அதைச் சேமிக்கவும்.</translation>
 <translation id="8252991034201168845">அணுகல்தன்மை அமைப்புகளை நிர்வகிப்பதற்கான பட்டன். ChromeOS அமைப்புகளில் அணுகல்தன்மைக் கருவிகளைப் பிரத்தியேகமாக்க, Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="8253091569723639551">பில்லிங் முகவரி தேவை</translation>
 <translation id="8257387598443225809">இந்த ஆப்ஸ், மொபைலுக்காக வடிவமைக்கப்பட்டது</translation>

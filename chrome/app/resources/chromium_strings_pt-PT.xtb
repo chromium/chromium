@@ -8,6 +8,7 @@
 <translation id="1104942323762546749">O Chromium pretende exportar as suas palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="113122355610423240">O Chromium é o seu navegador predefinido</translation>
 <translation id="1131805035311359397">Para verificar se as suas palavras-passe estão protegidas contra violação de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />inicie sessão no Chromium<ph name="END_LINK" />.</translation>
+<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{As extensões do Chromium estavam a aceder a dispositivos HID}=1{As extensões do Chromium estão a aceder a dispositivos HID}other{As extensões do Chromium estão a aceder a # dispositivos HID}}</translation>
 <translation id="1185134272377778587">Acerca do Chromium</translation>
 <translation id="1202417120496358351">{COUNT,plural, =1{O administrador fecha automaticamente o Chromium quando não é usado durante 1 minuto. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}other{O administrador fecha automaticamente o Chromium quando não é usado durante # minutos. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}}</translation>
 <translation id="1203500561924088507">Agradecemos a instalação. Tem de reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
@@ -356,6 +357,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> os sites podem armazenar informações no Chromium sobre os seus interesses. Por exemplo, se visitar um site para comprar ténis para uma maratona, o site pode definir "correr maratonas" como o seu interesse. Posteriormente, se visitar um site diferente para se inscrever numa corrida, esse site pode mostrar-lhe um anúncio de ténis de corrida com base nos seus interesses.</translation>
 <translation id="8619360774459241877">A iniciar o Chromium…</translation>
 <translation id="8621669128220841554">A instalação falhou devido a um erro não especificado. Descarregue novamente o Chromium .</translation>
+<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Uma extensão do Chromium estava a aceder a dispositivos HID}=1{Uma extensão do Chromium está a aceder a 1 dispositivo HID}other{Uma extensão do Chromium está a aceder a # dispositivos HID}}</translation>
 <translation id="8697124171261953979">Também controla a página apresentada quando inicia o Chromium ou pesquisa a partir da Caixa geral.</translation>
 <translation id="8704119203788522458">Este é o seu Chromium</translation>
 <translation id="8796602469536043152">O Chromium necessita de autorização de acesso à câmara e ao microfone para este site.</translation>

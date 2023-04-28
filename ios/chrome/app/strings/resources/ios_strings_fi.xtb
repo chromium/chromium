@@ -133,6 +133,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1815941218935345331">Tunnuskoodi</translation>
 <translation id="1820259098641718022">Lisättiin lukulistalle</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Vaarantuneet salasanat}=1{{COUNT} vaarantunut salasana}other{{COUNT} vaarantunutta salasanaa}}</translation>
+<translation id="1830634592642484976">Tämä osoite on tällä hetkellä tallennettu Chromeen. Jos haluat käyttää sitä Googlen tuotteissa, tallenna se Google-tilillesi (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Todenna henkilöllisyytesi varmistaaksesi, että sinulla on aina pääsy synkronoituun dataasi</translation>
 <translation id="1836891464494477513">{count,plural, =1{Kirjanmerkki tallennettu Google-tilillesi ({email})}other{Kirjanmerkit tallennettu Google-tilillesi ({email})}}</translation>
 <translation id="1870148520156231997">Näytä salasana</translation>
@@ -545,6 +546,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4636930964841734540">Tietoja</translation>
 <translation id="4642472735733036929">Hinnan seuranta lopetettu</translation>
 <translation id="4650125387981512669">Jatka tilillä <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Varmista, että salasanasi ovat turvassa ja selvitä, ovatko ne vaarantuneet. Saat myös ohjeita itsesi suojaamiseen verkossa. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Tämä ominaisuus otetaan käyttöön, kun kirjaudut Google-tilillesi.</translation>
 <translation id="4659667755519643272">Avaa välilehtien vaihtaja</translation>
 <translation id="46614316059270592">Tallenna salasana</translation>
@@ -697,6 +699,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5669617676038747374">QR-koodin luominen</translation>
 <translation id="567881659373499783">Versio <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Vahvista henkilöllisyytesi, jotta voit käyttää ja tallentaa salasanoja Google-tililläsi.</translation>
+<translation id="5684761169742812828">Tämä salasana vaarantui tietosuojaloukkauksessa internetissä. Jos sinulla ei ole aikaa muuttaa sitä juuri nyt, Google suosittelee, että säilytät tämän varoituksen myöhempää varten.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Nyt näytetään 1 Chrome-ikkuna}other{Nyt näytetään {count} Chrome-ikkunaa}}</translation>
 <translation id="5701270923492462699">Pääsy kameraan myönnetty</translation>
 <translation id="5704908597376970822">Sisäänkirjautuminen ei onnistu.</translation>
@@ -1222,6 +1225,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8952559610785099500">Lisää salasana</translation>
 <translation id="8953046091948372197">Näet kirjanmerkkisi täällä</translation>
 <translation id="895541991026785598">Ilmoita ongelmasta</translation>
+<translation id="8961757677053809960">Hylätäänkö varoitus?</translation>
 <translation id="8971545611707025079">Tarkista uudelleen</translation>
 <translation id="8974714402877957201">1. Avaa iPadin asetukset</translation>
 <translation id="8976382372951310360">Ohje</translation>

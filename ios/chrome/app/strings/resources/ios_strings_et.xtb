@@ -133,6 +133,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1815941218935345331">Pääsukood</translation>
 <translation id="1820259098641718022">Lisati lugemisloendisse</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Ohustatud paroolid}=1{{COUNT} ohustatud parool}other{{COUNT} ohustatud parooli}}</translation>
+<translation id="1830634592642484976">See aadress on praegu salvestatud Chrome'i. Kui soovite seda Google'i teenustes kasutada, salvestage see oma Google'i kontole <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Selleks, et pääseksite alati oma sünkroonitud andmetele juurde, kinnitage oma isik</translation>
 <translation id="1836891464494477513">{count,plural, =1{Järjehoidja salvestati teie Google'i kontole {email}}other{Järjehoidjad salvestati teie Google'i kontole {email}}}</translation>
 <translation id="1870148520156231997">Kuva parool</translation>
@@ -545,6 +546,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4636930964841734540">Teave</translation>
 <translation id="4642472735733036929">Hinna jälgimine on peatatud</translation>
 <translation id="4650125387981512669">Jätkake kasutajana <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Saate veenduda, et teie paroolid oleksid kaitstud, kontrollida, kas need pole ohustatud, ja saada nõu, kuidas end veebis kaitsta. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Kui logite oma Google'i kontole sisse, lülitatakse see funktsioon sisse.</translation>
 <translation id="4659667755519643272">Ava vahelehtede vaheti</translation>
 <translation id="46614316059270592">Salvesta parool</translation>
@@ -697,6 +699,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5669617676038747374">QR-koodi loomine</translation>
 <translation id="567881659373499783">Versioon <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Selleks, et saaksite oma Google'i kontol paroole kasutada ja salvestada, kinnitage oma isik.</translation>
+<translation id="5684761169742812828">See parool langes Internetis andme turberikkumise ohvriks. Kui teil pole praegu aega seda muuta, soovitab Google selle hoiatuse hiljem tegutsemise meeldetuletusena alles hoida.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Nüüd on kuvatud üks Chrome'i aken}other{Nüüd on kuvatud {count} Chrome'i akent}}</translation>
 <translation id="5701270923492462699">Juurdepääs kaamerale on lubatud</translation>
 <translation id="5704908597376970822">Ei saa sisse logida.</translation>
@@ -1222,6 +1225,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8952559610785099500">Parooli lisamine</translation>
 <translation id="8953046091948372197">Oma paroolid leiate siit</translation>
 <translation id="895541991026785598">Teavitage probleemist</translation>
+<translation id="8961757677053809960">Kas loobuda hoiatusest?</translation>
 <translation id="8971545611707025079">Kontrolli uuesti</translation>
 <translation id="8974714402877957201">1. Avage iPadi rakendus Settings</translation>
 <translation id="8976382372951310360">Abi</translation>

@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Se deschide în browserul secundar în<ph name="COUNTDOWN_SECONDS" /> secunde</translation>
+<translation id="1071735803834535661">tasta Meta externă</translation>
 <translation id="1071917609930274619">Cifrare de date</translation>
 <translation id="1072700771426194907">S-a detectat un dispozitiv USB</translation>
 <translation id="107278043869924952">Folosește codul PIN pe lângă parolă</translation>
@@ -1376,6 +1377,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2146263598007866206">Site-urile pot descărca automat fișierele conexe împreună pentru a te ajuta să economisești timp</translation>
 <translation id="2147151613919729065">Pentru a șterge istoricul din modul pentru invitați, închide toate ferestrele pentru invitați.</translation>
 <translation id="2147218225094845757">Ascunde panoul lateral</translation>
+<translation id="2147282432401652483">tasta Command</translation>
 <translation id="2148219725039824548">Eroare la montarea dispozitivului de stocare în rețea. Dispozitivul indicat nu a fost găsit în rețea.</translation>
 <translation id="2148756636027685713">Formatarea a fost finalizată</translation>
 <translation id="2148892889047469596">Proiectează fila</translation>
@@ -4946,6 +4948,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5298219193514155779">Temă creată de</translation>
 <translation id="5299109548848736476">Nu urmăriți</translation>
 <translation id="5299558715747014286">să vadă și gestioneze grupurile de file</translation>
+<translation id="529986401483187205">dezactivată</translation>
 <translation id="5300287940468717207">Resetezi permisiunile la nivel de site?</translation>
 <translation id="5300426565656326054">Personalizarea anunțurilor bazată pe browser</translation>
 <translation id="5300589172476337783">Afișează</translation>
@@ -6849,6 +6852,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6981982820502123353">Accesibilitate</translation>
 <translation id="6983507711977005608">Deconectează rețeaua pentru Tethering instantaneu</translation>
 <translation id="6983783921975806247">OID înregistrat</translation>
+<translation id="6983890893900549383">tasta Esc</translation>
 <translation id="6985235333261347343">Agent Microsoft de recuperare a cheilor</translation>
 <translation id="698524779381350301">Permite automat accesul pe următoarele site-uri</translation>
 <translation id="6985607387932385770">Imprimante</translation>
@@ -8020,6 +8024,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8009225694047762179">Gestionează parolele</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />” a fost mutat.</translation>
 <translation id="8011875486979733097">Nu se poate instala Steam</translation>
+<translation id="8012188750847319132">caps lock</translation>
 <translation id="8013993649590906847">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google.</translation>
 <translation id="8014154204619229810">Momentan, rulează instrumentul pentru actualizare. Actualizează într-un minut și verifică din nou.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> nu poate reveni la versiunea instalată anterior. Încearcă să folosești din nou Powerwash pe dispozitivul tău.</translation>

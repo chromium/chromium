@@ -315,6 +315,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1689333818294560261">Apzīmējums</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kā varat pārvaldīt savus datus:<ph name="END_BOLD" /> pārlūkā Chrome tiek automātiski dzēstas tēmas, kas ir vecākas par četrām nedēļām. Turpinot pārlūkošanu, tēma var tikt atkārtoti iekļauta sarakstā. Chrome iestatījumos jebkurā brīdī varat bloķēt tēmas, ko nevēlaties kopīgot ar vietnēm, un izslēgt reklāmu tēmas.</translation>
 <translation id="1697532407822776718">Gatavs!</translation>
+<translation id="1699651774646344471">Tagad varat izmantot adreses no sava Google konta.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Tālummaiņas līmeņi</translation>
@@ -537,6 +538,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2224337661447660594">Nav interneta savienojuma</translation>
 <translation id="2225927550500503913">Virtuālā karte ir ieslēgta</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Pierakstīšanās<ph name="END_LINK" /> Wi-Fi tīklā</translation>
+<translation id="2228057197024893428">Šī adrese pašlaik ir saglabāta pārlūkā Chrome. Lai izmantotu šo adresi citos Google produktos, saglabājiet to savā Google kontā (<ph name="ACCOUNT" />).</translation>
 <translation id="2239100178324503013">Sūtīt tūlīt</translation>
 <translation id="2241693394036365668">Fails tiek lejupielādēts</translation>
 <translation id="2246264294482514010">10 x 12 collas</translation>
@@ -656,6 +658,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2547466893236767989">Tīmekļa dizains un izstrāde</translation>
 <translation id="254947805923345898">Politikas vērtība nav derīga.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> nosūtīja nederīgu atbildi.</translation>
+<translation id="2551608178605132291">Adrese: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Turpmāk izmantot ekrāna bloķēšanu, lai ātrāk apstiprinātu kartes</translation>
 <translation id="2553853292994445426">Pārbaudiet droša DNS servera iestatījumus. Iespējams, esat konfigurējis drošu DNS serveri, ar kuru neizdodas izveidot savienojumu.</translation>
@@ -853,6 +856,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Pārbaudīt droša DNS servera konfigurāciju<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Vidējā paplāte</translation>
 <translation id="3109728660330352905">Jums nav pilnvaru, lai skatītu šo lapu.</translation>
+<translation id="3112892588078695695">Tālruņa numurs: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Trešā maiņa</translation>
 <translation id="3114040155724590991">Notiek Android sistēmas atjaunināšana
     Jūsu lietotnes palaišana var aizņemt vairāk laika nekā parasti.</translation>
@@ -1224,6 +1228,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4031179711345676612">Mikrofona lietošana ir atļauta</translation>
 <translation id="4040350669425716613">Koledžas un universitātes</translation>
 <translation id="4047351652147966654">18 x 24 collas</translation>
+<translation id="4050392779074832022">Jūs varēsiet izmantot šo adresi Google produktos.</translation>
 <translation id="405399507749852140">Saņemiet paziņojumus, ja kādā vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="4056223980640387499">Sēpija</translation>
 <translation id="4063063121357725926">Ļaujiet Google palīdzēt jums atrast atlaides jūsu groziem</translation>
@@ -2464,6 +2469,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7083258188081898530">9. paplāte</translation>
 <translation id="7086090958708083563">Augšupielādi pieprasīja lietotājs.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu, lai Chrome iestatījumos pārvaldītu atļaujas un datus, kas tiek glabāti vietnēs.</translation>
+<translation id="7096341143397839437">E-pasta adrese: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Šīs vietnes identitāte nav verificēta.</translation>
 <translation id="7101893872976785596">Šausmu filmas</translation>
 <translation id="7102079138917191645">Būvniecība un apsaimniekošana</translation>
@@ -2542,6 +2548,7 @@ Papildu informācija:
 <translation id="7256634549594854023">Aizmugurējā paplāte</translation>
 <translation id="725866823122871198">Nevar izveidot privātu savienojumu ar <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, jo jūsu datora datums un laiks (<ph name="DATE_AND_TIME" />) nav pareizs.</translation>
 <translation id="7260504762447901703">Atsaukt piekļuvi</translation>
+<translation id="7265608370113700582">Adrese ir pieejama tikai šajā ierīcē.</translation>
 <translation id="7275334191706090484">Pārvaldītās grāmatzīmes</translation>
 <translation id="7277998515889183784">Dekoratīvā kosmētika un sejas kopšanas līdzekļi</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai nomainītu Google konta paroli, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
@@ -2965,6 +2972,7 @@ Papildu informācija:
 <translation id="8245703462678310750">Lai izietu no pilnekrāna režīma un skatītu lejupielādi, nospiediet un turiet taustiņu |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8249296373107784235">Priekšlaikus pārtraukt</translation>
 <translation id="8249463483885748674">Standartizēti un iestāšanās pārbaudījumi</translation>
+<translation id="8250094606476360498">Šī adrese pašlaik ir saglabāta šajā ierīcē. Lai izmantotu šo adresi citos Google produktos, saglabājiet to savā Google kontā (<ph name="ACCOUNT" />).</translation>
 <translation id="8252991034201168845">Poga “Pārvaldīt pieejamības iestatījumus”. Lai Chrome OS iestatījumos personalizētu pieejamības rīkus, nospiediet taustiņu Enter.</translation>
 <translation id="8253091569723639551">Jānorāda norēķinu adrese.</translation>
 <translation id="8257387598443225809">Šī lietotne ir paredzēta mobilajām ierīcēm</translation>

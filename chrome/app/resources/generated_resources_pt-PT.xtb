@@ -3170,6 +3170,7 @@ Pretende pará-lo?</translation>
 <translation id="3706463572498736864">Páginas por folha</translation>
 <translation id="370649949373421643">Ativar Wi-Fi</translation>
 <translation id="370665806235115550">A carregar...</translation>
+<translation id="3707034683772193706">Um site que visita pode guardar uma pequena quantidade de informações no Chrome, principalmente para validar que não é um bot</translation>
 <translation id="3707163604290651814">Atualmente com sessão iniciada como <ph name="NAME" /></translation>
 <translation id="3707348585109246684">Abrir link num novo separador da <ph name="APP" /></translation>
 <translation id="3708295717182051206">Legendas</translation>
@@ -3722,6 +3723,7 @@ Pretende pará-lo?</translation>
 <translation id="4180788401304023883">Eliminar o certificado "<ph name="CERTIFICATE_NAME" />" da autoridade de certificação?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4182339886482390129">A Navegação segura melhorada faz mais para proteger contra Websites, transferências e extensões perigosos</translation>
 <translation id="4184803915913850597">Dispositivo HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – Pesquisa <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">A configurar a app <ph name="APP_NAME" />…</translation>
@@ -3874,6 +3876,7 @@ Pretende pará-lo?</translation>
 <translation id="4322394346347055525">Fechar os Outros Separadores</translation>
 <translation id="4324577459193912240">Ficheiro incompleto</translation>
 <translation id="4325237902968425115">A desinstalar <ph name="LINUX_APP_NAME" />…</translation>
+<translation id="4326146840124313313">A segurança mais avançada do Chrome faz mais para proteger contra Websites, transferências e extensões perigosos</translation>
 <translation id="4330191372652740264">Água gelada</translation>
 <translation id="4330387663455830245">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Configure o controlo parental</translation>
@@ -5538,6 +5541,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5833726373896279253">Estas definições só podem ser modificadas pelo proprietário:</translation>
 <translation id="583431638776747">O site não estava disponível</translation>
 <translation id="5834581999798853053">Faltam cerca de <ph name="TIME" /> minutos</translation>
+<translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{A extensão <ph name="EXTENSION1" /> está a aceder a dispositivos HID}=2{Extensões que acedem a dispositivos: <ph name="EXTENSION1" /> e <ph name="EXTENSION2" />}other{Extensões que acedem a dispositivos: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> e mais {3}}}</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – câmara ou microfone a gravar</translation>
 <translation id="583673505367439042">Os sites podem solicitar a edição de ficheiros ou de pastas no seu dispositivo</translation>
 <translation id="5836999627049108525">Idioma de Traduzir de</translation>
@@ -7215,6 +7219,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7339763383339757376">PKCS #7, certificado único</translation>
 <translation id="7339785458027436441">Rever a ortografia durante a escrita</translation>
 <translation id="7339898014177206373">Nova janela</translation>
+<translation id="7340179705876485790">Para retroceder mais do que 1 página, clique sem soltar em Anterior.</translation>
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> está agora em ecrã inteiro.</translation>
 <translation id="7340650977506865820">O site está a partilhar o ecrã.</translation>
 <translation id="7340757554212515731">Envia automaticamente relatórios de falhas, bem como dados de diagnóstico e utilização para a Google</translation>
@@ -7261,6 +7266,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7374376573160927383">Gerir dispositivos USB</translation>
 <translation id="7376124766545122644">Não é possível usar este link. Verifique se começa com "http://" ou "https://" para tentar novamente.</translation>
 <translation id="7376553024552204454">Realçar o cursor do rato ao ser movido</translation>
+<translation id="7377250337652426186">Para retroceder mais do que 1 página, clique sem soltar no botão anterior.</translation>
 <translation id="737728204345822099">Poderá ser mantido um registo da sua visita a este site na sua chave de segurança.</translation>
 <translation id="7377451353532943397">Continuar a impedir o acesso aos sensores</translation>
 <translation id="7377481913241237033">Associar com um código</translation>
@@ -7296,6 +7302,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7403642243184989645">A transferir recursos…</translation>
 <translation id="7404065585741198296">O seu telemóvel com um cabo USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{A verificação de segurança foi efetuada há 1 hora.}other{A verificação de segurança foi efetuada há {NUM_HOURS} horas}}</translation>
+<translation id="7406113532070524618">Esta definição funciona sem saber a sua identidade nem permitir que os sites vejam o seu histórico de navegação, embora os sites possam partilhar uma pequena quantidade de informações como parte da validação</translation>
 <translation id="740624631517654988">Janelas de pop-up bloqueadas</translation>
 <translation id="7406912950279255498">Modo de inversão de cores</translation>
 <translation id="7407430846095439694">Importar e vincular</translation>
@@ -9034,6 +9041,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> para proteger a sua privacidade, eliminamos automaticamente os sites da lista com mais de 4 semanas. Um site que visita novamente pode voltar a aparecer na lista. Em alternativa, pode remover um site se não quiser que o mesmo defina interesses para si.</translation>
 <translation id="8884570509232205463">Agora, o seu dispositivo será bloqueado à(s) <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8888253246822647887">A aplicação será aberta quando a atualização estiver concluída. As atualizações podem demorar alguns minutos.</translation>
+<translation id="8889294078294184559">À medida que navega, os sites podem verificar com o Chrome e validar com um site anterior que tenha visitado que provavelmente é uma pessoa real</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> pode editar os seguintes ficheiros e pastas</translation>
 <translation id="8890170499370378450">Pode incorrer em custos de dados móveis</translation>
 <translation id="8890516388109605451">Fontes</translation>

@@ -133,6 +133,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1815941218935345331">Maxfiy kod</translation>
 <translation id="1820259098641718022">Mutolaa ro‘yxatiga qo‘shildi</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Oshkor etilgan parollar}=1{{COUNT} ta parol oshkor etilgan}other{{COUNT} ta parol oshkor etilgan}}</translation>
+<translation id="1830634592642484976">Hozir bu manzil Chromega saqlangan. Boshqa Google xizmatlarida ishlatish uchun manzilni Google hisobiga (<ph name="USER_EMAIL" />) saqlang.</translation>
 <translation id="1832848789136765277">Maʼlumotlaringizni doim sinxronlash uchun shaxsingizni tasdiqlang</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bukmark Google hisobingizga saqlandi, {email}}other{Bukmarklar Google hisobingizga saqlandi, {email}}}</translation>
 <translation id="1870148520156231997">Parolni ochish</translation>
@@ -545,6 +546,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4636930964841734540">Ma’lumot</translation>
 <translation id="4642472735733036929">Narx kuzatuvi toʻxtatildi</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> nomidan kirish</translation>
+<translation id="4652817563047461855">Parollaringiz xavfsiz ekaniga ishonch hosil qiling. Ular oʻgʻirlagan yoki yoʻqligi haqida maʼlumot oling va oʻzingizni onlayn himoya qilish boʻyicha maslahat oling. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Bu funksiya Google hisobingizga kirganingizda yoqiladi.</translation>
 <translation id="4659667755519643272">Sahifalarni tezkor almashtirish funksiyasini yoqish</translation>
 <translation id="46614316059270592">Parolni saqlash</translation>
@@ -697,6 +699,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5669617676038747374">QR kod yaratish</translation>
 <translation id="567881659373499783"><ph name="PRODUCT_VERSION" />-versiya</translation>
 <translation id="5683499062697987550">Parollarni Google hisobiga saqlashda va ulardan foydalanish uchun shaxsingizni tasdiqlang.</translation>
+<translation id="5684761169742812828">Parol internet maʼlumotlari sizib chiqishida oshkor qilingan. Hozir uni almashtira olmasangiz, Google buni keyinroq qilishni unutmaslik uchun ogohlantirish qoldirishni tavsiya qiladi.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Hozir 1 ta Chrome oynasi chiqarilgan}other{Hozir {count} ta Chrome oynasi chiqarilgan}}</translation>
 <translation id="5701270923492462699">Kameradan foydalanishga ruxsat berildi</translation>
 <translation id="5704908597376970822">Kirish amalga oshmadi.</translation>
@@ -1222,6 +1225,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8952559610785099500">Parol kiritish</translation>
 <translation id="8953046091948372197">Parollaringiz shu yerda chiqadi</translation>
 <translation id="895541991026785598">Muammo haqida xabar yuborish</translation>
+<translation id="8961757677053809960">Ogohlantirish yopilsinmi?</translation>
 <translation id="8971545611707025079">Qayta tekshirish</translation>
 <translation id="8974714402877957201">1. iPad sozlamalarini oching</translation>
 <translation id="8976382372951310360">Yordam</translation>

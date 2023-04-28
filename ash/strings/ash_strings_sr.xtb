@@ -556,7 +556,7 @@
 <translation id="3593646411856133110">Превуците нагоре и задржите да бисте видели отворене апликације</translation>
 <translation id="3595596368722241419">Батерија је пуна</translation>
 <translation id="3596012367874587041">Подешавања апликације</translation>
-<translation id="3600061223661453002">Искључи</translation>
+<translation id="3600061223661453002">Искључено</translation>
 <translation id="3604801046548457007">Радна површина <ph name="DESK_TITILE" /> је направљена</translation>
 <translation id="3606978283550408104">Повезан је екран са Брајевом азбуком.</translation>
 <translation id="3609301425104788351"><ph name="MIC" />,
@@ -1367,7 +1367,7 @@
 <translation id="7378203170292176219">Превуците да бисте изабрали област за снимање</translation>
 <translation id="7378594059915113390">Контроле за медије</translation>
 <translation id="7378889811480108604">Режим уштеде батерије је искључен</translation>
-<translation id="7382680553121047388">Укључи</translation>
+<translation id="7382680553121047388">Укључено</translation>
 <translation id="7384028040782072252">Кликните десним тастером било где да бисте променили редослед апликација</translation>
 <translation id="7386767620098596324">Укључите/искључите мрежну везу. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Увек можете да подесите касније у Подешавањима.</translation>

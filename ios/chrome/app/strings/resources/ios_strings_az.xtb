@@ -133,6 +133,7 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="1815941218935345331">Parol</translation>
 <translation id="1820259098641718022">Oxu Siyahısına əlavə edildi</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Oğurlanmış Parollar}=1{{COUNT} Oğurlanmış Parol}other{{COUNT} Oğurlanmış Parol}}</translation>
+<translation id="1830634592642484976">Bu ünvan hazırda Chrome-da yadda saxlanır. Google məhsullarında istifadə etmək üçün Google Hesabında (<ph name="USER_EMAIL" />) yadda saxlayın.</translation>
 <translation id="1832848789136765277">Həmişə sinxronlaşdırılmış datanıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="1836891464494477513">{count,plural, =1{Əlfəcin Google Hesabında ({email}) yadda saxlandı}other{Əlfəcinlər Google Hesabında ({email}) yadda saxlandı}}</translation>
 <translation id="1870148520156231997">Parolu Göstərin</translation>
@@ -545,6 +546,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4636930964841734540">İnfo</translation>
 <translation id="4642472735733036929">Qiymət izlənilməsi dayandı</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> kimi davam edin</translation>
+<translation id="4652817563047461855">Parolların güvənli olduğundan əmin olun, onların ələ keçirilib-keçirilmədiyini müəyyən edin və özünüzü onlayn qorumaq üçün məsləhət alın. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Google Hesabınıza daxil olduqda, bu xüsusiyyət aktivləşir.</translation>
 <translation id="4659667755519643272">Panel Dəyişdirici Daxil edin</translation>
 <translation id="46614316059270592">Parolu yadda saxlayın</translation>
@@ -697,6 +699,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5669617676038747374">QR kodu yaradın</translation>
 <translation id="567881659373499783">Versiya <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Google Hesabında parolları istifadə etmək və yadda saxlamaq üçün kimliyinizi təsdiq edin.</translation>
+<translation id="5684761169742812828">Bu parol internetdə verilənlərin pozulması nəticəsində ifşa olunub. İndi dəyişməyə vaxt yoxdursa, Google bu xəbərdarlığı sonra xatırlamaq üçün saxlamağı tövsiyə edir.</translation>
 <translation id="5690398455483874150">{count,plural, =1{İndi 1 Chrome pəncərəsi göstərilir}other{İndi {count} Chrome pəncərəsi göstərilir}}</translation>
 <translation id="5701270923492462699">Kameraya giriş icazəsi verilib</translation>
 <translation id="5704908597376970822">Daxil olmaq mümkün deyil.</translation>
@@ -1222,6 +1225,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8952559610785099500">Parol əlavə edin</translation>
 <translation id="8953046091948372197">Parolları burada tapa bilərsiniz</translation>
 <translation id="895541991026785598">Problemi Xəbər verin</translation>
+<translation id="8961757677053809960">Xəbərdarlıqdan imtina edilsin?</translation>
 <translation id="8971545611707025079">Yenidən yoxlayın</translation>
 <translation id="8974714402877957201">1. iPad Ayarlarını açın</translation>
 <translation id="8976382372951310360">Yardım</translation>

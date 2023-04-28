@@ -133,6 +133,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1815941218935345331">Heslo</translation>
 <translation id="1820259098641718022">Přidáno do seznamu četby</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Prolomená hesla}=1{{COUNT} prolomené heslo}few{{COUNT} prolomená hesla}many{{COUNT} prolomeného hesla}other{{COUNT} prolomených hesel}}</translation>
+<translation id="1830634592642484976">Tato adresa je aktuálně uložena v Chromu. Pokud ji chcete používat ve službách Google, uložte ji do svého účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Aby bylo zajištěno, že budete mít vždy přístup k synchronizovaným datům, ověřte svou totožnost</translation>
 <translation id="1836891464494477513">{count,plural, =1{Záložka byla uložena do vašeho účtu Google {email}}few{Záložky byly uloženy do vašeho účtu Google {email}}many{Záložky byly uloženy do vašeho účtu Google {email}}other{Záložky byly uloženy do vašeho účtu Google {email}}}</translation>
 <translation id="1870148520156231997">Zobrazit heslo</translation>
@@ -545,6 +546,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4636930964841734540">Informace</translation>
 <translation id="4642472735733036929">Sledování ceny bylo ukončeno</translation>
 <translation id="4650125387981512669">Pokračovat jako <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Ujistěte se, že jsou vaše hesla v bezpečí, ověřte si, zda nebyla prolomena, a nechte si poradit, jak se na internetu chránit. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Když se přihlásíte k účtu Google, tato funkce se zapne.</translation>
 <translation id="4659667755519643272">Přejít do přepínače karet</translation>
 <translation id="46614316059270592">Uložit heslo</translation>
@@ -697,6 +699,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5669617676038747374">Vytvořit QR kód</translation>
 <translation id="567881659373499783">Verze <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Pokud chcete používat a ukládat hesla ve svém účtu Google, ověřte svou totožnost.</translation>
+<translation id="5684761169742812828">Toto heslo bylo vyzrazeno při porušení zabezpečení údajů na internetu. Pokud nemáte čas hned ho změnit, doporučuje Google ponechat si toto upozornění jako připomenutí na později.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Je zobrazeno 1 okno prohlížeče Chrome}few{Jsou zobrazena {count} okna prohlížeče Chrome}many{Je zobrazeno {count} okna prohlížeče Chrome}other{Je zobrazeno {count} oken prohlížeče Chrome}}</translation>
 <translation id="5701270923492462699">Přístup k fotoaparátu je povolen</translation>
 <translation id="5704908597376970822">Nepodařilo se přihlásit.</translation>
@@ -1222,6 +1225,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8952559610785099500">Přidat heslo</translation>
 <translation id="8953046091948372197">Zde najdete svá hesla</translation>
 <translation id="895541991026785598">Nahlásit problém</translation>
+<translation id="8961757677053809960">Zavřít upozornění?</translation>
 <translation id="8971545611707025079">Zkontrolovat znovu</translation>
 <translation id="8974714402877957201">1. Otevřete nastavení iPadu.</translation>
 <translation id="8976382372951310360">Nápověda</translation>

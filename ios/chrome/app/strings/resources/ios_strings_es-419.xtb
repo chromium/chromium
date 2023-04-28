@@ -133,6 +133,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1815941218935345331">Contraseña</translation>
 <translation id="1820259098641718022">Se agregó a la lista de lectura</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Contraseñas hackeadas}=1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
+<translation id="1830634592642484976">Actualmente, esta dirección se guarda en Chrome. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Para asegurarte de que siempre puedas acceder a tus datos sincronizados, verifica tu identidad.</translation>
 <translation id="1836891464494477513">{count,plural, =1{Se guardó el favorito en tu Cuenta de Google ({email})}other{Se guardaron los favoritos en tu Cuenta de Google ({email})}}</translation>
 <translation id="1870148520156231997">Mostrar contraseña</translation>
@@ -545,6 +546,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4636930964841734540">Información</translation>
 <translation id="4642472735733036929">Se detuvo el seguimiento de precios</translation>
 <translation id="4650125387981512669">Continuar como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Asegúrate de que tus contraseñas sean seguras, descubre si hackearon alguna y obtén consejos para protegerte en línea. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Esta función se activa cuando accedes a tu Cuenta de Google.</translation>
 <translation id="4659667755519643272">Acceder al alternador de pestañas</translation>
 <translation id="46614316059270592">Guardar contraseña</translation>
@@ -697,6 +699,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5669617676038747374">Crear un código QR</translation>
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Para usar y guardar contraseñas en tu Cuenta de Google, verifica tu identidad.</translation>
+<translation id="5684761169742812828">Se expuso esta contraseña en una violación de la seguridad de los datos en Internet. Si no tienes tiempo para cambiarla en este momento, Google recomienda conservar esta advertencia para recordar hacerlo más adelante.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Se muestra 1 ventana de Chrome}other{Se muestran {count} ventanas de Chrome}}</translation>
 <translation id="5701270923492462699">Acceso a la cámara permitido</translation>
 <translation id="5704908597376970822">No se puede acceder.</translation>
@@ -1222,6 +1225,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8952559610785099500">Agregar contraseña</translation>
 <translation id="8953046091948372197">Aquí encontrarás tus contraseñas</translation>
 <translation id="895541991026785598">Informar de un problema</translation>
+<translation id="8961757677053809960">¿Quieres descartar la advertencia?</translation>
 <translation id="8971545611707025079">Volver a verificar</translation>
 <translation id="8974714402877957201">1. Abre Configuración en el iPad.</translation>
 <translation id="8976382372951310360">Ayuda</translation>

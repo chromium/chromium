@@ -2900,6 +2900,15 @@
 <translation id="3623332696371971798">ป้องกันไม่ให้แอปการปรับเปลี่ยนเฉพาะบุคคลเข้าถึง Google Photos</translation>
 <translation id="3627678165642179114">เปิดหรือปิดใช้งานบริการเว็บสำหรับการตรวจสอบการสะกด</translation>
 <translation id="3628480121685794414">เปิดใช้การพิมพ์แบบด้านเดียว</translation>
+<translation id="3634117682099473917">เทมเพลต URI ของรีโซลเวอร์ DNS-over-HTTPS ที่ต้องการ วิธีระบุรีโซลเวอร์ DNS-over-HTTPS หลายรายการคือเว้นวรรคระหว่างเทมเพลต URI ที่เกี่ยวข้อง นโยบายนี้คล้ายเป็นอย่างมากกับ <ph name="DOH_TEMPLATES_POLICY_NAME" /> ซึ่งจะถูกลบล้างหากระบุ ในทางตรงข้ามนโยบายนี้รองรับการระบุข้อมูลประจำตัว
+
+หากตั้งค่า <ph name="DOH_MODE_POLICY_NAME" /> เป็น <ph name="SECURE_DNS_MODE_SECURE" /> ก็ต้องตั้งค่านโยบายนี้หรือ <ph name="DOH_TEMPLATES_POLICY_NAME" /> และนโยบายต้องไม่ว่างเปล่า
+
+หากตั้งค่า <ph name="DOH_MODE_POLICY_NAME" /> เป็น <ph name="SECURE_DNS_MODE_AUTOMATIC" /> และตั้งค่านโยบายนี้ด้วย ระบบก็จะใช้เทมเพลต URI ที่ระบุไว้ หากไม่ได้ตั้งค่านโยบายนี้ ระบบจะใช้การจับคู่แบบฮาร์ดโค้ดเพื่อพยายามอัปเกรดรีโซลเวอร์ DNS ปัจจุบันของผู้ใช้เป็นรีโซลเวอร์ DoH ที่ดำเนินการโดยผู้ให้บริการรายเดียวกัน
+
+หากเทมเพลต URI มีตัวแปร <ph name="HTTP_VARIABLE_DNS" /> คำขอที่ส่งไปยังรีโซลเวอร์จะใช้ <ph name="HTTP_METHOD_GET" /> หากไม่มี คำขอจะใช้ <ph name="HTTP_METHOD_POST" />
+
+ในเวอร์ชัน 114 ขึ้นไป <ph name="DOH_SALT_POLICY_NAME" /> เป็นนโยบายที่ไม่บังคับหากมีการตั้งค่านโยบายนี้ไว้</translation>
 <translation id="3634125384445314047">อนุญาตให้เข้าถึงรูปภาพและวิดีโอล่าสุดที่ถ่ายในโทรศัพท์ผ่านฮับโทรศัพท์</translation>
 <translation id="3642557248926713561">ปิดใช้การป้องกันส่วนขยายของ Google Safe Browsing</translation>
 <translation id="3643284063603988867">เปิดใช้ฟีเจอร์ "จำรหัสผ่าน"</translation>
@@ -3791,6 +3800,7 @@
 <translation id="45036050223225148">ปิดใช้การทดสอบ ClientHello ที่เข้ารหัสตาม TLS</translation>
 <translation id="4503935079903510542">อิมเมจดิสก์ UEFI ที่บูทได้ซึ่งใช้ในการติดตั้ง VM บนอุปกรณ์ x86_64</translation>
 <translation id="4508728400492074981">ควบคุมนโยบายสำหรับฟีเจอร์ชุดบุคคลที่หนึ่ง</translation>
+<translation id="4510131075424939993">ระบุค่า Salt ที่จะใช้ใน <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> เมื่อประเมินข้อมูลประจำตัว</translation>
 <translation id="4510923771103268849">ผู้ใช้มีสิทธิ์เข้าถึงรากของคอนเทนเนอร์ Crostini ได้</translation>
 <translation id="4512407512989846472">อนุญาตให้บล็อกการคัดลอกไปยังคลิปบอร์ดใน URL ที่ระบุ</translation>
 <translation id="4513691822411041977">ไม่บังคับใช้ฟีเจอร์ค้นหาปลอดภัยใน Google Search หรือโหมดที่จำกัดของ YouTube</translation>
@@ -5537,6 +5547,11 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns *
 
       หมายเหตุ: นโยบายนี้มีผลกับเอาต์พุตเสียงทั้งหมด ซึ่งรวมถึงฟีเจอร์การช่วยเหลือพิเศษที่เป็นเสียง อย่าปิดนโยบายนี้หากผู้ใช้ต้องการโปรแกรมอ่านหน้าจอ</translation>
 <translation id="6221175752766085998">อนุญาตใบรับรองที่ออกโดย Trust Anchor ในพื้นที่ที่ไม่มีส่วนขยาย subjectAlternativeName</translation>
+<translation id="6221327862246049151">Salt นี้จะใช้เป็นค่า Salt เมื่อแฮชข้อมูลประจำตัวที่รวมอยู่ในสตริง <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />
+
+Salt ต้องเป็นสตริงที่ยาว 8 ถึง 32 อักขระ
+
+ในเวอร์ชัน 114 ขึ้นไป นโยบายนี้เป็นนโยบายที่ไม่บังคับหากมีการตั้งค่านโยบาย <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> ไว้ หากไม่ได้ตั้งค่านโยบายนี้ ระบบจะแฮชตัวระบุใน URI เทมเพลตที่กำหนดค่าผ่านนโยบาย <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> โดยไม่ใช้ Salt</translation>
 <translation id="6224070048795197148">อนุญาตให้ผู้ใช้ใช้เบราว์เซอร์โดยไม่ต้องลงชื่อเข้าใช้</translation>
 <translation id="6224304369267200483">URL/โดเมนอนุญาตการยืนยันกุญแจรักษาความปลอดภัยโดยตรงโดยอัตโนมัติ</translation>
 <translation id="6225938950222983458">เราเลิกใช้งานและไม่รองรับนโยบายนี้แล้ว โปรดใช้ <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" /> แทน</translation>

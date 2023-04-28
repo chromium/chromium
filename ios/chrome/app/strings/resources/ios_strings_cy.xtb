@@ -133,6 +133,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1815941218935345331">Cyfrinair</translation>
 <translation id="1820259098641718022">Ychwanegwyd at y Rhestr Ddarllen</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Cyfrineiriau sydd wedi'u Darganfod}=1{{COUNT} Cyfrinair sydd wedi'i Ddarganfod}two{{COUNT} Gyfrinair sydd wedi'u Darganfod}few{{COUNT} Chyfrinair sydd wedi'u Darganfod}many{{COUNT} Chyfrinair sydd wedi'u Darganfod}other{{COUNT} Cyfrinair sydd wedi'u Darganfod}}</translation>
+<translation id="1830634592642484976">Mae'r cyfeiriad hwn wedi'i gadw i Chrome ar hyn o bryd. Er mwyn ei ddefnyddio ar draws cynhyrchion Google, cadwch ef yn eich Cyfrif Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">I wneud yn siŵr eich bod bob amser yn gallu cael mynediad at eich data cysoni, cadarnhewch mai chi sydd yno</translation>
 <translation id="1836891464494477513">{count,plural, =1{Mae'r nod tudalen wedi'i gadw yn eich Cyfrif Google, {email}}zero{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}}two{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}}few{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}}many{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}}other{Mae'r nodau tudalen wedi'u cadw yn eich Cyfrif Google, {email}}}</translation>
 <translation id="1870148520156231997">Datgelu'r Cyfrinair</translation>
@@ -545,6 +546,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4636930964841734540">Gwybodaeth</translation>
 <translation id="4642472735733036929">Olrhain prisiau wedi stopio</translation>
 <translation id="4650125387981512669">Parhau fel <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Gwneud yn siŵr bod eich cyfrineiriau yn ddiogel, darganfod a ydynt wedi cael eu peryglu, a chael cyngor i helpu i amddiffyn eich hun ar-lein. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Pan fyddwch yn mewngofnodi i'ch Cyfrif Google, mae'r nodwedd hon yn cael ei droi ymlaen.</translation>
 <translation id="4659667755519643272">Rhowch Newidydd Tabiau</translation>
 <translation id="46614316059270592">Cadw'r Cyfrinair</translation>
@@ -697,6 +699,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5669617676038747374">Wrthi'n creu cod QR</translation>
 <translation id="567881659373499783">Fersiwn <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">I ddefnyddio a chadw cyfrineiriau yn eich Cyfrif Google, cadarnhewch mai chi sydd yno.</translation>
+<translation id="5684761169742812828">Datgelwyd y cyfrinair hwn mewn toriad data ar y rhyngrwyd. Os nad oes gennych amser i'w newid ar hyn o bryd, mae Google yn argymell cadw'r rhybudd hwn i atgoffa'ch hun yn nes ymlaen.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Nawr yn dangos 1 ffenestr Chrome}zero{Nawr yn dangos {count} ffenestr Chrome}two{Nawr yn dangos {count} ffenestr Chrome}few{Nawr yn dangos {count} ffenestr Chrome}many{Nawr yn dangos {count} ffenestr Chrome}other{Nawr yn dangos {count} ffenestr Chrome}}</translation>
 <translation id="5701270923492462699">Caniateir Mynediad at y Camera</translation>
 <translation id="5704908597376970822">Methu â mewngofnodi.</translation>
@@ -1222,6 +1225,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8952559610785099500">Ychwanegu Cyfrinair</translation>
 <translation id="8953046091948372197">Byddwch yn gweld eich cyfrineiriau yma</translation>
 <translation id="895541991026785598">Adrodd am Broblem</translation>
+<translation id="8961757677053809960">Diystyru'r Rhybudd?</translation>
 <translation id="8971545611707025079">Gwirio Eto</translation>
 <translation id="8974714402877957201">1. Agorwch y Gosodiadau iPad</translation>
 <translation id="8976382372951310360">Cymorth</translation>

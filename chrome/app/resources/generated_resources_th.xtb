@@ -477,6 +477,7 @@
 <translation id="1410616244180625362">อนุญาตให้ <ph name="HOST" /> เข้าถึงกล้องต่อไป</translation>
 <translation id="1410797069449661718">เลื่อนไปทางแท็บแรก</translation>
 <translation id="1410806973194718079">ตรวจสอบนโยบายไม่ได้</translation>
+<translation id="1411400282355634827">รีเซ็ตสิทธิ์ทั้งหมดของอุปกรณ์บลูทูธไหม</translation>
 <translation id="1411724932979011919">รหัสที่คุณป้อนต้องอยู่ในรูปแบบ LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1412681350727866021">ส่วนขยายเพิ่มเติม</translation>
 <translation id="1414315029670184034">ไม่อนุญาตให้เว็บไซต์ใช้กล้องของคุณ</translation>
@@ -4811,6 +4812,7 @@
 <translation id="5178667623289523808">ค้นหาก่อนหน้านี้</translation>
 <translation id="5181140330217080051">กำลังดาวน์โหลด</translation>
 <translation id="5181172023548002891">ที่เครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="ACCOUNT" /></translation>
+<translation id="5183344263225877832">รีเซ็ตสิทธิ์ทั้งหมดของอุปกรณ์ HID ไหม</translation>
 <translation id="5184063094292164363">&amp;คอนโซล JavaScript</translation>
 <translation id="5184209580557088469">มีตั๋วที่ใช้ชื่อผู้ใช้นี้แล้ว</translation>
 <translation id="5184662919967270437">กำลังอัปเดตอุปกรณ์</translation>
@@ -6498,6 +6500,7 @@
 <translation id="6691541770654083180">โลก</translation>
 <translation id="6691936601825168937">&amp;ส่งต่อ</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 หน้า}other{{COUNT} หน้า}}</translation>
+<translation id="6693820805264897502">แทนที่รหัสผ่านที่มีอยู่</translation>
 <translation id="6697172646384837537">เลือกปลายทางที่ต้องการนำเข้ารหัสผ่าน</translation>
 <translation id="6697492270171225480">แสดงคำแนะนำหน้าที่คล้ายกันเมื่อไม่พบหน้าเว็บ</translation>
 <translation id="6697690052557311665">หากต้องการแชร์ ให้คลิกขวาที่โฟลเดอร์ในแอป Files จากนั้นเลือก "แชร์กับ Linux"</translation>
@@ -7616,6 +7619,7 @@
 <translation id="7674542105240814168">ปฏิเสธไม่ให้เข้าถึงตำแหน่ง</translation>
 <translation id="7676119992609591770">พบ <ph name="NUM" /> แท็บสำหรับ "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">ส่งเสียงของคุณไปยัง Google เพื่อให้พิมพ์ตามคำบอกในช่องข้อความต่างๆ</translation>
+<translation id="7678588695732963732">รีเซ็ตสิทธิ์ทั้งหมดของอุปกรณ์ USB ไหม</translation>
 <translation id="7679171213002716280">มีเครื่องพิมพ์ที่จัดการ <ph name="PRINTER_COUNT" /> เครื่อง</translation>
 <translation id="7680416688940118410">การปรับเทียบหน้าจอสัมผัส</translation>
 <translation id="7681095912841365527">เว็บไซต์ใช้บลูทูธได้</translation>
@@ -9376,6 +9380,7 @@
 <translation id="9192019773545828776">ฟังการอธิบายและอ่านออกเสียงเพื่อให้คุณใช้อุปกรณ์ได้โดยไม่ต้องมองหน้าจอ การอธิบายและอ่านออกเสียงอักษรเบรลล์จะพร้อมใช้งานกับอุปกรณ์ที่เชื่อมต่อ ใช้แป้น Ctrl + Alt + Z เพื่อเปิดและปิด ChromeVox ใช้แป้นค้นหา + ลูกศรซ้ายหรือลูกศรขวาเพื่อไปยังส่วนต่างๆ ใช้แป้นค้นหา + เว้นวรรคเพื่อเลือก (เปิดใช้งาน)</translation>
 <translation id="919686179725692564">ดูข้อมูลเพิ่มเติมเกี่ยวกับการสำรองข้อมูลแอป</translation>
 <translation id="9199503643457729322">คลิกเพื่อออกจากคู่มือความเป็นส่วนตัว</translation>
+<translation id="9199695835892108985">รีเซ็ตสิทธิ์ทั้งหมดของพอร์ตอนุกรมไหม</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> จะแก้ไขไฟล์ใน <ph name="FOLDERNAME" /> ได้</translation>
 <translation id="920045321358709304">ค้นหา <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">ระบบจะล้างข้อมูลออฟไลน์ทั้งหมด</translation>

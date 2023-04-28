@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">پاس کوڈ</translation>
 <translation id="1820259098641718022">پڑھنے کی فہرست میں شامل کر دیا گیا ہے</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{متاثرہ پاس ورڈز}=1{{COUNT} متاثرہ پاس ورڈ}other{{COUNT} متاثرہ پاس ورڈز}}</translation>
+<translation id="1830634592642484976">‏یہ پتہ فی الحال Chrome پر محفوظ ہے۔ اسے تمام Google پروڈکٹس میں استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ کریں۔</translation>
 <translation id="1832848789136765277">یقینی بنانے کیلئے کہ آپ اپنے مطابقت پذیر ڈیٹا تک ہمیشہ رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="1836891464494477513">{count,plural, =1{‏بک مارک آپ کے Google اکاؤنٹ میں محفوظ کیا، {email}}other{‏باک مارکس آپ کے Google اکاؤنٹ میں محفوظ کیے گئے، {email}}}</translation>
 <translation id="1870148520156231997">پاس ورڈ ظاہر کریں</translation>
@@ -545,6 +546,7 @@
 <translation id="4636930964841734540">معلومات</translation>
 <translation id="4642472735733036929">قیمت کی ٹریکنگ بند کی گئی</translation>
 <translation id="4650125387981512669">بطور <ph name="FIRST_RUN_ACCOUNT_NAME" /> جاری رکھیں</translation>
+<translation id="4652817563047461855">اس بات کو یقینی بنائیں کہ آپ کے پاس ورڈز محفوظ ہیں، معلوم کریں کہ آیا ان سے سمجھوتہ کیا گیا ہے اور اپنے آپ کو آن لائن محفوظ رکھنے میں مدد کے لیے مشورہ حاصل کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">‏جب آپ اپنے Google اکاؤنٹ میں سائن ان کرتے ہیں، تو یہ خصوصیت آن ہو جاتی ہے۔</translation>
 <translation id="4659667755519643272">ٹیب سوئچ کنندہ میں داخل ہوں</translation>
 <translation id="46614316059270592">پاس ورڈ محفوظ کریں</translation>
@@ -697,6 +699,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5669617676038747374">‏QR کوڈ تخلیق کریں</translation>
 <translation id="567881659373499783">ورژن <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">‏اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کرنے اور محفوظ کرنے کے لیے، تصدیق کریں کہ یہ آپ ہی ہیں۔</translation>
+<translation id="5684761169742812828">‏یہ پاس ورڈ انٹرنیٹ پر ڈیٹا کی خلاف ورزی میں افشاء ہو گیا۔ اگر آپ کے پاس ابھی اسے تبدیل کرنے کا وقت نہیں ہے تو Google تجویز کرتا ہے کہ بعد میں خود کو یاد دلانے کے لیے اس وارننگ کو برقرار رکھیں۔</translation>
 <translation id="5690398455483874150">{count,plural, =1{‏ابھی 1 Chrome ونڈو نظر آ رہا ہے}other{‏ابھی {count} Chrome ونڈوز نظر آ رہے ہیں}}</translation>
 <translation id="5701270923492462699">کیمرے تک رسائی کی اجازت ہے</translation>
 <translation id="5704908597376970822">سائن نہیں کیا جا سکتا۔</translation>
@@ -1222,6 +1225,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8952559610785099500">پاس ورڈ شامل کریں</translation>
 <translation id="8953046091948372197">آپ کو اپنے پاس ورڈ یہاں ملیں گے</translation>
 <translation id="895541991026785598">ایک مسئلہ کی اطلاع دیں</translation>
+<translation id="8961757677053809960">وارننگ مسترد کریں؟</translation>
 <translation id="8971545611707025079">دوبارہ چیک کریں</translation>
 <translation id="8974714402877957201">‏1۔ iPad ترتیبات کھولیں</translation>
 <translation id="8976382372951310360">مدد</translation>

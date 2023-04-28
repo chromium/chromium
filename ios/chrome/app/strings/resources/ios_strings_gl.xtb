@@ -133,6 +133,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1815941218935345331">Contrasinal</translation>
 <translation id="1820259098641718022">Engadiuse a páxina á lista de lectura</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Contrasinais vulnerados}=1{{COUNT} contrasinal vulnerado}other{{COUNT} contrasinais vulnerados}}</translation>
+<translation id="1830634592642484976">Este enderezo está gardado en Chrome. Para usalo nos diferentes produtos de Google, gárdao na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Para asegurarte de poder acceder sempre aos teus datos sincronizados, verifica a túa identidade</translation>
 <translation id="1836891464494477513">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email})}other{Os marcadores gardáronse na túa Conta de Google ({email})}}</translation>
 <translation id="1870148520156231997">Mostrar contrasinal</translation>
@@ -545,6 +546,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4636930964841734540">Información</translation>
 <translation id="4642472735733036929">Detívose o seguimento de prezos</translation>
 <translation id="4650125387981512669">Continuar como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Confirma se os teus contrasinais son seguros, descubre se foron vulnerados e recibe consellos para protexerte en liña. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Cando inicies sesión na túa Conta de Google, activarase esta función.</translation>
 <translation id="4659667755519643272">Entrar no selector de pestanas</translation>
 <translation id="46614316059270592">Gardar contrasinal</translation>
@@ -697,6 +699,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5669617676038747374">Crear código QR</translation>
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Para gardar os contrasinais na túa Conta de Google e poder usalos, verifica a túa identidade.</translation>
+<translation id="5684761169742812828">Este contrasinal quedou exposto debido a unha violación da seguranza dos datos en Internet. Se non tes tempo agora mesmo para cambialo, Google recoméndache gardar esta advertencia para lembralo máis tarde.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Mostrando 1 ventá de Chrome}other{Mostrando {count} ventás de Chrome}}</translation>
 <translation id="5701270923492462699">Permitiuse o acceso á cámara</translation>
 <translation id="5704908597376970822">Non se puido iniciar sesión.</translation>
@@ -1222,6 +1225,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8952559610785099500">Engadir un contrasinal</translation>
 <translation id="8953046091948372197">Aquí atoparás os teus contrasinais</translation>
 <translation id="895541991026785598">Informar dun problema</translation>
+<translation id="8961757677053809960">Queres ignorar a advertencia?</translation>
 <translation id="8971545611707025079">Comprobar de novo</translation>
 <translation id="8974714402877957201">1. Abre a configuración do iPad</translation>
 <translation id="8976382372951310360">Axuda</translation>

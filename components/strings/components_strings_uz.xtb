@@ -314,6 +314,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1689333818294560261">Nik</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Maʼlumotlaringizni qanday boshqarish mumkin:<ph name="END_BOLD" /> Chrome 4 haftadan eski mavzularni avtomatik ravishda oʻchirib tashlaydi. Takroriy tashriflar asosida mavzu roʻyxatga qayta kiritilishi mumkin. Chrome boshqa saytlarga ulashmasligi va aloqador reklamalar chiqmasligi uchun istalgan mavzuni Chrome sozlamalari orqali taqiqlash mumkin.</translation>
 <translation id="1697532407822776718">Tayyor!</translation>
+<translation id="1699651774646344471">Endi Google hisobingizdagi manzillardan foydalanishingiz mumkin</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Masshtab</translation>
@@ -536,6 +537,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2224337661447660594">Internet yo‘q</translation>
 <translation id="2225927550500503913">Virtual karta yoniq</translation>
 <translation id="2226636330183131181">WiFi tarmoq portaliga <ph name="BEGIN_LINK" />kirish<ph name="END_LINK" /></translation>
+<translation id="2228057197024893428">Hozir bu manzil Chromega saqlangan. Boshqa Google xizmatlarida ishlatish uchun manzilni Google hisobiga (<ph name="ACCOUNT" />) saqlang.</translation>
 <translation id="2239100178324503013">Hozir yuborish</translation>
 <translation id="2241693394036365668">Fayl yuklab olinishi</translation>
 <translation id="2246264294482514010">10 x 12 in</translation>
@@ -655,6 +657,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2547466893236767989">Veb dizayn va dasturlash</translation>
 <translation id="254947805923345898">Parametr qiymati yaroqsiz.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> yaroqsiz javob qaytardi.</translation>
+<translation id="2551608178605132291">Manzil: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Endi kartalar ekran qulfi orqali tasdiqlanadi</translation>
 <translation id="2553853292994445426">DNS sozlamalar himoyasini tekshiring. Siz sozlagan DNS serverga ulanilmayotgan boʻlishi mumkin.</translation>
@@ -852,6 +855,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />DNS sozlamalar himoyasini tekshirish<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Oʻrta tarnov</translation>
 <translation id="3109728660330352905">Sizda bu sahifani ko‘rishga ruxsat yo‘q.</translation>
+<translation id="3112892588078695695">Telefon raqami: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Uchinchi siljish</translation>
 <translation id="3114040155724590991">Android tizimi yangilanmoqda
     Ilova odatdagidan kechroq ishga tushishi mumkin.</translation>
@@ -2460,6 +2464,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7083258188081898530">Tarnov 9</translation>
 <translation id="7086090958708083563">Foydalanuvchi hisobot yuklanishini talab qilgan</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali ruxsatlar va saytlarda saqlanadigan maʼlumotlarni boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
+<translation id="7096341143397839437">Email: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Bu saytning identifikatsiya maʼlumotlari tekshirilmadi.</translation>
 <translation id="7101893872976785596">Dahshatli filmlar</translation>
 <translation id="7102079138917191645">Qurilish va texnik xizmat</translation>
@@ -2538,6 +2543,7 @@ Batafsil axborot:
 <translation id="7256634549594854023">Orqa tarnov</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeni bilan tizimdagi sana va vaqt sozlamalari (<ph name="DATE_AND_TIME" />) noto‘g‘ri bo‘lganligi uchun havfsiz aloqa o‘rnatib bo'lmadi.</translation>
 <translation id="7260504762447901703">Kirishni taqiqlash</translation>
+<translation id="7265608370113700582">Manzil faqat shu qurilmada mavjud</translation>
 <translation id="7275334191706090484">Boshqariladigan xatcho‘plar</translation>
 <translation id="7277998515889183784">Pardoz va kosmetika</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google hisobingiz parolini oʻzgartirish uchun avval Tab, keyin Enter tugmasini bosing</translation>
@@ -2961,6 +2967,7 @@ Batafsil axborot:
 <translation id="8245703462678310750">Butun ekran rejimidan chiqish va yuklanmani ochish uchun |<ph name="ACCELERATOR" />| tugmasini bosib turing.</translation>
 <translation id="8249296373107784235">Bekor qilish</translation>
 <translation id="8249463483885748674">Standartlashtirilgan va kirish imtihonlari</translation>
+<translation id="8250094606476360498">Hozir bu manzil mazkur qurilmada saqlangan. Boshqa Google xizmatlarida ishlatish uchun manzilni Google hisobiga (<ph name="ACCOUNT" />) saqlang.</translation>
 <translation id="8252991034201168845">Qulaylik sozlamalari boshqarish tugmasi, ChromeOS sozlamalari orqali qulaylik vositalarini moslashtirish uchun Enter tugmasini bosing</translation>
 <translation id="8253091569723639551">To‘lov manzilini kiriting</translation>
 <translation id="8257387598443225809">Bu ilova mobil qurilmalar uchun ishlab chiqilgan</translation>

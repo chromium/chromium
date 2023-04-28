@@ -133,6 +133,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1815941218935345331">Lösenord</translation>
 <translation id="1820259098641718022">Har lagts till i läslistan</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
+<translation id="1830634592642484976">Den här adressen har sparats i Chrome. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bokmärket har sparats i ditt Google-konto, {email}}other{Bokmärkena har sparats i ditt Google-konto, {email}}}</translation>
 <translation id="1870148520156231997">Visa lösenord</translation>
@@ -545,6 +546,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4636930964841734540">Info</translation>
 <translation id="4642472735733036929">Prisbevakning har avslutats</translation>
 <translation id="4650125387981512669">Fortsätt som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Se till att dina lösenord är säkra, ta reda på om de har utsatts för intrång och få råd om hur du skyddar dig online. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Den här funktionen är aktiverad när du loggar in på Google-kontot.</translation>
 <translation id="4659667755519643272">Öppna funktionen för flikbyte</translation>
 <translation id="46614316059270592">Spara lösenord</translation>
@@ -697,6 +699,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5669617676038747374">Skapa en QR-kod</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Verifiera din identitet för att använda och spara lösenord i Google-kontot.</translation>
+<translation id="5684761169742812828">Det här lösenordet har läckt ut vid ett dataintrång på internet. Om du inte har tid att ändra det just nu rekommenderar Google att du behåller den här varningen som en påminnelse att göra det senare.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Nu visas 1 fönster i Chrome}other{Nu visas {count} fönster i Chrome}}</translation>
 <translation id="5701270923492462699">Kameraåtkomst har tillåtits</translation>
 <translation id="5704908597376970822">Det gick inte att logga in.</translation>
@@ -1222,6 +1225,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8952559610785099500">Lägg till lösenord</translation>
 <translation id="8953046091948372197">Du hittar dina lösenord här</translation>
 <translation id="895541991026785598">Rapportera ett problem</translation>
+<translation id="8961757677053809960">Vill du ignorera varningen?</translation>
 <translation id="8971545611707025079">Kontrollera igen</translation>
 <translation id="8974714402877957201">1. Öppna iPad-inställningarna</translation>
 <translation id="8976382372951310360">Hjälp</translation>

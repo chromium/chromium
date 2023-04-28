@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">密码</translation>
 <translation id="1820259098641718022">已添加到阅读清单</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
+<translation id="1830634592642484976">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 帐号 (<ph name="USER_EMAIL" />) 中。</translation>
 <translation id="1832848789136765277">若要确保您能随时访问自己的同步数据，请验证是您本人在操作</translation>
 <translation id="1836891464494477513">{count,plural, =1{书签已保存到您的 Google 帐号 {email}}other{书签已保存到您的 Google 帐号 {email}}}</translation>
 <translation id="1870148520156231997">显示密码</translation>
@@ -545,6 +546,7 @@
 <translation id="4636930964841734540">信息</translation>
 <translation id="4642472735733036929">已停止跟踪价格</translation>
 <translation id="4650125387981512669">继续以<ph name="FIRST_RUN_ACCOUNT_NAME" />的身份登录</translation>
+<translation id="4652817563047461855">确保您的密码始终安全，检查密码是否遭到泄露，并获取关于如何保障您的在线安全的建议。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">当您登录自己的 Google 帐号后，系统即会启用此功能。</translation>
 <translation id="4659667755519643272">进入标签页切换器</translation>
 <translation id="46614316059270592">保存密码</translation>
@@ -697,6 +699,7 @@
 <translation id="5669617676038747374">生成二维码</translation>
 <translation id="567881659373499783">版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">要使用 Google 帐号中的密码或将密码保存到 Google 帐号，请验证是您本人在操作。</translation>
+<translation id="5684761169742812828">此密码已在互联网上遭遇数据泄露。如果您现在没有时间更改密码，Google 建议您保留此警告，以便之后继续提醒自己。</translation>
 <translation id="5690398455483874150">{count,plural, =1{目前显示了 1 个 Chrome 窗口}other{目前显示了 {count} 个 Chrome 窗口}}</translation>
 <translation id="5701270923492462699">已启用摄像头使用权限</translation>
 <translation id="5704908597376970822">无法登录。</translation>
@@ -1222,6 +1225,7 @@
 <translation id="8952559610785099500">添加密码</translation>
 <translation id="8953046091948372197">您的密码会显示在此处</translation>
 <translation id="895541991026785598">报告问题</translation>
+<translation id="8961757677053809960">关闭警告？</translation>
 <translation id="8971545611707025079">再次检查</translation>
 <translation id="8974714402877957201">1. 打开 iPad 设置</translation>
 <translation id="8976382372951310360">帮助</translation>

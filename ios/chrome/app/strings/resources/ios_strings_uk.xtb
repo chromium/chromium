@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">Код доступу</translation>
 <translation id="1820259098641718022">Додано в список читання</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Зламані паролі}=1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
+<translation id="1830634592642484976">Ця адреса зараз зберігається в Chrome. Збережіть її у своєму обліковому записі Google (<ph name="USER_EMAIL" />), щоб використовувати в усіх продуктах Google.</translation>
 <translation id="1832848789136765277">Щоб не втратити доступ до своїх даних синхронізації, підтвердьте свою особу</translation>
 <translation id="1836891464494477513">{count,plural, =1{Закладку збережено у вашому обліковому записі Google ({email})}one{Закладки збережено у вашому обліковому записі Google ({email})}few{Закладки збережено у вашому обліковому записі Google ({email})}many{Закладки збережено у вашому обліковому записі Google ({email})}other{Закладки збережено у вашому обліковому записі Google ({email})}}</translation>
 <translation id="1870148520156231997">Показати пароль</translation>
@@ -545,6 +546,7 @@
 <translation id="4636930964841734540">Інформація</translation>
 <translation id="4642472735733036929">Відстеження ціни зупинено</translation>
 <translation id="4650125387981512669">Продовжити як <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Переконайтеся, що ваші паролі надійні й не були викрадені, а також отримайте пораду, як захистити себе в Інтернеті. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Ця функція вмикається, коли ви входите в обліковий запис Google.</translation>
 <translation id="4659667755519643272">Відкрити перемикач вкладок</translation>
 <translation id="46614316059270592">Зберегти пароль</translation>
@@ -697,6 +699,7 @@
 <translation id="5669617676038747374">Створити QR-код</translation>
 <translation id="567881659373499783">Версія <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Щоб використовувати й зберігати паролі в обліковому записі Google, підтвердьте свою особу.</translation>
+<translation id="5684761169742812828">Цей пароль розкрито через порушення безпеки даних в Інтернеті. Якщо у вас немає часу змінити його прямо зараз, радимо не закривати це попередження – воно слугуватиме для вас нагадуванням.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Показано 1 вікно Chrome}one{Показано {count} вікно Chrome}few{Показано {count} вікна Chrome}many{Показано {count} вікон Chrome}other{Показано {count} вікна Chrome}}</translation>
 <translation id="5701270923492462699">Доступ до камери надано</translation>
 <translation id="5704908597376970822">Не вдається ввійти.</translation>
@@ -1222,6 +1225,7 @@
 <translation id="8952559610785099500">Додати пароль</translation>
 <translation id="8953046091948372197">Тут відображатимуться ваші паролі</translation>
 <translation id="895541991026785598">Повідомити про проблему</translation>
+<translation id="8961757677053809960">Закрити попередження?</translation>
 <translation id="8971545611707025079">Перевірити ще раз</translation>
 <translation id="8974714402877957201">1. Відкрийте Параметри на iPad</translation>
 <translation id="8976382372951310360">Довідка</translation>

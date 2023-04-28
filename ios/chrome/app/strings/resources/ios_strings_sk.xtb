@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">Vstupný kód</translation>
 <translation id="1820259098641718022">Pridané do čitateľského zoznamu</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Odhalené heslá}=1{{COUNT} odhalené heslo}few{{COUNT} odhalené heslá}many{{COUNT} Compromised Passwords}other{{COUNT} odhalených hesiel}}</translation>
+<translation id="1830634592642484976">Táto adresa je momentálne uložená v Chrome. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Ak chcete mať neustály prístup k svojim synchronizovaným údajom, overte svoju totožnosť</translation>
 <translation id="1836891464494477513">{count,plural, =1{Záložka bola uložená do vášho účtu Google {email}}few{Záložky boli uložené do vášho účtu Google {email}}many{Záložky boli uložené do vášho účtu Google {email}}other{Záložky boli uložené do vášho účtu Google {email}}}</translation>
 <translation id="1870148520156231997">Odhaliť heslo</translation>
@@ -545,6 +546,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4636930964841734540">Informácie</translation>
 <translation id="4642472735733036929">Sledovanie ceny bolo deaktivované</translation>
 <translation id="4650125387981512669">Pokračovať ako <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Skontrolujte, či sú vaše heslá bezpečné, či nedošlo k ich odhaleniu, a získajte radu, ako sa chrániť na internete. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Keď sa prihlásite do svojho účtu Google, táto funkcia je zapnutá.</translation>
 <translation id="4659667755519643272">Prejsť do Prepínača kariet</translation>
 <translation id="46614316059270592">Uložiť heslo</translation>
@@ -697,6 +699,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5669617676038747374">Vytvoriť QR kód</translation>
 <translation id="567881659373499783">Verzia <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Ak chcete používať a ukladať heslá vo svojom účte Google, overte svoju totožnosť.</translation>
+<translation id="5684761169742812828">Toto heslo bolo prezradené pri porušení ochrany údajov na internete. Ak si ho momentálne nemôžete zmeniť, Google vám odporúča ponechať si toto upozornenie, aby ste na to nezabudli.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Práve sa zobrazuje 1 okno Chromu}few{Práve sa zobrazujú {count} okná Chromu}many{Now showing {count} Chrome windows}other{Práve sa zobrazuje {count} okien Chromu}}</translation>
 <translation id="5701270923492462699">Prístup ku kamere je povolený</translation>
 <translation id="5704908597376970822">Nepodarilo sa prihlásiť.</translation>
@@ -1222,6 +1225,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8952559610785099500">Pridanie hesla</translation>
 <translation id="8953046091948372197">Tu nájdete svoje heslá</translation>
 <translation id="895541991026785598">Nahlásiť problém</translation>
+<translation id="8961757677053809960">Chcete upozornenie zavrieť?</translation>
 <translation id="8971545611707025079">Skontrolovať znova</translation>
 <translation id="8974714402877957201">1. Otvorte nastavenia iPadu</translation>
 <translation id="8976382372951310360">Pomocník</translation>

@@ -2248,6 +2248,7 @@
 <translation id="2861941300086904918">ਨੇਟਿਵ ਕਲਾਇੰਟ ਸੁਰੱਖਿਆ ਪ੍ਰਬੰਧਕ</translation>
 <translation id="2862815659905780618">Linux ਵਿਕਾਸ ਵਾਤਾਵਰਨ ਨੂੰ ਹਟਾਓ</translation>
 <translation id="2864601841139725659">ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ ਦੀ ਸੈਟਿੰਗ ਕਰੋ</translation>
+<translation id="2865057607286263192">ਐਕਸੈਂਟ ਚਿੰਨ੍ਹ ਅਤੇ ਖਾਸ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਦੇਖਣ ਲਈ ਕੀ-ਬੋਰਡ ਕੁੰਜੀਆਂ ਨੂੰ ਦਬਾਈ ਰੱਖੋ। ਇਸ ਨਾਲ ਵਰਨਾਂ ਵਾਲੀਆਂ ਕੁੰਜੀਆਂ ਲਈ ਕੁੰਜੀ ਦਬਾਉਣ ਨੂੰ ਦੁਹਰਾਉਣ ਦੀ ਪ੍ਰਕਿਰਿਆ ਬੰਦ ਹੋ ਜਾਵੇਗੀ। ਸਿਰਫ਼ ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਐੱਸ.) ਲਈ ਉਪਲਬਧ ਹੈ।</translation>
 <translation id="2865919525181940183">ਉਹਨਾਂ ਪ੍ਰੋਗਰਾਮਾਂ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਜੋ ਫਿਲਹਾਲ ਸਕ੍ਰੀਨ 'ਤੇ ਮੌਜੂਦ ਹਨ</translation>
 <translation id="286674810810214575">ਪਾਵਰ ਸਰੋਤਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="2867768963760577682">ਪਿੰਨ ਕੀਤੀ ਟੈਬ ਦੇ ਤੌਰ ਤੇ ਖੋਲ੍ਹੋ</translation>
@@ -2835,6 +2836,7 @@
 <translation id="3407392651057365886">ਹੋਰ ਪੰਨੇ ਪ੍ਰੀਲੋਡ ਕੀਤੇ ਗਏ ਹਨ। ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਵੱਲੋਂ ਬੇਨਤੀ ਕੀਤੇ ਜਾਣ 'ਤੇ ਪੰਨਿਆਂ ਨੂੰ Google ਸਰਵਰਾਂ ਰਾਹੀਂ ਪ੍ਰੀਲੋਡ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="3407967630066378878">ਫਿੰਗਰਪ੍ਰਿੰਟ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ, ਆਪਣੇ ਬੱਚੇ ਨੂੰ ਇਸ <ph name="DEVICE_TYPE" /> ਦੇ ਖੱਬੇ ਪਾਸੇ 'ਤੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ 'ਤੇ ਸਪਰਸ਼ ਕਰਨ ਲਈ ਕਹੋ। ਤੁਹਾਡੇ ਬੱਚੇ ਦਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਡਾਟਾ ਸੁਰੱਖਿਅਤ ਤਰੀਕੇ ਨਾਲ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਕਦੇ ਵੀ ਇਸ <ph name="DEVICE_TYPE" /> ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਜਾਂਦਾ।</translation>
 <translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> ਲਈ Google Password Manager ਵਿੱਚ 1 ਪਾਸਵਰਡ ਆਯਾਤ ਕੀਤਾ ਗਿਆ}one{<ph name="USER_EMAIL" /> ਲਈ Google Password Manager ਵਿੱਚ {NUM_PASSWORDS} ਪਾਸਵਰਡ ਆਯਾਤ ਕੀਤਾ ਗਿਆ}other{<ph name="USER_EMAIL" /> ਲਈ Google Password Manager ਵਿੱਚ {NUM_PASSWORDS} ਪਾਸਵਰਡ ਆਯਾਤ ਕੀਤੇ ਗਏ}}</translation>
+<translation id="3409513286451883969">&amp;ਚੁਣੀ ਹੋਈ ਲਿਖਤ ਦਾ <ph name="LANGUAGE" /> ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">ਚੋਣ ਤੇ ਜਾਓ</translation>
 <translation id="3413122095806433232">CA ਜਾਰੀਕਰਤਾ: <ph name="LOCATION" /></translation>
@@ -4552,6 +4554,7 @@
 <translation id="4907129260985716018">ਚੁਣੋ ਕਿ ਕਦੋਂ ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਤੁਹਾਡੇ ਸਾਈਟ ਡਾਟਾ ਨੂੰ ਪੜ੍ਹ ਅਤੇ ਇਸ ਵਿੱਚ ਤਬਦੀਲੀ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="4907161631261076876">ਇਹ ਫ਼ਾਈਲ ਆਮ ਕਰਕੇ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਅਤੇ ਇਹ ਖਤਰਨਾਕ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="4907306957610201395">ਇਜਾਜ਼ਤ ਸ਼੍ਰੇਣੀ</translation>
+<translation id="4908070840805457717">ਕੁੰਜੀ ਦਬਾਉਣ ਨੂੰ ਦੁਹਰਾਓ</translation>
 <translation id="4908811072292128752">ਦੋ ਸਾਈਟਾਂ ਨੂੰ ਇੱਕੋ ਸਮੇਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ ਕੋਈ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="4909038193460299775">ਕਿਉਂਕਿ ਇਹ ਖਾਤਾ <ph name="DOMAIN" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਇਸਲਈ ਤੁਹਾਡੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡਾਂ, ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਕਲੀਅਰ ਕੀਤਾ ਜਾਵੇਗਾ। ਹਾਲਾਂਕਿ, ਤੁਹਾਡਾ ਡਾਟਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਰਹੇਗਾ ਅਤੇ ਇਸ ਨੂੰ <ph name="BEGIN_LINK" />Google ਡੈਸ਼ਬੋਰਡ<ph name="END_LINK" /> 'ਤੇ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4912643508233590958">ਨਿਸ਼ਕਿਰਿਆ ਵੇਕ ਅਪਸ</translation>
@@ -5899,6 +5902,7 @@
 <translation id="6130692320435119637">ਵਾਈ-ਫਾਈ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6130887916931372608">ਕੀ-ਬੋਰਡ ਕੁੰਜੀ</translation>
 <translation id="6132714462430777655">ਕੀ ਸਕੂਲ ਵਿੱਚ ਦਾਖਲੇ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਛੱਡਣਾ ਹੈ?</translation>
+<translation id="6133850653093419052">ਪਹੁੰਚ ਦੀ ਬੇਨਤੀ ਕਰਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="6135823405800500595">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਫ਼ੋਨ ਨਜ਼ਦੀਕ ਹੈ, ਅਣਲਾਕ ਹੈ, ਅਤੇ ਬਲੂਟੁੱਥ ਅਤੇ ਵਾਈ-ਫਾਈ ਚਾਲੂ ਹਨ</translation>
 <translation id="6135826623269483856">ਤੁਹਾਡੀਆਂ ਸਾਰੀਆਂ ਡਿਸਪਲੇਆਂ 'ਤੇ ਵਿੰਡੋਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="6136114942382973861">ਡਾਊਨਲੋਡ ਬਾਰ ਬੰਦ ਕਰੋ</translation>
@@ -8308,6 +8312,7 @@
 <translation id="8242370300221559051">Play Store ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8242426110754782860">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="8243948765190375130">ਮੀਡਿਆ ਦੀ ਕੁਆਲਿਟੀ ਘਟ ਸਕਦੀ ਹੈ</translation>
+<translation id="8244201515061746038">ਸਵੈ-ਸੁਧਾਰ ਬਾਰੇ ਹੋਰ ਜਾਣਨ ਸੰਬੰਧੀ ਬਟਨ। ਸਵੈ-ਸੁਧਾਈ ਦੇ ਸੈਟਿੰਗਾਂ ਪੰਨੇ 'ਤੇ ਜਾਓ। ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ Enter, ਖਾਰਜ ਕਰਨ ਲਈ Escape ਦਬਾਓ।</translation>
 <translation id="8244514732452879619">ਲਾਈਟ ਜਲਦ ਬੰਦ ਹੋ ਜਾਵੇਗੀ</translation>
 <translation id="8246776524656196770">ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਕਿਸੇ ਪਿੰਨ ਨਾਲ ਸੁਰੱਖਿਅਤ ਕਰੋ (ਨਿੱਜੀ ਪਛਾਣ ਨੰਬਰ)</translation>
 <translation id="8248050856337841185">&amp;ਪੇਸਟ ਕਰੋ</translation>
@@ -8402,6 +8407,7 @@
 <translation id="8323167517179506834">URL ਟਾਈਪ ਕਰੋ</translation>
 <translation id="8323317289166663449">ਆਪਣੇ ਕੰਪਿਊਟਰ ਅਤੇ ਸਾਰੀਆਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਆਪਣਾ ਸਾਰਾ ਡਾਟਾ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="8324784016256120271">ਸਾਈਟਾਂ ਵੱਖ-ਵੱਖ ਸਾਈਟਾਂ ਵਿਚਲੀ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਦੇਖਣ ਲਈ ਕੁਕੀਜ਼ ਨੂੰ ਵਰਤ ਸਕਦੀਆਂ ਹਨ, ਉਦਾਹਰਨ ਲਈ, ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ</translation>
+<translation id="8324819620112450495">ਪਹੁੰਚ ਦੀ ਬੇਨਤੀ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="8325413836429495820">ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ ਨੂੰ ਦੇਖਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="8326478304147373412">PKCS #7, ਪ੍ਰਮਾਣ-ਪੱਤਰ ਚੇਨ</translation>
 <translation id="8327386430364625757">ਗਣਿਤਕ ਫ਼ੌਂਟ</translation>
@@ -8525,6 +8531,7 @@
 <translation id="8428271547607112339">ਸਕੂਲੀ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8428628598981198790">ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਇਸ ਸਾਈਟ ਨਾਲ ਵਰਤੀ ਨਹੀਂ ਜਾ ਸਕਦੀ</translation>
 <translation id="84297032718407999">ਤੁਹਾਨੂੰ <ph name="LOGOUT_TIME_LEFT" /> ਵਿੱਚ ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
+<translation id="8430963319679282846">ਜੇ ਤੁਸੀਂ ਕਿਸੇ ਕੁੰਜੀ ਨੂੰ ਦਬਾ ਕੇ ਰੱਖਦੇ ਹੋ, ਤਾਂ ਉਸ ਕੁੰਜੀ ਦੇ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਦੁਹਰਾਏ ਜਾਣਗੇ</translation>
 <translation id="8431190899827883166">ਟੈਪਾਂ ਦਿਖਾਓ</translation>
 <translation id="8434480141477525001">NaCl ਡੀਬੱਗ ਪੋਰਟ</translation>
 <translation id="8437209419043462667">US</translation>
@@ -9424,6 +9431,7 @@
 <translation id="925270020047573546">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਡੈਸਕਟਾਪ ਆਡੀਓ ਨੂੰ ਕਾਸਟ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨਹੀਂ ਹੈ।</translation>
 <translation id="929117907539171075">ਸਥਾਪਤ ਕੀਤੀ ਐਪ ਵਿਚਲੇ ਆਫ਼ਲਾਈਨ ਡਾਟੇ ਨੂੰ ਵੀ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="930268624053534560">ਵਿਸਤ੍ਰਿਤ ਟਾਈਮਸਟੈਂਪਸ</translation>
+<translation id="930551443325541578">ਕੁੰਜੀਆਂ ਦਬਾਉਣ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਦੁਹਰਾਉਣਾ ਅਤੇ ਐਕਸੈਂਟ ਚਿੰਨ੍ਹ</translation>
 <translation id="930893132043726269">ਫ਼ਿਲਹਾਲ ਰੋਮਿੰਗ 'ਤੇ ਹੈ</translation>
 <translation id="93140074055951850">Android ਐਪਾਂ ਨੂੰ ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="932327136139879170">ਹੋਮ</translation>

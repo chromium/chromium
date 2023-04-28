@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Wordt over <ph name="COUNTDOWN_SECONDS" /> seconden in alternatieve browser geopend</translation>
+<translation id="1071735803834535661">externe meta</translation>
 <translation id="1071917609930274619">Gegevenscodering</translation>
 <translation id="1072700771426194907">USB-apparaat gedetecteerd</translation>
 <translation id="107278043869924952">Pincode gebruiken naast wachtwoord</translation>
@@ -1375,6 +1376,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2146263598007866206">Sites kunnen gerelateerde bestanden automatisch samen downloaden om tijd te besparen</translation>
 <translation id="2147151613919729065">Sluit alle gastvensters om de geschiedenis van de gastmodus te wissen.</translation>
 <translation id="2147218225094845757">Zijvenster verbergen</translation>
+<translation id="2147282432401652483">command</translation>
 <translation id="2148219725039824548">Fout bij het activeren van de fileshare. De opgegeven fileshare kan niet in het netwerk worden gevonden.</translation>
 <translation id="2148756636027685713">Formatteren voltooid</translation>
 <translation id="2148892889047469596">Tabblad casten</translation>
@@ -4943,6 +4945,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5298219193514155779">Thema gemaakt door</translation>
 <translation id="5299109548848736476">Niet bijhouden</translation>
 <translation id="5299558715747014286">Je tabbladgroepen bekijken en beheren</translation>
+<translation id="529986401483187205">uitgezet</translation>
 <translation id="5300287940468717207">Sitemachtigingen resetten?</translation>
 <translation id="5300426565656326054">Browsergebaseerde advertentiepersonalisatie</translation>
 <translation id="5300589172476337783">Tonen</translation>
@@ -6839,6 +6842,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="6983507711977005608">Verbinding verbreken met netwerk voor instant-tethering</translation>
 <translation id="6983783921975806247">Geregistreerde OID</translation>
+<translation id="6983890893900549383">escape</translation>
 <translation id="6985235333261347343">Microsoft-sleutelherstelagent</translation>
 <translation id="698524779381350301">Automatisch toegang geven tot de volgende sites</translation>
 <translation id="6985607387932385770">Printers</translation>
@@ -8007,6 +8011,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8009225694047762179">Wachtwoorden beheren</translation>
 <translation id="8011372169388649948"><ph name="BOOKMARK_TITLE" /> verplaatst.</translation>
 <translation id="8011875486979733097">Steam kan niet worden geïnstalleerd</translation>
+<translation id="8012188750847319132">caps lock</translation>
 <translation id="8013993649590906847">Als een afbeelding geen nuttige beschrijving bevat, probeert Chrome je er een te geven. Afbeeldingen worden naar Google verzonden om beschrijvingen te maken.</translation>
 <translation id="8014154204619229810">De updater wordt momenteel uitgevoerd. Klik op Vernieuwen om opnieuw te controleren.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> kan niet worden teruggezet naar de voorgaande versie. Probeer Powerwash opnieuw op je apparaat.</translation>

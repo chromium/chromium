@@ -315,6 +315,7 @@
 <translation id="1689333818294560261">Ləqəb</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Datanızı necə idarə edə bilərsiniz:<ph name="END_BOLD" /> Chrome 4 həftədən köhnə mövzuları avtomatik silir. Baxmağa davam etdikcə mövzu siyahıda yenidən görünə bilər. Həmçinin Chrome-un saytlarla paylaşmasını istəmədiyiniz mövzuları bloklaya və istənilən vaxt Chrome ayarlarında reklam mövzularını deaktiv edə bilərsiniz.</translation>
 <translation id="1697532407822776718">Hər şey hazırdır!</translation>
+<translation id="1699651774646344471">Artıq Google Hesabındakı ünvanları istifadə edə bilərsiniz</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Zoom səviyyələri</translation>
@@ -537,6 +538,7 @@
 <translation id="2224337661447660594">İnternet yoxdur</translation>
 <translation id="2225927550500503913">Virtual kart aktiv edildi</translation>
 <translation id="2226636330183131181">WiFi şəbəkəsinə <ph name="BEGIN_LINK" />daxil olunur<ph name="END_LINK" /></translation>
+<translation id="2228057197024893428">Bu ünvan hazırda Chrome-da yadda saxlanır. Google məhsullarında istifadə etmək üçün Google Hesabında (<ph name="ACCOUNT" />) yadda saxlayın.</translation>
 <translation id="2239100178324503013">İndi göndərin</translation>
 <translation id="2241693394036365668">Fayl endirilir</translation>
 <translation id="2246264294482514010">10 x 12 düym</translation>
@@ -656,6 +658,7 @@
 <translation id="2547466893236767989">Veb dizaynı və inkişafı</translation>
 <translation id="254947805923345898">Siyasət dəyəri düzgün deyil.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> yalnış cavab göndərdi.</translation>
+<translation id="2551608178605132291">Ünvan: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Bundan sonra kartları təsdiqləmək üçün ekran kilidi istifadə edin</translation>
 <translation id="2553853292994445426">Təhlükəsiz DNS ayarlarınızı yoxlayın. Bağlanmaq mümkün olmayan təhlükəsiz DNS serveri konfiqurasiya etmiş ola bilərsiniz.</translation>
@@ -853,6 +856,7 @@
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Təhlükəsiz DNS konfiqurasiyası yoxlanılır<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Orta Qab</translation>
 <translation id="3109728660330352905">Bu səhifəyə baxmaq üçün icazəniz yoxdur.</translation>
+<translation id="3112892588078695695">Telefon nömrəsi: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Üçüncü növbə</translation>
 <translation id="3114040155724590991">Android Sistemi Güncəllənir
     Tətbiqinizi başlatmaq həmişəkindən çox çəkə bilər.</translation>
@@ -1221,6 +1225,7 @@
 <translation id="4031179711345676612">Mikrofona icazə verildi</translation>
 <translation id="4040350669425716613">Kollec və universitetlər</translation>
 <translation id="4047351652147966654">18 x 24 düym</translation>
+<translation id="4050392779074832022">Onu Google məhsullarında istifadə edə biləcəksiniz</translation>
 <translation id="405399507749852140">Hər hansı bir saytda qiymət enərsə, bildiriş alın</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Endirimlər tapmaqda Google'un yardım etməsinə icazə verin</translation>
@@ -2461,6 +2466,7 @@
 <translation id="7083258188081898530">Qab 9</translation>
 <translation id="7086090958708083563">Yükləmə istifadəçi tərəfindən tələb edildi</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında saytlarda saxlanılan icazələri və datanı idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
+<translation id="7096341143397839437">E-poçt: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Bu veb saytın kimliyi doğrulanmayıb.</translation>
 <translation id="7101893872976785596">Qorxu filmləri</translation>
 <translation id="7102079138917191645">İnşaat və təmir</translation>
@@ -2539,6 +2545,7 @@
 <translation id="7256634549594854023">Arxa Qab</translation>
 <translation id="725866823122871198">Kompüterinizin tarixi və vaxtı (<ph name="DATE_AND_TIME" />) yanlış olduğu üçün <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeninə bağlantı alınmır.</translation>
 <translation id="7260504762447901703">Girişi ləğv edin</translation>
+<translation id="7265608370113700582">Ünvan yalnız bu cihazda əlçatandır</translation>
 <translation id="7275334191706090484">İdarə olunan əlfəcinlər</translation>
 <translation id="7277998515889183784">Makiyaj və kosmetika</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Hesabı parolunuzu dəyişin</translation>
@@ -2962,6 +2969,7 @@
 <translation id="8245703462678310750">Tam ekrandan çıxmaq və endirməyə baxmaq üçün |<ph name="ACCELERATOR" />| düyməsini basıb saxlayın.</translation>
 <translation id="8249296373107784235">Dayandırın</translation>
 <translation id="8249463483885748674">Standartlaşmış və qəbul testləri</translation>
+<translation id="8250094606476360498">Bu ünvan hazırda bu cihazda yadda saxlanır. Google məhsullarında istifadə etmək üçün Google Hesabında (<ph name="ACCOUNT" />) yadda saxlayın.</translation>
 <translation id="8252991034201168845">"Əlçatımlılıq ayarlarını idarə edin" düyməsi, Enter düyməsinə basaraq ChromeOS ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
 <translation id="8253091569723639551">Faktura ünvanı tələb olunur</translation>
 <translation id="8257387598443225809">Bu tətbiq mobil üçün nəzərdə tutulmuşdur</translation>

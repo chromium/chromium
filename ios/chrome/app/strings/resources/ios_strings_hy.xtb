@@ -133,6 +133,7 @@
 <translation id="1815941218935345331">Անցակոդ</translation>
 <translation id="1820259098641718022">Ավելացվել է ընթերցանության ցանկում</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Կոտրված գաղտնաբառեր}=1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
+<translation id="1830634592642484976">Այս հասցեն ներկայումս պահված է Chrome-ում։ Պահեք հասցեն ձեր Google հաշվում (<ph name="USER_EMAIL" />), որպեսզի այն օգտագործեք Google-ի տարբեր արտադրանքներում։</translation>
 <translation id="1832848789136765277">Հաստատեք ձեր ինքնությունը, որպեսզի համաժամացված տվյալները միշտ հասանելի լինեն ձեզ</translation>
 <translation id="1836891464494477513">{count,plural, =1{Էջանիշն ավելացվել է ձեր Google հաշվում, {email}}one{Էջանիշն ավելացվել է ձեր Google հաշվում, {email}}other{Էջանիշներն ավելացվել են ձեր Google հաշվում, {email}}}</translation>
 <translation id="1870148520156231997">Ցուցադրել գաղտնաբառը</translation>
@@ -545,6 +546,7 @@
 <translation id="4636930964841734540">Տեղեկություններ</translation>
 <translation id="4642472735733036929">Գների հետագծումը կանգնեցված է</translation>
 <translation id="4650125387981512669">Շարունակել որպես <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Համոզվեք, որ ձեր գաղտնաբառերը վտանգված չեն, պարզեք՝ արդյոք դրանք չեն կոտրվել, և ստացեք խորհուրդներ, որոնք կօգնեն ձեզ պաշտպանվել համացանցում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">Այս գործառույթը միանում է, երբ դուք մտնում եք Google հաշիվ:</translation>
 <translation id="4659667755519643272">Բացել ներդիրների փոխանջատիչը</translation>
 <translation id="46614316059270592">Պահել գաղտնաբառը</translation>
@@ -697,6 +699,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5669617676038747374">Ստեղծել QR կոդ</translation>
 <translation id="567881659373499783">Տարբերակ <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Ձեր Google հաշվում գաղտնաբառեր օգտագործելու և պահելու համար հաստատեք ձեր ինքնությունը։</translation>
+<translation id="5684761169742812828">Համացանցում տվյալների արտահոսքի արդյունքում այս գաղտնաբառը բացահայտվել է։ Եթե չեք կարող փոխել այն հենց հիմա, Google-ը խորհուրդ է տալիս պահպանել այս նախազգուշացումը, որպեսզի չմոռանաք դա անել ավելի ուշ։</translation>
 <translation id="5690398455483874150">{count,plural, =1{Այժմ ցուցադրվում է Chrome-ի 1 պատուհան}one{Այժմ ցուցադրվում է Chrome-ի {count} պատուհան}other{Այժմ ցուցադրվում է Chrome-ի {count} պատուհան}}</translation>
 <translation id="5701270923492462699">Տեսախցիկի օգտագործումը թույլատրված է</translation>
 <translation id="5704908597376970822">Չհաջողվեց մուտք գործել։</translation>
@@ -1222,6 +1225,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8952559610785099500">Ավելացրեք գաղտնաբառ</translation>
 <translation id="8953046091948372197">Ձեր գաղտնաբառերը կգտնեք այստեղ</translation>
 <translation id="895541991026785598">Հաղորդել խնդրի մասին</translation>
+<translation id="8961757677053809960">Փակե՞լ նախազգուշացումը</translation>
 <translation id="8971545611707025079">Նորից ստուգել</translation>
 <translation id="8974714402877957201">1. Բացեք iPad-ի կարգավորումները։</translation>
 <translation id="8976382372951310360">Օգնություն</translation>

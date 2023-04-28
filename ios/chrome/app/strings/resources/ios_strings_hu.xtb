@@ -133,6 +133,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1815941218935345331">Jelkód</translation>
 <translation id="1820259098641718022">Hozzáadva az olvasási listához</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Jelszavak, amelyekhez illetéktelenül hozzáfértek}=1{{COUNT} illetéktelen kezekbe került jelszó}other{{COUNT} illetéktelen kezekbe került jelszó}}</translation>
+<translation id="1830634592642484976">A címet jelenleg a Chrome-ba menti a rendszer. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Igazolja személyazonosságát, hogy mindig hozzáférhessen szinkronizált adataihoz</translation>
 <translation id="1836891464494477513">{count,plural, =1{A könyvjelző mentve a Google-fiókjába ({email})}other{A könyvjelzők mentve a Google-fiókjába ({email})}}</translation>
 <translation id="1870148520156231997">Jelszó megjelenítése</translation>
@@ -545,6 +546,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="4636930964841734540">Információ</translation>
 <translation id="4642472735733036929">Árkövetés leállítva</translation>
 <translation id="4650125387981512669">Folytatás mint <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Meggyőződhet arról, hogy jelszavai biztonságosak, kiderítheti, hogy illetéktelenül hozzájuk fértek-e, és tanácsot kaphat az online biztonság megőrzéséhez. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="4659126640776004816">Amikor bejelentkezik Google-fiókjába, a rendszer bekapcsolja ezt a funkciót.</translation>
 <translation id="4659667755519643272">Lapváltó megnyitása</translation>
 <translation id="46614316059270592">Jelszó mentése</translation>
@@ -697,6 +699,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5669617676038747374">QR-kód létrehozása</translation>
 <translation id="567881659373499783">Verzió: <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">A jelszavak Google-fiókban való használatához és mentéséhez igazolja személyazonosságát.</translation>
+<translation id="5684761169742812828">A jelszó nyilvánosságra került egy adatvédelmi incidens során az interneten. Ha jelenleg nincs ideje a módosításra, a Google azt javasolja, hogy tartsa meg ezt a figyelmeztetést, hogy később is emlékezzen rá.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Jelenleg 1 Chrome-ablak jelenik meg}other{Jelenleg {count} Chrome-ablak jelenik meg}}</translation>
 <translation id="5701270923492462699">Kamera-hozzáférés engedélyezve</translation>
 <translation id="5704908597376970822">Nem sikerült a bejelentkezés.</translation>
@@ -1222,6 +1225,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8952559610785099500">Jelszó hozzáadása</translation>
 <translation id="8953046091948372197">Itt láthatja majd a jelszavait</translation>
 <translation id="895541991026785598">Hibabejelentés</translation>
+<translation id="8961757677053809960">Elveti a figyelmeztetést?</translation>
 <translation id="8971545611707025079">Ellenőrzés újra</translation>
 <translation id="8974714402877957201">1. Nyissa meg az iPad Beállítások menüjét.</translation>
 <translation id="8976382372951310360">Súgó</translation>

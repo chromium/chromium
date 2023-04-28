@@ -315,7 +315,7 @@
 <translation id="1689333818294560261">暱稱</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />Chrome 會自動刪除超過 4 星期的主題。隨著您持續瀏覽，清單可能會再次出現特定主題。此外，您亦可隨時在 Chrome 設定封鎖不希望 Chrome 與網站分享的主題，以及關閉廣告主題。</translation>
 <translation id="1697532407822776718">大功告成！</translation>
-<translation id="1699651774646344471">你現在可以使用 Google 帳戶中的地址</translation>
+<translation id="1699651774646344471">您現可使用 Google 帳戶中的地址</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">縮放等級</translation>
@@ -538,7 +538,7 @@
 <translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="2225927550500503913">虛擬卡已啟用</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />登入<ph name="END_LINK" /> Wi-Fi 網絡</translation>
-<translation id="2228057197024893428">這個地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用這項資訊，請儲存到你的 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
+<translation id="2228057197024893428">此地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="2239100178324503013">立即傳送</translation>
 <translation id="2241693394036365668">已下載檔案</translation>
 <translation id="2246264294482514010">10 x 12 吋</translation>
@@ -2469,7 +2469,7 @@
 <translation id="7083258188081898530">紙匣 9</translation>
 <translation id="7086090958708083563">使用者已要求上載</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理所有網站嘅權限同儲存嘅資料</translation>
-<translation id="7096341143397839437">電子郵件地址：<ph name="EMAIL" />。</translation>
+<translation id="7096341143397839437">電郵地址：<ph name="EMAIL" />。</translation>
 <translation id="7096937462164235847">這個網站的身分未經驗證。</translation>
 <translation id="7101893872976785596">恐怖電影</translation>
 <translation id="7102079138917191645">建築和裝修</translation>
@@ -2548,7 +2548,7 @@
 <translation id="7256634549594854023">後端托盤</translation>
 <translation id="725866823122871198">您電腦的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法建立私人連線至 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />。</translation>
 <translation id="7260504762447901703">撤銷存取權</translation>
-<translation id="7265608370113700582">這項地址資訊僅供此裝置存取</translation>
+<translation id="7265608370113700582">地址只可以喺呢部裝置上面用</translation>
 <translation id="7275334191706090484">受管理書籤</translation>
 <translation id="7277998515889183784">化妝和美容用品</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以改 Google 帳戶密碼</translation>
@@ -2972,7 +2972,7 @@
 <translation id="8245703462678310750">按住 |<ph name="ACCELERATOR" />| 鍵即可結束全螢幕模式並查看下載內容。</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="8249463483885748674">資格測驗和入學考試</translation>
-<translation id="8250094606476360498">這個地址目前儲存在這部裝置上。如要在各項 Google 產品中使用這項資訊，請儲存到你的 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
+<translation id="8250094606476360498">此地址目前已儲存在此裝置上。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="8252991034201168845">管理無障礙設定按鈕，㩒一下 Enter 鍵就可以喺 Chrome OS 設定度個人化您嘅無障礙工具</translation>
 <translation id="8253091569723639551">必須提供帳單地址</translation>
 <translation id="8257387598443225809">此應用程式專為流動裝置而設</translation>

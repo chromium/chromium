@@ -315,6 +315,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1689333818294560261">Prezývka</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Ako môžete spravovať svoje údaje:<ph name="END_BOLD" /> Chrome automaticky odstraňuje témy staršie ako štyri týždne. Počas ďalšieho prehliadania sa určitá téma môže v zozname znova zobraziť. V nastaveniach Chromu môžete navyše zablokovať témy, ktoré Chrome nemá zdieľať s webmi, a kedykoľvek témy reklám vypnúť.</translation>
 <translation id="1697532407822776718">Všetko je nastavené!</translation>
+<translation id="1699651774646344471">Teraz môžete používať adresy zo svojho účtu Google</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Úrovne priblíženia</translation>
@@ -537,6 +538,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2224337661447660594">Bez internetu</translation>
 <translation id="2225927550500503913">Virtuálna karta bola zapnutá</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Prihláste sa<ph name="END_LINK" /> do siete Wi‐Fi</translation>
+<translation id="2228057197024893428">Táto adresa je momentálne uložená v Chrome. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="2239100178324503013">Odoslať</translation>
 <translation id="2241693394036365668">Súbor je stiahnutý</translation>
 <translation id="2246264294482514010">10 × 12 palcov</translation>
@@ -656,6 +658,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2547466893236767989">Návrh a vývoj webov</translation>
 <translation id="254947805923345898">Hodnota pravidla je neplatná.</translation>
 <translation id="255002559098805027">Web <ph name="HOST_NAME" /> odoslal neplatnú odpoveď.</translation>
+<translation id="2551608178605132291">Adresa: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Odteraz potvrdzovať karty zámkou obrazovky</translation>
 <translation id="2553853292994445426">Skontrolujte svoje nastavenia zabezpečeného servera DNS. Možno ste nakonfigurovali zabezpečený server DNS, ku ktorému sa nedá pripojiť.</translation>
@@ -853,6 +856,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Skontrolovať konfiguráciu zabezpečeného servera DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Stredný zásobník</translation>
 <translation id="3109728660330352905">Nemáte povolenie na zobrazenie tejto stránky.</translation>
+<translation id="3112892588078695695">Telefónne číslo: <ph name="PHONE" />.</translation>
 <translation id="3113284927548439113">Tretia zmena</translation>
 <translation id="3114040155724590991">Systém Android sa aktualizuje.
     Spustenie aplikácie môže trvať dlhšie než zvyčajne.</translation>
@@ -1221,6 +1225,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4031179711345676612">Mikrofón je povolený</translation>
 <translation id="4040350669425716613">Vysoké školy a univerzity</translation>
 <translation id="4047351652147966654">18 × 24 palcov</translation>
+<translation id="4050392779074832022">Budete ju môcť používať v rôznych službách Googlu</translation>
 <translation id="405399507749852140">Dostávajte upozornenia, keď cena na ľubovoľnom webe poklesne</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4063063121357725926">Umožnite Googlu pomáhať vám nájsť zľavy pre vaše košíky</translation>
@@ -2460,6 +2465,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7083258188081898530">Priehradka č. 9</translation>
 <translation id="7086090958708083563">O nahranie požiadal používateľ</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter môžete v nastaveniach Chromu spravovať povolenia a údaje uložené na rôznych weboch</translation>
+<translation id="7096341143397839437">E‑mail: <ph name="EMAIL" />.</translation>
 <translation id="7096937462164235847">Identita tohto webu nie je overená.</translation>
 <translation id="7101893872976785596">Horory</translation>
 <translation id="7102079138917191645">Konštrukcie a údržba</translation>
@@ -2538,6 +2544,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7256634549594854023">Zadný zásobník</translation>
 <translation id="725866823122871198">Súkromné pripojenie k doméne <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sa nedá nadviazať, pretože dátum a čas (<ph name="DATE_AND_TIME" />) vášho počítača sú nesprávne.</translation>
 <translation id="7260504762447901703">Odvolať prístup</translation>
+<translation id="7265608370113700582">Adresa je k dispozícii iba v tomto zariadení</translation>
 <translation id="7275334191706090484">Spravované záložky</translation>
 <translation id="7277998515889183784">Mejkap a kozmetika</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter zmeníte heslo účtu Google</translation>
@@ -2961,6 +2968,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8245703462678310750">Pridržaním tlačidla |<ph name="ACCELERATOR" />| ukončite režim celej obrazovky a zobrazte stiahnutý obsah.</translation>
 <translation id="8249296373107784235">Prerušiť</translation>
 <translation id="8249463483885748674">Štandardizované a vstupné testy</translation>
+<translation id="8250094606476360498">Táto adresa je momentálne uložená v tomto zariadení. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Tlačidlo na správu nastavení dostupnosti, stlačením klávesa Enter si prispôsobte nástroje dostupnosti v nastaveniach systému Chrome OS</translation>
 <translation id="8253091569723639551">Fakturačná adresa je povinná</translation>
 <translation id="8257387598443225809">Táto aplikácia je určená pre mobilné zariadenia</translation>

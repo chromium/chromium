@@ -8,6 +8,7 @@
 <translation id="1104942323762546749">Chromium mahu mengeksport kata laluan anda. Taip kata laluan Windows anda untuk membenarkannya.</translation>
 <translation id="113122355610423240">Chromium ialah penyemak imbas lalai anda</translation>
 <translation id="1131805035311359397">Untuk menyemak sama ada kata laluan anda selamat daripada pelanggaran data dan isu keselamatan lain, <ph name="BEGIN_LINK" />log masuk ke Chromium<ph name="END_LINK" />.</translation>
+<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Beberapa sambungan Chromium telah mengakses peranti HID}=1{Beberapa sambungan Chromium sedang mengakses peranti HID}other{Beberapa sambungan Chromium sedang mengakses # peranti HID}}</translation>
 <translation id="1185134272377778587">Mengenai Chromium</translation>
 <translation id="1202417120496358351">{COUNT,plural, =1{Pentadbir anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Pentadbir anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
@@ -356,6 +357,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Laman boleh menyimpan maklumat tentang minat anda menggunakan Chromium. Contohnya, jika anda melawat laman untuk membeli kasut untuk maraton, laman tersebut mungkin mentakrifkan minat anda sebagai larian maraton. Kemudian, jika anda melawati laman lain untuk mendaftar perlumbaan, laman tersebut boleh memaparkan kepada anda iklan kasut untuk berlari berdasarkan minat anda.</translation>
 <translation id="8619360774459241877">Melancarkan Chromium...</translation>
 <translation id="8621669128220841554">Pemasangan gagal disebabkan ralat yang tidak dinyatakan. Sila muat turun semula Chromium.</translation>
+<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Satu sambungan Chromium telah mengakses peranti HID}=1{Satu sambungan Chromium sedang mengakses 1 peranti HID}other{Satu sambungan Chromium sedang mengakses # peranti HID}}</translation>
 <translation id="8697124171261953979">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chromium atau membuat carian dari Kotak Omni.</translation>
 <translation id="8704119203788522458">Ini Chromium anda</translation>
 <translation id="8796602469536043152">Chromium memerlukan kebenaran untuk mengakses kamera dan mikrofon anda bagi tapak ini</translation>

@@ -133,6 +133,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1815941218935345331">Piekļuves kods</translation>
 <translation id="1820259098641718022">Pievienota lasīšanas sarakstam</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Uzlauztas paroles}=1{{COUNT} uzlauzta parole}zero{{COUNT} uzlauztu paroļu}one{{COUNT} uzlauzta parole}other{{COUNT} uzlauztas paroles}}</translation>
+<translation id="1830634592642484976">Šī adrese pašlaik ir saglabāta pārlūkā Chrome. Lai izmantotu šo adresi citos Google produktos, saglabājiet to savā Google kontā (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Lai vienmēr varētu piekļūt saviem sinhronizētajiem datiem, apstipriniet savu identitāti.</translation>
 <translation id="1836891464494477513">{count,plural, =1{Grāmatzīme tika saglabāta jūsu Google kontā ({email}).}zero{Grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}one{Grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}other{Grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}}</translation>
 <translation id="1870148520156231997">Rādīt paroli</translation>
@@ -545,6 +546,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4636930964841734540">Informācija</translation>
 <translation id="4642472735733036929">Cenu izsekošana ir apturēta.</translation>
 <translation id="4650125387981512669">Turpināt kā: <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Aizsargājiet savas paroles, uzziniet, vai tās nav uzlauztas, un saņemiet padomus par drošību tiešsaistē. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4659126640776004816">Kad pierakstāties savā Google kontā, šī funkcija ir ieslēgta.</translation>
 <translation id="4659667755519643272">Atvērt ciļņu pārslēdzēju</translation>
 <translation id="46614316059270592">Saglabāt paroli</translation>
@@ -697,6 +699,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5669617676038747374">Izveidot kvadrātkodu</translation>
 <translation id="567881659373499783">Versija <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Lai Google kontā varētu izmantot un saglabāt paroles, apstipriniet savu identitāti.</translation>
+<translation id="5684761169742812828">Šī parole tika atklāta datu aizsardzības pārkāpumā internetā. Ja jums šobrīd nav laika nomainīt paroli, Google iesaka saglabāt šo brīdinājumu kā atgādinājumu sev, lai to izdarītu vēlāk.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Tagad tiek rādīts 1 Chrome logs}zero{Tagad tiek rādīti {count} Chrome logi}one{Tagad tiek rādīts {count} Chrome logs}other{Tagad tiek rādīti {count} Chrome logi}}</translation>
 <translation id="5701270923492462699">Piekļuve kamerai ir atļauta</translation>
 <translation id="5704908597376970822">Nevar pierakstīties.</translation>
@@ -1222,6 +1225,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8952559610785099500">Paroles pievienošana</translation>
 <translation id="8953046091948372197">Šeit varēsiet skatīt savas paroles</translation>
 <translation id="895541991026785598">Ziņot par problēmu</translation>
+<translation id="8961757677053809960">Vai noraidīt brīdinājumu?</translation>
 <translation id="8971545611707025079">Pārbaudīt vēlreiz</translation>
 <translation id="8974714402877957201">1. iPad planšetdatorā atveriet sadaļu Settings (Iestatījumi).</translation>
 <translation id="8976382372951310360">Palīdzība</translation>

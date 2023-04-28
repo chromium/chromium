@@ -114,6 +114,7 @@
 <translation id="2929907241665500097">Chrome tidak dikemas kini, kesilapan telah berlaku. <ph name="BEGIN_LINK" />Selesaikan masalah kemas kini dan kegagalan kemas kini Chrome.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Log Masuk Rangkaian - Chrome</translation>
 <translation id="3019382870990049182">Lancarkan semula untuk mengemas kini &amp;ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Beberapa sambungan Google Chrome telah mengakses peranti HID}=1{Beberapa sambungan Google Chrome sedang mengakses peranti HID}other{Beberapa sambungan Google Chrome sedang mengakses # peranti HID}}</translation>
 <translation id="303514781271618814">Chrome sedang meneroka ciri baharu yang membenarkan laman menyampaikan pengalaman penyemakan imbas yang sama menggunakan kurang data anda</translation>
 <translation id="3037838751736561277">Google Chrome dalam mod latar belakang.</translation>
 <translation id="3038232873781883849">Menunggu untuk memasang...</translation>
@@ -219,6 +220,7 @@
 <translation id="4970880042055371251">Versi Chrome OS</translation>
 <translation id="4970947549776831107">Chrome menyekat fail ini kerana jenis fail ini berbahaya</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Satu sambungan Google Chrome telah mengakses peranti HID}=1{Satu sambungan Google Chrome sedang mengakses 1 peranti HID}other{Satu sambungan Google Chrome sedang mengakses # peranti HID}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Pentadbir anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Pentadbir anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="5098668839038261629">Apabila dihidupkan, anda juga akan dilog keluar daripada Chrome</translation>
 <translation id="5132929315877954718">Temui apl, permainan, sambungan dan tema hebat untuk Google Chrome.</translation>

@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">פתיחה בדפדפן חלופי בעוד <ph name="COUNTDOWN_SECONDS" /> שניות</translation>
+<translation id="1071735803834535661">‏מקש Meta חיצוני</translation>
 <translation id="1071917609930274619">קידוד נתונים</translation>
 <translation id="1072700771426194907">‏זוהה התקן USB</translation>
 <translation id="107278043869924952">יש להשתמש בקוד אימות בנוסף לסיסמה</translation>
@@ -1386,6 +1387,7 @@
 <translation id="2146263598007866206">כדי לחסוך זמן, אתרים עשויים להוריד קבצים קשורים יחד, באופן אוטומטי</translation>
 <translation id="2147151613919729065">כדי לנקות את ההיסטוריה של 'מצב אורח', עליך לסגור את כל החלונות של האורחים.</translation>
 <translation id="2147218225094845757">הסתרת החלונית הצדדית</translation>
+<translation id="2147282432401652483">‏מקש Command</translation>
 <translation id="2148219725039824548">קרתה שגיאה בטעינת התקן הרשת לשיתוף קבצים. ההתקן שצוין לא נמצא ברשת.</translation>
 <translation id="2148756636027685713">הפרמוט הסתיים</translation>
 <translation id="2148892889047469596">העברת הכרטיסייה</translation>
@@ -4961,6 +4963,7 @@
 <translation id="5298219193514155779">נושא שנוצר על ידי</translation>
 <translation id="5299109548848736476">‏לא לעקוב (DNT)</translation>
 <translation id="5299558715747014286">הצגה וניהול של קבוצות הכרטיסיות</translation>
+<translation id="529986401483187205">מקש מושבת</translation>
 <translation id="5300287940468717207">לאפס את הרשאות האתרים?</translation>
 <translation id="5300426565656326054">התאמה אישית של מודעות על סמך הדפדפן</translation>
 <translation id="5300589172476337783">הצגה</translation>
@@ -6866,6 +6869,7 @@
 <translation id="6981982820502123353">נגישות</translation>
 <translation id="6983507711977005608">התנתקות מהרשת של שיתוף אינטרנט מיידי בין מכשירים</translation>
 <translation id="6983783921975806247">‏OID רשום</translation>
+<translation id="6983890893900549383">‏מקש Escape</translation>
 <translation id="6985235333261347343">‏סוכן שחזור המפתחות של Microsoft</translation>
 <translation id="698524779381350301">יש להעניק גישה אוטומטית לאתרים הבאים</translation>
 <translation id="6985607387932385770">מדפסות</translation>
@@ -8036,6 +8040,7 @@
 <translation id="8009225694047762179">ניהול סיסמאות</translation>
 <translation id="8011372169388649948">הסימנייה '<ph name="BOOKMARK_TITLE" />' הועברה.</translation>
 <translation id="8011875486979733097">‏לא ניתן להתקין את Steam</translation>
+<translation id="8012188750847319132">‏מקש Caps Lock</translation>
 <translation id="8013993649590906847">‏אם אין לתמונה תיאור מועיל, Chrome ינסה לספק לך תיאור. כדי ליצור תיאורים, התמונות נשלחות אל Google.</translation>
 <translation id="8014154204619229810">המעדכן פועל כעת. יש לרענן בעוד דקה כדי לבדוק שנית.</translation>
 <translation id="8014206674403687691">‏<ph name="IDS_SHORT_PRODUCT_NAME" /> אינו יכול לחזור לגרסה המותקנת הקודמת. יש לנסות לבצע שוב Powerwash למכשיר.</translation>

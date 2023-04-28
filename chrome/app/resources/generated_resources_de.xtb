@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Wird in <ph name="COUNTDOWN_SECONDS" /> Sekunden in einem alternativen Browser geöffnet</translation>
+<translation id="1071735803834535661">Externe Metataste</translation>
 <translation id="1071917609930274619">Datenverschlüsselung</translation>
 <translation id="1072700771426194907">USB-Gerät erkannt</translation>
 <translation id="107278043869924952">Zusätzlich zum Passwort die PIN verwenden</translation>
@@ -1371,6 +1372,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2146263598007866206">Websites laden zusammengehörende Dateien möglicherweise automatisch gemeinsam herunter, damit du Zeit sparst</translation>
 <translation id="2147151613919729065">Wenn du den Verlauf des Gastmodus löschen möchtest, musst du zuerst alle Fenster schließen, die darin geöffnet sind.</translation>
 <translation id="2147218225094845757">Seitenleiste ausblenden</translation>
+<translation id="2147282432401652483">Befehlstaste</translation>
 <translation id="2148219725039824548">Fehler beim Bereitstellen der Freigabe. Die angegebene Freigabe wurde im Netzwerk nicht gefunden.</translation>
 <translation id="2148756636027685713">Formatierung beendet</translation>
 <translation id="2148892889047469596">Tab streamen</translation>
@@ -4940,6 +4942,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5298219193514155779">Design von</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">Tabgruppen ansehen und verwalten</translation>
+<translation id="529986401483187205">deaktiviert</translation>
 <translation id="5300287940468717207">Websiteberechtigungen zurücksetzen?</translation>
 <translation id="5300426565656326054">Browserbasierte personalisierte Werbung</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
@@ -6837,6 +6840,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6981982820502123353">Bedienungshilfen</translation>
 <translation id="6983507711977005608">Verbindung mit Instant Tethering-Netzwerk trennen</translation>
 <translation id="6983783921975806247">Registrierte OID</translation>
+<translation id="6983890893900549383">Esc-Taste</translation>
 <translation id="6985235333261347343">Microsoft Key Recovery Agent</translation>
 <translation id="698524779381350301">Automatisch Zugriff auf die folgenden Websites gewähren</translation>
 <translation id="6985607387932385770">Drucker</translation>
@@ -8007,6 +8011,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8009225694047762179">Passwort verwalten</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />“ verschoben.</translation>
 <translation id="8011875486979733097">Steam kann nicht installiert werden</translation>
+<translation id="8012188750847319132">Feststelltaste</translation>
 <translation id="8013993649590906847">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet.</translation>
 <translation id="8014154204619229810">Der Updater wird momentan ausgeführt. Bitte versuche es in einer Minute erneut, indem du eine Aktualisierung vornimmst.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> konnte die zuvor installierte Version nicht wiederherstellen. Bitte versuche erneut, ein Powerwash für dein Gerät durchzuführen.</translation>

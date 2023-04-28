@@ -133,6 +133,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="1815941218935345331">Contrasenya</translation>
 <translation id="1820259098641718022">S'ha afegit a la llista de lectura</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Contrasenyes en perill}=1{{COUNT} contrasenya en perill}other{{COUNT} contrasenyes en perill}}</translation>
+<translation id="1830634592642484976">Actualment aquesta adreça està desada a Chrome. Per utilitzar-la en tots els productes de Google, desa-la al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Per assegurar-te de poder accedir a les dades sincronitzades en qualsevol moment, verifica la teva identitat</translation>
 <translation id="1836891464494477513">{count,plural, =1{L'adreça d'interès s'ha desat al teu Compte de Google, {email}}other{Les adreces d'interès s'han desat al teu Compte de Google, {email}}}</translation>
 <translation id="1870148520156231997">Mostra la contrasenya</translation>
@@ -545,6 +546,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4636930964841734540">Informació</translation>
 <translation id="4642472735733036929">S'ha aturat el seguiment dels preus</translation>
 <translation id="4650125387981512669">Continua com a <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4652817563047461855">Assegura't que les teves contrasenyes siguin segures, esbrina si estan en perill i obtén consells per protegir-te en línia. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4659126640776004816">En iniciar la sessió al Compte de Google, aquesta funció està sempre activada.</translation>
 <translation id="4659667755519643272">Entra al selector de pestanyes</translation>
 <translation id="46614316059270592">Desa la contrasenya</translation>
@@ -697,6 +699,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5669617676038747374">Crea un codi QR</translation>
 <translation id="567881659373499783">Versió <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Per utilitzar i desar contrasenyes al teu Compte de Google, verifica la teva identitat.</translation>
+<translation id="5684761169742812828">Aquesta contrasenya ha quedat exposada en una violació de les dades a Internet. Si no tens temps per canviar-la ara, Google et recomana que conservis aquest advertiment com a recordatori.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Es mostra 1 finestra de Chrome}other{Es mostren {count} finestres de Chrome}}</translation>
 <translation id="5701270923492462699">S'ha permès l'accés a la càmera</translation>
 <translation id="5704908597376970822">No es pot iniciar la sessió.</translation>
@@ -1222,6 +1225,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8952559610785099500">Afegeix una contrasenya</translation>
 <translation id="8953046091948372197">Trobaràs les contrasenyes aquí</translation>
 <translation id="895541991026785598">Informa d'un problema</translation>
+<translation id="8961757677053809960">Vols ignorar l'advertiment?</translation>
 <translation id="8971545611707025079">Torna a comprovar</translation>
 <translation id="8974714402877957201">1. Obre la configuració de l'iPad.</translation>
 <translation id="8976382372951310360">Ajuda</translation>
