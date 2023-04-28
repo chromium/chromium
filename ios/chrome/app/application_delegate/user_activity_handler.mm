@@ -90,7 +90,10 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
              [activityType isEqualToString:kSiriShortcutOpenInIncognito]) {
     return @[ kIncognitoMode ];
   } else {
-    static crash_reporter::CrashKeyString<4> key("activity");
+    // Use 32 as the maximum length of the reported value for this key (31
+    // characters + '\0'). See NSUserActivityTypes in Info.plist for the list of
+    // expected values.
+    static crash_reporter::CrashKeyString<32> key("activity");
     crash_reporter::ScopedCrashKeyString crash_key(
         &key, base::SysNSStringToUTF8(activityType));
     base::debug::DumpWithoutCrashing();
