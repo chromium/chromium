@@ -99,16 +99,7 @@ void HighEfficiencyModePolicy::OnHighEfficiencyModeChanged(bool enabled) {
 
   if (high_efficiency_mode_enabled_) {
     DCHECK(active_discard_timers_.empty());
-    for (const PageNode* page_node : graph_->GetAllPageNodes()) {
-      if (page_node->GetType() == PageType::kTab && !page_node->IsVisible()) {
-        base::TimeDelta time_before_discard =
-            time_before_discard_ -
-            page_node->GetTimeSinceLastVisibilityChange();
-        StartDiscardTimerIfEnabled(page_node, time_before_discard.is_negative()
-                                                  ? base::Microseconds(0)
-                                                  : time_before_discard);
-      }
-    }
+    StartAllDiscardTimers();
   } else {
     active_discard_timers_.clear();
   }
@@ -121,14 +112,23 @@ base::TimeDelta HighEfficiencyModePolicy::GetTimeBeforeDiscardForTesting()
 
 void HighEfficiencyModePolicy::SetTimeBeforeDiscard(
     base::TimeDelta time_before_discard) {
-  CHECK(active_discard_timers_.empty());
-  // TODO(charlesmeng): Update existing discard timers when time_before_discard_
-  // is changed.
   time_before_discard_ = time_before_discard;
+  if (high_efficiency_mode_enabled_) {
+    active_discard_timers_.clear();
+    StartAllDiscardTimers();
+  }
 }
 
 bool HighEfficiencyModePolicy::IsHighEfficiencyDiscardingEnabled() const {
   return high_efficiency_mode_enabled_;
+}
+
+void HighEfficiencyModePolicy::StartAllDiscardTimers() {
+  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
+    if (page_node->GetType() == PageType::kTab && !page_node->IsVisible()) {
+      StartDiscardTimerIfEnabled(page_node, time_before_discard_);
+    }
+  }
 }
 
 void HighEfficiencyModePolicy::StartDiscardTimerIfEnabled(

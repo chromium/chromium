@@ -140,11 +140,12 @@ TEST_F(HighEfficiencyModeTest, DontDiscardIfPlayingAudio) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardChangedBeforeHighEfficiencyOn) {
+TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardChangedBeforeTimerStarted) {
   base::TimeDelta original_time_before_discard =
       policy()->GetTimeBeforeDiscardForTesting();
+  base::TimeDelta increased_time_before_discard = base::Seconds(10);
   policy()->SetTimeBeforeDiscard(original_time_before_discard +
-                                 base::Seconds(10));
+                                 increased_time_before_discard);
 
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
@@ -157,11 +158,115 @@ TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardChangedBeforeHighEfficiencyOn) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(true));
 
-  task_env().FastForwardBy(base::Seconds(10));
+  task_env().FastForwardBy(increased_time_before_discard);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, DiscardIfAlreadyNotVisibleWhenModeEnabled) {
+TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardReduced) {
+  base::TimeDelta original_time_before_discard =
+      policy()->GetTimeBeforeDiscardForTesting();
+  constexpr base::TimeDelta kNewTimeBeforeDiscard = base::Minutes(20);
+  constexpr base::TimeDelta kInitialBackgroundTime = base::Minutes(10);
+  EXPECT_GE(original_time_before_discard, kNewTimeBeforeDiscard);
+  EXPECT_GE(kNewTimeBeforeDiscard, kInitialBackgroundTime);
+
+  page_node()->SetType(PageType::kTab);
+  page_node()->SetIsVisible(true);
+  page_node()->SetIsVisible(false);
+  policy()->OnHighEfficiencyModeChanged(true);
+
+  task_env().FastForwardBy(kInitialBackgroundTime);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  policy()->SetTimeBeforeDiscard(kNewTimeBeforeDiscard);
+
+  // Expect tab to not take into account time spent in the background prior
+  // to the time before discard changing.
+  task_env().FastForwardBy(kNewTimeBeforeDiscard - kInitialBackgroundTime);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  // Expect tab to be discarded after the new time before discard has elapsed
+  // since the last change to it.
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillOnce(::testing::Return(true));
+
+  task_env().FastForwardBy(kInitialBackgroundTime);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardReducedBelowBackgroundedTime) {
+  base::TimeDelta original_time_before_discard =
+      policy()->GetTimeBeforeDiscardForTesting();
+  constexpr base::TimeDelta kNewTimeBeforeDiscard = base::Minutes(5);
+  constexpr base::TimeDelta kInitialBackgroundTime = base::Minutes(10);
+  EXPECT_GE(original_time_before_discard, kInitialBackgroundTime);
+  EXPECT_GE(kInitialBackgroundTime, kNewTimeBeforeDiscard);
+
+  page_node()->SetType(PageType::kTab);
+  page_node()->SetIsVisible(true);
+  page_node()->SetIsVisible(false);
+  policy()->OnHighEfficiencyModeChanged(true);
+
+  task_env().FastForwardBy(kInitialBackgroundTime);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  // Expect tab to not be immediately discarded if time to discard is changed
+  // to something smaller than the already elapsed time in the background.
+  policy()->SetTimeBeforeDiscard(kNewTimeBeforeDiscard);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  // Expect tab to be discarded after the new time before discard has elapsed
+  // since the last change to it.
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillOnce(::testing::Return(true));
+
+  task_env().FastForwardBy(kNewTimeBeforeDiscard);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardIncreased) {
+  base::TimeDelta original_time_before_discard =
+      policy()->GetTimeBeforeDiscardForTesting();
+  constexpr base::TimeDelta kNewTimeBeforeDiscard = base::Hours(3);
+  constexpr base::TimeDelta kInitialBackgroundTime = base::Minutes(10);
+  EXPECT_GE(kNewTimeBeforeDiscard, original_time_before_discard);
+  EXPECT_GE(original_time_before_discard, kInitialBackgroundTime);
+
+  page_node()->SetType(PageType::kTab);
+  page_node()->SetIsVisible(true);
+  page_node()->SetIsVisible(false);
+  policy()->OnHighEfficiencyModeChanged(true);
+
+  task_env().FastForwardBy(kInitialBackgroundTime);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+  // Time elapsed since beginning of test = kInitialBackgroundTime
+
+  policy()->SetTimeBeforeDiscard(kNewTimeBeforeDiscard);
+
+  // Expect original timer to not be in effect
+  task_env().FastForwardBy(original_time_before_discard -
+                           kInitialBackgroundTime);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+  // Time elapsed since beginning of test = original_time_before_discard
+
+  // Expect tab to not take into account time spent in the background prior to
+  // the time before discard changing.
+  task_env().FastForwardBy(kNewTimeBeforeDiscard -
+                           original_time_before_discard);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+  // Time elapsed since beginning of test = kNewTimeBeforeDiscard
+
+  // Expect tab to be discarded after the new time before discard has elapsed
+  // since the last change to it.
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillOnce(::testing::Return(true));
+  task_env().FastForwardBy(kInitialBackgroundTime);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+  // Time elapsed since beginning of test = kInitialBackgroundTime +
+  //                                        kNewTimeBeforeDiscard
+}
+
+TEST_F(HighEfficiencyModeTest, DontDiscardIfAlreadyNotVisibleWhenModeEnabled) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
@@ -170,16 +275,22 @@ TEST_F(HighEfficiencyModeTest, DiscardIfAlreadyNotVisibleWhenModeEnabled) {
   task_env().FastForwardUntilNoTasksRemain();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
-  // Advance time by the usual discard interval, minus 10 seconds. This means
-  // that the page will be discarded 10 seconds after the mode is changed.
+  // Advance time by the usual discard interval, minus 10 seconds.
   task_env().FastForwardBy(policy()->GetTimeBeforeDiscardForTesting() -
                            base::Seconds(10));
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
   policy()->OnHighEfficiencyModeChanged(true);
+
+  // The page should not be discarded 10 seconds after the mode is changed.
+  task_env().FastForwardBy(base::Seconds(10));
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  // Instead, it should be discarded after the usual discard interval.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(true));
-  task_env().FastForwardBy(base::Seconds(10));
+  task_env().FastForwardBy(policy()->GetTimeBeforeDiscardForTesting() -
+                           base::Seconds(10));
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 

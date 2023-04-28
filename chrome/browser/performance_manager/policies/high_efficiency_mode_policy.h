@@ -45,6 +45,7 @@ class HighEfficiencyModePolicy : public GraphOwned,
   bool IsHighEfficiencyDiscardingEnabled() const;
 
  private:
+  void StartAllDiscardTimers();
   void StartDiscardTimerIfEnabled(const PageNode* page_node,
                                   base::TimeDelta time_before_discard);
   void RemoveActiveTimer(const PageNode* page_node);
