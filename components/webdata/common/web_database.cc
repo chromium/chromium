@@ -122,6 +122,21 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
     return sql::INIT_FAILURE;
   }
 
+  // Check whether we have write access at the earliest possible time.
+  // While failures can happen later as well, this gives us some clarity
+  // that we could at least use the database when we opened it.
+  // TODO(crbug.com/1430313): Remove when bug is fixed.
+  {
+    if (!db_.Execute("BEGIN EXCLUSIVE")) {
+      LogDiagnostics(db_);
+      return sql::INIT_FAILURE;
+    }
+    if (!db_.Execute("COMMIT")) {
+      LogDiagnostics(db_);
+      return sql::INIT_FAILURE;
+    }
+  }
+
   // Clobber really old databases.
   static_assert(kDeprecatedVersionNumber < kCurrentVersionNumber,
                 "Deprecation version must be less than current");
