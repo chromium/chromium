@@ -2529,16 +2529,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.SystemLogUploadResult"
-    enum="EnterpriseSystemLogUploadResult" expires_after="2023-03-19">
-  <obsolete>
-    Obsolete since M115 after expiration.
-  </obsolete>
-  <owner>bmalcolm@chromium.org</owner>
-  <owner>cros-client-wa@google.com</owner>
-  <summary>Result of a single attempt to upload system logs.</summary>
-</histogram>
-
 <histogram name="Enterprise.SystemSignals.Collection.WMI.{Signal}.ParsingError"
     enum="DeviceSignalsWmiParsingError" expires_after="2023-12-01">
   <owner>seblalancette@chromium.org</owner>
