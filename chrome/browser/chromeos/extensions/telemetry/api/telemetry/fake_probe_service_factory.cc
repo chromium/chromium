@@ -12,6 +12,12 @@
 
 namespace chromeos {
 
+namespace {
+
+namespace crosapi = ::crosapi::mojom;
+
+}  // namespace
+
 FakeProbeServiceFactory::FakeProbeServiceFactory() = default;
 FakeProbeServiceFactory::~FakeProbeServiceFactory() = default;
 
@@ -20,9 +26,9 @@ void FakeProbeServiceFactory::SetCreateInstanceResponse(
   fake_service_ = std::move(fake_service);
 }
 
-std::unique_ptr<crosapi::mojom::TelemetryProbeService>
+std::unique_ptr<crosapi::TelemetryProbeService>
 FakeProbeServiceFactory::CreateInstance(
-    mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver) {
+    mojo::PendingReceiver<crosapi::TelemetryProbeService> receiver) {
   fake_service_->BindPendingReceiver(std::move(receiver));
   return std::move(fake_service_);
 }

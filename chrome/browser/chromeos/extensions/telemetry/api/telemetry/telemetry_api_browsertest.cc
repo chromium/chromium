@@ -31,6 +31,12 @@
 
 namespace chromeos {
 
+namespace {
+
+namespace crosapi = ::crosapi::mojom;
+
+}  // namespace
+
 class TelemetryExtensionTelemetryApiBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
@@ -77,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kAudio});
+        {crosapi::ProbeCategoryEnum::kAudio});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -99,43 +105,43 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetAudioInfo_Success) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
 
     {
-      std::vector<crosapi::mojom::ProbeAudioOutputNodeInfoPtr> output_infos;
-      auto output_node_info = crosapi::mojom::ProbeAudioOutputNodeInfo::New();
-      output_node_info->id = crosapi::mojom::UInt64Value::New(43);
+      std::vector<crosapi::ProbeAudioOutputNodeInfoPtr> output_infos;
+      auto output_node_info = crosapi::ProbeAudioOutputNodeInfo::New();
+      output_node_info->id = crosapi::UInt64Value::New(43);
       output_node_info->name = "Internal Speaker";
       output_node_info->device_name = "HDA Intel PCH: CA0132 Analog:0,0";
-      output_node_info->active = crosapi::mojom::BoolValue::New(false);
-      output_node_info->node_volume = crosapi::mojom::UInt8Value::New(212);
+      output_node_info->active = crosapi::BoolValue::New(false);
+      output_node_info->node_volume = crosapi::UInt8Value::New(212);
       output_infos.push_back(std::move(output_node_info));
 
-      std::vector<crosapi::mojom::ProbeAudioInputNodeInfoPtr> input_infos;
-      auto input_node_info = crosapi::mojom::ProbeAudioInputNodeInfo::New();
-      input_node_info->id = crosapi::mojom::UInt64Value::New(42);
+      std::vector<crosapi::ProbeAudioInputNodeInfoPtr> input_infos;
+      auto input_node_info = crosapi::ProbeAudioInputNodeInfo::New();
+      input_node_info->id = crosapi::UInt64Value::New(42);
       input_node_info->name = "External Mic";
       input_node_info->device_name = "HDA Intel PCH: CA0132 Analog:1,0";
-      input_node_info->active = crosapi::mojom::BoolValue::New(true);
-      input_node_info->node_gain = crosapi::mojom::UInt8Value::New(1);
+      input_node_info->active = crosapi::BoolValue::New(true);
+      input_node_info->node_gain = crosapi::UInt8Value::New(1);
       input_infos.push_back(std::move(input_node_info));
 
-      auto audio_info = crosapi::mojom::ProbeAudioInfo::New();
-      audio_info->output_mute = crosapi::mojom::BoolValue::New(true);
-      audio_info->input_mute = crosapi::mojom::BoolValue::New(false);
-      audio_info->underruns = crosapi::mojom::UInt32Value::New(56);
-      audio_info->severe_underruns = crosapi::mojom::UInt32Value::New(3);
+      auto audio_info = crosapi::ProbeAudioInfo::New();
+      audio_info->output_mute = crosapi::BoolValue::New(true);
+      audio_info->input_mute = crosapi::BoolValue::New(false);
+      audio_info->underruns = crosapi::UInt32Value::New(56);
+      audio_info->severe_underruns = crosapi::UInt32Value::New(3);
       audio_info->output_nodes = std::move(output_infos);
       audio_info->input_nodes = std::move(input_infos);
 
       telemetry_info->audio_result =
-          crosapi::mojom::ProbeAudioResult::NewAudioInfo(std::move(audio_info));
+          crosapi::ProbeAudioResult::NewAudioInfo(std::move(audio_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kAudio});
+        {crosapi::ProbeCategoryEnum::kAudio});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -180,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kBattery});
+        {crosapi::ProbeCategoryEnum::kBattery});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -202,41 +208,34 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetBatteryInfo_Success) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
     {
-      auto battery_info = crosapi::mojom::ProbeBatteryInfo::New();
-      battery_info->cycle_count =
-          crosapi::mojom::Int64Value::New(100000000000000);
-      battery_info->voltage_now =
-          crosapi::mojom::DoubleValue::New(1234567890.123456);
+      auto battery_info = crosapi::ProbeBatteryInfo::New();
+      battery_info->cycle_count = crosapi::Int64Value::New(100000000000000);
+      battery_info->voltage_now = crosapi::DoubleValue::New(1234567890.123456);
       battery_info->vendor = "Google";
       battery_info->serial_number = "abcdef";
       battery_info->charge_full_design =
-          crosapi::mojom::DoubleValue::New(3000000000000000);
-      battery_info->charge_full =
-          crosapi::mojom::DoubleValue::New(9000000000000000);
+          crosapi::DoubleValue::New(3000000000000000);
+      battery_info->charge_full = crosapi::DoubleValue::New(9000000000000000);
       battery_info->voltage_min_design =
-          crosapi::mojom::DoubleValue::New(1000000000.1001);
+          crosapi::DoubleValue::New(1000000000.1001);
       battery_info->model_name = "Google Battery";
-      battery_info->charge_now =
-          crosapi::mojom::DoubleValue::New(7777777777.777);
-      battery_info->current_now =
-          crosapi::mojom::DoubleValue::New(0.9999999999999);
+      battery_info->charge_now = crosapi::DoubleValue::New(7777777777.777);
+      battery_info->current_now = crosapi::DoubleValue::New(0.9999999999999);
       battery_info->technology = "Li-ion";
       battery_info->status = "Charging";
       battery_info->manufacture_date = "2020-07-30";
-      battery_info->temperature =
-          crosapi::mojom::UInt64Value::New(7777777777777777);
+      battery_info->temperature = crosapi::UInt64Value::New(7777777777777777);
 
       telemetry_info->battery_result =
-          crosapi::mojom::ProbeBatteryResult::NewBatteryInfo(
-              std::move(battery_info));
+          crosapi::ProbeBatteryResult::NewBatteryInfo(std::move(battery_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kBattery});
+        {crosapi::ProbeCategoryEnum::kBattery});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -276,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices});
+        {crosapi::ProbeCategoryEnum::kNonRemovableBlockDevices});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -298,35 +297,33 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetNonRemovableBlockDeviceInfo_Success) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
 
     {
-      auto first_element =
-          crosapi::mojom::ProbeNonRemovableBlockDeviceInfo::New();
-      first_element->size = crosapi::mojom::UInt64Value::New(100000000);
+      auto first_element = crosapi::ProbeNonRemovableBlockDeviceInfo::New();
+      first_element->size = crosapi::UInt64Value::New(100000000);
       first_element->name = "TestName1";
       first_element->type = "TestType1";
 
-      auto second_element =
-          crosapi::mojom::ProbeNonRemovableBlockDeviceInfo::New();
-      second_element->size = crosapi::mojom::UInt64Value::New(200000000);
+      auto second_element = crosapi::ProbeNonRemovableBlockDeviceInfo::New();
+      second_element->size = crosapi::UInt64Value::New(200000000);
       second_element->name = "TestName2";
       second_element->type = "TestType2";
 
-      std::vector<crosapi::mojom::ProbeNonRemovableBlockDeviceInfoPtr>
+      std::vector<crosapi::ProbeNonRemovableBlockDeviceInfoPtr>
           block_devices_info;
       block_devices_info.push_back(std::move(first_element));
       block_devices_info.push_back(std::move(second_element));
 
       telemetry_info->block_device_result =
-          crosapi::mojom::ProbeNonRemovableBlockDeviceResult::
-              NewBlockDeviceInfo(std::move(block_devices_info));
+          crosapi::ProbeNonRemovableBlockDeviceResult::NewBlockDeviceInfo(
+              std::move(block_devices_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices});
+        {crosapi::ProbeCategoryEnum::kNonRemovableBlockDevices});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -359,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kCpu});
+        {crosapi::ProbeCategoryEnum::kCpu});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -381,79 +378,77 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetCpuInfo_Success) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
 
     {
-      auto c_state1 = crosapi::mojom::ProbeCpuCStateInfo::New();
+      auto c_state1 = crosapi::ProbeCpuCStateInfo::New();
       c_state1->name = "C1";
       c_state1->time_in_state_since_last_boot_us =
-          crosapi::mojom::UInt64Value::New(1125899906875957);
+          crosapi::UInt64Value::New(1125899906875957);
 
-      auto c_state2 = crosapi::mojom::ProbeCpuCStateInfo::New();
+      auto c_state2 = crosapi::ProbeCpuCStateInfo::New();
       c_state2->name = "C2";
       c_state2->time_in_state_since_last_boot_us =
-          crosapi::mojom::UInt64Value::New(1125899906877777);
+          crosapi::UInt64Value::New(1125899906877777);
 
-      auto logical_info1 = crosapi::mojom::ProbeLogicalCpuInfo::New();
+      auto logical_info1 = crosapi::ProbeLogicalCpuInfo::New();
       logical_info1->max_clock_speed_khz =
-          crosapi::mojom::UInt32Value::New(2147473647);
+          crosapi::UInt32Value::New(2147473647);
       logical_info1->scaling_max_frequency_khz =
-          crosapi::mojom::UInt32Value::New(1073764046);
+          crosapi::UInt32Value::New(1073764046);
       logical_info1->scaling_current_frequency_khz =
-          crosapi::mojom::UInt32Value::New(536904245);
+          crosapi::UInt32Value::New(536904245);
       // Idle time cannot be tested in browser test, because it requires USER_HZ
       // system constant to convert idle_time_user_hz to milliseconds.
-      logical_info1->idle_time_ms = crosapi::mojom::UInt64Value::New(0);
+      logical_info1->idle_time_ms = crosapi::UInt64Value::New(0);
       logical_info1->c_states.push_back(std::move(c_state1));
       logical_info1->c_states.push_back(std::move(c_state2));
 
-      auto logical_info2 = crosapi::mojom::ProbeLogicalCpuInfo::New();
+      auto logical_info2 = crosapi::ProbeLogicalCpuInfo::New();
       logical_info2->max_clock_speed_khz =
-          crosapi::mojom::UInt32Value::New(1147494759);
+          crosapi::UInt32Value::New(1147494759);
       logical_info2->scaling_max_frequency_khz =
-          crosapi::mojom::UInt32Value::New(1063764046);
+          crosapi::UInt32Value::New(1063764046);
       logical_info2->scaling_current_frequency_khz =
-          crosapi::mojom::UInt32Value::New(936904246);
+          crosapi::UInt32Value::New(936904246);
       // Idle time cannot be tested in browser test, because it requires USER_HZ
       // system constant to convert idle_time_user_hz to milliseconds.
-      logical_info2->idle_time_ms = crosapi::mojom::UInt64Value::New(0);
+      logical_info2->idle_time_ms = crosapi::UInt64Value::New(0);
 
-      auto physical_info1 = crosapi::mojom::ProbePhysicalCpuInfo::New();
+      auto physical_info1 = crosapi::ProbePhysicalCpuInfo::New();
       physical_info1->model_name = "i9";
       physical_info1->logical_cpus.push_back(std::move(logical_info1));
       physical_info1->logical_cpus.push_back(std::move(logical_info2));
 
-      auto logical_info3 = crosapi::mojom::ProbeLogicalCpuInfo::New();
+      auto logical_info3 = crosapi::ProbeLogicalCpuInfo::New();
       logical_info3->max_clock_speed_khz =
-          crosapi::mojom::UInt32Value::New(1247494759);
+          crosapi::UInt32Value::New(1247494759);
       logical_info3->scaling_max_frequency_khz =
-          crosapi::mojom::UInt32Value::New(1263764046);
+          crosapi::UInt32Value::New(1263764046);
       logical_info3->scaling_current_frequency_khz =
-          crosapi::mojom::UInt32Value::New(946904246);
+          crosapi::UInt32Value::New(946904246);
       // Idle time cannot be tested in browser test, because it requires USER_HZ
       // system constant to convert idle_time_user_hz to milliseconds.
-      logical_info3->idle_time_ms = crosapi::mojom::UInt64Value::New(0);
+      logical_info3->idle_time_ms = crosapi::UInt64Value::New(0);
 
-      auto physical_info2 = crosapi::mojom::ProbePhysicalCpuInfo::New();
+      auto physical_info2 = crosapi::ProbePhysicalCpuInfo::New();
       physical_info2->model_name = "i9-low-powered";
       physical_info2->logical_cpus.push_back(std::move(logical_info3));
 
-      auto cpu_info = crosapi::mojom::ProbeCpuInfo::New();
-      cpu_info->num_total_threads =
-          crosapi::mojom::UInt32Value::New(2147483647);
-      cpu_info->architecture =
-          crosapi::mojom::ProbeCpuArchitectureEnum::kArmv7l;
+      auto cpu_info = crosapi::ProbeCpuInfo::New();
+      cpu_info->num_total_threads = crosapi::UInt32Value::New(2147483647);
+      cpu_info->architecture = crosapi::ProbeCpuArchitectureEnum::kArmv7l;
       cpu_info->physical_cpus.push_back(std::move(physical_info1));
       cpu_info->physical_cpus.push_back(std::move(physical_info2));
 
       telemetry_info->cpu_result =
-          crosapi::mojom::ProbeCpuResult::NewCpuInfo(std::move(cpu_info));
+          crosapi::ProbeCpuResult::NewCpuInfo(std::move(cpu_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kCpu});
+        {crosapi::ProbeCategoryEnum::kCpu});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -515,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kSystem});
+        {crosapi::ProbeCategoryEnum::kSystem});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -537,23 +532,22 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetMarketingInfo_Success) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
     {
-      auto os_info = crosapi::mojom::ProbeOsInfo::New();
+      auto os_info = crosapi::ProbeOsInfo::New();
       os_info->marketing_name = "Test Marketing Name";
 
-      auto system_info = crosapi::mojom::ProbeSystemInfo::New();
+      auto system_info = crosapi::ProbeSystemInfo::New();
       system_info->os_info = std::move(os_info);
 
       telemetry_info->system_result =
-          crosapi::mojom::ProbeSystemResult::NewSystemInfo(
-              std::move(system_info));
+          crosapi::ProbeSystemResult::NewSystemInfo(std::move(system_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kSystem});
+        {crosapi::ProbeCategoryEnum::kSystem});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -578,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kMemory});
+        {crosapi::ProbeCategoryEnum::kMemory});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -600,28 +594,24 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetMemoryInfo_Success) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
 
     {
-      auto memory_info = crosapi::mojom::ProbeMemoryInfo::New();
-      memory_info->total_memory_kib =
-          crosapi::mojom::UInt32Value::New(2147483647);
-      memory_info->free_memory_kib =
-          crosapi::mojom::UInt32Value::New(2147483646);
-      memory_info->available_memory_kib =
-          crosapi::mojom::UInt32Value::New(2147483645);
+      auto memory_info = crosapi::ProbeMemoryInfo::New();
+      memory_info->total_memory_kib = crosapi::UInt32Value::New(2147483647);
+      memory_info->free_memory_kib = crosapi::UInt32Value::New(2147483646);
+      memory_info->available_memory_kib = crosapi::UInt32Value::New(2147483645);
       memory_info->page_faults_since_last_boot =
-          crosapi::mojom::UInt64Value::New(4611686018427388000);
+          crosapi::UInt64Value::New(4611686018427388000);
 
       telemetry_info->memory_result =
-          crosapi::mojom::ProbeMemoryResult::NewMemoryInfo(
-              std::move(memory_info));
+          crosapi::ProbeMemoryResult::NewMemoryInfo(std::move(memory_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kMemory});
+        {crosapi::ProbeCategoryEnum::kMemory});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -647,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kNetwork});
+        {crosapi::ProbeCategoryEnum::kNetwork});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -669,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetInternetConnectivityInfo_Success) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
 
     {
       auto network = chromeos::network_health::mojom::Network::New();
@@ -701,14 +691,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       network_info->networks.push_back(std::move(invalid_network));
 
       telemetry_info->network_result =
-          crosapi::mojom::ProbeNetworkResult::NewNetworkHealth(
+          crosapi::ProbeNetworkResult::NewNetworkHealth(
               std::move(network_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kNetwork});
+        {crosapi::ProbeCategoryEnum::kNetwork});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -760,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
 
-    auto oem_data = crosapi::mojom::ProbeOemData::New();
+    auto oem_data = crosapi::ProbeOemData::New();
     oem_data->oem_data = "123456789";
     fake_service_impl->SetOemDataResponse(std::move(oem_data));
 
@@ -785,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kSystem});
+        {crosapi::ProbeCategoryEnum::kSystem});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -807,29 +797,28 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOsVersionInfo_Success) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
     {
-      auto os_version_info = crosapi::mojom::ProbeOsVersion::New();
+      auto os_version_info = crosapi::ProbeOsVersion::New();
       os_version_info->release_milestone = "87";
       os_version_info->build_number = "13544";
       os_version_info->patch_number = "59.0";
       os_version_info->release_channel = "stable-channel";
 
-      auto os_info = crosapi::mojom::ProbeOsInfo::New();
+      auto os_info = crosapi::ProbeOsInfo::New();
       os_info->os_version = std::move(os_version_info);
 
-      auto system_info = crosapi::mojom::ProbeSystemInfo::New();
+      auto system_info = crosapi::ProbeSystemInfo::New();
       system_info->os_info = std::move(os_info);
 
       telemetry_info->system_result =
-          crosapi::mojom::ProbeSystemResult::NewSystemInfo(
-              std::move(system_info));
+          crosapi::ProbeSystemResult::NewSystemInfo(std::move(system_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kSystem});
+        {crosapi::ProbeCategoryEnum::kSystem});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -857,7 +846,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kCachedVpdData});
+        {crosapi::ProbeCategoryEnum::kCachedVpdData});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -879,23 +868,23 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoWithSerialNumberPermission) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
 
     {
-      auto vpd_info = crosapi::mojom::ProbeCachedVpdInfo::New();
+      auto vpd_info = crosapi::ProbeCachedVpdInfo::New();
       vpd_info->first_power_date = "2021-50";
       vpd_info->model_name = "COOL-LAPTOP-CHROME";
       vpd_info->serial_number = "5CD9132880";
       vpd_info->sku_number = "sku15";
 
       telemetry_info->vpd_result =
-          crosapi::mojom::ProbeCachedVpdResult::NewVpdInfo(std::move(vpd_info));
+          crosapi::ProbeCachedVpdResult::NewVpdInfo(std::move(vpd_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kCachedVpdData});
+        {crosapi::ProbeCategoryEnum::kCachedVpdData});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -920,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kStatefulPartition});
+        {crosapi::ProbeCategoryEnum::kStatefulPartition});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -942,24 +931,23 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetStatefulPartitionInfo_Success) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
     {
-      auto stateful_part_info =
-          crosapi::mojom::ProbeStatefulPartitionInfo::New();
+      auto stateful_part_info = crosapi::ProbeStatefulPartitionInfo::New();
       stateful_part_info->available_space =
-          crosapi::mojom::UInt64Value::New(3000000000000000);
+          crosapi::UInt64Value::New(3000000000000000);
       stateful_part_info->total_space =
-          crosapi::mojom::UInt64Value::New(9000000000000000);
+          crosapi::UInt64Value::New(9000000000000000);
 
       telemetry_info->stateful_partition_result =
-          crosapi::mojom::ProbeStatefulPartitionResult::NewPartitionInfo(
+          crosapi::ProbeStatefulPartitionResult::NewPartitionInfo(
               std::move(stateful_part_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kStatefulPartition});
+        {crosapi::ProbeCategoryEnum::kStatefulPartition});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -987,7 +975,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kTpm});
+        {crosapi::ProbeCategoryEnum::kTpm});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -1009,44 +997,42 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetTpmInfo_Success) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
     {
-      auto tpm_version = crosapi::mojom::ProbeTpmVersion::New();
-      tpm_version->gsc_version = crosapi::mojom::ProbeTpmGSCVersion::kCr50;
-      tpm_version->family = crosapi::mojom::UInt32Value::New(120);
-      tpm_version->spec_level = crosapi::mojom::UInt64Value::New(1000);
-      tpm_version->manufacturer = crosapi::mojom::UInt32Value::New(42);
-      tpm_version->tpm_model = crosapi::mojom::UInt32Value::New(333);
-      tpm_version->firmware_version = crosapi::mojom::UInt64Value::New(10000);
+      auto tpm_version = crosapi::ProbeTpmVersion::New();
+      tpm_version->gsc_version = crosapi::ProbeTpmGSCVersion::kCr50;
+      tpm_version->family = crosapi::UInt32Value::New(120);
+      tpm_version->spec_level = crosapi::UInt64Value::New(1000);
+      tpm_version->manufacturer = crosapi::UInt32Value::New(42);
+      tpm_version->tpm_model = crosapi::UInt32Value::New(333);
+      tpm_version->firmware_version = crosapi::UInt64Value::New(10000);
       tpm_version->vendor_specific = "VendorSpecific";
 
-      auto tpm_status = crosapi::mojom::ProbeTpmStatus::New();
-      tpm_status->enabled = crosapi::mojom::BoolValue::New(true);
-      tpm_status->owned = crosapi::mojom::BoolValue::New(false);
-      tpm_status->owner_password_is_present =
-          crosapi::mojom::BoolValue::New(false);
+      auto tpm_status = crosapi::ProbeTpmStatus::New();
+      tpm_status->enabled = crosapi::BoolValue::New(true);
+      tpm_status->owned = crosapi::BoolValue::New(false);
+      tpm_status->owner_password_is_present = crosapi::BoolValue::New(false);
 
-      auto dictonary_attack = crosapi::mojom::ProbeTpmDictionaryAttack::New();
-      dictonary_attack->counter = crosapi::mojom::UInt32Value::New(5);
-      dictonary_attack->threshold = crosapi::mojom::UInt32Value::New(1000);
-      dictonary_attack->lockout_in_effect =
-          crosapi::mojom::BoolValue::New(false);
+      auto dictonary_attack = crosapi::ProbeTpmDictionaryAttack::New();
+      dictonary_attack->counter = crosapi::UInt32Value::New(5);
+      dictonary_attack->threshold = crosapi::UInt32Value::New(1000);
+      dictonary_attack->lockout_in_effect = crosapi::BoolValue::New(false);
       dictonary_attack->lockout_seconds_remaining =
-          crosapi::mojom::UInt32Value::New(0);
+          crosapi::UInt32Value::New(0);
 
-      auto tpm_info = crosapi::mojom::ProbeTpmInfo::New();
+      auto tpm_info = crosapi::ProbeTpmInfo::New();
       tpm_info->version = std::move(tpm_version);
       tpm_info->status = std::move(tpm_status);
       tpm_info->dictionary_attack = std::move(dictonary_attack);
 
       telemetry_info->tpm_result =
-          crosapi::mojom::ProbeTpmResult::NewTpmInfo(std::move(tpm_info));
+          crosapi::ProbeTpmResult::NewTpmInfo(std::move(tpm_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kTpm});
+        {crosapi::ProbeCategoryEnum::kTpm});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -1092,7 +1078,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kBus});
+        {crosapi::ProbeCategoryEnum::kBus});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -1114,43 +1100,42 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetUsbBusInfo_Success) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
     {
-      std::vector<crosapi::mojom::ProbeUsbBusInterfaceInfoPtr> interfaces;
-      interfaces.push_back(crosapi::mojom::ProbeUsbBusInterfaceInfo::New(
-          crosapi::mojom::UInt8Value::New(42),
-          crosapi::mojom::UInt8Value::New(41),
-          crosapi::mojom::UInt8Value::New(43),
-          crosapi::mojom::UInt8Value::New(44), "MyDriver"));
+      std::vector<crosapi::ProbeUsbBusInterfaceInfoPtr> interfaces;
+      interfaces.push_back(crosapi::ProbeUsbBusInterfaceInfo::New(
+          crosapi::UInt8Value::New(42), crosapi::UInt8Value::New(41),
+          crosapi::UInt8Value::New(43), crosapi::UInt8Value::New(44),
+          "MyDriver"));
 
-      auto fwupd_version = crosapi::mojom::ProbeFwupdFirmwareVersionInfo::New(
-          "MyVersion", crosapi::mojom::ProbeFwupdVersionFormat::kPair);
+      auto fwupd_version = crosapi::ProbeFwupdFirmwareVersionInfo::New(
+          "MyVersion", crosapi::ProbeFwupdVersionFormat::kPair);
 
-      auto usb_bus_info = crosapi::mojom::ProbeUsbBusInfo::New();
-      usb_bus_info->class_id = crosapi::mojom::UInt8Value::New(45);
-      usb_bus_info->subclass_id = crosapi::mojom::UInt8Value::New(46);
-      usb_bus_info->protocol_id = crosapi::mojom::UInt8Value::New(47);
-      usb_bus_info->vendor_id = crosapi::mojom::UInt16Value::New(48);
-      usb_bus_info->product_id = crosapi::mojom::UInt16Value::New(49);
+      auto usb_bus_info = crosapi::ProbeUsbBusInfo::New();
+      usb_bus_info->class_id = crosapi::UInt8Value::New(45);
+      usb_bus_info->subclass_id = crosapi::UInt8Value::New(46);
+      usb_bus_info->protocol_id = crosapi::UInt8Value::New(47);
+      usb_bus_info->vendor_id = crosapi::UInt16Value::New(48);
+      usb_bus_info->product_id = crosapi::UInt16Value::New(49);
       usb_bus_info->interfaces = std::move(interfaces);
       usb_bus_info->fwupd_firmware_version_info = std::move(fwupd_version);
-      usb_bus_info->version = crosapi::mojom::ProbeUsbVersion::kUsb3;
-      usb_bus_info->spec_speed = crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps;
+      usb_bus_info->version = crosapi::ProbeUsbVersion::kUsb3;
+      usb_bus_info->spec_speed = crosapi::ProbeUsbSpecSpeed::k20Gbps;
 
       auto bus_info =
-          crosapi::mojom::ProbeBusInfo::NewUsbBusInfo(std::move(usb_bus_info));
+          crosapi::ProbeBusInfo::NewUsbBusInfo(std::move(usb_bus_info));
 
-      std::vector<crosapi::mojom::ProbeBusInfoPtr> input;
+      std::vector<crosapi::ProbeBusInfoPtr> input;
       input.push_back(std::move(bus_info));
 
       telemetry_info->bus_result =
-          crosapi::mojom::ProbeBusResult::NewBusDevicesInfo(std::move(input));
+          crosapi::ProbeBusResult::NewBusDevicesInfo(std::move(input));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kBus});
+        {crosapi::ProbeCategoryEnum::kBus});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -1239,41 +1224,34 @@ IN_PROC_BROWSER_TEST_F(
     GetBatteryInfoWithoutSerialNumberPermission) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
     {
-      auto battery_info = crosapi::mojom::ProbeBatteryInfo::New();
-      battery_info->cycle_count =
-          crosapi::mojom::Int64Value::New(100000000000000);
-      battery_info->voltage_now =
-          crosapi::mojom::DoubleValue::New(1234567890.123456);
+      auto battery_info = crosapi::ProbeBatteryInfo::New();
+      battery_info->cycle_count = crosapi::Int64Value::New(100000000000000);
+      battery_info->voltage_now = crosapi::DoubleValue::New(1234567890.123456);
       battery_info->vendor = "Google";
       battery_info->serial_number = "abcdef";
       battery_info->charge_full_design =
-          crosapi::mojom::DoubleValue::New(3000000000000000);
-      battery_info->charge_full =
-          crosapi::mojom::DoubleValue::New(9000000000000000);
+          crosapi::DoubleValue::New(3000000000000000);
+      battery_info->charge_full = crosapi::DoubleValue::New(9000000000000000);
       battery_info->voltage_min_design =
-          crosapi::mojom::DoubleValue::New(1000000000.1001);
+          crosapi::DoubleValue::New(1000000000.1001);
       battery_info->model_name = "Google Battery";
-      battery_info->charge_now =
-          crosapi::mojom::DoubleValue::New(7777777777.777);
-      battery_info->current_now =
-          crosapi::mojom::DoubleValue::New(0.9999999999999);
+      battery_info->charge_now = crosapi::DoubleValue::New(7777777777.777);
+      battery_info->current_now = crosapi::DoubleValue::New(0.9999999999999);
       battery_info->technology = "Li-ion";
       battery_info->status = "Charging";
       battery_info->manufacture_date = "2020-07-30";
-      battery_info->temperature =
-          crosapi::mojom::UInt64Value::New(7777777777777777);
+      battery_info->temperature = crosapi::UInt64Value::New(7777777777777777);
 
       telemetry_info->battery_result =
-          crosapi::mojom::ProbeBatteryResult::NewBatteryInfo(
-              std::move(battery_info));
+          crosapi::ProbeBatteryResult::NewBatteryInfo(std::move(battery_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kBattery});
+        {crosapi::ProbeCategoryEnum::kBattery});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -1312,7 +1290,7 @@ IN_PROC_BROWSER_TEST_F(
     GetOemInternetConnectivityWithoutPermission) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
 
     {
       auto network = chromeos::network_health::mojom::Network::New();
@@ -1329,14 +1307,14 @@ IN_PROC_BROWSER_TEST_F(
       network_info->networks.push_back(std::move(network));
 
       telemetry_info->network_result =
-          crosapi::mojom::ProbeNetworkResult::NewNetworkHealth(
+          crosapi::ProbeNetworkResult::NewNetworkHealth(
               std::move(network_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kNetwork});
+        {crosapi::ProbeCategoryEnum::kNetwork});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -1412,23 +1390,23 @@ IN_PROC_BROWSER_TEST_F(
     GetVpdInfoWithoutSerialNumberPermission) {
   // Configure FakeProbeService.
   {
-    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
 
     {
-      auto vpd_info = crosapi::mojom::ProbeCachedVpdInfo::New();
+      auto vpd_info = crosapi::ProbeCachedVpdInfo::New();
       vpd_info->first_power_date = "2021-50";
       vpd_info->model_name = "COOL-LAPTOP-CHROME";
       vpd_info->serial_number = "5CD9132880";
       vpd_info->sku_number = "sku15";
 
       telemetry_info->vpd_result =
-          crosapi::mojom::ProbeCachedVpdResult::NewVpdInfo(std::move(vpd_info));
+          crosapi::ProbeCachedVpdResult::NewVpdInfo(std::move(vpd_info));
     }
 
     auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kCachedVpdData});
+        {crosapi::ProbeCategoryEnum::kCachedVpdData});
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
