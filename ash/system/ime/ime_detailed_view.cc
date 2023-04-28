@@ -21,9 +21,11 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
@@ -63,7 +65,10 @@ void IMEDetailedView::CreateExtraTitleRowButtons() {
       controlled_setting_icon_->SetPreferredSize(gfx::Size(32, 32));
     }
     controlled_setting_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kSystemMenuBusinessIcon, kColorAshIconColorPrimary));
+        kSystemMenuBusinessIcon,
+        chromeos::features::IsJellyEnabled()
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+            : kColorAshIconColorPrimary));
     controlled_setting_icon_->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME_MANAGED));
     tri_view()->AddView(TriView::Container::END, controlled_setting_icon_);
