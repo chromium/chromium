@@ -142,10 +142,11 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                            LoadIconCallback callback);
 
   // Get pointer to the Promise App Registry Cache which holds all promise
-  // apps.
+  // apps. May return a nullptr.
   apps::PromiseAppRegistryCache* PromiseAppRegistryCache();
 
   // Get pointer to the Promise App Service which manages all promise apps.
+  // May return a nullptr.
   apps::PromiseAppService* PromiseAppService();
 
   // Add or update a promise app in the Promise App Registry Cache.
