@@ -1343,29 +1343,6 @@
             ]
         }
     ],
-    "AutofillPreventOverridingPrefilledFieldValue": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled2022-03-01",
-                    "enable_features": [
-                        "AutofillPreventOverridingPrefilledValues"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillRationalizeStreetAddressAndHouseNumber": [
         {
             "platforms": [
