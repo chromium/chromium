@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Handler;
@@ -25,6 +26,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -196,7 +199,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     private void onMaximizeEnd() {
         if (isMaximized()) {
-            if (mSheetOnRight) configureLayoutBeyondScreen(false);
+            if (mSheetOnRight) {
+                configureLayoutBeyondScreen(false);
+                maybeResetTalkbackFocus();
+            }
             maybeInvokeResizeCallback();
             setContentVisible(true);
         } else {
@@ -206,6 +212,19 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
                 initializeSize();
                 maybeInvokeResizeCallback();
             });
+        }
+    }
+
+    private void maybeResetTalkbackFocus() {
+        // Move the talkback focus from the leftmost button back to maximize button. This happens
+        // when double-tapping on the button causes the sheet to be resized to full width in
+        // talkback mode. Some delay is required for this to work as expected.
+        var am = (AccessibilityManager) mActivity.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        if (am != null && am.isTouchExplorationEnabled()) {
+            new Handler().postDelayed(() -> {
+                var maximizeButton = mToolbarView.findViewById(R.id.custom_tabs_sidepanel_maximize);
+                maximizeButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+            }, 200);
         }
     }
 
