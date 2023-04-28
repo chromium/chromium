@@ -304,6 +304,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   absl::optional<int32_t> restore_window_id_ = 0;
   absl::optional<std::string> restore_window_id_source_;
 
+  // Information pertaining to a window's persistability.
+  bool persistable_ = true;
+
   // Current modal status.
   bool system_modal_ = false;
 

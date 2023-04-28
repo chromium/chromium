@@ -618,6 +618,17 @@ void XDGToplevelWrapperImpl::CommitSnap(
   }
 }
 
+void XDGToplevelWrapperImpl::SetPersistable(bool persistable) const {
+  auto persistable_enum = persistable
+                              ? ZAURA_TOPLEVEL_PERSISTABLE_PERSISTABLE
+                              : ZAURA_TOPLEVEL_PERSISTABLE_NOT_PERSISTABLE;
+
+  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                            ZAURA_TOPLEVEL_SET_PERSISTABLE_SINCE_VERSION) {
+    zaura_toplevel_set_persistable(aura_toplevel_.get(), persistable_enum);
+  }
+}
+
 void XDGToplevelWrapperImpl::ShowSnapPreview(
     WaylandWindowSnapDirection snap_direction,
     bool allow_haptic_feedback) {

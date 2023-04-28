@@ -566,6 +566,7 @@ bool WaylandToplevelWindow::OnInitialize(
   restore_session_id_ = properties.restore_session_id;
   restore_window_id_ = properties.restore_window_id;
   restore_window_id_source_ = properties.restore_window_id_source;
+  persistable_ = properties.persistable;
 
   SetPinnedModeExtension(this, static_cast<PinnedModeExtension*>(this));
   SetSystemModalExtension(this, static_cast<SystemModalExtension*>(this));
@@ -1023,6 +1024,11 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     SetImmersiveFullscreenStatus(false);
+
+    if (shell_toplevel_->IsSupportedOnAuraToplevel(
+            ZAURA_TOPLEVEL_SET_PERSISTABLE_SINCE_VERSION)) {
+      shell_toplevel_->SetPersistable(persistable_);
+    }
 #endif
 
     // We pass the value of `z_order_` to the `shell_toplevel_` here in order to

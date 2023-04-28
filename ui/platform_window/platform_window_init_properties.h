@@ -142,6 +142,9 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 
   // Specifies the source to get `restore_window_id` from.
   absl::optional<std::string> restore_window_id_source;
+
+  // Specifies whether the associated window is persistable.
+  bool persistable = true;
 #endif
 
 #if BUILDFLAG(IS_OZONE)

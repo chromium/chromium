@@ -49,6 +49,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/wm/core/window_properties.h"
 #include "url/gurl.h"
 
 namespace {
@@ -320,7 +321,8 @@ desks_storage::DeskModel* ChromeSavedDeskDelegate::GetDeskModel() {
 bool ChromeSavedDeskDelegate::IsIncognitoWindow(aura::Window* window) const {
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForNativeWindow(window);
-  return browser_view && browser_view->GetIncognito();
+  return (browser_view && browser_view->GetIncognito()) ||
+         !window->GetProperty(wm::kPersistableKey);
 }
 
 absl::optional<gfx::ImageSkia>

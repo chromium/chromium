@@ -178,6 +178,9 @@ class ShellToplevelWrapper {
   virtual void ShowSnapPreview(WaylandWindowSnapDirection snap_direction,
                                bool allow_haptic_feedback) = 0;
 
+  // Sets the persistable window property.
+  virtual void SetPersistable(bool persistable) const = 0;
+
   // Casts `this` to XDGToplevelWrapperImpl, if it is of that type.
   virtual XDGToplevelWrapperImpl* AsXDGToplevelWrapper();
 };
