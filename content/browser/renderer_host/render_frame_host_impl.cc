@@ -4475,7 +4475,7 @@ void RenderFrameHostImpl::DidFailLoadWithError(const GURL& url,
   // show any user-visible changes from an inactive RenderFrameHost.
   if (!GetParentOrOuterDocument() &&
       CancelPrerendering(
-          PrerenderCancellationReason(PrerenderFinalStatus::kDidFailLoad))) {
+          PrerenderCancellationReason::BuildForLoadingError(error_code))) {
     return;
   }
 

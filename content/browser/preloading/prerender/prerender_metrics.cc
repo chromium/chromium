@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 
+#include <cmath>
+
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -118,6 +120,16 @@ void RecordPrerenderFinalStatusUma(
       final_status);
 }
 
+void RecordDidFailLoadErrorType(int32_t error_code,
+                                PrerenderTriggerType trigger_type,
+                                const std::string& embedder_histogram_suffix) {
+  base::UmaHistogramSparse(
+      GenerateHistogramName(
+          "Prerender.Experimental.PrerenderLoadingFailureError", trigger_type,
+          embedder_histogram_suffix),
+      std::abs(error_code));
+}
+
 }  // namespace
 
 // static
@@ -135,6 +147,13 @@ PrerenderCancellationReason::BuildForMojoBinderPolicy(
     const std::string& interface_name) {
   return PrerenderCancellationReason(PrerenderFinalStatus::kMojoBinderPolicy,
                                      interface_name);
+}
+
+//  static
+PrerenderCancellationReason PrerenderCancellationReason::BuildForLoadingError(
+    int32_t error_code) {
+  return PrerenderCancellationReason(PrerenderFinalStatus::kDidFailLoad,
+                                     error_code);
 }
 
 PrerenderCancellationReason::PrerenderCancellationReason(
@@ -170,6 +189,11 @@ void PrerenderCancellationReason::ReportMetrics(
                                         trigger_type,
                                         embedder_histogram_suffix);
       break;
+    case PrerenderFinalStatus::kDidFailLoad:
+      CHECK(absl::holds_alternative<int32_t>(explanation_));
+      RecordDidFailLoadErrorType(absl::get<int32_t>(explanation_), trigger_type,
+                                 embedder_histogram_suffix);
+      break;
     default:
       CHECK(absl::holds_alternative<absl::monostate>(explanation_));
       // Other types need not to report.
@@ -184,13 +208,16 @@ std::string PrerenderCancellationReason::ToDevtoolReasonString() const {
       // TODO(https://crbug.com/1328365): It seems we have to return an integer.
       // And devtool has to handle it based on the enum.xml, as the content
       // layer cannot know about the enums added by the embedder layer.
-      return "";
+      return std::string();
     case PrerenderFinalStatus::kMojoBinderPolicy:
       CHECK(absl::holds_alternative<std::string>(explanation_));
       return absl::get<std::string>(explanation_);
+    case PrerenderFinalStatus::kDidFailLoad:
+      CHECK(absl::holds_alternative<int32_t>(explanation_));
+      return std::string();
     default:
       CHECK(absl::holds_alternative<absl::monostate>(explanation_));
-      return "";
+      return std::string();
   }
 }
 

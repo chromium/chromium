@@ -1796,6 +1796,22 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram
+    name="Prerender.Experimental.PrerenderLoadingFailureError{PrerenderTriggerType}"
+    enum="NetErrorCodes" expires_after="2023-08-27">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Net error code is recorded by PrerenderCancellationReason when a prerender
+    host is canceled due to kDidFailLoad.
+
+    This metric is used to monitor whether preload cache intercepting logic
+    causes extra page loading errors. Similar to
+    PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus{PrerenderTriggerType},
+    but used to track the loading status of not activated prerendered pages.
+  </summary>
+</histogram>
+
+<histogram
     name="Prerender.Experimental.Search.FirstCorrectPrerenderHintReceivedToRealSearchNavigationStartedDuration"
     units="ms" expires_after="2023-08-20">
   <owner>lingqi@chromium.org</owner>
