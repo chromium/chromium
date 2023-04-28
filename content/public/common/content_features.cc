@@ -635,6 +635,9 @@ BASE_FEATURE(kLazyFrameLoading,
              "LazyFrameLoading",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLazyImageLoading,
+             "LazyImageLoading",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLazyImageVisibleLoadTimeMetrics,
              "LazyImageVisibleLoadTimeMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);

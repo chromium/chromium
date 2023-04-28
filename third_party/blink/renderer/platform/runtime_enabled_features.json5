@@ -1230,6 +1230,7 @@
     },
     {
       name: "DelayOutOfViewportLazyImages",
+      depends_on: ["LazyImageLoading"],
       public: true,
       status: "experimental",
     },
@@ -2078,6 +2079,12 @@
     },
     {
       name: "LazyFrameLoading",
+      public: true,
+      status: "stable",
+      base_feature: "none",
+    },
+    {
+      name: "LazyImageLoading",
       public: true,
       status: "stable",
       base_feature: "none",

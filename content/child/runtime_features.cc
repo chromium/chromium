@@ -258,6 +258,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableLazyInitializeMediaControls,
      raw_ref(features::kLazyInitializeMediaControls)},
     {wf::EnableLazyFrameLoading, raw_ref(features::kLazyFrameLoading)},
+    {wf::EnableLazyImageLoading, raw_ref(features::kLazyImageLoading)},
     {wf::EnableLazyImageVisibleLoadTimeMetrics,
      raw_ref(features::kLazyImageVisibleLoadTimeMetrics)},
     {wf::EnableMediaCastOverlayButton, raw_ref(media::kMediaCastOverlayButton)},

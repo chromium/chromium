@@ -1396,11 +1396,8 @@ TEST_F(HTMLPreloadScannerTest, MetaCsp_NoPreloadsAfter) {
     Test(test_case);
 }
 
-// TODO(crbug.com/1441062): These lazy load images tests date back to when we
-// had a feature for automatically applying lazy loading to images, but that
-// has been removed. These tests should be cleaned up to just test the basic
-// auto/eager/lazy behavior.
 TEST_F(HTMLPreloadScannerTest, LazyLoadImage_SmallImages) {
+  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(true);
   RunSetUp(kViewportEnabled);
   LazyLoadImageTestCase test_cases[] = {
       {"<img src='foo.jpg' loading='lazy'>", true},
@@ -1420,8 +1417,21 @@ TEST_F(HTMLPreloadScannerTest, LazyLoadImage_SmallImages) {
     Test(test_case);
 }
 
+TEST_F(HTMLPreloadScannerTest, LazyLoadImage_FeatureDisabledWithAttribute) {
+  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(false);
+  RunSetUp(kViewportEnabled);
+  LazyLoadImageTestCase test_cases[] = {
+      {"<img src='foo.jpg' loading='auto'>", false},
+      {"<img src='foo.jpg' loading='lazy'>", false},
+      {"<img src='foo.jpg' loading='eager'>", false},
+  };
+  for (const auto& test_case : test_cases)
+    Test(test_case);
+}
+
 TEST_F(HTMLPreloadScannerTest,
        LazyLoadImage_FeatureAutomaticEnabledWithAttribute) {
+  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(true);
   RunSetUp(kViewportEnabled);
   LazyLoadImageTestCase test_cases[] = {
       {"<img src='foo.jpg' loading='auto'>", false},
@@ -1438,6 +1448,7 @@ TEST_F(HTMLPreloadScannerTest,
 
 TEST_F(HTMLPreloadScannerTest,
        LazyLoadImage_FeatureExplicitEnabledWithAttribute) {
+  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(true);
   RunSetUp(kViewportEnabled);
   LazyLoadImageTestCase test_cases[] = {
       {"<img src='foo.jpg' loading='auto'>", false},
@@ -1451,6 +1462,7 @@ TEST_F(HTMLPreloadScannerTest,
 TEST_F(HTMLPreloadScannerTest,
        LazyLoadImage_FeatureAutomaticPreloadForLargeImages) {
   // Large images should not be preloaded, when loading is auto or lazy.
+  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(true);
   RunSetUp(kViewportEnabled);
   PreloadScannerTestCase test_cases[] = {
       {"http://example.test",
@@ -1488,6 +1500,7 @@ TEST_F(HTMLPreloadScannerTest,
 TEST_F(HTMLPreloadScannerTest,
        LazyLoadImage_FeatureExplicitPreloadForLargeImages) {
   // Large images should not be preloaded, when loading is lazy.
+  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test(true);
   RunSetUp(kViewportEnabled);
   PreloadScannerTestCase test_cases[] = {
       {"http://example.test",
