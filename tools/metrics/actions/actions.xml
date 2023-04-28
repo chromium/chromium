@@ -21817,6 +21817,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridUserScrolled">
+  <owner>lpromero@chromium.org</owner>
+  <owner>alionadangla@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>User in the iOS tab grid scrolled the grid of tabs.</description>
+</action>
+
+<action name="MobileTabGridUserScrolledToTop">
+  <owner>lpromero@chromium.org</owner>
+  <owner>alionadangla@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid tapped the status bar to scroll to the top of the
+    grid of tabs.
+  </description>
+</action>
+
 <action name="MobileTabNewTab">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
