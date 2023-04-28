@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "media/base/media_export.h"
-#include "media/base/media_types.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "ui/gfx/geometry/size.h"
@@ -37,9 +36,6 @@ struct MEDIA_EXPORT SupportedVideoDecoderConfig {
 
   // Returns true if and only if |config| is a supported config.
   bool Matches(const VideoDecoderConfig& config) const;
-
-  // Returns true if and only if |type| is a supported video type.
-  bool Matches(const VideoType& type) const;
 
   bool operator==(const SupportedVideoDecoderConfig& other) const {
     return profile_min == other.profile_min &&
@@ -79,11 +75,6 @@ using SupportedVideoDecoderConfigs = std::vector<SupportedVideoDecoderConfig>;
 MEDIA_EXPORT bool IsVideoDecoderConfigSupported(
     const SupportedVideoDecoderConfigs& supported_configs,
     const VideoDecoderConfig& config);
-
-// Helper method to determine if |type| is supported by |supported_configs|.
-MEDIA_EXPORT bool IsVideoTypeSupported(
-    const SupportedVideoDecoderConfigs& supported_configs,
-    const VideoType& type);
 
 }  // namespace media
 

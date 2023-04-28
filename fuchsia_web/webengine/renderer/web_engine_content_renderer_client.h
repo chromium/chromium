@@ -7,15 +7,10 @@
 
 #include <memory>
 
-#include "base/synchronization/waitable_event.h"
-#include "base/thread_annotations.h"
 #include "build/chromecast_buildflags.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "fuchsia_web/webengine/renderer/web_engine_audio_device_factory.h"
 #include "fuchsia_web/webengine/renderer/web_engine_render_frame_observer.h"
-#include "media/base/supported_video_decoder_config.h"
-#include "media/mojo/mojom/fuchsia_media.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
 namespace cast_streaming {
@@ -47,18 +42,6 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
   // Called by WebEngineRenderFrameObserver when its corresponding RenderFrame
   // is in the process of being deleted.
   void OnRenderFrameDeleted(int render_frame_id);
-
-  // Ensures the MediaCodecProvider is connected and ready to retrieve
-  // hardwared-supported video decoder configs.
-  void EnsureMediaCodecProvider();
-
-  // Updates the cache of `supported_decoder_configs_` and signal the waiting
-  // events.
-  void OnGetSupportedVideoDecoderConfigs(
-      const media::SupportedVideoDecoderConfigs& configs);
-
-  // Returns true if the specified video format can be decoded on hardware.
-  bool IsHardwareSupportedVideoType(const media::VideoType& type);
 
   // content::ContentRendererClient overrides.
   void RenderThreadStarted() override;
@@ -98,17 +81,6 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
   // is limited.
   std::unique_ptr<memory_pressure::MultiSourceMemoryPressureMonitor>
       memory_pressure_monitor_;
-
-  // Used to indicate if optional video profile support information has been
-  // retrieved from the FuchsiaMediaCodecProvider.
-  base::WaitableEvent decoder_configs_event_;
-
-  absl::optional<media::SupportedVideoDecoderConfigs>
-      supported_decoder_configs_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-  mojo::Remote<media::mojom::FuchsiaMediaCodecProvider> media_codec_provider_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_RENDERER_WEB_ENGINE_CONTENT_RENDERER_CLIENT_H_
