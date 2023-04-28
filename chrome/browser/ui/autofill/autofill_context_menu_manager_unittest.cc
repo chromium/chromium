@@ -93,11 +93,11 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
     render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
         *main_rfh(), content::ContextMenuParams());
     render_view_context_menu_->Init();
-
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
             autofill_client()->GetPersonalDataManager(),
-            render_view_context_menu_.get(), menu_model_.get(), nullptr);
+            render_view_context_menu_.get(), menu_model_.get(), nullptr,
+            std::make_unique<ScopedNewBadgeTracker>(profile()));
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams());
   }
