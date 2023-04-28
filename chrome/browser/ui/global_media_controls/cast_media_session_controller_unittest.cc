@@ -27,13 +27,13 @@ constexpr base::TimeDelta kDefaultSeekSeconds =
 
 class MockMediaController : public media_router::mojom::MediaController {
  public:
-  MOCK_METHOD0(Play, void());
-  MOCK_METHOD0(Pause, void());
-  MOCK_METHOD1(SetMute, void(bool));
-  MOCK_METHOD1(SetVolume, void(float));
-  MOCK_METHOD1(Seek, void(base::TimeDelta));
-  MOCK_METHOD0(NextTrack, void());
-  MOCK_METHOD0(PreviousTrack, void());
+  MOCK_METHOD(void, Play, ());
+  MOCK_METHOD(void, Pause, ());
+  MOCK_METHOD(void, SetMute, (bool));
+  MOCK_METHOD(void, SetVolume, (float));
+  MOCK_METHOD(void, Seek, (base::TimeDelta));
+  MOCK_METHOD(void, NextTrack, ());
+  MOCK_METHOD(void, PreviousTrack, ());
 };
 
 class CastMediaSessionControllerTest : public testing::Test {

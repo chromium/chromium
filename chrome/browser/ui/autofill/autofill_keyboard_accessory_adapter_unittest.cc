@@ -43,14 +43,15 @@ class MockAccessoryView
   MockAccessoryView(const MockAccessoryView&) = delete;
   MockAccessoryView& operator=(const MockAccessoryView&) = delete;
 
-  MOCK_METHOD0(Initialize, bool());
-  MOCK_METHOD0(Hide, void());
-  MOCK_METHOD0(Show, void());
-  MOCK_METHOD1(AxAnnounce, void(const std::u16string&));
-  MOCK_METHOD3(ConfirmDeletion,
-               void(const std::u16string&,
-                    const std::u16string&,
-                    base::OnceClosure));
+  MOCK_METHOD(bool, Initialize, ());
+  MOCK_METHOD(void, Hide, ());
+  MOCK_METHOD(void, Show, ());
+  MOCK_METHOD(void, AxAnnounce, (const std::u16string&));
+  MOCK_METHOD(void,
+              ConfirmDeletion,
+              (const std::u16string&,
+               const std::u16string&,
+               base::OnceClosure));
 };
 
 Suggestion createPasswordEntry(std::string password,

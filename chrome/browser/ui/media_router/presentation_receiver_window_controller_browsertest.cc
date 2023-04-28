@@ -86,8 +86,9 @@ class FakeControllerConnection final
   }
 
   // blink::mojom::PresentationConnection implementation
-  MOCK_METHOD1(OnMessage,
-               void(blink::mojom::PresentationConnectionMessagePtr message));
+  MOCK_METHOD(void,
+              OnMessage,
+              (blink::mojom::PresentationConnectionMessagePtr message));
   void DidChangeState(
       blink::mojom::PresentationConnectionState state) override {}
   void DidClose(

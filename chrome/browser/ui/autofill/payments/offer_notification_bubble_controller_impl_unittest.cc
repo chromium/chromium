@@ -75,10 +75,12 @@ class OfferNotificationBubbleControllerImplTest
 
   class MockCouponService : public CouponService {
    public:
-    MOCK_METHOD1(RecordCouponDisplayTimestamp,
-                 void(const autofill::AutofillOfferData& offer));
-    MOCK_METHOD1(GetCouponDisplayTimestamp,
-                 base::Time(const autofill::AutofillOfferData& offer));
+    MOCK_METHOD(void,
+                RecordCouponDisplayTimestamp,
+                (const autofill::AutofillOfferData& offer));
+    MOCK_METHOD(base::Time,
+                GetCouponDisplayTimestamp,
+                (const autofill::AutofillOfferData& offer));
   };
 
   void ShowBubble(const AutofillOfferData* offer) {

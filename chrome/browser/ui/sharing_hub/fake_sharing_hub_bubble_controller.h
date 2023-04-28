@@ -35,8 +35,8 @@ class FakeSharingHubBubbleController : public SharingHubBubbleController {
   std::vector<SharingHubAction> GetFirstPartyActions() override;
   base::WeakPtr<SharingHubBubbleController> GetWeakPtr() override;
 
-  MOCK_METHOD1(OnActionSelected, void(const SharingHubAction&));
-  MOCK_METHOD0(OnBubbleClosed, void());
+  MOCK_METHOD(void, OnActionSelected, (const SharingHubAction&));
+  MOCK_METHOD(void, OnBubbleClosed, ());
 
  private:
   std::vector<SharingHubAction> first_party_actions_;

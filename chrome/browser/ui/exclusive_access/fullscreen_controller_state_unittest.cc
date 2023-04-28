@@ -797,7 +797,7 @@ class FullscreenChangeObserver : public content::WebContentsObserver {
   FullscreenChangeObserver(const FullscreenChangeObserver&) = delete;
   FullscreenChangeObserver& operator=(const FullscreenChangeObserver&) = delete;
 
-  MOCK_METHOD2(DidToggleFullscreenModeForTab, void(bool, bool));
+  MOCK_METHOD(void, DidToggleFullscreenModeForTab, (bool, bool));
 };
 
 // Tests that going from tab fullscreen -> browser fullscreen causes an explicit

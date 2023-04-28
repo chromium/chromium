@@ -40,8 +40,9 @@ namespace {
 class MockAppMenuIconControllerDelegate
     : public AppMenuIconController::Delegate {
  public:
-  MOCK_METHOD1(UpdateTypeAndSeverity,
-               void(AppMenuIconController::TypeAndSeverity type_and_severity));
+  MOCK_METHOD(void,
+              UpdateTypeAndSeverity,
+              (AppMenuIconController::TypeAndSeverity type_and_severity));
   MOCK_CONST_METHOD1(GetDefaultColorForSeverity,
                      SkColor(AppMenuIconController::Severity severity));
 };

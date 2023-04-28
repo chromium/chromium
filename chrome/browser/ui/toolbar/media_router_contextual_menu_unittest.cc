@@ -56,8 +56,8 @@ std::unique_ptr<KeyedService> BuildUIService(content::BrowserContext* context) {
 class MockMediaRouterContextualMenuObserver
     : public MediaRouterContextualMenu::Observer {
  public:
-  MOCK_METHOD0(OnContextMenuShown, void());
-  MOCK_METHOD0(OnContextMenuHidden, void());
+  MOCK_METHOD(void, OnContextMenuShown, ());
+  MOCK_METHOD(void, OnContextMenuHidden, ());
 };
 
 }  // namespace

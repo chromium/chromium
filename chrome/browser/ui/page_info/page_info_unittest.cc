@@ -111,12 +111,13 @@ int SetSSLCipherSuite(int connection_status, int cipher_suite) {
 class MockPageInfoUI : public PageInfoUI {
  public:
   ~MockPageInfoUI() override = default;
-  MOCK_METHOD1(SetCookieInfo, void(const CookieInfoList& cookie_info_list));
-  MOCK_METHOD0(SetPermissionInfoStub, void());
-  MOCK_METHOD1(SetIdentityInfo, void(const IdentityInfo& identity_info));
-  MOCK_METHOD1(SetPageFeatureInfo, void(const PageFeatureInfo& info));
-  MOCK_METHOD1(SetAdPersonalizationInfo,
-               void(const AdPersonalizationInfo& info));
+  MOCK_METHOD(void, SetCookieInfo, (const CookieInfoList& cookie_info_list));
+  MOCK_METHOD(void, SetPermissionInfoStub, ());
+  MOCK_METHOD(void, SetIdentityInfo, (const IdentityInfo& identity_info));
+  MOCK_METHOD(void, SetPageFeatureInfo, (const PageFeatureInfo& info));
+  MOCK_METHOD(void,
+              SetAdPersonalizationInfo,
+              (const AdPersonalizationInfo& info));
 
   void SetPermissionInfo(
       const PermissionInfoList& permission_info_list,
