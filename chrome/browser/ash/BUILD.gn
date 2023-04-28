@@ -6459,27 +6459,6 @@ fuzzer_test("create_fnmatch_query_fuzzer") {
   ]
 }
 
-fuzzer_test("search_by_pattern_fuzzer") {
-  sources = [
-    "extensions/file_manager/search_by_pattern.cc",
-    "extensions/file_manager/search_by_pattern.h",
-    "extensions/file_manager/search_by_pattern_fuzzer.cc",
-    "fileapi/recent_disk_source.cc",
-    "fileapi/recent_disk_source.h",
-    "fileapi/recent_file.cc",
-    "fileapi/recent_file.h",
-    "fileapi/recent_source.cc",
-    "fileapi/recent_source.h",
-  ]
-  deps = [
-    "//base",
-    "//content/public/browser",
-    "//storage/browser",
-    "//ui/file_manager/base/gn:file_types_data_cpp",
-    "//url",
-  ]
-}
-
 if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("policy_fuzzer") {
     sources = [ "policy/fuzzer/policy_fuzzer.cc" ]
