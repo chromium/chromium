@@ -42,7 +42,7 @@
                                       secondURL:(NSString*)secondURL
                                        thirdURL:(NSString*)thirdURL
                                       fourthURL:(NSString*)fourthURL {
-  if (![BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded:YES]) {
+  if (![BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded]) {
     return testing::NSErrorWithLocalizedDescription(
         @"Bookmark model was not loaded");
   }
@@ -88,7 +88,7 @@
 }
 
 + (NSError*)setupBookmarksWhichExceedsScreenHeightUsingURL:(NSString*)URL {
-  if (![BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded:YES]) {
+  if (![BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded]) {
     return testing::NSErrorWithLocalizedDescription(
         @"Bookmark model was not loaded");
   }
@@ -123,13 +123,13 @@
   return nil;
 }
 
-+ (BOOL)waitForBookmarkModelLoaded:(BOOL)loaded {
++ (BOOL)waitForBookmarkModelLoaded {
   bookmarks::BookmarkModel* bookmarkModel =
       [BookmarkEarlGreyAppInterface bookmarkModel];
 
   return base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^{
-        return bookmarkModel->loaded() == loaded;
+        return bookmarkModel->loaded() == YES;
       });
 }
 
@@ -155,7 +155,7 @@
 }
 
 + (NSError*)addBookmarkWithTitle:(NSString*)title URL:(NSString*)url {
-  if (![BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded:YES]) {
+  if (![BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded]) {
     return testing::NSErrorWithLocalizedDescription(
         @"Bookmark model was not loaded");
   }
