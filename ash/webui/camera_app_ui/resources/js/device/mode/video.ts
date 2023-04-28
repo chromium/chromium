@@ -86,7 +86,7 @@ const GRAB_GIF_FRAME_RATIO = 2;
 /**
  * Initial speed for time-lapse recording.
  */
-const TIME_LAPSE_INITIAL_SPEED = 5;
+export const TIME_LAPSE_INITIAL_SPEED = 5;
 
 /**
  * Minimum bitrate multiplier for time lapse recording.

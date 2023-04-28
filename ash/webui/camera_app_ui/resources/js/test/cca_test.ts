@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertExists, assertInstanceof} from '../assert.js';
+import {TIME_LAPSE_INITIAL_SPEED} from '../device/mode/video.js';
 import * as dom from '../dom.js';
 import * as localStorage from '../models/local_storage.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
@@ -341,6 +342,13 @@ export class CCATest {
     const element = resolveVisibleElement(component, index);
     const {width, height} = element.getBoundingClientRect();
     return new Resolution(Math.round(width), Math.round(height));
+  }
+
+  /**
+   * Returns the initial speed of time-lapse recording.
+   */
+  static getTimeLapseInitialSpeed(): number {
+    return TIME_LAPSE_INITIAL_SPEED;
   }
 
   /**
