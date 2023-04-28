@@ -373,6 +373,7 @@ void MemoryCache::EvictResources() {
     resource_maps_.erase(resource_map_iter);
     resource_map_iter = resource_maps_.begin();
   }
+  saved_page_resources_.clear();
 }
 
 void MemoryCache::Prune() {
