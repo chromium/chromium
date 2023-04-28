@@ -255,7 +255,7 @@ struct ShadowFieldData;
 // will be copied from |field_data_manager|, if the argument is not null and
 // has entry for |element| (see properties in FieldPropertiesFlags).
 void WebFormControlElementToFormField(
-    FormRendererId form_renderer_id,
+    const blink::WebFormElement& form_element,
     const blink::WebFormControlElement& element,
     const FieldDataManager* field_data_manager,
     ExtractMask extract_mask,

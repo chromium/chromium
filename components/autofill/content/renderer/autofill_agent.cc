@@ -945,7 +945,7 @@ void AutofillAgent::QueryAutofillSuggestions(
     // If we didn't find the cached form, at least let autocomplete have a shot
     // at providing suggestions.
     WebFormControlElementToFormField(
-        form.unique_renderer_id, element, nullptr,
+        form_util::GetOwningForm(element), element, nullptr,
         static_cast<ExtractMask>(form_util::EXTRACT_VALUE |
                                  form_util::EXTRACT_BOUNDS |
                                  GetExtractDatalistMask()),
