@@ -292,8 +292,9 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     }
 
     network::mojom::NoVarySearchPtr no_vary_search_expected;
-    prefetch_document_manager->PrefetchUrl(url, prefetch_type, referrer,
-                                           no_vary_search_expected, nullptr);
+    prefetch_document_manager->PrefetchUrl(
+        url, prefetch_type, referrer, no_vary_search_expected,
+        blink::mojom::SpeculationInjectionWorld::kNone, nullptr);
   }
 
   int RequestCount() { return test_url_loader_factory_.NumPending(); }

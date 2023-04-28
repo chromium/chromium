@@ -18,18 +18,6 @@ namespace content {
 
 namespace {
 
-PreloadingPredictor GetPredictor(
-    blink::mojom::SpeculationInjectionWorld world) {
-  switch (world) {
-    case blink::mojom::SpeculationInjectionWorld::kNone:
-      [[fallthrough]];
-    case blink::mojom::SpeculationInjectionWorld::kMain:
-      return content_preloading_predictor::kSpeculationRules;
-    case blink::mojom::SpeculationInjectionWorld::kIsolated:
-      return content_preloading_predictor::kSpeculationRulesFromIsolatedWorld;
-  }
-}
-
 PrerenderTriggerType GetTriggerType(
     blink::mojom::SpeculationInjectionWorld world) {
   switch (world) {
@@ -211,8 +199,8 @@ bool PrerendererImpl::MaybePrerender(
   PreloadingURLMatchCallback same_url_matcher =
       PreloadingData::GetSameURLMatcher(candidate->url);
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
-      GetPredictor(candidate->injection_world), PreloadingType::kPrerender,
-      std::move(same_url_matcher));
+      GetPredictorForSpeculationRules(candidate->injection_world),
+      PreloadingType::kPrerender, std::move(same_url_matcher));
 
   auto [begin, end] = base::ranges::equal_range(
       started_prerenders_.begin(), started_prerenders_.end(), candidate->url,

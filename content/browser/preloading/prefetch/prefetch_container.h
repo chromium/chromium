@@ -58,6 +58,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer,
       absl::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      blink::mojom::SpeculationInjectionWorld world,
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager);
   ~PrefetchContainer();
 

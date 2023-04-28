@@ -197,8 +197,8 @@ void PreloadingDecider::UpdateSpeculationCandidates(
     processed_candidates_.insert(std::move(key));
     // TODO(crbug.com/1341019): Pass the action requested by speculation rules
     // to PreloadingPrediction.
-    AddPreloadingPrediction(candidate->url,
-                            content_preloading_predictor::kSpeculationRules);
+    AddPreloadingPrediction(candidate->url, GetPredictorForSpeculationRules(
+                                                candidate->injection_world));
 
     return false;
   };

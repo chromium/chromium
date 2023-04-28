@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PRELOADING_H_
 
 #include "content/public/browser/preloading.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
 namespace content {
 
@@ -47,6 +48,9 @@ static constexpr PreloadingPredictor kSpeculationRulesFromIsolatedWorld(
 }  // namespace content_preloading_predictor
 
 CONTENT_EXPORT base::StringPiece PreloadingTypeToString(PreloadingType type);
+
+PreloadingPredictor GetPredictorForSpeculationRules(
+    blink::mojom::SpeculationInjectionWorld world);
 
 }  // namespace content
 

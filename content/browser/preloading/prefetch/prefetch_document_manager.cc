@@ -154,7 +154,8 @@ void PrefetchDocumentManager::ProcessCandidates(
   }
 
   std::vector<std::tuple<GURL, PrefetchType, blink::mojom::Referrer,
-                         network::mojom::NoVarySearchPtr>>
+                         network::mojom::NoVarySearchPtr,
+                         blink::mojom::SpeculationInjectionWorld>>
       prefetches;
 
   auto should_process_entry =
@@ -177,7 +178,8 @@ void PrefetchDocumentManager::ProcessCandidates(
               candidate->url,
               PrefetchType(use_isolated_network_context, use_prefetch_proxy,
                            candidate->eagerness),
-              *candidate->referrer, candidate->no_vary_search_expected.Clone());
+              *candidate->referrer, candidate->no_vary_search_expected.Clone(),
+              candidate->injection_world);
           return true;
         }
         return false;
@@ -186,18 +188,18 @@ void PrefetchDocumentManager::ProcessCandidates(
   base::EraseIf(candidates, should_process_entry);
 
   if (const auto& host_to_bypass = PrefetchBypassProxyForHost()) {
-    for (auto& [prefetch_url, prefetch_type, referrer,
-                no_vary_search_expected] : prefetches) {
+    for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected,
+                world] : prefetches) {
       if (prefetch_type.IsProxyRequired() &&
           prefetch_url.host() == *host_to_bypass)
         prefetch_type.SetProxyBypassedForTest();
     }
   }
 
-  for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected] :
-       prefetches) {
+  for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected,
+              world] : prefetches) {
     PrefetchUrl(prefetch_url, prefetch_type, referrer, no_vary_search_expected,
-                devtools_observer);
+                world, devtools_observer);
   }
 }
 
@@ -206,6 +208,7 @@ void PrefetchDocumentManager::PrefetchUrl(
     const PrefetchType& prefetch_type,
     const blink::mojom::Referrer& referrer,
     const network::mojom::NoVarySearchPtr& mojo_no_vary_search_expected,
+    blink::mojom::SpeculationInjectionWorld world,
     base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
   // Skip any prefetches that have already been requested.
   auto prefetch_container_iter = all_prefetches_.find(url);
@@ -228,7 +231,8 @@ void PrefetchDocumentManager::PrefetchUrl(
   // Create a new |PrefetchContainer| and take ownership of it
   auto container = std::make_unique<PrefetchContainer>(
       render_frame_host().GetGlobalId(), url, prefetch_type, referrer,
-      std::move(no_vary_search_expected), weak_method_factory_.GetWeakPtr());
+      std::move(no_vary_search_expected), world,
+      weak_method_factory_.GetWeakPtr());
   container->SetDevToolsObserver(std::move(devtools_observer));
   if (base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
     container->SetNoVarySearchHelper(no_vary_search_helper_);

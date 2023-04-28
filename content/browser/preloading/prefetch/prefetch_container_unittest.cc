@@ -99,7 +99,10 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      blink::mojom::Referrer(), absl::nullopt, nullptr);
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
+      /*prefetch_document_manager=*/nullptr);
 
   EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
             GlobalRenderFrameHostId(1234, 5678));
@@ -121,7 +124,10 @@ TEST_F(PrefetchContainerTest, PrefetchStatus) {
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      blink::mojom::Referrer(), absl::nullopt, nullptr);
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
+      /*prefetch_document_manager=*/nullptr);
 
   EXPECT_FALSE(prefetch_container.HasPrefetchStatus());
 
@@ -138,7 +144,10 @@ TEST_F(PrefetchContainerTest, IsDecoy) {
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      blink::mojom::Referrer(), absl::nullopt, nullptr);
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
+      /*prefetch_document_manager=*/nullptr);
 
   EXPECT_FALSE(prefetch_container.IsDecoy());
 
@@ -152,7 +161,10 @@ TEST_F(PrefetchContainerTest, Servable) {
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      blink::mojom::Referrer(), absl::nullopt, nullptr);
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
+      /*prefetch_document_manager=*/nullptr);
 
   prefetch_container.TakeStreamingURLLoader(
       MakeServableStreamingURLLoaderForTest(
@@ -175,7 +187,10 @@ TEST_F(PrefetchContainerTest, CookieListener) {
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      blink::mojom::Referrer(), absl::nullopt, nullptr);
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
+      /*prefetch_document_manager=*/nullptr);
 
   // Add redirect hops. Each hop will have its own cookie listener.
   prefetch_container.AddRedirectHop(kTestUrl2);
@@ -221,7 +236,10 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      blink::mojom::Referrer(), absl::nullopt, nullptr);
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
+      /*prefetch_document_manager=*/nullptr);
   prefetch_container.RegisterCookieListener(kTestUrl, cookie_manager());
 
   EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
@@ -279,7 +297,10 @@ TEST_F(PrefetchContainerTest, CookieCopyWithRedirects) {
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      blink::mojom::Referrer(), absl::nullopt, nullptr);
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
+      /*prefetch_document_manager=*/nullptr);
 
   prefetch_container.AddRedirectHop(kRedirectUrl1);
   prefetch_container.AddRedirectHop(kRedirectUrl2);
@@ -398,7 +419,10 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(), absl::nullopt, nullptr);
+          blink::mojom::Referrer(),
+          /*no_vary_search_expected=*/absl::nullopt,
+          blink::mojom::SpeculationInjectionWorld::kNone,
+          /*prefetch_document_manager=*/nullptr);
 
   network::URLLoaderCompletionStatus completion_status;
   completion_status.encoded_data_length = 100;
@@ -517,7 +541,10 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm_NothingSet) {
           PrefetchType(/*use_isolated_network_context=*/true,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(), absl::nullopt, nullptr);
+          blink::mojom::Referrer(),
+          /*no_vary_search_expected=*/absl::nullopt,
+          blink::mojom::SpeculationInjectionWorld::kNone,
+          /*prefetch_document_manager=*/nullptr);
   prefetch_container.reset();
 
   auto ukm_entries = ukm_recorder.GetEntries(
@@ -588,7 +615,9 @@ TEST_F(PrefetchContainerTest, EligibilityCheck) {
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      blink::mojom::Referrer(), absl::nullopt,
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
       prefetch_document_manager->GetWeakPtr());
 
   // Mark initial prefetch as eligible
@@ -635,7 +664,9 @@ TEST_F(PrefetchContainerTest, IneligibleRedirect) {
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      blink::mojom::Referrer(), absl::nullopt,
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
       prefetch_document_manager->GetWeakPtr());
 
   // Mark initial prefetch as eligible
@@ -678,7 +709,10 @@ TEST_F(PrefetchContainerTest, NoVarySearchHelper) {
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      blink::mojom::Referrer(), absl::nullopt, nullptr);
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
+      /*prefetch_document_manager=*/nullptr);
 
   // Set up NoVarySearchHelper.
   scoped_refptr<NoVarySearchHelper> no_vary_search_helper =
@@ -737,7 +771,10 @@ TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms) {
         GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
         PrefetchType(/*use_isolated_network_context=*/true,
                      /*use_prefetch_proxy=*/true, test_case.eagerness),
-        blink::mojom::Referrer(), absl::nullopt, nullptr);
+        blink::mojom::Referrer(),
+        /*no_vary_search_expected=*/absl::nullopt,
+        blink::mojom::SpeculationInjectionWorld::kNone,
+        /*prefetch_document_manager=*/nullptr);
 
     prefetch_container.OnGetPrefetchToServe(test_case.block_until_head);
     if (test_case.block_until_head) {
@@ -792,7 +829,10 @@ TEST_F(PrefetchContainerTest, RecordRedirectChainSize) {
       PrefetchType(/*use_isolated_network_context=*/true,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      blink::mojom::Referrer(), absl::nullopt, nullptr);
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
+      /*prefetch_document_manager=*/nullptr);
 
   prefetch_container.AddRedirectHop(GURL("https://redirect1.com"));
   prefetch_container.AddRedirectHop(GURL("https://redirect2.com"));
