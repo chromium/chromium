@@ -130,20 +130,6 @@ class ExtensionBuilder {
     SetManifestPathImpl(path, base::Value(std::forward<T>(value)));
     return *this;
   }
-  // Specializations for unique_ptr<> to allow passing unique_ptr<base::Value>.
-  // All other types will fail to compile.
-  template <typename T>
-  ExtensionBuilder& SetManifestKey(base::StringPiece key,
-                                   std::unique_ptr<T> value) {
-    SetManifestKeyImpl(key, std::move(*value));
-    return *this;
-  }
-  template <typename T>
-  ExtensionBuilder& SetManifestPath(base::StringPiece path,
-                                    std::unique_ptr<T> value) {
-    SetManifestPathImpl(path, std::move(*value));
-    return *this;
-  }
 
   // A shortcut for adding raw JSON to the extension manifest. Useful if
   // constructing the values with a ValueBuilder is more painful than seeing
