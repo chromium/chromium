@@ -6,6 +6,7 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -35,6 +36,8 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
+
+using testing::IsNull;
 
 class FrameSelectionTest : public EditingTestBase {
  public:
@@ -1421,6 +1424,43 @@ TEST_F(FrameSelectionTest, PositionDisconnectedInFlatTree) {
                     GetVisibleSelectionInFlatTree().AsSelection()));
     }
   }
+}
+
+TEST_F(FrameSelectionTest,
+       PaintCaretRecordsSelectionWhenCursorUpdatesRequested) {
+  Text* text = AppendTextNode("Hello, World!");
+  UpdateAllLifecyclePhasesForTest();
+
+  GetDocument().body()->setContentEditable("true", ASSERT_NO_EXCEPTION);
+  GetDocument().body()->Focus();
+  EXPECT_TRUE(GetDocument().body()->IsFocused());
+
+  Selection().SetCaretEnabled(true);
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder().Collapse(Position(text, 0)).Build());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(Selection().ComputeVisibleSelectionInDOMTree().IsCaret());
+  EXPECT_TRUE(Selection().ShouldPaintCaret(
+      *To<LayoutBlock>(GetDocument().body()->GetLayoutObject())));
+
+  auto paint_controller =
+      std::make_unique<PaintController>(PaintController::kTransient);
+  {
+    GraphicsContext context(*paint_controller);
+    paint_controller->UpdateCurrentPaintChunkProperties(
+        root_paint_chunk_id_, *root_paint_property_client_,
+        PropertyTreeState::Root());
+    Selection().PaintCaret(context, PhysicalOffset());
+  }
+  paint_controller->CommitNewDisplayItems();
+
+  const PaintChunk& chunk = paint_controller->PaintChunks()[0];
+  EXPECT_THAT(chunk.layer_selection_data, Not(IsNull()));
+  LayerSelectionData selection_data = *chunk.layer_selection_data;
+  EXPECT_TRUE(selection_data.start.has_value());
+  EXPECT_EQ(gfx::SelectionBound::HIDDEN, selection_data.start->type);
+  EXPECT_TRUE(selection_data.end.has_value());
+  EXPECT_EQ(gfx::SelectionBound::HIDDEN, selection_data.end->type);
 }
 
 }  // namespace blink

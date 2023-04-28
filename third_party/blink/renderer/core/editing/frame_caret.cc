@@ -45,6 +45,8 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
+#include "ui/gfx/selection_bound.h"
 
 namespace blink {
 
@@ -241,8 +243,14 @@ void FrameCaret::PaintCaret(GraphicsContext& context,
                                                DisplayItem::kCaret);
 
   display_item_client_->PaintCaret(context, paint_offset, DisplayItem::kCaret);
-  if (frame_->Selection().IsHandleVisible() && !frame_->Selection().IsHidden())
-    display_item_client_->RecordSelection(context, paint_offset);
+
+  if (!frame_->Selection().IsHidden()) {
+    display_item_client_->RecordSelection(
+        context, paint_offset,
+        frame_->Selection().IsHandleVisible()
+            ? gfx::SelectionBound::Type::CENTER
+            : gfx::SelectionBound::Type::HIDDEN);
+  }
 }
 
 bool FrameCaret::ShouldShowCaret() const {

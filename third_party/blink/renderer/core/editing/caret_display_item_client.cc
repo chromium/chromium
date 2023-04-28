@@ -283,18 +283,17 @@ void CaretDisplayItemClient::PaintCaret(
                                      DarkModeFilter::ElementRole::kForeground));
 }
 
-void CaretDisplayItemClient::RecordSelection(
-    GraphicsContext& context,
-    const PhysicalOffset& paint_offset) {
+void CaretDisplayItemClient::RecordSelection(GraphicsContext& context,
+                                             const PhysicalOffset& paint_offset,
+                                             gfx::SelectionBound::Type type) {
   PhysicalRect drawing_rect = local_rect_;
   drawing_rect.Move(paint_offset);
   gfx::Rect paint_rect = ToPixelSnappedRect(drawing_rect);
 
-  // For the caret, the start and selection selection bounds are recorded as
-  // the same edges, with the type marked as CENTER.
-  PaintedSelectionBound start = {gfx::SelectionBound::Type::CENTER,
-                                 paint_rect.origin(), paint_rect.bottom_left(),
-                                 false};
+  // For the caret, the start and end selection bounds are recorded as
+  // the same edges, with the type marked as CENTER or HIDDEN.
+  PaintedSelectionBound start = {type, paint_rect.origin(),
+                                 paint_rect.bottom_left(), false};
   PaintedSelectionBound end = start;
 
   context.GetPaintController().RecordSelection(start, end);

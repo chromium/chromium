@@ -36,6 +36,8 @@ TouchHandleOrientation ToTouchHandleOrientation(
       return TouchHandleOrientation::RIGHT;
     case gfx::SelectionBound::CENTER:
       return TouchHandleOrientation::CENTER;
+    case gfx::SelectionBound::HIDDEN:
+      return TouchHandleOrientation::UNDEFINED;
     case gfx::SelectionBound::EMPTY:
       return TouchHandleOrientation::UNDEFINED;
   }
@@ -72,9 +74,7 @@ void TouchSelectionController::OnSelectionBoundsChanged(
   if (start == start_ && end_ == end)
     return;
 
-  if (start.type() == gfx::SelectionBound::EMPTY ||
-      end.type() == gfx::SelectionBound::EMPTY ||
-      !show_touch_handles_) {
+  if (!start.HasHandle() || !end.HasHandle() || !show_touch_handles_) {
     HideHandles();
     return;
   }
