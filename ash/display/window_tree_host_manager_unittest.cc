@@ -946,36 +946,67 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
                 secondary_display.id()));
 }
 
-// Tests for the crash during the deletion of the primary display when more
-// than one display is connected.
-// See https://crbug.com/1435564.
+class HostWindowObserver : aura::WindowObserver {
+ public:
+  explicit HostWindowObserver(const aura::Window* host_window)
+      : host_window_(host_window) {
+    // Host window need to be attached to a window tree host i.e part of window
+    // tree hierarchy.
+    DCHECK(host_window_->parent());
+  }
+
+  HostWindowObserver(const HostWindowObserver&) = delete;
+  HostWindowObserver& operator=(const HostWindowObserver&) = delete;
+
+  ~HostWindowObserver() override = default;
+
+  void OnWindowParentChanged(aura::Window* window,
+                             aura::Window* parent) override {
+    if (window == host_window_ && !parent) {
+      removed_from_host_ = true;
+    }
+  }
+
+  bool removed_from_host() const { return removed_from_host_; }
+
+ private:
+  bool removed_from_host_ = false;
+  const aura::Window* host_window_ = nullptr;
+};
+
+// Tests that RoundedDisplayProvider and its host window are correctly deleted
+// when we have only one display that display is being replaced i.e the primary
+// window tree host is temporarily stored and then attached to the new display.
 TEST_F(WindowTreeHostManagerRoundedDisplayTest,
-       UpdateProviderHostParentWhenDeletingPrimaryDisplay) {
+       RoundedDisplayProviderRemovedFromPrimaryWindowTreeHost) {
   WindowTreeHostManager* window_tree_host_manager =
       Shell::Get()->window_tree_host_manager();
-
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
 
+  display::Display primary_display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+  RoundedDisplayProvider* rounded_display_provider =
+      window_tree_host_manager->GetRoundedDisplayProvider(primary_display.id());
+  RoundedDisplayProviderTestApi provider_test(rounded_display_provider);
+
+  HostWindowObserver observer(provider_test.GetHostWindow());
+
   // First display has rounded corners.
-  display_manager()->OnNativeDisplaysChanged(
-      {first_display_info_,
-       display::ManagedDisplayInfo::CreateFromSpec("1+1-300x200")});
-
-  display::Display secondary_display =
-      display_manager_test.GetSecondaryDisplay();
-
-  // Make the second display as primary display.
-  window_tree_host_manager->SetPrimaryDisplayId(secondary_display.id());
-
-  // As we remove the second display (current primary display), we move the
-  // primary host (attached to the secondary display) to the first display and
-  // instead delete the host of the first display in
-  // `WindowTreeHostManager::OnDisplayRemoved()`.
-  // We need to update which WTH for the RoundedDisplayProvider before deleting
-  // the host.
   display_manager()->OnNativeDisplaysChanged({first_display_info_});
 
-  // As long nothing crashes we are good.
+  // Since the primary display was removed and it was the only display,
+  // the primary window tree was temporarily stored and then attached to the new
+  // display.
+  display_manager()->OnNativeDisplaysChanged(
+      {display::ManagedDisplayInfo::CreateFromSpec("1+1-300x200")});
+
+  primary_display = display::Screen::GetScreen()->GetPrimaryDisplay();
+
+  // Confirms that RoundedDisplayProvider was deleted and the host_window was
+  // removed from the root_window of the primary window tree host.
+  EXPECT_FALSE(window_tree_host_manager->GetRoundedDisplayProvider(
+      primary_display.id()));
+  EXPECT_FALSE(observer.removed_from_host());
 }
 
 TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {

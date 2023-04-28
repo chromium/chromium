@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -108,9 +107,8 @@ class ASH_EXPORT RoundedDisplayProvider {
   std::unique_ptr<RoundedDisplayGutterFactory> gutter_factory_;
 
   // Represents the surface on which the `host_` render the mask textures of the
-  // rounded-display corners. It gets destroyed when its window_tree_host
-  // is destroyed.
-  raw_ptr<aura::Window> host_window_ = nullptr;
+  // rounded-display corners.
+  std::unique_ptr<aura::Window> host_window_;
 
   // Responsible to render the mask textures by submitting compositor frames.
   std::unique_ptr<RoundedDisplayHost> host_;
