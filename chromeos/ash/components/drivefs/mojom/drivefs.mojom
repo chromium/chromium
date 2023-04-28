@@ -571,6 +571,7 @@ struct QueryParameters {
   enum QuerySource {
     kLocalOnly = 0,
     kCloudOnly = 1,
+    kLocalAndCloud = 2,
   };
 
   // Which field should be used for sorting the results.

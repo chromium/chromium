@@ -659,6 +659,7 @@ void PinManager::ListItems(const Id dir_id, Path dir_path) {
   params->page_size = 1000;
   params->my_drive_results_only = true;
   params->parent_stable_id = static_cast<int64_t>(dir_id);
+  params->query_source = mojom::QueryParameters::QuerySource::kLocalAndCloud;
 
   Query query;
   drivefs_->StartSearchQuery(query.BindNewPipeAndPassReceiver(),
