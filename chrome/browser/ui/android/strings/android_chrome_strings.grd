@@ -2683,6 +2683,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         If you’re seeing this frequently, try these <ph name="BEGIN_LINK">&lt;link&gt;</ph>suggestions<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
 
+      <!-- Can't launch dialog. -->
+      <message name="IDS_UPDATE_NEEDED" desc="The help message is displayed on launch if an update is required to function.">
+        Your device couldn’t open Chrome. To fix the issue, download the latest Chrome update from your app store.
+      </message>
+
       <!-- Web Notifications API -->
       <message name="IDS_NOTIFICATION_HIDDEN_TEXT" desc="Text shown in place of notification contents when the notification's contents have been hidden on a secure lockscreen [CHAR_LIMIT=32]">
         Contents hidden
