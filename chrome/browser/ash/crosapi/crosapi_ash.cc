@@ -45,6 +45,7 @@
 #include "chrome/browser/ash/crosapi/dlp_ash.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
+#include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
 #include "chrome/browser/ash/crosapi/emoji_picker_ash.h"
@@ -204,6 +205,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       dlp_ash_(std::make_unique<DlpAsh>()),
       document_scan_ash_(std::make_unique<DocumentScanAsh>()),
       download_controller_ash_(std::make_unique<DownloadControllerAsh>()),
+      download_status_updater_ash_(
+          std::make_unique<DownloadStatusUpdaterAsh>()),
       drive_integration_service_ash_(
           std::make_unique<DriveIntegrationServiceAsh>()),
       echo_private_ash_(std::make_unique<EchoPrivateAsh>()),
@@ -461,6 +464,11 @@ void CrosapiAsh::BindDocumentScan(
 void CrosapiAsh::BindDownloadController(
     mojo::PendingReceiver<mojom::DownloadController> receiver) {
   download_controller_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindDownloadStatusUpdater(
+    mojo::PendingReceiver<mojom::DownloadStatusUpdater> receiver) {
+  download_status_updater_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDriveIntegrationService(

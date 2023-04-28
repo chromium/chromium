@@ -43,6 +43,7 @@
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
+#include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/echo_private.mojom.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom.h"
@@ -317,6 +318,10 @@ LacrosService::LacrosService()
   ConstructRemote<
       crosapi::mojom::DownloadController, &Crosapi::BindDownloadController,
       Crosapi::MethodMinVersions::kBindDownloadControllerMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::DownloadStatusUpdater,
+      &Crosapi::BindDownloadStatusUpdater,
+      Crosapi::MethodMinVersions::kBindDownloadStatusUpdaterMinVersion>();
   ConstructRemote<
       crosapi::mojom::DriveIntegrationService,
       &crosapi::mojom::Crosapi::BindDriveIntegrationService,

@@ -33,6 +33,7 @@ import "chromeos/crosapi/mojom/digital_goods.mojom";
 import "chromeos/crosapi/mojom/dlp.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
 import "chromeos/crosapi/mojom/download_controller.mojom";
+import "chromeos/crosapi/mojom/download_status_updater.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/echo_private.mojom";
 import "chromeos/crosapi/mojom/emoji_picker.mojom";
@@ -137,8 +138,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 107
-// Next method id: 110
+// Next version: 108
+// Next method id: 111
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -301,6 +302,13 @@ interface Crosapi {
   // Added in M92.
   [MinVersion=28] BindDownloadController@33(
       pending_receiver<DownloadController> receiver);
+
+  // Binds the DownloadStatusUpdater interface, which allows Lacros download
+  // status updates to be passed into Ash Chrome for rendering in the
+  // appropriate System UI surface(s).
+  // Added in M115.
+  [MinVersion=107] BindDownloadStatusUpdater@110(
+      pending_receiver<DownloadStatusUpdater> receiver);
 
   // Binds the DriveIntegrationService interface for getting information about
   // the local Google Drive mount.

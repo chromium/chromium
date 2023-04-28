@@ -1,4 +1,7 @@
 file://components/download/OWNERS
 
 per-file download_request_limiter*=dominickn@chromium.org
+per-file download_status_updater_lacros*=chlily@chromium.org
+per-file download_status_updater_lacros*=dmblack@google.com
+per-file download_status-updater_lacros*=vakh@chromium.org
 per-file insecure_download_blocking*=jdeblasio@chromium.org

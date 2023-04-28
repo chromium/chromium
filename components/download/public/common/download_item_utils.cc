@@ -5,7 +5,6 @@
 #include "components/download/public/common/download_item_utils.h"
 
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
-#include "components/download/public/common/download_item.h"
 
 namespace download {
 namespace download_item_utils {
@@ -98,23 +97,6 @@ crosapi::mojom::InsecureDownloadStatus ConvertToMojoInsecureDownloadStatus(
   }
 }
 
-crosapi::mojom::DownloadState ConvertToMojoDownloadState(
-    DownloadItem::DownloadState value) {
-  switch (value) {
-    case DownloadItem::IN_PROGRESS:
-      return crosapi::mojom::DownloadState::kInProgress;
-    case DownloadItem::COMPLETE:
-      return crosapi::mojom::DownloadState::kComplete;
-    case DownloadItem::CANCELLED:
-      return crosapi::mojom::DownloadState::kCancelled;
-    case DownloadItem::INTERRUPTED:
-      return crosapi::mojom::DownloadState::kInterrupted;
-    case DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
-      return crosapi::mojom::DownloadState::kUnknown;
-  }
-}
-
 }  // namespace
 
 crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
@@ -144,6 +126,22 @@ crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
   download->insecure_download_status =
       ConvertToMojoInsecureDownloadStatus(item->GetInsecureDownloadStatus());
   return download;
+}
+
+crosapi::mojom::DownloadState ConvertToMojoDownloadState(
+    DownloadItem::DownloadState state) {
+  switch (state) {
+    case DownloadItem::IN_PROGRESS:
+      return crosapi::mojom::DownloadState::kInProgress;
+    case DownloadItem::COMPLETE:
+      return crosapi::mojom::DownloadState::kComplete;
+    case DownloadItem::CANCELLED:
+      return crosapi::mojom::DownloadState::kCancelled;
+    case DownloadItem::INTERRUPTED:
+      return crosapi::mojom::DownloadState::kInterrupted;
+    case DownloadItem::MAX_DOWNLOAD_STATE:
+      NOTREACHED_NORETURN();
+  }
 }
 
 }  // namespace download_item_utils

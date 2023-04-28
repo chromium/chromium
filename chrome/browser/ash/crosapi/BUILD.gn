@@ -106,6 +106,8 @@ source_set("crosapi") {
     "document_scan_ash.h",
     "download_controller_ash.cc",
     "download_controller_ash.h",
+    "download_status_updater_ash.cc",
+    "download_status_updater_ash.h",
     "drive_integration_service_ash.cc",
     "drive_integration_service_ash.h",
     "echo_private_ash.cc",

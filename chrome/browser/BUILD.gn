@@ -6222,7 +6222,6 @@ static_library("browser") {
 
   if (is_linux || is_chromeos_lacros) {
     sources += [
-      "download/download_status_updater_linux.cc",
       "first_run/upgrade_util_linux.cc",
       "first_run/upgrade_util_linux.h",
     ]
@@ -6234,6 +6233,7 @@ static_library("browser") {
 
     if (is_chromeos_lacros) {
       sources += [
+        "download/download_status_updater_lacros.cc",
         "icon_loader_chromeos.cc",
         "shell_integration_chromeos.cc",
         "upgrade_detector/get_installed_version_lacros.cc",
@@ -6242,6 +6242,7 @@ static_library("browser") {
       ]
     } else {
       sources += [
+        "download/download_status_updater_linux.cc",
         "icon_loader_auralinux.cc",
         "platform_util_linux.cc",
         "shell_integration_linux.cc",

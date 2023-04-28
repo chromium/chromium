@@ -1,0 +1,40 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/download_controller.mojom";
+
+// TODO(http://b/279831939): Add more renderable metadata.
+// Representation of a Lacros download's status to be passed into Ash Chrome
+// and rendered in the appropriate System UI surface(s).
+//
+// Next MinVersion: 1
+// Next ID: 2
+//
+[Stable, Uuid="d18b6479-e70d-44aa-b657-58ffff57735d"]
+struct DownloadStatus {
+
+  // The GUID for the underlying download which uniquely identifies the download
+  // during its lifetime.
+  string guid@0;
+
+  // The current state of the underlying download.
+  DownloadState state@1;
+
+};
+
+// The interface which allows Lacros download status updates to be passed into
+// Ash Chrome for rendering in the appropriate System UI surface(s).
+//
+// Next MinVersion: 1
+// Next ID: 1
+//
+[Stable, Uuid="2f06d2a1-7c81-4418-affe-bc821f43594e"]
+interface DownloadStatusUpdater {
+
+  // Invoked when `status` for a download should be updated.
+  Update@0(DownloadStatus status);
+
+};
