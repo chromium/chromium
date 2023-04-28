@@ -1361,6 +1361,9 @@ void WebFrameWidgetImpl::DidBeginMainFrame() {
   LocalFrame* root_frame = LocalRootImpl()->GetFrame();
   DCHECK(root_frame);
 
+  recordreplay::Assert(
+    "[RUN-1675-1826] WebFrameWidgetImpl::DidBeginMainFrame %d", !!root_frame->View());
+
   if (LocalFrameView* frame_view = root_frame->View())
     frame_view->RunPostLifecycleSteps();
   if (Page* page = root_frame->GetPage())

@@ -465,6 +465,7 @@ void ProxyMain::BeginMainFrame(
       begin_main_frame_state->active_sequence_trackers);
   if (blocking)
     commit_trace_.reset();
+  recordreplay::Assert("[RUN-1675-1826] ProxyMain::BeginMainFrame");
 }
 
 void ProxyMain::DidCompleteCommit(CommitTimestamps commit_timestamps) {
