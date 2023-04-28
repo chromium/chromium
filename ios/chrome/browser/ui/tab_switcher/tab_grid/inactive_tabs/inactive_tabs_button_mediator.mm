@@ -45,10 +45,10 @@ using ScopedWebStateListObservation =
 - (instancetype)initWithConsumer:(id<InactiveTabsInfoConsumer>)consumer
                     webStateList:(WebStateList*)webStateList
                      prefService:(PrefService*)prefService {
-  DCHECK(IsInactiveTabsEnabled());
-  DCHECK(consumer);
-  DCHECK(webStateList);
-  DCHECK(prefService);
+  CHECK(IsInactiveTabsAvailable());
+  CHECK(consumer);
+  CHECK(webStateList);
+  CHECK(prefService);
   self = [super init];
   if (self) {
     _consumer = consumer;

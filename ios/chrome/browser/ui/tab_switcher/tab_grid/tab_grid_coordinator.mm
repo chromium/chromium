@@ -801,7 +801,7 @@
     baseViewController.pinnedTabsDelegate = self.pinnedTabsMediator;
   }
 
-  if (IsInactiveTabsEnabled()) {
+  if (IsInactiveTabsAvailable()) {
     self.inactiveTabsButtonMediator = [[InactiveTabsButtonMediator alloc]
         initWithConsumer:baseViewController.regularTabsConsumer
             webStateList:_inactiveBrowser->GetWebStateList()
@@ -851,7 +851,7 @@
   self.baseViewController.incognitoTabsContextMenuProvider =
       self.incognitoTabContextMenuHelper;
 
-  if (IsInactiveTabsEnabled()) {
+  if (IsInactiveTabsAvailable()) {
     self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
         initWithBaseViewController:self.baseViewController
                            browser:_inactiveBrowser
