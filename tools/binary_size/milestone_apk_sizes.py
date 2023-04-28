@@ -213,6 +213,24 @@ def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
   _DumpCsv(metrics)
 
 
+def _CheckGnArgs(unsigned_prefix):
+  args = [_GSUTIL, 'cat', unsigned_prefix + '/arm/gn-args-derived.txt']
+  logging.warning(' '.join(args))
+  gn_args_data = subprocess.check_output(args, text=True)
+
+  def check_arg(name, value):
+    if f'{name} = {value}' not in gn_args_data:
+      if f'{name} =' not in gn_args_data:
+        sys.stderr.write(f'{name} is not in gn-args-derived.txt.\n')
+      else:
+        sys.stderr.write(f'{name}!={value} in gn-args-derived.txt.\n')
+      sys.stderr.write('To download: ' + ' '.join(args) + '\n')
+      sys.exit(1)
+
+  check_arg('is_on_release_branch', 'true')
+  check_arg('v8_enable_runtime_call_stats', 'false')
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--version', required=True, help='e.g.: "75.0.3770.143"')
@@ -227,6 +245,11 @@ def main():
 
   signed_prefix = posixpath.join(options.signed_bucket, options.version)
   unsigned_prefix = signed_prefix.replace('signed', 'unsigned')
+
+  # Ensure the binary size isn't inflated by is_on_release_branch=true not
+  # being set yet.
+  _CheckGnArgs(unsigned_prefix)
+
   with tempfile.TemporaryDirectory() as staging_dir:
     if options.keep_files:
       staging_dir = 'milestone_apk_sizes-staging'
