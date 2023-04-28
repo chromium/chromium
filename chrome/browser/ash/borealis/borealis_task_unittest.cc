@@ -38,26 +38,28 @@ class DiskManagerMock : public BorealisDiskManager {
   MOCK_METHOD(void,
               GetDiskInfo,
               (base::OnceCallback<
-                  void(Expected<GetDiskInfoResponse,
-                                Described<BorealisGetDiskInfoResult>>)>),
+                  void(base::expected<GetDiskInfoResponse,
+                                      Described<BorealisGetDiskInfoResult>>)>),
               ());
-  MOCK_METHOD(void,
-              RequestSpace,
-              (uint64_t,
-               base::OnceCallback<void(
-                   Expected<uint64_t, Described<BorealisResizeDiskResult>>)>),
-              ());
-  MOCK_METHOD(void,
-              ReleaseSpace,
-              (uint64_t,
-               base::OnceCallback<void(
-                   Expected<uint64_t, Described<BorealisResizeDiskResult>>)>),
-              ());
+  MOCK_METHOD(
+      void,
+      RequestSpace,
+      (uint64_t,
+       base::OnceCallback<void(
+           base::expected<uint64_t, Described<BorealisResizeDiskResult>>)>),
+      ());
+  MOCK_METHOD(
+      void,
+      ReleaseSpace,
+      (uint64_t,
+       base::OnceCallback<void(
+           base::expected<uint64_t, Described<BorealisResizeDiskResult>>)>),
+      ());
   MOCK_METHOD(void,
               SyncDiskSize,
               (base::OnceCallback<
-                  void(Expected<BorealisSyncDiskSizeResult,
-                                Described<BorealisSyncDiskSizeResult>>)>),
+                  void(base::expected<BorealisSyncDiskSizeResult,
+                                      Described<BorealisSyncDiskSizeResult>>)>),
               ());
 };
 
@@ -232,14 +234,13 @@ TEST_F(BorealisTasksTest, SyncBorealisDiskFailureIgnored) {
   EXPECT_CALL(*disk_mock, SyncDiskSize(_))
       .WillOnce(testing::Invoke(
           [](base::OnceCallback<void(
-                 Expected<BorealisSyncDiskSizeResult,
-                          Described<BorealisSyncDiskSizeResult>>)> callback) {
+                 base::expected<BorealisSyncDiskSizeResult,
+                                Described<BorealisSyncDiskSizeResult>>)>
+                 callback) {
             std::move(callback).Run(
-                Expected<BorealisSyncDiskSizeResult,
-                         Described<BorealisSyncDiskSizeResult>>::
-                    Unexpected(Described<BorealisSyncDiskSizeResult>(
-                        BorealisSyncDiskSizeResult::kFailedToGetDiskInfo,
-                        "error message")));
+                base::unexpected(Described<BorealisSyncDiskSizeResult>(
+                    BorealisSyncDiskSizeResult::kFailedToGetDiskInfo,
+                    "error message")));
           }));
 
   CallbackFactory callback_factory;
@@ -255,11 +256,12 @@ TEST_F(BorealisTasksTest, SyncBorealisDiskSucceeds) {
   EXPECT_CALL(*disk_mock, SyncDiskSize(_))
       .WillOnce(testing::Invoke(
           [](base::OnceCallback<void(
-                 Expected<BorealisSyncDiskSizeResult,
-                          Described<BorealisSyncDiskSizeResult>>)> callback) {
+                 base::expected<BorealisSyncDiskSizeResult,
+                                Described<BorealisSyncDiskSizeResult>>)>
+                 callback) {
             std::move(callback).Run(
-                Expected<BorealisSyncDiskSizeResult,
-                         Described<BorealisSyncDiskSizeResult>>(
+                base::expected<BorealisSyncDiskSizeResult,
+                               Described<BorealisSyncDiskSizeResult>>(
                     BorealisSyncDiskSizeResult::kNoActionNeeded));
           }));
 

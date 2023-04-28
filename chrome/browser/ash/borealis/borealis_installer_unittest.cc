@@ -328,9 +328,8 @@ TEST_F(BorealisInstallerTest, ReportsStartupFailureAsError) {
       .WillOnce(
           testing::Invoke([](BorealisContextManager::ResultCallback callback) {
             std::move(callback).Run(
-                BorealisContextManager::ContextOrFailure::Unexpected(
-                    Described<BorealisStartupResult>{
-                        BorealisStartupResult::kStartVmFailed, "Some Error"}));
+                base::unexpected(Described<BorealisStartupResult>{
+                    BorealisStartupResult::kStartVmFailed, "Some Error"}));
           }));
 
   EXPECT_CALL(*observer_, OnStateUpdated(InstallingState::kCheckingIfAllowed));

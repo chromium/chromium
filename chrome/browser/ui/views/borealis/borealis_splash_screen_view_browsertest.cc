@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager_mock.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager_test_helper.h"
-#include "chrome/browser/ash/borealis/infra/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -33,11 +32,8 @@ namespace {
 class FakeBorealisContextManager : public BorealisContextManager {
  public:
   void StartBorealis(ResultCallback callback) override {
-    std::move(callback).Run(
-        BorealisContextManager::ContextOrFailure::Unexpected(
-            Described<BorealisStartupResult>(
-                BorealisStartupResult::kMountFailed,
-                "failed on purpose for testing")));
+    std::move(callback).Run(base::unexpected(Described<BorealisStartupResult>(
+        BorealisStartupResult::kMountFailed, "failed on purpose for testing")));
   }
 
   bool IsRunning() override { return false; }

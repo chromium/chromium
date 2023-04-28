@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_DISK_MANAGER_H_
 
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/borealis/infra/described.h"
-#include "chrome/browser/ash/borealis/infra/expected.h"
 
 namespace borealis {
 
@@ -38,15 +38,15 @@ class BorealisDiskManager {
   // information about how the disk could be resized or an error.
   virtual void GetDiskInfo(
       base::OnceCallback<void(
-          Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>)>
-          callback) = 0;
+          base::expected<GetDiskInfoResponse,
+                         Described<BorealisGetDiskInfoResult>>)> callback) = 0;
 
   // Attempt to expand the VM disk by the number of bytes specified. Returns the
   // actual size increase in bytes, or an error.
   virtual void RequestSpace(
       uint64_t bytes_requested,
       base::OnceCallback<
-          void(Expected<uint64_t, Described<BorealisResizeDiskResult>>)>
+          void(base::expected<uint64_t, Described<BorealisResizeDiskResult>>)>
           callback) = 0;
 
   // Attempt to shrink the VM disk by the number of bytes specified. Returns the
@@ -54,7 +54,7 @@ class BorealisDiskManager {
   virtual void ReleaseSpace(
       uint64_t bytes_to_release,
       base::OnceCallback<
-          void(Expected<uint64_t, Described<BorealisResizeDiskResult>>)>
+          void(base::expected<uint64_t, Described<BorealisResizeDiskResult>>)>
           callback) = 0;
 
   // Assesses the disk and resizes it so that it fits within the desired
@@ -65,9 +65,9 @@ class BorealisDiskManager {
   // it, as successes. It will return an enum on success or an enum, with an
   // error string, on failure.
   virtual void SyncDiskSize(
-      base::OnceCallback<void(Expected<BorealisSyncDiskSizeResult,
-                                       Described<BorealisSyncDiskSizeResult>>)>
-          callback) = 0;
+      base::OnceCallback<void(
+          base::expected<BorealisSyncDiskSizeResult,
+                         Described<BorealisSyncDiskSizeResult>>)> callback) = 0;
 };
 
 }  // namespace borealis

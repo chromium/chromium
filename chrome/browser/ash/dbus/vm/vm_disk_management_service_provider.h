@@ -10,13 +10,13 @@
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
-using ExpectedGetDiskInfoResponse = borealis::Expected<
-    borealis::BorealisDiskManager::GetDiskInfoResponse,
-    borealis::Described<borealis::BorealisGetDiskInfoResult>>;
+using ExpectedGetDiskInfoResponse =
+    base::expected<borealis::BorealisDiskManager::GetDiskInfoResponse,
+                   borealis::Described<borealis::BorealisGetDiskInfoResult>>;
 
 using ExpectedRequestDeltaResponse =
-    borealis::Expected<uint64_t,
-                       borealis::Described<borealis::BorealisResizeDiskResult>>;
+    base::expected<uint64_t,
+                   borealis::Described<borealis::BorealisResizeDiskResult>>;
 
 namespace dbus {
 class MethodCall;

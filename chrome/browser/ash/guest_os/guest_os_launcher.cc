@@ -42,16 +42,16 @@ void LaunchBorealis(Profile* profile, LaunchCallback callback) {
           [](LaunchCallback callback,
              borealis::BorealisContextManager::ContextOrFailure
                  context_or_failure) {
-            if (!context_or_failure) {
+            if (!context_or_failure.has_value()) {
               std::stringstream error_msg;
               error_msg << "Failed to launch ("
-                        << static_cast<int>(context_or_failure.Error().error())
-                        << "): " << context_or_failure.Error().description();
+                        << static_cast<int>(context_or_failure.error().error())
+                        << "): " << context_or_failure.error().description();
               std::move(callback).Run(base::unexpected(error_msg.str()));
               return;
             }
             std::move(callback).Run(Success(
-                context_or_failure.Value()->vm_name(), /*container_name=*/""));
+                context_or_failure.value()->vm_name(), /*container_name=*/""));
           },
           std::move(callback)));
 }

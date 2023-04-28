@@ -162,8 +162,8 @@ class SyncBorealisDisk : public BorealisTask {
  private:
   void OnSyncBorealisDisk(
       BorealisContext* context,
-      Expected<BorealisSyncDiskSizeResult,
-               Described<BorealisSyncDiskSizeResult>> result);
+      base::expected<BorealisSyncDiskSizeResult,
+                     Described<BorealisSyncDiskSizeResult>> result);
   base::WeakPtrFactory<SyncBorealisDisk> weak_factory_{this};
 };
 

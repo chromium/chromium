@@ -10,10 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/infra/described.h"
-#include "chrome/browser/ash/borealis/infra/expected.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 
 class Profile;
@@ -65,11 +65,12 @@ class BorealisInstallerImpl : public BorealisInstaller {
   void UpdateInstallingState(InstallingState installing_state);
 
   void OnInstallComplete(
-      Expected<std::unique_ptr<InstallInfo>, Described<BorealisInstallResult>>
-          result_or_error);
+      base::expected<std::unique_ptr<InstallInfo>,
+                     Described<BorealisInstallResult>> result_or_error);
   void OnUninstallComplete(
       base::OnceCallback<void(BorealisUninstallResult)> on_uninstall_callback,
-      Expected<std::unique_ptr<InstallInfo>, BorealisUninstallResult> result);
+      base::expected<std::unique_ptr<InstallInfo>, BorealisUninstallResult>
+          result);
 
   raw_ptr<Profile, ExperimentalAsh> profile_;
   base::ObserverList<Observer> observers_;

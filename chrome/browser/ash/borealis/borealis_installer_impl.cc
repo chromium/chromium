@@ -171,14 +171,14 @@ class BorealisInstallerImpl::Installation
   }
 
   void OnBorealisStarted(BorealisContextManager::ContextOrFailure result) {
-    if (result) {
+    if (result.has_value()) {
       WaitForMainApp();
       return;
     }
     std::stringstream ss;
     ss << "Failed to start borealis (code "
-       << static_cast<int>(result.Error().error())
-       << "): " << result.Error().description();
+       << static_cast<int>(result.error().error())
+       << "): " << result.error().description();
     Fail({BorealisInstallResult::kStartupFailed, ss.str()});
   }
 
@@ -348,14 +348,14 @@ bool BorealisInstallerImpl::IsProcessing() {
 void BorealisInstallerImpl::Start() {
   RecordBorealisInstallNumAttemptsHistogram();
   if (IsProcessing()) {
-    OnInstallComplete(Installation::Result::Unexpected(Installation::ErrorState{
+    OnInstallComplete(base::unexpected(Installation::ErrorState{
         BorealisInstallResult::kBorealisInstallInProgress,
         "Installation of Borealis is already in progress"}));
     return;
   }
 
   if (content::GetNetworkConnectionTracker()->IsOffline()) {
-    OnInstallComplete(Installation::Result::Unexpected(
+    OnInstallComplete(base::unexpected(
         Installation::ErrorState{BorealisInstallResult::kOffline,
                                  "Can not install Borealis while offline"}));
     return;
@@ -479,11 +479,11 @@ void BorealisInstallerImpl::UpdateInstallingState(
 }
 
 void BorealisInstallerImpl::OnInstallComplete(
-    Expected<std::unique_ptr<InstallInfo>, Described<BorealisInstallResult>>
-        result_or_error) {
-  BorealisInstallResult result = result_or_error
+    base::expected<std::unique_ptr<InstallInfo>,
+                   Described<BorealisInstallResult>> result_or_error) {
+  BorealisInstallResult result = result_or_error.has_value()
                                      ? BorealisInstallResult::kSuccess
-                                     : result_or_error.Error().error();
+                                     : result_or_error.error().error();
   // If another installation is in progress, we don't want to reset any states
   // and interfere with the process. When that process completes, it will reset
   // these states.
@@ -502,18 +502,21 @@ void BorealisInstallerImpl::OnInstallComplete(
     RecordBorealisInstallResultHistogram(result);
   }
   for (auto& observer : observers_) {
-    observer.OnInstallationEnded(
-        result, result_or_error ? "" : result_or_error.Error().description());
+    observer.OnInstallationEnded(result,
+                                 result_or_error.has_value()
+                                     ? ""
+                                     : result_or_error.error().description());
   }
 }
 
 void BorealisInstallerImpl::OnUninstallComplete(
     base::OnceCallback<void(BorealisUninstallResult)> on_uninstall_callback,
-    Expected<std::unique_ptr<InstallInfo>, BorealisUninstallResult> result) {
+    base::expected<std::unique_ptr<InstallInfo>, BorealisUninstallResult>
+        result) {
   in_progress_uninstallation_.reset();
   BorealisUninstallResult uninstall_result = BorealisUninstallResult::kSuccess;
-  if (!result) {
-    uninstall_result = result.Error();
+  if (!result.has_value()) {
+    uninstall_result = result.error();
   }
   RecordBorealisUninstallResultHistogram(uninstall_result);
   std::move(on_uninstall_callback).Run(uninstall_result);

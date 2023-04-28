@@ -24,23 +24,25 @@ class BorealisDiskManagerDispatcher {
   virtual void GetDiskInfo(
       const std::string& origin_vm_name,
       const std::string& origin_container_name,
-      base::OnceCallback<void(Expected<BorealisDiskManager::GetDiskInfoResponse,
-                                       Described<BorealisGetDiskInfoResult>>)>
-          callback);
+      base::OnceCallback<
+          void(base::expected<BorealisDiskManager::GetDiskInfoResponse,
+                              Described<BorealisGetDiskInfoResult>>)> callback);
 
   virtual void RequestSpace(
       const std::string& origin_vm_name,
       const std::string& origin_container_name,
       uint64_t bytes_requested,
-      base::OnceCallback<void(
-          Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback);
+      base::OnceCallback<
+          void(base::expected<uint64_t, Described<BorealisResizeDiskResult>>)>
+          callback);
 
   virtual void ReleaseSpace(
       const std::string& origin_vm_name,
       const std::string& origin_container_name,
       uint64_t bytes_to_release,
-      base::OnceCallback<void(
-          Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback);
+      base::OnceCallback<
+          void(base::expected<uint64_t, Described<BorealisResizeDiskResult>>)>
+          callback);
 
   virtual void SetDiskManagerDelegate(BorealisDiskManager* disk_manager);
   virtual void RemoveDiskManagerDelegate(BorealisDiskManager* disk_manager);
