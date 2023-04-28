@@ -59,13 +59,25 @@ class MockSodaInstaller : public speech::SodaInstaller {
   MockSodaInstaller& operator=(const MockSodaInstaller&) = delete;
   ~MockSodaInstaller() override = default;
 
-  MOCK_CONST_METHOD0(GetSodaBinaryPath, base::FilePath());
-  MOCK_CONST_METHOD1(GetLanguagePath, base::FilePath(const std::string&));
-  MOCK_METHOD2(InstallLanguage, void(const std::string&, PrefService*));
-  MOCK_METHOD2(UninstallLanguage, void(const std::string&, PrefService*));
-  MOCK_CONST_METHOD0(GetAvailableLanguages, std::vector<std::string>());
-  MOCK_METHOD1(InstallSoda, void(PrefService*));
-  MOCK_METHOD1(UninstallSoda, void(PrefService*));
+  MOCK_METHOD(base::FilePath, GetSodaBinaryPath, (), (const, override));
+  MOCK_METHOD(base::FilePath,
+              GetLanguagePath,
+              (const std::string&),
+              (const, override));
+  MOCK_METHOD(void,
+              InstallLanguage,
+              (const std::string&, PrefService*),
+              (override));
+  MOCK_METHOD(void,
+              UninstallLanguage,
+              (const std::string&, PrefService*),
+              (override));
+  MOCK_METHOD(std::vector<std::string>,
+              GetAvailableLanguages,
+              (),
+              (const, override));
+  MOCK_METHOD(void, InstallSoda, (PrefService*), (override));
+  MOCK_METHOD(void, UninstallSoda, (PrefService*), (override));
 };
 
 class MockLocaleUpdateController : public ash::LocaleUpdateController {
@@ -76,14 +88,16 @@ class MockLocaleUpdateController : public ash::LocaleUpdateController {
       delete;
   ~MockLocaleUpdateController() override = default;
 
-  MOCK_METHOD0(OnLocaleChanged, void());
-  MOCK_METHOD4(ConfirmLocaleChange,
-               void(const std::string&,
-                    const std::string&,
-                    const std::string&,
-                    LocaleChangeConfirmationCallback));
-  MOCK_METHOD1(AddObserver, void(ash::LocaleChangeObserver*));
-  MOCK_METHOD1(RemoveObserver, void(ash::LocaleChangeObserver*));
+  MOCK_METHOD(void, OnLocaleChanged, (), (override));
+  MOCK_METHOD(void,
+              ConfirmLocaleChange,
+              (const std::string&,
+               const std::string&,
+               const std::string&,
+               LocaleChangeConfirmationCallback),
+              (override));
+  MOCK_METHOD(void, AddObserver, (ash::LocaleChangeObserver*), (override));
+  MOCK_METHOD(void, RemoveObserver, (ash::LocaleChangeObserver*), (override));
 };
 
 struct ProjectorClientTestScenario {

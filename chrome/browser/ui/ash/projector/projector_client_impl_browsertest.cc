@@ -96,11 +96,13 @@ class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
       const NewScreencastPrecondition& condition) override {
     std::move(quit_closure_).Run();
   }
-  MOCK_METHOD1(OnScreencastsPendingStatusChanged,
-               void(const PendingScreencastContainerSet&));
-  MOCK_METHOD1(OnSodaProgress, void(int));
-  MOCK_METHOD0(OnSodaError, void());
-  MOCK_METHOD0(OnSodaInstalled, void());
+  MOCK_METHOD(void,
+              OnScreencastsPendingStatusChanged,
+              (const PendingScreencastContainerSet&),
+              (override));
+  MOCK_METHOD(void, OnSodaProgress, (int), (override));
+  MOCK_METHOD(void, OnSodaError, (), (override));
+  MOCK_METHOD(void, OnSodaInstalled, (), (override));
 
   void SetDriveEnabled(bool enabled_drive, base::OnceClosure quit_closure) {
     quit_closure_ = std::move(quit_closure);

@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -54,20 +55,16 @@ std::unique_ptr<aura::Window> CreateLacrosWindow(
   return window;
 }
 
-class MockDesksClient : public DesksClient {
- public:
-  MOCK_CONST_METHOD1(GetAppIdForLacrosWindow,
-                     absl::optional<std::string>(aura::Window* window));
-};
-
 class MockBrowserManager : public crosapi::BrowserManager {
  public:
   MockBrowserManager()
       : BrowserManager(std::unique_ptr<crosapi::BrowserLoader>(), nullptr) {}
-  MOCK_CONST_METHOD0(IsRunning, bool());
-  MOCK_METHOD2(GetBrowserInformation,
-               void(const std::string&,
-                    crosapi::BrowserManager::GetBrowserInformationCallback));
+  MOCK_METHOD(bool, IsRunning, (), (const, override));
+  MOCK_METHOD(void,
+              GetBrowserInformation,
+              (const std::string&,
+               crosapi::BrowserManager::GetBrowserInformationCallback),
+              (override));
 };
 
 void ReturnEmptyGetBrowserInformation(
@@ -128,7 +125,6 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
   }
 
   MockBrowserManager& mock_browser_manager() { return mock_browser_manager_; }
-  MockDesksClient& mock_desks_client() { return mock_desks_client_; }
 
   full_restore::FullRestoreSaveHandler* GetSaveHandler(
       bool start_save_timer = true) {
@@ -154,7 +150,6 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 
   testing::NiceMock<MockBrowserManager> mock_browser_manager_;
-  testing::NiceMock<MockDesksClient> mock_desks_client_;
 
   std::unique_ptr<ChromeSavedDeskDelegate> chrome_saved_desk_delegate_;
 
@@ -162,21 +157,15 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
 };
 
 TEST_F(ChromeSavedDeskDelegateTest, NullWindowReturnsEmptyAppLaunchData) {
-  base::RunLoop loop;
+  base::test::TestFuture<std::unique_ptr<app_restore::AppLaunchInfo>> future;
   chrome_saved_desk_delegate()->GetAppLaunchDataForSavedDesk(
-      /*window=*/nullptr,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
-            EXPECT_FALSE(app_launch_info);
-            loop.Quit();
-          }));
-  loop.Run();
+      /*window=*/nullptr, future.GetCallback());
+  auto app_launch_info = future.Take();
+  EXPECT_FALSE(app_launch_info);
 }
 
 TEST_F(ChromeSavedDeskDelegateTest,
        EmptyLacrosWindowInfoReturnsEmptyAppLaunchData) {
-  ASSERT_EQ(&mock_desks_client(), DesksClient::Get());
-
   std::unique_ptr<aura::Window> window =
       CreateLacrosWindow(base::NumberToString(kLacrosWindowId));
 
@@ -190,13 +179,9 @@ TEST_F(ChromeSavedDeskDelegateTest,
 
   task_environment().RunUntilIdle();
 
-  base::RunLoop loop;
+  base::test::TestFuture<std::unique_ptr<app_restore::AppLaunchInfo>> future;
   chrome_saved_desk_delegate()->GetAppLaunchDataForSavedDesk(
-      window.get(),
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
-            EXPECT_FALSE(app_launch_info);
-            loop.Quit();
-          }));
-  loop.Run();
+      window.get(), future.GetCallback());
+  auto app_launch_info = future.Take();
+  EXPECT_FALSE(app_launch_info);
 }
