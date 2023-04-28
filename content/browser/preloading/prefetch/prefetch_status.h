@@ -161,8 +161,12 @@ enum class PrefetchStatus {
   // prefetch.
   kPrefetchFailedIneligibleRedirect = 44,
 
+  // The prefetch was not made because prefetches exceeded the limit per
+  // page.
+  kPrefetchFailedPerPageLimitExceeded = 45,
+
   // The max value of the PrefetchStatus. Update this when new enums are added.
-  kMaxValue = kPrefetchFailedIneligibleRedirect,
+  kMaxValue = kPrefetchFailedPerPageLimitExceeded,
 };
 
 }  // namespace content

@@ -2531,10 +2531,10 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics3 =
       GetMetricsForMostRecentNavigation();
   ASSERT_TRUE(serving_page_metrics3);
-  EXPECT_TRUE(serving_page_metrics3->prefetch_status);
-  EXPECT_EQ(serving_page_metrics3->prefetch_status.value(),
-            static_cast<int>(PrefetchStatus::kPrefetchNotStarted));
-  EXPECT_TRUE(serving_page_metrics3->required_private_prefetch_proxy);
+  // The prefetch attempt that exceeds the limit is just rejected with no
+  // chance to update PrefetchServingPageMetrics.
+  EXPECT_FALSE(serving_page_metrics3->prefetch_status);
+  EXPECT_FALSE(serving_page_metrics3->required_private_prefetch_proxy);
   EXPECT_TRUE(serving_page_metrics3->same_tab_as_prefetching_tab);
   EXPECT_FALSE(serving_page_metrics3->prefetch_header_latency);
 
@@ -2571,9 +2571,10 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
              PreloadingEligibility::kEligible,
-             PreloadingHoldbackStatus::kUnspecified,
-             PreloadingTriggeringOutcome::kUnspecified,
-             PreloadingFailureReason::kUnspecified,
+             PreloadingHoldbackStatus::kAllowed,
+             PreloadingTriggeringOutcome::kFailure,
+             ToPreloadingFailureReason(
+                 content::PrefetchStatus::kPrefetchFailedPerPageLimitExceeded),
              /*accurate=*/false)};
     EXPECT_THAT(actual_attempts,
                 testing::UnorderedElementsAreArray(expected_attempts))

@@ -176,6 +176,7 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchFailedMIMENotSupported:
       case PrefetchStatus::kPrefetchFailedInvalidRedirect:
       case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
+      case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
         if (initiator_devtools_navigation_token.has_value()) {
           devtools_instrumentation::DidUpdatePrefetchStatus(
               ftn, initiator_devtools_navigation_token.value(), url,

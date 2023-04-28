@@ -123,6 +123,7 @@ bool ShouldConsiderDecoyRequestForStatus(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchAllowed:
     case PrefetchStatus::kPrefetchFailedInvalidRedirect:
     case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
+    case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
       // These statuses should not be returned by the eligibility checks, and
       // thus not be passed in here.
       NOTREACHED();
@@ -722,19 +723,7 @@ base::WeakPtr<PrefetchContainer> PrefetchService::PopNextPrefetchContainer() {
       prefetch_queue_.begin(), prefetch_queue_.end(),
       [&](const base::WeakPtr<PrefetchContainer>& prefetch_container) {
         // Remove all prefetches from queue that no longer exist.
-        if (!prefetch_container)
-          return true;
-
-        // When there is a limit on the number of prefetches per page (i.e.
-        // |PrefetchServiceMaximumNumberOfPrefetchesPerPage| is not nullopt),
-        // remove prefetches from pages that have met or exceeded the limit.
-        if (!PrefetchServiceMaximumNumberOfPrefetchesPerPage())
-          return false;
-
-        DCHECK(prefetch_container->GetPrefetchDocumentManager());
-        return prefetch_container->GetPrefetchDocumentManager()
-                   ->GetNumberOfPrefetchRequestAttempted() >=
-               PrefetchServiceMaximumNumberOfPrefetchesPerPage().value();
+        return !prefetch_container;
       });
   prefetch_queue_.erase(new_end, prefetch_queue_.end());
 
@@ -763,11 +752,6 @@ base::WeakPtr<PrefetchContainer> PrefetchService::PopNextPrefetchContainer() {
 
   base::WeakPtr<PrefetchContainer> next_prefetch_container = *prefetch_iter;
   prefetch_queue_.erase(prefetch_iter);
-
-  DCHECK(next_prefetch_container->GetPrefetchDocumentManager());
-  next_prefetch_container->GetPrefetchDocumentManager()
-      ->OnPrefetchRequestAttempted();
-
   return next_prefetch_container;
 }
 
@@ -853,6 +837,20 @@ void PrefetchService::StartSinglePrefetch(
   }
 
   TakeOwnershipOfPrefetch(prefetch_container);
+
+  // If prefetch attempts exceed the limit per page, rejects new attempts.
+  if (prefetch_container->GetPrefetchDocumentManager()
+          ->GetNumberOfPrefetchRequestAttempted() >=
+      PrefetchServiceMaximumNumberOfPrefetchesPerPage().value_or(
+          std::numeric_limits<int>::max())) {
+    prefetch_container->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchFailedPerPageLimitExceeded);
+    ResetPrefetch(prefetch_container);
+    return;
+  }
+
+  prefetch_container->GetPrefetchDocumentManager()
+      ->OnPrefetchRequestAttempted();
 
   if (!prefetch_container->IsDecoy()) {
     // The status is updated to be successful or failed when it finishes.

@@ -83346,6 +83346,9 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
     The prefetch was redirect and failed, because the redirect URL was not
     eligible to be prefetched.
   </int>
+  <int value="45" label="Prefetch Failed: Per Page Limit Exceeded">
+    The prefetch was eligible but rejected due to the per-page limit exceeded.
+  </int>
 </enum>
 
 <enum name="PrefetchRedirect">
