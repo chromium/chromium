@@ -47,7 +47,7 @@ class LocalDeviceDataProviderImpl : public LocalDeviceDataProvider {
   // just the device type.
   std::string GetDeviceName() const;
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  const raw_ptr<PrefService> pref_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
