@@ -153,13 +153,6 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   // |window_|'s bounds change.
   void UpdateWindowDimensionsType();
 
-  // TODO(minch): Do not actually scale up the item to get the bounds.
-  // http://crbug.com/876567.
-  // Returns the bounds of the selected item, which will be scaled up a little
-  // bit and header view will be hidden after being selected. Note, the item
-  // will be restored back after scaled up.
-  gfx::Rect GetBoundsOfSelectedItem();
-
   // Increases the bounds of the dragged item.
   void ScaleUpSelectedItem(OverviewAnimationType animation_type);
 

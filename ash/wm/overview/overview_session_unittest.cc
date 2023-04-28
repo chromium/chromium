@@ -238,7 +238,8 @@ TEST_P(OverviewSessionTest, CloseButtonDisabledOnDrag) {
 
   // Drag `window1` in overview to trigger drag animations.
   GetEventGenerator()->PressTouchId(
-      /*touch_id=*/0, item1->GetBoundsOfSelectedItem().CenterPoint());
+      /*touch_id=*/0,
+      gfx::ToRoundedPoint(item1->GetTransformedBounds().CenterPoint()));
   GetEventGenerator()->MoveTouchIdBy(/*touch_id=*/0, -100, 0);
 
   // Make sure the drag event triggered the fade animations.
@@ -298,7 +299,8 @@ TEST_P(OverviewSessionTest, CloseButtonEnabledOnSnap) {
   // Snap `window1` to the left side of the screen while in
   // overview.
   GetEventGenerator()->PressTouchId(
-      /*touch_id=*/0, item1->GetBoundsOfSelectedItem().CenterPoint());
+      /*touch_id=*/0,
+      gfx::ToRoundedPoint(item1->GetTransformedBounds().CenterPoint()));
 
   GetEventGenerator()->MoveTouchId(gfx::Point(0, 0), /*touch_id=*/0);
 

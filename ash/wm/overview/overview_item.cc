@@ -664,14 +664,6 @@ void OverviewItem::UpdateWindowDimensionsType() {
   overview_item_view_->SetBackdropVisibility(show_backdrop);
 }
 
-gfx::Rect OverviewItem::GetBoundsOfSelectedItem() {
-  gfx::RectF original_bounds = target_bounds();
-  ScaleUpSelectedItem(OVERVIEW_ANIMATION_NONE);
-  gfx::RectF selected_bounds = transform_window_.GetTransformedBounds();
-  SetBounds(original_bounds, OVERVIEW_ANIMATION_NONE);
-  return ToStableSizeRoundedRect(selected_bounds);
-}
-
 void OverviewItem::ScaleUpSelectedItem(OverviewAnimationType animation_type) {
   gfx::RectF scaled_bounds = target_bounds();
   scaled_bounds.Inset(

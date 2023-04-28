@@ -376,9 +376,8 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
     OverviewItem* item2 = GetOverviewItemForWindow(window2);
     auto* event_generator = GetEventGenerator();
     event_generator->MoveMouseTo(
-        item2->GetBoundsOfSelectedItem().CenterPoint());
-    event_generator->PressLeftButton();
-    event_generator->ReleaseLeftButton();
+        gfx::ToRoundedPoint(item2->GetTransformedBounds().CenterPoint()));
+    event_generator->ClickLeftButton();
     WaitForOverviewExitAnimation();
     EXPECT_EQ(split_view_controller()->secondary_window(), window2);
 
@@ -689,8 +688,7 @@ TEST_F(SnapGroupEntryPointArm1Test, ExpandedMenuViewTest) {
   EXPECT_TRUE(update_secondary_window_button());
   EXPECT_TRUE(unlock_button());
 
-  event_generator->PressLeftButton();
-  event_generator->ReleaseLeftButton();
+  event_generator->ClickLeftButton();
   EXPECT_FALSE(snap_group_expanded_menu_widget());
   EXPECT_FALSE(snap_group_expanded_menu_view());
 }
@@ -746,9 +744,9 @@ TEST_F(SnapGroupEntryPointArm1Test, UpdateWindowButtonTest) {
   // be formed.
   OverviewItem* item3 = GetOverviewItemForWindow(w3.get());
   auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(item3->GetBoundsOfSelectedItem().CenterPoint());
-  event_generator->PressLeftButton();
-  event_generator->ReleaseLeftButton();
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(item3->GetTransformedBounds().CenterPoint()));
+  event_generator->ClickLeftButton();
   WaitForOverviewExitAnimation();
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(split_view_controller()->state(),
@@ -776,9 +774,9 @@ TEST_F(SnapGroupEntryPointArm1Test, UpdateWindowButtonTest) {
   // Do another update for the snap group by selecting another candidate from
   // the overview session and verify that the snap group has been updated.
   OverviewItem* item4 = GetOverviewItemForWindow(w4.get());
-  event_generator->MoveMouseTo(item4->GetBoundsOfSelectedItem().CenterPoint());
-  event_generator->PressLeftButton();
-  event_generator->ReleaseLeftButton();
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(item4->GetTransformedBounds().CenterPoint()));
+  event_generator->ClickLeftButton();
   WaitForOverviewExitAnimation();
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(split_view_controller()->state(),

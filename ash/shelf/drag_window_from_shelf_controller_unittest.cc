@@ -1318,13 +1318,12 @@ TEST_F(DragWindowFromShelfControllerTest,
 
   OverviewItem* overview_item = overview_grid->window_list()[0].get();
 
-  // Click on |overview_item| to exit overview mode and show windows.
-  const gfx::Point view_center =
-      overview_item->GetBoundsOfSelectedItem().CenterPoint();
-
+  // Press on `overview_item` to exit overview mode and show windows.
   auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(view_center);
-  event_generator->ClickLeftButton();
+  event_generator->set_current_screen_location(
+      gfx::ToRoundedPoint(overview_item->GetTransformedBounds().CenterPoint()));
+  event_generator->PressTouch();
+  event_generator->ReleaseTouch();
   ASSERT_FALSE(overview_controller->InOverviewSession());
 
   // Both transient child and parent windows should become visible.
