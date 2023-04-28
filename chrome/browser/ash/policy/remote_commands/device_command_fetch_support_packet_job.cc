@@ -55,9 +55,7 @@ constexpr char kRequestedPiiTypesKey[] = "requestedPiiTypes";
 constexpr char kRequesterId[] = "requesterMetadata";
 
 // JSON keys and values used for creating the upload metadata to File Storage
-// Server (go/crosman-file-storage-server).
-// TODO(b/278856041): Add link to File Storage Server documentation about the
-// expected metadata format.
+// Server (go/crosman_fss_action#scotty-upload-agent).
 constexpr char kFileTypeKey[] = "File-Type";
 constexpr char kSupportFileType[] = "support_file";
 constexpr char kCommandIdKey[] = "Command-ID";
@@ -138,6 +136,8 @@ std::string ErrorsToString(const std::set<SupportToolError>& errors) {
 // Returns the upload_parameters string for LogUploadEvent. This will be used as
 // request metadata for the log upload request to the File Storage Server.
 // Contains File-Type, Command-ID and Filename fields.
+// The details of metadata format can be found in
+// go/crosman_fss_action#scotty-upload-agent.
 std::string GetUploadParameters(
     const base::FilePath& filename,
     policy::RemoteCommandJob::UniqueIDType command_id) {
