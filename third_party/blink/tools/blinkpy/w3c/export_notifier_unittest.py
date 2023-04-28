@@ -206,10 +206,11 @@ class ExportNotifierTest(LoggingTestCase):
         self.notifier.process_failing_prs(gerrit_dict)
 
         self.assertEqual(self.notifier.gerrit.cls_queried, ['abc'])
-        self.assertEqual(self.notifier.gerrit.request_posted,
-                         [('/a/changes/abc/revisions/current/review', {
-                             'message': expected
-                         })])
+        self.assertEqual(
+            self.notifier.gerrit.request_posted,
+            [('/a/changes/chromium%2Fsrc~main~abc/revisions/current/review', {
+                'message': expected
+            })])
 
     def test_process_failing_prs_has_commented(self):
         self.notifier.dry_run = False
@@ -276,10 +277,11 @@ class ExportNotifierTest(LoggingTestCase):
         self.notifier.process_failing_prs(gerrit_dict)
 
         self.assertEqual(self.notifier.gerrit.cls_queried, ['abc'])
-        self.assertEqual(self.notifier.gerrit.request_posted,
-                         [('/a/changes/abc/revisions/current/review', {
-                             'message': expected
-                         })])
+        self.assertEqual(
+            self.notifier.gerrit.request_posted,
+            [('/a/changes/chromium%2Fsrc~main~abc/revisions/current/review', {
+                'message': expected
+            })])
 
     def test_process_failing_prs_raise_gerrit_error(self):
         self.notifier.dry_run = False
@@ -361,10 +363,11 @@ class ExportNotifierTest(LoggingTestCase):
             'get_branch_check_runs',
         ])
         self.assertEqual(self.notifier.gerrit.cls_queried, ['decafbad'])
-        self.assertEqual(self.notifier.gerrit.request_posted,
-                         [('/a/changes/decafbad/revisions/current/review', {
-                             'message': expected
-                         })])
+        self.assertEqual(self.notifier.gerrit.request_posted, [(
+            '/a/changes/chromium%2Fsrc~main~decafbad/revisions/current/review',
+            {
+                'message': expected
+            })])
 
     def generate_notifier_comment(self,
                                   pr_number,
