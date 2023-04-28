@@ -40,7 +40,6 @@ class AffiliatedCloudPolicyInvalidator;
 class AffiliatedInvalidationServiceProvider;
 class AffiliatedRemoteCommandsInvalidator;
 class BluetoothPolicyHandler;
-class DeviceActiveDirectoryPolicyManager;
 class DeviceCloudPolicyInitializer;
 class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
@@ -151,12 +150,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // May be nullptr, e.g. for devices managed by Active Directory.
   DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() const {
     return device_cloud_policy_manager_;
-  }
-
-  // May be nullptr, e.g. for cloud-managed devices.
-  DeviceActiveDirectoryPolicyManager* GetDeviceActiveDirectoryPolicyManager()
-      const {
-    return device_active_directory_policy_manager_;
   }
 
   // May be nullptr, e.g. for devices managed by Active Directory.
@@ -271,8 +264,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
       affiliated_invalidation_service_provider_;
   raw_ptr<DeviceCloudPolicyManagerAsh, ExperimentalAsh>
       device_cloud_policy_manager_ = nullptr;
-  raw_ptr<DeviceActiveDirectoryPolicyManager, ExperimentalAsh>
-      device_active_directory_policy_manager_ = nullptr;
   raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_ =
       nullptr;
   std::unique_ptr<DeviceCloudPolicyInitializer>

@@ -24,7 +24,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/notifications/adb_sideloading_policy_change_notification.h"
-#include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -551,9 +550,6 @@ base::flat_set<std::string> BrowserPolicyConnectorAsh::device_affiliation_ids()
 const em::PolicyData* BrowserPolicyConnectorAsh::GetDevicePolicy() const {
   if (device_cloud_policy_manager_)
     return device_cloud_policy_manager_->device_store()->policy();
-
-  if (device_active_directory_policy_manager_)
-    return device_active_directory_policy_manager_->store()->policy();
 
   return nullptr;
 }
