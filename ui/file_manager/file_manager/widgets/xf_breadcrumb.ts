@@ -441,6 +441,7 @@ function getCSS() {
       display: flex;
       outline: none;
       overflow: hidden;
+      padding-inline-start: 8px;
       user-select: none;
       white-space: nowrap;
     }
@@ -519,6 +520,10 @@ function getCSS() {
       height: 36px;
       margin: 6px 2px;
       padding: 0 12px;
+    }
+
+    :host > button:first-child {
+      margin-inline-start: 0;
     }
 
     button[disabled] {

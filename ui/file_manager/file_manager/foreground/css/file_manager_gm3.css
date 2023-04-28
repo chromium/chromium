@@ -254,20 +254,24 @@ html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row
 }
 
 #directory-tree .tree-row > .file-row > .align-right-icon {
+  --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
   --iron-icon-height: 20px;
   --iron-icon-width: 20px;
-  border-radius: 16px;
-  border-style: none;
+  --ripple-opacity: 100%;
+  border: none;
+  border-radius: 20px;
   box-sizing: border-box;
   flex: none;
-  height: 32px;
-  left: 1px;
+  height: 40px;
   position: relative;
-  right: 1px;
-  width: 32px;
+  right: -12px; /* Same as padding inline end of side nav. */
+  width: 40px;
   z-index: 1;
 }
 
+html[dir='rtl'] #directory-tree .tree-row > .file-row > .align-right-icon {
+  left: -12px; /* Same as padding inline end of side nav. */
+}
 
 #directory-tree .tree-row > .file-row > .external-link-icon iron-icon {
   padding: 6px;
@@ -289,16 +293,13 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
 }
 
 #directory-tree .tree-row > .file-row > .root-eject:focus {
-  border: 1px solid var(--cros-sys-focus_ring);
+  outline: 2px solid var(--cros-sys-focus_ring);
+  outline-offset: 2px;
 }
 
 #directory-tree .tree-row[active] > .file-row > .root-eject:focus {
-  border: 1px solid var(--cros-sys-inverse_primary);
-}
-
-#directory-tree .tree-row > .file-row > .root-eject:active {
-  --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
-  border-width: 0;
+  outline: 2px solid var(--cros-sys-inverse_primary);
+  outline-offset: 2px;
 }
 
 #directory-tree .tree-row[active] > .file-row > .root-eject:active {
@@ -341,6 +342,7 @@ html.col-resize .jelly-splitter:not(.splitter-active):hover {
 .dialog-header {
   align-items: center;
   background: none;
+  border-bottom: 1px solid transparent;
   box-sizing: border-box;
   color: var(--cros-text-color-secondary);
   display: flex;
@@ -352,7 +354,7 @@ html.col-resize .jelly-splitter:not(.splitter-active):hover {
 }
 
 body.check-select .dialog-header {
-  border-bottom: 1px solid var(--cros-separator-color);
+  border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
   color: var(--cros-sys-on_primary_container);
 }
@@ -1004,7 +1006,6 @@ html.focus-outline-visible .dialog-footer select:focus {
   flex-direction: row;
   overflow: hidden;
   padding-bottom: 4px;
-  padding-inline-start: 8px;
   padding-top: 4px;
 }
 
@@ -1176,6 +1177,7 @@ body.files-ng .banner-close {
      fully visible. */
   box-sizing: border-box;
   overflow-y: auto;
+  padding-inline: calc(20px - 16px); /* 16px is the padding of the thumbnail. */
   width: 100%;
 }
 
@@ -1733,7 +1735,7 @@ li[renaming=''] .filename-label {
 #list-container list li .detail-icon {
   height: 48px;
   margin-inline-end: 20px;
-  margin-inline-start: 20px;
+  margin-inline-start: calc(18px - 2px); /* 2px is the border width of li. */
   width: 24px;
 }
 
@@ -2424,5 +2426,5 @@ files-tooltip:not(:defined) {
 }
 
 #path-display-container {
-  background-color: var(--cros-sys-app_base_shaded);
+  background-color: var(--cros-sys-app_base);
 }
