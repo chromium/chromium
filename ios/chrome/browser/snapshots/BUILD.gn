@@ -27,6 +27,7 @@ source_set("snapshots") {
   deps = [
     "//base",
     "//base/ios",
+    "//build:blink_buildflags",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/sessions:scene_util",
     "//ios/chrome/browser/shared/model/browser_state",
