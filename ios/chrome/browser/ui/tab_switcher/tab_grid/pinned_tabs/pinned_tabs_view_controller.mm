@@ -179,10 +179,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if (visible) {
     [self updateDropOverlayViewVisibility];
     self.view.hidden = NO;
-
-    // Updating the collection view in case item's addition/removal was done
-    // while it was hidden.
-    [self.collectionView reloadData];
   }
 
   // Tell the delegate that the visibility has changed in order to update the
