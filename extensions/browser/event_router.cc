@@ -194,6 +194,10 @@ void EventRouter::RouteDispatchEvent(content::RenderProcessHost* rph,
   // EventDispatcher for worker threads should be bound at
   // `BindServiceWorkerEventDispatcher`.
   CHECK(dispatcher);
+
+  // The RenderProcessHost might be dead, but if the RenderProcessHost
+  // is alive then the dispatcher must be connected.
+  CHECK(!rph->IsInitializedAndNotDead() || dispatcher.is_connected());
   dispatcher->DispatchEvent(std::move(params), std::move(event_args));
 }
 
