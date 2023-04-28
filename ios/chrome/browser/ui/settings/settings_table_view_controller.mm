@@ -696,8 +696,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   AccountSignInItem* signInTextItem =
       [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
   signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
-  PrefService* prefService = _browserState->GetPrefs();
-  if (!HasManagedSyncDataType(prefService)) {
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(_browserState);
+  if (!HasManagedSyncDataType(syncService)) {
     signInTextItem.detailText =
         l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE);
   } else {

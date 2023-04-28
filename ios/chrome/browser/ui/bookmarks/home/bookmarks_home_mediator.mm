@@ -680,12 +680,10 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
   DCHECK(self.syncService);
-  ChromeBrowserState* browserState = [self originalBrowserState];
   bool syncDisabledPolicy = self.syncService->GetDisableReasons().Has(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
-  PrefService* prefService = browserState->GetPrefs();
   bool syncTypesDisabledPolicy = IsManagedSyncDataType(
-      prefService, syncer::UserSelectableType::kBookmarks);
+      self.syncService, syncer::UserSelectableType::kBookmarks);
   return syncDisabledPolicy || syncTypesDisabledPolicy;
 }
 

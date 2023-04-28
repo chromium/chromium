@@ -9,10 +9,9 @@
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/sync/base/pref_names.h"
-#import "components/sync/base/sync_prefs.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
+#import "components/sync/driver/sync_user_settings.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
@@ -29,16 +28,15 @@ bool IsRestrictAccountsToPatternsEnabled() {
               .empty();
 }
 
-bool IsManagedSyncDataType(PrefService* pref_service,
+bool IsManagedSyncDataType(syncer::SyncService* sync_service,
                            syncer::UserSelectableType data_type) {
-  return pref_service
-      ->FindPreference(syncer::SyncPrefs::GetPrefNameForType(data_type))
-      ->IsManaged();
+  return sync_service &&
+         sync_service->GetUserSettings()->IsTypeManagedByPolicy(data_type);
 }
 
-bool HasManagedSyncDataType(PrefService* pref_service) {
+bool HasManagedSyncDataType(syncer::SyncService* sync_service) {
   for (syncer::UserSelectableType type : syncer::UserSelectableTypeSet::All()) {
-    if (IsManagedSyncDataType(pref_service, type)) {
+    if (IsManagedSyncDataType(sync_service, type)) {
       return true;
     }
   }

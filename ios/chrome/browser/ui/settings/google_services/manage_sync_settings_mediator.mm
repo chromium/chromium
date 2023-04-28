@@ -13,7 +13,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/pref_names.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -903,7 +902,7 @@ bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
 
 // Returns YES if the given type is managed by policies (i.e. is not syncable)
 - (BOOL)isManagedSyncSettingsDataType:(syncer::UserSelectableType)type {
-  return IsManagedSyncDataType(self.userPrefService, type);
+  return IsManagedSyncDataType(self.syncService, type);
 }
 
 #pragma mark - Properties

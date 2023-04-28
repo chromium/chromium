@@ -285,9 +285,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     return YES;
   }
 
-  PrefService* prefService = self.browserState->GetPrefs();
-  DCHECK(prefService);
-  if (IsManagedSyncDataType(prefService, syncer::UserSelectableType::kTabs)) {
+  if (IsManagedSyncDataType(self.syncService,
+                            syncer::UserSelectableType::kTabs)) {
     // Return YES if the data type is disabled by the SyncTypesListDisabled
     // policy.
     return YES;

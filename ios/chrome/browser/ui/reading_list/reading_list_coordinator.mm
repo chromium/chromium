@@ -657,7 +657,7 @@
   const bool syncDisabledPolicy = syncService->GetDisableReasons().Has(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   const bool syncTypesDisabledPolicy = IsManagedSyncDataType(
-      _prefService, syncer::UserSelectableType::kReadingList);
+      syncService, syncer::UserSelectableType::kReadingList);
   return syncDisabledPolicy || syncTypesDisabledPolicy;
 }
 

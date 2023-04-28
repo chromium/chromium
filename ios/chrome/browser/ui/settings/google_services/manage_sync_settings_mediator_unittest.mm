@@ -10,7 +10,7 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
-#import "components/sync/base/pref_names.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
@@ -57,13 +57,6 @@ PrefService* SetPrefService() {
   PrefRegistrySimple* registry = prefs->registry();
   registry->RegisterBooleanPref(autofill::prefs::kAutofillWalletImportEnabled,
                                 true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncAutofill, true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncBookmarks, true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncTypedUrls, true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncTabs, true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncPasswords, true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncReadingList, true);
-  registry->RegisterBooleanPref(syncer::prefs::kSyncPreferences, true);
 
   return prefs;
 }
@@ -399,12 +392,13 @@ TEST_F(ManageSyncSettingsMediatorTest,
        CheckItemsWhenSyncTypeListHasEnabledItems) {
   FirstSetupSyncOnWithConsentEnabled();
 
-  TestingPrefServiceSimple* pref_service =
-      static_cast<TestingPrefServiceSimple*>(pref_service_);
-  pref_service->SetManagedPref(syncer::prefs::kSyncBookmarks,
-                               std::make_unique<base::Value>(true));
-  pref_service->SetManagedPref(syncer::prefs::kSyncPasswords,
-                               std::make_unique<base::Value>(true));
+  // Set up a policy to disable bookmarks and passwords.
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+          IsTypeManagedByPolicy(syncer::UserSelectableType::kBookmarks))
+      .WillByDefault(Return(true));
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+          IsTypeManagedByPolicy(syncer::UserSelectableType::kPasswords))
+      .WillByDefault(Return(true));
 
   // Loads the Sync page.
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
