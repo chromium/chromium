@@ -613,7 +613,7 @@ std::string PnaclComponentURLToFilename(const std::string& url) {
   return r;
 }
 
-PP_FileHandle GetReadonlyPnaclFd(const char* url,
+PP_FileHandle GetReadonlyPnaclFd(const std::string& url,
                                  bool is_executable,
                                  uint64_t* nonce_lo,
                                  uint64_t* nonce_hi) {
@@ -1170,83 +1170,74 @@ PP_Bool PPBNaClPrivate::GetPnaclResourceInfo(PP_Instance instance,
                                              PP_Var* llc_tool_name,
                                              PP_Var* ld_tool_name,
                                              PP_Var* subzero_tool_name) {
-  static const char kFilename[] = "chrome://pnacl-translator/pnacl.json";
   NexeLoadManager* load_manager = GetNexeLoadManager(instance);
-  DCHECK(load_manager);
-  if (!load_manager)
-    return PP_FALSE;
+  CHECK(load_manager);
 
-  uint64_t nonce_lo = 0;
-  uint64_t nonce_hi = 0;
-  base::File file(GetReadonlyPnaclFd(kFilename, false /* is_executable */,
-                                     &nonce_lo, &nonce_hi));
-  if (!file.IsValid()) {
-    load_manager->ReportLoadError(
-        PP_NACL_ERROR_PNACL_RESOURCE_FETCH,
-        "The Portable Native Client (pnacl) component is not "
-        "installed. Please consult chrome://components for more "
-        "information.");
+  const auto get_info = [&]() -> base::expected<void, std::string> {
+    const std::string kFilename = "chrome://pnacl-translator/pnacl.json";
+    uint64_t nonce_lo = 0;
+    uint64_t nonce_hi = 0;
+    base::File file(GetReadonlyPnaclFd(kFilename, false /* is_executable */,
+                                       &nonce_lo, &nonce_hi));
+    if (!file.IsValid()) {
+      return base::unexpected(
+          "The Portable Native Client (pnacl) component is not installed. "
+          "Please consult chrome://components for more information.");
+    }
+
+    int64_t file_size = file.GetLength();
+    if (file_size < 0) {
+      return base::unexpected("GetPnaclResourceInfo, GetLength failed for: " +
+                              kFilename);
+    }
+
+    if (file_size > 1 << 20) {
+      return base::unexpected("GetPnaclResourceInfo, file too large: " +
+                              kFilename);
+    }
+
+    std::unique_ptr<char[]> buffer(new char[file_size + 1]);
+    int rc = file.Read(0, buffer.get(), file_size);
+    if (rc < 0 || rc != file_size) {
+      return base::unexpected("GetPnaclResourceInfo, reading failed for: " +
+                              kFilename);
+    }
+
+    // Null-terminate the bytes we we read from the file.
+    buffer.get()[rc] = 0;
+
+    // Expect the JSON file to contain a top-level object (dictionary).
+    auto parsed_json =
+        base::JSONReader::ReadAndReturnValueWithError(buffer.get());
+    if (!parsed_json.has_value()) {
+      return base::unexpected(
+          "Parsing resource info failed: JSON parse error: " +
+          parsed_json.error().message);
+    }
+
+    auto* json_dict = parsed_json->GetIfDict();
+    if (!json_dict) {
+      return base::unexpected(
+          "Parsing resource info failed: JSON parse error: Not a "
+          "dictionary.");
+    }
+
+    if (auto* pnacl_llc_name = json_dict->FindString("pnacl-llc-name")) {
+      *llc_tool_name = ppapi::StringVar::StringToPPVar(*pnacl_llc_name);
+    }
+    if (auto* pnacl_ld_name = json_dict->FindString("pnacl-ld-name")) {
+      *ld_tool_name = ppapi::StringVar::StringToPPVar(*pnacl_ld_name);
+    }
+    if (auto* pnacl_sz_name = json_dict->FindString("pnacl-sz-name")) {
+      *subzero_tool_name = ppapi::StringVar::StringToPPVar(*pnacl_sz_name);
+    }
+    return base::ok();
+  };
+  if (auto info = get_info(); !info.has_value()) {
+    load_manager->ReportLoadError(PP_NACL_ERROR_PNACL_RESOURCE_FETCH,
+                                  info.error());
     return PP_FALSE;
   }
-
-  int64_t file_size = file.GetLength();
-  if (file_size < 0) {
-    load_manager->ReportLoadError(
-        PP_NACL_ERROR_PNACL_RESOURCE_FETCH,
-        std::string("GetPnaclResourceInfo, GetLength failed for: ") +
-            kFilename);
-    return PP_FALSE;
-  }
-
-  if (file_size > 1 << 20) {
-    load_manager->ReportLoadError(
-        PP_NACL_ERROR_PNACL_RESOURCE_FETCH,
-        std::string("GetPnaclResourceInfo, file too large: ") + kFilename);
-    return PP_FALSE;
-  }
-
-  std::unique_ptr<char[]> buffer(new char[file_size + 1]);
-  int rc = file.Read(0, buffer.get(), file_size);
-  if (rc < 0 || rc != file_size) {
-    load_manager->ReportLoadError(
-        PP_NACL_ERROR_PNACL_RESOURCE_FETCH,
-        std::string("GetPnaclResourceInfo, reading failed for: ") + kFilename);
-    return PP_FALSE;
-  }
-
-  // Null-terminate the bytes we we read from the file.
-  buffer.get()[rc] = 0;
-
-  // Expect the JSON file to contain a top-level object (dictionary).
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(buffer.get());
-
-  if (!parsed_json.has_value()) {
-    load_manager->ReportLoadError(
-        PP_NACL_ERROR_PNACL_RESOURCE_FETCH,
-        std::string("Parsing resource info failed: JSON parse error: ") +
-            parsed_json.error().message);
-    return PP_FALSE;
-  }
-
-  auto* json_dict = parsed_json->GetIfDict();
-  if (!json_dict) {
-    load_manager->ReportLoadError(
-        PP_NACL_ERROR_PNACL_RESOURCE_FETCH,
-        std::string("Parsing resource info failed: JSON parse error: Not a "
-                    "dictionary."));
-    return PP_FALSE;
-  }
-
-  if (auto* pnacl_llc_name = json_dict->FindString("pnacl-llc-name"))
-    *llc_tool_name = ppapi::StringVar::StringToPPVar(*pnacl_llc_name);
-
-  if (auto* pnacl_ld_name = json_dict->FindString("pnacl-ld-name"))
-    *ld_tool_name = ppapi::StringVar::StringToPPVar(*pnacl_ld_name);
-
-  if (auto* pnacl_sz_name = json_dict->FindString("pnacl-sz-name"))
-    *subzero_tool_name = ppapi::StringVar::StringToPPVar(*pnacl_sz_name);
-
   return PP_TRUE;
 }
 
@@ -1441,10 +1432,9 @@ void DownloadFile(PP_Instance instance,
   if (base::StartsWith(url, kPNaClTranslatorBaseUrl,
                        base::CompareCase::SENSITIVE)) {
     PP_NaClFileInfo file_info = kInvalidNaClFileInfo;
-    PP_FileHandle handle = GetReadonlyPnaclFd(url.c_str(),
-                                              false /* is_executable */,
-                                              &file_info.token_lo,
-                                              &file_info.token_hi);
+    PP_FileHandle handle =
+        GetReadonlyPnaclFd(url, false /* is_executable */, &file_info.token_lo,
+                           &file_info.token_hi);
     if (handle == PP_kInvalidFileHandle) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback),
