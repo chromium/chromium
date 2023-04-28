@@ -6,7 +6,9 @@
 
 #import <MediaPlayer/MediaPlayer.h>
 
-#include "base/mac/scoped_nsobject.h"
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @interface NowPlayingInfoCenterDelegateCocoa ()
 
@@ -19,12 +21,12 @@
 @end
 
 @implementation NowPlayingInfoCenterDelegateCocoa {
-  base::scoped_nsobject<NSMutableDictionary> _nowPlayingInfo;
+  NSMutableDictionary* __strong _nowPlayingInfo;
 }
 
 - (instancetype)init {
   if (self = [super init]) {
-    _nowPlayingInfo.reset([[NSMutableDictionary alloc] init]);
+    _nowPlayingInfo = [[NSMutableDictionary alloc] init];
     [self resetNowPlayingInfo];
     [self updateNowPlayingInfo];
   }
@@ -74,12 +76,11 @@
 
 - (void)setThumbnail:(NSImage*)image {
   if (@available(macOS 10.13.2, *)) {
-    base::scoped_nsobject<MPMediaItemArtwork> artwork(
-        [[MPMediaItemArtwork alloc]
-            initWithBoundsSize:image.size
-                requestHandler:^NSImage* _Nonnull(CGSize aSize) {
-                  return image;
-                }]);
+    MPMediaItemArtwork* artwork = [[MPMediaItemArtwork alloc]
+        initWithBoundsSize:image.size
+            requestHandler:^NSImage* _Nonnull(CGSize aSize) {
+              return image;
+            }];
     [_nowPlayingInfo setObject:artwork forKey:MPMediaItemPropertyArtwork];
   }
 }
@@ -90,12 +91,10 @@
 }
 
 - (void)initializeNowPlayingInfoValues {
-  [_nowPlayingInfo setObject:[NSNumber numberWithDouble:0]
+  [_nowPlayingInfo setObject:@0
                       forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
-  [_nowPlayingInfo setObject:[NSNumber numberWithDouble:0]
-                      forKey:MPNowPlayingInfoPropertyPlaybackRate];
-  [_nowPlayingInfo setObject:[NSNumber numberWithDouble:0]
-                      forKey:MPMediaItemPropertyPlaybackDuration];
+  [_nowPlayingInfo setObject:@0 forKey:MPNowPlayingInfoPropertyPlaybackRate];
+  [_nowPlayingInfo setObject:@0 forKey:MPMediaItemPropertyPlaybackDuration];
   [_nowPlayingInfo setObject:@"" forKey:MPMediaItemPropertyTitle];
   [_nowPlayingInfo setObject:@"" forKey:MPMediaItemPropertyArtist];
   [_nowPlayingInfo setObject:@"" forKey:MPMediaItemPropertyAlbumTitle];
