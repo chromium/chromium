@@ -4,6 +4,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
@@ -16,6 +17,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -41,7 +43,11 @@ int GetInputMethodTestInterfaceVersion() {
 }
 
 // Used to parameterize these tests.
-struct TestParam {};
+struct TestParam {
+  // Enables fixes for b/265853952.
+  // Enables the following feature flags: WaylandKeepSelectionFix (Lacros).
+  bool fix_265853952 = false;
+};
 
 // Binds an InputMethodTestInterface to Ash-Chrome, which allows these tests to
 // execute IME operations from Ash-Chrome.
@@ -493,11 +499,25 @@ void WaitUntilSurroundingTextIs(
 // Keep this fixture simple: only use this to enable / disable feature flags.
 class InputMethodLacrosBrowserTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<TestParam> {};
+      public ::testing::WithParamInterface<TestParam> {
+ public:
+  InputMethodLacrosBrowserTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    if (GetParam().fix_265853952) {
+      enabled_features.push_back(features::kWaylandKeepSelectionFix);
+    }
+    feature_list_override_.InitWithFeatures(enabled_features,
+                                            /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_override_;
+};
 
 INSTANTIATE_TEST_SUITE_P(InputMethodLacrosBrowserTestAllParams,
                          InputMethodLacrosBrowserTest,
-                         ::testing::Values(TestParam{}));
+                         ::testing::Values(TestParam{.fix_265853952 = true},
+                                           TestParam{.fix_265853952 = false}));
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        FocusingInputFieldSendsFocus) {

@@ -286,9 +286,11 @@ using WaylandInputMethodContextTest = WaylandInputMethodContextTestBase;
 using WaylandInputMethodContextOldServerTest =
     WaylandInputMethodContextTestBase;
 
-INSTANTIATE_TEST_SUITE_P(TextInputExtensionLatestVersion,
-                         WaylandInputMethodContextTest,
-                         ::testing::Values(wl::ServerConfig{}));
+INSTANTIATE_TEST_SUITE_P(
+    TextInputExtensionLatestVersion,
+    WaylandInputMethodContextTest,
+    ::testing::Values(wl::ServerConfig{.use_ime_keep_selection_fix = true},
+                      wl::ServerConfig{.use_ime_keep_selection_fix = false}));
 INSTANTIATE_TEST_SUITE_P(
     TextInputExtensionV7,
     WaylandInputMethodContextOldServerTest,
@@ -1104,7 +1106,11 @@ TEST_P(WaylandInputMethodContextTest, MAYBE(OnConfirmCompositionText)) {
     auto* text_input = server->text_input_manager_v1()->text_input();
     Mock::VerifyAndClearExpectations(text_input);
 
-    zwp_text_input_v1_send_cursor_position(text_input->resource(), 7, 10);
+    const auto sent_range = GetParam().use_ime_keep_selection_fix
+                                ? gfx::Range(10, 7)
+                                : gfx::Range(7, 10);
+    zwp_text_input_v1_send_cursor_position(
+        text_input->resource(), sent_range.start(), sent_range.end());
     zwp_text_input_v1_send_commit_string(text_input->resource(), 0,
                                          "ab😀cあdef");
   });
@@ -1152,9 +1158,13 @@ TEST_P(WaylandInputMethodContextTest,
     auto* text_input = server->text_input_manager_v1()->text_input();
     Mock::VerifyAndClearExpectations(text_input);
 
+    const auto expected_sent_range =
+        GetParam().use_ime_keep_selection_fix
+            ? gfx::Range(kExpectedSentRange.end(), kExpectedSentRange.start())
+            : kExpectedSentRange;
     zwp_text_input_v1_send_cursor_position(text_input->resource(),
-                                           kExpectedSentRange.start(),
-                                           kExpectedSentRange.end());
+                                           expected_sent_range.start(),
+                                           expected_sent_range.end());
     zwp_text_input_v1_send_commit_string(text_input->resource(), 0,
                                          kExpectedSentText.c_str());
   });

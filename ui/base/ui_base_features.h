@@ -203,6 +203,9 @@ BASE_DECLARE_FEATURE(kEnableVariableRefreshRate);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsVariableRefreshRateEnabled();
 
+// Fixes b/265853952.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kWaylandKeepSelectionFix);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kWaylandScreenCoordinatesEnabled);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
@@ -256,6 +259,7 @@ BASE_DECLARE_FEATURE(kCr2023MacFontSmoothing);
 // nanoseconds instead of milliseconds.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kUseNanosecondsForMotionEvent);
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_
