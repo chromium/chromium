@@ -1235,6 +1235,9 @@ if (enable_java_templates) {
          invoker.proguard_enable_obfuscation) && enable_proguard_obfuscation) {
       _args += [ "--enable-obfuscation" ]
     }
+    if (defined(invoker.repackage_classes)) {
+      _args += [ "--repackage-classes=" + invoker.repackage_classes ]
+    }
 
     if (defined(invoker.modules)) {
       foreach(_feature_module, invoker.modules) {
@@ -1516,6 +1519,7 @@ if (enable_java_templates) {
                                      "proguard_enable_obfuscation",
                                      "proguard_mapping_path",
                                      "proguard_sourcefile_suffix",
+                                     "repackage_classes",
                                      "top_target_name",
                                      "version_code",
                                    ])
@@ -4082,7 +4086,11 @@ if (enable_java_templates) {
 
         _dex_target_name = "${target_name}__dex"
         dex(_dex_target_name) {
-          forward_variables_from(invoker, [ "proguard_enable_obfuscation" ])
+          forward_variables_from(invoker,
+                                 [
+                                   "proguard_enable_obfuscation",
+                                   "repackage_classes",
+                                 ])
           input_class_jars = [ _device_processed_jar_path ]
           enable_desugar = _enable_desugar
           ignore_desugar_missing_deps = !_enable_bytecode_checks

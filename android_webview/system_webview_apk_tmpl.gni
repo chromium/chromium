@@ -333,6 +333,9 @@ template("system_webview_apk_or_module_tmpl") {
 
     if (!is_java_debug && !_omit_dex) {
       proguard_enabled = true
+      if (!_is_bundle_module) {
+        repackage_classes = "WV"
+      }
       if (!defined(proguard_configs)) {
         proguard_configs = []
       }

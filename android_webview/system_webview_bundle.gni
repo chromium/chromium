@@ -88,7 +88,10 @@ template("system_webview_bundle") {
 
   android_app_bundle(target_name) {
     command_line_flags_file = "webview-command-line"
-    proguard_enabled = !is_java_debug
+    if (!is_java_debug) {
+      proguard_enabled = true
+      repackage_classes = "WV"
+    }
     enable_language_splits = true
     if (_is_trichrome) {
       min_sdk_version = 29

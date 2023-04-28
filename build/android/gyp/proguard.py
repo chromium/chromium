@@ -67,8 +67,9 @@ def _ParseOptions():
                       help='Minify symbol names')
   parser.add_argument(
       '--verbose', '-v', action='store_true', help='Print all ProGuard output')
-  parser.add_argument(
-      '--repackage-classes', help='Package all optimized classes are put in.')
+  parser.add_argument('--repackage-classes',
+                      default='',
+                      help='Value for -repackageclasses.')
   parser.add_argument(
     '--disable-checks',
     action='store_true',
@@ -517,7 +518,7 @@ def _CombineConfigs(configs,
 def _CreateDynamicConfig(options):
   ret = []
   if options.enable_obfuscation:
-    ret.append("-repackageclasses ''")
+    ret.append(f"-repackageclasses '{options.repackage_classes}'")
   else:
     ret.append("-dontobfuscate")
 

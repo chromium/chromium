@@ -1931,6 +1931,7 @@ if (enable_java_templates && is_android) {
                                    "proguard_enabled",
                                    "proguard_enable_obfuscation",
                                    "min_sdk_version",
+                                   "repackage_classes",
                                    "version_code",
                                  ])
       deps = [ ":$_build_config_target_name" ] + _deps
@@ -3156,6 +3157,7 @@ if (enable_java_templates && is_android) {
                                  "enable_proguard_checks",
                                  "custom_assertion_handler",
                                  "proguard_enable_obfuscation",
+                                 "repackage_classes",
                                ])
         min_sdk_version = _min_sdk_version
         proguard_enabled = _proguard_enabled
@@ -3637,6 +3639,7 @@ if (enable_java_templates && is_android) {
             "proguard_enabled",
             "proguard_enable_obfuscation",
             "r_java_root_package_name",
+            "repackage_classes",
             "resource_exclusion_exceptions",
             "resource_exclusion_regex",
             "resource_ids_provider_dep",
@@ -3774,6 +3777,7 @@ if (enable_java_templates && is_android) {
             "proguard_configs",
             "proguard_enabled",
             "proguard_enable_obfuscation",
+            "repackage_classes",
             "resource_exclusion_exceptions",
             "resource_exclusion_regex",
             "resource_ids_provider_dep",
@@ -5093,6 +5097,7 @@ if (enable_java_templates && is_android) {
                                  "expected_proguard_config",
                                  "expected_proguard_config_base",
                                  "proguard_enable_obfuscation",
+                                 "repackage_classes",
                                ])
         if (defined(expected_proguard_config)) {
           top_target_name = _target_name
