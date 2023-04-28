@@ -210,7 +210,9 @@ using password_manager::WarningType;
   self.passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
-                          reauthModule:self.reauthModule];
+                          reauthModule:self.reauthModule
+                              referrer:password_manager::PasswordCheckReferrer::
+                                           kPasswordSettings];
   self.passwordCheckupCoordinator.delegate = self;
   [self.passwordCheckupCoordinator start];
 }

@@ -21,6 +21,8 @@
 #error "This file requires ARC support."
 #endif
 
+using password_manager::PasswordCheckReferrer;
+
 @interface PasswordCheckupCoordinator () <PasswordCheckupCommands,
                                           PasswordIssuesCoordinatorDelegate> {
   // Coordinator for password issues.
@@ -42,11 +44,12 @@
 
 @synthesize baseNavigationController = _baseNavigationController;
 
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-                                    reauthModule:
-                                        (ReauthenticationModule*)reauthModule {
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                        reauthModule:(ReauthenticationModule*)reauthModule
+                            referrer:(PasswordCheckReferrer)referrer {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
@@ -54,6 +57,7 @@
     _reauthModule = reauthModule;
     _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                      ApplicationCommands);
+    password_manager::LogPasswordCheckReferrer(referrer);
   }
   return self;
 }

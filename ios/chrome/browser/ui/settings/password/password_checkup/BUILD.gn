@@ -28,6 +28,7 @@ source_set("password_checkup") {
     "//ios/chrome/common:string_util",
     "//ui/base",
   ]
+  public_deps = [ "//components/password_manager/core/browser" ]
 }
 
 source_set("password_checkup_ui") {
