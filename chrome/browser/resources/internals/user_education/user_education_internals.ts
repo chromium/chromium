@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './user_education_internals_card.js';
 
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {CrContainerShadowMixin, CrContainerShadowMixinInterface} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -78,6 +79,7 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
 
   override ready() {
     super.ready();
+    startColorChangeUpdater();
 
     this.handler_.getTutorials().then(({tutorialInfos}) => {
       this.tutorials_ = tutorialInfos;
