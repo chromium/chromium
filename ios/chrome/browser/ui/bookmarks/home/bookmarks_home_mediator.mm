@@ -411,7 +411,9 @@ bool IsABookmarkNodeSectionForIdentifier(
             initWithType:BookmarksHomeItemTypePromo];
     signinPromoItem.configurator = [signinPromoViewMediator createConfigurator];
     signinPromoItem.text =
-        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS_WITH_UNITY);
+        base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)
+            ? l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS)
+            : l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS_WITH_UNITY);
     signinPromoItem.delegate = signinPromoViewMediator;
     [signinPromoViewMediator signinPromoViewIsVisible];
 

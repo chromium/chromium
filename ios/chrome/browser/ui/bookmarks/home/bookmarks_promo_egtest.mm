@@ -58,7 +58,8 @@ using chrome_test_util::SecondarySignInButton;
   } else if ([self isRunningTest:@selector
                    (testSnackbarAfterSignInPromoWithAccount)] ||
              [self isRunningTest:@selector
-                   (testSnackbarAfterSignInPromoWithoutAccount)]) {
+                   (testSnackbarAfterSignInPromoWithoutAccount)] ||
+             [self isRunningTest:@selector(testPromoViewBody)]) {
     config.features_enabled.push_back(
         bookmarks::kEnableBookmarksAccountStorage);
   }
@@ -81,6 +82,37 @@ using chrome_test_util::SecondarySignInButton;
 }
 
 #pragma mark - BookmarksPromoTestCase Tests
+
+// Tests the promo view body message for sync with
+// kEnableBookmarksAccountStorage flag disabled.
+- (void)testPromoViewBodyLegacy {
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+
+  // Check that promo is visible.
+  [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
+  NSString* body =
+      l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS_WITH_UNITY);
+  [[EarlGrey selectElementWithMatcher:grey_text(body)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the promo view body message for signin with
+// kEnableBookmarksAccountStorage flag enabled.
+- (void)testPromoViewBody {
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+
+  // Check that promo is visible.
+  [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
+  NSString* body = l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS);
+  [[EarlGrey selectElementWithMatcher:grey_text(body)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
 
 // Tests that the promo view is only seen at root level and not in any of the
 // child nodes.
