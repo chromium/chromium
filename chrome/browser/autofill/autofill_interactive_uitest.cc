@@ -1264,31 +1264,28 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
                               false, shift, false, false);
   }
 
-  // Returns a ValueWaiter which waits till `element_id`'s value changes to the
-  // passed-in `value`.
-  ValueWaiter ListenForChangeToSpecificValue(const std::string& element_id,
-                                             const std::string& value) {
+  void FillElementWithValue(const std::string& element_id,
+                            const std::string& value) {
+    // Sends "|element_id|:|value|" to |msg_queue| if the |element_id|'s
+    // value has changed to |value|.
     std::string script = base::StringPrintf(
         R"( (function() {
-          const field = document.getElementById('%s');
-          const listener = function(e) {
-            window.unblock = field.value === '%s';
-            if (window.unblock) {
-              field.removeEventListener('change', listener);
-            }
-          };
-          window.unblock = false;
-          field.addEventListener('change', listener);
-        })(); )",
+              const element_id = '%s';
+              const value = '%s';
+              const field = document.getElementById(element_id);
+              const listener = function() {
+                if (field.value === value) {
+                  field.removeEventListener('input', listener);
+                  domAutomationController.send(element_id +':'+ field.value);
+                }
+              };
+              field.addEventListener('input', listener, false);
+              return 'done';
+            })(); )",
         element_id.c_str(), value.c_str());
-    ExecuteScript(script);
-    return ListenForValueChange(element_id, "unblock", GetWebContents());
-  }
+    ASSERT_TRUE(content::ExecJs(GetWebContents(), script));
 
-  void FillElementWithValueAndBlur(const std::string& element_id,
-                                   const std::string& value) {
-    ValueWaiter value_waiter =
-        ListenForChangeToSpecificValue(element_id, value);
+    content::DOMMessageQueue msg_queue(GetWebContents());
     for (char16_t character : value) {
       ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
       const ui::PrintableCodeEntry* code_entry = base::ranges::find_if(
@@ -1300,12 +1297,13 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
       ASSERT_TRUE(code_entry != std::end(ui::kPrintableCodeMap));
       bool shift = code_entry->character[1] == character;
       ui::DomCode dom_code = code_entry->dom_code;
-      SimulateKeyPress(dom_key, dom_code, shift);
+      content::SimulateKeyPress(GetWebContents(), dom_key, dom_code,
+                                ui::DomCodeToUsLayoutKeyboardCode(dom_code),
+                                false, shift, false, false);
     }
-    // Blur the focused field to force the change event for text fields.
-    ASSERT_TRUE(BlurFocusedField(GetWebContents()));
-
-    ASSERT_EQ(value, std::move(value_waiter).Wait());
+    std::string reply;
+    ASSERT_TRUE(msg_queue.WaitForMessage(&reply));
+    ASSERT_EQ("\"" + element_id + ":" + value + "\"", reply);
   }
 
   void DeleteElementValue(const ElementExpr& field) {
@@ -1574,7 +1572,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextFieldAndFill) {
 
   // Modify a field.
   ASSERT_TRUE(FocusField(GetElementById("city"), GetWebContents()));
-  FillElementWithValueAndBlur("city", "Montreal");
+  FillElementWithValue("city", "Montreal");
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
   EXPECT_THAT(GetFormValues(),
@@ -1594,7 +1592,7 @@ void DoModifySelectFieldAndFill(AutofillInteractiveTest* test,
   ASSERT_TRUE(FocusSelectOrSelectMenu("state", should_test_selectmenu,
                                       test->GetWebContents()));
   ASSERT_NE(kDefaultAddressValues.state_short, base::StringPiece("CA"));
-  test->FillElementWithValueAndBlur("state", "CA");
+  test->FillElementWithValue("state", "CA");
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), test));
   EXPECT_THAT(test->GetFormValuesIgnoringSelectMenuButtonSlot(),
