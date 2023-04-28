@@ -4,17 +4,26 @@
 
 module commerce.mojom;
 
-// This outlines each factor that contributes to whether a user is
-// eligible for the shopping-list feature.
+// This contains the current state and the expected state of a feature.
+struct EligibleEntry {
+  // The current state of the feature, enabled or disabled.
+  bool value;
+  // The expected state of the feature. This can be either enabled(true) or
+  // disabled(false);
+  bool expected_value;
+};
+
+// This outlines each factor that contributes to whether a user is eligible
+// for the shopping-list feature.
 struct ShoppingListEligibleDetail {
-  bool is_region_locked_feature_enabled;
-  bool is_shopping_list_allowed_for_enterprise;
-  bool is_account_checker_valid;
-  bool is_signed_in;
-  bool is_syncing_bookmarks;
-  bool is_anonymized_url_data_collection_enabled;
-  bool is_web_and_app_activity_enabled;
-  bool is_subject_to_parental_controls;
+  EligibleEntry is_region_locked_feature_enabled;
+  EligibleEntry is_shopping_list_allowed_for_enterprise;
+  EligibleEntry is_account_checker_valid;
+  EligibleEntry is_signed_in;
+  EligibleEntry is_syncing_bookmarks;
+  EligibleEntry is_anonymized_url_data_collection_enabled;
+  EligibleEntry is_web_and_app_activity_enabled;
+  EligibleEntry is_subject_to_parental_controls;
 };
 
 // Used by the WebUI to bootstrap bidirectional communication.

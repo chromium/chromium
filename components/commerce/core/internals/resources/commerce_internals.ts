@@ -2,17 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
+import {EligibleEntry} from './commerce_internals.mojom-webui.js';
 import {CommerceInternalsApiProxy} from './commerce_internals_api_proxy.js';
 
 function getProxy(): CommerceInternalsApiProxy {
   return CommerceInternalsApiProxy.getInstance();
 }
 
-function createLiElement(factor: string, value: boolean) {
+function entryVerificationElement(value: boolean, expected: boolean) {
+  const checkmarkHTML = getTrustedHTML`&#10004;`;
+  const crossmarkHTML = getTrustedHTML`&#10006;`;
+  const span = document.createElement('span');
+  const isValid: boolean = value === expected;
+  span.innerHTML = isValid ? checkmarkHTML : crossmarkHTML;
+  span.classList.add(isValid ? 'eligible' : 'ineligible');
+  return span;
+}
+
+function createLiElement(factor: string, entry: EligibleEntry) {
   const li = document.createElement('li');
-  li.innerText = factor + (value ? ': true' : ': false');
+  li.innerText = factor + (entry.value ? ': true ' : ': false ');
+  li.appendChild(entryVerificationElement(entry.value, entry.expectedValue));
   return li;
 }
 
