@@ -3674,9 +3674,6 @@ extern const char kTerminalAlternativeEmulatorDescription[];
 extern const char kTerminalDevName[];
 extern const char kTerminalDevDescription[];
 
-extern const char kTerminalTmuxIntegrationName[];
-extern const char kTerminalTmuxIntegrationDescription[];
-
 extern const char kTetherName[];
 extern const char kTetherDescription[];
 

@@ -740,8 +740,6 @@ ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
   info.Set("tast", extensions::ExtensionRegistry::Get(browser_context())
                        ->enabled_extensions()
                        .Contains(extension_misc::kGuestModeTestExtensionId));
-  info.Set("tmux_integration", base::FeatureList::IsEnabled(
-                                   ash::features::kTerminalTmuxIntegration));
   return RespondNow(WithArguments(std::move(info)));
 }
 

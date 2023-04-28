@@ -245,10 +245,6 @@
                 "tast": {
                   "description": "True if tast extension is installed.",
                   "type": "boolean"
-                },
-                "tmux_integration": {
-                  "description": "True if tmux control mode integration is enabled.",
-                  "type": "boolean"
                 }
               },
               "description": "Information about which features are enabled."

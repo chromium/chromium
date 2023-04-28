@@ -7242,11 +7242,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "terminal-tmux-integration",
-    "owners": [ "lxj", "easy", "//chrome/browser/ash/guest_os/OWNERS" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "text-based-audio-descriptions",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120
