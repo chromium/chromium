@@ -375,6 +375,7 @@ class Viewer {
     }
   }
 
+
   drawPreviousFrame() {
     // When we switch to a different frame, we need to unfreeze the current
     // frame (to make sure the frame draws completely the next time it is drawn
@@ -455,7 +456,7 @@ class Player {
     this.viewer_ = viewer;
     this.paused_ = false;
     this.nextFrameScheduled_ = false;
-
+    this.live_ = true;
     this.drawCb_ = draw_cb;
 
     Player.instances[0] = this;
@@ -466,6 +467,10 @@ class Player {
     if (this.nextFrameScheduled_) return;
 
     const drawn = this.viewer_.drawNextFrame();
+    if(this.live_){
+      while(this.viewer_.drawNextFrame());
+    }
+
     this.didDrawNewFrame_();
     if (!drawn) return;
 
@@ -477,8 +482,15 @@ class Player {
     });
   }
 
+  live()
+  {
+    this.live_ = true;
+    this.play();
+  }
+
   pause() {
     this.paused_ = true;
+    this.live_ = false;
   }
 
   rewind() {
