@@ -7665,10 +7665,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kRecoverFromNeverSaveAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"full-user-agent", flag_descriptions::kFullUserAgentName,
-     flag_descriptions::kFullUserAgentDescription, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kFullUserAgent)},
-
     {"fullscreen-popup-windows", flag_descriptions::kFullscreenPopupWindowsName,
      flag_descriptions::kFullscreenPopupWindowsDescription,
      kOsDesktop | kOsAndroid,

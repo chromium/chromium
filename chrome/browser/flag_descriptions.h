@@ -912,9 +912,6 @@ extern const char kForceDirectionRtl[];
 extern const char kForceUiDirectionName[];
 extern const char kForceUiDirectionDescription[];
 
-extern const char kFullUserAgentName[];
-extern const char kFullUserAgentDescription[];
-
 extern const char kFullscreenPopupWindowsName[];
 extern const char kFullscreenPopupWindowsDescription[];
 

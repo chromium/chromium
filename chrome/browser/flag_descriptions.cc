@@ -1627,11 +1627,6 @@ const char kForceUiDirectionDescription[] =
     "Explicitly force the UI to left-to-right (LTR) or right-to-left (RTL) "
     "mode, overriding the default direction of the UI language.";
 
-const char kFullUserAgentName[] = "Full User-Agent request header";
-const char kFullUserAgentDescription[] =
-    "If set, use the full (non-reduced) user agent string for the User-Agent "
-    "request header and the JS APIs.";
-
 const char kFullscreenPopupWindowsName[] = "Fullscreen popup windows";
 const char kFullscreenPopupWindowsDescription[] =
     "Enables sites with Window Management permission to open fullscreen popup "

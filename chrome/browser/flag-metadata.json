@@ -4214,11 +4214,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "full-user-agent",
-    "owners": [ "victortan", "abeyad"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "fullscreen-popup-windows",
     "owners": [ "btriebw", "msw" ],
     "expiry_milestone": 120
