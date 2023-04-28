@@ -423,8 +423,7 @@ class TokenPreloadScanner::StartTagScanner {
         resource_width_ = dimension.Value();
       }
       if (width_attr_dimension_type_ ==
-              HTMLImageElement::LazyLoadDimensionType::kNotAbsolute &&
-          RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
+          HTMLImageElement::LazyLoadDimensionType::kNotAbsolute) {
         width_attr_dimension_type_ =
             HTMLImageElement::GetAttributeLazyLoadDimensionType(
                 attribute_value);
@@ -436,15 +435,13 @@ class TokenPreloadScanner::StartTagScanner {
         resource_height_ = dimension.Value();
       }
       if (height_attr_dimension_type_ ==
-              HTMLImageElement::LazyLoadDimensionType::kNotAbsolute &&
-          RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
+          HTMLImageElement::LazyLoadDimensionType::kNotAbsolute) {
         height_attr_dimension_type_ =
             HTMLImageElement::GetAttributeLazyLoadDimensionType(
                 attribute_value);
       }
     } else if (loading_attr_value_ == LoadingAttributeValue::kAuto &&
-               Match(attribute_name, html_names::kLoadingAttr) &&
-               RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
+               Match(attribute_name, html_names::kLoadingAttr)) {
       loading_attr_value_ = GetLoadingAttributeValue(attribute_value);
     } else if (Match(attribute_name, html_names::kAttributionsrcAttr)) {
       attributionsrc_attr_set_ = true;

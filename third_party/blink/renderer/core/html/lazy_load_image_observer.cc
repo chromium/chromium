@@ -157,8 +157,6 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(
     Document* root_document,
     Element* element,
     DeferralMessage deferral_message) {
-  DCHECK(RuntimeEnabledFeatures::LazyImageLoadingEnabled());
-
   if (!lazy_load_intersection_observer_) {
     CreateLazyLoadIntersectionObserver(root_document);
   }
