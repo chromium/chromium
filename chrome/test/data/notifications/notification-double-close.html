@@ -13,17 +13,19 @@
           tag: tag
         });
 
-        notification.onshow = function() {
-          window.domAutomationController.send("0");  // success
-        };
+        return new Promise(resolve => {
+          notification.onshow = function() {
+            resolve("0");  // success
+          };
 
-        notification.onerror = function() {
-          window.domAutomationController.send("-1");  // failure
-        };
+          notification.onerror = function() {
+            resolve("-1");  // failure
+          };
 
-        notification.onclose = function() {
-          notification.close();
-        };
+          notification.onclose = function() {
+            notification.close();
+          };
+        });
       }
     </script>
   </body>

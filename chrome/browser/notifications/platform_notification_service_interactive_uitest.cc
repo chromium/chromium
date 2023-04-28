@@ -167,11 +167,13 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
   // Executes |script| and stores the result as a string in |result|. A boolean
   // will be returned, indicating whether the script was executed successfully.
   bool RunScript(const std::string& script, std::string* result) const {
-    return content::ExecuteScriptAndExtractString(browser()
-                                                      ->tab_strip_model()
-                                                      ->GetActiveWebContents()
-                                                      ->GetPrimaryMainFrame(),
-                                                  script, result);
+    *result = content::EvalJs(browser()
+                                  ->tab_strip_model()
+                                  ->GetActiveWebContents()
+                                  ->GetPrimaryMainFrame(),
+                              script)
+                  .ExtractString();
+    return true;
   }
 
   GURL TestPageUrl() const {

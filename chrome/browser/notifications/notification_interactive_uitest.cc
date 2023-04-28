@@ -795,9 +795,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
 
   // Start a screen capture session.
   content::WebContents* web_contents = GetActiveWebContents(browser());
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, "startScreenCapture();", &result));
-  ASSERT_EQ("success", result);
+  ASSERT_EQ("success", content::EvalJs(web_contents, "startScreenCapture();"));
 
   // Showing a notification during the screen capture session should show the
   // "Notifications muted" notification.
@@ -828,9 +826,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
 
   // Stop the screen capture session.
   browser()->tab_strip_model()->ActivateTabAt(screen_capture_tab);
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, "stopScreenCapture();", &result));
-  ASSERT_EQ("success", result);
+  ASSERT_EQ("success", content::EvalJs(web_contents, "stopScreenCapture();"));
 
   // Stopping the screen capture session should display the queued notifications
   // and close the "Notifications muted" notification.
