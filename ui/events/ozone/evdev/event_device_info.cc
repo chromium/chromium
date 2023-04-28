@@ -241,6 +241,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x12cf, 0x0490},  // Acer Cestus 325
     {0x1532, 0x007a},  // Razer Viper Ultimate (Wired)
     {0x1532, 0x007b},  // Razer Viper Ultimate (Wireless)
+    {0x1532, 0x008a},  // Razer Viper Mini
     {0x1532, 0x009a},  // Razer Pro Click Mini (Dongle)
     {0x1532, 0x009b},  // Razer Pro Click Mini (Bluetooth)
     {0x17ef, 0x60be},  // Lenovo Legion M200 RGB Gaming Mouse
