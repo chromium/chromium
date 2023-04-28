@@ -243,6 +243,10 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
    * Helper function that checks whether the entered url is valid.
    */
   private async validateWebsite_() {
+    if (this.website_.length === 0) {
+      this.websiteErrorMessage_ = null;
+      return;
+    }
     PasswordManagerImpl.getInstance()
         .getUrlCollection(this.website_)
         .then(urlCollection => {
@@ -255,7 +259,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
   private onWebsiteInputBlur_() {
     if (this.website_.length === 0) {
-      this.websiteErrorMessage_ = this.i18n('notValidWebsite');
+      this.websiteErrorMessage_ = '';
     } else if (!this.websiteErrorMessage_ && !this.website_.includes('.')) {
       this.websiteErrorMessage_ =
           this.i18n('missingTLD', `${this.website_}.com`);
@@ -263,7 +267,11 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   }
 
   private isWebsiteInputInvalid_(): boolean {
-    return !!this.websiteErrorMessage_;
+    return this.websiteErrorMessage_ !== null;
+  }
+
+  private showWebsiteError_(): boolean {
+    return !!this.websiteErrorMessage_ && this.websiteErrorMessage_!.length > 0;
   }
 
   private computeUsernameErrorMessage_(): string|null {

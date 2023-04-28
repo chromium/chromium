@@ -341,13 +341,24 @@ suite('AddPasswordDialogTest', function() {
     await flushTasks();
 
     assertFalse(dialog.$.websiteInput.invalid);
-
+    assertFalse(dialog.$.websiteInput.hasAttribute('show-error-message'));
+    assertEquals(null, dialog.$.websiteInput.errorMessage);
+    // Simulate losing focus.
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
-    await flushTasks();
 
     assertTrue(dialog.$.websiteInput.invalid);
+    assertFalse(dialog.$.websiteInput.hasAttribute('show-error-message'));
+    assertEquals('', dialog.$.websiteInput.errorMessage);
+
+    // Simulate losing focus.
+    dialog.$.websiteInput.value = 'abc';
+    dialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
+
+    assertTrue(dialog.$.websiteInput.invalid);
+    assertTrue(dialog.$.websiteInput.hasAttribute('show-error-message'));
     assertEquals(
-        dialog.i18n('notValidWebsite'), dialog.$.websiteInput.errorMessage);
+        dialog.i18n('missingTLD', 'abc.com'),
+        dialog.$.websiteInput.errorMessage);
   });
 
   test('error when leaving password blank', async function() {
