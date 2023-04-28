@@ -10,11 +10,18 @@
 
 namespace chromeos::converters {
 
+namespace {
+
+namespace cx_events = ::chromeos::api::os_events;
+namespace crosapi = ::crosapi::mojom;
+
+}  // namespace
+
 namespace unchecked {
 
-api::os_events::AudioJackEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryAudioJackEventInfoPtr ptr) {
-  api::os_events::AudioJackEventInfo result;
+cx_events::AudioJackEventInfo UncheckedConvertPtr(
+    crosapi::TelemetryAudioJackEventInfoPtr ptr) {
+  cx_events::AudioJackEventInfo result;
 
   result.event = Convert(ptr->state);
   result.device_type = Convert(ptr->device_type);
@@ -22,18 +29,18 @@ api::os_events::AudioJackEventInfo UncheckedConvertPtr(
   return result;
 }
 
-api::os_events::LidEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryLidEventInfoPtr ptr) {
-  api::os_events::LidEventInfo result;
+cx_events::LidEventInfo UncheckedConvertPtr(
+    crosapi::TelemetryLidEventInfoPtr ptr) {
+  cx_events::LidEventInfo result;
 
   result.event = Convert(ptr->state);
 
   return result;
 }
 
-api::os_events::UsbEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryUsbEventInfoPtr ptr) {
-  api::os_events::UsbEventInfo result;
+cx_events::UsbEventInfo UncheckedConvertPtr(
+    crosapi::TelemetryUsbEventInfoPtr ptr) {
+  cx_events::UsbEventInfo result;
 
   result.event = Convert(ptr->state);
   result.vendor = ptr->vendor;
@@ -45,9 +52,9 @@ api::os_events::UsbEventInfo UncheckedConvertPtr(
   return result;
 }
 
-api::os_events::SdCardEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetrySdCardEventInfoPtr ptr) {
-  api::os_events::SdCardEventInfo result;
+cx_events::SdCardEventInfo UncheckedConvertPtr(
+    crosapi::TelemetrySdCardEventInfoPtr ptr) {
+  cx_events::SdCardEventInfo result;
 
   result.event = Convert(ptr->state);
 
@@ -56,85 +63,80 @@ api::os_events::SdCardEventInfo UncheckedConvertPtr(
 
 }  // namespace unchecked
 
-api::os_events::AudioJackEvent Convert(
-    crosapi::mojom::TelemetryAudioJackEventInfo::State state) {
+cx_events::AudioJackEvent Convert(
+    crosapi::TelemetryAudioJackEventInfo::State state) {
   switch (state) {
-    case crosapi::mojom::TelemetryAudioJackEventInfo_State::kUnmappedEnumField:
-      return api::os_events::AudioJackEvent::kNone;
-    case crosapi::mojom::TelemetryAudioJackEventInfo_State::kAdd:
-      return api::os_events::AudioJackEvent::kConnected;
-    case crosapi::mojom::TelemetryAudioJackEventInfo_State::kRemove:
-      return api::os_events::AudioJackEvent::kDisconnected;
+    case crosapi::TelemetryAudioJackEventInfo_State::kUnmappedEnumField:
+      return cx_events::AudioJackEvent::kNone;
+    case crosapi::TelemetryAudioJackEventInfo_State::kAdd:
+      return cx_events::AudioJackEvent::kConnected;
+    case crosapi::TelemetryAudioJackEventInfo_State::kRemove:
+      return cx_events::AudioJackEvent::kDisconnected;
   }
   NOTREACHED();
 }
 
-api::os_events::AudioJackDeviceType Convert(
-    crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType device_type) {
+cx_events::AudioJackDeviceType Convert(
+    crosapi::TelemetryAudioJackEventInfo::DeviceType device_type) {
   switch (device_type) {
-    case crosapi::mojom::TelemetryAudioJackEventInfo_DeviceType::
-        kUnmappedEnumField:
-      return api::os_events::AudioJackDeviceType::kNone;
-    case crosapi::mojom::TelemetryAudioJackEventInfo_DeviceType::kHeadphone:
-      return api::os_events::AudioJackDeviceType::kHeadphone;
-    case crosapi::mojom::TelemetryAudioJackEventInfo_DeviceType::kMicrophone:
-      return api::os_events::AudioJackDeviceType::kMicrophone;
+    case crosapi::TelemetryAudioJackEventInfo_DeviceType::kUnmappedEnumField:
+      return cx_events::AudioJackDeviceType::kNone;
+    case crosapi::TelemetryAudioJackEventInfo_DeviceType::kHeadphone:
+      return cx_events::AudioJackDeviceType::kHeadphone;
+    case crosapi::TelemetryAudioJackEventInfo_DeviceType::kMicrophone:
+      return cx_events::AudioJackDeviceType::kMicrophone;
   }
   NOTREACHED();
 }
 
-api::os_events::LidEvent Convert(
-    crosapi::mojom::TelemetryLidEventInfo::State state) {
+cx_events::LidEvent Convert(crosapi::TelemetryLidEventInfo::State state) {
   switch (state) {
-    case crosapi::mojom::TelemetryLidEventInfo_State::kUnmappedEnumField:
-      return api::os_events::LidEvent::kNone;
-    case crosapi::mojom::TelemetryLidEventInfo_State::kClosed:
-      return api::os_events::LidEvent::kClosed;
-    case crosapi::mojom::TelemetryLidEventInfo_State::kOpened:
-      return api::os_events::LidEvent::kOpened;
+    case crosapi::TelemetryLidEventInfo_State::kUnmappedEnumField:
+      return cx_events::LidEvent::kNone;
+    case crosapi::TelemetryLidEventInfo_State::kClosed:
+      return cx_events::LidEvent::kClosed;
+    case crosapi::TelemetryLidEventInfo_State::kOpened:
+      return cx_events::LidEvent::kOpened;
   }
   NOTREACHED();
 }
 
-api::os_events::UsbEvent Convert(
-    crosapi::mojom::TelemetryUsbEventInfo::State state) {
+cx_events::UsbEvent Convert(crosapi::TelemetryUsbEventInfo::State state) {
   switch (state) {
-    case crosapi::mojom::TelemetryUsbEventInfo_State::kUnmappedEnumField:
-      return api::os_events::UsbEvent::kNone;
-    case crosapi::mojom::TelemetryUsbEventInfo_State::kAdd:
-      return api::os_events::UsbEvent::kConnected;
-    case crosapi::mojom::TelemetryUsbEventInfo_State::kRemove:
-      return api::os_events::UsbEvent::kDisconnected;
+    case crosapi::TelemetryUsbEventInfo_State::kUnmappedEnumField:
+      return cx_events::UsbEvent::kNone;
+    case crosapi::TelemetryUsbEventInfo_State::kAdd:
+      return cx_events::UsbEvent::kConnected;
+    case crosapi::TelemetryUsbEventInfo_State::kRemove:
+      return cx_events::UsbEvent::kDisconnected;
   }
   NOTREACHED();
 }
 
-api::os_events::SdCardEvent Convert(
-    crosapi::mojom::TelemetrySdCardEventInfo::State state) {
+cx_events::SdCardEvent Convert(crosapi::TelemetrySdCardEventInfo::State state) {
   switch (state) {
-    case crosapi::mojom::TelemetrySdCardEventInfo_State::kUnmappedEnumField:
-      return api::os_events::SdCardEvent::kNone;
-    case crosapi::mojom::TelemetrySdCardEventInfo_State::kAdd:
-      return api::os_events::SdCardEvent::kConnected;
-    case crosapi::mojom::TelemetrySdCardEventInfo_State::kRemove:
-      return api::os_events::SdCardEvent::kDisconnected;
+    case crosapi::TelemetrySdCardEventInfo_State::kUnmappedEnumField:
+      return cx_events::SdCardEvent::kNone;
+    case crosapi::TelemetrySdCardEventInfo_State::kAdd:
+      return cx_events::SdCardEvent::kConnected;
+    case crosapi::TelemetrySdCardEventInfo_State::kRemove:
+      return cx_events::SdCardEvent::kDisconnected;
   }
   NOTREACHED();
 }
 
-crosapi::mojom::TelemetryEventCategoryEnum Convert(
-    api::os_events::EventCategory input) {
+crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
   switch (input) {
-    case api::os_events::EventCategory::kNone:
-      return crosapi::mojom::TelemetryEventCategoryEnum::kUnmappedEnumField;
-    case api::os_events::EventCategory::kAudioJack:
-      return crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack;
-    case api::os_events::EventCategory::kLid:
-      return crosapi::mojom::TelemetryEventCategoryEnum::kLid;
-    case api::os_events::EventCategory::kUsb:
-      return crosapi::mojom::TelemetryEventCategoryEnum::kUsb;
-    case api::os_events::EventCategory::kSdCard:
-      return crosapi::mojom::TelemetryEventCategoryEnum::kSdCard;
+    case cx_events::EventCategory::kNone:
+      return crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField;
+    case cx_events::EventCategory::kAudioJack:
+      return crosapi::TelemetryEventCategoryEnum::kAudioJack;
+    case cx_events::EventCategory::kLid:
+      return crosapi::TelemetryEventCategoryEnum::kLid;
+    case cx_events::EventCategory::kUsb:
+      return crosapi::TelemetryEventCategoryEnum::kUsb;
+    case cx_events::EventCategory::kSdCard:
+      return crosapi::TelemetryEventCategoryEnum::kSdCard;
   }
   NOTREACHED();
 }

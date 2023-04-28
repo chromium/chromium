@@ -15,14 +15,20 @@
 
 namespace chromeos {
 
+namespace {
+
+namespace crosapi = ::crosapi::mojom;
+
+}  // namespace
+
 EventRouter::EventRouter(content::BrowserContext* context)
     : browser_context_(context) {}
 
 EventRouter::~EventRouter() = default;
 
-mojo::PendingRemote<crosapi::mojom::TelemetryEventObserver>
+mojo::PendingRemote<crosapi::TelemetryEventObserver>
 EventRouter::GetPendingRemoteForCategoryAndExtension(
-    crosapi::mojom::TelemetryEventCategoryEnum category,
+    crosapi::TelemetryEventCategoryEnum category,
     extensions::ExtensionId extension_id) {
   auto iter_extension = observers_.find(extension_id);
   if (iter_extension == observers_.end()) {
@@ -50,7 +56,7 @@ void EventRouter::ResetReceiversForExtension(
 
 void EventRouter::ResetReceiversOfExtensionByCategory(
     extensions::ExtensionId extension_id,
-    crosapi::mojom::TelemetryEventCategoryEnum category) {
+    crosapi::TelemetryEventCategoryEnum category) {
   auto it = observers_.find(extension_id);
   if (it == observers_.end()) {
     return;
@@ -61,7 +67,7 @@ void EventRouter::ResetReceiversOfExtensionByCategory(
 
 bool EventRouter::IsExtensionObservingForCategory(
     extensions::ExtensionId extension_id,
-    crosapi::mojom::TelemetryEventCategoryEnum category) {
+    crosapi::TelemetryEventCategoryEnum category) {
   auto it = observers_.find(extension_id);
   if (it == observers_.end()) {
     return false;

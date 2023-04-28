@@ -22,6 +22,13 @@
 
 namespace chromeos {
 
+namespace {
+
+namespace cx_events = ::chromeos::api::os_events;
+namespace crosapi = ::crosapi::mojom;
+
+}  // namespace
+
 // EventsApiFunctionBase -------------------------------------------------------
 
 EventsApiFunctionBase::EventsApiFunctionBase() = default;
@@ -30,8 +37,7 @@ EventsApiFunctionBase::~EventsApiFunctionBase() = default;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool EventsApiFunctionBase::IsCrosApiAvailable() {
-  return LacrosService::Get()
-      ->IsAvailable<crosapi::mojom::TelemetryEventService>();
+  return LacrosService::Get()->IsAvailable<crosapi::TelemetryEventService>();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -49,7 +55,7 @@ absl::optional<Params> EventsApiFunctionBase::GetParams() {
 // OsEventsIsEventSupportedFunction --------------------------------------------
 
 void OsEventsIsEventSupportedFunction::RunIfAllowed() {
-  const auto params = GetParams<api::os_events::IsEventSupported::Params>();
+  const auto params = GetParams<cx_events::IsEventSupported::Params>();
   if (!params) {
     return;
   }
@@ -62,36 +68,36 @@ void OsEventsIsEventSupportedFunction::RunIfAllowed() {
 }
 
 void OsEventsIsEventSupportedFunction::OnEventManagerResult(
-    crosapi::mojom::TelemetryExtensionSupportStatusPtr status) {
+    crosapi::TelemetryExtensionSupportStatusPtr status) {
   if (!status) {
     Respond(Error("API internal error."));
     return;
   }
 
   switch (status->which()) {
-    case crosapi::mojom::internal::TelemetryExtensionSupportStatus_Data::
+    case crosapi::internal::TelemetryExtensionSupportStatus_Data::
         TelemetryExtensionSupportStatus_Tag::kUnmappedUnionField:
       Respond(Error("API internal error."));
       break;
-    case crosapi::mojom::internal::TelemetryExtensionSupportStatus_Data::
+    case crosapi::internal::TelemetryExtensionSupportStatus_Data::
         TelemetryExtensionSupportStatus_Tag::kException:
       Respond(Error(status->get_exception()->debug_message));
       break;
-    case crosapi::mojom::internal::TelemetryExtensionSupportStatus_Data::
+    case crosapi::internal::TelemetryExtensionSupportStatus_Data::
         TelemetryExtensionSupportStatus_Tag::kSupported: {
-      api::os_events::EventSupportStatusInfo success;
-      success.status = api::os_events::EventSupportStatus::kSupported;
-      Respond(ArgumentList(
-          api::os_events::IsEventSupported::Results::Create(success)));
+      cx_events::EventSupportStatusInfo success;
+      success.status = cx_events::EventSupportStatus::kSupported;
+      Respond(
+          ArgumentList(cx_events::IsEventSupported::Results::Create(success)));
       break;
     }
-    case crosapi::mojom::internal::TelemetryExtensionSupportStatus_Data::
+    case crosapi::internal::TelemetryExtensionSupportStatus_Data::
         TelemetryExtensionSupportStatus_Tag::kUnsupported:
-      api::os_events::EventSupportStatusInfo result;
-      result.status = api::os_events::EventSupportStatus::kUnsupported;
+      cx_events::EventSupportStatusInfo result;
+      result.status = cx_events::EventSupportStatus::kUnsupported;
 
-      Respond(ArgumentList(
-          api::os_events::IsEventSupported::Results::Create(result)));
+      Respond(
+          ArgumentList(cx_events::IsEventSupported::Results::Create(result)));
       break;
   }
 }
@@ -99,7 +105,7 @@ void OsEventsIsEventSupportedFunction::OnEventManagerResult(
 // OsEventsStartCapturingEventsFunction ----------------------------------------
 
 void OsEventsStartCapturingEventsFunction::RunIfAllowed() {
-  const auto params = GetParams<api::os_events::StartCapturingEvents::Params>();
+  const auto params = GetParams<cx_events::StartCapturingEvents::Params>();
   if (!params) {
     return;
   }
@@ -121,7 +127,7 @@ void OsEventsStartCapturingEventsFunction::RunIfAllowed() {
 // OsEventsStopCapturingEventsFunction -----------------------------------------
 
 void OsEventsStopCapturingEventsFunction::RunIfAllowed() {
-  const auto params = GetParams<api::os_events::StartCapturingEvents::Params>();
+  const auto params = GetParams<cx_events::StartCapturingEvents::Params>();
   if (!params) {
     return;
   }
