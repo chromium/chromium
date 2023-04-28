@@ -338,11 +338,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     }
 
     @Override
-    public boolean hideOnScroll() {
-        return true;
-    }
-
-    @Override
     public int getSheetContentDescriptionStringId() {
         return R.string.overscroll_navigation_sheet_description;
     }
