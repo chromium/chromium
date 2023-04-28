@@ -78,7 +78,7 @@ OverviewItemView::OverviewItemView(
     views::Button::PressedCallback close_callback,
     aura::Window* window,
     bool show_preview)
-    : WindowMiniView(window, kWindowMargin),
+    : WindowMiniView(window),
       overview_item_(overview_item),
       close_button_(header_view()->AddChildView(std::make_unique<CloseButton>(
           std::move(close_callback),

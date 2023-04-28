@@ -157,7 +157,7 @@ gfx::SizeF GetItemSizeWhenOnDesksBar(OverviewGrid* overview_grid,
   }
 
   // Add the margins overview mode adds around the window's contents.
-  scaled_size.Enlarge(2 * kWindowMargin, 2 * kWindowMargin + kHeaderHeightDp);
+  scaled_size.Enlarge(kDraggingEnlargeDp, kDraggingEnlargeDp + kHeaderHeightDp);
   return scaled_size;
 }
 
@@ -384,8 +384,8 @@ void OverviewWindowDragController::StartNormalDragMode(
     // bottom-edge of the desks bar (may be different edges if we are dragging
     // from different directions).
     gfx::SizeF item_no_header_size = original_scaled_size_;
-    item_no_header_size.Enlarge(float{-kWindowMargin * 2},
-                                float{-kWindowMargin * 2 - kHeaderHeightDp});
+    item_no_header_size.Enlarge(float{-kDraggingEnlargeDp},
+                                float{-kDraggingEnlargeDp - kHeaderHeightDp});
 
     // We must update the desks bar widget bounds before we cache its bounds
     // below, in case it needs to be pushed down due to splitview indicators.
@@ -612,7 +612,7 @@ void OverviewWindowDragController::ContinueNormalDrag(
       // target bounds, and offset up the centerpoint by half that amount, so
       // that the transformed bounds of the window contents move up to be
       // centered around the cursor.
-      centerpoint.Offset(0, (-kWindowMargin - kHeaderHeightDp) / 2);
+      centerpoint.Offset(0, -kHeaderHeightDp / 2);
     }
 
     const auto iter = per_grid_desks_bar_data_.find(overview_grid);

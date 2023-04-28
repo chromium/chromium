@@ -170,14 +170,10 @@ gfx::Size WindowMiniView::GetPreviewViewSize() const {
   return preview_view_->GetPreferredSize();
 }
 
-WindowMiniView::WindowMiniView(aura::Window* source_window, int border_inset)
+WindowMiniView::WindowMiniView(aura::Window* source_window)
     : source_window_(source_window) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-
-  // TODO(conniekxu|sammiequon): Remove the border once the calculation method
-  // for the bounds of the OverviewItemView is redone.
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(border_inset)));
 
   window_observation_.Observe(source_window);
 
@@ -213,7 +209,7 @@ WindowMiniView::WindowMiniView(aura::Window* source_window, int border_inset)
   // In order to show the focus ring out of the content view, `border_inset`
   // needs to be counted when setting the insets for the focus ring.
   views::InstallRoundRectHighlightPathGenerator(
-      this, gfx::Insets(kFocusRingHaloInset + border_inset),
+      this, gfx::Insets(kFocusRingHaloInset),
       chromeos::features::IsJellyrollEnabled() ? kFocusRingCornerRadius
                                                : kBackdropBorderRoundingDp);
   views::FocusRing::Install(this);

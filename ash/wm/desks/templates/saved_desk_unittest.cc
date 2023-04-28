@@ -920,10 +920,9 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
                                          save_desk_button_container]() {
     auto& window_list = overview_grid->window_list();
     ASSERT_FALSE(window_list.empty());
-    EXPECT_EQ(
-        std::round(window_list.front()->target_bounds().x()) + kWindowMargin,
-        save_desk_button_container->GetBoundsInScreen().x());
-    EXPECT_EQ(std::round(window_list.front()->target_bounds().y()) - 40,
+    EXPECT_EQ(std::round(window_list.front()->target_bounds().x()),
+              save_desk_button_container->GetBoundsInScreen().x());
+    EXPECT_EQ(std::round(window_list.front()->target_bounds().y()) - 45,
               save_desk_button_container->GetBoundsInScreen().y());
     EXPECT_EQ(16, save_desk_button_container->GetBetweenChildSpacing());
   };

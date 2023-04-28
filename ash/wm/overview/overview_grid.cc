@@ -98,7 +98,7 @@ constexpr int kNoItemsIndicatorVerticalPaddingDp = 8;
 
 // Distance from the bottom of the save desk as template button to the top of
 // the first overview item.
-constexpr int kSaveDeskAsTemplateOverviewItemSpacingDp = 40;
+constexpr int kSaveDeskAsTemplateOverviewItemSpacingDp = 45;
 
 // Windows are not allowed to get taller than this.
 constexpr int kMaxHeight = 512;
@@ -400,8 +400,8 @@ gfx::Insets GetGridInsetsImpl(const gfx::Rect& grid_bounds) {
       horizontal_inset +
       kOverviewVerticalInset * (grid_bounds.height() - 2 * horizontal_inset);
 
-  return gfx::Insets::VH(std::max(0, vertical_inset - kWindowMargin),
-                         std::max(0, horizontal_inset - kWindowMargin));
+  return gfx::Insets::VH(std::max(0, vertical_inset),
+                         std::max(0, horizontal_inset));
 }
 
 bool ShouldExcludeItemFromGridLayout(
@@ -2033,8 +2033,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // changing, so its ok to use a bounds animation as opposed to a transform
   // animation. If the visibility has changed, skip the bounds animation and use
   // the fade animation from above. Align the widget so it is visually aligned
-  // with the first overview item, which has an invisible border of
-  // `kWindowMargin` thickness.
+  // with the first overview item.
   ScopedOverviewAnimationSettings settings(
       visibility_changed || in_desk_animation
           ? OVERVIEW_ANIMATION_NONE
@@ -2042,7 +2041,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
       save_desk_button_container_widget_->GetNativeWindow());
   gfx::Point available_origin =
       gfx::ToRoundedPoint(first_overview_item_bounds.origin()) +
-      gfx::Vector2d(kWindowMargin, -kSaveDeskAsTemplateOverviewItemSpacingDp);
+      gfx::Vector2d(0, -kSaveDeskAsTemplateOverviewItemSpacingDp);
   save_desk_button_container_widget_->SetBounds(gfx::Rect(
       available_origin, save_desk_button_container_widget_->GetContentsView()
                             ->GetPreferredSize()));
@@ -2240,7 +2239,7 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
   // |high_height|. Once this optimal height is known, |height_fixed| is set to
   // true and the rows are balanced by repeatedly squeezing the widest row to
   // cause windows to overflow to the subsequent rows.
-  int low_height = 2 * kWindowMargin;
+  int low_height = kSpaceBetweenItemsDp;
   int high_height = std::max(low_height, total_bounds.height() + 1);
   int height = 0.5 * (low_height + high_height);
   bool height_fixed = false;
@@ -2379,7 +2378,7 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRectsForTabletModeLayout(
     const int x = right_edge_map.contains(y)
                       ? right_edge_map[y]
                       : total_bounds.x() + scroll_offset_;
-    right_edge_map[y] = x + width;
+    right_edge_map[y] = x + width + kSpaceBetweenItemsDp;
     DCHECK_LE(static_cast<int>(right_edge_map.size()), kTabletLayoutRow);
 
     const gfx::RectF bounds(x, y, width, height);
@@ -2419,35 +2418,33 @@ bool OverviewGrid::FitWindowRectsInBounds(
     if (ShouldExcludeItemFromGridLayout(window_list_[i].get(), ignored_items))
       continue;
 
-    int width = CalculateWidthAndMaybeSetUnclippedBounds(window_list_[i].get(),
-                                                         height) +
-                2 * kWindowMargin;
-    int height_with_margin = height + 2 * kWindowMargin;
+    int width =
+        CalculateWidthAndMaybeSetUnclippedBounds(window_list_[i].get(), height);
 
-    if (left + width > bounds.right()) {
+    if ((left + width + kSpaceBetweenItemsDp) > bounds.right()) {
       // Move to the next row if possible.
       if (*out_min_right > left)
         *out_min_right = left;
       if (*out_max_right < left)
         *out_max_right = left;
-      top += height_with_margin;
+      top += (height + kSpaceBetweenItemsDp);
 
       // Check if the new row reaches the bottom or if the first item in the new
       // row does not fit within the available width.
-      if (top + height_with_margin > bounds.bottom() ||
-          bounds.x() + width > bounds.right()) {
+      if ((top + height + kSpaceBetweenItemsDp) > bounds.bottom() ||
+          bounds.x() + width + kSpaceBetweenItemsDp > bounds.right()) {
         return false;
       }
       left = bounds.x();
     }
 
     // Position the current rect.
-    (*out_rects)[i] = gfx::RectF(left, top, width, height_with_margin);
+    (*out_rects)[i] = gfx::RectF(left, top, width, height);
 
-    // Increment horizontal position using sanitized positive |width|.
-    left += width;
+    // Increment horizontal position using sanitized positive `width`.
+    left += (width + kSpaceBetweenItemsDp);
 
-    *out_max_bottom = top + height_with_margin;
+    *out_max_bottom = top + height;
   }
 
   // Update the narrowest and widest row width for the last row.

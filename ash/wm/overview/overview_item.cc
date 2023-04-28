@@ -341,7 +341,6 @@ gfx::RectF OverviewItem::GetTransformedBounds() const {
 
 gfx::RectF OverviewItem::GetWindowTargetBoundsWithInsets() const {
   gfx::RectF window_target_bounds = target_bounds_;
-  window_target_bounds.Inset(kWindowMargin);
   window_target_bounds.Inset(gfx::InsetsF::TLBR(kHeaderHeightDp, 0, 0, 0));
   return window_target_bounds;
 }
@@ -818,7 +817,6 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
     gfx::RectF shadow_bounds;
     if (chromeos::features::IsJellyrollEnabled()) {
       shadow_bounds = target_bounds_;
-      shadow_bounds.Inset(gfx::InsetsF(kWindowMargin));
     } else {
       shadow_bounds = GetWindowTargetBoundsWithInsets();
     }
@@ -1245,10 +1243,6 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
 
   const int top_view_inset = transform_window_.GetTopInset();
   gfx::RectF transformed_bounds = target_bounds;
-
-  // |target_bounds| are the bounds of the |item_widget|, which include a
-  // border.
-  transformed_bounds.Inset(kWindowMargin);
 
   // Update |transformed_bounds| to match the unclipped size of the window, so
   // we transform the window to the correct size.

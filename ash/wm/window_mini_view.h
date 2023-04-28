@@ -68,7 +68,7 @@ class ASH_EXPORT WindowMiniView : public views::View,
   WindowPreviewView* preview_view() const { return preview_view_; }
 
  protected:
-  explicit WindowMiniView(aura::Window* source_window, int border_inset = 0);
+  explicit WindowMiniView(aura::Window* source_window);
 
   // Updates the icon view by creating it if necessary, and grabbing the correct
   // image from |source_window_|.

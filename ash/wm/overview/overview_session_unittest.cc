@@ -7775,7 +7775,6 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   // Verify that |item| is letter boxed. The bounds of |item|, minus the margin
   // should have an aspect ratio of 2 : 1.
   gfx::RectF item_bounds = item->target_bounds();
-  item_bounds.Inset(gfx::InsetsF(kWindowMargin));
   EXPECT_EQ(OverviewGridWindowFillMode::kLetterBoxed,
             item->GetWindowDimensionsType());
   EXPECT_EQ(2.f, item_bounds.width() / item_bounds.height());
@@ -7794,7 +7793,6 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   // targets (and that is okay). The bounds of |drop_target|, minus the margin
   // should have an aspect ratio of 1 : 2.
   gfx::RectF drop_target_bounds = drop_target->target_bounds();
-  drop_target_bounds.Inset(gfx::InsetsF(kWindowMargin));
   EXPECT_EQ(0.5f, drop_target_bounds.width() / drop_target_bounds.height());
 }
 
