@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_CREDENTIAL_PROVIDER_SERVICE_H_
 #define IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_CREDENTIAL_PROVIDER_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -14,7 +15,6 @@
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service_observer.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
 
 class FaviconLoader;
 
@@ -42,7 +42,6 @@ class CredentialProviderService
   CredentialProviderService(
       PrefService* prefs,
       scoped_refptr<password_manager::PasswordStoreInterface> password_store,
-      AuthenticationService* authentication_service,
       id<MutableCredentialStore> credential_store,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
@@ -125,26 +124,24 @@ class CredentialProviderService
   void OnSavingPasswordsEnabledChanged();
 
   // The interface for getting and manipulating a user's saved passwords.
-  scoped_refptr<password_manager::PasswordStoreInterface> password_store_;
-
-  // The interface for getting the primary account identifier.
-  AuthenticationService* authentication_service_ = nullptr;
+  const scoped_refptr<password_manager::PasswordStoreInterface> password_store_;
 
   // Identity manager to observe.
-  signin::IdentityManager* identity_manager_ = nullptr;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Sync Service to observe.
-  syncer::SyncService* sync_service_ = nullptr;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   // Helper which injects branding information from affiliation service.
-  std::unique_ptr<password_manager::AffiliatedMatchHelper> affiliated_helper_;
+  const std::unique_ptr<password_manager::AffiliatedMatchHelper>
+      affiliated_helper_;
 
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
-  FaviconLoader* favicon_loader_ = nullptr;
+  const raw_ptr<FaviconLoader> favicon_loader_;
 
   // The interface for saving and updating credentials.
-  id<MutableCredentialStore> credential_store_ = nil;
+  const id<MutableCredentialStore> credential_store_ = nil;
 
   // The current validation ID or nil.
   NSString* account_id_ = nil;
