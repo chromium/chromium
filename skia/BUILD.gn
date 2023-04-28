@@ -25,7 +25,6 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "SKIA_SUPPORT_SKOTTIE=$skia_support_skottie",
-    "ENABLE_SKIA_GRAPHITE=$enable_skia_graphite",
     "SKIA_USE_DAWN=$skia_use_dawn",
     "SKIA_USE_METAL=$skia_use_metal",
   ]
@@ -105,15 +104,15 @@ config("skia_config") {
         "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers_config",
       ]
     }
-    if (enable_skia_graphite) {
-      defines += [ "SK_GRAPHITE" ]
-      if (skia_use_dawn) {
-        defines += [ "SK_DAWN" ]
-        configs += [ "//third_party/dawn/include/dawn:public" ]
-      }
-      if (skia_use_metal) {
-        defines += [ "SK_METAL" ]
-      }
+
+    # Graphite
+    defines += [ "SK_GRAPHITE" ]
+    if (skia_use_dawn) {
+      defines += [ "SK_DAWN" ]
+      configs += [ "//third_party/dawn/include/dawn:public" ]
+    }
+    if (skia_use_metal) {
+      defines += [ "SK_METAL" ]
     }
   }
 }
@@ -566,8 +565,18 @@ component("skia") {
       sources += skia_shared_vk_sources
       sources += skia_gpu_vk_chromium_private
     }
-    if (enable_skia_graphite) {
-      deps += [ ":skia_graphite" ]
+
+    public_deps += [ ":skia_graphite_public" ]
+    deps += [ ":skia_graphite_private" ]
+
+    # Even though we only use Dawn and Metal with Graphite, we need to build the
+    # Ganesh sources, since both Ganesh and Graphite use the same defines for
+    # enabling backends, otherwise we'll get undefined symbol errors in Ganesh.
+    if (skia_use_dawn) {
+      deps += [ ":skia_ganesh_dawn" ]
+    }
+    if (skia_use_metal) {
+      deps += [ ":skia_ganesh_metal" ]
     }
     deps += [ "//gpu/config:workaround_list" ]
   }
@@ -766,50 +775,65 @@ skia_source_set("skia_opts") {
 }
 
 # Split out Graphite sources because of conflicting file names with Ganesh.
-if (enable_skia_graphite) {
-  skia_source_set("skia_graphite") {
+# Split into separate private and public source sets because we want to allow
+# shared GPU code in ":skia" to include private Graphite headers, but want to
+# limit external code to only depend on public headers. Only define these source
+# sets when skia_support_gpu is true so that on iOS non-Blink builds, headers in
+# these source sets are considered unknown and skipped by gn check.
+if (skia_support_gpu) {
+  skia_source_set("skia_graphite_public") {
     public = skia_graphite_public
-    sources = skia_graphite_sources
-    deps = []
     if (skia_use_dawn) {
-      sources += skia_shared_dawn_sources
-      sources += skia_graphite_dawn_sources
-      deps += [
-        ":skia_ganesh_dawn",
+      public += skia_graphite_dawn_public
+      public_deps = [
         "//third_party/dawn/src/dawn:cpp",
         "//third_party/dawn/src/dawn:proc",
       ]
     }
     if (skia_use_metal) {
-      sources += skia_shared_mtl_sources
-      sources += skia_graphite_mtl_sources
-      deps += [ ":skia_ganesh_metal" ]
+      public += skia_graphite_mtl_public
       frameworks = [ "Metal.framework" ]
     }
   }
 
-  # Even though we only use Dawn and Metal with Graphite, we need to build the
-  # Ganesh sources, since both Ganesh and Graphite use the same defines for
-  # enabling backends, or else we'll get undefined symbol errors in some cases.
+  # If a source set contains only sources and no public files, then dependents can
+  # include any file from sources.
+  skia_source_set("skia_graphite_private") {
+    sources = skia_graphite_sources
+    if (skia_use_dawn) {
+      sources += skia_shared_dawn_sources
+      sources += skia_graphite_dawn_sources
+    }
+    if (skia_use_metal) {
+      sources += skia_shared_mtl_sources
+      sources += skia_graphite_mtl_sources
+    }
+    visibility = [ ":skia" ]
+  }
+
   if (skia_use_dawn) {
+    # Split out Ganesh Dawn sources, because they require error suppression.
     skia_source_set("skia_ganesh_dawn") {
-      public = skia_gpu_dawn_public
-      sources = skia_gpu_dawn_private
+      sources = skia_gpu_dawn_public
+      sources += skia_gpu_dawn_private
 
       # Ganesh Dawn backend has SkASSERT(!"umimplemented") calls which cause
       # -Wstring-conversion to fail - exempt this code since it's unused anyway.
       cflags_cc = [ "-Wno-string-conversion" ]
+
+      visibility = [ ":skia" ]
     }
   }
   if (skia_use_metal) {
     # Split out Ganesh Metal sources, because they require ARC.
     skia_source_set("skia_ganesh_metal") {
-      public = skia_gpu_metal_public
-      sources = skia_gpu_metal_private
+      sources = skia_gpu_metal_public
+      sources += skia_gpu_metal_private
       cflags_objcc = [
         "-Wno-unguarded-availability",
         "-fobjc-arc",
       ]
+      visibility = [ ":skia" ]
     }
   }
 }

@@ -370,7 +370,6 @@ GpuServiceImpl::GpuServiceImpl(
   }
 #endif
 
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
   if (gpu_preferences_.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     dawn_context_provider_ = DawnContextProvider::Create();
@@ -387,7 +386,6 @@ GpuServiceImpl::GpuServiceImpl(
     }
 #endif  // BUILDFLAG(SKIA_USE_METAL)
   }
-#endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
 
 #if BUILDFLAG(USE_VAAPI_IMAGE_CODECS)
   image_decode_accelerator_worker_ =

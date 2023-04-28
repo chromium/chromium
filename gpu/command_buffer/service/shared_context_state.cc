@@ -24,6 +24,7 @@
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
@@ -42,10 +43,6 @@
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
-#include "third_party/skia/include/gpu/graphite/Context.h"
 #endif
 
 #if BUILDFLAG(SKIA_USE_METAL)
@@ -369,10 +366,8 @@ bool SharedContextState::InitializeGanesh(
 
 bool SharedContextState::InitializeGraphite(
     const GpuPreferences& gpu_preferences) {
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
-  skgpu::graphite::ContextOptions context_options =
+  [[maybe_unused]] skgpu::graphite::ContextOptions context_options =
       GetDefaultGraphiteContextOptions();
-
   if (gr_context_type_ == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     if (dawn_context_provider_ &&
@@ -402,9 +397,6 @@ bool SharedContextState::InitializeGraphite(
   viz_compositor_graphite_recorder_ = graphite_context_->makeRecorder();
   transfer_cache_ = std::make_unique<ServiceTransferCache>(gpu_preferences);
   return true;
-#else   // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
-  NOTREACHED_NORETURN();
-#endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
 }
 
 bool SharedContextState::InitializeGL(

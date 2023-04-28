@@ -21,6 +21,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -43,10 +44,6 @@ extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 #if BUILDFLAG(IS_WIN)
 #include <d3d11.h>
 #include <wrl/client.h>
-#endif
-
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
-#include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #endif
 
 typedef unsigned int GLenum;
@@ -324,7 +321,6 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
       return promise_image_textures_[plane_index].get();
     }
 
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
     skgpu::graphite::BackendTexture graphite_texture() const {
       DCHECK(representation()->format().is_single_plane());
       return graphite_texture(0);
@@ -332,7 +328,6 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     skgpu::graphite::BackendTexture graphite_texture(int plane_index) const {
       return graphite_textures_[plane_index];
     }
-#endif
 
     // NOTE: Implemented only for Ganesh.
     // Applies the GrBackendSurfaceMutableState for Vulkan layout and external
@@ -345,21 +340,17 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     ScopedWriteAccess(
         SkiaImageRepresentation* representation,
         std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures);
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
     ScopedWriteAccess(
         SkiaImageRepresentation* representation,
         std::vector<skgpu::graphite::BackendTexture> graphite_textures);
-#endif
 
     // A vector of surfaces, promise textures and graphite backend textures
     // corresponding to the number of planes in SharedImageFormat.
     std::vector<sk_sp<SkSurface>> surfaces_;
     // NOTE: Used only for Ganesh.
     std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures_;
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
     // NOTE: Used only for Graphite.
     std::vector<skgpu::graphite::BackendTexture> graphite_textures_;
-#endif
   };
 
   class GPU_GLES2_EXPORT ScopedReadAccess
@@ -375,7 +366,6 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
       return promise_image_textures_[plane_index].get();
     }
 
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
     skgpu::graphite::BackendTexture graphite_texture() const {
       DCHECK(representation()->format().is_single_plane());
       return graphite_texture(0);
@@ -383,7 +373,6 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     skgpu::graphite::BackendTexture graphite_texture(int plane_index) const {
       return graphite_textures_[plane_index];
     }
-#endif
 
     // Creates an SkImage from BackendTexture for single planar formats or if
     // format prefers external sampler. Creates an SkImage from
@@ -409,19 +398,15 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     ScopedReadAccess(
         SkiaImageRepresentation* representation,
         std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures);
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
     ScopedReadAccess(
         SkiaImageRepresentation* representation,
         std::vector<skgpu::graphite::BackendTexture> graphite_textures);
-#endif
 
     // A vector of promise textures and graphite backend textures corresponding
     // to the number of planes in SharedImageFormat. NOTE: Used only for Ganesh.
     std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures_;
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
     // NOTE: Used only for Graphite.
     std::vector<skgpu::graphite::BackendTexture> graphite_textures_;
-#endif
   };
 
   SkiaImageRepresentation(SharedImageManager* manager,
@@ -626,7 +611,6 @@ class GPU_GLES2_EXPORT SkiaGaneshImageRepresentation
 ///////////////////////////////////////////////////////////////////////////////
 // SkiaGraphiteImageRepresentation
 
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
 class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
     : public SkiaImageRepresentation {
  public:
@@ -723,7 +707,6 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
   // Returns an empty vector on failure.
   virtual std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() = 0;
 };
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // DawnImageRepresentation

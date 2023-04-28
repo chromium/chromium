@@ -17,7 +17,8 @@ enable_vulkan_backend_tests =
     enable_vulkan &&
     ((is_linux && !is_castos && !is_cfi) || (is_fuchsia && target_cpu == "x64"))
 
-enable_skia_graphite_tests = enable_skia_graphite && enable_skia_graphite_gtests
+enable_skia_graphite_tests =
+    (skia_use_dawn || skia_use_metal) && enable_skia_graphite_gtests
 
 # TODO(crbug.com/1336055): Determine whether is_cast_android needs this.
 enable_cast_overlay_strategy = is_castos || is_cast_android
