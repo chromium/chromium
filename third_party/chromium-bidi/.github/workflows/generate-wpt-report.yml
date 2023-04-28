@@ -45,20 +45,12 @@ jobs:
         working-directory: wpt
       - name: Install Chromium
         run: echo "chromium_binary=$(npx @puppeteer/browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
-      - name: Run tests
-        run: >
-          ./wpt/wpt run
-          --binary-arg="--headless=new"
-          --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"
-          --webdriver-arg="--log-path=out/chromedriver.log"
-          --webdriver-arg="--verbose"
-          --binary "${{ env.chromium_binary }}"
-          --install-webdriver --channel=dev --yes
-          --manifest MANIFEST.json
-          --metadata wpt-metadata/chromedriver/headless
-          --log-wptreport out/wptreport-chromedriver.json
-          chrome
-          webdriver/tests/bidi/
+      - name: Run WPT tests
+        run: ./runWPT.sh webdriver/tests/bidi/
+        env:
+          BROWSER_BIN: ${{ env.chromium_binary }}
+          CHROMEDRIVER: true
+          WPT_REPORT: out/wptreport.json
       - name: Generate HTML test report
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
@@ -93,3 +85,4 @@ jobs:
 env:
   DEBUG: bidiServer:log
   FORCE_COLOR: 3
+  PIP_DISABLE_PIP_VERSION_CHECK: 1

@@ -37,3 +37,4 @@ jobs:
 
 env:
   FORCE_COLOR: 3
+  PIP_DISABLE_PIP_VERSION_CHECK: 1

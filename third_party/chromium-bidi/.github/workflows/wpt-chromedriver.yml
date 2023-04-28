@@ -37,28 +37,21 @@ jobs:
         working-directory: wpt
       - name: Install Chromium
         run: echo "chromium_binary=$(npx @puppeteer/browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
-      - name: Run tests
-        timeout-minutes: 20
-        run: >
-          ./wpt/wpt run
-          --binary-arg="--headless=new"
-          --webdriver-arg="--bidi-mapper-path=lib/iife/mapperTab.js"
-          --webdriver-arg="--log-path=out/chromedriver.log"
-          --webdriver-arg="--verbose"
-          --binary "${{ env.chromium_binary }}"
-          --install-webdriver --channel=dev --yes
-          --manifest MANIFEST.json
-          --metadata wpt-metadata/chromedriver/headless
-          --log-wptreport out/wptreport-chromedriver.json
-          chrome
-          webdriver/tests/bidi/
+      - name: Run WPT tests
+        timeout-minutes: 30
+        # For verbose logging, add --log-mach - --log-mach-level info
+        run: ./runWPT.sh webdriver/tests/bidi/
+        env:
+          BROWSER_BIN: ${{ env.chromium_binary }}
+          CHROMEDRIVER: true
+          WPT_REPORT: out/wptreport.json
       - name: Generate HTML test report
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         run: >
           node test-report/htmlWptReport.mjs
-          out/wptreport-chromedriver.json
-          out/wptreport-chromedriver.html
+          out/wptreport.json
+          out/wptreport.html
       - name: Update expectations
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
@@ -67,7 +60,7 @@ jobs:
           --product chromium
           --manifest MANIFEST.json
           --metadata wpt-metadata/chromedriver/headless
-          out/wptreport-chromedriver.json
+          out/wptreport.json
       - name: Upload expectations
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
@@ -86,3 +79,4 @@ jobs:
 env:
   DEBUG: bidiServer:log
   FORCE_COLOR: 3
+  PIP_DISABLE_PIP_VERSION_CHECK: 1

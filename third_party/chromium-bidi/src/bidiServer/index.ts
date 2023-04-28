@@ -132,7 +132,7 @@ async function onNewBidiConnectionOpen(
   ];
 
   const executablePath =
-    process.env['CHROME_BIN'] ??
+    process.env['BROWSER_BIN'] ??
     computeSystemExecutablePath({
       browser: Browser.CHROME,
       channel: chromeChannel ?? ChromeReleaseChannel.DEV,

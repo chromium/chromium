@@ -296,22 +296,22 @@ python wpt make-hosts-file | Out-File $env:SystemRoot\System32\drivers\etc\hosts
 If you are behind a proxy, you also need to make sure the domains above are excluded
 from your proxy lookups.
 
-#### 5. Set `WPT_BROWSER_PATH`
+#### 5. Set `BROWSER_BIN`
 
-Set the `WPT_BROWSER_PATH` environment variable to a Chrome, Edge or Chromium binary to launch.
+Set the `BROWSER_BIN` environment variable to a Chrome, Edge or Chromium binary to launch.
 For example, on macOS:
 
 ```sh
 # Chrome
-export WPT_BROWSER_PATH="/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
-export WPT_BROWSER_PATH="/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev"
-export WPT_BROWSER_PATH="/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta"
-export WPT_BROWSER_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-export WPT_BROWSER_PATH="/Applications/Chromium.app/Contents/MacOS/Chromium"
+export BROWSER_BIN="/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
+export BROWSER_BIN="/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev"
+export BROWSER_BIN="/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta"
+export BROWSER_BIN="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+export BROWSER_BIN="/Applications/Chromium.app/Contents/MacOS/Chromium"
 
 # Edge
-export WPT_BROWSER_PATH="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
-export WPT_BROWSER_PATH="/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"
+export BROWSER_BIN="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
+export BROWSER_BIN="/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"
 ```
 
 ### Run WPT tests
@@ -339,7 +339,7 @@ npm run build --watch
 ```sh
 ./wpt/wpt run \
   --webdriver-binary runBiDiServer.sh \
-  --binary "$WPT_BROWSER_PATH" \
+  --binary "$BROWSER_BIN" \
   --manifest wpt/MANIFEST.json \
   --metadata wpt-metadata/mapper/headless \
   chromium \
@@ -353,7 +353,7 @@ npm run build --watch
 ```sh
 ./wpt/wpt run \
   --webdriver-binary runBiDiServer.sh \
-  --binary "$WPT_BROWSER_PATH" \
+  --binary "$BROWSER_BIN" \
   --manifest wpt/MANIFEST.json \
   --metadata wpt-metadata/mapper/headless \
   --log-wptreport wptreport.json \
