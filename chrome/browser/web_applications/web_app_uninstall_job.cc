@@ -27,15 +27,10 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-BASE_FEATURE(kExperimentalWebAppProfileIsolationDeleteProfile,
-             "ExperimentalWebAppProfileIsolationDeleteProfile",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // static
 std::unique_ptr<WebAppUninstallJob> WebAppUninstallJob::CreateAndStart(
@@ -143,13 +138,9 @@ void WebAppUninstallJob::Start(
                               weak_ptr_factory_.GetWeakPtr()));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This is not guarded by the flag ExperimentalWebAppProfileIsolation so that
-  // we can clean the data even after the flag is disabled. A separate kill
-  // switch flag is used to allow us to remotely disable this logic just in case
-  // something bad happen.
-  if (app_profile_path.has_value() &&
-      base::FeatureList::IsEnabled(
-          kExperimentalWebAppProfileIsolationDeleteProfile)) {
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kExperimentalWebAppProfileIsolation) &&
+      app_profile_path.has_value()) {
     CHECK(Profile::IsWebAppProfilePath(app_profile_path.value()));
     auto* profile_manager = g_browser_process->profile_manager();
 
