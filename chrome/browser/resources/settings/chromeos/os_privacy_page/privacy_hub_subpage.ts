@@ -45,7 +45,7 @@ export const PrivacyHubNavigationOrigin = {
 const SettingsPrivacyHubSubpageBase = PrefsMixin(DeepLinkingMixin(
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
+export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   static get is() {
     return 'settings-privacy-hub-subpage' as const;
   }

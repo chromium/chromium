@@ -175,6 +175,7 @@ export {GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageH
 export {ConfirmationDialogType, SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {osPageVisibility} from './os_page_visibility.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
+export {OsSettingsPrivacyPageElement} from './os_privacy_page/os_privacy_page.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {OsSettingsSearchPageElement} from './os_search_page/os_search_page.js';

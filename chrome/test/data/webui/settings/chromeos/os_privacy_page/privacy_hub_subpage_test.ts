@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../chai.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {MetricsConsentBrowserProxyImpl, Router, routes, SecureDnsMode} from 'chrome://os-settings/chromeos/os_settings.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubSubpage} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, Router, routes, SecureDnsMode, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {FakeMediaDevices} from './fake_media_devices.js';
-import {FakeMetricsPrivate} from './fake_metrics_private.js';
+import {FakeMediaDevices} from '../fake_media_devices.js';
+import {FakeMetricsPrivate} from '../fake_metrics_private.js';
+
 import {DEVICE_METRICS_CONSENT_PREF_NAME, TestMetricsConsentBrowserProxy} from './test_metrics_consent_browser_proxy.js';
 import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 
@@ -27,7 +28,7 @@ const PrivacyHubVersion = {
   Dogfood: 'Privacy Hub with dogfooded features (camera and microphone only).',
 };
 
-function overridedValues(privacyHubVersion) {
+function overridedValues(privacyHubVersion: string) {
   switch (privacyHubVersion) {
     case PrivacyHubVersion.Future: {
       return {
@@ -56,15 +57,11 @@ function overridedValues(privacyHubVersion) {
   }
 }
 
-async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
-  /** @type {SettingsPrivacyHubPage} */
-  let privacyHubSubpage = null;
-
-  /** @type {?TestPrivacyHubBrowserProxy} */
-  let privacyHubBrowserProxy = null;
-
-  /** @type {?FakeMediaDevices} */
-  let mediaDevices = null;
+async function parametrizedPrivacyHubSubpageTestsuite(
+    privacyHubVersion: string) {
+  let privacyHubSubpage: SettingsPrivacyHubSubpage;
+  let privacyHubBrowserProxy: TestPrivacyHubBrowserProxy;
+  let mediaDevices: FakeMediaDevices;
 
   setup(async () => {
     loadTimeData.overrideValues(overridedValues(privacyHubVersion));
@@ -75,14 +72,13 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     mediaDevices = new FakeMediaDevices();
     MediaDevicesProxy.setMediaDevicesForTesting(mediaDevices);
 
-    PolymerTest.clearBody();
     privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
     document.body.appendChild(privacyHubSubpage);
     await waitAfterNextRender(privacyHubSubpage);
     flush();
   });
 
-  teardown(function() {
+  teardown(() => {
     privacyHubSubpage.remove();
     Router.getInstance().resetRouteForTesting();
   });
@@ -95,8 +91,9 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     flush();
 
     const deepLinkElement =
-        privacyHubSubpage.shadowRoot.querySelector('#cameraToggle')
-            .shadowRoot.querySelector('cr-toggle');
+        privacyHubSubpage.shadowRoot!.querySelector('#cameraToggle')!
+            .shadowRoot!.querySelector('cr-toggle');
+    assert(deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -111,8 +108,9 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     flush();
 
     const deepLinkElement =
-        privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
-            .shadowRoot.querySelector('cr-toggle');
+        privacyHubSubpage.shadowRoot!.querySelector('#microphoneToggle')!
+            .shadowRoot!.querySelector('cr-toggle');
+    assert(deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -121,12 +119,12 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
 
   test('Microphone toggle disabled when the hw toggle is active', async () => {
     const getMicrophoneList = () =>
-        privacyHubSubpage.shadowRoot.querySelector('#micList');
+        privacyHubSubpage.shadowRoot!.querySelector('#micList');
     const getMicrophoneCrToggle = () =>
-        privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
-            .shadowRoot.querySelector('cr-toggle');
+        privacyHubSubpage.shadowRoot!.querySelector('#microphoneToggle')!
+            .shadowRoot!.querySelector('cr-toggle');
     const getMicrophoneTooltip = () =>
-        privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
+        privacyHubSubpage.shadowRoot!.querySelector('#microphoneToggle')!
             .querySelector('cr-tooltip-icon');
 
     privacyHubBrowserProxy.microphoneToggleIsEnabled = false;
@@ -136,50 +134,53 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     await waitAfterNextRender(privacyHubSubpage);
     // There should be no MediaDevice connected initially. Microphone toggle
     // should be disabled as no microphone is connected.
-    assertFalse(!!getMicrophoneList());
-    assertTrue(getMicrophoneCrToggle().disabled);
+    assertEquals(null, getMicrophoneList());
+    assertTrue(getMicrophoneCrToggle()!.disabled);
     // TODO(b/259553116) Check how banshee handles the microphone hardware
     // switch.
-    assertTrue(getMicrophoneTooltip().hidden);
+    assertTrue(getMicrophoneTooltip()!.hidden);
 
     // Add a microphone.
     mediaDevices.addDevice('audioinput', 'Fake Microphone');
     await waitAfterNextRender(privacyHubSubpage);
-    assertTrue(!!getMicrophoneList());
+    assert(getMicrophoneList());
     // Microphone toggle should be enabled to click now as there is a microphone
     // connected and the hw toggle is inactive.
-    assertFalse(getMicrophoneCrToggle().disabled);
+    assertFalse(getMicrophoneCrToggle()!.disabled);
     // The tooltip should only show when the HW switch is engaged.
-    assertTrue(getMicrophoneTooltip().hidden);
+    assertTrue(getMicrophoneTooltip()!.hidden);
 
     // Activate the hw toggle.
     webUIListenerCallback('microphone-hardware-toggle-changed', true);
     await waitAfterNextRender(privacyHubSubpage);
     // Microphone toggle should be disabled again due to the hw switch being
     // active.
-    assertTrue(getMicrophoneCrToggle().disabled);
+    assertTrue(getMicrophoneCrToggle()!.disabled);
     // With the HW switch being active the tooltip should be visible.
-    assertFalse(getMicrophoneTooltip().hidden);
+    assertFalse(getMicrophoneTooltip()!.hidden);
     // Ensure that the tooltip has the intended content.
     assertEquals(
         privacyHubSubpage.i18n('microphoneHwToggleTooltip'),
-        getMicrophoneTooltip().tooltipText.trim());
+        getMicrophoneTooltip()!.tooltipText.trim());
 
     mediaDevices.popDevice();
   });
 
-  test('Suggested content, pref disabled', async () => {
+  test('Suggested content, pref disabled', () => {
+    privacyHubSubpage.remove();
     privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
     document.body.appendChild(privacyHubSubpage);
     flush();
 
     // The default state of the pref is disabled.
-    const suggestedContent = assert(
-        privacyHubSubpage.shadowRoot.querySelector('#suggested-content'));
+    const suggestedContent =
+        privacyHubSubpage.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>('#suggested-content');
+    assert(suggestedContent);
     assertFalse(suggestedContent.checked);
   });
 
-  test('Suggested content, pref enabled', async () => {
+  test('Suggested content, pref enabled', () => {
     // Update the backing pref to enabled.
     privacyHubSubpage.prefs = {
       'settings': {
@@ -192,8 +193,10 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     flush();
 
     // The checkbox reflects the updated pref state.
-    const suggestedContent = assert(
-        privacyHubSubpage.shadowRoot.querySelector('#suggested-content'));
+    const suggestedContent =
+        privacyHubSubpage.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>('#suggested-content');
+    assert(suggestedContent);
     assertTrue(suggestedContent.checked);
   });
 
@@ -205,12 +208,14 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     flush();
 
     const toggleElement =
-        privacyHubSubpage.shadowRoot.querySelector('#geolocationToggle');
+        privacyHubSubpage.shadowRoot!.querySelector('#geolocationToggle');
     if (privacyHubVersion === PrivacyHubVersion.Dogfood) {
       assertEquals(null, toggleElement);
     } else {
+      assert(toggleElement);
       const deepLinkElement =
-          toggleElement.shadowRoot.querySelector('cr-toggle');
+          toggleElement.shadowRoot!.querySelector('cr-toggle');
+      assert(deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -220,47 +225,47 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
 
   test('Camera, microphone toggle, their sublabel and their list', async () => {
     const getNoCameraText = () =>
-        privacyHubSubpage.shadowRoot.querySelector('#noCamera');
+        privacyHubSubpage.shadowRoot!.querySelector('#noCamera');
     const getCameraList = () =>
-        privacyHubSubpage.shadowRoot.querySelector('#cameraList');
+        privacyHubSubpage.shadowRoot!.querySelector<DomRepeat>('#cameraList');
     const getCameraCrToggle = () =>
-        privacyHubSubpage.shadowRoot.querySelector('#cameraToggle')
-            .shadowRoot.querySelector('cr-toggle');
+        privacyHubSubpage.shadowRoot!.querySelector('#cameraToggle')!
+            .shadowRoot!.querySelector('cr-toggle');
     const getCameraToggleSublabel = () =>
-        privacyHubSubpage.shadowRoot.querySelector('#cameraToggle')
-            .shadowRoot.querySelector('#sub-label-text');
+        privacyHubSubpage.shadowRoot!.querySelector('#cameraToggle')!
+            .shadowRoot!.querySelector('#sub-label-text');
 
 
     const getNoMicrophoneText = () =>
-        privacyHubSubpage.shadowRoot.querySelector('#noMic');
+        privacyHubSubpage.shadowRoot!.querySelector('#noMic');
     const getMicrophoneList = () =>
-        privacyHubSubpage.shadowRoot.querySelector('#micList');
+        privacyHubSubpage.shadowRoot!.querySelector<DomRepeat>('#micList');
     const getMicrophoneCrToggle = () =>
-        privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
-            .shadowRoot.querySelector('cr-toggle');
+        privacyHubSubpage.shadowRoot!.querySelector('#microphoneToggle')!
+            .shadowRoot!.querySelector('cr-toggle');
     const getMicrophoneToggleSublabel = () =>
-        privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
-            .shadowRoot.querySelector('#sub-label-text');
+        privacyHubSubpage.shadowRoot!.querySelector('#microphoneToggle')!
+            .shadowRoot!.querySelector('#sub-label-text');
 
     // Initially, the lists of media devices should be hidden and `#noMic` and
     // `#noCamera` should be displayed.
-    assertFalse(!!getCameraList());
-    assertTrue(!!getNoCameraText());
+    assertEquals(null, getCameraList());
+    assert(getNoCameraText());
     assertEquals(
         privacyHubSubpage.i18n('noCameraConnectedText'),
-        getNoCameraText().textContent.trim());
+        getNoCameraText()!.textContent!.trim());
     assertEquals(
         privacyHubSubpage.i18n('cameraToggleSubtext'),
-        getCameraToggleSublabel().textContent.trim());
+        getCameraToggleSublabel()!.textContent!.trim());
 
-    assertFalse(!!getMicrophoneList());
-    assertTrue(!!getNoMicrophoneText());
+    assertEquals(null, getMicrophoneList());
+    assert(getNoMicrophoneText());
     assertEquals(
         privacyHubSubpage.i18n('noMicrophoneConnectedText'),
-        getNoMicrophoneText().textContent.trim());
+        getNoMicrophoneText()!.textContent!.trim());
     assertEquals(
         privacyHubSubpage.i18n('microphoneToggleSubtext'),
-        getMicrophoneToggleSublabel().textContent.trim());
+        getMicrophoneToggleSublabel()!.textContent!.trim());
 
     const tests = [
       {
@@ -340,22 +345,24 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
         mics++;
       }
 
+      const cameraList = getCameraList();
       if (cams) {
-        assertTrue(!!getCameraList());
-        assertEquals(cams, getCameraList().items.length);
-        assertFalse(getCameraCrToggle().disabled);
+        assert(cameraList);
+        assertEquals(cams, cameraList.items!.length);
+        assertFalse(getCameraCrToggle()!.disabled);
       } else {
-        assertFalse(!!getCameraList());
-        assertTrue(getCameraCrToggle().disabled);
+        assertEquals(null, cameraList);
+        assertTrue(getCameraCrToggle()!.disabled);
       }
 
+      const microphoneList = getMicrophoneList();
       if (mics) {
-        assertTrue(!!getMicrophoneList());
-        assertEquals(mics, getMicrophoneList().items.length);
-        assertFalse(getMicrophoneCrToggle().disabled);
+        assert(microphoneList);
+        assertEquals(mics, microphoneList.items!.length);
+        assertFalse(getMicrophoneCrToggle()!.disabled);
       } else {
-        assertFalse(!!getMicrophoneList());
-        assertTrue(getMicrophoneCrToggle().disabled);
+        assertEquals(null, microphoneList);
+        assertTrue(getMicrophoneCrToggle()!.disabled);
       }
     }
 
@@ -371,27 +378,30 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
         mics--;
       }
 
+      const cameraList = getCameraList();
       if (cams) {
-        assertTrue(!!getCameraList());
-        assertEquals(cams, getCameraList().items.length);
-        assertFalse(getCameraCrToggle().disabled);
+        assert(cameraList);
+        assertEquals(cams, cameraList.items!.length);
+        assertFalse(getCameraCrToggle()!.disabled);
       } else {
-        assertFalse(!!getCameraList());
-        assertTrue(getCameraCrToggle().disabled);
+        assertEquals(null, cameraList);
+        assertTrue(getCameraCrToggle()!.disabled);
       }
 
+      const microphoneList = getMicrophoneList();
       if (mics) {
-        assertTrue(!!getMicrophoneList());
-        assertEquals(mics, getMicrophoneList().items.length);
-        assertFalse(getMicrophoneCrToggle().disabled);
+        assert(microphoneList);
+        assertEquals(mics, microphoneList.items!.length);
+        assertFalse(getMicrophoneCrToggle()!.disabled);
       } else {
-        assertFalse(!!getMicrophoneList());
-        assertTrue(getMicrophoneCrToggle().disabled);
+        assertEquals(null, microphoneList);
+        assertTrue(getMicrophoneCrToggle()!.disabled);
       }
     }
   });
 
   test('Toggle camera button', async () => {
+    privacyHubSubpage.remove();
     privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
     privacyHubSubpage.prefs = {
       'ash': {
@@ -404,7 +414,8 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     };
     document.body.appendChild(privacyHubSubpage);
     const fakeMetricsPrivate = new FakeMetricsPrivate();
-    chrome.metricsPrivate = fakeMetricsPrivate;
+    chrome.metricsPrivate =
+        fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
     flush();
 
     mediaDevices.addDevice('videoinput', 'Fake Camera');
@@ -412,8 +423,9 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     await waitAfterNextRender(privacyHubSubpage);
 
     const cameraToggleControl =
-        assert(privacyHubSubpage.shadowRoot.querySelector('#cameraToggle')
-                   .shadowRoot.querySelector('cr-toggle'));
+        privacyHubSubpage.shadowRoot!.querySelector('#cameraToggle')!
+            .shadowRoot!.querySelector('cr-toggle');
+    assert(cameraToggleControl);
 
     // Pref and toggle should be in sync and not disabled
     assertTrue(cameraToggleControl.checked);
@@ -456,6 +468,7 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
   });
 
   test('Toggle microphone button', async () => {
+    privacyHubSubpage.remove();
     privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
     privacyHubSubpage.prefs = {
       'ash': {
@@ -469,7 +482,8 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
 
     document.body.appendChild(privacyHubSubpage);
     const fakeMetricsPrivate = new FakeMetricsPrivate();
-    chrome.metricsPrivate = fakeMetricsPrivate;
+    chrome.metricsPrivate =
+        fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
     flush();
 
     mediaDevices.addDevice('audioinput', 'Fake Mic');
@@ -477,8 +491,9 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     await waitAfterNextRender(privacyHubSubpage);
 
     const microphoneToggleControl =
-        assert(privacyHubSubpage.shadowRoot.querySelector('#microphoneToggle')
-                   .shadowRoot.querySelector('cr-toggle'));
+        privacyHubSubpage.shadowRoot!.querySelector('#microphoneToggle')!
+            .shadowRoot!.querySelector('cr-toggle');
+    assert(microphoneToggleControl);
 
     // Pref and toggle should be in sync and not disabled
     assertTrue(microphoneToggleControl.checked);
@@ -522,19 +537,18 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
 }
 
 suite(
-    'PrivacyHubDogfoodSubpageTests',
+    '<settings-privacy-hub-subpage> Dogfood',
     () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.Dogfood));
 suite(
-    'PrivacyHubMVPSubpageTests',
+    '<settings-privacy-hub-subpage> MVP',
     () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.MVP));
 suite(
-    'PrivacyHubFutureSubpageTests',
+    '<settings-privacy-hub-subpage> Future',
     () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.Future));
 
 async function parametrizedTestsuiteForMetricsConsentToggle(
-    isPrivacyHubVisible) {
-  /** @type {SettingsPrivacyPageElement} */
-  let settingsPage = null;
+    isPrivacyHubVisible: boolean) {
+  let settingsPage: SettingsPrivacyHubSubpage|OsSettingsPrivacyPageElement;
 
   // Which settings page to run the tests on.
   const pageId = isPrivacyHubVisible ? 'settings-privacy-hub-subpage' :
@@ -562,8 +576,7 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
         {'mode': {value: SecureDnsMode.AUTOMATIC}, 'templates': {value: ''}},
   };
 
-  /** @type {?TestMetricsConsentBrowserProxy} */
-  let metricsConsentBrowserProxy = null;
+  let metricsConsentBrowserProxy: TestMetricsConsentBrowserProxy;
 
   setup(async () => {
     loadTimeData.overrideValues({
@@ -574,10 +587,9 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
         metricsConsentBrowserProxy);
 
     settingsPage = document.createElement(pageId);
-    PolymerTest.clearBody();
   });
 
-  async function setUpPage(prefName, isConfigurable) {
+  async function setUpPage(prefName: string, isConfigurable: boolean) {
     metricsConsentBrowserProxy.setMetricsConsentState(prefName, isConfigurable);
 
     settingsPage = document.createElement(pageId);
@@ -586,11 +598,11 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
     flush();
 
     await metricsConsentBrowserProxy.whenCalled('getMetricsConsentState');
-    await waitAfterNextRender();
+    await waitAfterNextRender(settingsPage);
     flush();
   }
 
-  teardown(function() {
+  teardown(() => {
     settingsPage.remove();
     Router.getInstance().resetRouteForTesting();
   });
@@ -603,7 +615,7 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
         flush();
 
         const element =
-            settingsPage.shadowRoot.querySelector('#metricsConsentToggle');
+            settingsPage.shadowRoot!.querySelector('#metricsConsentToggle');
 
         assertEquals(
             isPrivacyHubVisible, element === null,
@@ -620,7 +632,7 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
           flush();
 
           const element =
-              settingsPage.shadowRoot.querySelector('#metricsConsentToggle');
+              settingsPage.shadowRoot!.querySelector('#metricsConsentToggle');
 
           assertFalse(
               element === null,
@@ -640,9 +652,11 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
     flush();
 
     const deepLinkElement =
-        settingsPage.shadowRoot.querySelector('#metricsConsentToggle')
-            .shadowRoot.querySelector('#settingsToggle')
-            .shadowRoot.querySelector('cr-toggle');
+        settingsPage.shadowRoot!.querySelector(
+                                    '#metricsConsentToggle')!.shadowRoot!
+            .querySelector('#settingsToggle')!.shadowRoot!.querySelector(
+                'cr-toggle');
+    assert(deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
 
     assertEquals(
@@ -655,9 +669,11 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
         DEVICE_METRICS_CONSENT_PREF_NAME, /*isConfigurable=*/ false);
 
     const toggle =
-        settingsPage.shadowRoot.querySelector('#metricsConsentToggle')
-            .shadowRoot.querySelector('#settingsToggle')
-            .shadowRoot.querySelector('cr-toggle');
+        settingsPage.shadowRoot!.querySelector(
+                                    '#metricsConsentToggle')!.shadowRoot!
+            .querySelector('#settingsToggle')!.shadowRoot!.querySelector(
+                'cr-toggle');
+    assert(toggle);
     await waitAfterNextRender(toggle);
 
     // The pref is true, so the toggle should be on.
@@ -671,9 +687,11 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
     await setUpPage(DEVICE_METRICS_CONSENT_PREF_NAME, /*isConfigurable=*/ true);
 
     const toggle =
-        settingsPage.shadowRoot.querySelector('#metricsConsentToggle')
-            .shadowRoot.querySelector('#settingsToggle')
-            .shadowRoot.querySelector('cr-toggle');
+        settingsPage.shadowRoot!.querySelector(
+                                    '#metricsConsentToggle')!.shadowRoot!
+            .querySelector('#settingsToggle')!.shadowRoot!.querySelector(
+                'cr-toggle');
+    assert(toggle);
     await waitAfterNextRender(toggle);
 
     // The pref is true, so the toggle should be on.
@@ -694,9 +712,11 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
     await setUpPage(USER_METRICS_CONSENT_PREF_NAME, /*isConfigurable=*/ true);
 
     const toggle =
-        settingsPage.shadowRoot.querySelector('#metricsConsentToggle')
-            .shadowRoot.querySelector('#settingsToggle')
-            .shadowRoot.querySelector('cr-toggle');
+        settingsPage.shadowRoot!.querySelector(
+                                    '#metricsConsentToggle')!.shadowRoot!
+            .querySelector('#settingsToggle')!.shadowRoot!.querySelector(
+                'cr-toggle');
+    assert(toggle);
     await waitAfterNextRender(toggle);
 
     // The user consent pref is false, so the toggle should not be checked.
@@ -715,11 +735,11 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
 }
 
 suite(
-    'PrivacyHubSubpageTest_OfficialBuild',
+    '<os-settings-privacy-page> OfficialBuild PrivacyHubVisible',
     () => parametrizedTestsuiteForMetricsConsentToggle(
         /*isPrivacyHubVisible=*/ true));
 
 suite(
-    'PrivacyHubSubpageTest_OfficialBuild',
+    '<os-settings-privacy-page> OfficialBuild PrivacyHubHidden',
     () => parametrizedTestsuiteForMetricsConsentToggle(
         /*isPrivacyHubVisible=*/ false));

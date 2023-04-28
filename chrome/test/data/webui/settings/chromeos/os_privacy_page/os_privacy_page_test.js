@@ -12,8 +12,9 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import {FakeMetricsPrivate} from './fake_metrics_private.js';
-import {FakeQuickUnlockPrivate} from './fake_quick_unlock_private.js';
+import {FakeMetricsPrivate} from '../fake_metrics_private.js';
+import {FakeQuickUnlockPrivate} from '../fake_quick_unlock_private.js';
+
 import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 
 const crosSettingPrefName = 'cros.device.peripheral_data_access_enabled';

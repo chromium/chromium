@@ -37,7 +37,7 @@ import {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} 
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 import {PrivacyHubNavigationOrigin} from './privacy_hub_subpage.js';
 
-interface OsSettingsPrivacyPageElement {
+export interface OsSettingsPrivacyPageElement {
   $: {
     verifiedAccessToggle: SettingsToggleButtonElement,
   };
@@ -46,7 +46,8 @@ interface OsSettingsPrivacyPageElement {
 const OsSettingsPrivacyPageElementBase = PrefsMixin(
     LockStateMixin(RouteObserverMixin(DeepLinkingMixin(PolymerElement))));
 
-class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
+export class OsSettingsPrivacyPageElement extends
+    OsSettingsPrivacyPageElementBase {
   static get is() {
     return 'os-settings-privacy-page' as const;
   }

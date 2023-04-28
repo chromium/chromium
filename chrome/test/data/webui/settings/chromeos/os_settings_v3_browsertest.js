@@ -509,6 +509,12 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_test.js'],
  ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
+ ['OsPrivacyPage', 'os_privacy_page/os_privacy_page_test.js'],
+ [
+   'OsPrivacyPagePrivacyHubSubpage',
+   'os_privacy_page/privacy_hub_subpage_test.js',
+   {enabled: ['ash::features::kCrosPrivacyHub']},
+ ],
  [
    'OsPrivacyPageSmartPrivacySubpage',
    'os_privacy_page/smart_privacy_subpage_test.js'
@@ -553,12 +559,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'PrinterStatus',
    'printer_status_tests.js',
  ],
- [
-   'PrivacyHubSubpage',
-   'privacy_hub_subpage_tests.js',
-   {enabled: ['ash::features::kCrosPrivacyHub']},
- ],
- ['PrivacyPage', 'os_privacy_page_test.js'],
  ['ResetPage', 'os_reset_page_test.js'],
  [
    'SettingsSchedulerSlider',
@@ -608,16 +608,16 @@ function registerTest(testName, module, featureList) {
       mocha.grep('AboutPageTest_OfficialBuild').run();
     });
     GEN('#endif');
-  } else if (testName === 'PrivacyHubSubpage') {
+  } else if (testName === 'OsPrivacyPagePrivacyHubSubpage') {
     // PrivacyHubSubpage has a test suite that can only succeed on official
     // builds where the is_chrome_branded build flag is enabled.
     TEST_F(className, 'AllBuilds' || 'All', () => {
-      mocha.grep('/^(?!PrivacyHubSubpageTest_OfficialBuild).*$/').run();
+      mocha.grep('/^(?!<os-settings-privacy-page> OfficialBuild).*$/').run();
     });
 
     GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
     TEST_F(className, 'OfficialBuild' || 'All', () => {
-      mocha.grep('PrivacyHubSubpageTest_OfficialBuild').run();
+      mocha.grep('<os-settings-privacy-page> OfficialBuild').run();
     });
     GEN('#endif');
   } else if (testName === 'OsSettingsSearchBox') {
