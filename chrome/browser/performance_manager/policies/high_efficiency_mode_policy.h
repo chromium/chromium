@@ -48,7 +48,9 @@ class HighEfficiencyModePolicy : public GraphOwned,
   void StartDiscardTimerIfEnabled(const PageNode* page_node,
                                   base::TimeDelta time_before_discard);
   void RemoveActiveTimer(const PageNode* page_node);
-  void DiscardPageTimerCallback(const PageNode* page_node);
+  void DiscardPageTimerCallback(const PageNode* page_node,
+                                base::LiveTicks posted_at,
+                                base::TimeDelta requested_time_before_discard);
 
   bool high_efficiency_mode_enabled_ = false;
 

@@ -84,6 +84,37 @@ TEST_F(HighEfficiencyModeTest, DiscardAfterBackgrounded) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
+TEST_F(HighEfficiencyModeTest, DontDiscardAfterBackgroundedIfSuspended) {
+  policy()->SetTimeBeforeDiscard(base::Hours(2));
+  page_node()->SetType(PageType::kTab);
+  page_node()->SetIsVisible(true);
+  policy()->OnHighEfficiencyModeChanged(true);
+  page_node()->SetIsVisible(false);
+
+  EXPECT_EQ(policy()->GetTimeBeforeDiscardForTesting(), base::Hours(2));
+
+  // The tab isn't discarded if the elapsed time was spent with the device
+  // suspended.
+  task_env().SuspendedFastForwardBy(base::Hours(10));
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  // Advance only one hour, there should still not be a discard.
+  task_env().FastForwardBy(base::Hours(1));
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  // Suspend again for more than the expected time, no discard should happen.
+  task_env().SuspendedFastForwardBy(base::Hours(10));
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillOnce(::testing::Return(true));
+
+  // Finally advance un-suspended until the time is elapsed, the tab should be
+  // discarded.
+  task_env().FastForwardBy(base::Hours(1));
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
 TEST_F(HighEfficiencyModeTest, DontDiscardIfPageIsNotATab) {
   page_node()->SetType(PageType::kUnknown);
   policy()->OnHighEfficiencyModeChanged(true);

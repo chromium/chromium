@@ -142,7 +142,8 @@ void HighEfficiencyModePolicy::StartDiscardTimerIfEnabled(
     active_discard_timers_[page_node].Start(
         FROM_HERE, time_before_discard,
         base::BindOnce(&HighEfficiencyModePolicy::DiscardPageTimerCallback,
-                       base::Unretained(this), page_node));
+                       base::Unretained(this), page_node,
+                       base::LiveTicks::Now(), time_before_discard));
   }
 }
 
@@ -153,7 +154,9 @@ void HighEfficiencyModePolicy::RemoveActiveTimer(const PageNode* page_node) {
 }
 
 void HighEfficiencyModePolicy::DiscardPageTimerCallback(
-    const PageNode* page_node) {
+    const PageNode* page_node,
+    base::LiveTicks posted_at,
+    base::TimeDelta requested_time_before_discard) {
   // When this callback is invoked, the `page_node` is guaranteed to still be
   // valid otherwise `OnBeforePageNodeRemoved` would've been called and the
   // timer destroyed.
@@ -163,8 +166,20 @@ void HighEfficiencyModePolicy::DiscardPageTimerCallback(
   // possible to get here and for High Efficiency Mode to be off.
   DCHECK(IsHighEfficiencyDiscardingEnabled());
 
-  PageDiscardingHelper::GetFromGraph(graph_)->ImmediatelyDiscardSpecificPage(
-      page_node, PageDiscardingHelper::DiscardReason::PROACTIVE);
+  // If the time elapsed according to `LiveTicks` is shorter than
+  // `requested_time_before_discard`, it means that the device was in a
+  // suspended state at some point between when the timer was started and now.
+  // In this case, start a new timer for the difference, which is the remaining
+  // time the tab should stay backgrounded to total
+  // `requested_time_before_discard` in background.
+  base::TimeDelta elapsed_not_suspended = base::LiveTicks::Now() - posted_at;
+  if (elapsed_not_suspended < requested_time_before_discard) {
+    StartDiscardTimerIfEnabled(
+        page_node, requested_time_before_discard - elapsed_not_suspended);
+  } else {
+    PageDiscardingHelper::GetFromGraph(graph_)->ImmediatelyDiscardSpecificPage(
+        page_node, PageDiscardingHelper::DiscardReason::PROACTIVE);
+  }
 }
 
 }  // namespace performance_manager::policies
