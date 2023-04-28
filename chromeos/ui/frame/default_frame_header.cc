@@ -11,6 +11,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -112,7 +113,8 @@ void DefaultFrameHeader::DoPaintHeader(gfx::Canvas* canvas) {
 
   cc::PaintFlags flags;
 
-  if (features::IsJellyrollEnabled()) {
+  if (features::IsJellyrollEnabled() &&
+      wm::ApplyDynamicColorToWindowFrameHeader(GetTargetWindow())) {
     flags.setColor(target_widget()->GetColorProvider()->GetColor(
         GetColorIdForCurrentMode()));
   } else {

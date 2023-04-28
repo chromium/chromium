@@ -144,4 +144,15 @@ bool CanFloatWindow(aura::Window* window) {
                                             : CanFloatWindowInClamshell(window);
 }
 
+bool ApplyDynamicColorToWindowFrameHeader(aura::Window* window) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const int app_type = window->GetProperty(aura::client::kAppType);
+  if (app_type == static_cast<int>(ash::AppType::ARC_APP) ||
+      app_type == static_cast<int>(ash::AppType::CROSTINI_APP)) {
+    return false;
+  }
+#endif
+  return true;
+}
+
 }  // namespace chromeos::wm
