@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.SparseBooleanArray;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.EntityInfoProto;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionInSuggest;
 import org.chromium.components.omnibox.action.OmniboxActionType;
@@ -30,15 +32,13 @@ import java.util.Set;
  * A class that handles model creation for the Action Chips.
  */
 public class ActionChipsProcessor {
-    // Only show action chips for the top 3 suggestions.
-    private static final int MAX_POSITION = 3;
-
     private final @NonNull Context mContext;
     private final @NonNull ActionChipsDelegate mActionChipsDelegate;
     private final @NonNull SuggestionHost mSuggestionHost;
     private final @NonNull Set<Integer> mLastVisiblePedals = new ArraySet<>();
     private final @NonNull SparseBooleanArray mActionInSuggestShownOrUsed =
             new SparseBooleanArray();
+    private final boolean mDialerAvailable;
     private int mJourneysActionShownPosition = -1;
 
     /**
@@ -51,6 +51,11 @@ public class ActionChipsProcessor {
         mContext = context;
         mSuggestionHost = suggestionHost;
         mActionChipsDelegate = actionChipsDelegate;
+
+        // TODO(crbug/1418077): Migrate this to OmniboxActionInSuggest along with execute logic.
+        var pm = mContext.getPackageManager();
+        var dialIntent = new Intent(Intent.ACTION_DIAL);
+        mDialerAvailable = !pm.queryIntentActivities(dialIntent, 0).isEmpty();
     }
 
     public void onUrlFocusChange(boolean hasFocus) {
@@ -85,6 +90,8 @@ public class ActionChipsProcessor {
         modelList.add(new ListItem(ActionChipsProperties.ViewType.HEADER, new PropertyModel()));
 
         for (OmniboxAction chip : actionChipList) {
+            if (!actionSupported(chip)) continue;
+
             final var chipModel =
                     new PropertyModel.Builder(ChipProperties.ALL_KEYS)
                             .with(ChipProperties.TEXT, chip.hint)
@@ -122,7 +129,30 @@ public class ActionChipsProcessor {
     }
 
     private boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
-        return suggestion.getActions().size() > 0 && position < MAX_POSITION;
+        // TODO(crbug/1418077): Migrate this to OmniboxActionInSuggest along with execute logic.
+        for (int index = 0; index < suggestion.getActions().size(); ++index) {
+            if (actionSupported(suggestion.getActions().get(index))) return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Evaluates whether a given action is supported.
+     * TODO(crbug/1418077): Migrate this to OmniboxActionInSuggest along with execute logic.
+     */
+    private boolean actionSupported(@NonNull OmniboxAction action) {
+        switch (action.actionId) {
+            case OmniboxActionType.PEDAL:
+            case OmniboxActionType.HISTORY_CLUSTERS:
+                return true;
+
+            case OmniboxActionType.ACTION_IN_SUGGEST:
+                return OmniboxActionInSuggest.from(action).actionInfo.getActionType().getNumber()
+                        != EntityInfoProto.ActionInfo.ActionType.CALL_VALUE
+                        || mDialerAvailable;
+        }
+        return false;
     }
 
     /**
