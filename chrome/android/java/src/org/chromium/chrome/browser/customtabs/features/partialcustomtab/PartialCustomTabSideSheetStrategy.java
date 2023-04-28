@@ -31,6 +31,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -142,6 +143,12 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     boolean toggleMaximize(boolean animate) {
+        @ResizeType
+        int resizeType =
+                mIsMaximized ? ResizeType.MANUAL_MINIMIZATION : ResizeType.MANUAL_EXPANSION;
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.SideSheetResizeType", resizeType, ResizeType.COUNT);
+
         mIsMaximized = !mIsMaximized;
         if (mIsMaximized) {
             if (shouldDrawDividerLine()) resetCoordinatorLayoutInsets();

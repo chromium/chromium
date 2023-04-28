@@ -18,6 +18,7 @@ import androidx.annotation.AnimRes;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -294,6 +295,9 @@ public class PartialCustomTabDisplayManager
 
     private PartialCustomTabBaseStrategy createSizeStrategy(@PartialCustomTabType int type,
             boolean maximized, int sideSheetPosition, int sideSheetAnimation) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.PartialCustomTabType", type, PartialCustomTabType.COUNT);
+
         switch (type) {
             case PartialCustomTabType.BOTTOM_SHEET: {
                 return new PartialCustomTabBottomSheetStrategy(mActivity, mUnclampedInitialHeight,

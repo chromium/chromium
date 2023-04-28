@@ -403,6 +403,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.PartialCustomTabType"
+    enum="CustomTabsPartialCustomTabType" expires_after="2023-10-01">
+  <owner>kgrosu@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Type of the Partial Custom Tab that has been created. A new entry will be
+    logged each time a PCCT is opened or when the user transitions from a type
+    of PCCT to another (e.g. on screen rotation if the type changes from
+    bottom-sheet to side-sheet). Multiple entries can be logged for each PCCT
+    that is being displayed.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.PostMessage.OnMessage" enum="Boolean"
     expires_after="2023-08-26">
   <owner>sinansahin@google.com</owner>
@@ -475,8 +488,8 @@ chromium-metrics-reviews@google.com.
   <owner>kgrosu@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
-    When a Partial Custom Tab has been resized by the user log if it is an
-    expansion or a minimization of the tab.
+    When a bottom-sheet Partial Custom Tab has been resized by the user log if
+    it is an expansion or a minimization of the tab.
   </summary>
 </histogram>
 
@@ -563,6 +576,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the location of the share option in the Custom Tab. Recorded when
     the share option is added while the Custom Tab is being constructed.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.SideSheetResizeType" enum="CustomTabsResizeType2"
+    expires_after="2023-10-01">
+  <owner>kgrosu@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Resize type of the Partial Custom Tab that's either an expansion or
+    minimization. Recorded when the PCCT has been maximized/minimized by the
+    user.
   </summary>
 </histogram>
 

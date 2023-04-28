@@ -63,6 +63,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.ResizeType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.HandleStrategy;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -621,7 +622,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
-        int expected = PartialCustomTabBottomSheetStrategy.ResizeType.AUTO_EXPANSION;
+        int expected = ResizeType.AUTO_EXPANSION;
         var histogramExpansion =
                 HistogramWatcher.newSingleRecordWatcher("CustomTabs.ResizeType2", expected);
 
@@ -817,7 +818,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
 
-        int expected = PartialCustomTabBottomSheetStrategy.ResizeType.MANUAL_EXPANSION;
+        int expected = ResizeType.MANUAL_EXPANSION;
         var histogramExpansion =
                 HistogramWatcher.newSingleRecordWatcher("CustomTabs.ResizeType2", expected);
 
@@ -842,7 +843,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
         // Drag to the top so it can be minimized in the next step.
         assertTabIsFullHeight(dragTab(handleStrategy, 1500, 1000, 0));
 
-        int expected = PartialCustomTabBottomSheetStrategy.ResizeType.MANUAL_MINIMIZATION;
+        int expected = ResizeType.MANUAL_MINIMIZATION;
         var histogramExpansion =
                 HistogramWatcher.newSingleRecordWatcher("CustomTabs.ResizeType2", expected);
 
@@ -1204,7 +1205,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
                         eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
         doReturn(mPCCTTestRule.mDragBarBackground).when(mPCCTTestRule.mDragBar).getBackground();
-        int expected = PartialCustomTabBottomSheetStrategy.ResizeType.AUTO_EXPANSION;
+        int expected = ResizeType.AUTO_EXPANSION;
         var histogramExpansion =
                 HistogramWatcher.newSingleRecordWatcher("CustomTabs.ResizeType2", expected);
         strategy.onFindToolbarShown();
@@ -1219,7 +1220,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
                         eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
-        expected = PartialCustomTabBottomSheetStrategy.ResizeType.AUTO_MINIMIZATION;
+        expected = ResizeType.AUTO_MINIMIZATION;
         var histogramMinimization =
                 HistogramWatcher.newSingleRecordWatcher("CustomTabs.ResizeType2", expected);
         strategy.onFindToolbarHidden();

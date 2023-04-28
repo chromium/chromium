@@ -117,22 +117,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private int mMoveStartY;
     private float mOffsetY;
 
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    // This should be kept in sync with the definition |CustomTabsResizeType2|
-    // in tools/metrics/histograms/enums.xml.
-    @IntDef({ResizeType.MANUAL_EXPANSION, ResizeType.MANUAL_MINIMIZATION, ResizeType.AUTO_EXPANSION,
-            ResizeType.AUTO_MINIMIZATION, ResizeType.COUNT})
-    @Retention(RetentionPolicy.SOURCE)
-    @VisibleForTesting
-    @interface ResizeType {
-        int MANUAL_EXPANSION = 0;
-        int MANUAL_MINIMIZATION = 1;
-        int AUTO_EXPANSION = 2;
-        int AUTO_MINIMIZATION = 3;
-        int COUNT = 4;
-    }
-
     // Used to initialize the coordinator view (R.id.coordinator) to full-height at the beginning.
     // This is a workaround to an issue of the host app briefly flashing when the tab is resized.
     private boolean mInitFirstHeight;
