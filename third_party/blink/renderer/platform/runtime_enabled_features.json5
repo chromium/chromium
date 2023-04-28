@@ -3721,7 +3721,7 @@
     // https://w3c.github.io/webauthn/#sctn-parseRequestOptionsFromJSON
     {
       name: "WebAuthenticationJSONSerialization",
-      status: "experimental",
+      status: "test",
     },
     {
       name: "WebAuthenticationLargeBlobExtension",
