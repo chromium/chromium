@@ -99,7 +99,7 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
   // TODO(crbug.com/1440628): Cleanup the temporary behaviour of an additional
   // opt in for Bookmarks and Reading Lists.
   if (use_transport_only_mode_callback_.Run() &&
-      !prefs_->IsOptedInForBookmarksAccountStorage()) {
+      !prefs_->IsOptedInForBookmarksAndReadingListAccountStorage()) {
     types.Remove(UserSelectableType::kBookmarks);
     types.Remove(UserSelectableType::kReadingList);
   }
@@ -135,8 +135,9 @@ void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
 }
 
 #if BUILDFLAG(IS_IOS)
-void SyncUserSettingsImpl::SetBookmarksAccountStorageOptIn(bool value) {
-  prefs_->SetBookmarksAccountStorageOptIn(value);
+void SyncUserSettingsImpl::SetBookmarksAndReadingListAccountStorageOptIn(
+    bool value) {
+  prefs_->SetBookmarksAndReadingListAccountStorageOptIn(value);
 }
 #endif  // BUILDFLAG(IS_IOS)
 

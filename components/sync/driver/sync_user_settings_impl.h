@@ -43,7 +43,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   void SetSelectedTypes(bool sync_everything,
                         UserSelectableTypeSet types) override;
 #if BUILDFLAG(IS_IOS)
-  void SetBookmarksAccountStorageOptIn(bool value);
+  void SetBookmarksAndReadingListAccountStorageOptIn(bool value);
 #endif  // BUILDFLAG(IS_IOS)
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

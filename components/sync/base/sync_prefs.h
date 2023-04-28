@@ -95,11 +95,11 @@ class SyncPrefs {
                         UserSelectableTypeSet selected_types);
 
 #if BUILDFLAG(IS_IOS)
-  // Sets the transport bookmarks pref on opt in/out.
-  void SetBookmarksAccountStorageOptIn(bool value);
+  // Sets the transport bookmarks & reading list pref on opt in/out.
+  void SetBookmarksAndReadingListAccountStorageOptIn(bool value);
 
-  // Gets the transport bookmarks pref.
-  bool IsOptedInForBookmarksAccountStorage();
+  // Gets the transport bookmarks & reading list pref.
+  bool IsOptedInForBookmarksAndReadingListAccountStorage();
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

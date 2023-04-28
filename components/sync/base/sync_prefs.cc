@@ -54,7 +54,8 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kSyncFirstSetupComplete, false);
   registry->RegisterBooleanPref(prefs::kSyncRequested, false);
   registry->RegisterBooleanPref(prefs::kSyncKeepEverythingSynced, true);
-  registry->RegisterBooleanPref(prefs::kBookmarksAccountStorageOptIn, false);
+  registry->RegisterBooleanPref(
+      prefs::kBookmarksAndReadingListAccountStorageOptIn, false);
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     RegisterTypeSelectedPref(registry, type);
   }
@@ -175,16 +176,18 @@ void SyncPrefs::SetSelectedTypes(bool keep_everything_synced,
 }
 
 #if BUILDFLAG(IS_IOS)
-void SyncPrefs::SetBookmarksAccountStorageOptIn(bool value) {
-  pref_service_->SetBoolean(prefs::kBookmarksAccountStorageOptIn, value);
+void SyncPrefs::SetBookmarksAndReadingListAccountStorageOptIn(bool value) {
+  pref_service_->SetBoolean(prefs::kBookmarksAndReadingListAccountStorageOptIn,
+                            value);
 
   for (SyncPrefObserver& observer : sync_pref_observers_) {
     observer.OnPreferredDataTypesPrefChange();
   }
 }
 
-bool SyncPrefs::IsOptedInForBookmarksAccountStorage() {
-  return pref_service_->GetBoolean(prefs::kBookmarksAccountStorageOptIn);
+bool SyncPrefs::IsOptedInForBookmarksAndReadingListAccountStorage() {
+  return pref_service_->GetBoolean(
+      prefs::kBookmarksAndReadingListAccountStorageOptIn);
 }
 #endif  // BUILDFLAG(IS_IOS)
 
