@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import android.graphics.Bitmap;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.autofill.LegalMessageLine;
+import org.chromium.url.GURL;
 
 import java.util.LinkedList;
 
@@ -23,20 +22,27 @@ public class VirtualCardEnrollmentFields {
     final LinkedList<LegalMessageLine> mGoogleLegalMessages = new LinkedList<>();
     @VisibleForTesting
     final LinkedList<LegalMessageLine> mIssuerLegalMessages = new LinkedList<>();
-    private final Bitmap mIssuerCardArt;
     private final String mCardIdentifierString;
+    private final int mNetworkIconId;
+    private final GURL mCardArtUrl;
 
-    public VirtualCardEnrollmentFields(String cardIdentifierString, Bitmap issuerCardArt) {
+    public VirtualCardEnrollmentFields(
+            String cardIdentifierString, int networkIconId, GURL cardArtUrl) {
         mCardIdentifierString = cardIdentifierString;
-        mIssuerCardArt = issuerCardArt;
-    }
-
-    public Bitmap getIssuerCardArt() {
-        return mIssuerCardArt;
+        mNetworkIconId = networkIconId;
+        mCardArtUrl = cardArtUrl;
     }
 
     public String getCardIdentifierString() {
         return mCardIdentifierString;
+    }
+
+    public int getNetworkIconId() {
+        return mNetworkIconId;
+    }
+
+    public GURL getCardArtUrl() {
+        return mCardArtUrl;
     }
 
     public LinkedList<LegalMessageLine> getGoogleLegalMessages() {
@@ -52,12 +58,14 @@ public class VirtualCardEnrollmentFields {
      *
      * @param cardIdentifierString The text to be displayed in the enrollment dialog to help with
      *         identifying the card.
-     * @param issuerCardArt The image associated with the card being enrolled.
+     * @param networkIconId The resource Id for the card's network icon.
+     * @param cardArtUrl The URL to fetch the card art associated with the card being enrolled.
      */
     @CalledByNative
     @VisibleForTesting
-    static VirtualCardEnrollmentFields create(String cardIdentifierString, Bitmap issuerCardArt) {
-        return new VirtualCardEnrollmentFields(cardIdentifierString, issuerCardArt);
+    static VirtualCardEnrollmentFields create(
+            String cardIdentifierString, int networkIconId, GURL cardArtUrl) {
+        return new VirtualCardEnrollmentFields(cardIdentifierString, networkIconId, cardArtUrl);
     }
 
     /**
