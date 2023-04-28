@@ -1700,8 +1700,9 @@ void SQLitePersistentCookieStore::Backend::BackgroundDeleteAllInList(
     delete_statement.Reset(true);
     delete_statement.BindString(0, cookie.first);
     delete_statement.BindInt(1, cookie.second);
-    if (!delete_statement.Run())
-      NOTREACHED() << "Could not delete a cookie from the DB.";
+    if (!delete_statement.Run()) {
+      LOG(WARNING) << "Could not delete a cookie from the DB.";
+    }
   }
 
   if (!transaction.Commit())
