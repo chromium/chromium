@@ -79,7 +79,7 @@ class CompanionUrlBuilderTest : public testing::Test {
   }
   // Deserialize the query param into proto::CompanionUrlParams.
   proto::CompanionUrlParams DeserializeCompanionRequest(
-      std::string companion_url_param) {
+      const std::string& companion_url_param) {
     companion::proto::CompanionUrlParams proto;
     auto base64_decoded = base::Base64Decode(companion_url_param);
     auto serialized_proto = std::string(base64_decoded.value().begin(),

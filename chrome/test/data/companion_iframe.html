@@ -1,0 +1,22 @@
+<html>
+<script>
+
+  // The proto received on last update postmessage. Reset on getLastReceivedCompanionProto().
+  lastReceivedCompanionProto = null;
+
+  function onBrowserMessage(event) {
+    if (event.data['type'] == 31) { // `MethodType.kUpdateCompanionPage`
+      window.lastReceivedCompanionProto = event.data['companionUpdateParams'];
+    }
+  }
+
+  function getLastReceivedCompanionProto() {
+    protoCopy = window.lastReceivedCompanionProto;
+    window.lastReceivedCompanionProto = null;
+    return protoCopy;
+  }
+
+  window.addEventListener('message', onBrowserMessage, false);
+
+</script>
+</html>
