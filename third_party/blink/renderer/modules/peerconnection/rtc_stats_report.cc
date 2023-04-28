@@ -196,16 +196,14 @@ RTCInboundRtpStreamStats* ToV8Stat(
   }
   if (webrtc_stat.kind.is_defined()) {
     v8_stat->setKind(String::FromUTF8(*webrtc_stat.kind));
+    // mediaType is a legacy alias for kind.
+    v8_stat->setMediaType(String::FromUTF8(*webrtc_stat.kind));
   }
   if (webrtc_stat.transport_id.is_defined()) {
     v8_stat->setTransportId(String::FromUTF8(*webrtc_stat.transport_id));
   }
   if (webrtc_stat.codec_id.is_defined()) {
     v8_stat->setCodecId(String::FromUTF8(*webrtc_stat.codec_id));
-  }
-  // RTCRtpStreamStats legacy stats
-  if (webrtc_stat.media_type.is_defined()) {
-    v8_stat->setMediaType(String::FromUTF8(*webrtc_stat.media_type));
   }
   if (!unship_deprecated_stats && webrtc_stat.track_id.is_defined()) {
     v8_stat->setTrackId(String::FromUTF8(*webrtc_stat.track_id));
@@ -408,6 +406,8 @@ RTCRemoteInboundRtpStreamStats* ToV8Stat(
   }
   if (webrtc_stat.kind.is_defined()) {
     v8_stat->setKind(String::FromUTF8(*webrtc_stat.kind));
+    // mediaType is a legacy alias for kind.
+    v8_stat->setMediaType(String::FromUTF8(*webrtc_stat.kind));
   }
   if (webrtc_stat.transport_id.is_defined()) {
     v8_stat->setTransportId(String::FromUTF8(*webrtc_stat.transport_id));
@@ -416,9 +416,6 @@ RTCRemoteInboundRtpStreamStats* ToV8Stat(
     v8_stat->setCodecId(String::FromUTF8(*webrtc_stat.codec_id));
   }
   // RTCRtpStreamStats legacy stats
-  if (webrtc_stat.media_type.is_defined()) {
-    v8_stat->setMediaType(String::FromUTF8(*webrtc_stat.media_type));
-  }
   if (!unship_deprecated_stats && webrtc_stat.track_id.is_defined()) {
     v8_stat->setTrackId(String::FromUTF8(*webrtc_stat.track_id));
   }
@@ -463,6 +460,8 @@ RTCOutboundRtpStreamStats* ToV8Stat(
   }
   if (webrtc_stat.kind.is_defined()) {
     v8_stat->setKind(String::FromUTF8(*webrtc_stat.kind));
+    // mediaType is a legacy alias for kind.
+    v8_stat->setMediaType(String::FromUTF8(*webrtc_stat.kind));
   }
   if (webrtc_stat.transport_id.is_defined()) {
     v8_stat->setTransportId(String::FromUTF8(*webrtc_stat.transport_id));
@@ -471,9 +470,6 @@ RTCOutboundRtpStreamStats* ToV8Stat(
     v8_stat->setCodecId(String::FromUTF8(*webrtc_stat.codec_id));
   }
   // RTCRtpStreamStats legacy stats
-  if (webrtc_stat.media_type.is_defined()) {
-    v8_stat->setMediaType(String::FromUTF8(*webrtc_stat.media_type));
-  }
   if (!unship_deprecated_stats && webrtc_stat.track_id.is_defined()) {
     v8_stat->setTrackId(String::FromUTF8(*webrtc_stat.track_id));
   }
@@ -604,6 +600,8 @@ RTCRemoteOutboundRtpStreamStats* ToV8Stat(
   }
   if (webrtc_stat.kind.is_defined()) {
     v8_stat->setKind(String::FromUTF8(*webrtc_stat.kind));
+    // mediaType is a legacy alias for kind.
+    v8_stat->setMediaType(String::FromUTF8(*webrtc_stat.kind));
   }
   if (webrtc_stat.transport_id.is_defined()) {
     v8_stat->setTransportId(String::FromUTF8(*webrtc_stat.transport_id));
@@ -612,9 +610,6 @@ RTCRemoteOutboundRtpStreamStats* ToV8Stat(
     v8_stat->setCodecId(String::FromUTF8(*webrtc_stat.codec_id));
   }
   // RTCRtpStreamStats legacy stats
-  if (webrtc_stat.media_type.is_defined()) {
-    v8_stat->setMediaType(String::FromUTF8(*webrtc_stat.media_type));
-  }
   if (!unship_deprecated_stats && webrtc_stat.track_id.is_defined()) {
     v8_stat->setTrackId(String::FromUTF8(*webrtc_stat.track_id));
   }
