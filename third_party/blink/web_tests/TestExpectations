@@ -1213,9 +1213,6 @@ crbug.com/240765 external/wpt/css/css-flexbox/multiline-shrink-to-fit.html [ Fai
 crbug.com/240765 external/wpt/css/css-flexbox/flex-container-max-content-001.html [ Failure ]
 crbug.com/240765 external/wpt/css/css-flexbox/flex-container-min-content-001.html [ Failure ]
 
-# These require css-align-3 positional keywords that Blink doesn't yet support for flexbox.
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-001.html [ Failure ]
-
 # We don't currently support visibility: collapse in flexbox
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-baseline-001.html [ Failure ]
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-horiz-001.html [ Failure ]

@@ -2029,6 +2029,10 @@
       status: "stable",
     },
     {
+      name: "LayoutFlexSafeAlignment",
+      status: "stable",
+    },
+    {
       // crbug.com/1425520. Enabled since M113.
       name: "LayoutMediaChildPaintContainment",
       status: "stable",
