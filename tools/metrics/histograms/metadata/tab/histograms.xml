@@ -1061,6 +1061,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tabs.ActiveCountAtStartup" units="tabs"
+    expires_after="2023-10-01">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>
+    [iOS] Records the number of tabs that are considered active as per the
+    current tab inactivity threshold. This is recorded at cold launch.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.CountAtResume" units="tabs" expires_after="2024-01-15">
 <!-- This histogram was expired between 2022-11-02 and M111 -->
 
@@ -1110,6 +1121,17 @@ chromium-metrics-reviews@google.com.
     Creation Rank&quot; is relative to other background tabs which were opened
     from the same URL via the context menu. The newest background tab has a
     &quot;Reverse Tab Creation Rank&quot; of zero.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.InactiveCountAtStartup" units="tabs"
+    expires_after="2023-10-01">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>
+    [iOS] Records the number of tabs that are considered inactive as per the
+    current tab inactivity threshold. This is recorded at cold launch.
   </summary>
 </histogram>
 
@@ -1219,6 +1241,16 @@ chromium-metrics-reviews@google.com.
     logged on all desktop platforms.
   </summary>
   <token key="BatteryState" variants="BatteryState"/>
+</histogram>
+
+<histogram name="Tabs.OldCountAtStartup" units="tabs"
+    expires_after="2023-10-01">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>
+    [iOS] Number of tabs older than 21 days. Recorded at cold launch.
+  </summary>
 </histogram>
 
 <histogram name="Tabs.PersistedTabData.Critical.Map.Success"
