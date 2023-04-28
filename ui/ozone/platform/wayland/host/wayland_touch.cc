@@ -73,6 +73,10 @@ void WaylandTouch::Down(void* data,
                                                     serial);
 
   WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
+  if (!window) {
+    return;
+  }
+
   gfx::PointF location = touch->connection_->MaybeConvertLocation(
       gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), window);
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
