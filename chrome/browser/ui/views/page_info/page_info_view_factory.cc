@@ -134,7 +134,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER),
-          presenter_->GetSiteNameOrAppNameToDisplay()),
+          presenter_->GetSubjectNameForDisplay()),
       std::make_unique<PageInfoSecurityContentView>(
           presenter_, /*is_standalone_page=*/true));
 }
@@ -143,7 +143,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreatePermissionPageView(
     ContentSettingsType type) {
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(PageInfoUI::PermissionTypeToUIString(type),
-                          presenter_->GetSiteNameOrAppNameToDisplay()),
+                          presenter_->GetSubjectNameForDisplay()),
       std::make_unique<PageInfoPermissionContentView>(presenter_, ui_delegate_,
                                                       type));
 }
@@ -156,7 +156,7 @@ PageInfoViewFactory::CreateAdPersonalizationPageView() {
           : IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER;
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(l10n_util::GetStringUTF16(header_id),
-                          presenter_->GetSiteNameOrAppNameToDisplay()),
+                          presenter_->GetSubjectNameForDisplay()),
       std::make_unique<PageInfoAdPersonalizationContentView>(presenter_,
                                                              ui_delegate_));
 }
@@ -166,7 +166,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateCookiesPageView() {
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
-          presenter_->GetSiteNameOrAppNameToDisplay()),
+          presenter_->GetSubjectNameForDisplay()),
       std::make_unique<PageInfoCookiesContentView>(presenter_));
 }
 

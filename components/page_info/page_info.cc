@@ -254,9 +254,6 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
   DCHECK(delegate_);
   security_level_ = delegate_->GetSecurityLevel();
   visible_security_state_for_metrics_ = delegate_->GetVisibleSecurityState();
-#if !BUILDFLAG(IS_ANDROID)
-  isolated_web_app_name_ = delegate_->GetWebAppShortName();
-#endif
 
   // TabSpecificContentSetting needs to be created before page load.
   DCHECK(GetPageSpecificContentSettings());
@@ -828,16 +825,12 @@ permissions::ObjectPermissionContextBase* PageInfo::GetChooserContextFromUIInfo(
   return delegate_->GetChooserContext(ui_info.content_settings_type);
 }
 
-std::u16string PageInfo::GetSiteNameOrAppNameToDisplay() const {
+std::u16string PageInfo::GetSubjectNameForDisplay() const {
   if (!site_name_for_testing_.empty()) {
     return site_name_for_testing_;
   }
 
-  if (IsIsolatedWebApp() && !isolated_web_app_name_.empty()) {
-    return isolated_web_app_name_;
-  }
-
-  return GetSimpleSiteName();
+  return delegate_->GetSubjectName(site_url_);
 }
 
 void PageInfo::ComputeUIInputs(const GURL& url) {
@@ -1017,7 +1010,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   // weakly encrypted connections.
   site_connection_status_ = SITE_CONNECTION_STATUS_UNKNOWN;
 
-  std::u16string subject_name(GetSiteNameOrAppNameToDisplay());
+  std::u16string subject_name(GetSubjectNameForDisplay());
   if (subject_name.empty()) {
     subject_name.assign(
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_TAB_UNKNOWN_PARTY));
@@ -1415,7 +1408,7 @@ void PageInfo::PresentSiteIdentity() {
   DCHECK_NE(site_identity_status_, SITE_IDENTITY_STATUS_UNKNOWN);
   DCHECK_NE(site_connection_status_, SITE_CONNECTION_STATUS_UNKNOWN);
   PageInfoUI::IdentityInfo info;
-  info.site_identity = UTF16ToUTF8(GetSiteNameOrAppNameToDisplay());
+  info.site_identity = UTF16ToUTF8(GetSubjectNameForDisplay());
 
   info.connection_status = site_connection_status_;
   info.connection_status_description = UTF16ToUTF8(site_connection_details_);
@@ -1474,11 +1467,6 @@ void PageInfo::RecordPasswordReuseEvent() {
 }
 #endif
 
-std::u16string PageInfo::GetSimpleSiteName() const {
-  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-      site_url_);
-}
-
 HostContentSettingsMap* PageInfo::GetContentSettings() const {
   return delegate_->GetContentSettings();
 }
@@ -1493,13 +1481,6 @@ std::vector<ContentSettingsType> PageInfo::GetAllPermissionsForTesting() {
 
 void PageInfo::SetSiteNameForTesting(const std::u16string& site_name) {
   site_name_for_testing_ = site_name;
-  PresentSiteIdentity();
-}
-
-void PageInfo::SetIsolatedWebAppNameForTesting(
-    const std::u16string& isolated_web_app_name) {
-  is_isolated_web_app_for_testing_ = true;
-  isolated_web_app_name_ = isolated_web_app_name;
   PresentSiteIdentity();
 }
 
@@ -1650,10 +1631,9 @@ int PageInfo::GetThirdPartyBlockedCookiesCount(const GURL& site_url) {
 }
 
 bool PageInfo::IsIsolatedWebApp() const {
-  if (is_isolated_web_app_for_testing_)
-    return true;
-
-  return web_contents_ &&
-         web_contents_->GetPrimaryMainFrame()->GetWebExposedIsolationLevel() >=
-             content::WebExposedIsolationLevel::kMaybeIsolatedApplication;
+#if !BUILDFLAG(IS_ANDROID)
+  return delegate_->IsIsolatedWebApp();
+#else
+  return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }

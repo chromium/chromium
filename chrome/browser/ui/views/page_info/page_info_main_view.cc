@@ -370,7 +370,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
   std::unique_ptr<PageInfoUI::SecurityDescription> security_description =
       GetSecurityDescription(identity_info);
 
-  title_->SetText(presenter_->GetSiteNameOrAppNameToDisplay());
+  title_->SetText(presenter_->GetSubjectNameForDisplay());
 
   security_container_view_->RemoveAllChildViews();
   if (security_description->summary_style == SecuritySummaryColor::GREEN) {

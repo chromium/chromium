@@ -46,6 +46,10 @@ UrlIdentity CreateDefaultUrlIdentityFromUrl(const GURL& url,
         url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
   } else if (options.default_options.Has(DefaultFormatOptions::kHostname)) {
     name = url_formatter::IDNToUnicode(url.host());
+  } else if (options.default_options.Has(
+                 DefaultFormatOptions::kOmitSchemePathAndTrivialSubdomains)) {
+    name = url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+        url);
   } else {
     name = url_formatter::FormatUrlForSecurityDisplay(url);
   }

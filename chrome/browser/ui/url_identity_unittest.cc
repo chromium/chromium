@@ -162,6 +162,14 @@ TEST_F(UrlIdentityTest, DefaultFormatOptionsTest) {
            .type = Type::kDefault,
            .name = u"abc.example.com",
        }},
+      {GURL("http://user:pass@google.com/path"),
+       {Type::kDefault},
+       {.default_options =
+            {DefaultFormatOptions::kOmitSchemePathAndTrivialSubdomains}},
+       {
+           .type = Type::kDefault,
+           .name = u"google.com",
+       }},
   };
 
   for (const auto& test_case : test_cases) {

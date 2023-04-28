@@ -57,7 +57,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   bool CreateInfoBarDelegate() override;
   std::unique_ptr<content_settings::CookieControlsController>
   CreateCookieControlsController() override;
-  std::u16string GetWebAppShortName() override;
+  bool IsIsolatedWebApp() override;
   // In Chrome's case, this may show the site settings page or an app settings
   // page, depending on context.
   void ShowSiteSettings(const GURL& site_url) override;
@@ -74,6 +74,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   void OnUIClosing() override;
 #endif
 
+  std::u16string GetSubjectName(const GURL& url) override;
   permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoblocker()
       override;
   StatefulSSLHostStateDelegate* GetStatefulSSLHostStateDelegate() override;

@@ -317,12 +317,11 @@ class PageInfo : private content_settings::CookieControlsView {
 
   // For most sites, this returns a human-friendly string based on site origin,
   // without scheme, the username and password, the path or trivial subdomains.
-  // See |GetSimpleSiteInfo()|.
   //
-  // For Isolated Web Apps, the origin's host name is a non-human-readable
-  // string of characters, so instead of displaying the origin, the short name
-  // of the app will be displayed.
-  std::u16string GetSiteNameOrAppNameToDisplay() const;
+  // For Isolated Web Apps & Chrome Extensions, the origin's host name is a
+  // non-human-readable string of characters, so instead of displaying the
+  // origin, the short name of the app will be displayed.
+  std::u16string GetSubjectNameForDisplay() const;
 
   // Retrieves all the permissions that are shown in Page Info.
   // Exposed for testing.
@@ -331,9 +330,6 @@ class PageInfo : private content_settings::CookieControlsView {
   PageInfoUI* ui_for_testing() const { return ui_; }
 
   void SetSiteNameForTesting(const std::u16string& site_name);
-
-  void SetIsolatedWebAppNameForTesting(
-      const std::u16string& isolated_web_app_name);
 
   void SetSubscribedToPermissionChangeForTesting() {
     is_subscribed_to_permission_change_for_testing = true;
@@ -396,11 +392,6 @@ class PageInfo : private content_settings::CookieControlsView {
   void RecordPasswordReuseEvent();
 #endif
 
-  // Returns site origin in a concise and human-friendly way, without the
-  // HTTP/HTTPS scheme, the username and password, the path and trivial
-  // subdomains.
-  std::u16string GetSimpleSiteName() const;
-
   // Helper function to get the |HostContentSettingsMap| associated with
   // |PageInfo|.
   HostContentSettingsMap* GetContentSettings() const;
@@ -456,9 +447,6 @@ class PageInfo : private content_settings::CookieControlsView {
   // The Omnibox URL of the website for which to display site permissions and
   // site information.
   GURL site_url_;
-
-  // The short name of an Isolated Web App. Empty for non-IWAs.
-  std::u16string isolated_web_app_name_;
 
   // Status of the website's identity verification check.
   SiteIdentityStatus site_identity_status_;
@@ -529,8 +517,6 @@ class PageInfo : private content_settings::CookieControlsView {
   std::u16string safe_browsing_details_;
 
   std::u16string site_name_for_testing_;
-
-  bool is_isolated_web_app_for_testing_ = false;
 
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   base::ScopedObservation<content_settings::CookieControlsController,
