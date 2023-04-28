@@ -47,10 +47,12 @@ class MockPage : public reading_list::mojom::Page {
   }
   mojo::Receiver<reading_list::mojom::Page> receiver_{this};
 
-  MOCK_METHOD1(ItemsChanged,
-               void(reading_list::mojom::ReadLaterEntriesByStatusPtr));
-  MOCK_METHOD1(CurrentPageActionButtonStateChanged,
-               void(reading_list::mojom::CurrentPageActionButtonState));
+  MOCK_METHOD(void,
+              ItemsChanged,
+              (reading_list::mojom::ReadLaterEntriesByStatusPtr));
+  MOCK_METHOD(void,
+              CurrentPageActionButtonStateChanged,
+              (reading_list::mojom::CurrentPageActionButtonState));
 };
 
 void ExpectNewReadLaterEntry(const reading_list::mojom::ReadLaterEntry* entry,
