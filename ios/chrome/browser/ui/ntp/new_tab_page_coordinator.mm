@@ -1558,9 +1558,9 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
   self.NTPViewController.feedVisible = [self isFeedVisible];
 
-  self.feedWrapperViewController = [[FeedWrapperViewController alloc]
-        initWithDelegate:self
-      feedViewController:self.feedViewController];
+  self.feedWrapperViewController = [self.componentFactory
+      feedWrapperViewControllerWithDelegate:self
+                         feedViewController:self.feedViewController];
 
   self.NTPViewController.feedWrapperViewController =
       self.feedWrapperViewController;

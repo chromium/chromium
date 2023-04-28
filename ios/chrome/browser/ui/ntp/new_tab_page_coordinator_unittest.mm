@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
@@ -78,6 +80,11 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     toolbar_delegate_ =
         OCMProtocolMock(@protocol(NewTabPageControllerDelegate));
     histogram_tester_.reset(new base::HistogramTester());
+
+    std::vector<base::test::FeatureRef> enabled;
+    enabled.push_back(kEnableDiscoverFeedTopSyncPromo);
+    std::vector<base::test::FeatureRef> disabled;
+    scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
   void CreateCoordinator(bool off_the_record) {
@@ -92,9 +99,33 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     scene_state_ = OCMClassMock([SceneState class]);
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
-    coordinator_ = [[NewTabPageCoordinator alloc]
-         initWithBrowser:browser_.get()
-        componentFactory:[[NewTabPageComponentFactory alloc] init]];
+    // Mocks the component factory so that the NTP is tested with a fake feed.
+    // This allows testing of feed-dependent views, such as the feed top
+    // section.
+    // TODO(crbug.com/1441139): Replace this with a
+    // FakeNewTabPageComponentFactory implementation.
+    component_factory_mock_ =
+        OCMPartialMock([[NewTabPageComponentFactory alloc] init]);
+    UIViewController* fakeFeedViewController = [[UIViewController alloc] init];
+    UICollectionView* fakeFeedCollectionView = [[UICollectionView alloc]
+               initWithFrame:CGRectZero
+        collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
+    [fakeFeedViewController.view addSubview:fakeFeedCollectionView];
+    FeedWrapperViewController* feedWrapperViewController =
+        [[FeedWrapperViewController alloc]
+              initWithDelegate:coordinator_
+            feedViewController:fakeFeedViewController];
+    OCMStub([component_factory_mock_ discoverFeedForBrowser:browser_.get()
+                                viewControllerConfiguration:[OCMArg any]])
+        .andReturn(fakeFeedViewController);
+    OCMStub([component_factory_mock_
+                feedWrapperViewControllerWithDelegate:[OCMArg any]
+                                   feedViewController:[OCMArg any]])
+        .andReturn(feedWrapperViewController);
+
+    coordinator_ =
+        [[NewTabPageCoordinator alloc] initWithBrowser:browser_.get()
+                                      componentFactory:component_factory_mock_];
     coordinator_.baseViewController = base_view_controller_;
     coordinator_.toolbarDelegate = toolbar_delegate_;
 
@@ -199,11 +230,13 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   id scene_state_;
   NewTabPageCoordinator* coordinator_;
   NewTabPageMetricsRecorder* NTPMetricsRecorder_;
+  NewTabPageComponentFactory* component_factory_mock_;
   UIViewController* base_view_controller_;
   id omnibox_commands_handler_mock;
   id snackbar_commands_handler_mock;
   id fakebox_focuser_handler_mock;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the coordinator doesn't vend an IncognitoViewController VC on the
@@ -468,4 +501,34 @@ TEST_F(NewTabPageCoordinatorTest, ProxiesNTPViewControllerMethods) {
                           @selector(omniboxDidResignFirstResponder));
 
   [coordinator_ stop];
+}
+
+// Tests the state of the NTP coordinator after starting and stopping it. This
+// mainly ensures that all strongly references properties are created and
+// released, but also checks that the NTP state is correct for each scnenario.
+TEST_F(NewTabPageCoordinatorTest, IsNTPCleanOnStop) {
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+
+  [coordinator_ start];
+  EXPECT_NE(nil, coordinator_.NTPViewController);
+  EXPECT_NE(nil, coordinator_.contentSuggestionsCoordinator.viewController);
+  EXPECT_NE(nil, coordinator_.contentSuggestionsCoordinator);
+  EXPECT_NE(nil, coordinator_.headerViewController);
+  EXPECT_NE(nil, coordinator_.NTPMediator);
+  EXPECT_NE(nil, coordinator_.feedWrapperViewController);
+  EXPECT_NE(nil, coordinator_.feedTopSectionCoordinator);
+  EXPECT_NE(nil, coordinator_.feedHeaderViewController);
+  EXPECT_TRUE(coordinator_.started);
+
+  [coordinator_ stop];
+  EXPECT_EQ(nil, coordinator_.NTPViewController);
+  EXPECT_EQ(nil, coordinator_.contentSuggestionsCoordinator.viewController);
+  EXPECT_EQ(nil, coordinator_.contentSuggestionsCoordinator);
+  EXPECT_EQ(nil, coordinator_.headerViewController);
+  EXPECT_EQ(nil, coordinator_.NTPMediator);
+  EXPECT_EQ(nil, coordinator_.feedWrapperViewController);
+  EXPECT_EQ(nil, coordinator_.feedTopSectionCoordinator);
+  EXPECT_EQ(nil, coordinator_.feedHeaderViewController);
+  EXPECT_FALSE(coordinator_.started);
 }

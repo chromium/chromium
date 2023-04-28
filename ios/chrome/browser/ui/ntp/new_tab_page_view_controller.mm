@@ -417,8 +417,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
 
   // Adds the feed top section to the view hierarchy if it exists.
-  if (IsDiscoverFeedTopSyncPromoEnabled() &&
-      self.feedTopSectionViewController) {
+  if (self.feedTopSectionViewController) {
     [self addViewControllerAboveFeed:self.feedTopSectionViewController];
   }
 
@@ -1118,8 +1117,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // If Feed top section is enabled, the header bottom anchor should be set to
   // its top anchor instead of the feed collection's top anchor.
   UIView* bottomView = self.collectionView;
-  if (IsDiscoverFeedTopSyncPromoEnabled() &&
-      self.feedTopSectionViewController) {
+  if (self.feedTopSectionViewController) {
     bottomView = self.feedTopSectionViewController.view;
   }
   self.feedHeaderConstraints = @[
@@ -1287,8 +1285,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
           constraintLessThanOrEqualToConstant:kDiscoverFeedContentWidth],
     ]];
     [self setInitialFeedHeaderConstraints];
-    if (IsDiscoverFeedTopSyncPromoEnabled() &&
-        self.feedTopSectionViewController) {
+    if (self.feedTopSectionViewController) {
       [NSLayoutConstraint activateConstraints:@[
         [self.feedTopSectionViewController.view.leftAnchor
             constraintEqualToAnchor:self.collectionView.leftAnchor],
@@ -1406,8 +1403,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 // Height of the feed top section, returns 0 if not visible.
 - (CGFloat)feedTopSectionHeight {
-  return IsDiscoverFeedTopSyncPromoEnabled() &&
-                 self.feedTopSectionViewController
+  return self.feedTopSectionViewController
              ? self.feedTopSectionViewController.view.frame.size.height
              : 0;
 }
