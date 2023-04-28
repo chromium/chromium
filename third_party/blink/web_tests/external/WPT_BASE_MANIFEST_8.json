@@ -105972,6 +105972,58 @@
        ],
        {}
       ]
+     ],
+     "quote-scoping-invalidation-001.html": [
+      "61ec4a481ffd20af97be0620334edfad6cef1954",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/reference/quote-scoping-invalidation-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "quote-scoping-invalidation-002.html": [
+      "727ee9a58128bbb4eaeff87f2f3df988e8547da9",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/reference/quote-scoping-invalidation-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "quote-scoping-invalidation-003.html": [
+      "24e69eb38fe7d18fd5e2359fdfb5d64440343192",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/reference/quote-scoping-invalidation-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "quote-scoping-invalidation-004.html": [
+      "11b0d24f6680879aafd21853ea7abb07a55072c4",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/reference/quote-scoping-invalidation-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "css-content": {
@@ -106811,6 +106863,71 @@
        [
         [
          "/css/css-content/reference/quotes-034-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "quotes-first-letter-001.html": [
+      "651615f5259d0cf4b972552e6e6a454c1127b7e3",
+      [
+       null,
+       [
+        [
+         "/css/css-content/reference/quotes-first-letter-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "quotes-first-letter-002.html": [
+      "8c40b1418a3ca0e3074ce6130ad372f8bb03c263",
+      [
+       null,
+       [
+        [
+         "/css/css-content/reference/quotes-first-letter-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "quotes-first-letter-003.html": [
+      "fd556d2ab12b704491c3ab36bbb4d1d045247d6a",
+      [
+       null,
+       [
+        [
+         "/css/css-content/reference/quotes-first-letter-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "quotes-first-letter-004.html": [
+      "932ea8516e12a9cd8d53de56fbea7d6317d2cbe6",
+      [
+       null,
+       [
+        [
+         "/css/css-content/reference/quotes-first-letter-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "quotes-first-letter-005.html": [
+      "a22589a661b5a043c7b1b5eb291e6aac20b0f688",
+      [
+       null,
+       [
+        [
+         "/css/css-content/reference/quotes-first-letter-002-ref.html",
          "=="
         ]
        ],
@@ -270317,16 +270434,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "d709032d997d61f9472b5ae8518552ce9cf4e1ba",
-     []
-    ],
-    "mtime.json": [
-     "1b33fd9a32fd40a90e687ce9c121efe2be55c10b",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -290914,10 +291021,6 @@
        "5523ebf636e54fb6ba40097198be8991520af0f4",
        []
       ],
-      "percentage-padding-orthogonal-expected.txt": [
-       "7dde7f870c4d04ff81e8727b5e90aec1f79907de",
-       []
-      ],
       "percentage-padding-orthogonal.html.ini": [
        "7a7f398e5bac5273656e5aadb6dfc433af30a675",
        []
@@ -290928,10 +291031,6 @@
       ],
       "pseudo-elements-002b-ref.html": [
        "5783b77fec394dbee9fe97bfd0925ffc1043dacb",
-       []
-      ],
-      "query-evaluation-expected.txt": [
-       "17b6c5dd30ef9906d4642c1fb541553990668537",
        []
       ],
       "query-evaluation.html.ini": [
@@ -291173,22 +291272,6 @@
        []
       ]
      },
-     "quote-scoping-001.html.ini": [
-      "4ed5c3a5a026430868e153999d6c108743a422c9",
-      []
-     ],
-     "quote-scoping-002.html.ini": [
-      "754329ba6e88d83b912ca3b54da1ed8b67ef666a",
-      []
-     ],
-     "quote-scoping-003.html.ini": [
-      "37abc561465ac854979d5412185feae990945a0a",
-      []
-     ],
-     "quote-scoping-004.html.ini": [
-      "e12db6452eff25054307d32bc8a8ec9277c7dd9a",
-      []
-     ],
      "reference": {
       "contain-baseline-ref.html": [
        "1fdecb1c33149af52c48c105bce8ad91904bad44",
@@ -291512,6 +291595,22 @@
       ],
       "quote-scoping-empty-style-boundaries-ref.html": [
        "6437e08eb1a336d7ae9d69b1c1a47b67a3fd1a3f",
+       []
+      ],
+      "quote-scoping-invalidation-001-ref.html": [
+       "5c1a6203e62a8a57a450b33e09461856b5e3a6ab",
+       []
+      ],
+      "quote-scoping-invalidation-002-ref.html": [
+       "e48a080e9216ac6d0594588b6b531324501b57a2",
+       []
+      ],
+      "quote-scoping-invalidation-003-ref.html": [
+       "766ad6cbe9632388b0978a079d38154abf8f253b",
+       []
+      ],
+      "quote-scoping-invalidation-004-ref.html": [
+       "8280075f004a82682a07856242a8a6854c0eac82",
        []
       ],
       "ref-if-there-is-no-red.xht": [
@@ -291898,6 +291997,14 @@
       ],
       "quotes-034-ref.html": [
        "bfe7163f13276f181c2aeb765f20dad74c0cf204",
+       []
+      ],
+      "quotes-first-letter-001-ref.html": [
+       "c68334b8da72b7d72a9c4539fb06dad06530f82f",
+       []
+      ],
+      "quotes-first-letter-002-ref.html": [
+       "094be48cd8c90b569b82ce26d9083daecca7ae44",
        []
       ]
      },
@@ -345116,7 +345223,7 @@
       []
      ],
      "iframe.tentative.https.window-expected.txt": [
-      "db149f43b0235900c08ef033cfd0e41959abecda",
+      "6d3da80d6a3e7531153398d78f3f93b3b7395e83",
       []
      ],
      "iframe.tentative.https.window.js.ini": [
@@ -345225,7 +345332,7 @@
        []
       ],
       "support.sub.js": [
-       "0cf3d2532e7ffd5ff24d9dd3d1653cf60b62c071",
+       "a09c46031f5d4354592b479d10d6d0499ae6418a",
        []
       ],
       "worker-blob-fetcher.html": [
@@ -345250,23 +345357,15 @@
       []
      ],
      "service-worker-fetch.https.window-expected.txt": [
-      "81f6d8aac3a8a7057b3b91cbcb1ff3b5b07eb774",
+      "2fa1ec2bbc20620b6b949dcea8257109e55aa118",
       []
      ],
      "service-worker-fetch.https.window.js.ini": [
       "f793a9754359da02e7dc0907cd5f11b3e7b053bf",
       []
      ],
-     "service-worker-update.https.window-expected.txt": [
-      "0aca19f20b483f0527a40e58c9aa507986c61365",
-      []
-     ],
      "service-worker-update.https.window.js.ini": [
       "169f1746682aa007ee3de7edeca6dfe47d5f57a0",
-      []
-     ],
-     "service-worker.https.window-expected.txt": [
-      "9f6d82c80281d637d51f1976ccbcc883448dbcf8",
       []
      ],
      "service-worker.https.window.js.ini": [
@@ -345274,7 +345373,7 @@
       []
      ],
      "shared-worker-blob-fetch.https.window-expected.txt": [
-      "81f6d8aac3a8a7057b3b91cbcb1ff3b5b07eb774",
+      "2fa1ec2bbc20620b6b949dcea8257109e55aa118",
       []
      ],
      "shared-worker-blob-fetch.https.window.js.ini": [
@@ -345290,7 +345389,7 @@
       []
      ],
      "shared-worker-fetch.https.window-expected.txt": [
-      "0dc5268932503b1922bc3e69b523c6d78d7c29b6",
+      "614004f0837c38ec8adbdb4c8eb9fce88c1e6877",
       []
      ],
      "shared-worker-fetch.https.window.js.ini": [
@@ -345303,10 +345402,6 @@
      ],
      "shared-worker-fetch.window.js.ini": [
       "d1f917576c908489c9f3750da001df7ace9c153b",
-      []
-     ],
-     "shared-worker.https.window-expected.txt": [
-      "7acfd4c64f5339a5bc11a599d3d447bed545dd7f",
       []
      ],
      "shared-worker.https.window.js.ini": [
@@ -440730,7 +440825,7 @@
        ]
       ],
       "percentage-padding-orthogonal.html": [
-       "5fc591a668c6e863868e70084ee082917a79b82f",
+       "0c419d18a9da2c2765667c1d2b81d7f4dc514112",
        [
         null,
         {}
@@ -440792,8 +440887,15 @@
         {}
        ]
       ],
+      "query-evaluation-style.html": [
+       "4262f8bb0c2015e9da32bf8c96432563cb129c18",
+       [
+        null,
+        {}
+       ]
+      ],
       "query-evaluation.html": [
-       "67139d02d9879589cd98d05adec5daa2c12ffcff",
+       "5b301f2d1d94097f51e4f21bf90a7a99531a9dda",
        [
         null,
         {}
@@ -494349,7 +494451,7 @@
      ]
     ],
     "fledge-container-size.https.html": [
-     "6f2c519d43a2cbfdcfe4a6829abfa9f346b5096f",
+     "5347c841d58e76d6c1fdd7700f6ad963ee606a9f",
      [
       null,
       {}
@@ -505011,7 +505113,7 @@
     },
     "local-network-access": {
      "fetch-from-treat-as-public.https.window.js": [
-      "90f7feb63419d7e3c03811679644f6ccc4abd2a7",
+      "084e03282f4f78cf10408647ffd7d9a2f274c0e7",
       [
        "fetch/local-network-access/fetch-from-treat-as-public.https.window.html",
        {
@@ -505190,7 +505292,7 @@
       ]
      ],
      "iframe.tentative.https.window.js": [
-      "48bd6420fd9c46a758f8f1f01bf9e2263c8760e1",
+      "6a83b88d3ff16b1c8a4d3891422936564e8dcb60",
       [
        "fetch/local-network-access/iframe.tentative.https.window.html",
        {
@@ -505306,7 +505408,7 @@
       ]
      ],
      "redirect.https.window.js": [
-      "edbd5a19fbc963c7b37dedac88e31829d9268421",
+      "efbd8f31f936ad22aac5685e04676177b1dc31d7",
       [
        "fetch/local-network-access/redirect.https.window.html",
        {
@@ -505342,7 +505444,7 @@
       ]
      ],
      "service-worker-fetch.https.window.js": [
-      "5645d78456156d09afd5b074c24215de83b19c4a",
+      "3d0f6d8097a6c44933840d41074fbe7b2713678a",
       [
        "fetch/local-network-access/service-worker-fetch.https.window.html",
        {
@@ -505360,7 +505462,7 @@
       ]
      ],
      "service-worker-update.https.window.js": [
-      "fe2bf58f6600470650b9a19707a98ca895b2d86c",
+      "4882d235bb01c7498cf956ba5a46c0d496e66067",
       [
        "fetch/local-network-access/service-worker-update.https.window.html",
        {
@@ -505378,7 +505480,7 @@
       ]
      ],
      "service-worker.https.window.js": [
-      "8dc631f65a85d65a29e891482310f74c942da6b1",
+      "046f662a1275a9b017784139e85b83f419e71098",
       [
        "fetch/local-network-access/service-worker.https.window.html",
        {
@@ -505396,7 +505498,7 @@
       ]
      ],
      "shared-worker-blob-fetch.https.window.js": [
-      "ad9cd09c31b0a7aa83501f44a9e63455696ab9c2",
+      "269abb7edc4ce9be544c08b6206d8a2994e45759",
       [
        "fetch/local-network-access/shared-worker-blob-fetch.https.window.html",
        {
@@ -505432,7 +505534,7 @@
       ]
      ],
      "shared-worker-fetch.https.window.js": [
-      "7066b359caa2ddb173a02a359d012456dd7a43a2",
+      "e5f2b94920276e0360d1566e5d343886c4382b54",
       [
        "fetch/local-network-access/shared-worker-fetch.https.window.html",
        {
@@ -505468,7 +505570,7 @@
       ]
      ],
      "shared-worker.https.window.js": [
-      "ecb70c41245e82ab89f652d0de01c1d3b1f80890",
+      "24ae10878281b153ba6a267a8b3cb3c30a38b628",
       [
        "fetch/local-network-access/shared-worker.https.window.html",
        {
@@ -505586,7 +505688,7 @@
       ]
      ],
      "worker.https.window.js": [
-      "2d0dddd685cccf4d1ed4064db61ffcc1a3514f09",
+      "a0f19314ee386c67445afa149faa301938ff1110",
       [
        "fetch/local-network-access/worker.https.window.html",
        {
@@ -505622,7 +505724,7 @@
       ]
      ],
      "xhr-from-treat-as-public.https.window.js": [
-      "04fe5449d19e5baecbb1904140b315dc18206070",
+      "3aae3050d97d900c51ad6a3b31de67db6442deea",
       [
        "fetch/local-network-access/xhr-from-treat-as-public.https.window.html",
        {
@@ -582082,7 +582184,7 @@
      ]
     ],
     "onerror-event.html": [
-     "1d2ebefc656bf597b30a15bec4675c6607d3aff0",
+     "443513e9feeb47afac400d3328cecf8df6f3b36f",
      [
       null,
       {
@@ -582209,7 +582311,7 @@
      ]
     ],
     "preload-error.sub.html": [
-     "3c9d35b0b3589f0003c64d2817dd9b0f8dc60562",
+     "7a170471fc8b1605c49b441954fd6007194cad13",
      [
       null,
       {
