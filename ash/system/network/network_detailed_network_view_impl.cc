@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/rounded_container.h"
+#include "ash/style/typography.h"
 #include "ash/system/network/network_detailed_view.h"
 #include "ash/system/network/network_list_mobile_header_view_impl.h"
 #include "ash/system/network/network_list_network_item_view.h"
@@ -96,9 +97,8 @@ HoverHighlightView* NetworkDetailedNetworkViewImpl::AddJoinNetworkEntry() {
       l10n_util::GetStringUTF16(IDS_ASH_QUICK_SETTINGS_JOIN_WIFI_NETWORK));
   views::Label* label = entry->text_label();
   label->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
-  // TODO(b/253086997): Apply the correct font to the label.
-  TrayPopupUtils::SetLabelFontList(
-      label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
+                                        *label);
 
   return entry;
 }
