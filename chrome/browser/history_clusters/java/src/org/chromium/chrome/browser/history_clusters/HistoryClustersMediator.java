@@ -26,6 +26,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
+import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.chrome.browser.history_clusters.HistoryCluster.MatchPosition;
 import org.chromium.chrome.browser.history_clusters.HistoryClusterView.ClusterViewAccessibilityState;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
@@ -110,6 +111,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private final AccessibilityUtil mAccessibilityUtil;
     private final Callback<String> mAnnounceForAccessibilityCallback;
     private final Handler mHandler;
+    private final DestroyChecker mDestroyChecker = new DestroyChecker();
     private final boolean mIsScrollToLoadDisabled;
 
     /**
@@ -181,7 +183,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                 new PropertyModel.Builder(HistoryClustersItemProperties.ALL_KEYS)
                         .with(HistoryClustersItemProperties.PROGRESS_BUTTON_STATE, buttonState)
                         .with(HistoryClustersItemProperties.CLICK_HANDLER,
-                                (v) -> mPromise.then(this::continueQuery, this::onPromiseRejected))
+                                (v)
+                                        -> mPromise.then(mCallbackController.makeCancelable(
+                                                                 this::continueQuery),
+                                                this::onPromiseRejected))
                         .build();
         mMoreProgressItem = new ListItem(ItemType.MORE_PROGRESS, moreProgressModel);
         mEmptyTextListItem = new ListItem(ItemType.EMPTY_TEXT, new PropertyModel());
@@ -209,7 +214,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         if (layoutManager.findLastVisibleItemPosition()
                 > (mModelList.size() - REMAINING_ITEM_BUFFER_SIZE)) {
-            mPromise.then(this::continueQuery, this::onPromiseRejected);
+            mPromise.then(mCallbackController.makeCancelable(this::continueQuery),
+                    this::onPromiseRejected);
         }
     }
 
@@ -217,6 +223,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mHandler.removeCallbacksAndMessages(null);
         mLargeIconBridge.destroy();
         mCallbackController.destroy();
+        mDestroyChecker.destroy();
     }
 
     void setQueryState(QueryState queryState) {
@@ -232,6 +239,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
     @VisibleForTesting
     void startQuery(String query) {
+        mDestroyChecker.checkNotDestroyed();
         if (mQueryState.isSearching()) {
             mMetricsLogger.incrementQueryCount();
         }
@@ -247,6 +255,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     }
 
     void continueQuery(HistoryClustersResult previousResult) {
+        mDestroyChecker.checkNotDestroyed();
         if (!previousResult.canLoadMore()) return;
         mPromise = mHistoryClustersBridge.loadMoreClusters(previousResult.getQuery());
         mPromise.then(

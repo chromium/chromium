@@ -999,6 +999,21 @@ public class HistoryClustersMediatorTest {
         verify(mBridge, times(2)).queryClusters("query");
     }
 
+    @Test
+    public void testContinueQueryAfterDestroy() {
+        Promise promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("query");
+
+        doReturn(3).when(mLayoutManager).findLastVisibleItemPosition();
+
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
+        fulfillPromise(promise, mHistoryClustersResultWithQuery);
+        mMediator.onScrolled(mRecyclerView, 1, 1);
+        mMediator.destroy();
+
+        ShadowLooper.idleMainLooper();
+    }
+
     private <T> void fulfillPromise(Promise<T> promise, T result) {
         promise.fulfill(result);
         ShadowLooper.idleMainLooper();
