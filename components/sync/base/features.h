@@ -67,9 +67,6 @@ BASE_DECLARE_FEATURE(kSyncAutofillWalletUsageData);
 // likely to get combined into one commit message.
 BASE_DECLARE_FEATURE(kSyncExtensionTypesThrottling);
 
-// TODO(crbug.com/1425065): Remove this.
-BASE_DECLARE_FEATURE(kSyncResetPollIntervalOnStart);
-
 // If enabled, Segmentation data type will be synced.
 BASE_DECLARE_FEATURE(kSyncSegmentationDataType);
 

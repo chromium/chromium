@@ -2062,14 +2062,4 @@ TEST_F(SyncSchedulerImplTest, PollOnStartUpWithinBoundsAfterLongPause) {
   EXPECT_TRUE(found_delay_less_or_equal_5_permille);
 }
 
-TEST_F(SyncSchedulerImplTest, TestResetPollIntervalOnStartFeatureFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSyncResetPollIntervalOnStart);
-  base::Time now = base::Time::Now();
-  EXPECT_THAT(ComputeLastPollOnStart(
-                  /*last_poll=*/now - base::Days(1),
-                  /*poll_interval=*/base::Hours(4), now),
-              Eq(now));
-}
-
 }  // namespace syncer

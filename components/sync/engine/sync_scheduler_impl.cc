@@ -201,9 +201,6 @@ base::Time SyncSchedulerImpl::ComputeLastPollOnStart(
     base::Time last_poll,
     base::TimeDelta poll_interval,
     base::Time now) {
-  if (base::FeatureList::IsEnabled(kSyncResetPollIntervalOnStart)) {
-    return now;
-  }
   if (base::FeatureList::IsEnabled(kSyncPollImmediatelyOnEveryStartup)) {
     // Hack: Pretend the last poll happened sufficiently long ago to trigger a
     // poll.
