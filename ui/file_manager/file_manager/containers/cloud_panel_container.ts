@@ -35,6 +35,12 @@ export class CloudPanelContainer {
   private progress_: BulkPinProgress|null = null;
 
   /**
+   * The driveFsBulkPinningEnabled preference, used to identify if it has
+   * changed or not.
+   */
+  private bulkPinningPreference_: boolean|undefined = false;
+
+  /**
    * Keeps track of the number of updates.
    * NOTE: Used for testing only.
    */
@@ -63,23 +69,30 @@ export class CloudPanelContainer {
 
   onStateChanged(state: State) {
     const bulkPinProgress = state.bulkPinning;
+    const bulkPinPref = state.preferences?.driveFsBulkPinningEnabled;
     if (!bulkPinProgress) {
+      this.bulkPinningPreference_ = bulkPinPref;
       return;
     }
 
-    // Check if any of the keys have changed.
-    if (this.progress_ &&
-        (this.progress_.filesToPin === bulkPinProgress.filesToPin &&
-         this.progress_.pinnedBytes === bulkPinProgress.pinnedBytes &&
-         this.progress_.bytesToPin === bulkPinProgress.bytesToPin)) {
+    // Check if any of the required state has changed between store changes.
+    if ((this.progress_ &&
+         (this.progress_.stage === bulkPinProgress.stage &&
+          this.progress_.filesToPin === bulkPinProgress.filesToPin &&
+          this.progress_.pinnedBytes === bulkPinProgress.pinnedBytes &&
+          this.progress_.bytesToPin === bulkPinProgress.bytesToPin)) &&
+        this.bulkPinningPreference_ === bulkPinPref) {
       return;
     }
     this.progress_ = bulkPinProgress;
+    this.bulkPinningPreference_ = bulkPinPref;
 
-    // If the `stage` represents an in progress stage, then update the
-    // attributes on the `<xf-cloud-panel>` element to reflect the current
-    // progress.
-    if (!util.isBulkPinningInProgress(bulkPinProgress.stage)) {
+    // If the bulk pinning cloud panel can't be shown, make sure to close any
+    // open variants of it. This ensures if the panel is open when the
+    // preference is disabled, it will not stay open with stale data.
+    if (!util.canBulkPinningCloudPanelShow(
+            bulkPinProgress.stage, bulkPinPref)) {
+      this.panel_.close();
       return;
     }
 

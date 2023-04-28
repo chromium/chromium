@@ -3075,6 +3075,36 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "setBulkPinningOnline") {
+    absl::optional<bool> enabled = value.FindBool("enabled");
+    ASSERT_TRUE(enabled.has_value());
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(integration_service, nullptr);
+    ASSERT_NE(integration_service->GetPinManager(), nullptr);
+    integration_service->GetPinManager()->SetOnline(enabled.value());
+    return;
+  }
+
+  if (name == "forceBulkPinningCalculateRequiredSpace") {
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(integration_service, nullptr);
+    ASSERT_NE(integration_service->GetPinManager(), nullptr);
+    integration_service->GetPinManager()->CalculateRequiredSpace();
+    return;
+  }
+
+  if (name == "getBulkPinningStage") {
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(integration_service, nullptr);
+    ASSERT_NE(integration_service->GetPinManager(), nullptr);
+    auto progress = integration_service->GetPinManager()->GetProgress();
+    *output = drivefs::pinning::ToString(progress.stage);
+    return;
+  }
+
   if (name == "setCrostiniEnabled") {
     absl::optional<bool> enabled = value.FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());

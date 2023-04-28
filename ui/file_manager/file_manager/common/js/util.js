@@ -1554,27 +1554,44 @@ util.isOneDriveId = (providerId) => {
 };
 
 /**
- * Returns whether a bulk pin stage represents an in progress stage or not.
- * @param {chrome.fileManagerPrivate.BulkPinStage|undefined} stage
- * @returns {boolean}
- */
-util.isBulkPinningInProgress = (stage) => {
-  switch (stage) {
-    case chrome.fileManagerPrivate.BulkPinStage.GETTING_FREE_SPACE:
-    case chrome.fileManagerPrivate.BulkPinStage.LISTING_FILES:
-    case chrome.fileManagerPrivate.BulkPinStage.SYNCING:
-      return true;
-    default:
-      return false;
-  }
-};
-
-/**
  * @param {?VolumeInfo} volumeInfo
  * @return {boolean}
  */
 util.isOneDrive = (volumeInfo) => {
   return util.isOneDriveId(volumeInfo?.providerId);
+};
+
+/**
+ * Bulk pinning should only show visible UI elements when in progress or
+ * continuing to sync.
+ * @param {chrome.fileManagerPrivate.BulkPinStage|undefined} stage
+ * @param {boolean|undefined} pref
+ * @returns {boolean}
+ */
+util.canBulkPinningCloudPanelShow = (stage, pref) => {
+  if (!util.isDriveFsBulkPinningEnabled()) {
+    return false;
+  }
+
+  // If the stage is in progress and the bulk pinning preference is enabled,
+  // then the cloud panel should not be visible.
+  if (pref &&
+      (stage === chrome.fileManagerPrivate.BulkPinStage.GETTING_FREE_SPACE ||
+       stage === chrome.fileManagerPrivate.BulkPinStage.LISTING_FILES ||
+       chrome.fileManagerPrivate.BulkPinStage.SYNCING)) {
+    return true;
+  }
+
+  // The `PAUSED` stage represents the user being offline and the
+  // `NOT_ENOUGH_SPACE` represents the user not having enough space on disk
+  // to download. For the former the preference should still be enabled,
+  // however, for the latter the preference will have been disabled.
+  if ((stage === chrome.fileManagerPrivate.BulkPinStage.PAUSED && pref) ||
+      stage === chrome.fileManagerPrivate.BulkPinStage.NOT_ENOUGH_SPACE) {
+    return true;
+  }
+
+  return false;
 };
 
 export {util, UserCanceledError};

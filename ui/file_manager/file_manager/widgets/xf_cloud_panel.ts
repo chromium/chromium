@@ -80,10 +80,26 @@ export class XfCloudPanel extends XfBase {
   }
 
   /**
+   * Returns true if the dialog is open, false otherwise.
+   */
+  get open() {
+    return this.$panel_?.open || false;
+  }
+
+  /**
    * Show the element relative to the cloud icon that was clicked.
    */
   showAt(el: HTMLElement) {
     this.$panel_!.showAt(el, {top: el.offsetTop + el.offsetHeight + 8});
+  }
+
+  /**
+   * Close the panel.
+   */
+  close() {
+    if (this.open) {
+      this.$panel_!.close();
+    }
   }
 
   /**

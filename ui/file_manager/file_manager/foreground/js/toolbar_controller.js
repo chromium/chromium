@@ -507,35 +507,16 @@ export class ToolbarController {
 
   /**
    * Updates the visibility of the cloud button.
-   * If the bulk pinning feature is on OR has finished with either `PAUSED` or
-   * `NOT_ENOUGH_SPACE` then show the cloud button, don't show otherwise.
    * @param {!State} state latest state from the store.
    * @private
    */
   updateCloudButton_(state) {
-    if (!util.isDriveFsBulkPinningEnabled()) {
-      // The cloud button is default hidden.
-      return;
-    }
-
+    const bulkPinningPref = state.preferences?.driveFsBulkPinningEnabled;
     const bulkPinningStage = state.bulkPinning?.stage;
-    // If the stage is in progress, show the cloud icon.
-    if (util.isBulkPinningInProgress(bulkPinningStage)) {
+    if (util.canBulkPinningCloudPanelShow(bulkPinningStage, bulkPinningPref)) {
       this.cloudButton_.hidden = false;
       return;
     }
-
-    // The `PAUSED` stage represents the user being offline and the
-    // `NOT_ENOUGH_SPACE` represents the user not having enough space on disk to
-    // download. Both have states in the progress panel, so show the cloud icon.
-    if (bulkPinningStage === chrome.fileManagerPrivate.BulkPinStage.PAUSED ||
-        bulkPinningStage ===
-            chrome.fileManagerPrivate.BulkPinStage.NOT_ENOUGH_SPACE) {
-      this.cloudButton_.hidden = false;
-      return;
-    }
-
-    // All other states should hide the cloud button.
     this.cloudButton_.hidden = true;
   }
 }

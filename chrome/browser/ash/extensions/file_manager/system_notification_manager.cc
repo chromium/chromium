@@ -30,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -696,6 +697,10 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
     case extensions::events::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED:
       notification = UpdateDriveSyncNotification(event, event_arguments);
       break;
+    case extensions::events::FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS:
+      // The bulk pin progress should not get a status outside the Files app,
+      // ignore this event.
+      return;
     default:
       DLOG(WARNING) << "Unhandled event: " << event.event_name;
       break;

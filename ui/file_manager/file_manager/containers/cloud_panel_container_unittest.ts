@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
 import {updateBulkPinProgress} from '../state/actions/bulk_pinning.js';
 import {updatePreferences} from '../state/actions/preferences.js';
+import {waitDeepEquals} from '../state/for_tests.js';
 import {getEmptyState, getStore} from '../state/store.js';
 import {XfCloudPanel} from '../widgets/xf_cloud_panel.js';
 
@@ -22,7 +24,27 @@ let container: CloudPanelContainer|null = null;
  */
 let panel: XfCloudPanel|null = null;
 
+/**
+ * A preferences object to initialize the store with that ensures bulk pinning
+ * preference is enabled.
+ */
+const PREFERENCES = {
+  driveEnabled: false,
+  cellularDisabled: false,
+  searchSuggestEnabled: false,
+  use24hourClock: false,
+  timezone: 'GMT+10',
+  arcEnabled: false,
+  arcRemovableMediaAccessEnabled: false,
+  folderShortcuts: [],
+  trashEnabled: false,
+  officeFileMovedOneDrive: 0,
+  officeFileMovedGoogleDrive: 0,
+  driveFsBulkPinningEnabled: true,
+};
+
 export function setUp() {
+  loadTimeData.overrideValues({'DRIVE_FS_BULK_PINNING': true});
   panel = document.createElement('xf-cloud-panel');
   document.body.appendChild(panel);
   container = new CloudPanelContainer(panel, /*test_=*/ true);
@@ -41,9 +63,9 @@ export function tearDown() {
  * that data as attributes.
  */
 export async function testProgressAndItemsArePassedToElement(done: () => void) {
-  // Initialize the empty store.
+  // Initialize the store with bulk pinning pref enabled.
   const store = getStore();
-  store.init(getEmptyState());
+  store.init({...getEmptyState(), preferences: PREFERENCES});
 
   // Setup a syncing state that should be 15% done with 24 items.
   const bulkPinning: BulkPinProgress = {
@@ -74,9 +96,9 @@ export async function testProgressAndItemsArePassedToElement(done: () => void) {
  */
 export async function testOutOfBoundsValuesDoNotUpdateProgress(
     done: () => void) {
-  // Initialize the empty store.
+  // Initialize the store with bulk pinning pref enabled.
   const store = getStore();
-  store.init(getEmptyState());
+  store.init({...getEmptyState(), preferences: PREFERENCES});
 
   // Setup a syncing state that should contain invalid data.
   const bulkPinning: BulkPinProgress = {
@@ -103,9 +125,9 @@ export async function testOutOfBoundsValuesDoNotUpdateProgress(
  */
 export async function testOtherStoreUpdatesDontCauseThisContainerToUpdate(
     done: () => void) {
-  // Initialize the empty store.
+  // Initialize the store with bulk pinning pref enabled.
   const store = getStore();
-  store.init(getEmptyState());
+  store.init({...getEmptyState(), preferences: PREFERENCES});
 
   // Start using a basic syncing state.
   const bulkPinning: BulkPinProgress = {
@@ -125,25 +147,9 @@ export async function testOtherStoreUpdatesDontCauseThisContainerToUpdate(
   assertEquals(panel!.getAttribute('items'), '24');
   assertEquals(panel!.getAttribute('percentage'), '15');
 
-  // Setup a basic prefs object to update the store with.
-  const prefs = {
-    driveEnabled: false,
-    cellularDisabled: false,
-    searchSuggestEnabled: false,
-    use24hourClock: false,
-    timezone: 'GMT+10',
-    arcEnabled: false,
-    arcRemovableMediaAccessEnabled: false,
-    folderShortcuts: [],
-    trashEnabled: false,
-    officeFileMovedOneDrive: 0,
-    officeFileMovedGoogleDrive: 0,
-    driveFsBulkPinningEnabled: false,
-  };
-
-  // Update the preferences and ensure the `setAttribute` call hasn't happened
-  // again and the attributes remain the same.
-  store.dispatch(updatePreferences(prefs));
+  // Update the preferences with new values and ensure the `setAttribute` call
+  // hasn't happened again and the attributes remain the same.
+  store.dispatch(updatePreferences({...PREFERENCES, arcEnabled: true}));
   assertEquals(
       container!.updates, 1,
       'Preferences state change should not increment cloud panel updates');
@@ -169,7 +175,6 @@ export async function testOtherStoreUpdatesDontCauseThisContainerToUpdate(
   done();
 }
 
-
 /**
  * Tests that when there are no bytes to be pinned, the percente should be
  * updated to be 100% as any new user who logs in with no new changes will have
@@ -177,9 +182,9 @@ export async function testOtherStoreUpdatesDontCauseThisContainerToUpdate(
  */
 export async function testZeroBytesToPinShouldShowAllFilesSynced(
     done: () => void) {
-  // Initialize the empty store.
+  // Initialize the store with bulk pinning pref enabled.
   const store = getStore();
-  store.init(getEmptyState());
+  store.init({...getEmptyState(), preferences: PREFERENCES});
 
   // Setup a syncing state that should be 0% done with 0 items.
   const bulkPinning: BulkPinProgress = {
@@ -228,6 +233,50 @@ export async function testWhenSettingsClickEventEmittedSettingsSubpageOpened(
   // page.
   await waitUntil(() => pageRequested !== null);
   assertEquals(pageRequested, 'googleDrive');
+
+  done();
+}
+
+/**
+ * Tests that the element doesn't receive updates when the preference is
+ * disabled, after enabling the preference updates should propagate through.
+ */
+export async function testInProgressStateDoesNotUpdateThePanelWhenPrefDisabled(
+    done: () => void) {
+  // Initialize the store with bulk pinning disabled.
+  const store = getStore();
+  store.init({
+    ...getEmptyState(),
+    preferences: {...PREFERENCES, driveFsBulkPinningEnabled: false},
+  });
+
+  // Setup a syncing state that should be 10% done with 10 items.
+  const bulkPinning: BulkPinProgress = {
+    stage: BulkPinStage.SYNCING,
+    freeSpaceBytes: 0,
+    requiredSpaceBytes: 0,
+    bytesToPin: 1000,
+    pinnedBytes: 100,
+    filesToPin: 10,
+  };
+
+  // Dispatch an update to the store, wait for the store to update before
+  // asserting that the panel doesn't get attributes due to the pref not being
+  // enabled.
+  store.dispatch(updateBulkPinProgress(bulkPinning));
+  await waitDeepEquals(
+      store, BulkPinStage.SYNCING,
+      (state) => state.bulkPinning && state.bulkPinning!.stage);
+  assertFalse(panel!.hasAttribute('items'));
+  assertFalse(panel!.hasAttribute('percentage'));
+  assertEquals(container!.updates, 0);
+
+  // Enable the bulk pinning preference and wait for it to update the cloud
+  // panel attributes.
+  store.dispatch(updatePreferences({...PREFERENCES}));
+  await waitUntil(() => container!.updates === 1);
+  assertEquals(panel!.getAttribute('items'), '10');
+  assertEquals(panel!.getAttribute('percentage'), '10');
 
   done();
 }
