@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -124,11 +125,8 @@ bool PrintViewManager::PrintForSystemDialogNow(
 }
 
 bool PrintViewManager::BasicPrint(content::RenderFrameHost* rfh) {
-  PrintPreviewDialogController* dialog_controller =
-      PrintPreviewDialogController::GetInstance();
-  if (!dialog_controller)
-    return false;
-
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  CHECK(dialog_controller);
   content::WebContents* print_preview_dialog =
       dialog_controller->GetPrintPreviewForContents(web_contents());
   if (!print_preview_dialog)
@@ -378,13 +376,6 @@ void PrintViewManager::SetupScriptedPrintPreview(
     return;
   }
 
-  PrintPreviewDialogController* dialog_controller =
-      PrintPreviewDialogController::GetInstance();
-  if (!dialog_controller) {
-    std::move(callback).Run();
-    return;
-  }
-
   // Since window.print() is renderer-initiated, explicitly establish a
   // connection to the RenderFrame here. Without this, later operations that
   // expect the established connection can unexpected fail.
@@ -435,19 +426,15 @@ void PrintViewManager::OnScriptedPrintPreviewCallback(
   if (!rfh || rfh != print_preview_rfh_)
     return;
 
-  PrintPreviewDialogController* dialog_controller =
-      PrintPreviewDialogController::GetInstance();
-  if (!dialog_controller) {
-    PrintPreviewDone();
-    return;
-  }
-
   // Running a dialog causes an exit to webpage-initiated fullscreen.
   // http://crbug.com/728276
   if (web_contents()->IsFullscreen())
     web_contents()->ExitFullscreen(true);
 
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  CHECK(dialog_controller);
   dialog_controller->PrintPreview(web_contents());
+
   mojom::RequestPrintPreviewParams params;
   params.is_modifiable = source_is_modifiable;
   PrintPreviewUI::SetInitialParams(
@@ -479,16 +466,13 @@ void PrintViewManager::OnRequestPrintPreviewCallback(
   if (!render_frame_host || !render_frame_host->IsRenderFrameLive())
     return;
 
-  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
-  if (!dialog_controller) {
-    PrintPreviewDone();
-    return;
-  }
-
   if (params->webnode_only)
     PrintPreviewForWebNode(render_frame_host);
 
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  CHECK(dialog_controller);
   dialog_controller->PrintPreview(web_contents());
+
   PrintPreviewUI::SetInitialParams(
       dialog_controller->GetPrintPreviewForContents(web_contents()), *params);
   PrintPreviewAllowedForTesting();

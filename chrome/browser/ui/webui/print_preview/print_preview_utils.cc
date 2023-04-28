@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -235,11 +236,10 @@ void StartLocalPrint(base::Value::Dict job_settings,
                      content::WebContents* preview_web_contents,
                      PrinterHandler::PrintCallback callback) {
   // Get print view manager.
-  PrintPreviewDialogController* dialog_controller =
-      PrintPreviewDialogController::GetInstance();
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  CHECK(dialog_controller);
   content::WebContents* initiator =
-      dialog_controller ? dialog_controller->GetInitiator(preview_web_contents)
-                        : nullptr;
+      dialog_controller->GetInitiator(preview_web_contents);
   PrintViewManager* print_view_manager =
       initiator ? PrintViewManager::FromWebContents(initiator) : nullptr;
   if (!print_view_manager) {
