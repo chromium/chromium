@@ -1844,6 +1844,7 @@ enum HistogramValue {
   SIDEPANEL_SETPANELBEHAVIOR = 1781,
   SIDEPANEL_GETPANELBEHAVIOR = 1782,
   FILEMANAGERPRIVATE_GETBULKPINPROGRESS = 1783,
+  ENTERPRISE_REMOTEAPPS_SETPINNEDAPPS = 1784,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

@@ -70,6 +70,8 @@ class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
                  DeleteAppCallback callback) override;
   void SortLauncherWithRemoteAppsFirst(
       SortLauncherWithRemoteAppsFirstCallback callback) override;
+  void SetPinnedApps(const std::vector<std::string>& app_ids,
+                     SetPinnedAppsCallback callback) override;
 
   void OnAppLaunched(const std::string& source_id, const std::string& app_id);
 

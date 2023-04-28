@@ -6,11 +6,14 @@
 
 #include <utility>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/image_downloader.h"
+#include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -265,6 +268,19 @@ RemoteAppsError RemoteAppsManager::DeleteApp(const std::string& id) {
 void RemoteAppsManager::SortLauncherWithRemoteAppsFirst() {
   static_cast<ChromeAppListModelUpdater*>(model_updater_)
       ->RequestAppListSort(AppListSortOrder::kAlphabeticalEphemeralAppFirst);
+}
+
+RemoteAppsError RemoteAppsManager::SetPinnedApps(
+    const std::vector<std::string>& app_ids) {
+  if (app_ids.size() > 1) {
+    return RemoteAppsError::kPinningMultipleAppsNotSupported;
+  }
+
+  // Providing an empty app id will reset the pinned app.
+  std::string app_id = app_ids.empty() ? "" : app_ids[0];
+  bool success =
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(app_id);
+  return success ? RemoteAppsError::kNone : RemoteAppsError::kFailedToPinAnApp;
 }
 
 std::string RemoteAppsManager::AddFolder(const std::string& folder_name,

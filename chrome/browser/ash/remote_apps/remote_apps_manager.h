@@ -129,6 +129,10 @@ class RemoteAppsManager
   // sort order which moves the remote apps to the front of the launcher.
   void SortLauncherWithRemoteAppsFirst();
 
+  // Sets the list of apps to be pinned on the shelf. If `app_ids` are empty
+  // it should unpin all currently pinned apps.
+  RemoteAppsError SetPinnedApps(const std::vector<std::string>& app_ids);
+
   // Adds a folder with |folder_name|. Note that empty folders are not shown in
   // the launcher. Returns the ID for the added folder. If |add_to_front| is
   // true, the folder will be added to the front of the app item list.

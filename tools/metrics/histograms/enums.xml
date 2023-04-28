@@ -35922,6 +35922,7 @@ Called by update_extension_histograms.py.-->
   <int value="1781" label="SIDEPANEL_SETPANELBEHAVIOR"/>
   <int value="1782" label="SIDEPANEL_GETPANELBEHAVIOR"/>
   <int value="1783" label="FILEMANAGERPRIVATE_GETBULKPINPROGRESS"/>
+  <int value="1784" label="ENTERPRISE_REMOTEAPPS_SETPINNEDAPPS"/>
 </enum>
 
 <enum name="ExtensionIconState">

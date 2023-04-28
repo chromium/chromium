@@ -210,4 +210,40 @@ void EnterpriseRemoteAppsSortLauncherFunction::OnResult(
   Respond(NoArguments());
 }
 
+EnterpriseRemoteAppsSetPinnedAppsFunction::
+    EnterpriseRemoteAppsSetPinnedAppsFunction() = default;
+
+EnterpriseRemoteAppsSetPinnedAppsFunction::
+    ~EnterpriseRemoteAppsSetPinnedAppsFunction() = default;
+
+ExtensionFunction::ResponseAction
+EnterpriseRemoteAppsSetPinnedAppsFunction::Run() {
+  auto parameters =
+      api::enterprise_remote_apps::SetPinnedApps::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  chromeos::remote_apps::mojom::RemoteApps* remote_apps_api =
+      GetEnterpriseRemoteAppsApi(browser_context());
+  if (remote_apps_api == nullptr) {
+    return RespondNow(Error("Remote apps not supported in this session"));
+  }
+
+  auto callback = base::BindOnce(
+      &EnterpriseRemoteAppsSetPinnedAppsFunction::OnResult, this);
+  remote_apps_api->SetPinnedApps(parameters->app_ids, std::move(callback));
+
+  // `did_respond()` needed here as the `SetPinnedApps()` can be sync or async.
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void EnterpriseRemoteAppsSetPinnedAppsFunction::OnResult(
+    const absl::optional<std::string>& error) {
+  if (error) {
+    Respond(Error(*error));
+    return;
+  }
+
+  Respond(NoArguments());
+}
+
 }  // namespace chrome_apps::api

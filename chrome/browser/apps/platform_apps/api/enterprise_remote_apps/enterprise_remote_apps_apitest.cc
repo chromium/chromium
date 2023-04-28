@@ -12,11 +12,14 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/quick_app_access_model.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
@@ -73,7 +76,11 @@ constexpr char kId4[] = "Id 4";
 class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
                           public testing::WithParamInterface<std::string> {
  public:
-  RemoteAppsApitest() = default;
+  RemoteAppsApitest() {
+    // Quick App is used for the current implementation of app pinning.
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kHomeButtonQuickAppAccess);
+  }
 
   // DevicePolicyCrosBrowserTest:
   void SetUp() override {
@@ -185,6 +192,18 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
     return index == model_size - 1;
   }
 
+  const std::string& PinnedAppId() {
+    return ash::AppListModelProvider::Get()
+        ->quick_app_access_model()
+        ->quick_app_id();
+  }
+
+  void ExpectNoAppIsPinned() {
+    // When no app is pinned, QuickAppAccessMode::quick_app_id() returns an
+    // empty string.
+    EXPECT_EQ(PinnedAppId(), "");
+  }
+
   // Launch healthcare application on device (COM_HEALTH_CUJ1_TASK2_WF1).
   void AddScreenplayTag() {
     base::AddTagToTestResult("feature_id",
@@ -195,6 +214,7 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
   raw_ptr<Profile, ExperimentalAsh> profile_;
   base::Value::Dict config_;
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, AddApp) {
@@ -382,6 +402,43 @@ IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, SortLauncher) {
   EXPECT_LT(id2_index, app1_index);           // Test App 7 < Test App 1
   EXPECT_LT(app1_index, app2_index);          // Test App 1 < Test App 2
   EXPECT_LT(app2_index, app4_index);          // Test App 2 < Test App 4
+}
+
+// Adds a remote app to the launcher and tests that it can be pinned to the
+// shelf.
+// TODO(b/279770944): Investigate crashes: when test finishes we get segfault in
+// the destructor of QuickAppAccessModel. That can be mitigated by manually
+// unpinning the app before the end of the test, i.e. calling
+// `ash::AppListModelProvider::Get()->quick_app_access_model()->SetQuickApp("");`
+// But then the test becomes flaky: sometimes it crashes in
+// `ash::HomeButton::AnimateQuickAppButtonOut()`.
+IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, DISABLED_PinSingleApp) {
+  if (GetParam() != kApiExtensionRelativePath) {
+    GTEST_SKIP() << "The setPinnedApps API method is not available in Mojo API";
+  }
+
+  extensions::ResultCatcher catcher;
+  // This should pin app with ID `kId1` to the shelf
+  LoadExtensionAndRunTest("PinSingleApp");
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  EXPECT_EQ(PinnedAppId(), kId1);
+}
+
+// Adds multiple remote apps to the launcher and tests that we get an error when
+// trying to pin more that one of them.
+IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, PinMultipleAppsError) {
+  if (GetParam() != kApiExtensionRelativePath) {
+    GTEST_SKIP() << "The setPinnedApps API method is not available in Mojo API";
+  }
+
+  extensions::ResultCatcher catcher;
+  // This will try to pin multiple apps to the shelf which should result in
+  // extension error.
+  LoadExtensionAndRunTest("PinMultipleAppsError");
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  ExpectNoAppIsPinned();
 }
 
 INSTANTIATE_TEST_SUITE_P(,

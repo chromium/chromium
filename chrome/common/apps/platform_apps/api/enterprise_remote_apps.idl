@@ -70,6 +70,13 @@ namespace enterprise.remoteApps {
     static void sortLauncher(
         SortLauncherOptions options,
         optional VoidCallback callback);
+
+    // Set the list of apps to be pinned on the shelf. Any apps that are
+    // currently pinned and not present in `appIds` will be unpinned. Can be
+    // called with an empty list to unpin all the apps.
+    [nodoc] static void setPinnedApps(
+        DOMString[] appIds,
+        optional VoidCallback callback);
   };
 
   interface Events {
