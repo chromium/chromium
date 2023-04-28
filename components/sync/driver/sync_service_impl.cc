@@ -1055,7 +1055,10 @@ void SyncServiceImpl::CryptoStateChanged() {
 
 void SyncServiceImpl::CryptoRequiredUserActionChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MaybeRecordTrustedVaultHistograms();
+}
 
+void SyncServiceImpl::MaybeRecordTrustedVaultHistograms() {
   if (should_record_trusted_vault_error_shown_on_startup_ &&
       crypto_.IsTrustedVaultKeyRequiredStateKnown() && IsSyncFeatureEnabled()) {
     DCHECK(engine_);
@@ -1072,7 +1075,7 @@ void SyncServiceImpl::CryptoRequiredUserActionChanged() {
         // A 'first time sync configure' is an indication that the account was
         // added to the browser recently (sign in).
         base::UmaHistogramBoolean(
-            "Sync.TrustedVaultErrorShownOnFirstTimeSync",
+            "Sync.TrustedVaultErrorShownOnFirstTimeSync2",
             user_settings_->IsTrustedVaultKeyRequiredForPreferredDataTypes());
       }
     }
@@ -1563,6 +1566,9 @@ void SyncServiceImpl::OnFirstSetupCompletePrefChange(
     bool is_first_setup_complete) {
   if (engine_ && engine_->IsInitialized()) {
     ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
+    // IsSyncFeatureEnabled() likely changed, it might be time to record
+    // histograms.
+    MaybeRecordTrustedVaultHistograms();
   }
 }
 
