@@ -136,6 +136,7 @@ blink_core_tests_inspector = [
   "inspector_emulation_agent_test.cc",
   "inspector_highlight_test.cc",
   "inspector_history_test.cc",
+  "inspector_preload_agent_unittest.cc",
   "inspector_media_context_impl_unittest.cc",
   "inspector_session_state_test.cc",
   "inspector_style_resolver_test.cc",

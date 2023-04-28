@@ -1012,7 +1012,7 @@ PendingScript* ScriptLoader::PrepareScript(
         // document's list of speculation rule sets.
         DCHECK(RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window));
         auto* source = MakeGarbageCollected<SpeculationRuleSet::Source>(
-            source_text, element_document);
+            source_text, element_document, element_->GetDOMNodeId());
         speculation_rule_set_ =
             SpeculationRuleSet::Parse(source, context_window);
         CHECK(speculation_rule_set_);

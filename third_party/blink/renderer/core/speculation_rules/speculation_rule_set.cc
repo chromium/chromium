@@ -365,17 +365,38 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
 // ---- SpeculationRuleSet::Source implementation ----
 
 SpeculationRuleSet::Source::Source(const String& source_text,
-                                   Document& document)
+                                   Document& document,
+                                   DOMNodeId node_id)
     : source_text_(source_text),
+      document_(document),
+      node_id_(node_id),
       base_url_(absl::nullopt),
-      document_(document) {}
+      request_id_(absl::nullopt) {}
 
 SpeculationRuleSet::Source::Source(const String& source_text,
-                                   const KURL& base_url)
-    : source_text_(source_text), base_url_(base_url), document_(nullptr) {}
+                                   const KURL& base_url,
+                                   uint64_t request_id)
+    : source_text_(source_text),
+      document_(nullptr),
+      node_id_(absl::nullopt),
+      base_url_(base_url),
+      request_id_(request_id) {}
 
 const String& SpeculationRuleSet::Source::GetSourceText() const {
   return source_text_;
+}
+
+const absl::optional<DOMNodeId>& SpeculationRuleSet::Source::GetNodeId() const {
+  return node_id_;
+}
+
+const absl::optional<KURL>& SpeculationRuleSet::Source::GetSourceURL() const {
+  return base_url_;
+}
+
+const absl::optional<uint64_t>& SpeculationRuleSet::Source::GetRequestId()
+    const {
+  return request_id_;
 }
 
 KURL SpeculationRuleSet::Source::GetBaseURL() const {

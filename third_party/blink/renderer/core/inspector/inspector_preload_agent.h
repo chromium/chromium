@@ -14,6 +14,15 @@ class Document;
 class SpeculationCandidate;
 class SpeculationRuleSet;
 
+namespace internal {
+
+// Exposed for tests.
+CORE_EXPORT std::unique_ptr<protocol::Preload::RuleSet> BuildProtocolRuleSet(
+    const SpeculationRuleSet& rule_set,
+    const String& loader_id);
+
+}  // namespace internal
+
 class CORE_EXPORT InspectorPreloadAgent final
     : public InspectorBaseAgent<protocol::Preload::Metainfo> {
  public:

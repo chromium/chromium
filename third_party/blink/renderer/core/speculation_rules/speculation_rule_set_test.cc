@@ -123,7 +123,8 @@ class SpeculationRuleSetTest : public ::testing::Test {
                                     const KURL& base_url,
                                     ExecutionContext* context) {
     return SpeculationRuleSet::Parse(
-        MakeGarbageCollected<SpeculationRuleSet::Source>(source_text, base_url),
+        MakeGarbageCollected<SpeculationRuleSet::Source>(source_text, base_url,
+                                                         /* request_id */ 0),
         context);
   }
 
