@@ -737,6 +737,9 @@ testcase.driveLinkToDirectory = async () => {
   await remoteCall.waitUntilSelected(appId, 'G');
   await remoteCall.waitForElement(appId, '.table-row[selected]');
 
+  // Ensure the "G" directory has the shortcut class applied.
+  await remoteCall.waitForElement(appId, '#file-list [file-name="G"].shortcut');
+
   // Open the link
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('openFile', appId, ['G']));

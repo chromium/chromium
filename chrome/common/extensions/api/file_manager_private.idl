@@ -253,7 +253,8 @@ enum EntryPropertyName {
   isExternalMedia,
   isArbitrarySyncFolder,
   syncStatus,
-  progress
+  progress,
+  shortcut
 };
 
 // Source of the volume data.
@@ -549,6 +550,9 @@ dictionary EntryProperties {
   // E.g., pasting, syncing. Note: currently, this is exclusively being used
   // for Drive syncing.
   double? progress;
+
+  // True if the entry is a shortcut.
+  boolean? shortcut;
 };
 
 // Information about total and remaining size on the mount point.

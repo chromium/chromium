@@ -514,7 +514,8 @@ chrome.fileManagerPrivate.ResultingTasks;
  *   isExternalMedia: (boolean|undefined),
  *   isArbitrarySyncFolder: (boolean|undefined),
  *   syncStatus: (!chrome.fileManagerPrivate.SyncStatus|undefined),
- *   progress: (number|undefined)
+ *   progress: (number|undefined),
+ *   shortcut: (boolean|undefined)
  * }}
  */
 chrome.fileManagerPrivate.EntryProperties;

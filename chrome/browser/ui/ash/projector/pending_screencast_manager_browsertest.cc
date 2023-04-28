@@ -274,11 +274,11 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
   void ExpectEmptyRequestBodyForProjectorFileContent(
       const std::string& file_content) {
     CreateFileInDriveFsFolder(kDefaultMetadataFilePath, file_content);
-    GetFakeDriveFs()->SetMetadata(base::FilePath(kDefaultMetadataFilePath),
-                                  "text/plain", kTestMetadataFile, false, false,
-                                  false, {}, {}, "abc123",
-                                  /*alternate_url=*/
-                                  "https://drive.google.com/open?id=fileId");
+    GetFakeDriveFs()->SetMetadata(
+        base::FilePath(kDefaultMetadataFilePath), "text/plain",
+        kTestMetadataFile, false, false, false, {}, {}, "abc123",
+        /*alternate_url=*/
+        "https://drive.google.com/open?id=fileId", /*shortcut=*/false);
 
     // Sets get file id callback:
     base::RunLoop run_loop;
@@ -777,7 +777,8 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   GetFakeDriveFs()->SetMetadata(
       base::FilePath(kDefaultMetadataFilePath), "text/plain", kTestMetadataFile,
       false, false, false, {}, {}, "abc123",
-      /*alternate_url=*/"https://drive.google.com/open?id=fileId");
+      /*alternate_url=*/"https://drive.google.com/open?id=fileId",
+      /*shortcut=*/false);
 
   // Sets get file id callback:
   base::RunLoop run_loop;
@@ -816,10 +817,10 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   CreateFileInDriveFsFolder(kDefaultMetadataFilePath, kTestMetadataFileBytes);
   // Sets empty alternate url in metadata, which could happen when metadata is
   // not fully populated.
-  GetFakeDriveFs()->SetMetadata(base::FilePath(kDefaultMetadataFilePath),
-                                "text/plain", kTestMetadataFile, false, false,
-                                false, {}, {}, "abc123",
-                                /*alternate_url=*/std::string());
+  GetFakeDriveFs()->SetMetadata(
+      base::FilePath(kDefaultMetadataFilePath), "text/plain", kTestMetadataFile,
+      false, false, false, {}, {}, "abc123",
+      /*alternate_url=*/std::string(), /*shortcut=*/false);
 
   TestGetFileIdFailed();
 }
@@ -828,10 +829,10 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
                        UpdateIndexableTextFailByInCorrectAlternateUrl) {
   CreateFileInDriveFsFolder(kDefaultMetadataFilePath, kTestMetadataFileBytes);
   // Sets incorrect alternate url in metadata.
-  GetFakeDriveFs()->SetMetadata(base::FilePath(kDefaultMetadataFilePath),
-                                "text/plain", kTestMetadataFile, false, false,
-                                false, {}, {}, "abc123",
-                                /*alternate_url=*/"alternate_url");
+  GetFakeDriveFs()->SetMetadata(
+      base::FilePath(kDefaultMetadataFilePath), "text/plain", kTestMetadataFile,
+      false, false, false, {}, {}, "abc123",
+      /*alternate_url=*/"alternate_url", /*shortcut=*/false);
 
   TestGetFileIdFailed();
 }

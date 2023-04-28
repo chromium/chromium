@@ -451,6 +451,15 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
         metadata->folder_feature->is_arbitrary_sync_folder;
   }
 
+  if (metadata->shortcut_details) {
+    // Only surface shortcut parameter if the shortcut is accessible.
+    properties_->shortcut =
+        (metadata->shortcut_details->target_lookup_status ==
+         drivefs::mojom::ShortcutDetails::LookupStatus::kOk);
+  } else {
+    properties_->shortcut = false;
+  }
+
   CompleteGetEntryProperties(drive::FILE_ERROR_OK);
 }
 

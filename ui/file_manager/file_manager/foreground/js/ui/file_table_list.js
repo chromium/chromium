@@ -367,6 +367,7 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
     'syncStatus',
     'progress',
     'contentMimeType',
+    'shortcut',
   ])[0];
   filelist.updateListItemExternalProps(
       li, entry, externalProps, util.isTeamDriveRoot(entry));
@@ -540,6 +541,7 @@ filelist.updateListItemExternalProps =
       li.classList.toggle(
           'encrypted',
           FileType.isEncrypted(entry, externalProps.contentMimeType));
+      li.classList.toggle('shortcut', !!externalProps.shortcut);
 
       const iconDiv = li.querySelector('.detail-icon');
       if (!iconDiv) {

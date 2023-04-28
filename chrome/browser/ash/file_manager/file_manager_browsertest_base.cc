@@ -1365,7 +1365,7 @@ class DriveFsTestVolume : public TestVolume {
         {entry.folder_feature.is_machine_root,
          entry.folder_feature.is_arbitrary_sync_folder,
          entry.folder_feature.is_external_media},
-        "", entry.alternate_url);
+        "", entry.alternate_url, (entry.entry_type == AddEntriesMessage::LINK));
 
     ASSERT_TRUE(UpdateModifiedTime(entry));
   }

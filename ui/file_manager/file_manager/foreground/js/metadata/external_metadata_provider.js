@@ -99,6 +99,7 @@ export class ExternalMetadataProvider extends MetadataProvider {
       item.isArbitrarySyncFolder = prop.isArbitrarySyncFolder;
       item.syncStatus = prop.syncStatus;
       item.progress = prop.progress;
+      item.shortcut = prop.shortcut;
       results.push(item);
     }
     return results;
@@ -138,4 +139,5 @@ ExternalMetadataProvider.PROPERTY_NAMES = [
   'isArbitrarySyncFolder',
   'syncStatus',
   'progress',
+  'shortcut',
 ];

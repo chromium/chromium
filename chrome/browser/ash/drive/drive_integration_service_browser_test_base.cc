@@ -93,7 +93,8 @@ void DriveIntegrationServiceBrowserTestBase::AddDriveFileWithRelativePath(
       relative_to_drive_fs_mount.BaseName().value(),
       /*pinned=*/false, /*available_offline=*/false, /*shared=*/false,
       /*capabilities=*/{},
-      /*folder_feature=*/{}, drive_file_id, /*alternate_url=*/"");
+      /*folder_feature=*/{}, drive_file_id, /*alternate_url=*/"",
+      /*shortcut=*/false);
 
   // Update the relative/absolute paths to the generated file.
   if (new_file_relative_path)

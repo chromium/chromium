@@ -348,7 +348,8 @@ void FakeDriveFs::SetMetadata(const base::FilePath& path,
                               const mojom::Capabilities& capabilities,
                               const mojom::FolderFeature& folder_feature,
                               const std::string& doc_id,
-                              const std::string& alternate_url) {
+                              const std::string& alternate_url,
+                              bool shortcut) {
   auto& stored_metadata = metadata_[path];
   stored_metadata.mime_type = mime_type;
   stored_metadata.original_name = original_name;
@@ -364,6 +365,9 @@ void FakeDriveFs::SetMetadata(const base::FilePath& path,
   }
   if (shared) {
     stored_metadata.shared = true;
+  }
+  if (shortcut) {
+    stored_metadata.shortcut = true;
   }
   stored_metadata.alternate_url = alternate_url;
 }
@@ -455,6 +459,11 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
   metadata->stable_id = stored_metadata.stable_id;
   if (stored_metadata.hosted) {
     metadata->can_pin = mojom::FileMetadata::CanPinStatus::kDisabled;
+  }
+  if (stored_metadata.shortcut) {
+    metadata->shortcut_details = mojom::ShortcutDetails::New();
+    metadata->shortcut_details->target_lookup_status =
+        mojom::ShortcutDetails::LookupStatus::kOk;
   }
 
   std::move(callback).Run(drive::FILE_ERROR_OK, std::move(metadata));

@@ -65,7 +65,8 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
                    const mojom::Capabilities& capabilities,
                    const mojom::FolderFeature& folder_feature,
                    const std::string& doc_id,
-                   const std::string& alternate_url);
+                   const std::string& alternate_url,
+                   bool shortcut);
 
   void DisplayConfirmDialog(
       drivefs::mojom::DialogReasonPtr reason,
@@ -113,6 +114,7 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
     std::string doc_id;
     int64_t stable_id = 0;
     std::string alternate_url;
+    bool shortcut = false;
   };
 
   absl::optional<FakeDriveFs::FileMetadata> GetItemMetadata(

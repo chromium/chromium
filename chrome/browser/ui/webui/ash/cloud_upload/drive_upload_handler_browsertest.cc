@@ -209,7 +209,8 @@ class DriveUploadHandlerTest
         test_file_name_, false, false, false, {}, {}, "abc123",
         /*alternate_url=*/
         "https://docs.google.com/document/d/"
-        "smalldocxid?rtpof=true&usp=drive_fs");
+        "smalldocxid?rtpof=true&usp=drive_fs",
+        /*shortcut=*/false);
 
     // Simulate server sync events.
     drivefs::mojom::SyncingStatusPtr status =
