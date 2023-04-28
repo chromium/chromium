@@ -1595,7 +1595,7 @@ BASE_FEATURE(kSearchInShortcutsApp,
 // This tool under development will be rolled out via Finch.
 // Enabling this flag will use the new feedback tool instead of the current
 // tool on CrOS.
-BASE_FEATURE(kOsFeedback, "OsFeedback", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOsFeedback, "OsFeedback", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, a new App Notifications subpage will appear in CrOS Apps section.
 BASE_FEATURE(kOsSettingsAppNotificationsPage,
