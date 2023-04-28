@@ -1,4 +1,4 @@
-<style>
+<style include="cros-color-overrides">
   :host {
     align-items: center;
     border: 1px solid var(--cr-separator-color);
@@ -83,7 +83,7 @@
     color: var(--cros-text-color-prominent);
   }
 
-  cr-button {
+  :host-context(body:not(.jelly-enabled)) cr-button {
     --border-color: transparent;
     --hover-border-color: transparent;
     --disabled-border-color: transparent;
