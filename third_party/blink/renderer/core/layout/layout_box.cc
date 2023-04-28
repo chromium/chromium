@@ -108,6 +108,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
@@ -3197,6 +3198,8 @@ void LayoutBox::ClearLayoutResults() {
 
 void LayoutBox::RebuildFragmentTreeSpine() {
   DCHECK(PhysicalFragmentCount());
+  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES(
+      "Blink.Layout.RebuildFragmentTreeSpine");
   // If this box has an associated layout-result, rebuild the spine of the
   // fragment-tree to ensure consistency.
   LayoutBox* container = this;
@@ -5291,6 +5294,8 @@ RecalcLayoutOverflowResult LayoutBox::RecalcLayoutOverflowNG() {
       //  - An arbitrary descendant had its layout-overflow change (as
       //    indicated by |rebuild_fragment_tree|).
       if (rebuild_fragment_tree || layout_overflow) {
+        SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES(
+            "Blink.Layout.CloneFragmentsForLayoutOverflow");
         layout_result = NGLayoutResult::CloneWithPostLayoutFragments(
             *layout_result, layout_overflow);
       }
