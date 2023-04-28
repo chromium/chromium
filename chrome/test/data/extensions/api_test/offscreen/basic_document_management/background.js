@@ -116,15 +116,18 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function callingCreateDocumentWithMultipleReasonsRejects() {
-    await chrome.test.assertPromiseRejects(
-        chrome.offscreen.createDocument(
+  async function callingCreateDocumentWithMultipleReasonsIsAccepted() {
+    chrome.test.assertFalse(await chrome.offscreen.hasDocument());
+    await chrome.offscreen.createDocument(
         {
           url: 'offscreen.html',
           reasons: ['TESTING', 'AUDIO_PLAYBACK'],
           justification: 'ignored',
-        }),
-        'Error: Only a single `reason` is currently supported.');
+        });
+    chrome.test.assertTrue(await chrome.offscreen.hasDocument());
+
+    // Tidy up.
+    await chrome.offscreen.closeDocument();
     chrome.test.succeed();
   },
 

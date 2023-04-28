@@ -88,10 +88,6 @@ ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
     return RespondNow(Error("A `reason` must be provided."));
   }
 
-  if (deduped_reasons.size() > 1) {
-    return RespondNow(Error("Only a single `reason` is currently supported."));
-  }
-
   if (base::Contains(deduped_reasons, api::offscreen::Reason::kTesting) &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kOffscreenDocumentTesting)) {
@@ -101,8 +97,8 @@ ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
         switches::kOffscreenDocumentTesting)));
   }
 
-  OffscreenDocumentHost* offscreen_document = manager->CreateOffscreenDocument(
-      *extension(), url, *deduped_reasons.begin());
+  OffscreenDocumentHost* offscreen_document =
+      manager->CreateOffscreenDocument(*extension(), url, deduped_reasons);
   DCHECK(offscreen_document);
 
   // We assume it's impossible for a document to entirely synchronously load. If
