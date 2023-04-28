@@ -440,6 +440,19 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryDefault) {
   EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
 }
 
+// Check default values for permissions.query on storage-access when 3p cookie
+// is allowed.
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       PermissionQueryDefault_AllowCrossSiteCookie) {
+  SetBlockThirdPartyCookies(false);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+
+  EXPECT_EQ(QueryPermission(GetPrimaryMainFrame()), "granted");
+  EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
+}
+
 // Test that permissions.query changes to "granted" when a storage access
 // request was successful.
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryGranted) {
@@ -488,6 +501,31 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryCrossSite) {
   // The permission should not be available cross-site.
   NavigateFrameTo(kHostC, "/echoheader?cookie");
   EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
+}
+
+// When 3p cookie is allowed, check that in a A(B) frame tree, the embedded
+// B iframe can access cookie without requesting, but the prompt is still shown
+// if the iframe makes the request.
+IN_PROC_BROWSER_TEST_F(
+    StorageAccessAPIBrowserTest,
+    ThirdPartyCookiesAccess_CrossSiteIframe_AllowCrossSiteCookie) {
+  SetBlockThirdPartyCookies(false);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  // The cross-site iframe has cookie access since 3p cookies are allowed.
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB),
+            CookieBundleWithContent("cross-site=b.test"));
+
+  // TODO(https://crbug.com/1441133): We should either make sure there is way to
+  // let developer check whether they need to call rSA(), or no prompt is shown
+  // when 3p cookie is allowed.
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
 }
 
 // Validate that a cross-site iframe can bypass third-party cookie blocking via
