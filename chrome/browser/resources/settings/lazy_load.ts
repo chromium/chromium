@@ -123,7 +123,6 @@ export {PasswordCheckListItemElement} from './autofill_page/password_check_list_
 export {PasswordDialogMode, PasswordEditDialogElement} from './autofill_page/password_edit_dialog.js';
 export {PasswordListItemElement} from './autofill_page/password_list_item.js';
 export {PasswordMoveMultiplePasswordsToAccountDialogElement} from './autofill_page/password_move_multiple_passwords_to_account_dialog.js';
-export {PasswordMoveToAccountDialogElement} from './autofill_page/password_move_to_account_dialog.js';
 export {SettingsPasswordRemoveConfirmationDialogElement} from './autofill_page/password_remove_confirmation_dialog.js';
 export {PasswordRemoveDialogElement} from './autofill_page/password_remove_dialog.js';
 export {PasswordViewElement} from './autofill_page/password_view.js';

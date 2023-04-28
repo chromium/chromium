@@ -496,7 +496,8 @@ enum class AddCredentialFromSettingsUserInteractions {
 };
 
 // Metrics: PasswordManager.MoveToAccountStoreTrigger.
-// This must be kept in sync with the enum in password_move_to_account_dialog.js
+// This must be kept in sync with the enum in
+// password_move_multiple_passwords_to_account_dialog.ts
 // (in chrome/browser/resources/settings/autofill_page).
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

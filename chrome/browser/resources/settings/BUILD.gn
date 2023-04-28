@@ -91,7 +91,6 @@ build_webui("build") {
     "autofill_page/password_list_item.ts",
     "autofill_page/password_preview_item.ts",
     "autofill_page/password_move_multiple_passwords_to_account_dialog.ts",
-    "autofill_page/password_move_to_account_dialog.ts",
     "autofill_page/password_remove_confirmation_dialog.ts",
     "autofill_page/password_remove_dialog.ts",
     "autofill_page/password_view.ts",

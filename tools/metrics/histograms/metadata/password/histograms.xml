@@ -491,7 +491,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     When the user is offered to move a password from the profile store to the
     account store, this records what user action caused the moving flow to be
-    offered. Recorded only in Win/Mac/Linux.
+    offered. Recorded only in Win/Mac/Linux/iOS.
   </summary>
 </histogram>
 

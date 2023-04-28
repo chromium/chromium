@@ -1105,15 +1105,6 @@ suite('PasswordsSection', function() {
   });
 
   if (!(isChromeOS || isLacros)) {
-    // Test verifies that the overflow menu does not offer an option to move a
-    // password to the account.
-    test('noMoveToAccountOption', async function() {
-      const passwordsSection =
-          await createPasswordsSection(elementFactory, passwordManager, [], []);
-      assertTrue(passwordsSection.$.passwordsListHandler.$
-                     .menuMovePasswordToAccount.hidden);
-    });
-
     // Tests that the opt-in/opt-out buttons appear for signed-in (non-sync)
     // users and that the text content changes accordingly.
     test(
