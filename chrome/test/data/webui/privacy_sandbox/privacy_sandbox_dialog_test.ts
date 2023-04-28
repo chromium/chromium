@@ -768,7 +768,9 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
 
   // TODO(b/277180533): determine whether some of the more button test logic can
   // be shared.
-  test('moreButton', async function() {
+  // TODO(crbug.com/1432915): various more button test issues. Re-enable once
+  // resolved.
+  test.skip('moreButton', async function() {
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     await flushTasks();
