@@ -22,6 +22,7 @@
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
+#include "media/gpu/windows/d3d_accelerator.h"
 #include "media/video/picture.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
@@ -105,7 +106,8 @@ typedef struct {
 } DXVA_PicParams_HEVC_SCC;
 #pragma pack(pop)
 
-class D3D11H265Accelerator : public H265Decoder::H265Accelerator {
+class D3D11H265Accelerator : public D3DAccelerator,
+                             public H265Decoder::H265Accelerator {
  public:
   D3D11H265Accelerator(D3D11VideoDecoderClient* client,
                        MediaLog* media_log,
@@ -176,21 +178,6 @@ class D3D11H265Accelerator : public H265Decoder::H265Accelerator {
       const H265Picture::Vector& ref_pic_set_lt_curr,
       const H265Picture::Vector& ref_pic_set_st_curr_after,
       const H265Picture::Vector& ref_pic_set_st_curr_before);
-
-  void SetVideoDecoder(ComD3D11VideoDecoder video_decoder);
-
-  // Record a failure to DVLOG and |media_log_|.
-  void RecordFailure(const std::string& reason,
-                     D3D11Status::Codes code,
-                     HRESULT hr = S_OK) const;
-  void RecordFailure(D3D11Status error) const;
-
-  raw_ptr<D3D11VideoDecoderClient> client_;
-  raw_ptr<MediaLog> media_log_ = nullptr;
-
-  ComD3D11VideoDecoder video_decoder_;
-  ComD3D11VideoDevice video_device_;
-  std::unique_ptr<VideoContextWrapper> video_context_;
 
   // This information set at the beginning of a frame and saved for processing
   // all the slices.

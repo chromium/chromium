@@ -22,6 +22,7 @@
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
+#include "media/gpu/windows/d3d_accelerator.h"
 #include "media/video/picture.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
@@ -30,10 +31,10 @@ namespace media {
 
 constexpr int kRefFrameMaxCount = 16;
 
-class D3D11H264Accelerator;
 class MediaLog;
 
-class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
+class D3D11H264Accelerator : public D3DAccelerator,
+                             public H264Decoder::H264Accelerator {
  public:
   D3D11H264Accelerator(D3D11VideoDecoderClient* client,
                        MediaLog* media_log,
@@ -86,21 +87,6 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
                                 const H264SliceHeader* slice_hdr);
 
   void PicParamsFromPic(DXVA_PicParams_H264* pic_param, D3D11H264Picture* pic);
-
-  void SetVideoDecoder(ComD3D11VideoDecoder video_decoder);
-
-  // Record a failure to DVLOG and |media_log_|.
-  void RecordFailure(const std::string& reason,
-                     D3D11Status::Codes code,
-                     HRESULT hr = S_OK) const;
-  void RecordFailure(D3D11Status error) const;
-
-  raw_ptr<D3D11VideoDecoderClient> client_;
-  raw_ptr<MediaLog> media_log_ = nullptr;
-
-  ComD3D11VideoDecoder video_decoder_;
-  ComD3D11VideoDevice video_device_;
-  std::unique_ptr<VideoContextWrapper> video_context_;
 
   // This information set at the beginning of a frame and saved for processing
   // all the slices.

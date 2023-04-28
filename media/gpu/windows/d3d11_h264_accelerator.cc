@@ -11,9 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/media_log.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/h264_dpb.h"
@@ -71,15 +69,10 @@ D3D11H264Accelerator::D3D11H264Accelerator(
     MediaLog* media_log,
     ComD3D11VideoDevice video_device,
     std::unique_ptr<VideoContextWrapper> video_context)
-    : client_(client),
-      media_log_(media_log),
-      video_device_(video_device),
-      video_context_(std::move(video_context)) {
-  DCHECK(client);
-  DCHECK(media_log_);
-  client->SetDecoderCB(base::BindRepeating(
-      &D3D11H264Accelerator::SetVideoDecoder, base::Unretained(this)));
-}
+    : D3DAccelerator(client,
+                     media_log,
+                     std::move(video_device),
+                     std::move(video_context)) {}
 
 D3D11H264Accelerator::~D3D11H264Accelerator() {}
 
@@ -117,7 +110,8 @@ H264DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
     if (result.has_value()) {
       output_view = std::move(result).value();
     } else {
-      RecordFailure(std::move(result).error());
+      RecordFailure("Picture AcquireOutputView failed",
+                    std::move(result).error().code());
       return H264DecoderStatus::kFail;
     }
 
@@ -618,25 +612,6 @@ void D3D11H264Accelerator::Reset() {
 bool D3D11H264Accelerator::OutputPicture(scoped_refptr<H264Picture> pic) {
   D3D11H264Picture* our_pic = pic->AsD3D11H264Picture();
   return our_pic && client_->OutputResult(our_pic, our_pic->picture);
-}
-
-void D3D11H264Accelerator::RecordFailure(const std::string& reason,
-                                         D3D11Status::Codes code,
-                                         HRESULT hr) const {
-  std::string hr_string;
-  if (!SUCCEEDED(hr))
-    hr_string = ": " + logging::SystemErrorCodeToString(hr);
-
-  DLOG(ERROR) << reason << hr_string;
-  MEDIA_LOG(ERROR, media_log_) << hr_string << ": " << reason;
-}
-
-void D3D11H264Accelerator::RecordFailure(D3D11Status error) const {
-  RecordFailure(error.message(), error.code());
-}
-
-void D3D11H264Accelerator::SetVideoDecoder(ComD3D11VideoDecoder video_decoder) {
-  video_decoder_ = std::move(video_decoder);
 }
 
 }  // namespace media
