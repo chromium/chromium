@@ -48,7 +48,7 @@ MODULES_EXPORT bool ExtractV8CanvasStyle(v8::Isolate* isolate,
 
 // Converts `style` to a v8 value.
 MODULES_EXPORT v8::Local<v8::Value> CanvasStyleToV8(ScriptState* script_state,
-                                                    CanvasStyle* style);
+                                                    const CanvasStyle& style);
 
 }  // namespace blink
 

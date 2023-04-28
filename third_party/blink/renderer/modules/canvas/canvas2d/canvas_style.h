@@ -43,23 +43,14 @@ namespace blink {
 
 class CanvasGradient;
 class CanvasPattern;
-class CanvasRenderingContext2DState;
 class HTMLCanvasElement;
 
-class CanvasStyle final : public GarbageCollected<CanvasStyle> {
+class CanvasStyle final {
+  DISALLOW_NEW();
+
  public:
-  // Only CanvasRenderingContext2DState is allowed to mutate this.
-  using PassKey = base::PassKey<CanvasRenderingContext2DState>;
-
-  explicit CanvasStyle(Color);
-  explicit CanvasStyle(CanvasGradient*);
-  explicit CanvasStyle(CanvasPattern*);
-
-  // Marks this style as potentially being referenced by multiple
-  // CanvasRenderingContext2DStates. If the style is shared, then it should not
-  // be mutated.
-  void MarkShared(PassKey key) { shared_ = true; }
-  bool is_shared() const { return shared_; }
+  CanvasStyle();
+  CanvasStyle(const CanvasStyle& other);
 
   String GetColorAsString() const {
     DCHECK_EQ(type_, kColor);
@@ -86,31 +77,28 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
     return type_ == kColor && color_ == color;
   }
 
-  bool IsEquivalentPattern(CanvasPattern* pattern) const {
-    return type_ == kImagePattern && pattern_ == pattern;
-  }
-
-  bool IsEquivalentGradient(CanvasGradient* gradient) const {
-    return type_ == kGradient && gradient_ == gradient;
-  }
-
-  void SetColor(PassKey key, Color color) {
-    DCHECK(!shared_);
+  bool SetColor(Color color) {
+    if (LIKELY(type_ == kColor)) {
+      if (color == color_) {
+        return false;
+      }
+      color_ = color;
+      return true;
+    }
     type_ = kColor;
     color_ = color;
     gradient_ = nullptr;
     pattern_ = nullptr;
+    return true;
   }
 
-  void SetPattern(PassKey key, CanvasPattern* pattern) {
-    DCHECK(!shared_);
+  void SetPattern(CanvasPattern* pattern) {
     type_ = kImagePattern;
     pattern_ = pattern;
     gradient_ = nullptr;
   }
 
-  void SetGradient(PassKey key, CanvasGradient* gradient) {
-    DCHECK(!shared_);
+  void SetGradient(CanvasGradient* gradient) {
     type_ = kGradient;
     gradient_ = gradient;
     pattern_ = nullptr;
@@ -120,13 +108,9 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
 
  private:
   enum Type { kColor, kGradient, kImagePattern };
-
   Type type_;
 
-  bool shared_ = false;
-
   Color color_;
-
   Member<CanvasGradient> gradient_;
   Member<CanvasPattern> pattern_;
 };

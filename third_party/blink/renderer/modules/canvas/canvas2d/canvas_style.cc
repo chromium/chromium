@@ -74,13 +74,13 @@ bool ParseCanvasColorString(const String& color_string, Color& parsed_color) {
   }
 }
 
-CanvasStyle::CanvasStyle(Color color) : type_(kColor), color_(color) {}
+CanvasStyle::CanvasStyle() : type_(kColor), color_(Color::kBlack) {}
 
-CanvasStyle::CanvasStyle(CanvasGradient* gradient)
-    : type_(kGradient), gradient_(gradient) {}
-
-CanvasStyle::CanvasStyle(CanvasPattern* pattern)
-    : type_(kImagePattern), pattern_(pattern) {}
+CanvasStyle::CanvasStyle(const CanvasStyle& other) {
+  // Default copy constructor would not use memcpy because Member<> fields
+  // are not technically POD, but it is still safe to memcpy them.
+  memcpy(this, &other, sizeof(CanvasStyle));
+}
 
 void CanvasStyle::ApplyToFlags(cc::PaintFlags& flags,
                                float global_alpha) const {

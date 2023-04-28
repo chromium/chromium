@@ -500,7 +500,7 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
       if (!ExtractColorFromV8ValueAndUpdateCache(v8_style, parsed_color)) {
         return;
       }
-      if (GetState().StrokeStyle()->IsEquivalentColor(parsed_color)) {
+      if (GetState().StrokeStyle().IsEquivalentColor(parsed_color)) {
         GetState().SetUnparsedStrokeColor(v8_style.string);
         return;
       }
@@ -560,7 +560,7 @@ void BaseRenderingContext2D::setFillStyle(v8::Isolate* isolate,
       if (!ExtractColorFromV8ValueAndUpdateCache(v8_style, parsed_color)) {
         return;
       }
-      if (GetState().FillStyle()->IsEquivalentColor(parsed_color)) {
+      if (GetState().FillStyle().IsEquivalentColor(parsed_color)) {
         GetState().SetUnparsedFillColor(v8_style.string);
         return;
       }
