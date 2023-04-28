@@ -25,13 +25,18 @@ TestHistoryClustersService::QueryClusters(
     QueryClustersContinuationParams continuation_params,
     bool recluster,
     QueryClustersCallback callback) {
-  std::move(callback).Run(clusters_, continuation_params);
+  std::move(callback).Run(clusters_,
+                          next_query_is_done_
+                              ? QueryClustersContinuationParams::DoneParams()
+                              : continuation_params);
   return nullptr;
 }
 
 void TestHistoryClustersService::SetClustersToReturn(
-    const std::vector<history::Cluster>& clusters) {
+    const std::vector<history::Cluster>& clusters,
+    bool exhausted_all_visits) {
   clusters_ = clusters;
+  next_query_is_done_ = exhausted_all_visits;
 }
 
 }  // namespace history_clusters

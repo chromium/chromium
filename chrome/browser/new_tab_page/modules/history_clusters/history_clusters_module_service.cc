@@ -154,6 +154,10 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
     GetClustersCallback callback,
     std::vector<history::Cluster> clusters,
     history_clusters::QueryClustersContinuationParams continuation_params) {
+  base::UmaHistogramBoolean(
+      "NewTabPage.HistoryClusters.ExhaustedEligibleClusters",
+      continuation_params.exhausted_all_visits);
+
   // Within each cluster, sort visits.
   for (auto& cluster : clusters) {
     history_clusters::StableSortVisits(cluster.visits);

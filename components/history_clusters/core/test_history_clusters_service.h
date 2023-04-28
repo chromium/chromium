@@ -29,11 +29,15 @@ class TestHistoryClustersService : public HistoryClustersService {
       QueryClustersCallback callback) override;
 
   // Sets `clusters` to be the clusters that always get returned when
-  // `QueryClusters()` is called.
-  void SetClustersToReturn(const std::vector<history::Cluster>& clusters);
+  // `QueryClusters()` is called. If `exhausted_all_visits` is true, the next
+  // query will invoke its callback using
+  // `QueryClustersContinuationParams::DoneParams()`.
+  void SetClustersToReturn(const std::vector<history::Cluster>& clusters,
+                           bool exhausted_all_visits = true);
 
  private:
   std::vector<history::Cluster> clusters_;
+  bool next_query_is_done_ = false;
 };
 
 }  // namespace history_clusters
