@@ -16,7 +16,7 @@ steps:
       - "os=linux"
       - "queue=runtime"
     artifact_paths:
-      - "build_id/**"
+      - "build_id/linux/**"
   - label: "Build chromium - Mac"
     key: "build-chromium-mac"
     plugins:
@@ -29,9 +29,8 @@ steps:
       - "runtimeType=chromiumbuild"
       - "os=macos"
       - "queue=runtime"
-    # TODO(dmiller): this might race with the linux build, we should store these under separate paths
-    # artifact_paths:
-    #   - "build_id/**"
+    artifact_paths:
+      - "build_id/macOS/**"
   - label: "Build chromium - Windows"
     key: "build-chromium-windows"
     # TODO(dmiller): remove this once we have a windows build that doesn't fail
@@ -47,9 +46,8 @@ steps:
       - "runtimeType=chromiumbuild"
       - "os=windows"
       - "queue=runtime"
-    # TODO(dmiller): this might race with the linux build, we should store these under separate paths
-    # artifact_paths:
-    #   - "build_id/**"
+    artifact_paths:
+      - "build_id/windows/**"
   - trigger: "testing-runtime-e2e"
     label: ":hammer: Trigger Runtime Tests"
     depends_on: "build-chromium-linux"

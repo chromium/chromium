@@ -15,8 +15,11 @@ const S3DevBucket = "recordreplay-us-east-2-dev";
 const S3Website = "recordreplay-website";
 
 const BUILDKITE_BUILD_ID_ARTIFACT = "build_id";
-const BUILDKITE_ARTIFACT_DIRECTORY =
-  (process.env.BUILDKITE_BUILD_CHECKOUT_PATH || "./") + "/build_id";
+const BUILDKITE_ARTIFACT_DIRECTORY = path.join(
+  process.env.BUILDKITE_BUILD_CHECKOUT_PATH || "./",
+  currentPlatform(),
+  "build_id"
+);
 
 function uploadToAllBuckets(localPath, s3Path) {
   for (const bucket of [S3Bucket, S3DevBucket]) {
@@ -229,9 +232,9 @@ async function main(options) {
   // Write the build_id artifact.  This is how buildkite agents will know which build
   // to download from S3: by first downloading this file.
   fs.rmSync(BUILDKITE_ARTIFACT_DIRECTORY, { force: true, recursive: true });
-  fs.mkdirSync(BUILDKITE_ARTIFACT_DIRECTORY);
+  fs.mkdirSync(BUILDKITE_ARTIFACT_DIRECTORY, { recursive: true });
   fs.writeFileSync(
-    `${BUILDKITE_ARTIFACT_DIRECTORY}/${BUILDKITE_BUILD_ID_ARTIFACT}`,
+    path.join(BUILDKITE_ARTIFACT_DIRECTORY, BUILDKITE_BUILD_ID_ARTIFACT),
     buildId
   );
 
