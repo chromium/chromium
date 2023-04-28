@@ -120,8 +120,6 @@ class PrintViewManager : public PrintViewManagerBase,
 #endif
       bool has_selection);
 
-  void OnScriptedPrintPreviewReply(SetupScriptedPrintPreviewCallback callback);
-
   // Helper method for ShowScriptedPrintPreview(), called from
   // RejectPrintPreviewRequestIfRestricted(). Based on value of
   // `should_proceed`, continues to show the print preview or cancels it.

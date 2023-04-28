@@ -55,6 +55,12 @@ ScriptedPrintPreviewClosureMap& GetScriptedPrintPreviewClosureMap() {
   return *closure_map;
 }
 
+void OnScriptedPrintPreviewReply(
+    PrintViewManager::SetupScriptedPrintPreviewCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::move(callback).Run();
+}
+
 }  // namespace
 
 PrintViewManager::PrintViewManager(content::WebContents* web_contents)
@@ -383,8 +389,7 @@ void PrintViewManager::SetupScriptedPrintPreview(
 
   SetPrintPreviewRenderFrameHost(rfh);
   print_preview_state_ = SCRIPTED_PREVIEW;
-  map[rph] = base::BindOnce(&PrintViewManager::OnScriptedPrintPreviewReply,
-                            base::Unretained(this), std::move(callback));
+  map[rph] = base::BindOnce(&OnScriptedPrintPreviewReply, std::move(callback));
   scripted_print_preview_rph_ = rph;
   DCHECK(!scripted_print_preview_rph_set_blocked_);
   if (!scripted_print_preview_rph_->IsBlocked()) {
@@ -483,12 +488,6 @@ void PrintViewManager::CheckForCancel(int32_t preview_ui_id,
                                       CheckForCancelCallback callback) {
   std::move(callback).Run(
       PrintPreviewUI::ShouldCancelRequest(preview_ui_id, request_id));
-}
-
-void PrintViewManager::OnScriptedPrintPreviewReply(
-    SetupScriptedPrintPreviewCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::move(callback).Run();
 }
 
 void PrintViewManager::MaybeUnblockScriptedPreviewRPH() {
