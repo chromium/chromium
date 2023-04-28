@@ -10,7 +10,6 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "phone_hub_view_ids.h"
 #include "ui/views/view.h"
 
 namespace views {

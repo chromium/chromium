@@ -10,12 +10,12 @@
 
 #include "ash/frame_sink/ui_resource_manager.h"
 #include "ash/rounded_display/rounded_display_gutter.h"
+#include "ash/rounded_display/rounded_display_gutter_factory.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/quad_list.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "rounded_display_gutter_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window_tree_host.h"

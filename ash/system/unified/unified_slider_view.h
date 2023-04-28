@@ -7,8 +7,8 @@
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/unified/quick_settings_slider.h"
 #include "base/memory/raw_ptr.h"
-#include "quick_settings_slider.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/image_view.h"

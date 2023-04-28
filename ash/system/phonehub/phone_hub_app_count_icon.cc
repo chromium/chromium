@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "phone_hub_app_count_icon.h"
+#include "ash/system/phonehub/phone_hub_app_count_icon.h"
 
 #include "ash/style/ash_color_provider.h"
 #include "base/i18n/number_formatting.h"

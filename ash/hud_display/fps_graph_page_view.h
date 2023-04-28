@@ -6,7 +6,6 @@
 #define ASH_HUD_DISPLAY_FPS_GRAPH_PAGE_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "time.h"
 
 #include "ash/hud_display/graph.h"
 #include "ash/hud_display/graph_page_view_base.h"

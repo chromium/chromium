@@ -4,8 +4,6 @@
 
 #include "ash/drag_drop/scoped_drag_drop_observer.h"
 
-#include "memory"
-
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/drag_drop/draggable_test_view.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"

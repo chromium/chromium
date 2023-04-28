@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ambient_managed_photo_source.h"
+#include "ash/public/cpp/ambient/ambient_managed_photo_source.h"
 
 namespace ash {
 

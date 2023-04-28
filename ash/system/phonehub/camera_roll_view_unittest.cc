@@ -7,7 +7,6 @@
 #include "ash/system/phonehub/camera_roll_thumbnail.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/test/ash_test_base.h"
-#include "camera_roll_view.h"
 #include "chromeos/ash/components/phonehub/camera_roll_item.h"
 #include "chromeos/ash/components/phonehub/fake_camera_roll_manager.h"
 #include "chromeos/ash/components/phonehub/fake_user_action_recorder.h"

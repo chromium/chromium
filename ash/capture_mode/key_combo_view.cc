@@ -15,7 +15,6 @@
 #include "ash/public/cpp/assistant/assistant_state_base.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "key_item_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/event_constants.h"

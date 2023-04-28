@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "status_area_animation_controller.h"
+#include "ash/system/status_area_animation_controller.h"
 
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/tray/tray_container.h"

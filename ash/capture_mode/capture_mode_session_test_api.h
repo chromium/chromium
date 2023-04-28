@@ -5,8 +5,8 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_SESSION_TEST_API_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_SESSION_TEST_API_H_
 
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/memory/raw_ptr.h"
-#include "capture_mode_session_focus_cycler.h"
 
 namespace ash {
 

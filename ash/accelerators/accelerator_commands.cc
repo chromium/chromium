@@ -4,7 +4,7 @@
 
 #include "ash/accelerators/accelerator_commands.h"
 
-#include "accelerator_notifications.h"
+#include "ash/accelerators/accelerator_notifications.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
