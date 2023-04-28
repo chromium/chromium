@@ -308,6 +308,56 @@ template("rust_target") {
     _visibility = []
     _visibility = [ ":${_target_name}" ]
 
+    if (_build_unit_tests) {
+      _unit_test_target = "${_target_name}_unittests"
+      if (defined(invoker.unit_test_target)) {
+        _unit_test_target = invoker.unit_test_target
+      }
+
+      rust_unit_test(_unit_test_target) {
+        forward_variables_from(invoker, [ "sources" ])
+        testonly = true
+        crate_root = _crate_root
+        rustflags = _rustflags
+        env_out_dir = _env_out_dir
+        if (defined(invoker.unit_test_output_dir)) {
+          output_dir = invoker.unit_test_output_dir
+        }
+        deps = _rust_deps + _public_deps
+        aliased_deps = _rust_aliased_deps
+        public_deps = [ ":${_target_name}" ]
+        if (defined(invoker.test_deps)) {
+          deps += invoker.test_deps
+        }
+        inputs = []
+        if (defined(invoker.inputs)) {
+          inputs += invoker.inputs
+        }
+        if (defined(invoker.test_inputs)) {
+          inputs += invoker.test_inputs
+        }
+        if (defined(invoker.executable_configs)) {
+          configs = []
+          configs = invoker.executable_configs
+        } else if (!defined(configs)) {
+          configs = []
+        }
+        configs += _test_configs
+        rustenv = _rustenv
+
+        if (!_allow_unsafe) {
+          configs += [ "//build/rust:forbid_unsafe" ]
+        }
+      }
+    } else {
+      not_needed([
+                   "_crate_root",
+                   "_crate_name",
+                   "_metadata",
+                   "_test_configs",
+                 ])
+    }
+
     target(invoker.target_type, "${_target_name}${_main_target_suffix}") {
       forward_variables_from(invoker,
                              "*",
@@ -387,56 +437,6 @@ template("rust_target") {
       }
     } else {
       not_needed([ "_cxx_deps" ])
-    }
-
-    if (_build_unit_tests) {
-      _unit_test_target = "${_target_name}_unittests"
-      if (defined(invoker.unit_test_target)) {
-        _unit_test_target = invoker.unit_test_target
-      }
-
-      rust_unit_test(_unit_test_target) {
-        forward_variables_from(invoker, [ "sources" ])
-        testonly = true
-        crate_root = _crate_root
-        rustflags = _rustflags
-        env_out_dir = _env_out_dir
-        if (defined(invoker.unit_test_output_dir)) {
-          output_dir = invoker.unit_test_output_dir
-        }
-        deps = _rust_deps + _public_deps
-        aliased_deps = _rust_aliased_deps
-        public_deps = [ ":${_target_name}" ]
-        if (defined(invoker.test_deps)) {
-          deps += invoker.test_deps
-        }
-        inputs = []
-        if (defined(invoker.inputs)) {
-          inputs += invoker.inputs
-        }
-        if (defined(invoker.test_inputs)) {
-          inputs += invoker.test_inputs
-        }
-        if (defined(invoker.executable_configs)) {
-          configs = []
-          configs = invoker.executable_configs
-        } else if (!defined(configs)) {
-          configs = []
-        }
-        configs += _test_configs
-        rustenv = _rustenv
-
-        if (!_allow_unsafe) {
-          configs += [ "//build/rust:forbid_unsafe" ]
-        }
-      }
-    } else {
-      not_needed([
-                   "_crate_root",
-                   "_crate_name",
-                   "_metadata",
-                   "_test_configs",
-                 ])
     }
   }
 }

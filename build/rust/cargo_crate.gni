@@ -134,6 +134,7 @@ template("cargo_crate") {
                                  "target_type",
                                  "configs",
                                  "rustenv",
+                                 "dev_deps",
                                ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
@@ -191,6 +192,10 @@ template("cargo_crate") {
       output_dir = "$target_out_dir/$_orig_target_name"
     }
 
+    if (defined(invoker.dev_deps)) {
+      test_deps = invoker.dev_deps
+    }
+
     if (defined(invoker.build_root)) {
       # Uh-oh, we have a build script
       if (!defined(deps)) {
@@ -198,9 +203,6 @@ template("cargo_crate") {
       }
       if (!defined(sources)) {
         sources = []
-      }
-      if (defined(invoker.dev_deps)) {
-        test_deps = invoker.dev_deps
       }
 
       # This... is a bit weird. We generate a file called cargo_flags.rs which
