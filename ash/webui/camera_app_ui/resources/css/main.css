@@ -311,7 +311,7 @@ div.mode-item>input {
 
 div.mode-item>span {
   border-radius: 16px/50%;
-  color: white;
+  color: var(--cros-sys-on_surface);
   display: inline-block;
   font-size: 14px;
   font-weight: 500;
