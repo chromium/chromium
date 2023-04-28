@@ -192,6 +192,11 @@ ExtensionMenuItemView::ExtensionMenuItemView(
   const int icon_label_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
+  auto site_permissions_button_icon =
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          vector_icons::kSubmenuArrowIcon, ui::kColorIcon));
+  site_permissions_button_icon_ = site_permissions_button_icon.get();
+
   views::Builder<ExtensionMenuItemView>(this)
       // Set so the extension button receives enter/exit on children to
       // retain hover status when hovering child views.
@@ -230,17 +235,12 @@ ExtensionMenuItemView::ExtensionMenuItemView(
           // Secondary row.
           views::Builder<views::FlexLayoutView>().AddChildren(
               // Site permissions button.
-              // TODO(crbug.com/998298): Compute title based on the
-              // extension site access.
               // TODO(crbug.com/998298): Add tooltip after UX provides it.
               views::Builder<HoverButton>(
                   std::make_unique<HoverButton>(
                       site_permissions_button_callback,
                       /*icon_view=*/nullptr, std::u16string(), std::u16string(),
-                      std::make_unique<views::ImageView>(
-                          ui::ImageModel::FromVectorIcon(
-                              vector_icons::kSubmenuArrowIcon,
-                              ui::kColorIcon))))
+                      std::move(site_permissions_button_icon)))
                   .CopyAddressTo(&site_permissions_button_)
                   // Margin to align the main and secondary row text. Icon
                   // size and horizontal insets should be the values used by
@@ -301,8 +301,8 @@ void ExtensionMenuItemView::Update(
                                          SitePermissionsButtonState::kEnabled);
     site_permissions_button_->SetText(
         GetSitePermissionsButtonText(site_permissions_button_access));
-    // TODO(crbug.com/1390952): Display the arrow icon only when site
-    // permissions button is enabled.
+    site_permissions_button_icon_->SetVisible(
+        site_permissions_button_state == SitePermissionsButtonState::kEnabled);
   }
 
   view_controller()->UpdateState();

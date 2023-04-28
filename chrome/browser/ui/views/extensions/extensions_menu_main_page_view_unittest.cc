@@ -306,7 +306,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   ShowMenu();
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
 
-  // Button is visible, disabled and has "none" text when site
+  // Button is visible, disabled, has no icon and has "none" text when site
   // setting is set to "customize by extension" (default setting).
   EXPECT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
@@ -315,6 +315,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
+  EXPECT_FALSE(
+      menu_item->site_permissions_button_icon_for_testing()->GetVisible());
 
   // Button is hidden when site setting is set to "block all extensions".
   UpdateUserSiteSetting(
@@ -336,7 +338,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   ShowMenu();
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
 
-  // Button is visible, enabled and has "on click" text when site
+  // Button is visible, enabled, has icon and has "on click" text when site
   // setting is set to "customize by extension" (default setting).
   EXPECT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
@@ -345,6 +347,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_TRUE(
+      menu_item->site_permissions_button_icon_for_testing()->GetVisible());
 
   // Button is hidden when site setting is set to "block all extensions".
   UpdateUserSiteSetting(
@@ -366,7 +370,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   ShowMenu();
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
 
-  // Button is visible, enabled and has "on site" text when site
+  // Button is visible, enabled, has icon and has "on site" text when site
   // setting is set to "customize by extension" (default setting).
   EXPECT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
@@ -375,6 +379,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
+  EXPECT_TRUE(
+      menu_item->site_permissions_button_icon_for_testing()->GetVisible());
 
   // Button is hidden when site setting is set to "block all extensions".
   UpdateUserSiteSetting(
@@ -395,7 +401,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   ShowMenu();
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
 
-  // Button is visible, enabled and has "on all sites" text when
+  // Button is visible, enabled, has icon and has "on all sites" text when
   // site setting is set to "customize by extension" (default setting).
   EXPECT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
@@ -405,6 +411,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
       menu_item->site_permissions_button_for_testing()->GetText(),
       l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
+  EXPECT_TRUE(
+      menu_item->site_permissions_button_icon_for_testing()->GetVisible());
 
   // Button is hidden when site setting is set to "block all extensions".
   UpdateUserSiteSetting(
@@ -423,7 +431,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, SitePermissionsButton_ActiveTab) {
   ShowMenu();
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
 
-  // Button is visible, enabled and has "on click" text when
+  // Button is visible, enabled, has icon and has "on click" text when
   // site setting is set to "customize by extension" (default setting).
   EXPECT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
@@ -432,6 +440,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, SitePermissionsButton_ActiveTab) {
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_TRUE(
+      menu_item->site_permissions_button_icon_for_testing()->GetVisible());
 
   // Button is hidden when site setting is set to "block all extensions".
   UpdateUserSiteSetting(
@@ -452,7 +462,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   ShowMenu();
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
 
-  // Button is visible, disabled and has "none" text when
+  // Button is visible, disabled, has no icon and has "none" text when
   // site setting is set to "customize by extension" (default setting).
   EXPECT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
@@ -461,6 +471,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
+  EXPECT_FALSE(
+      menu_item->site_permissions_button_icon_for_testing()->GetVisible());
 
   // Button is hidden when site setting is set to "block all extensions".
   UpdateUserSiteSetting(
@@ -482,7 +494,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   ShowMenu();
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
 
-  // Button is visible, disabled and has "on all sites" text when
+  // Button is visible, disabled, has no icon and has "on all sites" text when
   // site setting is set to "customize by extension" (default setting).
   EXPECT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
@@ -492,8 +504,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
       menu_item->site_permissions_button_for_testing()->GetText(),
       l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
+  EXPECT_FALSE(
+      menu_item->site_permissions_button_icon_for_testing()->GetVisible());
 
-  // Button is visible, disabled and has "on all sites" text when
+  // Button is visible, disabled, has no icon and has "on all sites" text when
   // site setting is set to "block all extensions".
   // Note: Policy-installed extension can still run on the site even if the user
   // blocked all extensions because enterprise-installed extensions take
@@ -508,6 +522,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
       menu_item->site_permissions_button_for_testing()->GetText(),
       l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
+  EXPECT_FALSE(
+      menu_item->site_permissions_button_icon_for_testing()->GetVisible());
 }
 
 // Verifies the site permissions button opens the site permissions page when it
@@ -523,12 +539,14 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   ShowMenu();
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
 
-  // Button is visible and enabled when site setting is set to "customize by
-  // extension" (default setting).
+  // Button is visible, enabled and has an icon when site setting is set to
+  // "customize by extension" (default setting).
   EXPECT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
+  EXPECT_TRUE(
+      menu_item->site_permissions_button_icon_for_testing()->GetVisible());
 
   // Clicking on an extension's site permission enabled button should open
   // its site permission page in the menu.
