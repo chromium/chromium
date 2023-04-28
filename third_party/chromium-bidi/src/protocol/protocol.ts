@@ -727,7 +727,7 @@ export namespace Script {
   };
 
   export type AddPreloadScriptParameters = {
-    expression: string;
+    functionDeclaration: string;
     sandbox?: string;
     context?: CommonDataTypes.BrowsingContext | null;
   };

@@ -302,7 +302,7 @@ export namespace Script {
   export const PreloadScriptSchema = zod.string();
 
   export const AddPreloadScriptParametersSchema = zod.object({
-    expression: zod.string(),
+    functionDeclaration: zod.string(),
     sandbox: zod.string().optional(),
     context: CommonDataTypes.BrowsingContextSchema.optional(),
   });

@@ -31,6 +31,11 @@ import {RealmStorage} from '../script/realmStorage.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import {CdpTarget} from './cdpTarget.js';
+import {
+  PreloadScriptStorage,
+  CdpPreloadScript,
+  BidiPreloadScript,
+} from './PreloadScriptStorage.js';
 
 export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -39,6 +44,7 @@ export class BrowsingContextProcessor {
   readonly #logger?: LoggerFn;
   readonly #realmStorage: RealmStorage;
   readonly #selfTargetId: string;
+  readonly #preloadScriptStorage: PreloadScriptStorage;
 
   constructor(
     realmStorage: RealmStorage,
@@ -54,6 +60,7 @@ export class BrowsingContextProcessor {
     this.#logger = logger;
     this.#realmStorage = realmStorage;
     this.#selfTargetId = selfTargetId;
+    this.#preloadScriptStorage = new PreloadScriptStorage();
 
     this.#setEventListeners(this.#cdpConnection.browserClient());
   }
@@ -140,7 +147,7 @@ export class BrowsingContextProcessor {
     if (!this.#isValidTarget(targetInfo)) {
       // DevTools or some other not supported by BiDi target. Just release
       // debugger  and ignore them.
-      void targetCdpClient
+      targetCdpClient
         .sendCommand('Runtime.runIfWaitingForDebugger')
         .then(() =>
           parentSessionCdpClient.sendCommand('Target.detachFromTarget', params)
@@ -170,6 +177,7 @@ export class BrowsingContextProcessor {
         .getContext(targetInfo.targetId)
         .updateCdpTarget(cdpTarget);
     } else {
+      // New context.
       BrowsingContextImpl.create(
         cdpTarget,
         this.#realmStorage,
@@ -286,44 +294,70 @@ export class BrowsingContextProcessor {
   async process_script_addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
-    const contexts: BrowsingContextImpl[] = [];
-    const scripts: Script.PreloadScript[] = [];
-
-    if (params.context) {
-      // TODO(#293): Handle edge case with OOPiF. Whenever a frame is moved out
-      // of process, we have to add those scripts as well.
-      contexts.push(this.#browsingContextStorage.getContext(params.context));
-    } else {
-      // Add all contexts.
-      // TODO(#293): Add preload scripts to all new browsing contexts as well.
-      contexts.push(...this.#browsingContextStorage.getAllContexts());
-    }
-
-    scripts.push(
-      ...(await Promise.all(
-        contexts.map((context) =>
-          context.cdpTarget.addPreloadScript(
-            // The spec provides a function, and CDP expects an evaluation.
-            `(${params.expression})();`,
-            params.sandbox
-          )
-        )
-      ))
+    const cdpTargets = new Set<CdpTarget>(
+      // TODO: flatten children and deduplicate.
+      params.context === undefined || params.context === null
+        ? this.#browsingContextStorage
+            .getTopLevelContexts()
+            .map((context) => context.cdpTarget)
+        : [this.#browsingContextStorage.getContext(params.context).cdpTarget]
     );
 
-    // TODO(#293): What to return whenever there are multiple contexts?
+    const cdpPreloadScripts: CdpPreloadScript[] = [];
+
+    for (const cdpTarget of cdpTargets) {
+      const cdpPreloadScriptId = await cdpTarget.addPreloadScript(
+        // The spec provides a function, and CDP expects an evaluation.
+        `(${params.functionDeclaration})();`,
+        params.sandbox
+      );
+      cdpPreloadScripts.push({
+        target: cdpTarget,
+        preloadScriptId: cdpPreloadScriptId,
+      });
+    }
+
+    const preloadScript: BidiPreloadScript =
+      this.#preloadScriptStorage.addPreloadScripts(
+        params.context ?? null,
+        cdpPreloadScripts,
+        params.functionDeclaration,
+        params.sandbox
+      );
+
     return {
       result: {
-        script: scripts[0]!,
+        script: preloadScript.id,
       },
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async process_script_removePreloadScript(
-    _params: Script.RemovePreloadScriptParameters
+    params: Script.RemovePreloadScriptParameters
   ): Promise<Message.EmptyResult> {
-    throw new Message.UnknownErrorException('Not implemented.');
+    const bidiId = params.script;
+
+    const scripts = this.#preloadScriptStorage.findPreloadScripts({
+      id: bidiId,
+    });
+
+    if (scripts.length === 0) {
+      throw new Message.NoSuchScriptException(
+        `No preload script with BiDi ID '${bidiId}'`
+      );
+    }
+
+    for (const script of scripts) {
+      for (const cdpPreloadScript of script.cdpPreloadScripts) {
+        const cdpTarget = cdpPreloadScript.target;
+        const cdpPreloadScriptId = cdpPreloadScript.preloadScriptId;
+        await cdpTarget.removePreloadScript(cdpPreloadScriptId);
+      }
+    }
+
+    this.#preloadScriptStorage.removePreloadScripts({
+      id: bidiId,
+    });
 
     return {result: {}};
   }
