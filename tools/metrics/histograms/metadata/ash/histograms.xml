@@ -6127,45 +6127,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Ash.VideoConference.ReturnToAppButton.FadeOut.AnimationSmoothness"
-    units="%" expires_after="2024-04-20">
-  <owner>leandre@chromium.org</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Relative smoothness of the fade out animation of the return to app button
-    inside the video conference controls. 100% represents ideally smooth 60
-    frames per second. Emitted when the fade out animation is completed.
-  </summary>
-</histogram>
-
-<histogram
-    name="Ash.VideoConference.ReturnToAppPanel.BoundsChange.AnimationSmoothness"
-    units="%" expires_after="2024-04-20">
-  <owner>leandre@chromium.org</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Relative smoothness of the bounds change animation of the return to app
-    panel inside the video conference controls. 100% represents ideally smooth
-    60 frames per second. Emitted when the bounds change animation is completed.
-  </summary>
-</histogram>
-
-<histogram name="Ash.VideoConference.{ViewName}.FadeIn.AnimationSmoothness"
-    units="%" expires_after="2024-04-20">
-  <owner>leandre@chromium.org</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Relative smoothness of the fade in animation of the {ViewName} inside the
-    video conference controls. 100% represents ideally smooth 60 frames per
-    second. Emitted when the fade in animation is completed.
-  </summary>
-  <token key="ViewName">
-    <variant name="ReturnToAppButton" summary="Return To App button"/>
-    <variant name="SummaryIcons" summary="Summary icons"/>
-  </token>
-</histogram>
-
 <histogram name="Ash.VideoConferenceTray.BackgroundBlur.Click"
     enum="BackgroundBlurState" expires_after="2024-03-16">
   <owner>leandre@google.com</owner>
