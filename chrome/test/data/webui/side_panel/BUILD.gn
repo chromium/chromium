@@ -13,6 +13,7 @@ build_webui_tests("build") {
     "bookmarks/bookmarks_list_interactive_ui_test.ts",
     "bookmarks/bookmarks_list_test.ts",
     "bookmarks/power_bookmarks_context_menu_test.ts",
+    "bookmarks/power_bookmarks_drag_manager_test.ts",
     "bookmarks/power_bookmarks_edit_dialog_test.ts",
     "bookmarks/power_bookmarks_list_test.ts",
     "bookmarks/power_bookmarks_service_test.ts",
