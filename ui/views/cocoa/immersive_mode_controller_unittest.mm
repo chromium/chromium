@@ -373,4 +373,26 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindow) {
   EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 0);
 }
 
+// Test ImmersiveModeTabbedController z-order test.
+TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindowZOrder) {
+  // Controller under test.
+  auto immersive_mode_controller =
+      std::make_unique<ImmersiveModeTabbedController>(
+          browser(), overlay(), tab_overlay(), base::DoNothing());
+  immersive_mode_controller->Enable();
+  immersive_mode_controller->FullscreenTransitionCompleted();
+
+  // Create a popup.
+  CocoaTestHelperWindow* popup = [[CocoaTestHelperWindow alloc] init];
+  EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 0);
+
+  // Add the popup as a child of overlay.
+  [overlay() addChildWindow:popup ordered:NSWindowAbove];
+
+  // Make sure the tab overlay window stays on z-order top.
+  EXPECT_EQ(overlay().childWindows.lastObject, tab_overlay());
+
+  [popup close];
+}
+
 }  // namespace remote_cocoa

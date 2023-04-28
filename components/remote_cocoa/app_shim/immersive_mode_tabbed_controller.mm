@@ -207,6 +207,15 @@ void ImmersiveModeTabbedController::OnChildWindowAdded(NSWindow* child) {
   if (child == tab_window_) {
     return;
   }
+
+  // Keep the tab window on top of its siblings. This will allow children of tab
+  // window to always be z-order on top of overlay window children.
+  // Practically this allows for the tab preview hover card to be z-order on top
+  // of omnibox results popup.
+  if (overlay_window().childWindows.lastObject != tab_window_) {
+    [overlay_window() removeChildWindow:tab_window_];
+    [overlay_window() addChildWindow:tab_window_ ordered:NSWindowAbove];
+  }
   ImmersiveModeController::OnChildWindowAdded(child);
 }
 
