@@ -242,7 +242,7 @@ ts_library("build_ts") {
 }
 ```
 
-### **optimize_webui**
+### **bundle_js**
 ```
 This rule is used to bundle larger user-facing WebUIs for improved performance.
 It is generally not needed for debug UIs or UIs that have very few files to
@@ -265,7 +265,7 @@ js_module_in_files: The names of the root files to bundle. These files should
                     The shared bundle will be named "shared.rollup.js" and
                     located at the same relative path as the inputs.
 out_manifest: File location to write the manifest of all output files created
-              by optimize_webui(). Useful for generating grds.
+              by bundle_js(). Useful for generating grds.
 deps: Targets generating any files being bundled. Note that this should include
       targets generating shared resources that are expected to be bundled in
       the UI, e.g. //ui/webui/resources/js:build_ts.
@@ -286,13 +286,13 @@ external_paths: Mappings between absolute URLs and paths where files imported
 
 #### **Example**
 ```
-import("//ui/webui/resources/tools/optimize_webui.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
 import ("//chrome/common/features.gni")
 
 # optimize_webui should generally only be called when the optimize_webui
 # feature flag is enabled.
 if (optimize_webui) {
-  optimize_webui("build") {
+  bundle_js("build") {
     host = "mywebui"
     js_module_in_files = [ "my_webui.js" ]  # will output my_webui.rollup.js
     input = rebase_path("$target_gen_dir/tsc", root_build_dir)
@@ -315,8 +315,8 @@ if (optimize_webui) {
 ```
 This rule is used to minify Javascript files to reduce build size.
 Also generates a manifest file to |target_gen_dir| named
-minify_js_manifest.json. Note that this should not be used alongside
-optimize_webui, which minifies files in addition to bundling them.
+minify_js_manifest.json. This can be used alongside bundle_js(), if
+bundling and minifying is desired.
 ```
 
 #### **Arguments**
