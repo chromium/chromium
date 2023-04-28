@@ -384,14 +384,6 @@ void ExtendedDragSource::OnDraggedWindowVisibilityChanged(bool visible) {
       drag_source_window_ ? drag_source_window_.get() : toplevel);
   toplevel->SetBoundsInScreen(toplevel_bounds, display);
 
-  if (WMHelper::GetInstance()->InTabletMode()) {
-    // The bounds that is stored in ash::kRestoreBoundsOverrideKey will be used
-    // by DragDetails to calculate the detached window bounds during dragging
-    // when detaching in tablet mode to ensure the detached window is correctly
-    // placed under the pointer/finger.
-    toplevel->SetProperty(ash::kRestoreBoundsOverrideKey, toplevel_bounds);
-  }
-
   DVLOG(1) << "Dragged window mapped. toplevel=" << toplevel
            << " origin=" << screen_location.ToString();
 
