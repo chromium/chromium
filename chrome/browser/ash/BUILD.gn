@@ -6448,6 +6448,19 @@ fuzzer_test("zeroconf_printer_detector_fuzzer") {
   ]
 }
 
+fuzzer_test("create_fnmatch_query_fuzzer") {
+  sources = [
+    "extensions/file_manager/create_fnmatch_query_fuzzer.cc",
+    "extensions/file_manager/search_by_pattern.cc",
+    "extensions/file_manager/search_by_pattern.h",
+    "fileapi/recent_source.h",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+  ]
+}
+
 if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("policy_fuzzer") {
     sources = [ "policy/fuzzer/policy_fuzzer.cc" ]
