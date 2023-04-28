@@ -21298,13 +21298,33 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "performance_tuning.high_efficiency_mode.state": {
+            "location": "local_state",
+            "default_value": 0
+          }
+        }
+      },
+      {
         "policies": {
           "HighEfficiencyModeEnabled": true
         },
         "prefs": {
-          "performance_tuning.high_efficiency_mode.enabled": {
+          "performance_tuning.high_efficiency_mode.state": {
             "location": "local_state",
-            "value": true
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "HighEfficiencyModeEnabled": false
+        },
+        "prefs": {
+          "performance_tuning.high_efficiency_mode.state": {
+            "location": "local_state",
+            "value": 0
           }
         }
       }

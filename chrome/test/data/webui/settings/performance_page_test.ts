@@ -6,7 +6,7 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
-import {HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsPerformancePageElement, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/settings.js';
+import {HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeExceptionListAction, HighEfficiencyModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsPerformancePageElement, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -40,9 +40,9 @@ suite('PerformancePage', function() {
     performancePage.set('prefs', {
       performance_tuning: {
         high_efficiency_mode: {
-          enabled: {
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: false,
+          state: {
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: HighEfficiencyModeState.DISABLED,
           },
         },
         tab_discarding: {
@@ -66,32 +66,31 @@ suite('PerformancePage', function() {
   });
 
   test('testHighEfficiencyModeEnabled', function() {
-    performancePage.setPrefValue(HIGH_EFFICIENCY_MODE_PREF, true);
-    assertTrue(
-        performancePage.$.toggleButton.checked,
-        'toggle should be checked when pref is true');
+    performancePage.setPrefValue(
+        HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeState.ENABLED_ON_TIMER);
+    assertTrue(performancePage.$.toggleButton.checked);
   });
 
   test('testHighEfficiencyModeDisabled', function() {
-    performancePage.setPrefValue(HIGH_EFFICIENCY_MODE_PREF, false);
-    assertFalse(
-        performancePage.$.toggleButton.checked,
-        'toggle should not be checked when pref is false');
+    performancePage.setPrefValue(
+        HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeState.DISABLED);
+    assertFalse(performancePage.$.toggleButton.checked);
   });
 
   test('testHighEfficiencyModeMetrics', async function() {
-    performancePage.setPrefValue(HIGH_EFFICIENCY_MODE_PREF, false);
+    performancePage.setPrefValue(
+        HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeState.DISABLED);
 
     performancePage.$.toggleButton.click();
-    let enabled = await performanceMetricsProxy.whenCalled(
+    let state = await performanceMetricsProxy.whenCalled(
         'recordHighEfficiencyModeChanged');
-    assertTrue(enabled);
+    assertEquals(state, HighEfficiencyModeState.ENABLED_ON_TIMER);
 
     performanceMetricsProxy.reset();
     performancePage.$.toggleButton.click();
-    enabled = await performanceMetricsProxy.whenCalled(
+    state = await performanceMetricsProxy.whenCalled(
         'recordHighEfficiencyModeChanged');
-    assertFalse(enabled);
+    assertEquals(state, HighEfficiencyModeState.DISABLED);
   });
 
   function assertExceptionListEquals(rules: string[], message?: string) {

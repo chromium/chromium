@@ -15,6 +15,9 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
+using performance_manager::user_tuning::prefs::HighEfficiencyModeState;
+using performance_manager::user_tuning::prefs::kHighEfficiencyModeState;
+
 namespace performance_manager {
 
 namespace {
@@ -81,7 +84,7 @@ void MetricsProvider::Initialize() {
 
   pref_change_registrar_.Init(local_state_);
   pref_change_registrar_.Add(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
+      kHighEfficiencyModeState,
       base::BindRepeating(&MetricsProvider::OnTuningModesChanged,
                           base::Unretained(this)));
   performance_manager::user_tuning::UserPerformanceTuningManager::GetInstance()
@@ -171,8 +174,9 @@ MetricsProvider::EfficiencyMode MetricsProvider::ComputeCurrentMode() const {
   // UserPerformanceTuningManager is destroyed. Do not access UPTM directly from
   // here.
 
-  bool high_efficiency_enabled = local_state_->GetBoolean(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
+  bool high_efficiency_enabled =
+      local_state_->GetInteger(kHighEfficiencyModeState) !=
+      static_cast<int>(HighEfficiencyModeState::kDisabled);
 
   if (high_efficiency_enabled && battery_saver_enabled_) {
     return EfficiencyMode::kBoth;

@@ -1058,8 +1058,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 
   // Performance settings.
   (*s_allowlist)
-      [performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled] =
-          settings_api::PrefType::PREF_TYPE_BOOLEAN;
+      [performance_manager::user_tuning::prefs::kHighEfficiencyModeState] =
+          settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)
       [performance_manager::user_tuning::prefs::kBatterySaverModeState] =
           settings_api::PrefType::PREF_TYPE_NUMBER;

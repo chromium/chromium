@@ -22,6 +22,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/frame_rate_throttling.h"
 
+using performance_manager::user_tuning::prefs::HighEfficiencyModeState;
+using performance_manager::user_tuning::prefs::kHighEfficiencyModeState;
+
 namespace performance_manager::user_tuning {
 namespace {
 
@@ -193,27 +196,30 @@ bool UserPerformanceTuningManager::IsBatterySaverModeDisabledForSession()
   return battery_saver_mode_disabled_for_session_;
 }
 
-bool UserPerformanceTuningManager::IsHighEfficiencyModeActive() const {
-  return pref_change_registrar_.prefs()->GetBoolean(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
+bool UserPerformanceTuningManager::IsHighEfficiencyModeActive() {
+  HighEfficiencyModeState state = performance_manager::user_tuning::prefs::
+      GetCurrentHighEfficiencyModeState(pref_change_registrar_.prefs());
+  return state != HighEfficiencyModeState::kDisabled;
 }
 
 bool UserPerformanceTuningManager::IsHighEfficiencyModeManaged() const {
-  auto* pref = pref_change_registrar_.prefs()->FindPreference(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
+  auto* pref =
+      pref_change_registrar_.prefs()->FindPreference(kHighEfficiencyModeState);
   return pref->IsManaged();
 }
 
 bool UserPerformanceTuningManager::IsHighEfficiencyModeDefault() const {
-  auto* pref = pref_change_registrar_.prefs()->FindPreference(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
+  auto* pref =
+      pref_change_registrar_.prefs()->FindPreference(kHighEfficiencyModeState);
   return pref->IsDefaultValue();
 }
 
 void UserPerformanceTuningManager::SetHighEfficiencyModeEnabled(bool enabled) {
-  pref_change_registrar_.prefs()->SetBoolean(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
-      enabled);
+  HighEfficiencyModeState state = enabled
+                                      ? HighEfficiencyModeState::kEnabledOnTimer
+                                      : HighEfficiencyModeState::kDisabled;
+  pref_change_registrar_.prefs()->SetInteger(kHighEfficiencyModeState,
+                                             static_cast<int>(state));
 }
 
 bool UserPerformanceTuningManager::IsBatterySaverActive() const {
@@ -317,10 +323,8 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
                                                          std::move(notifier));
   }
 
-  // TODO(crbug.com/1430068): call
-  // performance_manager::user_tuning::prefs::MigrateHighEfficiencyModePref
-  // here in the same patch as the UI and enterprise policy are migrated to
-  // the enum pref.
+  performance_manager::user_tuning::prefs::MigrateHighEfficiencyModePref(
+      local_state);
 
   SetDefaultTimeBeforeDiscardFromSwitch(local_state);
 
@@ -343,7 +347,7 @@ void UserPerformanceTuningManager::Start() {
   OnHighEfficiencyModeTimeBeforeDiscardChanged();
 
   pref_change_registrar_.Add(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
+      kHighEfficiencyModeState,
       base::BindRepeating(
           &UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged,
           base::Unretained(this)));
@@ -377,9 +381,8 @@ void UserPerformanceTuningManager::Start() {
 }
 
 void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
-  bool enabled = pref_change_registrar_.prefs()->GetBoolean(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
-  high_efficiency_mode_delegate_->ToggleHighEfficiencyMode(enabled);
+  high_efficiency_mode_delegate_->ToggleHighEfficiencyMode(
+      IsHighEfficiencyModeActive());
 
   for (auto& obs : observers_) {
     obs.OnHighEfficiencyModeChanged();

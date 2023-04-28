@@ -159,7 +159,7 @@ class UserPerformanceTuningManager
   bool IsBatterySaverModeDisabledForSession() const;
 
   // Returns true if High Efficiency mode is currently enabled.
-  bool IsHighEfficiencyModeActive() const;
+  bool IsHighEfficiencyModeActive();
 
   // Returns true if the prefs underlying High Efficiency Mode are managed by an
   // enterprise policy.

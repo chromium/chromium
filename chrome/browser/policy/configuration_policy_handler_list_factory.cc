@@ -25,6 +25,7 @@
 #include "chrome/browser/net/disk_cache_dir_policy_handler.h"
 #include "chrome/browser/net/explicitly_allowed_network_ports_policy_handler.h"
 #include "chrome/browser/net/secure_dns_policy_handler.h"
+#include "chrome/browser/performance_manager/public/user_tuning/high_efficiency_policy_handler.h"
 #include "chrome/browser/policy/boolean_disabling_policy_handler.h"
 #include "chrome/browser/policy/browsing_history_policy_handler.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -1845,9 +1846,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::STRING },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-  { key::kHighEfficiencyModeEnabled,
-    performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kBatterySaverModeAvailability,
     performance_manager::user_tuning::prefs::kBatterySaverModeState,
     base::Value::Type::INTEGER },
@@ -1970,6 +1968,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<URLBlocklistPolicyHandler>(key::kURLBlocklist));
   // Policies for all platforms - End
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+  handlers->AddHandler(
+      std::make_unique<performance_manager::HighEfficiencyPolicyHandler>());
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(

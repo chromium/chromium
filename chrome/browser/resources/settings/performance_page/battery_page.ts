@@ -45,38 +45,19 @@ export class SettingsBatteryPageElement extends SettingsBatteryPageElementBase {
 
   static get properties() {
     return {
-      /**
-       * Possible values for the
-       * 'prefs.performance_tuning.battery_saver_mode.state' preference. These
-       * values map to
-       * performance_manager::user_tuning::prefs::BatterySaverModeState, and
-       * are written to prefs and metrics, so order should not be changed.
-       */
-      batterySaverModeStatePrefValues: {
+      batterySaverModeStateEnum_: {
         readOnly: true,
         type: Object,
-        value: {
-          disabled: BatterySaverModeState.DISABLED,
-          enabledBelowThreshold: BatterySaverModeState.ENABLED_BELOW_THRESHOLD,
-          enabledOnBattery: BatterySaverModeState.ENABLED_ON_BATTERY,
-          enabled: BatterySaverModeState.ENABLED,
-        },
+        value: BatterySaverModeState,
       },
     };
   }
-
-  batterySaverModeStatePrefValues: {
-    disabled: number,
-    enabledBelowThreshold: number,
-    enabledOnBattery: number,
-    enabled: number,
-  };
 
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 
   private isBatterySaverModeEnabled_(value: number): boolean {
-    return value !== this.batterySaverModeStatePrefValues.disabled;
+    return value !== BatterySaverModeState.DISABLED;
   }
 
   private onChange_() {

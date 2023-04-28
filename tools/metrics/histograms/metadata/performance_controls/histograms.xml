@@ -101,13 +101,13 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
-<histogram name="PerformanceControls.HighEfficiency.SettingsChangeMode"
-    enum="BooleanEnabled" expires_after="2023-09-03">
+<histogram name="PerformanceControls.HighEfficiency.SettingsChangeMode2"
+    enum="HighEfficiencyModeState" expires_after="2023-09-03">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
-    Logs whether the user enabled or disabled the high efficiency mode pref when
-    it is changed through the settings page. This will be used to measure the
+    Logs the state of the high efficiency mode pref when the user makes a change
+    to it through the settings page. This will be used to measure the
     discoverability and usefulness of high efficiency mode.
   </summary>
 </histogram>

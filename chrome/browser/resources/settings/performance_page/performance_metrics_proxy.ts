@@ -27,9 +27,22 @@ export enum HighEfficiencyModeExceptionListAction {
   COUNT = 3,
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// This must be kept in sync with HighEfficiencyModeState in
+// components/performance_manager/public/user_tuning/prefs.h
+export enum HighEfficiencyModeState {
+  DISABLED = 0,
+  ENABLED = 1,
+  ENABLED_ON_TIMER = 2,
+
+  // Must be last.
+  COUNT = 3,
+}
+
 export interface PerformanceMetricsProxy {
   recordBatterySaverModeChanged(state: BatterySaverModeState): void;
-  recordHighEfficiencyModeChanged(enabled: boolean): void;
+  recordHighEfficiencyModeChanged(state: HighEfficiencyModeState): void;
   recordExceptionListAction(action: HighEfficiencyModeExceptionListAction):
       void;
 }
@@ -41,9 +54,10 @@ export class PerformanceMetricsProxyImpl implements PerformanceMetricsProxy {
         BatterySaverModeState.COUNT);
   }
 
-  recordHighEfficiencyModeChanged(enabled: boolean): void {
-    chrome.metricsPrivate.recordBoolean(
-        'PerformanceControls.HighEfficiency.SettingsChangeMode', enabled);
+  recordHighEfficiencyModeChanged(state: HighEfficiencyModeState): void {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PerformanceControls.HighEfficiency.SettingsChangeMode2', state,
+        HighEfficiencyModeState.COUNT);
   }
 
   recordExceptionListAction(action: HighEfficiencyModeExceptionListAction) {

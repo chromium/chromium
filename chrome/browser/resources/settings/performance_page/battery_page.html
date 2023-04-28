@@ -8,8 +8,8 @@
     label="$i18n{batterySaverModeLabel}"
     sub-label="$i18n{batterySaverModeDescription}"
     learn-more-url="$i18n{batterySaverLearnMoreUrl}"
-    numeric-unchecked-value="[[batterySaverModeStatePrefValues.disabled]]"
-    numeric-checked-value="[[batterySaverModeStatePrefValues.enabledBelowThreshold]]"
+    numeric-unchecked-value="[[batterySaverModeStateEnum_.DISABLED]]"
+    numeric-checked-value="[[batterySaverModeStateEnum_.ENABLED_BELOW_THRESHOLD]]"
     >
 </settings-toggle-button>
 <iron-collapse id="radioGroupCollapse"
@@ -21,12 +21,12 @@
         group-aria-label="$i18n{batterySaverModeRadioGroupAriaLabel}">
       <controlled-radio-button
           label="$i18n{batterySaverModeEnabledBelowThresholdLabel}"
-          name="[[batterySaverModeStatePrefValues.enabledBelowThreshold]]"
+          name="[[batterySaverModeStateEnum_.ENABLED_BELOW_THRESHOLD]]"
           pref="[[prefs.performance_tuning.battery_saver_mode.state]]">
       </controlled-radio-button>
       <controlled-radio-button id="enabledOnBatteryButton"
           label="$i18n{batterySaverModeEnabledOnBatteryLabel}"
-          name="[[batterySaverModeStatePrefValues.enabledOnBattery]]"
+          name="[[batterySaverModeStateEnum_.ENABLED_ON_BATTERY]]"
           pref="[[prefs.performance_tuning.battery_saver_mode.state]]">
       </controlled-radio-button>
     </settings-radio-group>

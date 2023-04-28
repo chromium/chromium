@@ -43,9 +43,12 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
   PrefService* local_state() { return &local_state_; }
 
   void SetHighEfficiencyEnabled(bool enabled) {
-    local_state()->SetBoolean(
-        performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
-        enabled);
+    local_state()->SetInteger(
+        performance_manager::user_tuning::prefs::kHighEfficiencyModeState,
+        static_cast<int>(enabled ? performance_manager::user_tuning::prefs::
+                                       HighEfficiencyModeState::kEnabledOnTimer
+                                 : performance_manager::user_tuning::prefs::
+                                       HighEfficiencyModeState::kDisabled));
   }
 
   void SetBatterySaverEnabled(bool enabled) {

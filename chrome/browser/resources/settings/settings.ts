@@ -67,7 +67,7 @@ export {SettingsPeoplePageElement} from './people_page/people_page.js';
 export {MAX_SIGNIN_PROMO_IMPRESSION, SettingsSyncAccountControlElement} from './people_page/sync_account_control.js';
 export {BATTERY_SAVER_MODE_PREF, SettingsBatteryPageElement} from './performance_page/battery_page.js';
 export {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performance_page/performance_browser_proxy.js';
-export {BatterySaverModeState, HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';
+export {BatterySaverModeState, HighEfficiencyModeExceptionListAction, HighEfficiencyModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';
 export {HIGH_EFFICIENCY_MODE_PREF, SettingsPerformancePageElement} from './performance_page/performance_page.js';
 export {MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement} from './performance_page/tab_discard_exception_dialog.js';
 export {TabDiscardExceptionEntryElement} from './performance_page/tab_discard_exception_entry.js';

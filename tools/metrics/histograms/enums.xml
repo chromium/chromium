@@ -49424,6 +49424,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Remove"/>
 </enum>
 
+<enum name="HighEfficiencyModeState">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Enabled on timer"/>
+</enum>
+
 <enum name="HintCacheStoreEntryType">
   <summary>
     Possible store entry types contained within the HintCacheStore.

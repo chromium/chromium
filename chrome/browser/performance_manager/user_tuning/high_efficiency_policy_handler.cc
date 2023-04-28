@@ -8,6 +8,10 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 
+using performance_manager::user_tuning::prefs::kHighEfficiencyModeState;
+using HighEfficiencyModeState =
+    performance_manager::user_tuning::prefs::HighEfficiencyModeState;
+
 namespace performance_manager {
 
 HighEfficiencyPolicyHandler::HighEfficiencyPolicyHandler()
@@ -25,16 +29,12 @@ void HighEfficiencyPolicyHandler::ApplyPolicySettings(
     return;
   }
 
-  int equivalent_int_value =
-      value->GetBool()
-          ? static_cast<int>(performance_manager::user_tuning::prefs::
-                                 HighEfficiencyModeState::kEnabled)
-          : static_cast<int>(performance_manager::user_tuning::prefs::
-                                 HighEfficiencyModeState::kDisabled);
+  HighEfficiencyModeState state = value->GetBool()
+                                      ? HighEfficiencyModeState::kEnabledOnTimer
+                                      : HighEfficiencyModeState::kDisabled;
 
-  prefs->SetValue(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeState,
-      base::Value(equivalent_int_value));
+  prefs->SetValue(kHighEfficiencyModeState,
+                  base::Value(static_cast<int>(state)));
 }
 
 }  // namespace performance_manager

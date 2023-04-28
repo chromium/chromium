@@ -44,7 +44,8 @@ TEST_F(HighEfficiencyPolicyHandlerTest, PolicySetToFalseSetsPrefToDisabled) {
                                  HighEfficiencyModeState::kDisabled));
 }
 
-TEST_F(HighEfficiencyPolicyHandlerTest, PolicySetToTrueSetsPrefToEnabled) {
+TEST_F(HighEfficiencyPolicyHandlerTest,
+       PolicySetToTrueSetsPrefToEnabledOnTimer) {
   const base::Value* value_ptr = nullptr;
   policy::PolicyMap policy;
   policy.Set(policy::key::kHighEfficiencyModeEnabled,
@@ -57,7 +58,7 @@ TEST_F(HighEfficiencyPolicyHandlerTest, PolicySetToTrueSetsPrefToEnabled) {
       &value_ptr));
   EXPECT_EQ(value_ptr->GetInt(),
             static_cast<int>(performance_manager::user_tuning::prefs::
-                                 HighEfficiencyModeState::kEnabled));
+                                 HighEfficiencyModeState::kEnabledOnTimer));
 }
 
 }  // namespace performance_manager
