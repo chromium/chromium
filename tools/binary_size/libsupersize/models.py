@@ -37,6 +37,7 @@ METADATA_ELF_RELOCATIONS_COUNT = 'elf_relocations_count'
 METADATA_PROGUARD_MAPPING_FILENAME = 'proguard_mapping_file_name'
 
 # New sections should also be added to the SuperSize UI.
+SECTION_ARSC = '.arsc'
 SECTION_BSS = '.bss'
 SECTION_BSS_REL_RO = '.bss.rel.ro'
 SECTION_DATA = '.data'
@@ -84,6 +85,7 @@ PAK_SECTIONS = (
 CONTAINER_MULTIPLE = '*'
 
 SECTION_NAME_TO_SECTION = {
+    SECTION_ARSC: 'a',
     SECTION_BSS: 'b',
     SECTION_BSS_REL_RO: 'b',
     SECTION_DATA: 'd',
@@ -101,6 +103,7 @@ SECTION_NAME_TO_SECTION = {
 }
 
 SECTION_TO_SECTION_NAME = collections.OrderedDict((
+    ('a', SECTION_ARSC),
     ('t', SECTION_TEXT),
     ('r', SECTION_RODATA),
     ('R', SECTION_DATA_REL_RO),
@@ -518,6 +521,9 @@ class BaseSymbol:
     if flags & FLAG_UNCOMPRESSED:
       parts.append('uncompressed')
     return '{%s}' % ','.join(parts)
+
+  def IsArsc(self):
+    return self.section_name == SECTION_ARSC
 
   def IsBss(self):
     return self.section_name in BSS_SECTIONS

@@ -43,6 +43,11 @@ Other section sizes:
     .rel.plt: 2.75kb (2816 bytes) (counted in .other)
     .shstrtab: 436 bytes (436 bytes) (counted in .other)
 
+Section .arsc: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
 Section .text: has 100.0% of 35982248 bytes accounted for from 23 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 13808 bytes (0.0%)
 * 16 have source paths. Accounts for 73986 bytes (0.2%).

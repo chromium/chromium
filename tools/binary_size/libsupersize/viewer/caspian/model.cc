@@ -352,6 +352,8 @@ SectionId BaseSizeInfo::ShortSectionName(const char* section_name) {
       ret = SectionId::kPakNontranslated;
     } else if (!strcmp(section_name, ".pak.translations")) {
       ret = SectionId::kPakTranslations;
+    } else if (!strcmp(section_name, ".arsc")) {
+      ret = SectionId::kArsc;
     } else {
       std::cerr << "Attributing unrecognized section name to .other: "
                 << section_name << std::endl;
