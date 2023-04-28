@@ -3486,7 +3486,9 @@ const FeatureEntry::FeatureParam
     kPrivacySandboxSettings4ForceShowRestrictedNoticeForTesting[] = {
         {privacy_sandbox::
              kPrivacySandboxSettings4ForceShowNoticeRestrictedForTestingName,
-         "true"}};
+         "true"},
+        {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName, "true"},
+        {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}};
 const FeatureEntry::FeatureParam
     kPrivacySandboxSettings4ForceRestrictedUserForTesting[] = {
         {privacy_sandbox::
