@@ -36,6 +36,7 @@ test("services_unittests") {
   if (use_blink) {
     deps += [
       "//services/audio:tests",
+      "//services/device:tests",
       "//services/image_annotation:tests",
       "//services/image_annotation/public/cpp:tests",
       "//services/media_session:tests",
@@ -54,7 +55,6 @@ test("services_unittests") {
   if (!is_ios) {
     deps += [
       "//services/data_decoder:tests",
-      "//services/device:tests",
       "//services/proxy_resolver:tests",
       "//services/tracing:tests",
     ]

@@ -184,7 +184,7 @@ void GeolocationProviderImpl::OnClientsChanged() {
   } else {
     if (!IsRunning()) {
       base::Thread::Options options;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
       options.message_pump_type = base::MessagePumpType::NS_RUNLOOP;
 #endif
       StartWithOptions(std::move(options));

@@ -23,7 +23,7 @@ class FakeGeolocationSource : public SystemGeolocationSource {
     permission_callback_.Run(status_);
   }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   void RegisterPositionUpdateCallback(
       PositionUpdateCallback callback) override {
     position_callback_ = callback;
@@ -37,17 +37,17 @@ class FakeGeolocationSource : public SystemGeolocationSource {
   void FakePositionUpdated(mojom::GeopositionResultPtr result) {
     position_callback_.Run(std::move(result));
   }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
  private:
   LocationSystemPermissionStatus status_ =
       LocationSystemPermissionStatus::kDenied;
   PermissionUpdateCallback permission_callback_;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   bool watching_position_ = false;
   PositionUpdateCallback position_callback_;
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 };
 }  // namespace
 
@@ -60,7 +60,7 @@ void FakeGeolocationManager::SetSystemPermission(
       .SetSystemPermission(status);
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 bool FakeGeolocationManager::watching_position() {
   return static_cast<FakeGeolocationSource&>(SystemGeolocationSourceForTest())
       .watching_position();
@@ -71,6 +71,6 @@ void FakeGeolocationManager::FakePositionUpdated(
   return static_cast<FakeGeolocationSource&>(SystemGeolocationSourceForTest())
       .FakePositionUpdated(std::move(position));
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace device

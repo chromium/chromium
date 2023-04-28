@@ -76,7 +76,7 @@ source_set("test_support") {
     "//url",
   ]
 
-  if (is_mac || is_chromeos) {
+  if (is_apple || is_chromeos) {
     sources += [
       "test/fake_geolocation_manager.cc",
       "test/fake_geolocation_manager.h",
