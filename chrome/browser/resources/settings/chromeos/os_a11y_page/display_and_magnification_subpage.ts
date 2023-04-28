@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * 'settings-display-and-magnification-page' is the accessibility settings
+ * 'settings-display-and-magnification-subpage' is the accessibility settings
  * subpage for display and magnification accessibility settings.
  */
 
@@ -29,16 +29,16 @@ import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
-import {getTemplate} from './display_and_magnification_page.html.js';
+import {getTemplate} from './display_and_magnification_subpage.html.js';
 
-const SettingsDisplayAndMagnificationElementBase =
+const SettingsDisplayAndMagnificationSubpageElementBase =
     DeepLinkingMixin(RouteOriginMixin(
         PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-export class SettingsDisplayAndMagnificationElement extends
-    SettingsDisplayAndMagnificationElementBase {
+export class SettingsDisplayAndMagnificationSubpageElement extends
+    SettingsDisplayAndMagnificationSubpageElementBase {
   static get is() {
-    return 'settings-display-and-magnification-page';
+    return 'settings-display-and-magnification-subpage' as const;
   }
 
   static get template() {
@@ -190,11 +190,11 @@ export class SettingsDisplayAndMagnificationElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-display-and-magnification-page':
-        SettingsDisplayAndMagnificationElement;
+    [SettingsDisplayAndMagnificationSubpageElement.is]:
+        SettingsDisplayAndMagnificationSubpageElement;
   }
 }
 
 customElements.define(
-    SettingsDisplayAndMagnificationElement.is,
-    SettingsDisplayAndMagnificationElement);
+    SettingsDisplayAndMagnificationSubpageElement.is,
+    SettingsDisplayAndMagnificationSubpageElement);

@@ -26,7 +26,7 @@ import './internet_page/internet_known_networks_subpage.js';
 import './internet_page/internet_subpage.js';
 import './internet_page/passpoint_subpage.js';
 import './os_a11y_page/manage_a11y_subpage.js';
-import './os_a11y_page/display_and_magnification_page.js';
+import './os_a11y_page/display_and_magnification_subpage.js';
 import './os_a11y_page/keyboard_and_text_input_page.js';
 import './os_a11y_page/cursor_and_touchpad_page.js';
 import './os_a11y_page/chromevox_subpage.js';
@@ -125,7 +125,7 @@ export {BluetoothBrailleDisplayUiElement} from './os_a11y_page/bluetooth_braille
 export {ChangeDictationLocaleDialog, DictationLocaleOption} from './os_a11y_page/change_dictation_locale_dialog.js';
 export {SettingsChromeVoxSubpageElement} from './os_a11y_page/chromevox_subpage.js';
 export {SettingsCursorAndTouchpadPageElement} from './os_a11y_page/cursor_and_touchpad_page.js';
-export {SettingsDisplayAndMagnificationElement} from './os_a11y_page/display_and_magnification_page.js';
+export {SettingsDisplayAndMagnificationSubpageElement} from './os_a11y_page/display_and_magnification_subpage.js';
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
 export {SettingsManageA11ySubpageElement} from './os_a11y_page/manage_a11y_subpage.js';
 export {SettingsTextToSpeechSubpageElement} from './os_a11y_page/text_to_speech_subpage.js';

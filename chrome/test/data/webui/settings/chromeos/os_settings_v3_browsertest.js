@@ -449,8 +449,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'os_a11y_page/change_dictation_locale_dialog_test.js',
  ],
  [
-   'OsA11yPageDisplayAndMagnificationPage',
-   'os_a11y_page/display_and_magnification_page_test.js',
+   'OsA11yPageDisplayAndMagnificationSubpage',
+   'os_a11y_page/display_and_magnification_subpage_test.js',
    {enabled: ['features::kExperimentalAccessibilityColorEnhancementSettings']},
  ],
  [

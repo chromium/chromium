@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {SettingsDisplayAndMagnificationElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {SettingsDisplayAndMagnificationSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {CrSettingsPrefs, Router, routes, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -14,8 +14,8 @@ import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from '
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-suite('settings-display-and-magnification-page', () => {
-  let page: SettingsDisplayAndMagnificationElement;
+suite('<settings-display-and-magnification-subpage>', () => {
+  let page: SettingsDisplayAndMagnificationSubpageElement;
   let prefElement: SettingsPrefsElement;
 
   async function initPage() {
@@ -23,7 +23,7 @@ suite('settings-display-and-magnification-page', () => {
     document.body.appendChild(prefElement);
 
     await CrSettingsPrefs.initialized;
-    page = document.createElement('settings-display-and-magnification-page');
+    page = document.createElement('settings-display-and-magnification-subpage');
     page.prefs = prefElement.prefs;
     document.body.appendChild(page);
     flush();
