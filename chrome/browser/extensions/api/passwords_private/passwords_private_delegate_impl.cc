@@ -78,7 +78,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils_chromeos.h"
-#include "chrome/browser/password_manager/password_manager_util_chromeos.h"
 #endif
 
 namespace {
