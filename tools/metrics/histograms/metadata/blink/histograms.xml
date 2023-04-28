@@ -3597,22 +3597,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold"
+<histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2"
     enum="NQEEffectiveConnectionType" expires_after="2023-09-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>rajendrant@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
   <summary>
     Records the effective connection type whenever a lazily loaded image that
     was initially above the fold becomes visible before it finishes loading.
   </summary>
 </histogram>
 
-<histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold"
+<histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2"
     enum="NQEEffectiveConnectionType" expires_after="2023-09-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>rajendrant@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
   <summary>
     Records the effective connection type whenever a lazily loaded image that
     was initially below the fold becomes visible before it finishes loading.
@@ -3620,29 +3618,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold{BlinkVisibleLoadTimeSuffixes}"
-    units="ms" expires_after="2022-01-02">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>bengr@chromium.org</owner>
+    name="Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2{BlinkVisibleLoadTimeSuffixes}"
+    units="ms" expires_after="2023-09-01">
+  <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
   <summary>
-    Milliseconds spent waiting for an above the fold image element to load. 0ms
-    is recorded if the image is already loaded by the time user scrolls to it.
-    EffectiveConnectionType (2G, 3G, etc) is recorded as suffix to this
-    histogram. {BlinkVisibleLoadTimeSuffixes}
+    Milliseconds spent waiting for an above-the-fold lazily loaded image to
+    load. 0ms is recorded if the image is already loaded by the time user
+    scrolls to it. EffectiveConnectionType (2G, 3G, etc) is recorded as suffix
+    to this histogram. {BlinkVisibleLoadTimeSuffixes}
   </summary>
   <token key="BlinkVisibleLoadTimeSuffixes"
       variants="BlinkVisibleLoadTimeSuffixes"/>
 </histogram>
 
 <histogram
-    name="Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold{BlinkVisibleLoadTimeSuffixes}"
-    units="ms" expires_after="2022-01-02">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>bengr@chromium.org</owner>
+    name="Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2{BlinkVisibleLoadTimeSuffixes}"
+    units="ms" expires_after="2023-09-01">
+  <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
   <summary>
-    Milliseconds spent waiting for a below the fold image element to load. 0ms
-    is recorded if the image is already loaded by the time user scrolls to it.
-    EffectiveConnectionType (2G, 3G, etc) is recorded as suffix to this
+    Milliseconds spent waiting for a below-the-fold lazily loaded image to load.
+    0ms is recorded if the image is already loaded by the time user scrolls to
+    it. EffectiveConnectionType (2G, 3G, etc) is recorded as suffix to this
     histogram. {BlinkVisibleLoadTimeSuffixes}
   </summary>
   <token key="BlinkVisibleLoadTimeSuffixes"

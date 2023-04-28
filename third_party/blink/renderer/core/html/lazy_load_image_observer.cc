@@ -92,11 +92,11 @@ void RecordVisibleLoadTimeForImage(
     case WebEffectiveConnectionType::kTypeSlow2G:
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.Slow2G",
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.Slow2G",
             visible_load_delay);
       } else {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.Slow2G",
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.Slow2G",
             visible_load_delay);
       }
       break;
@@ -104,11 +104,11 @@ void RecordVisibleLoadTimeForImage(
     case WebEffectiveConnectionType::kType2G:
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.2G",
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.2G",
             visible_load_delay);
       } else {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.2G",
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.2G",
             visible_load_delay);
       }
       break;
@@ -116,11 +116,11 @@ void RecordVisibleLoadTimeForImage(
     case WebEffectiveConnectionType::kType3G:
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.3G",
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.3G",
             visible_load_delay);
       } else {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.3G",
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.3G",
             visible_load_delay);
       }
       break;
@@ -128,11 +128,11 @@ void RecordVisibleLoadTimeForImage(
     case WebEffectiveConnectionType::kType4G:
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold.4G",
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G",
             visible_load_delay);
       } else {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold.4G",
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G",
             visible_load_delay);
       }
       break;
@@ -309,11 +309,11 @@ void LazyLoadImageObserver::OnVisibilityChanged(
       // WebEffectiveConnectionType.
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold",
+            "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2",
             GetNetworkStateNotifier().EffectiveType());
       } else {
         UMA_HISTOGRAM_ENUMERATION(
-            "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold",
+            "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2",
             GetNetworkStateNotifier().EffectiveType());
       }
     } else {

@@ -155,21 +155,22 @@ LazyImageHelper::DetermineEligibilityAndTrackVisibilityMetrics(
     return LazyImageHelper::Eligibility::kDisabled;
   }
 
-  StartMonitoringVisibility(html_image);
   return LazyImageHelper::Eligibility::kDisabled;
 }
 
 void LazyImageHelper::RecordMetricsOnLoadFinished(
     HTMLImageElement* image_element) {
-  if (image_element->is_lazy_loaded()) {
-    if (ImageResourceContent* content = image_element->CachedImage()) {
-      int64_t response_size = content->GetResponse().EncodedDataLength();
-      IMAGE_BYTES_HISTOGRAM("Blink.LazyLoadedImage.Size", response_size);
-      if (Document* document = GetRootDocumentOrNull(image_element)) {
-        if (!document->LoadEventFinished()) {
-          IMAGE_BYTES_HISTOGRAM(
-              "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", response_size);
-        }
+  if (!image_element->is_lazy_loaded()) {
+    return;
+  }
+
+  if (ImageResourceContent* content = image_element->CachedImage()) {
+    int64_t response_size = content->GetResponse().EncodedDataLength();
+    IMAGE_BYTES_HISTOGRAM("Blink.LazyLoadedImage.Size", response_size);
+    if (Document* document = GetRootDocumentOrNull(image_element)) {
+      if (!document->LoadEventFinished()) {
+        IMAGE_BYTES_HISTOGRAM("Blink.LazyLoadedImageBeforeDocumentOnLoad.Size",
+                              response_size);
       }
     }
   }
