@@ -335,27 +335,20 @@ void ExtensionsMenuModel::Build(Browser* browser) {
 // AutofillSubMenuModel
 
 AutofillSubMenuModel::AutofillSubMenuModel(
-    ui::SimpleMenuModel::Delegate* delegate,
-    AppMenuIconController* app_menu_icon_controller)
+    ui::SimpleMenuModel::Delegate* delegate)
     : SimpleMenuModel(delegate) {
   AddItemWithStringIdAndIcon(
       IDC_SHOW_PASSWORD_MANAGER, IDS_PASSWORD_MANAGER_SUBMENU_OPTION,
-      ui::ImageModel::FromVectorIcon(
-          kKeyChromeRefreshIcon,
-          app_menu_icon_controller->GetIconColor(absl::nullopt),
-          kDefaultIconSize));
+      ui::ImageModel::FromVectorIcon(kKeyChromeRefreshIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
   AddItemWithStringIdAndIcon(
       IDC_SHOW_PAYMENT_METHODS, IDS_PAYMENT_METHOD_SUBMENU_OPTION,
-      ui::ImageModel::FromVectorIcon(
-          kCreditCardChromeRefreshIcon,
-          app_menu_icon_controller->GetIconColor(absl::nullopt),
-          kDefaultIconSize));
+      ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
   AddItemWithStringIdAndIcon(
       IDC_SHOW_ADDRESSES, IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-      ui::ImageModel::FromVectorIcon(
-          kLocationOnChromeRefreshIcon,
-          app_menu_icon_controller->GetIconColor(absl::nullopt),
-          kDefaultIconSize));
+      ui::ImageModel::FromVectorIcon(kLocationOnChromeRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
 }
 
 AutofillSubMenuModel::~AutofillSubMenuModel() = default;
@@ -364,15 +357,8 @@ AutofillSubMenuModel::~AutofillSubMenuModel() = default;
 // FindAndEditSubMenuModel
 
 FindAndEditSubMenuModel::FindAndEditSubMenuModel(
-    ui::SimpleMenuModel::Delegate* delegate,
-    Browser* browser)
+    ui::SimpleMenuModel::Delegate* delegate)
     : SimpleMenuModel(delegate) {
-  Build(browser);
-}
-
-FindAndEditSubMenuModel::~FindAndEditSubMenuModel() = default;
-
-void FindAndEditSubMenuModel::Build(Browser* browser) {
   AddItemWithStringIdAndIcon(
       IDC_FIND, IDS_FIND,
       ui::ImageModel::FromVectorIcon(kSearchMenuIcon, ui::kColorMenuIcon,
@@ -391,6 +377,8 @@ void FindAndEditSubMenuModel::Build(Browser* browser) {
       ui::ImageModel::FromVectorIcon(kPasteMenuIcon, ui::kColorMenuIcon,
                                      kDefaultIconSize));
 }
+
+FindAndEditSubMenuModel::~FindAndEditSubMenuModel() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // AppMenuModel
@@ -1041,8 +1029,7 @@ void AppMenuModel::Build() {
       features::IsChromeRefresh2023() &&
       !base::FeatureList::IsEnabled(
           password_manager::features::kPasswordManagerRedesign)) {
-    sub_menus_.push_back(std::make_unique<AutofillSubMenuModel>(
-        this, app_menu_icon_controller_));
+    sub_menus_.push_back(std::make_unique<AutofillSubMenuModel>(this));
     AddSubMenuWithStringId(IDC_AUTOFILL_MENU, IDS_AUTOFILL_MENU,
                            sub_menus_.back().get());
   }
@@ -1118,8 +1105,7 @@ void AppMenuModel::Build() {
   }
 
   if (features::IsChromeRefresh2023()) {
-    sub_menus_.push_back(
-        std::make_unique<FindAndEditSubMenuModel>(this, browser_));
+    sub_menus_.push_back(std::make_unique<FindAndEditSubMenuModel>(this));
     AddSubMenuWithStringId(IDC_FIND_AND_EDIT_MENU, IDS_FIND_AND_EDIT_MENU,
                            sub_menus_.back().get());
   } else {

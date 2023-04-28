@@ -141,8 +141,7 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
 
 class AutofillSubMenuModel : public ui::SimpleMenuModel {
  public:
-  AutofillSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                       AppMenuIconController* app_menu_icon_controller);
+  explicit AutofillSubMenuModel(ui::SimpleMenuModel::Delegate* delegate);
 
   AutofillSubMenuModel(const AutofillSubMenuModel&) = delete;
   AutofillSubMenuModel& operator=(const AutofillSubMenuModel&) = delete;
@@ -152,16 +151,12 @@ class AutofillSubMenuModel : public ui::SimpleMenuModel {
 
 class FindAndEditSubMenuModel : public ui::SimpleMenuModel {
  public:
-  FindAndEditSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                          Browser* browser);
+  explicit FindAndEditSubMenuModel(ui::SimpleMenuModel::Delegate* delegate);
 
   FindAndEditSubMenuModel(const FindAndEditSubMenuModel&) = delete;
   FindAndEditSubMenuModel& operator=(const FindAndEditSubMenuModel&) = delete;
 
   ~FindAndEditSubMenuModel() override;
-
- private:
-  void Build(Browser* browser);
 };
 
 // A menu model that builds the contents of the app menu.
