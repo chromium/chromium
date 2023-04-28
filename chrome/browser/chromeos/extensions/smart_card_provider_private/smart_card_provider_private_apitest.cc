@@ -6,12 +6,17 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/extensions/smart_card_provider_private/smart_card_provider_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/common/extensions/api/smart_card_provider_private.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+
+namespace scard_api = extensions::api::smart_card_provider_private;
 
 using device::mojom::SmartCardError;
 using device::mojom::SmartCardResult;
@@ -152,6 +157,45 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
 
  private:
   raw_ptr<const Extension, DanglingUntriaged> extension_;
+};
+
+class EventObserver : public EventRouter::TestObserver {
+ public:
+  size_t GetEventCount(const std::string& name) const {
+    return event_count_.contains(name) ? event_count_.at(name) : 0;
+  }
+  void WaitForEventCount(const std::string& name, size_t count) {
+    if (GetEventCount(name) >= count) {
+      return;
+    }
+    expected_event_name_ = name;
+    expected_event_count_ = count;
+    run_loop_.Run();
+  }
+
+ private:
+  void OnWillDispatchEvent(const Event& event) override {
+    event_count_[event.event_name]++;
+    if (expected_event_name_ == event.event_name &&
+        GetEventCount(expected_event_name_) >= expected_event_count_) {
+      run_loop_.Quit();
+    }
+  }
+  void OnDidDispatchEventToProcess(const Event& event) override {}
+
+  std::map<std::string, size_t> event_count_;
+  std::string expected_event_name_;
+  size_t expected_event_count_;
+  base::RunLoop run_loop_;
+};
+
+class DisconnectObserver {
+ public:
+  base::RepeatingClosure GetClosure() { return run_loop_.QuitClosure(); }
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
 };
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
@@ -828,6 +872,252 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, CancelResponseTimeout) {
   device::mojom::SmartCardResultPtr result = result_future.Take();
   ASSERT_TRUE(result->is_error());
   EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
+}
+
+// A mojo::SmartCardContext receives a call while there's still another call
+// waiting for an answer from the provider.
+// The implementation should wait until the provider answers that pending
+// request before it forwards him the next one.
+//
+// In this case, it's a ListReaders() followed by a Connect().
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, ContextBusy) {
+  constexpr char kBackgroundJs[] =
+      R"(
+      let establishedContext = 0;
+
+      let letListReadersProceed;
+      let listReadersCanProceed = new Promise(function(resolve) {
+        letListReadersProceed = resolve;
+      });
+
+
+      chrome.smartCardProviderPrivate.onEstablishContextRequested.addListener(
+          function (requestId) {
+        // Ensure we only give one context.
+        if (establishedContext !== 0) {
+          chrome.smartCardProviderPrivate.reportEstablishContextResult(
+              requestId, establishedContext, "NO_MEMORY");
+          return;
+        }
+        establishedContext = 123;
+        chrome.smartCardProviderPrivate.reportEstablishContextResult(
+            requestId, establishedContext, "SUCCESS");
+      });
+
+      chrome.smartCardProviderPrivate.onListReadersRequested.addListener(
+          async function(requestId, scardContext){
+        // Verify that the context is valid.
+        if (establishedContext === 0 || scardContext !== establishedContext) {
+          chrome.smartCardProviderPrivate.reportListReadersResult(requestId,
+              readerStates, "INVALID_PARAMETER");
+          return;
+        }
+
+        await listReadersCanProceed;
+
+        let readers = ["foo", "bar"];
+
+        chrome.smartCardProviderPrivate.reportListReadersResult(requestId,
+            readers, "SUCCESS");
+      });
+
+      chrome.smartCardProviderPrivate.onConnectRequested.addListener(
+          function (requestId, scardContext, reader, shareMode,
+            preferredProtocols) {
+
+        // Verify that the context is valid
+        if (establishedContext === 0 || scardContext !== establishedContext) {
+          chrome.smartCardProviderPrivate.reportConnectResult(requestId, 0,
+              "", "INVALID_PARAMETER");
+          return;
+        }
+
+        chrome.smartCardProviderPrivate.reportConnectResult(requestId, 987,
+            "T1", "SUCCESS");
+      });
+    )";
+  LoadFakeProviderExtension(kBackgroundJs);
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  EventObserver event_observer;
+
+  EventRouter* event_router =
+      EventRouterFactory::GetForBrowserContext(profile());
+  event_router->AddObserverForTesting(&event_observer);
+
+  base::test::TestFuture<device::mojom::SmartCardListReadersResultPtr>
+      list_readers_future;
+
+  base::test::TestFuture<device::mojom::SmartCardConnectResultPtr>
+      connect_future;
+
+  EXPECT_EQ(event_observer.GetEventCount(
+                scard_api::OnListReadersRequested::kEventName),
+            0u);
+  context->ListReaders(list_readers_future.GetCallback());
+  context.FlushForTesting();
+  // The ListReaders request should go straight away since the context is free.
+  EXPECT_EQ(event_observer.GetEventCount(
+                scard_api::OnListReadersRequested::kEventName),
+            1u);
+
+  context->Connect("foo", device::mojom::SmartCardShareMode::kShared,
+                   device::mojom::SmartCardProtocols::New(),
+                   connect_future.GetCallback());
+  context.FlushForTesting();
+  // The Connect request should not have been sent since the context is still
+  // busy with the ListReaders that hasn't been answered yet.
+  EXPECT_EQ(
+      event_observer.GetEventCount(scard_api::OnConnectRequested::kEventName),
+      0u);
+
+  // Let the ListReaders call finish.
+  {
+    static constexpr char kScript[] =
+        R"(
+           letListReadersProceed();
+           chrome.test.sendScriptResult('ok');
+         )";
+    base::Value result = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension()->id(), kScript,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+    ASSERT_TRUE(result.is_string());
+    EXPECT_EQ("ok", result.GetString());
+  }
+
+  {
+    device::mojom::SmartCardListReadersResultPtr result =
+        list_readers_future.Take();
+    EXPECT_TRUE(result->is_readers());
+  }
+
+  // Now that the ListReaders call has finished the queued Connect request
+  // should finally go through.
+  event_observer.WaitForEventCount(scard_api::OnConnectRequested::kEventName,
+                                   1u);
+
+  {
+    device::mojom::SmartCardConnectResultPtr result = connect_future.Take();
+    EXPECT_TRUE(result->is_success());
+  }
+
+  event_router->RemoveObserverForTesting(&event_observer);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       ConnectionSharesContextFate) {
+  std::string background_js(kEstablishContextJs);
+  background_js.append(kConnectJs);
+  background_js.append(R"(
+      let letListReadersProceed;
+      let listReadersCanProceed = new Promise(function(resolve) {
+        letListReadersProceed = resolve;
+      });
+
+      chrome.smartCardProviderPrivate.onListReadersRequested.addListener(
+          async function(requestId, scardContext){
+        if (scardContext !== 123) {
+          chrome.smartCardProviderPrivate.reportListReadersResult(requestId,
+              readerStates, "INVALID_PARAMETER");
+          return;
+        }
+
+        console.log('listreaders will wait...');
+        await listReadersCanProceed;
+        console.log('proceeding with listreaders');
+        let readers = ["foo-reader"];
+
+        chrome.smartCardProviderPrivate.reportListReadersResult(requestId,
+            readers, "SUCCESS");
+      });
+
+      chrome.smartCardProviderPrivate.onReleaseContextRequested.addListener(
+          function(requestId, scardContext) {
+        if (scardContext != 123) {
+          chrome.smartCardProviderPrivate.reportReleaseContextResult(requestId,
+              "INVALID_PARAMETER");
+          return;
+        }
+        chrome.smartCardProviderPrivate.reportReleaseContextResult(
+            requestId, "SUCCESS");
+      });
+    )");
+  LoadFakeProviderExtension(background_js);
+
+  DisconnectObserver disconnect_observer;
+
+  SmartCardProviderPrivateAPI& scard_provider_api =
+      SmartCardProviderPrivateAPI::Get(*profile());
+  scard_provider_api.SetDisconnectObserverForTesting(
+      disconnect_observer.GetClosure());
+
+  EventObserver event_observer;
+  EventRouter* event_router =
+      EventRouterFactory::GetForBrowserContext(profile());
+  event_router->AddObserverForTesting(&event_observer);
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  mojo::Remote<device::mojom::SmartCardConnection> connection =
+      CreateConnection(*context.get());
+  ASSERT_TRUE(connection.is_bound());
+
+  // ListReaders() won't be answered until told so.
+  // Thus its request will remain pending.
+  base::test::TestFuture<device::mojom::SmartCardListReadersResultPtr>
+      list_readers_future;
+  context->ListReaders(list_readers_future.GetCallback());
+  context.FlushForTesting();
+  EXPECT_EQ(event_observer.GetEventCount(
+                scard_api::OnListReadersRequested::kEventName),
+            1u);
+
+  EXPECT_TRUE(connection.is_connected());
+
+  // Queues a ReleaseContext() to the provider due to the pending ListReaders()
+  // response.
+  context.reset();
+  disconnect_observer.Wait();
+  EXPECT_EQ(event_observer.GetEventCount(
+                scard_api::OnReleaseContextRequested::kEventName),
+            0u);
+
+  // Lost of the SmartCardContext also causes the SmartCardConnection it created
+  // to get disconnected, so it won't be able to send any requests.
+  connection.FlushForTesting();
+  EXPECT_FALSE(connection.is_connected());
+
+  // Let the ListReaders call finish.
+  {
+    static constexpr char kScript[] =
+        R"(
+           letListReadersProceed();
+           chrome.test.sendScriptResult('ok');
+         )";
+    base::Value result = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension()->id(), kScript,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+    ASSERT_TRUE(result.is_string());
+    EXPECT_EQ("ok", result.GetString());
+  }
+
+  // After ListReaders is done, ReleaseContext should go through.
+  event_observer.WaitForEventCount(
+      scard_api::OnReleaseContextRequested::kEventName, 1u);
+
+  // The ListReaders callback never had the chance to get called since the
+  // mojom::SmartCardContext was reset before that request finished.
+  EXPECT_FALSE(list_readers_future.IsReady());
+
+  scard_provider_api.SetDisconnectObserverForTesting(base::RepeatingClosure());
+  event_router->RemoveObserverForTesting(&event_observer);
 }
 
 }  // namespace extensions
