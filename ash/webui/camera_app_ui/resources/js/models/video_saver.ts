@@ -347,7 +347,7 @@ export class TimeLapseSaver {
    * Sends the frame to the encoder.
    */
   write(frame: VideoFrame, frameNo: number): void {
-    if (!frame.timestamp || this.ended || this.canceled) {
+    if (frame.timestamp === null || this.ended || this.canceled) {
       return;
     }
     this.frameNoMap.set(frame.timestamp, frameNo);

@@ -99,7 +99,7 @@ export abstract class ModeBase {
    * @return Promise for the operation.
    */
   async removeMetadataObserver(): Promise<void> {
-    if (!this.video.isExpired) {
+    if (!this.video.isExpired()) {
       return;
     }
     this.crosImageCapture.removeMetadataObserver();

@@ -115,7 +115,7 @@ class Reconfigurer {
         return 0;
       }
       if (this.config !== null ? a === this.config.deviceId :
-                                 (facings && facings[a] === preferredFacing)) {
+                                 facings?.[a] === preferredFacing) {
         return -1;
       }
       return 1;

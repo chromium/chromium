@@ -75,16 +75,17 @@ export class OptionGroup<T> {
   }
 }
 
+type ButtonGroups<T> = Array<{optionGroup: OptionGroup<T>, el: HTMLDivElement}>;
+
 /**
  * View controller for review page.
  */
-export class Review<T> extends View {
+export class Review extends View {
   protected readonly image: HTMLElement;
 
   protected readonly video: HTMLVideoElement;
 
-  private btnGroups: Array<{optionGroup: OptionGroup<T>, el: HTMLDivElement}> =
-      [];
+  private btnGroups: ButtonGroups<unknown> = [];
 
   private primaryBtn: HTMLButtonElement|null;
 
@@ -141,23 +142,25 @@ export class Review<T> extends View {
   /**
    * Starts review.
    */
-  async startReview(...optionGroups: Array<OptionGroup<T>>): Promise<T|null> {
+  async startReview<T>(...optionGroups: Array<OptionGroup<T>>):
+      Promise<T|null> {
     // Remove all existing button groups and buttons.
     for (const group of this.btnGroups) {
       group.el.remove();
     }
-    this.btnGroups = [];
+    const btnGroups: ButtonGroups<T> = [];
+    this.btnGroups = btnGroups;
 
     // Create new button groups and buttons.
     this.primaryBtn = null;
     const onSelected = new WaitableEvent<T|null>();
     for (const group of optionGroups) {
       const templ = instantiateTemplate(`#${group.template}`);
-      this.btnGroups.push(
+      btnGroups.push(
           {optionGroup: group, el: dom.getFrom(templ, 'div', HTMLDivElement)});
       this.root.appendChild(templ);
     }
-    for (const btnGroup of this.btnGroups) {
+    for (const btnGroup of btnGroups) {
       const addButton = ({
         uiArgs: {text, label, templateId, primary},
         exitValue,

@@ -245,7 +245,7 @@ export class Preview {
 
   toString(): string {
     const {videoWidth, videoHeight} = this.video;
-    return videoHeight ? `${videoWidth} x ${videoHeight}` : '';
+    return videoHeight > 0 ? `${videoWidth} x ${videoHeight}` : '';
   }
 
   /**
@@ -403,7 +403,7 @@ export class Preview {
    * @return Promise for the operation.
    */
   private async enableShowMetadata(): Promise<void> {
-    if (!this.streamInternal) {
+    if (this.streamInternal === null) {
       return;
     }
 
@@ -554,7 +554,7 @@ export class Preview {
     })();
 
     const deviceOperator = DeviceOperator.getInstance();
-    if (!deviceOperator) {
+    if (deviceOperator === null) {
       return;
     }
 
@@ -642,7 +642,7 @@ export class Preview {
    * @return Promise for the operation.
    */
   private async disableShowMetadata(): Promise<void> {
-    if (!this.streamInternal || this.metadataObserver === null) {
+    if (this.streamInternal === null || this.metadataObserver === null) {
       return;
     }
 

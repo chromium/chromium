@@ -62,7 +62,7 @@ export class FaceOverlay {
    */
   async updateOrientation(): Promise<void> {
     const deviceOperator = DeviceOperator.getInstance();
-    if (deviceOperator) {
+    if (deviceOperator !== null) {
       this.orientation =
           await deviceOperator.getCameraFrameRotation(this.deviceId);
     }

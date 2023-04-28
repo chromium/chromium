@@ -726,7 +726,7 @@ export class Video extends ModeBase {
     } else {
       sound.cancel(dom.get('#sound-rec-start', HTMLAudioElement));
 
-      if (this.mediaRecorder &&
+      if (this.mediaRecorder !== null &&
           (this.mediaRecorder.state === 'recording' ||
            this.mediaRecorder.state === 'paused')) {
         this.mediaRecorder.stop();
@@ -874,7 +874,7 @@ export class Video extends ModeBase {
         let noChunk = true;
 
         function onDataAvailable(event: BlobEvent) {
-          if (event.data && event.data.size > 0) {
+          if (event.data.size > 0) {
             noChunk = false;
             saver.write(event.data);
           }

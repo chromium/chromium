@@ -49,7 +49,7 @@ export function position(rect: DOMRectReadOnly): void {
 export function hide(): void {
   assert(wrapper !== null);
 
-  if (hovered) {
+  if (hovered !== null) {
     hovered = null;
     wrapper.textContent = '';
     wrapper.classList.remove('visible');

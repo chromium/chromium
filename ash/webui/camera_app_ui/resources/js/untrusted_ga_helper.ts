@@ -43,9 +43,15 @@ function initGA(
   window.GoogleAnalyticsObject = 'ga';
   // Creates an initial ga() function.
   // The queued commands will be executed once analytics.js loads.
+  //
+  // The type of .ga on Window doesn't include undefined, but since this part
+  // is setup code for ga, it's possible to have a undefined case here. Disable
+  // eslint which would think the condition is always true.
+  /* eslint-disable @typescript-eslint/strict-boolean-expressions */
   window.ga = window.ga || ((...args: unknown[]) => {
                              (window.ga.q = window.ga.q || []).push(args);
                            }) as UniversalAnalytics.ga;
+  /* eslint-enable @typescript-eslint/strict-boolean-expressions */
   window.ga.l = Date.now();
   const a = document.createElement('script');
   const m = document.getElementsByTagName('script')[0];

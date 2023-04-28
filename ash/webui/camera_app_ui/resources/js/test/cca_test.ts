@@ -251,7 +251,7 @@ export class CCATest {
   static async getFacing(): Promise<string> {
     const track = getPreviewVideoTrack();
     const deviceOperator = DeviceOperator.getInstance();
-    if (!deviceOperator) {
+    if (deviceOperator === null) {
       const facing = track.getSettings().facingMode;
       return facing ?? 'unknown';
     }

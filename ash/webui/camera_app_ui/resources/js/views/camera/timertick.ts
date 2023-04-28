@@ -72,8 +72,6 @@ export function start(): Promise<void> {
  * Cancels active timer ticking if applicable.
  */
 export function cancel(): void {
-  if (doCancel) {
-    doCancel();
-    doCancel = null;
-  }
+  doCancel?.();
+  doCancel = null;
 }

@@ -121,7 +121,7 @@ export type KeyboardShortcut =
  */
 export function getKeyboardShortcut(event: KeyboardEvent): KeyboardShortcut {
   let key = event.key;
-  if (key.match(/^[a-z]$/)) {
+  if (/^[a-z]$/.test(key)) {
     key = key.toUpperCase();
   }
   if (!isSupportedKeyboardKey(key)) {
@@ -458,11 +458,11 @@ export function getFpsRangeFromConstraints(frameRate: ConstrainDouble|
   let maxFps = 0;
   // For devices that don't support constant frame rate, we pass {0,0} and let
   // VCD fall back to the default range.
-  if (frameRate) {
+  if (frameRate !== undefined) {
     if (typeof frameRate === 'number') {
       minFps = frameRate;
       maxFps = frameRate;
-    } else if (frameRate.exact) {
+    } else if (frameRate.exact !== undefined) {
       minFps = frameRate.exact;
       maxFps = frameRate.exact;
     }

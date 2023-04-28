@@ -75,7 +75,7 @@ export class Warning extends View {
     if (index !== -1) {
       this.errorNames.splice(index, 1);
     }
-    if (this.errorNames.length) {
+    if (this.errorNames.length > 0) {
       this.updateMessage();
       return false;
     }

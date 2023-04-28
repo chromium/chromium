@@ -160,7 +160,7 @@ export class Camera extends View implements CameraViewUI {
       if (e.clientX === 0 && e.clientY === 0) {
         return metrics.ShutterType.KEYBOARD;
       }
-      return e.sourceCapabilities?.firesTouchEvents ?
+      return (e.sourceCapabilities?.firesTouchEvents ?? false) ?
           metrics.ShutterType.TOUCH :
           metrics.ShutterType.MOUSE;
     }
@@ -290,7 +290,7 @@ export class Camera extends View implements CameraViewUI {
           this.updateModeUI(mode);
           this.updateShutterLabel(mode);
           state.set(PerfEvent.MODE_SWITCHING, true);
-          const isSuccess = await this.cameraManager.switchMode(mode);
+          const isSuccess = await this.cameraManager.switchMode(mode) ?? false;
           state.set(PerfEvent.MODE_SWITCHING, false, {hasError: !isSuccess});
         }
       });
@@ -786,7 +786,7 @@ export class Camera extends View implements CameraViewUI {
         options: [new review.Option(
             {text: I18nString.LABEL_RETAKE}, {exitValue: null})],
       });
-      const positive = new review.OptionGroup({
+      const positive = new review.OptionGroup<boolean>({
         template: review.ButtonGroupTemplate.POSITIVE,
         options: [
           new review.Option({text: I18nString.LABEL_SHARE}, {
@@ -800,7 +800,7 @@ export class Camera extends View implements CameraViewUI {
         ],
       });
       nav.close(ViewName.FLASH);
-      result = (await this.review.startReview(negative, positive)) as boolean;
+      result = await this.review.startReview(negative, positive);
     });
     if (result) {
       sendEvent(metrics.GifResultType.SAVE);

@@ -88,7 +88,8 @@ export class CameraIntent extends Camera {
               },
               {exitValue: false}),
         ],
-      }));
+      })) ??
+          false;
       metrics.sendCaptureEvent({
         facing: this.getFacing(),
         ...metricArgs,

@@ -305,15 +305,15 @@ export function sendCaptureEvent({
   function condState(
       states: state.StateUnion[],
       cond?: state.StateUnion,
-      strict?: boolean,
+      strict = false,
       ): string {
     // Return the first existing state among the given states only if
     // there is no gate condition or the condition is met.
-    const prerequisite = !cond || state.get(cond);
-    if (strict && !prerequisite) {
-      return '';
+    const prerequisite = cond === undefined || state.get(cond);
+    if (!prerequisite) {
+      return strict ? '' : 'n/a';
     }
-    return prerequisite && states.find((s) => state.get(s)) || 'n/a';
+    return states.find((s) => state.get(s)) ?? 'n/a';
   }
 
   sendEvent(

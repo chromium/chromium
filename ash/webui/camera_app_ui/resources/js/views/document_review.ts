@@ -346,7 +346,7 @@ export class DocumentReview extends View {
     if (this.updatingPage !== null) {
       return;
     }
-    while (this.pendingUpdatePayload) {
+    while (this.pendingUpdatePayload !== null) {
       this.updatingPage = this.updatePageInternal(...this.pendingUpdatePayload);
       this.pendingUpdatePayload = null;
       await this.updatingPage;
@@ -359,7 +359,7 @@ export class DocumentReview extends View {
    */
   private async waitForUpdatingPage<T>(onUpdated?: () => Promise<T>):
       Promise<T|undefined> {
-    if (!this.updatingPage) {
+    if (this.updatingPage === null) {
       return onUpdated?.();
     }
     nav.open(ViewName.FLASH);

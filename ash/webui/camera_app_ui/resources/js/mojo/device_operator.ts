@@ -289,7 +289,10 @@ export class DeviceOperator {
     };
     const vid = await getTag(0x80010000);
     const pid = await getTag(0x80010001);
-    return vid && pid && `${vid}:${pid}`;
+    if (vid === null || pid === null) {
+      return null;
+    }
+    return `${vid}:${pid}`;
   }
 
   /**
@@ -707,7 +710,9 @@ export class DeviceOperator {
    */
   async setVirtualDeviceEnabled(deviceId: string, enabled: boolean):
       Promise<void> {
-    if (deviceId) {
+    // TODO(pihsun): Check if there's actually case that deviceId is empty
+    // string here.
+    if (deviceId !== '') {
       await this.deviceProvider.setVirtualDeviceEnabled(deviceId, enabled);
     }
   }

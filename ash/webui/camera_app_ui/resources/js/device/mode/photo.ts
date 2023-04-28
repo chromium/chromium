@@ -142,7 +142,7 @@ export class Photo extends ModeBase {
         return;
       }
       let photoSettings: PhotoSettings;
-      if (this.captureResolution) {
+      if (this.captureResolution !== null) {
         photoSettings = {
           imageWidth: this.captureResolution.width,
           imageHeight: this.captureResolution.height,
