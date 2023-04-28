@@ -22,7 +22,6 @@
 #import "base/task/single_thread_task_runner.h"
 #include "components/crash/core/common/crash_key.h"
 #include "media/base/mac/color_space_util_mac.h"
-#include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_types.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
@@ -70,10 +69,6 @@ constexpr size_t kPixelBufferPoolSize = 10;
 }  // anonymous namespace
 
 namespace media {
-
-BASE_FEATURE(kInCapturerScaling,
-             "InCapturerScaling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Uses the most recent advice from Apple for configuring and starting.
 BASE_FEATURE(kConfigureCaptureBeforeStart,
@@ -362,56 +357,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                                                   media::kFrameRatePrecision))];
   }
   return YES;
-}
-
-- (void)setScaledResolutions:(std::vector<gfx::Size>)resolutions {
-  if (!base::FeatureList::IsEnabled(media::kInCapturerScaling)) {
-    return;
-  }
-  // The lock is needed for |_scaledFrameTransformers|.
-  base::AutoLock lock(_lock);
-  bool reconfigureScaledFrameTransformers = false;
-  if (resolutions.size() != _scaledFrameTransformers.size()) {
-    reconfigureScaledFrameTransformers = true;
-  } else {
-    for (const auto& resolution : resolutions) {
-      bool resolutionHasTransformer = false;
-      for (const auto& scaledFrameTransformer : _scaledFrameTransformers) {
-        if (resolution == scaledFrameTransformer->destination_size()) {
-          resolutionHasTransformer = true;
-          break;
-        }
-      }
-      if (!resolutionHasTransformer) {
-        reconfigureScaledFrameTransformers = true;
-        break;
-      }
-    }
-  }
-  if (!reconfigureScaledFrameTransformers)
-    return;
-  std::stringstream str;
-  str << "[";
-  for (size_t i = 0; i < resolutions.size(); ++i) {
-    if (i != 0)
-      str << ", ";
-    str << resolutions[i].ToString();
-  }
-  str << "]";
-  VLOG(1) << "Configuring scaled resolutions: " << str.str();
-  _scaledFrameTransformers.clear();
-  for (size_t i = 0; i < resolutions.size(); ++i) {
-    DCHECK(i == 0 || resolutions[i - 1].height() >= resolutions[i].height());
-    // Configure the transformer to and from NV12 pixel buffers - we only want
-    // to pay scaling costs, not conversion costs.
-    auto scaledFrameTransformer = media::SampleBufferTransformer::Create();
-    scaledFrameTransformer->Reconfigure(
-        media::SampleBufferTransformer::
-            kBestTransformerForPixelBufferToNv12Output,
-        kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange, resolutions[i],
-        kPixelBufferPoolSize);
-    _scaledFrameTransformers.push_back(std::move(scaledFrameTransformer));
-  }
 }
 
 - (BOOL)startCapture {
@@ -874,51 +819,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                                            captureFormat:captureFormat
                                               colorSpace:colorSpace];
 
-  // The lock is needed for |_scaledFrameTransformers| and |_frameReceiver|.
+  // The lock is needed for |_frameReceiver|.
   _lock.AssertAcquired();
-  // References to any scaled pixel buffers need to be retained until after
-  // ReceiveExternalGpuMemoryBufferFrame().
-  std::vector<base::ScopedCFTypeRef<CVPixelBufferRef>> scaledPixelBuffers;
-  std::vector<media::CapturedExternalVideoBuffer> scaledExternalBuffers;
-  scaledPixelBuffers.reserve(_scaledFrameTransformers.size());
-  scaledExternalBuffers.reserve(_scaledFrameTransformers.size());
-  for (auto& scaledFrameTransformer : _scaledFrameTransformers) {
-    gfx::Size scaledFrameSize = scaledFrameTransformer->destination_size();
-    // Only proceed if this results in downscaling in one or both dimensions.
-    //
-    // It is not clear that we want to continue to allow changing the aspect
-    // ratio like this since this causes visible stretching in the image if the
-    // stretch is significantly large.
-    // TODO(https://crbug.com/1157072): When we know what to do about aspect
-    // ratios, consider adding a DCHECK here or otherwise ignore wrong aspect
-    // ratios (within some fault tolerance).
-    if (scaledFrameSize.width() > captureFormat.frame_size.width() ||
-        scaledFrameSize.height() > captureFormat.frame_size.height() ||
-        scaledFrameSize == captureFormat.frame_size) {
-      continue;
-    }
-    CVPixelBufferRef bufferToScale =
-        !scaledPixelBuffers.empty() ? scaledPixelBuffers.back() : pixelBuffer;
-    base::ScopedCFTypeRef<CVPixelBufferRef> scaledPixelBuffer =
-        scaledFrameTransformer->Transform(bufferToScale);
-    if (!scaledPixelBuffer) {
-      LOG(ERROR) << "Failed to downscale frame, skipping resolution "
-                 << scaledFrameSize.ToString();
-      continue;
-    }
-    scaledPixelBuffers.push_back(scaledPixelBuffer);
-    IOSurfaceRef scaledIoSurface = CVPixelBufferGetIOSurface(scaledPixelBuffer);
-    media::VideoCaptureFormat scaledCaptureFormat = captureFormat;
-    scaledCaptureFormat.frame_size = scaledFrameSize;
-    scaledExternalBuffers.push_back([self
-        capturedExternalVideoBufferFromNV12IOSurface:scaledIoSurface
-                                       captureFormat:scaledCaptureFormat
-                                          colorSpace:colorSpace]);
-  }
-
   DCHECK(_frameReceiver);
-  _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(
-      std::move(externalBuffer), std::move(scaledExternalBuffers), timestamp);
+  _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(std::move(externalBuffer),
+                                                      timestamp);
 }
 
 - (media::CapturedExternalVideoBuffer)

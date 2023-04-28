@@ -10,11 +10,10 @@
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
 #include "base/functional/callback_forward.h"
-#include "base/task/single_thread_task_runner.h"
-
 #include "base/mac/scoped_dispatch_object.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/capture/video/mac/sample_buffer_transformer_mac.h"
@@ -42,7 +41,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
   // AVFoundation.
   virtual void ReceiveExternalGpuMemoryBufferFrame(
       CapturedExternalVideoBuffer frame,
-      std::vector<CapturedExternalVideoBuffer> scaled_frames,
       base::TimeDelta timestamp) = 0;
 
   // Callbacks with the result of a still image capture, or in case of error,
@@ -62,14 +60,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
   // Forwarder to VideoCaptureDevice::Client::OnCaptureConfigurationChanged().
   virtual void ReceiveCaptureConfigurationChanged() = 0;
 };
-
-// When this feature is enabled, the capturer can be configured using
-// setScaledResolutions to output scaled versions of the captured frame (in
-// addition to the original frame), whenever NV12 IOSurfaces are available to
-// the capturer. These are available either when the camera supports it and
-// kAVFoundationCaptureV2ZeroCopy is enabled or when kInCaptureConvertToNv12 is
-// used to convert frames to NV12.
-CAPTURE_EXPORT BASE_DECLARE_FEATURE(kInCapturerScaling);
 
 // Find the best capture format from |formats| for the specified dimensions and
 // frame rate. Returns an element of |formats|, or nil.
@@ -125,13 +115,6 @@ CAPTURE_EXPORT
 
   // When enabled, converts captured frames to NV12.
   std::unique_ptr<media::SampleBufferTransformer> _sampleBufferTransformer;
-  // Transformers used to create downscaled versions of the captured image.
-  // Enabled when setScaledResolutions is called (i.e.
-  // media::VideoCaptureFeedback asks for scaled frames on behalf of a consumer
-  // in the Renderer process), NV12 output is enabled and the kInCapturerScaling
-  // feature is on.
-  std::vector<std::unique_ptr<media::SampleBufferTransformer>>
-      _scaledFrameTransformers;
 
   // On macOS 10.15 or later, this has type AVCapturePhotoOutput.
   // On earlier versions, this has type AVCaptureStillImageOutput.
@@ -185,13 +168,6 @@ CAPTURE_EXPORT
 - (BOOL)setCaptureHeight:(int)height
                    width:(int)width
                frameRate:(float)frameRate;
-
-// If an efficient path is available, the capturer will perform scaling and
-// deliver scaled frames to the |frameReceiver| as specified by |resolutions|.
-// The scaled frames are delivered in addition to the original captured frame.
-// Resolutions that match the captured frame or that would result in upscaling
-// are ignored.
-- (void)setScaledResolutions:(std::vector<gfx::Size>)resolutions;
 
 // Starts video capturing and registers notification listeners. Must be
 // called after setCaptureDevice:, and, eventually, also after

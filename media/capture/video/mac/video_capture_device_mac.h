@@ -72,9 +72,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceMac
   void GetPhotoState(GetPhotoStateCallback callback) override;
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override;
-  // VideoFrameConsumerFeedbackObserver implementation.
-  void OnUtilizationReport(media::VideoCaptureFeedback feedback) override;
-
   bool Init(VideoCaptureApi capture_api_type);
 
   // VideoCaptureDeviceAVFoundationFrameReceiver:
@@ -85,10 +82,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceMac
                     int aspect_numerator,
                     int aspect_denominator,
                     base::TimeDelta timestamp) override;
-  void ReceiveExternalGpuMemoryBufferFrame(
-      CapturedExternalVideoBuffer frame,
-      std::vector<CapturedExternalVideoBuffer> scaled_frames,
-      base::TimeDelta timestamp) override;
+  void ReceiveExternalGpuMemoryBufferFrame(CapturedExternalVideoBuffer frame,
+                                           base::TimeDelta timestamp) override;
   void OnPhotoTaken(const uint8_t* image_data,
                     size_t image_length,
                     const std::string& mime_type) override;

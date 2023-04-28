@@ -451,14 +451,6 @@ void VideoCaptureDeviceMac::SetPhotoOptions(mojom::PhotoSettingsPtr settings,
   std::move(callback).Run(true);
 }
 
-void VideoCaptureDeviceMac::OnUtilizationReport(
-    media::VideoCaptureFeedback feedback) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  if (!capture_device_)
-    return;
-  [capture_device_ setScaledResolutions:std::move(feedback.mapped_sizes)];
-}
-
 bool VideoCaptureDeviceMac::Init(VideoCaptureApi capture_api_type) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(state_, kNotInitialized);
@@ -499,7 +491,6 @@ void VideoCaptureDeviceMac::ReceiveFrame(const uint8_t* video_frame,
 
 void VideoCaptureDeviceMac::ReceiveExternalGpuMemoryBufferFrame(
     CapturedExternalVideoBuffer frame,
-    std::vector<CapturedExternalVideoBuffer> scaled_frames,
     base::TimeDelta timestamp) {
   if (capture_format_.frame_size != frame.format.frame_size) {
     ReceiveError(VideoCaptureError::kMacReceivedFrameWithUnexpectedResolution,
@@ -508,9 +499,11 @@ void VideoCaptureDeviceMac::ReceiveExternalGpuMemoryBufferFrame(
                      ", and expected " + capture_format_.frame_size.ToString());
     return;
   }
+  // TODO(https://crbug.com/1440075): Remove the `scaled_buffers` argument
+  // because the vector is always empty and no consumers are interested in them.
   client_->OnIncomingCapturedExternalBuffer(
-      std::move(frame), std::move(scaled_frames), base::TimeTicks::Now(),
-      timestamp, gfx::Rect(capture_format_.frame_size));
+      std::move(frame), std::vector<CapturedExternalVideoBuffer>(),
+      base::TimeTicks::Now(), timestamp, gfx::Rect(capture_format_.frame_size));
 }
 
 void VideoCaptureDeviceMac::OnPhotoTaken(const uint8_t* image_data,
