@@ -430,15 +430,10 @@ crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/uniform-values-per-program.html [ Failure ]
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/uniform-default-values.html [ Failure ]
 
-## win10 / angle-d3d9 / Passthrough command decoder failures ##
-
-crbug.com/1439591 [ angle-d3d9 intel passthrough win10 ] conformance/uniforms/uniform-samplers-test.html [ RetryOnFailure ]
-
 ## win10 / angle-d3d11 / Passthrough command decoder failures ##
 
 crbug.com/1378372 [ angle-d3d11 nvidia-0x2184 passthrough release target-cpu-32 win10 ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
 crbug.com/1378372 [ angle-d3d11 nvidia-0x2184 passthrough release target-cpu-32 win10 ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
-crbug.com/1439591 [ angle-d3d11 intel passthrough win10 ] conformance/uniforms/uniform-samplers-test.html [ RetryOnFailure ]
 crbug.com/1439591 [ angle-d3d11 nvidia passthrough win10 ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ RetryOnFailure ]
 
 ## Vulkan / Win / NVIDIA / Passthrough command decoder ##
@@ -450,8 +445,6 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/glsl/functions/glsl-function-faceforward.html [ Failure ]
 
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
-
-crbug.com/1439591 [ win10 intel angle-vulkan passthrough ] conformance/uniforms/uniform-samplers-test.html [ RetryOnFailure ]
 
 ####################
 # Mac failures     #

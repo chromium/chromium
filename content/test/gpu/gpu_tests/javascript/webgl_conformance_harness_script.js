@@ -138,6 +138,9 @@ if (inIframe) {
       // conformance/uniforms/no-over-optimization-on-uniform-array-*
       'getUniform',
       'getUniformLocation',
+      // conformance/uniforms/uniform-samplers-test.html
+      'uniform1i',
+      'uniform1iv',
       // conformance2/sync/sync-webgl-specific.html
       'clientWaitSync',
       'getSyncParameter',
