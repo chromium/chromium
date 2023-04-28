@@ -498,8 +498,9 @@ void QuicConnectionLogger::OnCryptoHandshakeMessageReceived(
 
       int sample = GetAddressMismatch(local_address_from_shlo_,
                                       local_address_from_self_);
-      // We are seemingly talking to an older server that does not support the
-      // feature, so we can't report the results in the histogram.
+      // If `sample` is negative, we are seemingly talking to an older server
+      // that does not support the feature, so we can't report the results in
+      // the histogram.
       if (sample >= 0) {
         UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.SelfShloAddressMismatch",
                                   static_cast<QuicAddressMismatch>(sample),
