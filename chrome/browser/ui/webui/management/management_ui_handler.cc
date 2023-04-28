@@ -1087,9 +1087,6 @@ const std::string ManagementUIHandler::GetDeviceManager() const {
   if (device_managed_) {
     device_domain = connector->GetEnterpriseDomainManager();
   }
-  if (device_domain.empty() && connector->IsActiveDirectoryManaged()) {
-    device_domain = connector->GetRealm();
-  }
   return device_domain;
 }
 

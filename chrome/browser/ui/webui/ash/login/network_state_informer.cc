@@ -37,15 +37,6 @@ NetworkStateInformer::State GetStateForNetwork(const NetworkState* network) {
     return NetworkStateInformer::CONNECTING;
   }
   if (!network->IsConnectedState()) {
-    // If there is no connection treat as online for Active Directory devices.
-    // These devices do not have to be online to reach the server.
-    // TODO(rsorokin): Fix reporting network connectivity for Active Directory
-    // devices (crbug.com/685691).
-    if (g_browser_process->platform_part()
-            ->browser_policy_connector_ash()
-            ->IsActiveDirectoryManaged()) {
-      return NetworkStateInformer::ONLINE;
-    }
     return NetworkStateInformer::OFFLINE;
   }
   switch (network->GetPortalState()) {
