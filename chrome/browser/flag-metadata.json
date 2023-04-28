@@ -6077,11 +6077,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "password-view-page-in-settings",
-    "owners": ["mamir", "derinel@google.com"],
-    "expiry_milestone": 118
-  },
-  {
     "name": "passwords-grouping",
     "owners": ["vsemeniuk@google.com", "vasilii"],
     "expiry_milestone": 117

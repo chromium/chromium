@@ -8009,12 +8009,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      SINGLE_VALUE_TYPE(switches::kEnableBluetoothSerialPortProfileInSerialApi)},
 
-    {"password-view-page-in-settings",
-     flag_descriptions::kPasswordViewPageInSettingsName,
-     flag_descriptions::kPasswordViewPageInSettingsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordViewPageInSettings)},
-
     {"password-notes", flag_descriptions::kPasswordNotesWithBackupName,
      flag_descriptions::kPasswordNotesWithBackupDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(syncer::kPasswordNotesWithBackup,

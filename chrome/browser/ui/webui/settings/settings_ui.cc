@@ -302,9 +302,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   html_source->AddBoolean(
       "enablePasswordViewPage",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordViewPageInSettings) ||
-          base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
+      base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
 
   html_source->AddBoolean(
       "enablePasswordNotes",

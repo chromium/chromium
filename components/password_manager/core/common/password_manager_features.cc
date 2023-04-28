@@ -151,11 +151,6 @@ BASE_FEATURE(kPasswordIssuesInSpecificsMetadata,
              "PasswordIssuesInSpecificsMetadata",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the new password viewing subpage.
-BASE_FEATURE(kPasswordViewPageInSettings,
-             "PasswordViewPageInSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables sending credentials from the settings UI.
 BASE_FEATURE(kSendPasswords,
              "SendPasswords",

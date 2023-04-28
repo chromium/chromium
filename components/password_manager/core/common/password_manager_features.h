@@ -58,7 +58,6 @@ BASE_DECLARE_FEATURE(kMemoryMapWeaknessCheckDictionaries);
 #endif
 BASE_DECLARE_FEATURE(kNewRegexForOtpFields);
 BASE_DECLARE_FEATURE(kPasswordIssuesInSpecificsMetadata);
-BASE_DECLARE_FEATURE(kPasswordViewPageInSettings);
 BASE_DECLARE_FEATURE(kSendPasswords);
 BASE_DECLARE_FEATURE(kLeakDetectionUnauthenticated);
 BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
