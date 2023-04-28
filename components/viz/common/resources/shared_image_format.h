@@ -264,7 +264,19 @@ inline constexpr SharedImageFormat kNV12A =
     SharedImageFormat::SinglePlane(ResourceFormat::YUVA_420_TRIPLANAR);
 inline constexpr SharedImageFormat kP010 =
     SharedImageFormat::SinglePlane(ResourceFormat::P010);
+
+// All known legacy multiplanar formats.
+constexpr SharedImageFormat kAll[4] = {kYV12, kNV12, kNV12A, kP010};
+
 }  // namespace LegacyMultiPlaneFormat
+
+// The number of singleplanar and legacy multiplanar formats should correspond
+// exactly to the number of ResourceFormat types. Note that RESOURCE_FORMAT_MAX
+// uses zero-based indexing.
+constexpr auto kNumResourceFormatTypes = RESOURCE_FORMAT_MAX + 1;
+static_assert(std::size(SinglePlaneFormat::kAll) +
+                  std::size(LegacyMultiPlaneFormat::kAll) ==
+              kNumResourceFormatTypes);
 
 // Constants for common multi-planar formats.
 namespace MultiPlaneFormat {
