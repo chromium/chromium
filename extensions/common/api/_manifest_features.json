@@ -68,7 +68,7 @@
     // APIs.
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos", "win", "mac"]
+    "platforms": ["chromeos", "lacros", "win", "mac"]
   }, {
     "channel": "stable",
     "extension_types": ["platform_app"],

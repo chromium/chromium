@@ -3,7 +3,6 @@
 -AccessContextAuditBrowserTest.RemoveRecords
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/*
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/*
--BluetoothApiTest.*
 -BluetoothLowEnergyApiTest.*
 -BluetoothPrivateApiTest.*
 -BrowserViewTest.GetAccessibleTabModalDialogTitle
