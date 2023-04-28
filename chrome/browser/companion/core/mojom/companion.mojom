@@ -36,6 +36,9 @@ enum MethodType {
   // Method corresponding to `CompanionPageHandler.OnPhFeedback`.
   kOnPhFeedback = 8,
 
+  // Method corresponding to `CompanionPageHandler.OnCqJumptagClicked`.
+  kOnCqJumptagClicked = 9,
+
   // Methods used in browser -> renderer communication.
   // Method corresponding to `CompanionPage.UpdateCompanionPage`.
   kUpdateCompanionPage = 31,
@@ -157,6 +160,11 @@ interface CompanionPageHandler {
 
   // Called in response to user feedback action on the PH surface.
   OnPhFeedback(PhFeedback ph_feedback);
+
+  // Called to notify the browser that the user has clicked on a jumptag.
+  // `text_directive` is the URL fragment for highlighting and scrolling-to.
+  // Ref: https://wicg.github.io/scroll-to-text-fragment/#syntax.
+  OnCqJumptagClicked(string text_directive);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

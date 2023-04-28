@@ -11,6 +11,7 @@
 #include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/companion/core/signin_delegate.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
+#include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
@@ -177,7 +178,7 @@ void CompanionPageHandler::RecordUiSurfaceClicked(
 void CompanionPageHandler::OnCqCandidatesAvailable(
     const std::vector<std::string>& text_directives) {
   auto* text_finder_manager =
-      TextFinderManager::GetForPage(web_contents()->GetPrimaryPage());
+      TextFinderManager::GetOrCreateForPage(web_contents()->GetPrimaryPage());
   CHECK(text_finder_manager);
   text_finder_manager->CreateTextFinders(
       text_directives,
@@ -188,6 +189,14 @@ void CompanionPageHandler::OnCqCandidatesAvailable(
 void CompanionPageHandler::OnPhFeedback(
     side_panel::mojom::PhFeedback ph_feedback) {
   metrics_logger_->OnPhFeedback(ph_feedback);
+}
+
+void CompanionPageHandler::OnCqJumptagClicked(
+    const std::string& text_directive) {
+  auto* text_highlighter_manager = TextHighlighterManager::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage());
+  text_highlighter_manager->CreateTextHighlighterAndRemoveExistingInstance(
+      text_directive);
 }
 
 void CompanionPageHandler::EnableMsbb(bool enable_msbb) {

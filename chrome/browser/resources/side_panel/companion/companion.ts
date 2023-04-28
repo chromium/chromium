@@ -45,6 +45,9 @@ enum ParamType {
   // Arguments for MethodType.kRecordUiSurfaceShown.
   CHILD_ELEMENT_COUNT = 'childElementCount',
 
+  // Arguments for MethodType.kOnCqJamptagClicked.
+  CQ_JUMPTAG_TEXT = 'cqJumptagText',
+
   // Arguments for browser -> iframe communication.
   COMPANION_UPDATE_PARAMS = 'companionUpdateParams',
 
@@ -195,6 +198,8 @@ function onCompanionMessageEvent(event: MessageEvent) {
         data[ParamType.CQ_TEXT_DIRECTIVES]);
   } else if (methodType === MethodType.kOnPhFeedback) {
     companionProxy.handler.onPhFeedback(data[ParamType.PH_FEEDBACK]);
+  } else if (methodType === MethodType.kOnCqJumptagClicked) {
+    companionProxy.handler.onCqJumptagClicked(data[ParamType.CQ_JUMPTAG_TEXT]);
   }
 }
 
