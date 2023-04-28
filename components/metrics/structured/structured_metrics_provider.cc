@@ -67,7 +67,7 @@ bool StructuredMetricsProvider::HasIndependentMetrics() {
     return false;
   }
 
-  if (!recording_enabled_) {
+  if (!recorder().can_provide_metrics()) {
     return false;
   }
 

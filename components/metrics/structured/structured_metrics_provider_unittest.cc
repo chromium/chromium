@@ -106,10 +106,6 @@ class StructuredMetricsProviderTest : public testing::Test {
     // Enable recording, normally done after the metrics service has checked
     // consent allows recording.
     provider_->OnRecordingEnabled();
-    // Add a profile, normally done by the ChromeMetricsServiceClient after a
-    // user logs in.
-    OnProfileAdded(TempDirPath());
-    Wait();
   }
 
   void OnRecordingEnabled() { provider_->OnRecordingEnabled(); }
@@ -144,6 +140,11 @@ class StructuredMetricsProviderTest : public testing::Test {
                                        0);
   }
 
+  bool RecorderInitialized() {
+    return provider_->recorder().is_init_state(
+        StructuredMetricsRecorder::InitState::kInitialized);
+  }
+
  protected:
   std::unique_ptr<TestSystemProfileProvider> system_profile_provider_;
   std::unique_ptr<StructuredMetricsProvider> provider_;
@@ -167,11 +168,29 @@ TEST_F(StructuredMetricsProviderTest, DisableIndependentUploads) {
       kStructuredMetrics, {{"enable_independent_metrics_upload", "false"}});
 
   Init();
+
+  // Add a profile, normally done by the ChromeMetricsServiceClient after a
+  // user logs in.
+  OnProfileAdded(TempDirPath());
+  Wait();
+
   OnRecordingEnabled();
   events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
   EXPECT_EQ(GetSessionData().events_size(), 2);
+  ExpectNoErrors();
+}
+
+TEST_F(StructuredMetricsProviderTest, NoIndependentUploadsBeforeInitialized) {
+  Init();
+  // Verify the recorder is not initialized.
+  EXPECT_FALSE(RecorderInitialized());
+
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
+  EXPECT_EQ(GetSessionData().events_size(), 0);
   ExpectNoErrors();
 }
 

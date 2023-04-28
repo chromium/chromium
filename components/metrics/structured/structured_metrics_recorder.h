@@ -70,6 +70,10 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
 
   void ProvideEventMetrics(ChromeUserMetricsExtension& uma_proto);
 
+  bool can_provide_metrics() const {
+    return recording_enabled() && is_init_state(InitState::kInitialized);
+  }
+
   // Returns pointer to in-memory events.
   EventsProto* events() { return events_->get(); }
 
@@ -103,10 +107,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   };
 
   bool is_init_state(InitState state) const { return init_state_ == state; }
-
-  bool can_provide_metrics() const {
-    return recording_enabled() && is_init_state(InitState::kInitialized);
-  }
 
   void OnKeyDataInitialized();
   void OnRead(ReadStatus status);
