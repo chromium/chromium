@@ -24,15 +24,15 @@ namespace {
 class MockChromeCleanerDialogController
     : public safe_browsing::ChromeCleanerDialogController {
  public:
-  MOCK_METHOD0(DialogShown, void());
-  MOCK_METHOD1(Accept, void(bool));
-  MOCK_METHOD0(Cancel, void());
-  MOCK_METHOD0(Close, void());
-  MOCK_METHOD0(ClosedWithoutUserInteraction, void());
-  MOCK_METHOD1(DetailsButtonClicked, void(bool));
-  MOCK_METHOD1(SetLogsEnabled, void(bool));
-  MOCK_METHOD0(LogsEnabled, bool());
-  MOCK_METHOD0(LogsManaged, bool());
+  MOCK_METHOD(void, DialogShown, (), (override));
+  MOCK_METHOD(void, Accept, (bool), (override));
+  MOCK_METHOD(void, Cancel, (), (override));
+  MOCK_METHOD(void, Close, (), (override));
+  MOCK_METHOD(void, ClosedWithoutUserInteraction, (), (override));
+  MOCK_METHOD(void, DetailsButtonClicked, (bool), (override));
+  MOCK_METHOD(void, SetLogsEnabled, (bool), (override));
+  MOCK_METHOD(bool, LogsEnabled, (), (override));
+  MOCK_METHOD(bool, LogsManaged, (), (override));
 };
 
 class ChromeCleanerDialogTest : public DialogBrowserTest {

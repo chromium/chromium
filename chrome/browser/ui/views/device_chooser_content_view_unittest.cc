@@ -32,7 +32,7 @@ namespace {
 class MockTableViewObserver : public views::TableViewObserver {
  public:
   // views::TableViewObserver:
-  MOCK_METHOD0(OnSelectionChanged, void());
+  MOCK_METHOD(void, OnSelectionChanged, (), (override));
 };
 
 }  // namespace

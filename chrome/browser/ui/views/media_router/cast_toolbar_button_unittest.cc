@@ -64,8 +64,8 @@ MediaRoute CreateNonLocalDisplayRoute() {
 
 class MockContextMenuObserver : public MediaRouterContextualMenu::Observer {
  public:
-  MOCK_METHOD0(OnContextMenuShown, void());
-  MOCK_METHOD0(OnContextMenuHidden, void());
+  MOCK_METHOD(void, OnContextMenuShown, (), (override));
+  MOCK_METHOD(void, OnContextMenuHidden, (), (override));
 };
 
 }  // namespace

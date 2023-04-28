@@ -26,7 +26,7 @@ class StopCastingHandler {
   StopCastingHandler() = default;
   ~StopCastingHandler() = default;
 
-  MOCK_METHOD0(StopCasting, void());
+  MOCK_METHOD(void, StopCasting, (), ());
 };
 
 // A mock class for delegating media notification footer view.
@@ -36,9 +36,9 @@ class MockFooterViewDelegate : public MediaItemUIFooterView::Delegate {
   ~MockFooterViewDelegate() override = default;
 
   // MediaNotificationfooterview::Delegate.
-  MOCK_METHOD0(OnDropdownButtonClicked, void());
-  MOCK_METHOD0(IsDeviceSelectorExpanded, bool());
-  MOCK_METHOD1(OnDeviceSelected, void(int));
+  MOCK_METHOD(void, OnDropdownButtonClicked, (), (override));
+  MOCK_METHOD(bool, IsDeviceSelectorExpanded, (), (override));
+  MOCK_METHOD(void, OnDeviceSelected, (int), (override));
 };
 
 }  // namespace

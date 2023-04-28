@@ -80,7 +80,7 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
         current_credential_leak_prompt_);
   }
 
-  MOCK_METHOD0(OnDialogClosed, void());
+  MOCK_METHOD(void, OnDialogClosed, (), ());
 
  private:
   raw_ptr<AccountChooserPrompt, DanglingUntriaged> current_account_chooser_;
@@ -161,8 +161,11 @@ class PasswordDialogViewTest : public DialogBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
-  MOCK_METHOD1(OnChooseCredential, void(const password_manager::PasswordForm*));
-  MOCK_METHOD0(OnIconRequestDone, void());
+  MOCK_METHOD(void,
+              OnChooseCredential,
+              (const password_manager::PasswordForm*),
+              ());
+  MOCK_METHOD(void, OnIconRequestDone, (), ());
 
   // Called on the server background thread.
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {

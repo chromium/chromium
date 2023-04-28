@@ -152,7 +152,7 @@ class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
   PersonalDataLoadedObserverMock() = default;
   ~PersonalDataLoadedObserverMock() override = default;
 
-  MOCK_METHOD0(OnPersonalDataChanged, void());
+  MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
 };
 
 class LocalCardMigrationBrowserTest

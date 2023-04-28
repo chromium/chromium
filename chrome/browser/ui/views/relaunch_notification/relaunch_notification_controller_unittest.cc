@@ -113,11 +113,11 @@ class FakeRelaunchNotificationController
 // A mock delegate for testing.
 class MockControllerDelegate : public ControllerDelegate {
  public:
-  MOCK_METHOD0(NotifyRelaunchRecommended, void());
-  MOCK_METHOD0(NotifyRelaunchRequired, void());
-  MOCK_METHOD0(Close, void());
-  MOCK_METHOD1(SetDeadline, void(base::Time));
-  MOCK_METHOD0(OnRelaunchDeadlineExpired, void());
+  MOCK_METHOD(void, NotifyRelaunchRecommended, (), (override));
+  MOCK_METHOD(void, NotifyRelaunchRequired, (), (override));
+  MOCK_METHOD(void, Close, (), (override));
+  MOCK_METHOD(void, SetDeadline, (base::Time), (override));
+  MOCK_METHOD(void, OnRelaunchDeadlineExpired, (), (override));
 };
 
 // A fake UpgradeDetector.

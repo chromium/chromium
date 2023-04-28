@@ -72,9 +72,9 @@ class MockHatsNextWebDialog : public HatsNextWebDialog {
                           product_specific_bits_data,
                           product_specific_string_data) {}
 
-  MOCK_METHOD0(ShowWidget, void());
-  MOCK_METHOD0(CloseWidget, void());
-  MOCK_METHOD0(UpdateWidgetSize, void());
+  MOCK_METHOD(void, ShowWidget, (), (override));
+  MOCK_METHOD(void, CloseWidget, (), (override));
+  MOCK_METHOD(void, UpdateWidgetSize, (), (override));
 
   void WaitForClose() {
     base::RunLoop run_loop;

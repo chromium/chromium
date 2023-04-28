@@ -43,15 +43,15 @@ namespace {
 
 class BorealisInstallerMock : public borealis::BorealisInstaller {
  public:
-  MOCK_METHOD0(IsProcessing, bool());
-  MOCK_METHOD0(Start, void());
-  MOCK_METHOD0(Cancel, void());
+  MOCK_METHOD(bool, IsProcessing, (), (override));
+  MOCK_METHOD(void, Start, (), (override));
+  MOCK_METHOD(void, Cancel, (), (override));
   MOCK_METHOD(void,
               Uninstall,
               (base::OnceCallback<void(BorealisUninstallResult)>),
               ());
-  MOCK_METHOD1(AddObserver, void(Observer*));
-  MOCK_METHOD1(RemoveObserver, void(Observer*));
+  MOCK_METHOD(void, AddObserver, (Observer*), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 };
 
 class BorealisInstallerViewBrowserTest : public DialogBrowserTest {

@@ -94,10 +94,15 @@ class TryChromeDialogBrowserTestBase : public InProcessBrowserTest {
  protected:
   class MockDelegate : public TryChromeDialog::Delegate {
    public:
-    MOCK_METHOD1(SetToastLocation,
-                 void(installer::ExperimentMetrics::ToastLocation));
-    MOCK_METHOD1(SetExperimentState, void(installer::ExperimentMetrics::State));
-    MOCK_METHOD0(InteractionComplete, void());
+    MOCK_METHOD(void,
+                SetToastLocation,
+                (installer::ExperimentMetrics::ToastLocation),
+                (override));
+    MOCK_METHOD(void,
+                SetExperimentState,
+                (installer::ExperimentMetrics::State),
+                (override));
+    MOCK_METHOD(void, InteractionComplete, (), (override));
   };
 
   explicit TryChromeDialogBrowserTestBase(int group = 0) : group_(group) {
