@@ -477,11 +477,10 @@ void ShowSearchEngineSettings(Browser* browser) {
   ShowSettingsSubPage(browser, kSearchEnginesSubPage);
 }
 
-void ShowWebStoreFromAppMenu(Browser* browser) {
+void ShowWebStore(Browser* browser, const base::StringPiece& utm_source_value) {
   ShowSingletonTabIgnorePathOverwriteNTP(
-      browser,
-      extension_urls::AppendUtmSource(extension_urls::GetWebstoreLaunchURL(),
-                                      extension_urls::kAppMenuUtmSource));
+      browser, extension_urls::AppendUtmSource(
+                   extension_urls::GetWebstoreLaunchURL(), utm_source_value));
 }
 
 void ShowPrivacySandboxSettings(Browser* browser) {

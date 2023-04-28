@@ -194,7 +194,7 @@ void ShowSafeBrowsingEnhancedProtection(Browser* browser);
 void ShowImportDialog(Browser* browser);
 void ShowAboutChrome(Browser* browser);
 void ShowSearchEngineSettings(Browser* browser);
-void ShowWebStoreFromAppMenu(Browser* browser);
+void ShowWebStore(Browser* browser, const base::StringPiece& utm_source_value);
 void ShowPrivacySandboxSettings(Browser* browser);
 void ShowPrivacySandboxAdMeasurementSettings(Browser* browser);
 void ShowPrivacySandboxAdPersonalization(Browser* browser);

@@ -79,6 +79,7 @@
 #include "content/public/common/profiling.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_urls.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -821,7 +822,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
       CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
             features::IsChromeRefresh2023());
-      ShowWebStoreFromAppMenu(browser_);
+      ShowWebStore(browser_, extension_urls::kAppMenuUtmSource);
       break;
     case IDC_PERFORMANCE:
       ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),

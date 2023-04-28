@@ -32,6 +32,7 @@ const char kChromeWebstoreUpdateURL[] =
     "https://clients2.google.com/service/update2/crx";
 
 const char kAppMenuUtmSource[] = "ext_app_menu";
+const char kExtensionsMenuUtmSource[] = "ext_extensions_menu";
 
 GURL GetWebstoreLaunchURL() {
   extensions::ExtensionsClient* client = extensions::ExtensionsClient::Get();

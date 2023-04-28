@@ -33,8 +33,9 @@ extern const char kChromeWebstoreBaseURL[];
 extern const char kChromeWebstoreUpdateURL[];
 extern const char kNewChromeWebstoreBaseURL[];
 
-// UTM attribution source for extension app menu web store URL.
+// UTM attribution source for opening the web store URL from the toolbar.
 extern const char kAppMenuUtmSource[];
+extern const char kExtensionsMenuUtmSource[];
 
 // Returns the URL prefix for the extension/apps gallery. Can be set via the
 // --apps-gallery-url switch. The URL returned will not contain a trailing
