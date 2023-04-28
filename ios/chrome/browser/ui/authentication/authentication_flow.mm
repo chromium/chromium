@@ -114,6 +114,7 @@ enum AuthenticationState {
 
   Browser* _browser;
   id<SystemIdentity> _identityToSignIn;
+  signin_metrics::AccessPoint _accessPoint;
   NSString* _identityToSignInHostedDomain;
 
   // Token to have access to user policies from dmserver.
@@ -135,6 +136,7 @@ enum AuthenticationState {
 
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(id<SystemIdentity>)identity
+                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                postSignInAction:(PostSignInAction)postSignInAction
        presentingViewController:(UIViewController*)presentingViewController {
   if ((self = [super init])) {
@@ -143,6 +145,7 @@ enum AuthenticationState {
     DCHECK(identity);
     _browser = browser;
     _identityToSignIn = identity;
+    _accessPoint = accessPoint;
     _localDataClearingStrategy = SHOULD_CLEAR_DATA_USER_CHOICE;
     _postSignInAction = postSignInAction;
     _presentingViewController = presentingViewController;
@@ -461,6 +464,7 @@ enum AuthenticationState {
 
   if (accountManagerService->IsValidIdentity(identity)) {
     [_performer signInIdentity:identity
+                 atAccessPoint:self.accessPoint
               withHostedDomain:_identityToSignInHostedDomain
                 toBrowserState:browserState];
     _didSignIn = YES;

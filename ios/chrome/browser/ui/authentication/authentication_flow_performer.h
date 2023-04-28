@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer_delegate.h"
 
 class Browser;
@@ -39,6 +40,7 @@ class PrefService;
 
 // Signs `identity` with `hostedDomain` into `browserState`.
 - (void)signInIdentity:(id<SystemIdentity>)identity
+         atAccessPoint:(signin_metrics::AccessPoint)accessPoint
       withHostedDomain:(NSString*)hostedDomain
         toBrowserState:(ChromeBrowserState*)browserState;
 

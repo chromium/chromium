@@ -322,7 +322,8 @@ id<SystemIdentity> AuthenticationService::GetPrimaryIdentity(
   return account_manager_service_->GetIdentityWithGaiaID(authenticated_gaia_id);
 }
 
-void AuthenticationService::SignIn(id<SystemIdentity> identity) {
+void AuthenticationService::SignIn(id<SystemIdentity> identity,
+                                   signin_metrics::AccessPoint access_point) {
   ServiceStatus status = GetServiceStatus();
   CHECK(status == ServiceStatus::SigninAllowed ||
         status == ServiceStatus::SigninForcedByPolicy)
@@ -361,7 +362,7 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity) {
     // `GrantSyncConsent`.
     signin::PrimaryAccountMutator::PrimaryAccountError error =
         identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-            account_id, signin::ConsentLevel::kSignin);
+            account_id, signin::ConsentLevel::kSignin, access_point);
     CHECK_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
              error);
   }
@@ -375,6 +376,10 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity) {
   CHECK(!primary_account.empty());
   CHECK_EQ(account_id, primary_account);
   crash_keys::SetCurrentlySignedIn(true);
+}
+
+void AuthenticationService::SignIn(id<SystemIdentity> identity) {
+  SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 }
 
 void AuthenticationService::GrantSyncConsent(id<SystemIdentity> identity) {

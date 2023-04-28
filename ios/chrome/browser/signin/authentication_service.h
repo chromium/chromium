@@ -127,9 +127,17 @@ class AuthenticationService : public KeyedService,
   virtual id<SystemIdentity> GetPrimaryIdentity(
       signin::ConsentLevel consent_level) const;
 
-  // Grants signin::ConsentLevel::kSignin to `identity`.
-  // This method does not set up Sync-the-feature for the identity.
-  // Virtual for testing.
+  // Grants signin::ConsentLevel::kSignin to `identity` and records the signin
+  // at `accessPoint`. This method does not set up Sync-the-feature for the
+  // identity. Virtual for testing.
+  virtual void SignIn(id<SystemIdentity> identity,
+                      signin_metrics::AccessPoint access_point);
+
+  // Grants signin::ConsentLevel::kSignin to `identity` and records the signin
+  // at `ACCESS_POINT_UNKNOWN`. This method is used for testing Virtual for
+  // testing.
+  // TODO(crbug.com/1261772): Remove this method and update all unit
+  // tests accordingly.
   virtual void SignIn(id<SystemIdentity> identity);
 
   // Grants signin::ConsentLevel::kSync to `identity`.

@@ -10,6 +10,7 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/test/mock_sync_service.h"
@@ -119,7 +120,8 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
 // interrupted.
 TEST_F(AdvancedSettingsSigninMediatorTest,
        saveUserPreferenceSigninInterruptedWithSyncDisabled) {
-  authentication_service_->SignIn(identity_);
+  authentication_service_->SignIn(
+      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   [mediator_
       saveUserPreferenceForSigninResult:SigninCoordinatorResultInterrupted
                     originalSigninState:
@@ -133,7 +135,8 @@ TEST_F(AdvancedSettingsSigninMediatorTest,
 // interrupted with IdentitySigninStateSignedOut.
 TEST_F(AdvancedSettingsSigninMediatorTest,
        saveUserPreferenceSigninInterruptedWithSignout) {
-  authentication_service_->SignIn(identity_);
+  authentication_service_->SignIn(
+      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   [mediator_
       saveUserPreferenceForSigninResult:SigninCoordinatorResultInterrupted
                     originalSigninState:IdentitySigninStateSignedOut];

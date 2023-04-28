@@ -558,6 +558,7 @@ using signin_metrics::PromoAction;
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:self.unifiedConsentCoordinator.selectedIdentity
+                   accessPoint:self.logger.accessPoint
               postSignInAction:postSignInAction
       presentingViewController:self.viewController];
   authenticationFlow.dispatcher = HandlerForProtocol(

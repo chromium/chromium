@@ -110,6 +110,8 @@ class UserSigninMediatorTest : public PlatformTest {
     authentication_flow_ = [[AuthenticationFlow alloc]
                  initWithBrowser:browser_.get()
                         identity:identity_
+                     accessPoint:signin_metrics::AccessPoint::
+                                     ACCESS_POINT_UNKNOWN
                 postSignInAction:postSignInAction
         presentingViewController:presenting_view_controller_mock_];
     [authentication_flow_ setPerformerForTesting:performer_mock_];
@@ -123,9 +125,12 @@ class UserSigninMediatorTest : public PlatformTest {
           NSLog(@" fetchManagedStatus ");
           [authentication_flow_ didFetchManagedStatus:nil];
         });
-    OCMExpect([performer_mock_ signInIdentity:identity_
-                             withHostedDomain:nil
-                               toBrowserState:browser_state_.get()])
+    OCMExpect(
+        [performer_mock_
+              signInIdentity:identity_
+               atAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN
+            withHostedDomain:nil
+              toBrowserState:browser_state_.get()])
         .andDo(^(NSInvocation* invocation) {
           NSLog(@" signInIdentity ");
           authentication_service()->SignIn(identity_);

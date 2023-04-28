@@ -265,6 +265,7 @@
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:self.selectedIdentity
+                                      accessPoint:self.accessPoint
                                  postSignInAction:PostSignInAction::kNone
                          presentingViewController:self.navigationController];
   authenticationFlow.dispatcher = HandlerForProtocol(

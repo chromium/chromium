@@ -125,10 +125,11 @@ NSString* const kAuthenticationSnackbarCategory =
 }
 
 - (void)signInIdentity:(id<SystemIdentity>)identity
+         atAccessPoint:(signin_metrics::AccessPoint)accessPoint
       withHostedDomain:(NSString*)hostedDomain
         toBrowserState:(ChromeBrowserState*)browserState {
   AuthenticationServiceFactory::GetForBrowserState(browserState)
-      ->SignIn(identity);
+      ->SignIn(identity, accessPoint);
 }
 
 - (void)signOutBrowserState:(ChromeBrowserState*)browserState {

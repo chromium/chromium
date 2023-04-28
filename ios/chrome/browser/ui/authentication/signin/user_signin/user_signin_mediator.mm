@@ -193,7 +193,8 @@
   if (!authenticationService)
     return;
 
-  authenticationService->SignIn(identity);
+  signin_metrics::AccessPoint accessPoint = self.authenticationFlow.accessPoint;
+  authenticationService->SignIn(identity, accessPoint);
 }
 
 - (void)disconnect {
