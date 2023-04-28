@@ -525,8 +525,6 @@ static_library("test_support") {
     "test/keyboard_layout.h",
     "test/motion_event_test_utils.cc",
     "test/motion_event_test_utils.h",
-    "test/platform_event_source_test_api.cc",
-    "test/platform_event_source_test_api.h",
     "test/scoped_event_waiter.cc",
     "test/scoped_event_waiter.h",
     "test/test_event.cc",
