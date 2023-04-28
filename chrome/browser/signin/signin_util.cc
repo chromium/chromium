@@ -88,13 +88,14 @@ ProfileSeparationPolicyStateSet GetProfileSeparationPolicyState(
   std::string current_profile_account_restriction =
       profile->GetPrefs()->GetString(prefs::kManagedAccountsSigninRestriction);
 
-  if (profile->GetPrefs()->GetBoolean(
-          prefs::kManagedAccountsSigninRestrictionScopeMachine)) {
-    result.Put(ProfileSeparationPolicyState::kEnforcedOnMachineLevel);
-  }
   if (base::StartsWith(current_profile_account_restriction,
                        "primary_account")) {
     result.Put(ProfileSeparationPolicyState::kEnforcedByExistingProfile);
+
+    if (profile->GetPrefs()->GetBoolean(
+            prefs::kManagedAccountsSigninRestrictionScopeMachine)) {
+      result.Put(ProfileSeparationPolicyState::kEnforcedOnMachineLevel);
+    }
   }
   if (base::StartsWith(current_profile_account_restriction,
                        "primary_account_strict")) {
