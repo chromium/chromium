@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -21,6 +22,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/cc_export.h"
 #include "cc/paint/image_transfer_cache_entry.h"
@@ -36,6 +38,8 @@ class RasterContextProvider;
 }
 
 namespace cc {
+
+CC_EXPORT BASE_DECLARE_FEATURE(kPurgeOldCacheEntriesOnTimer);
 
 class RasterDarkModeFilter;
 
@@ -155,6 +159,9 @@ class CC_EXPORT GpuImageDecodeCache
   // Returns the GL texture ID backing the given SkImage.
   static GrGLuint GlIdFromSkImage(const SkImage* image);
 
+  static constexpr base::TimeDelta kPurgeInterval = base::Seconds(30);
+  static constexpr base::TimeDelta kPurgeMaxAge = base::Seconds(30);
+
   // ImageDecodeCache overrides.
 
   // Finds the existing uploaded image for the provided DrawImage. Creates an
@@ -231,6 +238,22 @@ class CC_EXPORT GpuImageDecodeCache
     return paint_image_entries_.size();
   }
   bool NeedsDarkModeFilterForTesting(const DrawImage& draw_image);
+
+  bool HasPendingPurgeTaskForTesting() const {
+    base::AutoLock locker(lock_);
+    return has_pending_purge_task();
+  }
+
+  void SetTimerTaskRunnerForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner)
+      LOCKS_EXCLUDED(lock_) {
+    base::AutoLock locker(lock_);
+    timer_.SetTaskRunner(task_runner);
+  }
+
+  // Updating the |last_use| field of the associated |ImageData|.
+  void TouchCacheEntryForTesting(const DrawImage& draw_image)
+      LOCKS_EXCLUDED(lock_);
 
  private:
   enum class DecodedDataMode { kGpu, kCpu, kTransferCache };
@@ -868,6 +891,10 @@ class CC_EXPORT GpuImageDecodeCache
   // Purges any old entries from the PersistentCache if the feature to enable
   // this behavior is turned on.
   void MaybePurgeOldCacheEntries() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void PostPurgeOldCacheEntriesTask() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void DoPurgeOldCacheEntries(base::TimeDelta max_age)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void PurgeOldCacheEntriesCallback() LOCKS_EXCLUDED(lock_);
 
   // Adds mips to an image if required.
   void UpdateMipsIfNeeded(const DrawImage& draw_image, ImageData* image_data)
@@ -876,6 +903,10 @@ class CC_EXPORT GpuImageDecodeCache
   static scoped_refptr<TileTask> GetTaskFromMapForClientId(
       const ClientId client_id,
       const ImageTaskMap& task_map);
+
+  bool has_pending_purge_task() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    return timer_.IsRunning();
+  }
 
   const SkColorType color_type_;
   const bool use_transfer_cache_ = false;
@@ -891,6 +922,8 @@ class CC_EXPORT GpuImageDecodeCache
   // The exception are const members like |normal_max_cache_bytes_| that can
   // be accessed without a lock since they are thread safe.
   mutable base::Lock lock_;
+
+  base::OneShotTimer timer_ GUARDED_BY(lock_);
 
   PersistentCache persistent_cache_ GUARDED_BY(lock_);
 
