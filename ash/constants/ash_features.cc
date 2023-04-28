@@ -312,6 +312,11 @@ BASE_FEATURE(kCameraPrivacySwitchNotifications,
              "CameraPrivacySwitchNotifications",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the capture mode advanced audio settings are enabled.
+BASE_FEATURE(kCaptureModeAudioMixing,
+             "CaptureModeAudioMixing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the capture mode demo tools feature is enabled for Capture
 // Mode.
 BASE_FEATURE(kCaptureModeDemoTools,
@@ -2516,6 +2521,10 @@ bool IsBluetoothQualityReportEnabled() {
 
 bool IsCalendarJellyEnabled() {
   return base::FeatureList::IsEnabled(kCalendarJelly);
+}
+
+bool IsCaptureModeAudioMixingEnabled() {
+  return base::FeatureList::IsEnabled(kCaptureModeAudioMixing);
 }
 
 bool IsCaptivePortalErrorPageEnabled() {
