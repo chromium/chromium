@@ -68,7 +68,6 @@ const int kCompatibleVersionNumber = 106;
 sql::InitStatus FailedMigrationTo(int version_num) {
   LOG(WARNING) << "Unable to update web database to version " << version_num
                << ".";
-  NOTREACHED();
   return sql::INIT_FAILURE;
 }
 
