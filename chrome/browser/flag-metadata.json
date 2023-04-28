@@ -1355,12 +1355,12 @@
   {
     "name": "customize-chrome-color-extraction",
     "owners": [ "rtatum@google.com", "tiborg" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "customize-chrome-side-panel",
     "owners": [ "chrome-desktop-ntp@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "darken-websites-checkbox-in-themes-setting",
@@ -5255,7 +5255,7 @@
   {
     "name": "ntp-drive-module",
     "owners": [ "mahmadi", "tiborg" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "ntp-dummy-modules",
@@ -5340,7 +5340,7 @@
   {
     "name": "ntp-recipe-tasks-module",
     "owners": [ "rtatum", "tiborg" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "ntp-reduced-logo-space",
@@ -5355,7 +5355,7 @@
   {
     "name": "ntp-single-row-shortcuts",
     "owners": [ "//components/search/OWNERS" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "ntp-view-hierarchy-repair",
