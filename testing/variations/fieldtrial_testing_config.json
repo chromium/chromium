@@ -9965,28 +9965,6 @@
             ]
         }
     ],
-    "PermissionConfirmationChip": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ConfirmationChipNoLockIconOverride",
-                    "enable_features": [
-                        "ConfirmationChip"
-                    ],
-                    "disable_features": [
-                        "ChipLocationIconOverride"
-                    ]
-                }
-            ]
-        }
-    ],
     "PermissionsQuietPromptsSurvey": [
         {
             "platforms": [
