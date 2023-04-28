@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
@@ -288,6 +289,8 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   std::map<std::string, LoadInfo> load_cache_;
 
   const raw_ptr<ComponentUpdateService, ExperimentalAsh> component_updater_;
+
+  base::WeakPtrFactory<CrOSComponentInstaller> weak_factory_{this};
 };
 
 }  // namespace component_updater

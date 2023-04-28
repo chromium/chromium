@@ -351,7 +351,7 @@ void CrOSComponentInstaller::RegisterInstalled() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(GetInstalled),
       base::BindOnce(&CrOSComponentInstaller::RegisterN,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void CrOSComponentInstaller::RegisterCompatiblePath(
@@ -427,13 +427,14 @@ void CrOSComponentInstaller::Install(const std::string& name,
     return;
   }
 
-  Register(*config,
-           base::BindOnce(
-               &CrOSComponentInstaller::StartInstall, base::Unretained(this),
-               name, GenerateId(config->sha2hash), update_policy,
-               base::BindOnce(&CrOSComponentInstaller::FinishInstall,
-                              base::Unretained(this), name, mount_policy,
-                              update_policy, std::move(load_callback))));
+  Register(
+      *config,
+      base::BindOnce(
+          &CrOSComponentInstaller::StartInstall, weak_factory_.GetWeakPtr(),
+          name, GenerateId(config->sha2hash), update_policy,
+          base::BindOnce(&CrOSComponentInstaller::FinishInstall,
+                         weak_factory_.GetWeakPtr(), name, mount_policy,
+                         update_policy, std::move(load_callback))));
 }
 
 void CrOSComponentInstaller::StartInstall(
@@ -512,7 +513,8 @@ void CrOSComponentInstaller::LoadInternal(const std::string& name,
   ash::ImageLoaderClient::Get()->LoadComponentAtPath(
       name, path,
       base::BindOnce(&CrOSComponentInstaller::FinishLoad,
-                     base::Unretained(this), std::move(load_callback), name));
+                     weak_factory_.GetWeakPtr(), std::move(load_callback),
+                     name));
 }
 
 void CrOSComponentInstaller::FinishLoad(LoadCallback load_callback,
