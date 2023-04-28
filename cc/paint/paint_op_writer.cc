@@ -176,7 +176,7 @@ void PaintOpWriter::WriteFlattenable(const SkFlattenable* val) {
     return;
   }
 
-  uint64_t* size_memory = WriteSize(0u);
+  void* size_memory = SkipSize();
   if (!valid_)
     return;
 
@@ -186,24 +186,33 @@ void PaintOpWriter::WriteFlattenable(const SkFlattenable* val) {
     valid_ = false;
     return;
   }
-  *size_memory = bytes_written;
+  WriteSizeAt(size_memory, bytes_written);
   DidWrite(bytes_written);
 }
 
-uint64_t* PaintOpWriter::WriteSize(size_t size) {
-  // size_t is always serialized as uint64_t to make the serialized result
-  // portable between 32bit and 64bit processes.
-  uint64_t* memory = reinterpret_cast<uint64_t*>(memory_.get());
-  uint64_t size64 = static_cast<uint64_t>(size);
+void PaintOpWriter::WriteSize(size_t size) {
+  EnsureBytes(SerializedSize<size_t>());
+  if (!valid_) {
+    return;
+  }
+  WriteSizeAt(memory_.get(), size);
+  DidWrite(SerializedSize<size_t>());
+}
 
-  // size_t is always aligned to only 4 bytes. Avoid undefined behavior by
-  // reading as two uint32_ts and combining the result.
-  // https://crbug.com/1429994
-  uint32_t lo = static_cast<uint32_t>(size64);
-  uint32_t hi = static_cast<uint32_t>(size64 >> 32);
-  WriteSimple(lo);
-  WriteSimple(hi);
+void* PaintOpWriter::SkipSize() {
+  auto* memory = memory_.get();
+  WriteSize(0u);
   return memory;
+}
+
+void PaintOpWriter::WriteSizeAt(void* memory, size_t size) {
+  // size_t is always serialized as uint32_ts to make the serialized result
+  // portable between 32bit and 64bit processes, and to meet the 4-byte
+  // minimum alignment requirement of PaintOpWriter (https://crbug.com/1429994
+  // and https://crbug.com/1440013).
+  uint32_t* memory_32 = static_cast<uint32_t*>(memory);
+  memory_32[0] = static_cast<uint32_t>(size);
+  memory_32[1] = static_cast<uint32_t>(static_cast<uint64_t>(size) >> 32);
 }
 
 void PaintOpWriter::Write(SkScalar data) {
@@ -215,10 +224,6 @@ void PaintOpWriter::Write(uint8_t data) {
 }
 
 void PaintOpWriter::Write(uint32_t data) {
-  WriteSimple(data);
-}
-
-void PaintOpWriter::Write(uint64_t data) {
   WriteSimple(data);
 }
 
@@ -267,7 +272,7 @@ void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
   } else {
     Write(static_cast<uint32_t>(PaintCacheEntryState::kInlinedDoNotCache));
   }
-  uint64_t* bytes_to_skip = WriteSize(0u);
+  void* bytes_to_skip = SkipSize();
   if (!valid_)
     return;
 
@@ -280,7 +285,7 @@ void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
   if (use_paint_cache == UsePaintCache::kEnabled) {
     options_->paint_cache->Put(PaintCacheDataType::kPath, id, bytes_written);
   }
-  *bytes_to_skip = bytes_written;
+  WriteSizeAt(bytes_to_skip, bytes_written);
   DidWrite(bytes_written);
 }
 
@@ -360,7 +365,7 @@ void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
   uint32_t id = skottie->id();
   Write(id);
 
-  uint64_t* bytes_to_skip = WriteSize(0u);
+  void* bytes_to_skip = SkipSize();
   if (!valid_)
     return;
 
@@ -377,7 +382,7 @@ void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
   }
 
   DCHECK_LE(bytes_written, remaining_bytes_);
-  *bytes_to_skip = bytes_written;
+  WriteSizeAt(bytes_to_skip, bytes_written);
   DidWrite(bytes_written);
 }
 
@@ -485,7 +490,7 @@ void PaintOpWriter::Write(const sk_sp<GrSlug>& slug) {
     return;
 
   AssertFieldAlignment();
-  uint64_t* size_memory = WriteSize(0u);
+  void* size_memory = SkipSize();
   if (!valid_)
     return;
 
@@ -501,7 +506,7 @@ void PaintOpWriter::Write(const sk_sp<GrSlug>& slug) {
     }
   }
 
-  *size_memory = bytes_written;
+  WriteSizeAt(size_memory, bytes_written);
   DidWrite(bytes_written);
 }
 
@@ -1003,7 +1008,7 @@ void PaintOpWriter::Write(const PaintRecord& record,
   // We need to record how many bytes we will serialize, but we don't know this
   // information until we do the serialization. So, write 0 as the size first,
   // and amend it after writing.
-  uint64_t* size_memory = WriteSize(0u);
+  void* size_memory = SkipSize();
   if (!valid_)
     return;
 
@@ -1035,7 +1040,7 @@ void PaintOpWriter::Write(const PaintRecord& record,
 
   // Write the size to the size memory, which preceeds the memory for the
   // record.
-  *size_memory = serializer.written();
+  WriteSizeAt(size_memory, serializer.written());
 
   // The serializer should have failed if it ran out of space. DCHECK to verify
   // that it wrote at most as many bytes as we had left.
