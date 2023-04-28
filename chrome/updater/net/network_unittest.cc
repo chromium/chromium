@@ -108,8 +108,8 @@ class UpdaterNetworkTest : public ::testing::Test {
     return http_response;
   }
 
-  MOCK_METHOD0(DownloadToFileCompleted, void(void));
-  MOCK_METHOD0(PostRequestCompleted, void(void));
+  MOCK_METHOD(void, DownloadToFileCompleted, ());
+  MOCK_METHOD(void, PostRequestCompleted, ());
 
  protected:
   base::test::TaskEnvironment task_environment_;
