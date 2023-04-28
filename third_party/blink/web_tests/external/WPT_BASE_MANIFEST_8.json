@@ -189920,6 +189920,19 @@
         {}
        ]
       ],
+      "text-wrap-balance-text-indent-001.html": [
+       "e06d91e599e6e137d3c178d3553ca82ff370eae6",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/text-wrap-balance-text-indent-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "textarea-break-spaces-001.html": [
        "ad81e99768f9816c6e8a659c13aed81c4f22d940",
        [
@@ -270239,16 +270252,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "44f55ca094ff76c7f35c96d84445fdd31cf9cb55",
-     []
-    ],
-    "mtime.json": [
-     "ff40b363f78e8a259c7ad2e5d0ad900d4234ff1c",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -321741,6 +321744,10 @@
        ],
        "text-wrap-balance-line-clamp-001-ref.html": [
         "4e465be7ccf97dfe4e8523f92aa6aec4470acbe2",
+        []
+       ],
+       "text-wrap-balance-text-indent-001-ref.html": [
+        "401e35e2f1f8c534487782df003078b1a53b6e36",
         []
        ],
        "textarea-pre-wrap-001-ref.html": [
@@ -392762,8 +392769,16 @@
      "b33ebb8f2bfa17e8cc33a6ec75d8d358b01e2b9f",
      []
     ],
+    "hard_sigmoid.https.any-expected.txt": [
+     "5f06f607d87fd16c42f9b7f53b3013a678a2727b",
+     []
+    ],
     "hard_sigmoid.https.any.js.ini": [
      "72fe9565a99c5e5975ac518f919fad3543b91d09",
+     []
+    ],
+    "hard_sigmoid.https.any.worker-expected.txt": [
+     "e7a009e75f99f53d8f8a557d471370e597070ed0",
      []
     ],
     "hard_swish.https.any.js.ini": [
@@ -392778,8 +392793,16 @@
      "7b3310be72b46a3b99c5fea423dd8cbeda2cdfcd",
      []
     ],
+    "linear.https.any-expected.txt": [
+     "81d05c713c5eee1714125dc4e057f6ee0ec9f21b",
+     []
+    ],
     "linear.https.any.js.ini": [
      "b3bb1d888bd1a2392a2ea1b219e30afaacfe089a",
+     []
+    ],
+    "linear.https.any.worker-expected.txt": [
+     "7302388a3767a07984a8f5cff65b00247ee6662a",
      []
     ],
     "matmul.https.any-expected.txt": [
@@ -392807,7 +392830,7 @@
      []
     ],
     "reduction.https.any-expected.txt": [
-     "6257e70f7946e50d223d2aa9b6fd8a936fac5432",
+     "8614cc2e82ca144d7d6a15d76f6f125ccd1198f4",
      []
     ],
     "reduction.https.any.js.ini": [
@@ -392815,7 +392838,7 @@
      []
     ],
     "reduction.https.any.worker-expected.txt": [
-     "e9901fd35599b827fabc94eab555de120faf8b7b",
+     "1f05df1e03ac1899aee28b953f89909883a26c33",
      []
     ],
     "relu.https.any.js.ini": [
@@ -393047,7 +393070,7 @@
      []
     ],
     "slice.https.any-expected.txt": [
-     "cefdb035a2113e2c6aa6f081422273e34aa6c626",
+     "7652a09f011009d0c86648ed6736b6828565e065",
      []
     ],
     "slice.https.any.js.ini": [
@@ -393055,15 +393078,23 @@
      []
     ],
     "slice.https.any.worker-expected.txt": [
-     "4c362ac5bee440728ed34264c82383ccec5669f4",
+     "493e9b020042d66ff435a3067c089d6b6162d1fb",
      []
     ],
     "softmax.https.any.js.ini": [
      "a8a6b6b1405075fa6be9163df14a2c24dee34b4a",
      []
     ],
+    "softsign.https.any-expected.txt": [
+     "614ecd0325350cdf1348901b7614bc8890ae5fe2",
+     []
+    ],
     "softsign.https.any.js.ini": [
      "1975679ad23458ddcea1198691b6806a395a5830",
+     []
+    ],
+    "softsign.https.any.worker-expected.txt": [
+     "a0f5d8fb4a83d3cc8d752a5d749b21a6f99f358c",
      []
     ],
     "split.https.any-expected.txt": [
@@ -582046,6 +582077,15 @@
      [
       null,
       {}
+     ]
+    ],
+    "prefetch-time-to-fetch.https.html": [
+     "528cd657f6ac3ae20bc74f75dce5317d259756f7",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "prefetch-types.https.html": [
