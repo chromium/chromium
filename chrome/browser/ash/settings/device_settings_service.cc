@@ -160,8 +160,7 @@ void DeviceSettingsService::LoadIfNotPresent() {
 
 void DeviceSettingsService::LoadImmediately() {
   std::unique_ptr<SessionManagerOperation> operation(new LoadSettingsOperation(
-      /*request_key_load=*/true, /*cloud_validations=*/true,
-      /*force_immediate_load=*/true,
+      /*request_key_load=*/true, /*force_immediate_load=*/true,
       base::BindOnce(&DeviceSettingsService::HandleCompletedOperation,
                      weak_factory_.GetWeakPtr(), base::OnceClosure())));
   operation->Start(session_manager_client_, owner_key_util_, public_key_);
@@ -291,8 +290,7 @@ void DeviceSettingsService::Enqueue(
 
 void DeviceSettingsService::EnqueueLoad(bool request_key_load) {
   Enqueue(std::make_unique<LoadSettingsOperation>(
-      request_key_load, /*cloud_validations=*/true,
-      /*force_immediate_load=*/false,
+      request_key_load, /*force_immediate_load=*/false,
       base::BindOnce(&DeviceSettingsService::HandleCompletedAsyncOperation,
                      weak_factory_.GetWeakPtr(), base::OnceClosure())));
 }
