@@ -61,20 +61,33 @@ const char kPreloadWebStateGroup[] = "PreloadGroup";
 - (void)removeReportParameter:(NSNumber*)key pending:(BOOL)pending {
   int index = key.intValue;
   DCHECK(index < kNumberOfURLsToSend);
-  if (pending)
+  if (pending) {
     pending_url_crash_keys[index].Clear();
-  else
+  } else {
     url_crash_keys[index].Clear();
+    if (index == 0) {
+      // Only sync (and clear) the first non-pending URL to PreviousSessionInfo.
+      [[PreviousSessionInfo sharedInstance]
+          removeReportParameterForKey:@"url0"];
+    }
+  }
 }
 - (void)setReportParameterURL:(const GURL&)URL
                        forKey:(NSNumber*)key
                       pending:(BOOL)pending {
   int index = key.intValue;
   DCHECK(index < kNumberOfURLsToSend);
-  if (pending)
+  if (pending) {
     pending_url_crash_keys[index].Set(URL.spec());
-  else
+  } else {
     url_crash_keys[index].Set(URL.spec());
+    if (index == 0) {
+      // Only sync (and clear) the first non-pending URL to PreviousSessionInfo.
+      [[PreviousSessionInfo sharedInstance]
+          setReportParameterValue:base::SysUTF8ToNSString(URL.spec())
+                           forKey:@"url0"];
+    }
+  }
 }
 @end
 

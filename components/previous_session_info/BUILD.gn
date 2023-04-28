@@ -12,6 +12,7 @@ source_set("previous_session_info") {
   ]
   deps = [
     "//base",
+    "//components/variations",
     "//components/version_info",
     "//url",
   ]

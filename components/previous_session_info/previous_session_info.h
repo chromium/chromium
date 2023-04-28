@@ -130,7 +130,7 @@ enum class DeviceBatteryState {
     NSMutableSet<NSString*>* connectedSceneSessionsIDs;
 
 // Crash report parameters as key-value pairs.
-@property(nonatomic, readonly)
+@property(atomic, readonly)
     NSDictionary<NSString*, NSString*>* reportParameters;
 
 // Memory footprint in bytes of the browser process.
@@ -146,6 +146,9 @@ enum class DeviceBatteryState {
 // Number of open "off the record" tabs in the previous session.
 @property(nonatomic, readonly) NSInteger OTRTabCount;
 
+// The breadcrumbs from the previous session.
+@property(atomic, readonly) NSString* breadcrumbs;
+
 // Singleton PreviousSessionInfo. During the lifetime of the app, the returned
 // object is the same, and describes the previous session, even after a new
 // session has started (by calling beginRecordingCurrentSession).
@@ -154,6 +157,9 @@ enum class DeviceBatteryState {
 // Clears the persisted information about the previous session and starts
 // persisting information about the current session, for use in a next session.
 - (void)beginRecordingCurrentSession;
+
+// Start recording active field trials.
+- (void)beginRecordingFieldTrials;
 
 // Starts memory usage data recording with given |interval|.
 - (void)startRecordingMemoryFootprintWithInterval:(base::TimeDelta)interval;
@@ -207,6 +213,9 @@ enum class DeviceBatteryState {
 - (void)updateCurrentSessionTabCount:(NSInteger)count;
 // Records number of off the record tabs.
 - (void)updateCurrentSessionOTRTabCount:(NSInteger)count;
+
+// Records breadcrumbs from the previous session.
+- (void)setBreadcrumbsLog:(NSString*)breadcrumbs;
 
 // Records information crash report parameters.
 - (void)setReportParameterValue:(NSString*)value forKey:(NSString*)key;

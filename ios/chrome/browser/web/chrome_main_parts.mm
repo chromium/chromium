@@ -39,6 +39,7 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/json_pref_store.h"
 #import "components/prefs/pref_service.h"
+#import "components/previous_session_info/previous_session_info.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/translate/core/browser/translate_metrics_logger_impl.h"
@@ -77,6 +78,7 @@
 #import "net/http/http_stream_factory.h"
 #import "net/url_request/url_request.h"
 #import "rlz/buildflags/buildflags.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
 
@@ -134,6 +136,10 @@ void IOSChromeMainParts::PreCreateMainMessageLoop() {
   const std::string loaded_locale =
       ui::ResourceBundle::InitSharedInstanceWithLocale(
           std::string(), nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
+  std::string app_locale = l10n_util::GetApplicationLocale(std::string());
+  [[PreviousSessionInfo sharedInstance]
+      setReportParameterValue:base::SysUTF8ToNSString(app_locale)
+                       forKey:@"icu_locale_input"];
   CHECK(!loaded_locale.empty());
 
   base::FilePath resources_pack_path;

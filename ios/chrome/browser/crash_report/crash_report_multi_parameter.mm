@@ -75,6 +75,9 @@ const int kMaximumMultiParameterValueSize = 256;
     return;
   }
   _key->Set(stateAsJson);
+  [[PreviousSessionInfo sharedInstance]
+      setReportParameterValue:base::SysUTF8ToNSString(stateAsJson)
+                       forKey:@"user_application_state"];
 }
 
 @end

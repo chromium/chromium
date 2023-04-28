@@ -245,6 +245,7 @@ source_set("web_internal") {
     "//components/password_manager/ios:password_manager_feature_header",
     "//components/payments/core",
     "//components/prefs",
+    "//components/previous_session_info",
     "//components/resources",
     "//components/signin/public/identity_manager",
     "//components/strings",

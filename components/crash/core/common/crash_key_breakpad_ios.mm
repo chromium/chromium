@@ -9,7 +9,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/crash_key_base_support.h"
 #include "components/crash/core/common/reporter_running_ios.h"
-#import "components/previous_session_info/previous_session_info.h"
 #import "third_party/breakpad/breakpad/src/client/ios/Breakpad.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 
@@ -46,8 +45,6 @@ void WithBreakpadRefSync(void (^block)(BreakpadRef ref)) {
 void CrashKeyStringImpl::Set(base::StringPiece value) {
   NSString* key = base::SysUTF8ToNSString(name_);
   NSString* value_ns = base::SysUTF8ToNSString(value);
-  [[PreviousSessionInfo sharedInstance] setReportParameterValue:value_ns
-                                                         forKey:key];
   if (!crash_reporter::IsBreakpadRunning())
     return;
 
@@ -56,8 +53,6 @@ void CrashKeyStringImpl::Set(base::StringPiece value) {
 
 void CrashKeyStringImpl::Clear() {
   NSString* key = base::SysUTF8ToNSString(name_);
-  [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:key];
-
   if (!crash_reporter::IsBreakpadRunning())
     return;
 

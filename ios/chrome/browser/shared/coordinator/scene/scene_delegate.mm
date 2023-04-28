@@ -4,16 +4,45 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 
+#import "base/files/file_path.h"
 #import "base/mac/foundation_util.h"
+#import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
+#import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
+#import "ios/chrome/browser/paths/paths.h"
 #import "ios/chrome/browser/ui/appearance/appearance_customization.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Set the breadcrumbs log in PreviousSessionInfo.
+void SyncBreadcrumbsLog() {
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    base::FilePath storage_dir;
+    bool result = base::PathService::Get(ios::DIR_USER_DATA, &storage_dir);
+    DCHECK(result);
+    const base::FilePath breadcrumbs_file_path =
+        breadcrumbs::GetBreadcrumbPersistentStorageFilePath(storage_dir);
+    dispatch_async(
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+          NSString* breadcrumbs = [NSString
+              stringWithContentsOfFile:base::SysUTF8ToNSString(
+                                           breadcrumbs_file_path.value())
+                              encoding:NSUTF8StringEncoding
+                                 error:NULL];
+          [[PreviousSessionInfo sharedInstance] setBreadcrumbsLog:breadcrumbs];
+        });
+  });
+}
+}  // namespace
 NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 
 @implementation SceneDelegate
@@ -40,6 +69,10 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
     // With iOS15 pre-warming, this appears to be the first callback after the
     // app is restored.  This is a no-op in non-prewarming.
     [[MainThreadFreezeDetector sharedInstance] start];
+
+    // Sync the breadcrumbs log as early as possible, before any MetricKit crash
+    // reports may come in.
+    SyncBreadcrumbsLog();
 
     // Sizing of the window is handled by UIKit.
     _window = [[ChromeOverlayWindow alloc] init];
