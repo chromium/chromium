@@ -19,13 +19,15 @@ declare_args() {
   # bad compile times.
   chrome_pgo_phase = 0
   if (!dcheck_always_on && is_official_build &&
-      # TODO(crbug.com/1052397): Remove chromeos_is_browser_only once
-      # target_os switch for lacros-chrome is completed.
       # TODO(crbug.com/1336055): Update this now-outdated condition with regard
       # to chromecast and determine whether chromeos_is_browser_only is
       # obsolete.
       (is_high_end_android || is_win || is_mac || is_fuchsia ||
-       (is_linux && !is_castos && !chromeos_is_browser_only))) {
+       (is_linux && !is_castos) ||
+       # TODO(crbug.com/1435082): Currently arm boards are not working.
+       # Enable this for arm boards, once the lab set up is fixed.
+       (is_chromeos_lacros && is_chromeos_device && target_cpu != "arm" &&
+        target_cpu != "arm64"))) {
     chrome_pgo_phase = 2
   }
 
