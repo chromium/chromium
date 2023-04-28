@@ -135,6 +135,12 @@ class CONTENT_EXPORT UtilityProcessHost
   // Provides extra switches to append to the process's command line.
   void SetExtraCommandLineSwitches(std::vector<std::string> switches);
 
+#if BUILDFLAG(IS_WIN)
+  // Specifies libraries to preload before the sandbox is locked down. Paths
+  // should be absolute.
+  void SetPreloadLibraries(const std::vector<base::FilePath>& preloads);
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // Adds to ChildProcessLauncherFileData::files_to_preload, which maps |key| ->
   // |file| in the new process's base::FileDescriptorStore.
@@ -186,6 +192,11 @@ class CONTENT_EXPORT UtilityProcessHost
 
   // Extra command line switches to append.
   std::vector<std::string> extra_switches_;
+
+#if BUILDFLAG(IS_WIN)
+  // Libraries to load before sandbox lockdown. Only used on Windows.
+  std::vector<base::FilePath> preload_libraries_;
+#endif  // BUILDFLAG(IS_WIN)
 
   // Extra files and file descriptors to preload in the new process.
   std::unique_ptr<ChildProcessLauncherFileData> file_data_;

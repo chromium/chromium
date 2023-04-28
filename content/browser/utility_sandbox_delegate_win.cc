@@ -7,6 +7,8 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/pickle.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
@@ -237,6 +239,19 @@ bool ScreenAIInitializeConfig(sandbox::TargetConfig* config,
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
+// Adds preload-libraries to the delegate blob for utility_main() to access
+// before lockdown is initialized.
+void AddPreloadLibraryDelegateData(
+    sandbox::TargetPolicy* policy,
+    std::vector<base::FilePath>& preload_libraries) {
+  CHECK(!preload_libraries.empty());
+  base::Pickle pickle;
+  for (const auto& library_path : preload_libraries) {
+    library_path.WriteToPickle(&pickle);
+  }
+  policy->AddDelegateData(base::make_span(pickle.data(), pickle.size()));
+}
+
 }  // namespace
 
 std::string UtilitySandboxedProcessLauncherDelegate::GetSandboxTag() {
@@ -397,5 +412,13 @@ bool UtilitySandboxedProcessLauncherDelegate::AllowWindowsFontsDir() {
     return true;
   }
   return false;
+}
+
+bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
+    sandbox::TargetPolicy* policy) {
+  if (!preload_libraries_.empty()) {
+    AddPreloadLibraryDelegateData(policy, preload_libraries_);
+  }
+  return SandboxedProcessLauncherDelegate::PreSpawnTarget(policy);
 }
 }  // namespace content

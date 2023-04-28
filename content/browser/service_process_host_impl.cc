@@ -192,12 +192,19 @@ void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
                     ? options.display_name
                     : base::UTF8ToUTF16(*receiver.interface_name()));
   host->SetMetricsName(*receiver.interface_name());
-  if (!ShouldEnableSandbox(sandbox))
+  if (!ShouldEnableSandbox(sandbox)) {
     sandbox = sandbox::mojom::Sandbox::kNoSandbox;
+  }
   host->SetSandboxType(sandbox);
   host->SetExtraCommandLineSwitches(std::move(options.extra_switches));
-  if (options.child_flags)
+  if (options.child_flags) {
     host->set_child_flags(*options.child_flags);
+  }
+#if BUILDFLAG(IS_WIN)
+  if (!options.preload_libraries.empty()) {
+    host->SetPreloadLibraries(options.preload_libraries);
+  }
+#endif  // BUILDFLAG(IS_WIN)
   host->Start();
   host->GetChildProcess()->BindServiceInterface(std::move(receiver));
 }
