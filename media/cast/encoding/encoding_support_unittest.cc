@@ -10,10 +10,6 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/cpu.h"  // nogncheck
-#endif
-
 namespace media::cast::encoding_support {
 namespace {
 

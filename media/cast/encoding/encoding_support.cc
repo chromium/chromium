@@ -4,15 +4,6 @@
 
 #include "media/cast/encoding/external_video_encoder.h"
 
-#if DCHECK_IS_ON()
-#include <ios>
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/cpu.h"            // nogncheck
-#include "base/no_destructor.h"  // nogncheck
-#endif
-
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
