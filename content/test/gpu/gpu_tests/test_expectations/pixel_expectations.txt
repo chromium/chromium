@@ -216,6 +216,9 @@ crbug.com/1356246 [ mac intel debug ] Pixel_SVGHuge [ Failure ]
 # Mac Nvidia laptops are quite old and the test times out on release builds too.
 crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
 
+# Fuchsia devices do not have enough memory for this test.
+crbug.com/1441056 [ fuchsia ] Pixel_SVGHuge [ Skip ]
+
 # MediaFoundation for Clear DirectComposition only supported on WIN10_RS3.
 [ android ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
 [ chromeos ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
