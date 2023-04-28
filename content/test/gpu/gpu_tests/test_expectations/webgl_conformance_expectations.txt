@@ -324,9 +324,6 @@ crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/array
 crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/reading/read-pixels-test.html [ Failure ]
 
-# VANGLE + debug timeouts on Windows and Linux
-crbug.com/1432243 [ debug angle-vulkan passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Skip ]
-
 ###############################
 # Permanent Slow Expectations #
 ###############################
