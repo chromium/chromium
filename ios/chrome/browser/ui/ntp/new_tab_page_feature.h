@@ -115,7 +115,12 @@ bool IsNTPViewHierarchyRepairEnabled();
 // Whether the Discover feed top sync promotion is enabled.
 bool IsDiscoverFeedTopSyncPromoEnabled();
 
+// Returns the feed top sync promo's UI style.
 SigninPromoViewStyle GetTopOfFeedPromoStyle();
+
+// Whether the feed top sync promo should only be shown to users who previously
+// engaged with the feed.
+bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo();
 
 // Returns the number of impressions before autodismissing the feed sync promo.
 int FeedSyncPromoAutodismissCount();

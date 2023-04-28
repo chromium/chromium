@@ -599,7 +599,9 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // For the top-of-feed promo, the user must have engaged with a feed first.
   if (accessPoint ==
           signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO &&
-      ![[NSUserDefaults standardUserDefaults] boolForKey:kEngagedWithFeedKey]) {
+      (![[NSUserDefaults standardUserDefaults]
+           boolForKey:kEngagedWithFeedKey] ||
+       ShouldIgnoreFeedEngagementConditionForTopSyncPromo())) {
     return NO;
   }
 
