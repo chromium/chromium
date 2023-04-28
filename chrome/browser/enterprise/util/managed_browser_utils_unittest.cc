@@ -133,21 +133,21 @@ class AutoSelectCertificateTest : public testing::Test {
         base::Value(std::move(root)));
   }
 
-  base::Value CreateFilterValue(const std::string& issuer,
-                                const std::string& subject) {
+  base::Value::Dict CreateFilterValue(const std::string& issuer,
+                                      const std::string& subject) {
     EXPECT_FALSE(issuer.empty() && subject.empty());
 
-    base::Value filter(base::Value::Type::DICT);
+    base::Value::Dict filter;
     if (!issuer.empty()) {
       base::Value issuer_value(base::Value::Type::DICT);
       issuer_value.SetStringKey("CN", issuer);
-      filter.SetKey("ISSUER", std::move(issuer_value));
+      filter.Set("ISSUER", std::move(issuer_value));
     }
 
     if (!subject.empty()) {
       base::Value subject_value(base::Value::Type::DICT);
       subject_value.SetStringKey("CN", subject);
-      filter.SetKey("SUBJECT", std::move(subject_value));
+      filter.Set("SUBJECT", std::move(subject_value));
     }
 
     return filter;
