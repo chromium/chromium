@@ -237,14 +237,6 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
   virtual void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) = 0;
 
-  // Gets SSH server public key of container and trusted SSH client private key
-  // which can be used to connect to the container.
-  // |callback| is called after the method call finishes.
-  virtual void GetContainerSshKeys(
-      const vm_tools::concierge::ContainerSshKeysRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::concierge::ContainerSshKeysResponse> callback) = 0;
-
   // Attaches a USB device to a VM.
   // |callback| is called once the method call has finished.
   virtual void AttachUsbDevice(

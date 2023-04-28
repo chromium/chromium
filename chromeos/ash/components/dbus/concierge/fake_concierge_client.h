@@ -118,10 +118,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
           vm_tools::concierge::SetVmCpuRestrictionResponse> callback) override;
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
-  void GetContainerSshKeys(
-      const vm_tools::concierge::ContainerSshKeysRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::concierge::ContainerSshKeysResponse> callback) override;
   void AttachUsbDevice(
       base::ScopedFD fd,
       const vm_tools::concierge::AttachUsbDeviceRequest& request,
@@ -292,11 +288,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
           set_vm_cpu_restriction_response) {
     set_vm_cpu_restriction_response_ = set_vm_cpu_restriction_response;
   }
-  void set_container_ssh_keys_response(
-      absl::optional<vm_tools::concierge::ContainerSshKeysResponse>
-          container_ssh_keys_response) {
-    container_ssh_keys_response_ = container_ssh_keys_response;
-  }
   void set_attach_usb_device_response(
       absl::optional<vm_tools::concierge::AttachUsbDeviceResponse>
           attach_usb_device_response) {
@@ -349,9 +340,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   }
   void set_send_tremplin_started_signal_delay(base::TimeDelta delay) {
     send_tremplin_started_signal_delay_ = delay;
-  }
-  void send_get_container_ssh_keys_response_delay(base::TimeDelta delay) {
-    send_get_container_ssh_keys_response_delay_ = delay;
   }
   void reset_get_vm_info_call_count() { get_vm_info_call_count_ = 0; }
 
@@ -435,8 +423,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       arcvm_complete_boot_response_;
   absl::optional<vm_tools::concierge::SetVmCpuRestrictionResponse>
       set_vm_cpu_restriction_response_;
-  absl::optional<vm_tools::concierge::ContainerSshKeysResponse>
-      container_ssh_keys_response_;
   absl::optional<vm_tools::concierge::AttachUsbDeviceResponse>
       attach_usb_device_response_;
   absl::optional<vm_tools::concierge::DetachUsbDeviceResponse>
@@ -455,7 +441,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   base::TimeDelta send_create_disk_image_response_delay_;
   base::TimeDelta send_start_vm_response_delay_;
   base::TimeDelta send_tremplin_started_signal_delay_;
-  base::TimeDelta send_get_container_ssh_keys_response_delay_;
 
   // Can be set to fake a series of disk image status signals.
   std::vector<vm_tools::concierge::DiskImageStatusResponse>

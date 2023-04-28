@@ -322,18 +322,6 @@ void FakeConciergeClient::WaitForServiceToBeAvailable(
                                 wait_for_service_to_be_available_response_));
 }
 
-void FakeConciergeClient::GetContainerSshKeys(
-    const vm_tools::concierge::ContainerSshKeysRequest& request,
-    chromeos::DBusMethodCallback<vm_tools::concierge::ContainerSshKeysResponse>
-        callback) {
-  get_container_ssh_keys_call_count_++;
-
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), container_ssh_keys_response_),
-      send_get_container_ssh_keys_response_delay_);
-}
-
 void FakeConciergeClient::AttachUsbDevice(
     base::ScopedFD fd,
     const vm_tools::concierge::AttachUsbDeviceRequest& request,
@@ -493,11 +481,6 @@ void FakeConciergeClient::InitializeProtoResponses() {
       vm_tools::concierge::ArcVmCompleteBootResult::SUCCESS);
 
   set_vm_cpu_restriction_response_.emplace();
-
-  container_ssh_keys_response_.emplace();
-  container_ssh_keys_response_->set_container_public_key("pubkey");
-  container_ssh_keys_response_->set_host_private_key("privkey");
-  container_ssh_keys_response_->set_hostname("hostname");
 
   attach_usb_device_response_.emplace();
   attach_usb_device_response_->set_success(true);

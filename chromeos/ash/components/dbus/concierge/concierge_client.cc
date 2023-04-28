@@ -214,14 +214,6 @@ class ConciergeClientImpl : public ConciergeClient {
     concierge_proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 
-  void GetContainerSshKeys(
-      const concierge::ContainerSshKeysRequest& request,
-      chromeos::DBusMethodCallback<concierge::ContainerSshKeysResponse>
-          callback) override {
-    CallMethod(concierge::kGetContainerSshKeysMethod, request,
-               std::move(callback));
-  }
-
   void AttachUsbDevice(
       base::ScopedFD fd,
       const concierge::AttachUsbDeviceRequest& request,
