@@ -304,10 +304,6 @@ class PageContentAnnotationsWebContentsObserverTest
     return optimization_guide_decider_.get();
   }
 
-  void SetTemplateURLServiceLoaded(bool loaded) {
-    template_url_service_->set_loaded(loaded);
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestOptimizationGuideModelProvider>
@@ -330,6 +326,8 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest, DoesNotRegisterType) {
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
        MainFrameNavigationAnnotatesTitle) {
+  base::HistogramTester histogram_tester;
+
   // Navigate.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://www.foo.com/someurl"));
@@ -352,10 +350,16 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
                                       u"newtitle");
   EXPECT_FALSE(service()->last_annotation_request());
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted",
+      0);
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
        SameDocumentNavigationsAnnotateTitle) {
+  base::HistogramTester histogram_tester;
+
   // Navigate.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("http://foo"), main_rfh());
@@ -377,6 +381,10 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   EXPECT_TRUE(last_annotation_request.has_value());
   EXPECT_EQ(last_annotation_request->url, url2);
   EXPECT_EQ(last_annotation_request->text_to_annotate, "Title");
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted",
+      0);
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
@@ -396,8 +404,7 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   EXPECT_EQ(last_annotation_request->text_to_annotate, "a");
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations."
-      "TemplateURLServiceLoadedAtNavigationFinish",
+      "OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted",
       true, 1);
 }
 
@@ -417,10 +424,11 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
             GURL("http://non-default-engine.com/?q=a"));
   EXPECT_EQ(last_annotation_request->text_to_annotate, "a");
 
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations."
-      "TemplateURLServiceLoadedAtNavigationFinish",
-      true, 1);
+  // Should not record even though search terms were extracted since it is not
+  // Google SRP.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted",
+      0);
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
@@ -751,78 +759,6 @@ TEST_F(PageContentAnnotationsWebContentsObserverRelatedSearchesFromZPSCacheTest,
     EXPECT_EQ(related_searches[1], "san diego");
     EXPECT_EQ(related_searches[2], "san francisco");
   }
-}
-
-class
-    PageContentAnnotationsWebContentsObserverOnlyPersistGoogleSearchMetadataTest
-    : public PageContentAnnotationsWebContentsObserverTest {
- public:
-  PageContentAnnotationsWebContentsObserverOnlyPersistGoogleSearchMetadataTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageContentAnnotations,
-        {{"persist_search_metadata_for_non_google_searches", "false"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(
-    PageContentAnnotationsWebContentsObserverOnlyPersistGoogleSearchMetadataTest,
-    AnnotatesTitleInsteadOfSearchTerms) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://non-default-engine.com/?q=a"));
-
-  // Set title.
-  std::u16string title(u"Title");
-  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
-                                      title);
-
-  // The title should be what is requested to be annotated.
-  absl::optional<HistoryVisit> last_annotation_request =
-      service()->last_annotation_request();
-  EXPECT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->url,
-            GURL("http://non-default-engine.com/?q=a"));
-  EXPECT_EQ(last_annotation_request->text_to_annotate, "Title");
-
-  service()->ClearLastAnnotationRequest();
-
-  // Update title again - make sure we don't reannotate for same page.
-  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
-                                      u"newtitle");
-  EXPECT_FALSE(service()->last_annotation_request());
-}
-
-TEST_F(
-    PageContentAnnotationsWebContentsObserverOnlyPersistGoogleSearchMetadataTest,
-    SRPURLsAnnotateTitleIfTemplateURLServiceNotLoaded) {
-  SetTemplateURLServiceLoaded(false);
-
-  base::HistogramTester histogram_tester;
-
-  // Navigate and commit so there is an entry.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://default-engine.com/search?q=a"));
-
-  // Set title.
-  std::u16string title(u"Title");
-  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
-                                      title);
-
-  // The title should be what is requested to be annotated.
-  absl::optional<HistoryVisit> last_annotation_request =
-      service()->last_annotation_request();
-  EXPECT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->url,
-            GURL("http://default-engine.com/search?q=a"));
-  EXPECT_EQ(last_annotation_request->text_to_annotate, "Title");
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations."
-      "TemplateURLServiceLoadedAtNavigationFinish",
-      false, 1);
 }
 
 class PageContentAnnotationsWebContentsObserverRemotePageMetadataTest

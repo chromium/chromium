@@ -222,10 +222,6 @@ bool IsUnrestrictedModelDownloadingEnabled();
 // Returns whether the feature to annotate page content is enabled.
 bool IsPageContentAnnotationEnabled();
 
-// Whether search metadata should be persisted for non-Google searches, as
-// identified by the TemplateURLService.
-bool ShouldPersistSearchMetadataForNonGoogleSearches();
-
 // Whether we should write content annotations to History Service.
 bool ShouldWriteContentAnnotationsToHistoryService();
 

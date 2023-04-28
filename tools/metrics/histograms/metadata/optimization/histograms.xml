@@ -678,6 +678,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted"
+    enum="Boolean" expires_after="M120">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the TemplateURLService was able to extract metadata on a
+    Google SRP. Recorded once for each local visit to the Google SRP.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PageContentAnnotations.JobExecutionTime.{AnnotationType}"
     units="ms" expires_after="M117">
   <owner>robertogden@chromium.org</owner>
@@ -712,7 +723,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.TemplateURLServiceLoadedAtNavigationFinish"
-    enum="BooleanLoaded" expires_after="M117">
+    enum="BooleanLoaded" expires_after="M115">
+  <obsolete>
+    Obsolete as of 04/2023.
+  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

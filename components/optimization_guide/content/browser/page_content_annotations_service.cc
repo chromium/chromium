@@ -661,10 +661,7 @@ void PageContentAnnotationsService::OnURLVisited(
   HistoryVisit history_visit(visit_row.visit_id);
   history_visit.text_to_annotate = base::UTF16ToUTF8(url_row.title());
 
-  if (template_url_service_ &&
-      (optimization_guide::features::
-           ShouldPersistSearchMetadataForNonGoogleSearches() ||
-       google_util::IsGoogleSearchUrl(url_row.url()))) {
+  if (template_url_service_) {
     auto search_metadata =
         template_url_service_->ExtractSearchMetadata(url_row.url());
     if (search_metadata) {

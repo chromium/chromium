@@ -487,12 +487,6 @@ bool IsPageContentAnnotationEnabled() {
   return base::FeatureList::IsEnabled(kPageContentAnnotations);
 }
 
-bool ShouldPersistSearchMetadataForNonGoogleSearches() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kPageContentAnnotations,
-      "persist_search_metadata_for_non_google_searches", true);
-}
-
 bool ShouldWriteContentAnnotationsToHistoryService() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kPageContentAnnotations, "write_to_history_service", true);
