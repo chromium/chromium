@@ -39,6 +39,11 @@ void WatcherDispatcher::NotifyHandleState(Dispatcher* dispatcher,
                                           const HandleSignalsState& state) {
   base::AutoLock lock(lock_);
   auto it = watched_handles_.find(dispatcher);
+
+  recordreplay::Assert(
+      "[RUN-1307-1812] WatcherDispatcher::NotifyHandleState %d %d",
+      it == watched_handles_.end(), recordreplay::PointerId(this));
+
   if (it == watched_handles_.end())
     return;
 
