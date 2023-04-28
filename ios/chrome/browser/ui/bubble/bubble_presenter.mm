@@ -71,6 +71,8 @@ const CGFloat kBubblePresentationDelay = 1;
     BubbleViewControllerPresenter* whatsNewBubblePresenter;
 @property(nonatomic, strong) BubbleViewControllerPresenter*
     priceNotificationsWhileBrowsingBubbleTipPresenter;
+@property(nonatomic, strong)
+    BubbleViewControllerPresenter* tabPinnedBubbleTipPresenter;
 
 @property(nonatomic, assign) ChromeBrowserState* browserState;
 
@@ -149,6 +151,9 @@ const CGFloat kBubblePresentationDelay = 1;
   [self.discoverFeedHeaderMenuTipBubblePresenter dismissAnimated:NO];
   [self.readingListTipBubblePresenter dismissAnimated:NO];
   [self.followWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
+  [self.priceNotificationsWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
+  [self.tabPinnedBubbleTipPresenter dismissAnimated:NO];
+  [self.whatsNewBubblePresenter dismissAnimated:NO];
   [self.defaultPageModeTipBubblePresenter dismissAnimated:NO];
 }
 
@@ -336,7 +341,7 @@ const CGFloat kBubblePresentationDelay = 1;
 
   // If the feature engagement tracker does not consider it valid to display
   // the tip, then end early to prevent the potential reassignment of the
-  // existing `whatsNewBubblePresenter` to nil.
+  // existing `tabPinnedBubbleTipPresenter` to nil.
   BubbleViewControllerPresenter* presenter =
       [self presentBubbleForFeature:feature_engagement::kIPHTabPinnedFeature
                           direction:arrowDirection
@@ -348,7 +353,7 @@ const CGFloat kBubblePresentationDelay = 1;
     return;
   }
 
-  self.priceNotificationsWhileBrowsingBubbleTipPresenter = presenter;
+  self.tabPinnedBubbleTipPresenter = presenter;
 }
 
 #pragma mark - Private
