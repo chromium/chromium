@@ -199,6 +199,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     IDCompositionDevice2* dcomp_device,
     Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
     uint64_t dcomp_surface_serial,
+    const gfx::Size& image_size,
     const gfx::Rect& content_rect,
     const gfx::Rect& quad_rect,
     bool nearest_neighbor_filter,
@@ -272,17 +273,26 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     CHECK_EQ(hr, S_OK);
   }
 
-  if (content_rect_ != content_rect || quad_rect_ != quad_rect) {
+  if (image_size_ != image_size || content_rect_ != content_rect ||
+      quad_rect_ != quad_rect) {
+    image_size_ = image_size;
     content_rect_ = content_rect;
     quad_rect_ = quad_rect;
     needs_commit = true;
 
-    // Exclude content outside the content rect region
-    const auto content_clip =
-        D2D1::RectF(content_rect_.x(), content_rect_.y(), content_rect_.right(),
-                    content_rect_.bottom());
-    hr = content_visual_->SetClip(content_clip);
-    CHECK_EQ(hr, S_OK);
+    if (content_rect_.Contains(gfx::Rect(image_size_))) {
+      // No need to set clip to content if the whole image is inside the content
+      // rect region.
+      hr = content_visual_->SetClip(nullptr);
+      CHECK_EQ(hr, S_OK);
+    } else {
+      // Exclude content outside the content rect region.
+      const auto content_clip =
+          D2D1::RectF(content_rect_.x(), content_rect_.y(),
+                      content_rect_.right(), content_rect_.bottom());
+      hr = content_visual_->SetClip(content_clip);
+      CHECK_EQ(hr, S_OK);
+    }
 
     // Transform the (clipped) content so that it fills |quad_rect_|'s bounds.
     // |quad_rect_|'s offset is handled below, so we exclude it from the matrix.
@@ -408,9 +418,9 @@ bool DCLayerTree::VisualTree::UpdateTree(
         dc_layer_tree_->dcomp_device_.Get(),
         overlays[i]->overlay_image->dcomp_visual_content(),
         overlays[i]->overlay_image->dcomp_surface_serial(),
-        overlays[i]->content_rect, overlays[i]->quad_rect,
-        overlays[i]->nearest_neighbor_filter, overlays[i]->transform,
-        overlays[i]->clip_rect);
+        overlays[i]->overlay_image->size(), overlays[i]->content_rect,
+        overlays[i]->quad_rect, overlays[i]->nearest_neighbor_filter,
+        overlays[i]->transform, overlays[i]->clip_rect);
 
     // Zero z_order represents root layer.
     if (overlays[i]->z_order == 0) {

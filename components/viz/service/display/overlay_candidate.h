@@ -132,7 +132,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
       gfx::ProtectedVideoType::kClear;
 
 #if BUILDFLAG(IS_WIN)
-  bool maybe_video_fullscreen_letterboxing = false;
+  // Indication of the overlay to be detected as possible full screen
+  // letterboxing.
+  bool possible_video_fullscreen_letterboxing = false;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

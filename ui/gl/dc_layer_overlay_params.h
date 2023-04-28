@@ -52,10 +52,12 @@ struct GL_EXPORT DCLayerOverlayParams {
 
   gfx::HDRMetadata hdr_metadata;
 
-  bool maybe_video_fullscreen_letterboxing = false;
-
   // When false, this overlay will be scaled with linear sampling.
   bool nearest_neighbor_filter = false;
+
+  // Indication of the overlay to be detected as possible full screen
+  // letterboxing.
+  bool possible_video_fullscreen_letterboxing = false;
 };
 
 }  // namespace gl

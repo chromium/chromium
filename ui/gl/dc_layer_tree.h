@@ -203,6 +203,7 @@ class DCLayerTree {
       bool Update(IDCompositionDevice2* dcomp_device,
                   Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
                   uint64_t dcomp_surface_serial,
+                  const gfx::Size& image_size,
                   const gfx::Rect& content_rect,
                   const gfx::Rect& quad_rect,
                   bool nearest_neighbor_filter,
@@ -260,15 +261,19 @@ class DCLayerTree {
       // both it and |content_visual_| can scale the content.
       bool nearest_neighbor_filter_ = false;
 
-      // Transform from quad space to root space
+      // Transform from quad space to root space.
       gfx::Transform transform_;
 
-      // Clip rect in root space
+      // Clip rect in root space.
       absl::optional<gfx::Rect> clip_rect_;
+
+      // The size of overlay image in |dcomp_visual_content_| which is in
+      // pixels.
+      gfx::Size image_size_;
 
       // The order relative to the root surface. Positive values means the
       // visual appears in front of the root surface (i.e. overlay) and negative
-      // values means the visual appears below the root surface (i.e. underlay)
+      // values means the visual appears below the root surface (i.e. underlay).
       int z_order_ = 0;
     };
 
