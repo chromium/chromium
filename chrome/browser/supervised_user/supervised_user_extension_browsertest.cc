@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_service.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/supervised_user/supervised_user_mixin.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "extensions/browser/disable_reason.h"
@@ -16,14 +19,21 @@
 #include "extensions/common/extension.h"
 
 namespace {
+
 constexpr char kGoodCrxId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
-}  // namespace
+
+}
 
 namespace extensions {
 
 // Tests for the interaction between supervised users and extensions.
 class SupervisedUserExtensionTest : public ExtensionBrowserTest {
  public:
+  SupervisedUserExtensionTest() {
+    // Suppress regular user login to enable child user login.
+    set_chromeos_user_ = false;
+  }
+
   // We have to essentially replicate what MixinBasedInProcessBrowserTest does
   // here because ExtensionBrowserTest doesn't inherit from that class.
   void SetUp() override {
@@ -59,6 +69,7 @@ class SupervisedUserExtensionTest : public ExtensionBrowserTest {
 
   void SetUpOnMainThread() override {
     mixin_host_.SetUpOnMainThread();
+    logged_in_user_mixin_.LogInUser();
     ExtensionBrowserTest::SetUpOnMainThread();
   }
 
@@ -78,6 +89,10 @@ class SupervisedUserExtensionTest : public ExtensionBrowserTest {
   }
 
  protected:
+  SupervisedUserService* GetSupervisedUserService() {
+    return SupervisedUserServiceFactory::GetForProfile(profile());
+  }
+
   bool IsDisabledForCustodianApproval(const std::string& extension_id) {
     ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
     return extension_prefs->HasDisableReason(
@@ -87,12 +102,17 @@ class SupervisedUserExtensionTest : public ExtensionBrowserTest {
 
  private:
   InProcessBrowserTestMixinHost mixin_host_;
-  supervised_user::SupervisedUserMixin supervised_user_mixin_{
-      mixin_host_,
-      this,
-      {.account_type = content::IsPreTest()
-                           ? supervised_user::SupervisedUserMixin::kSupervised
-                           : supervised_user::SupervisedUserMixin::kRegular}};
+
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
+  // We want to log in as child user for all of the PRE tests, and regular user
+  // otherwise.
+  ash::LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_,
+      content::IsPreTest() ? ash::LoggedInUserMixin::LogInType::kChild
+                           : ash::LoggedInUserMixin::LogInType::kRegular,
+      embedded_test_server(), this};
 };
 
 // Removing supervision should also remove associated disable reasons, such as
@@ -103,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionTest,
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
 
-  ASSERT_TRUE(profile()->IsChild());
+  EXPECT_TRUE(profile()->IsChild());
 
   base::FilePath path = test_data_dir_.AppendASCII("good.crx");
   EXPECT_FALSE(LoadExtension(path));
@@ -119,19 +139,14 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionTest,
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionTest,
                        RemovingSupervisionCustodianApprovalRequired) {
-  ASSERT_FALSE(profile()->IsChild());
-
+  EXPECT_FALSE(profile()->IsChild());
   // The extension should still be installed since we are sharing the same data
   // directory as the PRE test.
   const Extension* extension =
       extension_registry()->GetInstalledExtension(kGoodCrxId);
   EXPECT_TRUE(extension);
-
   // The extension should be enabled now after removing supervision.
   EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(kGoodCrxId));
-  EXPECT_FALSE(
-      extension_registry()->disabled_extensions().Contains(kGoodCrxId));
-
   EXPECT_FALSE(IsDisabledForCustodianApproval(kGoodCrxId));
 }
 

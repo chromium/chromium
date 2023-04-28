@@ -1227,14 +1227,13 @@ void ExtensionService::CheckManagementPolicy() {
 
     // If this profile is not supervised, then remove any supervised user
     // related disable reasons.
-    bool is_supervised;
+    bool extensions_permissions_enabled = true;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    is_supervised = SupervisedUserServiceFactory::GetForProfile(profile())
-                        ->IsSubjectToParentalControls();
-#else
-    is_supervised = false;
+    extensions_permissions_enabled =
+        SupervisedUserServiceFactory::GetForProfile(profile())
+            ->AreExtensionsPermissionsEnabled();
 #endif
-    if (!is_supervised) {
+    if (extensions_permissions_enabled) {
       disable_reasons &= (~disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
     }
 
