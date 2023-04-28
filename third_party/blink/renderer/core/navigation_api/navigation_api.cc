@@ -908,10 +908,7 @@ void NavigationApi::AbortOngoingNavigation(ScriptState* script_state) {
       script_state,
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                          "Navigation was aborted"));
-  if (ongoing_navigate_event_->IsBeingDispatched()) {
-    ongoing_navigate_event_->preventDefault();
-  }
-  ongoing_navigate_event_->signal()->SignalAbort(script_state, error);
+  ongoing_navigate_event_->Abort(script_state, error);
   ongoing_navigate_event_ = nullptr;
   DidFailOngoingNavigation(error);
 }

@@ -4713,12 +4713,12 @@ void RenderFrameHostImpl::DidCommitPageActivation(
 }
 
 void RenderFrameHostImpl::StartLoadingForAsyncNavigationApiCommit() {
-  // A same document navigation commit was requested, but was deferred by script
-  // via the Navigation API in the renderer. Show loading UI while waiting for
-  // the script to undefer and allow the commit to proceed.
-  if (is_loading()) {
-    return;
-  }
+  // A same document navigation commit was requested, but was intercepted by
+  // the navigation event. This should cause loading UI to appear, because
+  // unlike other same-document navigations, this one is asynchronous. Note that
+  // the renderer notifies the browser after a short delay, in order to lessen
+  // the risk of the loading UI jittering if there are several short
+  // asynchronous navigations in a row.
   LoadingState previous_frame_tree_loading_state =
       frame_tree()->LoadingTree()->GetLoadingState();
   loading_state_ = LoadingState::LOADING_UI_REQUESTED;
@@ -12363,21 +12363,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // racy DidStopLoading Mojo method resets the loading state that was set to
   // true in CommitNavigation.
   if (!is_loading()) {
-    // In general, loading ui is only shown for cross-document navigations,
-    // because same-document navigations are already complete by the time the
-    // renderer notifies the browser process of the navigation.
-    // The navigation API's intercept(), however, is an asynchronous
-    // same-document navigation, and should therefore show loading UI until load
-    // completion.
-    bool should_show_loading_ui =
-        !is_same_document_navigation ||
-        same_document_params->same_document_navigation_type ==
-            blink::mojom::SameDocumentNavigationType::kNavigationApiIntercept;
-
     LoadingState previous_frame_tree_loading_state =
         frame_tree()->LoadingTree()->GetLoadingState();
-    loading_state_ = should_show_loading_ui ? LoadingState::LOADING_UI_REQUESTED
-                                            : LoadingState::LOADING_WITHOUT_UI;
+    loading_state_ = is_same_document_navigation
+                         ? LoadingState::LOADING_WITHOUT_UI
+                         : LoadingState::LOADING_UI_REQUESTED;
     // TODO(https://crbug.com/1405759): Explain why this is true.
     CHECK(owner_);
     owner_->DidStartLoading(previous_frame_tree_loading_state);
