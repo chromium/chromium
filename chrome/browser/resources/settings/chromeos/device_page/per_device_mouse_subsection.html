@@ -4,7 +4,7 @@
   }
 </style>
 <div id="mouse">
-  <h2 class="device-name">[[mouse.name]]</h2>
+  <h2 class="device-name" id="mouseName">[[mouse.name]]</h2>
   <div class="subsection">
     <div class="settings-box">
       <div class="start settings-box-text" id="mouseSwapButtonLabel">
@@ -61,12 +61,12 @@
     <div class="settings-box bottom-divider" id="mouseReverseScrollRow"
           on-click="onMouseReverseScrollRowClicked_">
       <div class="start settings-box-text">
-        <localized-link
-            on-click="onLearnMoreLinkClicked_"
+        <div on-click="onLearnMoreLinkClicked_"
             id="enableMouseReverseScrollingLabel"
-            localized-string="$i18n{mouseReverseScroll}"
-            link-url="$i18n{naturalScrollLearnMoreLink}">
-        </localized-link>
+            inner-h-t-m-l="[[getAriaLabelledContent(
+                'mouseReverseScroll',
+                'naturalScrollLearnMoreLink')]]">
+        </div>
       </div>
       <cr-toggle id="mouseReverseScroll"
           checked="{{reverseScrollValue}}"
