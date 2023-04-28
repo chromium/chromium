@@ -223,9 +223,10 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
               .SetVisible(false))
       .BuildChildren();
 
-  // We need to ensure that the layer is non-opaque when animating.
   SetPaintToLayer();
+  // We need to ensure that the layer is non-opaque when animating.
   layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
 
   const int button_text_id = saved_desk_->type() == DeskTemplateType::kTemplate
                                  ? IDS_ASH_DESKS_TEMPLATES_USE_TEMPLATE_BUTTON
