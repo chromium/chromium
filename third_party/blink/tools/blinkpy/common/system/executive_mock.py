@@ -98,7 +98,8 @@ class MockExecutive(object):
                  exit_code=0,
                  exception=None,
                  run_command_fn=None,
-                 proc=None):
+                 proc=None,
+                 cpu_count=2):
         self._should_log = should_log
         self._should_throw = should_throw
         # FIXME: Once executive wraps os.getpid() we can just use a static pid for "this" process.
@@ -109,6 +110,7 @@ class MockExecutive(object):
         self._exception = exception
         self._run_command_fn = run_command_fn
         self._proc = proc
+        self._cpu_count = cpu_count
         self.full_calls = []
 
     def _append_call(self, args, **kwargs):
@@ -188,7 +190,7 @@ class MockExecutive(object):
         return output
 
     def cpu_count(self):
-        return 2
+        return self._cpu_count
 
     def kill_process(self, pid, kill_tree=True):
         pass
