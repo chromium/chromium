@@ -44,7 +44,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (instancetype)init {
-  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
+  CHECK(IsInactiveTabsAvailable());
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(IDS_IOS_TABS_MANAGEMENT_SETTINGS);

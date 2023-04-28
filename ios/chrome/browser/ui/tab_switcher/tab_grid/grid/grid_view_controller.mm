@@ -572,7 +572,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     case TabGridModeNormal: {
       // The Regular Tabs grid has a button to inform about the hidden inactive
       // tabs.
-      DCHECK(IsInactiveTabsEnabled());
+      CHECK(IsInactiveTabsAvailable() && self.inactiveTabsCount > 0);
       InactiveTabsButtonHeader* header = [collectionView
           dequeueReusableSupplementaryViewOfKind:kind
                              withReuseIdentifier:
@@ -725,7 +725,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     referenceSizeForHeaderInSection:(NSInteger)section {
   switch (_mode) {
     case TabGridModeNormal:
-      if (!IsInactiveTabsEnabled() || self.inactiveTabsCount == 0) {
+      if (!IsInactiveTabsAvailable() || self.inactiveTabsCount == 0) {
         return CGSizeZero;
       }
       // The Regular Tabs grid has a button to inform about the hidden inactive
@@ -745,7 +745,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       return CGSizeMake(collectionView.bounds.size.width, height);
     }
     case TabGridModeInactive:
-      if (!IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser()) {
+      if (!IsInactiveTabsEnabled()) {
         return CGSizeZero;
       }
       // The Inactive Tabs grid has a header to inform about the feature and a

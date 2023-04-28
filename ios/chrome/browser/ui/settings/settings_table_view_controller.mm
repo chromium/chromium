@@ -498,10 +498,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     }
   }
 
-  // `IsInactiveTabsEnabled` returns NO if the user explicitly disabled inactive
-  // tabs. As the user should have the choice to enabled it back, the settings
-  // should be displayed even if the feature has been explicitly disabled.
-  if (IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser()) {
+  if (IsInactiveTabsAvailable()) {
     [model addItem:[self tabsSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 

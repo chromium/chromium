@@ -437,11 +437,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     inactiveTabsControllerForBrowser:(Browser*)browser
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate {
-  // `IsInactiveTabsEnabled` returns NO if the user explicitly disabled inactive
-  // tabs. As the user should have the choice to enabled it back, the settings
-  // should be displayed even if the feature has been explicitly disabled.
-  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
-  DCHECK(browser);
+  CHECK(IsInactiveTabsAvailable());
+  CHECK(browser);
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
           initWithRootViewController:nil
