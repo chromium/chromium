@@ -69,7 +69,7 @@ constexpr CGFloat kContentSpacing = 16.;
   DCHECK(!self.activityIndicatorView);
   self.activityIndicatorView = [[UIActivityIndicatorView alloc] init];
   self.activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.activityIndicatorView.color = UIColor.whiteColor;
+  self.activityIndicatorView.color = [UIColor colorNamed:kSolidButtonTextColor];
   [self.primaryButton addSubview:self.activityIndicatorView];
   AddSameCenterConstraints(self.activityIndicatorView, self.primaryButton);
   [self.activityIndicatorView startAnimating];

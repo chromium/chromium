@@ -396,7 +396,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
   }
   self.primaryButton.titleLabel.alpha = 0;
   _activityIndicatorView = [[UIActivityIndicatorView alloc] init];
-  _activityIndicatorView.color = UIColor.whiteColor;
+  _activityIndicatorView.color = [UIColor colorNamed:kSolidButtonTextColor];
   _activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
   _activityIndicatorView.accessibilityIdentifier =
       kSigninPromoActivityIndicatorId;
