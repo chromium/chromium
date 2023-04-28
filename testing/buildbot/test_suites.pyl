@@ -3876,7 +3876,6 @@
       'cast_unittests': {},
       'cc_unittests': {},
       'color_unittests': {},
-      'components_browsertests': {},
       'components_unittests': {},
       'content_unittests': {},
       'crashpad_tests': {},
