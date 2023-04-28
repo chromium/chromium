@@ -194,32 +194,6 @@ void AppendParamsFromStartParams(
               BINARY_TRANSLATION_TYPE_NDK_TRANSLATION);
       break;
   }
-
-  std::string log_profile_name;
-  switch (start_params.usap_profile) {
-    case StartParams::UsapProfile::DEFAULT:
-      request.set_usap_profile(
-          vm_tools::concierge::StartArcVmRequest::USAP_PROFILE_DEFAULT);
-      log_profile_name = "default low-memory";
-      break;
-    case StartParams::UsapProfile::M4G:
-      request.set_usap_profile(
-          vm_tools::concierge::StartArcVmRequest::USAP_PROFILE_4G);
-      log_profile_name = "high-memory 4G";
-      break;
-    case StartParams::UsapProfile::M8G:
-      request.set_usap_profile(
-          vm_tools::concierge::StartArcVmRequest::USAP_PROFILE_8G);
-      log_profile_name = "high-memory 8G";
-      break;
-    case StartParams::UsapProfile::M16G:
-      request.set_usap_profile(
-          vm_tools::concierge::StartArcVmRequest::USAP_PROFILE_16G);
-      log_profile_name = "high-memory 16G";
-      break;
-  }
-  VLOG(1) << "Applied " << log_profile_name << " USAP profile";
-
   *request.mutable_mini_instance_request() =
       ArcClientAdapter::ConvertStartParamsToStartArcMiniInstanceRequest(
           start_params);

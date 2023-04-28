@@ -2454,41 +2454,6 @@ TEST_P(ArcVmClientAdapterDalvikMemoryProfileTest, Profile) {
             test_param.arc_profile);
 }
 
-struct UsapProfileTestParam {
-  // Requested profile.
-  StartParams::UsapProfile profile;
-  // Name of profile that is expected.
-  const char* profile_name;
-  int memory;
-};
-
-constexpr UsapProfileTestParam kUsapProfileTestCases[] = {
-    {StartParams::UsapProfile::DEFAULT, nullptr,
-     vm_tools::concierge::StartArcVmRequest::USAP_PROFILE_DEFAULT},
-    {StartParams::UsapProfile::M4G, "4G",
-     vm_tools::concierge::StartArcVmRequest::USAP_PROFILE_4G},
-    {StartParams::UsapProfile::M8G, "8G",
-     vm_tools::concierge::StartArcVmRequest::USAP_PROFILE_8G},
-    {StartParams::UsapProfile::M16G, "16G",
-     vm_tools::concierge::StartArcVmRequest::USAP_PROFILE_16G}};
-
-class ArcVmClientAdapterUsapProfileTest
-    : public ArcVmClientAdapterTest,
-      public testing::WithParamInterface<UsapProfileTestParam> {};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ArcVmClientAdapterUsapProfileTest,
-                         ::testing::ValuesIn(kUsapProfileTestCases));
-
-TEST_P(ArcVmClientAdapterUsapProfileTest, Profile) {
-  const auto& test_param = GetParam();
-  StartParams start_params(GetPopulatedStartParams());
-  start_params.usap_profile = test_param.profile;
-  StartMiniArcWithParams(true, std::move(start_params));
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(request.usap_profile(), test_param.memory);
-}
-
 TEST_F(ArcVmClientAdapterTest, ArcVmTTSCachingDefault) {
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));

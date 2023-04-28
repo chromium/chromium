@@ -71,16 +71,6 @@ class ArcContainerClientAdapter : public ArcClientAdapter,
   // ArcClientAdapter overrides:
   void StartMiniArc(StartParams params,
                     chromeos::VoidDBusMethodCallback callback) override {
-    switch (params.usap_profile) {
-      case StartParams::UsapProfile::DEFAULT:
-        break;
-      case StartParams::UsapProfile::M4G:
-      case StartParams::UsapProfile::M8G:
-      case StartParams::UsapProfile::M16G:
-        VLOG(1) << "USAP profile is not supported for container.";
-        break;
-    }
-
     auto request =
         ArcClientAdapter::ConvertStartParamsToStartArcMiniInstanceRequest(
             std::move(params));

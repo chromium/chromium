@@ -96,11 +96,6 @@ BASE_FEATURE(kEnableUnmanagedToManagedTransitionFeature,
              "ArcEnableUnmanagedToManagedTransitionFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls ARC Unspecialized Application Processes.
-// When enabled, Android creates a pool of processes
-// that will start applications so that zygote doesn't have to wake.
-BASE_FEATURE(kEnableUsap, "ArcEnableUsap", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to use virtio-blk for Android /data instead of using
 // virtio-fs.
 BASE_FEATURE(kEnableVirtioBlkForData,

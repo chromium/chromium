@@ -5136,12 +5136,6 @@ const char kArcEnableAAudioMMAPDescription[] =
     "Enable AAudio MMAP support for ARCVM which provides low latency audio "
     "for supported apps.";
 
-const char kArcEnableUsapName[] =
-    "Enable ARC Unspecialized Application Processes";
-const char kArcEnableUsapDesc[] =
-    "Enable ARC Unspecialized Application Processes when applicable for "
-    "high-memory devices.";
-
 const char kArcEnableVirtioBlkForDataName[] =
     "Enable virtio-blk for ARCVM /data";
 const char kArcEnableVirtioBlkForDataDesc[] =
