@@ -40,8 +40,8 @@ class MockShoppingListHandler : public ShoppingListHandler {
             nullptr,
             "") {}
 
-  MOCK_METHOD1(TrackPriceForBookmark, void(int64_t bookmark_id));
-  MOCK_METHOD1(UntrackPriceForBookmark, void(int64_t bookmark_id));
+  MOCK_METHOD(void, TrackPriceForBookmark, (int64_t bookmark_id));
+  MOCK_METHOD(void, UntrackPriceForBookmark, (int64_t bookmark_id));
 };
 
 class ShoppingListContextMenuControllerTest : public testing::Test {
