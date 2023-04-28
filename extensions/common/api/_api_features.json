@@ -748,7 +748,8 @@
       "content_script",
       "lock_screen_extension",
       "offscreen_extension",
-      "unblessed_extension"
+      "unblessed_extension",
+      "user_script"
     ]
   }, {
     "channel": "stable",

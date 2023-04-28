@@ -262,4 +262,47 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromWebContext) {
   }
 }
 
+TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromUserScriptContext) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  scoped_refptr<const Extension> extension = ExtensionBuilder("foo").Build();
+  RegisterExtension(extension);
+
+  ScriptContext* script_context = CreateScriptContext(
+      context, extension.get(), Feature::USER_SCRIPT_CONTEXT);
+  script_context->set_url(extension->url());
+
+  std::string other_id(32, 'a');
+  struct {
+    v8::Local<v8::Value> passed_id;
+    base::StringPiece expected_id;
+    bool should_pass;
+  } test_cases[] = {
+      // If the extension ID is not provided, the bindings use the calling
+      // extension's.
+      {v8::Null(isolate()), extension->id(), true},
+      // We treat the empty string to be the same as null, even though it's
+      // somewhat unfortunate.
+      // See https://crbug.com/823577.
+      {gin::StringToV8(isolate(), ""), extension->id(), true},
+      {gin::StringToV8(isolate(), extension->id()), extension->id(), true},
+      // User scripts may not target other extensions.
+      {gin::StringToV8(isolate(), other_id), base::StringPiece(), false},
+  };
+
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Test Case: %d", static_cast<int>(i)));
+    const auto& test_case = test_cases[i];
+    std::string target;
+    std::string error;
+    EXPECT_EQ(test_case.should_pass,
+              messaging_util::GetTargetExtensionId(
+                  script_context, test_case.passed_id, "runtime.sendMessage",
+                  &target, &error));
+    EXPECT_EQ(test_case.expected_id, target);
+    EXPECT_EQ(test_case.should_pass, error.empty()) << error;
+  }
+}
+
 }  // namespace extensions

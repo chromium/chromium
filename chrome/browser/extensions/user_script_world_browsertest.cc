@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
   static constexpr char kExpectedJson[] =
       R"({
            "mainWorldFlag": "<no flag>",
-           "chromeKeys": ["csi", "loadTimes", "runtime"],
+           "chromeKeys": ["csi", "loadTimes", "runtime", "test"],
            "runtimeKeys": ["ContextType", "OnInstalledReason",
                            "OnRestartRequiredReason", "PlatformArch",
                            "PlatformNaclArch", "PlatformOs",
@@ -418,6 +418,50 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest, ConnectAPI) {
       ExecuteScriptInUserScriptWorld(kScriptSource, *extension);
 
   // ...And the script result validates the user script expectation.
+  EXPECT_EQ(script_result, "success");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+// Tests that attempting to message another extension from a user script throws
+// an error.
+IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
+                       TryingToSendMessageToOtherExtensionTriggersError) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "User Script Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "host_permissions": ["http://example.com/*"]
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  static constexpr char kTrySendMessage[] =
+      R"(let targetId = 'a'.repeat(32);
+         let errorMsg = /User scripts may not message external extensions./;
+         chrome.test.runTests([
+           function sendMessageToExternalExtensionThrowsError() {
+             chrome.test.assertThrows(chrome.runtime.sendMessage, null,
+                                      [targetId, 'test message'], errorMsg);
+             chrome.test.succeed();
+           },
+           function connectToExternalExtensionThrowsError() {
+             chrome.test.assertThrows(chrome.runtime.connect, null,
+                                      [targetId], errorMsg);
+             chrome.test.succeed();
+           },
+         ]);
+         // Eval the script to a non-null value.
+         'success';)";
+
+  ResultCatcher result_catcher;
+  base::Value script_result =
+      ExecuteScriptInUserScriptWorld(kTrySendMessage, *extension);
   EXPECT_EQ(script_result, "success");
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }

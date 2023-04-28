@@ -269,6 +269,15 @@ bool GetTargetExtensionId(ScriptContext* script_context,
     }
   }
 
+  if (script_context->context_type() == Feature::USER_SCRIPT_CONTEXT) {
+    // User scripts should *always* have an associated extension.
+    CHECK(script_context->extension());
+    if (script_context->extension()->id() != target_id) {
+      *error_out = "User scripts may not message external extensions.";
+      return false;
+    }
+  }
+
   *target_out = std::move(target_id);
   return true;
 }

@@ -136,6 +136,33 @@ bool IsValidMessagingSource(RenderProcessHost& process,
   }
 }
 
+bool IsValidMessagingTarget(RenderProcessHost& process,
+                            const MessagingEndpoint& source_endpoint,
+                            const ExtensionId& target_id) {
+  switch (source_endpoint.type) {
+    case MessagingEndpoint::Type::kNativeApp:
+    case MessagingEndpoint::Type::kExtension:
+    case MessagingEndpoint::Type::kWebPage:
+    case MessagingEndpoint::Type::kContentScript:
+      // The API allows these to target any source. The connection may be
+      // refused (e.g. if the target extension isn't installed or doesn't accept
+      // a connection from the source), but it isn't a sign of a bad IPC.
+      return true;
+    case MessagingEndpoint::Type::kUserScript:
+      // User scripts can only target their own corresponding extension.
+      // `source_endpoint.extension_id` should have been validated above in
+      // `IsValidMessagingSource()`.
+      CHECK(source_endpoint.extension_id);
+      if (source_endpoint.extension_id != target_id) {
+        bad_message::ReceivedBadMessage(
+            &process,
+            bad_message::EMF_INVALID_EXTERNAL_EXTENSION_ID_FOR_USER_SCRIPT);
+        return false;
+      }
+      return true;
+  }
+}
+
 // Returns true if `source_context` can be legitimately claimed/used by
 // `render_process_id`.  Otherwise reports a bad IPC message and returns false
 // (expecting the caller to not take any action based on the rejected,
@@ -440,6 +467,7 @@ void MessagingAPIMessageFilter::OnOpenChannelToExtension(
   ScopedExternalConnectionInfoCrashKeys info_crash_keys(info);
   debug::ScopedPortContextCrashKeys port_context_crash_keys(source_context);
   if (!IsValidMessagingSource(*process, info.source_endpoint) ||
+      !IsValidMessagingTarget(*process, info.source_endpoint, info.target_id) ||
       !IsValidSourceUrl(*process, info.source_url, source_context) ||
       !IsValidSourceContext(*process, source_context)) {
     // No need to call ReceivedBadMessage here, because it will be called (when
