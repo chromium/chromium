@@ -412,7 +412,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gnrt_unittests",
-        "test_id_prefix": "ninja://tools/crates/gnrt:gnrt_unittests/"
+        "test_id_prefix": "ninja://tools/crates/gnrt/lib:gnrt_unittests/"
       },
       {
         "merge": {
@@ -557,7 +557,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gnrt_unittests",
-        "test_id_prefix": "ninja://tools/crates/gnrt:gnrt_unittests/"
+        "test_id_prefix": "ninja://tools/crates/gnrt/lib:gnrt_unittests/"
       },
       {
         "merge": {
@@ -752,7 +752,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gnrt_unittests",
-        "test_id_prefix": "ninja://tools/crates/gnrt:gnrt_unittests/"
+        "test_id_prefix": "ninja://tools/crates/gnrt/lib:gnrt_unittests/"
       },
       {
         "args": [
@@ -1049,7 +1049,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gnrt_unittests",
-        "test_id_prefix": "ninja://tools/crates/gnrt:gnrt_unittests/"
+        "test_id_prefix": "ninja://tools/crates/gnrt/lib:gnrt_unittests/"
       },
       {
         "merge": {
@@ -1202,7 +1202,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gnrt_unittests",
-        "test_id_prefix": "ninja://tools/crates/gnrt:gnrt_unittests/"
+        "test_id_prefix": "ninja://tools/crates/gnrt/lib:gnrt_unittests/"
       },
       {
         "merge": {

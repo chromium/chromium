@@ -643,7 +643,7 @@
     "type": "console_test_launcher",
   },
   "gnrt_unittests": {
-    "label": "//tools/crates/gnrt:gnrt_unittests",
+    "label": "//tools/crates/gnrt/lib:gnrt_unittests",
     "type": "console_test_launcher",
   },
   "cronet_package": {

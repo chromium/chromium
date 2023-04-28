@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use std::fs;
-use std::io::Write;
-use std::process;
-
 use crate::crates;
 use crate::manifest::CargoManifest;
 use crate::paths;
-use crate::{check_exit_ok, check_output, check_spawn, check_wait_with_output};
+use crate::util::{check_exit_ok, check_output, check_spawn, check_wait_with_output};
+
+use std::fs;
+use std::io::Write;
+use std::process;
 
 use anyhow::{Context, Result};
 

@@ -862,8 +862,8 @@ group("all_rust") {
     # cross-compiling.
     if (enable_rust_gnrt && host_os == target_os && host_cpu == target_cpu) {
       deps += [
-        "//tools/crates/gnrt:gnrt_unittests",
         "//tools/crates/gnrt($host_toolchain)",
+        "//tools/crates/gnrt/lib:gnrt_unittests",
       ]
     }
   }

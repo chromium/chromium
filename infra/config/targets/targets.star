@@ -802,7 +802,7 @@ targets.console_test_launcher(
 
 targets.console_test_launcher(
     name = "gnrt_unittests",
-    label = "//tools/crates/gnrt:gnrt_unittests",
+    label = "//tools/crates/gnrt/lib:gnrt_unittests",
 )
 
 targets.compile_target(
