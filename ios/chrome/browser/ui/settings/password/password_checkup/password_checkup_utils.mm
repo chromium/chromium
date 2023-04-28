@@ -45,6 +45,11 @@ bool IsCredentialUnmutedCompromised(const CredentialUIEntry& credential) {
 
 WarningType GetWarningOfHighestPriority(
     const std::vector<CredentialUIEntry>& insecure_credentials) {
+  // Using a set to make sure that the `has_reused_passwords` flag is only set
+  // to `true` if there is at least a reused group of two passwords.
+  // TODO(crbug.com/1434343): This is a temporary solution to filter out the
+  // reused password groups with only one remaining password.
+  std::unordered_set<std::u16string> reused_passwords_set;
   bool has_reused_passwords = false;
   bool has_weak_passwords = false;
   bool has_muted_warnings = false;
@@ -60,7 +65,12 @@ WarningType GetWarningOfHighestPriority(
     // warning. So, if the credential is reused, there is no need to verify if
     // it is also weak.
     if (credential.IsReused()) {
-      has_reused_passwords = true;
+      if (reused_passwords_set.find(credential.password) !=
+          reused_passwords_set.end()) {
+        has_reused_passwords = true;
+      } else {
+        reused_passwords_set.insert(credential.password);
+      }
     } else if (credential.IsWeak()) {
       has_weak_passwords = true;
     }

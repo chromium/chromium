@@ -164,10 +164,13 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
   EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
               WarningType::kWeakPasswordsWarning);
 
-  // Add a reused password.
+  // Add 2 reused passwords.
   PasswordForm form4 = MakeSavedPassword(kExampleCom4, kUsername116);
   AddIssueToForm(&form4, InsecureType::kReused, base::Minutes(1));
   store().AddLogin(form4);
+  PasswordForm form5 = MakeSavedPassword(kExampleCom5, kUsername116);
+  AddIssueToForm(&form5, InsecureType::kReused, base::Minutes(1));
+  store().AddLogin(form5);
   RunUntilIdle();
   insecure_credentials = manager().GetInsecureCredentials();
   // The "reused passwords" warning becomes the highest priority warning.
@@ -175,9 +178,9 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
               WarningType::kReusedPasswordsWarning);
 
   // Add an unmuted compromised password.
-  PasswordForm form5 = MakeSavedPassword(kExampleCom5, kUsername116);
-  AddIssueToForm(&form5, InsecureType::kLeaked, base::Minutes(1));
-  store().AddLogin(form5);
+  PasswordForm form6 = MakeSavedPassword(kExampleCom6, kUsername116);
+  AddIssueToForm(&form6, InsecureType::kLeaked, base::Minutes(1));
+  store().AddLogin(form6);
   RunUntilIdle();
   insecure_credentials = manager().GetInsecureCredentials();
   // The "compromised passwords" warning becomes the highest priority warning.
@@ -455,4 +458,24 @@ TEST_F(PasswordCheckupUtilsTest,
   filtered_credentials = GetPasswordsForWarningType(
       WarningType::kReusedPasswordsWarning, insecure_credentials);
   EXPECT_TRUE(filtered_credentials.empty());
+}
+
+// Tests that `GetWarningOfHighestPriority` doesn't return the "reused
+// passwords" warning if a password is flagged as reused when there is no other
+// credential with that same password.
+// TODO(crbug.com/1434343): Update or delete this test once a fix has landed.
+TEST_F(PasswordCheckupUtilsTest,
+       CheckWarningOfHighestPriorityWhenOneReusedPassword) {
+  // Add a reused password.
+  PasswordForm reused_form = MakeSavedPassword(kExampleCom1, kUsername116);
+  AddIssueToForm(&reused_form, InsecureType::kReused, base::Minutes(1));
+  store().AddLogin(reused_form);
+  RunUntilIdle();
+
+  std::vector<CredentialUIEntry> insecure_credentials =
+      manager().GetInsecureCredentials();
+
+  // The "no insecure passwords" warning is the highest priority warning.
+  EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
+              WarningType::kNoInsecurePasswordsWarning);
 }
