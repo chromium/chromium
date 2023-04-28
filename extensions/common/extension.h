@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "extensions/buildflags/buildflags.h"
@@ -454,7 +454,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
   // A dynamic ID that can be used when referencing extension resources via URL
   // instead of an extension ID.
-  base::GUID guid_;
+  base::Uuid guid_;
 };
 
 typedef std::vector<scoped_refptr<const Extension>> ExtensionList;

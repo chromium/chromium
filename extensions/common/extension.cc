@@ -276,7 +276,7 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
     return nullptr;
   }
 
-  extension->guid_ = base::GUID::GenerateRandomV4();
+  extension->guid_ = base::Uuid::GenerateRandomV4();
   extension->dynamic_url_ = Extension::GetBaseURLFromExtensionId(
       extension->guid_.AsLowercaseString());
 
@@ -453,7 +453,7 @@ void Extension::SetManifestData(const std::string& key,
 }
 
 void Extension::SetGUID(const ExtensionGuid& guid) {
-  guid_ = base::GUID::ParseLowercase(guid);
+  guid_ = base::Uuid::ParseLowercase(guid);
   DCHECK(guid_.is_valid());
   dynamic_url_ =
       Extension::GetBaseURLFromExtensionId(guid_.AsLowercaseString());
