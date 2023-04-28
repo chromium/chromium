@@ -14,6 +14,11 @@ TestCastConfigController::TestCastConfigController() = default;
 
 TestCastConfigController::~TestCastConfigController() = default;
 
+void TestCastConfigController::AddSinkAndRoute(
+    const SinkAndRoute& sink_and_route) {
+  sinks_and_routes_.push_back(sink_and_route);
+}
+
 void TestCastConfigController::ResetRouteIds() {
   stop_casting_route_id_.clear();
   freeze_route_route_id_.clear();

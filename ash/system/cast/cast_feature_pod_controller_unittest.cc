@@ -15,6 +15,14 @@
 namespace ash {
 namespace {
 
+// Returns a SinkAndRoute as if the local machine was casting.
+SinkAndRoute MakeLocalSinkAndRoute() {
+  SinkAndRoute sink_and_route;
+  sink_and_route.route.id = "route_id";
+  sink_and_route.route.is_local_source = true;
+  return sink_and_route;
+}
+
 class CastFeaturePodControllerTest : public AshTestBase {
  public:
   CastFeaturePodControllerTest() {
@@ -39,9 +47,12 @@ class CastFeaturePodControllerTest : public AshTestBase {
 TEST_F(CastFeaturePodControllerTest, CreateTile) {
   std::unique_ptr<FeatureTile> tile = controller_->CreateTile();
   EXPECT_TRUE(tile->GetVisible());
+  EXPECT_FALSE(tile->IsToggled());
+  EXPECT_EQ(tile->label()->GetText(), u"Cast screen");
   EXPECT_EQ(tile->GetTooltipText(), u"Show cast devices");
   EXPECT_TRUE(tile->drill_in_button()->GetVisible());
   EXPECT_EQ(tile->drill_in_button()->GetTooltipText(), u"Show cast devices");
+  EXPECT_FALSE(tile->sub_label()->GetVisible());
 }
 
 TEST_F(CastFeaturePodControllerTest, TileNotVisibleWhenNoMediaRouter) {
@@ -77,6 +88,62 @@ TEST_F(CastFeaturePodControllerTest, SubLabelVisibleOnDevicesUpdated) {
   cast_config_.set_has_sinks_and_routes(true);
   controller_->OnDevicesUpdated({});
   EXPECT_TRUE(tile->sub_label()->GetVisible());
+}
+
+TEST_F(CastFeaturePodControllerTest, TileStateWhenCastingScreen) {
+  cast_config_.set_has_active_route(true);
+  cast_config_.set_has_sinks_and_routes(true);
+  SinkAndRoute sink_and_route = MakeLocalSinkAndRoute();
+  sink_and_route.sink.name = "Sony TV";
+  sink_and_route.route.content_source = ContentSource::kDesktop;
+  cast_config_.AddSinkAndRoute(sink_and_route);
+
+  std::unique_ptr<FeatureTile> tile = controller_->CreateTile();
+  EXPECT_TRUE(tile->IsToggled());
+  EXPECT_EQ(tile->label()->GetText(), u"Casting screen");
+  EXPECT_TRUE(tile->sub_label()->GetVisible());
+  EXPECT_EQ(tile->sub_label()->GetText(), u"Sony TV");
+}
+
+TEST_F(CastFeaturePodControllerTest, TileStateWhenCastingTab) {
+  cast_config_.set_has_active_route(true);
+  cast_config_.set_has_sinks_and_routes(true);
+  SinkAndRoute sink_and_route = MakeLocalSinkAndRoute();
+  sink_and_route.sink.name = "Sony TV";
+  sink_and_route.route.content_source = ContentSource::kTab;
+  cast_config_.AddSinkAndRoute(sink_and_route);
+
+  std::unique_ptr<FeatureTile> tile = controller_->CreateTile();
+  EXPECT_TRUE(tile->IsToggled());
+  EXPECT_EQ(tile->label()->GetText(), u"Casting tab");
+  EXPECT_TRUE(tile->sub_label()->GetVisible());
+  EXPECT_EQ(tile->sub_label()->GetText(), u"Sony TV");
+}
+
+TEST_F(CastFeaturePodControllerTest, TileStateWhenCastingUnknownSource) {
+  cast_config_.set_has_active_route(true);
+  cast_config_.set_has_sinks_and_routes(true);
+  SinkAndRoute sink_and_route = MakeLocalSinkAndRoute();
+  sink_and_route.sink.name = "Sony TV";
+  sink_and_route.route.content_source = ContentSource::kUnknown;
+  cast_config_.AddSinkAndRoute(sink_and_route);
+
+  std::unique_ptr<FeatureTile> tile = controller_->CreateTile();
+  EXPECT_TRUE(tile->IsToggled());
+  EXPECT_EQ(tile->label()->GetText(), u"Casting");
+  EXPECT_TRUE(tile->sub_label()->GetVisible());
+  EXPECT_EQ(tile->sub_label()->GetText(), u"Sony TV");
+}
+
+TEST_F(CastFeaturePodControllerTest, SubLabelHiddenWhenSinkHasNoName) {
+  cast_config_.set_has_active_route(true);
+  cast_config_.set_has_sinks_and_routes(true);
+  SinkAndRoute sink_and_route = MakeLocalSinkAndRoute();
+  sink_and_route.sink.name = "";
+  cast_config_.AddSinkAndRoute(sink_and_route);
+
+  std::unique_ptr<FeatureTile> tile = controller_->CreateTile();
+  EXPECT_FALSE(tile->sub_label()->GetVisible());
 }
 
 }  // namespace

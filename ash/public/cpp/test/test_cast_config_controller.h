@@ -47,6 +47,9 @@ class TestCastConfigController : public CastConfigController {
     return unfreeze_route_route_id_;
   }
 
+  // Adds an entry to `sinks_and_routes_`.
+  void AddSinkAndRoute(const SinkAndRoute& sink_and_route);
+
   // Resets the captured route IDs.
   void ResetRouteIds();
 

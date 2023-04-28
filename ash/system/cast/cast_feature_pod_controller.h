@@ -47,8 +47,8 @@ class ASH_EXPORT CastFeaturePodController
   // Updates feature pod button visibility. Used pre-QsRevamp.
   void Update();
 
-  // Updates tile sublabel visibility. Used post-QsRevamp.
-  void UpdateSublabelVisibility();
+  // Updates the feature tile. Used post-QsRevamp.
+  void UpdateFeatureTile();
 
   const raw_ptr<UnifiedSystemTrayController,
                 DanglingUntriaged | ExperimentalAsh>

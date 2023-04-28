@@ -498,6 +498,15 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_CAST_TOOLTIP" desc="The tooltip text used for Cast button in system tray bubble.">
         Show cast devices
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_CASTING" desc="The label used in the system tray bubble when casting a generic source to a Chromecast device">
+        Casting
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CASTING_SCREEN" desc="The label used in the system tray bubble when casting the screen to a Chromecast device">
+        Casting screen
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CASTING_TAB" desc="The label used in the system tray bubble when casting a Chrome tab to a Chromecast device">
+        Casting tab
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_TITLE" desc="The notification title to tell the user we are casting to a cast device.">
         Casting to <ph name="RECEIVER_NAME">$1<ex>Living Room</ex></ph>
       </message>
