@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
 #include "third_party/blink/renderer/core/css/shadow_tree_style_sheet_collection.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -130,6 +131,8 @@ CSSFontSelector* CreateCSSFontSelectorFor(Document& document) {
 
 StyleEngine::StyleEngine(Document& document)
     : document_(&document),
+      style_containment_scope_tree_(
+          MakeGarbageCollected<StyleContainmentScopeTree>()),
       document_style_sheet_collection_(
           MakeGarbageCollected<DocumentStyleSheetCollection>(document)),
       resolver_(MakeGarbageCollected<StyleResolver>(document)),
@@ -705,6 +708,14 @@ void StyleEngine::ResetAuthorStyle(TreeScope& tree_scope) {
   tree_scope.ClearScopedStyleResolver();
 }
 
+StyleContainmentScopeTree& StyleEngine::EnsureStyleContainmentScopeTree() {
+  if (!style_containment_scope_tree_) {
+    style_containment_scope_tree_ =
+        MakeGarbageCollected<StyleContainmentScopeTree>();
+  }
+  return *style_containment_scope_tree_;
+}
+
 void StyleEngine::SetRuleUsageTracker(StyleRuleUsageTracker* tracker) {
   tracker_ = tracker;
 
@@ -781,6 +792,7 @@ void StyleEngine::DidDetach() {
     environment_variables_->DetachFromParent();
   }
   environment_variables_ = nullptr;
+  style_containment_scope_tree_ = nullptr;
 }
 
 bool StyleEngine::ClearFontFaceCacheAndAddUserFonts(
@@ -2751,6 +2763,9 @@ void StyleEngine::EnvironmentVariableChanged() {
 
 void StyleEngine::NodeWillBeRemoved(Node& node) {
   if (auto* element = DynamicTo<Element>(node)) {
+    if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
+      tree->ElementWillBeRemoved(*element);
+    }
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(
         *element);
   }
@@ -3136,6 +3151,10 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
     RebuildLayoutTree(&container);
   }
 
+  // Update quotes only if there are any scopes marked dirty.
+  if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
+    tree->UpdateQuotes();
+  }
   if (container == GetDocument().documentElement()) {
     // If the container is the root element, there may be body styles which have
     // changed as a result of the new container query evaluation, and if
@@ -3313,6 +3332,10 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
       TRACE_EVENT0("blink,blink_style", "Document::rebuildLayoutTree");
       SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Style.RebuildLayoutTreeTime");
       RebuildLayoutTree();
+    }
+    // Update quotes only if there are any scopes marked dirty.
+    if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
+      tree->UpdateQuotes();
     }
   } else {
     style_recalc_root_.Clear();
@@ -3841,6 +3864,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(ua_view_transition_style_);
   visitor->Trace(style_image_cache_);
   visitor->Trace(fill_or_clip_path_uri_value_cache_);
+  visitor->Trace(style_containment_scope_tree_);
   FontSelectorClient::Trace(visitor);
 }
 

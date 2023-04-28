@@ -365,4 +365,41 @@ LayoutObject* LayoutTreeBuilderTraversal::NextInTopLayer(
   return nullptr;
 }
 
+int LayoutTreeBuilderTraversal::ComparePreorderTreePosition(const Node& node1,
+                                                            const Node& node2) {
+  if (node1 == node2) {
+    return 0;
+  }
+  HeapVector<const Node*> ancestors1;
+  HeapVector<const Node*> ancestors2;
+  for (const Node* anc1 = &node1; anc1; anc1 = Parent(*anc1)) {
+    ancestors1.emplace_back(anc1);
+  }
+  for (const Node* anc2 = &node2; anc2; anc2 = Parent(*anc2)) {
+    ancestors2.emplace_back(anc2);
+  }
+  int anc1 = ancestors1.size() - 1;
+  int anc2 = ancestors2.size() - 1;
+  // First let's eliminate the ancestors until we find the first that are
+  // inequal, meaning that we need to perform a linear search in that subtree.
+  while (anc1 >= 0 && anc2 >= 0 && ancestors1[anc1] == ancestors2[anc2]) {
+    --anc1;
+    --anc2;
+  }
+  if (anc1 < 0) {
+    return anc2 < 0 ? 0 : -1;
+  }
+  if (anc2 < 0) {
+    return 1;
+  }
+  // Start linear search from last ancestor we found
+  const Node* parent = Parent(*ancestors1[anc1]);
+  for (const Node* elem = ancestors1[anc1]; elem; elem = Next(*elem, parent)) {
+    if (elem == ancestors2[anc2]) {
+      return -1;
+    }
+  }
+  return 1;
+}
+
 }  // namespace blink
