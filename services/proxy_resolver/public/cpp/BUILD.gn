@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+component("proxy_resolver_mojom_support") {
+  sources = [
+    "mojo_host_mojom_traits.cc",
+    "mojo_host_mojom_traits.h",
+    "proxy_resolver_mojom_traits.cc",
+    "proxy_resolver_mojom_traits.h",
+  ]
+  deps = [
+    "//net",
+    "//services/network/public/mojom:mojom_network_param",
+    "//services/proxy_resolver/public/mojom:mojom_shared",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  defines = [ "IS_PROXY_RESOLVER_CPP_IMPL" ]
+}

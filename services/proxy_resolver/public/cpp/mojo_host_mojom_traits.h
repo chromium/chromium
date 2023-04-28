@@ -5,6 +5,7 @@
 #ifndef SERVICES_PROXY_RESOLVER_PUBLIC_CPP_MOJO_HOST_MOJOM_TRAITS_H_
 #define SERVICES_PROXY_RESOLVER_PUBLIC_CPP_MOJO_HOST_MOJOM_TRAITS_H_
 
+#include "base/component_export.h"
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
@@ -13,8 +14,9 @@
 namespace mojo {
 
 template <>
-struct EnumTraits<proxy_resolver::mojom::HostResolveOperation,
-                  net::ProxyResolveDnsOperation> {
+struct COMPONENT_EXPORT(PROXY_RESOLVER_CPP)
+    EnumTraits<proxy_resolver::mojom::HostResolveOperation,
+               net::ProxyResolveDnsOperation> {
   static proxy_resolver::mojom::HostResolveOperation ToMojom(
       net::ProxyResolveDnsOperation input);
 

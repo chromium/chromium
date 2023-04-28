@@ -120,20 +120,6 @@ TEST(IPCMessageTest, ValueDict) {
   EXPECT_FALSE(IPC::ReadParam(&bad_msg, &iter, &output));
 }
 
-// Tests net::HostPortPair serialization
-TEST(IPCMessageTest, HostPortPair) {
-  net::HostPortPair input("host.com", 12345);
-
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
-  IPC::ParamTraits<net::HostPortPair>::Write(&msg, input);
-
-  net::HostPortPair output;
-  base::PickleIterator iter(msg);
-  EXPECT_TRUE(IPC::ParamTraits<net::HostPortPair>::Read(&msg, &iter, &output));
-  EXPECT_EQ(input.host(), output.host());
-  EXPECT_EQ(input.port(), output.port());
-}
-
 // Tests net::SSLInfo serialization
 TEST(IPCMessageTest, SSLInfo) {
   // Build a SSLInfo. Avoid false for booleans as that's the default value.

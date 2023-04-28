@@ -451,6 +451,7 @@ component("cpp_base") {
     "//net",
     "//services/network/public/mojom:cookies_mojom",
     "//services/network/public/mojom:mojom_first_party_sets",
+    "//services/network/public/mojom:mojom_network_isolation_key",
     "//services/network/public/mojom:url_loader_base",
   ]
   defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]

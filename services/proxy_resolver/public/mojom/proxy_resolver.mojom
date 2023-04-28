@@ -10,6 +10,7 @@ module proxy_resolver.mojom;
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/network_anonymization_key.mojom";
+import "services/network/public/mojom/network_param.mojom";
 import "url/mojom/url.mojom";
 
 // Mirror of net::ProxyResolveDnsOperation.
@@ -27,28 +28,8 @@ interface HostResolverRequestClient {
   ReportResult(int32 error, array<network.mojom.IPAddress> result);
 };
 
-// Mirror of net::ProxyServer::Scheme.
-enum ProxyScheme {
-  INVALID,
-  DIRECT,
-  HTTP,
-  SOCKS4,
-  SOCKS5,
-  HTTPS,
-  QUIC,
-};
-
-// Mirror of net::ProxyServer.
-struct ProxyServer {
-  ProxyScheme scheme;
-
-  // |host| and |port| are only valid if |scheme| is not INVALID or DIRECT.
-  string host;
-  uint16 port;
-};
-
 struct ProxyInfo {
-  array<ProxyServer> proxy_servers;
+  array<network.mojom.ProxyServer> proxy_servers;
 };
 
 interface ProxyResolver {

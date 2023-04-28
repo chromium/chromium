@@ -10,7 +10,7 @@ mojom("mojom") {
   deps = [
     "//services/network/public/mojom:mojom_ip_address",
     "//services/network/public/mojom:mojom_network_anonymization_key",
-    "//services/network/public/mojom:mojom_network_isolation_key",
+    "//services/network/public/mojom:mojom_network_param",
     "//url/mojom:url_mojom_gurl",
   ]
   public_deps = [ "//sandbox/policy/mojom" ]
@@ -33,24 +33,13 @@ mojom("mojom") {
           mojom = "proxy_resolver.mojom.ProxyInfo"
           cpp = "::net::ProxyInfo"
         },
-
-        {
-          mojom = "proxy_resolver.mojom.ProxyServer"
-          cpp = "::net::ProxyServer"
-        },
-
-        {
-          mojom = "proxy_resolver.mojom.ProxyServer::Scheme"
-          cpp = "::net::ProxyScheme"
-        },
       ]
       traits_headers = [
         "//services/proxy_resolver/public/cpp/mojo_host_mojom_traits.h",
         "//services/proxy_resolver/public/cpp/proxy_resolver_mojom_traits.h",
       ]
-      traits_sources = [
-        "//services/proxy_resolver/public/cpp/mojo_host_mojom_traits.cc",
-        "//services/proxy_resolver/public/cpp/proxy_resolver_mojom_traits.cc",
+      traits_public_deps = [
+        "//services/proxy_resolver/public/cpp:proxy_resolver_mojom_support",
       ]
     },
   ]
