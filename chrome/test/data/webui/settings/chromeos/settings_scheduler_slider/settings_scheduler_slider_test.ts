@@ -4,17 +4,14 @@
 
 import 'chrome://os-settings/chromeos/os_settings.js';
 
+import {SettingsSchedulerSliderElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+suite('<settings-scheduler-slider>', () => {
+  let slider: SettingsSchedulerSliderElement;
 
-/** @fileoverview Suite of tests for settings-scheduler-slider. */
-suite('SettingsSchedulerSlider', function() {
-  /** @type {!SettingsSchedulerSliderElement} */
-  let slider;
-
-  setup(function() {
-    PolymerTest.clearBody();
+  setup(() => {
     slider = document.createElement('settings-scheduler-slider');
     assertTrue(!!slider);
     slider.prefStartTime = {
@@ -58,26 +55,28 @@ suite('SettingsSchedulerSlider', function() {
 
   // TODO(crbug.com/1305868O): Skip test as it consistently fails whenever
   // daylight savings is active.
-  test.skip('pref value update time string', function() {
+  test.skip('pref value update time string', () => {
     // Test that the slider time string is updated after the pref is
     // saved.
-    assertTrue(!!slider.shadowRoot.querySelector('#startLabel'));
-    assertTrue(!!slider.shadowRoot.querySelector('#endLabel'));
+    const startLabel = slider.shadowRoot!.querySelector('#startLabel');
+    assertTrue(!!startLabel);
+
+    const endLabel = slider.shadowRoot!.querySelector('#endLabel');
+    assertTrue(!!endLabel);
 
     const getStartTimeString = () => {
-      return slider.shadowRoot.querySelector('#startLabel').innerHTML.trim();
+      return startLabel.innerHTML.trim();
     };
 
     const getEndTimeString = () => {
-      return slider.shadowRoot.querySelector('#endLabel').innerHTML.trim();
+      return endLabel.innerHTML.trim();
     };
 
     assertEquals('1:00 AM', getStartTimeString());
     assertEquals('2:00 AM', getEndTimeString());
 
     slider.prefStartTime.value = 70;
-    slider.setPrefValue(
-        'ash.night_light.custom_start_time', 70);
+    slider.setPrefValue('ash.night_light.custom_start_time', 70);
     flush();
 
     assertEquals('1:10 AM', getStartTimeString());
@@ -91,33 +90,35 @@ suite('SettingsSchedulerSlider', function() {
     assertEquals('3:00 PM', getEndTimeString());
   });
 
-  test('prefStartTime and prefEndTime should have default values', function() {
+  test('prefStartTime and prefEndTime should have default values', () => {
     // Test that prefStartTime.value and prefEndTime.value are set
     // (crbug.com/1232075).
-    PolymerTest.clearBody();
     slider = document.createElement('settings-scheduler-slider');
     flush();
     const kDefaultStartTimeOffsetMinutes = 18 * 60;
     const kDefaultEndTimeOffsetMinutes = 6 * 60;
-    assertNotEquals(slider.prefStartTime, undefined);
-    assertNotEquals(slider.prefEndTime, undefined);
-    assertEquals(slider.prefStartTime.value, kDefaultStartTimeOffsetMinutes);
-    assertEquals(slider.prefEndTime.value, kDefaultEndTimeOffsetMinutes);
+    assertNotEquals(undefined, slider.prefStartTime);
+    assertNotEquals(undefined, slider.prefEndTime);
+    assertEquals(kDefaultStartTimeOffsetMinutes, slider.prefStartTime.value);
+    assertEquals(kDefaultEndTimeOffsetMinutes, slider.prefEndTime.value);
   });
 
   // TODO(crbug.com/1305868): Skip test as it consistently fails whenever
   // daylight savings is active.
-  test.skip('pref value update aria label', function() {
+  test.skip('pref value update aria label', () => {
     // Test that the aria label is updated after the pref is saved.
-    assertTrue(!!slider.shadowRoot.querySelector('#startKnob'));
-    assertTrue(!!slider.shadowRoot.querySelector('#endKnob'));
+    const startKnob = slider.shadowRoot!.querySelector('#startKnob');
+    assertTrue(!!startKnob);
+
+    const endKnob = slider.shadowRoot!.querySelector('#endKnob');
+    assertTrue(!!endKnob);
 
     const getStartTimeAriaLabel = () => {
-      return slider.shadowRoot.querySelector('#startKnob').ariaLabel.trim();
+      return startKnob.ariaLabel!.trim();
     };
 
     const getEndTimeAriaLabel = () => {
-      return slider.shadowRoot.querySelector('#endKnob').ariaLabel.trim();
+      return endKnob.ariaLabel!.trim();
     };
 
     assertEquals(slider.i18n('startTime', '1:00 AM'), getStartTimeAriaLabel());

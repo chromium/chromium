@@ -560,7 +560,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['PrivacyPage', 'os_privacy_page_test.js'],
  ['ResetPage', 'os_reset_page_test.js'],
- ['SettingsSchedulerSlider', 'settings_scheduler_slider_test.js'],
+ [
+   'SettingsSchedulerSlider',
+   'settings_scheduler_slider/settings_scheduler_slider_test.js'
+ ],
  [
    'SelectToSpeakSubpage',
    'select_to_speak_subpage_tests.js',
