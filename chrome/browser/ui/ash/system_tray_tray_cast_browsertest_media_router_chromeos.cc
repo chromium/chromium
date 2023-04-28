@@ -12,7 +12,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/system/cast/tray_cast.h"
+#include "ash/system/cast/cast_detailed_view.h"
 #include "ash/system/cast/unified_cast_detailed_view_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
