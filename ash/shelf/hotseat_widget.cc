@@ -375,11 +375,17 @@ class HotseatWindowTargeter : public aura::WindowTargeter {
                        gfx::Rect* hit_test_rect_mouse,
                        gfx::Rect* hit_test_rect_touch) const override {
     if (target == hotseat_widget_->GetNativeWindow()) {
-      // Shrink the hit bounds from the size of the window to the size of the
-      // hotseat translucent background.
-      gfx::Rect hit_bounds = target->bounds();
-      hit_bounds.ClampToCenteredSize(
-          hotseat_widget_->GetTranslucentBackgroundSize());
+      // Shrink the hit bounds from the size of the hotseat to the size of the
+      // scrollable shelf view.
+      auto* const scrollable_shelf_view =
+          hotseat_widget_->scrollable_shelf_view();
+
+      gfx::Rect hit_bounds = scrollable_shelf_view->GetLocalBounds();
+      hit_bounds.Inset(
+          scrollable_shelf_view->CalculateMirroredEdgePadding(true));
+      hit_bounds = scrollable_shelf_view->ConvertRectToWidget(hit_bounds);
+      hit_bounds.Offset(target->bounds().origin().OffsetFromOrigin());
+
       *hit_test_rect_mouse = *hit_test_rect_touch = hit_bounds;
       return true;
     }
@@ -762,6 +768,8 @@ void HotseatWidget::Initialize(aura::Window* container, Shelf* shelf) {
       std::make_unique<ScrollableShelfView>(ShelfModel::Get(), shelf));
   delegate_view_->Init(scrollable_shelf_view(), this);
   delegate_view_->SetEnableArrowKeyTraversal(true);
+  hotseat_window_targeter_ = std::make_unique<aura::ScopedWindowTargeter>(
+      GetNativeWindow(), std::make_unique<HotseatWindowTargeter>(this));
 
   // The initialization of scrollable shelf should update the translucent
   // background which is stored in |delegate_view_|. So initializes
@@ -958,6 +966,10 @@ gfx::Size HotseatWidget::CalculateInlineAppBarSize() const {
   return gfx::Size(hotseat_size, height);
 }
 
+void HotseatWidget::ReserveSpaceForAdjacentWidgets(const gfx::Insets& space) {
+  reserved_space_ = space;
+}
+
 void HotseatWidget::CalculateTargetBounds() {
   ShelfLayoutManager* layout_manager = shelf_->shelf_layout_manager();
   const HotseatState hotseat_target_state =
@@ -1018,7 +1030,9 @@ void HotseatWidget::CalculateTargetBounds() {
 }
 
 gfx::Rect HotseatWidget::GetTargetBounds() const {
-  return target_bounds_;
+  gfx::Rect inset_bounds = target_bounds_;
+  inset_bounds.Inset(reserved_space_);
+  return inset_bounds;
 }
 
 void HotseatWidget::UpdateLayout(bool animate) {
@@ -1163,15 +1177,6 @@ void HotseatWidget::SetState(HotseatState state) {
     return;
 
   state_ = state;
-
-  // If the hotseat is not extended we can use the normal targeting as the
-  // hidden parts of the hotseat will not block non-shelf items from taking
-  if (state == HotseatState::kExtended) {
-    hotseat_window_targeter_ = std::make_unique<aura::ScopedWindowTargeter>(
-        GetNativeWindow(), std::make_unique<HotseatWindowTargeter>(this));
-  } else {
-    hotseat_window_targeter_.reset();
-  }
 }
 
 ui::Layer* HotseatWidget::GetLayerForNudgeAnimation() {
@@ -1180,7 +1185,9 @@ ui::Layer* HotseatWidget::GetLayerForNudgeAnimation() {
 
 HotseatWidget::LayoutInputs HotseatWidget::GetLayoutInputs() const {
   const ShelfLayoutManager* layout_manager = shelf_->shelf_layout_manager();
-  return {target_bounds_, CalculateShelfViewOpacity(),
+  gfx::Rect inset_bounds = target_bounds_;
+  inset_bounds.Inset(reserved_space_);
+  return {inset_bounds, CalculateShelfViewOpacity(),
           layout_manager->is_active_session_state()};
 }
 

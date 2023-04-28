@@ -18,6 +18,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
+#include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/scrollable_shelf_view.h"
@@ -421,6 +422,15 @@ void Shelf::CreateNavigationWidget(aura::Window* container) {
       std::make_unique<NavigationWidgetAnimationMetricsReporter>();
 }
 
+void Shelf::CreateDeskButtonWidget(aura::Window* container) {
+  CHECK(container);
+  CHECK(!desk_button_widget_);
+  CHECK(ash::features::IsDeskButtonEnabled());
+
+  desk_button_widget_ = std::make_unique<DeskButtonWidget>(this);
+  desk_button_widget_->Initialize(container);
+}
+
 void Shelf::CreateHotseatWidget(aura::Window* container) {
   DCHECK(container);
   DCHECK(!hotseat_widget_);
@@ -457,6 +467,9 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
   // Create the various shelf components.
   CreateHotseatWidget(shelf_container);
   CreateNavigationWidget(shelf_container);
+  if (ash::features::IsDeskButtonEnabled()) {
+    CreateDeskButtonWidget(shelf_container);
+  }
   if (features::IsUseLoginShelfWidgetEnabled()) {
     login_shelf_widget_ =
         std::make_unique<LoginShelfWidget>(/*shelf=*/this, shelf_container);

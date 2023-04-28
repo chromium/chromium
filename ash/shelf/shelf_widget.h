@@ -12,6 +12,7 @@
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/hotseat_transition_animator.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
@@ -73,6 +74,9 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
     return shelf_->navigation_widget();
   }
   HotseatWidget* hotseat_widget() const { return shelf_->hotseat_widget(); }
+  DeskButtonWidget* desk_button_widget() const {
+    return shelf_->desk_button_widget();
+  }
   StatusAreaWidget* status_area_widget() const {
     return shelf_->status_area_widget();
   }
