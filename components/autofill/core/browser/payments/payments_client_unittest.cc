@@ -1563,10 +1563,12 @@ TEST_F(PaymentsClientTest, UploadRequestIncludesEncryptedPan) {
   StartUploading(UploadCardOptions());
   IssueOAuthToken();
 
-  // Verify that the encrypted_pan and s7e_1_pan parameters were included
-  // in the request, and ephemeral_pan was not.
-  EXPECT_TRUE(GetUploadData().find("encrypted_pan") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("ephemeral_pan") == std::string::npos);
+  // Verify that the `encrypted_pan` and s7e_1_pan parameters were included in
+  // the request, and `pan` was not.
+  // Because "pan" is a subset of "encrypted_pan", temporarily include their
+  // enclosing quotation marks (as %22) in the searches.
+  EXPECT_TRUE(GetUploadData().find("%22encrypted_pan%22") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("%22pan%22") == std::string::npos);
   EXPECT_TRUE(GetUploadData().find("__param:s7e_1_pan") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("&s7e_1_pan=4111111111111111") !=
               std::string::npos);
@@ -1593,7 +1595,7 @@ TEST_F(PaymentsClientTest, UploadRequestIncludesClientBehaviorSignals) {
               HasSubstr("%22client_behavior_signals%22:%5B1%5D"));
 }
 
-TEST_F(PaymentsClientTest, UploadRequestIncludesEphemeralPan) {
+TEST_F(PaymentsClientTest, UploadRequestIncludesPan) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillUpstreamUseAlternateSecureDataType);
@@ -1601,12 +1603,12 @@ TEST_F(PaymentsClientTest, UploadRequestIncludesEphemeralPan) {
   StartUploading(UploadCardOptions());
   IssueOAuthToken();
 
-  // Verify that the ephemeral_pan and s7e_38_pan parameters were included
-  // in the request, and encrypted_pan was not.
+  // Verify that the `pan` and s7e_21_pan parameters were included in the
+  // request, and `encrypted_pan` was not.
   EXPECT_TRUE(GetUploadData().find("encrypted_pan") == std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("ephemeral_pan") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("__param:s7e_38_pan") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("&s7e_38_pan=4111111111111111") !=
+  EXPECT_TRUE(GetUploadData().find("pan") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("__param:s7e_21_pan") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("&s7e_21_pan=4111111111111111") !=
               std::string::npos);
 }
 

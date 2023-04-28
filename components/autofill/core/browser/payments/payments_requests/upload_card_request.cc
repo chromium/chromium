@@ -26,10 +26,10 @@ const char kUploadCardRequestFormatWithoutCvc[] =
     "&s7e_1_pan=%s";
 const char kUploadCardRequestFormatUsingAlternateType[] =
     "requestContentType=application/json; charset=utf-8&request=%s"
-    "&s7e_38_pan=%s&s7e_13_cvc=%s";
+    "&s7e_21_pan=%s&s7e_13_cvc=%s";
 const char kUploadCardRequestFormatWithoutCvcUsingAlternateType[] =
     "requestContentType=application/json; charset=utf-8&request=%s"
-    "&s7e_38_pan=%s";
+    "&s7e_21_pan=%s";
 }  // namespace
 
 UploadCardRequest::UploadCardRequest(
@@ -56,7 +56,7 @@ std::string UploadCardRequest::GetRequestContent() {
   base::Value::Dict request_dict;
   if (base::FeatureList::IsEnabled(
           features::kAutofillUpstreamUseAlternateSecureDataType)) {
-    request_dict.Set("ephemeral_pan", "__param:s7e_38_pan");
+    request_dict.Set("pan", "__param:s7e_21_pan");
   } else {
     request_dict.Set("encrypted_pan", "__param:s7e_1_pan");
   }
