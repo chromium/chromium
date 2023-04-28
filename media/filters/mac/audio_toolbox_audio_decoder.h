@@ -52,7 +52,7 @@ class MEDIA_EXPORT AudioToolboxAudioDecoder : public AudioDecoder {
   using ScopedAudioConverterRef =
       base::ScopedTypeRef<AudioConverterRef, ScopedAudioConverterRefTraits>;
 
-  bool CreateAACDecoder(const AudioDecoderConfig& config);
+  bool CreateDecoder(const AudioDecoderConfig& config);
 
   std::unique_ptr<MediaLog> media_log_;
 

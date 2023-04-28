@@ -12,6 +12,7 @@
 #include "base/sys_byteorder.h"
 #include "base/task/bind_post_task.h"
 #include "media/base/audio_buffer.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/audio_discard_helper.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
@@ -20,16 +21,25 @@
 #include "media/base/status.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/mp4/es_descriptor.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
 namespace {
 
-bool CanUseAudioToolbox(AudioCodecProfile profile) {
+bool CanUseAudioToolbox(const AudioDecoderConfig& config) {
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+  // AC3 is available on macOS 10.2 or later, and E-AC3 is available on
+  // macOS 10.11 or later, so this is always true.
+  if (config.codec() == AudioCodec::kEAC3 ||
+      config.codec() == AudioCodec::kAC3) {
+    return true;
+  }
+#endif
   // We only use AudioToolbox for decoding xHE-AAC content and that's only
   // available on macOS 10.15 or higher.
   if (__builtin_available(macOS 10.15, *))
-    return profile == AudioCodecProfile::kXHE_AAC;
+    return config.profile() == AudioCodecProfile::kXHE_AAC;
   return false;
 }
 
@@ -162,8 +172,9 @@ void AudioToolboxAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                           InitCB init_cb,
                                           const OutputCB& output_cb,
                                           const WaitingCB& waiting_cb) {
-  if (!CanUseAudioToolbox(config.profile())) {
-    DLOG(WARNING) << "Only xHE-AAC decoding is supported by this decoder.";
+  if (!CanUseAudioToolbox(config)) {
+    DLOG(WARNING)
+        << "Only xHE-AAC/AC3/E-AC3 decoding is supported by this decoder.";
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedCodec);
     return;
   }
@@ -179,7 +190,7 @@ void AudioToolboxAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
   output_cb_ = output_cb;
   base::BindPostTaskToCurrentDefault(std::move(init_cb))
-      .Run(CreateAACDecoder(config)
+      .Run(CreateDecoder(config)
                ? DecoderStatus::Codes::kOk
                : DecoderStatus::Codes::kFailedToCreateDecoder);
 }
@@ -267,23 +278,51 @@ bool AudioToolboxAudioDecoder::NeedsBitstreamConversion() const {
   return false;
 }
 
-bool AudioToolboxAudioDecoder::CreateAACDecoder(
-    const AudioDecoderConfig& config) {
-  // Input is xHE-AAC / USAC.
+bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
   AudioStreamBasicDescription input_format = {};
-  input_format.mFormatID = kAudioFormatMPEGD_USAC;
+  std::vector<uint8_t> magic_cookie;
 
-  auto magic_cookie = GenerateEsdsMagicCookie(config.aac_extra_data());
+  switch (config.codec()) {
+    case AudioCodec::kAAC: {
+      // Input is xHE-AAC / USAC.
+      CHECK_EQ(config.profile(), AudioCodecProfile::kXHE_AAC);
+      input_format.mFormatID = kAudioFormatMPEGD_USAC;
+      magic_cookie = GenerateEsdsMagicCookie(config.aac_extra_data());
 
-  // Have macOS fill in the rest of the input_format for us.
-  UInt32 format_size = sizeof(input_format);
-  auto status = AudioFormatGetProperty(kAudioFormatProperty_FormatInfo,
-                                       magic_cookie.size(), magic_cookie.data(),
-                                       &format_size, &input_format);
-  if (status != noErr) {
-    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_)
-        << "AudioFormatGetProperty() failed";
-    return false;
+      // Have macOS fill in the rest of the input_format for us.
+      UInt32 format_size = sizeof(input_format);
+      auto status = AudioFormatGetProperty(
+          kAudioFormatProperty_FormatInfo, magic_cookie.size(),
+          magic_cookie.data(), &format_size, &input_format);
+      if (status != noErr) {
+        OSSTATUS_MEDIA_LOG(ERROR, status, media_log_)
+            << "AudioFormatGetProperty() failed";
+        return false;
+      }
+      break;
+    }
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+    case AudioCodec::kAC3:
+    case AudioCodec::kEAC3:
+      // Input is AC3/E-AC3.
+      input_format.mFormatID = config.codec() == AudioCodec::kAC3
+                                   ? kAudioFormatAC3
+                                   : kAudioFormatEnhancedAC3;
+
+      // AC3/E-AC3 doesn't have an extra_data, so fill input format manually.
+      input_format.mBytesPerPacket = 0;
+      input_format.mSampleRate = config.samples_per_second();
+      input_format.mChannelsPerFrame = config.channels();
+      // This is a fixed value of 6 * 256 for AC3, and can be {1,2,3,6} * 256
+      // for E-AC3. For now, set this value to 6 * 256 works for both codec
+      // since we get frame count from AudioConverterFillComplexBuffer and trim
+      // audio buffer each time during decoding.
+      input_format.mFramesPerPacket = 6 * 256;
+      break;
+#endif
+    default:
+      NOTREACHED() << "Unsupported codec: " << config.codec();
+      return false;
   }
 
   // Output is float planar.
@@ -369,39 +408,42 @@ bool AudioToolboxAudioDecoder::CreateAACDecoder(
     return false;
   }
 
-  // Instill the magic!
-  result = AudioConverterSetProperty(decoder_,
-                                     kAudioConverterDecompressionMagicCookie,
-                                     magic_cookie.size(), magic_cookie.data());
-  if (result != noErr) {
-    OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
-        << "AudioConverterSetProperty() failed";
-    return false;
-  }
+  if (config.codec() == AudioCodec::kAAC) {
+    // Instill the magic!
+    result = AudioConverterSetProperty(
+        decoder_, kAudioConverterDecompressionMagicCookie, magic_cookie.size(),
+        magic_cookie.data());
+    if (result != noErr) {
+      OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
+          << "AudioConverterSetProperty() failed";
+      return false;
+    }
 
-  // macOS doesn't provide a default target loudness. Use the value recommended
-  // by Fraunhofer.
-  const Float32 kDefaultLoudness = -16.0;
-  result =
-      AudioConverterSetProperty(decoder_, kAudioCodecPropertyProgramTargetLevel,
-                                sizeof(kDefaultLoudness), &kDefaultLoudness);
-  if (result != noErr) {
-    OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
-        << "AudioConverterSetProperty() failed to set loudness.";
-    return false;
-  }
+    // macOS doesn't provide a default target loudness. Use the value
+    // recommended by Fraunhofer. AC3/E-AC3 doesn't support set this,
+    // so limit this to xHE-AAC only.
+    const Float32 kDefaultLoudness = -16.0;
+    result = AudioConverterSetProperty(
+        decoder_, kAudioCodecPropertyProgramTargetLevel,
+        sizeof(kDefaultLoudness), &kDefaultLoudness);
+    if (result != noErr) {
+      OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
+          << "AudioConverterSetProperty() failed to set loudness.";
+      return false;
+    }
 
-  // Likewise set the effect type recommended by Fraunhofer. There doesn't
-  // appear to be a key name available for this yet.
-  // Values: 0=none, night=1, noisy=2, limited=3
-  const UInt32 kDefaultEffectType = 3;
-  result = AudioConverterSetProperty(decoder_, 0x64726370 /* "drcp" */,
-                                     sizeof(kDefaultEffectType),
-                                     &kDefaultEffectType);
-  if (result != noErr) {
-    OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
-        << "AudioConverterSetProperty() failed to set DRC effect type.";
-    return false;
+    // Likewise set the effect type recommended by Fraunhofer. There doesn't
+    // appear to be a key name available for this yet.
+    // Values: 0=none, night=1, noisy=2, limited=3
+    const UInt32 kDefaultEffectType = 3;
+    result = AudioConverterSetProperty(decoder_, 0x64726370 /* "drcp" */,
+                                       sizeof(kDefaultEffectType),
+                                       &kDefaultEffectType);
+    if (result != noErr) {
+      OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
+          << "AudioConverterSetProperty() failed to set DRC effect type.";
+      return false;
+    }
   }
 
   discard_helper_ = std::make_unique<AudioDiscardHelper>(
