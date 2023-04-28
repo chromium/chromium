@@ -6836,6 +6836,19 @@ crbug.com/952717 [ Win11 ] http/tests/xmlhttprequest/redirect-cross-origin-post.
 crbug.com/1433050 [ Mac10.15 ] http/tests/devtools/bindings/sourcemap-bindings-multiple-frames.js [ Failure Pass ]
 crbug.com/1426534 wpt_internal/content-security-policy/reporting-api/reporting-api-works-on-frame-ancestors.https.sub.html [ Failure Pass ]
 
+# Temporarily skipped due to mac-arm failures.
+crbug.com/1441090 [ Mac ] compositing/reflections/nested-reflection-transformed.html [ Failure Pass ]
+crbug.com/1441090 [ Mac ] compositing/reflections/nested-reflection-transformed2.html [ Failure Pass ]
+crbug.com/1441090 [ Mac ] compositing/reflections/reflection-in-composited.html [ Failure Pass ]
+crbug.com/1441090 [ Mac ] fast/borders/border-image-rotate-transform.html [ Failure Pass ]
+crbug.com/1441090 [ Mac ] fast/borders/border-inner-bleed.html [ Failure Pass ]
+crbug.com/1441090 [ Mac ] fast/css/transformed-mask.html [ Failure Pass ]
+crbug.com/1441090 [ Mac ] fast/reflections/opacity-reflection-transform.html [ Failure Pass ]
+crbug.com/1441090 [ Mac ] paint/invalidation/reflection/reflection-with-rotation.html [ Failure Pass ]
+crbug.com/1441090 [ Mac ] paint/invalidation/svg/animated-path-inside-transformed-html.xhtml [ Failure Pass ]
+crbug.com/1441090 [ Mac ] svg/custom/focus-ring.svg [ Failure Pass ]
+crbug.com/1441090 [ Mac ] svg/custom/transformed-outlines.svg [ Failure Pass ]
+
 # Flake suppressor for Mac12 Tests (dbg) builder 2023-04-26
 [ Debug Mac12 ] compositing/video/video-controls-squashing.html [ Failure ]
 [ Debug Mac12 ] editing/selection/caret-at-bidi-boundary.html [ Failure ]
