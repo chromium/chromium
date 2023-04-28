@@ -3280,11 +3280,12 @@ const char kUnifiedPasswordManagerAndroidReenrollmentDescription[] =
     "reenrollment into Google Mobile Services if sync and backend "
     "communication work.";
 
-const char kUnsafeWebGPUName[] = "Unsafe WebGPU";
+const char kUnsafeWebGPUName[] = "Unsafe WebGPU Support";
 const char kUnsafeWebGPUDescription[] =
-    "Enables access to the experimental WebGPU API. Warning: As GPU sandboxing "
-    "isn't implemented yet for the WebGPU API, it is possible to read GPU data "
-    "for other processes.";
+    "Convenience flag for WebGPU development. Enables best-effort WebGPU "
+    "support on unsupported configurations and more! Note that this flag could "
+    "expose security issues to websites so only use it for your own "
+    "development.";
 
 const char kUiPartialSwapName[] = "Partial swap";
 const char kUiPartialSwapDescription[] = "Sets partial swap behavior.";

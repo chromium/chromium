@@ -3424,7 +3424,7 @@
   {
     "name": "enable-unsafe-webgpu",
     "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "enable-user-dtc-inline-flow",
