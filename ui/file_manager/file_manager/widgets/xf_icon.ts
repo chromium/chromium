@@ -38,8 +38,6 @@ export class XfIcon extends XfBase {
 
   static get multiColor() {
     return {
-      [constants.ICON_TYPES.OFFLINE]:
-          svg`<use xlink:href="foreground/images/files/ui/offline.svg#offline"></use>`,
       [constants.ICON_TYPES.CLOUD_DONE]:
           svg`<use xlink:href="foreground/images/files/ui/cloud_done.svg#cloud_done"></use>`,
       [constants.ICON_TYPES.CLOUD_ERROR]:
@@ -285,6 +283,10 @@ function getCSS() {
 
     :host([type="my_files"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/my_files.svg);
+    }
+
+    :host([type="offline"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/offline.svg);
     }
 
     :host([type="optical"]) span {
