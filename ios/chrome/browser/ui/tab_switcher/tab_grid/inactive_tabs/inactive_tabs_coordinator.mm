@@ -124,7 +124,15 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 @property(nonatomic, strong)
     NSLayoutConstraint* baseViewSnapshotHorizontalPosition;
 
-// The potential user education coordinator shown the first time Inactive Tabs
+// Whether settings are currently presented.
+@property(nonatomic, getter=isPresetingSettings) BOOL presentingSettings;
+
+// Optional block called when settings are dismissed. This is because there
+// sometimes is work that needs to be delayed between the time the settings are
+// changed, and when the UI is updated.
+@property(nonatomic, copy) ProceduralBlock onSettingsDismissedBlock;
+
+// The optional user education coordinator shown the first time Inactive Tabs
 // are displayed.
 @property(nonatomic, strong)
     InactiveTabsUserEducationCoordinator* userEducationCoordinator;
@@ -279,7 +287,9 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 
   [self.userEducationCoordinator stop];
   self.userEducationCoordinator = nil;
-  [self closeSettings];
+  if (self.presentingSettings) {
+    [self closeSettings];
+  }
   [self.viewController.gridViewController dismissModals];
 
   UIView* baseView = self.baseViewController.view;
@@ -362,8 +372,22 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 - (void)gridViewController:(GridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count {
   // Close the Inactive Tabs view when closing the last inactive tab.
-  if (self.showing && count == 0) {
-    [_delegate inactiveTabsCoordinatorDidFinish:self];
+  if (count == 0 && self.showing) {
+    __weak __typeof(self) weakSelf = self;
+    ProceduralBlock didFinish = ^{
+      InactiveTabsCoordinator* strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+      [strongSelf->_delegate inactiveTabsCoordinatorDidFinish:strongSelf];
+    };
+
+    // Delay updating the UI if settings are presented.
+    if (self.presentingSettings) {
+      self.onSettingsDismissedBlock = didFinish;
+    } else {
+      didFinish();
+    }
   }
 }
 
@@ -492,11 +516,18 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  __weak __typeof(self) weakSelf = self;
+  [self.baseViewController dismissViewControllerAnimated:YES
+                                              completion:^{
+                                                [weakSelf onSettingsDismissed];
+                                              }];
 }
 
 - (void)settingsWasDismissed {
-  // No-op.
+  // This is called when the settings are swiped away by the user.
+  // `settingsWasDismissed` is not called after programmatically calling
+  // `closeSettings`, so call the completion here.
+  [self onSettingsDismissed];
 }
 
 - (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
@@ -550,9 +581,19 @@ NSString* const kInactiveTabsUserEducationShownOnce =
       [SettingsNavigationController
           inactiveTabsControllerForBrowser:self.browser
                                   delegate:self];
-  [self.baseViewController presentViewController:settingsController
-                                        animated:YES
-                                      completion:nil];
+  [self.viewController presentViewController:settingsController
+                                    animated:YES
+                                  completion:nil];
+  self.presentingSettings = YES;
+}
+
+// Called when Inactive Tabs settings are dismissed.
+- (void)onSettingsDismissed {
+  self.presentingSettings = NO;
+  if (self.onSettingsDismissedBlock) {
+    self.onSettingsDismissedBlock();
+    self.onSettingsDismissedBlock = nil;
+  }
 }
 
 @end
