@@ -47,7 +47,6 @@ class LayoutNGMixin : public Base {
 
   void UpdateOutOfFlowBlockLayout();
   const NGLayoutResult* UpdateInFlowBlockLayout();
-  void UpdateMargins();
 };
 
 }  // namespace blink

@@ -260,7 +260,6 @@ void LayoutNGTable::UpdateBlockLayout() {
     return;
   }
   UpdateInFlowBlockLayout();
-  UpdateMargins();
 }
 
 void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {

@@ -343,30 +343,6 @@ const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   return result;
 }
 
-template <typename Base>
-void LayoutNGMixin<Base>::UpdateMargins() {
-  Base::CheckIsNotDestroyed();
-
-  const LayoutBlock* containing_block = Base::ContainingBlock();
-  if (!containing_block || !containing_block->IsLayoutBlockFlow())
-    return;
-
-  // In the legacy engine, for regular block container layout, children
-  // calculate and store margins on themselves, while in NG that's done by the
-  // container. Since this object is a LayoutNG entry-point, we'll have to do it
-  // on ourselves, since that's what the legacy container expects.
-  const ComputedStyle& style = Base::StyleRef();
-  const ComputedStyle& cb_style = containing_block->StyleRef();
-  const auto writing_direction = cb_style.GetWritingDirection();
-  LayoutUnit available_logical_width =
-      LayoutBoxUtils::AvailableLogicalWidth(*this, containing_block);
-  NGBoxStrut margins = ComputePhysicalMargins(style, available_logical_width)
-                           .ConvertToLogical(writing_direction);
-  ResolveInlineMargins(style, cb_style, available_logical_width,
-                       Base::LogicalWidth(), &margins);
-  Base::SetMargin(margins.ConvertToPhysical(writing_direction));
-}
-
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBlockFlow>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutSVGBlock>;
