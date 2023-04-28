@@ -77,11 +77,10 @@ class V4L2VideoDecoderBackend {
 
   virtual bool Initialize() = 0;
 
-  // Schedule |buffer| to be processed, with bitstream ID |bitstream_id|.
+  // Schedule |buffer| to be processed.
   // The backend must call |decode_cb| once the buffer is not used anymore.
   virtual void EnqueueDecodeTask(scoped_refptr<DecoderBuffer> buffer,
-                                 VideoDecoder::DecodeCB decode_cb,
-                                 int32_t bitstream_id) = 0;
+                                 VideoDecoder::DecodeCB decode_cb) = 0;
   // Called by the decoder when it has dequeued a buffer from the CAPTURE queue.
   virtual void OnOutputBufferDequeued(V4L2ReadableBufferRef buf) = 0;
   // Backend can overload this method if it needs to do specific work when

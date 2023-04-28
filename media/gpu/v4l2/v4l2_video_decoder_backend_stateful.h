@@ -43,8 +43,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   // V4L2VideoDecoderBackend implementation
   bool Initialize() override;
   void EnqueueDecodeTask(scoped_refptr<DecoderBuffer> buffer,
-                         VideoDecoder::DecodeCB decode_cb,
-                         int32_t bitstream_id) override;
+                         VideoDecoder::DecodeCB decode_cb) override;
   void OnOutputBufferDequeued(V4L2ReadableBufferRef buffer) override;
   void OnServiceDeviceTask(bool event) override;
   void OnStreamStopped(bool stop_input_queue) override;
@@ -66,12 +65,8 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
     size_t bytes_used = 0;
     // The callback function passed to EnqueueDecodeTask().
     VideoDecoder::DecodeCB decode_cb;
-    // Identifier for the decoder buffer.
-    int32_t bitstream_id;
 
-    DecodeRequest(scoped_refptr<DecoderBuffer> buf,
-                  VideoDecoder::DecodeCB cb,
-                  int32_t id);
+    DecodeRequest(scoped_refptr<DecoderBuffer> buf, VideoDecoder::DecodeCB cb);
 
     DecodeRequest(const DecodeRequest&) = delete;
     DecodeRequest& operator=(const DecodeRequest&) = delete;

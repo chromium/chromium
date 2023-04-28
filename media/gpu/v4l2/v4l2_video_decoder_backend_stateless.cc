@@ -358,9 +358,11 @@ void V4L2StatelessVideoDecoderBackend::SurfaceReady(
 
 void V4L2StatelessVideoDecoderBackend::EnqueueDecodeTask(
     scoped_refptr<DecoderBuffer> buffer,
-    VideoDecoder::DecodeCB decode_cb,
-    int32_t bitstream_id) {
+    VideoDecoder::DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const int32_t bitstream_id =
+      bitstream_id_generator_.GenerateNextId().GetUnsafeValue();
 
   if (!buffer->end_of_stream())
     bitstream_id_to_timestamp_.Put(bitstream_id, buffer->timestamp());

@@ -54,9 +54,8 @@ absl::optional<uint8_t> V4L2PixelFormatToBitDepth(uint32_t v4l2_pixelformat) {
 
 V4L2StatefulVideoDecoderBackend::DecodeRequest::DecodeRequest(
     scoped_refptr<DecoderBuffer> buf,
-    VideoDecoder::DecodeCB cb,
-    int32_t id)
-    : buffer(std::move(buf)), decode_cb(std::move(cb)), bitstream_id(id) {}
+    VideoDecoder::DecodeCB cb)
+    : buffer(std::move(buf)), decode_cb(std::move(cb)) {}
 
 V4L2StatefulVideoDecoderBackend::DecodeRequest::DecodeRequest(DecodeRequest&&) =
     default;
@@ -135,8 +134,7 @@ bool V4L2StatefulVideoDecoderBackend::Initialize() {
 
 void V4L2StatefulVideoDecoderBackend::EnqueueDecodeTask(
     scoped_refptr<DecoderBuffer> buffer,
-    VideoDecoder::DecodeCB decode_cb,
-    int32_t bitstream_id) {
+    VideoDecoder::DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 
@@ -145,7 +143,7 @@ void V4L2StatefulVideoDecoderBackend::EnqueueDecodeTask(
   }
 
   decode_request_queue_.push(
-      DecodeRequest(std::move(buffer), std::move(decode_cb), bitstream_id));
+      DecodeRequest(std::move(buffer), std::move(decode_cb)));
 
   DoDecodeWork();
 }

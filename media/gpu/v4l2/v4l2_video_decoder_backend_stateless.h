@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/id_type.h"
 #include "media/base/decoder_status.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -49,8 +50,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   // V4L2VideoDecoderBackend implementation
   bool Initialize() override;
   void EnqueueDecodeTask(scoped_refptr<DecoderBuffer> buffer,
-                         VideoDecoder::DecodeCB decode_cb,
-                         int32_t bitstream_id) override;
+                         VideoDecoder::DecodeCB decode_cb) override;
   void OnOutputBufferDequeued(V4L2ReadableBufferRef buffer) override;
   void OnStreamStopped(bool stop_input_queue) override;
   bool ApplyResolution(const gfx::Size& pic_size,
@@ -190,6 +190,13 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   // Same but with ScopedDecodeTrace for chrome:tracing purposes.
   base::small_map<std::map<base::TimeDelta, std::unique_ptr<ScopedDecodeTrace>>>
       buffer_tracers_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Int32 safe ID generator, starting at 0. Generated IDs are used to uniquely
+  // identify a Decode() request for stateless backends. BitstreamID is just
+  // a "phantom type" (see StrongAlias), essentially just a name.
+  struct BitstreamID {};
+  base::IdType32<BitstreamID>::Generator bitstream_id_generator_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtr<V4L2StatelessVideoDecoderBackend> weak_this_;
   base::WeakPtrFactory<V4L2StatelessVideoDecoderBackend> weak_this_factory_{

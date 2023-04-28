@@ -609,9 +609,8 @@ void V4L2VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     }
   }
 
-  const int32_t bitstream_id = bitstream_id_generator_.GetNextBitstreamId();
   backend_->EnqueueDecodeTask(std::move(buffer),
-                              std::move(trampoline_decode_cb), bitstream_id);
+                              std::move(trampoline_decode_cb));
 }
 
 bool V4L2VideoDecoder::StartStreamV4L2Queue(bool start_output_queue) {
