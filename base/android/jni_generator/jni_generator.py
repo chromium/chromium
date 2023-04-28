@@ -664,10 +664,8 @@ def GetMangledMethodName(jni_params, name, params, return_type):
   return mangled_name
 
 
-def MangleCalledByNatives(jni_params, called_by_natives, always_mangle):
-  """Mangles all the overloads from the call_by_natives list or
-     mangle all methods if always_mangle is true.
-  """
+def MangleCalledByNatives(jni_params, called_by_natives):
+  """Mangles all the overloads from the call_by_natives list."""
   method_counts = collections.defaultdict(
       lambda: collections.defaultdict(lambda: 0))
   for called_by_native in called_by_natives:
@@ -678,7 +676,7 @@ def MangleCalledByNatives(jni_params, called_by_natives, always_mangle):
     java_class_name = called_by_native.java_class_name
     method_name = called_by_native.name
     method_id_var_name = method_name
-    if always_mangle or method_counts[java_class_name][method_name] > 1:
+    if method_counts[java_class_name][method_name] > 1:
       method_id_var_name = GetMangledMethodName(jni_params, method_name,
                                                 called_by_native.params,
                                                 called_by_native.return_type)
@@ -708,13 +706,12 @@ def RemoveIndentedEmptyLines(string):
   return re.sub('^(?: {2})+$\n', '', string, flags=re.MULTILINE)
 
 
-def ExtractCalledByNatives(jni_params, contents, always_mangle):
+def ExtractCalledByNatives(jni_params, contents):
   """Parses all methods annotated with @CalledByNative.
 
   Args:
     jni_params: JniParams object.
     contents: the contents of the java file.
-    always_mangle: See MangleCalledByNatives.
 
   Returns:
     A list of dict with information about the annotated methods.
@@ -750,7 +747,7 @@ def ExtractCalledByNatives(jni_params, contents, always_mangle):
     if '@CalledByNative' in line1:
       raise ParseError('could not parse @CalledByNative method signature',
                        line1, line2)
-  return MangleCalledByNatives(jni_params, called_by_natives, always_mangle)
+  return MangleCalledByNatives(jni_params, called_by_natives)
 
 
 def RemoveComments(contents):
@@ -830,8 +827,8 @@ class JNIFromJavaP(object):
                              contents[lineno + 1]),
                          is_constructor=True)
       ]
-    self.called_by_natives = MangleCalledByNatives(
-        self.jni_params, self.called_by_natives, options.always_mangle)
+    self.called_by_natives = MangleCalledByNatives(self.jni_params,
+                                                   self.called_by_natives)
     self.constant_fields = []
     re_constant_field = re.compile('.*?public static final int (?P<name>.*?);')
     re_constant_field_value = re.compile(
@@ -1000,8 +997,7 @@ class JNIFromJavaSource(object):
     self.jni_params = JniParams(fully_qualified_class)
     self.jni_params.ExtractImportsAndInnerClasses(contents)
     jni_namespace = ExtractJNINamespace(contents) or options.namespace
-    called_by_natives = ExtractCalledByNatives(self.jni_params, contents,
-                                               options.always_mangle)
+    called_by_natives = ExtractCalledByNatives(self.jni_params, contents)
 
     natives, module_name = ProxyHelpers.ExtractStaticProxyNatives(
         fully_qualified_class, contents, options.ptr_type)
@@ -1656,8 +1652,6 @@ See SampleForTests.java for more details.
       '--enable_profiling',
       action='store_true',
       help='Add additional profiling instrumentation.')
-  parser.add_argument(
-      '--always_mangle', action='store_true', help='Mangle all function names')
   parser.add_argument('--unchecked_exceptions',
                       action='store_true',
                       help='Do not check that no exceptions were thrown.')

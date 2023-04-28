@@ -59,7 +59,6 @@ class JniGeneratorOptions(object):
     self.enable_profiling = False
     self.use_proxy_hash = False
     self.enable_jni_multiplexing = False
-    self.always_mangle = False
     self.unchecked_exceptions = False
     self.split_name = None
     self.include_test_only = True
@@ -639,7 +638,7 @@ class TestGenerator(BaseTest):
     jni_params = jni_generator.JniParams('org/chromium/Foo')
     jni_params.ExtractImportsAndInnerClasses(test_data)
     called_by_natives = jni_generator.ExtractCalledByNatives(
-        jni_params, test_data, always_mangle=False)
+        jni_params, test_data)
     golden_called_by_natives = [
         CalledByNative(
             return_type='InnerClass',
@@ -896,15 +895,13 @@ class TestGenerator(BaseTest):
     try:
       jni_params = jni_generator.JniParams('')
       jni_generator.ExtractCalledByNatives(
-          jni_params,
-          """
+          jni_params, """
 @CalledByNative
 public static int foo(); // This one is fine
 
 @CalledByNative
 scooby doo
-""",
-          always_mangle=False)
+""")
       self.fail('Expected a ParseError')
     except jni_generator.ParseError as e:
       self.assertEqual(('@CalledByNative', 'scooby doo'), e.context_lines)
@@ -951,26 +948,6 @@ import org.chromium.base.BuildInfo;
         jni_generator.GetMangledMethodName(jni_params, 'open', [
             Param(name='p1', datatype='java/lang/String'),
         ], 'java/io/InputStream'))
-
-  def testMethodNameAlwaysMangle(self):
-    test_data = """
-    import f.o.o.Bar;
-    import f.o.o.Baz;
-
-    class Clazz {
-      @CalledByNative
-      public Baz methodz(Bar bar) {
-        return null;
-      }
-    }
-    """
-    jni_params = jni_generator.JniParams('org/chromium/Foo')
-    jni_params.ExtractImportsAndInnerClasses(test_data)
-    called_by_natives = jni_generator.ExtractCalledByNatives(
-        jni_params, test_data, always_mangle=True)
-    self.assertEqual(1, len(called_by_natives))
-    method = called_by_natives[0]
-    self.assertEqual('methodzFOOB_FOOB', method.method_id_var_name)
 
   def testFromJavaPGenerics(self):
     contents = """

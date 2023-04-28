@@ -200,9 +200,6 @@ if (enable_java_templates) {
         }
         _input_args = invoker.classes
         _input_names = invoker.classes
-        if (defined(invoker.always_mangle) && invoker.always_mangle) {
-          args += [ "--always_mangle" ]
-        }
         if (defined(invoker.unchecked_exceptions) &&
             invoker.unchecked_exceptions) {
           args += [ "--unchecked_exceptions" ]
@@ -321,8 +318,6 @@ if (enable_java_templates) {
   #     include the full path to the .class file.
   #   jar_file: the path to the .jar. If not provided, will default to the sdk's
   #     android.jar
-  #   always_mangle: Mangle all generated method names. By default, the script
-  #     only mangles methods that cause ambiguity due to method overload.
   #   unchecked_exceptions: Don't CHECK() for exceptions in generated stubs.
   #     This behaves as if every method had @CalledByNativeUnchecked.
   #   deps, public_deps: As normal
