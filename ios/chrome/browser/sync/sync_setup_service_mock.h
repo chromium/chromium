@@ -25,7 +25,7 @@ class SyncSetupServiceMock : public SyncSetupService {
   MOCK_METHOD(bool, IsEncryptEverythingEnabled, (), (const override));
   MOCK_METHOD(bool, CanSyncFeatureStart, (), (const override));
   MOCK_METHOD(bool, IsSyncRequested, (), (const override));
-  MOCK_METHOD(bool, IsSyncingAllDataTypes, (), (const override));
+  MOCK_METHOD(bool, IsSyncEverythingEnabled, (), (const override));
   MOCK_METHOD(bool,
               IsDataTypePreferred,
               (syncer::UserSelectableType),

@@ -111,7 +111,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
+    ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
@@ -126,7 +126,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         .WillByDefault(Return(false));
     ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
+    ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::DISABLED));
@@ -139,7 +139,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         .WillByDefault(Return(false));
     ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
         .WillByDefault(Return(false));
-    ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
+    ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::DISABLED));

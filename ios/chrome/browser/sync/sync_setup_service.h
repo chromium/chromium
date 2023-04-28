@@ -45,7 +45,7 @@ class SyncSetupService : public KeyedService {
   virtual bool IsDataTypePreferred(syncer::UserSelectableType datatype) const;
   // Enables or disables the given datatype. To be noted: this can be called at
   // any time, but will only be meaningful if `CanSyncFeatureStart` is true and
-  // `IsSyncingAllDataTypes` is false. Changes won't take effect in the sync
+  // `IsSyncEverythingEnabled` is false. Changes won't take effect in the sync
   // backend before the next call to `CommitChanges`.
   void SetDataTypeEnabled(syncer::UserSelectableType datatype, bool enabled);
 
@@ -54,10 +54,10 @@ class SyncSetupService : public KeyedService {
   bool UserActionIsRequiredToHaveTabSyncWork();
 
   // Returns whether all datatypes are being synced.
-  virtual bool IsSyncingAllDataTypes() const;
+  virtual bool IsSyncEverythingEnabled() const;
   // Sets whether all datatypes should be synced or not. Changes won't take
   // effect before the next call to `CommitChanges`.
-  virtual void SetSyncingAllDataTypes(bool sync_all);
+  virtual void SetSyncEverythingEnabled(bool sync_all);
 
   // Returns whether all sync data is being encrypted.
   virtual bool IsEncryptEverythingEnabled() const;

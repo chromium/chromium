@@ -40,7 +40,7 @@ void SyncSetupService::SetDataTypeEnabled(syncer::UserSelectableType datatype,
     selected_types.Put(datatype);
   else
     selected_types.Remove(datatype);
-  user_settings->SetSelectedTypes(IsSyncingAllDataTypes(), selected_types);
+  user_settings->SetSelectedTypes(IsSyncEverythingEnabled(), selected_types);
 }
 
 bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
@@ -79,11 +79,11 @@ bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
   return true;
 }
 
-bool SyncSetupService::IsSyncingAllDataTypes() const {
+bool SyncSetupService::IsSyncEverythingEnabled() const {
   return sync_service_->GetUserSettings()->IsSyncEverythingEnabled();
 }
 
-void SyncSetupService::SetSyncingAllDataTypes(bool sync_all) {
+void SyncSetupService::SetSyncEverythingEnabled(bool sync_all) {
   if (!sync_blocker_)
     sync_blocker_ = sync_service_->GetSetupInProgressHandle();
   sync_service_->GetUserSettings()->SetSelectedTypes(

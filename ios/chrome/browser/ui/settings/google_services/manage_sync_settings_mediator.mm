@@ -204,10 +204,10 @@ bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
   if ([self.syncEverythingItem isKindOfClass:[TableViewInfoButtonItem class]]) {
     // It's possible that the sync everything pref remains true when a policy
     // change doesn't allow to sync everthing anymore. Fix that here.
-    BOOL isSyncingEverything = self.syncSetupService->IsSyncingAllDataTypes();
+    BOOL isSyncingEverything = self.syncSetupService->IsSyncEverythingEnabled();
     BOOL canSyncEverything = self.allItemsAreSynceable;
     if (isSyncingEverything && !canSyncEverything) {
-      self.syncSetupService->SetSyncingAllDataTypes(NO);
+      self.syncSetupService->SetSyncEverythingEnabled(NO);
     }
     return;
   }
@@ -215,7 +215,7 @@ bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
   BOOL shouldSyncEverythingBeEditable = !self.disabledBecauseOfSyncError;
   BOOL shouldSyncEverythingItemBeOn =
       self.syncSetupService->IsSyncRequested() &&
-      self.syncSetupService->IsSyncingAllDataTypes();
+      self.syncSetupService->IsSyncEverythingEnabled();
   SyncSwitchItem* syncEverythingItem =
       base::mac::ObjCCastStrict<SyncSwitchItem>(self.syncEverythingItem);
   BOOL needsUpdate =
@@ -528,7 +528,7 @@ bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
 }
 
 - (BOOL)shouldSyncDataItemEnabled {
-  return (!self.syncSetupService->IsSyncingAllDataTypes() ||
+  return (!self.syncSetupService->IsSyncEverythingEnabled() ||
           !self.allItemsAreSynceable ||
           !self.syncSetupService->IsSyncRequested()) &&
          !self.disabledBecauseOfSyncError;
@@ -613,7 +613,7 @@ bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
                 isKindOfClass:[TableViewInfoButtonItem class]])
           return;
 
-        self.syncSetupService->SetSyncingAllDataTypes(value);
+        self.syncSetupService->SetSyncEverythingEnabled(value);
         if (value) {
           // When sync everything is turned on, the autocomplete wallet
           // should be turned on. This code can be removed once
