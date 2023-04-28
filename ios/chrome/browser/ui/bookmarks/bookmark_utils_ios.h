@@ -14,6 +14,7 @@
 
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/bookmarks/common/storage_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AuthenticationService;
@@ -26,11 +27,6 @@ namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
-
-enum class BookmarkModelType {
-  kProfile,
-  kAccount,
-};
 
 namespace bookmark_utils_ios {
 
@@ -97,7 +93,7 @@ NSString* TitleForBookmarkNode(const bookmarks::BookmarkNode* node);
 // This function is linear in time in the depth of the bookmark_node.
 // TODO(crbug.com/1417992): once the bookmark nodes has access to its model,
 // rewrite the function to be constant time.
-BookmarkModelType GetBookmarkModelType(
+bookmarks::StorageType GetBookmarkModelType(
     const bookmarks::BookmarkNode* bookmark_node,
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model);

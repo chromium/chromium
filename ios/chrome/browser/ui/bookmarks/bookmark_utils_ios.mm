@@ -25,6 +25,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/query_parser/query_parser.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -154,27 +155,27 @@ NSString* TitleForBookmarkNode(const BookmarkNode* node) {
 
 #pragma mark - Profile and account
 
-BookmarkModelType GetBookmarkModelType(
+bookmarks::StorageType GetBookmarkModelType(
     const bookmarks::BookmarkNode* bookmark_node,
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model) {
   DCHECK(profile_model);
   if (bookmark_node->HasAncestor(profile_model->root_node())) {
-    return BookmarkModelType::kProfile;
+    return bookmarks::StorageType::kLocalOrSyncable;
   }
   DCHECK(account_model &&
          bookmark_node->HasAncestor(account_model->root_node()));
-  return BookmarkModelType::kAccount;
+  return bookmarks::StorageType::kAccount;
 }
 
 bookmarks::BookmarkModel* GetBookmarkModelForNode(
     const bookmarks::BookmarkNode* bookmark_node,
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model) {
-  BookmarkModelType modelType =
+  bookmarks::StorageType modelType =
       GetBookmarkModelType(bookmark_node, profile_model, account_model);
-  return modelType == BookmarkModelType::kAccount ? account_model
-                                                  : profile_model;
+  return modelType == bookmarks::StorageType::kAccount ? account_model
+                                                       : profile_model;
 }
 
 bool ShouldDisplayCloudSlashIconForProfileModel(

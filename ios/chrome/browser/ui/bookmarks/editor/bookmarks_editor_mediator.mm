@@ -98,13 +98,13 @@
 #pragma mark - BookmarksEditorMutator
 
 - (BOOL)shouldDisplayCloudSlashSymbolForParentFolder {
-  BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
+  bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
       self.bookmark, _profileBookmarkModel.get(), _accountBookmarkModel.get());
   switch (type) {
-    case BookmarkModelType::kProfile:
+    case bookmarks::StorageType::kLocalOrSyncable:
       return bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
           _syncSetupService);
-    case BookmarkModelType::kAccount:
+    case bookmarks::StorageType::kAccount:
       return NO;
   }
   NOTREACHED_NORETURN();

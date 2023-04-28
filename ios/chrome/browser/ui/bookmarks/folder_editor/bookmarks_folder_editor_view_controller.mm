@@ -499,15 +499,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   CHECK(_parentFolderItem);
   _parentFolderItem.title =
       bookmark_utils_ios::TitleForBookmarkNode(_parentFolder);
-  BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
+  bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
       _parentFolder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
   switch (type) {
-    case BookmarkModelType::kProfile:
+    case bookmarks::StorageType::kLocalOrSyncable:
       _parentFolderItem.shouldDisplayCloudSlashIcon =
           bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
               _syncSetupService);
       break;
-    case BookmarkModelType::kAccount:
+    case bookmarks::StorageType::kAccount:
       _parentFolderItem.shouldDisplayCloudSlashIcon = NO;
       break;
   }
