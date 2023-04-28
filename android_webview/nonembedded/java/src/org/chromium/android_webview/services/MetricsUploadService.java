@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import org.chromium.android_webview.common.BadRequestRecorder;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.services.IMetricsUploadService;
 
@@ -53,10 +54,12 @@ public class MetricsUploadService extends Service {
                 // The API is not available on the device so we should ensure this isn't called
                 // again.
                 case 17:
+                    BadRequestRecorder.record(BadRequestRecorder.Reason.UNAVAILABLE_PLATFORM_API);
                     return HttpURLConnection.HTTP_BAD_REQUEST;
                 // If we receive a non expected status from the platform, we will report this as bad
                 // to be rejected to the chromium metrics.
                 default:
+                    BadRequestRecorder.record(BadRequestRecorder.Reason.UNKNOWN_PLATFORM_RESPONSE);
                     return HttpURLConnection.HTTP_BAD_REQUEST;
             }
         }

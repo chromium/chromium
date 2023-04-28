@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.AwBrowserProcess;
+import org.chromium.android_webview.common.BadRequestRecorder;
 import org.chromium.android_webview.common.services.IMetricsUploadService;
 import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
@@ -152,6 +153,7 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
                 Log.e(TAG, "Request to send data completed with exception", e);
                 // In this case the request hit the server so we will treat this as a discarded log.
                 // The Chromium metrics service will drop http 400s.
+                BadRequestRecorder.record(BadRequestRecorder.Reason.EXCEPTION_WAITING_FOR_SERVICE);
                 return HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (TimeoutException e) {
                 Log.e(TAG, "Failed to receive response from upload service in time", e);
