@@ -511,7 +511,8 @@ void WorkerThreadDispatcher::DidInitializeContext(
         WorkerThreadDispatcher::Get()
             ->GetServiceWorkerHostOnIO()
             ->DidInitializeServiceWorkerContext(
-                extension_id, service_worker_version_id, thread_id);
+                extension_id, service_worker_version_id, thread_id,
+                WorkerThreadDispatcher::Get()->BindEventDispatcher(thread_id));
       },
       service_worker_data->context()->GetExtensionID(),
       service_worker_version_id, thread_id));
@@ -556,6 +557,7 @@ void WorkerThreadDispatcher::DidStopContext(const GURL& service_worker_scope,
             ->DidStopServiceWorkerContext(extension_id, activation_token,
                                           service_worker_scope,
                                           service_worker_version_id, thread_id);
+        WorkerThreadDispatcher::Get()->UnbindEventDispatcher(thread_id);
       },
       service_worker_data->context()->GetExtensionID(),
       service_worker_data->activation_sequence(), service_worker_scope,
@@ -624,6 +626,27 @@ void WorkerThreadDispatcher::RemoveWorkerData(
     base::AutoLock lock(task_runner_map_lock_);
     task_runner_map_.erase(worker_thread_id);
   }
+}
+
+mojo::PendingAssociatedRemote<mojom::EventDispatcher>
+WorkerThreadDispatcher::BindEventDispatcher(int worker_thread_id) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  mojo::PendingAssociatedRemote<mojom::EventDispatcher> remote;
+  mojo::ReceiverId receiver_id =
+      event_dispatchers_.Add(this, remote.InitWithNewEndpointAndPassReceiver());
+  event_dispatcher_ids_.insert({worker_thread_id, receiver_id});
+  return remote;
+}
+
+void WorkerThreadDispatcher::UnbindEventDispatcher(int worker_thread_id) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  auto it = event_dispatcher_ids_.find(worker_thread_id);
+  if (it == event_dispatcher_ids_.end()) {
+    return;
+  }
+  mojo::ReceiverId receiver_id = it->second;
+  event_dispatchers_.Remove(receiver_id);
+  event_dispatcher_ids_.erase(receiver_id);
 }
 
 }  // namespace extensions

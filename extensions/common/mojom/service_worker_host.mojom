@@ -5,6 +5,7 @@
 module extensions.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "extensions/common/mojom/event_dispatcher.mojom";
 import "extensions/common/mojom/frame.mojom";
 import "url/mojom/url.mojom";
 
@@ -13,9 +14,11 @@ import "url/mojom/url.mojom";
 interface ServiceWorkerHost {
   // Tells the browser that an extension service worker context was initialized,
   // but possibly didn't start executing its top-level JavaScript.
-  DidInitializeServiceWorkerContext(string extension_id,
-                                    int64 service_worker_version_id,
-                                    int32 worker_thread_id);
+  DidInitializeServiceWorkerContext(
+      string extension_id,
+      int64 service_worker_version_id,
+      int32 worker_thread_id,
+      pending_associated_remote<EventDispatcher> event_dispatcher);
 
   // Tells the browser that an extension service worker context has started and
   // finished executing its top-level JavaScript.

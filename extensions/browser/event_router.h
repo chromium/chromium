@@ -328,6 +328,11 @@ class EventRouter : public KeyedService,
   bool HasLazyEventListenerForTesting(const std::string& event_name);
   bool HasNonLazyEventListenerForTesting(const std::string& event_name);
 
+  void BindServiceWorkerEventDispatcher(
+      int render_process_id,
+      int worker_thread_id,
+      mojo::PendingAssociatedRemote<mojom::EventDispatcher> event_dispatcher);
+
  private:
   friend class EventRouterFilterTest;
   friend class EventRouterTest;
@@ -493,6 +498,9 @@ class EventRouter : public KeyedService,
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
+  void UnbindServiceWorkerEventDispatcher(content::RenderProcessHost* host,
+                                          int worker_thread_id);
+
   const raw_ptr<content::BrowserContext> browser_context_;
 
   // The ExtensionPrefs associated with |browser_context_|. May be NULL in
@@ -518,9 +526,10 @@ class EventRouter : public KeyedService,
 
   EventAckData event_ack_data_;
 
-  std::map<content::RenderProcessHost*,
-           mojo::AssociatedRemote<mojom::EventDispatcher>>
-      rph_dispatcher_map_;
+  using DispatcherMap =
+      std::map<int /*worker_thread_id*/,
+               mojo::AssociatedRemote<mojom::EventDispatcher>>;
+  std::map<content::RenderProcessHost*, DispatcherMap> rph_dispatcher_map_;
 
   // All the Mojo receivers for the EventRouter. Keeps track of the render
   // process id.

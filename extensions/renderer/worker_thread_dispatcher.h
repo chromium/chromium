@@ -20,6 +20,7 @@
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/service_worker_host.mojom.h"
 #include "ipc/ipc_sync_message_filter.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace base {
@@ -163,6 +164,10 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   mojom::EventRouter* GetEventRouterOnIO();
   mojom::ServiceWorkerHost* GetServiceWorkerHostOnIO();
 
+  mojo::PendingAssociatedRemote<mojom::EventDispatcher> BindEventDispatcher(
+      int worker_thread_id);
+  void UnbindEventDispatcher(int worker_thread_id);
+
   // Mojo interface implementation, called from the main thread.
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
                      base::Value::List event_args) override;
@@ -208,6 +213,11 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
   mojo::AssociatedRemote<mojom::ServiceWorkerHost> service_worker_host_;
+
+  // The set of receivers for mojom::EventDispatcher. `event_dispatcher_ids`
+  // keeps track which receiver is associated to the worker thread.
+  mojo::AssociatedReceiverSet<mojom::EventDispatcher> event_dispatchers_;
+  std::map<int /*worker_thread_id*/, mojo::ReceiverId> event_dispatcher_ids_;
 };
 
 }  // namespace extensions

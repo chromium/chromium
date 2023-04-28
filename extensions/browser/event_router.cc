@@ -177,18 +177,23 @@ void EventRouter::DispatchExtensionMessage(
 void EventRouter::RouteDispatchEvent(content::RenderProcessHost* rph,
                                      mojom::DispatchEventParamsPtr params,
                                      base::Value::List event_args) {
-  // TODO(crbug.com/1302000) Add bindings for worker threads to be directly
-  // channel-associated.
+  int worker_thread_id = params->worker_thread_id;
   mojo::AssociatedRemote<mojom::EventDispatcher>& dispatcher =
-      rph_dispatcher_map_[rph];
-  if (!dispatcher.is_bound()) {
-    IPC::ChannelProxy* channel = rph->GetChannel();
-    if (!channel) {
-      return;
+      rph_dispatcher_map_[rph][worker_thread_id];
+
+  if (worker_thread_id == kMainThreadId) {
+    if (!dispatcher.is_bound()) {
+      IPC::ChannelProxy* channel = rph->GetChannel();
+      if (!channel) {
+        return;
+      }
+      channel->GetRemoteAssociatedInterface(
+          dispatcher.BindNewEndpointAndPassReceiver());
     }
-    channel->GetRemoteAssociatedInterface(
-        dispatcher.BindNewEndpointAndPassReceiver());
   }
+  // EventDispatcher for worker threads should be bound at
+  // `BindServiceWorkerEventDispatcher`.
+  CHECK(dispatcher);
   dispatcher->DispatchEvent(std::move(params), std::move(event_args));
 }
 
@@ -1347,6 +1352,32 @@ void EventRouter::RemoveLazyEventListenerImpl(
     DCHECK(prefs_did_exist);
     SetRegisteredEvents(extension_id, events, type);
   }
+}
+
+void EventRouter::BindServiceWorkerEventDispatcher(
+    int render_process_id,
+    int worker_thread_id,
+    mojo::PendingAssociatedRemote<mojom::EventDispatcher> event_dispatcher) {
+  auto* process = RenderProcessHost::FromID(render_process_id);
+  if (!process) {
+    return;
+  }
+  mojo::AssociatedRemote<mojom::EventDispatcher>& worker_dispatcher =
+      rph_dispatcher_map_[process][worker_thread_id];
+  CHECK(!worker_dispatcher);
+  worker_dispatcher.Bind(std::move(event_dispatcher));
+  worker_dispatcher.set_disconnect_handler(
+      base::BindOnce(&EventRouter::UnbindServiceWorkerEventDispatcher,
+                     weak_factory_.GetWeakPtr(), process, worker_thread_id));
+}
+
+void EventRouter::UnbindServiceWorkerEventDispatcher(RenderProcessHost* host,
+                                                     int worker_thread_id) {
+  auto map = rph_dispatcher_map_.find(host);
+  if (map == rph_dispatcher_map_.end()) {
+    return;
+  }
+  map->second.erase(worker_thread_id);
 }
 
 Event::Event(events::HistogramValue histogram_value,
