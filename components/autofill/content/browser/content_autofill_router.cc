@@ -567,9 +567,10 @@ void ContentAutofillRouter::DidFillAutofillFormData(
 
   const FormData* browser_form = form_forest_.GetBrowserForm(form_id);
   AFCHECK(browser_form, return);
-  DCHECK(!last_queried_target_ ||
-         last_queried_target_ == DriverOfFrame(browser_form->host_frame));
   auto* target = DriverOfFrame(browser_form->host_frame);
+  // Usually, `target == last_queried_target_`, but this is not guaranteed
+  // because ContentAutofillRouter may have learned about `form`'s parent form
+  // in between AskForValuesToFill() and DidFillAutofillFormData().
   AFCHECK(target, return );
   callback(target, *browser_form, timestamp);
 }
