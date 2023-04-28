@@ -20,8 +20,8 @@ TEST(BucketInfoMojomTraitsTest, SerializeAndDeserialize) {
       BucketInfo(
           BucketId(1),
           blink::StorageKey::CreateFromStringForTesting("http://example/"),
-          blink::mojom::StorageType::kTemporary, "default", base::Time(), 0,
-          true, blink::mojom::BucketDurability::kRelaxed),
+          blink::mojom::StorageType::kTemporary, kDefaultBucketName,
+          base::Time(), 0, true, blink::mojom::BucketDurability::kRelaxed),
       BucketInfo(
           BucketId(123),
           blink::StorageKey::CreateFromStringForTesting("http://google.com/"),

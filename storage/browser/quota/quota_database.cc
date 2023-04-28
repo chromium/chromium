@@ -52,11 +52,11 @@ namespace {
 // Version 7 - 2021-05-20 - https://crrev.com/c/2910136
 // Version 8 - 2021-09-01 - https://crrev.com/c/3119831
 // Version 9 - 2022-05-13 - https://crrev.com/c/3601253
-const int kQuotaDatabaseCurrentSchemaVersion = 9;
-const int kQuotaDatabaseCompatibleVersion = 9;
+// Version 10 - 2023-04-10 - https://crrev.com/c/4412082
+const int kQuotaDatabaseCurrentSchemaVersion = 10;
+const int kQuotaDatabaseCompatibleVersion = 10;
 
 // Definitions for database schema.
-const char kHostQuotaTable[] = "quota";
 const char kBucketTable[] = "buckets";
 
 // Deprecated flag that ensured that the buckets table was bootstrapped
@@ -160,13 +160,6 @@ std::set<BucketInfo> BucketInfosFromSqlStatement(sql::Statement& statement) {
 }  // anonymous namespace
 
 const QuotaDatabase::TableSchema QuotaDatabase::kTables[] = {
-    // TODO(crbug.com/1175113): Cleanup kHostQuotaTable.
-    {kHostQuotaTable,
-     "(host TEXT NOT NULL,"
-     " type INTEGER NOT NULL,"
-     " quota INTEGER NOT NULL,"
-     " PRIMARY KEY(host, type))"
-     " WITHOUT ROWID"},
     {kBucketTable,
      "(id INTEGER PRIMARY KEY AUTOINCREMENT,"
      " storage_key TEXT NOT NULL,"

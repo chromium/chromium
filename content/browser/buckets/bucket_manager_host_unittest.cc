@@ -170,6 +170,8 @@ TEST_F(BucketManagerHostTest, OpenBucket) {
 
 TEST_F(BucketManagerHostTest, OpenBucketValidateName) {
   const std::vector<std::pair</*is_valid=*/bool, std::string>> names = {
+      // The default name should not be a valid user-provided bucket name.
+      {false, storage::kDefaultBucketName},
       {false, ""},
       {false, " "},
       {false, "2021/01/01"},

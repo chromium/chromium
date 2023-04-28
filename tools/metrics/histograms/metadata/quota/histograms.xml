@@ -75,6 +75,7 @@ chromium-metrics-reviews@google.com.
     <variant name="FromV6ToV7"/>
     <variant name="FromV7ToV8"/>
     <variant name="FromV8ToV9"/>
+    <variant name="FromV9ToV10"/>
   </token>
 </histogram>
 

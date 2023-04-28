@@ -24,6 +24,9 @@ namespace storage {
 
 namespace {
 
+// The name for the implicit/default bucket before V10.
+constexpr char kDefaultNamePreV10[] = "default";
+
 // Overwrites the buckets table with the new_buckets table after data has been
 // copied from the former into the latter.
 bool OverwriteBucketsTableSetUpIndexes(sql::Database* db) {
@@ -108,7 +111,15 @@ bool QuotaDatabaseMigrations::UpgradeSchema(QuotaDatabase& quota_database) {
       return false;
   }
 
-  return quota_database.meta_table_->GetVersionNumber() == 9;
+  if (quota_database.meta_table_->GetVersionNumber() == 9) {
+    bool success = MigrateFromVersion9ToVersion10(quota_database);
+    RecordMigrationHistogram(/*old_version=*/9, /*new_version=*/10, success);
+    if (!success) {
+      return false;
+    }
+  }
+
+  return quota_database.meta_table_->GetVersionNumber() == 10;
 }
 
 void QuotaDatabaseMigrations::RecordMigrationHistogram(int old_version,
@@ -185,7 +196,7 @@ bool QuotaDatabaseMigrations::MigrateFromVersion5ToVersion7(
   // clang-format on
   sql::Statement import_origin_info_statement(
       db->GetCachedStatement(SQL_FROM_HERE, kImportOriginInfoSql));
-  import_origin_info_statement.BindString(0, kDefaultBucketName);
+  import_origin_info_statement.BindString(0, kDefaultNamePreV10);
   import_origin_info_statement.BindTime(1, base::Time::Max());
   if (!import_origin_info_statement.Run())
     return false;
@@ -426,7 +437,7 @@ bool QuotaDatabaseMigrations::MigrateFromVersion8ToVersion9(
     // the time of this migration, non-default buckets are not supported without
     // a flag, but check the name anyway for correctness.
     insert_statement.BindInt(
-        11, static_cast<int>(bucket_name == kDefaultBucketName
+        11, static_cast<int>(bucket_name == kDefaultNamePreV10
                                  ? blink::mojom::BucketDurability::kStrict
                                  : blink::mojom::BucketDurability::kRelaxed));
 
@@ -443,6 +454,55 @@ bool QuotaDatabaseMigrations::MigrateFromVersion8ToVersion9(
   // Mark database as up to date.
   return quota_database.meta_table_->SetVersionNumber(9) &&
          quota_database.meta_table_->SetCompatibleVersionNumber(9) &&
+         transaction.Commit();
+}
+
+bool QuotaDatabaseMigrations::MigrateFromVersion9ToVersion10(
+    QuotaDatabase& quota_database) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_database.sequence_checker_);
+
+  sql::Database* db = quota_database.db_.get();
+  sql::Transaction transaction(db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  // Update the default bucket name to '_default'.
+  // See https://github.com/WICG/storage-buckets/issues/91
+  // clang-format off
+  static constexpr char kUpdateDefaultBucketNameSql[] =
+      "UPDATE buckets "
+        "SET name = ? "
+        "WHERE name = ? ";
+  // clang-format on
+  sql::Statement update_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kUpdateDefaultBucketNameSql));
+  update_statement.BindString(0, kDefaultBucketName);
+  update_statement.BindString(1, kDefaultNamePreV10);
+  if (!update_statement.Run()) {
+    return false;
+  }
+
+  // Delete quota table (see crbug.com/1175113).
+  static constexpr char kDeleteQuotaHostTableSql[] = "DROP TABLE quota";
+  if (!db->Execute(kDeleteQuotaHostTableSql)) {
+    return false;
+  }
+
+  // Delete buckets with persistent type (see crbug.com/1175113).
+  static constexpr char kDeletePersistentTypeBuckets[] =
+      "DELETE FROM buckets WHERE type = ? ";
+  sql::Statement delete_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kDeletePersistentTypeBuckets));
+  delete_statement.BindInt(
+      0, static_cast<int>(blink::mojom::StorageType::kDeprecatedPersistent));
+  if (!delete_statement.Run()) {
+    return false;
+  }
+
+  // Mark database as up to date.
+  return quota_database.meta_table_->SetVersionNumber(10) &&
+         quota_database.meta_table_->SetCompatibleVersionNumber(10) &&
          transaction.Commit();
 }
 

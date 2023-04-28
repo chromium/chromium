@@ -894,7 +894,8 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Overflow) {
   EXPECT_EQ(QuotaError::kQuotaExceeded, bucket_c.error());
 
   // Default bucket shouldn't be limited by the quota.
-  EXPECT_TRUE(UpdateOrCreateBucket({storage_key, "default"}).has_value());
+  EXPECT_TRUE(
+      UpdateOrCreateBucket({storage_key, kDefaultBucketName}).has_value());
 }
 
 // Make sure `EvictExpiredBuckets` deletes expired buckets.
