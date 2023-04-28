@@ -14,7 +14,7 @@ namespace blink {
 
 namespace {
 
-void RunTest(const base::StringPiece input,
+void RunTest(const std::string& input,
              double expected_val,
              blink::AdSize::LengthUnit expected_unit) {
   auto [out_val, out_units] = blink::ParseAdSizeString(input);
@@ -29,81 +29,190 @@ TEST(AdDisplaySizeUtilsTest, ConvertAdSizeUnitToString) {
             ConvertAdSizeUnitToString(blink::AdSize::LengthUnit::kPixels));
   EXPECT_EQ("sw",
             ConvertAdSizeUnitToString(blink::AdSize::LengthUnit::kScreenWidth));
+  EXPECT_EQ("sh", ConvertAdSizeUnitToString(
+                      blink::AdSize::LengthUnit::kScreenHeight));
   EXPECT_TRUE(
       ConvertAdSizeUnitToString(blink::AdSize::LengthUnit::kInvalid).empty());
 }
 
-TEST(AdDisplaySizeUtilsTest, ParseSizeStringPixels) {
-  RunTest("200px", 200, blink::AdSize::LengthUnit::kPixels);
+// Positive test cases.
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringWithUnits) {
+  RunTest("100px", 100.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("100sw", 100.0, blink::AdSize::LengthUnit::kScreenWidth);
+  RunTest("100sh", 100.0, blink::AdSize::LengthUnit::kScreenHeight);
+  RunTest("100.0px", 100.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("100.0sw", 100.0, blink::AdSize::LengthUnit::kScreenWidth);
+  RunTest("100.0sh", 100.0, blink::AdSize::LengthUnit::kScreenHeight);
 }
 
-TEST(AdDisplaySizeUtilsTest, ParseSizeStringScreenWidth) {
-  RunTest("200sw", 200, blink::AdSize::LengthUnit::kScreenWidth);
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringOnlyNumbers) {
+  RunTest("100", 100.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("100.0", 100.0, blink::AdSize::LengthUnit::kPixels);
 }
 
-TEST(AdDisplaySizeUtilsTest, ParseSizeStringWithSpace) {
-  RunTest("200 px", 200, blink::AdSize::LengthUnit::kPixels);
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringNumbersTrailingSpaces) {
+  RunTest("100 ", 100.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("100   ", 100.0, blink::AdSize::LengthUnit::kPixels);
 }
 
-TEST(AdDisplaySizeUtilsTest, ParseSizeStringWithLotsOfSpaces) {
-  RunTest("200       px", 200, blink::AdSize::LengthUnit::kPixels);
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringNumbersLeadingSpaces) {
+  RunTest(" 100", 100.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("   100", 100.0, blink::AdSize::LengthUnit::kPixels);
 }
 
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringNumbersTrailingLeadingSpaces) {
+  RunTest(" 100 ", 100.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("   100 ", 100.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest(" 100   ", 100.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("   100   ", 100.0, blink::AdSize::LengthUnit::kPixels);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringPixelsTrailingSpace) {
+  RunTest("100px ", 100.0, blink::AdSize::LengthUnit::kPixels);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringPixelsLeadingSpace) {
+  RunTest(" 100px", 100.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("   100px", 100.0, blink::AdSize::LengthUnit::kPixels);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringPixelsTrailingLeadingSpaces) {
+  RunTest(" 100px ", 100.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("   100px ", 100.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest(" 100px   ", 100.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("   100px   ", 100.0, blink::AdSize::LengthUnit::kPixels);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeZeroPixel) {
+  RunTest("0", 0.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest(" 0 ", 0.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("0.0", 0.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest(" 0.0 ", 0.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("0px", 0.0, blink::AdSize::LengthUnit::kPixels);
+  RunTest("0.0px", 0.0, blink::AdSize::LengthUnit::kPixels);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringNumbersWithDecimal) {
+  RunTest("0.1px", 0.1, blink::AdSize::LengthUnit::kPixels);
+  RunTest("0.100px", 0.1, blink::AdSize::LengthUnit::kPixels);
+}
+
+// Negative test cases.
 TEST(AdDisplaySizeUtilsTest, ParseSizeStringNoValue) {
-  RunTest("px", 0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest(" px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest(" px ", 0.0, blink::AdSize::LengthUnit::kInvalid);
 }
 
-TEST(AdDisplaySizeUtilsTest, ParseSizeStringSpacesButNoValue) {
-  RunTest("  px", 0, blink::AdSize::LengthUnit::kPixels);
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringNegativeValue) {
+  RunTest("-100px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest(" -100px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest(" - 100px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("-0", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("-0px", 0.0, blink::AdSize::LengthUnit::kInvalid);
 }
 
-TEST(AdDisplaySizeUtilsTest, ParseSizeStringValueButNoUnits) {
-  RunTest("10", 10, blink::AdSize::LengthUnit::kInvalid);
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringNumbersLeadingZero) {
+  RunTest("01px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("00px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringSingleDot) {
+  RunTest(".", 0.0, blink::AdSize::LengthUnit::kInvalid);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringSingleDotWithUnit) {
+  RunTest(".px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringPixelsMiddleSpaces) {
+  RunTest("100 px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("100   px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringNumbersTrailingDot) {
+  RunTest("100.px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringNumbersLeadingDot) {
+  RunTest(".1px", 0.0, blink::AdSize::LengthUnit::kInvalid);
 }
 
 TEST(AdDisplaySizeUtilsTest, ParseSizeStringInvalidUnit) {
-  RunTest("10in", 10, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("10in", 0.0, blink::AdSize::LengthUnit::kInvalid);
 }
 
 TEST(AdDisplaySizeUtilsTest, ParseSizeStringValueAndUnitSwapped) {
-  RunTest("px200", 0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("px100", 0.0, blink::AdSize::LengthUnit::kInvalid);
 }
 
 TEST(AdDisplaySizeUtilsTest, ParseSizeStringEmptyString) {
-  RunTest("", 0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("", 0.0, blink::AdSize::LengthUnit::kInvalid);
 }
 
-TEST(AdDisplaySizeUtilsTest, ParseSizeStringGarbageInString) {
-  RunTest("123abc456px", 123, blink::AdSize::LengthUnit::kPixels);
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringSingleSpace) {
+  RunTest(" ", 0.0, blink::AdSize::LengthUnit::kInvalid);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringMultipleSpaces) {
+  RunTest("   ", 0.0, blink::AdSize::LengthUnit::kInvalid);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringSpacesInNumbers) {
+  RunTest("100 1px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("100. 1px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("100 1px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("100 1 px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("100 1 . 1px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("0 0px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("0 0", 0.0, blink::AdSize::LengthUnit::kInvalid);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringSpacesInUnit) {
+  RunTest("100p x", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("100s w", 0.0, blink::AdSize::LengthUnit::kInvalid);
+}
+
+TEST(AdDisplaySizeUtilsTest, ParseSizeStringWrongFormat) {
+  RunTest("123abc456px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("100%px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("100pixels", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("varpx", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("var px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("100/2px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("100..1px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("10e3px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("2-1px", 0.0, blink::AdSize::LengthUnit::kInvalid);
+  RunTest("2-1", 0.0, blink::AdSize::LengthUnit::kInvalid);
 }
 
 TEST(AdDisplaySizeUtilsTest, ValidAdSize) {
-  AdSize ad_size(10, AdSize::LengthUnit::kPixels, 5,
+  AdSize ad_size(10.0, AdSize::LengthUnit::kPixels, 5.0,
                  AdSize::LengthUnit::kScreenWidth);
   EXPECT_TRUE(IsValidAdSize(ad_size));
 }
 
 TEST(AdDisplaySizeUtilsTest, AdSizeInvalidUnits) {
-  AdSize ad_size(10, AdSize::LengthUnit::kInvalid, 5,
+  AdSize ad_size(10.0, AdSize::LengthUnit::kInvalid, 5.0,
                  AdSize::LengthUnit::kScreenWidth);
   EXPECT_FALSE(IsValidAdSize(ad_size));
 }
 
 TEST(AdDisplaySizeUtilsTest, AdSizeZeroValue) {
-  AdSize ad_size(0, AdSize::LengthUnit::kPixels, 5,
+  AdSize ad_size(0.0, AdSize::LengthUnit::kPixels, 5.0,
                  AdSize::LengthUnit::kScreenWidth);
   EXPECT_FALSE(IsValidAdSize(ad_size));
 }
 
 TEST(AdDisplaySizeUtilsTest, AdSizeNegativeValue) {
-  AdSize ad_size(-1, AdSize::LengthUnit::kPixels, 5,
+  AdSize ad_size(-1.0, AdSize::LengthUnit::kPixels, 5.0,
                  AdSize::LengthUnit::kScreenWidth);
   EXPECT_FALSE(IsValidAdSize(ad_size));
 }
 
 TEST(AdDisplaySizeUtilsTest, AdSizeInfiniteValue) {
   AdSize ad_size(std::numeric_limits<double>::infinity(),
-                 AdSize::LengthUnit::kPixels, 5,
+                 AdSize::LengthUnit::kPixels, 5.0,
                  AdSize::LengthUnit::kScreenWidth);
   EXPECT_FALSE(IsValidAdSize(ad_size));
 }

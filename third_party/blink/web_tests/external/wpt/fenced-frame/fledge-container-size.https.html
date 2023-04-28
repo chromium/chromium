@@ -89,9 +89,6 @@ async function checkSuccess() {
 }
 
 // Type error cases.
-promise_test(async () => { return checkSyntaxError('299', '72'); }, '299 x 72');
-promise_test(async () => { return checkSyntaxError('299px', '72'); }, '299px x 72');
-promise_test(async () => { return checkSyntaxError('299', '72px'); }, '299 x 72px');
 promise_test(async () => { return checkSyntaxError('-299px', '72px'); }, '-299px x 72px');
 promise_test(async () => { return checkSyntaxError('299px', '-72px'); }, '299px x -72px');
 promise_test(async () => { return checkSyntaxError('0px', '0px'); }, '0px x 0px');

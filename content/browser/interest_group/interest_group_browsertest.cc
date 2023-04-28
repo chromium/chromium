@@ -3446,7 +3446,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          adSizes: {"size_1": {"width": "300 px", "height": "150 px"}},
+          adSizes: {"size_1": {"width": "300px", "height": "150px"}},
           sizeGroups: {"": ["size_1"]},
         },
         /*joinDurationSec=*/1);
@@ -5768,12 +5768,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               /*name=*/"cars")
               .SetBiddingUrl(https_server_->GetURL(
                   "a.test", "/interest_group/bidding_logic_with_size.js"))
-              .SetAds(/*ads=*/{
-                  {{ad_url, R"({"ad":"metadata","here":[1,2]})", "group_1"}}})
+              .SetAds(
+                  /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt, "group_1"}}})
               .SetAdSizes(
                   {{{"size_1",
                      blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
-                                   50, blink::AdSize::LengthUnit::kPixels)}}})
+                                   50,
+                                   blink::AdSize::LengthUnit::kScreenHeight)}}})
               .SetSizeGroups({{{"group_1", {"size_1"}}}})
               .Build()));
 
@@ -5799,46 +5800,42 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL ad_url = https_server_->GetURL(
       "c.test", "/echo?render_cars&size={%AD_WIDTH%}x{%AD_HEIGHT%}");
 
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          blink::TestInterestGroupBuilder(
-              /*owner=*/test_origin,
-              /*name=*/"cars")
-              .SetBiddingUrl(https_server_->GetURL(
-                  "a.test", "/interest_group/bidding_logic_with_size.js"))
-              .SetTrustedBiddingSignalsUrl(https_server_->GetURL(
-                  "a.test", "/interest_group/trusted_bidding_signals.json"))
-              .SetTrustedBiddingSignalsKeys({{"key1"}})
-              .SetAds(/*ads=*/{{{ad_url, /*metadata=*/absl::nullopt,
-                                 /*size_group=*/"group_1"}}})
-              .SetAdSizes(
-                  {{{"size_1",
-                     blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
-                                   50, blink::AdSize::LengthUnit::kPixels)}}})
-              .SetSizeGroups({{{"group_1", {"size_1"}}}})
-              .Build()));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/bidding_logic_with_size.js"))
+                    .SetAds(/*ads=*/{{{ad_url, /*metadata=*/absl::nullopt,
+                                       /*size_group=*/"group_1"}}})
+                    .SetAdSizes(
+                        {{{"size_1",
+                           blink::AdSize(
+                               100, blink::AdSize::LengthUnit::kScreenWidth, 50,
+                               blink::AdSize::LengthUnit::kScreenHeight)}}})
+                    .SetSizeGroups({{{"group_1", {"size_1"}}}})
+                    .Build()));
 
   std::string auction_config = JsReplace(
       R"({
-    seller: $1,
-    decisionLogicUrl: $2,
-    interestGroupBuyers: [$1],
-    auctionSignals: {x: 1},
-    sellerSignals: {yet: 'more', info: 1},
-    sellerTimeout: 200,
-    perBuyerSignals: {$1: {even: 'more', x: 4.5}},
-    perBuyerTimeouts: {$1: 100, '*': 150}
-                })",
+        seller: $1,
+        decisionLogicUrl: $2,
+        interestGroupBuyers: [$1]
+      })",
       test_origin,
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
   int screen_width = static_cast<int>(display::Screen::GetScreen()
                                           ->GetPrimaryDisplay()
                                           .GetSizeInPixel()
                                           .width());
+  int screen_height = static_cast<int>(0.5 * display::Screen::GetScreen()
+                                                 ->GetPrimaryDisplay()
+                                                 .GetSizeInPixel()
+                                                 .height());
   GURL expected_url = https_server_->GetURL(
-      "c.test",
-      base::StringPrintf("/echo?render_cars&size=%ix50", screen_width));
+      "c.test", base::StringPrintf("/echo?render_cars&size=%ix%i", screen_width,
+                                   screen_height));
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, expected_url);
 }
 
@@ -6486,22 +6483,22 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   GURL ad_url = https_server_->GetURL(
       "c.test", "/set-header?Supports-Loading-Mode: fenced-frame");
 
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          blink::TestInterestGroupBuilder(
-              /*owner=*/test_origin,
-              /*name=*/"cars")
-              .SetBiddingUrl(https_server_->GetURL(
-                  "a.test", "/interest_group/bidding_logic_with_size.js"))
-              .SetAds(/*ads=*/{{{ad_url, /*metadata=*/absl::nullopt,
-                                 /*size_group=*/"group_1"}}})
-              .SetAdSizes(
-                  {{{"size_1",
-                     blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
-                                   50, blink::AdSize::LengthUnit::kPixels)}}})
-              .SetSizeGroups({{{"group_1", {"size_1"}}}})
-              .Build()));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/bidding_logic_with_size.js"))
+                    .SetAds(/*ads=*/{{{ad_url, /*metadata=*/absl::nullopt,
+                                       /*size_group=*/"group_1"}}})
+                    .SetAdSizes(
+                        {{{"size_1",
+                           blink::AdSize(
+                               100, blink::AdSize::LengthUnit::kScreenWidth, 50,
+                               blink::AdSize::LengthUnit::kScreenHeight)}}})
+                    .SetSizeGroups({{{"group_1", {"size_1"}}}})
+                    .Build()));
 
   std::string auction_config = JsReplace(
       R"({
@@ -6519,6 +6516,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                                           ->GetPrimaryDisplay()
                                           .GetSizeInPixel()
                                           .width());
+  int screen_height = static_cast<int>(0.5 * display::Screen::GetScreen()
+                                                 ->GetPrimaryDisplay()
+                                                 .GetSizeInPixel()
+                                                 .height());
   RenderFrameHost* ad_frame = GetFencedFrameRenderFrameHost(shell());
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   // Wait for 2 requestAnimationFrame calls to make things deterministic.
@@ -6529,7 +6530,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   EXPECT_TRUE(
       ExecJs(ad_frame, "getComputedStyle(document.documentElement).width;"));
   EXPECT_EQ(EvalJs(ad_frame, "innerWidth").ExtractInt(), screen_width);
-  EXPECT_EQ(EvalJs(ad_frame, "innerHeight").ExtractInt(), 50);
+  EXPECT_EQ(EvalJs(ad_frame, "innerHeight").ExtractInt(), screen_height);
 }
 
 // TODO(crbug.com/1439980): Fix flaky test.
@@ -6563,7 +6564,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
               .SetAdSizes(
                   {{{"size_1",
                      blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
-                                   50, blink::AdSize::LengthUnit::kPixels)},
+                                   50,
+                                   blink::AdSize::LengthUnit::kScreenHeight)},
                     {"size_2",
                      blink::AdSize(50, blink::AdSize::LengthUnit::kPixels, 25,
                                    blink::AdSize::LengthUnit::kPixels)}}})
@@ -6589,6 +6591,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                                           ->GetPrimaryDisplay()
                                           .GetSizeInPixel()
                                           .width());
+  int screen_height = static_cast<int>(0.5 * display::Screen::GetScreen()
+                                                 ->GetPrimaryDisplay()
+                                                 .GetSizeInPixel()
+                                                 .height());
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   // Wait for 2 requestAnimationFrame calls to make things deterministic.
   // Without this, the fenced frame may end up with its default size 300px *
@@ -6598,7 +6604,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   EXPECT_TRUE(
       ExecJs(ad_frame, "getComputedStyle(document.documentElement).width;"));
   EXPECT_EQ(EvalJs(ad_frame, "innerWidth").ExtractInt(), screen_width);
-  EXPECT_EQ(EvalJs(ad_frame, "innerHeight").ExtractInt(), 50);
+  EXPECT_EQ(EvalJs(ad_frame, "innerHeight").ExtractInt(), screen_height);
 
   // Get the first component config from the fenced frame. Load it in the
   // nested fenced frame. The load should succeed.

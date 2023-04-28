@@ -322,6 +322,7 @@ source_set("common") {
     "//services/metrics/public/mojom:mojom",
     "//services/network/public/cpp:cpp",
     "//third_party/blink/public/common:buildflags",
+    "//third_party/re2",
     "//ui/base:base",
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/display",
@@ -532,8 +533,8 @@ if (use_fuzzing_engine_with_lpm) {
     seed_corpus = "//third_party/blink/common/storage_key/storage_key_corpus"
   }
 
-  fuzzer_test("interest_group_parse_size_fuzzer") {
-    sources = [ "interest_group/interest_group_parse_size_fuzzer.cc" ]
+  fuzzer_test("ad_display_size_parser_fuzzer") {
+    sources = [ "interest_group/ad_display_size_parser_fuzzer.cc" ]
     deps = [
       ":common",
       "//content/public/common",

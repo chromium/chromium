@@ -7730,7 +7730,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
           /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
 
   // The 'render' field corresponds to an object that contains the url string
-  // and size.
+  // and size with units.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({
           ad: "ad",
@@ -7747,6 +7747,28 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
           blink::AdDescriptor(
               GURL("https://response.test/"),
               blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 50,
+                            blink::AdSize::LengthUnit::kPixels)),
+          /*ad_component_descriptors=*/absl::nullopt,
+          /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
+
+  // The 'render' field corresponds to an object that contains the url string
+  // and size without units.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: "ad",
+          bid: 1,
+          render: {
+            url: "https://response.test/",
+            width: "100",
+            height: "50"
+          }
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, /*bid_currency=*/absl::nullopt,
+          /*ad_cost=*/absl::nullopt,
+          blink::AdDescriptor(
+              GURL("https://response.test/"),
+              blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
                             blink::AdSize::LengthUnit::kPixels)),
           /*ad_component_descriptors=*/absl::nullopt,
           /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
@@ -7846,21 +7868,6 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() bid has invalid size for render ad."});
 
-  // Size doesn't have units.
-  RunGenerateBidWithReturnValueExpectingResult(
-      R"({
-          ad: "ad",
-          bid: 1,
-          render: {
-            url: "https://response.test/",
-            width: "100",
-            height: "100"
-          }
-        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
-      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid has invalid size for render ad."});
-
   // Size doesn't have numbers.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({
@@ -7942,7 +7949,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
           /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
 
   // The 'adComponents' field corresponds to an array of object that has the url
-  // string and size.
+  // string and size with units.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({
           ad: 0,
@@ -7962,6 +7969,30 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
           std::vector<blink::AdDescriptor>{blink::AdDescriptor(
               GURL("https://ad_component.test/"),
               blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 50,
+                            blink::AdSize::LengthUnit::kPixels))},
+          /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
+
+  // The 'adComponents' field corresponds to an array of object that has the url
+  // string and size without units.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({
+          ad: 0,
+          bid: 1,
+          render: "https://response.test/",
+          adComponents: [
+            {
+              url: "https://ad_component.test/",
+              width: "100",
+              height: "50"
+            }
+          ]
+        })",
+      /*expected_bid=*/mojom::BidderWorkletBid::New(
+          "0", 1, /*bid_currency=*/absl::nullopt, /*ad_cost=*/absl::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          std::vector<blink::AdDescriptor>{blink::AdDescriptor(
+              GURL("https://ad_component.test/"),
+              blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
                             blink::AdSize::LengthUnit::kPixels))},
           /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
 
@@ -8168,25 +8199,6 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
               url: "https://ad_component.test/",
               width: "100in",
               height: "100px"
-            }
-          ]
-        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
-      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
-      {"https://url.test/ generateBid() bid adComponents have invalid size for "
-       "ad component."});
-
-  // Size doesn't have units.
-  RunGenerateBidWithReturnValueExpectingResult(
-      R"({
-          ad: 0,
-          bid: 1,
-          render: "https://response.test/",
-          adComponents: [
-            {
-              url: "https://ad_component.test/",
-              width: "100",
-              height: "100"
             }
           ]
         })",

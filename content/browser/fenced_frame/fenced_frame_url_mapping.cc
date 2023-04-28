@@ -68,6 +68,13 @@ int AdSizeToPixels(double size, blink::AdSize::LengthUnit unit) {
                                 .width();
       return static_cast<int>(size / 100.0 * screen_width);
     }
+    case blink::AdSize::LengthUnit::kScreenHeight: {
+      double screen_height = display::Screen::GetScreen()
+                                 ->GetPrimaryDisplay()
+                                 .GetSizeInPixel()
+                                 .height();
+      return static_cast<int>(size / 100.0 * screen_height);
+    }
     case blink::AdSize::LengthUnit::kInvalid:
       NOTREACHED_NORETURN();
   }

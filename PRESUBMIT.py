@@ -970,6 +970,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [
         # Needed to implement and test std::string_view interoperability.
         r'base/strings/string_piece.*',
+        # Needed to use re2::RE2 regular expression library.
+        r'third_party/blink/common/interest_group/ad_display_size_utils.cc',
         # Needed to use liburlpattern API.
         r'third_party/blink/renderer/core/url_pattern/.*',
         r'third_party/blink/renderer/modules/manifest/manifest_parser\.cc',
