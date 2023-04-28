@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
+#include "components/performance_manager/public/features.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/image/image_skia.h"
@@ -102,6 +103,9 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // Sets the icon.
   void SetIcon(const gfx::ImageSkia& icon, bool should_themify_favicon);
 
+  // Start or stops the favicon fade animation for discard tabs
+  void SetDiscarded(bool is_tab_discarded, bool show_discard_status);
+
   // For certain types of tabs the loading animation is not desired so the
   // caller can set inhibit_loading_animation to true. When false, the loading
   // animation state will be derived from the network state.
@@ -153,6 +157,21 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // Animation used when the favicon fades in after being shown inside the
   // loading-state spinner.
   gfx::LinearAnimation favicon_fade_in_animation_;
+
+  // Animation used when a tab is discarded so the favicon will partially
+  // fade out
+  gfx::LinearAnimation tab_discard_animation_;
+
+  // When the favicon is partially translucent to signal that the tab has been
+  // discarded. If this isNull(), then the favicon is not translucent and
+  // favicon_ or themed_favicon_ should be used instead.
+  gfx::ImageSkia translucent_icon_;
+
+  bool was_tab_discarded_ = false;
+
+  performance_manager::features::DiscardTabTreatmentOptions
+      discard_tab_treatment_option_ =
+          performance_manager::features::DiscardTabTreatmentOptions::kNone;
 
   // Crash animation (in place of favicon). Lazily created since most of the
   // time it will be unneeded.

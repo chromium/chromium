@@ -102,6 +102,10 @@ const base::FeatureParam<base::TimeDelta>
         &kMemorySavingsReportingImprovements,
         "expanded_high_efficiency_chip_discarded_duration", base::Hours(6)};
 
+const base::FeatureParam<int> kDiscardedTabTreatmenOption{
+    &kDiscardedTabTreatment, "discard_tab_treatment_option",
+    static_cast<int>(DiscardTabTreatmentOptions::kFadeFullsizedFavicon)};
+
 #endif
 
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,

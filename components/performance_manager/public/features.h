@@ -128,6 +128,14 @@ extern const base::FeatureParam<int> kExpandedHighEfficiencyChipThresholdBytes;
 extern const base::FeatureParam<base::TimeDelta>
     kExpandedHighEfficiencyChipDiscardedDuration;
 
+extern const base::FeatureParam<int> kDiscardedTabTreatmenOption;
+
+enum class DiscardTabTreatmentOptions {
+  kNone = 0,
+  kFadeFullsizedFavicon = 1,
+  kFadeSmallFaviconWithRing = 2
+};
+
 #endif
 
 // Policy that evicts the BFCache of pages that become non visible or the

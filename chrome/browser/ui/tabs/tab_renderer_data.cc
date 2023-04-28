@@ -9,8 +9,10 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -58,8 +60,8 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
       ThumbnailTabHelper::FromWebContents(contents);
   if (thumbnail_tab_helper) {
     data.thumbnail = thumbnail_tab_helper->thumbnail();
-    data.is_tab_discarded = thumbnail_tab_helper->is_tab_discarded();
   }
+  data.is_tab_discarded = contents->WasDiscarded();
   data.network_state = TabNetworkStateForWebContents(contents);
   data.title = tab_ui_helper->GetTitle();
   data.visible_url = contents->GetVisibleURL();
@@ -84,6 +86,18 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
   data.should_themify_favicon =
       entry && favicon::ShouldThemifyFaviconForEntry(entry);
 
+  absl::optional<mojom::LifecycleUnitDiscardReason> discard_reason =
+      high_efficiency::GetDiscardReason(contents);
+
+  // Only show discard status for tabs that were proactively discarded to
+  // prevent confusion to users on why a tab was discarded. Also, the favicon
+  // discard animation may use resources so the animation should be limited
+  // to proactive discards to prevent performance issues.
+  data.should_show_discard_status =
+      high_efficiency::IsURLSupported(contents->GetURL()) &&
+      contents->WasDiscarded() && discard_reason.has_value() &&
+      discard_reason.value() == mojom::LifecycleUnitDiscardReason::PROACTIVE;
+
   return data;
 }
 
@@ -107,7 +121,9 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
          incognito == other.incognito && show_icon == other.show_icon &&
          pinned == other.pinned && blocked == other.blocked &&
          alert_state == other.alert_state &&
-         should_hide_throbber == other.should_hide_throbber;
+         should_hide_throbber == other.should_hide_throbber &&
+         is_tab_discarded == other.is_tab_discarded &&
+         should_show_discard_status == other.should_show_discard_status;
 }
 
 bool TabRendererData::IsCrashed() const {

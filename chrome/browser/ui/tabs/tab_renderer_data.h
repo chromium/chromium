@@ -57,6 +57,7 @@ struct TabRendererData {
   bool should_render_empty_title = false;
   bool should_themify_favicon = false;
   bool is_tab_discarded = false;
+  bool should_show_discard_status = false;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_RENDERER_DATA_H_

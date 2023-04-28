@@ -188,6 +188,8 @@ class Tab : public gfx::AnimationDelegate,
 
   raw_ptr<TabCloseButton> close_button() { return close_button_; }
 
+  TabIcon* GetTabIconForTesting() const { return icon_; }
+
  private:
   class TabCloseButtonObserver;
   friend class AlertIndicatorButtonTest;

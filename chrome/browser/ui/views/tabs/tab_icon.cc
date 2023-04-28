@@ -42,6 +42,7 @@ namespace {
 
 constexpr int kAttentionIndicatorRadius = 3;
 constexpr int kLoadingAnimationStrokeWidthDp = 2;
+constexpr double kDiscardedFaviconFinalOpacity = 0.3;
 
 bool NetworkStateIsAnimated(TabNetworkState network_state) {
   return network_state != TabNetworkState::kNone &&
@@ -82,7 +83,10 @@ TabIcon::TabIcon()
       clock_(base::DefaultTickClock::GetInstance()),
       favicon_fade_in_animation_(base::Milliseconds(250),
                                  gfx::LinearAnimation::kDefaultFrameRate,
-                                 this) {
+                                 this),
+      tab_discard_animation_(base::Seconds(1),
+                             gfx::LinearAnimation::kDefaultFrameRate,
+                             this) {
   SetCanProcessEventsWithinSubtree(false);
 
   // The minimum size to avoid clipping the attention indicator.
@@ -92,6 +96,17 @@ TabIcon::TabIcon()
 
   // Initial state (before any data) should not be animating.
   DCHECK(!GetShowingLoadingAnimation());
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kDiscardedTabTreatment)) {
+    discard_tab_treatment_option_ =
+        static_cast<performance_manager::features::DiscardTabTreatmentOptions>(
+            performance_manager::features::kDiscardedTabTreatmenOption.Get());
+  }
+
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
+    tab_discard_animation_.SetDuration(base::TimeDelta());
+  }
 }
 
 TabIcon::~TabIcon() = default;
@@ -103,6 +118,7 @@ void TabIcon::SetData(const TabRendererData& data) {
   SetIcon(data.favicon, data.should_themify_favicon);
   SetNetworkState(data.network_state);
   SetCrashed(data.IsCrashed());
+  SetDiscarded(data.is_tab_discarded, data.should_show_discard_status);
   has_tab_renderer_data_ = true;
 
   const bool showing_load = GetShowingLoadingAnimation();
@@ -193,6 +209,17 @@ void TabIcon::OnThemeChanged() {
 }
 
 void TabIcon::AnimationProgressed(const gfx::Animation* animation) {
+  if (animation == &tab_discard_animation_ &&
+      discard_tab_treatment_option_ ==
+          performance_manager::features::DiscardTabTreatmentOptions::
+              kFadeFullsizedFavicon) {
+    const double opacity = gfx::Tween::DoubleValueBetween(
+        animation->GetCurrentValue(), 1.0, kDiscardedFaviconFinalOpacity);
+    gfx::ImageSkia favicon =
+        !themed_favicon_.isNull() ? themed_favicon_ : favicon_;
+    translucent_icon_ =
+        gfx::ImageSkiaOperations::CreateTransparentImage(favicon, opacity);
+  }
   SchedulePaint();
 }
 
@@ -269,6 +296,13 @@ const gfx::ImageSkia& TabIcon::GetIconToPaint() {
     }
     return crashed_icon_;
   }
+
+  if (!translucent_icon_.isNull() &&
+      discard_tab_treatment_option_ !=
+          performance_manager::features::DiscardTabTreatmentOptions::kNone) {
+    return translucent_icon_;
+  }
+
   return themed_favicon_.isNull() ? favicon_ : themed_favicon_;
 }
 
@@ -358,6 +392,22 @@ void TabIcon::SetIcon(const gfx::ImageSkia& icon, bool should_themify_favicon) {
   }
 
   SchedulePaint();
+}
+
+void TabIcon::SetDiscarded(bool is_tab_discarded, bool show_discard_status) {
+  if (was_tab_discarded_ != is_tab_discarded) {
+    if (discard_tab_treatment_option_ ==
+        performance_manager::features::DiscardTabTreatmentOptions::
+            kFadeFullsizedFavicon) {
+      was_tab_discarded_ = is_tab_discarded;
+      if (show_discard_status) {
+        tab_discard_animation_.Start();
+      } else {
+        translucent_icon_ = gfx::ImageSkia();
+        tab_discard_animation_.Stop();
+      }
+    }
+  }
 }
 
 void TabIcon::SetNetworkState(TabNetworkState network_state) {

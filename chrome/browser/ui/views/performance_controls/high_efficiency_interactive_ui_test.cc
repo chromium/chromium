@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/callback_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -15,10 +16,12 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
+#include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -39,6 +42,8 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "url/gurl.h"
@@ -50,6 +55,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceSettingsTab);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAudioIsAudible);
 
 constexpr base::TimeDelta kShortDelay = base::Seconds(1);
+constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 
 class QuitRunLoopOnMemoryMetricsRefreshObserver
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
@@ -557,4 +563,60 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
                            memory_estimate * 1024)) != std::string::npos;
               },
               browser())));
+}
+
+// Tests Discarding on pages with various types of content
+class HighEfficiencyFaviconTreatmentTest
+    : public HighEfficiencyInteractiveTest {
+ public:
+  HighEfficiencyFaviconTreatmentTest() = default;
+  ~HighEfficiencyFaviconTreatmentTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        performance_manager::features::kDiscardedTabTreatment,
+        {{"discard_tab_treatment_option",
+          base::NumberToString(static_cast<int>(
+              performance_manager::features::DiscardTabTreatmentOptions::
+                  kFadeFullsizedFavicon))}});
+
+    animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+        gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+    HighEfficiencyInteractiveTest::SetUp();
+  }
+
+  TabStrip* GetTabStrip() {
+    return BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
+  }
+
+  TabIcon* GetTabIcon(int tab_index) {
+    return GetTabStrip()->tab_at(tab_index)->GetTabIconForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
+      animation_mode_reset_;
+};
+
+// A tab's favicon should should be dimmed when it is discarded due to high
+// efficiency mode
+IN_PROC_BROWSER_TEST_F(HighEfficiencyFaviconTreatmentTest,
+                       DimFaviconOnDiscard) {
+  constexpr char kFirstTabFavicon[] = "first_tab_favicon";
+
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      Do(base::BindLambdaForTesting(
+          [=]() { GetTabStrip()->StopAnimating(true); })),
+      TryDiscardTab(0), CheckTabIsDiscarded(0),
+      NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
+                 return views::AsViewClass<views::View>(GetTabIcon(0));
+               })),
+      Screenshot(kFirstTabFavicon, "TabIcon", "4447439"));
 }
