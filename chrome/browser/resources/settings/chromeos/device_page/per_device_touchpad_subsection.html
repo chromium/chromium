@@ -1,7 +1,8 @@
 <style include="settings-shared input-device-settings-shared">
 </style>
 <div id="touchpad">
-  <h2 class="device-name">[[getTouchpadName(touchpad.name)]]</h2>
+  <h2 class="device-name"
+      id="touchpadName">[[getTouchpadName(touchpad.name)]]</h2>
   <div class="subsection">
     <settings-toggle-button id="enableTapToClick"
         pref="{{enableTapToClickPref}}"
@@ -89,12 +90,12 @@
         <div class="start settings-box-text">
           <div>$i18n{touchpadHapticFeedbackTitle}</div>
           <div class="secondary">
-            <localized-link
-              on-click="onLearnMoreLinkClicked_"
-              id="touchpadHapticFeedbackSecondary"
-              localized-string="$i18n{touchpadHapticFeedbackSecondaryText}"
-              link-url="$i18n{hapticFeedbackLearnMoreLink}">
-            </localized-link>
+            <div on-click="onLearnMoreLinkClicked_"
+                id="touchpadHapticFeedbackSecondary"
+                inner-h-t-m-l="[[getAriaLabelledContent(
+                    'touchpadHapticFeedbackSecondaryText',
+                    'hapticFeedbackLearnMoreLink')]]">
+            </div>
           </div>
         </div>
         <cr-toggle id="touchpadHapticFeedbackToggle"
@@ -108,12 +109,12 @@
     <div class="settings-box bottom-divider" id="reverseScrollRow"
           on-click="onTouchpadReverseScrollRowClicked_">
       <div class="start settings-box-text">
-        <localized-link
-            on-click="onLearnMoreLinkClicked_"
+        <div on-click="onLearnMoreLinkClicked_"
             id="enableReverseScrollingLabel"
-            localized-string="$i18n{touchPadScrollLabel}"
-            link-url="$i18n{naturalScrollLearnMoreLink}">
-        </localized-link>
+            inner-h-t-m-l="[[getAriaLabelledContent(
+                'touchPadScrollLabel',
+                'naturalScrollLearnMoreLink')]]">
+        </div>
       </div>
       <cr-toggle id="enableReverseScrollingToggle"
           checked="{{reverseScrollValue}}"
