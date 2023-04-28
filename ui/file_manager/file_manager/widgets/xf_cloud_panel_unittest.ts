@@ -48,6 +48,7 @@ async function waitForStyles(
     if (!styleMap.has(tag) || !styleMap.get(tag)) {
       return false;
     }
+    console.log('waitForStyles', styleMap.get(tag)!.toString());
     return styleMap.get(tag)!.toString() === want;
   });
 }
@@ -145,5 +146,39 @@ export async function testWhenGoogleDriveSettingsIsClickedEventIsEmitted(
   // Wait until the number of clicks has incremented.
   await waitUntil(() => clicks === 1);
 
+  done();
+}
+
+/**
+ * Tests that when percentage is 100% it should show the "All files synced"
+ * state and not the progress state.
+ */
+export async function testWhenPercentage100OnlyDoneStateShows(
+    done: () => void) {
+  const element = getCloudPanelElement();
+  const progressStateElement =
+      await getElement<HTMLDivElement>(element.shadowRoot!, '#progress-state');
+  const progressFinishedElement = await getElement<HTMLDivElement>(
+      element.shadowRoot!, '#progress-finished');
+
+  // When no attributes have been set, no div should be visible.
+  await waitForStyles(progressStateElement, 'display', 'none');
+  await waitForStyles(progressFinishedElement, 'display', 'none');
+
+  // Update the items to 3 and total percentage to 50%.
+  element.setAttribute('items', '3');
+  element.setAttribute('percentage', '50');
+
+  // Ensure the progressStateElement is showing but the finished element is not.
+  await waitForStyles(progressStateElement, 'display', 'block');
+  await waitForStyles(progressFinishedElement, 'display', 'none');
+
+  // Update the total percentage to 100%.
+  element.setAttribute('percentage', '100');
+
+  // Ensure the progressState is not showing but the finished element is
+  // showing.
+  await waitForStyles(progressStateElement, 'display', 'none');
+  await waitForStyles(progressFinishedElement, 'display', 'flex');
   done();
 }

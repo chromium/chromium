@@ -68,7 +68,10 @@ export class CloudPanelContainer {
     }
 
     // Check if any of the keys have changed.
-    if (this.progress_ && this.progress_ === bulkPinProgress) {
+    if (this.progress_ &&
+        (this.progress_.filesToPin === bulkPinProgress.filesToPin &&
+         this.progress_.pinnedBytes === bulkPinProgress.pinnedBytes &&
+         this.progress_.bytesToPin === bulkPinProgress.bytesToPin)) {
       return;
     }
     this.progress_ = bulkPinProgress;
@@ -80,13 +83,16 @@ export class CloudPanelContainer {
       return;
     }
 
+    // Files to pin can't be negative the pinned bytes should never exceed
+    // the bytes to pin (>100%).
     if (bulkPinProgress.filesToPin < 0 ||
         (bulkPinProgress.pinnedBytes > bulkPinProgress.bytesToPin)) {
       return;
     }
 
     this.panel_.setAttribute('items', String(bulkPinProgress.filesToPin));
-    const percentage =
+    const percentage = (bulkPinProgress.bytesToPin === 0) ?
+        '100' :
         (bulkPinProgress.pinnedBytes / bulkPinProgress.bytesToPin * 100)
             .toFixed(0);
     this.panel_.setAttribute('percentage', String(percentage));

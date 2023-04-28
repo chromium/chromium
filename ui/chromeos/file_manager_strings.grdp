@@ -1759,4 +1759,7 @@
   <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_SINGLE_FILE_SYNCING_LABEL" translateable="false" desc="The text used when Google drive items are being downloaded and this represents the total number of items to sync.">
     Syncing 1 file
   </message>
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_ALL_FILES_SYNCED_LABEL" translateable="false" desc="The text used when all the Drive items have successfully finished downloading and are synced.">
+    Your files are synced
+  </message>
 </grit-part>

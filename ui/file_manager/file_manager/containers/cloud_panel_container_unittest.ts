@@ -98,8 +98,8 @@ export async function testOutOfBoundsValuesDoNotUpdateProgress(
 }
 
 /**
- * Tests that if somehow any invalid data makes its way into the store, it
- * doesn't propagate to the element.
+ * Tests that updates to the store unrelated to bulk pinning OR any duplicate
+ * updates do not get passed onto the underlying element.
  */
 export async function testOtherStoreUpdatesDontCauseThisContainerToUpdate(
     done: () => void) {
@@ -158,6 +158,48 @@ export async function testOtherStoreUpdatesDontCauseThisContainerToUpdate(
       'Bulk pin state change should increment updates to 2');
   assertEquals(panel!.getAttribute('items'), '24');
   assertEquals(panel!.getAttribute('percentage'), '30');
+
+  // Update the bulk pin progress with the exact same data as before, this
+  // should not cause another update and the attributes should not be changed.
+  store.dispatch(updateBulkPinProgress({...bulkPinning, pinnedBytes: 300}));
+  assertEquals(container!.updates, 2, 'Bulk pin state should not be changed');
+  assertEquals(panel!.getAttribute('items'), '24');
+  assertEquals(panel!.getAttribute('percentage'), '30');
+
+  done();
+}
+
+
+/**
+ * Tests that when there are no bytes to be pinned, the percente should be
+ * updated to be 100% as any new user who logs in with no new changes will have
+ * no bytes to pin on initialization.
+ */
+export async function testZeroBytesToPinShouldShowAllFilesSynced(
+    done: () => void) {
+  // Initialize the empty store.
+  const store = getStore();
+  store.init(getEmptyState());
+
+  // Setup a syncing state that should be 0% done with 0 items.
+  const bulkPinning: BulkPinProgress = {
+    stage: BulkPinStage.SYNCING,
+    freeSpaceBytes: 0,
+    requiredSpaceBytes: 0,
+    bytesToPin: 0,
+    pinnedBytes: 0,
+    filesToPin: 0,
+  };
+
+  // Dispatch an update to the store and wait for the panel to have the
+  // attribute `items`.
+  store.dispatch(updateBulkPinProgress(bulkPinning));
+  await waitUntil(() => panel!.hasAttribute('items'));
+
+  // Assert the items and progress values are representative of the data in the
+  // store.
+  assertEquals(panel!.getAttribute('items'), '0');
+  assertEquals(panel!.getAttribute('percentage'), '100');
 
   done();
 }

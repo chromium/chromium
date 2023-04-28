@@ -9,6 +9,7 @@
  */
 
 import {str, strf, util} from '../common/js/util.js';
+import {constants} from '../foreground/js/constants.js';
 
 import {css, customElement, html, property, query, XfBase} from './xf_base.js';
 
@@ -44,7 +45,8 @@ export class XfCloudPanel extends XfBase {
             } catch (e) {
               return null;
             }
-            if (util.isNullOrUndefined(percentage) || percentage < 0 ||
+            if (util.isNullOrUndefined(percentage) ||
+                Number.isNaN(percentage) || percentage < 0 ||
                 percentage > 100) {
               return null;
             }
@@ -121,7 +123,13 @@ export class XfCloudPanel extends XfBase {
           </progress>
           <div class="progress-description">3 minutes remaining</div>
         </div>
-        <xf-icon class="status-icon" type="error" size="large"></xf-icon>
+        <div id="progress-finished">
+          <xf-icon type="${
+        constants.ICON_TYPES.BULK_PINNING_DONE}" size="large"></xf-icon>
+          <div class="status-description">
+            ${str('DRIVE_ALL_FILES_SYNCED')}
+          </div>
+        </div>
         <div class="divider"></div>
         <div class="menu">
           <button class="action" @click=${this.onSettingsClicked_}>${
@@ -141,7 +149,12 @@ function getCSS() {
       z-index: 600;
     }
 
-    :host(:not([items][percentage])) #progress-state {
+    :host(:not([items][percentage])) #progress-state,
+    :host([percentage="100"]) #progress-state {
+      display: none;
+    }
+
+    :host(:not([items][percentage="100"])) #progress-finished {
       display: none;
     }
 
@@ -152,9 +165,14 @@ function getCSS() {
       width: 320px;
     }
 
-    .status-icon {
-      --xf-icon-color: transparent;
-      align-self: center;
+    #progress-finished {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    xf-icon[type="bulk_pinning_done"] {
+      --xf-icon-color: var(--cros-sys-positive);
       padding: 27px 0px 20px;
     }
 

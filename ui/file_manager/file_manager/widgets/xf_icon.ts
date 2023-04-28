@@ -366,6 +366,10 @@ function getCSS() {
     :host([type="check"]) span {
       -webkit-mask-image: url(../foreground/images/files/ui/check.svg);
     }
+
+    :host([type="bulk_pinning_done"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/bulk_pinning_done.svg);
+    }
   `;
 }
 
