@@ -60,11 +60,11 @@ class FakeParentAccessUIHandlerDelegate : public ParentAccessUIHandlerDelegate {
     }
   }
 
-  MOCK_METHOD2(SetApproved, void(const std::string&, const base::Time&));
-  MOCK_METHOD0(SetDeclined, void());
-  MOCK_METHOD0(SetCanceled, void());
-  MOCK_METHOD0(SetDisabled, void());
-  MOCK_METHOD0(SetError, void());
+  MOCK_METHOD(void, SetApproved, (const std::string&, const base::Time&));
+  MOCK_METHOD(void, SetDeclined, ());
+  MOCK_METHOD(void, SetCanceled, ());
+  MOCK_METHOD(void, SetDisabled, ());
+  MOCK_METHOD(void, SetError, ());
 
   void set_flow_type(
       parent_access_ui::mojom::ParentAccessParams::FlowType flow_type) {
