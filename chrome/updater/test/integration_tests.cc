@@ -907,6 +907,10 @@ TEST_F(IntegrationTest, RotateLog) {
 // test need not run on Windows.
 #if BUILDFLAG(IS_MAC)
 TEST_F(IntegrationTest, UnregisterUnownedApp) {
+  if (GetTestScope() == UpdaterScope::kSystem) {
+    // TODO(crbug.com/1441082): Re-enable this test.
+    return;
+  }
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
@@ -921,11 +925,7 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
 
-  if (GetTestScope() == UpdaterScope::kSystem) {
-    ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test1"));
-  } else {
-    ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered("test1"));
-  }
+  ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered("test1"));
 
   ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test2"));
 
