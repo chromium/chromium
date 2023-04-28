@@ -26,6 +26,7 @@ using ::testing::Return;
 using ::testing::SaveArg;
 
 constexpr char kFakeUserActionId[] = "1234567890";
+constexpr char kFakeUserActionId2[] = "0987654321";
 
 class MockRequest : public BinaryUploadService::Request {
  public:
@@ -58,6 +59,10 @@ class FakeLocalBinaryUploadService : public LocalBinaryUploadService {
     OnFileSystemSignals(config, subject_names, items);
   }
 
+  void set_cancel_quit_closure(base::RepeatingClosure closure) {
+    cancel_quit_closure_ = closure;
+  }
+
  private:
   void StartAgentVerification(
       const content_analysis::sdk::Client::Config& config,
@@ -72,6 +77,13 @@ class FakeLocalBinaryUploadService : public LocalBinaryUploadService {
     return auto_verify_ || LocalBinaryUploadService::IsAgentVerified(config);
   }
 
+  void OnCancelRequestSent(std::unique_ptr<CancelRequests> cancel) override {
+    if (!cancel_quit_closure_.is_null()) {
+      cancel_quit_closure_.Run();
+    }
+  }
+
+  base::RepeatingClosure cancel_quit_closure_;
   bool auto_verify_;
 };
 
@@ -471,11 +483,18 @@ TEST_F(LocalBinaryUploadServiceTest, CancelRequests) {
   CloudOrLocalAnalysisSettings cloud_or_local(local);
   FakeLocalBinaryUploadService lbus(&profile_);
 
-  // Add one more request than the max number of concurrent active requests.
-  // The remaining one should be pending.
-  LocalAnalysisSettings settings(local);
-  for (size_t i = 0; i < LocalBinaryUploadService::kMaxActiveCount + 1; ++i) {
-    auto request = std::make_unique<MockRequest>(base::DoNothing(), settings);
+  constexpr size_t kCount = LocalBinaryUploadService::kMaxActiveCount + 1;
+  BinaryUploadService::Result results[kCount];
+  ContentAnalysisResponse responses[kCount];
+
+  // Create a barrier closure whose count include one for each analysis request
+  // plus one for the cancel request.
+  auto barrier_closure = CreateQuitBarrier(kCount + 1);
+  lbus.set_cancel_quit_closure(barrier_closure);
+
+  for (size_t i = 0; i < kCount; ++i) {
+    auto request =
+        MakeRequest(config, results + i, responses + i, barrier_closure);
     request->set_user_action_id(kFakeUserActionId);
     lbus.MaybeUploadForDeepScanning(std::move(request));
   }
@@ -489,15 +508,69 @@ TEST_F(LocalBinaryUploadServiceTest, CancelRequests) {
   cr->set_user_action_id(kFakeUserActionId);
   lbus.MaybeCancelRequests(std::move(cr));
 
-  EXPECT_EQ(0u, lbus.GetActiveRequestCountForTesting());
-  EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
-
-  task_environment_.RunUntilIdle();
-
   FakeContentAnalysisSdkClient* fake_client_ptr =
       fake_sdk_manager_.GetFakeClient({local.local_path, local.user_specific});
+
+  // Pending requests are cancelled, but active ones remain.
+  EXPECT_EQ(LocalBinaryUploadService::kMaxActiveCount,
+            lbus.GetActiveRequestCountForTesting());
+  EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
+
+  // Cancel request is not yet sent.
+  EXPECT_TRUE(fake_client_ptr->GetCancelRequests().user_action_id().empty());
+
+  task_environment_.RunUntilQuit();
+
+  // Active requests are now cancelled.
+  EXPECT_EQ(0u, lbus.GetActiveRequestCountForTesting());
+
+  // Cancel request was sent.
   EXPECT_EQ(kFakeUserActionId,
             fake_client_ptr->GetCancelRequests().user_action_id());
+}
+
+TEST_F(LocalBinaryUploadServiceTest, CancelRequests_MultipleUserActions) {
+  content_analysis::sdk::Client::Config config{"local_system_path", false};
+  LocalAnalysisSettings local;
+  local.local_path = config.name;
+  local.user_specific = config.user_specific;
+
+  CloudOrLocalAnalysisSettings cloud_or_local(local);
+  FakeLocalBinaryUploadService lbus(&profile_);
+
+  BinaryUploadService::Result results[2];
+  ContentAnalysisResponse responses[2];
+
+  // Create a barrier closure whose count include one for each analysis request
+  // plus one for the cancel request.
+  auto barrier_closure = CreateQuitBarrier(3);
+  lbus.set_cancel_quit_closure(barrier_closure);
+
+  auto request = MakeRequest(config, results, responses, barrier_closure);
+  request->set_user_action_id(kFakeUserActionId);
+  lbus.MaybeUploadForDeepScanning(std::move(request));
+
+  request = MakeRequest(config, results + 1, responses + 1, barrier_closure);
+  request->set_user_action_id(kFakeUserActionId2);
+  lbus.MaybeUploadForDeepScanning(std::move(request));
+
+  EXPECT_EQ(2u, lbus.GetActiveRequestCountForTesting());
+  EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
+
+  auto cr = std::make_unique<LocalBinaryUploadService::CancelRequests>(
+      cloud_or_local);
+  cr->set_user_action_id(kFakeUserActionId);
+  lbus.MaybeCancelRequests(std::move(cr));
+
+  // No active requests are cancelled yet.
+  EXPECT_EQ(2u, lbus.GetActiveRequestCountForTesting());
+  EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
+
+  task_environment_.RunUntilQuit();
+
+  // All requests are done.
+  EXPECT_EQ(0u, lbus.GetActiveRequestCountForTesting());
+  EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
 }
 
 TEST_F(LocalBinaryUploadServiceTest,

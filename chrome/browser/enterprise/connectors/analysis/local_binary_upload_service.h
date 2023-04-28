@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -161,9 +162,18 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
           cancel);
 
   // Handles a response from the agent for a given ask or cancel.
-  void HandleAckOrCancelResponse(
+  void HandleAckResponse(
       scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
       int status);
+  void HandleCancelResponse(
+      scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
+      std::unique_ptr<safe_browsing::BinaryUploadService::CancelRequests>
+          cancel,
+      int status);
+
+  // In tests, this method can be overridden to know when a cancel request
+  // has been sent to the agent.
+  virtual void OnCancelRequestSent(std::unique_ptr<CancelRequests> cancel) {}
 
   // Find the request that corresponds to the given response.
   RequestKey FindRequestByToken(
@@ -183,6 +193,10 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   void FinishRequest(RequestKey key,
                      Result result,
                      ContentAnalysisResponse response);
+
+  // Send a cancel request to the agent if there are no more active requests
+  // for the given action.
+  void SendCancelRequestsIfNeeded();
 
   // Handles a timeout for the request given by `key`.  The request could
   // be in either the active or pending lists.
@@ -222,6 +236,12 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
 
   // Keeps track of pending requests not yet sent.
   std::vector<RequestInfo> pending_requests_;
+
+  // Pending cancel requests.  Once all requests associated with a given
+  // action are sent, a cancel request can be sent.  This is to ensure that
+  // chrome does not send requests for analysis for a given action after a
+  // cancel request has been sent.
+  std::set<std::unique_ptr<CancelRequests>> pending_cancel_requests_;
 
   // Timer used to retry connection to agent.
   base::OneShotTimer connection_retry_timer_;

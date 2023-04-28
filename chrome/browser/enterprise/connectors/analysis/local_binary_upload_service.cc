@@ -276,31 +276,23 @@ void LocalBinaryUploadService::MaybeAcknowledge(std::unique_ptr<Ack> ack) {
 
 void LocalBinaryUploadService::MaybeCancelRequests(
     std::unique_ptr<CancelRequests> cancel) {
-  // Cancel all active requests.  If the agent returns a response for any,
-  // they will be ignored.
-  for (auto it = active_requests_.begin(); it != active_requests_.end();) {
-    if (it->second.request->user_action_id() == cancel->get_user_action_id()) {
-      it = active_requests_.erase(it);
-    } else {
-      ++it;
-    }
-  }
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Cancel all pending requests.
   for (auto it = pending_requests_.begin(); it != pending_requests_.end();) {
     if (it->request->user_action_id() == cancel->get_user_action_id()) {
+      // This does not calls the `FinishRequest()` method because it would
+      // invalidate the iterator.
+      it->request->FinishRequest(Result::UPLOAD_FAILURE,
+                                 ContentAnalysisResponse());
       it = pending_requests_.erase(it);
     } else {
       ++it;
     }
   }
 
-  // Tell agent to cancel requests.  This is a best effort only on the part of
-  // the agent.
-  auto* cancel_ptr = cancel.get();
-  DoSendCancel(ContentAnalysisSdkManager::Get()->GetClient(
-                   SDKConfigFromCancel(cancel_ptr)),
-               std::move(cancel));
+  pending_cancel_requests_.insert(std::move(cancel));
+  SendCancelRequestsIfNeeded();
 }
 
 void LocalBinaryUploadService::StartAgentVerification(
@@ -549,7 +541,7 @@ void LocalBinaryUploadService::DoSendAck(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&SendAckToSDK, wrapped, std::move(sdk_ack)),
-      base::BindOnce(&LocalBinaryUploadService::HandleAckOrCancelResponse,
+      base::BindOnce(&LocalBinaryUploadService::HandleAckResponse,
                      factory_.GetWeakPtr(), wrapped));
 }
 
@@ -561,6 +553,8 @@ void LocalBinaryUploadService::DoSendCancel(
     return;
   }
 
+  DVLOG(1) << __func__ << ": action_id=" << cancel->get_user_action_id();
+
   content_analysis::sdk::ContentAnalysisCancelRequests sdk_cancel;
   sdk_cancel.set_user_action_id(cancel->get_user_action_id());
 
@@ -568,14 +562,27 @@ void LocalBinaryUploadService::DoSendCancel(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&SendCancelToSDK, wrapped, std::move(sdk_cancel)),
-      base::BindOnce(&LocalBinaryUploadService::HandleAckOrCancelResponse,
-                     factory_.GetWeakPtr(), wrapped));
+      base::BindOnce(&LocalBinaryUploadService::HandleCancelResponse,
+                     factory_.GetWeakPtr(), wrapped, std::move(cancel)));
 }
 
-void LocalBinaryUploadService::HandleAckOrCancelResponse(
+void LocalBinaryUploadService::HandleAckResponse(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
     int status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (status != 0) {
+    ResetClient(wrapped->client()->GetConfig());
+  }
+}
+
+void LocalBinaryUploadService::HandleCancelResponse(
+    scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
+    std::unique_ptr<safe_browsing::BinaryUploadService::CancelRequests> cancel,
+    int status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  OnCancelRequestSent(std::move(cancel));
 
   if (status != 0) {
     ResetClient(wrapped->client()->GetConfig());
@@ -657,6 +664,38 @@ void LocalBinaryUploadService::FinishRequest(RequestKey key,
   if (it2 != pending_requests_.end()) {
     it2->request->FinishRequest(result, response);
     pending_requests_.erase(it2);
+  }
+
+  SendCancelRequestsIfNeeded();
+}
+
+void LocalBinaryUploadService::SendCancelRequestsIfNeeded() {
+  DVLOG(1) << __func__;
+
+  for (auto it = pending_cancel_requests_.begin();
+       it != pending_cancel_requests_.end();) {
+    bool cancel_now = true;
+    for (auto& pair : active_requests_) {
+      if (pair.second.request->user_action_id() ==
+          (*it)->get_user_action_id()) {
+        cancel_now = false;
+        break;
+      }
+    }
+
+    if (cancel_now) {
+      auto curr = it++;
+      auto cancel = std::move(pending_cancel_requests_.extract(curr).value());
+
+      // Tell agent to cancel requests.  This is best effort only on the part
+      // of the agent.
+      auto* cancel_ptr = cancel.get();
+      DoSendCancel(ContentAnalysisSdkManager::Get()->GetClient(
+                       SDKConfigFromCancel(cancel_ptr)),
+                   std::move(cancel));
+    } else {
+      ++it;
+    }
   }
 }
 
