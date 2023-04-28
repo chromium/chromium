@@ -8,9 +8,10 @@
 #include <memory>
 #include <type_traits>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/borealis/infra/expected.h"
+#include "base/types/expected.h"
 
 namespace guest_os {
 
@@ -41,13 +42,14 @@ class CachedCallback {
       std::is_default_constructible<E>::value,
       "Cached callbacks must have a default constructible error type");
 
-  using Result = borealis::Expected<T*, E>;
+  using Result = base::expected<T*, E>;
 
   using Callback = base::OnceCallback<void(Result result)>;
 
   virtual ~CachedCallback() {
-    if (!queued_callbacks_.empty())
-      Finish(Result::Unexpected(Reject()));
+    if (!queued_callbacks_.empty()) {
+      Finish(base::unexpected(Reject()));
+    }
   }
 
   // Request access to the cached result.
@@ -67,8 +69,9 @@ class CachedCallback {
 
   // Returns the cached result if it exists, nullptr otherwise.
   T* MaybeGet() const {
-    if (real_object_)
+    if (real_object_) {
       return real_object_.get();
+    }
     return nullptr;
   }
 
@@ -84,7 +87,7 @@ class CachedCallback {
   }
 
  protected:
-  using RealResult = borealis::Expected<std::unique_ptr<T>, E>;
+  using RealResult = base::expected<std::unique_ptr<T>, E>;
 
   using RealCallback = base::OnceCallback<void(RealResult)>;
 
@@ -102,23 +105,23 @@ class CachedCallback {
   // is static so that lambdas defined by the subclass can use them.
   template <typename... TT>
   static RealResult Success(TT&&... tt) {
-    return RealResult(std::make_unique<T>(std::forward<TT>(tt)...));
+    return base::ok(std::make_unique<T>(std::forward<TT>(tt)...));
   }
 
   // Similar to Success, but for error results.
   template <typename... EE>
   static RealResult Failure(EE&&... ee) {
-    return RealResult::Unexpected(std::forward<EE>(ee)...);
+    return base::unexpected(std::forward<EE>(ee)...);
   }
 
  private:
   void OnRealResultFound(RealResult real_result) {
-    if (!real_result) {
-      Finish(Result::Unexpected(real_result.Error()));
+    if (!real_result.has_value()) {
+      Finish(base::unexpected(real_result.error()));
       return;
     }
-    real_object_ = std::move(real_result.Value());
-    Finish(Result(real_object_.get()));
+    real_object_ = std::move(real_result.value());
+    Finish(base::ok(real_object_.get()));
   }
 
   void Finish(Result res) {

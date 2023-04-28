@@ -72,17 +72,17 @@ void OnTokenChecked(Profile* profile,
 template <typename T>
 void HandleReturn(dbus::MethodCall* method_call,
                   dbus::ExportedObject::ResponseSender response_sender,
-                  borealis::Expected<T, std::string> response) {
-  if (!response) {
+                  base::expected<T, std::string> response) {
+  if (!response.has_value()) {
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,
-                                                 response.Error()));
+                                                 response.error()));
     return;
   }
   std::unique_ptr<dbus::Response> dbus_response =
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(dbus_response.get());
-  writer.AppendProtoAsArrayOfBytes(response.Value());
+  writer.AppendProtoAsArrayOfBytes(response.value());
   std::move(response_sender).Run(std::move(dbus_response));
 }
 

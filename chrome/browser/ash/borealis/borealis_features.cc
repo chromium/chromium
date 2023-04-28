@@ -104,11 +104,9 @@ void BorealisFeatures::IsAllowed(
   async_checker_->Get(base::BindOnce(
       [](base::OnceCallback<void(AllowStatus)> callback,
          AsyncAllowChecker::Result result) {
-        if (result) {
-          std::move(callback).Run(*result.Value());
-          return;
-        }
-        std::move(callback).Run(AllowStatus::kFailedToDetermine);
+        std::move(callback).Run(
+            result.transform([](AllowStatus* status) { return *status; })
+                .value_or(AllowStatus::kFailedToDetermine));
       },
       std::move(callback)));
 }

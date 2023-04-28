@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/borealis/infra/expected.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/guest_os/infra/cached_callback.h"
@@ -188,10 +188,10 @@ void GuestOsMountProvider::Mount(Profile* target_profile,
   callback_->Get(base::BindOnce(
       [](base::OnceCallback<void(bool)> callback, Profile* target_profile,
          guest_os::GuestOsMountProviderInner::Result result) {
-        if (result) {
-          result.Value()->AddVolumeForProfile(target_profile);
+        if (result.has_value()) {
+          result.value()->AddVolumeForProfile(target_profile);
         }
-        std::move(callback).Run(!!result);
+        std::move(callback).Run(result.has_value());
       },
       std::move(callback), target_profile));
 }
