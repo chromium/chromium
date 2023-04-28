@@ -1115,13 +1115,14 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 }
 
 #toast {
-  background: rgb(30, 30, 35);
+  background: var(--cros-sys-base_elevated);
   border-radius: 16px;
-  color: white;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
+  color: var(--cros-sys-on_surface);
   font-size: 16px;
   line-height: 32px;
   opacity: 0;
-  padding: 0 16px;
+  padding: 8px 16px;
   pointer-events: none;
   z-index: 100;
 }
