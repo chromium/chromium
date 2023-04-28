@@ -9717,7 +9717,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kHoldingSpaceSuggestions)},
     {"enable-16-desks", flag_descriptions::kDesks16Name,
      flag_descriptions::kDesks16Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kEnable16Desks)},
+     FEATURE_VALUE_TYPE(ash::features::kFeatureManagement16Desks)},
 #endif
 
     {"use-nat64-for-ipv4-literal",

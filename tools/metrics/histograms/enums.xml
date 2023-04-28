@@ -61931,6 +61931,7 @@ from previous Chrome versions.
   <int value="-170986053" label="EnableManualFallbacksFilling:enabled"/>
   <int value="-170809452" label="QueryTilesOnStart:enabled"/>
   <int value="-169745744" label="SyncPseudoUSSPreferences:enabled"/>
+  <int value="-169434837" label="FeatureManagement16Desks:enabled"/>
   <int value="-168306701" label="SystemLiveCaption:disabled"/>
   <int value="-167744090" label="EnableHomeLauncher:enabled"/>
   <int value="-167420098" label="WebBluetoothNewPermissionsBackend:enabled"/>
@@ -64109,6 +64110,7 @@ from previous Chrome versions.
   <int value="1017569133" label="OobeSimon:enabled"/>
   <int value="1018797564" label="EnableAppListSearchAutocomplete:disabled"/>
   <int value="1018998019" label="memlog"/>
+  <int value="1019321025" label="FeatureManagement16Desks:disabled"/>
   <int value="1019623058" label="ash-enable-shelf-model-synchronization"/>
   <int value="1019857902"
       label="disable-hide-inactive-stacked-tab-close-buttons"/>

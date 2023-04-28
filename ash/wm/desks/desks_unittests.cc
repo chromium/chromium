@@ -400,9 +400,9 @@ class DesksTest : public AshTestBase,
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam().use_16_desks) {
-      enabled_features.push_back(features::kEnable16Desks);
+      enabled_features.push_back(features::kFeatureManagement16Desks);
     } else {
-      disabled_features.push_back(features::kEnable16Desks);
+      disabled_features.push_back(features::kFeatureManagement16Desks);
     }
 
     if (GetParam().enable_jellyroll) {

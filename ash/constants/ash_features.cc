@@ -616,11 +616,6 @@ BASE_FEATURE(kEcheSWAProcessAndroidAccessibilityTree,
              "EcheSWAProcessAndroidAccessibilityTree",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, allows the creation of up to 16 desks (default is 8).
-BASE_FEATURE(kEnable16Desks,
-             "Enable16Desks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables background blur for the app list, shelf, unified system tray,
 // autoclick menu, etc. Also enables the AppsGridView mask layer, slower devices
 // may have choppier app list animations while in this mode. crbug.com/765292.
@@ -900,6 +895,12 @@ BASE_FEATURE(kFastPairSavedDevices,
 // subsequent pairing scenarios are enabled.
 BASE_FEATURE(kFastPairSavedDevicesStrictOptIn,
              "FastPairSavedDevicesStrictOptIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, allows the creation of up to 16 desks (default is 8). This flag
+// is intended to be controlled by the feature management module.
+BASE_FEATURE(kFeatureManagement16Desks,
+             "FeatureManagement16Desks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Restricts the time-of-day wallpaper/screensaver features to the intended
@@ -2421,7 +2422,7 @@ bool DoWindowsFollowCursor() {
 }
 
 bool Is16DesksEnabled() {
-  return base::FeatureList::IsEnabled(kEnable16Desks);
+  return base::FeatureList::IsEnabled(kFeatureManagement16Desks);
 }
 
 bool IsAdaptiveChargingEnabled() {
