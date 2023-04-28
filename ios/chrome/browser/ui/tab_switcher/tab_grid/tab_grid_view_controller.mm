@@ -194,6 +194,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // YES if it is possible to undo the close all conditions.
 @property(nonatomic, assign) BOOL undoCloseAllAvailable;
 
+// The timestamp of the user entering the tab grid.
+@property(nonatomic, assign) base::TimeTicks tabGridEnterTime;
+
 @end
 
 @implementation TabGridViewController {
@@ -509,6 +512,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.remoteTabsViewController.session = self.view.window.windowScene.session;
 
   self.remoteTabsViewController.preventUpdates = NO;
+
+  // Record when the tab switcher is presented.
+  self.tabGridEnterTime = base::TimeTicks::Now();
 }
 
 - (void)contentDidAppear {
@@ -548,6 +554,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.regularTabsViewController contentWillDisappear];
   [self.pinnedTabsViewController contentWillDisappear];
   self.remoteTabsViewController.preventUpdates = YES;
+
+  self.tabGridEnterTime = base::TimeTicks();
 }
 
 - (void)dismissModals {
@@ -2203,6 +2211,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.bottomToolbar setScrollViewScrolledToEdge:gridScrolledToBottom];
 }
 
+- (void)reportTabSelectionTime {
+  CHECK(!self.tabGridEnterTime.is_null());
+  base::TimeDelta duration = base::TimeTicks::Now() - self.tabGridEnterTime;
+  base::UmaHistogramLongTimes("IOS.TabSwitcher.TimeSpentOpeningExistingTab",
+                              duration);
+  self.tabGridEnterTime = base::TimeTicks();
+}
+
 #pragma mark UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
@@ -2399,6 +2415,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)pinnedTabsViewController:
             (PinnedTabsViewController*)pinnedTabsViewController
              didSelectItemWithID:(NSString*)itemID {
+  // Record how long it took to select an item.
+  [self reportTabSelectionTime];
+
   [self.pinnedTabsDelegate selectItemWithID:itemID];
 
   self.activePage = self.currentPage;
@@ -2491,6 +2510,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           base::UserMetricsAction("MobileTabGridOpenIncognitoTabSearchResult"));
     }
   }
+  // Record how long it took to select an item.
+  [self reportTabSelectionTime];
 
   alreadySelected = [tabsDelegate isItemWithIDSelected:itemID];
   if (!alreadySelected) {
