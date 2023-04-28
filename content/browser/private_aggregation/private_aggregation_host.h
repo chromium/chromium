@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 
 namespace base {
@@ -59,6 +60,10 @@ class CONTENT_EXPORT PrivateAggregationHost
 
   // The maximum allowed context_id string length.
   static constexpr int kMaxContextIdLength = 64;
+  static_assert(kMaxContextIdLength ==
+                    blink::kPrivateAggregationApiContextIdMaxLength,
+                "Maximum length of context_id should be aligned between Shared "
+                "Storage and Private Aggregation.");
 
   // `on_report_request_received` and `browser_context` must be non-null.
   PrivateAggregationHost(

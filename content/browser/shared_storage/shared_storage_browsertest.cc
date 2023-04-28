@@ -867,11 +867,14 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
     return reporting_map;
   }
 
-  void ExecuteScriptInWorklet(const ToRenderFrameHost& execution_target,
-                              const std::string& script,
-                              GURL* out_module_script_url,
-                              size_t expected_total_host_count = 1u,
-                              bool keep_alive_after_operation = true) {
+  void ExecuteScriptInWorklet(
+      const ToRenderFrameHost& execution_target,
+      const std::string& script,
+      GURL* out_module_script_url,
+      size_t expected_total_host_count = 1u,
+      bool keep_alive_after_operation = true,
+      absl::optional<std::string> context_id = absl::nullopt,
+      std::string* out_error = nullptr) {
     DCHECK(out_module_script_url);
 
     base::StringPairs run_function_body_replacement;
@@ -905,9 +908,20 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
     EXPECT_TRUE(ExecJs(
         execution_target,
         JsReplace("window.keepWorklet = $1;", keep_alive_after_operation)));
-    EXPECT_TRUE(ExecJs(execution_target, R"(
-        sharedStorage.run('test-operation', {keepAlive: keepWorklet});
-      )"));
+
+    testing::AssertionResult result = ExecJs(
+        execution_target,
+        base::StrCat(
+            {"sharedStorage.run('test-operation', {keepAlive: keepWorklet",
+             context_id.has_value()
+                 ? JsReplace(", privateAggregationConfig: {contextId: $1}});",
+                             context_id.value())
+                 : "});"}));
+    EXPECT_EQ(!!result, out_error == nullptr);
+    if (out_error) {
+      *out_error = std::string(result.message());
+      return;
+    }
 
     test_worklet_host_manager()
         .GetAttachedWorkletHostForFrame(execution_target.render_frame_host())
@@ -6448,6 +6462,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
         EXPECT_EQ(budget_key.origin(), a_test_origin_);
         EXPECT_EQ(budget_key.api(),
                   PrivateAggregationBudgetKey::Api::kSharedStorage);
+        EXPECT_TRUE(request.additional_fields().empty());
         run_loop.Quit();
       }));
 
@@ -6554,6 +6569,197 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   EXPECT_TRUE(console_observer.messages().empty());
 
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       ContextId) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_callback(), Run)
+      .WillOnce(testing::Invoke([&](AggregatableReportRequest request,
+                                    PrivateAggregationBudgetKey budget_key) {
+        ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+        EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
+        EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
+        EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
+        EXPECT_EQ(budget_key.origin(), a_test_origin_);
+        EXPECT_EQ(budget_key.api(),
+                  PrivateAggregationBudgetKey::Api::kSharedStorage);
+        EXPECT_THAT(request.additional_fields(),
+                    testing::ElementsAre(
+                        testing::Pair("context_id", "example_context_id")));
+        run_loop.Quit();
+      }));
+
+  EXPECT_CALL(browser_client(),
+              LogWebFeatureForCurrentPage(
+                  shell()->web_contents()->GetPrimaryMainFrame(),
+                  blink::mojom::WebFeature::kPrivateAggregationApiAll));
+  EXPECT_CALL(
+      browser_client(),
+      LogWebFeatureForCurrentPage(
+          shell()->web_contents()->GetPrimaryMainFrame(),
+          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
+  ON_CALL(browser_client(), IsPrivateAggregationAllowed)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(browser_client(), IsSharedStorageAllowed)
+      .WillByDefault(testing::Return(true));
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+    )",
+                         &out_script_url, /*expected_total_host_count=*/1u,
+                         /*keep_alive_after_operation=*/true,
+                         /*context_id=*/"example_context_id");
+
+  EXPECT_TRUE(console_observer.messages().empty());
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       ContextIdEmptyString) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_callback(), Run)
+      .WillOnce(testing::Invoke([&](AggregatableReportRequest request,
+                                    PrivateAggregationBudgetKey budget_key) {
+        ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+        EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
+        EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
+        EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
+        EXPECT_EQ(budget_key.origin(), a_test_origin_);
+        EXPECT_EQ(budget_key.api(),
+                  PrivateAggregationBudgetKey::Api::kSharedStorage);
+        EXPECT_THAT(request.additional_fields(),
+                    testing::ElementsAre(testing::Pair("context_id", "")));
+        run_loop.Quit();
+      }));
+
+  EXPECT_CALL(browser_client(),
+              LogWebFeatureForCurrentPage(
+                  shell()->web_contents()->GetPrimaryMainFrame(),
+                  blink::mojom::WebFeature::kPrivateAggregationApiAll));
+  EXPECT_CALL(
+      browser_client(),
+      LogWebFeatureForCurrentPage(
+          shell()->web_contents()->GetPrimaryMainFrame(),
+          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
+  ON_CALL(browser_client(), IsPrivateAggregationAllowed)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(browser_client(), IsSharedStorageAllowed)
+      .WillByDefault(testing::Return(true));
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+    )",
+                         &out_script_url, /*expected_total_host_count=*/1u,
+                         /*keep_alive_after_operation=*/true,
+                         /*context_id=*/
+                         "");
+
+  EXPECT_TRUE(console_observer.messages().empty());
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       ContextIdMaxAllowedLength) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_callback(), Run)
+      .WillOnce(testing::Invoke([&](AggregatableReportRequest request,
+                                    PrivateAggregationBudgetKey budget_key) {
+        ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+        EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
+        EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
+        EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
+        EXPECT_EQ(budget_key.origin(), a_test_origin_);
+        EXPECT_EQ(budget_key.api(),
+                  PrivateAggregationBudgetKey::Api::kSharedStorage);
+        EXPECT_THAT(request.additional_fields(),
+                    testing::ElementsAre(
+                        testing::Pair("context_id",
+                                      "an_example_of_a_context_id_with_the_"
+                                      "exact_maximum_allowed_length")));
+        run_loop.Quit();
+      }));
+
+  EXPECT_CALL(browser_client(),
+              LogWebFeatureForCurrentPage(
+                  shell()->web_contents()->GetPrimaryMainFrame(),
+                  blink::mojom::WebFeature::kPrivateAggregationApiAll));
+  EXPECT_CALL(
+      browser_client(),
+      LogWebFeatureForCurrentPage(
+          shell()->web_contents()->GetPrimaryMainFrame(),
+          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
+  ON_CALL(browser_client(), IsPrivateAggregationAllowed)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(browser_client(), IsSharedStorageAllowed)
+      .WillByDefault(testing::Return(true));
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(
+      shell(), R"(
+      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+    )",
+      &out_script_url, /*expected_total_host_count=*/1u,
+      /*keep_alive_after_operation=*/true,
+      /*context_id=*/
+      "an_example_of_a_context_id_with_the_exact_maximum_allowed_length");
+
+  EXPECT_TRUE(console_observer.messages().empty());
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       ContextIdTooLong) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  EXPECT_CALL(mock_callback(), Run).Times(0);
+  EXPECT_CALL(browser_client(),
+              LogWebFeatureForCurrentPage(
+                  shell()->web_contents()->GetPrimaryMainFrame(),
+                  blink::mojom::WebFeature::kPrivateAggregationApiAll))
+      .Times(0);
+  EXPECT_CALL(
+      browser_client(),
+      LogWebFeatureForCurrentPage(
+          shell()->web_contents()->GetPrimaryMainFrame(),
+          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage))
+      .Times(0);
+  ON_CALL(browser_client(), IsPrivateAggregationAllowed)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(browser_client(), IsSharedStorageAllowed)
+      .WillByDefault(testing::Return(true));
+
+  GURL out_script_url;
+  std::string out_error;
+  ExecuteScriptInWorklet(
+      shell(), R"(
+      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+    )",
+      &out_script_url, /*expected_total_host_count=*/1u,
+      /*keep_alive_after_operation=*/true,
+      /*context_id=*/
+      "this_is_an_example_of_a_context_id_that_is_too_long_to_be_allowed",
+      &out_error);
+
+  EXPECT_THAT(
+      out_error,
+      testing::HasSubstr("Error: contextId length cannot be larger than 64"));
+
+  EXPECT_TRUE(console_observer.messages().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
