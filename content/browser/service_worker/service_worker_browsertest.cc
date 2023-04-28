@@ -4419,6 +4419,28 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSpeculativeStartupBrowserTest,
       static_cast<int>(blink::ServiceWorkerStatusCode::kOk), 1);
 }
 
+class ServiceWorkerSpeculativeStartupWithoutParamBrowserTest
+    : public ServiceWorkerBrowserTest {
+ public:
+  ServiceWorkerSpeculativeStartupWithoutParamBrowserTest() {
+    feature_list_.InitFromCommandLine("SpeculativeServiceWorkerStartup", "");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Regression test for https://crbug.com/1440062.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerSpeculativeStartupWithoutParamBrowserTest,
+                       NavigatingToAboutSrcdocDoesNotCrash) {
+  StartServerAndNavigateToSetup();
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(NavigateToURL(shell(), GURL("about:srcdoc")));
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.StartWorker.Purpose",
+      static_cast<int>(ServiceWorkerMetrics::EventType::NAVIGATION_HINT), 0);
+}
+
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
   base::HistogramTester histogram_tester;
   StartServerAndNavigateToSetup();

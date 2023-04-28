@@ -120,6 +120,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
+#include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -2000,7 +2001,14 @@ NavigationRequest::NavigationRequest(
   // service worker (e.g, Prerendering or the previous navigation already
   // started the service worker), but this call does nothing if the service
   // worker already started for the URL.
-  if (reload_type_ != ReloadType::BYPASSING_CACHE &&
+  //
+  // Checking OriginCanAccessServiceWorkers() is needed before calling
+  // GetTentativeOriginAtRequestTime() since loading an about:srcdoc URL
+  // on the main frame will cause a failure while processing
+  // GetTentativeOriginAtRequestTime(). OriginCanAccessServiceWorkers()
+  // can also skip unnecessary computation.
+  if (GetURL().is_valid() && OriginCanAccessServiceWorkers(GetURL()) &&
+      reload_type_ != ReloadType::BYPASSING_CACHE &&
       base::FeatureList::IsEnabled(kSpeculativeServiceWorkerStartup)) {
     if (ServiceWorkerContext* context =
             frame_tree_node_->navigator()
