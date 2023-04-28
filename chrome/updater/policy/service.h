@@ -77,8 +77,6 @@ class PolicyStatus {
 // The PolicyService returns policies for enterprise managed machines from the
 // source with the highest priority where the policy available.
 // This class is sequence affine and its instance is bound to the main sequence.
-// TODO(crbug.com/1358718) - modernize the public interface to return by value
-// instead of two out-params.
 class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
  public:
   using PolicyManagerVector =
@@ -142,6 +140,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // provided DM policy manager. The DM policy manager is preloaded separately
   // in a blocking sequence since it needs to do I/O to load policies.
   void FetchPoliciesDone(
+      scoped_refptr<PolicyFetcher> fetcher,
       base::OnceCallback<void(int)> callback,
       int result,
       scoped_refptr<PolicyManagerInterface> dm_policy_manager);
@@ -153,7 +152,6 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   PolicyManagers policy_managers_;
 
   const scoped_refptr<ExternalConstants> external_constants_;
-  const scoped_refptr<PolicyFetcher> policy_fetcher_;
 
   // Helper function to query the policy from the managed policy providers and
   // determines the policy status.

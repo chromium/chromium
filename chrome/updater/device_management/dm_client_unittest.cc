@@ -35,6 +35,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using base::test::RunClosure;
 
@@ -82,7 +83,7 @@ class TestConfigurator : public DMClient::Configurator {
   explicit TestConfigurator(const GURL& url);
   ~TestConfigurator() override = default;
 
-  std::string GetDMServerUrl() const override { return server_url_; }
+  GURL GetDMServerUrl() const override { return server_url_; }
 
   std::string GetAgentParameter() const override {
     return "Updater-Test-Agent";
@@ -97,14 +98,14 @@ class TestConfigurator : public DMClient::Configurator {
 
  private:
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
-  const std::string server_url_;
+  const GURL server_url_;
 };
 
 TestConfigurator::TestConfigurator(const GURL& url)
     : network_fetcher_factory_(base::MakeRefCounted<NetworkFetcherFactory>(
           PolicyServiceProxyConfiguration::Get(
               test::CreateTestPolicyService()))),
-      server_url_(url.spec()) {}
+      server_url_(url) {}
 
 class DMRequestCallbackHandler
     : public base::RefCountedThreadSafe<DMRequestCallbackHandler> {

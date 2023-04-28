@@ -109,8 +109,7 @@ PolicyService::PolicyService(
           /*should_take_policy_critical_section*/ false,
           external_constants,
           CreateDMPolicyManager()))),
-      external_constants_(external_constants),
-      policy_fetcher_(base::MakeRefCounted<PolicyFetcher>(this)) {
+      external_constants_(external_constants) {
   VLOG(1) << "Current effective policies:" << std::endl
           << GetAllPoliciesAsString();
 }
@@ -120,11 +119,15 @@ PolicyService::~PolicyService() = default;
 void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  policy_fetcher_->FetchPolicies(base::BindOnce(
-      &PolicyService::FetchPoliciesDone, this, std::move(callback)));
+  auto fetcher = base::MakeRefCounted<PolicyFetcher>(
+      external_constants_->DeviceManagementURL(),
+      PolicyServiceProxyConfiguration::Get(this));
+  fetcher->FetchPolicies(base::BindOnce(&PolicyService::FetchPoliciesDone, this,
+                                        fetcher, std::move(callback)));
 }
 
 void PolicyService::FetchPoliciesDone(
+    scoped_refptr<PolicyFetcher> fetcher,
     base::OnceCallback<void(int)> callback,
     int result,
     scoped_refptr<PolicyManagerInterface> dm_policy_manager) {

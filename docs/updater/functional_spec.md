@@ -1163,10 +1163,15 @@ small log file in its data directory.
 ### External Constants Overrides
 Building the updater produces both a production-ready updater executable and a
 version of the executable used for the purposes of testing. The test executable
-is identical to the production one except that it allows cetain constants to be
+is identical to the production one except that it allows certain constants to be
 overridden by the execution environment:
 
-*   `url`: Update check & ping-back URL.
+*   `url`: List of URLs for update check & ping-back.
+*   `crash_upload_url`: Crash reporting URL.
+*   `device_management_url`: URL to fetch device management policies.
+*   `initial_delay`: Time to delay the start of the automated background tasks.
+*   `overinstall_timeout`: Over-install timeout.
+*   `server_keep_alive`: Minimum amount of time the server needs to stay alive.
 *   `use_cup`: Whether CUP is used at all.
 *   `cup_public_key`: An unarmored PEM-encoded ASN.1 SubjectPublicKeyInfo with
     the ecPublicKey algorithm and containing a named elliptic curve.

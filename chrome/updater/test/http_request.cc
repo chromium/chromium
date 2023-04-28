@@ -56,7 +56,8 @@ std::string GetPrintableContent(const HttpRequest& request) {
   printable_content.reserve(dump_limit);
   base::ranges::transform(request.decoded_content.begin(),
                           request.decoded_content.begin() + dump_limit,
-                          std::back_inserter(printable_content), [](char c) {
+                          std::back_inserter(printable_content),
+                          [](unsigned char c) {
                             return std::isprint(c) || std::isspace(c) ? c : '.';
                           });
 

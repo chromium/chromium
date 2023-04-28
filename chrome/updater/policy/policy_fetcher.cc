@@ -23,6 +23,8 @@
 #include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace updater {
 namespace {
@@ -38,11 +40,14 @@ scoped_refptr<base::SequencedTaskRunner> GetBlockingTaskRunner() {
 
 }  // namespace
 
-PolicyFetcher::PolicyFetcher(scoped_refptr<PolicyService> policy_service)
-    : policy_service_(policy_service),
-      policy_service_proxy_configuration_(
-          PolicyServiceProxyConfiguration::Get(policy_service)),
-      sequenced_task_runner_(GetBlockingTaskRunner()) {}
+PolicyFetcher::PolicyFetcher(
+    const GURL& server_url,
+    const absl::optional<PolicyServiceProxyConfiguration>& proxy_configuration)
+    : server_url_(server_url),
+      policy_service_proxy_configuration_(proxy_configuration),
+      sequenced_task_runner_(GetBlockingTaskRunner()) {
+  VLOG(0) << "Policy server: " << server_url_.possibly_invalid_spec();
+}
 
 PolicyFetcher::~PolicyFetcher() = default;
 
@@ -68,7 +73,8 @@ void PolicyFetcher::RegisterDevice(
 
   scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
   DMClient::RegisterDevice(
-      DMClient::CreateDefaultConfigurator(policy_service_proxy_configuration_),
+      DMClient::CreateDefaultConfigurator(server_url_,
+                                          policy_service_proxy_configuration_),
       dm_storage,
       base::BindPostTask(main_task_runner,
                          base::BindOnce(std::move(callback),
@@ -105,7 +111,8 @@ void PolicyFetcher::FetchPolicy(
   VLOG(1) << __func__;
 
   DMClient::FetchPolicy(
-      DMClient::CreateDefaultConfigurator(policy_service_proxy_configuration_),
+      DMClient::CreateDefaultConfigurator(server_url_,
+                                          policy_service_proxy_configuration_),
       GetDefaultDMStorage(),
       base::BindOnce(&PolicyFetcher::OnFetchPolicyRequestComplete, this)
           .Then(std::move(callback)));
@@ -126,7 +133,7 @@ PolicyFetcher::OnFetchPolicyRequestComplete(
         base::BindOnce(
             &DMClient::ReportPolicyValidationErrors,
             DMClient::CreateDefaultConfigurator(
-                policy_service_proxy_configuration_),
+                server_url_, policy_service_proxy_configuration_),
             GetDefaultDMStorage(), validation_result,
             base::BindOnce([](DMClient::RequestResult result) {
               if (result != DMClient::RequestResult::kSuccess)
