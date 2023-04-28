@@ -40,6 +40,10 @@ namespace {
 // The vertical distance used to end drag to show and start drag to hide.
 constexpr int kMenuDragPoint = 100;
 
+// The vertical position of the multitask menu, in the window (and widget)
+// coordinates.
+constexpr int kVerticalPosition = 8;
+
 }  // namespace
 
 class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
@@ -590,18 +594,33 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HiddenButtons) {
   EXPECT_FALSE(multitask_menu_view->float_button_for_testing());
 }
 
-// Tests that showing the menu will dismiss the visual cue (drag bar).
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, DismissCueOnShowMenu) {
+// Tests that the cue is still showing when the menu is opened, and it has been
+// transformed to the correct position below the menu.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, CueTransformOnShowMenu) {
   auto window = CreateAppWindow();
 
-  auto* multitask_cue =
-      GetMultitaskMenuEventHandler()->multitask_cue_for_testing();
+  auto* multitask_cue = GetMultitaskMenuEventHandler()->multitask_cue();
   ASSERT_TRUE(multitask_cue);
   EXPECT_TRUE(multitask_cue->cue_layer());
 
+  // Cue should still be showing when the menu is activated.
   ShowMultitaskMenu(*window);
+  ASSERT_TRUE(multitask_cue);
+  ui::Layer* cue_layer = multitask_cue->cue_layer();
+  EXPECT_TRUE(cue_layer);
 
-  multitask_cue = GetMultitaskMenuEventHandler()->multitask_cue_for_testing();
+  // Verify cue is transformed to the right position.
+  const gfx::Rect expected_bounds(
+      (window->bounds().width() - TabletModeMultitaskCue::kCueWidth) / 2,
+      GetMultitaskMenuView(GetMultitaskMenu())->bounds().bottom() +
+          kVerticalPosition + TabletModeMultitaskCue::kCueYOffset,
+      TabletModeMultitaskCue::kCueWidth, TabletModeMultitaskCue::kCueHeight);
+  EXPECT_EQ(expected_bounds, cue_layer->GetTargetTransform().MapRect(
+                                 cue_layer->GetTargetBounds()));
+
+  // Cue should still dismiss via timer after menu opened.
+  multitask_cue->FireCueDismissTimerForTesting();
+
   ASSERT_TRUE(multitask_cue);
   EXPECT_FALSE(multitask_cue->cue_layer());
 }
