@@ -417,7 +417,7 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_NothingSet) {
       pref_service_.GetUserPrefValue(prefs::kSyncKeepEverythingSynced));
 
   // Run the migration.
-  syncer::MigrateSyncRequestedPrefPostMice(&pref_service_);
+  syncer::SyncPrefs::MigrateSyncRequestedPrefPostMice(&pref_service_);
 
   // The migration should have left all the prefs unset.
   EXPECT_FALSE(pref_service_.GetUserPrefValue(prefs::kSyncRequested));
@@ -432,7 +432,7 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithAllTypes) {
   pref_service_.SetBoolean(prefs::kSyncKeepEverythingSynced, true);
 
   // Run the migration.
-  syncer::MigrateSyncRequestedPrefPostMice(&pref_service_);
+  syncer::SyncPrefs::MigrateSyncRequestedPrefPostMice(&pref_service_);
 
   // The migration should have changed nothing.
   SyncPrefs prefs(&pref_service_);
@@ -448,12 +448,12 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithSomeTypes) {
   pref_service_.SetBoolean(prefs::kSyncFirstSetupComplete, true);
   pref_service_.SetBoolean(prefs::kSyncKeepEverythingSynced, false);
   for (UserSelectableType type : enabled_types) {
-    const char* pref_name = SyncPrefs::GetPrefNameForType(type);
+    const char* pref_name = SyncPrefs::GetPrefNameForTypeForTesting(type);
     pref_service_.SetBoolean(pref_name, true);
   }
 
   // Run the migration.
-  syncer::MigrateSyncRequestedPrefPostMice(&pref_service_);
+  syncer::SyncPrefs::MigrateSyncRequestedPrefPostMice(&pref_service_);
 
   // The migration should have changed nothing.
   SyncPrefs prefs(&pref_service_);
@@ -470,7 +470,7 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithNoTypes) {
   // All selectable types are false by default.
 
   // Run the migration.
-  syncer::MigrateSyncRequestedPrefPostMice(&pref_service_);
+  syncer::SyncPrefs::MigrateSyncRequestedPrefPostMice(&pref_service_);
 
   // The migration should have changed nothing.
   SyncPrefs prefs(&pref_service_);
@@ -487,7 +487,7 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithNoTypes) {
   // All selectable types are false by default.
 
   // Run the migration.
-  syncer::MigrateSyncRequestedPrefPostMice(&pref_service_);
+  syncer::SyncPrefs::MigrateSyncRequestedPrefPostMice(&pref_service_);
 
   // The migration should have set SyncRequested to true, but kept all data
   // types disabled.
@@ -505,12 +505,12 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithSomeTypes) {
   pref_service_.SetBoolean(prefs::kSyncFirstSetupComplete, true);
   pref_service_.SetBoolean(prefs::kSyncKeepEverythingSynced, false);
   for (UserSelectableType type : enabled_types) {
-    const char* pref_name = SyncPrefs::GetPrefNameForType(type);
+    const char* pref_name = SyncPrefs::GetPrefNameForTypeForTesting(type);
     pref_service_.SetBoolean(pref_name, true);
   }
 
   // Run the migration.
-  syncer::MigrateSyncRequestedPrefPostMice(&pref_service_);
+  syncer::SyncPrefs::MigrateSyncRequestedPrefPostMice(&pref_service_);
 
   // The migration should have set SyncRequested to true, but turned off all
   // data types.
@@ -530,12 +530,12 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithAllTypes) {
   // Even though "Sync everything" is enabled, also explicitly set some of the
   // individual data type prefs, to make sure the migration handles this case.
   for (UserSelectableType type : enabled_types) {
-    const char* pref_name = SyncPrefs::GetPrefNameForType(type);
+    const char* pref_name = SyncPrefs::GetPrefNameForTypeForTesting(type);
     pref_service_.SetBoolean(pref_name, true);
   }
 
   // Run the migration.
-  syncer::MigrateSyncRequestedPrefPostMice(&pref_service_);
+  syncer::SyncPrefs::MigrateSyncRequestedPrefPostMice(&pref_service_);
 
   // The migration should have set SyncRequested to true, but turned off all
   // data types and the "sync everything" flag.
@@ -568,7 +568,7 @@ TEST_P(SyncPrefsSyncRequestedMigrationCombinationsTest, Idempotent) {
                           testing::get<2>(GetParam()));
 
   // Do the first migration.
-  syncer::MigrateSyncRequestedPrefPostMice(&pref_service_);
+  syncer::SyncPrefs::MigrateSyncRequestedPrefPostMice(&pref_service_);
 
   // Record the resulting pref values.
   BooleanPrefState expect_sync_requested =
@@ -579,7 +579,7 @@ TEST_P(SyncPrefsSyncRequestedMigrationCombinationsTest, Idempotent) {
       GetBooleanUserPrefValue(prefs::kSyncKeepEverythingSynced);
 
   // Do the second migration.
-  syncer::MigrateSyncRequestedPrefPostMice(&pref_service_);
+  syncer::SyncPrefs::MigrateSyncRequestedPrefPostMice(&pref_service_);
 
   // Verify that the pref values did not change.
   EXPECT_TRUE(

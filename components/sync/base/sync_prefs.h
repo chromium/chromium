@@ -113,8 +113,7 @@ class SyncPrefs {
                           UserSelectableOsTypeSet selected_types);
 
   // Maps |type| to its corresponding preference name.
-  // TODO(crbug.com/1435427): Make this private.
-  static const char* GetPrefNameForOsType(UserSelectableOsType type);
+  static const char* GetPrefNameForOsTypeForTesting(UserSelectableOsType type);
 
   // Sets |type| as disabled in the given |policy_prefs|, which should
   // correspond to the "managed" (aka policy-controlled) pref store.
@@ -131,8 +130,7 @@ class SyncPrefs {
   bool IsSyncClientDisabledByPolicy() const;
 
   // Maps |type| to its corresponding preference name.
-  // TODO(crbug.com/1435427): Make this private.
-  static const char* GetPrefNameForType(UserSelectableType type);
+  static const char* GetPrefNameForTypeForTesting(UserSelectableType type);
 
   // Sets |type| as disabled in the given |policy_prefs|, which should
   // correspond to the "managed" (aka policy-controlled) pref store.
@@ -153,9 +151,18 @@ class SyncPrefs {
   void SetPassphrasePromptMutedProductVersion(int major_version);
   void ClearPassphrasePromptMutedProductVersion();
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  static void MigrateSyncRequestedPrefPostMice(PrefService* pref_service);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
  private:
   static void RegisterTypeSelectedPref(PrefRegistrySimple* prefs,
                                        UserSelectableType type);
+
+  static const char* GetPrefNameForType(UserSelectableType type);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  static const char* GetPrefNameForOsType(UserSelectableOsType type);
+#endif
 
   void OnSyncManagedPrefChanged();
   void OnFirstSetupCompletePrefChange();
@@ -175,10 +182,6 @@ class SyncPrefs {
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-void MigrateSyncRequestedPrefPostMice(PrefService* pref_service);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace syncer
 

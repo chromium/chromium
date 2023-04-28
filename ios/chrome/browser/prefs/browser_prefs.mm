@@ -446,7 +446,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   prefs->ClearPref(kPrefPromoObject);
 
   // Added 06/2022.
-  syncer::MigrateSyncRequestedPrefPostMice(prefs);
+  syncer::SyncPrefs::MigrateSyncRequestedPrefPostMice(prefs);
 
   // Added 09/2022
   prefs->ClearPref(kDataSaverEnabled);

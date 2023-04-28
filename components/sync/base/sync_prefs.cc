@@ -235,6 +235,12 @@ void SyncPrefs::SetSelectedOsTypes(bool sync_all_os_types,
 }
 
 // static
+const char* SyncPrefs::GetPrefNameForOsTypeForTesting(
+    UserSelectableOsType type) {
+  return GetPrefNameForOsType(type);
+}
+
+// static
 const char* SyncPrefs::GetPrefNameForOsType(UserSelectableOsType type) {
   switch (type) {
     case UserSelectableOsType::kOsApps:
@@ -290,6 +296,11 @@ void SyncPrefs::SetEncryptionBootstrapToken(const std::string& token) {
 void SyncPrefs::ClearEncryptionBootstrapToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(prefs::kSyncEncryptionBootstrapToken);
+}
+
+// static
+const char* SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType type) {
+  return GetPrefNameForType(type);
 }
 
 // static
@@ -373,7 +384,8 @@ void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-void MigrateSyncRequestedPrefPostMice(PrefService* pref_service) {
+// static
+void SyncPrefs::MigrateSyncRequestedPrefPostMice(PrefService* pref_service) {
   // Before MICe, there was a toggle in Sync settings that corresponded to the
   // SyncRequested bit. After MICe, there's no such toggle anymore, but some
   // users may still be in the legacy state where SyncRequested is false, for
