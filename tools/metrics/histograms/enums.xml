@@ -79132,6 +79132,12 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="PartnerHomepageCustomizationDelegate">
+  <int value="0" label="Phenotype config"/>
+  <int value="1" label="GService flag"/>
+  <int value="2" label="Preload APK"/>
+</enum>
+
 <enum name="PartnerLocationMetric">
   <int value="0" label="Other"/>
   <int value="1"

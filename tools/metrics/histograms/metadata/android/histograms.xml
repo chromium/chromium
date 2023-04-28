@@ -2764,6 +2764,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.PartnerHomepageCustomization.Delegate"
+    enum="PartnerHomepageCustomizationDelegate" expires_after="M120">
+  <owner>donnd@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records which delegate will be used to provide the home page URL that is
+    needed for a custom provider's home page. Recorded at startup on Android.
+  </summary>
+</histogram>
+
 <histogram name="Android.PhotoPicker.BitmapScalerTask" units="ms"
     expires_after="2023-06-01">
   <owner>finnur@chromium.org</owner>
