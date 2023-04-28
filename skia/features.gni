@@ -6,8 +6,12 @@ import("//build/config/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
 declare_args() {
-  # Enable experimental Skia Graphite backend.
-  enable_skia_graphite = false
+  # Enable experimental Skia Graphite Dawn backend.
+  skia_use_dawn = false
+
+  # Enable experimental Skia Graphite Metal backend. Intended only for debugging
+  # on non-official developer builds.
+  skia_use_metal = false
 
   # Enable gtests using SkiaRenderer on Skia Graphite.
   # TODO(rivr): Remove this and enable the tests by default once a software
@@ -23,13 +27,6 @@ skia_support_gpu = use_blink
 # Skia Ganesh GL backend is always enabled on all platforms - applies only when
 # GPU rasterization is enabled.
 skia_use_gl = true
-
-# Dawn is used with Skia Graphite by default.
-skia_use_dawn = enable_skia_graphite
-
-# Metal is only used with Skia Graphite on Mac and iOS blink developer builds.
-skia_use_metal =
-    enable_skia_graphite && is_apple && use_blink && !is_official_build
 
 skia_support_pdf = !is_ios && enable_printing
 
