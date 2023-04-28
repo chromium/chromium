@@ -337,7 +337,6 @@ div.mode-item>span {
 button.shutter {
   display: none;
   height: 60px;
-  outline-offset: 9px;
   width: 60px;
   z-index: 1;  /* On top of transforming switch-mode buttons. */
 }
@@ -359,22 +358,31 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
 }
 
 #video-snapshot {
-  background-size: 44px 44px;
   height: 44px;
   width: 44px;
 }
 
 #start-takephoto,
 #video-snapshot {
-  background-image: url(/images/camera_shutter_photo_start.svg);
+  position: relative;
 }
 
-:is(#start-takephoto, #video-snapshot):enabled:hover {
-  background-image: url(/images/camera_shutter_photo_start_hover.svg);
+:is(#start-takephoto, #video-snapshot) svg-wrapper {
+  color: var(--cros-sys-inverse_surface);
+  --secondary-color: white;
 }
 
-:is(#start-takephoto, #video-snapshot):enabled:active {
-  background-image: url(/images/camera_shutter_photo_start_active.svg);
+:is(#start-takephoto, #video-snapshot):enabled:hover::after {
+  background: var(--cros-sys-hover_on_prominent);
+  border-radius: 50%;
+  content: '';
+  display: block;
+  inset: 0;
+  position: absolute;
+}
+
+:is(#start-takephoto, #video-snapshot):enabled:active svg-wrapper {
+  color: var(--cros-sys-secondary);
 }
 
 body.taking #start-takephoto:active {
