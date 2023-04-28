@@ -11,7 +11,6 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/highlight_border.h"
@@ -41,8 +40,6 @@ SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderNoShadow
           : views::HighlightBorder::Type::kHighlightBorder2));
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kSaveDeskCornerRadius});
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
 }
 
 SavedDeskSaveDeskButton::~SavedDeskSaveDeskButton() = default;
@@ -66,6 +63,12 @@ void SavedDeskSaveDeskButton::OnViewHighlighted() {
 
 void SavedDeskSaveDeskButton::OnViewUnhighlighted() {
   views::FocusRing::Get(this)->SchedulePaint();
+}
+
+void SavedDeskSaveDeskButton::OnThemeChanged() {
+  PillButton::OnThemeChanged();
+  SetBackgroundColor(AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80));
 }
 
 void SavedDeskSaveDeskButton::OnFocus() {

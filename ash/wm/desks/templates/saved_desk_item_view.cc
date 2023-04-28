@@ -132,8 +132,8 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
       .SetUseDefaultFillLayout(true)
       .SetAccessibleName(saved_desk_name)
       .SetCallback(std::move(launch_template_callback))
-      .SetBackground(views::CreateThemedSolidBackground(
-          cros_tokens::kCrosSysSystemBaseElevated))
+      .SetBackground(views::CreateThemedRoundedRectBackground(
+          cros_tokens::kCrosSysSystemBaseElevated, kSaveDeskCornerRadius))
       .SetBorder(std::make_unique<views::HighlightBorder>(
           kSaveDeskCornerRadius,
           chromeos::features::IsJellyrollEnabled()
@@ -225,11 +225,9 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
               .SetVisible(false))
       .BuildChildren();
 
-  SetPaintToLayer();
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kSaveDeskCornerRadius});
   // We need to ensure that the layer is non-opaque when animating.
+  SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
 
   const int button_text_id = saved_desk_->type() == DeskTemplateType::kTemplate
                                  ? IDS_ASH_DESKS_TEMPLATES_USE_TEMPLATE_BUTTON

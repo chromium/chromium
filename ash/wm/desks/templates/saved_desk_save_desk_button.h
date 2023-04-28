@@ -46,6 +46,7 @@ class ASH_EXPORT SavedDeskSaveDeskButton : public PillButton,
   void OnViewUnhighlighted() override;
 
   // PillButton:
+  void OnThemeChanged() override;
   void OnFocus() override;
   void OnBlur() override;
 
