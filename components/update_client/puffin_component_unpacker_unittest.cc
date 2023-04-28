@@ -56,8 +56,7 @@ TEST_F(PuffinComponentUnpackerTest, UnpackFullCrx) {
       TestFile("jebgalgnebhfojomionfpkfelancnnkf.crx"),
       config->GetUnzipperFactory()->Create(), crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
-          [&loop,
-           &sequence_checker](const PuffinComponentUnpacker::Result& result) {
+          [&](const PuffinComponentUnpacker::Result& result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
             EXPECT_EQ(result.error, UnpackerError::kNone);
             EXPECT_EQ(result.extended_error, 0);
@@ -88,8 +87,7 @@ TEST_F(PuffinComponentUnpackerTest, UnpackFileNotFound) {
       std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
       TestFile("file_not_found.crx"), nullptr, crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
-          [&loop,
-           &sequence_checker](const PuffinComponentUnpacker::Result& result) {
+          [&](const PuffinComponentUnpacker::Result& result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
             EXPECT_EQ(result.error, UnpackerError::kInvalidFile);
             EXPECT_EQ(result.extended_error,
@@ -112,8 +110,7 @@ TEST_F(PuffinComponentUnpackerTest, UnpackFileHashMismatch) {
       TestFile("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr,
       crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
-          [&loop,
-           &sequence_checker](const PuffinComponentUnpacker::Result& result) {
+          [&](const PuffinComponentUnpacker::Result& result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
             EXPECT_EQ(result.error, UnpackerError::kInvalidFile);
             EXPECT_EQ(
@@ -137,8 +134,7 @@ TEST_F(PuffinComponentUnpackerTest, UnpackWithVerifiedContents) {
       TestFile("gndmhdcefbhlchkhipcnnbkcmicncehk_22_314.crx3"),
       config->GetUnzipperFactory()->Create(), crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
-          [&loop,
-           &sequence_checker](const PuffinComponentUnpacker::Result& result) {
+          [&](const PuffinComponentUnpacker::Result& result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
             EXPECT_EQ(result.error, UnpackerError::kNone);
             base::FilePath unpack_path = result.unpack_path;

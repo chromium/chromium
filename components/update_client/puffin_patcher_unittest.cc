@@ -66,13 +66,12 @@ TEST_F(PuffinPatcherTest, CheckPuffPatch) {
     PuffinPatcher::Patch(
         std::move(input_file), std::move(patch_file), std::move(output_file),
         patcher,
-        base::BindLambdaForTesting(
-            [&loop, &sequence_checker](UnpackerError error, int extra_code) {
-              DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-              EXPECT_EQ(error, UnpackerError::kNone);
-              EXPECT_EQ(extra_code, 0);
-              loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](UnpackerError error, int extra_code) {
+          DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+          EXPECT_EQ(error, UnpackerError::kNone);
+          EXPECT_EQ(extra_code, 0);
+          loop.Quit();
+        }));
     loop.Run();
   }
 
@@ -92,13 +91,12 @@ TEST_F(PuffinPatcherTest, CheckPuffPatch) {
     PuffinPatcher::Patch(
         std::move(input_file), std::move(patch_file), std::move(output_file),
         patcher,
-        base::BindLambdaForTesting(
-            [&loop, &sequence_checker](UnpackerError error, int extra_code) {
-              DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-              EXPECT_EQ(error, UnpackerError::kNone);
-              EXPECT_EQ(extra_code, 0);
-              loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](UnpackerError error, int extra_code) {
+          DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+          EXPECT_EQ(error, UnpackerError::kNone);
+          EXPECT_EQ(extra_code, 0);
+          loop.Quit();
+        }));
     loop.Run();
   }
 
