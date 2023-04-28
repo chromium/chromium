@@ -36,6 +36,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -64,7 +65,10 @@ class PortalBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kPortals,
                               blink::features::kPortalsCrossOrigin},
-        /*disabled_features=*/{});
+        // Some tests assume that tabs don't share processes. Disable a feature
+        // that allows process sharing among tabs.
+        /*disabled_features=*/{
+            features::kProcessPerSiteUpToMainFrameThreshold});
     InProcessBrowserTest::SetUp();
   }
 
