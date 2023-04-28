@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_QRCODE_GENERATOR_PUBLIC_CPP_QRCODE_GENERATOR_SERVICE_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -31,25 +32,17 @@ class QRImageGenerator {
   // Generates a QR code.
   //
   // The `callback` will not be run if `this` generator is destroyed first.
-  //
-  // The `callback` may not run if there is an internal mojo connection error.
-  // TODO(https://crbug.com/1431991): The public C++ interface should be
-  // mojo-agnostic.  This part of the comment should be removed or replaced
-  // after handling mojo connection errors internally.
   using ResponseCallback =
       base::OnceCallback<void(mojom::GenerateQRCodeResponsePtr)>;
   void GenerateQRCode(mojom::GenerateQRCodeRequestPtr request,
                       ResponseCallback callback);
 
-  // TODO(https://crbug.com/1431991): The public C++ interface should be
-  // mojo-agnostic.  Remove this method and handle mojo connection errors
-  // internally.
-  void set_disconnect_handler(base::OnceClosure callback) {
-    mojo_service_.set_disconnect_handler(std::move(callback));
-  }
-
  private:
+  void ForwardResponse(ResponseCallback original_callback,
+                       mojom::GenerateQRCodeResponsePtr response);
+
   mojo::Remote<mojom::QRCodeGeneratorService> mojo_service_;
+  base::WeakPtrFactory<QRImageGenerator> weak_ptr_factory_;
 };
 
 }  // namespace qrcode_generator

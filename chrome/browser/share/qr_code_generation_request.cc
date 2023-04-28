@@ -39,15 +39,6 @@ QRCodeGenerationRequest::QRCodeGenerationRequest(
 
   qrcode_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
 
-  // On RPC error, we will still run the handler with a null bitmap.
-  // The handler will call destroy() on this native object to clean up.
-  // base::Unretained(this) is safe here because the callback won't be invoked
-  // after |remote_| is destroyed, and |remote_| will be destroyed if this
-  // object is destroyed.
-  qrcode_service_->set_disconnect_handler(
-      base::BindOnce(&QRCodeGenerationRequest::OnGenerateCodeResponse,
-                     base::Unretained(this), nullptr));
-
   auto callback = base::BindOnce(
       &QRCodeGenerationRequest::OnGenerateCodeResponse, base::Unretained(this));
   qrcode_service_->GenerateQRCode(std::move(request), std::move(callback));
@@ -63,9 +54,8 @@ void QRCodeGenerationRequest::OnGenerateCodeResponse(
     const qrcode_generator::mojom::GenerateQRCodeResponsePtr service_response) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  if (!service_response ||
-      service_response->error_code !=
-          qrcode_generator::mojom::QRCodeGeneratorError::NONE) {
+  if (service_response->error_code !=
+      qrcode_generator::mojom::QRCodeGeneratorError::NONE) {
     Java_QRCodeGenerationRequest_onQRCodeAvailable(
         env, java_qr_code_generation_request_, nullptr);
     return;
