@@ -620,7 +620,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       int cert_verify_flags,
       const quic::QuicConfig& config,
       std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config,
-      const char* const connection_description,
       base::TimeTicks dns_resolution_start_time,
       base::TimeTicks dns_resolution_end_time,
       std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index,
