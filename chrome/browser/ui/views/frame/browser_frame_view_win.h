@@ -174,8 +174,6 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   raw_ptr<views::Label> window_title_ = nullptr;
 
   // The container holding the caption buttons (minimize, maximize, close, etc.)
-  // May be null if the caption button container is destroyed before the frame
-  // view. Always check for validity before using!
   raw_ptr<BrowserCaptionButtonContainer> caption_button_container_;
 
   // Whether or not the window throbber is currently animating.

@@ -254,7 +254,7 @@ void BrowserFrameViewWin::PaintAsActiveChanged() {
   // painted to a layer and is not repainted by
   // BrowserNonClientFrameView::PaintAsActiveChanged. Schedule a re-paint here
   // to update the caption button colors.
-  if (caption_button_container_ && caption_button_container_->layer()) {
+  if (caption_button_container_->layer()) {
     caption_button_container_->SchedulePaint();
   }
 }
@@ -323,15 +323,13 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   }
 
   // Then see if the point is within any of the window controls.
-  if (caption_button_container_) {
-    gfx::Point local_point = point;
-    ConvertPointToTarget(parent(), caption_button_container_, &local_point);
-    if (caption_button_container_->HitTestPoint(local_point)) {
-      const int hit_test_result =
-          caption_button_container_->NonClientHitTest(local_point);
-      if (hit_test_result != HTNOWHERE) {
-        return hit_test_result;
-      }
+  gfx::Point local_point = point;
+  ConvertPointToTarget(parent(), caption_button_container_, &local_point);
+  if (caption_button_container_->HitTestPoint(local_point)) {
+    const int hit_test_result =
+        caption_button_container_->NonClientHitTest(local_point);
+    if (hit_test_result != HTNOWHERE) {
+      return hit_test_result;
     }
   }
 
@@ -398,9 +396,7 @@ void BrowserFrameViewWin::UpdateWindowTitle() {
 
 void BrowserFrameViewWin::ResetWindowControls() {
   BrowserNonClientFrameView::ResetWindowControls();
-  if (caption_button_container_) {
-    caption_button_container_->ResetWindowControls();
-  }
+  caption_button_container_->ResetWindowControls();
 }
 
 bool BrowserFrameViewWin::ShouldTabIconViewAnimate() const {
@@ -744,9 +740,6 @@ void BrowserFrameViewWin::LayoutTitleBar() {
 
 void BrowserFrameViewWin::LayoutCaptionButtons() {
   TRACE_EVENT0("views.frame", "BrowserFrameViewWin::LayoutCaptionButtons");
-  if (!caption_button_container_) {
-    return;
-  }
 
   caption_button_container_->SetVisible(!frame()->IsFullscreen());
 
