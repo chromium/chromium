@@ -25,6 +25,7 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -152,6 +153,10 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
   if (root_surface) {
     root_surface_ = root_surface;
     root_surface_->SetSurfaceDelegate(this);
+
+    // TODO(oshima): Investigate if we can set this to `host_window`.
+    root_surface->window()->SetProperty(
+        ui::kAXConsiderInvisibleAndIgnoreChildren, true);
     host_window_->AddChild(root_surface_->window());
     UpdateHostWindowBounds();
     root_surface_->window()->Show();
