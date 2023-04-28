@@ -77,7 +77,8 @@ namespace arc {
 PasspointDialogView::PasspointDialogView(
     mojom::PasspointApprovalRequestPtr request,
     PasspointDialogCallback callback)
-    : callback_(std::move(callback)) {
+    : app_name_(base::UTF8ToUTF16(request->app_name)),
+      callback_(std::move(callback)) {
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
@@ -98,8 +99,7 @@ PasspointDialogView::PasspointDialogView(
   AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringFUTF16(
-              IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_TITLE,
-              base::UTF8ToUTF16(request->app_name)))
+              IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_TITLE, app_name_))
           .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
           .SetMultiLine(true)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -126,6 +126,13 @@ gfx::Size PasspointDialogView::CalculatePreferredSize() const {
   size.set_width(provider->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   return size;
+}
+
+void PasspointDialogView::AddedToWidget() {
+  auto& view_ax = GetWidget()->GetRootView()->GetViewAccessibility();
+  view_ax.OverrideRole(ax::mojom::Role::kDialog);
+  view_ax.OverrideName(l10n_util::GetStringFUTF16(
+      IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_TITLE, app_name_));
 }
 
 int PasspointDialogView::GetLabelWidth() {

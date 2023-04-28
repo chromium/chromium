@@ -61,6 +61,7 @@ class PasspointDialogView : public views::BoxLayoutView {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  void AddedToWidget() override;
 
  private:
   // Get width to be used by label. This is calculated by getting the dialog's
@@ -78,6 +79,7 @@ class PasspointDialogView : public views::BoxLayoutView {
   void OnLearnMoreClicked();
   void OnButtonClicked(bool allow);
 
+  std::u16string app_name_;
   PasspointDialogCallback callback_;
 
   // Added for testing.
