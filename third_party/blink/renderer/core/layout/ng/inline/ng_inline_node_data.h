@@ -28,6 +28,11 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
 
   bool IsBlockLevel() const { return is_block_level_; }
 
+  // True if this node can't use the bisection in `NGParagraphLineBreaker`.
+  bool IsBisectLineBreakDisabled() const {
+    return is_bisect_line_break_disabled_;
+  }
+
   const NGInlineItemsData& ItemsData(bool is_first_line) const {
     return !is_first_line || !first_line_items_
                ? (const NGInlineItemsData&)*this
@@ -84,6 +89,8 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
   // May not be able to use line caches even when the line or earlier lines are
   // not dirty.
   unsigned changes_may_affect_earlier_lines_ : 1;
+
+  unsigned is_bisect_line_break_disabled_ : 1;
 };
 
 }  // namespace blink
