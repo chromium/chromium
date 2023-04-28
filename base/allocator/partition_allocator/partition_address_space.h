@@ -209,7 +209,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
       // Shadow is not created for ConfigurablePool for now, so this part should
       // be unreachable.
       PA_NOTREACHED();
-      return 0;
     }
   }
 #endif

@@ -201,13 +201,12 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 #endif
 
 // Async signal safe checking mechanism.
-BASE_EXPORT void RawCheck(const char* message);
-BASE_EXPORT void RawError(const char* message);
-#define RAW_CHECK(condition)                                 \
-  do {                                                       \
-    if (UNLIKELY(!(condition))) {                            \
-      ::logging::RawCheck("Check failed: " #condition "\n"); \
-    }                                                        \
+[[noreturn]] BASE_EXPORT void RawCheckFailure(const char* message);
+#define RAW_CHECK(condition)                                        \
+  do {                                                              \
+    if (UNLIKELY(!(condition))) {                                   \
+      ::logging::RawCheckFailure("Check failed: " #condition "\n"); \
+    }                                                               \
   } while (0)
 
 }  // namespace logging

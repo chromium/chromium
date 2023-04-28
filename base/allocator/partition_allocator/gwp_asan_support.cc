@@ -122,7 +122,6 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
   }
 
   PA_NOTREACHED();
-  return nullptr;
 }
 
 // static

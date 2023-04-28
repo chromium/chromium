@@ -306,7 +306,6 @@ component("partition_alloc") {
     ":chromecast_buildflags",
     ":chromeos_buildflags",
     ":debugging_buildflags",
-    ":logging_buildflags",
     ":partition_alloc_buildflags",
   ]
 
@@ -476,12 +475,6 @@ buildflag_header("chromeos_buildflags") {
   flags = [ "PA_IS_CHROMEOS_ASH=$is_chromeos_ash" ]
 }
 
-buildflag_header("logging_buildflags") {
-  header = "logging_buildflags.h"
-
-  flags = [ "PA_ENABLE_LOG_ERROR_NOT_REACHED=$enable_log_error_not_reached" ]
-}
-
 buildflag_header("debugging_buildflags") {
   header = "debugging_buildflags.h"
   header_dir = rebase_path(".", "//") + "/partition_alloc_base/debug"
@@ -502,7 +495,6 @@ group("buildflags") {
     ":chromecast_buildflags",
     ":chromeos_buildflags",
     ":debugging_buildflags",
-    ":logging_buildflags",
     ":partition_alloc_buildflags",
   ]
 }

@@ -259,12 +259,9 @@ LogMessage* CheckOpResult::CreateLogMessage(bool is_dcheck,
   return log_message;
 }
 
-void RawCheck(const char* message) {
+void RawCheckFailure(const char* message) {
   RawLog(LOGGING_FATAL, message);
-}
-
-void RawError(const char* message) {
-  RawLog(LOGGING_ERROR, message);
+  __builtin_unreachable();
 }
 
 }  // namespace logging

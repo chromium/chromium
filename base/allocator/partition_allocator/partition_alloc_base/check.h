@@ -169,13 +169,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CheckError {
 #endif
 
 // Async signal safe checking mechanism.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) void RawCheck(const char* message);
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) void RawError(const char* message);
-#define PA_RAW_CHECK(condition)                       \
-  do {                                                \
-    if (!(condition))                                 \
-      ::partition_alloc::internal::logging::RawCheck( \
-          "Check failed: " #condition "\n");          \
+[[noreturn]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) void RawCheckFailure(
+    const char* message);
+#define PA_RAW_CHECK(condition)                              \
+  do {                                                       \
+    if (!(condition))                                        \
+      ::partition_alloc::internal::logging::RawCheckFailure( \
+          "Check failed: " #condition "\n");                 \
   } while (0)
 
 }  // namespace partition_alloc::internal::logging

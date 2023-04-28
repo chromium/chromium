@@ -206,7 +206,6 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
   }
 
   PA_NOTREACHED();
-  return 0;
 }
 
 bool AddressPoolManager::Pool::TryReserveChunk(uintptr_t address,
