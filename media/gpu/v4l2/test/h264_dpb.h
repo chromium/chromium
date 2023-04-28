@@ -24,6 +24,9 @@ namespace v4l2_test {
 // slice including how the slice is reordered. It is used as
 // elements in the decoded picture buffer class H264DPB.
 struct H264SliceMetadata {
+  H264SliceMetadata();
+  H264SliceMetadata(const H264SliceMetadata&);
+
   H264SliceHeader slice_header;
   int bottom_field_order_cnt = 0;
   int frame_num = -1;

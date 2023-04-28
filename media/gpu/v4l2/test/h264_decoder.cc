@@ -404,7 +404,7 @@ void H264Decoder::FlushDPB() {
   std::sort(transmittable_slices.begin(), transmittable_slices.end(),
             H264PicOrderCompare());
 
-  for (auto i : transmittable_slices) {
+  for (auto* i : transmittable_slices) {
     i->outputted = true;
     slice_ready_queue_.push(*i);
   }

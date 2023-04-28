@@ -7,6 +7,10 @@
 namespace media {
 namespace v4l2_test {
 
+H264SliceMetadata::H264SliceMetadata() = default;
+
+H264SliceMetadata::H264SliceMetadata(const H264SliceMetadata&) = default;
+
 int H264DPB::CountRefPics() {
   int ret = 0;
   for (auto& i : *this) {

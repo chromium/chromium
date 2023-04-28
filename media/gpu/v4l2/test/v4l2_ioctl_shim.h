@@ -12,6 +12,7 @@
 
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -28,7 +29,7 @@ class MmappedBuffer : public base::RefCounted<MmappedBuffer> {
 
   class MmappedPlane {
    public:
-    void* start_addr;
+    raw_ptr<void> start_addr;
     const size_t length;
     size_t bytes_used;
 
