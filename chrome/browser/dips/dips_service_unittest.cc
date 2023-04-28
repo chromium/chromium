@@ -98,6 +98,44 @@ TEST_F(DIPSServiceTest, DeleteDbFilesIfPersistenceDisabled) {
   EXPECT_FALSE(base::PathExists(GetDIPSFilePath(profile.get())));
 }
 
+// Verifies that when an OTR profile is opened, the DIPS database file for
+// the underlying regular profile is NOT deleted.
+TEST_F(DIPSServiceTest, PreserveRegularProfileDbFiles) {
+  base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
+
+  // Ensure the DIPS feature is enabled and the database is set to be persisted.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      dips::kFeature, {{"persist_database", "true"}});
+
+  // Build a regular profile.
+  std::unique_ptr<TestingProfile> profile =
+      TestingProfile::Builder().SetPath(data_path).Build();
+  DIPSService* service = DIPSService::Get(profile.get());
+  ASSERT_NE(service, nullptr);
+
+  // Ensure the regular profile's database files have been created since the
+  // DIPS feature and persistence are enabled.
+  WaitOnStorage(service);
+  service->WaitForFileDeletionCompleteForTesting();
+  ASSERT_TRUE(base::PathExists(GetDIPSFilePath(profile.get())));
+
+  // Build an off-the-record profile based on `profile`.
+  TestingProfile* otr_profile =
+      TestingProfile::Builder().SetPath(data_path).BuildIncognito(
+          profile.get());
+  DIPSService* otr_service = DIPSService::Get(otr_profile);
+  ASSERT_NE(otr_service, nullptr);
+
+  // Ensure the OTR profile's database has been initialized and any file
+  // deletion tasks have finished (although there shouldn't be any).
+  WaitOnStorage(otr_service);
+  otr_service->WaitForFileDeletionCompleteForTesting();
+
+  // Ensure the regular profile's database files were NOT deleted.
+  EXPECT_TRUE(base::PathExists(GetDIPSFilePath(profile.get())));
+}
+
 class DIPSServiceStateRemovalTest : public testing::Test {
  public:
   DIPSServiceStateRemovalTest()

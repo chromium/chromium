@@ -167,16 +167,23 @@ DIPSService::DIPSService(content::BrowserContext* context)
   absl::optional<base::FilePath> path_to_use;
   base::FilePath dips_path = GetDIPSFilePath(browser_context_);
 
-  if (dips::kPersistedDatabaseEnabled.Get() &&
-      !browser_context_->IsOffTheRecord()) {
-    path_to_use = dips_path;
-    // Existing database files won't be deleted, so quit the
-    // `wait_for_file_deletion_` RunLoop.
+  if (browser_context_->IsOffTheRecord()) {
+    // OTR profiles should have no existing DIPS database file to be cleaned up.
+    // In fact, attempting to delete one at the path associated with the OTR
+    // profile would delete the DIPS database for the underlying regular
+    // profile.
     wait_for_file_deletion_.Quit();
   } else {
-    // If opening in-memory, delete any database files that may exist.
-    DIPSStorage::DeleteDatabaseFiles(dips_path,
-                                     wait_for_file_deletion_.QuitClosure());
+    if (dips::kPersistedDatabaseEnabled.Get()) {
+      path_to_use = dips_path;
+      // Existing database files won't be deleted, so quit the
+      // `wait_for_file_deletion_` RunLoop.
+      wait_for_file_deletion_.Quit();
+    } else {
+      // If opening in-memory, delete any database files that may exist.
+      DIPSStorage::DeleteDatabaseFiles(dips_path,
+                                       wait_for_file_deletion_.QuitClosure());
+    }
   }
 
   storage_ = base::SequenceBound<DIPSStorage>(CreateTaskRunner(), path_to_use);
