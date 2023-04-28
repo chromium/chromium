@@ -45,8 +45,9 @@ However, you'll more likely want to use
 out-of-process co-ordinator.
 
 To use centipede, specify `use_centipede = true` instead of `use_libfuzzer =
-true`. You'll then want to run centipede using some command like:
+true`. You should also build the `centipede` target as well as your fuzzer.
+You'll then want to run centipede using some command like:
 
 ```
-export ASAN_OPTIONS=detect_odr_violations=0 $BIN_DIR/centipede --binary=~/chromium/src/out/ASAN/html_in_process_fuzz_tests --workdir=$WD --shmem_size_mb 4096 --rss_limit_mb 0  --batch_size 100 --log_features_shards 2 --exit_on_crash 1
+mkdir wd && ASAN_OPTIONS=detect_odr_violation=0 out/ASAN/centipede --binary=out/ASAN/html_in_process_fuzz_tests --workdir=wd --shmem_size_mb 4096 --rss_limit_mb 0  --batch_size 100 --log_features_shards 2 --exit_on_crash 1
 ```
