@@ -269,6 +269,11 @@ class LoginPromptBrowserTest
   typedef std::map<std::string, AuthInfo> AuthMap;
 
   void SetAuthFor(LoginHandler* handler);
+  // Authenticates for BasicAuth and waits the authentication is accepted.
+  void SetAuthForAndWait(LoginHandler* handler,
+                         NavigationController* controller);
+  // Waits until the title matches the expected title for BasicAuth.
+  void ExpectSuccessfulBasicAuthTitle(content::WebContents* contents);
 
   AuthMap auth_map_;
   std::string bad_password_;
@@ -299,6 +304,29 @@ void LoginPromptBrowserTest::SetAuthFor(LoginHandler* handler) {
   }
 }
 
+void LoginPromptBrowserTest::SetAuthForAndWait(
+    LoginHandler* handler,
+    NavigationController* controller) {
+  ASSERT_TRUE(handler);
+  WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
+  SetAuthFor(handler);
+  auth_supplied_waiter.Wait();
+}
+
+std::u16string ExpectedTitleFromAuth(const std::u16string& username,
+                                     const std::u16string& password) {
+  // The TestServer sets the title to username/password on successful login.
+  return username + u"/" + password;
+}
+
+void LoginPromptBrowserTest::ExpectSuccessfulBasicAuthTitle(
+    content::WebContents* contents) {
+  std::u16string expected_title =
+      ExpectedTitleFromAuth(u"basicuser", u"secret");
+  content::TitleWatcher title_watcher(contents, expected_title);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+}
+
 const char kPrefetchAuthPage[] = "/login/prefetch.html";
 
 const char kMultiRealmTestPage[] = "/login/multi_realm.html";
@@ -314,12 +342,6 @@ const char kAuthDigestPage[] = "/auth-digest";
 // Navigating to non-existing pages caused flakes in the past
 // (https://crbug.com/636875).
 const char kNoAuthPage1[] = "/simple.html";
-
-std::u16string ExpectedTitleFromAuth(const std::u16string& username,
-                                     const std::u16string& password) {
-  // The TestServer sets the title to username/password on successful login.
-  return username + u"/" + password;
-}
 
 // Confirm that <link rel="prefetch"> targetting an auth required
 // resource does not provide a login dialog.  These types of requests
@@ -412,15 +434,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuth) {
     }
 
     ASSERT_EQ(1u, observer.handlers().size());
-    WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-    LoginHandler* handler = *observer.handlers().begin();
-    SetAuthFor(handler);
-    auth_supplied_waiter.Wait();
-
-    std::u16string expected_title =
-        ExpectedTitleFromAuth(u"basicuser", u"secret");
-    content::TitleWatcher title_watcher(contents, expected_title);
-    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+    SetAuthForAndWait(*observer.handlers().begin(), controller);
+    ExpectSuccessfulBasicAuthTitle(contents);
   }
 }
 
@@ -740,9 +755,7 @@ IN_PROC_BROWSER_TEST_P(MultiRealmLoginPromptBrowserTest,
 IN_PROC_BROWSER_TEST_P(MultiRealmLoginPromptBrowserTest,
                        MultipleRealmConfirmation) {
   RunTest([this](LoginHandler* handler) {
-    WindowedAuthSuppliedObserver waiter(GetNavigationController());
-    SetAuthFor(handler);
-    waiter.Wait();
+    SetAuthForAndWait(handler, GetNavigationController());
   });
 
   EXPECT_LT(0, login_prompt_observer()->auth_needed_count());
@@ -795,13 +808,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, IncorrectConfirmation) {
     WindowedAuthNeededObserver auth_needed_waiter(controller);
 
     while (!observer.handlers().empty()) {
-      WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-      LoginHandler* handler = *observer.handlers().begin();
-
-      ASSERT_TRUE(handler);
+      SetAuthForAndWait(*observer.handlers().begin(), controller);
       n_handlers++;
-      SetAuthFor(handler);
-      auth_supplied_waiter.Wait();
     }
 
     if (n_handlers < 1)
@@ -1123,14 +1131,10 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, SupplyRedundantAuths) {
     ASSERT_EQ(2U, observer.handlers().size());
 
     // Supply auth in one of the tabs.
-    WindowedAuthSuppliedObserver auth_supplied_waiter_1(controller_1);
     WindowedAuthSuppliedObserver auth_supplied_waiter_2(controller_2);
-    LoginHandler* handler_1 = *observer.handlers().begin();
-    ASSERT_TRUE(handler_1);
-    SetAuthFor(handler_1);
+    SetAuthForAndWait(*observer.handlers().begin(), controller_1);
 
     // Both tabs should be authenticated.
-    auth_supplied_waiter_1.Wait();
     auth_supplied_waiter_2.Wait();
   }
 
@@ -1237,14 +1241,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     ASSERT_EQ(1U, observer.handlers().size());
     ASSERT_EQ(1U, observer_incognito.handlers().size());
 
-    // Supply auth in regular tab.
-    WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-    LoginHandler* handler = *observer.handlers().begin();
-    ASSERT_TRUE(handler);
-    SetAuthFor(handler);
-
-    // Regular tab should be authenticated.
-    auth_supplied_waiter.Wait();
+    // Supply auth in regular tab, it should be authenticated.
+    SetAuthForAndWait(*observer.handlers().begin(), controller);
 
     // There's not really a way to wait for the incognito window to "do
     // nothing".  Run anything pending in the message loop just to be sure.
@@ -1456,15 +1454,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   auth_needed_waiter.Wait();
 
   ASSERT_EQ(1u, observer.handlers().size());
-  WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-  LoginHandler* handler = *observer.handlers().begin();
-  SetAuthFor(handler);
-  auth_supplied_waiter.Wait();
-
-  std::u16string expected_title =
-      ExpectedTitleFromAuth(u"basicuser", u"secret");
-  content::TitleWatcher title_watcher(contents, expected_title);
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  SetAuthForAndWait(*observer.handlers().begin(), controller);
+  ExpectSuccessfulBasicAuthTitle(contents);
   EXPECT_EQ(1, observer.auth_needed_count());
 
   base::RunLoop run_loop;
@@ -1496,10 +1487,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
                                      ui::PAGE_TRANSITION_TYPED, false));
     auth_needed_waiter2.Wait();
     ASSERT_EQ(1u, observer.handlers().size());
-    WindowedAuthSuppliedObserver auth_supplied_waiter2(controller);
-    handler = *observer.handlers().begin();
-    SetAuthFor(handler);
-    auth_supplied_waiter2.Wait();
+    SetAuthForAndWait(*observer.handlers().begin(), controller);
     navigation_observer.Wait();
     EXPECT_EQ(2, observer.auth_needed_count());
   }
@@ -1546,15 +1534,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   auth_needed_waiter.Wait();
 
   ASSERT_EQ(1u, observer.handlers().size());
-  WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-  LoginHandler* handler = *observer.handlers().begin();
-  SetAuthFor(handler);
-  auth_supplied_waiter.Wait();
+  SetAuthForAndWait(*observer.handlers().begin(), controller);
+  ExpectSuccessfulBasicAuthTitle(contents);
 
-  std::u16string expected_title =
-      ExpectedTitleFromAuth(u"basicuser", u"secret");
-  content::TitleWatcher title_watcher(contents, expected_title);
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   EXPECT_EQ(1, observer.auth_needed_count());
 
   base::RunLoop run_loop;
@@ -1915,15 +1897,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   ASSERT_EQ(1u, observer.handlers().size());
 
   // Test that credentials are handled correctly.
-  WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-  LoginHandler* handler = *observer.handlers().begin();
-  SetAuthFor(handler);
-  auth_supplied_waiter.Wait();
-
-  std::u16string expected_title =
-      ExpectedTitleFromAuth(u"basicuser", u"secret");
-  content::TitleWatcher auth_supplied_title_watcher(contents, expected_title);
-  EXPECT_EQ(expected_title, auth_supplied_title_watcher.WaitAndGetTitle());
+  SetAuthForAndWait(*observer.handlers().begin(), controller);
+  ExpectSuccessfulBasicAuthTitle(contents);
 }
 
 // Tests that the repost dialog is not shown when credentials are entered for a
@@ -1950,15 +1925,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, NoRepostDialogAfterCredentials) {
 
   // Enter credentials and test that the page loads. If the repost dialog is
   // shown, the test will hang while waiting for input.
-  WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-  LoginHandler* handler = *observer.handlers().begin();
-  SetAuthFor(handler);
-  auth_supplied_waiter.Wait();
-
-  std::u16string expected_title =
-      ExpectedTitleFromAuth(u"basicuser", u"secret");
-  content::TitleWatcher auth_supplied_title_watcher(contents, expected_title);
-  EXPECT_EQ(expected_title, auth_supplied_title_watcher.WaitAndGetTitle());
+  SetAuthForAndWait(*observer.handlers().begin(), controller);
+  ExpectSuccessfulBasicAuthTitle(contents);
 }
 
 // Tests that when HTTP Auth committed interstitials are enabled, showing a
@@ -1996,16 +1964,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PromptWithOnlyInitialEntry) {
   ASSERT_EQ(1u, observer.handlers().size());
 
   // Test that credentials are handled correctly.
-  WindowedAuthSuppliedObserver auth_supplied_waiter(opened_controller);
-  LoginHandler* handler = *observer.handlers().begin();
-  SetAuthFor(handler);
-  auth_supplied_waiter.Wait();
-
-  std::u16string expected_title =
-      ExpectedTitleFromAuth(u"basicuser", u"secret");
-  content::TitleWatcher auth_supplied_title_watcher(opened_contents,
-                                                    expected_title);
-  EXPECT_EQ(expected_title, auth_supplied_title_watcher.WaitAndGetTitle());
+  SetAuthForAndWait(*observer.handlers().begin(), opened_controller);
+  ExpectSuccessfulBasicAuthTitle(opened_contents);
 }
 
 // Tests that when HTTP Auth committed interstitials are enabled, a prompt
@@ -2089,14 +2049,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   WindowedAuthNeededObserver auth_needed_waiter(controller);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
   auth_needed_waiter.Wait();
-  WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-  LoginHandler* handler = *observer.handlers().begin();
-  SetAuthFor(handler);
-  auth_supplied_waiter.Wait();
-  std::u16string expected_title =
-      ExpectedTitleFromAuth(u"basicuser", u"secret");
-  content::TitleWatcher title_watcher(web_contents, expected_title);
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  SetAuthForAndWait(*observer.handlers().begin(), controller);
+  ExpectSuccessfulBasicAuthTitle(web_contents);
 
   // Now navigate to a page handled by HandleUnauthorized(), for which the
   // cached credentials are incorrect.
@@ -2325,16 +2279,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, BasicAuthWithServiceWorker) {
         browser(), https_server.GetURL(kAuthBasicPage)));
     auth_needed_waiter.Wait();
     EXPECT_FALSE(observer.handlers().empty());
-    WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-    LoginHandler* handler = *observer.handlers().begin();
-    SetAuthFor(handler);
-    auth_supplied_waiter.Wait();
-
-    std::u16string expected_title =
-        ExpectedTitleFromAuth(u"basicuser", u"secret");
-    content::TitleWatcher auth_supplied_title_watcher(web_contents,
-                                                      expected_title);
-    EXPECT_EQ(expected_title, auth_supplied_title_watcher.WaitAndGetTitle());
+    SetAuthForAndWait(*observer.handlers().begin(), controller);
+    ExpectSuccessfulBasicAuthTitle(web_contents);
   }
 }
 
