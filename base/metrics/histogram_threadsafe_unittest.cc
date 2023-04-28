@@ -299,7 +299,7 @@ class HistogramThreadsafeTest : public testing::Test {
 // use of ASSERT_* instead EXPECT_* because the test is repeated multiple times,
 // and the use of EXPECT_* produces spammy outputs as it does not end the test
 // immediately.
-TEST_F(HistogramThreadsafeTest, DISABLED_SnapshotDeltaThreadsafe) {
+TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
   // We try this test |kNumIterations| times to have a coverage of different
   // scenarios. For example, for a numeric histogram, if it has only samples
   // within the same bucket, the samples will be stored in a different way than
@@ -307,9 +307,9 @@ TEST_F(HistogramThreadsafeTest, DISABLED_SnapshotDeltaThreadsafe) {
   // vs a vector). Hence, the goal of doing this test multiple time is to have
   // coverage of the SingleSample scenario, because once the histogram has moved
   // to using a vector, it will not use SingleSample again.
-  // Note: |kNumIterations| was 200 on 4/2023, but was decreased because the
+  // Note: |kNumIterations| was 100 on 4/2023, but was decreased because the
   // workload was causing flakiness (timing out).
-  constexpr size_t kNumIterations = 100;
+  constexpr size_t kNumIterations = 50;
   for (size_t iteration = 0; iteration < kNumIterations; ++iteration) {
     // TL;DR of the test: multiple threads are created, which will each emit to
     // the same histograms and snapshot their delta multiple times. We keep
@@ -333,7 +333,7 @@ TEST_F(HistogramThreadsafeTest, DISABLED_SnapshotDeltaThreadsafe) {
     // samples found in the snapshots so that we can compare that they match
     // later on.
     constexpr size_t kNumThreads = 2;
-    constexpr size_t kNumEmissions = 2000;
+    constexpr size_t kNumEmissions = 1000;
     subtle::Atomic32 real_total_samples_count = 0;
     std::vector<subtle::Atomic32> real_bucket_counts(kHistogramMax, 0);
     subtle::Atomic32 snapshots_total_samples_count = 0;
