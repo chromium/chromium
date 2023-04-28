@@ -15,6 +15,7 @@
   --grey-200: rgb(var(--grey-200-rgb));
   --grey-400: rgb(189, 193, 198);
   --grey-500: rgb(154, 160, 166);
+  --grey-600: rgb(128, 134, 139);
   --grey-700: rgb(95, 99, 104);
   --grey-900-rgb: 32, 33, 36;
   --grey-900: rgb(var(--grey-900-rgb));
@@ -358,8 +359,8 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
 }
 
 #video-snapshot {
-  height: 44px;
-  width: 44px;
+  height: 46px;
+  width: 46px;
 }
 
 #start-takephoto,
@@ -407,19 +408,17 @@ body.taking #start-takephoto:active {
 }
 
 #pause-recordvideo {
-  --size: 44px;
+  --size: 46px;
 }
 
 #recordvideo,
 #pause-recordvideo {
   --dot-size: 25%;
   --duration: 180ms;
-  --red: #f44336;
   --square-delay: 45ms;
   --square-size: calc(100% / 3);
-  --white: #ffffff;
 
-  background: var(--white);
+  background: white;
   border-radius: 50%;
   height: var(--size);
   position: relative;
@@ -427,19 +426,22 @@ body.taking #start-takephoto:active {
   width: var(--size);
 }
 
-#recordvideo:hover,
-#pause-recordvideo:hover {
-  --red: #f44336;
-  --white: #e8eaed;
+:is(#recordvideo, #pause-recordvideo):hover::after {
+  background: var(--cros-sys-hover_on_prominent);
+  border-radius: 50%;
+  content: '';
+  display: block;
+  inset: 0;
+  position: absolute;
 }
 
-body.taking.video #recordvideo:hover {
-  --red: #d93025;
+body.taking.video #recordvideo:hover::after {
+  background: var(--cros-sys-hover_on_subtle);
 }
 
 #recordvideo .red-dot,
 #pause-recordvideo .red-dot {
-  background: var(--red);
+  background: var(--cros-ref-error40);
   border-radius: 50%;
   box-sizing: border-box;
   height: var(--dot-size);
@@ -461,7 +463,7 @@ body:not(.recording-ui-paused).video #pause-recordvideo .red-dot {
 }
 
 #recordvideo .white-square {
-  background: var(--white);
+  background: white;
   border-radius: 2px;
   height: 0;
   left: 50%;
@@ -483,16 +485,20 @@ body.taking.video #recordvideo .white-square {
 #pause-recordvideo .two-bars {
   --bar-size: 20px;
 
-  background-image: url(/images/camera_shutter_video_pause.svg);
   height: var(--bar-size);
   left: calc(50% - var(--bar-size) / 2);
+  overflow: hidden;
   position: absolute;
   top: calc(50% - var(--bar-size) / 2);
   width: var(--bar-size);
 }
 
+#pause-recordvideo .two-bars svg-wrapper {
+  color: var(--cros-sys-secondary_container);
+}
+
 body.video.recording.recording-ui-paused #recordvideo {
-  --size: 44px;
+  --size: 46px;
 }
 
 body.video.recording-ui-paused #pause-recordvideo {
@@ -500,7 +506,7 @@ body.video.recording-ui-paused #pause-recordvideo {
 }
 
 body.video.recording-ui-paused #pause-recordvideo .two-bars {
-  --bar-size: 0px;
+  --bar-size: 0;
 }
 
 body.video.taking #recordvideo {

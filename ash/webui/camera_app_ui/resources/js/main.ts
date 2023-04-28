@@ -425,7 +425,7 @@ async function setupDynamicColor(): Promise<void> {
   }
   if (loadTimeData.getChromeFlag(Flag.JELLY)) {
     startColorChangeUpdater();
-    await loadCSS('chrome://theme/colors.css?sets=sys');
+    await loadCSS('chrome://theme/colors.css?sets=ref,sys');
   } else {
     await loadCSS('/css/colors_default.css');
   }
