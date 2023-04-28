@@ -302,6 +302,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
  private:
   // "CommerceTabHelper" encompases both the content/ and ios/ versions.
   friend class CommerceTabHelper;
+  friend class CommerceInternalsHandler;
   // Test classes are also friends.
   friend class ShoppingServiceTestBase;
   friend class ShoppingServiceTest;

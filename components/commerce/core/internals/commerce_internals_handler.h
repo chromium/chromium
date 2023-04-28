@@ -30,6 +30,8 @@ class CommerceInternalsHandler : public mojom::CommerceInternalsHandler {
   // commerce::mojom::CommerceInternalsHandler:
   void GetIsShoppingListEligible(
       GetIsShoppingListEligibleCallback callback) override;
+  void GetShoppingListEligibleDetails(
+      GetShoppingListEligibleDetailsCallback callback) override;
 
  private:
   mojo::Remote<mojom::CommerceInternalsPage> page_;

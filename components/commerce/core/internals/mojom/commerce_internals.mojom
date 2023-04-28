@@ -4,6 +4,19 @@
 
 module commerce.mojom;
 
+// This outlines each factor that contributes to whether a user is
+// eligible for the shopping-list feature.
+struct ShoppingListEligibleDetail {
+  bool is_region_locked_feature_enabled;
+  bool is_shopping_list_allowed_for_enterprise;
+  bool is_account_checker_valid;
+  bool is_signed_in;
+  bool is_syncing_bookmarks;
+  bool is_anonymized_url_data_collection_enabled;
+  bool is_web_and_app_activity_enabled;
+  bool is_subject_to_parental_controls;
+};
+
 // Used by the WebUI to bootstrap bidirectional communication.
 interface CommerceInternalsHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -16,6 +29,8 @@ interface CommerceInternalsHandlerFactory {
 interface CommerceInternalsHandler {
   // Returns whether the user is eligible to use the shopping list feature.
   GetIsShoppingListEligible() => (bool eligible);
+  // Returns the ShoppingListEligibleDetail.
+  GetShoppingListEligibleDetails() =>(ShoppingListEligibleDetail detail);
 };
 
 // WebUI-side handler for requests from the browser.

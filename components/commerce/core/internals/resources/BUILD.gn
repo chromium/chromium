@@ -7,7 +7,10 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "commerce_internals"
 
-  static_files = [ "commerce_internals.html" ]
+  static_files = [
+    "commerce_internals.css",
+    "commerce_internals.html",
+  ]
 
   non_web_component_files = [
     "commerce_internals.ts",

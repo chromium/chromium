@@ -10,6 +10,7 @@ found in the LICENSE file.
     <meta charset="utf-8">
     <title>Commerce Internals</title>
     <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="commerce_internals.css">
 <if expr="is_ios">
     <!-- TODO(crbug.com/487000): Remove this once injected by web. -->
     <script src="chrome://resources/js/ios/web_ui.js"></script>
@@ -19,7 +20,8 @@ found in the LICENSE file.
 
   <body>
     <h1>Commerce Internals</h1>
-    <div>Shopping list eligible?: <span id="shopping-list-eligible"></span></div>
+    <div>Shopping list eligible?: <span id="shopping-list-eligible"></span> <button id="shopping-list-eligible-see-details-btn">See details</button></div>
+    <div id="shopping-list-eligible-details"></div>
   </body>
 
   <script type="module" src="commerce_internals.js"></script>

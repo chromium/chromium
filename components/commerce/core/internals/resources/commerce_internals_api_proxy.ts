@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CommerceInternalsHandlerFactory, CommerceInternalsHandlerRemote, CommerceInternalsPageCallbackRouter} from './commerce_internals.mojom-webui.js';
+import {CommerceInternalsHandlerFactory, CommerceInternalsHandlerRemote, CommerceInternalsPageCallbackRouter, ShoppingListEligibleDetail} from './commerce_internals.mojom-webui.js';
 
 export class CommerceInternalsApiProxy {
   private callbackRouter: CommerceInternalsPageCallbackRouter;
@@ -24,6 +24,11 @@ export class CommerceInternalsApiProxy {
 
   getIsShoppingListEligible(): Promise<{eligible: boolean}> {
     return this.handler.getIsShoppingListEligible();
+  }
+
+  getShoppingListEligibleDetails():
+      Promise<{detail: ShoppingListEligibleDetail}> {
+    return this.handler.getShoppingListEligibleDetails();
   }
 
   getCallbackRouter(): CommerceInternalsPageCallbackRouter {
