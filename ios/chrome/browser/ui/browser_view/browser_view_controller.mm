@@ -2339,7 +2339,7 @@ enum HeaderBehaviour {
                         fromTabId:(NSString*)tabId {
   // Check if the call comes from currently visible tab.
   NSString* visibleTabId = self.currentWebState->GetStableIdentifier();
-  if ([tabId isEqual:visibleTabId]) {
+  if ([tabId isEqualToString:visibleTabId]) {
     [self addChildViewController:viewController];
     [self.view addSubview:viewController.view];
     [viewController didMoveToParentViewController:self];

@@ -1015,8 +1015,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)historyEntryForURL:(NSString*)URL title:(NSString*)title {
   GREYMatchesBlock matches = ^BOOL(TableViewURLCell* cell) {
-    return [cell.titleLabel.text isEqual:title] &&
-           [cell.URLLabel.text isEqual:URL];
+    return [cell.titleLabel.text isEqualToString:title] &&
+           [cell.URLLabel.text isEqualToString:URL];
   };
 
   GREYDescribeToBlock describe = ^(id<GREYDescription> description) {

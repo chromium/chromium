@@ -359,18 +359,20 @@ void ChromeWebClient::PrepareErrorPage(
       std::move(callback);
   NSError* final_underlying_error =
       base::ios::GetFinalUnderlyingErrorFromError(error);
-  if ([final_underlying_error.domain isEqual:kSafeBrowsingErrorDomain]) {
+  if ([final_underlying_error.domain
+          isEqualToString:kSafeBrowsingErrorDomain]) {
     // Only kUnsafeResourceErrorCode is supported.
     DCHECK_EQ(kUnsafeResourceErrorCode, final_underlying_error.code);
     std::move(error_html_callback)
         .Run(GetSafeBrowsingErrorPageHTML(web_state, navigation_id));
-  } else if ([final_underlying_error.domain isEqual:kLookalikeUrlErrorDomain]) {
+  } else if ([final_underlying_error.domain
+                 isEqualToString:kLookalikeUrlErrorDomain]) {
     // Only kLookalikeUrlErrorCode is supported.
     DCHECK_EQ(kLookalikeUrlErrorCode, final_underlying_error.code);
     std::move(error_html_callback)
         .Run(GetLookalikeUrlErrorPageHtml(web_state, navigation_id));
   } else if ([final_underlying_error.domain
-                 isEqual:kHttpsOnlyModeErrorDomain]) {
+                 isEqualToString:kHttpsOnlyModeErrorDomain]) {
     // Only kHttpsOnlyModeErrorCode is supported.
     DCHECK_EQ(kHttpsOnlyModeErrorCode, final_underlying_error.code);
     std::move(error_html_callback)

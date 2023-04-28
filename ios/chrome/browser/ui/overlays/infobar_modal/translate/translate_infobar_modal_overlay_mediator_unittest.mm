@@ -133,8 +133,9 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, UpdateLanguageInfo) {
   // computed.
   NSString* currentLanguage =
       [[[NSBundle mainBundle] preferredLocalizations] firstObject];
-  if (![currentLanguage isEqual:@"en-US"])
+  if (![currentLanguage isEqualToString:@"en-US"]) {
     return;
+  }
 
   const int portuguese_index = 67;
   const int spanish_index = 81;

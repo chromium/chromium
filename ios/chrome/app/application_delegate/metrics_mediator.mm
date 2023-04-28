@@ -269,8 +269,10 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
     if (count != 0) {
       base::UmaHistogramCounts1000(SysNSStringToUTF8(keyMetric[key]), count);
       [shared_defaults setInteger:0 forKey:key];
-      if ([key isEqual:app_group::kCredentialExtensionPasswordUseCount] ||
-          [key isEqual:app_group::kCredentialExtensionQuickPasswordUseCount]) {
+      if ([key isEqualToString:app_group::
+                                   kCredentialExtensionPasswordUseCount] ||
+          [key isEqualToString:app_group::
+                                   kCredentialExtensionQuickPasswordUseCount]) {
         LogLikelyInterestedDefaultBrowserUserActivity(
             DefaultPromoTypeMadeForIOS);
       }

@@ -25,7 +25,7 @@ bool IsUrlRequestValid(NSURLRequest* request) {
     return false;
   }
 
-  if ([request.URL.scheme isEqual:@"data"]) {
+  if ([request.URL.scheme isEqualToString:@"data"]) {
     std::string mime_type;
     std::string charset;
     std::string data;

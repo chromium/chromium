@@ -296,7 +296,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     // TODO(crbug.com/1081274): This re-ordering will be redundant once we
     // apply ordering changes to the account reconciler.
     TableViewItem* item = [self accountItem:identity];
-    if ([identity.userEmail isEqual:authenticatedEmail]) {
+    if ([identity.userEmail isEqualToString:authenticatedEmail]) {
       [model insertItem:item
           inSectionWithIdentifier:SectionIdentifierAccounts
                           atIndex:0];

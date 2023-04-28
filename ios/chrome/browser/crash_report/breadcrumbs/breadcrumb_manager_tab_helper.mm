@@ -106,7 +106,8 @@ void BreadcrumbManagerTabHelper::DidFinishNavigation(
     error_code = net::ERR_FAILED;
     NSError* final_error = base::ios::GetFinalUnderlyingErrorFromError(error);
     // Only errors with net::kNSErrorDomain have correct net error code.
-    if (final_error && [final_error.domain isEqual:net::kNSErrorDomain]) {
+    if (final_error &&
+        [final_error.domain isEqualToString:net::kNSErrorDomain]) {
       error_code = final_error.code;
     }
   }

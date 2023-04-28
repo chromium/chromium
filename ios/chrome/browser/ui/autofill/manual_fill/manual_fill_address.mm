@@ -51,40 +51,41 @@
     return NO;
   }
   ManualFillAddress* otherObject = (ManualFillAddress*)object;
-  if (![otherObject.firstName isEqual:self.firstName]) {
+  if (![otherObject.firstName isEqualToString:self.firstName]) {
     return NO;
   }
-  if (![otherObject.middleNameOrInitial isEqual:self.middleNameOrInitial]) {
+  if (![otherObject.middleNameOrInitial
+          isEqualToString:self.middleNameOrInitial]) {
     return NO;
   }
-  if (![otherObject.lastName isEqual:self.lastName]) {
+  if (![otherObject.lastName isEqualToString:self.lastName]) {
     return NO;
   }
-  if (![otherObject.company isEqual:self.company]) {
+  if (![otherObject.company isEqualToString:self.company]) {
     return NO;
   }
-  if (![otherObject.line1 isEqual:self.line1]) {
+  if (![otherObject.line1 isEqualToString:self.line1]) {
     return NO;
   }
-  if (![otherObject.line2 isEqual:self.line2]) {
+  if (![otherObject.line2 isEqualToString:self.line2]) {
     return NO;
   }
-  if (![otherObject.zip isEqual:self.zip]) {
+  if (![otherObject.zip isEqualToString:self.zip]) {
     return NO;
   }
-  if (![otherObject.city isEqual:self.city]) {
+  if (![otherObject.city isEqualToString:self.city]) {
     return NO;
   }
-  if (![otherObject.state isEqual:self.state]) {
+  if (![otherObject.state isEqualToString:self.state]) {
     return NO;
   }
-  if (![otherObject.country isEqual:self.country]) {
+  if (![otherObject.country isEqualToString:self.country]) {
     return NO;
   }
-  if (![otherObject.phoneNumber isEqual:self.phoneNumber]) {
+  if (![otherObject.phoneNumber isEqualToString:self.phoneNumber]) {
     return NO;
   }
-  if (![otherObject.emailAddress isEqual:self.emailAddress]) {
+  if (![otherObject.emailAddress isEqualToString:self.emailAddress]) {
     return NO;
   }
   return YES;

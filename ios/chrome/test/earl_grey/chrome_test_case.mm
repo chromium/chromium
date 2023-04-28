@@ -310,7 +310,8 @@ void ResetAuthentication() {
 }
 
 - (BOOL)isRunningTest:(SEL)selector {
-  return [[self currentTestMethodName] isEqual:NSStringFromSelector(selector)];
+  return [[self currentTestMethodName]
+      isEqualToString:NSStringFromSelector(selector)];
 }
 
 + (void)testForStartup {

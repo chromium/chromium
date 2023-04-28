@@ -46,7 +46,7 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
       // title. If this ever changes, then a decision has to be made on which
       // one should be used for sharing.
       DCHECK([tab_util::GetTabTitle(web_state)
-          isEqual:base::SysUTF16ToNSString(original_title)]);
+          isEqualToString:base::SysUTF16ToNSString(original_title)]);
       is_original_title = YES;
     }
   }

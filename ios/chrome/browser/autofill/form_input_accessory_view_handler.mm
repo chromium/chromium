@@ -37,13 +37,14 @@ enum class FormInputAccessoryAction {
 };
 
 FormInputAccessoryAction UMAActionForAssistAction(NSString* assistAction) {
-  if ([assistAction isEqual:kFormSuggestionAssistButtonPreviousElement]) {
+  if ([assistAction
+          isEqualToString:kFormSuggestionAssistButtonPreviousElement]) {
     return FormInputAccessoryAction::kPreviousElement;
   }
-  if ([assistAction isEqual:kFormSuggestionAssistButtonNextElement]) {
+  if ([assistAction isEqualToString:kFormSuggestionAssistButtonNextElement]) {
     return FormInputAccessoryAction::kNextElement;
   }
-  if ([assistAction isEqual:kFormSuggestionAssistButtonDone]) {
+  if ([assistAction isEqualToString:kFormSuggestionAssistButtonDone]) {
     return FormInputAccessoryAction::kDone;
   }
   NOTREACHED();

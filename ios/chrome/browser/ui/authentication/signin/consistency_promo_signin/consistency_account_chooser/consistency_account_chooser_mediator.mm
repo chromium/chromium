@@ -115,7 +115,7 @@
   IdentityItemConfigurator* configurator = nil;
   for (IdentityItemConfigurator* cursor in self
            .sortedIdentityItemConfigurators) {
-    if ([cursor.gaiaID isEqual:identity.gaiaID]) {
+    if ([cursor.gaiaID isEqualToString:identity.gaiaID]) {
       configurator = cursor;
     }
   }

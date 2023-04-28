@@ -67,17 +67,19 @@ NSString* const kNoteKey = @"note";
       return NO;
     }
     ArchivableCredential* otherCredential = (ArchivableCredential*)other;
-    return
-        [self.favicon isEqual:otherCredential.favicon] &&
-        [self.keychainIdentifier isEqual:otherCredential.keychainIdentifier] &&
-        self.rank == otherCredential.rank &&
-        [self.recordIdentifier isEqual:otherCredential.recordIdentifier] &&
-        [self.serviceIdentifier isEqual:otherCredential.serviceIdentifier] &&
-        [self.serviceName isEqual:otherCredential.serviceName] &&
-        [self.user isEqual:otherCredential.user] &&
-        [self.validationIdentifier
-            isEqual:otherCredential.validationIdentifier] &&
-        [self.note isEqual:otherCredential.note];
+    return [self.favicon isEqualToString:otherCredential.favicon] &&
+           [self.keychainIdentifier
+               isEqualToString:otherCredential.keychainIdentifier] &&
+           self.rank == otherCredential.rank &&
+           [self.recordIdentifier
+               isEqualToString:otherCredential.recordIdentifier] &&
+           [self.serviceIdentifier
+               isEqualToString:otherCredential.serviceIdentifier] &&
+           [self.serviceName isEqualToString:otherCredential.serviceName] &&
+           [self.user isEqualToString:otherCredential.user] &&
+           [self.validationIdentifier
+               isEqualToString:otherCredential.validationIdentifier] &&
+           [self.note isEqualToString:otherCredential.note];
   }
 }
 

@@ -328,7 +328,7 @@ NSString* GetSizeString(long long size_in_bytes) {
 #pragma mark - Public
 
 - (void)setFileName:(NSString*)fileName {
-  if (![_fileName isEqual:fileName]) {
+  if (![_fileName isEqualToString:fileName]) {
     _fileName = [fileName copy];
     [self updateStatusLabel];
   }
