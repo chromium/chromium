@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test.services;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+
 import android.content.Context;
 import android.os.Build;
 
@@ -21,14 +23,16 @@ import androidx.test.filters.MediumTest;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
-import org.chromium.android_webview.test.AwJUnit4ClassRunner;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.android_webview.test.OnlyRunIn;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Vector;
@@ -41,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(AwJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.O)
 @RequiresApi(Build.VERSION_CODES.O)
+@OnlyRunIn(SINGLE_PROCESS)
 public class JsSandboxServiceTest {
     // This value is somewhat arbitrary. It might need bumping if V8 snapshots become significantly
     // larger in future. However, we don't want it too large as that will make the tests slower and

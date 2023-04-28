@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test.services;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+
 import android.content.Context;
 import android.os.Build;
 
@@ -24,6 +26,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.shell.R;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 
@@ -39,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(AwJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.O)
 @RequiresApi(Build.VERSION_CODES.O)
+@OnlyRunIn(SINGLE_PROCESS)
 public class JsSandboxFledgeTest {
     private static final int TIMEOUT_SECONDS = 5;
 
