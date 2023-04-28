@@ -804,6 +804,23 @@ TEST_F(SyncSchedulerImplTest, Polling) {
   AnalyzePollRun(times, kMinNumSamples, optimal_start, poll_interval);
 }
 
+TEST_F(SyncSchedulerImplTest, ShouldPollOnBrowserStartup) {
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndEnableFeature(
+      syncer::kSyncPollWithoutDelayOnStartup);
+
+  EXPECT_CALL(*syncer(), PollSyncShare)
+      .WillOnce(DoAll(Invoke(SimulatePollSuccess), Return(true)));
+
+  // The last polling request happened longer ago than the polling period.
+  StartSyncScheduler(/*last_poll_time=*/base::Time::Now() - base::Hours(24));
+
+  // Waits for all the scheduled tasks to finish. If the poll request would be
+  // delayed, PollSyncShare() wouldn't be called because it requires posting
+  // another task (see SyncSchedulerImpl::TrySyncCycleJob).
+  StopSyncScheduler();
+}
+
 // Test that polling gets the intervals from the provided context.
 TEST_F(SyncSchedulerImplTest, ShouldUseInitialPollIntervalFromContext) {
   base::TimeDelta poll_interval(base::Milliseconds(30));
@@ -1989,6 +2006,13 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
 }
 
 TEST_F(SyncSchedulerImplTest, PollOnStartUpAfterLongPause) {
+  // TODO(crbug.com/1440624): last poll request could happen more time ago than
+  // periodic interval. This test will not be necessary once delay before a poll
+  // request is removed.
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndDisableFeature(
+      syncer::kSyncPollWithoutDelayOnStartup);
+
   base::Time now = base::Time::Now();
   base::TimeDelta poll_interval = base::Hours(4);
   base::Time last_reset = ComputeLastPollOnStart(
@@ -2009,6 +2033,13 @@ TEST_F(SyncSchedulerImplTest, PollOnStartUpAfterShortPause) {
 // Verifies that the delay is in [0, 0.01*poll_interval) and spot checks the
 // random number generation.
 TEST_F(SyncSchedulerImplTest, PollOnStartUpWithinBoundsAfterLongPause) {
+  // TODO(crbug.com/1440624): last poll request could happen more time ago than
+  // periodic interval. This test will not be necessary once delay before a poll
+  // request is removed.
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndDisableFeature(
+      syncer::kSyncPollWithoutDelayOnStartup);
+
   base::Time now = base::Time::Now();
   base::TimeDelta poll_interval = base::Hours(4);
   base::Time last_poll = now - base::Days(2);

@@ -182,6 +182,10 @@ BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 // TODO(crbug.com/1425071): Remove this.
 BASE_DECLARE_FEATURE(kSyncPollImmediatelyOnEveryStartup);
 
+// If enabled, and a poll GetUpdates request is scheduled on browser startup,
+// there won't be an additional delay.
+BASE_DECLARE_FEATURE(kSyncPollWithoutDelayOnStartup);
+
 #if BUILDFLAG(IS_IOS)
 // Feature flag to enable indicating the Account Storage error in the Account
 // Cell when Sync is turned OFF (iOS only).
