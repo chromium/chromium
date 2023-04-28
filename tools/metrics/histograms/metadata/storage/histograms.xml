@@ -287,22 +287,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NativeFileSystemAPI.FileChooserResult.{Type}" units="units"
-    expires_after="2023-05-01">
-  <owner>asully@chromium.org</owner>
-  <owner>src/content/browser/file_system_access/OWNERS</owner>
-  <summary>
-    The number of files a user picked using the file picker in the File System
-    Access API. Recorded as 0 if the user cancelled the picker.
-  </summary>
-  <token key="Type">
-    <variant name="OpenDirectory" summary=""/>
-    <variant name="OpenFile" summary=""/>
-    <variant name="OpenMultipleFiles" summary=""/>
-    <variant name="SaveFile" summary=""/>
-  </token>
-</histogram>
-
 <histogram name="Sqlite.RecoveryStep" enum="SqliteErrorCode"
     expires_after="M77">
   <owner>costan@google.com</owner>
