@@ -177,6 +177,11 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
       ScriptWrappable* object,
       const v8::TracedReference<v8::Object>& handle);
 
+  // Clear the reference pointing from |object| to |handle| in any world.
+  static bool UnsetMainWorldWrapperIfSet(
+      ScriptWrappable* object,
+      const v8::TracedReference<v8::Object>& handle);
+
  private:
   static bool UnsetNonMainWorldWrapperIfSet(
       ScriptWrappable* object,
@@ -198,12 +203,20 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
 };
 
 // static
+inline bool DOMWrapperWorld::UnsetMainWorldWrapperIfSet(
+    ScriptWrappable* object,
+    const v8::TracedReference<v8::Object>& handle) {
+  return object->UnsetMainWorldWrapperIfSet(handle);
+}
+
+// static
 inline bool DOMWrapperWorld::UnsetSpecificWrapperIfSet(
     ScriptWrappable* object,
     const v8::TracedReference<v8::Object>& handle) {
   // Fast path for main world.
-  if (object->UnsetMainWorldWrapperIfSet(handle))
+  if (UnsetMainWorldWrapperIfSet(object, handle)) {
     return true;
+  }
 
   // Slow path: |object| may point to |handle| in any non-main DOM world.
   return DOMWrapperWorld::UnsetNonMainWorldWrapperIfSet(object, handle);
