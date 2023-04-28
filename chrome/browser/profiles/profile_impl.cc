@@ -191,7 +191,7 @@
 #include "chrome/browser/ash/locale_change_guard.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/policy/core/user_policy_manager_builder_ash.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_factory_ash.h"
 #include "chrome/browser/ash/preferences.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
@@ -581,9 +581,8 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
   else
     ash::DeviceSettingsService::Get()->LoadIfNotPresent();
 
-  policy::CreateConfigurationPolicyProvider(this, force_immediate_policy_load,
-                                            io_task_runner_,
-                                            &user_cloud_policy_manager_ash_);
+  user_cloud_policy_manager_ash_ = policy::CreateUserCloudPolicyManagerAsh(
+      this, force_immediate_policy_load, io_task_runner_);
 
   cloud_policy_manager = nullptr;
   policy_provider = GetUserCloudPolicyManagerAsh();

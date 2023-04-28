@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/user_policy_manager_builder_ash.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_factory_ash.h"
 
 #include <utility>
 
@@ -79,18 +79,13 @@ void OnUserPolicyFatalError(const AccountId& account_id) {
 
 }  // namespace
 
-void CreateConfigurationPolicyProvider(
+std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
     Profile* profile,
     bool force_immediate_load,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    std::unique_ptr<UserCloudPolicyManagerAsh>*
-        user_cloud_policy_manager_ash_out) {
-  // Clear the two out parameters. Default return will be nullptr for both.
-  *user_cloud_policy_manager_ash_out = nullptr;
-
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
   // Don't initialize cloud policy for the signin and the lock screen profile.
   if (!ash::ProfileHelper::IsUserProfile(profile)) {
-    return;
+    return nullptr;
   }
 
   // |user| should never be nullptr except for the signin and lock screen app
@@ -120,7 +115,7 @@ void CreateConfigurationPolicyProvider(
     // Mark this profile as not requiring policy.
     known_user.SetProfileRequiresPolicy(
         account_id, ProfileRequiresPolicy::kNoPolicyRequired);
-    return;
+    return nullptr;
   }
 
   BrowserPolicyConnectorAsh* connector =
@@ -132,7 +127,7 @@ void CreateConfigurationPolicyProvider(
       // migration is finished.  (KioskAppManager still needs to be migrated.)
       if (!user->HasGaiaAccount()) {
         DLOG(WARNING) << "No policy for users without Gaia accounts";
-        return;
+        return nullptr;
       }
       break;
     case AccountType::ACTIVE_DIRECTORY:
@@ -166,7 +161,7 @@ void CreateConfigurationPolicyProvider(
     LOG(ERROR) << "Exiting non-stub session because browser restarted before"
                << " profile was initialized.";
     chrome::AttemptUserExit();
-    return;
+    return nullptr;
   }
 
   // If true, we must load policy for this user - we will abort profile
@@ -227,8 +222,9 @@ void CreateConfigurationPolicyProvider(
 
   DeviceManagementService* device_management_service =
       connector->device_management_service();
-  if (block_profile_init_on_policy_refresh)
+  if (block_profile_init_on_policy_refresh) {
     device_management_service->ScheduleInitialization(0);
+  }
 
   base::FilePath profile_dir = profile->GetPath();
   const base::FilePath component_policy_cache_dir =
@@ -251,8 +247,9 @@ void CreateConfigurationPolicyProvider(
       new UserCloudExternalDataManager(
           base::BindRepeating(&GetChromePolicyDetails), backend_task_runner,
           external_data_dir, store.get()));
-  if (force_immediate_load)
+  if (force_immediate_load) {
     store->LoadImmediately();
+  }
 
   std::unique_ptr<UserCloudPolicyManagerAsh> manager =
       std::make_unique<UserCloudPolicyManagerAsh>(
@@ -277,7 +274,7 @@ void CreateConfigurationPolicyProvider(
   manager->ConnectManagementService(
       device_management_service,
       g_browser_process->shared_url_loader_factory());
-  *user_cloud_policy_manager_ash_out = std::move(manager);
+  return manager;
 }
 
 }  // namespace policy
