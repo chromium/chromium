@@ -1453,6 +1453,52 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
             base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
 }
 
+// For forward compatibility we should silently ignore fields that we don't
+// know about.
+TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownFields) {
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+"unsupportedField": "InInterestGroup",
+"ads": [{
+  "renderUrl": "https://example.com/new_render",
+  "unsupportedField": "InAd"
+        }],
+"adComponents": [{
+  "renderUrl": "https://example.com/new_component",
+  "unsupportedField": "InAdComponent"
+        }]
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
+  interest_group.trusted_bidding_signals_keys.emplace();
+  interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // Check that the ad changed.
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+  ASSERT_EQ(group.ad_components->size(), 1u);
+  EXPECT_EQ(group.ad_components.value()[0].render_url.spec(),
+            "https://example.com/new_component");
+}
+
 // Try to set the name -- for security, name and owner shouldn't be
 // allowed to change. If they don't match the interest group (update URLs are
 // registered per interest group), fail the update and don't update anything.

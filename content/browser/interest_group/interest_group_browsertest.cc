@@ -2482,6 +2482,45 @@ navigator.joinAdInterestGroup(
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupUnsupportedFields) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ("done", EvalJs(shell(), JsReplace(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          unsupportedField: 'In group',
+          ads: [{
+            renderUrl: $2,
+            unsupportedField: 'In ad',
+            }],
+          adComponents: [{
+            renderUrl: $2,
+            unsupportedField: 'In ad component',
+            }]
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                              test_origin.Serialize().c_str(),
+                                              url.spec().c_str())));
+  WaitForAccessObserved({
+      {TestInterestGroupObserver::kJoin, test_origin, "cars"},
+  });
+  auto storage_groups = GetInterestGroupsForOwner(test_origin);
+  ASSERT_EQ(storage_groups.size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidOwner) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
   AttachInterestGroupObserver();
