@@ -90,18 +90,13 @@ SampleColorScheme GenerateSampleColorScheme(bool dark,
 
   std::unique_ptr<ui::Palette> palette =
       ui::GeneratePalette(seed_color, ToVariant(scheme));
-  // TODO(b/277820985): Update these tones when we decide on better ones.
-  // These match the tone values for cros.sys.primary,
-  // cros.sys.primary-container, and cros.sys.tertiary-container. Since we don't
-  // need all the colors in the mixer (which would be slower), it's
-  // reimplemented here.
+  // These match the tone values for cros.ref.primary-80,
+  // cros.ref.primary-60, and cros.ref.tertiary-70.
   SampleColorScheme sample;
   sample.scheme = scheme;
-  sample.primary = palette->primary().get(dark ? 80.f : 40.f);  // primary
-  sample.secondary =
-      palette->primary().get(dark ? 30.f : 90.f);  // primary-container
-  sample.tertiary =
-      palette->tertiary().get(dark ? 30.f : 90.f);  // tertiary-container
+  sample.primary = palette->primary().get(80.f);    // primary 80
+  sample.secondary = palette->primary().get(60.f);  // primary 60
+  sample.tertiary = palette->tertiary().get(70.f);  // tertiary 70
 
   return sample;
 }

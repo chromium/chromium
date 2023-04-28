@@ -331,8 +331,8 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme) {
   EXPECT_THAT(
       results,
       testing::UnorderedElementsAre(
-          Sample(ColorScheme::kTonalSpot, SkColorSetRGB(0x94, 0x47, 0x44)),
-          Sample(ColorScheme::kExpressive, SkColorSetRGB(0x3b, 0x69, 0x30))));
+          Sample(ColorScheme::kTonalSpot, SkColorSetRGB(0xff, 0xb3, 0xae)),
+          Sample(ColorScheme::kExpressive, SkColorSetRGB(0xa0, 0xd4, 0x8f))));
 }
 
 TEST_F(ColorPaletteControllerTest, GenerateSampleScheme_AllValues_Teal) {
@@ -361,9 +361,9 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme_AllValues_Teal) {
   auto& result = results.front();
   EXPECT_THAT(result, testing::Eq(SampleColorScheme{
                           .scheme = ColorScheme::kVibrant,
-                          .primary = SkColorSetRGB(0x00, 0x6c, 0x46),
-                          .secondary = SkColorSetRGB(0x4d, 0xff, 0xb2),
-                          .tertiary = SkColorSetRGB(0xa8, 0xef, 0xef)}));
+                          .primary = SkColorSetRGB(0x00, 0xe2, 0x97),
+                          .secondary = SkColorSetRGB(0x00, 0xa5, 0x6d),
+                          .tertiary = SkColorSetRGB(0x70, 0xb7, 0xb7)}));
 }
 
 // Helper to print better matcher errors.
