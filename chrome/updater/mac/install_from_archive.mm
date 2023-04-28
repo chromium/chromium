@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/mac_util.h"
 #include "chrome/updater/util/util.h"
@@ -189,6 +190,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
     options.clear_environment = true;
     options.environment = {
         {"KS_TICKET_AP", ap},
+        {"KS_TICKET_SERVER_URL", UPDATE_CHECK_URL},
         {"KS_TICKET_XC_PATH", existence_checker_path.value()},
         {"PATH", env_path},
         {"PREVIOUS_VERSION", pv.GetString()},
