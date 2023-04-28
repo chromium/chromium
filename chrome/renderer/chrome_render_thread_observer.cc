@@ -60,6 +60,7 @@
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
+#include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_listener_renderer_impl.h"
 #endif
 
 using blink::WebCache;
@@ -152,6 +153,21 @@ chrome::mojom::DynamicParamsPtr ChromeRenderThreadObserver::GetDynamicParams()
   return chrome::mojom::DynamicParams::New();
 }
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+// Returns null if `bound_session_request_throttled_in_renderer_manager_` is
+// null. This can happen on profiles where `RendererUpdater` and
+// `BoundSessionCookieRefreshService` keyed services are not created.
+std::unique_ptr<BoundSessionRequestThrottledListener>
+ChromeRenderThreadObserver::CreateBoundSessionRequestThrottledListener() const {
+  if (!bound_session_request_throttled_in_renderer_manager_) {
+    return nullptr;
+  }
+
+  return std::make_unique<BoundSessionRequestThrottledListenerRendererImpl>(
+      bound_session_request_throttled_in_renderer_manager_, io_task_runner_);
+}
+#endif
+
 void ChromeRenderThreadObserver::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
   associated_interfaces->AddInterface<chrome::mojom::RendererConfiguration>(
@@ -189,6 +205,7 @@ void ChromeRenderThreadObserver::SetInitialConfiguration(
     bound_session_request_throttled_in_renderer_manager_ =
         BoundSessionRequestThrottledInRendererManager::Create(
             std::move(bound_session_request_throttled_listener));
+    io_task_runner_ = content::ChildThread::Get()->GetIOTaskRunner();
   }
 #endif
 }

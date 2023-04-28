@@ -192,7 +192,8 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
       client_data_header,
 #endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      /*bound_session_request_throttled_listener=*/nullptr,
+      chrome_content_renderer_client_->GetChromeObserver()
+          ->CreateBoundSessionRequestThrottledListener(),
 #endif
       chrome_content_renderer_client_->GetChromeObserver()
           ->GetDynamicParams()));

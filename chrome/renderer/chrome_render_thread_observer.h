@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 class BoundSessionRequestThrottledInRendererManager;
+class BoundSessionRequestThrottledListener;
 #endif
 
 namespace visitedlink {
@@ -94,6 +95,11 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
   // render process is running.
   chrome::mojom::DynamicParamsPtr GetDynamicParams() const;
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  std::unique_ptr<BoundSessionRequestThrottledListener>
+  CreateBoundSessionRequestThrottledListener() const;
+#endif
+
   visitedlink::VisitedLinkReader* visited_link_reader() {
     return visited_link_reader_.get();
   }
@@ -153,6 +159,7 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   scoped_refptr<BoundSessionRequestThrottledInRendererManager>
       bound_session_request_throttled_in_renderer_manager_;
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 #endif
 };
 
