@@ -35,9 +35,6 @@ class GuestOsSecurityDelegate : public exo::SecurityDelegate {
                               std::unique_ptr<exo::WaylandServerHandle>)>
           callback);
 
-  // exo::SecurityDelegate overrides:
-  std::string GetSecurityContext() const override;
-
  private:
   base::WeakPtrFactory<GuestOsSecurityDelegate> weak_factory_;
 };

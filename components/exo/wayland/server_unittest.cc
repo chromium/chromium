@@ -47,13 +47,13 @@ TestListener::TestListener() {
 TEST_F(ServerTest, Open) {
   auto server = CreateServer();
   // Check that calling Open() succeeds.
-  bool rv = server->Open(/*default_path=*/false);
+  bool rv = server->Open();
   EXPECT_TRUE(rv);
 }
 
 TEST_F(ServerTest, GetFileDescriptor) {
   auto server = CreateServer();
-  bool rv = server->Open(/*default_path=*/false);
+  bool rv = server->Open();
   EXPECT_TRUE(rv);
 
   // Check that the returned file descriptor is valid.
@@ -72,43 +72,16 @@ TEST_F(ServerTest, SecurityDelegateAssociation) {
             security_delegate_ptr);
 }
 
-TEST_F(ServerTest, CreateAsync) {
-  base::ScopedTempDir non_xdg_dir;
-  ASSERT_TRUE(non_xdg_dir.CreateUniqueTempDir());
-
-  base::RunLoop run_loop;
-  base::FilePath server_socket;
-
-  auto server = CreateServer();
-  server->StartAsync(base::BindLambdaForTesting(
-      [&run_loop, &server_socket](bool success, const base::FilePath& path) {
-        EXPECT_TRUE(success);
-        server_socket = path;
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  // Should create a directory for the server.
-  EXPECT_TRUE(base::DirectoryExists(server_socket.DirName()));
-  // Must not be a child of the XDG dir.
-  EXPECT_TRUE(base::IsDirectoryEmpty(xdg_temp_dir_.GetPath()));
-  // Must be deleted when the helper is removed.
-  server.reset();
-  EXPECT_FALSE(base::PathExists(server_socket));
-}
-
 TEST_F(ServerTest, StartFd) {
   ScopedTempSocket sock;
 
   auto server = CreateServer();
   base::RunLoop start_loop;
-  server->StartWithFdAsync(
-      sock.TakeFd(),
-      base::BindLambdaForTesting([&](bool success, const base::FilePath& path) {
-        EXPECT_TRUE(success);
-        EXPECT_EQ(path, base::FilePath{});
-        start_loop.Quit();
-      }));
+  server->StartWithFdAsync(sock.TakeFd(),
+                           base::BindLambdaForTesting([&](bool success) {
+                             EXPECT_TRUE(success);
+                             start_loop.Quit();
+                           }));
   start_loop.Run();
 
   base::Thread client_thread("client");
@@ -146,7 +119,7 @@ TEST_F(ServerTest, StartFd) {
 
 TEST_F(ServerTest, Dispatch) {
   auto server = CreateServer();
-  bool rv = server->Open(/*default_path=*/false);
+  bool rv = server->Open();
   EXPECT_TRUE(rv);
 
   base::Thread client_thread("client");
@@ -167,8 +140,7 @@ TEST_F(ServerTest, Dispatch) {
         // is required to ensure `connected_to_server` is set before it is
         // accessed on the main thread.
         base::AutoLock locker(lock);
-        client_display =
-            wl_display_connect(server->socket_path().MaybeAsASCII().c_str());
+        client_display = wl_display_connect(nullptr);
         connected_to_server = !!client_display;
       }));
 
@@ -200,7 +172,7 @@ TEST_F(ServerTest, Dispatch) {
 
 TEST_F(ServerTest, Flush) {
   auto server = CreateServer();
-  bool rv = server->Open(/*default_path=*/false);
+  bool rv = server->Open();
   EXPECT_TRUE(rv);
 
   // Just call Flush to check that it doesn't have any bad side-effects.

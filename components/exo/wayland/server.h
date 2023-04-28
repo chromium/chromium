@@ -46,8 +46,7 @@ class WaylandWatcher;
 // requests are dispatched into the given Exosphere display.
 class Server : public display::DisplayObserver {
  public:
-  using StartCallback =
-      base::OnceCallback<void(bool, const base::FilePath& path)>;
+  using StartCallback = base::OnceCallback<void(bool)>;
 
   Server(Display* display, std::unique_ptr<SecurityDelegate> security_delegate);
 
@@ -65,19 +64,12 @@ class Server : public display::DisplayObserver {
       Display* display,
       std::unique_ptr<SecurityDelegate> security_delegate);
 
-  // In cases where the server was started asynchronously, this helper can be
-  // used to delete it asynchronously as well.
-  static void DestroyAsync(std::unique_ptr<Server> server);
-
-  // TODO(b/270254359): deprecate go/secure-exo-ids in favour of
-  // go/securer-exo-ids.
-  void StartAsync(StartCallback callback);
   void StartWithDefaultPath(StartCallback callback);
   void StartWithFdAsync(base::ScopedFD fd, StartCallback callback);
 
   void Initialize();
 
-  bool Open(bool default_path);
+  bool Open();
 
   bool OpenFd(base::ScopedFD fd);
 
@@ -108,10 +100,6 @@ class Server : public display::DisplayObserver {
     return GetWaylandDisplay();
   }
 
-  // Returns the path to the wayland socket used by this server. Returns "" if
-  // StarTWithDefaultPath() hasn't been called, or StartWithFd() was called.
-  const base::FilePath& socket_path() const { return socket_path_; }
-
  protected:
   friend class UiControls;
   friend class WestonTest;
@@ -126,8 +114,6 @@ class Server : public display::DisplayObserver {
   // by clients to connect to the display server.
   bool AddSocket(const std::string& name);
 
-  // This has the server's socket inside it, so it must be deleted last.
-  base::ScopedTempDir socket_dir_;
   const raw_ptr<Display, ExperimentalAsh> display_;
   std::unique_ptr<SecurityDelegate> security_delegate_;
   // Deleting wl_display depends on SerialTracker.
@@ -138,7 +124,6 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WaylandSeat> seat_data_;
   display::ScopedDisplayObserver display_observer_{this};
   std::unique_ptr<wayland::WaylandWatcher> wayland_watcher_;
-  base::FilePath socket_path_;
   std::unique_ptr<WaylandDmabufFeedbackManager> wayland_feedback_manager_;
 
   std::unique_ptr<WaylandKeyboardExtension> zcr_keyboard_extension_data_;

@@ -33,8 +33,4 @@ void GuestOsSecurityDelegate::MakeServerWithFd(
       base::BindOnce(std::move(callback), cap_ptr));
 }
 
-std::string GuestOsSecurityDelegate::GetSecurityContext() const {
-  return vm_tools::kConciergeSecurityContext;
-}
-
 }  // namespace guest_os

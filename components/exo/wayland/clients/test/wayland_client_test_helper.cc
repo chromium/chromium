@@ -45,8 +45,9 @@ WaylandClientTestHelper::WaylandClientTestHelper() = default;
 WaylandClientTestHelper::~WaylandClientTestHelper() = default;
 
 void WaylandClientTestHelper::SetUp() {
-  if (!ui_thread_task_runner_)
+  if (!ui_thread_task_runner_) {
     return;
+  }
 
   DCHECK(!ui_thread_task_runner_->BelongsToCurrentThread());
 
@@ -59,8 +60,9 @@ void WaylandClientTestHelper::SetUp() {
 }
 
 void WaylandClientTestHelper::TearDown() {
-  if (!ui_thread_task_runner_)
+  if (!ui_thread_task_runner_) {
     return;
+  }
 
   DCHECK(ui_thread_task_runner_);
   DCHECK(!ui_thread_task_runner_->BelongsToCurrentThread());
@@ -91,7 +93,7 @@ void WaylandClientTestHelper::SetUpOnUIThread(base::WaitableEvent* event) {
   wayland_server_ = exo::wayland::Server::Create(display_.get());
   DCHECK(wayland_server_);
   wayland_server_->StartWithDefaultPath(base::BindOnce(
-      [](base::WaitableEvent* event, bool success, const base::FilePath& path) {
+      [](base::WaitableEvent* event, bool success) {
         DCHECK(success);
         event->Signal();
       },

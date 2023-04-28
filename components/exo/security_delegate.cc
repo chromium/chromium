@@ -19,7 +19,6 @@ class DefaultSecurityDelegate : public SecurityDelegate {
   ~DefaultSecurityDelegate() override = default;
 
   // SecurityDelegate:
-  std::string GetSecurityContext() const override { return ""; }
   bool CanLockPointer(aura::Window* toplevel) const override {
     // TODO(b/200896773): Move this out from exo's default security delegate
     // define in client's security delegates.
