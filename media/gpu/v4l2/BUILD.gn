@@ -28,6 +28,12 @@ source_set("v4l2") {
     "buffer_affinity_tracker.h",
     "generic_v4l2_device.cc",
     "generic_v4l2_device.h",
+    "legacy/v4l2_slice_video_decode_accelerator.cc",
+    "legacy/v4l2_slice_video_decode_accelerator.h",
+    "legacy/v4l2_stateful_workaround.cc",
+    "legacy/v4l2_stateful_workaround.h",
+    "legacy/v4l2_video_decode_accelerator.cc",
+    "legacy/v4l2_video_decode_accelerator.h",
     "v4l2_decode_surface.cc",
     "v4l2_decode_surface.h",
     "v4l2_decode_surface_handler.h",
@@ -39,16 +45,10 @@ source_set("v4l2") {
     "v4l2_framerate_control.h",
     "v4l2_image_processor_backend.cc",
     "v4l2_image_processor_backend.h",
-    "v4l2_slice_video_decode_accelerator.cc",
-    "v4l2_slice_video_decode_accelerator.h",
-    "v4l2_stateful_workaround.cc",
-    "v4l2_stateful_workaround.h",
     "v4l2_utils.cc",
     "v4l2_utils.h",
     "v4l2_vda_helpers.cc",
     "v4l2_vda_helpers.h",
-    "v4l2_video_decode_accelerator.cc",
-    "v4l2_video_decode_accelerator.h",
     "v4l2_video_decoder.cc",
     "v4l2_video_decoder.h",
     "v4l2_video_decoder_backend.cc",
@@ -155,8 +155,8 @@ source_set("v4l2_status") {
 source_set("unit_test") {
   testonly = true
   sources = [
+    "legacy/v4l2_stateful_workaround_unittest.cc",
     "v4l2_device_unittest.cc",
-    "v4l2_stateful_workaround_unittest.cc",
   ]
   deps = [
     ":v4l2",

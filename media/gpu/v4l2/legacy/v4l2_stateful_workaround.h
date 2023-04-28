@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_V4L2_V4L2_STATEFUL_WORKAROUND_H_
-#define MEDIA_GPU_V4L2_V4L2_STATEFUL_WORKAROUND_H_
+#ifndef MEDIA_GPU_V4L2_LEGACY_V4L2_STATEFUL_WORKAROUND_H_
+#define MEDIA_GPU_V4L2_LEGACY_V4L2_STATEFUL_WORKAROUND_H_
 
 #include <memory>
 #include <string>
@@ -50,4 +50,4 @@ CreateV4L2StatefulWorkarounds(V4L2Device::Type device_type,
 bool AppendVP9SuperFrameIndex(scoped_refptr<DecoderBuffer>& buffer);
 }  // namespace media
 
-#endif  // MEDIA_GPU_V4L2_V4L2_STATEFUL_WORKAROUND_H_
+#endif  // MEDIA_GPU_V4L2_LEGACY_V4L2_STATEFUL_WORKAROUND_H_
