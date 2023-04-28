@@ -99,6 +99,15 @@ export class SettingsAutofillPageElement extends
         type: Object,
         value: null,
       },
+
+      passwordsTitle_: {
+        type: String,
+        value() {
+          return loadTimeData.getBoolean('enableNewPasswordManagerPage') ?
+              loadTimeData.getString('localPasswordManager') :
+              loadTimeData.getString('passwords');
+        },
+      },
     };
   }
 
