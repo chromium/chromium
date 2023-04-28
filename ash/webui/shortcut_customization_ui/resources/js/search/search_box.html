@@ -56,7 +56,7 @@
     border-radius: 0 0 20px 20px;
     box-shadow: var(--cr-elevation-3);
     display: table;
-    padding-bottom: 8px;
+    padding-bottom: 16px;
     width: var(--cr-toolbar-field-width);
   }
 
@@ -74,10 +74,16 @@
   }
 
   #noSearchResultsContainer {
+    align-items: center;
     color: var(--cros-text-color-secondary);
-    height: 40px;
-    line-height: 40px;
+    display: flex;
+    height: 24px;
     margin-inline-start: 24px;
+    margin-top: 6px;
+  }
+
+  #noSearchResultsContainer[hidden] {
+    display: none;
   }
 
   /* The separator covers the top box shadow of the dropdown so that
