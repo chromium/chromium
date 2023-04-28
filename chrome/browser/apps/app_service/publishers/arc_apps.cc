@@ -35,6 +35,7 @@
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_manager.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
@@ -1567,6 +1568,42 @@ void ArcApps::OnInstallationStarted(const std::string& package_name) {
 
     // All ARC installations start as "Pending".
     promise_app->status = PromiseStatus::kPending;
+    AppPublisher::PublishPromiseApp(std::move(promise_app));
+  }
+}
+
+void ArcApps::OnInstallationProgressChanged(const std::string& package_name,
+                                            float progress) {
+  if (ash::features::ArePromiseIconsEnabled()) {
+    if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(
+            PackageId(AppType::kArc, package_name))) {
+      LOG(ERROR) << "Cannot update installation progress value for "
+                 << package_name
+                 << ", as there is no promise app registered for this package.";
+      return;
+    }
+    PromiseAppPtr promise_app =
+        AppPublisher::MakePromiseApp(PackageId(AppType::kArc, package_name));
+    promise_app->progress = progress;
+    AppPublisher::PublishPromiseApp(std::move(promise_app));
+  }
+}
+
+void ArcApps::OnInstallationActiveChanged(const std::string& package_name,
+                                          bool active) {
+  if (ash::features::ArePromiseIconsEnabled()) {
+    PackageId package_id(AppType::kArc, package_name);
+    if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(
+            PackageId(AppType::kArc, package_name))) {
+      LOG(ERROR) << "Cannot update installation active status for "
+                 << package_name
+                 << ", as there is no promise app registered for this package.";
+      return;
+    }
+    PromiseAppPtr promise_app =
+        AppPublisher::MakePromiseApp(PackageId(AppType::kArc, package_name));
+    promise_app->status =
+        active ? PromiseStatus::kInstalling : PromiseStatus::kPending;
     AppPublisher::PublishPromiseApp(std::move(promise_app));
   }
 }

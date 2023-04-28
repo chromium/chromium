@@ -534,4 +534,16 @@ void FakeAppInstance::GetPackageIcon(const std::string& package_name,
 
 void FakeAppInstance::RemoveCachedIcon(const std::string& icon_resource_id) {}
 
+void FakeAppInstance::SendInstallationProgressChanged(
+    const std::string& package_name,
+    float progress) {
+  app_host_->OnInstallationProgressChanged(package_name, progress);
+}
+
+void FakeAppInstance::SendInstallationActiveChanged(
+    const std::string& package_name,
+    bool active) {
+  app_host_->OnInstallationActiveChanged(package_name, active);
+}
+
 }  // namespace arc

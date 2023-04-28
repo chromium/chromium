@@ -201,6 +201,10 @@ class FakeAppInstance : public mojom::AppInstance {
 
   void SendInstallationStarted(const std::string& package_name);
   void SendInstallationFinished(const std::string& package_name, bool success);
+  void SendInstallationProgressChanged(const std::string& package_name,
+                                       float progress);
+  void SendInstallationActiveChanged(const std::string& package_name,
+                                     bool active);
 
   // Returns latest icon response for particular dimension. Returns true and
   // fill |png_data_as_string| if icon for |dimension| was generated.

@@ -2421,6 +2421,22 @@ void ArcAppListPrefs::OnInstallationStarted(
     observer.OnInstallationStarted(*package_name);
 }
 
+void ArcAppListPrefs::OnInstallationProgressChanged(
+    const std::string& package_name,
+    float progress) {
+  for (auto& observer : observer_list_) {
+    observer.OnInstallationProgressChanged(package_name, progress);
+  }
+}
+
+void ArcAppListPrefs::OnInstallationActiveChanged(
+    const std::string& package_name,
+    bool active) {
+  for (auto& observer : observer_list_) {
+    observer.OnInstallationActiveChanged(package_name, active);
+  }
+}
+
 void ArcAppListPrefs::OnInstallationFinished(
     arc::mojom::InstallationResultPtr result) {
   if (result) {

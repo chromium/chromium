@@ -266,6 +266,16 @@ class ArcAppListPrefs : public KeyedService,
     // Notifies that installation of package started.
     virtual void OnInstallationStarted(const std::string& package_name) {}
 
+    // Notifies that package installation has a new progress percentage.
+    virtual void OnInstallationProgressChanged(const std::string& package_name,
+                                               float progress) {}
+
+    // Notifies that a package installation session has either become active
+    // (currently downloading or installing) or inactive (installation is
+    // pending or paused).
+    virtual void OnInstallationActiveChanged(const std::string& package_name,
+                                             bool active) {}
+
     // Notifies that installation of package finished. |succeed| is set to true
     // in case of success.
     virtual void OnInstallationFinished(const std::string& package_name,
@@ -527,6 +537,10 @@ class ArcAppListPrefs : public KeyedService,
       std::vector<arc::mojom::ArcPackageInfoPtr> packages) override;
   void OnInstallationStarted(
       const absl::optional<std::string>& package_name) override;
+  void OnInstallationProgressChanged(const std::string& package_name,
+                                     float progress) override;
+  void OnInstallationActiveChanged(const std::string& package_name,
+                                   bool active) override;
   void OnInstallationFinished(
       arc::mojom::InstallationResultPtr result) override;
 

@@ -166,6 +166,10 @@ class ArcApps : public KeyedService,
                      int32_t session_id) override;
   void OnTaskDestroyed(int32_t task_id) override;
   void OnInstallationStarted(const std::string& package_name) override;
+  void OnInstallationProgressChanged(const std::string& package_name,
+                                     float progress) override;
+  void OnInstallationActiveChanged(const std::string& package_name,
+                                   bool active) override;
 
   // arc::ArcIntentHelperObserver overrides.
   void OnIntentFiltersUpdated(

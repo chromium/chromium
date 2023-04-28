@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 58
+// Next MinVersion: 59
 
 module arc.mojom;
 
@@ -313,7 +313,7 @@ enum AppCategory {
   kAccessibility = 8,
 };
 
-// Next method ID: 19
+// Next method ID: 21
 // Deprecated method IDs: 1
 interface AppHost {
   // Sends newly added ARC app to Chrome. This message is sent when ARC receives
@@ -396,6 +396,16 @@ interface AppHost {
   // defined by its |intent_uri| and |package_name|.
   [MinVersion=18] OnUninstallShortcut@16(string package_name,
                                          string intent_uri);
+
+  // Notifies that a package installation has a new progress value.
+  [MinVersion=58] OnInstallationProgressChanged@19(string package_name,
+                                                   float progress);
+
+  // Notifies that a package installation session has either become active
+  // (currently downloading or installing) or inactive (installation is
+  // pending or paused).
+  [MinVersion=58] OnInstallationActiveChanged@20(string package_name,
+                                                 bool active);
 };
 
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
