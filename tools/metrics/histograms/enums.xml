@@ -11756,6 +11756,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="LE with random address"/>
 </enum>
 
+<enum name="BodyConsumerBaseFetchCheckPoint">
+  <int value="0" label="BodyCosumerBase Constructor"/>
+  <int value="1" label="BodyCosumerBase::DidFetchDataLoadFailed"/>
+</enum>
+
 <enum name="BookmarkAppNavigationResult">
   <int value="0" label="From app or tab to new tab: Context Menu navigation"/>
   <int value="1"
@@ -43098,6 +43103,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="Failed with an exception"/>
   <int value="7" label="Skipped to avoid retrying previous failure"/>
   <int value="8" label="Font file descriptor was cached"/>
+</enum>
+
+<enum name="FetchManagerLoaderCheckPoint">
+  <int value="0" label="FetchManager::Loader Constructor"/>
+  <int value="1" label="FetchManager::Loader::Failed"/>
 </enum>
 
 <enum name="FetchRequestMode">
