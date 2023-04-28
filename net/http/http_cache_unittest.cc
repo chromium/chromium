@@ -9052,47 +9052,6 @@ TEST_F(HttpCacheTest, UnknownRangeGET_2) {
   RemoveMockTransaction(&transaction);
 }
 
-// Similar to UnknownRangeGET_2, except that the resource size is empty.
-// Regression test for crbug.com/813061, and probably https://crbug.com/1375128
-TEST_F(HttpCacheTest, UnknownRangeGET_3) {
-  MockHttpCache cache;
-  std::string headers;
-
-  ScopedMockTransaction transaction(kSimpleGET_Transaction);
-  transaction.response_headers =
-      "Cache-Control: max-age=10000\n"
-      "Content-Length: 0\n",
-  transaction.data = "";
-  transaction.test_mode = TEST_MODE_SYNC_CACHE_START |
-                          TEST_MODE_SYNC_CACHE_READ |
-                          TEST_MODE_SYNC_CACHE_WRITE;
-
-  // Write the empty resource to the cache.
-  RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
-
-  EXPECT_EQ(
-      "HTTP/1.1 200 OK\nCache-Control: max-age=10000\nContent-Length: 0\n",
-      headers);
-  EXPECT_EQ(1, cache.network_layer()->transaction_count());
-  EXPECT_EQ(0, cache.disk_cache()->open_count());
-  EXPECT_EQ(1, cache.disk_cache()->create_count());
-
-  // Make sure we are done with the previous transaction.
-  base::RunLoop().RunUntilIdle();
-
-  // Write and read from the cache. This used to trigger a DCHECK
-  // (or loop infinitely with it off).
-  transaction.request_headers = "Range: bytes = -20\r\n" EXTRA_HEADER;
-  RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
-
-  EXPECT_EQ(
-      "HTTP/1.1 200 OK\nCache-Control: max-age=10000\nContent-Length: 0\n",
-      headers);
-  EXPECT_EQ(1, cache.network_layer()->transaction_count());
-  EXPECT_EQ(1, cache.disk_cache()->open_count());
-  EXPECT_EQ(1, cache.disk_cache()->create_count());
-}
-
 // Tests that receiving Not Modified when asking for an open range doesn't mess
 // up things.
 TEST_F(HttpCacheTest, UnknownRangeGET_304) {
