@@ -1150,6 +1150,14 @@ class URLLoaderTest : public testing::Test {
   // Lets subclasses inject a mock ClientSocketFactory.
   virtual net::ClientSocketFactory* GetSocketFactory() { return nullptr; }
 
+  ResourceRequest CreateCrossOriginResourceRequest() {
+    ResourceRequest request =
+        CreateResourceRequest("GET", test_server()->GetURL("/empty.html"));
+    request.request_initiator =
+        url::Origin::Create(GURL("http://other-origin.test/"));
+    return request;
+  }
+
  protected:
   void Monitor(const net::test_server::HttpRequest& request) {
     sent_request_ = request;
@@ -1250,10 +1258,26 @@ TEST_F(URLLoaderTest, SSLSentOnlyWhenRequested) {
   ASSERT_FALSE(!!ssl_info());
 }
 
+// This test verifies that when the request is same-origin and the origin is
+// potentially trustworthy, the request is not blocked.
+TEST_F(URLLoaderTest, PotentiallyTrustworthySameOriginIsOk) {
+  mojom::ClientSecurityStatePtr client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->local_network_request_policy =
+      mojom::LocalNetworkRequestPolicy::kPreflightBlock;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  GURL url = test_server()->GetURL("/empty.html");
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.request_initiator = url::Origin::Create(url);
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
+}
+
 // This test verifies that when the URLLoaderFactory's parameters are missing
 // a client security state, requests to local network resources are authorized.
 TEST_F(URLLoaderTest, MissingClientSecurityStateIsOk) {
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  EXPECT_EQ(net::OK, LoadRequest(CreateCrossOriginResourceRequest()));
 }
 
 // This test verifies that when the request's `target_ip_address_space` matches
@@ -1264,9 +1288,10 @@ TEST_F(URLLoaderTest, MatchingTargetIPAddressSpaceIsOk) {
   client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
   set_factory_client_security_state(std::move(client_security_state));
 
-  set_target_ip_address_space(mojom::IPAddressSpace::kLoopback);
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+  request.target_ip_address_space = mojom::IPAddressSpace::kLoopback;
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 // This test verifies that when the request's `target_ip_address_space` does not
@@ -1279,9 +1304,10 @@ TEST_F(URLLoaderTest, MismatchingTargetIPAddressSpaceWarnIsNotBlocked) {
       mojom::LocalNetworkRequestPolicy::kPreflightWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  set_target_ip_address_space(mojom::IPAddressSpace::kLocal);
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 // This test verifies that when the request's `target_ip_address_space` does not
@@ -1294,10 +1320,10 @@ TEST_F(URLLoaderTest, MismatchingTargetIPAddressSpaceIsBlocked) {
       mojom::LocalNetworkRequestPolicy::kPreflightBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
-  set_target_ip_address_space(mojom::IPAddressSpace::kLocal);
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess,
@@ -1316,8 +1342,6 @@ TEST_F(URLLoaderTest, MismatchingTargetIPAddressSpaceErrorCode) {
       mojom::LocalNetworkRequestPolicy::kPreflightBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
-  set_target_ip_address_space(mojom::IPAddressSpace::kLocal);
-
   ResultObserver connected_callback_result_observer;
 
   net::TransportInfo info = net::DefaultTransportInfo();
@@ -1332,7 +1356,12 @@ TEST_F(URLLoaderTest, MismatchingTargetIPAddressSpaceErrorCode) {
   net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
       url, std::move(interceptor));
 
-  EXPECT_THAT(Load(url), IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.request_initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess,
@@ -1367,7 +1396,11 @@ TEST_F(URLLoaderTest, InconsistentIPAddressSpaceWarnIsNotBlocked) {
   net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
       url, std::move(interceptor));
 
-  EXPECT_THAT(Load(url), IsOk());
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.request_initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 // This test verifies that when the request calls `URLLoader::OnConnected()`
@@ -1398,7 +1431,11 @@ TEST_F(URLLoaderTest, InconsistentIPAddressSpaceIsBlocked) {
   net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
       url, std::move(interceptor));
 
-  EXPECT_THAT(Load(url), IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.request_initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess,
@@ -1429,8 +1466,9 @@ TEST_F(URLLoaderTest, SecureUnknownToLocalBlock) {
   client_security_state->ip_address_space = mojom::IPAddressSpace::kUnknown;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
                   mojom::IPAddressSpace::kLoopback)));
@@ -1444,7 +1482,9 @@ TEST_F(URLLoaderTest, SecureUnknownToLocalWarn) {
       mojom::LocalNetworkRequestPolicy::kWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, SecureUnknownToLocalAllow) {
@@ -1455,7 +1495,9 @@ TEST_F(URLLoaderTest, SecureUnknownToLocalAllow) {
       mojom::LocalNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, SecureUnknownToLocalPreflightWarn) {
@@ -1466,8 +1508,9 @@ TEST_F(URLLoaderTest, SecureUnknownToLocalPreflightWarn) {
       mojom::LocalNetworkRequestPolicy::kPreflightWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -1483,8 +1526,9 @@ TEST_F(URLLoaderTest, SecureUnknownToLocalPreflightBlock) {
       mojom::LocalNetworkRequestPolicy::kPreflightBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -1497,8 +1541,9 @@ TEST_F(URLLoaderTest, NonSecureUnknownToLocalBlock) {
   client_security_state->ip_address_space = mojom::IPAddressSpace::kUnknown;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
                   mojom::IPAddressSpace::kLoopback)));
@@ -1511,7 +1556,9 @@ TEST_F(URLLoaderTest, NonSecureUnknownToLocalWarn) {
       mojom::LocalNetworkRequestPolicy::kWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, NonSecureUnknownToLocalAllow) {
@@ -1521,7 +1568,9 @@ TEST_F(URLLoaderTest, NonSecureUnknownToLocalAllow) {
       mojom::LocalNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, NonSecureUnknownToLocalPreflightWarn) {
@@ -1531,8 +1580,9 @@ TEST_F(URLLoaderTest, NonSecureUnknownToLocalPreflightWarn) {
       mojom::LocalNetworkRequestPolicy::kPreflightWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -1547,8 +1597,9 @@ TEST_F(URLLoaderTest, NonSecureUnknownToLocalPreflightBlock) {
       mojom::LocalNetworkRequestPolicy::kPreflightBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -1562,8 +1613,9 @@ TEST_F(URLLoaderTest, SecurePublicToLocalBlock) {
   client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
                   mojom::IPAddressSpace::kLoopback)));
@@ -1577,7 +1629,9 @@ TEST_F(URLLoaderTest, SecurePublicToLocalWarn) {
       mojom::LocalNetworkRequestPolicy::kWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, SecurePublicToLocalAllow) {
@@ -1588,7 +1642,9 @@ TEST_F(URLLoaderTest, SecurePublicToLocalAllow) {
       mojom::LocalNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, SecurePublicToLocalPreflightWarn) {
@@ -1599,8 +1655,9 @@ TEST_F(URLLoaderTest, SecurePublicToLocalPreflightWarn) {
       mojom::LocalNetworkRequestPolicy::kPreflightWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -1616,8 +1673,9 @@ TEST_F(URLLoaderTest, SecurePublicToLocalPreflightBlock) {
       mojom::LocalNetworkRequestPolicy::kPreflightBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -1630,8 +1688,9 @@ TEST_F(URLLoaderTest, NonSecurePublicToLocalBlock) {
   client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
                   mojom::IPAddressSpace::kLoopback)));
@@ -1644,7 +1703,9 @@ TEST_F(URLLoaderTest, NonSecurePublicToLocalWarn) {
       mojom::LocalNetworkRequestPolicy::kWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, NonSecurePublicToLocalAllow) {
@@ -1654,7 +1715,9 @@ TEST_F(URLLoaderTest, NonSecurePublicToLocalAllow) {
       mojom::LocalNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, NonSecurePublicToLocalPreflightWarn) {
@@ -1664,8 +1727,9 @@ TEST_F(URLLoaderTest, NonSecurePublicToLocalPreflightWarn) {
       mojom::LocalNetworkRequestPolicy::kPreflightWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -1680,8 +1744,9 @@ TEST_F(URLLoaderTest, NonSecurePublicToLocalPreflightBlock) {
       mojom::LocalNetworkRequestPolicy::kPreflightBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -1695,8 +1760,9 @@ TEST_F(URLLoaderTest, SecurePrivateToLocalBlock) {
   client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
                   mojom::IPAddressSpace::kLoopback)));
@@ -1710,7 +1776,9 @@ TEST_F(URLLoaderTest, SecurePrivateToLocalWarn) {
       mojom::LocalNetworkRequestPolicy::kWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, SecurePrivateToLocalAllow) {
@@ -1721,7 +1789,9 @@ TEST_F(URLLoaderTest, SecurePrivateToLocalAllow) {
       mojom::LocalNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, SecurePrivateToLocalPreflightBlock) {
@@ -1732,8 +1802,9 @@ TEST_F(URLLoaderTest, SecurePrivateToLocalPreflightBlock) {
       mojom::LocalNetworkRequestPolicy::kPreflightBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -1749,8 +1820,9 @@ TEST_F(URLLoaderTest, SecurePrivateToLocalPreflightWarn) {
       mojom::LocalNetworkRequestPolicy::kPreflightWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -1763,8 +1835,9 @@ TEST_F(URLLoaderTest, NonSecurePrivateToLocalBlock) {
   client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
                   mojom::IPAddressSpace::kLoopback)));
@@ -1777,7 +1850,9 @@ TEST_F(URLLoaderTest, NonSecurePrivateToLocalWarn) {
       mojom::LocalNetworkRequestPolicy::kWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, NonSecurePrivateToLocalAllow) {
@@ -1787,7 +1862,9 @@ TEST_F(URLLoaderTest, NonSecurePrivateToLocalAllow) {
       mojom::LocalNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, NonSecurePrivateToLocalPreflightBlock) {
@@ -1797,8 +1874,9 @@ TEST_F(URLLoaderTest, NonSecurePrivateToLocalPreflightBlock) {
       mojom::LocalNetworkRequestPolicy::kPreflightBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -1813,8 +1891,9 @@ TEST_F(URLLoaderTest, NonSecurePrivateToLocalPreflightWarn) {
       mojom::LocalNetworkRequestPolicy::kPreflightWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_FAILED));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -1828,7 +1907,9 @@ TEST_F(URLLoaderTest, SecureLocalToLocalBlock) {
   client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, SecureLocalToLocalWarn) {
@@ -1839,7 +1920,9 @@ TEST_F(URLLoaderTest, SecureLocalToLocalWarn) {
       mojom::LocalNetworkRequestPolicy::kWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, SecureLocalToLocalAllow) {
@@ -1850,7 +1933,9 @@ TEST_F(URLLoaderTest, SecureLocalToLocalAllow) {
       mojom::LocalNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, SecureLocalToLocalPreflightBlock) {
@@ -1861,7 +1946,9 @@ TEST_F(URLLoaderTest, SecureLocalToLocalPreflightBlock) {
       mojom::LocalNetworkRequestPolicy::kPreflightBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, SecureLocalToLocalPreflightWarn) {
@@ -1872,7 +1959,9 @@ TEST_F(URLLoaderTest, SecureLocalToLocalPreflightWarn) {
       mojom::LocalNetworkRequestPolicy::kPreflightWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, NonSecureLocalToLocalBlock) {
@@ -1880,7 +1969,9 @@ TEST_F(URLLoaderTest, NonSecureLocalToLocalBlock) {
   client_security_state->ip_address_space = mojom::IPAddressSpace::kLoopback;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, NonSecureLocalToLocalWarn) {
@@ -1890,7 +1981,9 @@ TEST_F(URLLoaderTest, NonSecureLocalToLocalWarn) {
       mojom::LocalNetworkRequestPolicy::kWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, NonSecureLocalToLocalAllow) {
@@ -1900,7 +1993,9 @@ TEST_F(URLLoaderTest, NonSecureLocalToLocalAllow) {
       mojom::LocalNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, NonSecureLocalToLocalPreflightBlock) {
@@ -1910,7 +2005,9 @@ TEST_F(URLLoaderTest, NonSecureLocalToLocalPreflightBlock) {
       mojom::LocalNetworkRequestPolicy::kPreflightBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, NonSecureLocalToLocalPreflightWarn) {
@@ -1920,7 +2017,9 @@ TEST_F(URLLoaderTest, NonSecureLocalToLocalPreflightWarn) {
       mojom::LocalNetworkRequestPolicy::kPreflightWarn;
   set_factory_client_security_state(std::move(client_security_state));
 
-  EXPECT_THAT(Load(test_server()->GetURL("/empty.html")), IsOk());
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
 }
 
 TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSuccess) {
@@ -1930,7 +2029,9 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSuccess) {
 
   net::RecordingNetLogObserver net_log_observer;
 
-  std::ignore = Load(test_server()->GetURL("/empty.html"));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  std::ignore = LoadRequest(request);
 
   std::vector<net::NetLogEntry> entries = net_log_observer.GetEntriesWithType(
       net::NetLogEventType::LOCAL_NETWORK_ACCESS_CHECK);
@@ -1958,7 +2059,9 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckFailure) {
 
   net::RecordingNetLogObserver net_log_observer;
 
-  std::ignore = Load(test_server()->GetURL("/empty.html"));
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  std::ignore = LoadRequest(request);
 
   std::vector<net::NetLogEntry> entries = net_log_observer.GetEntriesWithType(
       net::NetLogEventType::LOCAL_NETWORK_ACCESS_CHECK);
@@ -1974,6 +2077,37 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckFailure) {
 
   EXPECT_THAT(params.FindString("result"),
               Pointee(Eq("blocked-by-policy-preflight-block")));
+}
+
+TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSameOrigin) {
+  mojom::ClientSecurityStatePtr client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->local_network_request_policy =
+      mojom::LocalNetworkRequestPolicy::kPreflightBlock;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  net::RecordingNetLogObserver net_log_observer;
+
+  GURL url = test_server()->GetURL("/empty.html");
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.request_initiator = url::Origin::Create(url);
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
+
+  std::vector<net::NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      net::NetLogEventType::LOCAL_NETWORK_ACCESS_CHECK);
+
+  ASSERT_THAT(entries, SizeIs(1));
+
+  const base::Value::Dict& params = entries[0].params;
+
+  EXPECT_THAT(params.FindString("client_address_space"), Pointee(Eq("public")));
+
+  EXPECT_THAT(params.FindString("resource_address_space"),
+              Pointee(Eq("loopback")));
+
+  EXPECT_THAT(params.FindString("result"),
+              Pointee(Eq("allowed-potentially-trustworthy-same-origin")));
 }
 
 // Bundles together the inputs to a parameterized private network request test.

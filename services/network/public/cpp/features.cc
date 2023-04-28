@@ -331,7 +331,7 @@ BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,
 // preflights.
 BASE_FEATURE(kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin,
              "LocalNetworkAccessAllowPotentiallyTrustworthySameOrigin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables out-of-process system DNS resolution so getaddrinfo() never runs in
 // the network service sandbox. System DNS resolution will instead be brokered

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS treat-as-public to local: failed preflight.
-PASS treat-as-public to local: success.
-PASS treat-as-public to private: failed preflight.
-PASS treat-as-public to private: success.
-PASS public to public: success.
-Harness: the test ran to completion.
-

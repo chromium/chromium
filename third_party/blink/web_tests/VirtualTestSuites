@@ -54,15 +54,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "lna-allow-potentially-trustworthy-same-origin",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/fetch/local-network-access"],
-    "args": [
-      "--enable-features=LocalNetworkAccessAllowPotentiallyTrustworthySameOrigin"
-    ],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "reduce-accept-language",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/navigation/language",

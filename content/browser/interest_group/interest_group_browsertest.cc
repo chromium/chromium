@@ -69,6 +69,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -1618,8 +1619,14 @@ class InterestGroupLocalNetworkBrowserTest : public InterestGroupBrowserTest {
  protected:
   InterestGroupLocalNetworkBrowserTest()
       : remote_test_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitAndEnableFeature(
-        features::kPrivateNetworkAccessRespectPreflightResults);
+    feature_list_.InitWithFeatures(
+        /*`enabled_features`=*/
+        {features::kPrivateNetworkAccessRespectPreflightResults},
+        /*disabled_features=*/
+        // TODO(https://crbug.com/1427145): Enable same-origin exemption when
+        // the initiator is fixed.
+        {network::features::
+             kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin});
 
     remote_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     remote_test_server_.AddDefaultHandlers(GetTestDataFilePath());
