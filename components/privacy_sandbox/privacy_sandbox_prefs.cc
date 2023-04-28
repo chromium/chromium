@@ -35,6 +35,8 @@ const char kPrivacySandboxM1AdMeasurementEnabled[] =
 
 const char kPrivacySandboxM1Restricted[] = "privacy_sandbox.m1.restricted";
 
+const char kPrivacySandboxM1Unrestricted[] = "privacy_sandbox.m1.unrestricted";
+
 const char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
 
 const char kPrivacySandboxApisEnabledV2[] = "privacy_sandbox.apis_enabled_v2";
@@ -123,6 +125,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1Restricted, false);
+  registry->RegisterBooleanPref(prefs::kPrivacySandboxM1Unrestricted, false);
 
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxManuallyControlled, false,
