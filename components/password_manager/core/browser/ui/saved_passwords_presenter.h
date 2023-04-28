@@ -107,6 +107,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                           scoped_refptr<PasswordStoreInterface> account_store);
   ~SavedPasswordsPresenter() override;
 
+  SavedPasswordsPresenter(const SavedPasswordsPresenter&) = delete;
+  SavedPasswordsPresenter& operator=(const SavedPasswordsPresenter&) = delete;
+
   // Initializes the presenter and makes it issue the first request for all
   // saved passwords.
   void Init();
