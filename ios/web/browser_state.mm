@@ -8,7 +8,6 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#import "base/guid.h"
 #import "base/location.h"
 #import "base/memory/ref_counted.h"
 #import "base/metrics/histogram_functions.h"
