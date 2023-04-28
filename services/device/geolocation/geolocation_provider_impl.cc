@@ -41,8 +41,20 @@ GeolocationManager* g_geolocation_manager = nullptr;
 }  // namespace
 
 // static
+GeolocationProvider* GeolocationProvider::instance_for_testing_ = nullptr;
+
+// static
 GeolocationProvider* GeolocationProvider::GetInstance() {
+  if (instance_for_testing_) {
+    return instance_for_testing_;
+  }
   return GeolocationProviderImpl::GetInstance();
+}
+
+// static
+void GeolocationProvider::SetInstanceForTesting(
+    GeolocationProvider* instance_for_testing) {
+  instance_for_testing_ = instance_for_testing;
 }
 
 // static
