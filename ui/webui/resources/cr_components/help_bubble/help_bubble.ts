@@ -104,7 +104,6 @@ export class HelpBubbleElement extends PolymerElement {
   progress: Progress|null = null;
   bodyIconName: string|null;
   bodyIconAltText: string;
-  forceCloseButton: boolean;
   timeoutMs: number|null = null;
   timeoutTimerId: number|null = null;
   debouncedUpdate: (() => void)|null = null;
@@ -297,11 +296,6 @@ export class HelpBubbleElement extends PolymerElement {
   private shouldShowBodyInMain_(progress: Progress|null, titleText: string):
       boolean {
     return !!progress || !!titleText;
-  }
-
-  private shouldShowCloseButton_(
-      buttons: HelpBubbleButtonParams[], forceCloseButton: boolean): boolean {
-    return buttons.length === 0 || forceCloseButton;
   }
 
   private shouldShowBodyIcon_(bodyIconName: string): boolean {

@@ -69,7 +69,6 @@ struct HelpBubbleParams {
   string? title_text;
   string body_text;
   string close_button_alt_text;
-  bool force_close_button = false;
   string? body_icon_name;
   string body_icon_alt_text;
   Progress? progress;

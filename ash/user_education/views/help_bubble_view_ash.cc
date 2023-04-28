@@ -386,24 +386,22 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     label->SetElideBehavior(gfx::NO_ELIDE);
   }
 
-  // Add close button (optional).
-  if (params.buttons.empty() || params.force_close_button) {
-    std::u16string alt_text = params.close_button_alt_text;
+  // Add close button.
+  std::u16string alt_text = params.close_button_alt_text;
 
-    // This can be empty if a test doesn't set it. Set a reasonable default to
-    // avoid an assertion (generated when a button with no text has no
-    // accessible name).
-    if (alt_text.empty()) {
-      alt_text = l10n_util::GetStringUTF16(IDS_CLOSE);
-    }
-
-    // Since we set the cancel callback, we will use CancelDialog() to dismiss.
-    close_button_ =
-        (params.progress ? progress_container : top_text_container)
-            ->AddChildView(std::make_unique<ClosePromoButton>(
-                alt_text, base::BindRepeating(&DialogDelegate::CancelDialog,
-                                              base::Unretained(this))));
+  // This can be empty if a test doesn't set it. Set a reasonable default to
+  // avoid an assertion (generated when a button with no text has no
+  // accessible name).
+  if (alt_text.empty()) {
+    alt_text = l10n_util::GetStringUTF16(IDS_CLOSE);
   }
+
+  // Since we set the cancel callback, we will use CancelDialog() to dismiss.
+  close_button_ =
+      (params.progress ? progress_container : top_text_container)
+          ->AddChildView(std::make_unique<ClosePromoButton>(
+              alt_text, base::BindRepeating(&DialogDelegate::CancelDialog,
+                                            base::Unretained(this))));
 
   // Add other buttons.
   if (!params.buttons.empty()) {

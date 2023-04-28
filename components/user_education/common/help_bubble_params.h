@@ -76,9 +76,6 @@ struct HelpBubbleParams {
   // guaranteed to remain stable.
   std::vector<HelpBubbleButtonParams> buttons;
 
-  // If set to true, a close button will always be shown.
-  bool force_close_button = false;
-
   // Alt text to use for the close button.
   std::u16string close_button_alt_text;
 
