@@ -3830,40 +3830,62 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
   expect_count("Autofill.EditedAutofilledFieldAtSubmission.Aggregate", 1, 3);
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ShadowDOM) {
+// Shadow DOM tests consist of two cases:
+// - Case 0: the <form> is in the main DOM;
+// - Case 1: the <form> is in a shadow DOM.
+class AutofillInteractiveTestShadowDom
+    : public AutofillInteractiveTest,
+      public ::testing::WithParamInterface<size_t> {
+ public:
+  size_t case_num() const { return GetParam(); }
+
+  // Replaces "$1" in `str` with the `case_num()`.
+  std::string WithCaseNum(base::StringPiece str) const {
+    return base::ReplaceStringPlaceholders(
+        str, {base::NumberToString(case_num())}, nullptr);
+  }
+
+  ElementExpr JsElement(base::StringPiece js_expr) {
+    return ElementExpr(WithCaseNum(js_expr));
+  }
+
+  content::EvalJsResult Js(base::StringPiece js_code) {
+    return content::EvalJs(GetWebContents(), WithCaseNum(js_code));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
+                         AutofillInteractiveTestShadowDom,
+                         ::testing::Values(0, 1));
+
+// Tests that in a shadow-DOM-transcending form, Autofill detects labels
+// *outside* of the field's shadow DOM.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestShadowDom,
+                       LabelInHostingDomOfField) {
   CreateTestProfile();
   GURL url =
       embedded_test_server()->GetURL("a.com", "/autofill/shadowdom.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  ASSERT_TRUE(AutofillFlow(ElementExpr("getNameElement()"), this));
-
-  auto Js = [this](const std::string& code) {
-    return content::EvalJs(GetWebContents(), code);
-  };
-
-  EXPECT_EQ("Milton C. Waddams", Js("getName()"));
-  EXPECT_EQ("4120 Freidrich Lane", Js("getAddress()"));
-  EXPECT_EQ("Austin", Js("getCity()"));
-  EXPECT_EQ("TX", Js("getState()"));
-  EXPECT_EQ("78744", Js("getZip()"));
+  ASSERT_TRUE(AutofillFlow(JsElement("getNameElement($1)"), this));
+  EXPECT_EQ("Milton C. Waddams", Js("getName($1)"));
+  EXPECT_EQ("4120 Freidrich Lane", Js("getAddress($1)"));
+  EXPECT_EQ("Austin", Js("getCity($1)"));
+  EXPECT_EQ("TX", Js("getState($1)"));
+  EXPECT_EQ("78744", Js("getZip($1)"));
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ShadowDOMNoInference) {
+// Tests that in a shadow-DOM-transcending form, Autofill detects labels
+// *inside* of the field's shadow DOM.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestShadowDom,
+                       LabelInSameShadowDomAsField) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/shadowdom-no-inference.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  ASSERT_TRUE(AutofillFlow(ElementExpr("getNameElement()"), this));
-
-  auto Js = [this](const std::string& code) {
-    return content::EvalJs(GetWebContents(), code);
-  };
-
-  EXPECT_EQ("Milton C. Waddams", Js("getName()"));
-  EXPECT_EQ("4120 Freidrich Lane", Js("getAddress()"));
-  EXPECT_EQ("TX", Js("getState()"));
+  ASSERT_TRUE(AutofillFlow(JsElement("getNameElement($1)"), this));
+  EXPECT_EQ("Milton C. Waddams", Js("getName($1)"));
+  EXPECT_EQ("4120 Freidrich Lane", Js("getAddress($1)"));
+  EXPECT_EQ("TX", Js("getState($1)"));
 }
 
 // ChromeVox is only available on ChromeOS.

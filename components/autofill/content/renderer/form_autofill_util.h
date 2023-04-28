@@ -277,6 +277,15 @@ bool WebFormElementToFormData(
     FormData* form,
     FormFieldData* field);
 
+// Returns the form that owns the `form_control`, or a null pointer if no form
+// owns the `form_control`. exists.
+//
+// The form that owns `form_control` is
+// - the form with which `form_control` is associated, if such a form exists,
+// - the closest shadow-including ancestor WebFormElement.
+blink::WebFormElement GetOwningForm(
+    const blink::WebFormControlElement& form_control);
+
 // Get all form control elements from |elements| that are not part of a form.
 std::vector<blink::WebFormControlElement> GetUnownedFormFieldElements(
     const blink::WebDocument& document);

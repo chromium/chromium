@@ -1820,26 +1820,6 @@ void ValidateAutocompleteAttributeForElement(const WebElement& element) {
   }
 }
 
-void FindFormElementUpShadowRoots(const WebElement& element,
-                                  WebFormElement* found_form_element) {
-  // If we are in shadowdom, then look to see if the host(s) are inside a form
-  // element we can use.
-  int levels_up = kMaxShadowLevelsUp;
-  for (WebElement host = element.OwnerShadowHost(); !host.IsNull() && levels_up;
-       host = host.OwnerShadowHost(), --levels_up) {
-    for (WebNode parent = host; !parent.IsNull();
-         parent = parent.ParentNode()) {
-      if (parent.IsElementNode()) {
-        WebElement parentElement = parent.To<WebElement>();
-        if (parentElement.HasHTMLTagName("form")) {
-          *found_form_element = parentElement.To<WebFormElement>();
-          return;
-        }
-      }
-    }
-  }
-}
-
 }  // namespace
 
 // TODO(crbug.com/1335257): This check is very similar to IsWebElementVisible()
@@ -2191,8 +2171,7 @@ void WebFormControlElementToFormField(
   field->aria_description = GetAriaDescription(element.GetDocument(), element);
 
   // Traverse up through shadow hosts to see if we can gather missing fields.
-  WebFormElement form_element_up_shadow_hosts;
-  FindFormElementUpShadowRoots(element, &form_element_up_shadow_hosts);
+  WebFormElement form_element_up_shadow_hosts = GetOwningForm(element);
   int levels_up = kMaxShadowLevelsUp;
   for (WebElement host = element.OwnerShadowHost();
        !host.IsNull() && levels_up &&
@@ -2367,6 +2346,31 @@ bool WebFormElementToFormData(
       extract_mask, form, field);
 }
 
+WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
+  WebFormElement associated_form = form_control.Form();
+  if (!associated_form.IsNull()) {
+    return associated_form;
+  }
+
+  // If we are in a shadow DOM, then look to see if the host(s) are inside a
+  // form element we can use.
+  int levels_up = kMaxShadowLevelsUp;
+  for (WebElement host = form_control.OwnerShadowHost();
+       !host.IsNull() && levels_up;
+       host = host.OwnerShadowHost(), --levels_up) {
+    for (WebNode parent = host; !parent.IsNull();
+         parent = parent.ParentNode()) {
+      if (parent.IsElementNode()) {
+        WebElement parentElement = parent.To<WebElement>();
+        if (parentElement.HasHTMLTagName("form")) {
+          return parentElement.To<WebFormElement>();
+        }
+      }
+    }
+  }
+  return WebFormElement();
+}
+
 std::vector<WebFormControlElement> GetUnownedFormFieldElements(
     const WebDocument& document) {
   return document.UnassociatedFormControls().ReleaseVector();
@@ -2430,10 +2434,7 @@ bool FindFormAndFieldForFormControlElement(
 
   extract_mask =
       static_cast<ExtractMask>(EXTRACT_VALUE | EXTRACT_OPTIONS | extract_mask);
-  WebFormElement form_element = element.Form();
-
-  if (form_element.IsNull())
-    FindFormElementUpShadowRoots(element, &form_element);
+  WebFormElement form_element = GetOwningForm(element);
 
   if (form_element.IsNull()) {
     // No associated form, try the synthetic form for unowned form elements.
@@ -2464,9 +2465,7 @@ std::vector<WebFormControlElement> FillOrPreviewForm(
     const FormData& form,
     const WebFormControlElement& element,
     mojom::RendererFormDataAction action) {
-  WebFormElement form_element = element.Form();
-  if (form_element.IsNull())
-    FindFormElementUpShadowRoots(element, &form_element);
+  WebFormElement form_element = GetOwningForm(element);
 
   Callback callback = action == mojom::RendererFormDataAction::kPreview
                           ? &PreviewFormField

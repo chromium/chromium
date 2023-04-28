@@ -611,9 +611,10 @@ void AutofillAgent::FillOrPreviewForm(const FormData& form,
   // In these cases, we set `element_` to some form field as if Autofill had
   // been triggered from that field. This is necessary because currently
   // AutofillAgent relies on `element_` in many places.
-  if (!form.fields.empty() && (element_.IsNull() || !element_.Focused() ||
-                               form_util::GetFormRendererId(element_.Form()) !=
-                                   form.unique_renderer_id)) {
+  if (!form.fields.empty() &&
+      (element_.IsNull() || !element_.Focused() ||
+       form_util::GetFormRendererId(form_util::GetOwningForm(element_)) !=
+           form.unique_renderer_id)) {
     WebDocument document = render_frame()->GetWebFrame()->GetDocument();
     element_ = form_util::FindFormControlElementByUniqueRendererId(
         document, form.fields.front().unique_renderer_id);

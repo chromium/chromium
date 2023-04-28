@@ -3,51 +3,108 @@
 <p>go to chrome://settings/addresses to set up autofill</p>
 <p>autofill is not supported in file:// urls</p>
 
-<form>
-  <div id=host1>
-    <template shadowroot=open>
-      <label for=input1>name</label>
-      <input id=input1>
-    </template>
-  </div>
+<div id=case0>
+  <form>
+    <div id=host1>
+      <template shadowroot=open>
+        <label for=input1>name</label>
+        <input id=input1>
+      </template>
+    </div>
 
-  <div id=host2>
-    <template shadowroot=open>
-      <div id=innerhost2>
+    <div id=host2>
+      <template shadowroot=open>
+        <div id=innerhost2>
+          <template shadowroot=open>
+            <label for=input2>address</label>
+            <input id=input2>
+          </template>
+        </div>
+      </template>
+    </div>
+
+    <div id=host3>
+      <template shadowroot=open>
+        <label for=input3>state</label>
+        <select id=input3>
+          <option value=WA>WA</option>
+          <option value=CA>CA</option>
+          <option value=TX>TX</option>
+        </select>
+      </template>
+    </div>
+  </form>
+</div>
+
+<div id=case1>
+  <!-- A copy of the above, but inside another shadow DOM. -->
+  <template shadowroot=open>
+    <form>
+      <div id=host1>
         <template shadowroot=open>
-          <label for=input2>address</label>
-          <input id=input2>
+          <label for=input1>name</label>
+          <input id=input1>
         </template>
       </div>
-    </template>
-  </div>
 
-  <div id=host3>
-    <template shadowroot=open>
-      <label for=input3>state</label>
-      <select id=input3>
-        <option value=WA>WA</option>
-        <option value=CA>CA</option>
-        <option value=TX>TX</option>
-      </select>
-    </template>
-  </div>
-</form>
+      <div id=host2>
+        <template shadowroot=open>
+          <div id=innerhost2>
+            <template shadowroot=open>
+              <label for=input2>address</label>
+              <input id=input2>
+            </template>
+          </div>
+        </template>
+      </div>
+
+      <div id=host3>
+        <template shadowroot=open>
+          <label for=input3>state</label>
+          <select id=input3>
+            <option value=WA>WA</option>
+            <option value=CA>CA</option>
+            <option value=TX>TX</option>
+          </select>
+        </template>
+      </div>
+    </form>
+  </template>
+</div>
 
 <script>
-function getNameElement() {
-  return host1.shadowRoot.getElementById('input1');
+function getForm(caseNum) {
+  switch (caseNum) {
+    case 1:
+      return document.querySelector('#case1');
+    case 2:
+      return document.querySelector('#case2').shadowRoot.querySelector('form');
+  }
+  throw Error(`Invalid test case: "${caseNum}"`);
 }
 
-function getName() {
-  return getNameElement().value;
+function getForm(caseNum) {
+  switch (caseNum) {
+    case 0:
+      return document.querySelector('#case0').querySelector('form');
+    case 1:
+      return document.querySelector('#case1').shadowRoot.querySelector('form');
+  }
 }
 
-function getAddress() {
-  return host2.shadowRoot.getElementById('innerhost2').shadowRoot.getElementById('input2').value;
+function getNameElement(caseNum) {
+  return getForm(caseNum).querySelector('#host1').shadowRoot.querySelector('#input1');
 }
 
-function getState() {
-  return host3.shadowRoot.querySelector('select').value;
+function getName(caseNum) {
+  return getNameElement(caseNum).value;
+}
+
+function getAddress(caseNum) {
+  return getForm(caseNum).querySelector('#host2').shadowRoot.querySelector('#innerhost2').shadowRoot.querySelector('#input2').value;
+}
+
+function getState(caseNum) {
+  return getForm(caseNum).querySelector('#host3').shadowRoot.querySelector('select').value;
 }
 </script>
