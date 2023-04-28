@@ -196,6 +196,8 @@ if (is_linux || is_chromeos) {
   cpu = current_cpu
   if (cpu == "arm64") {
     cpu = "aarch64"
+  } else if (cpu == "x86") {
+    cpu = "i686"
   } else if (cpu == "x64") {
     cpu = "x86_64"
   }
