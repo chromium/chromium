@@ -279,11 +279,11 @@ class WPTAdapter:
 
     def _check_and_update_options(self, options):
         """Postprocess options, some of which can depend on each other."""
+        self._check_and_update_sharding_options(options)
         # Set up logging as early as possible.
         self._check_and_update_output_options(options)
         self._check_and_update_upstream_options(options)
         self._check_and_update_config_options(options)
-        self._check_and_update_sharding_options(options)
         # TODO(crbug/1316055): Enable tombstone with '--stackwalk-binary' and
         # '--symbols-path'.
         options.exclude = options.exclude or []
@@ -316,11 +316,8 @@ class WPTAdapter:
         if options.log_chromium == '' or options.show_results:
             options.log_chromium = self.fs.join(output_dir, 'results.json')
         if options.log_wptreport == '':
-            if self._shard_index is None:
-                filename = 'wpt_reports_%s.json' % options.product
-            else:
-                filename = 'wpt_reports_%s_%02d.json' % (options.product,
-                                                         self._shard_index)
+            filename = 'wpt_reports_%s_%02d.json' % (options.product,
+                                                     options.this_chunk)
             options.log_wptreport = self.fs.join(output_dir, filename)
         for log_type in ('chromium', 'wptreport'):
             dest = 'log_%s' % log_type
@@ -352,9 +349,6 @@ class WPTAdapter:
         ])
         if options.retry_unexpected is None:
             options.retry_unexpected = 3
-            logger.warning(
-                'Tests not explicitly specified; '
-                'using %d retries', options.retry_unexpected)
         if not options.mojojs_path:
             options.mojojs_path = self.path_from_output_dir(
                 options.target, 'gen')
@@ -430,13 +424,12 @@ class WPTAdapter:
             options.run_by_dir = 0
 
     def _check_and_update_sharding_options(self, options):
-        if self._shard_index is not None:
+        # Command line arguments take priority over environment variables
+        if (options.total_chunks == 1 and self._shard_index is not None
+                and self._total_shards is not None):
             # wptrunner uses a 1-based index, whereas LUCI uses 0-based.
             options.this_chunk = self._shard_index + 1
-        if self._total_shards is not None:
             options.total_chunks = self._total_shards
-        logger.info('Selecting tests for shard %d/%d', options.this_chunk,
-                    options.total_chunks)
         # The default sharding strategy is to shard by directory. But
         # we want to hash each test to determine which shard runs it.
         # This allows running individual directories that have few
@@ -1291,6 +1284,8 @@ def main() -> int:
     try:
         adapter = WPTAdapter()
         options = adapter.parse_arguments()
+        logger.info('Selecting tests for shard %d/%d', options.this_chunk,
+                    options.total_chunks)
         return adapter.run_tests(options)
     except KeyboardInterrupt:
         logger.critical("Harness exited after signal interrupt")
