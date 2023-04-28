@@ -33,6 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/strings/grit/components_strings.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
@@ -63,7 +64,10 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
             bookmarks))),
         shopping_list_controller_(shopping_list_controller),
         bookmarks_(bookmarks) {
-    CHECK(bookmarks.size() > 0);
+    if (bookmarks.size() == 0) {
+      mojo::ReportBadMessage("BookmarkContextMenu has empty bookmarks");
+      return;
+    }
     if (source == side_panel::mojom::ActionSource::kPriceTracking) {
       DCHECK(shopping_list_controller_);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
