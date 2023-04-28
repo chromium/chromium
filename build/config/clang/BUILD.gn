@@ -54,6 +54,12 @@ config("find_bad_constructs") {
         "-plugin-arg-find-bad-constructs",
         "-Xclang",
         "raw-ptr-exclude-path=base/containers/span.h",
+
+        # TODO(crbug.com/1440909): Remove this once this change is applied to the clang plugin.
+        "-Xclang",
+        "-plugin-arg-find-bad-constructs",
+        "-Xclang",
+        "raw-ptr-exclude-path=\\third_party/",
       ]
     }
   }
