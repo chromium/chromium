@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 
-#include "base/guid.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -87,7 +87,7 @@ class BrowserCaptureMediaStreamTrackTest : public testing::Test {
 TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidIdResultFirst) {
   V8TestingScope v8_scope;
 
-  const base::GUID valid_id = base::GUID::GenerateRandomV4();
+  const base::Uuid valid_id = base::Uuid::GenerateRandomV4();
 
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
@@ -125,7 +125,7 @@ TEST_F(BrowserCaptureMediaStreamTrackTest,
        CropToRejectsIfResultFromBrowserProcessIsNotSuccess) {
   V8TestingScope v8_scope;
 
-  const base::GUID valid_id = base::GUID::GenerateRandomV4();
+  const base::Uuid valid_id = base::Uuid::GenerateRandomV4();
 
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
@@ -164,7 +164,7 @@ TEST_F(BrowserCaptureMediaStreamTrackTest,
        CropToRejectsIfSourceReturnsNulloptForNextCropVersion) {
   V8TestingScope v8_scope;
 
-  const base::GUID valid_id = base::GUID::GenerateRandomV4();
+  const base::Uuid valid_id = base::Uuid::GenerateRandomV4();
 
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
@@ -198,7 +198,7 @@ TEST_F(BrowserCaptureMediaStreamTrackTest,
 TEST_F(BrowserCaptureMediaStreamTrackTest, CropToFailsOnAndroid) {
   V8TestingScope v8_scope;
 
-  const base::GUID valid_id = base::GUID::GenerateRandomV4();
+  const base::Uuid valid_id = base::Uuid::GenerateRandomV4();
 
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();

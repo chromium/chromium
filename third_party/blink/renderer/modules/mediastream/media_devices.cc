@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -1130,7 +1130,7 @@ void MediaDevices::ResolveProduceCropIdPromise(Element* element,
     resolver->Reject();
     RecordUma(ProduceCropTargetPromiseResult::kPromiseRejected);
   } else {
-    const base::GUID guid = base::GUID::ParseLowercase(crop_id.Ascii());
+    const base::Uuid guid = base::Uuid::ParseLowercase(crop_id.Ascii());
     DCHECK(guid.is_valid());
     element->SetRegionCaptureCropId(
         std::make_unique<RegionCaptureCropId>(blink::GUIDToToken(guid)));
