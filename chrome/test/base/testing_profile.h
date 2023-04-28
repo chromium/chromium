@@ -282,9 +282,9 @@ class TestingProfile : public Profile {
   // |otr_profile| cannot be empty.
   void SetOffTheRecordProfile(std::unique_ptr<Profile> otr_profile);
 
-  // Marks profile as a Family Link supervised profile.
+  // Marks profile Family Link supervision status.
   // Only available when ENABLE_SUPERVISED_USERS feature is enabled.
-  void SetIsSupervisedProfile();
+  void SetIsSupervisedProfile(bool is_supervised_profile = true);
 
   sync_preferences::TestingPrefServiceSyncable* GetTestingPrefService();
 
