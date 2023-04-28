@@ -7341,11 +7341,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "trim-on-memory-pressure",
-    "owners": [ "bgeffon" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "turn-off-streaming-media-caching-always",
     "owners": [ "wicarr@microsoft.com", "cassew@google.com" ],
     "expiry_milestone": 99
