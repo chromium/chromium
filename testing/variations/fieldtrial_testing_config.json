@@ -9988,25 +9988,6 @@
             ]
         }
     ],
-    "PermissionChip": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_2022-11-29",
-                    "enable_features": [
-                        "PermissionChip"
-                    ]
-                }
-            ]
-        }
-    ],
     "PermissionConfirmationChip": [
         {
             "platforms": [
