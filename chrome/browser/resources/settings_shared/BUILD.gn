@@ -13,6 +13,7 @@ build_webui("build") {
   web_component_files = [
     "controls/extension_controlled_indicator.ts",
     "controls/settings_dropdown_menu.ts",
+    "controls/settings_slider.ts",
     "controls/settings_toggle_button.ts",
   ]
 

@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../controls/settings_slider.js';
+import '/shared/settings/controls/settings_slider.js';
 import '../settings_shared.css.js';
 import '/shared/settings/controls/settings_dropdown_menu.js';
 
