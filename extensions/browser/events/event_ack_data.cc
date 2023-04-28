@@ -9,7 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
@@ -28,7 +28,7 @@ void EventAckData::IncrementInflightEvent(
     int event_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::string request_uuid = base::GenerateGUID();
+  std::string request_uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   bool start_ok = true;
 
   content::ServiceWorkerExternalRequestResult result =

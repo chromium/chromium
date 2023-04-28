@@ -176,7 +176,7 @@ class ExtensionApiFrameIdMap {
     ~ExtensionDocumentUserData() override;
 
     const DocumentId& document_id() const { return document_id_; }
-    const base::GUID& context_id() const { return context_id_; }
+    const base::Uuid& context_id() const { return context_id_; }
 
    private:
     friend content::DocumentUserData<ExtensionDocumentUserData>;

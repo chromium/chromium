@@ -8,11 +8,11 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -319,9 +319,9 @@ void LockScreenItemStorage::CreateItemImpl(const std::string& extension_id,
     return;
   }
 
-  std::unique_ptr<DataItem> item =
-      CreateDataItem(base::GenerateGUID(), extension_id, context_,
-                     value_store_cache_.get(), task_runner_.get(), crypto_key_);
+  std::unique_ptr<DataItem> item = CreateDataItem(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), extension_id,
+      context_, value_store_cache_.get(), task_runner_.get(), crypto_key_);
   DataItem* item_ptr = item.get();
   item_ptr->Register(base::BindOnce(
       &LockScreenItemStorage::OnItemRegistered, weak_ptr_factory_.GetWeakPtr(),

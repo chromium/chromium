@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
@@ -20,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -762,7 +762,7 @@ std::string ProcessManager::IncrementServiceWorkerKeepaliveCount(
   DCHECK(extension);
   DCHECK(BackgroundInfo::IsServiceWorkerBased(extension));
 
-  std::string request_uuid = base::GenerateGUID();
+  std::string request_uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   content::ServiceWorkerContext* service_worker_context =
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser_context_);
