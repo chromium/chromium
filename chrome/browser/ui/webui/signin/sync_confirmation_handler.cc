@@ -30,6 +30,13 @@
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/lacros_url_handling.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/sync/base/features.h"
+#endif
+
 using signin::ConsentLevel;
 
 namespace {
@@ -83,6 +90,13 @@ void SyncConfirmationHandler::RegisterMessages() {
       "accountInfoRequest",
       base::BindRepeating(&SyncConfirmationHandler::HandleAccountInfoRequest,
                           base::Unretained(this)));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  web_ui()->RegisterMessageCallback(
+      "openDeviceSyncSettings",
+      base::BindRepeating(
+          &SyncConfirmationHandler::HandleOpenDeviceSyncSettings,
+          base::Unretained(this)));
+#endif
 }
 
 void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
@@ -117,6 +131,15 @@ void SyncConfirmationHandler::HandleAccountInfoRequest(
   if (primary_account_info.IsValid())
     SetAccountInfo(primary_account_info);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void SyncConfirmationHandler::HandleOpenDeviceSyncSettings(
+    const base::Value::List& args) {
+  std::string os_sync_settings_url = chrome::kChromeUIOSSettingsURL;
+  os_sync_settings_url.append(chromeos::settings::mojom::kSyncSubpagePath);
+  lacros_url_handling::NavigateInAsh(GURL(os_sync_settings_url));
+}
+#endif
 
 void SyncConfirmationHandler::RecordConsent(const base::Value::List& args) {
   CHECK_EQ(2U, args.size());

@@ -364,12 +364,12 @@
     width: 24px;
   }
 
-  #syncInfoDesc {
+  .sync-info-desc {
     font-size: 0.75rem;
     line-height: 20px;
   }
 
-  .tangible-sync-style.dialog #syncInfoDesc {
+  .tangible-sync-style.dialog .sync-info-desc {
     margin: 0 38px;
   }
 
@@ -600,9 +600,16 @@
           </div>
         </template>
       </div>
-      <div id="syncInfoDesc" class="secondary" consent-description>
+      <div class="sync-info-desc secondary"
+          hidden="[[useClickableSyncInfoDesc_]]" consent-description>
         $i18n{syncConfirmationSyncInfoDesc}
       </div>
+      <localized-link class="sync-info-desc secondary"
+          consent-description
+          hidden="[[!useClickableSyncInfoDesc_]]"
+          localized-string="$i18n{syncConfirmationSyncInfoDesc}"
+          on-link-clicked="onDisclaimerClicked_">
+      </localized-link>
     </div>
   </div>
   <div class$="action-row [[getAnimationClass_()]]">

@@ -102,6 +102,7 @@ suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
         consentDescriptionTexts.push(i18n(syncBenefitsList[i].title));
       }
       consentDescriptionTexts.push(i18n('syncConfirmationSyncInfoDesc'));
+
       return consentDescriptionTexts;
     }
 

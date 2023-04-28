@@ -10821,6 +10821,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         You can always choose what to sync in settings. Google may personalize Search and other services based on your history.
       </message>
 
+      <if expr="chromeos_lacros">
+        <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC_WITH_ASH_SETTINGS_LINK" translateable="false" desc="This string appears in the footer on a screen that asks users if they want to turn on sync if Apps data type sync is enabled. This string informs the user that apps sync is managed separately in device settings">
+          *You can always choose what to sync in settings. Google may personalize Search and other services based on your history. Keep in mind that device sync, which includes apps sync, is managed separately in <ph name="LINK_BEGIN">&lt;a href='#'&gt;</ph>device settings<ph name="LINK_END">&lt;/a&gt;</ph>.*
+        </message>
+      </if>
+
       <!--  Sync Confirmation section of the Signin Intercept first run experience flow -->
       <message name="IDS_SYNC_CONFIRMATION_WELCOME_TITLE_SIGNIN_INTERCEPT" desc="This string appears as a heading on a pop-up dialog that shows up after users create a new profile. It welcomes users. The tone should be friendly and inviting.">
         Welcome, <ph name="USERNAME">$1<ex>Bob</ex></ph>

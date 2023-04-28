@@ -52,6 +52,13 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/webui_resources.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/sync_prefs.h"
+#endif
+
 namespace {
 const char kSyncBenefitAutofillStringName[] = "syncConfirmationAutofill";
 const char kSyncBenefitBookmarksStringName[] = "syncConfirmationBookmarks";
@@ -74,6 +81,14 @@ bool IsAnyTypeSyncable(const syncer::SyncService* sync_service,
   }
   return false;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ShouldShowAppsDisclaimerInLacros(Profile* profile) {
+  syncer::SyncPrefs prefs_ = syncer::SyncPrefs(profile->GetPrefs());
+  return prefs_.IsAppsSyncEnabledByOs() &&
+         base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing);
+}
+#endif
 }  // namespace
 
 // static
@@ -209,6 +224,7 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   bool isTangibleSync = base::FeatureList::IsEnabled(switches::kTangibleSync);
   bool isSigninInterceptFre =
       style == SyncConfirmationStyle::kSigninInterceptModal;
+  bool use_clickable_sync_info_desc = false;
   source->AddBoolean("isModalDialog",
                      style == SyncConfirmationStyle::kDefaultModal ||
                          style == SyncConfirmationStyle::kSigninInterceptModal);
@@ -263,6 +279,13 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
     // when enabling it.
     DCHECK(!isSigninInterceptFre);
     info_title_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_LACROS;
+
+    if (ShouldShowAppsDisclaimerInLacros(profile_)) {
+      info_desc_id =
+          IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC_WITH_ASH_SETTINGS_LINK;
+      use_clickable_sync_info_desc = true;
+    }
+
 #else
     info_title_id =
         isSigninInterceptFre
@@ -327,6 +350,7 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   AddStringResource(source, kSyncBenefitHistoryAndMoreStringName,
                     IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_HISTORY_AND_MORE);
 
+  source->AddBoolean("useClickableSyncInfoDesc", use_clickable_sync_info_desc);
   source->AddResourcePath(illustration_path, illustration_id);
   source->AddResourcePath(illustration_dark_path, illustration_dark_id);
 }
