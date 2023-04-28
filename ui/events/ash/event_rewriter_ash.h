@@ -226,12 +226,8 @@ class EventRewriterAsh : public EventRewriter {
   // request raw function keys for these keys.
   bool ForceTopRowAsFunctionKeys(int device_id) const;
 
-  // Returns true if |last_keyboard_device_id_| is Hotrod remote.
-  bool IsHotrodRemote() const;
-  // Returns true if |last_keyboard_device_id_| is of given |device_type|.
-  bool IsLastKeyboardOfType(KeyboardCapability::DeviceType device_type) const;
-  // Returns the device type of |last_keyboard_device_id_|.
-  KeyboardCapability::DeviceType GetLastKeyboardType() const;
+  // Returns true if |device_id| is Hotrod remote.
+  bool IsHotrodRemote(int device_id) const;
 
   // Given modifier flags |original_flags|, returns the remapped modifiers
   // according to user preferences and/or event properties.
