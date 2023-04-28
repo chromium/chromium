@@ -28,7 +28,7 @@ namespace {
 
 BASE_FEATURE(kWebDatabaseDumpWithoutCrashingOnInitProblems,
              "WebDatabaseDumpWithoutCrashingOnInitProblems",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::string GetDiagnostics(const sql::Database& db) {
   if (!db.is_open()) {
