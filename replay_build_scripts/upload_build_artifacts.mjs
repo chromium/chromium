@@ -17,8 +17,8 @@ const S3Website = "recordreplay-website";
 const BUILDKITE_BUILD_ID_ARTIFACT = "build_id";
 const BUILDKITE_ARTIFACT_DIRECTORY = path.join(
   process.env.BUILDKITE_BUILD_CHECKOUT_PATH || "./",
-  currentPlatform(),
-  "build_id"
+  "build_id",
+  currentPlatform()
 );
 
 function uploadToAllBuckets(localPath, s3Path) {
