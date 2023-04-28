@@ -283,6 +283,9 @@ void IOSChromeMetricsServiceClient::Initialize() {
         std::make_unique<metrics::DemographicMetricsProvider>(
             std::make_unique<metrics::ChromeBrowserStateClient>(),
             metrics::MetricsLogUploader::MetricServiceType::UKM));
+    // As this is startup, there the UKM previous state is the same as the
+    // present state.
+    OnUkmAllowedStateChanged(/* must_purge */ false, GetUkmConsentState());
     RegisterUKMProviders();
   }
 }
@@ -537,13 +540,28 @@ void IOSChromeMetricsServiceClient::OnHistoryDeleted() {
 
 void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
     bool must_purge,
-    ukm::UkmConsentState) {
+    ukm::UkmConsentState previous_consent_state) {
+  const ukm::UkmConsentState consent_state = GetUkmConsentState();
   if (!ukm_service_)
     return;
   if (must_purge) {
     ukm_service_->Purge();
     ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
+  } else {
+    // Purge recording if required consent has been revoked.
+    if (!consent_state.Has(ukm::MSBB)) {
+      ukm_service_->PurgeMsbbData();
+    }
+    // No need to test for ukm::APPS and ukm::EXTENSIONS as they are not
+    // supported on iOS.
   }
+
+  // Notify the recording service of changed metrics consent.
+  ukm_service_->UpdateRecording(consent_state);
+
+  // Broadcast UKM consent state change.
+  ukm_service_->OnUkmAllowedStateChanged(consent_state);
+
   // Signal service manager to enable/disable UKM based on new state.
   UpdateRunningServices();
 }
