@@ -20,41 +20,30 @@
 
 namespace {
 
-using ::base::BindOnce;
-using ::base::expected;
-using ::base::NoDestructor;
-using ::base::unexpected;
-using ::base::Unretained;
-using ::signin::AccessTokenFetcher;
-using ::signin::AccessTokenInfo;
-using ::signin::ConsentLevel;
-using ::signin::IdentityManager;
-using ::signin::PrimaryAccountAccessTokenFetcher;
-
-expected<AccessTokenInfo, GoogleServiceAuthError> ToSingleReturnValue(
-    GoogleServiceAuthError error,
-    AccessTokenInfo access_token_info) {
+base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>
+ToSingleReturnValue(GoogleServiceAuthError error,
+                    signin::AccessTokenInfo access_token_info) {
   if (error.state() == GoogleServiceAuthError::NONE) {
     return access_token_info;
   }
-  return unexpected(error);
+  return base::unexpected(error);
 }
 
 }  // namespace
 
 KidsAccessTokenFetcher::KidsAccessTokenFetcher(
-    IdentityManager& identity_manager,
+    signin::IdentityManager& identity_manager,
     Consumer consumer)
     : consumer_(std::move(consumer)) {
   // base::Unretained(.) is safe, because no extra on-destroyed semantics are
   // needed and this instance must outlive the callback execution.
   primary_account_access_token_fetcher_ =
-      std::make_unique<PrimaryAccountAccessTokenFetcher>(
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           "family_info_fetcher", &identity_manager, Scopes(),
-          BindOnce(&KidsAccessTokenFetcher::OnAccessTokenFetchComplete,
-                   Unretained(this)),
-          PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          ConsentLevel::kSignin);
+          base::BindOnce(&KidsAccessTokenFetcher::OnAccessTokenFetchComplete,
+                         base::Unretained(this)),
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+          signin::ConsentLevel::kSignin);
 }
 KidsAccessTokenFetcher::~KidsAccessTokenFetcher() = default;
 
@@ -65,7 +54,7 @@ void KidsAccessTokenFetcher::OnAccessTokenFetchComplete(
 }
 
 const OAuth2AccessTokenManager::ScopeSet& KidsAccessTokenFetcher::Scopes() {
-  static auto nonce = NoDestructor<OAuth2AccessTokenManager::ScopeSet>{
+  static auto nonce = base::NoDestructor<OAuth2AccessTokenManager::ScopeSet>{
       {GaiaConstants::kKidFamilyReadonlyOAuth2Scope}};
   return *nonce;
 }
