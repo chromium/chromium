@@ -50,6 +50,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
@@ -120,6 +121,10 @@ public class CustomTabToolbarUnitTest {
     OfflineDownloader mOfflineDownloader;
     @Mock
     Tab mTab;
+    @Mock
+    Callback<Integer> mContainerVisibilityChangeObserver;
+    @Mock
+    View mParentView;
 
     private Activity mActivity;
     private CustomTabToolbar mToolbar;
@@ -429,6 +434,23 @@ public class CustomTabToolbarUnitTest {
         // HandleStrategy should be initialized properly in response.
         mToolbar.setHandleStrategy(strategy2);
         assertNotNull(strategy2.getClickCloseHandlerForTesting());
+    }
+
+    @Test
+    public void testContainerVisibilityChange() {
+        // Self changes should be ignored.
+        mToolbar.addContainerVisibilityChangeObserver(mContainerVisibilityChangeObserver);
+        mToolbar.onVisibilityChanged(mToolbar, View.VISIBLE);
+        verify(mContainerVisibilityChangeObserver, never()).onResult(any());
+
+        mToolbar.onVisibilityChanged(mParentView, View.VISIBLE);
+        verify(mContainerVisibilityChangeObserver, times(1)).onResult(View.VISIBLE);
+
+        // After removing, no more events.
+        reset(mContainerVisibilityChangeObserver);
+        mToolbar.removeContainerVisibilityChangeObserver(mContainerVisibilityChangeObserver);
+        mToolbar.onVisibilityChanged(mParentView, View.VISIBLE);
+        verify(mContainerVisibilityChangeObserver, never()).onResult(any());
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

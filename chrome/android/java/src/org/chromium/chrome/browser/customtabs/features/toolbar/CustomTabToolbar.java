@@ -31,7 +31,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -50,7 +49,9 @@ import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -128,6 +129,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private LocationBarModel mLocationBarModel;
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private @Nullable CustomTabCaptureStateToken mLastCustomTabCaptureStateToken;
+    private ObserverList<Callback<Integer>> mContainerVisibilityChangeObserverList =
+            new ObserverList<>();
 
     // Whether the maximization button should be shown when it can. Set to {@code true}
     // while the side sheet is running with the maximize button option on.
@@ -773,6 +776,27 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (textureMode) {
             mLastCustomTabCaptureStateToken = generateCaptureStateToken();
         }
+    }
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        // Ignore when the changed view is our self. This happens on startup, and is not our
+        // container being changed.
+        if (changedView != this) {
+            for (Callback<Integer> observer : mContainerVisibilityChangeObserverList) {
+                observer.onResult(visibility);
+            }
+        }
+    }
+
+    /** Subscribe to container visibility changes. */
+    public void addContainerVisibilityChangeObserver(Callback<Integer> observer) {
+        mContainerVisibilityChangeObserverList.addObserver(observer);
+    }
+
+    /** Unsubscribe to container visibility changes. */
+    public void removeContainerVisibilityChangeObserver(Callback<Integer> observer) {
+        mContainerVisibilityChangeObserverList.removeObserver(observer);
     }
 
     private CustomTabCaptureStateToken generateCaptureStateToken() {

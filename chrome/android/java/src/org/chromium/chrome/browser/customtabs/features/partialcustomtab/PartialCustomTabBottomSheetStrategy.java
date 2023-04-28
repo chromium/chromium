@@ -895,7 +895,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @VisibleForTesting
     void setMockViewForTesting(LinearLayout navbar, ImageView spinnerView,
-            CircularProgressDrawable spinner, View toolbar, View toolbarCoordinator,
+            CircularProgressDrawable spinner, CustomTabToolbar toolbar, View toolbarCoordinator,
             PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
         mNavbar = navbar;
         mSpinnerView = spinnerView;

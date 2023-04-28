@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -74,7 +75,7 @@ public abstract class PartialCustomTabBaseStrategy
     protected int mHeight;
     protected int mWidth;
 
-    protected View mToolbarView;
+    protected CustomTabToolbar mToolbarView;
     protected View mToolbarCoordinator;
     protected int mToolbarColor;
     protected int mToolbarCornerRadius;
@@ -85,6 +86,9 @@ public abstract class PartialCustomTabBaseStrategy
     // Note: Do not use anywhere except in |onConfigurationChanged| as it might not be up-to-date.
     protected boolean mIsInMultiWindowMode;
     protected int mOrientation;
+
+    private final Callback<Integer> mVisibilityChangeObserver =
+            this::onToolbarContainerVisibilityChange;
 
     private ValueAnimator mAnimator;
     private Runnable mPostAnimationRunnable;
@@ -172,6 +176,9 @@ public abstract class PartialCustomTabBaseStrategy
     public void destroy() {
         mFullscreenManager.removeObserver(this);
         cleanupImeStateCallback();
+        if (mToolbarView != null) {
+            mToolbarView.removeContainerVisibilityChangeObserver(mVisibilityChangeObserver);
+        }
     }
 
     @Override
@@ -184,9 +191,15 @@ public abstract class PartialCustomTabBaseStrategy
     }
 
     public void setToolbar(View toolbarCoordinator, CustomTabToolbar toolbar) {
+        if (mToolbarView != null) {
+            mToolbarView.removeContainerVisibilityChangeObserver(mVisibilityChangeObserver);
+        }
+
         mToolbarCoordinator = toolbarCoordinator;
         mToolbarView = toolbar;
         mToolbarColor = toolbar.getBackground().getColor();
+
+        mToolbarView.addContainerVisibilityChangeObserver(mVisibilityChangeObserver);
     }
 
     public void onShowSoftInput(Runnable softKeyboardRunnable) {
@@ -535,8 +548,22 @@ public abstract class PartialCustomTabBaseStrategy
         mFinishRunnable = null;
     }
 
+    private void onToolbarContainerVisibilityChange(int visibility) {
+        // See https://crbug.com/1430948 for more context. The issue is that sometimes when
+        // exiting fullscreen, if we don't get a new layout, SurfaceFlinger doesn't recalculate
+        // transparent regions and this View (and children) are never shown. Theoretically this
+        // should also only ever need to be done the first time becoming visible after exiting
+        // fullscreen, but PCCTs do not currently allow scrolling off the toolbar, so it doesn't
+        // matter.
+        if (visibility == View.VISIBLE) {
+            ViewUtils.requestLayout(mToolbarView,
+                    "PartialCustomTabBaseStrategy.onToolbarContainerVisibilityChange");
+        }
+    }
+
     @VisibleForTesting
-    void setMockViewForTesting(ViewGroup coordinatorLayout, View toolbar, View toolbarCoordinator) {
+    void setMockViewForTesting(
+            ViewGroup coordinatorLayout, CustomTabToolbar toolbar, View toolbarCoordinator) {
         mPositionUpdater = this::updatePosition;
         mToolbarView = toolbar;
         mToolbarCoordinator = toolbarCoordinator;
