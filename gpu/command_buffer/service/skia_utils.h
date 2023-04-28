@@ -16,7 +16,10 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
+
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
 #include "third_party/skia/include/gpu/graphite/ContextOptions.h"
+#endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
@@ -54,8 +57,10 @@ class SharedContextState;
 // Returns default GrContextOptions.
 GPU_GLES2_EXPORT GrContextOptions GetDefaultGrContextOptions();
 
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
 GPU_GLES2_EXPORT skgpu::graphite::ContextOptions
 GetDefaultGraphiteContextOptions();
+#endif
 
 // Returns internal gl format of texture for Skia for given `gl_storage_format`.
 GPU_GLES2_EXPORT GLuint GetGrGLBackendTextureFormat(

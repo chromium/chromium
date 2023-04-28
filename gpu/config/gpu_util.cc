@@ -298,6 +298,7 @@ GpuFeatureStatus GetSkiaGraphiteFeatureStatus(
     const std::set<int>& blocklisted_features,
     const GpuPreferences& gpu_preferences,
     bool use_swift_shader) {
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
   if (use_swift_shader) {
     return kGpuFeatureStatusDisabled;
   }
@@ -314,6 +315,7 @@ GpuFeatureStatus GetSkiaGraphiteFeatureStatus(
     return kGpuFeatureStatusEnabled;
   }
 #endif  // BUILDFLAG(SKIA_USE_METAL)
+#endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
   return kGpuFeatureStatusDisabled;
 }
 
