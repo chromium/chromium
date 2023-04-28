@@ -62,8 +62,8 @@ fn main() -> Result<()> {
         }
         Some(("download", args)) => {
             let security = args.get_one::<String>("security-critical").unwrap() == "yes";
-            let name = args.get_one::<String>("NAME").unwrap();
-            let version = args.get_one::<semver::Version>("VERSION").unwrap().clone();
+            let name = args.get_one::<String>("name").unwrap();
+            let version = args.get_one::<semver::Version>("version").unwrap().clone();
             download::download(name, version, security, &paths)
         }
         _ => unreachable!("Invalid subcommand"),
