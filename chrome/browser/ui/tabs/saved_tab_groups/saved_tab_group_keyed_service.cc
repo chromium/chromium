@@ -66,7 +66,11 @@ syncer::OnceModelTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {
 void SavedTabGroupKeyedService::StoreLocalToSavedId(
     const base::Uuid& saved_guid,
     const tab_groups::TabGroupId local_group_id) {
-  CHECK(!model()->is_loaded());
+  const SavedTabGroup* const group = model()->Get(local_group_id);
+  if (model()->is_loaded() && group->saved_guid() == saved_guid) {
+    return;
+  }
+
   saved_guid_to_local_group_id_mapping_.emplace_back(saved_guid,
                                                      local_group_id);
 }
@@ -290,15 +294,12 @@ void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
     ConnectLocalTabGroup(local_group_id, saved_guid);
   }
 
-  // Clear `saved_guid_to_local_group_id_mapping_` expecting that this observer
-  // function will only be called once on startup freeing unsued space.
+  // Clear `saved_guid_to_local_group_id_mapping_` to save space when finished.
   //
   // TODO(dljames): Investigate using a single use callback to connect local and
   // saved groups together. There are crashes that occur when restarting the
-  // browser before the browser process completely shuts down. This triggers the
-  // CHECK in StoreLocalToSavedId because the SavedTabGroupModel has already
-  // loaded. The callback will also remove the need of
-  // `saved_guid_to_local_group_id_mapping_`.
+  // browser before the browser process completely shuts down. The callback will
+  // also remove the need of `saved_guid_to_local_group_id_mapping_`.
   saved_guid_to_local_group_id_mapping_.clear();
   CHECK(saved_guid_to_local_group_id_mapping_.empty());
 }

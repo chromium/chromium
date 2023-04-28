@@ -304,13 +304,6 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   EXPECT_TRUE(model->Contains(tab_group_id_1));
   EXPECT_TRUE(model->Contains(tab_group_id_2));
   EXPECT_FALSE(model->Contains(tab_group_id_3));
-
-  // StoreLocalToSavedId should only be called before the
-  // SavedTabGroupModel is loaded to temporarily preserve id associations before
-  // it is emptied an never used again. Calling StoreLocalToSavedId after the
-  // SavedTabGroupModel is loaded will never use the data taking up space until
-  // the browser is restarted. To prevent this we crash.
-  EXPECT_DEATH(service()->StoreLocalToSavedId(guid_1, tab_group_id_1), "");
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
