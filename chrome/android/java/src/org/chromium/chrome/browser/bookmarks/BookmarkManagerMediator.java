@@ -23,8 +23,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -39,13 +37,11 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
@@ -55,7 +51,6 @@ import java.util.Stack;
 class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
                                          PartnerBookmarksReader.FaviconUpdateObserver,
                                          BookmarkUiPrefs.Observer {
-    private static final int MAXIMUM_NUMBER_OF_SEARCH_RESULTS = 500;
     private static final String EMPTY_QUERY = null;
 
     private static boolean sPreventLoadingForTesting;
@@ -361,7 +356,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
         mPromoHeaderManager = new BookmarkPromoHeader(mContext, mProfile, this::updateHeader);
         mBookmarkUndoController = bookmarkUndoController;
-        mBookmarkQueryHandler = new BookmarkQueryHandler(mBookmarkModel);
+        mBookmarkQueryHandler = new LegacyBookmarkQueryHandler(mBookmarkModel);
         mModelList = modelList;
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mBookmarkUiPrefs.addObserver(this);
@@ -795,86 +790,6 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             }
         }
         return position;
-    }
-
-    private static class BookmarkQueryHandler {
-        private final BookmarkModel mBookmarkModel;
-        private final SyncService mSyncService;
-        private final SyncStateChangedListener mSyncStateChangedListener = this::syncStateChanged;
-        private final List<BookmarkId> mTopLevelFolders = new ArrayList<>();
-
-        public BookmarkQueryHandler(BookmarkModel bookmarkModel) {
-            mBookmarkModel = bookmarkModel;
-            mBookmarkModel.finishLoadingBookmarkModel(this::onBookmarkModelLoaded);
-            mSyncService = SyncService.get();
-            mSyncService.addSyncStateChangedListener(mSyncStateChangedListener);
-        }
-
-        void destroy() {
-            mSyncService.removeSyncStateChangedListener(mSyncStateChangedListener);
-        }
-
-        List<BookmarkListEntry> buildBookmarkListForParent(BookmarkId parentId) {
-            final List<BookmarkId> childIdList;
-            if (parentId.equals(mBookmarkModel.getRootFolderId())) {
-                childIdList = mTopLevelFolders;
-            } else {
-                childIdList = mBookmarkModel.getChildIds(parentId);
-            }
-
-            final List<BookmarkListEntry> bookmarkListEntries = new ArrayList<>();
-            for (BookmarkId bookmarkId : childIdList) {
-                PowerBookmarkMeta powerBookmarkMeta =
-                        mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
-                if (BookmarkId.SHOPPING_FOLDER.equals(parentId)) {
-                    if (powerBookmarkMeta == null || !powerBookmarkMeta.hasShoppingSpecifics()
-                            || !powerBookmarkMeta.getShoppingSpecifics().getIsPriceTracked()) {
-                        continue;
-                    }
-                }
-
-                BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-                BookmarkListEntry bookmarkListEntry =
-                        BookmarkListEntry.createBookmarkEntry(bookmarkItem, powerBookmarkMeta);
-                bookmarkListEntries.add(bookmarkListEntry);
-            }
-
-            if (parentId.getType() == BookmarkType.READING_LIST) {
-                ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(bookmarkListEntries);
-            }
-
-            return bookmarkListEntries;
-        }
-
-        List<BookmarkListEntry> buildBookmarkListForSearch(String query) {
-            final List<BookmarkId> searchIdList =
-                    mBookmarkModel.searchBookmarks(query, MAXIMUM_NUMBER_OF_SEARCH_RESULTS);
-            final List<BookmarkListEntry> bookmarkListEntries = new ArrayList<>();
-            for (BookmarkId bookmarkId : searchIdList) {
-                PowerBookmarkMeta powerBookmarkMeta =
-                        mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
-                BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-                BookmarkListEntry bookmarkListEntry =
-                        BookmarkListEntry.createBookmarkEntry(bookmarkItem, powerBookmarkMeta);
-                bookmarkListEntries.add(bookmarkListEntry);
-            }
-            return bookmarkListEntries;
-        }
-
-        private void onBookmarkModelLoaded() {
-            populateTopLevelFoldersList();
-        }
-
-        private void syncStateChanged() {
-            if (mBookmarkModel.isBookmarkModelLoaded()) {
-                populateTopLevelFoldersList();
-            }
-        }
-
-        private void populateTopLevelFoldersList() {
-            mTopLevelFolders.clear();
-            mTopLevelFolders.addAll(BookmarkUtils.populateTopLevelFolders(mBookmarkModel));
-        }
     }
 
     private void setBookmarks(List<BookmarkListEntry> bookmarkListEntryList) {
