@@ -677,6 +677,10 @@ void WindowTreeHostManager::OnDisplayRemoved(const display::Display& display) {
     GetRootWindowSettings(GetWindow(primary_host))->display_id =
         primary_display_id;
 
+    // Since window tree hosts have been swapped between displays, we need to
+    // update the WTH the RoundedDisplayProviders are attached to.
+    UpdateHostOfDisplayProviders();
+
     OnDisplayMetricsChanged(
         GetDisplayManager()->GetDisplayForId(primary_display_id),
         DISPLAY_METRIC_BOUNDS);
@@ -761,6 +765,16 @@ void WindowTreeHostManager::AddRoundedDisplayProviderIfNeeded(
 void WindowTreeHostManager::RemoveRoundedDisplayProvider(
     const display::Display& display) {
   rounded_display_providers_map_.erase(display.id());
+}
+
+void WindowTreeHostManager::UpdateHostOfDisplayProviders() {
+  for (auto& pair : window_tree_hosts_) {
+    RoundedDisplayProvider* rounded_display_provider =
+        GetRoundedDisplayProvider(pair.first);
+    if (rounded_display_provider) {
+      rounded_display_provider->UpdateHostParent();
+    }
+  }
 }
 
 void WindowTreeHostManager::OnHostResized(aura::WindowTreeHost* host) {
@@ -906,21 +920,9 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   UpdateWorkAreaOfDisplayNearestWindow(GetWindow(non_primary_host),
                                        new_primary_display.GetWorkAreaInsets());
 
-  RoundedDisplayProvider* old_primary_rounded_display_provider =
-      GetRoundedDisplayProvider(old_primary_display.id());
-  RoundedDisplayProvider* new_primary_rounded_display_provider =
-      GetRoundedDisplayProvider(new_primary_display.id());
-
-  // We need to update the host window surfaces of the swapped display to ensure
-  // that host_windows are parented to correct root_windows, and therefore the
-  // display textures are rendered to correct display.
-  if (old_primary_rounded_display_provider) {
-    old_primary_rounded_display_provider->UpdateHostParent();
-  }
-
-  if (new_primary_rounded_display_provider) {
-    new_primary_rounded_display_provider->UpdateHostParent();
-  }
+  // Since window tree hosts have been swapped, we need to update the WTH
+  // that RoundedDisplayProviders are attached to.
+  UpdateHostOfDisplayProviders();
 
   // Update the display manager with new display info.
   GetDisplayManager()->set_force_bounds_changed(true);

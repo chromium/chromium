@@ -210,6 +210,11 @@ class ASH_EXPORT WindowTreeHostManager
   void AddRoundedDisplayProviderIfNeeded(const display::Display& display);
   void RemoveRoundedDisplayProvider(const display::Display& display);
 
+  // Updates the window tree host that the RoundedDisplayProvider is attached
+  // to, for all the display providers. This ensures that the display textures
+  // are rendered on the correct display.
+  void UpdateHostOfDisplayProviders();
+
   typedef std::map<int64_t, AshWindowTreeHost*> WindowTreeHostMap;
   // The mapping from display ID to its window tree host.
   WindowTreeHostMap window_tree_hosts_;

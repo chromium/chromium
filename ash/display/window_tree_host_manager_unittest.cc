@@ -946,6 +946,38 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
                 secondary_display.id()));
 }
 
+// Tests for the crash during the deletion of the primary display when more
+// than one display is connected.
+// See https://crbug.com/1435564.
+TEST_F(WindowTreeHostManagerRoundedDisplayTest,
+       UpdateProviderHostParentWhenDeletingPrimaryDisplay) {
+  WindowTreeHostManager* window_tree_host_manager =
+      Shell::Get()->window_tree_host_manager();
+
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  // First display has rounded corners.
+  display_manager()->OnNativeDisplaysChanged(
+      {first_display_info_,
+       display::ManagedDisplayInfo::CreateFromSpec("1+1-300x200")});
+
+  display::Display secondary_display =
+      display_manager_test.GetSecondaryDisplay();
+
+  // Make the second display as primary display.
+  window_tree_host_manager->SetPrimaryDisplayId(secondary_display.id());
+
+  // As we remove the second display (current primary display), we move the
+  // primary host (attached to the secondary display) to the first display and
+  // instead delete the host of the first display in
+  // `WindowTreeHostManager::OnDisplayRemoved()`.
+  // We need to update which WTH for the RoundedDisplayProvider before deleting
+  // the host.
+  display_manager()->OnNativeDisplaysChanged({first_display_info_});
+
+  // As long nothing crashes we are good.
+}
+
 TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
   WindowTreeHostManager* window_tree_host_manager =
       Shell::Get()->window_tree_host_manager();
