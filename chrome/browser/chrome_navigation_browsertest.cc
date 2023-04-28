@@ -276,10 +276,15 @@ class CtrlClickShouldEndUpInNewProcessTest : public CtrlClickProcessTest {
  protected:
   void VerifyProcessExpectations(content::WebContents* main_contents,
                                  content::WebContents* new_contents) override {
-    // Verify that the two WebContents are in a different process, SiteInstance
-    // and BrowsingInstance from the old contents.
-    EXPECT_NE(main_contents->GetPrimaryMainFrame()->GetProcess(),
-              new_contents->GetPrimaryMainFrame()->GetProcess());
+    // The two WebContents should not share the same process unless process
+    // sharing is explicitly allowed by a process-per-site feature.
+    if (!base::FeatureList::IsEnabled(
+            features::kProcessPerSiteUpToMainFrameThreshold)) {
+      EXPECT_NE(main_contents->GetPrimaryMainFrame()->GetProcess(),
+                new_contents->GetPrimaryMainFrame()->GetProcess());
+    }
+    // The new WebContents should always have a different SiteInstance and
+    // BrowsingInstance from the old contents.
     EXPECT_NE(main_contents->GetPrimaryMainFrame()->GetSiteInstance(),
               new_contents->GetPrimaryMainFrame()->GetSiteInstance());
     EXPECT_FALSE(main_contents->GetSiteInstance()->IsRelatedSiteInstance(
