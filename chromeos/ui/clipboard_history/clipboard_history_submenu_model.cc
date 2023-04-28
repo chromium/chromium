@@ -12,9 +12,14 @@ namespace chromeos::clipboard_history {
 // static
 std::unique_ptr<ClipboardHistorySubmenuModel>
 ClipboardHistorySubmenuModel::CreateClipboardHistorySubmenuModel(
+    crosapi::mojom::ClipboardHistoryControllerShowSource source,
     size_t start_command_id) {
+  CHECK(source == crosapi::mojom::ClipboardHistoryControllerShowSource::
+                      kRenderViewContextMenu ||
+        source == crosapi::mojom::ClipboardHistoryControllerShowSource::
+                      kTextfieldContextMenu);
   return base::WrapUnique(new ClipboardHistorySubmenuModel(
-      start_command_id, QueryItemDescriptors()));
+      source, start_command_id, QueryItemDescriptors()));
 }
 
 ClipboardHistorySubmenuModel::~ClipboardHistorySubmenuModel() = default;
@@ -23,15 +28,16 @@ void ClipboardHistorySubmenuModel::ExecuteCommand(int command_id,
                                                   int event_flags) {
   if (auto iter = item_ids_by_command_ids_.find(command_id);
       iter != item_ids_by_command_ids_.end()) {
-    PasteClipboardItemById(iter->second);
+    PasteClipboardItemById(iter->second, event_flags, source_);
   }
 }
 
 ClipboardHistorySubmenuModel::ClipboardHistorySubmenuModel(
+    crosapi::mojom::ClipboardHistoryControllerShowSource source,
     size_t start_command_id,
     const std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>&
         item_descriptors)
-    : ui::SimpleMenuModel(this) {
+    : ui::SimpleMenuModel(this), source_(source) {
   for (size_t index = 0; index < item_descriptors.size(); ++index) {
     const size_t command_id = start_command_id + index;
     AddItemWithIcon(

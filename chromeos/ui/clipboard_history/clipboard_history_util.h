@@ -30,14 +30,19 @@ QueryItemDescriptorsImpl::ResultType QueryItemDescriptors();
 
 // Sets the function implementation that pastes the clipboard item specified
 // by id. CrOS Ash and CrOS Lacros have different implementations.
-using PasteClipboardItemByIdImpl =
-    base::RepeatingCallback<void(const std::string&)>;
+using PasteClipboardItemByIdImpl = base::RepeatingCallback<void(
+    const std::string&,
+    int,
+    crosapi::mojom::ClipboardHistoryControllerShowSource)>;
 COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
 void SetPasteClipboardItemByIdImpl(PasteClipboardItemByIdImpl impl);
 
 // Pastes the clipboard item specified by `id`.
 COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
-void PasteClipboardItemById(const std::string& id);
+void PasteClipboardItemById(
+    const std::string& id,
+    int event_flags,
+    crosapi::mojom::ClipboardHistoryControllerShowSource show_source);
 
 // Returns the icon that represents a clipboard item with the specified
 // `display_format`.

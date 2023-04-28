@@ -39,8 +39,11 @@ void SetPasteClipboardItemByIdImpl(PasteClipboardItemByIdImpl impl) {
   old_impl = impl;
 }
 
-void PasteClipboardItemById(const std::string& id) {
-  GetPasteClipboardItemByIdImpl().Run(id);
+void PasteClipboardItemById(
+    const std::string& id,
+    int event_flags,
+    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
+  GetPasteClipboardItemByIdImpl().Run(id, event_flags, show_source);
 }
 
 ui::ImageModel GetIconForDisplayFormat(

@@ -39,6 +39,8 @@ ViewsTextServicesContextMenuAsh::ViewsTextServicesContextMenuAsh(
     // always work. Find a better solution.
     submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
         CreateClipboardHistorySubmenuModel(
+            crosapi::mojom::ClipboardHistoryControllerShowSource::
+                kTextfieldContextMenu,
             /*start_command_id=*/views::Textfield::kLastCommandId + 1);
 
     menu->InsertSubMenuWithStringIdAt(

@@ -34,7 +34,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/one_shot_event.h"
@@ -132,6 +131,22 @@ void RecordMenuIndexPastedUserAction(int command_id) {
   }
 }
 
+void RecordPasteItemIndex(int index) {
+  CHECK_GE(index, clipboard_history_util::kFirstItemCommandId);
+  CHECK_LT(index, clipboard_history_util::kCommandIdBoundary);
+
+  // Record the paste item's history list index in a histogram to get a
+  // distribution of where in the list users paste from.
+  base::UmaHistogramExactLinear(
+      "Ash.ClipboardHistory.ContextMenu.MenuOptionSelected", index,
+      /*exclusive_max=*/clipboard_history_util::kCommandIdBoundary);
+
+  // Record the paste item's history list index as a user action to analyze
+  // usage patterns, e.g., how frequently the same index is pasted multiple
+  // times in a row.
+  RecordMenuIndexPastedUserAction(index);
+}
+
 using ClipboardHistoryPasteType =
     ClipboardHistoryControllerImpl::ClipboardHistoryPasteType;
 bool IsPlainTextPaste(ClipboardHistoryPasteType paste_type) {
@@ -149,6 +164,37 @@ bool IsPlainTextPaste(ClipboardHistoryPasteType paste_type) {
     case ClipboardHistoryPasteType::kRichTextVirtualKeyboard:
       return false;
   }
+}
+
+ClipboardHistoryPasteType CalculatePasteType(
+    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source,
+    int event_flags) {
+  // There are no specific flags that indicate a paste triggered by a
+  // keystroke, so assume by default that keystroke was the event source
+  // and then check for the other known possibilities. This assumption may
+  // cause pastes from unknown sources to be incorrectly captured as
+  // keystroke pastes, but we do not expect such cases to significantly
+  // alter metrics.
+  const bool paste_plain_text = event_flags & ui::EF_SHIFT_DOWN;
+
+  if (paste_source ==
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kVirtualKeyboard) {
+    return paste_plain_text
+               ? ClipboardHistoryPasteType::kPlainTextVirtualKeyboard
+               : ClipboardHistoryPasteType::kRichTextVirtualKeyboard;
+  }
+
+  ClipboardHistoryPasteType paste_type =
+      paste_plain_text ? ClipboardHistoryPasteType::kPlainTextKeystroke
+                       : ClipboardHistoryPasteType::kRichTextKeystroke;
+  if (event_flags & ui::EF_MOUSE_BUTTON) {
+    paste_type = paste_plain_text ? ClipboardHistoryPasteType::kPlainTextMouse
+                                  : ClipboardHistoryPasteType::kRichTextMouse;
+  } else if (event_flags & ui::EF_FROM_TOUCH) {
+    paste_type = paste_plain_text ? ClipboardHistoryPasteType::kPlainTextTouch
+                                  : ClipboardHistoryPasteType::kRichTextTouch;
+  }
+  return paste_type;
 }
 
 }  // namespace
@@ -309,11 +355,12 @@ void ClipboardHistoryControllerImpl::ToggleMenuShownByAccelerator(
     } else {
       // Before hiding the menu, paste the selected menu item, or the first item
       // if none is selected.
-      PasteMenuItemData(context_menu_->GetSelectedMenuItemCommand().value_or(
-                            clipboard_history_util::kFirstItemCommandId),
-                        is_plain_text_paste
-                            ? ClipboardHistoryPasteType::kPlainTextAccelerator
-                            : ClipboardHistoryPasteType::kRichTextAccelerator);
+      PasteClipboardItemByCommandId(
+          context_menu_->GetSelectedMenuItemCommand().value_or(
+              clipboard_history_util::kFirstItemCommandId),
+          is_plain_text_paste
+              ? ClipboardHistoryPasteType::kPlainTextAccelerator
+              : ClipboardHistoryPasteType::kRichTextAccelerator);
     }
     return;
   }
@@ -562,27 +609,31 @@ std::vector<std::string> ClipboardHistoryControllerImpl::GetHistoryItemIds()
 }
 
 bool ClipboardHistoryControllerImpl::PasteClipboardItemById(
-    const std::string& item_id) {
-  if (currently_pasting_)
+    const std::string& item_id,
+    int event_flags,
+    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) {
+  // Prevent multiple pastes in quick succession.
+  // TODO(http://b/279825892): This branch code handles the virtual keyboard
+  // paste specifically. Move this code logic to the virtual keyboard delegate.
+  if (currently_pasting_) {
     return false;
-
-  auto* active_window = window_util::GetActiveWindow();
-  if (!active_window)
-    return false;
-
-  for (const auto& item : history()->GetItems()) {
-    if (item.id().ToString() == item_id) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &ClipboardHistoryControllerImpl::PasteClipboardHistoryItem,
-              weak_ptr_factory_.GetWeakPtr(), active_window, item,
-              ClipboardHistoryPasteType::kRichTextVirtualKeyboard,
-              last_menu_source_));
-      return true;
-    }
   }
-  return false;
+
+  const std::list<ClipboardHistoryItem>& history_items = history()->GetItems();
+  auto iter_by_id = std::find_if(history_items.cbegin(), history_items.cend(),
+                                 [&item_id](const ClipboardHistoryItem& item) {
+                                   return item.id().ToString() == item_id;
+                                 });
+  if (iter_by_id == history_items.cend()) {
+    return false;
+  }
+
+  RecordPasteItemIndex(std::distance(history_items.cbegin(), iter_by_id) +
+                       clipboard_history_util::kFirstItemCommandId);
+
+  MaybePostPasteTask(*iter_by_id, CalculatePasteType(paste_source, event_flags),
+                     paste_source);
+  return true;
 }
 
 bool ClipboardHistoryControllerImpl::DeleteClipboardItemById(
@@ -728,31 +779,9 @@ void ClipboardHistoryControllerImpl::ExecuteCommand(int command_id,
   Action action = context_menu_->GetActionForCommandId(command_id);
   switch (action) {
     case Action::kPaste:
-      // Create a scope for the variables used in this case so that they can be
-      // deallocated from the stack.
-      {
-        bool paste_plain_text = event_flags & ui::EF_SHIFT_DOWN;
-        // There are no specific flags that indicate a paste triggered by a
-        // keystroke, so assume by default that keystroke was the event source
-        // and then check for the other known possibilities. This assumption may
-        // cause pastes from unknown sources to be incorrectly captured as
-        // keystroke pastes, but we do not expect such cases to significantly
-        // alter metrics.
-        ClipboardHistoryPasteType paste_type =
-            paste_plain_text ? ClipboardHistoryPasteType::kPlainTextKeystroke
-                             : ClipboardHistoryPasteType::kRichTextKeystroke;
-        if (event_flags & ui::EF_MOUSE_BUTTON) {
-          paste_type = paste_plain_text
-                           ? ClipboardHistoryPasteType::kPlainTextMouse
-                           : ClipboardHistoryPasteType::kRichTextMouse;
-        } else if (event_flags & ui::EF_FROM_TOUCH) {
-          paste_type = paste_plain_text
-                           ? ClipboardHistoryPasteType::kPlainTextTouch
-                           : ClipboardHistoryPasteType::kRichTextTouch;
-        }
-        PasteMenuItemData(command_id, paste_type);
-        return;
-      }
+      PasteClipboardItemByCommandId(
+          command_id, CalculatePasteType(last_menu_source_, event_flags));
+      return;
     case Action::kDelete:
       DeleteItemWithCommandId(command_id);
       return;
@@ -768,19 +797,28 @@ void ClipboardHistoryControllerImpl::ExecuteCommand(int command_id,
   }
 }
 
-void ClipboardHistoryControllerImpl::PasteMenuItemData(
+void ClipboardHistoryControllerImpl::PasteClipboardItemByCommandId(
     int command_id,
     ClipboardHistoryPasteType paste_type) {
-  // Record the paste item's history list index in a histogram to get a
-  // distribution of where in the list users paste from.
-  UMA_HISTOGRAM_ENUMERATION(
-      "Ash.ClipboardHistory.ContextMenu.MenuOptionSelected", command_id,
-      clipboard_history_util::kCommandIdBoundary);
-  // Record the paste item's history list index as a user action to analyze
-  // usage patterns, e.g., how frequently the same index is pasted multiple
-  // times in a row.
-  RecordMenuIndexPastedUserAction(command_id);
+  // Force close the context menu. Failure to do so before dispatching our
+  // synthetic key event will result in the context menu consuming the event.
+  // When closing the menu, indicate that the menu is closing because of an
+  // imminent paste. Note that in some cases, this will indicate paste intent
+  // for pastes that ultimately fail. For now, this is an acceptable inaccuracy.
+  CHECK(context_menu_);
+  context_menu_->Cancel(/*will_paste_item=*/true);
 
+  // `command_id` should match the pasted item's index in `context_menu_`.
+  RecordPasteItemIndex(command_id);
+
+  MaybePostPasteTask(context_menu_->GetItemFromCommandId(command_id),
+                     paste_type, last_menu_source_);
+}
+
+void ClipboardHistoryControllerImpl::MaybePostPasteTask(
+    const ClipboardHistoryItem& item,
+    ClipboardHistoryPasteType paste_type,
+    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) {
   // Deactivate ClipboardImageModelFactory prior to pasting to ensure that any
   // modifications to the clipboard for HTML rendering purposes are reversed.
   // This factory may be nullptr in tests.
@@ -788,26 +826,15 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(
     clipboard_image_factory->Deactivate();
   }
 
-  // Force close the context menu. Failure to do so before dispatching our
-  // synthetic key event will result in the context menu consuming the event.
-  // When closing the menu, indicate that the menu is closing because of an
-  // imminent paste. Note that in some cases, this will indicate paste intent
-  // for pastes that ultimately fail. For now, this is an acceptable inaccuracy.
-  DCHECK(context_menu_);
-  context_menu_->Cancel(/*will_paste_item=*/true);
-
-  auto* active_window = window_util::GetActiveWindow();
-  if (!active_window)
-    return;
-
-  const ClipboardHistoryItem& selected_item =
-      context_menu_->GetItemFromCommandId(command_id);
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ClipboardHistoryControllerImpl::PasteClipboardHistoryItem,
-                     weak_ptr_factory_.GetWeakPtr(), active_window,
-                     selected_item, paste_type, last_menu_source_));
+  if (auto* active_window = window_util::GetActiveWindow()) {
+    // Paste asynchronously to ensure ARC windows handle paste events correctly.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ClipboardHistoryControllerImpl::PasteClipboardHistoryItem,
+            weak_ptr_factory_.GetWeakPtr(), active_window, item, paste_type,
+            paste_source));
+  }
 }
 
 void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(

@@ -14,6 +14,7 @@
 
 namespace crosapi::mojom {
 class ClipboardHistoryItemDescriptor;
+enum class ClipboardHistoryControllerShowSource;
 }  // namespace crosapi::mojom
 
 namespace chromeos::clipboard_history {
@@ -24,11 +25,14 @@ class COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
     ClipboardHistorySubmenuModel : public ui::SimpleMenuModel,
                                    public ui::SimpleMenuModel::Delegate {
  public:
-  // `start_command_id` is the first available command id for the submenu items.
-  // `start_command_id` should be specified so that the submenu command ids do
-  // not conflict with any other command id in the parent menu.
+  // `source` indicates where the submenu model is used. It should be a context
+  // menu. `start_command_id` is the first available command id for the submenu
+  // items. `start_command_id` should be specified so that the submenu command
+  // ids do not conflict with any other command id in the parent menu.
   static std::unique_ptr<ClipboardHistorySubmenuModel>
-  CreateClipboardHistorySubmenuModel(size_t start_command_id);
+  CreateClipboardHistorySubmenuModel(
+      crosapi::mojom::ClipboardHistoryControllerShowSource source,
+      size_t start_command_id);
 
   ClipboardHistorySubmenuModel(const ClipboardHistorySubmenuModel&) = delete;
   ClipboardHistorySubmenuModel& operator=(const ClipboardHistorySubmenuModel&) =
@@ -40,9 +44,12 @@ class COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
   void ExecuteCommand(int command_id, int event_flags) override;
 
   ClipboardHistorySubmenuModel(
+      crosapi::mojom::ClipboardHistoryControllerShowSource source,
       size_t start_command,
       const std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>&
           item_descriptors);
+
+  const crosapi::mojom::ClipboardHistoryControllerShowSource source_;
 
   // Mappings from command ids to clipboard history item ids.
   std::map<int, std::string> item_ids_by_command_ids_;

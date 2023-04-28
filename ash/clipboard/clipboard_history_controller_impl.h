@@ -163,7 +163,11 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void OnScreenshotNotificationCreated() override;
   std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() override;
   std::vector<std::string> GetHistoryItemIds() const override;
-  bool PasteClipboardItemById(const std::string& item_id) override;
+  bool PasteClipboardItemById(
+      const std::string& item_id,
+      int event_flags,
+      crosapi::mojom::ClipboardHistoryControllerShowSource paste_source)
+      override;
   bool DeleteClipboardItemById(const std::string& item_id) override;
 
   // ClipboardHistory::Observer:
@@ -194,8 +198,20 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // `event_flags`.
   void ExecuteCommand(int command_id, int event_flags);
 
-  // Paste the clipboard data of the menu item specified by `command_id`.
-  void PasteMenuItemData(int command_id, ClipboardHistoryPasteType paste_type);
+  // Pastes the clipboard data of the clipboard history context menu item
+  // specified by `command_id`. NOTE: This function assumes that the clipboard
+  // history context menu has been open. It is different from
+  // `PasteClipboardItemById()` that can be called without showing the clipboard
+  // history context menu.
+  void PasteClipboardItemByCommandId(int command_id,
+                                     ClipboardHistoryPasteType paste_type);
+
+  // Posts a task to paste `item` with `paste_type` to the active window, if
+  // any.
+  void MaybePostPasteTask(
+      const ClipboardHistoryItem& item,
+      ClipboardHistoryPasteType paste_type,
+      crosapi::mojom::ClipboardHistoryControllerShowSource paste_source);
 
   // Pastes the specified clipboard history item, if `intended_window` matches
   // the active window. `paste_type` indicates the mode of paste execution for

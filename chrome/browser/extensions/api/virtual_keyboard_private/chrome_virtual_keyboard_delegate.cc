@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,6 +41,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -390,7 +392,8 @@ bool ChromeVirtualKeyboardDelegate::PasteClipboardItem(
     return false;
 
   return clipboard_history_controller->PasteClipboardItemById(
-      clipboard_item_id);
+      clipboard_item_id, ui::EF_NONE,
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kVirtualKeyboard);
 }
 
 bool ChromeVirtualKeyboardDelegate::DeleteClipboardItem(

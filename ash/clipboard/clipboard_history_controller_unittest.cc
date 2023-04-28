@@ -280,6 +280,95 @@ TEST_F(ClipboardHistoryControllerTest, LockedScreenImage) {
   TestEnteringLockScreen();
 }
 
+class ClipboardHistoryControllerWithTextfieldTest
+    : public ClipboardHistoryControllerTest {
+ public:
+  // ClipboardHistoryControllerTest:
+  void SetUp() override {
+    ClipboardHistoryControllerTest::SetUp();
+
+    textfield_widget_ = CreateFramelessTestWidget();
+    textfield_widget_->SetBounds(gfx::Rect(0, 0, 100, 100));
+    textfield_ = textfield_widget_->SetContentsView(
+        std::make_unique<views::Textfield>());
+    textfield_->SetAccessibleName(u"Textfield");
+    textfield_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
+    // Focus the textfield and confirm initial state.
+    textfield_->RequestFocus();
+    ASSERT_TRUE(textfield_->HasFocus());
+    ASSERT_TRUE(textfield_->GetText().empty());
+  }
+
+  std::unique_ptr<views::Widget> textfield_widget_;
+  views::Textfield* textfield_;
+};
+
+TEST_F(ClipboardHistoryControllerWithTextfieldTest, PasteClipboardItemById) {
+  // Write four items to the clipboard.
+  WriteTextToClipboardAndConfirm(u"A");
+  WriteTextToClipboardAndConfirm(u"B");
+  WriteTextToClipboardAndConfirm(u"C");
+  WriteTextToClipboardAndConfirm(u"D");
+  const std::vector<ClipboardHistoryItem> items = GetHistoryValues();
+  ASSERT_EQ(items.size(), 4u);
+
+  // Set a zero duration to make test code simpler.
+  GetClipboardHistoryController()->set_buffer_restoration_delay_for_test(
+      base::TimeDelta());
+
+  struct {
+    size_t paste_data_index;
+    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source;
+    int event_flags;
+    ClipboardHistoryControllerImpl::ClipboardHistoryPasteType paste_type;
+  } test_cases[] = {
+      {/*paste_data_index=*/0,
+       /*paste_source=*/
+       crosapi::mojom::ClipboardHistoryControllerShowSource::kVirtualKeyboard,
+       /*event_flags=*/ui::EF_NONE,
+       /*paste_type=*/
+       ClipboardHistoryControllerImpl::ClipboardHistoryPasteType::
+           kRichTextVirtualKeyboard},
+      {/*paste_data_index=*/1,
+       /*paste_source=*/
+       crosapi::mojom::ClipboardHistoryControllerShowSource::
+           kTextfieldContextMenu,
+       /*event_flags=*/ui::EF_MOUSE_BUTTON,
+       /*paste_type=*/
+       ClipboardHistoryControllerImpl::ClipboardHistoryPasteType::
+           kRichTextMouse},
+      {/*paste_data_index=*/2,
+       /*paste_source=*/
+       crosapi::mojom::ClipboardHistoryControllerShowSource::
+           kRenderViewContextMenu,
+       /*event_flags=*/ui::EF_SHIFT_DOWN | ui::EF_FROM_TOUCH,
+       /*paste_type=*/
+       ClipboardHistoryControllerImpl::ClipboardHistoryPasteType::
+           kPlainTextTouch}};
+
+  for (auto& [paste_data_index, paste_source, event_flags, paste_type] :
+       test_cases) {
+    base::HistogramTester histogram_tester;
+    textfield_->SetText(std::u16string());
+    ClipboardHistoryController::Get()->PasteClipboardItemById(
+        items[paste_data_index].id().ToString(), event_flags, paste_source);
+    base::RunLoop().RunUntilIdle();
+
+    // Verify the contents of `textfield_` and histograms.
+    EXPECT_EQ(textfield_->GetText(), items[paste_data_index].display_text());
+    histogram_tester.ExpectBucketCount("Ash.ClipboardHistory.PasteType",
+                                       paste_type,
+                                       /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount("Ash.ClipboardHistory.PasteSource",
+                                       paste_source,
+                                       /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Ash.ClipboardHistory.ContextMenu.MenuOptionSelected",
+        paste_data_index + 1, /*expected_count=*/1);
+  }
+}
+
 // Base class for tests of Clipboard History parameterized by whether the
 // `kClipboardHistoryRefresh` feature flag is enabled.
 class ClipboardHistoryControllerRefreshTest
@@ -742,7 +831,7 @@ TEST_P(ClipboardHistoryControllerShowSourceTest, OnMenuClosingCallback) {
 // refresh feature is enabled;
 // 2. The second value is the display format under test.
 class ClipboardHistoryRefreshDisplayFormatTest
-    : public ClipboardHistoryControllerTest,
+    : public ClipboardHistoryControllerWithTextfieldTest,
       public testing::WithParamInterface<
           std::tuple</*enable_clipboard_history_refresh=*/bool,
                      /*display_format_under_test=*/crosapi::mojom::
@@ -800,17 +889,10 @@ INSTANTIATE_TEST_SUITE_P(
 // Verifies that the clipboard history submenu model of the text services
 // context menu in Ash works as expected.
 TEST_P(ClipboardHistoryRefreshDisplayFormatTest, TextServicesSubMenu) {
-  // Create a test widget with the textfield.
-  std::unique_ptr<views::Widget> textfield_widget = CreateFramelessTestWidget();
-  textfield_widget->SetBounds(gfx::Rect(0, 0, 100, 100));
-  views::Textfield* textfield =
-      textfield_widget->SetContentsView(std::make_unique<views::Textfield>());
-  textfield->SetAccessibleName(u"Textfield");
-
   // Show the textfield context menu before writing any clipboard data.
-  ShowTextfieldContextMenu(textfield);
+  ShowTextfieldContextMenu(textfield_);
 
-  views::TextfieldTestApi api(textfield);
+  views::TextfieldTestApi api(textfield_);
   ui::MenuModel* const root_model = api.context_menu_contents();
   ASSERT_TRUE(root_model);
 
@@ -833,7 +915,7 @@ TEST_P(ClipboardHistoryRefreshDisplayFormatTest, TextServicesSubMenu) {
 
   // Close the textfield menu then reshow.
   GetEventGenerator()->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
-  ShowTextfieldContextMenu(textfield);
+  ShowTextfieldContextMenu(textfield_);
 
   // Check `submenu_model` if any. Reuse `target_command_index` since the
   // context menu model structure should not change.
