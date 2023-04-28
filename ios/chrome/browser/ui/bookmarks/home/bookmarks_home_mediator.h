@@ -52,17 +52,6 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 // BookmarksHomeViewController.
 @interface BookmarksHomeMediator : NSObject
 
-// Models.
-
-// The model holding profile bookmark data.
-@property(nonatomic, assign, readonly)
-    bookmarks::BookmarkModel* profileBookmarkModel;
-// The model holding account bookmark data.
-@property(nonatomic, assign, readonly)
-    bookmarks::BookmarkModel* accountBookmarkModel;
-
-// State variables.
-
 // The BookmarkNode that is currently being displayed by the table view.  May be
 // nil.
 @property(nonatomic, assign) const bookmarks::BookmarkNode* displayedNode;
