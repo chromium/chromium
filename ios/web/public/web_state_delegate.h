@@ -11,6 +11,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/functional/callback.h"
+#include "build/blink_buildflags.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
 
@@ -107,6 +108,9 @@ class WebStateDelegate {
 
  private:
   friend class WebStateImpl;
+#if BUILDFLAG(USE_BLINK)
+  friend class ContentWebState;
+#endif
 
   // Called when `this` becomes the WebStateDelegate for `source`.
   void Attach(WebState* source);

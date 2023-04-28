@@ -71,6 +71,7 @@ source_set("agents") {
     ":session_metrics",
     ":web_state_list",
     "//base",
+    "//build:blink_buildflags",
     "//components/navigation_metrics",
     "//components/profile_metrics",
     "//ios/chrome/browser/browser_state_metrics",

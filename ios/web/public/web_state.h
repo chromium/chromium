@@ -20,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
+#include "build/blink_buildflags.h"
 #include "components/sessions/core/session_id.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
 #include "ios/web/public/js_messaging/content_world.h"
@@ -81,6 +82,11 @@ class WebState : public base::SupportsUserData {
     // clicking a link with a blank target.  Used to determine whether the
     // WebState is allowed to be closed via window.close().
     bool created_with_opener;
+
+#if BUILDFLAG(USE_BLINK)
+    // If `created_with_opener`, a pointer to the opener WebState.
+    WebState* opener_web_state;
+#endif
 
     // Value used to set the last time the WebState was made active; this
     // is the value that will be returned by GetLastActiveTime(). If this
