@@ -143,8 +143,11 @@ mojom::GetAssertionResponsePtr BuildGetAssertionResponseError(
 }  // namespace
 
 QuickStartDecoder::QuickStartDecoder(
-    mojo::PendingReceiver<mojom::QuickStartDecoder> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    mojo::PendingReceiver<mojom::QuickStartDecoder> receiver,
+    base::OnceClosure on_disconnect)
+    : receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(std::move(on_disconnect));
+}
 
 QuickStartDecoder::~QuickStartDecoder() = default;
 

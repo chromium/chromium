@@ -27,7 +27,8 @@ struct Environment {
 
     // Create instance once to be reused between fuzzing rounds.
     decoder = std::make_unique<sharing::NearbySharingDecoder>(
-        remote.BindNewPipeAndPassReceiver());
+        remote.BindNewPipeAndPassReceiver(),
+        /*on_disconnect=*/base::DoNothing());
   }
 
   base::SingleThreadTaskExecutor task_executor;
