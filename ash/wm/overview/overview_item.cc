@@ -1260,7 +1260,10 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
     if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
         transform_window_.type() == OverviewGridWindowFillMode::kLetterBoxed) {
       overview_item_bounds.set_x(transformed_bounds.x());
-      overview_item_bounds.set_width(transformed_bounds.width());
+      // We minus 0.5f here because sometimes the transformed window is a little
+      // bit wider than the header view on the right side.
+      // TODO(b/280085961): Investigate a proper fix for this.
+      overview_item_bounds.set_width(transformed_bounds.width() - 0.5f);
     }
   }
 
