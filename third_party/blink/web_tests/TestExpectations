@@ -6839,7 +6839,6 @@ crbug.com/1432272 [ Linux ] virtual/unsafe_webgpu/regress/regress-1104580.html [
 crbug.com/1432763 [ Linux ] external/wpt/fetch/metadata/generated/element-picture.https.sub.html [ Crash Pass Timeout ]
 
 # Sheriff 2023-04-20
-crbug.com/1432703 [ Win10.20h2 ] external/wpt/long-animation-frame/tentative/loaf-blocking-duration.html [ Failure Pass ]
 crbug.com/952717 [ Win11 ] http/tests/xmlhttprequest/redirect-cross-origin-post.html [ Failure Pass ]
 
 # Sheriff 2023-04-21
