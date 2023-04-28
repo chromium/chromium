@@ -324,7 +324,8 @@ export class HelpBubbleElement extends PolymerElement {
   }
 
   private getButtonClass_(isDefault: boolean): string {
-    return isDefault ? 'default-button' : '';
+    return isDefault ? 'default-button focus-outline-visible' :
+                       'focus-outline-visible';
   }
 
   private getButtonTabIndex_(index: number, isDefault: boolean): number {
