@@ -84,6 +84,8 @@ class PrerenderManager : public content::WebContentsObserver,
   base::WeakPtr<content::PrerenderHandle> StartPrerenderBookmark(
       const GURL& prerendering_url,
       content::PreloadingPredictor predictor);
+  void StopPrerenderBookmark(
+      base::WeakPtr<content::PrerenderHandle> prerender_handle);
 
   // The entry of direct url input prerender.
   // Calling this method will return WeakPtr of the started prerender, and lead

@@ -366,6 +366,16 @@ class BookmarkButton : public BookmarkButtonBase {
   void OnMouseExited(const ui::MouseEvent& event) override {
     MayRecordHoverDuration(/*taken=*/false);
     BookmarkButtonBase::OnMouseExited(event);
+    if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2)) {
+      preloading_timer_.Stop();
+      if (prerender_web_contents_) {
+        auto* prerender_manager =
+            PrerenderManager::FromWebContents(&(*prerender_web_contents_));
+        prerender_manager->StopPrerenderBookmark(prerender_handle_);
+        prerender_handle_ = nullptr;
+        prerender_web_contents_ = nullptr;
+      }
+    }
   }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
@@ -406,16 +416,16 @@ class BookmarkButton : public BookmarkButtonBase {
 
  private:
   void StartPrerendering(content::PreloadingPredictor predictor, GURL url) {
-    // TODO(https://crbug.com/1422819): Cancel the prerendering if the mouse
-    // exits without triggering PressedCallback. Prerender only for https
-    // scheme, and add an enum metric to report the protocol scheme.
+    // TODO(https://crbug.com/1422819): Prerender only for https scheme, and add
+    // an enum metric to report the protocol scheme.
     CHECK(
         base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2));
     if (!prerender_handle_) {
-      PrerenderManager::CreateForWebContents(
-          browser_->tab_strip_model()->GetActiveWebContents());
-      auto* prerender_manager = PrerenderManager::FromWebContents(
-          browser_->tab_strip_model()->GetActiveWebContents());
+      prerender_web_contents_ =
+          browser_->tab_strip_model()->GetActiveWebContents()->GetWeakPtr();
+      PrerenderManager::CreateForWebContents(&(*prerender_web_contents_));
+      auto* prerender_manager =
+          PrerenderManager::FromWebContents(&(*prerender_web_contents_));
       prerender_handle_ =
           prerender_manager->StartPrerenderBookmark(url, predictor);
     }
@@ -430,6 +440,7 @@ class BookmarkButton : public BookmarkButtonBase {
   const raw_ptr<Browser> browser_;
   base::WeakPtr<content::PrerenderHandle> prerender_handle_;
   base::RetainingOneShotTimer preloading_timer_;
+  base::WeakPtr<content::WebContents> prerender_web_contents_;
 
   // Information for metrics.
   absl::optional<base::TimeTicks> mouse_entered_time_;
