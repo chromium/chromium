@@ -15,8 +15,7 @@ items:
 - caption: Disable deleting browser and download history
   value: false
 owners:
-- file://components/policy/OWNERS
-- bartfab@chromium.org
+- file://chrome/browser/enterprise/OWNERS
 schema:
   type: boolean
 supported_on:
