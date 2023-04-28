@@ -88,6 +88,12 @@ void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
 }
 
 void AccountConsistencyBrowserAgent::OnAddAccount() {
+  if ([base_view_controller_ presentedViewController]) {
+    // If the base view controller is already presenting a view, the sign-in
+    // should not appear on top of it.
+    // See http://crbug.com/1399464.
+    return;
+  }
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperationAddAccount
             accessPoint:signin_metrics::AccessPoint::
