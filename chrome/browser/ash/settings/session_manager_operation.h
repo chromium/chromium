@@ -96,8 +96,8 @@ class SessionManagerOperation {
   }
 
   // Whether to verify the loaded policy's signature against |public_key_| and
-  // perform other cloud-specific validations.  (Active Directory policy has no
-  // signature that could be verified.)
+  // perform other cloud-specific validations.
+  // TODO(b:263367348): Remove this since it's always used as true.
   bool cloud_validations_ = true;
 
   bool force_key_load_ = false;
