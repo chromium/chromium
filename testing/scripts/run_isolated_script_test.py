@@ -64,6 +64,8 @@ class BareScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
     # them than to update bot configs to not pass them.
     common.add_emulator_args(self._parser)
     self._parser.add_argument(
+        '--coverage-dir', type=str, help='Unused')
+    self._parser.add_argument(
         '--use-persistent-shell', action='store_true', help='Unused')
 
 
