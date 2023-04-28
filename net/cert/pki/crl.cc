@@ -368,7 +368,7 @@ CRLRevocationStatus CheckCRL(std::string_view raw_crl,
                              size_t target_cert_index,
                              const ParsedDistributionPoint& cert_dp,
                              int64_t verify_time_epoch_seconds,
-                             int64_t max_age_seconds) {
+                             absl::optional<int64_t> max_age_seconds) {
   DCHECK_LT(target_cert_index, valid_chain.size());
 
   if (cert_dp.reasons) {

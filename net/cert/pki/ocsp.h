@@ -285,7 +285,7 @@ CheckOCSP(std::string_view raw_response,
           std::string_view certificate_der,
           std::string_view issuer_certificate_der,
           int64_t verify_time_epoch_seconds,
-          int64_t max_age_seconds,
+          absl::optional<int64_t> max_age_seconds,
           OCSPVerifyResult::ResponseStatus* response_details);
 
 // Checks the revocation status of |certificate| by using the DER-encoded
@@ -298,7 +298,7 @@ CheckOCSP(std::string_view raw_response,
           const ParsedCertificate* certificate,
           const ParsedCertificate* issuer_certificate,
           int64_t verify_time_epoch_seconds,
-          int64_t max_age_seconds,
+          absl::optional<int64_t> max_age_seconds,
           OCSPVerifyResult::ResponseStatus* response_details);
 
 // Creates a DER-encoded OCSPRequest for |cert|. The request is fairly basic:

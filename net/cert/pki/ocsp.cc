@@ -735,7 +735,7 @@ OCSPRevocationStatus GetRevocationStatusForCert(
     const ParsedCertificate* cert,
     const ParsedCertificate* issuer_certificate,
     int64_t verify_time_epoch_seconds,
-    int64_t max_age_seconds,
+    absl::optional<int64_t> max_age_seconds,
     OCSPVerifyResult::ResponseStatus* response_details) {
   OCSPRevocationStatus result = OCSPRevocationStatus::UNKNOWN;
   *response_details = OCSPVerifyResult::NO_MATCHING_RESPONSE;
@@ -800,7 +800,7 @@ OCSPRevocationStatus CheckOCSP(
     std::string_view issuer_certificate_der,
     const ParsedCertificate* issuer_certificate,
     int64_t verify_time_epoch_seconds,
-    int64_t max_age_seconds,
+    absl::optional<int64_t> max_age_seconds,
     OCSPVerifyResult::ResponseStatus* response_details) {
   *response_details = OCSPVerifyResult::NOT_CHECKED;
 
@@ -902,7 +902,7 @@ OCSPRevocationStatus CheckOCSP(
     std::string_view certificate_der,
     std::string_view issuer_certificate_der,
     int64_t verify_time_epoch_seconds,
-    int64_t max_age_seconds,
+    absl::optional<int64_t> max_age_seconds,
     OCSPVerifyResult::ResponseStatus* response_details) {
   return CheckOCSP(raw_response, certificate_der, nullptr,
                    issuer_certificate_der, nullptr, verify_time_epoch_seconds,
@@ -914,7 +914,7 @@ OCSPRevocationStatus CheckOCSP(
     const ParsedCertificate* certificate,
     const ParsedCertificate* issuer_certificate,
     int64_t verify_time_epoch_seconds,
-    int64_t max_age_seconds,
+    absl::optional<int64_t> max_age_seconds,
     OCSPVerifyResult::ResponseStatus* response_details) {
   return CheckOCSP(raw_response, std::string_view(), certificate,
                    std::string_view(), issuer_certificate,

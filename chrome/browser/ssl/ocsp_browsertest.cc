@@ -25,6 +25,7 @@
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/cert/ev_root_ca_metadata.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -69,6 +70,7 @@ class OCSPBrowserTest : public PlatformBrowserTest,
   }
 
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
     network::mojom::NetworkContextParamsPtr context_params =
         g_browser_process->system_network_context_manager()
             ->CreateDefaultNetworkContextParams();
@@ -120,6 +122,7 @@ class OCSPBrowserTest : public PlatformBrowserTest,
   }
 
   void DoConnection(
+      base::StringPiece hostname,
       const net::EmbeddedTestServer::ServerCertificateConfig& config) {
     net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
 
@@ -128,7 +131,12 @@ class OCSPBrowserTest : public PlatformBrowserTest,
     ASSERT_TRUE(server.Start());
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), server.GetURL("/ssl/google.html")));
+        browser(), server.GetURL(hostname, "/ssl/google.html")));
+  }
+
+  void DoConnection(
+      const net::EmbeddedTestServer::ServerCertificateConfig& config) {
+    DoConnection("127.0.0.1", config);
   }
 
   net::CertStatus GetCurrentCertStatus() {
@@ -298,8 +306,13 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
-                       TestHTTPSOCSPIntermediateResponseTooOld) {
+                       TestHTTPSOCSPIntermediateResponseTooOldKnownRoot) {
   EnableRevocationChecking();
+
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "root_ca_cert.pem");
+  ASSERT_TRUE(root_cert);
+  net::ScopedTestKnownRoot scoped_known_root(root_cert.get());
 
   net::EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.intermediate =
@@ -311,8 +324,9 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
   cert_config.intermediate_ocsp_config = net::EmbeddedTestServer::OCSPConfig(
       {{net::OCSPRevocationStatus::REVOKED,
         net::EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLonger}});
+  cert_config.dns_names = {"example.com"};
 
-  DoConnection(cert_config);
+  DoConnection("example.com", cert_config);
   net::CertStatus cert_status = GetCurrentCertStatus();
 
   if (ssl_test_util::UsingBuiltinCertVerifier()) {
@@ -326,6 +340,31 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
         chrome_test_utils::GetActiveWebContents(this), net::CERT_STATUS_REVOKED,
         AuthState::SHOWING_INTERSTITIAL);
   }
+
+  EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
+}
+
+IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
+                       TestHTTPSOCSPIntermediateResponseTooOld) {
+  EnableRevocationChecking();
+
+  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.intermediate =
+      net::EmbeddedTestServer::IntermediateType::kInHandshake;
+  cert_config.ocsp_config = net::EmbeddedTestServer::OCSPConfig(
+      {{net::OCSPRevocationStatus::GOOD,
+        net::EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
+  cert_config.intermediate_ocsp_config = net::EmbeddedTestServer::OCSPConfig(
+      {{net::OCSPRevocationStatus::REVOKED,
+        net::EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLonger}});
+
+  DoConnection(cert_config);
+  net::CertStatus cert_status = GetCurrentCertStatus();
+
+  // No limitation on response age for locally trusted roots.
+  ssl_test_util::CheckAuthenticationBrokenState(
+      chrome_test_utils::GetActiveWebContents(this), net::CERT_STATUS_REVOKED,
+      AuthState::SHOWING_INTERSTITIAL);
 
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }

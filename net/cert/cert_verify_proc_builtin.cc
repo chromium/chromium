@@ -130,6 +130,7 @@ RevocationPolicy NoRevocationChecking() {
   policy.crl_allowed = false;
   policy.allow_missing_info = true;
   policy.allow_unable_to_check = true;
+  policy.enforce_baseline_requirements = false;
   return policy;
 }
 
@@ -342,21 +343,24 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
       policy.crl_allowed = true;
       policy.allow_missing_info = false;
       policy.allow_unable_to_check = false;
+      policy.enforce_baseline_requirements = false;
       return policy;
     }
 
     // Use soft-fail revocation checking for VERIFY_REV_CHECKING_ENABLED.
     if (flags_ & CertVerifyProc::VERIFY_REV_CHECKING_ENABLED) {
+      const bool is_known_root =
+          !certs.empty() && trust_store_->IsKnownRoot(certs.back().get());
       RevocationPolicy policy;
       policy.check_revocation = true;
       policy.networking_allowed = true;
       // Publicly trusted certs are required to have OCSP by the Baseline
       // Requirements and CRLs can be quite large, so disable the fallback to
       // CRLs for chains to known roots.
-      policy.crl_allowed =
-          !certs.empty() && !trust_store_->IsKnownRoot(certs.back().get());
+      policy.crl_allowed = !is_known_root;
       policy.allow_missing_info = true;
       policy.allow_unable_to_check = true;
+      policy.enforce_baseline_requirements = is_known_root;
       return policy;
     }
 

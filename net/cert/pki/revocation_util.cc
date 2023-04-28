@@ -19,10 +19,12 @@ constexpr int64_t kMaxValidTime = 253402300799;  // 9999-12-31 23:59:59 UTC
 bool CheckRevocationDateValid(const der::GeneralizedTime& this_update,
                               const der::GeneralizedTime* next_update,
                               int64_t verify_time_epoch_seconds,
-                              int64_t max_age_seconds) {
+                              absl::optional<int64_t> max_age_seconds) {
   if (verify_time_epoch_seconds > kMaxValidTime ||
       verify_time_epoch_seconds < kMinValidTime ||
-      max_age_seconds > kMaxValidTime || max_age_seconds < 0) {
+      (max_age_seconds.has_value() &&
+       (max_age_seconds.value() > kMaxValidTime ||
+        max_age_seconds.value() < 0))) {
     return false;
   }
   der::GeneralizedTime verify_time;
@@ -39,13 +41,16 @@ bool CheckRevocationDateValid(const der::GeneralizedTime& this_update,
     return false;  // Response is no longer valid.
   }
 
-  der::GeneralizedTime earliest_this_update;
-  if (!der::EncodePosixTimeAsGeneralizedTime(
-          verify_time_epoch_seconds - max_age_seconds, &earliest_this_update)) {
-    return false;
-  }
-  if (this_update < earliest_this_update) {
-    return false;  // Response is too old.
+  if (max_age_seconds.has_value()) {
+    der::GeneralizedTime earliest_this_update;
+    if (!der::EncodePosixTimeAsGeneralizedTime(
+            verify_time_epoch_seconds - max_age_seconds.value(),
+            &earliest_this_update)) {
+      return false;
+    }
+    if (this_update < earliest_this_update) {
+      return false;  // Response is too old.
+    }
   }
 
   return true;
