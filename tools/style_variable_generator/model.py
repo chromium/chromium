@@ -394,7 +394,8 @@ class Model(object):
                 CheckColorReference(color.var, name)
             if isinstance(color, ColorRGBVar):
                 CheckColorReference(color.ToVar(), name)
-            if color.opacity and color.opacity.var:
+            if isinstance(color,
+                          (ColorRGB, ColorRGBVar)) and color.opacity.var:
                 CheckOpacityReference(color.opacity.var, name)
             if isinstance(color, ColorBlend):
                 assert len(color.blended_colors) == 2

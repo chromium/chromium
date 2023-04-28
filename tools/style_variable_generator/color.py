@@ -150,7 +150,7 @@ def ParseColor(value):
 
     if parsed is None:
         raise ValueError('Malformed color value')
-    if not parsed.opacity and not isinstance(parsed, (ColorBlend, ColorVar)):
+    if not isinstance(parsed, Color):
         raise ValueError(repr(parsed))
 
     return parsed
@@ -174,9 +174,6 @@ class Color:
     with '.rgb'.
     '''
 
-    def __init__(self, opacity=None):
-        self.opacity = opacity
-
     @abstractmethod
     def GetFormula(self):
         pass
@@ -188,13 +185,14 @@ class Color:
 
 class ColorRGB(Color):
     def __init__(self, rgb=None, opacity=None):
-        super().__init__(opacity)
+        super().__init__()
         if rgb is None:
             (self.r, self.g, self.b) = [-1, -1, -1]
         else:
             if not all([(0 <= v <= 255) for v in rgb]):
                 raise ValueError(f'RGB value out of bounds: {rgb}')
             (self.r, self.g, self.b) = rgb
+        self.opacity = opacity
 
     def GetFormula(self):
         a = repr(self.opacity)
@@ -206,11 +204,12 @@ class ColorRGB(Color):
 
 
 class ColorRGBVar(Color):
-    def __init__(self, rgb_var=None):
+    def __init__(self, rgb_var=None, opacity=None):
         super().__init__()
         if not re.match(r'^[\w\.\-]+\.rgb$', rgb_var):
             raise ValueError(f'"{rgb_var}" is not a valid RGBVar value')
         self.rgb_var = rgb_var
+        self.opacity = opacity
 
     def ToVar(self):
         assert (self.rgb_var)
