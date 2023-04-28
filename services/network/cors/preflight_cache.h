@@ -14,6 +14,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/cors/preflight_result.h"
+#include "services/network/public/mojom/clear_data_filter.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/origin.h"
 
@@ -62,11 +63,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
       const net::NetLogWithSource& net_log,
       bool acam_preflight_spec_conformant);
 
+  void ClearCache(mojom::ClearDataFilterPtr url_filter);
+
   // Counts cached entries for testing.
   size_t CountEntriesForTesting() const;
 
-  // Purges one cache entry if number of entries is larger than `max_entries`
-  // for testing.
+  bool DoesEntryExistForTesting(
+      const url::Origin& origin,
+      const std::string& url,
+      const net::NetworkIsolationKey& network_isolation_key,
+      mojom::IPAddressSpace target_ip_address_space);
+
+  // Purges one cache entry if number of entries is larger than
+  // `max_entries` for testing.
   void MayPurgeForTesting(size_t max_entries, size_t purge_unit);
 
  private:

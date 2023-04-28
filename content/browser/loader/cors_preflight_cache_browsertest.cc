@@ -10,8 +10,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -112,6 +115,49 @@ IN_PROC_BROWSER_TEST_F(CorsPreflightCacheBrowserTest, Default) {
   EXPECT_EQ(1u, options_count());
   EXPECT_EQ(2u, get_count());
 
+  // Make another fetch request with reload cache mode, and it should not hit
+  // the preflight cache.
+  std::unique_ptr<TitleWatcher> watcher3 =
+      std::make_unique<TitleWatcher>(shell()->web_contents(), kTestDone);
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(base::StringPrintf(
+                   "%s?;%d;reload", kTestPath, cross_origin_port()))));
+  EXPECT_EQ(kTestDone, watcher3->WaitAndGetTitle());
+  EXPECT_EQ(2u, options_count());
+  EXPECT_EQ(3u, get_count());
+}
+
+IN_PROC_BROWSER_TEST_F(CorsPreflightCacheBrowserTest, ClearCache) {
+  // Cache should be empty at first. Expect OPTIONS
+  std::unique_ptr<TitleWatcher> watcher1 =
+      std::make_unique<TitleWatcher>(shell()->web_contents(), kTestDone);
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(base::StringPrintf(
+                   "%s?;%d;default", kTestPath, cross_origin_port()))));
+  EXPECT_EQ(kTestDone, watcher1->WaitAndGetTitle());
+  EXPECT_EQ(1u, options_count());
+  EXPECT_EQ(1u, get_count());
+
+  // Make another fetch request, and OPTIONS request hits the preflight cache.
+  std::unique_ptr<TitleWatcher> watcher2 =
+      std::make_unique<TitleWatcher>(shell()->web_contents(), kTestDone);
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(base::StringPrintf(
+                   "%s?;%d;default", kTestPath, cross_origin_port()))));
+  EXPECT_EQ(kTestDone, watcher2->WaitAndGetTitle());
+  EXPECT_EQ(1u, options_count());
+  EXPECT_EQ(2u, get_count());
+
+  // Clear the PreflightCache, make a request and it should not hit the
+  // Preflight cache
+  BrowsingDataRemover* remover =
+      shell()->web_contents()->GetBrowserContext()->GetBrowsingDataRemover();
+  BrowsingDataRemoverCompletionObserver completion_observer(remover);
+  remover->RemoveAndReply(
+      base::Time(), base::Time::Max(), BrowsingDataRemover::DATA_TYPE_CACHE,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+      &completion_observer);
+  completion_observer.BlockUntilCompletion();
   // Make another fetch request with reload cache mode, and it should not hit
   // the preflight cache.
   std::unique_ptr<TitleWatcher> watcher3 =

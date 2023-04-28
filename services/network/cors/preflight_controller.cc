@@ -31,6 +31,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
@@ -675,6 +676,11 @@ void PreflightController::PerformPreflightCheck(
       std::move(client_security_state), devtools_observer, net_log,
       acam_preflight_spec_conformant));
   (*emplaced_pair.first)->Request(loader_factory);
+}
+
+void PreflightController::ClearCorsPreflightCache(
+    mojom::ClearDataFilterPtr url_filter) {
+  cache_.ClearCache(std::move(url_filter));
 }
 
 void PreflightController::RemoveLoader(PreflightLoader* loader) {

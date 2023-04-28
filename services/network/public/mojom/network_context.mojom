@@ -1010,6 +1010,17 @@ interface NetworkContext {
   ClearHttpAuthCache(mojo_base.mojom.Time start_time,
                      mojo_base.mojom.Time end_time) => ();
 
+  // Clears entries from the Preflight Cache according to the specified filter.
+  // Clear browsing history supports time ranges for the last 1hr, 24hr, 7d, 4w,
+  // and all time.
+  // Chrome caps the Access-Control-Max-Age header value for CORS-preflight
+  // responses to 2hrs.
+  // We opted for not to implement time range removal of entries from the
+  // PreflightCache, as it will just serve the 1hr. period. Instead, we always
+  // perform an "all-time" removal.
+  // Clears all entries if |filter| isn't specified
+  ClearCorsPreflightCache(ClearDataFilter? filter) => ();
+
   // Clears all report entries from the reporting cache. This has no effect if
   // the ENABLE_REPORTING build flag is false.
   //

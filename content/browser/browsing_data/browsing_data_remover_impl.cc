@@ -553,6 +553,12 @@ void BrowsingDataRemoverImpl::RemoveImpl(
 
     // Clears the PrefetchedSignedExchangeCache of all RenderFrameHostImpls.
     RenderFrameHostImpl::ClearAllPrefetchedSignedExchangeCache();
+
+    // Clears the CORS PreFlight cache. We don't support delete_begin,
+    // delete_end time range, as the preflight cache max age is capped to 2hrs.
+    network_context->ClearCorsPreflightCache(
+        filter_builder->BuildNetworkServiceFilter(),
+        CreateTaskCompletionClosureForMojo(TracingDataType::kPreflightCache));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -841,6 +847,8 @@ const char* BrowsingDataRemoverImpl::GetHistogramSuffix(TracingDataType task) {
       return "DeferredCookies";
     case TracingDataType::kSharedStorage:
       return "SharedStorage";
+    case TracingDataType::kPreflightCache:
+      return "PreflightCache";
   }
 }
 

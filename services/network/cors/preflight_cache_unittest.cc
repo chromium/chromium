@@ -15,6 +15,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -22,6 +23,20 @@
 namespace network::cors {
 
 namespace {
+
+struct CacheTestEntry {
+  const char* origin;
+  const char* url;
+};
+
+constexpr CacheTestEntry kCacheEntries[] = {
+    {"http://www.origin1.com:8080", "http://www.test.com/A"},
+    {"http://www.origin2.com:80", "http://www.test.com/B"},
+    {"http://www.origin3.com:80", "http://www.test.com/C"},
+    {"http://www.origin4.com:80", "http://www.test.com/D"},
+    {"http://A.origin.com:80", "http://www.test.com/A"},
+    {"http://A.origin.com:8080", "http://www.test.com/A"},
+    {"http://B.origin.com:80", "http://www.test.com/B"}};
 
 class PreflightCacheTest : public testing::Test {
  public:
@@ -74,7 +89,25 @@ class PreflightCacheTest : public testing::Test {
         net::HttpRequestHeaders(), /*is_revalidating=*/false, net_log_, true);
   }
 
+  void ClearCache(mojom::ClearDataFilterPtr url_filter) {
+    cache_.ClearCache(std::move(url_filter));
+  }
+
+  bool DoesEntryExists(const url::Origin& origin, const std::string& url) {
+    return cache_.DoesEntryExistForTesting(origin, url,
+                                           net::NetworkIsolationKey(),
+                                           mojom::IPAddressSpace::kUnknown);
+  }
+
   void Advance(int seconds) { clock_.Advance(base::Seconds(seconds)); }
+
+  size_t PopulateCache() {
+    for (auto entry : kCacheEntries) {
+      AppendEntry(url::Origin::Create(GURL(entry.origin)), GURL(entry.url),
+                  net::NetworkIsolationKey());
+    }
+    return std::size(kCacheEntries);
+  }
 
  private:
   // testing::Test implementation.
@@ -291,6 +324,192 @@ TEST_F(PreflightCacheTest, NetLogCheckCacheExist) {
   EXPECT_EQ(net::GetStringValueFromParams(entries[3], "status"), "miss");
   EXPECT_EQ(entries[4].type, net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE);
   EXPECT_EQ(net::GetStringValueFromParams(entries[4], "status"), "stale");
+}
+
+TEST_F(PreflightCacheTest, ClearCacheNoFilter) {
+  // The cache is initially empty
+  EXPECT_EQ(0u, CountEntries());
+  auto numEntries = PopulateCache();
+  EXPECT_EQ(numEntries, CountEntries());
+
+  // When no filter is present, it should delete all entries in the cache
+  ClearCache(nullptr /* filter */);
+  EXPECT_EQ(0u, CountEntries());
+}
+
+TEST_F(PreflightCacheTest, ClearCacheWithEmptyDeleteFilter) {
+  // The cache is initially empty
+  EXPECT_EQ(0u, CountEntries());
+  auto numEntries = PopulateCache();
+  EXPECT_EQ(numEntries, CountEntries());
+
+  mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
+  filter->type = mojom::ClearDataFilter::Type::DELETE_MATCHES;
+
+  // An empty DELETE_MATCHES filter should not delete any entries
+  ClearCache(std::move(filter));
+  EXPECT_EQ(std::size(kCacheEntries), CountEntries());
+}
+
+TEST_F(PreflightCacheTest, ClearCacheWithDeleteFilterOrigins) {
+  unsigned int filtered_entries[] = {0, 1};
+  // The cache is initially empty
+  EXPECT_EQ(0u, CountEntries());
+  auto num_entries = PopulateCache();
+  auto remaining_entries = num_entries - std::size(filtered_entries);
+  EXPECT_EQ(num_entries, CountEntries());
+
+  mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
+  filter->type = mojom::ClearDataFilter::Type::DELETE_MATCHES;
+  for (auto i : filtered_entries) {
+    filter->origins.push_back(
+        url::Origin::Create(GURL(kCacheEntries[i].origin)));
+  }
+
+  // Non-empty DELETE_MATCHES should just delete the origins that match
+  ClearCache(std::move(filter));
+  EXPECT_EQ(remaining_entries, CountEntries());
+  for (auto i : filtered_entries) {
+    ASSERT_FALSE(
+        DoesEntryExists(url::Origin::Create(GURL(kCacheEntries[i].origin)),
+                        kCacheEntries[i].url));
+  }
+}
+
+TEST_F(PreflightCacheTest, ClearCacheWithDeleteFilterDomains) {
+  // The cache is initially empty
+  EXPECT_EQ(0u, CountEntries());
+  auto num_entries = PopulateCache();
+  EXPECT_EQ(num_entries, CountEntries());
+
+  mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
+  filter->type = mojom::ClearDataFilter::Type::DELETE_MATCHES;
+  filter->domains.push_back("origin.com");
+  // origin.com matches 3 entries for kCacheEntries
+  unsigned int filtered_entries[] = {4, 5, 6};
+  // Non-empty DELETE_MATCHES should just delete the origins that match
+  ClearCache(std::move(filter));
+  EXPECT_EQ(4u, CountEntries());
+  for (auto i : filtered_entries) {
+    ASSERT_FALSE(
+        DoesEntryExists(url::Origin::Create(GURL(kCacheEntries[i].origin)),
+                        kCacheEntries[i].url));
+  }
+}
+
+TEST_F(PreflightCacheTest, ClearCacheWithDeleteFilterOriginsAndDomains) {
+  // The cache is initially empty
+  EXPECT_EQ(0u, CountEntries());
+  auto num_entries = PopulateCache();
+  EXPECT_EQ(num_entries, CountEntries());
+
+  mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
+  filter->type = mojom::ClearDataFilter::Type::DELETE_MATCHES;
+  unsigned int filtered_origins[] = {0, 1};
+  for (auto i : filtered_origins) {
+    filter->origins.push_back(
+        url::Origin::Create(GURL(kCacheEntries[i].origin)));
+  }
+  filter->domains.push_back("origin.com");
+  // Non-empty DELETE_MATCHES should just delete the origins that match
+  ClearCache(std::move(filter));
+  // origin.com matches 3 origins for kCacheEntries
+  unsigned int matched_entries[] = {0, 1, 4, 5, 6};
+  auto remaining_entries = num_entries - std::size(matched_entries);
+  EXPECT_EQ(remaining_entries, CountEntries());
+  for (auto i : matched_entries) {
+    ASSERT_FALSE(
+        DoesEntryExists(url::Origin::Create(GURL(kCacheEntries[i].origin)),
+                        kCacheEntries[i].url));
+  }
+}
+
+TEST_F(PreflightCacheTest, ClearCacheWithEmptyKeepFilter) {
+  // The cache is initially empty
+  EXPECT_EQ(0u, CountEntries());
+  auto num_entries = PopulateCache();
+  EXPECT_EQ(num_entries, CountEntries());
+
+  mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
+  filter->type = mojom::ClearDataFilter::Type::KEEP_MATCHES;
+
+  // An empty KEEP_MATCHES filter should delete everything
+  ClearCache(std::move(filter));
+  EXPECT_EQ(0u, CountEntries());
+}
+
+TEST_F(PreflightCacheTest, ClearCacheWithKeepFilterOrigins) {
+  unsigned int filtered_entries[] = {3};
+  // The cache is initially empty
+  EXPECT_EQ(0u, CountEntries());
+  auto num_entries = PopulateCache();
+  EXPECT_EQ(num_entries, CountEntries());
+
+  mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
+  filter->type = mojom::ClearDataFilter::Type::KEEP_MATCHES;
+  for (auto i : filtered_entries) {
+    filter->origins.push_back(
+        url::Origin::Create(GURL(kCacheEntries[i].origin)));
+  }
+
+  // Non-empty KEEP_MATCHES should delete everything but the origins that
+  // match
+  auto remaining_entries = std::size(filtered_entries);
+  ClearCache(std::move(filter));
+  EXPECT_EQ(remaining_entries, CountEntries());
+  for (auto i : filtered_entries) {
+    ASSERT_TRUE(
+        DoesEntryExists(url::Origin::Create(GURL(kCacheEntries[i].origin)),
+                        kCacheEntries[i].url));
+  }
+}
+
+TEST_F(PreflightCacheTest, ClearCacheWithKeepFilterDomains) {
+  // The cache is initially empty
+  EXPECT_EQ(0u, CountEntries());
+  auto num_entries = PopulateCache();
+  EXPECT_EQ(num_entries, CountEntries());
+
+  mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
+  filter->type = mojom::ClearDataFilter::Type::KEEP_MATCHES;
+  filter->domains.push_back("origin.com");
+  // origin.com matches 3 entries for kCacheEntries
+  unsigned int matched_entries[] = {4, 5, 6};
+  // Non-empty KEEP_MATCHES should just delete the origins that match
+  ClearCache(std::move(filter));
+  EXPECT_EQ(std::size(matched_entries), CountEntries());
+  for (auto i : matched_entries) {
+    ASSERT_TRUE(
+        DoesEntryExists(url::Origin::Create(GURL(kCacheEntries[i].origin)),
+                        kCacheEntries[i].url));
+  }
+}
+
+TEST_F(PreflightCacheTest, ClearCacheWithKeepFilterOriginsAndDomains) {
+  // The cache is initially empty
+  EXPECT_EQ(0u, CountEntries());
+  auto num_entries = PopulateCache();
+  EXPECT_EQ(num_entries, CountEntries());
+
+  mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
+  filter->type = mojom::ClearDataFilter::Type::KEEP_MATCHES;
+  unsigned int filtered_origins[] = {0, 1};
+  for (auto i : filtered_origins) {
+    filter->origins.push_back(
+        url::Origin::Create(GURL(kCacheEntries[i].origin)));
+  }
+  filter->domains.push_back("origin.com");
+  // Non-empty DELETE_MATCHES should just delete the origins that match
+  ClearCache(std::move(filter));
+  // origin.com matches 3 origins for kCacheEntries
+  unsigned int matched_entries[] = {0, 1, 4, 5, 6};
+  auto remaining_entries = std::size(matched_entries);
+  EXPECT_EQ(remaining_entries, CountEntries());
+  for (auto i : matched_entries) {
+    ASSERT_TRUE(
+        DoesEntryExists(url::Origin::Create(GURL(kCacheEntries[i].origin)),
+                        kCacheEntries[i].url));
+  }
 }
 
 }  // namespace

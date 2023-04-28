@@ -13901,6 +13901,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="13" label="kConversions"/>
   <int value="14" label="kDeferredCookies"/>
   <int value="15" label="kSharedStorage"/>
+  <int value="16" label="kPreflightCache"/>
 </enum>
 
 <enum name="BrowsingInstancePluralityVisibilityState">
