@@ -98,4 +98,23 @@ TEST_F(CompanionMetricsLoggerTest, RecordPromoEvent) {
       static_cast<int>(PromoEvent::kSignInAccepted));
 }
 
+TEST_F(CompanionMetricsLoggerTest, RecordPhFeedback) {
+  base::HistogramTester histogram_tester;
+
+  // Show a promo, user accepts it.
+  logger_->OnPhFeedback(PhFeedback::kThumbsDown);
+
+  // Destroy the logger. Verify that UKM event is recorded.
+  logger_.reset();
+
+  const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
+  EXPECT_EQ(ukm_recorder()->GetEntriesByName(entry_name).size(), 1ul);
+  auto* entry = ukm_recorder()->GetEntriesByName(entry_name)[0];
+  ukm_recorder()->EntryHasMetric(
+      entry, ukm::builders::Companion_PageView::kPH_FeedbackName);
+  ukm_recorder()->ExpectEntryMetric(
+      entry, ukm::builders::Companion_PageView::kPH_FeedbackName,
+      static_cast<int>(PhFeedback::kThumbsDown));
+}
+
 }  // namespace companion

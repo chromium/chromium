@@ -10,6 +10,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
+using side_panel::mojom::PhFeedback;
 using side_panel::mojom::PromoAction;
 using side_panel::mojom::PromoType;
 using side_panel::mojom::UiSurface;
@@ -80,6 +81,7 @@ class CompanionMetricsLogger {
   void RecordUiSurfaceShown(UiSurface ui_surface, uint32_t child_element_count);
   void RecordUiSurfaceClicked(UiSurface ui_surface);
   void OnPromoAction(PromoType promo_type, PromoAction promo_action);
+  void OnPhFeedback(PhFeedback ph_feedback);
 
  private:
   // Meant to be called at destruction. Flushes the UKM metrics.
@@ -93,6 +95,9 @@ class CompanionMetricsLogger {
 
   // Last event on the promo surfaces.
   absl::optional<PromoEvent> last_promo_event_;
+
+  // Last event on the promo surfaces.
+  absl::optional<PhFeedback> last_ph_feedback_;
 };
 
 }  // namespace companion

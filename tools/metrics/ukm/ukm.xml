@@ -6682,6 +6682,11 @@ be describing additional metrics about the same event.
       The last event on the CQ surface.
     </summary>
   </metric>
+  <metric name="PH.Feedback" enum="Companion.PhFeedback">
+    <summary>
+      The last user feedback event on the PH surface.
+    </summary>
+  </metric>
   <metric name="PH.LastEvent" enum="Companion.UiEvent">
     <summary>
       The last event on the PH surface.

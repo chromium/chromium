@@ -112,6 +112,10 @@ void CompanionMetricsLogger::OnPromoAction(PromoType promo_type,
                                 last_promo_event_.value());
 }
 
+void CompanionMetricsLogger::OnPhFeedback(PhFeedback ph_feedback) {
+  last_ph_feedback_ = ph_feedback;
+}
+
 void CompanionMetricsLogger::FlushStats() {
   ukm::builders::Companion_PageView ukm_builder(ukm_source_id_);
 
@@ -126,6 +130,11 @@ void CompanionMetricsLogger::FlushStats() {
   iter = ui_surface_metrics_.find(UiSurface::kPH);
   if (iter != ui_surface_metrics_.end()) {
     ukm_builder.SetPH_LastEvent(static_cast<int64_t>(iter->second.last_event));
+  }
+
+  // PH feedback.
+  if (last_ph_feedback_.has_value()) {
+    ukm_builder.SetPH_Feedback(static_cast<int>(last_ph_feedback_.value()));
   }
 
   // Region search.

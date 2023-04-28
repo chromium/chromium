@@ -30,8 +30,11 @@ enum MethodType {
   // Method corresponding to `CompanionPageHandler.RecordUiSurfaceClicked`.
   kRecordUiSurfaceClicked = 6,
 
-  // Method called when cq candidates are available.
+  // Method corresponding to `CompanionPageHandler.OnCqCandidatesAvailable`.
   kOnCqCandidatesAvailable = 7,
+
+  // Method corresponding to `CompanionPageHandler.OnPhFeedback`.
+  kOnPhFeedback = 8,
 
   // Methods used in browser -> renderer communication.
   // Method corresponding to `CompanionPage.UpdateCompanionPage`.
@@ -67,6 +70,17 @@ enum PromoAction {
 
   // User declined the promo.
   kRejected = 3,
+};
+
+// User feedback actions on the PH surface.
+// Keep this file in sync with
+// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
+enum PhFeedback {
+  // User clicked thumbs up.
+  kThumbsUp = 1,
+
+  // User clicked thumbs down.
+  kThumbsDown = 2,
 };
 
 // Data for uploading an image query.
@@ -140,6 +154,9 @@ interface CompanionPageHandler {
 
   // Called to notify the browser that the cq candidates are available.
   OnCqCandidatesAvailable(array<string> text_directives);
+
+  // Called in response to user feedback action on the PH surface.
+  OnPhFeedback(PhFeedback ph_feedback);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

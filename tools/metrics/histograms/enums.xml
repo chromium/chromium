@@ -18104,6 +18104,11 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Header set by client code"/>
 </enum>
 
+<enum name="Companion.PhFeedback">
+  <int value="1" label="Thumbs up"/>
+  <int value="2" label="Thumbs down"/>
+</enum>
+
 <enum name="Companion.PromoEvent">
   <int value="0" label="Unknown"/>
   <int value="1" label="SignIn.Shown"/>

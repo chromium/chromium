@@ -185,6 +185,11 @@ void CompanionPageHandler::OnCqCandidatesAvailable(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void CompanionPageHandler::OnPhFeedback(
+    side_panel::mojom::PhFeedback ph_feedback) {
+  metrics_logger_->OnPhFeedback(ph_feedback);
+}
+
 void CompanionPageHandler::EnableMsbb(bool enable_msbb) {
   auto* consent_service =
       UnifiedConsentServiceFactory::GetForProfile(GetProfile());

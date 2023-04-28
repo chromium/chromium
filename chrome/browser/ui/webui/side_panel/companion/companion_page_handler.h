@@ -52,6 +52,7 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   void RecordUiSurfaceClicked(side_panel::mojom::UiSurface ui_surface) override;
   void OnCqCandidatesAvailable(
       const std::vector<std::string>& text_directives) override;
+  void OnPhFeedback(side_panel::mojom::PhFeedback ph_feedback) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;

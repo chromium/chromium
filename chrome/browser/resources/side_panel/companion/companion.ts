@@ -33,8 +33,8 @@ enum ParamType {
   PROMO_ACTION = 'promoAction',
   PROMO_TYPE = 'promoType',
 
-  // Arguments for MethodType.kOnPhAction.
-  PH_ACTION = 'phAction',
+  // Arguments for MethodType.kOnPhFeedback.
+  PH_FEEDBACK = 'phFeedback',
 
   // Arguments for MethodType.kOnOpenInNewTabButtonURLChanged.
   URL_FOR_OPEN_IN_NEW_TAB = 'urlForOpenInNewTab',
@@ -193,6 +193,8 @@ function onCompanionMessageEvent(event: MessageEvent) {
   } else if (methodType === MethodType.kOnCqCandidatesAvailable) {
     companionProxy.handler.onCqCandidatesAvailable(
         data[ParamType.CQ_TEXT_DIRECTIVES]);
+  } else if (methodType === MethodType.kOnPhFeedback) {
+    companionProxy.handler.onPhFeedback(data[ParamType.PH_FEEDBACK]);
   }
 }
 
