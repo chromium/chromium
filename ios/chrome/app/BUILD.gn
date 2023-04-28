@@ -400,6 +400,13 @@ source_set("app_internal") {
     "startup_tasks.mm",
   ]
 
+  if (ios_enable_sandbox_dump) {
+    sources += [
+      "dump_documents_statistics.h",
+      "dump_documents_statistics.mm",
+    ]
+  }
+
   deps = [
     ":app",
     ":app_metrics_app_state_agent",
@@ -448,6 +455,7 @@ source_set("app_internal") {
     "//ios/chrome/app/application_delegate:url_opener_params",
     "//ios/chrome/app/spotlight",
     "//ios/chrome/app/startup",
+    "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/accessibility",
