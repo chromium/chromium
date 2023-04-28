@@ -65,6 +65,7 @@ try_.orchestrator_builder(
         ),
     ),
     compilator = "android-12-x64-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
     },
@@ -73,6 +74,7 @@ try_.orchestrator_builder(
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
+    use_java_coverage = True,
 )
 
 try_.compilator_builder(

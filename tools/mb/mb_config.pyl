@@ -1021,7 +1021,7 @@
       'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_trichrome_reclient',
       'android-11-x86-rel': 'android_release_trybot_x86_fastbuild_webview_trichrome_reclient',
       'android-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
-      'android-12-x64-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
+      'android-12-x64-rel': 'android_release_trybot_x64_coverage_fastbuild_webview_trichrome_reclient',
       'android-12l-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
       'android-13-x64-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
       'android-arm64-all-targets-dbg': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
@@ -1779,6 +1779,12 @@
 
     'android_release_trybot_reclient_cxx17_no_werror': [
       'android', 'release_trybot_reclient', 'strip_debug_info', 'force_cxx17', 'no_werror',
+    ],
+
+    'android_release_trybot_x64_coverage_fastbuild_webview_trichrome_reclient': [
+      'android', 'release_trybot_reclient', 'strip_debug_info', 'x64',
+      'android_fastbuild', 'use_java_coverage', 'partial_code_coverage_instrumentation',
+      'webview_trichrome', 'no_secondary_abi', 'webview_shell',
     ],
 
     'android_release_trybot_x64_fastbuild_webview_trichrome_reclient': [

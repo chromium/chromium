@@ -47,6 +47,13 @@
       }
     }
   },
+  "$build/code_coverage": {
+    "coverage_test_types": [
+      "unit",
+      "overall"
+    ],
+    "use_java_coverage": true
+  },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
     "jobs": 300,
