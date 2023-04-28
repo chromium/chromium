@@ -257,13 +257,14 @@ void ExtendedDragSource::OnToplevelWindowDragCancelled() {
 }
 
 void ExtendedDragSource::OnToplevelWindowDragEvent(ui::LocatedEvent* event) {
-  DCHECK(event);
-  aura::Window* target = static_cast<aura::Window*>(event->target());
   pointer_location_ = event->root_location_f();
-  wm::ConvertPointToScreen(target->GetRootWindow(), &pointer_location_);
 
   if (!dragged_window_holder_)
     return;
+
+  DCHECK(event);
+  aura::Window* target = static_cast<aura::Window*>(event->target());
+  wm::ConvertPointToScreen(target->GetRootWindow(), &pointer_location_);
 
   auto* handler = ash::Shell::Get()->toplevel_window_event_handler();
   if (event->IsMouseEvent()) {

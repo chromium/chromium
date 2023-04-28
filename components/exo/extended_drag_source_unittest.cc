@@ -478,6 +478,15 @@ TEST_F(ExtendedDragSourceTest, DestroyDraggedSurfaceWhileDragging) {
   EXPECT_EQ(extended_drag_source_->GetDragSourceWindowForTesting(),
             source_window.get());
 
+  // Create an drag event instance to be dispatched manually
+  // and hold a dangling target pointer.
+  auto event = std::make_unique<ui::MouseEvent>(
+      ui::ET_MOUSE_DRAGGED, dragged_window->bounds().origin(),
+      dragged_window->bounds().origin(), ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::Event::DispatcherApi(event.get())
+      .set_target(shell_surface->GetWidget()->GetNativeWindow());
+
   // Make sure extended drag source gracefully handles |dragged_window|
   // visibility change (calls into dragged_window->Hide()) during while the drag
   // session is still alive.
@@ -488,6 +497,16 @@ TEST_F(ExtendedDragSourceTest, DestroyDraggedSurfaceWhileDragging) {
   ui::test::EventGenerator generator(GetContext());
   generator.DragMouseBy(190, 190);
   EXPECT_TRUE(surface->window()->GetBoundsInScreen().origin().IsOrigin());
+
+  // Ensure that spurious calls to OnToplevelWindowDragEvent, mimic'ing
+  // a dispatch of an event holding a dangling target reference to
+  // ExtendedDragSource at this point, does not crash Ash.
+  //
+  // Note that this is a non-deterministic scenario where the user dragging
+  // surface is destroyed (eg retached) right before the respective `dragged`
+  // event is dispatched to ExtendedDragSource::OnToplevelWindowDragEvent() -
+  // crbug.com/1347192
+  extended_drag_source_->OnToplevelWindowDragEvent(event.get());
 }
 
 // Regression test for crbug.com/1330125.
