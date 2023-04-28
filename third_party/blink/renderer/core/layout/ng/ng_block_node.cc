@@ -297,11 +297,14 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
   if (float_input.float_left_inline_size || float_input.float_right_inline_size)
     return false;
 
-  // Check if we have any percentage inline padding.
+  // Check if we have any percentage padding.
   const auto& style = node.Style();
-  if (style.MayHavePadding() && (style.PaddingStart().IsPercentOrCalc() ||
-                                 style.PaddingEnd().IsPercentOrCalc()))
+  if (style.MayHavePadding() && (style.PaddingTop().IsPercentOrCalc() ||
+                                 style.PaddingRight().IsPercentOrCalc() ||
+                                 style.PaddingBottom().IsPercentOrCalc() ||
+                                 style.PaddingLeft().IsPercentOrCalc())) {
     return false;
+  }
 
   if (node.HasAspectRatio() && (style.LogicalMinHeight().IsPercentOrCalc() ||
                                 style.LogicalMaxHeight().IsPercentOrCalc()))
@@ -1011,8 +1014,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     sizes = NGFragment({container_writing_mode, TextDirection::kLtr},
                        layout_result->PhysicalFragment())
                 .InlineSize();
-    return MinMaxSizesResult(sizes,
-                             /* depends_on_block_constraints */ false);
+    return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
   }
 
   // Returns if we are (directly) dependent on any block constraints.
