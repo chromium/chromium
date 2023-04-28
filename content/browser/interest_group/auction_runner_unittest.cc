@@ -2228,6 +2228,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       return *this;
     }
 
+    // If set to -1, these metrics are not checked.
     MetricsExpectations& SetNumBidsQueuedWaitingForSellerWorklet(
         int64_t value) {
       num_bids_queued_waiting_for_seller_worklet = value;
@@ -2453,15 +2454,17 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
             UkmEntry::kMeanTimeBidsQueuedWaitingForConfigPromisesInMillisName,
             expectations.num_bids_queued_waiting_for_config_promises > 0));
 
-    EXPECT_THAT(ukm_metrics,
-                HasMetricWithValue(
-                    UkmEntry::kNumBidsQueuedWaitingForSellerWorkletName,
-                    expectations.num_bids_queued_waiting_for_seller_worklet));
-    EXPECT_THAT(
-        ukm_metrics,
-        OnlyHasMetricIf(
-            UkmEntry::kMeanTimeBidsQueuedWaitingForSellerWorkletInMillisName,
-            expectations.num_bids_queued_waiting_for_seller_worklet > 0));
+    if (expectations.num_bids_queued_waiting_for_seller_worklet >= 0) {
+      EXPECT_THAT(ukm_metrics,
+                  HasMetricWithValue(
+                      UkmEntry::kNumBidsQueuedWaitingForSellerWorkletName,
+                      expectations.num_bids_queued_waiting_for_seller_worklet));
+      EXPECT_THAT(
+          ukm_metrics,
+          OnlyHasMetricIf(
+              UkmEntry::kMeanTimeBidsQueuedWaitingForSellerWorkletInMillisName,
+              expectations.num_bids_queued_waiting_for_seller_worklet > 0));
+    }
   }
 
   AuctionRunner::IsInterestGroupApiAllowedCallback
@@ -8063,38 +8066,18 @@ TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
       // the cases where we're making an insufficient number of these available,
       // the top-level InterestGroupAuction will need to wait for the
       // SellerWorklet to become available to rescore the bids.
+      //
+      // Only a much weaker expectation can be applied to the number of
+      // component bids queued. In all cases where we limit the number of
+      // available SellerWorklets, it's possible that the component bids are
+      // generated before a SellerWorklet is available. Because the ordering of
+      // these events is non-deterministic, we can only make lower-bound
+      // assumptions on how many of the bids will be queued as a result. As
+      // such, we simply don't check these metrics in this case. We still check
+      // that no bids are queued when all SellerWorklets are available.
       if (num_used_seller_worklet_processes > 0) {
         num_top_level_bids_queued = 2;
-      }
-
-      // In the case where only one SellerWorklet is available at the start of
-      // the auction, one of the component auctions will get it, and the other
-      // one will have to wait for it, leaving the bid of the second component
-      // auction queued for scoring. This doesn't happen if either no or only
-      // one BidderWorklet is available at the start of the auction, because
-      // then the second component auction has to wait for both the
-      // BidderWorklet and the SellerWorklet to be released by the first
-      // component auction.
-      if (num_used_seller_worklet_processes ==
-              AuctionProcessManager::kMaxSellerProcesses - 1 &&
-          num_used_bidder_worklet_processes == 0) {
-        num_component_bids_queued = 1;
-      }
-
-      // In the case where no SellerWorklet is available at the start of the
-      // auction, both component auctions will have to wait for it to be
-      // released later by the test, above, leaving the bid of both component
-      // auctions queued for scoring. This doesn't happen if there are no
-      // BidderWorklets available at the start of the auction, because a
-      // BidderWorklet is released by the test after a SellerWorklet is
-      // released, but it does happen if even one BidderWorklet is available at
-      // the start of the auction, because the component auctions can share it
-      // before the SellerWorklet is released by the test.
-      if (num_used_seller_worklet_processes ==
-              AuctionProcessManager::kMaxSellerProcesses &&
-          num_used_bidder_worklet_processes <
-              AuctionProcessManager::kMaxBidderProcesses) {
-        num_component_bids_queued = 2;
+        num_component_bids_queued = -1;
       }
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(2)
