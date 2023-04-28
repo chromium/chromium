@@ -37,7 +37,6 @@ import org.chromium.components.version_info.VersionConstants;
 
 import java.net.HttpURLConnection;
 import java.util.Date;
-import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
@@ -77,12 +76,8 @@ public class AwVariationsSeedFetcher extends JobService {
     private static VariationsSeedFetcher sMockDownloader;
     private static Clock sTestClock;
     private static Date sDate;
-    private static boolean sUseZeroJitter;
 
     private FetchTask mFetchTask;
-    // Since fast mode seed fetches are scheduled on a delay, this prevents scheduling
-    // multiple fast seed fetch jobs.
-    private static boolean sPendingFastFetchModeScheduling;
 
     private static long currentTimeMillis() {
         if (sTestClock != null) {
@@ -218,11 +213,6 @@ public class AwVariationsSeedFetcher extends JobService {
         boolean alreadyScheduled = handlePreviouslyScheduledJob(scheduler, requireFastMode);
         if (alreadyScheduled) return;
 
-        // Awaiting delayed fast variations seed request due to postDelayedTask
-        if (sPendingFastFetchModeScheduling) {
-            return;
-        }
-
         // Note: we don't throttle fast mode, since we need to set up a periodic job,
         // and it already has random delay on the initial fetch.
         if (!requireFastMode && hasFetchTaskRunRecently()) {
@@ -231,19 +221,8 @@ public class AwVariationsSeedFetcher extends JobService {
         }
 
         VariationsUtils.debugLog("Scheduling seed download job");
-        if (!requireFastMode || sUseZeroJitter) {
-            scheduleJob(scheduler, requireFastMode);
-            return;
-        }
-        // The jitter is used to create a more uniform distribution of seed fetch requests for
-        // the population. Adding jitter to the initial request helps space them out more evenly
-        // as the mitigation is deployed so the seed fetches are not requested all at once
-        // even if SafeMode is enabled simultaneously on many devices.
-        sPendingFastFetchModeScheduling = true;
-        int jitter =
-                new Random().nextInt((int) VariationsFastFetchModeUtils.MAX_ALLOWABLE_SEED_AGE_MS);
-        PostTask.postDelayedTask(TaskTraits.USER_VISIBLE,
-                () -> { scheduleJob(scheduler, requireFastMode); }, /*delay=*/jitter);
+        // TODO(avvall): Add jitter to initial request
+        scheduleJob(scheduler, requireFastMode);
     }
 
     private static boolean hasFetchTaskRunRecently() {
@@ -295,7 +274,6 @@ public class AwVariationsSeedFetcher extends JobService {
         } else {
             Log.e(TAG, "Failed to schedule job");
         }
-        sPendingFastFetchModeScheduling = false;
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -437,11 +415,6 @@ public class AwVariationsSeedFetcher extends JobService {
 
     public static void setTestClock(Clock clock) {
         sTestClock = clock;
-    }
-
-    @VisibleForTesting
-    public static void setUseZeroJitterForTesting(boolean useZeroJitter) {
-        sUseZeroJitter = useZeroJitter;
     }
 
     @VisibleForTesting

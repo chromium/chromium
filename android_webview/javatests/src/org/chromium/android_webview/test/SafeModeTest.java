@@ -814,7 +814,6 @@ public class SafeModeTest {
             throws Exception {
         long startingTime = 54000L;
         AwVariationsSeedFetcher.setMocks(mScheduler, mDownloader);
-        AwVariationsSeedFetcher.setUseZeroJitterForTesting(true);
         FastVariationsSeedSafeModeAction action =
                 new FastVariationsSeedSafeModeAction(TEST_WEBVIEW_PACKAGE_NAME);
 
@@ -848,7 +847,6 @@ public class SafeModeTest {
             throws Exception {
         long startingTime = 54000L;
         AwVariationsSeedFetcher.setMocks(mScheduler, mDownloader);
-        AwVariationsSeedFetcher.setUseZeroJitterForTesting(true);
         FastVariationsSeedSafeModeAction action =
                 new FastVariationsSeedSafeModeAction(TEST_WEBVIEW_PACKAGE_NAME);
 
@@ -1302,7 +1300,6 @@ public class SafeModeTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeModeActionList_turnOffSafeModeSeedFetch() throws Throwable {
-        AwVariationsSeedFetcher.setUseZeroJitterForTesting(true);
         NonEmbeddedFastVariationsSeedSafeModeAction testAction =
                 new NonEmbeddedFastVariationsSeedSafeModeAction();
         AwVariationsSeedFetcher.setMocks(mScheduler, mDownloader);
