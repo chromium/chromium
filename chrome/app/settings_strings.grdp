@@ -968,9 +968,6 @@
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_INVALID_URL" desc="An error message for a row that wasn't imported, because the URL is in an unacceptable format. It is shown on the dialog for importing passwords if some passwords weren't imported.">
     URL format should be https://www.example.com
   </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_NON_ASCII_URL" desc="An error message for a row that wasn't imported, because provided URL contains non-ASCII characters. It is shown on the dialog for importing passwords if some passwords weren't imported.">
-    URL can only contain ASCII characters
-  </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_BAD_ROWS_FORMAT" desc="An error message for which summarizes all rows that weren't imported, because we weren't able to read them completely due to incorrect formatting. It is shown on the dialog for importing passwords if some passwords weren't imported.">
     {NUM_PASSWORDS, plural,
      =1 {1 other password wasn't imported because it's formatted incorrectly}

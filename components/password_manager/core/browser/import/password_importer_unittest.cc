@@ -1052,7 +1052,7 @@ TEST_P(PasswordImporterTest, CSVImportInvalidURLReported) {
   EXPECT_EQ("ww1.google.com", results.displayed_entries[0].url);
 }
 
-TEST_P(PasswordImporterTest, CSVImportNonASCIIURLReported) {
+TEST_P(PasswordImporterTest, CSVImportNonASCIIURL) {
   constexpr char kTestCSVInput[] =
       "Url,Username,Password\n"
       "https://.إلياس.com,test@gmail.com,test1   \n";
@@ -1062,23 +1062,17 @@ TEST_P(PasswordImporterTest, CSVImportNonASCIIURLReported) {
   base::FilePath input_path = temp_file_path();
   ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
-  AssertNotStartedState();
+  AssertImportCompletedWithNoErrors();
 
-  histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
-                                      ImportEntry::Status::NON_ASCII_URL, 1);
-  histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.ImportedPasswordsPerUserInCSV", 0, 1);
+      "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
 
-  ASSERT_EQ(0u, stored_passwords().size());
+  ASSERT_EQ(1u, stored_passwords().size());
 
   const password_manager::ImportResults results = GetImportResults();
   EXPECT_EQ(password_manager::ImportResults::Status::SUCCESS, results.status);
-  ASSERT_EQ(1u, results.displayed_entries.size());
-  EXPECT_EQ(password_manager::ImportEntry::Status::NON_ASCII_URL,
-            results.displayed_entries[0].status);
-  EXPECT_EQ("test@gmail.com", results.displayed_entries[0].username);
-  EXPECT_EQ("https://.إلياس.com", results.displayed_entries[0].url);
+  ASSERT_EQ(0u, results.displayed_entries.size());
+  EXPECT_EQ(GURL("https://.إلياس.com"), stored_passwords()[0].GetURL());
 }
 
 TEST_P(PasswordImporterTest, SingleFailedSingleSucceeds) {

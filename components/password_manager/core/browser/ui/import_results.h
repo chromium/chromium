@@ -25,8 +25,8 @@ struct ImportEntry {
     MISSING_URL = 3,
     // Bad url formatting.
     INVALID_URL = 4,
-    // URL contains non-ASCII chars.
-    NON_ASCII_URL = 5,
+    // Deprecated in crrev.com/c/4478954.
+    // NON_ASCII_URL = 5,
     // URL is too long.
     LONG_URL = 6,
     // Password is too long.

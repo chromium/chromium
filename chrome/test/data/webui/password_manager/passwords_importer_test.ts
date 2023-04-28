@@ -651,13 +651,6 @@ suite('PasswordsImporterTest', function() {
           id: 0,
         },
         {
-          status: chrome.passwordsPrivate.ImportEntryStatus.NON_ASCII_URL,
-          username: 'username',
-          url: 'https://أهلا.com',
-          password: '',
-          id: 0,
-        },
-        {
           status: chrome.passwordsPrivate.ImportEntryStatus.LONG_PASSWORD,
           username: 'username',
           url: 'https://google.com',

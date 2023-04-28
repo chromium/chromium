@@ -80174,7 +80174,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Missing password"/>
   <int value="3" label="Missing URL"/>
   <int value="4" label="Invalid URL"/>
-  <int value="5" label="Non-ASCII URL"/>
+  <int value="5" label="Non-ASCII URL (Deprecated)"/>
   <int value="6" label="Long URL"/>
   <int value="7" label="Long password"/>
   <int value="8" label="Long username"/>

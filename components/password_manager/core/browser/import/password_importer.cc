@@ -180,9 +180,7 @@ CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
     if (url.error().empty()) {
       return base::unexpected(with_status(ImportEntry::Status::MISSING_URL));
     }
-    return base::unexpected(with_status(
-        base::IsStringASCII(url.error()) ? ImportEntry::Status::INVALID_URL
-                                         : ImportEntry::Status::NON_ASCII_URL));
+    return base::unexpected(with_status(ImportEntry::Status::INVALID_URL));
   }
   if (url->spec().length() > 2048) {
     return base::unexpected(with_status(ImportEntry::Status::LONG_URL));

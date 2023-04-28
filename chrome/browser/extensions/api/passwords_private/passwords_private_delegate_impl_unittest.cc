@@ -1213,11 +1213,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportEntryStatus) {
                            IMPORT_ENTRY_STATUS_INVALID_URL) ==
           static_cast<int>(password_manager::ImportEntry::Status::INVALID_URL),
       "");
-  static_assert(static_cast<int>(api::passwords_private::ImportEntryStatus::
-                                     IMPORT_ENTRY_STATUS_NON_ASCII_URL) ==
-                    static_cast<int>(
-                        password_manager::ImportEntry::Status::NON_ASCII_URL),
-                "");
   static_assert(
       static_cast<int>(api::passwords_private::ImportEntryStatus::
                            IMPORT_ENTRY_STATUS_LONG_URL) ==

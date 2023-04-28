@@ -200,8 +200,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_IMPORT_MISSING_PASSWORD},
     {"importPasswordsMissingURL", IDS_PASSWORD_MANAGER_UI_IMPORT_MISSING_URL},
     {"importPasswordsInvalidURL", IDS_PASSWORD_MANAGER_UI_IMPORT_INVALID_URL},
-    {"importPasswordsNonASCIIURL",
-     IDS_PASSWORD_MANAGER_UI_IMPORT_NON_ASCII_URL},
     {"importPasswordsLongURL", IDS_PASSWORD_MANAGER_UI_IMPORT_LONG_URL},
     {"importPasswordsLongPassword",
      IDS_PASSWORD_MANAGER_UI_IMPORT_LONG_PASSWORD},

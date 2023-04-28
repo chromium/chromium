@@ -77,7 +77,7 @@ CSVPassword::CSVPassword(const ColumnMap& map, base::StringPiece row) {
     switch (meaning_it->second) {
       case Label::kOrigin: {
         GURL gurl = GURL(field);
-        if (!gurl.is_valid() || !base::IsStringASCII(field)) {
+        if (!gurl.is_valid()) {
           url_ = base::unexpected(ConvertUTF8(field));
         } else {
           url_ = gurl;

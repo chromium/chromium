@@ -533,8 +533,6 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
         return this.i18n('importPasswordsInvalidURL');
       case chrome.passwordsPrivate.ImportEntryStatus.LONG_URL:
         return this.i18n('importPasswordsLongURL');
-      case chrome.passwordsPrivate.ImportEntryStatus.NON_ASCII_URL:
-        return this.i18n('importPasswordsNonASCIIURL');
       case chrome.passwordsPrivate.ImportEntryStatus.LONG_PASSWORD:
         return this.i18n('importPasswordsLongPassword');
       case chrome.passwordsPrivate.ImportEntryStatus.LONG_USERNAME:
@@ -554,6 +552,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
       case chrome.passwordsPrivate.ImportEntryStatus.LONG_CONCATENATED_NOTE:
         return this.i18n('importPasswordsLongNote');
       case chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR:
+      case chrome.passwordsPrivate.ImportEntryStatus.NON_ASCII_URL:
       default:
         assertNotReached();
     }
