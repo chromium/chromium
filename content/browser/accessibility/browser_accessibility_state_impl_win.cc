@@ -48,7 +48,12 @@ class WindowsAccessibilityEnabler
         ui::AXMode::kNativeAPIs);
   }
 
-  void OnIAccessible2Used() override {
+  void OnBasicIAccessible2Used() override {
+    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
+        ui::AXMode::kNativeAPIs);
+  }
+
+  void OnAdvancedIAccessible2Used() override {
     // When IAccessible2 APIs have been used elsewhere in the codebase,
     // enable basic web accessibility support. (Full screen reader support is
     // detected later when specific more advanced APIs are accessed.)
