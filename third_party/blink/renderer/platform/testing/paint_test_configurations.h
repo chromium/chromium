@@ -12,6 +12,7 @@
 #include "cc/base/features.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "ui/native_theme/native_theme_features.h"
 
 namespace blink {
 
@@ -21,6 +22,7 @@ enum {
   kSolidColorLayers = 1 << 2,
   kCompositeScrollAfterPaint = 1 << 3,
   kUsedColorSchemeRootScrollbars = 1 << 4,
+  kFluentScrollbar = 1 << 5,
 };
 
 class PaintTestConfigurations
@@ -38,11 +40,19 @@ class PaintTestConfigurations
                                                kCompositeScrollAfterPaint),
         ScopedUsedColorSchemeRootScrollbarsForTest(
             GetParam() & kUsedColorSchemeRootScrollbars) {
+    std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
     if (GetParam() & kScrollUnification) {
-      feature_list_.InitAndEnableFeature(::features::kScrollUnification);
+      enabled_features.push_back(::features::kScrollUnification);
     } else {
-      feature_list_.InitAndDisableFeature(::features::kScrollUnification);
+      disabled_features.push_back(::features::kScrollUnification);
     }
+    if (GetParam() & kFluentScrollbar) {
+      enabled_features.push_back(::features::kFluentScrollbar);
+    } else {
+      disabled_features.push_back(::features::kFluentScrollbar);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~PaintTestConfigurations() override {
     // Must destruct all objects before toggling back feature flags.
@@ -70,7 +80,7 @@ class PaintTestConfigurations
       All, test_class,                                            \
       ::testing::Values(0, kScrollUnification, kSolidColorLayers, \
                         kCompositeScrollAfterPaint,               \
-                        kUsedColorSchemeRootScrollbars))
+                        kUsedColorSchemeRootScrollbars, kFluentScrollbar))
 
 }  // namespace blink
 

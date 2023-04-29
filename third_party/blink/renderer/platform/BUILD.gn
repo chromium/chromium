@@ -1674,6 +1674,7 @@ component("platform") {
     "//third_party/pffft:pffft",
     "//ui/base/cursor",
     "//ui/gfx",
+    "//ui/native_theme:features",
   ]
   deps = [
     "//base:base_static",
