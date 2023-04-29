@@ -6519,12 +6519,33 @@ CSSValue* ConsumeScrollPadding(CSSParserTokenRange& range,
                                 UnitlessQuirk::kForbid);
 }
 
+namespace {
+
+// https://drafts.csswg.org/css-shapes-1/#supported-basic-shapes
+bool IsBasicShapeSupportedByOffsetPath(const CSSValueID& id) {
+  switch (id) {
+    case CSSValueID::kCircle:
+    case CSSValueID::kEllipse:
+      return RuntimeEnabledFeatures::
+          CSSOffsetPathBasicShapesCircleAndEllipseEnabled();
+    default:
+      return false;
+  }
+}
+
+}  // namespace
+
 CSSValue* ConsumeOffsetPath(CSSParserTokenRange& range,
                             const CSSParserContext& context) {
   CSSValue* value = nullptr;
+  const CSSValueID function_id = range.Peek().FunctionId();
   if (RuntimeEnabledFeatures::CSSOffsetPathRayEnabled() &&
-      range.Peek().FunctionId() == CSSValueID::kRay) {
+      function_id == CSSValueID::kRay) {
     value = ConsumeRay(range, context);
+  } else if (IsBasicShapeSupportedByOffsetPath(function_id)) {
+    value = ConsumeBasicShape(range, context, AllowPathValue::kAllow,
+                              AllowBasicShapeRectValue::kAllow,
+                              AllowBasicShapeXYWHValue::kAllow);
   } else {
     value = ConsumePathOrNone(range);
   }

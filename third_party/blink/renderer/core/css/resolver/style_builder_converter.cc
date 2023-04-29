@@ -2430,7 +2430,7 @@ scoped_refptr<StylePath> StyleBuilderConverter::ConvertPathOrNone(
 scoped_refptr<BasicShape> StyleBuilderConverter::ConvertOffsetPath(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (value.IsRayValue()) {
+  if (value.IsRayValue() || value.IsBasicShapeValue()) {
     return BasicShapeForValue(state, value);
   }
   return ConvertPathOrNone(state, value);

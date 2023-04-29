@@ -43,14 +43,14 @@ bool BasicShapeCircle::IsEqualAssumingSameType(const BasicShape& o) const {
          radius_ == other.radius_;
 }
 
-float BasicShapeCircle::FloatValueForRadiusInBox(gfx::SizeF box_size) const {
+float BasicShapeCircle::FloatValueForRadiusInBox(
+    const gfx::PointF& center,
+    const gfx::SizeF& box_size) const {
   if (radius_.GetType() == BasicShapeRadius::kValue) {
     return FloatValueForLength(
         radius_.Value(),
         hypotf(box_size.width(), box_size.height()) / sqrtf(2));
   }
-
-  gfx::PointF center = PointForCenterCoordinate(center_x_, center_y_, box_size);
 
   float width_delta = std::abs(box_size.width() - center.x());
   float height_delta = std::abs(box_size.height() - center.y());
@@ -66,11 +66,18 @@ float BasicShapeCircle::FloatValueForRadiusInBox(gfx::SizeF box_size) const {
 
 void BasicShapeCircle::GetPath(Path& path,
                                const gfx::RectF& bounding_box,
-                               float) const {
-  DCHECK(path.IsEmpty());
-  gfx::PointF center =
+                               float zoom) const {
+  const gfx::PointF center =
       PointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
-  float radius = FloatValueForRadiusInBox(bounding_box.size());
+  GetPathFromCenter(path, center, bounding_box, zoom);
+}
+
+void BasicShapeCircle::GetPathFromCenter(Path& path,
+                                         const gfx::PointF& center,
+                                         const gfx::RectF& bounding_box,
+                                         float) const {
+  DCHECK(path.IsEmpty());
+  const float radius = FloatValueForRadiusInBox(center, bounding_box.size());
   path.AddEllipse(center + bounding_box.OffsetFromOrigin(), radius, radius);
 }
 
@@ -99,13 +106,20 @@ float BasicShapeEllipse::FloatValueForRadiusInBox(
 
 void BasicShapeEllipse::GetPath(Path& path,
                                 const gfx::RectF& bounding_box,
-                                float) const {
-  DCHECK(path.IsEmpty());
-  gfx::PointF center =
+                                float zoom) const {
+  const gfx::PointF center =
       PointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
-  float radius_x =
+  GetPathFromCenter(path, center, bounding_box, zoom);
+}
+
+void BasicShapeEllipse::GetPathFromCenter(Path& path,
+                                          const gfx::PointF& center,
+                                          const gfx::RectF& bounding_box,
+                                          float) const {
+  DCHECK(path.IsEmpty());
+  const float radius_x =
       FloatValueForRadiusInBox(radius_x_, center.x(), bounding_box.width());
-  float radius_y =
+  const float radius_y =
       FloatValueForRadiusInBox(radius_y_, center.y(), bounding_box.height());
   path.AddEllipse(center + bounding_box.OffsetFromOrigin(), radius_x, radius_y);
 }

@@ -986,6 +986,11 @@
       base_feature: "none",
     },
     {
+      name: "CSSOffsetPathBasicShapesCircleAndEllipse",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "CSSOffsetPathRay",
       status: "experimental",
       base_feature: "none",

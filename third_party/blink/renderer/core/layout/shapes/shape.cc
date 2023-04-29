@@ -113,8 +113,8 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
       gfx::PointF center =
           PointForCenterCoordinate(circle->CenterX(), circle->CenterY(),
                                    gfx::SizeF(box_width, box_height));
-      float radius =
-          circle->FloatValueForRadiusInBox(gfx::SizeF(box_width, box_height));
+      float radius = circle->FloatValueForRadiusInBox(
+          center, gfx::SizeF(box_width, box_height));
       gfx::PointF logical_center = PhysicalPointToLogical(
           center, logical_box_size.Height().ToFloat(), writing_mode);
 

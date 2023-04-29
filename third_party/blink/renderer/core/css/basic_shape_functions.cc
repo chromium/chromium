@@ -371,6 +371,9 @@ scoped_refptr<BasicShape> BasicShapeForValue(
     circle->SetCenterY(
         ConvertToCenterCoordinate(state, circle_value.CenterY()));
     circle->SetRadius(CssValueToBasicShapeRadius(state, circle_value.Radius()));
+    if (!circle_value.CenterX()) {
+      circle->SetHasExplicitCenter(false);
+    }
 
     basic_shape = std::move(circle);
   } else if (IsA<cssvalue::CSSBasicShapeEllipseValue>(basic_shape_value)) {
@@ -386,6 +389,9 @@ scoped_refptr<BasicShape> BasicShapeForValue(
         CssValueToBasicShapeRadius(state, ellipse_value.RadiusX()));
     ellipse->SetRadiusY(
         CssValueToBasicShapeRadius(state, ellipse_value.RadiusY()));
+    if (!ellipse_value.CenterX()) {
+      ellipse->SetHasExplicitCenter(false);
+    }
 
     basic_shape = std::move(ellipse);
   } else if (IsA<cssvalue::CSSBasicShapePolygonValue>(basic_shape_value)) {

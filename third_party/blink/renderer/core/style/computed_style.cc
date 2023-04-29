@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
+#include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
@@ -1471,6 +1472,34 @@ gfx::PointF GetStartingPointOfThePath(const LayoutBox* box,
 
 }  // namespace
 
+PointAndTangent ComputedStyle::CalculatePointAndTangentOnCircleOrEllipse(
+    const LayoutBox* box,
+    const gfx::RectF& bounding_box) const {
+  const auto& shape = To<BasicShapeWithCenterAndRadii>(*OffsetPath());
+  const gfx::SizeF reference_box_size = GetReferenceBoxSize(box, bounding_box);
+  Path path;
+  if (shape.HasExplicitCenter()) {
+    shape.GetPath(path, gfx::RectF(reference_box_size), EffectiveZoom());
+  } else {
+    // If circle() or ellipse() is used, and an explicit center position is not
+    // given, they default to using the offset starting position, rather than
+    // their standard default.
+    const gfx::PointF starting_point =
+        GetStartingPointOfThePath(box, OffsetPosition(), reference_box_size);
+    shape.GetPathFromCenter(path, starting_point,
+                            gfx::RectF(reference_box_size), EffectiveZoom());
+  }
+  float shape_length = path.length();
+  float path_length = FloatValueForLength(OffsetDistance(), shape_length);
+  if (shape_length > 0) {
+    path_length = fmod(path_length, shape_length);
+    if (path_length < 0) {
+      path_length += shape_length;
+    }
+  }
+  return path.PointAndNormalAtLength(path_length);
+}
+
 PointAndTangent ComputedStyle::CalculatePointAndTangentOnRay(
     const LayoutBox* box,
     const gfx::RectF& bounding_box) const {
@@ -1517,7 +1546,6 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
   }
 
   const LengthPoint& anchor = OffsetAnchor();
-  const LengthPoint& position = OffsetPosition();
   const StyleOffsetRotation& rotate = OffsetRotate();
 
   float origin_shift_x = 0;
@@ -1525,7 +1553,7 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
   // If the offset-position and offset-anchor properties are not yet enabled,
   // they will have the default value, auto.
   gfx::PointF anchor_point(origin_x, origin_y);
-  if (!position.X().IsAuto() || !anchor.X().IsAuto()) {
+  if (!anchor.X().IsAuto()) {
     anchor_point = PointForLengthPoint(anchor, bounding_box.size());
     anchor_point += bounding_box.OffsetFromOrigin();
 
@@ -1542,6 +1570,11 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
     case BasicShape::kStyleRayType:
       path_position = CalculatePointAndTangentOnRay(box, bounding_box);
       break;
+    case BasicShape::kBasicShapeCircleType:
+    case BasicShape::kBasicShapeEllipseType:
+      path_position =
+          CalculatePointAndTangentOnCircleOrEllipse(box, bounding_box);
+      break;
     default:
       NOTREACHED();
       break;
@@ -1556,7 +1589,7 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
       path_position.point.y() - anchor_point.y() + origin_shift_y);
   transform.Rotate(path_position.tangent_in_degrees + rotate.angle);
 
-  if (!position.X().IsAuto() || !anchor.X().IsAuto()) {
+  if (!anchor.X().IsAuto()) {
     // Shift the origin back to transform-origin.
     transform.Translate(-origin_shift_x, -origin_shift_y);
   }
