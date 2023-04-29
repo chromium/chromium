@@ -856,6 +856,9 @@ crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/rendering/blitf
 crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/textures/misc/tex-input-validation.html [ Failure ]
 crbug.com/1373277 [ chromeos chromeos-board-kevin ] conformance2/textures/video/tex-3d-srgb8-rgb-unsigned_byte.html [ Failure ]
 
+crbug.com/1441195 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
+crbug.com/1441195 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
+
 crbug.com/1232106 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1232118 [ angle-opengles chromeos chromeos-board-amd64-generic passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
