@@ -4196,7 +4196,6 @@ Pretende pará-lo?</translation>
 <translation id="4617001782309103936">Muito curto</translation>
 <translation id="4617270414136722281">Opções de extensão</translation>
 <translation id="4617880081511131945">Não é possível estabelecer ligação</translation>
-<translation id="4618195822946934889">O URL só pode conter carateres ASCII</translation>
 <translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4619615317237390068">Separadores de outros dispositivos</translation>
 <translation id="4620809267248568679">Esta definição é gerida por uma extensão.</translation>
@@ -7294,7 +7293,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7412226954991670867">Memória GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Configuração concluída</translation>
-<translation id="7415484647604548662">Pode bloquear sites que não quer. O Chrome também apaga automaticamente os sites da lista com mais de 4 semanas.</translation>
 <translation id="7416091793702109803">Rever <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Não é possível carregar os Termos de Utilização. Verifique a ligação de rede e tente novamente.</translation>
 <translation id="7416362041876611053">Erro de rede desconhecido.</translation>
@@ -8818,6 +8816,9 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8725178340343806893">Favoritos/Marcadores</translation>
 <translation id="87254326763805752">Confirme o token de acesso</translation>
 <translation id="8726206820263995930">Erro ao obter as definições da política do servidor: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Enviar <ph name="BEGIN_LINK1" />metadados de preenchimento automático<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (os dados de preenchimento automático não são partilhados)</translation>
 <translation id="8728351286589123703">As suas autorizações escolhidas serão repostas</translation>
 <translation id="8729133765463465108">Usar a câmara para ler o código QR</translation>
 <translation id="8730621377337864115">Concluído</translation>
@@ -9353,7 +9354,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9180380851667544951">O site pode partilhar o ecrã.</translation>
 <translation id="9180847522826713506">Para ver a sua palavra-passe ou adicionar uma nota sobre ela, clique no ícone de chave</translation>
 <translation id="9182556968660520230">Não permitir que os sites reproduzam conteúdo protegido</translation>
-<translation id="9183331776983279456">O Chrome apaga automaticamente os sites com mais de 4 semanas. Um site que visita novamente pode voltar a aparecer na lista. Em alternativa, pode impedir que um site lhe sugira anúncios.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186963452600581158">Iniciar sessão com uma Conta Google de criança</translation>
 <translation id="9187967020623675250">As teclas não correspondem. Prima qualquer tecla para <ph name="RESPONSE" />.</translation>

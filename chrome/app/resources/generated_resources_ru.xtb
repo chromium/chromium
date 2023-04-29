@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Страница откроется в альтернативном браузере через <ph name="COUNTDOWN_SECONDS" /> сек.</translation>
+<translation id="1071735803834535661">Внешняя клавиша Meta</translation>
 <translation id="1071917609930274619">Шифрование данных</translation>
 <translation id="1072700771426194907">Обнаружено USB-устройство</translation>
 <translation id="107278043869924952">Использовать PIN-код вместе с паролем</translation>
@@ -1370,6 +1371,7 @@
 <translation id="2146263598007866206">Сайты могут автоматически скачивать сразу несколько связанных файлов. Это позволяет вам экономить время.</translation>
 <translation id="2147151613919729065">Чтобы очистить историю гостевого режима, закройте все соответствующие окна</translation>
 <translation id="2147218225094845757">Скрыть боковую панель</translation>
+<translation id="2147282432401652483">Command</translation>
 <translation id="2148219725039824548">Ошибка. Не удалось найти указанный ресурс в сети.</translation>
 <translation id="2148756636027685713">Форматирование завершено</translation>
 <translation id="2148892889047469596">Трансляция содержимого вкладки</translation>
@@ -4190,7 +4192,6 @@
 <translation id="4617001782309103936">Слишком короткий</translation>
 <translation id="4617270414136722281">Параметры расширений</translation>
 <translation id="4617880081511131945">Не удается подключиться</translation>
-<translation id="4618195822946934889">URL может содержать только символы стандарта ASCII.</translation>
 <translation id="4619564267100705184">Подтвердить личность</translation>
 <translation id="4619615317237390068">Вкладки с других устройств</translation>
 <translation id="4620809267248568679">Этот параметр определяется расширением.</translation>
@@ -4928,6 +4929,7 @@
 <translation id="5298219193514155779">Автор темы:</translation>
 <translation id="5299109548848736476">Запрет отслеживания</translation>
 <translation id="5299558715747014286">Просмотр групп вкладок и управление ими</translation>
+<translation id="529986401483187205">Отключено</translation>
 <translation id="5300287940468717207">Сбросить все разрешения сайтов?</translation>
 <translation id="5300426565656326054">Персонализация рекламы на основе данных браузера</translation>
 <translation id="5300589172476337783">Показать</translation>
@@ -6825,6 +6827,7 @@
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="6983507711977005608">Отключиться от мгновенной точки доступа</translation>
 <translation id="6983783921975806247">Зарегистрированный OID</translation>
+<translation id="6983890893900549383">Esc</translation>
 <translation id="6985235333261347343">Агент восстановления ключей Microsoft</translation>
 <translation id="698524779381350301">Автоматически разрешать доступ к следующим сайтам</translation>
 <translation id="6985607387932385770">Принтеры</translation>
@@ -7285,7 +7288,6 @@
 <translation id="7412226954991670867">Память графического процессора</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Настройка завершена</translation>
-<translation id="7415484647604548662">Вы можете заблокировать ненужные сайты. Тогда реклама, которую они рекомендуют, не будет показываться вам. Chrome также автоматически удаляет из списка сайты, добавленные более четырех недель назад.</translation>
 <translation id="7416091793702109803">Посмотреть файл "<ph name="FILE_NAME" />"</translation>
 <translation id="7416263748877373774">Не удалось загрузить Условия использования. Проверьте подключение к интернету и повторите попытку.</translation>
 <translation id="7416362041876611053">Неизвестная сетевая ошибка.</translation>
@@ -7991,6 +7993,7 @@
 <translation id="8009225694047762179">Управление паролями</translation>
 <translation id="8011372169388649948">Закладка "<ph name="BOOKMARK_TITLE" />" перемещена.</translation>
 <translation id="8011875486979733097">Не удалось установить Steam</translation>
+<translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8013993649590906847">Если у изображения нет понятного описания, Chrome попытается его найти. Для создания описаний изображения отправляются в Google.</translation>
 <translation id="8014154204619229810">Работает программа обновлений. Повторите попытку через пару минут.</translation>
 <translation id="8014206674403687691">Невозможно вернуться к предыдущей установленной версии <ph name="IDS_SHORT_PRODUCT_NAME" />. Воспользуйтесь функцией Powerwash.</translation>
@@ -9344,7 +9347,6 @@
 <translation id="9180380851667544951">Сайт может открыть доступ к вашему экрану</translation>
 <translation id="9180847522826713506">Чтобы посмотреть пароль или добавить заметку о нем, нажмите на значок ключа.</translation>
 <translation id="9182556968660520230">Запретить сайтам воспроизводить защищенный контент</translation>
-<translation id="9183331776983279456">Chrome автоматически удаляет сайты через 4 недели с момента их добавления. Если вы повторно посетите сайт, он может вновь появиться в списке. Вы также можете запретить сайту предлагать рекламу.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Приложение}one{# приложение}few{# приложения}many{# приложений}other{# приложения}}</translation>
 <translation id="9186963452600581158">Войти в аккаунт Google ребенка</translation>
 <translation id="9187967020623675250">Клавиши не совпадают. Нажмите любую клавишу, чтобы <ph name="RESPONSE" />.</translation>

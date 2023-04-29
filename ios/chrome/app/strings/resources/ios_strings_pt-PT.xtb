@@ -407,6 +407,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3638472932233958418">Pré-carregar Páginas Web</translation>
 <translation id="3661160521073045932">Perfil de configuração disponível</translation>
 <translation id="3670030362669914947">Número</translation>
+<translation id="3700134753671613714">Inicie sessão para obter os seus marcadores em todos os dispositivos.</translation>
 <translation id="3709582977625132201">Marcar como não lido</translation>
 <translation id="371230970611282515">Prevê e envia-lhe avisos sobre eventos perigosos antes da sua ocorrência.</translation>
 <translation id="37207012422556617">Pesquisas populares</translation>
@@ -609,6 +610,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="4979397965658815378">Inicie sessão com a sua Conta Google para aceder aos marcadores, às palavras-passe, ao histórico e a outras definições em todos os dispositivos</translation>
 <translation id="4986678885919050584">Remover deste dispositivo</translation>
 <translation id="498985224078955265">Para enviar este separador para outro dispositivo, inicie sessão no Chrome em ambos os dispositivos.</translation>
+<translation id="4996567535980789550">Ative a sincronização para gerir o conteúdo que vê</translation>
 <translation id="5005498671520578047">Copiar palavra-passe</translation>
 <translation id="5016420433031926653">Enviar para <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Lembrar-me mais tarde</translation>
@@ -665,6 +667,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="543338862236136125">Editar palavra-passe</translation>
 <translation id="5433691172869980887">Nome de utilizador copiado</translation>
 <translation id="5439599923922718668">Visitados frequentemente</translation>
+<translation id="5439618055789623719">Sessão iniciada como <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Informações de Segurança da Página</translation>
 <translation id="5443952882982198570">Cartões de crédito</translation>
 <translation id="5444892875087332195">Marcadores</translation>
@@ -1235,6 +1238,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9034759925968272072">A sessão na sua Conta Google não é terminada. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
+<translation id="9043368763795653245">Para personalizar o feed do Discover e o Chrome, ative a sincronização.</translation>
 <translation id="9055772144595778347">Impossível Iniciar Sessão</translation>
 <translation id="9055960261314198756">A Proteção melhorada está desativada</translation>
 <translation id="9057972802061533987">Não é possível seguir. Algo correu mal.</translation>

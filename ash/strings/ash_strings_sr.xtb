@@ -382,6 +382,7 @@
 <translation id="2791421900609674576">Видећете препоруке да бисте могли да наставите тамо где сте стали.  Можете да додирнете и задржите да бисте уклонили препоруке.</translation>
 <translation id="2792498699870441125">Alt + тастер за претрагу</translation>
 <translation id="2797741504905337289">Журка на полици</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, изабрано је</translation>
 <translation id="2805756323405976993">Апликације</translation>
 <translation id="2814448776515246190">Делимично снимање</translation>
 <translation id="2819276065543622893">Бићете одмах одјављени.</translation>
@@ -1393,6 +1394,7 @@
 <translation id="7497767806359279797">Одаберите језик и тастатуру</translation>
 <translation id="7508690557411636492">Отварано протеклог месеца</translation>
 <translation id="7509246181739783082">Верификујте идентитет</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, није изабрано</translation>
 <translation id="7513622367902644023">Изабран је режим снимка екрана</translation>
 <translation id="7513922695575567867">Календар, седмица када је <ph name="DATE" />, <ph name="SELECTED_DATE" /> је тренутно изабран.</translation>
 <translation id="7514365320538308">Преузми</translation>

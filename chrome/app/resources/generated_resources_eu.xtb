@@ -4190,7 +4190,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4617001782309103936">Laburregia</translation>
 <translation id="4617270414136722281">Luzapenaren aukerak</translation>
 <translation id="4617880081511131945">Ezin da ezarri konexioa</translation>
-<translation id="4618195822946934889">ASCII karaktereak soilik izan ditzake URLak</translation>
 <translation id="4619564267100705184">Egiaztatu zeu zarela</translation>
 <translation id="4619615317237390068">Beste gailu batzuetako fitxak</translation>
 <translation id="4620809267248568679">Luzapen batek betearazten du ezarpena.</translation>
@@ -7278,7 +7277,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7412226954991670867">GPU memoria</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Konfiguratu da</translation>
-<translation id="7415484647604548662">Nahi ez dituzun webguneak blokea ditzakezu. Gainera, Chrome-k automatikoki ezabatzen ditu zerrendatik lau aste baino gehiago dituzten webguneak.</translation>
 <translation id="7416091793702109803">Berrikusi <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Ezin dira kargatu Zerbitzu-baldintzak. Egiaztatu sarera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="7416362041876611053">Sareko errore ezezaguna.</translation>
@@ -9334,7 +9332,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="9180380851667544951">Webguneak pantaila parteka dezake</translation>
 <translation id="9180847522826713506">Pasahitza ikusteko edo hari buruzko ohar bat gehitzeko, sakatu giltzaren ikonoa</translation>
 <translation id="9182556968660520230">Ez eman eduki babestua erreproduzitzeko baimena webguneei</translation>
-<translation id="9183331776983279456">Chrome-k automatikoki ezabatzen ditu lau aste baino gehiago dituzten webguneak. Baliteke beste behin bisitatzen duzun webgune bat berriro ere zerrendan agertzea. Era berean, webgune bat blokeatuta, zuretzako iragarkiak iradokitzea galaraz diezaiokezu.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikazioa}other{# aplikazio}}</translation>
 <translation id="9186963452600581158">Hasi saioa haurraren Google-ko kontuan</translation>
 <translation id="9187967020623675250">Teklak ez datoz bat. Sakatu edozein tekla <ph name="RESPONSE" />.</translation>

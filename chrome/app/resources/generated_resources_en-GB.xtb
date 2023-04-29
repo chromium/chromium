@@ -3977,6 +3977,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4412632005703201014">Chrome apps are migrating to progressive web apps. This Chrome app was installed on your browser by your organisation. To open the progressive web app from the Apps list, first contact your administrator and ask them to uninstall the Chrome app. In the meantime, you can visit <ph name="EXTENSION_LAUNCH_URL" /> to open <ph name="EXTENSION_NAME" /> on the web.</translation>
 <translation id="4412698727486357573">Help Centre</translation>
 <translation id="4412992751769744546">Allow third-party cookies</translation>
+<translation id="4413087696295876280">Read ChromeOS Flex device information and data</translation>
 <translation id="44141919652824029">Allow '<ph name="APP_NAME" />' to get the list of your attached USB devices?</translation>
 <translation id="4414232939543644979">New &amp;Incognito Window</translation>
 <translation id="4414648713167199100">Uses your Chromebook’s mobile data and your operator may charge additional fees. May increase battery usage. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4210,7 +4211,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4617001782309103936">Too short</translation>
 <translation id="4617270414136722281">Extension options</translation>
 <translation id="4617880081511131945">Can't establish connection</translation>
-<translation id="4618195822946934889">URL can only contain ASCII characters</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4619615317237390068">Tabs from other devices</translation>
 <translation id="4620809267248568679">This setting is enforced by an extension.</translation>
@@ -6854,6 +6854,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6993000214273684335">Tab removed from unnamed group – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Updating Chrome Browser</translation>
 <translation id="6995899638241819463">Warn you if passwords are exposed in a data breach</translation>
+<translation id="6995984090981858039">Read ChromeOS device information and data</translation>
 <translation id="6997553674029032185">Go to site</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Activity Log</translation>
 <translation id="6997707937646349884">On your devices:</translation>
@@ -7057,6 +7058,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7193051357671784796">This app was added by your organisation. Restart the app to finish installing it.</translation>
 <translation id="7193374945610105795">No passwords saved for <ph name="ORIGIN" /></translation>
 <translation id="7194873994243265344">Your organisation has blocked this file because it is encrypted. Ask its owner to decrypt it.</translation>
+<translation id="7196107899576756066">{COUNT,plural, =1{1 download in progress}other{# downloads in progress}}</translation>
 <translation id="7196272782924897510">Use a passkey from another device?</translation>
 <translation id="7196913789568937443">Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data. Your backups are uploaded to Google and encrypted using your Google Account password. <ph name="BEGIN_LINK1" />Learn More<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Get Google Search and Google smarts every time that you browse</translation>
@@ -7305,7 +7307,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7412226954991670867">GPU Memory</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Setup complete</translation>
-<translation id="7415484647604548662">You can block sites that you don't want. Chrome also auto-deletes sites that are older than four weeks from the list.</translation>
 <translation id="7416091793702109803">Review <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Terms of Service cannot be loaded. Please check your network connection and retry.</translation>
 <translation id="7416362041876611053">Unknown network error</translation>
@@ -8829,6 +8830,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8725178340343806893">Favourites/bookmarks</translation>
 <translation id="87254326763805752">Confirm passkey</translation>
 <translation id="8726206820263995930">Error when fetching policy settings from the server: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Send <ph name="BEGIN_LINK1" />autofill metadata<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (your autofill data won't be shared)</translation>
 <translation id="8728351286589123703">Your chosen permissions will be reset</translation>
 <translation id="8729133765463465108">Use camera to scan QR code</translation>
 <translation id="8730621377337864115">Done</translation>
@@ -9364,7 +9368,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9180380851667544951">Site can share your screen</translation>
 <translation id="9180847522826713506">To view your password or add a note about it, click the key icon</translation>
 <translation id="9182556968660520230">Don't allow sites to play protected content</translation>
-<translation id="9183331776983279456">Chrome auto-deletes sites that are older than four weeks. A site that you visit again might reappear on the list. Or you can block a site from suggesting ads for you.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186963452600581158">Sign in with a child's Google Account</translation>
 <translation id="9187967020623675250">Keys don’t match. Press any key to <ph name="RESPONSE" />.</translation>

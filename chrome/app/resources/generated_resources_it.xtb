@@ -4194,7 +4194,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4617001782309103936">Troppo corto</translation>
 <translation id="4617270414136722281">Opzioni estensione</translation>
 <translation id="4617880081511131945">Impossibile stabilire una connessione</translation>
-<translation id="4618195822946934889">L'URL può contenere soltanto caratteri ASCII</translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4619615317237390068">Schede di altri dispositivi</translation>
 <translation id="4620809267248568679">Questa impostazione è applicata da un'estensione.</translation>
@@ -7286,7 +7285,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7412226954991670867">Memoria GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Configurazione completata</translation>
-<translation id="7415484647604548662">Puoi bloccare i siti indesiderati. Chrome elimina automaticamente dall'elenco i siti risalenti a più di 4 settimane prima della data corrente.</translation>
 <translation id="7416091793702109803">Controlla il file <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Impossibile caricare i Termini di servizio. Controlla la connessione di rete e riprova.</translation>
 <translation id="7416362041876611053">Errore di rete sconosciuto.</translation>
@@ -9345,7 +9343,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9180380851667544951">Il sito può condividere lo schermo</translation>
 <translation id="9180847522826713506">Per visualizzare la password o aggiungere una nota, fai clic sull'icona della chiave</translation>
 <translation id="9182556968660520230">Non consentire ai siti di riprodurre contenuti protetti</translation>
-<translation id="9183331776983279456">Chrome elimina automaticamente i siti che risalgono a più di 4 settimane prima della data corrente. Se visiti di nuovo un sito, questo potrebbe essere visualizzato di nuovo nell'elenco. In alternativa, puoi impedire a un sito di suggerire annunci per te.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# app}}</translation>
 <translation id="9186963452600581158">Accedi con l'Account Google di un bambino</translation>
 <translation id="9187967020623675250">I tasti non corrispondono. Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>

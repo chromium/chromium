@@ -1887,7 +1887,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5596939519753369075">2 x 3,5 inci (5 x 8 cm)</translation>
 <translation id="560412284261940334">Pengelolaan tidak didukung</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Cara Anda dapat mengelola data Anda:<ph name="END_BOLD" /> Chrome otomatis menghapus situs yang tersimpan lebih dari 4 minggu. Situs yang Anda buka lagi mungkin akan muncul kembali di daftar. Anda juga dapat memblokir situs agar tidak menyarankan iklan dan menonaktifkan iklan yang disarankan situs kapan saja di setelan Chrome.</translation>
 <translation id="5610142619324316209">Periksa sambungan</translation>
 <translation id="5610807607761827392">Anda dapat mengelola kartu dan alamat di <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="5611398002774823980">Simpan di akun</translation>
@@ -3209,7 +3208,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8876033571432926051">Game kasual</translation>
 <translation id="8877780815363510165">Memancing</translation>
 <translation id="8884537526797090108">Tidak dapat merekam konten rahasia</translation>
-<translation id="8890798179125483517">Chrome otomatis menghapus topik dan situs yang menyarankan iklan, yang tersimpan lebih dari 4 minggu. Atau, Anda dapat memblokir topik dan situs tertentu yang tidak Anda sukai.</translation>
 <translation id="8891727572606052622">Mode proxy tidak valid.</translation>
 <translation id="8894794286471754040">Tepi panjang lebih dulu</translation>
 <translation id="8897428486789851669">Renang</translation>

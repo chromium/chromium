@@ -4193,7 +4193,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4617001782309103936">Juda qisqa</translation>
 <translation id="4617270414136722281">Kengaytma parametrlari</translation>
 <translation id="4617880081511131945">Aloqa oʻrnatilmadi</translation>
-<translation id="4618195822946934889">URL faqat ASCII belgilaridan iborat boʻlishi lozim</translation>
 <translation id="4619564267100705184">Bu siz ekaningizni isbotlang</translation>
 <translation id="4619615317237390068">Boshqa qurilmalardan sinxronlangan varaqlar</translation>
 <translation id="4620809267248568679">Bu parametr kengaytma tomonidan kuchga kiritilgan.</translation>
@@ -7284,7 +7283,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7412226954991670867">Grafik protsessor (GPU) xotirasi</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Sozlash yakunlandi</translation>
-<translation id="7415484647604548662">Istalgan saytni bloklash mumkin. Shuningdek, Chrome roʻyxatdagi 4 haftadan eskirgan saytlarni avtomatik oʻchiradi.</translation>
 <translation id="7416091793702109803">Tekshirish: <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Xizmat shartlari yuklanmadi. Internetga ulanishni tekshiring va qaytadan urining.</translation>
 <translation id="7416362041876611053">Tarmoqqa oid noma’lum xato.</translation>
@@ -9340,7 +9338,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="9180380851667544951">Sayt ekraningizni namoyish etishi mumkin</translation>
 <translation id="9180847522826713506">Parolni koʻrish yoki unga qayd kiritish uchun kalit belgisini bosing</translation>
 <translation id="9182556968660520230">Saytlarga himoyalangan kontentni ijro qilishni taqiqlash</translation>
-<translation id="9183331776983279456">Chrome 4 haftadan eskirgan saytlarni avtomatik oʻchiradi. Takroriy ochilgan saytlar roʻyxatda qayta chiqishi mumkin. Yoki saytni sizga reklama taklif qilishini bloklashingiz mumkin.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Ilova}other{# ta ilova}}</translation>
 <translation id="9186963452600581158">Farzandingizning Google hisobi bilan kiring</translation>
 <translation id="9187967020623675250">Kalitlar mos emas. <ph name="RESPONSE" /> uchun istalgan tugmani bosing.</translation>

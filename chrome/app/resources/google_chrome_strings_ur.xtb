@@ -117,6 +117,7 @@
 <translation id="2929907241665500097">‏Chrome اپ ڈیٹ نہیں ہوا، کچھ غلط ہو گیا۔ <ph name="BEGIN_LINK" />Chrome اپ ڈیٹ کی دشواریوں اور ناکام اپ ڈیٹس کو درست کریں۔<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - نیٹ ورک سائن ان - Chrome</translation>
 <translation id="3019382870990049182">‏ChromeOS Flex&amp; کو اپ ڈیٹ کرنے کیلئے بند کر کے دوبارہ چلائیں</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{‏Google Chrome ایکسٹینشنز HID آلات تک رسائی حاصل کر رہے تھے}=1{‏Google Chrome ایکسٹینشنز HID آلات تک رسائی حاصل کر رہے ہیں}other{‏Google Chrome ایکسٹینشنز # HID آلات تک رسائی حاصل کر رہے ہیں}}</translation>
 <translation id="303514781271618814">‏Chrome نئی خصوصیات کو دریافت کر رہا ہے جو سائٹس کو آپ کے کم ڈیٹا کا استعمال کر کے وہی براؤزنگ تجربہ فراہم کرنے کی اجازت دیتا ہے</translation>
 <translation id="3037838751736561277">‏Google Chrome پس منظر وضع میں ہے۔</translation>
 <translation id="3038232873781883849">انسٹال ہونے کا انتظار ہے...</translation>
@@ -222,6 +223,7 @@
 <translation id="4970880042055371251">‏ChromeOS ورژن</translation>
 <translation id="4970947549776831107">‏Chrome نے اس فائل کو مسدود کر دیا کیونکہ اس قسم کی فائل خطرناک ہے</translation>
 <translation id="4990567037958725628">‏Google Chrome کینیری</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{‏Google Chrome ایکسٹینشن HID آلات تک رسائی حاصل کر رہا تھا}=1{‏Google Chrome ایکسٹینشن 1 HID آلہ تک رسائی حاصل کر رہا ہے}other{‏Google Chrome ایکسٹینشن # HID آلات تک رسائی حاصل کر رہا ہے}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{‏جب 1 منٹ تک Chrome کا استعمال نہیں کیا جاتا ہے تو آپ کا منتظم اسے خودکار طور پر بند کر دیتا ہے۔ براؤزنگ ڈیٹا کو حذف کر دیا جاتا ہے۔ اس میں سرگزشت، آٹو فل اور ڈاؤن لوڈز شامل ہو سکتے ہیں۔}other{‏جب # منٹ تک Chrome کا استعمال نہیں کیا جاتا ہے تو آپ کا منتظم اسے خودکار طور پر بند کر دیتا ہے۔ براؤزنگ ڈیٹا کو حذف کر دیا جاتا ہے۔ اس میں سرگزشت، آٹو فل اور ڈاؤن لوڈز شامل ہو سکتے ہیں۔}}</translation>
 <translation id="5098668839038261629">‏آن ہونے پر، آپ Chrome سے بھی سائن آؤٹ ہو جائیں گے</translation>
 <translation id="5132929315877954718">‏Google Chrome کیلئے زبردست اطلاقات، گیمز، ایکسٹینشنز اور تھیمز کو دریافت کریں۔</translation>

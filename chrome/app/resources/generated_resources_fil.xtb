@@ -3978,6 +3978,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4412632005703201014">Nagma-migrate ang Mga Chrome App sa Mga Progressive Web App. Na-install ng iyong organisasyon ang Chrome App na ito sa browser mo. Para buksan ang Progressive Web App mula sa listahan ng Mga App, makipag-ugnayan muna sa iyong administrator at hilingin sa kanyang i-uninstall ang Chrome App. Sa ngayon, puwede mong bisitahin ang <ph name="EXTENSION_LAUNCH_URL" /> para buksan ang <ph name="EXTENSION_NAME" /> sa web.</translation>
 <translation id="4412698727486357573">Help center</translation>
 <translation id="4412992751769744546">Payagan ang third-party na cookies</translation>
+<translation id="4413087696295876280">Basahin ang impormasyon device at data ng ChromeOS Flex</translation>
 <translation id="44141919652824029">Payagan ang "<ph name="APP_NAME" />" na makuha ang listahan ng iyong mga naka-attach na USB device?</translation>
 <translation id="4414232939543644979">Bagong &amp;Incognito Window</translation>
 <translation id="4414648713167199100">Ginagamit ang mobile data ng iyong Chromebook at posibleng maningil ng mga karagdagang bayarin ang carrier mo. Posibleng madagdagan ang paggamit ng baterya. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4211,7 +4212,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4617001782309103936">Napakaikli</translation>
 <translation id="4617270414136722281">Mga opsyon ng extension</translation>
 <translation id="4617880081511131945">Hindi makakonekta</translation>
-<translation id="4618195822946934889">Puwede lang maglaman ng mga ASCII character ang URL</translation>
 <translation id="4619564267100705184">I-verify na ikaw ito</translation>
 <translation id="4619615317237390068">Mga tab mula sa iba pang device</translation>
 <translation id="4620809267248568679">Ipinapatupad ng isang extension ang setting na ito.</translation>
@@ -6857,6 +6857,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6993000214273684335">Inalis ang tab sa grupong walang pangalan - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Ina-update ang Chrome browser</translation>
 <translation id="6995899638241819463">Balaan ka kung ma-expose ang mga password sa isang paglabag sa data</translation>
+<translation id="6995984090981858039">Basahin ang impormasyon ng device at data ng ChromeOS</translation>
 <translation id="6997553674029032185">Pumunta sa site</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Log ng Aktibidad</translation>
 <translation id="6997707937646349884">Sa iyong mga device:</translation>
@@ -7060,6 +7061,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7193051357671784796">Idinagdag ng iyong organisasyon ang app na ito. I-restart ang app para tapusin ang pag-install nito.</translation>
 <translation id="7193374945610105795">Walang naka-save na password para sa <ph name="ORIGIN" /></translation>
 <translation id="7194873994243265344">Na-block ng iyong organisasyon ang file na ito dahil naka-encrypt ito. Hilingin sa may-ari nitong i-decrypt ito.</translation>
+<translation id="7196107899576756066">{COUNT,plural, =1{1 nagda-download}one{# nagda-download}other{# na nagda-download}}</translation>
 <translation id="7196272782924897510">Gumamit ng passkey mula sa ibang device?</translation>
 <translation id="7196913789568937443">Mag-back up sa Google Drive. Madaling i-restore ang iyong data o magpalit ng device anumang oras. Kabilang sa iyong backup ang data ng app. Ina-upload sa Google ang iyong mga backup at ine-encrypt gamit ang password ng Google Account mo. <ph name="BEGIN_LINK1" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Makakuha ng Google Search at Google smarts sa tuwing magba-browse ka</translation>
@@ -7308,7 +7310,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7412226954991670867">GPU Memory</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Tapos na ang pag-set up</translation>
-<translation id="7415484647604548662">Puwede kang mag-block ng mga site na ayaw mo. Awtomatiko ring dine-delete ng Chrome ang mga site sa listahan na mas matagal sa 4 na linggo.</translation>
 <translation id="7416091793702109803">Suriin ang <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Hindi ma-load ang Mga Tuntunin ng Serbisyo. Pakisuri ang iyong koneksyon ng network at subukan ulit.</translation>
 <translation id="7416362041876611053">Hindi alam na error sa network.</translation>
@@ -9370,7 +9371,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9180380851667544951">Maaaring ibahagi ng site ang iyong screen</translation>
 <translation id="9180847522826713506">Para matingnan ang iyong password o magdagdag ng tala tungkol dito, i-click ang icon na key</translation>
 <translation id="9182556968660520230">Huwag payagan ang mga site na mag-play ng pinoprotektahang content</translation>
-<translation id="9183331776983279456">Awtomatikong dine-delete ng Chrome ang mga site na mahigit 4 na linggo na. Posibleng lumabas ulit sa listahan ang site na binisita mo ulit. O puwede mong i-block ang isang site mula sa pagmumungkahi ng mga ad para sa iyo.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# na app}}</translation>
 <translation id="9186963452600581158">Mag-sign in gamit ang Google Account ng isang bata</translation>
 <translation id="9187967020623675250">Hindi magkatugma ang mga key. Pumindot ng anumang key para <ph name="RESPONSE" />.</translation>

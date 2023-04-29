@@ -1263,6 +1263,7 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="7709918231054955894">Thola wonke amathebhu akho</translation>
 <translation id="772434085369393266">Thuthukisa ukufuna ku-HTTPS futhi ikuxwayise ngaphambi kokulayisha amasayithi angayisekeli. Awukwazi ukushintsha le sethingi ngoba Unokuvikela Okuthuthukile okunikwe amandla.</translation>
 <translation id="7725024127233776428">Amakhasi owafaka ibhukhimakhi avela lapha</translation>
+<translation id="7733878270780732638">Asikho isikhala esanele kudivayisi</translation>
 <translation id="7757787379047923882">Umbhalo wabiwe kusuka ku-<ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Ikhadi le-SD elingu-<ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Engeza ikheli</translation>
@@ -1550,7 +1551,6 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="9158770349521403363">Yabelana ngokuqukethwe kuphela</translation>
 <translation id="9159716826369098114">Buyisela ithebhu yeqembu lamathebhu angu-<ph name="TAB_COUNT" /> njengeqembu lethebhu yangemuva entsha.</translation>
 <translation id="9169507124922466868">Umlando wokuzula uvuleke ngohhafu</translation>
-<translation id="9183331776983279456">I-Chrome isula ngokuzenzekela amasayithi amadala kunamaviki ama-4. Isayithi oyivakashelayo futhi ingase ivele ohlwini. Noma ungavimba isayithi ekuphakamiseni izikhangiso zakho.</translation>
 <translation id="9190276265094487094">Uzoba nomlando wakho kuwo wonke amadivayisi akho avunyelanisiwe ukuze uqhubeke nalokho ubukwenza</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Kuhlolwe kumzuzu o-1 odlule}one{Kuhlolwe kwimizuzu engu-# edlule}other{Kuhlolwe kwimizuzu engu-# edlule}}</translation>
 <translation id="9204836675896933765">1 ifayela elisele</translation>
@@ -1572,7 +1572,6 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="96681097142096641">Bona ikhasi elenziwe laba lula?</translation>
 <translation id="968900484120156207">Amakhasi owavakashelayo avela lapha</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> amaminithi asele</translation>
-<translation id="978317418833355355">Ungavimba amasayithi ongawafuni. I-Chrome iphinda isuse ngokuzenzekela amasayithi ohlwini oludala kunamaviki ama-4. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Ayixhunyiwe ku-inthanethi</translation>
 <translation id="983192555821071799">Vala wonke amathebhu</translation>
 <translation id="987264212798334818">Okujwayelekile</translation>

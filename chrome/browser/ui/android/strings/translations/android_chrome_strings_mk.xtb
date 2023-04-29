@@ -309,7 +309,7 @@
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2760989362628427051">Вклучува темна тема кога е вклучена темната тема или „Штедачот на батерија“ на уредот</translation>
 <translation id="2762000892062317888">пред малку</translation>
-<translation id="276969039800130567">Најавени сте како <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="276969039800130567">Најавени сте како: <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2776236159752647997">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389">Останаа <ph name="SECONDS" /> секунди</translation>
 <translation id="2779651927720337254">не успеа</translation>
@@ -927,7 +927,7 @@
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="604124094241169006">Автоматски</translation>
 <translation id="6042308850641462728">Повеќе</translation>
-<translation id="6049046116080614938">Најавени сте како <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Копче. Ги отвора поставките.</translation>
+<translation id="6049046116080614938">Најавени сте како: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Копче. Ги отвора поставките.</translation>
 <translation id="604996488070107836">Преземањето на <ph name="FILE_NAME" /> не успеа поради непозната грешка.</translation>
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Контролирајте ги сториите и активноста тука</translation>
@@ -1311,7 +1311,7 @@
 <translation id="7968014550143838305">Додадено во списокот за читање</translation>
 <translation id="7971136598759319605">Активен пред 1 ден</translation>
 <translation id="7975379999046275268">Прегледајте ја страницата <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
-<translation id="7981085434646346979">Најавени сте како <ph name="USER_NAME" />. Копче. Ги отвора поставките.</translation>
+<translation id="7981085434646346979">Најавени сте како: <ph name="USER_NAME" />. Копче. Ги отвора поставките.</translation>
 <translation id="7986497153528221272">За да ги гледате лозинките, прво поставете заклучување екран на вашиот уред</translation>
 <translation id="7995059495660416932">Ќе ги видите содржините кога ќе станат достапни</translation>
 <translation id="799576009106109668">Ќе прелистувате побрзо бидејќи содржините се вчитуваат проактивно според вашата тековна посета на веб-страницата</translation>
@@ -1550,7 +1550,6 @@
 <translation id="9158770349521403363">Сподели само содржини</translation>
 <translation id="9159716826369098114">Врати ја групата картички од <ph name="TAB_COUNT" /> картички како нова заднинска група картички.</translation>
 <translation id="9169507124922466868">Историјата на навигација е отворена до половина екран</translation>
-<translation id="9183331776983279456">Chrome автоматски ги брише сајтовите што се постари од 4 седмици. Сајт што ќе го посетите повторно може одново да се појави на списокот. Или може да блокирате сајт да ви прикажува реклами.</translation>
 <translation id="9190276265094487094">Историјата ќе ви биде достапна на сите ваши синхронизирани уреди за да може да продолжите со она што сте го правеле</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено пред 1 минута}one{Проверено пред # минута}other{Проверено пред # минути}}</translation>
 <translation id="9204836675896933765">Преостанува 1 датотека</translation>
@@ -1572,7 +1571,6 @@
 <translation id="96681097142096641">Да се прикаже поедноставена страница?</translation>
 <translation id="968900484120156207">Страниците што ги посетувате се појавуваат тука</translation>
 <translation id="970715775301869095">Останаа <ph name="MINUTES" /> минути</translation>
-<translation id="978317418833355355">Може да ги блокирате сајтовите што не ви се допаѓаат. Chrome автоматски ги брише сајтовите од списокот што се постари од 4 седмици. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Без мрежа</translation>
 <translation id="983192555821071799">Затвори ги сите картички</translation>
 <translation id="987264212798334818">Општо</translation>

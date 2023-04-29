@@ -4209,7 +4209,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4617001782309103936">Prekratko</translation>
 <translation id="4617270414136722281">Možnosti razširitev</translation>
 <translation id="4617880081511131945">Povezave ni mogoče vzpostaviti</translation>
-<translation id="4618195822946934889">URL lahko vsebuje samo znake ASCII</translation>
 <translation id="4619564267100705184">Potrditev identitete</translation>
 <translation id="4619615317237390068">Zavihki iz drugih naprav</translation>
 <translation id="4620809267248568679">To nastavitev je vsilila razširitev.</translation>
@@ -7308,7 +7307,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7412226954991670867">Pomnilnik grafičnega procesorja</translation>
 <translation id="7414464185801331860">18 x</translation>
 <translation id="7415454883318062233">Nastavitev dokončana</translation>
-<translation id="7415484647604548662">Spletna mesta, ki jih ne želite, lahko blokirate. Chrome prav tako s seznama samodejno izbriše spletna mesta, starejša od 4 tednov.</translation>
 <translation id="7416091793702109803">Pregled datoteke <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Pogojev storitve ni mogoče naložiti. Preverite omrežno povezavo in poskusite znova.</translation>
 <translation id="7416362041876611053">Neznana napaka v omrežju.</translation>
@@ -9369,7 +9367,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9180380851667544951">Spletno mesto lahko souporablja vaš zaslon</translation>
 <translation id="9180847522826713506">Če si želite ogledati geslo ali dodati opombo o njem, kliknite ikono ključa.</translation>
 <translation id="9182556968660520230">Spletnim mestom ni dovoljeno predvajanje zaščitene vsebine.</translation>
-<translation id="9183331776983279456">Chrome samodejno izbriše spletna mesta, starejša od 4 tednov. Spletno mesto, ki ga znova obiščete, se morda znova prikaže na seznamu. Če ne želite, da vam spletno mesto predlaga oglase, ga lahko tudi blokirate.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacija}one{# aplikacija}two{# aplikaciji}few{# aplikacije}other{# aplikacij}}</translation>
 <translation id="9186963452600581158">Prijavite se z otrokovim računom Google</translation>
 <translation id="9187967020623675250">Tipki se ne ujemata. Pritisnite poljubno tipko, če želite narediti to: <ph name="RESPONSE" />.</translation>

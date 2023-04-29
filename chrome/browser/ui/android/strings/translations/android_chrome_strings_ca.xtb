@@ -1550,7 +1550,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="9158770349521403363">Comparteix només el contingut</translation>
 <translation id="9159716826369098114">Restaura el grup de <ph name="TAB_COUNT" /> pestanyes com un nou grup de pestanyes en segon pla.</translation>
 <translation id="9169507124922466868">L'historial de navegació està obert fins a la meitat</translation>
-<translation id="9183331776983279456">Chrome suprimeix automàticament els llocs web que tenen més de 4 setmanes. És possible que un lloc web que tornis a visitar aparegui de nou a la llista. També pots bloquejar un lloc web per impedir que et suggereixi anuncis.</translation>
 <translation id="9190276265094487094">Tindràs l'historial en tots els dispositius sincronitzats perquè puguis continuar el que estaves fent</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{S'ha comprovat fa 1 minut}other{S'ha comprovat fa # minuts}}</translation>
 <translation id="9204836675896933765">Queda 1 fitxer</translation>
@@ -1572,7 +1571,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="96681097142096641">Vols mostrar la pàgina simplificada?</translation>
 <translation id="968900484120156207">Les pàgines que visitis es mostraran aquí</translation>
 <translation id="970715775301869095">Queden <ph name="MINUTES" /> minuts</translation>
-<translation id="978317418833355355">Pots bloquejar els llocs web que no t'interessen. Chrome també suprimeix automàticament els llocs web de la llista que tenen més de 4 setmanes. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Sense connexió</translation>
 <translation id="983192555821071799">Tanca totes les pestanyes</translation>
 <translation id="987264212798334818">General</translation>

@@ -4206,7 +4206,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4617001782309103936">Liian lyhyt</translation>
 <translation id="4617270414136722281">Laajennusasetukset</translation>
 <translation id="4617880081511131945">Yhteyttä ei voi muodostaa</translation>
-<translation id="4618195822946934889">URL-osoite voi sisältää vain ASCII-merkkejä</translation>
 <translation id="4619564267100705184">Todenna henkilöllisyytesi</translation>
 <translation id="4619615317237390068">Välilehdet muista laitteista</translation>
 <translation id="4620809267248568679">Laajennus on ottanut käyttöön tämän asetuksen.</translation>
@@ -7301,7 +7300,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7412226954991670867">Keskusyksikön muisti</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Määritys valmis</translation>
-<translation id="7415484647604548662">Voit estää sivustot, joita et halua. Chrome myös poistaa listalta automaattisesti yli neljä viikkoa vanhat sivustotiedot.</translation>
 <translation id="7416091793702109803">Tarkista <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Käyttöehtojen lataaminen ei onnistu. Tarkista verkkoyhteys ja yritä uudelleen.</translation>
 <translation id="7416362041876611053">Tuntematon verkkovirhe.</translation>
@@ -9359,7 +9357,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9180380851667544951">Sivusto voi jakaa näyttösi</translation>
 <translation id="9180847522826713506">Voit katsoa salasanan tai lisätä siihen liittyvän muistiinpanon, kun klikkaat avainkuvaketta</translation>
 <translation id="9182556968660520230">Älä salli sivustojen toistaa suojattua sisältöä</translation>
-<translation id="9183331776983279456">Chrome poistaa automaattisesti yli neljä viikkoa vanhat sivustotiedot. Jos käyt taas sivustolla, se voi näkyä listalla uudelleen. Voit myös estää sivustoa ehdottamasta mainoksia sinulle.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Sovellus}other{# sovellusta}}</translation>
 <translation id="9186963452600581158">Kirjaudu sisään lapsen Google-tilillä</translation>
 <translation id="9187967020623675250">Näppäimet eivät täsmää. <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>

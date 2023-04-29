@@ -1550,7 +1550,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="9158770349521403363">Trimite numai conținutul</translation>
 <translation id="9159716826369098114">Restabilește grupul de <ph name="TAB_COUNT" /> file ca pe un nou grup de file din fundal.</translation>
 <translation id="9169507124922466868">Istoricul de navigare este pe jumătate deschis</translation>
-<translation id="9183331776983279456">Chrome șterge automat site-urile mai vechi de patru săptămâni. Un site pe care îl accesezi din nou poate să reapară în listă. Sau poți să nu permiți unui site să îți sugereze anunțuri.</translation>
 <translation id="9190276265094487094">Istoricul apare pe toate dispozitivele tale sincronizate. Astfel, poți continua ceea ce făceai.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A rulat acum un minut}few{A rulat acum # minute}other{A rulat acum # de minute}}</translation>
 <translation id="9204836675896933765">1 fișier rămas</translation>
@@ -1572,7 +1571,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="96681097142096641">Vrei să afișezi pagina simplificată?</translation>
 <translation id="968900484120156207">Paginile pe care le accesezi apar aici</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min. rămase</translation>
-<translation id="978317418833355355">Poți să blochezi site-urile pe care nu le dorești. În plus, Chrome șterge automat site-urile din listă mai vechi de patru săptămâni. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Închide toate filele</translation>
 <translation id="987264212798334818">General</translation>

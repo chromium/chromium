@@ -191,6 +191,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1396259464226642517">Hindi ba inaasahan ang resultang ito? <ph name="BEGIN_LINK" />Magpadala ng feedback<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Light Green</translation>
 <translation id="1406500794671479665">Bine-verify...</translation>
+<translation id="1406812885827747674">Payagan sa ngayon</translation>
 <translation id="1407135791313364759">Buksan lahat</translation>
 <translation id="1408787208417187241">Triple staple top</translation>
 <translation id="1410941016594047814">Envelope Invite</translation>
@@ -470,6 +471,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2079545284768500474">I-undo</translation>
 <translation id="20817612488360358">Itinatakda ang mga setting ng proxy ng system upang magamit ngunit tinutukoy rin ang isang tahasang configuration ng proxy.</translation>
 <translation id="2082238445998314030">Resulta <ph name="RESULT_NUMBER" /> sa <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083256696566019397">Payagan sa bawat pagbisita</translation>
 <translation id="2085876078937250610">I-save…</translation>
 <translation id="2088086323192747268">Button na Pamahalaan ang pag-sync, pindutin ang Enter para pamahalaan kung anong impormasyon ang isi-sync mo sa mga setting ng Chrome</translation>
 <translation id="2091887806945687916">Tunog</translation>
@@ -1352,6 +1354,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Na-save na ang card na ito sa iyong Google Account}one{Na-save na ang mga card na ito sa iyong Google Account}other{Na-save na ang mga card na ito sa iyong Google Account}}</translation>
 <translation id="4287495839370498922">Pinahusay na privacy sa mga ad sa Chrome</translation>
 <translation id="4287885627794386150">Kwalipikado para sa trial pero hindi aktibo</translation>
+<translation id="4290920330097335010">Huwag kailanman payagan</translation>
 <translation id="4297502707443874121">Thumbnail para sa page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Pamumuhunan</translation>
 <translation id="42981349822642051">Palawakin</translation>
@@ -1888,7 +1891,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5596939519753369075">2 x 3.5 in</translation>
 <translation id="560412284261940334">Hindi sinusuportahan ang pamamahala</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Paano mo mapapamahalaan ang iyong data:<ph name="END_BOLD" /> Awtomatikong dine-delete ng Chrome ang mga site na mahigit 4 na linggo na. Posibleng lumabas ulit sa listahan ang site na binisita mo ulit. Puwede ka ring mag-block ng site sa pagmumungkahi ng mga ad para sa iyo at i-off ang mga ad na iminumungkahi ng site anumang oras sa mga setting ng Chrome.</translation>
 <translation id="5610142619324316209">Suriin ang koneksyon</translation>
 <translation id="5610807607761827392">Maaari mong pamahalaan ang mga card at address sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
 <translation id="5611398002774823980">I-save sa account</translation>
@@ -3214,7 +3216,6 @@ Mga karagdagang detalye:
 <translation id="8876033571432926051">Mga casual na laro</translation>
 <translation id="8877780815363510165">Pangingisda</translation>
 <translation id="8884537526797090108">Hindi puwedeng mag-record ng kumpidensyal na content</translation>
-<translation id="8890798179125483517">Awtomatikong dine-delete ng Chrome ang mga paksa at site na nagmumungkahi ng mga ad na mahigit 4 na linggo na. O puwede mong i-block ang mga partikular na paksa at site na ayaw mo.</translation>
 <translation id="8891727572606052622">Di-wastong mode ng proxy.</translation>
 <translation id="8894794286471754040">Long edge muna</translation>
 <translation id="8897428486789851669">Paglangoy</translation>

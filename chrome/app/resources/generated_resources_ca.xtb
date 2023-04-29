@@ -4189,7 +4189,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4617001782309103936">És massa curt</translation>
 <translation id="4617270414136722281">Opcions d'extensió</translation>
 <translation id="4617880081511131945">No es pot establir la connexió</translation>
-<translation id="4618195822946934889">L'URL només pot contenir caràcters ASCII</translation>
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
 <translation id="4619615317237390068">Pestanyes d'altres dispositius</translation>
 <translation id="4620809267248568679">Aquesta configuració està gestionada per una extensió.</translation>
@@ -7279,7 +7278,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7412226954991670867">Memòria de la GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Configuració completada</translation>
-<translation id="7415484647604548662">Pots bloquejar els llocs web que no t'interessen. Chrome també suprimeix automàticament els llocs web de la llista que tenen més de 4 setmanes.</translation>
 <translation id="7416091793702109803">Escriu una ressenya sobre <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Les condicions del servei no es poden carregar. Comprova la connexió a la xarxa i torna-ho a provar.</translation>
 <translation id="7416362041876611053">Error de la xarxa desconegut.</translation>
@@ -9338,7 +9336,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9180380851667544951">El lloc web pot compartir la pantalla</translation>
 <translation id="9180847522826713506">Per veure la contrasenya o afegir-hi una nota, fes clic a la icona de la clau</translation>
 <translation id="9182556968660520230">No permetis que els llocs web reprodueixin contingut protegit</translation>
-<translation id="9183331776983279456">Chrome suprimeix automàticament els llocs web que tenen més de 4 setmanes. És possible que un lloc web que tornis a visitar aparegui de nou a la llista. També pots bloquejar un lloc web per impedir que et suggereixi anuncis.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicació}other{# aplicacions}}</translation>
 <translation id="9186963452600581158">Inicia la sessió amb el Compte de Google d'un nen</translation>
 <translation id="9187967020623675250">Les tecles no coincideixen. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>

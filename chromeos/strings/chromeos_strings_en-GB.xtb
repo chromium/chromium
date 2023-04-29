@@ -293,6 +293,7 @@
 <translation id="3484914941826596830">While the firmware is updating, do not unplug this external device or shut down your computer. You can minimise this window. This update may take a few minutes and your external device may not work during this time.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3488065109653206955">Partially activated</translation>
+<translation id="3502426834823382181">view all apps</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />performance trace data<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS update</translation>
 <translation id="3527036260304016759">Failed – Unknown error</translation>
@@ -636,6 +637,7 @@
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Turn Dark theme on</translation>
+<translation id="6285899124799306373">open Launcher</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> test has been cancelled</translation>
 <translation id="631063167932043783">Explore app</translation>
 <translation id="6319207335391420837">Update firmware on <ph name="DEVICE_NAME" /></translation>
@@ -651,6 +653,7 @@
 <translation id="6382182670717268353">Screen saver preview</translation>
 <translation id="6388847657025262518">The scanner’s document feeder is jammed. Check the feeder and try again.</translation>
 <translation id="6394634179843537518">Add file</translation>
+<translation id="6401427872449207797">browser search</translation>
 <translation id="6410257289063177456">Image Files</translation>
 <translation id="641081527798843608">Subject match</translation>
 <translation id="6412715219990689313">Built-in keyboard</translation>
@@ -876,6 +879,7 @@
 <translation id="8312330582793120272">play media</translation>
 <translation id="8318753676953949627">No images</translation>
 <translation id="8329018942023753850">calculator app</translation>
+<translation id="8335869473001018124">open search</translation>
 <translation id="8336739000755212683">Change device account image</translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="8351855506390808906">Keymapping touch point</translation>

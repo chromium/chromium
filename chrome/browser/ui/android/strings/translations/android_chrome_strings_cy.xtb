@@ -1263,6 +1263,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7709918231054955894">Cael eich holl dabiau</translation>
 <translation id="772434085369393266">Uwchraddio llywio i HTTPS a'ch rhybuddio cyn llwytho gwefannau nad ydynt yn ei gefnogi. Ni allwch newid y gosodiad hwn oherwydd eich bod wedi galluogi Advanced Protection.</translation>
 <translation id="7725024127233776428">Bydd tudalennau rydych yn creu nodau tudalen ohonynt yn ymddangos yma</translation>
+<translation id="7733878270780732638">Dim digon o le ar y ddyfais.</translation>
 <translation id="7757787379047923882">Testun wedi'i rannu gan <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Cerdyn SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ychwanegu cyfeiriad</translation>
@@ -1550,7 +1551,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="9158770349521403363">Rhannu cynnwys yn unig</translation>
 <translation id="9159716826369098114">Adfer grŵp tabiau o <ph name="TAB_COUNT" /> o dabiau fel grŵp tabiau cefndirol newydd.</translation>
 <translation id="9169507124922466868">Mae hanes llywio wedi'i hanner agor</translation>
-<translation id="9183331776983279456">Mae Chrome yn dileu gwefannau yn awtomatig sy'n hŷn na 4 wythnos. Mae'n bosib y bydd gwefan y byddwch yn ymweld â hi eto yn ailymddangos ar y rhestr. Neu gallwch rwystro gwefan rhag awgrymu hysbysebion i chi.</translation>
 <translation id="9190276265094487094">Bydd gennych eich hanes ar eich holl ddyfeisiau sydd wedi'u cysoni felly gallwch barhau â'r hyn yr oeddech yn ei wneud</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Gwiriwyd 1 funud yn ôl}zero{Gwiriwyd # munud yn ôl}two{Gwiriwyd # funud yn ôl}few{Gwiriwyd # munud yn ôl}many{Gwiriwyd # munud yn ôl}other{Gwiriwyd # munud yn ôl}}</translation>
 <translation id="9204836675896933765">1 ffeil yn weddill</translation>
@@ -1572,7 +1572,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="96681097142096641">Gweld tudalen sydd wedi'i symleiddio?</translation>
 <translation id="968900484120156207">Mae'r tudalennau yr ymwelwch â nhw yn ymddangos yma</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> o funudau ar ôl</translation>
-<translation id="978317418833355355">Gallwch rwystro gwefannau nad ydych eu heisiau. Mae Chrome hefyd yn dileu gwefannau yn awtomatig o'r rhestr sy'n hŷn na 4 wythnos. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">All-lein</translation>
 <translation id="983192555821071799">Cau pob tab</translation>
 <translation id="987264212798334818">Cyffredinol</translation>

@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Öppnas i en annan webbläsare om <ph name="COUNTDOWN_SECONDS" /> sekunder</translation>
+<translation id="1071735803834535661">extern metatangent</translation>
 <translation id="1071917609930274619">Datachiffrering</translation>
 <translation id="1072700771426194907">En USB-enhet har upptäckts</translation>
 <translation id="107278043869924952">Använd en pinkod utöver lösenordet</translation>
@@ -1380,6 +1381,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2146263598007866206">Webbplatser kan automatiskt ladda ned relaterade filer samtidigt så att du sparar tid</translation>
 <translation id="2147151613919729065">Stäng alla gästfönster för att rensa gästlägets historik.</translation>
 <translation id="2147218225094845757">Dölj sidopanel</translation>
+<translation id="2147282432401652483">kommando</translation>
 <translation id="2148219725039824548">Det gick inte att montera den delade resursen. Den angivna resursen hittades inte i nätverket.</translation>
 <translation id="2148756636027685713">Formateringen är klar</translation>
 <translation id="2148892889047469596">Casta fliken</translation>
@@ -4208,7 +4210,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4617001782309103936">För kort</translation>
 <translation id="4617270414136722281">Tilläggsalternativ</translation>
 <translation id="4617880081511131945">Det gick inte att upprätta en anslutning</translation>
-<translation id="4618195822946934889">Webbadressen får bara innehålla ASCII-tecken</translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4619615317237390068">Flikar från andra enheter</translation>
 <translation id="4620809267248568679">Den här inställningen är låst av ett tillägg.</translation>
@@ -4946,6 +4947,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5298219193514155779">Temat skapades av</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">Visa och hantera dina flikgrupper</translation>
+<translation id="529986401483187205">inaktiverad</translation>
 <translation id="5300287940468717207">Vill du återställa webbplatsernas behörigheter?</translation>
 <translation id="5300426565656326054">Webbläsarbaserad annonsanpassning</translation>
 <translation id="5300589172476337783">Visa</translation>
@@ -6838,6 +6840,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="6983507711977005608">Koppla från nätverket som använder direktinternetdelning</translation>
 <translation id="6983783921975806247">Registrerat OID</translation>
+<translation id="6983890893900549383">escape</translation>
 <translation id="6985235333261347343">Microsofts nyckelåterställningsagent</translation>
 <translation id="698524779381350301">Tillåt åtkomst automatiskt på följande webbplatser</translation>
 <translation id="6985607387932385770">Skrivare</translation>
@@ -7301,7 +7304,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7412226954991670867">GPU-minne</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Konfigurationen är klar</translation>
-<translation id="7415484647604548662">Du kan blockera webbplatser som du inte vill ha. Chrome raderar även webbplatser som är äldre än fyra veckor automatiskt.</translation>
 <translation id="7416091793702109803">Granska <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Användarvillkoren gick inte att läsa in. Kontrollera nätverksanslutningen och försök igen.</translation>
 <translation id="7416362041876611053">Okänt nätverksfel.</translation>
@@ -8008,6 +8010,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8009225694047762179">Hantera Lösenord</translation>
 <translation id="8011372169388649948"><ph name="BOOKMARK_TITLE" /> har flyttats.</translation>
 <translation id="8011875486979733097">Det går inte att installera Steam</translation>
+<translation id="8012188750847319132">caps lock</translation>
 <translation id="8013993649590906847">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chrome. Bilderna skickas till Google så att beskrivningen kan genereras.</translation>
 <translation id="8014154204619229810">Uppdateringsprogrammet körs. Uppdatera sidan om en minut och kolla igen.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> kan inte återställas till den föregående installerade versionen. Försök använda Powerwash på enheten igen.</translation>
@@ -9359,7 +9362,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9180380851667544951">Webbplatsen kan dela din skärm</translation>
 <translation id="9180847522826713506">Klicka på nyckelikonen om du vill visa lösenordet eller lägga till en anteckning om det</translation>
 <translation id="9182556968660520230">Tillåt inte att webbplatser spelar upp skyddat innehåll</translation>
-<translation id="9183331776983279456">Chrome raderar webbplatser som är äldre än fyra veckor automatiskt. Om du besöker en webbplats på nytt kan den dyka upp på listan igen. Du kan även blockera en webbplats från att föreslå annonser för dig.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# appar}}</translation>
 <translation id="9186963452600581158">Logga in med ett barns Google-konto</translation>
 <translation id="9187967020623675250">Tangenterna matchar inte. Tryck på valfri tangent för att <ph name="RESPONSE" />.</translation>

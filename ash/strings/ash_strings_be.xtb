@@ -382,6 +382,7 @@
 <translation id="2791421900609674576">Выкарыстоўвайце рэкамендацыі, каб працягваць работу з таго месца, на якім вы спыніліся. Каб выдаліць рэкамендацыю, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="2792498699870441125">Alt+Пошук</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, выбрана</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="2814448776515246190">Здыманне часткі экрана</translation>
 <translation id="2819276065543622893">Вы выйдзеце з уліковага запісу зараз.</translation>
@@ -1392,6 +1393,7 @@
 <translation id="7497767806359279797">Выбраць мову і клавіятуру</translation>
 <translation id="7508690557411636492">Адкрывалася ў мінулым месяцы</translation>
 <translation id="7509246181739783082">Спраўдзіце сваю асобу</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, не выбрана</translation>
 <translation id="7513622367902644023">Быў выбраны рэжым здымка экрана</translation>
 <translation id="7513922695575567867">Каляндар, тыдзень з <ph name="DATE" />, дата, якая цяпер выбрана, – <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Спампаваць</translation>

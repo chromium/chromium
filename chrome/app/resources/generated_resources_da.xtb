@@ -4207,7 +4207,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4617001782309103936">For kort</translation>
 <translation id="4617270414136722281">Valgmuligheder for udvidelser</translation>
 <translation id="4617880081511131945">Der kan ikke oprettes forbindelse</translation>
-<translation id="4618195822946934889">Webadressen må kun indeholde ASCII-tegn</translation>
 <translation id="4619564267100705184">Verificer din identitet</translation>
 <translation id="4619615317237390068">Faner fra andre enheder</translation>
 <translation id="4620809267248568679">Denne indstilling håndhæves af en udvidelse.</translation>
@@ -7300,7 +7299,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7412226954991670867">GPU-hukommelse</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Konfigurationen er fuldført</translation>
-<translation id="7415484647604548662">Du kan blokere websites, du ikke er interesseret i. Chrome sletter også automatisk websites fra listen, som er mere end 4 uger gamle.</translation>
 <translation id="7416091793702109803">Se <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Servicevilkårene kan ikke indlæses. Tjek din netværksforbindelse, og prøv igen.</translation>
 <translation id="7416362041876611053">Ukendt netværksfejl.</translation>
@@ -9359,7 +9357,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9180380851667544951">Websitet kan dele din skærm</translation>
 <translation id="9180847522826713506">Du kan se din adgangskode eller tilføje en note om den ved at klikke på nøgleikonet</translation>
 <translation id="9182556968660520230">Tillad ikke, at websites afspiller beskyttet indhold</translation>
-<translation id="9183331776983279456">Chrome sletter automatisk websites, der er mere end 4 uger gamle. Et website, du besøger igen, kan blive dukke op på listen igen. Du kan også blokere et website, så det ikke kan foreslå annoncer til dig.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# apps}}</translation>
 <translation id="9186963452600581158">Log ind med et barns Google-konto</translation>
 <translation id="9187967020623675250">Tasterne stemmer ikke overens. Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>

@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Өөр хөтчид <ph name="COUNTDOWN_SECONDS" /> секундийн дараа нээнэ</translation>
+<translation id="1071735803834535661">гадаад мета</translation>
 <translation id="1071917609930274619">ӨгөгдлийН шифрлэлт</translation>
 <translation id="1072700771426194907">USB төхөөрөмж олдлоо</translation>
 <translation id="107278043869924952">Нууц үг дээрээ ПИН нэмж ашиглах</translation>
@@ -1376,6 +1377,7 @@
 <translation id="2146263598007866206">Сайтууд таны цагийг хэмнэхийн тулд холбоотой файлуудыг хамтад нь автоматаар татаж болзошгүй</translation>
 <translation id="2147151613919729065">Зочны горимын түүхийг арилгахын тулд Зочны бүх цонхыг хаана уу.</translation>
 <translation id="2147218225094845757">Хажуугийн самбарыг нуух</translation>
+<translation id="2147282432401652483">тушаал</translation>
 <translation id="2148219725039824548">Хуваалцлыг залгаж чадсангүй. Сонгосон хуваалцал сүлжээнээс олдсонгүй.</translation>
 <translation id="2148756636027685713">Форматлаж дууссан</translation>
 <translation id="2148892889047469596">Цонх дамжуулах</translation>
@@ -4199,7 +4201,6 @@
 <translation id="4617001782309103936">Хэт богино</translation>
 <translation id="4617270414136722281">Өргөтгөлийн сонголт</translation>
 <translation id="4617880081511131945">Холболт тогтоож чадсангүй</translation>
-<translation id="4618195822946934889">URL зөвхөн ASCII тэмдэгтүүд агуулах боломжтой</translation>
 <translation id="4619564267100705184">Өөрийгөө мөн болохыг бататгах</translation>
 <translation id="4619615317237390068">Бусад төхөөрөмжний таб</translation>
 <translation id="4620809267248568679">Энэ тохиргоог өргөтгөлөөр идэвхжүүлсэн байна.</translation>
@@ -4937,6 +4938,7 @@
 <translation id="5298219193514155779">Сэдвийг үүсгэсэн</translation>
 <translation id="5299109548848736476">Байршлыг бүү тогтоо</translation>
 <translation id="5299558715747014286">Таны табын бүлгийг харах болон удирдах</translation>
+<translation id="529986401483187205">идэвхгүй болгосон</translation>
 <translation id="5300287940468717207">Сайтын зөвшөөрлийг шинэчлэх үү?</translation>
 <translation id="5300426565656326054">Хөтчид тулгуурласан сонирхсон зарын тохируулга</translation>
 <translation id="5300589172476337783">Харуулах</translation>
@@ -6828,6 +6830,7 @@
 <translation id="6981982820502123353">Хандалт</translation>
 <translation id="6983507711977005608">Шуурхай модем болгох сүлжээг салгах</translation>
 <translation id="6983783921975806247">OID-ыг бүртгэсэн</translation>
+<translation id="6983890893900549383">escape</translation>
 <translation id="6985235333261347343">Майкрософтын түлхүүр сэргээх агент</translation>
 <translation id="698524779381350301">Дараах сайтуудад хандалтыг автоматаар зөвшөөрөх</translation>
 <translation id="6985607387932385770">Хэвлэгч</translation>
@@ -7288,7 +7291,6 @@
 <translation id="7412226954991670867">GPU санах ой</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Тохируулж дууслаа</translation>
-<translation id="7415484647604548662">Та хүсэхгүй байгаа сайтуудаа блоклож болно. Chrome нь мөн жагсаалтад 4 долоо хоногоос дээш удсан сайтуудыг автоматаар устгадаг.</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" />-г шалгах</translation>
 <translation id="7416263748877373774">Үйлчилгээний нөхцөлийг ачаалах боломжгүй. Сүлжээний холболтоо шалгаад, дахин оролдоно уу.</translation>
 <translation id="7416362041876611053">Үл мэдэгдэх сүлжээний алдаа.</translation>
@@ -7993,6 +7995,7 @@
 <translation id="8009225694047762179">Нууц үгийг удирдах</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />'-г зөөсөн.</translation>
 <translation id="8011875486979733097">Steam-г суулгах боломжгүй</translation>
+<translation id="8012188750847319132">том үсгийн горим</translation>
 <translation id="8013993649590906847">Хэрэв зурагт хэрэгтэй тайлбар байхгүй бол Chrome танд тайлбар өгөхөөр оролдох болно. Тайлбар үүсгэхийн тулд зургийг Google-д илгээнэ.</translation>
 <translation id="8014154204619229810">Шинэчлэгч ажиллаж байна. Хэдэн хормын дараа дахин ачаалаад, шалгана уу.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> өмнөх хэвэнд оруулах боломжгүй байна. Powerwash сонголтыг та дахин сонгож үзнэ үү.</translation>
@@ -9340,7 +9343,6 @@
 <translation id="9180380851667544951">Сайт таны дэлгэцийг хуваалцах боломжтой</translation>
 <translation id="9180847522826713506">Нууц үгээ харах эсвэл үүний талаар тэмдэглэл нэмэхийн тулд түлхүүрийн дүрс тэмдгийг товшино уу</translation>
 <translation id="9182556968660520230">Сайтуудад хамгаалагдсан контент тоглуулахыг бүү зөвшөөр</translation>
-<translation id="9183331776983279456">Chrome нь 4 долоо хоногоос дээш удсан сайтуудыг автоматаар устгадаг. Таны дахин зочилсон сайт жагсаалтад дахин гарч ирж магадгүй. Эсвэл та сайтыг танд зар санал болгохыг блоклож болно.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Апп}other{# апп}}</translation>
 <translation id="9186963452600581158">Хүүхдийн Google Бүртгэлээр нэвтрэх</translation>
 <translation id="9187967020623675250">Товчнууд таарахгүй байна. <ph name="RESPONSE" />-н тулд дурын товчийг дарна уу.</translation>

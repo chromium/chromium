@@ -151,6 +151,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="1810845389119482123">Chưa hoàn tất quá trình thiết lập đồng bộ hóa ban đầu</translation>
 <translation id="1829244130665387512">Tìm trong trang</translation>
 <translation id="1832459821645506983">Có, tôi đồng ý</translation>
+<translation id="185383612275551373">Đồng bộ hoá để xem nội dung phù hợp nhất trên Google</translation>
 <translation id="1854311313115643875">Trong giai đoạn dùng thử, tính năng Đo lường quảng cáo cho phép các trang web bạn truy cập yêu cầu Chrome cung cấp thông tin để đo lường hiệu quả quảng cáo. Tính năng Đo lường quảng cáo hạn chế hoạt động theo dõi qua nhiều trang web bằng cách chuyển ít thông tin nhất có thể giữa các trang web.
 
 Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạn cũng xoá những thông tin đo lường liên quan. Xem <ph name="BEGIN_LINK" />nhật ký duyệt web của bạn<ph name="END_LINK" />.</translation>
@@ -1263,6 +1264,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7709918231054955894">Xem tất cả thẻ của bạn</translation>
 <translation id="772434085369393266">Nâng các hình thức chuyển hướng lên giao thức HTTPS và cảnh báo bạn trước khi tải những trang web không hỗ trợ giao thức HTTPS. Bạn không thể thay đổi chế độ cài đặt này vì đã bật tính năng Bảo vệ nâng cao.</translation>
 <translation id="7725024127233776428">Các trang mà bạn đánh dấu sẽ xuất hiện tại đây</translation>
+<translation id="7733878270780732638">Không đủ dung lượng trên thiết bị.</translation>
 <translation id="7757787379047923882">Văn bản được chia sẻ từ <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Thẻ SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Thêm địa chỉ</translation>
@@ -1550,7 +1552,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9158770349521403363">Chỉ chia sẻ nội dung</translation>
 <translation id="9159716826369098114">Khôi phục nhóm <ph name="TAB_COUNT" /> thẻ dưới dạng một nhóm thẻ nền mới.</translation>
 <translation id="9169507124922466868">Lịch sử di chuyển đang mở ở nửa dưới màn hình</translation>
-<translation id="9183331776983279456">Chrome tự động xoá những trang web mà đã hơn 4 tuần bạn không truy cập. Trang web bạn truy cập lại có thể xuất hiện lại trong danh sách. Ngoài ra, bạn có thể ngăn một trang web đề xuất quảng cáo cho bạn.</translation>
 <translation id="9190276265094487094">Bạn sẽ thấy nhật ký duyệt web trên tất cả những thiết bị đã đồng bộ hoá, nhờ vậy bạn có thể tiếp tục những việc bạn đang làm</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Đã kiểm tra 1 phút trước}other{Đã kiểm tra # phút trước}}</translation>
 <translation id="9204836675896933765">Còn lại 1 tệp</translation>
@@ -1572,7 +1573,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="96681097142096641">Xem trang ở chế độ đơn giản?</translation>
 <translation id="968900484120156207">Các trang mà bạn truy cập sẽ xuất hiện tại đây</translation>
 <translation id="970715775301869095">Còn <ph name="MINUTES" /> phút</translation>
-<translation id="978317418833355355">Bạn có thể chặn các trang web mà bạn không muốn. Chrome cũng tự động xoá khỏi danh sách các trang web mà đã hơn 4 tuần bạn không truy cập. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
 <translation id="983192555821071799">Đóng tất cả các thẻ</translation>
 <translation id="987264212798334818">Chung</translation>

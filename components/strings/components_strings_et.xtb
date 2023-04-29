@@ -1888,7 +1888,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5596939519753369075">2 × 3,5 tolli</translation>
 <translation id="560412284261940334">Haldust ei toetata</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Kuidas saate oma andmeid hallata?<ph name="END_BOLD" /> Chrome kustutab automaatselt saidid, mis on vanemad kui 4 nädalat. Saidid, mida uuesti külastate, võivad loendisse tagasi ilmuda. Samuti võite igal ajal Chrome'i seadetes blokeerida reklaamide soovitamise konkreetselt saidilt või lülitada välja saitide soovitatud reklaamid.</translation>
 <translation id="5610142619324316209">Kontrollige ühendust</translation>
 <translation id="5610807607761827392">Kaarte ja aadresse saate hallata menüüs <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
 <translation id="5611398002774823980">Salvesta kontole</translation>
@@ -3214,7 +3213,6 @@ Lisateave:
 <translation id="8876033571432926051">Lihtsad mängud</translation>
 <translation id="8877780815363510165">Kalapüük</translation>
 <translation id="8884537526797090108">Konfidentsiaalset sisu ei saa salvestada</translation>
-<translation id="8890798179125483517">Chrome kustutab automaatselt reklaame soovitavad teemad ja saidid, mis on olnud loendis üle 4 nädala. Samuti saate blokeerida konkreetsed teemad ja saidid, mis teile ei meeldi.</translation>
 <translation id="8891727572606052622">Kehtetu puhverserveri režiim.</translation>
 <translation id="8894794286471754040">Pikem serv enne</translation>
 <translation id="8897428486789851669">Ujumine</translation>

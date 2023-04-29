@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Inafungua katika kivinjari mbadala ndani ya sekunde <ph name="COUNTDOWN_SECONDS" /></translation>
+<translation id="1071735803834535661">meta ya nje</translation>
 <translation id="1071917609930274619">Usimbaji wa Data</translation>
 <translation id="1072700771426194907">Imetambua kifaa cha USB</translation>
 <translation id="107278043869924952">Tumia PIN pamoja na nenosiri</translation>
@@ -1376,6 +1377,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2146263598007866206">Tovuti zinaweza kupakua kiotomatiki faili zinazohusiana kwa pamoja ili kuokoa muda wako</translation>
 <translation id="2147151613919729065">Ili ufute historia ya hali ya matumizi ya Wageni, funga madirisha yote ya Wageni.</translation>
 <translation id="2147218225094845757">Ficha kidirisha cha pembeni</translation>
+<translation id="2147282432401652483">amri</translation>
 <translation id="2148219725039824548">Hitilafu imetokea wakati wa kupachika faili ya kushiriki. Imeshindwa kupata faili iliyobainishwa ya kushiriki katika mtandao.</translation>
 <translation id="2148756636027685713">Uumbizaji umekamilika</translation>
 <translation id="2148892889047469596">Tuma kichupo</translation>
@@ -4199,7 +4201,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4617001782309103936">Ni fupi mno</translation>
 <translation id="4617270414136722281">Chaguo za viendelezi</translation>
 <translation id="4617880081511131945">Imeshindwa kuunganisha kwenye simu</translation>
-<translation id="4618195822946934889">URL inaweza tu kuwa na herufi za ASCII</translation>
 <translation id="4619564267100705184">Thibitisha kwamba ni wewe</translation>
 <translation id="4619615317237390068">Vichupo kutoka kwenye vifaa vingine</translation>
 <translation id="4620809267248568679">Mpangilio huu unatekelezwa kwa kiendelezi.</translation>
@@ -4937,6 +4938,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5298219193514155779">Mandhari imeunda na</translation>
 <translation id="5299109548848736476">Usifuatilie</translation>
 <translation id="5299558715747014286">Angalia na udhibiti vikundi vya vichupo vyako</translation>
+<translation id="529986401483187205">kimezimwa</translation>
 <translation id="5300287940468717207">Ungependa kubadilisha ruhusa za tovuti?</translation>
 <translation id="5300426565656326054">Mapendeleo ya matangazo kwenye kivinjari</translation>
 <translation id="5300589172476337783">Onyesha</translation>
@@ -6828,6 +6830,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6981982820502123353">Ufikivu</translation>
 <translation id="6983507711977005608">Ondoa Mtandao wa Kusambazwa Papo Hapo</translation>
 <translation id="6983783921975806247">OID Iliyosajiliwa</translation>
+<translation id="6983890893900549383">kitufe cha "escape"</translation>
 <translation id="6985235333261347343">Kifaa cha Kuopoa Funguo cha Microsoft</translation>
 <translation id="698524779381350301">Ruhusu ufikiaji wa tovuti zifuatazo kiotomatiki</translation>
 <translation id="6985607387932385770">Printa</translation>
@@ -7288,7 +7291,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7412226954991670867">Kumbukumbu ya GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Uwekaji mipangilio umekamilika</translation>
-<translation id="7415484647604548662">Unaweza kuzuia tovuti ambazo huzihitaji. Chrome pia hufuta kiotomatiki tovuti zilizohifadhiwa kwenye orodha kwa zaidi ya wiki 4.</translation>
 <translation id="7416091793702109803">Kagua <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Imeshindwa kupakia Sheria na Masharti. Tafadhali kagua muunganisho wako wa mtandao kisha ujaribu tena.</translation>
 <translation id="7416362041876611053">Hitilafu ya mtandao isiyojulikana.</translation>
@@ -7996,6 +7998,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8009225694047762179">Dhibiti Manenosiri</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' imehamishwa.</translation>
 <translation id="8011875486979733097">Programu ya Steam haiwezi kusakinishwa</translation>
+<translation id="8012188750847319132">kitufe cha "caps lock"</translation>
 <translation id="8013993649590906847">Ikiwa picha haina ufafanuzi muhimu, Chrome itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google.</translation>
 <translation id="8014154204619229810">Programu ya kusasisha inatekeleza kwa sasa. Onyesha upya baada ya dakika moja ili uangalie tena.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> haiwezi kurejesha toleo lililokuwa limesakinishwa. Tafadhali jaribu kutumia tena Powerwash kwenye kifaa chako.</translation>
@@ -9346,7 +9349,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="9180380851667544951">Tovuti inaweza kushiriki skrini yako</translation>
 <translation id="9180847522826713506">Ili uangalie nenosiri lako au uweke dokezo la nenosiri hilo, bofya aikoni ya kitufe</translation>
 <translation id="9182556968660520230">Usiruhusu tovuti zicheze maudhui yanayolindwa</translation>
-<translation id="9183331776983279456">Chrome hufuta kiotomatiki tovuti zilizohifadhiwa kwa zaidi ya wiki 4. Tovuti unayoitembelea tena huenda ikaonekana tena kwenye orodha. Au unaweza kuzuia tovuti isikupendekezee matangazo.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Programu}other{Programu #}}</translation>
 <translation id="9186963452600581158">Ingia ukitumia Akaunti ya Google ya mtoto</translation>
 <translation id="9187967020623675250">Vitufe havilingani. Bonyeza kitufe chochote ili <ph name="RESPONSE" />.</translation>

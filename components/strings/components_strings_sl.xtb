@@ -1888,8 +1888,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5596939519753369075">2 x 3,5 palcev</translation>
 <translation id="560412284261940334">Upravljanje ni podprto</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Kako lahko upravljate podatke:<ph name="END_BOLD" /> Chrome samodejno izbriše podatke o spletnih mestih, starejše od štirih tednov. Spletno mesto, ki ga znova obiščete, se morda znova prikaže na seznamu. 
-Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto predlagalo oglase za vas, ali izklopite oglase, ki jih predlagajo spletna mesta.</translation>
 <translation id="5610142619324316209">preveriti povezavo</translation>
 <translation id="5610807607761827392">Kartice in naslove je mogoče upravljati v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
 <translation id="5611398002774823980">Shrani v račun</translation>
@@ -3215,7 +3213,6 @@ Dodatne podrobnosti:
 <translation id="8876033571432926051">Priložnostne igre</translation>
 <translation id="8877780815363510165">Ribarjenje</translation>
 <translation id="8884537526797090108">Zaupne vsebine ni mogoče posneti</translation>
-<translation id="8890798179125483517">Chrome samodejno izbriše teme in spletna mesta, ki predlagajo oglase, starejše od štirih tednov. Blokirate lahko tudi določene teme in spletna mesta, ki vam niso všeč.</translation>
 <translation id="8891727572606052622">Neveljaven način strežnika proxy.</translation>
 <translation id="8894794286471754040">Najprej dolgi rob</translation>
 <translation id="8897428486789851669">Plavanje</translation>

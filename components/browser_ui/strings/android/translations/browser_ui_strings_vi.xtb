@@ -148,6 +148,7 @@
 <translation id="3600792891314830896">Tắt tiếng trên các trang web phát âm thanh</translation>
 <translation id="3602290021589620013">Xem trước</translation>
 <translation id="3628308229821498208">Cụm từ tìm kiếm đề xuất</translation>
+<translation id="3707034683772193706">Trang web bạn truy cập có thể lưu một lượng nhỏ thông tin với Chrome, chủ yếu để xác thực rằng bạn không phải là bot</translation>
 <translation id="3721953990244350188">Đóng và hiện thao tác có sẵn tiếp theo</translation>
 <translation id="3744111561329211289">Đồng bộ hóa dưới nền</translation>
 <translation id="3763247130972274048">Nhấn đúp vào bên trái hoặc bên phải của video để tua lại/tua đi 10 giây</translation>
@@ -344,6 +345,7 @@
 <translation id="7302486331832100261">Bạn thường chặn các thông báo. Để cho phép, hãy nhấn vào Chi tiết.</translation>
 <translation id="7366415735885268578">Thêm trang web</translation>
 <translation id="7383715096023715447">Chế độ cài đặt cho <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Chế độ cài đặt này có hiệu lực mà không cần xác định danh tính của bạn hay cho phép các trang web xem nhật ký duyệt web của bạn mặc dù các trang web có thể chia sẻ một lượng thông tin nhỏ trong quá trình xác minh</translation>
 <translation id="7423098979219808738">Hỏi trước</translation>
 <translation id="7423538860840206698">Đã chặn quyền đọc bảng nhớ tạm</translation>
 <translation id="7425915948813553151">Giao diện tối cho các trang web</translation>
@@ -433,6 +435,7 @@
 <translation id="8816026460808729765">Chặn không cho các trang web sử dụng cảm biến</translation>
 <translation id="8823559166155093873">Chặn cookie</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Khi bạn tiếp tục duyệt web, các trang web có thể kiểm tra qua Chrome và xác minh qua trang web mà bạn truy cập trước đó rằng bạn có thể là người thực</translation>
 <translation id="8899807382908246773">Quảng cáo xâm nhập</translation>
 <translation id="8903921497873541725">Phóng to</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

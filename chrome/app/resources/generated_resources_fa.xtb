@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">باز کردن در مرورگر جایگزین پس از<ph name="COUNTDOWN_SECONDS" /> ثانیه دیگر</translation>
+<translation id="1071735803834535661">متای خارجی</translation>
 <translation id="1071917609930274619">به رمز درآوردن داده</translation>
 <translation id="1072700771426194907">‏دستگاه USB شناسایی شد</translation>
 <translation id="107278043869924952">استفاده از پین همراه با گذرواژه</translation>
@@ -1377,6 +1378,7 @@
 <translation id="2146263598007866206">سایت‌ها شاید به‌طور خودکار فایل‌های مرتبط را با هم بارگیری کنند تا در زمان صرفه‌جویی شود</translation>
 <translation id="2147151613919729065">برای پاک کردن سابقه «حالت مهمان»، همه پنحره‌های «مهمان» را ببندید.</translation>
 <translation id="2147218225094845757">پنهان کردن پانل کناری</translation>
+<translation id="2147282432401652483">command</translation>
 <translation id="2148219725039824548">هنگام نشاندن دستگاه ذخیره‌سازی متصل به شبکه خطایی روی داد. دستگاه ذخیره‌سازی مشخص‌شده در شبکه پیدا نشد.</translation>
 <translation id="2148756636027685713">قالب‌بندی تمام شد</translation>
 <translation id="2148892889047469596">برگه فرستادن</translation>
@@ -4201,7 +4203,6 @@
 <translation id="4617001782309103936">بسیار کوتاه</translation>
 <translation id="4617270414136722281">گزینه‌های افزونه</translation>
 <translation id="4617880081511131945">امکان برقراری اتصال وجود ندارد</translation>
-<translation id="4618195822946934889">‏نشانی وب تنها می‌تواند شامل نویسه‌های ASCII باشد</translation>
 <translation id="4619564267100705184">تأیید کنید این شمایید</translation>
 <translation id="4619615317237390068">برگه‌ها از دستگاه‌های دیگر</translation>
 <translation id="4620809267248568679">این تنظیم توسط یک برنامهٔ افزودنی به اجرا گذاشته می‌شود.</translation>
@@ -4939,6 +4940,7 @@
 <translation id="5298219193514155779">ایحاد زمینه توسط</translation>
 <translation id="5299109548848736476">ردیابی نشود</translation>
 <translation id="5299558715747014286">مشاهده و مدیریت گروه‌های برگه</translation>
+<translation id="529986401483187205">غیرفعال</translation>
 <translation id="5300287940468717207">مجوزهای سایت بازنشانی شود؟</translation>
 <translation id="5300426565656326054">شخصی‌سازی آگهی مبتنی بر مرورگر</translation>
 <translation id="5300589172476337783">نمایش</translation>
@@ -6832,6 +6834,7 @@
 <translation id="6981982820502123353">دسترس‌پذیری</translation>
 <translation id="6983507711977005608">قطع اتصال شبکه «اشتراک‌گذاری اینترنت فوری»</translation>
 <translation id="6983783921975806247">‏OID ثبت شده</translation>
+<translation id="6983890893900549383">گریز</translation>
 <translation id="6985235333261347343">‏نماینده بازیابی کلید Microsoft</translation>
 <translation id="698524779381350301">دسترسی به سایت‌های زیر به‌طور خودکار مجاز شود</translation>
 <translation id="6985607387932385770">چاپگرها</translation>
@@ -7292,7 +7295,6 @@
 <translation id="7412226954991670867">‏حافظه GPU</translation>
 <translation id="7414464185801331860">۱۸ برابر</translation>
 <translation id="7415454883318062233">راه‌اندازی کامل شد</translation>
-<translation id="7415484647604548662">‏می‌توانید سایت‌هایی را که نمی‌خواهید مسدود کنید. Chrome نیز سایت‌های قدیمی‌تر از ۴ هفته را به‌طور خودکار از فهرست حذف می‌کند.</translation>
 <translation id="7416091793702109803">مرور <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">«شرایط خدمات» را نمی‌توان بار کرد. لطفاً اتصال شبکه‌تان را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="7416362041876611053">خطای شبکه ناشناس.</translation>
@@ -7998,6 +8000,7 @@
 <translation id="8009225694047762179">مدیریت گذرواژه</translation>
 <translation id="8011372169388649948">«<ph name="BOOKMARK_TITLE" />» منتقل شد.</translation>
 <translation id="8011875486979733097">‏نمی‌توان Steam را نصب کرد</translation>
+<translation id="8012188750847319132">قفل تبدیل</translation>
 <translation id="8013993649590906847">‏اگر تصویری توضیح مفیدی نداشته باشد، Chrome توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود.</translation>
 <translation id="8014154204619229810">در حال حاضر به‌روزرسان در حال اجراست. برای بررسی دوباره، بعد از یک دقیقه بازآورید.</translation>
 <translation id="8014206674403687691">‏<ph name="IDS_SHORT_PRODUCT_NAME" /> قادر نیست به نسخه نصب شده قبلی بازگردد. لطفاً دوباره سعی کنید دستگاهتان را Powerwash کنید.</translation>
@@ -9349,7 +9352,6 @@
 <translation id="9180380851667544951">سایت می‌تواند صفحه‌نمایشتان را هم‌رسانی کند</translation>
 <translation id="9180847522826713506">برای نمایش گذرواژه‌تان یا افزودن یادداشت درباره آن، روی نماد کلید کلیک کنید.</translation>
 <translation id="9182556968660520230">به سایت‌ها اجازه داده نشود محتوای محافظت‌شده را پخش کنند</translation>
-<translation id="9183331776983279456">‏Chrome سایت‌هایی را که قدیمی‌تر از ۴ هفته باشند به‌طور خودکار حذف می‌کند. سایت‌هایی که مجدداً از آن‌ها بازدید می‌کنید ممکن است دوباره در فهرست نمایش داده شود. یا می‌توانید سایتی را مسدود کنید تا به شما آگهی پیشنهاد ندهد.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{برنامه}one{# برنامه}other{# برنامه}}</translation>
 <translation id="9186963452600581158">‏ورود به سیستم با «حساب Google» فرزند</translation>
 <translation id="9187967020623675250">کلیدها مطابقت ندارند. برای <ph name="RESPONSE" />، یکی از کلیدها را فشار دهید.</translation>

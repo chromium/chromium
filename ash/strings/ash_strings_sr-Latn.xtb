@@ -382,6 +382,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2791421900609674576">Videćete preporuke da biste mogli da nastavite tamo gde ste stali.  Možete da dodirnete i zadržite da biste uklonili preporuke.</translation>
 <translation id="2792498699870441125">Alt + taster za pretragu</translation>
 <translation id="2797741504905337289">Žurka na polici</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, izabrano je</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2814448776515246190">Delimično snimanje</translation>
 <translation id="2819276065543622893">Bićete odmah odjavljeni.</translation>
@@ -1393,6 +1394,7 @@ Novo instaliranje</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
 <translation id="7508690557411636492">Otvarano proteklog meseca</translation>
 <translation id="7509246181739783082">Verifikujte identitet</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nije izabrano</translation>
 <translation id="7513622367902644023">Izabran je režim snimka ekrana</translation>
 <translation id="7513922695575567867">Kalendar, sedmica kada je <ph name="DATE" />, <ph name="SELECTED_DATE" /> je trenutno izabran.</translation>
 <translation id="7514365320538308">Preuzmi</translation>

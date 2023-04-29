@@ -4191,7 +4191,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4617001782309103936">Prea scurt</translation>
 <translation id="4617270414136722281">Opțiuni pentru extensie</translation>
 <translation id="4617880081511131945">Nu se poate stabili conexiunea</translation>
-<translation id="4618195822946934889">Adresa URL poate conține numai caractere ASCII</translation>
 <translation id="4619564267100705184">Confirmă-ți identitatea</translation>
 <translation id="4619615317237390068">File de pe alte dispozitive</translation>
 <translation id="4620809267248568679">Această setare este impusă de o extensie.</translation>
@@ -7284,7 +7283,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7412226954991670867">Memorie GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Configurare finalizată</translation>
-<translation id="7415484647604548662">Poți să blochezi site-urile pe care nu le dorești. În plus, Chrome șterge automat site-urile din listă mai vechi de patru săptămâni.</translation>
 <translation id="7416091793702109803">Examinează <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Nu se pot încărca Termenii și condițiile. Verifică-ți conexiunea de rețea și încearcă din nou.</translation>
 <translation id="7416362041876611053">Eroare de rețea necunoscută.</translation>
@@ -9343,7 +9341,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9180380851667544951">Site-ul poate permite accesul la ecranul tău</translation>
 <translation id="9180847522826713506">Pentru a vedea parola sau pentru a adăuga o notă despre ea, dă clic pe pictograma cheie</translation>
 <translation id="9182556968660520230">Nu permite site-urilor să redea conținut protejat</translation>
-<translation id="9183331776983279456">Chrome șterge automat site-urile mai vechi de patru săptămâni. Un site pe care îl accesezi din nou poate să reapară în listă. Sau poți să nu permiți unui site să îți sugereze anunțuri.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicație}few{# aplicații}other{# de aplicații}}</translation>
 <translation id="9186963452600581158">Conectează-te cu Contul Google al unui copil</translation>
 <translation id="9187967020623675250">Tastele nu corespund. Apasă pe orice tastă pentru <ph name="RESPONSE" />.</translation>

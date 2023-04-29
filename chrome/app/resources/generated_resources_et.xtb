@@ -4200,7 +4200,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4617001782309103936">Liiga lühike</translation>
 <translation id="4617270414136722281">Laienduse valikud</translation>
 <translation id="4617880081511131945">Ei saa ühendust luua</translation>
-<translation id="4618195822946934889">URL tohib sisaldada ainult ASCII-süsteemi tähemärke</translation>
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
 <translation id="4619615317237390068">Muudest seadmetest pärinevad vahelehed</translation>
 <translation id="4620809267248568679">Selle seade jõustas laiendus.</translation>
@@ -7295,7 +7294,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7412226954991670867">GPU-mälu</translation>
 <translation id="7414464185801331860">18-kordne</translation>
 <translation id="7415454883318062233">Seadistus on lõpetatud</translation>
-<translation id="7415484647604548662">Saate blokeerida saidid, millel te ei soovi lubada andmeid salvestada. Samuti kustutab Chrome loendist automaatselt saidid, mis on seal olnud kauem kui 4 nädalat.</translation>
 <translation id="7416091793702109803">Faili <ph name="FILE_NAME" /> ülevaatamine</translation>
 <translation id="7416263748877373774">Teenusetingimusi ei saa laadida. Kontrollige võrguühendust ja proovige uuesti.</translation>
 <translation id="7416362041876611053">Tundmatu võrguviga.</translation>
@@ -9354,7 +9352,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="9180380851667544951">Sait saab jagada teie ekraanikuva</translation>
 <translation id="9180847522826713506">Oma parooli vaatamiseks või selle kohta märkme lisamiseks klõpsake võtmeikoonil</translation>
 <translation id="9182556968660520230">Ära luba saitidel kaitstud sisu esitada</translation>
-<translation id="9183331776983279456">Chrome kustutab automaatselt saidid, mis on vanemad kui 4 nädalat. Sait, mida uuesti külastate, võidakse uuesti loendis kuvada. Võite ka saidi puhul reklaamide soovitamise blokeerida.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Rakendus}other{# rakendust}}</translation>
 <translation id="9186963452600581158">Logige sisse oma lapse Google'i kontoga</translation>
 <translation id="9187967020623675250">Klahvid ei ühti. Vajutage mis tahes klahvi, et <ph name="RESPONSE" />.</translation>

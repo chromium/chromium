@@ -4209,7 +4209,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4617001782309103936">Per trumpas</translation>
 <translation id="4617270414136722281">Plėtinių parinktys</translation>
 <translation id="4617880081511131945">Nepavyko užmegzti ryšio</translation>
-<translation id="4618195822946934889">URL gali sudaryti tik ASCII simboliai</translation>
 <translation id="4619564267100705184">Patvirtinti tapatybę</translation>
 <translation id="4619615317237390068">Skirtukai iš kitų įrenginių</translation>
 <translation id="4620809267248568679">Šį nustatymą paleidžia plėtinys.</translation>
@@ -7307,7 +7306,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7412226954991670867">GPU atmintis</translation>
 <translation id="7414464185801331860">18 k.</translation>
 <translation id="7415454883318062233">Sąranka baigta</translation>
-<translation id="7415484647604548662">Galite užblokuoti nepageidaujamas svetaines. „Chrome“ taip pat iš sąrašo automatiškai ištrina senesnes nei keturių savaičių svetaines.</translation>
 <translation id="7416091793702109803">Peržiūrėti <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Nepavyksta įkelti paslaugų teikimo sąlygų. Patikrinkite tinklo ryšį ir bandykite dar kartą.</translation>
 <translation id="7416362041876611053">Nežinoma tinklo klaida.</translation>
@@ -9368,7 +9366,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9180380851667544951">Svetainė gali bendrinti jūsų ekrano vaizdą</translation>
 <translation id="9180847522826713506">Jei norite peržiūrėti slaptažodį ar pridėti pastabą apie jį, spustelėkite rakto piktogramą</translation>
 <translation id="9182556968660520230">Neleisti svetainėms leisti apsaugoto turinio</translation>
-<translation id="9183331776983279456">„Chrome“ automatiškai ištrina senesnes nei keturių savaičių svetaines. Jei dar kartą apsilankysite svetainėje, ji gali vėl atsirasti sąraše. Taip pat galite užblokuoti svetainę, kad ji negalėtų siūlyti skelbimų.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Programa}one{# programa}few{# programos}many{# programos}other{# programų}}</translation>
 <translation id="9186963452600581158">Prisijungti naudojant vaiko „Google“ paskyrą</translation>
 <translation id="9187967020623675250">Klavišai neatitinka. Paspauskite bet kurį klavišą, kad atliktumėte veiksmą „<ph name="RESPONSE" />“.</translation>

@@ -4189,7 +4189,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4617001782309103936">PIN demasiado curto</translation>
 <translation id="4617270414136722281">Opcións de extensión</translation>
 <translation id="4617880081511131945">Non se puido establecer conexión</translation>
-<translation id="4618195822946934889">O URL só pode conter caracteres ASCII</translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4619615317237390068">Pestanas doutros dispositivos</translation>
 <translation id="4620809267248568679">Unha extensión aplica esta configuración.</translation>
@@ -7277,7 +7276,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7412226954991670867">Memoria GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Completouse a configuración</translation>
-<translation id="7415484647604548662">Podes bloquear os sitios que non che interesen. Chrome tamén elimina automaticamente da lista os sitios que leven nela máis de 4 semanas.</translation>
 <translation id="7416091793702109803">Revisar <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Non se puideron cargar as Condicións de servizo. Comproba a conexión de rede e téntao de novo.</translation>
 <translation id="7416362041876611053">Erro de rede descoñecido.</translation>
@@ -9334,7 +9332,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="9180380851667544951">O sitio pode compartir a túa pantalla</translation>
 <translation id="9180847522826713506">Para ver o contrasinal ou engadir unha nota sobre el, fai clic na icona de chave</translation>
 <translation id="9182556968660520230">Non permitir que os sitios reproduzan contido protexido</translation>
-<translation id="9183331776983279456">Chrome elimina automaticamente os sitios que leven máis de 4 semanas na lista. Se volves visitar un sitio, é posible que apareza na lista outra vez. Tamén podes bloquear sitios para que non che suxiran anuncios.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicación}other{# aplicacións}}</translation>
 <translation id="9186963452600581158">Iniciar sesión cunha Conta de Google infantil</translation>
 <translation id="9187967020623675250">As teclas non coinciden. Preme calquera tecla para <ph name="RESPONSE" />.</translation>

@@ -382,6 +382,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2791421900609674576">Þú sérð tillögur svo þú getir haldið áfram þar sem frá var horfið. Þú getur haldið inni til að fjarlægja tillögur.</translation>
 <translation id="2792498699870441125">Alt+leitarhnappur</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, valið</translation>
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="2814448776515246190">Myndataka að hluta til</translation>
 <translation id="2819276065543622893">Þú verður skráð(ur) út núna.</translation>
@@ -1392,6 +1393,7 @@ Ný uppsetning</translation>
 <translation id="7497767806359279797">Velja tungumál og lyklaborð</translation>
 <translation id="7508690557411636492">Opnað í liðnum mánuði</translation>
 <translation id="7509246181739783082">Staðfestu hver þú ert</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, ekki valið</translation>
 <translation id="7513622367902644023">Skjámyndastilling valin</translation>
 <translation id="7513922695575567867">Dagatal, vikan <ph name="DATE" />, núverandi val er <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Sækja</translation>

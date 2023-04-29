@@ -1891,7 +1891,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5596939519753369075">2 x 3,5 in</translation>
 <translation id="560412284261940334">Upravljanje nije podržano</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Kako možete upravljati podacima:<ph name="END_BOLD" /> Chrome automatski briše web lokacije starije od 4 sedmice. Web lokacija koju ponovo posjetite može se ponovo pojaviti na listi. U postavkama Chromea u bilo kojem trenutku također možete blokirati da vam web lokacija predlaže oglase i isključiti oglase koje predlažu web lokacije.</translation>
 <translation id="5610142619324316209">Provjeriti vezu</translation>
 <translation id="5610807607761827392">Karticama i adresama možete upravljati u <ph name="BEGIN_LINK" />Postavkama<ph name="END_LINK" />.</translation>
 <translation id="5611398002774823980">Sačuvaj na račun</translation>
@@ -3217,7 +3216,6 @@ Dodatni detalji:
 <translation id="8876033571432926051">Ležerne igre</translation>
 <translation id="8877780815363510165">Pecanje</translation>
 <translation id="8884537526797090108">Nije moguće snimiti povjerljivi sadržaj</translation>
-<translation id="8890798179125483517">Chrome automatski briše teme i web lokacije koje predlažu oglase koji su stariji od 4 sedmice. A možete i blokirati određene teme i web lokacije koje vam se ne sviđaju.</translation>
 <translation id="8891727572606052622">Nevažeći način rada proksija.</translation>
 <translation id="8894794286471754040">Najprije duga strana</translation>
 <translation id="8897428486789851669">Plivanje</translation>

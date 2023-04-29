@@ -4189,7 +4189,6 @@
 <translation id="4617001782309103936">太短</translation>
 <translation id="4617270414136722281">擴充功能選項</translation>
 <translation id="4617880081511131945">無法建立連線</translation>
-<translation id="4618195822946934889">網址只能使用 ASCII 字元</translation>
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
 <translation id="4620809267248568679">這項設定是由擴充功能執行。</translation>
@@ -7277,7 +7276,6 @@
 <translation id="7412226954991670867">GPU 記憶體</translation>
 <translation id="7414464185801331860">18 倍</translation>
 <translation id="7415454883318062233">設定完成</translation>
-<translation id="7415484647604548662">你可以封鎖不喜歡的網站，Chrome 也會自動將 4 週前造訪的網站從清單中刪除。</translation>
 <translation id="7416091793702109803">查看「<ph name="FILE_NAME" />」</translation>
 <translation id="7416263748877373774">無法載入《服務條款》。請檢查您的網路連線，然後再試一次。</translation>
 <translation id="7416362041876611053">不明的網路錯誤。</translation>
@@ -9335,7 +9333,6 @@
 <translation id="9180380851667544951">網站可以分享你的螢幕畫面</translation>
 <translation id="9180847522826713506">如要查看密碼或新增密碼相關附註，請點選鑰匙圖示</translation>
 <translation id="9182556968660520230">禁止網站播放受保護內容</translation>
-<translation id="9183331776983279456">Chrome 會自動刪除 4 週前造訪的網站，但你再次造訪的網站可能會重新加回清單。你也可以封鎖網站，讓該網站無法為你提供建議廣告。</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{應用程式}other{# 個應用程式}}</translation>
 <translation id="9186963452600581158">使用孩子的 Google 帳戶登入</translation>
 <translation id="9187967020623675250">按鍵不符。按下任意鍵即可<ph name="RESPONSE" />。</translation>

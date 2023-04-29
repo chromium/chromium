@@ -4206,7 +4206,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4617001782309103936">Te kort</translation>
 <translation id="4617270414136722281">Uitbreidingopsies</translation>
 <translation id="4617880081511131945">Kan nie verbinding vestig nie</translation>
-<translation id="4618195822946934889">URL kan slegs ASCII-karakters bevat</translation>
 <translation id="4619564267100705184">Verifieer dis jy</translation>
 <translation id="4619615317237390068">Oortjies van ander toestelle af</translation>
 <translation id="4620809267248568679">Hierdie instelling word deur 'n uitbreiding afgedwing.</translation>
@@ -7298,7 +7297,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7412226954991670867">GPU-geheue</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Opstelling is voltooi</translation>
-<translation id="7415484647604548662">Jy kan werwe blokkeer wat jy nie wil hê nie. Chrome vee werwe wat ouer as 4 weke is ook outomaties van die lys af uit.</translation>
 <translation id="7416091793702109803">Gaan <ph name="FILE_NAME" /> na</translation>
 <translation id="7416263748877373774">Diensbepalings kan nie gelaai word nie. Gaan jou netwerkverbinding na en probeer weer.</translation>
 <translation id="7416362041876611053">Onbekende netwerkfout.</translation>
@@ -9355,7 +9353,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="9180380851667544951">Werf kan jou skerm deel</translation>
 <translation id="9180847522826713506">Klik die sleutelikoon om jou wagwoord te bekyk of ’n nota daaroor by te voeg.</translation>
 <translation id="9182556968660520230">Moenie werwe toelaat om beskermde inhoud te speel nie</translation>
-<translation id="9183331776983279456">Chrome vee werwe wat ouer as 4 weke is outomaties uit. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Of jy kan ’n werf blokkeer om vir jou advertensies voor te stel.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Program}other{# programme}}</translation>
 <translation id="9186963452600581158">Meld met jou kind se Google-rekening aan</translation>
 <translation id="9187967020623675250">Sleutels stem nie ooreen nie. Druk enige sleutel en <ph name="RESPONSE" />.</translation>

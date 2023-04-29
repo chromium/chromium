@@ -1263,6 +1263,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7709918231054955894">Wyświetl wszystkie swoje karty</translation>
 <translation id="772434085369393266">Uaktualnij elementy nawigacyjne do protokołu HTTPS i wyświetlaj ostrzeżenia przed wczytaniem stron, które go nie obsługują. Nie możesz zmienić tego ustawienia, ponieważ masz włączoną Ochronę zaawansowaną.</translation>
 <translation id="7725024127233776428">Tutaj pojawią się strony, które dodasz do zakładek</translation>
+<translation id="7733878270780732638">Za mało miejsca na urządzeniu.</translation>
 <translation id="7757787379047923882">Tekst udostępniony z urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Karta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Dodaj adres</translation>
@@ -1550,7 +1551,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="9158770349521403363">Udostępnij tylko treść</translation>
 <translation id="9159716826369098114">Przywróć grupę <ph name="TAB_COUNT" /> kart jako nową grupę kart w tle.</translation>
 <translation id="9169507124922466868">Historia nawigacji jest otwarta w połowie</translation>
-<translation id="9183331776983279456">Chrome automatycznie usuwa witryny starsze niż 4 tygodnie. Witryna, którą odwiedzisz ponownie, może pojawić się znów na liście. Możesz też zablokować witrynie możliwość sugerowania reklam.</translation>
 <translation id="9190276265094487094">Będziesz mieć dostęp do swojej historii na wszystkich zsynchronizowanych urządzeniach, aby możliwe było kontynuowanie przerwanych działań</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Sprawdzano minutę temu}few{Sprawdzano # minuty temu}many{Sprawdzano # minut temu}other{Sprawdzano # minuty temu}}</translation>
 <translation id="9204836675896933765">Pozostał jeden plik</translation>
@@ -1572,7 +1572,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="96681097142096641">Pokazać uproszczoną stronę?</translation>
 <translation id="968900484120156207">Tutaj pojawią się strony, które odwiedzisz</translation>
 <translation id="970715775301869095">Pozostało: <ph name="MINUTES" /> min</translation>
-<translation id="978317418833355355">Możesz blokować witryny, których nie potrzebujesz. Chrome automatycznie usuwa z listy witryny starsze niż 4 tygodnie. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zamknij wszystkie karty</translation>
 <translation id="987264212798334818">Ogólne</translation>

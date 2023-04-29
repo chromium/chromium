@@ -1888,7 +1888,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5596939519753369075">2 x 3,5 tommer</translation>
 <translation id="560412284261940334">Administrering støttes ikke</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Slik kan du administrere dataene dine:<ph name="END_BOLD" /> Chrome sletter automatisk nettsteder som er eldre enn fire uker. Nettsteder du besøker på nytt, kan havne på listen igjen. Du kan også blokkere nettsteder fra å foreslå annonser for deg og når som helst slå av annonser som er foreslått av nettstedet ditt, i Chrome-innstillingene.</translation>
 <translation id="5610142619324316209">Sjekk tilkoblingen</translation>
 <translation id="5610807607761827392">Du kan administrere kort og adresser i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="5611398002774823980">Lagre i kontoen</translation>
@@ -3213,7 +3212,6 @@ Mer informasjon:
 <translation id="8876033571432926051">Enkle spill</translation>
 <translation id="8877780815363510165">Fiske</translation>
 <translation id="8884537526797090108">Kan ikke ta opp konfidensielt innhold</translation>
-<translation id="8890798179125483517">Chrome sletter automatisk emner og nettsteder som foreslår annonser som er eldre enn fire uker. Alternativt kan du blokkere bestemte emner og nettsteder du ikke liker.</translation>
 <translation id="8891727572606052622">Ugyldig modus for proxy-tjener.</translation>
 <translation id="8894794286471754040">Langsiden først</translation>
 <translation id="8897428486789851669">Svømming</translation>

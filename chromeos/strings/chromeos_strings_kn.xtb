@@ -721,7 +721,7 @@
 <translation id="6977381486153291903">ಫರ್ಮ್‌ವೇರ್ ಮರುಪರಿಶೀಲನೆ</translation>
 <translation id="6981982820502123353">ಪ್ರವೇಶ</translation>
 <translation id="7005833343836210400">ಸಾಧನ ಆಫ್‌ಲೈನ್ ಆಗಿದೆ</translation>
-<translation id="7028979494427204405">ಈ ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ಬಳಕೆದಾರರು ಭೇಟಿ ನೀಡಿದ ವೆಬ್‌ಪುಟಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಇಮೇಲ್ ಸೇರಿದಂತೆ ಅವರ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಗಳಿಗೆ ಪ್ರವೇಶ ಹೊಂದಿರುತ್ತದೆ.</translation>
+<translation id="7028979494427204405">ಈ ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ಬಳಕೆದಾರರು ಭೇಟಿ ನೀಡಿದ ವೆಬ್‌ಪುಟಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಇಮೇಲ್ ಸೇರಿದಂತೆ ಅವರ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುತ್ತದೆ.</translation>
 <translation id="7040230719604914234">ಆಪರೇಟರ್</translation>
 <translation id="7041549558901442110">ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ.</translation>
 <translation id="7058278511608979688">ಕೊನೆಗೊಳಿಸಿ ಮತ್ತು ಉಳಿಸಿ</translation>
@@ -947,6 +947,7 @@
 <translation id="8898840733695078011">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ</translation>
 <translation id="8909114361904403025">ಮೇಲಿನ ಆ್ಯರೋ</translation>
 <translation id="8910721771319628100">ವಿಳಂಬ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ ಮೇಲಿನ ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್</translation>
+<translation id="8912306040879976619">ಕೀಬೋರ್ಡ್ ವಲಯಗಳು</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ನ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">ವಿಫಲವಾಗಿದೆ - ಟ್ರೇ ಕಾಣೆಯಾಗಿದೆ</translation>
 <translation id="8923267550422472772">ರೀಸೆಟ್ ಮಾಡಬೇಕಾಗಿರುವ ತಿಂಗಳಿನ ದಿನ</translation>

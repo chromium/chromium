@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Megnyitás másik böngészőben <ph name="COUNTDOWN_SECONDS" /> másodperc múlva</translation>
+<translation id="1071735803834535661">külső meta</translation>
 <translation id="1071917609930274619">Adattitkosítás</translation>
 <translation id="1072700771426194907">USB-eszköz észlelve</translation>
 <translation id="107278043869924952">PIN-kód használata a jelszó mellett</translation>
@@ -1379,6 +1380,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2146263598007866206">Előfordulhat, hogy a webhelyek automatikusan együtt töltik le a kapcsolódó fájlokat, hogy időt takarítsanak meg Önnek</translation>
 <translation id="2147151613919729065">A vendég mód előzményeinek törléséhez zárja be a vendég módban megnyitott összes ablakot.</translation>
 <translation id="2147218225094845757">Oldalsó panel elrejtése</translation>
+<translation id="2147282432401652483">Command</translation>
 <translation id="2148219725039824548">Hiba történt a megosztott tároló csatlakoztatása során. A megadott megosztott tároló nem található a hálózaton.</translation>
 <translation id="2148756636027685713">A formázás elkészült</translation>
 <translation id="2148892889047469596">Lap átküldése</translation>
@@ -4202,7 +4204,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4617001782309103936">Túl rövid</translation>
 <translation id="4617270414136722281">Bővítménybeállítások</translation>
 <translation id="4617880081511131945">Nem lehet kapcsolódni</translation>
-<translation id="4618195822946934889">Az URL csak ASCII-karakterekből állhat</translation>
 <translation id="4619564267100705184">Igazolja személyazonosságát</translation>
 <translation id="4619615317237390068">Más eszközök lapjai</translation>
 <translation id="4620809267248568679">Ezt a beállítást egy bővítmény kényszeríti ki.</translation>
@@ -4941,6 +4942,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5298219193514155779">Téma készítője:</translation>
 <translation id="5299109548848736476">Nincs nyomon követés</translation>
 <translation id="5299558715747014286">Lapcsoportok megtekintése és kezelése</translation>
+<translation id="529986401483187205">letiltva</translation>
 <translation id="5300287940468717207">Visszaállítja a webhelyengedélyeket?</translation>
 <translation id="5300426565656326054">Hirdetések böngészőalapú személyre szabása</translation>
 <translation id="5300589172476337783">Megjelenítés</translation>
@@ -6833,6 +6835,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6981982820502123353">Kisegítő lehetőségek</translation>
 <translation id="6983507711977005608">Lecsatlakozás az Azonnali internetmegosztás hálózatáról</translation>
 <translation id="6983783921975806247">Regisztrált OID</translation>
+<translation id="6983890893900549383">Esc</translation>
 <translation id="6985235333261347343">Microsoft kulcshelyreállító ügynök</translation>
 <translation id="698524779381350301">Hozzáférés automatikus engedélyezése a következő webhelyeken</translation>
 <translation id="6985607387932385770">Nyomtatók</translation>
@@ -7293,7 +7296,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7412226954991670867">GPU memória</translation>
 <translation id="7414464185801331860">18×</translation>
 <translation id="7415454883318062233">A beállítás kész</translation>
-<translation id="7415484647604548662">Letilthatja a nem kívánt webhelyeket. Emellett a Chrome automatikusan törli a listáról a négy hétnél régebbi webhelyeket.</translation>
 <translation id="7416091793702109803">Áttekintés: <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Nem sikerült betölteni az Általános Szerződési Feltételeket. Ellenőrizze a hálózati kapcsolatot, és próbálkozzon újra.</translation>
 <translation id="7416362041876611053">Ismeretlen hálózati hiba.</translation>
@@ -7999,6 +8001,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8009225694047762179">Jelszó kezelése</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />” áthelyezve.</translation>
 <translation id="8011875486979733097">A Steam nem telepíthető</translation>
+<translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8013993649590906847">Ha valamelyik kép nem rendelkezik hasznos leírással, akkor a Chrome igyekszik leírást adni róla. A Google automatikusan megkapja a leírások létrehozásához szükséges képeket.</translation>
 <translation id="8014154204619229810">A frissítő most fut. Frissítsen egy perc múlva, és ellenőrizze az állapotát.</translation>
 <translation id="8014206674403687691">Nem sikerült visszatérni a(z) <ph name="IDS_SHORT_PRODUCT_NAME" /> korábban telepített verziójához. Kérjük, próbálja meg újra eszközén végrehajtani a Powerwash műveletet.</translation>
@@ -9349,7 +9352,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9180380851667544951">A webhely megoszthatja a képernyőjét</translation>
 <translation id="9180847522826713506">Jelszava megtekintéséhez vagy hozzá tartozó megjegyzés hozzáadásához kattintson a kulcs ikonra.</translation>
 <translation id="9182556968660520230">A webhelyek nem játszhatnak le védett tartalmakat</translation>
-<translation id="9183331776983279456">A Chrome automatikusan törli a négy hétnél régebbi webhelyeket. Előfordulhat, hogy egy újra felkeresett webhely ismét megjelenik a listán. Emellett lehetősége van arra is, hogy letiltsa az egyes webhelyek számára, hogy hirdetéseket javasoljanak Önnek.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Alkalmazás}other{# alkalmazás}}</translation>
 <translation id="9186963452600581158">Bejelentkezés gyermek Google-fiókjával</translation>
 <translation id="9187967020623675250">A billentyűk nem egyeznek. Nyomja le bármelyik billentyűt a következőhöz: <ph name="RESPONSE" />.</translation>

@@ -1550,7 +1550,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="9158770349521403363">Sdílet pouze obsah</translation>
 <translation id="9159716826369098114">Obnovit skupinu <ph name="TAB_COUNT" /> karet jako novou skupinu karet na pozadí.</translation>
 <translation id="9169507124922466868">Historie navigace je otevřená na půlce</translation>
-<translation id="9183331776983279456">Weby, které jsou starší než 4 týdny, Chrome automaticky maže. Web, který navštívíte znovu, se na seznamu může opět objevit. Navrhování reklam můžete webu také zablokovat.</translation>
 <translation id="9190276265094487094">Ve všech synchronizovaných zařízeních budete mít historii, takže budete moci pokračovat v tom, co jste dělali</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Zkontrolováno před 1 minutou}few{Zkontrolováno před # minutami}many{Zkontrolováno před # minuty}other{Aktualizováno před # minutami}}</translation>
 <translation id="9204836675896933765">Zbývá 1 soubor</translation>
@@ -1572,7 +1571,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="96681097142096641">Zobrazit zjednodušenou stránku?</translation>
 <translation id="968900484120156207">Zde se zobrazují navštívené stránky</translation>
 <translation id="970715775301869095">Zbývá: <ph name="MINUTES" /> min</translation>
-<translation id="978317418833355355">Nežádoucí weby můžete zablokovat. Chrome ze seznamu také automaticky maže weby starší než 4 týdny. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zavřít všechny karty</translation>
 <translation id="987264212798334818">Všeobecné</translation>

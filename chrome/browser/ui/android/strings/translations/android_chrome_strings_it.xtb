@@ -1551,7 +1551,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="9158770349521403363">Condividi solo contenuti</translation>
 <translation id="9159716826369098114">Ripristina il gruppo di <ph name="TAB_COUNT" /> schede come nuovo gruppo di schede in background.</translation>
 <translation id="9169507124922466868">La cronologia di navigazione è aperta fino a metà</translation>
-<translation id="9183331776983279456">Chrome elimina automaticamente i siti che risalgono a più di 4 settimane prima della data corrente. Se visiti di nuovo un sito, questo potrebbe essere visualizzato di nuovo nell'elenco. In alternativa, puoi impedire a un sito di suggerire annunci per te.</translation>
 <translation id="9190276265094487094">La tua cronologia sarà disponibile su tutti i dispositivi sincronizzati per poter continuare ciò che stavi facendo</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Eseguito 1 minuto fa}other{Eseguito # minuti fa}}</translation>
 <translation id="9204836675896933765">1 file rimanente</translation>
@@ -1573,7 +1572,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="96681097142096641">Vuoi visualizzare la pagina semplificata?</translation>
 <translation id="968900484120156207">Le pagine visitate saranno mostrate qui</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min rimanenti</translation>
-<translation id="978317418833355355">Puoi bloccare i siti indesiderati. Chrome elimina automaticamente dall'elenco i siti risalenti a più di 4 settimane prima della data corrente. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Chiudi tutte le schede</translation>
 <translation id="987264212798334818">Generali</translation>

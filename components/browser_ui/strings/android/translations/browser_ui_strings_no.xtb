@@ -148,6 +148,7 @@
 <translation id="3600792891314830896">Kutt lyden for nettsteder som spiller av lyd</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3628308229821498208">Foreslåtte søk</translation>
+<translation id="3707034683772193706">Nettsteder du besøker, kan lagre litt informasjon i Chrome – hovedsakelig for å bekrefte at du ikke er en robot</translation>
 <translation id="3721953990244350188">Avvis, og vis neste tilgjengelige handling</translation>
 <translation id="3744111561329211289">Bakgrunnssynkronisering</translation>
 <translation id="3763247130972274048">Dobbelttrykk på venstre eller høyre side av videoen for å hoppe 10 sekunder</translation>
@@ -344,6 +345,7 @@
 <translation id="7302486331832100261">Du blokkerer vanligvis varsler. For å tillate dette trykker du på Detaljer.</translation>
 <translation id="7366415735885268578">Legg til et nettsted</translation>
 <translation id="7383715096023715447">Innstillinger for <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Denne innstillingen fungerer uten at du blir identifisert, og uten at nettsteder kan se nettleserloggen din, men nettsteder kan dele noe informasjon som en del av bekreftelsesprosessen</translation>
 <translation id="7423098979219808738">Spør først</translation>
 <translation id="7423538860840206698">Blokkert fra å lese utklippstavlen</translation>
 <translation id="7425915948813553151">Mørkt tema for nettsteder</translation>
@@ -433,6 +435,7 @@
 <translation id="8816026460808729765">Blokkér nettsteder fra å få tilgang til sensorer</translation>
 <translation id="8823559166155093873">Blokkering av informasjonskapsler</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Når du fortsetter å surfe, kan nettsteder kontrollere denne informasjonen i Chrome og få bekreftet av nettsteder du har besøkt tidligere, at du sannsynligvis er en ekte person</translation>
 <translation id="8899807382908246773">Forstyrrende annonser</translation>
 <translation id="8903921497873541725">Zoom inn</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

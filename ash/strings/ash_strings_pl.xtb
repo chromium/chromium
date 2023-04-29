@@ -382,6 +382,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2791421900609674576">Zobaczysz rekomendacje, dzięki którym możesz kontynuować od ostatniego miejsca. Aby je usunąć, naciśnij i przytrzymaj.</translation>
 <translation id="2792498699870441125">Alt+Szukaj</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490">Wybrano: <ph name="BUTTON_LABEL" /></translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2814448776515246190">Przechwytywanie części ekranu</translation>
 <translation id="2819276065543622893">Zostaniesz teraz wylogowany.</translation>
@@ -1391,6 +1392,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7497767806359279797">Wybierz język i klawiaturę</translation>
 <translation id="7508690557411636492">Otwierane w zeszłym miesiącu</translation>
 <translation id="7509246181739783082">Weryfikacja tożsamości</translation>
+<translation id="7512726380443357693">Nie wybrano: <ph name="BUTTON_LABEL" /></translation>
 <translation id="7513622367902644023">Wybrano tryb zrzutu ekranu</translation>
 <translation id="7513922695575567867">Kalendarz, tydzień do <ph name="DATE" />, obecnie wybrana jest data <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Pobierz</translation>

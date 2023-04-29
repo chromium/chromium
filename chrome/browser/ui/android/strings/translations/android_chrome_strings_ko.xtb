@@ -1550,7 +1550,6 @@
 <translation id="9158770349521403363">콘텐츠만 공유</translation>
 <translation id="9159716826369098114">탭 <ph name="TAB_COUNT" />개의 탭 그룹을 새 백그라운드 탭 그룹으로 복원합니다.</translation>
 <translation id="9169507124922466868">탐색 기록이 절반 높이로 열림</translation>
-<translation id="9183331776983279456">Chrome은 4주 이상 된 사이트를 자동 삭제합니다. 재방문한 사이트는 목록에 다시 표시될 수 있습니다. 또는 사이트에서 광고를 추천하지 못하도록 차단할 수도 있습니다.</translation>
 <translation id="9190276265094487094">동기화된 모든 기기에 방문 기록이 유지되므로 전에 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1분 전에 확인됨}other{#분 전에 확인됨}}</translation>
 <translation id="9204836675896933765">파일 1개가 남았습니다.</translation>
@@ -1572,7 +1571,6 @@
 <translation id="96681097142096641">간소화된 페이지를 보시겠습니까?</translation>
 <translation id="968900484120156207">방문한 페이지가 여기에 표시됩니다.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" />분 남음</translation>
-<translation id="978317418833355355">원치 않는 사이트를 차단할 수 있습니다. 또한 Chrome은 4주 이상 된 사이트를 목록에서 자동 삭제합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="983192555821071799">탭 모두 닫기</translation>
 <translation id="987264212798334818">일반</translation>

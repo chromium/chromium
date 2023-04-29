@@ -1888,7 +1888,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5596939519753369075">2×3,5 in</translation>
 <translation id="560412284261940334">Upravljanje nije podržano</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Kako možete da upravljate podacima:<ph name="END_BOLD" /> Chrome automatski briše sajtove starije od 4 nedelje. Sajt koji ponovo posetite može opet da se pojavi na listi. U svakom trenutku u podešavanjima Chrome-a možete i da blokirate sajt da vam ne bi predlagao oglase, kao i da isključite oglase koje sajtovi predlažu.</translation>
 <translation id="5610142619324316209">da proverite vezu</translation>
 <translation id="5610807607761827392">Karticama i adresama možete da upravljate u <ph name="BEGIN_LINK" />Podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="5611398002774823980">Sačuvaj na nalogu</translation>
@@ -3214,7 +3213,6 @@ Dodatni detalji:
 <translation id="8876033571432926051">Igre za opuštanje</translation>
 <translation id="8877780815363510165">Pecanje</translation>
 <translation id="8884537526797090108">Snimanje poverljivog sadržaja nije uspelo</translation>
-<translation id="8890798179125483517">Chrome automatski briše teme i sajtove koji predlažu oglase starije od 4 nedelje. Možete i da blokirate određene teme i sajtove koji vam se ne sviđaju.</translation>
 <translation id="8891727572606052622">Nevažeći režim proksija.</translation>
 <translation id="8894794286471754040">Prvo dugačka ivica</translation>
 <translation id="8897428486789851669">Plivanje</translation>

@@ -1889,7 +1889,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5596939519753369075">2 x 3,5 tuumaa</translation>
 <translation id="560412284261940334">Hallintaa ei tueta</translation>
 <translation id="5605670050355397069">Kierrevihko</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Miten voit vaikuttaa dataasi:<ph name="END_BOLD" /> Chrome poistaa yli neljä viikkoa vanhat sivustot automaattisesti. Jos käyt sivustolla uudelleen, se voi näkyä taas listalla. Lisäksi voit milloin tahansa estää sivustoa ehdottamasta sinulle mainoksia ja laittaa sivustojen ehdottamat mainokset pois päältä Chromen asetuksista.</translation>
 <translation id="5610142619324316209">Tarkista yhteys.</translation>
 <translation id="5610807607761827392">Voit hallita kortteja ja osoitteita <ph name="BEGIN_LINK" />Asetuksissa<ph name="END_LINK" />.</translation>
 <translation id="5611398002774823980">Tallenna tilille</translation>
@@ -3216,7 +3215,6 @@ Lisätietoja:
 <translation id="8876033571432926051">Helpot pelit</translation>
 <translation id="8877780815363510165">Kalastus</translation>
 <translation id="8884537526797090108">Luottamuksellista sisältöä ei voi tallentaa</translation>
-<translation id="8890798179125483517">Chrome poistaa automaattisesti aiheet ja sivustot, jotka ehdottavat yli neljä viikkoa vanhoja mainoksia. Voit myös estää tiettyjä aiheita ja sivustoja, joista et pidä.</translation>
 <translation id="8891727572606052622">Virheellinen välityspalvelimen tila.</translation>
 <translation id="8894794286471754040">Pitkä reuna ensin</translation>
 <translation id="8897428486789851669">Uinti</translation>

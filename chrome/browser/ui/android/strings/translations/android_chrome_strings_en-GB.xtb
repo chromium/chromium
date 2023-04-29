@@ -151,6 +151,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1810845389119482123">Initial sync setup not finished</translation>
 <translation id="1829244130665387512">Find in page</translation>
 <translation id="1832459821645506983">Yes, I’m in</translation>
+<translation id="185383612275551373">Sync to get the most relevant content from Google</translation>
 <translation id="1854311313115643875">When trials are on, ad measurement allows sites that you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
 
 When you delete your browsing history – all or for a specific site – you also delete associated measurement info. See <ph name="BEGIN_LINK" />your browsing history<ph name="END_LINK" />.</translation>
@@ -1551,7 +1552,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="9158770349521403363">Share content only</translation>
 <translation id="9159716826369098114">Restore tab group of <ph name="TAB_COUNT" /> tabs as a new background tab group.</translation>
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
-<translation id="9183331776983279456">Chrome auto-deletes sites that are older than four weeks. A site that you visit again might reappear on the list. Or you can block a site from suggesting ads for you.</translation>
 <translation id="9190276265094487094">You’ll have your history on all your synced devices so that you can continue what you were doing</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>
 <translation id="9204836675896933765">1 file left</translation>
@@ -1573,7 +1573,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="96681097142096641">View simplified page?</translation>
 <translation id="968900484120156207">Pages that you visit appear here</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> mins left</translation>
-<translation id="978317418833355355">You can block sites that you don’t want. Chrome also auto-deletes sites from the list that are older than four weeks. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Close all tabs</translation>
 <translation id="987264212798334818">General</translation>

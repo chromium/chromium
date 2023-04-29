@@ -3974,6 +3974,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4412632005703201014">Os apps do Chrome estão migrando para Progressive Web Apps. Este app do Chrome foi instalado no navegador pela sua organização. Para abrir o Progressive Web App na página "Detalhes do app", primeiro entre em contato com o administrador e peça para desinstalar o app do Chrome. Enquanto isso, você pode acessar <ph name="EXTENSION_LAUNCH_URL" /> para abrir a extensão <ph name="EXTENSION_NAME" /> na Web.</translation>
 <translation id="4412698727486357573">Central de Ajuda</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
+<translation id="4413087696295876280">Ler dados e informações do dispositivo ChromeOS Flex</translation>
 <translation id="44141919652824029">Permitir que o app <ph name="APP_NAME" /> receba a lista dos seus dispositivos USB conectados?</translation>
 <translation id="4414232939543644979">Nova janela &amp;anônima</translation>
 <translation id="4414648713167199100">Usa os dados móveis do seu Chromebook, o que pode aumentar o uso da bateria. Sujeito a cobranças extras da operadora. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4207,7 +4208,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4617001782309103936">Muito curto</translation>
 <translation id="4617270414136722281">Opções de extensão</translation>
 <translation id="4617880081511131945">Não é possível estabelecer uma conexão</translation>
-<translation id="4618195822946934889">O URL só permite caracteres ASCII</translation>
 <translation id="4619564267100705184">Confirmar sua identidade</translation>
 <translation id="4619615317237390068">Guias de outros dispositivos</translation>
 <translation id="4620809267248568679">Esta configuração é aplicada por uma extensão.</translation>
@@ -6853,6 +6853,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6993000214273684335">Guia removida do grupo sem nome: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Atualizando o navegador Chrome</translation>
 <translation id="6995899638241819463">Avisar se suas senhas forem expostas em uma violação de dados</translation>
+<translation id="6995984090981858039">Ler dados e informações do dispositivo ChromeOS</translation>
 <translation id="6997553674029032185">Acessar o site</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" />: registro de atividades</translation>
 <translation id="6997707937646349884">Nos seus dispositivos:</translation>
@@ -7056,6 +7057,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7193051357671784796">Este app foi adicionado pela sua organização. Reinicie o app para concluir a instalação.</translation>
 <translation id="7193374945610105795">Nenhuma senha salva para <ph name="ORIGIN" /></translation>
 <translation id="7194873994243265344">Sua organização bloqueou esse arquivo porque ele está criptografado. Peça para o proprietário descriptografar.</translation>
+<translation id="7196107899576756066">{COUNT,plural, =1{1 download em andamento}one{# download em andamento}other{# downloads em andamento}}</translation>
 <translation id="7196272782924897510">Quer mesmo usar uma senha de acesso de outro dispositivo?</translation>
 <translation id="7196913789568937443">Fazer backup no Google Drive. Restaure seus dados com facilidade ou troque de dispositivo a qualquer momento. O backup inclui dados de apps. Ele é enviado ao Google e criptografado usando a senha da sua Conta do Google. <ph name="BEGIN_LINK1" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Aproveite a tecnologia do Google e da Pesquisa sempre que navegar</translation>
@@ -7301,7 +7303,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7412226954991670867">Memória GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Configuração concluída</translation>
-<translation id="7415484647604548662">Você pode bloquear sites indesejados. O Chrome também exclui automaticamente sites que estão na lista há mais de quatro semanas.</translation>
 <translation id="7416091793702109803">Revisar <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Não foi possível carregar os Termos de Serviço. Verifique sua conexão de rede e tente novamente.</translation>
 <translation id="7416362041876611053">Erro de rede desconhecido.</translation>
@@ -9360,7 +9361,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9180380851667544951">O site pode compartilhar sua tela</translation>
 <translation id="9180847522826713506">Para conferir sua senha ou adicionar uma observação sobre ela, clique no ícone de chave</translation>
 <translation id="9182556968660520230">Não permitir que os sites reproduzam conteúdo protegido</translation>
-<translation id="9183331776983279456">O Chrome exclui automaticamente sites que estão há mais de quatro semanas na lista. Um site que você visitar novamente poderá reaparecer. Você também pode bloquear um site para que ele não sugira anúncios.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# apps}}</translation>
 <translation id="9186963452600581158">Fazer login com a Conta do Google de uma criança</translation>
 <translation id="9187967020623675250">As teclas não correspondem. Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
