@@ -4723,7 +4723,8 @@ AutotestPrivateSetAppWindowStateFunction::Run() {
           api::autotest_private::WMEventType::kWmeventSnapLeft ||
       params->change.event_type ==
           api::autotest_private::WMEventType::kWmeventSnapRight) {
-    const ash::WMEvent event(ToWMEventType(params->change.event_type));
+    const ash::WindowSnapWMEvent event(
+        ToWMEventType(params->change.event_type));
     ash::WindowState::Get(window)->OnWMEvent(&event);
   } else {
     const ash::WMEvent event(ToWMEventType(params->change.event_type));

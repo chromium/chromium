@@ -3166,7 +3166,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   // Snap |window| to the left and store its window properties.
   // TODO(sammiequon): Store and check desk id and restore bounds.
   auto* window_state = WindowState::Get(window);
-  const WMEvent left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent left_snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&left_snap_event);
   const chromeos::WindowStateType pre_save_state_type =
       window_state->GetStateType();

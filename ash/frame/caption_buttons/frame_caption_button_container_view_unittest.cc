@@ -330,7 +330,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, ResizeButtonRestoreBehavior) {
   EXPECT_TRUE(window_state->IsNormalStateType());
 
   // Snap the window.
-  const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   // Check the window is now snapped.
   EXPECT_TRUE(window_state->IsSnapped());

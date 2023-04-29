@@ -453,12 +453,12 @@ TEST_F(ClientControlledStateTest, SnapWindow) {
   ASSERT_FALSE(window_state()->CanSnap());
 
   // The event should be ignored.
-  const WMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_event);
   EXPECT_FALSE(window_state()->IsSnapped());
   EXPECT_TRUE(delegate()->requested_bounds().IsEmpty());
 
-  const WMEvent snap_right_event(WM_EVENT_CYCLE_SNAP_SECONDARY);
+  const WindowSnapWMEvent snap_right_event(WM_EVENT_CYCLE_SNAP_SECONDARY);
   window_state()->OnWMEvent(&snap_right_event);
   EXPECT_FALSE(window_state()->IsSnapped());
   EXPECT_TRUE(delegate()->requested_bounds().IsEmpty());
@@ -496,7 +496,7 @@ TEST_F(ClientControlledStateTest, PartialSnap) {
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
 
   // Test that snap from half to partial works.
-  const WMEvent snap_left_half(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_left_half(WM_EVENT_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_half);
   gfx::Rect expected_bounds(work_area.x(), work_area.y(),
                             work_area.width() * chromeos::kDefaultSnapRatio,
@@ -504,23 +504,23 @@ TEST_F(ClientControlledStateTest, PartialSnap) {
   EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
   EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
 
-  const WMEvent snap_left_partial(WM_EVENT_SNAP_PRIMARY,
-                                  chromeos::kTwoThirdSnapRatio);
+  const WindowSnapWMEvent snap_left_partial(WM_EVENT_SNAP_PRIMARY,
+                                            chromeos::kTwoThirdSnapRatio);
   window_state()->OnWMEvent(&snap_left_partial);
   expected_bounds.set_width(work_area.width() * chromeos::kTwoThirdSnapRatio);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
   EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
 
   // Test that snap from primary to secondary works.
-  const WMEvent snap_right_half(WM_EVENT_SNAP_SECONDARY);
+  const WindowSnapWMEvent snap_right_half(WM_EVENT_SNAP_SECONDARY);
   window_state()->OnWMEvent(&snap_right_half);
   EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
   expected_bounds.set_x(work_area.width() * chromeos::kDefaultSnapRatio);
   expected_bounds.set_width(work_area.width() * chromeos::kDefaultSnapRatio);
   EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
 
-  const WMEvent snap_right_partial(WM_EVENT_SNAP_SECONDARY,
-                                   chromeos::kOneThirdSnapRatio);
+  const WindowSnapWMEvent snap_right_partial(WM_EVENT_SNAP_SECONDARY,
+                                             chromeos::kOneThirdSnapRatio);
   window_state()->OnWMEvent(&snap_right_partial);
   EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
   expected_bounds.set_x(
@@ -542,7 +542,7 @@ TEST_F(ClientControlledStateTest, SnapInSecondaryDisplay) {
   widget_delegate()->EnableSnap();
 
   // Make sure the requested bounds for snapped window is local to display.
-  const WMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_event);
 
   EXPECT_EQ(second_display_id, delegate()->display_id());
@@ -565,7 +565,7 @@ TEST_F(ClientControlledStateTest, SnapMinimizeAndUnminimize) {
   UpdateDisplay("800x600");
   widget_delegate()->EnableSnap();
 
-  const WMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_event);
   state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_EQ(gfx::Rect(0, 0, 400, 600 - ShelfConfig::Get()->shelf_size()),
@@ -1240,7 +1240,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet,
   requested_bounds_queue.push(delegate()->requested_bounds());
 
   // Send a snap request.
-  const WMEvent snap(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap(WM_EVENT_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap);
   new_state_queue.push(delegate()->new_state());
   requested_bounds_queue.push(delegate()->requested_bounds());

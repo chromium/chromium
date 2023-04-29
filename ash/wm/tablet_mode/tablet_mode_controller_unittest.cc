@@ -209,7 +209,7 @@ class TabletModeControllerTest : public AshTestBase {
   std::unique_ptr<aura::Window> CreateDesktopWindowSnappedLeft(
       const gfx::Rect& bounds = gfx::Rect()) {
     std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
-    WMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
+    WindowSnapWMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
     WindowState::Get(window.get())->OnWMEvent(&snap_to_left);
     return window;
   }
@@ -218,7 +218,7 @@ class TabletModeControllerTest : public AshTestBase {
   std::unique_ptr<aura::Window> CreateDesktopWindowSnappedRight(
       const gfx::Rect& bounds = gfx::Rect()) {
     std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
-    WMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_SECONDARY);
+    WindowSnapWMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_SECONDARY);
     WindowState::Get(window.get())->OnWMEvent(&snap_to_right);
     return window;
   }
@@ -1363,7 +1363,7 @@ TEST_F(TabletModeControllerTest,
   WindowState* left_window_state = WindowState::Get(left_window.get());
   ASSERT_TRUE(left_window_state->CanSnap());
   ASSERT_FALSE(split_view_controller()->CanSnapWindow(left_window.get()));
-  WMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  WindowSnapWMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
   left_window_state->OnWMEvent(&snap_to_left);
   std::unique_ptr<aura::Window> right_window =
       CreateDesktopWindowSnappedRight();
@@ -1393,7 +1393,7 @@ TEST_F(TabletModeControllerTest,
   WindowState* right_window_state = WindowState::Get(right_window.get());
   ASSERT_TRUE(right_window_state->CanSnap());
   ASSERT_FALSE(split_view_controller()->CanSnapWindow(right_window.get()));
-  WMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_SECONDARY);
+  WindowSnapWMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_SECONDARY);
   right_window_state->OnWMEvent(&snap_to_right);
   wm::ActivateWindow(right_window.get());
   tablet_mode_controller()->SetEnabledForTest(true);
@@ -1422,7 +1422,7 @@ TEST_F(TabletModeControllerTest,
   WindowState* right_window_state = WindowState::Get(right_window.get());
   ASSERT_TRUE(right_window_state->CanSnap());
   ASSERT_FALSE(split_view_controller()->CanSnapWindow(right_window.get()));
-  WMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_SECONDARY);
+  WindowSnapWMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_SECONDARY);
   right_window_state->OnWMEvent(&snap_to_right);
   ASSERT_EQ(left_window.get(), window_util::GetActiveWindow());
   tablet_mode_controller()->SetEnabledForTest(true);
@@ -1450,7 +1450,7 @@ TEST_F(TabletModeControllerTest,
   WindowState* left_window_state = WindowState::Get(left_window.get());
   ASSERT_TRUE(left_window_state->CanSnap());
   ASSERT_FALSE(split_view_controller()->CanSnapWindow(left_window.get()));
-  WMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  WindowSnapWMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
   left_window_state->OnWMEvent(&snap_to_left);
   std::unique_ptr<aura::Window> right_window =
       CreateDesktopWindowSnappedRight();
@@ -1743,7 +1743,7 @@ TEST_F(TabletModeControllerTest, ShouldAutoHideTitlebars) {
   EXPECT_TRUE(window_state->CanSnap());
 
   // Snap the window and check that `ShouldAutoHideTitlebars()` is true.
-  WMEvent snap_to_left(WM_EVENT_SNAP_PRIMARY);
+  WindowSnapWMEvent snap_to_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_to_left);
   EXPECT_TRUE(window_state->IsSnapped());
   EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
