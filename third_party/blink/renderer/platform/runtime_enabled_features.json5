@@ -2034,6 +2034,10 @@
       status: "stable",
     },
     {
+      name: "LayoutDisableWebkitBoxSafeAlignment",
+      status: "stable",
+    },
+    {
       name: "LayoutFlexSafeAlignment",
       status: "stable",
     },

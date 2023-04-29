@@ -335,7 +335,11 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
       return available_free_space;
     case ItemPosition::kCenter: {
       const LayoutUnit result = (available_free_space / 2);
-      return is_deprecated_webkit_box ? result.ClampNegativeToZero() : result;
+      return (!RuntimeEnabledFeatures::
+                  LayoutDisableWebkitBoxSafeAlignmentEnabled() &&
+              is_deprecated_webkit_box)
+                 ? result.ClampNegativeToZero()
+                 : result;
     }
     case ItemPosition::kBaseline:
     case ItemPosition::kLastBaseline:

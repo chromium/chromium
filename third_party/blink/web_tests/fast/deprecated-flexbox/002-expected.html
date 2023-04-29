@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<style>
+  div.outer {
+    position: relative;
+  }
+
+  div.crossTop {
+    height: 100px;
+    width: 300px;
+    background-color: green;
+    position: absolute;
+    top: 200px;
+    left: -50px;
+  }
+
+  div.crossBar {
+    height: 300px;
+    width: 100px;
+    background-color: green;
+    position: absolute;
+    top: 100px;
+    left: 100px;
+  }
+
+</style>
+You should see a green cross below (300 pixels wide and 300 pixels tall). This
+is a test to ensure that
+boxes don't obey the overconstraint correction (margin-right/left should not be
+corrected when a box is
+overconstrained).
+
+<div class="outer">
+  <div class="crossTop"></div>
+  <div class="crossBar"></div>
+</div>
