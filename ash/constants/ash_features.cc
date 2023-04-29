@@ -828,7 +828,7 @@ BASE_FEATURE(kFamilyLinkOnSchoolDevice,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Fast Pair feature.
-BASE_FEATURE(kFastPair, "FastPair", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFastPair, "FastPair", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables logic for handling BLE address rotations during retroactive pair
 // scenarios.
@@ -888,7 +888,7 @@ BASE_FEATURE(kFastPairSoftwareScanning,
 // Enables the "Saved Devices" Fast Pair page in scenario in Bluetooth Settings.
 BASE_FEATURE(kFastPairSavedDevices,
              "FastPairSavedDevices",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the "Saved Devices" Fast Pair strict interpretation of opt-in status,
 // meaning that a user's preferences determine if retroactive pairing and

@@ -104,11 +104,14 @@ namespace quick_pair {
 class UIBrokerImplTest : public AshTestBase, public UIBroker::Observer {
  public:
   void SetUp() override {
-    AshTestBase::SetUp();
-
     presenter_factory_ = std::make_unique<FakeFastPairPresenterFactory>();
     FastPairPresenterImpl::Factory::SetFactoryForTesting(
         presenter_factory_.get());
+
+    // We need to make sure that we register the test factory before calling
+    // `AshTestBase::SetUp()`, since the test setup will create the presenter
+    // behind the scenes.
+    AshTestBase::SetUp();
 
     ui_broker_ = std::make_unique<UIBrokerImpl>();
     ui_broker_->AddObserver(this);

@@ -16,9 +16,13 @@
 namespace ash {
 namespace quick_pair {
 
-FakeFastPairRepository::FakeFastPairRepository() : FastPairRepository() {}
+FakeFastPairRepository::FakeFastPairRepository() {
+  SetInstanceForTesting(this);
+}
 
-FakeFastPairRepository::~FakeFastPairRepository() = default;
+FakeFastPairRepository::~FakeFastPairRepository() {
+  SetInstanceForTesting(nullptr);
+}
 
 void FakeFastPairRepository::SetFakeMetadata(const std::string& hex_model_id,
                                              nearby::fastpair::Device metadata,

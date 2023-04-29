@@ -135,6 +135,7 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
   AshTestHelper::InitParams params;
   params.start_session = start_session_;
   params.create_global_cras_audio_handler = create_global_cras_audio_handler_;
+  params.create_quick_pair_mediator = create_quick_pair_mediator_;
   params.delegate = std::move(delegate);
   params.local_state = local_state();
 

@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/services/bluetooth_config",
+    "//chromeos/ash/services/bluetooth_config:in_process_bluetooth_config",
     "//chromeos/ash/services/bluetooth_config:test_support",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
     "//chromeos/ash/services/quick_pair",

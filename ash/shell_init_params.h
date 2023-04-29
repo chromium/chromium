@@ -40,7 +40,7 @@ struct ASH_EXPORT ShellInitParams {
   // Factory for creating the virtual keyboard UI. Must be non-null.
   std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory;
 
-  // Factory for creating the quick_pair mediator. Must be non-null.
+  // Factory for creating the quick_pair mediator.
   std::unique_ptr<ash::quick_pair::Mediator::Factory>
       quick_pair_mediator_factory;
 

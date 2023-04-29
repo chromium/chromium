@@ -92,8 +92,6 @@ void SetPrefs(PrefService* logged_in_profile_prefs, PrefService* device_prefs) {
 void BindToInProcessInstance(
     mojo::PendingReceiver<mojom::CrosBluetoothConfig> pending_receiver) {
   BLUETOOTH_LOG(DEBUG) << "Binding to CrosBluetoothConfig";
-  DCHECK_EQ(features::IsFastPairEnabled(),
-            static_cast<bool>(g_fast_pair_delegate));
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&OnBluetoothAdapter, std::move(pending_receiver)));
 }

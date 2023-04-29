@@ -1257,7 +1257,8 @@ void Shell::Init(
 
   // Fast Pair depends on the display manager, so initialize it after
   // display manager was properly initialized.
-  if (base::FeatureList::IsEnabled(features::kFastPair)) {
+  if (base::FeatureList::IsEnabled(features::kFastPair) &&
+      quick_pair_mediator_factory) {
     quick_pair_mediator_ = quick_pair_mediator_factory->BuildInstance();
   }
 

@@ -240,6 +240,7 @@ class FastPairPairerImplTest : public AshTestBase {
         &fast_pair_gatt_service_factory_);
 
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
+    fast_pair_repository_ = std::make_unique<FakeFastPairRepository>();
 
     gatt_service_client_ = FastPairGattServiceClientImpl::Factory::Create(
         fake_bluetooth_device_ptr_, adapter_.get(), base::DoNothing());
@@ -254,6 +255,7 @@ class FastPairPairerImplTest : public AshTestBase {
   }
 
   void TearDown() override {
+    fast_pair_repository_.reset();
     pairer_.reset();
     ClearLogin();
     AshTestBase::TearDown();
@@ -391,12 +393,12 @@ class FastPairPairerImplTest : public AshTestBase {
   bool IsDevicePaired() { return fake_bluetooth_device_ptr_->IsDevicePaired(); }
 
   bool IsAccountKeySavedToFootprints() {
-    return fast_pair_repository_.HasKeyForDevice(
+    return fast_pair_repository_->HasKeyForDevice(
         fake_bluetooth_device_ptr_->GetAddress());
   }
 
   bool IsDisplayNameSavedToFootprints() {
-    return fast_pair_repository_.HasNameForDevice(
+    return fast_pair_repository_->HasNameForDevice(
         fake_bluetooth_device_ptr_->GetAddress());
   }
 
@@ -488,7 +490,7 @@ class FastPairPairerImplTest : public AshTestBase {
       account_key_failure_callback_;
   base::MockCallback<base::OnceCallback<void(scoped_refptr<Device>)>>
       pairing_procedure_complete_;
-  FakeFastPairRepository fast_pair_repository_;
+  std::unique_ptr<FakeFastPairRepository> fast_pair_repository_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
   FakeFastPairGattServiceClientImplFactory fast_pair_gatt_service_factory_;
@@ -771,7 +773,8 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial_AlreadyFastPaired) {
   fake_fast_pair_handshake_->InvokeCallback();
 
   // Mock that the device is already fast paired (and saved to Footprints).
-  fast_pair_repository_.SaveMacAddressToAccount(kBluetoothCanonicalizedAddress);
+  fast_pair_repository_->SaveMacAddressToAccount(
+      kBluetoothCanonicalizedAddress);
   EXPECT_CALL(*fake_bluetooth_device_ptr_, IsBonded()).WillOnce(Return(true));
 
   // For an already fast paired device, we skip the Account Key writing.
@@ -826,7 +829,8 @@ TEST_F(FastPairPairerImplTest,
   fake_fast_pair_handshake_->InvokeCallback();
 
   // Mock that the device is already fast paired (and saved to Footprints).
-  fast_pair_repository_.SaveMacAddressToAccount(kBluetoothCanonicalizedAddress);
+  fast_pair_repository_->SaveMacAddressToAccount(
+      kBluetoothCanonicalizedAddress);
   EXPECT_CALL(*fake_bluetooth_device_ptr_, IsBonded()).WillOnce(Return(true));
 
   // For an already fast paired device, we skip the Account Key writing.
@@ -1422,7 +1426,7 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_FlagEnabled) {
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPairSavedDevicesStrictOptIn},
       /*disabled_features=*/{});
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -1463,7 +1467,7 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_FlagDisabled) {
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kFastPairSavedDevices,
                              features::kFastPairSavedDevicesStrictOptIn});
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -1494,7 +1498,7 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_StrictFlagDisabled) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
       /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -1526,7 +1530,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagEnabled) {
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPairSavedDevicesStrictOptIn},
       /*disabled_features=*/{});
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
 
   histogram_tester().ExpectTotalCount(
@@ -1570,7 +1574,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagDisabled) {
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kFastPairSavedDevices,
                              features::kFastPairSavedDevicesStrictOptIn});
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
 
   histogram_tester().ExpectTotalCount(
@@ -1613,7 +1617,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_StrictFlagDisabled) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
       /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
 
   histogram_tester().ExpectTotalCount(
@@ -1776,7 +1780,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagEnabled) {
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPairSavedDevicesStrictOptIn},
       /*disabled_features=*/{});
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -1816,7 +1820,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagEnabled) {
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagDisabled) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1861,7 +1865,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagDisabled) {
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_StrictFlagDisabled) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1905,7 +1909,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_StrictFlagDisabled) {
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagEnabled) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1934,7 +1938,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagEnabled) {
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagDisabled) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1962,7 +1966,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagDisabled) {
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_StrictFlagDisabled) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1989,7 +1993,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_StrictFlagDisabled) {
 
 TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_GattErrorFailed) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2015,7 +2019,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_GattErrorFailed) {
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorUnknown) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2041,7 +2045,7 @@ TEST_F(FastPairPairerImplTest,
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorInProgress) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2067,7 +2071,7 @@ TEST_F(FastPairPairerImplTest,
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorInvalidLength) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2093,7 +2097,7 @@ TEST_F(FastPairPairerImplTest,
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorNotPermitted) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2119,7 +2123,7 @@ TEST_F(FastPairPairerImplTest,
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorNotAuthorized) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2145,7 +2149,7 @@ TEST_F(FastPairPairerImplTest,
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorNotPaired) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2170,7 +2174,7 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorNotSupported) {
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2196,7 +2200,7 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_NoCancelPairing) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2268,7 +2272,7 @@ TEST_F(FastPairPairerImplTest, FastPairVersionOne_DeviceUnpaired) {
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagEnabled) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2289,7 +2293,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagEnabled) {
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_FlagDisabled) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2319,7 +2323,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_FlagDisabled) {
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_StrictFlagDisabled) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2344,7 +2348,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_StrictFlagDisabled) {
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagDisabled) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2370,7 +2374,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagDisabled) {
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_StrictFlagDisabled) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2400,7 +2404,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_FlagEnabled) {
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPairSavedDevicesStrictOptIn},
       /*disabled_features=*/{});
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_UNKNOWN);
 
   histogram_tester().ExpectTotalCount(
@@ -2422,7 +2426,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_FlagDisabled) {
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kFastPairSavedDevices,
                              features::kFastPairSavedDevicesStrictOptIn});
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_UNKNOWN);
 
   histogram_tester().ExpectTotalCount(
@@ -2447,7 +2451,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_StrictFlagDisabled) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
       /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_UNKNOWN);
 
   histogram_tester().ExpectTotalCount(
@@ -2492,7 +2496,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_InitialPairing) {
       /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
 
   // Start opted out.
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   histogram_tester().ExpectBucketCount(
       kSavedDeviceUpdateOptInStatusInitialResult,
@@ -2529,7 +2533,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_InitialPairing) {
 
   // Expect that the user is now opted in.
   EXPECT_EQ(nearby::fastpair::OptInStatus::STATUS_OPTED_IN,
-            fast_pair_repository_.GetOptInStatus());
+            fast_pair_repository_->GetOptInStatus());
   histogram_tester().ExpectBucketCount(
       kSavedDeviceUpdateOptInStatusInitialResult,
       /*success=*/true, 1);
@@ -2542,7 +2546,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_RetroactivePairing) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
 
   // Start opted out
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   histogram_tester().ExpectBucketCount(
       kSavedDeviceUpdateOptInStatusRetroactiveResult,
@@ -2574,7 +2578,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_RetroactivePairing) {
 
   // Expect that the user is now opted in.
   EXPECT_EQ(nearby::fastpair::OptInStatus::STATUS_OPTED_IN,
-            fast_pair_repository_.GetOptInStatus());
+            fast_pair_repository_->GetOptInStatus());
   histogram_tester().ExpectBucketCount(
       kSavedDeviceUpdateOptInStatusRetroactiveResult,
       /*success=*/true, 1);
@@ -2587,11 +2591,12 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices},
+      /*enabled_features=*/{features::kFastPairSavedDevices,
+                            features::kFastPair},
       /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
 
   // Start opted out
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   histogram_tester().ExpectBucketCount(
       kSavedDeviceUpdateOptInStatusSubsequentResult,
@@ -2624,7 +2629,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
 
   // Expect that the user is opted in now.
   EXPECT_EQ(nearby::fastpair::OptInStatus::STATUS_OPTED_IN,
-            fast_pair_repository_.GetOptInStatus());
+            fast_pair_repository_->GetOptInStatus());
   histogram_tester().ExpectBucketCount(
       kSavedDeviceUpdateOptInStatusSubsequentResult,
       /*success=*/true, 1);
@@ -2703,7 +2708,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_ConnectTimeout_Subsequent) {
 
 TEST_F(FastPairPairerImplTest, RetroactiveNotLoggedToInitial) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2788,7 +2793,7 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Retroactive) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  fast_pair_repository_.SetOptInStatus(
+  fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

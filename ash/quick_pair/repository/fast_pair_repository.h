@@ -154,8 +154,8 @@ class FastPairRepository {
       const std::string& mac_address,
       IsDeviceSavedToAccountCallback callback) = 0;
 
- protected:
   static void SetInstance(FastPairRepository* instance);
+  static void SetInstanceForTesting(FastPairRepository* instance);
 };
 
 }  // namespace quick_pair

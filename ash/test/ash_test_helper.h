@@ -12,6 +12,8 @@
 
 #include "ash/assistant/test/test_assistant_service.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/quick_pair/common/quick_pair_browser_delegate.h"
+#include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell_delegate.h"
@@ -80,6 +82,9 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
     // True if a fake global `CrasAudioHandler` should be created.
     bool create_global_cras_audio_handler = true;
+
+    // True if a global `QuickPairMediator` should be created.
+    bool create_quick_pair_mediator = true;
   };
 
   // Instantiates/destroys an AshTestHelper. This can happen in a
@@ -205,6 +210,9 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
   std::unique_ptr<TestWallpaperControllerClient> wallpaper_controller_client_;
   std::unique_ptr<SavedDeskTestHelper> saved_desk_test_helper_;
+  std::unique_ptr<quick_pair::Mediator::Factory> quick_pair_mediator_factory_;
+  std::unique_ptr<quick_pair::QuickPairBrowserDelegate>
+      quick_pair_browser_delegate_;
 
   // Used only for pixel tests.
   std::unique_ptr<AshPixelTestHelper> pixel_test_helper_;
@@ -220,6 +228,8 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
   // True if a fake global `CrasAudioHandler` should be created.
   bool create_global_cras_audio_handler_ = true;
+  // True if a fake `QuickPairMediator` should be created.
+  bool create_quick_pair_mediator_ = true;
 };
 
 }  // namespace ash
