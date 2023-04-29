@@ -978,7 +978,7 @@
   {
     "name": "cct-real-time-engagement-signals",
     "owners": ["sinansahin@google.com", "jinsukkim"],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "cct-real-time-engagement-signals-alternative-impl",
