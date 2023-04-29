@@ -13,7 +13,6 @@ https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidf
 
 import argparse
 import collections
-import dataclasses
 import logging
 import functools
 import os
@@ -329,7 +328,7 @@ class ArscChunk:
     type: (In header) Chunk type specified by a _RES_*_TYPE constant.
     header_size: (In header) Byte size of the header, which is |type|-dependent.
     size: (In header) Byte size of the chunk, including header.
-    placeholder: Number of placeholder bytes.
+    padding: Number of padding bytes.
   """
   def __init__(self, reader, parent):
     # Custom additions for binary size tracking.
@@ -354,8 +353,8 @@ class ArscChunk:
     return self.addr + self.size
 
   @property
-  def placeholder(self):
-    """Returns type-dependent placeholder, overridable."""
+  def padding(self):
+    """Returns type-dependent padding, overridable."""
     return 0
 
   def StrHelper(self, name, fields):
@@ -370,12 +369,6 @@ class ArscChunk:
 
   def __str__(self):
     return self.StrHelper('UNKNOWN (type=%d)' % self.type, {})
-
-  def symbol_name(self):
-    return str(self)
-
-  def labelled_children(self):
-    yield from ((None, child) for child in self.children)
 
 
 class ArscStringPool(ArscChunk):
@@ -401,7 +394,6 @@ class ArscStringPool(ArscChunk):
     self.is_utf8 = bool(self.flags & ArscStringPool.UTF8_FLAG)
     assert reader.Tell() == self.payload_addr
 
-    self.role = ''  # Can be modified by parent.
     base = self.addr + self.string_start
     self.string_addrs = [
         base + reader.NextUInt() for _ in range(self.string_count)
@@ -413,9 +405,6 @@ class ArscStringPool(ArscChunk):
 
   def __str__(self):
     return self.StrHelper('STRING_POOL', {'string_count': self.string_count})
-
-  def symbol_name(self):
-    return f'STRING_POOL: {self.role}' if self.role else 'STRING_POOL'
 
   @property
   @functools.lru_cache
@@ -470,7 +459,6 @@ class ArscResTable(ArscChunk):
     assert reader.PeekArscHeaderType() == _RES_STRING_POOL_TYPE
 
     self.string_pool = reader.NextArscChunk(parent=self)
-    self.string_pool.role = 'root'
     self.children.append(self.string_pool)
 
     # Save |cur_addr| since children chunks may not be fully parsed.
@@ -486,18 +474,6 @@ class ArscResTable(ArscChunk):
 
   def __str__(self):
     return self.StrHelper('TABLE', {'package_count': self.package_count})
-
-  def symbol_name(self):
-    return 'res_table'
-
-  def labelled_children(self):
-    for chunk in self.children:
-      if chunk is self.string_pool:
-        yield (None, chunk)
-      elif isinstance(chunk, ArscResTablePackage):
-        yield (chunk.name, chunk)
-      else:
-        yield (None, chunk)
 
 
 class ArscResTablePackage(ArscChunk):
@@ -540,29 +516,17 @@ class ArscResTablePackage(ArscChunk):
       reader.Seek(cur_addr)
       chunk = reader.NextArscChunk(parent=self)
       self.children.append(chunk)
-      if isinstance(chunk, ArscStringPool):
+      if chunk.type == _RES_STRING_POOL_TYPE:
         if self.type_pool is None:
           self.type_pool = chunk
-          self.type_pool.role = 'types'
         elif self.key_pool is None:
           self.key_pool = chunk
-          self.key_pool.role = 'keys'
         else:
           logging.warn('Unexpected string pool at %08X.' % t.address)
       cur_addr = chunk.end_addr
 
   def __str__(self):
     return self.StrHelper('PACKAGE', {'name': self.name})
-
-  def symbol_name(self):
-    return 'package'
-
-  def labelled_children(self):
-    for chunk in self.children:
-      if isinstance(chunk, (ArscResTableType, ArscResTableTypeSpec)):
-        yield (chunk.type_str, chunk)
-      else:
-        yield (None, chunk)
 
 
 class ArscResTableType(ArscChunk):
@@ -572,7 +536,7 @@ class ArscResTableType(ArscChunk):
   resource entries, followed by resource data (not parsed). The pointer table
   can be dense or sparse.
   * Dense tables use NO_ENTRY to mark resources unavailable for |config|. These
-    pointers are counted in |placeholder|.
+    pointers are counted in |padding|.
   * Sparse tables stores sorted (index, pointer) pairs and uses binary search.
     Currently we don't support these.
 
@@ -601,21 +565,21 @@ class ArscResTableType(ArscChunk):
     self.config = ResTableConfig(reader)
     assert reader.Tell() == self.payload_addr
 
-    self.entry_placeholder = 0
+    self.entry_padding = 0
     self.type_str = parent.type_pool.GetString(self.id - 1)
 
     entries_start_addr = self.addr + self.entries_start
     entries_offsets = [reader.NextUInt() for _ in range(self.entry_count)]
     assert entries_start_addr >= reader.Tell()
 
-    self.entry_placeholder += sum(4 for o in entries_offsets
-                                  if o == ArscResTableType.NO_ENTRY)
+    self.entry_padding += sum(4 for o in entries_offsets
+                              if o == ArscResTableType.NO_ENTRY)
     # Skip reading actual entries.
     reader.Seek(self.end_addr)
 
   @property
-  def placeholder(self):
-    return self.entry_placeholder
+  def padding(self):
+    return self.entry_padding
 
   def __str__(self):
     return self.StrHelper(
@@ -623,12 +587,9 @@ class ArscResTableType(ArscChunk):
             'type_str': self.type_str,
             'entry_count': self.entry_count,
             'size': self.size,
-            'placeholder': self.entry_placeholder,
+            'padding': self.entry_padding,
             'config': str(self.config),
         })
-
-  def symbol_name(self):
-    return str(self.config) or 'default'
 
 
 class ArscResTableTypeSpec(ArscChunk):
@@ -661,9 +622,6 @@ class ArscResTableTypeSpec(ArscChunk):
         'entry_count': self.entry_count
     })
 
-  def symbol_name(self):
-    return 'TYPE_SPEC'
-
 
 class ArscFile:
   """Represents a single ARSC file.
@@ -679,39 +637,21 @@ class ArscFile:
     self.table = reader.NextArscChunk()
 
   def VisitPreOrder(self):
-    """Depth-first pre-order visitor of all (path, chunk).
-
-    |path| is a string to establish context of |chunk|, consisting of non-None
-    labels of ancestral and current chunks joined by '/'.
-    """
-    @dataclasses.dataclass
-    class StackFrame:
-      prev_has_label: bool
-      child_iterator: object
-
-    label_stack = []
-    yield '', self.table
-    stack = [StackFrame(False, self.table.labelled_children())]
-    while stack:
-      frame = stack[-1]
-      if frame.prev_has_label:
-        label_stack.pop()
-        frame.prev_has_label = False
-      label_and_chunk = next(frame.child_iterator, None)
-      if label_and_chunk:
-        label, chunk = label_and_chunk
-        if label:
-          label_stack.append(label)
-          frame.prev_has_label = True
-        yield '/'.join(label_stack), chunk
-        stack.append(StackFrame(False, chunk.labelled_children()))
+    """Depth-first pre-order visitor of all chunks."""
+    yield self.table
+    st = [iter(self.table.children)]
+    while st:
+      chunk = next(st[-1], None)
+      if chunk:
+        yield chunk
+        st.append(iter(chunk.children))
       else:
-        stack.pop()
+        st.pop()
 
 
 def _DumpArscChunks(arsc_data):
   arsc_file = ArscFile(arsc_data)
-  for _, chunk in arsc_file.VisitPreOrder():
+  for chunk in arsc_file.VisitPreOrder():
     print(str(chunk))
 
 

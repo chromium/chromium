@@ -500,7 +500,6 @@ function _makeIconTemplateGetter() {
     m: getSymbolIcon('.dexmethodicon'),
     p: getSymbolIcon('.localpakicon'),
     P: getSymbolIcon('.nonlocalpakicon'),
-    a: getSymbolIcon('.arscicon'),
     o: getSymbolIcon('.othericon'),  // used as default icon
     '*': null,
   };
