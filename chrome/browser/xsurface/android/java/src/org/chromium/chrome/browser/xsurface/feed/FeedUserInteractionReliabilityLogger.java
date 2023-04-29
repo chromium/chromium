@@ -72,6 +72,29 @@ public interface FeedUserInteractionReliabilityLogger {
     default void onPaginationIndicatorShown() {}
 
     /**
+     * Called when the action upload request has started.
+     */
+    default void onPaginationActionUploadRequestStarted() {}
+
+    /**
+     * Called when the pagination query request has been sent.
+     */
+    default void onPaginationRequestSent() {}
+
+    /**
+     * Called when the pagination query response has been received.
+     * @param serverRecvTimestamp Server-reported time (nanoseconds) at which the request arrived.
+     * @param serverSendTimestamp Server-reported time (nanoseconds) at which the response was sent.
+     */
+    default void onPaginationResponseReceived(long serverRecvTimestamp, long serverSendTimestamp) {}
+
+    /**
+     * Called when the pagination query request has finished.
+     * @param canonicalStatus Network request status code.
+     */
+    default void onPaginationRequestFinished(int canonicalStatus) {}
+
+    /**
      * Describes the end state of the pagination process.
      */
     @IntDef({PaginationResult.SUCCESS_WITH_MORE_FEED, PaginationResult.SUCCESS_WITH_NO_FEED,
