@@ -2609,6 +2609,15 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERABLE" desc="Toast shown when a Bluetooth adapter is discoverable.">
         "<ph name="NAME">$1<ex>Chromebook</ex></ph>" visible to Bluetooth devices.
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_ON_MULTIPLE_CONNECTED_DEVICES" desc="Tooltip or accessiblity text for the hotspot icon in system tray when hotspot is turned on and multiple devices are connected.">
+        <ph name="DEVICECOUNT">$1</ph> devices connected to your <ph name="DEVICE_NAME">$2<ex>Chromebook</ex></ph> hotspot
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_ON_ONE_CONNECTED_DEVICE" desc="Tooltip or accessiblity text for the hotspot icon in system tray when hotspot is turned on and one device is connected.">
+        1 device connected to your <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> hotspot
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_ON_NO_CONNECTED_DEVICES" desc="Tooltip or accessiblity text for the hotspot icon in system tray when hotspot is turned on and no devices are connected.">
+        Your <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> hotspot is on, no devices connected
+      </message>
       <message name="IDS_ASH_HOTSPOT_ON_TITLE" desc="Title used for the system notification shown when the hotspot is turned on.">
         Hotspot is on
       </message>

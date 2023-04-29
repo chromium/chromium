@@ -16,6 +16,7 @@
 #include "ash/system/camera/autozoom_toast_controller.h"
 #include "ash/system/channel_indicator/channel_indicator.h"
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
+#include "ash/system/hotspot/hotspot_tray_view.h"
 #include "ash/system/human_presence/snooping_protection_view.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/message_center_ui_controller.h"
@@ -247,6 +248,11 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
             shelf, CameraMicTrayItemView::Type::kCamera));
     mic_view_ = AddTrayItemToContainer(std::make_unique<CameraMicTrayItemView>(
         shelf, CameraMicTrayItemView::Type::kMic));
+  }
+
+  if (features::IsHotspotEnabled()) {
+    hotspot_tray_view_ =
+        AddTrayItemToContainer(std::make_unique<HotspotTrayView>(shelf));
   }
 
   if (features::IsSeparateNetworkIconsEnabled()) {
@@ -676,6 +682,12 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
   status.push_back(network_tray_view_->GetVisible()
                        ? network_tray_view_->GetAccessibleNameString()
                        : base::EmptyString16());
+
+  if (hotspot_tray_view_) {
+    status.push_back(hotspot_tray_view_->GetVisible()
+                         ? hotspot_tray_view_->GetAccessibleNameString()
+                         : base::EmptyString16());
+  }
 
   // For privacy string, we use either `privacy_indicators_view_` or the combo
   // of `mic_view_` and `camera_view_`.

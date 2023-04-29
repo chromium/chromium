@@ -41,6 +41,7 @@ class AshMessagePopupCollection;
 class CameraMicTrayItemView;
 class ChannelIndicatorView;
 class CurrentLocaleView;
+class HotspotTrayView;
 class ImeModeView;
 class ManagedDeviceTrayItemView;
 class NetworkTrayView;
@@ -330,7 +331,7 @@ class ASH_EXPORT UnifiedSystemTray
   raw_ptr<TimeTrayItemView, ExperimentalAsh> time_view_ = nullptr;
   raw_ptr<PrivacyIndicatorsTrayItemView, ExperimentalAsh>
       privacy_indicators_view_ = nullptr;
-
+  raw_ptr<HotspotTrayView, ExperimentalAsh> hotspot_tray_view_ = nullptr;
   raw_ptr<NetworkTrayView, ExperimentalAsh> network_tray_view_ = nullptr;
   raw_ptr<ChannelIndicatorView, ExperimentalAsh> channel_indicator_view_ =
       nullptr;
