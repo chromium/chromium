@@ -1827,7 +1827,7 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
-                               WindowSnapActionSource::kOthers, 1);
+                               WindowSnapActionSource::kNotSpecified, 1);
   window_state->Maximize();
 
   // Drag the window to the screen edge to snap.
@@ -1840,7 +1840,7 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
                                WindowSnapActionSource::kDragWindowToEdgeToSnap,
                                1);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
-                               WindowSnapActionSource::kOthers, 1);
+                               WindowSnapActionSource::kNotSpecified, 1);
   window_state->Maximize();
 
   // Use keyboard to snap a window.
@@ -1850,7 +1850,7 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
                                WindowSnapActionSource::kKeyboardShortcutToSnap,
                                1);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
-                               WindowSnapActionSource::kOthers, 1);
+                               WindowSnapActionSource::kNotSpecified, 1);
   window_state->Maximize();
 
   // Restore the maximized window to snap window state.
@@ -1859,7 +1859,7 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
       kWindowSnapActionSourceHistogram,
       WindowSnapActionSource::kSnapByWindowStateRestore, 1);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
-                               WindowSnapActionSource::kOthers, 1);
+                               WindowSnapActionSource::kNotSpecified, 1);
   window_state->Maximize();
 
   // Drag or select overview window to snap window.
@@ -1877,7 +1877,7 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
       kWindowSnapActionSourceHistogram,
       WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap, 1);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
-                               WindowSnapActionSource::kOthers, 1);
+                               WindowSnapActionSource::kNotSpecified, 1);
   window_state->Maximize();
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -1890,14 +1890,14 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
                                WindowSnapActionSource::kKeyboardShortcutToSnap,
                                2);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
-                               WindowSnapActionSource::kOthers, 1);
+                               WindowSnapActionSource::kNotSpecified, 1);
 
   // Auto-snap in splitview.
   std::unique_ptr<aura::Window> window2(CreateAppWindow());
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
-                               WindowSnapActionSource::kAutoSnapBySplitview, 1);
+                               WindowSnapActionSource::kAutoSnapInSplitView, 1);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
-                               WindowSnapActionSource::kOthers, 1);
+                               WindowSnapActionSource::kNotSpecified, 1);
 
   // Resize in splitview.
   auto* split_view_controller =
@@ -1913,10 +1913,10 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   split_view_controller->ResizeWithDivider(resize_point);
   // This should not cause any metrics change.
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
-                               WindowSnapActionSource::kOthers, 1);
+                               WindowSnapActionSource::kNotSpecified, 1);
   split_view_controller->EndResizeWithDivider(resize_point);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
-                               WindowSnapActionSource::kOthers, 1);
+                               WindowSnapActionSource::kNotSpecified, 1);
 }
 
 // Test how the minimum height specified by the aura::WindowDelegate affects

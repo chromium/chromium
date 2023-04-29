@@ -40,6 +40,17 @@ enum class SnapDirection {
 // The singleton that implements the interface is provided by Ash.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) SnapController {
  public:
+  // The sources of the snap request that are from the window size button.
+  // Currently there can be two sources: either by long pressing on the size
+  // button and then pressing on one of the snap buttons, or by hovering the
+  // size button to show the window layout menu and then pressing on one of the
+  // snap options.
+  enum class SnapRequestSource {
+    kSnapButton,
+    kWindowLayoutMenu,
+    kFromLacrosSnapButtonOrWindowLayoutMenu,
+  };
+
   virtual ~SnapController();
 
   static SnapController* Get();
@@ -57,7 +68,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) SnapController {
   // window, if any.
   virtual void CommitSnap(aura::Window* window,
                           SnapDirection snap,
-                          float snap_ratio) = 0;
+                          float snap_ratio,
+                          SnapRequestSource snap_request_source) = 0;
 
  protected:
   SnapController();

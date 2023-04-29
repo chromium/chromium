@@ -102,7 +102,8 @@ class TabletModeWindowState : public WindowState::State {
   // it cannot be snapped.
   void DoTabletSnap(WindowState* window_state,
                     WMEventType snap_event_type,
-                    float snap_ratio);
+                    float snap_ratio,
+                    WindowSnapActionSource snap_action_source);
 
   // Called by `WM_EVENT_RESTORE`, or a `WM_EVENT_NORMAL` that is restoring.
   // Restores to the state in `window_states`'s restore history.

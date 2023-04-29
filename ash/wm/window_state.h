@@ -450,10 +450,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   const DragDetails* drag_details() const { return drag_details_.get(); }
   DragDetails* drag_details() { return drag_details_.get(); }
 
-  void set_snap_action_source(WindowSnapActionSource type) {
-    snap_action_source_ = type;
-  }
-
   const std::vector<RestoreState>& window_state_restore_history_for_testing()
       const {
     return window_state_restore_history_;
@@ -600,9 +596,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   bool CanUnresizableSnapOnDisplay(display::Display display) const;
 
-  void RecordAndResetWindowSnapActionSource(
-      chromeos::WindowStateType current_type,
-      chromeos::WindowStateType new_type);
+  void RecordWindowSnapActionSource(WindowSnapActionSource snap_action_source);
 
   // Gets called by the `drag_to_maximize_mis_trigger_timer_` to check the drag
   // to maximize behavior's validity and record the number of mis-triggers.
@@ -707,10 +701,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // a higher precedent than whatever is at the tip of
   // window_state_restore_history_.
   absl::optional<gfx::Rect> restore_bounds_override_;
-
-  // This is used to record where the current snap window state change request
-  // comes from.
-  WindowSnapActionSource snap_action_source_ = WindowSnapActionSource::kOthers;
 };
 
 ASH_EXPORT

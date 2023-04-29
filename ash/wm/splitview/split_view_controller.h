@@ -19,6 +19,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -245,6 +246,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // transition.
   void SnapWindow(aura::Window* window,
                   SnapPosition snap_position,
+                  WindowSnapActionSource snap_action_source =
+                      WindowSnapActionSource::kNotSpecified,
                   bool activate_window = false,
                   float snap_ratio = chromeos::kDefaultSnapRatio);
 
@@ -364,7 +367,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void OnWindowDragStarted(aura::Window* dragged_window);
   void OnWindowDragEnded(aura::Window* dragged_window,
                          SnapPosition desired_snap_position,
-                         const gfx::Point& last_location_in_screen);
+                         const gfx::Point& last_location_in_screen,
+                         WindowSnapActionSource snap_action_source);
   void OnWindowDragCanceled();
 
   // Computes the snap position for a dragged window, based on the last
@@ -620,7 +624,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void EndWindowDragImpl(aura::Window* window,
                          bool is_being_destroyed,
                          SnapPosition desired_snap_position,
-                         const gfx::Point& last_location_in_screen);
+                         const gfx::Point& last_location_in_screen,
+                         WindowSnapActionSource snap_action_source);
 
   // Do the split divider spawn animation. It will add a finishing touch to the
   // |window| animation that generally accommodates snapping by dragging.
