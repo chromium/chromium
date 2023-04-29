@@ -136342,12 +136342,12 @@
      ],
      "gradient": {
       "css-color-4-colors-default-to-oklab-gradient.html": [
-       "63fdd6f4a442ca49a8a11392dbf98de387467df0",
+       "9ef20db2362bedb85090128e7c3cbe4536deda29",
        [
         null,
         [
          [
-          "/css/css-images/gradient/oklab-gradient-expected.html",
+          "/css/css-images/gradient/oklab-gradient-ref.html",
           "=="
          ]
         ],
@@ -136632,12 +136632,12 @@
        ]
       ],
       "legacy-color-gradient.html": [
-       "8fe3ca83d8718fb622f3870c5fa10ee04b0c0862",
+       "e6af42103b9407221bfeae6e74b5379dc7379441",
        [
         null,
         [
          [
-          "/css/css-images/gradient/srgb-gradient-expected.html",
+          "/css/css-images/gradient/srgb-gradient-ref.html",
           "=="
          ]
         ],
@@ -136661,12 +136661,12 @@
        ]
       ],
       "oklab-gradient.html": [
-       "71230ef5997c27144d683477a712811987ed56e4",
+       "5291a4f42844035ac291b239a5cafb52f67c6d60",
        [
         null,
         [
          [
-          "/css/css-images/gradient/oklab-gradient-expected.html",
+          "/css/css-images/gradient/oklab-gradient-ref.html",
           "=="
          ]
         ],
@@ -136690,12 +136690,12 @@
        ]
       ],
       "srgb-gradient.html": [
-       "e27c637e22ebb12778d6036aac814e0f9c197dbd",
+       "4cdb0f17b7e10f4485ed7fb62bdcaa6a2bb16777",
        [
         null,
         [
          [
-          "/css/css-images/gradient/srgb-gradient-expected.html",
+          "/css/css-images/gradient/srgb-gradient-ref.html",
           "=="
          ]
         ],
@@ -136719,12 +136719,12 @@
        ]
       ],
       "srgb-linear-gradient.html": [
-       "0869f3dfbfa7871b0bf50b9b5b3901140dd63129",
+       "8d928e21b5559462e93b668c3dc62f668bcaca97",
        [
         null,
         [
          [
-          "/css/css-images/gradient/srgb-linear-gradient-expected.html",
+          "/css/css-images/gradient/srgb-linear-gradient-ref.html",
           "=="
          ]
         ],
@@ -136748,12 +136748,12 @@
        ]
       ],
       "xyz-gradient.html": [
-       "f760f148cd26484aa6983caa61924c821240505f",
+       "74d6efe226663d23ecec439c3f3c2f3fcfbaec41",
        [
         null,
         [
          [
-          "/css/css-images/gradient/xyz-gradient-expected.html",
+          "/css/css-images/gradient/xyz-gradient-ref.html",
           "=="
          ]
         ],
@@ -270664,6 +270664,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "6c540c1c9190a0badfcbba4699ebc5fcc80375ab",
+     []
+    ],
+    "mtime.json": [
+     "796d55ec7c99a2cd9b11e91801d64397f63a99d4",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -306221,6 +306231,10 @@
        "b4a36ff6d0e43b38d670472dd56a0eb44b31ea2c",
        []
       ],
+      "oklab-gradient-ref.html": [
+       "ca2232e38096157847a2430e721f9eb73cf68185",
+       []
+      ],
       "resources": {
        "oklab-gradient.png": [
         "9e52fd9b84ba9f16cdfba6fa1df67f17521c2ff5",
@@ -306238,7 +306252,19 @@
         "eb3ab7893663b01cac643f82da54405ce1bd541a",
         []
        ]
-      }
+      },
+      "srgb-gradient-ref.html": [
+       "49a402d68e668d924fbec150b367ba2188a67592",
+       []
+      ],
+      "srgb-linear-gradient-ref.html": [
+       "34f660f6f02d07c6440f4790f966806113fca0dd",
+       []
+      ],
+      "xyz-gradient-ref.html": [
+       "a435bbfd5888414d5f199c2a49daf7138ca1c4d5",
+       []
+      ]
      },
      "gradient-border-box-ref.html": [
       "5b219cea6c20ba46ebba7d7bb890af3923d90a54",
@@ -354383,7 +354409,7 @@
       []
      ],
      "reporting-subresource-corp.https.html.ini": [
-      "afa1b7701d9c450d5f4f330bd316ba4132418e16",
+      "faac56574db5efc48d143830c0ac1240fdbf70df",
       []
      ],
      "reporting-to-document-reporting-endpoint.https.window.js.ini": [
@@ -369103,10 +369129,6 @@
     ],
     "inert-inlines-around-selection-range-in-contenteditable.html.ini": [
      "2d0927a29cadcf464f2a66b0aa30bcd038054d13",
-     []
-    ],
-    "inert-pseudo-element-hittest-expected.txt": [
-     "3d2acbc0527f656902f7f5ee0ce52df34bb19c54",
      []
     ]
    },
@@ -564040,7 +564062,7 @@
      ]
     ],
     "inert-pseudo-element-hittest.html": [
-     "bdba76960385337fe4b563bf4e97939615e11163",
+     "8268f02aa2405a06e47b8f18d88c057712840846",
      [
       null,
       {
@@ -672776,36 +672798,6 @@
      }
     },
     "css-images": {
-     "gradient": {
-      "oklab-gradient-expected.html": [
-       "ca2232e38096157847a2430e721f9eb73cf68185",
-       [
-        null,
-        {}
-       ]
-      ],
-      "srgb-gradient-expected.html": [
-       "49a402d68e668d924fbec150b367ba2188a67592",
-       [
-        null,
-        {}
-       ]
-      ],
-      "srgb-linear-gradient-expected.html": [
-       "34f660f6f02d07c6440f4790f966806113fca0dd",
-       [
-        null,
-        {}
-       ]
-      ],
-      "xyz-gradient-expected.html": [
-       "a435bbfd5888414d5f199c2a49daf7138ca1c4d5",
-       [
-        null,
-        {}
-       ]
-      ]
-     },
      "image-fit-001.xht": [
       "169d55c0f2e9bf93fd9851f7fb43eb4493d14b39",
       [
