@@ -151,7 +151,7 @@
 <translation id="1322083935398004629">രാഷ്‌ട്രീയം</translation>
 <translation id="132301787627749051">ക്ലിപ്പ്ബോർഡ് ചിത്രത്തിനായി തിരയുക</translation>
 <translation id="1323433172918577554">കൂടുതൽ കാണിക്കുക</translation>
-<translation id="132390688737681464">വിലാസങ്ങൾ സംരക്ഷിച്ച് സ്വമേധയാ പൂരിപ്പിക്കുക</translation>
+<translation id="132390688737681464">വിലാസങ്ങൾ സംരക്ഷിച്ച് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="1329916999021038454">റിപ്പോർട്ട് അയയ്ക്കുക</translation>
 <translation id="1330449323196174374">ലെഫ്റ്റ് ഗേറ്റ് മടക്ക്</translation>
 <translation id="1333745675627230582">Chrome ദിനോസർ ഗെയിം കളിക്കുക</translation>
@@ -311,7 +311,7 @@
 <translation id="1656024727720460136">വായന എളുപ്പമാക്കുന്നതിന് Chrome ഈ പേജ് ലളിതമാക്കി. സുരക്ഷിത കണക്ഷനിലൂടെ Chrome ഒറിജിനൽ പേജ് വീണ്ടെടുത്തു.</translation>
 <translation id="1656489000284462475">പിക്കപ്പ്</translation>
 <translation id="1658918301167915956">Bluetooth ഉപകരണങ്ങൾ</translation>
-<translation id="1662550410081243962">പേയ്‌മെന്റ് രീതികൾ സംരക്ഷിച്ച് സ്വമേധയാ പൂരിപ്പിക്കുക</translation>
+<translation id="1662550410081243962">പേയ്‌മെന്റ് രീതികൾ സംരക്ഷിച്ച് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="1663943134801823270">കാർഡുകളും വിലാസങ്ങളും Chrome-ൽ നിന്നുള്ളതാണ്. നിങ്ങൾക്ക് അവ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> മാനേജ് ചെയ്യാം.</translation>
 <translation id="1671391448414634642">ഇനിമുതൽ <ph name="SOURCE_LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ <ph name="TARGET_LANGUAGE" /> ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യപ്പെടും.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> എന്നതിൽ നിന്ന് <ph name="TARGET_LANGUAGE" /> എന്നതിലേക്ക്</translation>
@@ -564,7 +564,7 @@
 <translation id="2276057643614339130">പ്രിന്റ് ബേസ്</translation>
 <translation id="2277103315734023688">മുന്നോട്ട് നീക്കുക</translation>
 <translation id="2277753418458118549">കണക്ഷന്റെ വിശദാംശങ്ങൾ കാണിക്കുക</translation>
-<translation id="2283340219607151381">വിലാസങ്ങൾ സംരക്ഷിച്ച് സ്വമേധയാ പൂരിപ്പിക്കുക</translation>
+<translation id="2283340219607151381">വിലാസങ്ങൾ സംരക്ഷിച്ച് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' ഇല്ലാതാക്കി</translation>
 <translation id="2286383991450886080">34 x 44 ഇഞ്ച്</translation>
 <translation id="2288422996159078444">നിങ്ങൾ ടൈപ്പ് ചെയ്യുന്നവയും കാണുന്ന പേജുകളും വെബിലെ മറ്റ് എല്ലാ ആക്റ്റിവിറ്റികളും നിരീക്ഷിക്കപ്പെടുന്നുണ്ട്. നിങ്ങളുടെ അറിവില്ലാതെ സൈറ്റുകളിലെ ഉള്ളടക്കം മാറുകയും ചെയ്തേക്കാം.</translation>
@@ -1602,7 +1602,7 @@
 <translation id="4876305945144899064">ഉപയോക്തൃനാമമില്ല</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> തിരയുക</translation>
-<translation id="4879491255372875719">സ്വമേധയാ (ഡിഫോൾട്ട്)</translation>
+<translation id="4879491255372875719">സ്വയമേവ (ഡിഫോൾട്ട്)</translation>
 <translation id="4880827082731008257">തിരയൽ ചരിത്രം</translation>
 <translation id="4881695831933465202">തുറക്കുക</translation>
 <translation id="4881808915112408168">24 x 31.5 ഇഞ്ച്</translation>
@@ -2615,7 +2615,7 @@
 <translation id="7403392780200267761">ലിങ്ക് പങ്കിട്ടും QR കോഡ് സൃഷ്ടിച്ചും കാസ്റ്റ് ചെയ്തും മറ്റും ഈ ടാബ് പങ്കിടുക</translation>
 <translation id="7403591733719184120">നിങ്ങളുടെ <ph name="DEVICE_NAME" /> മാനേജ് ചെയ്യപ്പെട്ടിരിക്കുന്നു</translation>
 <translation id="7407424307057130981">&lt;p&gt;നിങ്ങളുടെ Windows കമ്പ്യൂട്ടറിൽ Superfish സോഫ്റ്റ്‌വെയർ ഉണ്ടെങ്കിൽ, നിങ്ങൾ ഈ പിശക് കാണും.&lt;/p&gt;
-      &lt;p&gt;നിങ്ങൾക്ക് വെബിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ, സോഫ്‌റ്റ്‌വെയർ താൽക്കാലികമായി പ്രവർത്തനരഹിതമാക്കാൻ ഈ ഘട്ടങ്ങൾ പിന്തുടരുക. നിങ്ങൾക്ക് അഡ്‌മിനിസ്ട്രേറ്ററുടെ സവിശേഷാധികാരങ്ങൾ ആവശ്യമായിവരും.&lt;/p&gt;
+      &lt;p&gt;നിങ്ങൾക്ക് വെബിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ, സോഫ്‌റ്റ്‌വെയർ താൽക്കാലികമായി പ്രവർത്തനരഹിതമാക്കാൻ ഈ ഘട്ടങ്ങൾ ഫോളോ ചെയ്യുക. നിങ്ങൾക്ക് അഡ്‌മിനിസ്ട്രേറ്ററുടെ സവിശേഷാധികാരങ്ങൾ ആവശ്യമായിവരും.&lt;/p&gt;
       &lt;ol&gt;
       &lt;li&gt; &lt;strong&gt;ആരംഭിക്കാൻ&lt;/strong&gt; ക്ലിക്ക് ചെയ്യുക, തുടർന്ന് &lt;strong&gt;"പ്രാദേശിക സേവനങ്ങൾ കാണുക "&lt;/strong&gt; എന്നത് തിരയുകയും തെരഞ്ഞെടുക്കുകയും ചെയ്യുക"
       

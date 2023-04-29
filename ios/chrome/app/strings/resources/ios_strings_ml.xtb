@@ -270,7 +270,7 @@
 <translation id="2843803966603263712">വിവർത്തന ക്രമീകരണം റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="284581348330507117">തനതായ പാസ്‌വേഡുകൾ സൃഷ്‌ടിക്കുക</translation>
 <translation id="2848086008667475748">ക്രമീകരണത്തിൽ ഡിഫോൾട്ട് ആക്കുക…</translation>
-<translation id="2858204748079866344">നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കാൻ, Chrome ഈ ഫീൽഡിൽ പാസ്‌വേഡ് സ്വമേധയാ പൂരിപ്പിക്കില്ല.</translation>
+<translation id="2858204748079866344">നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കാൻ, Chrome ഈ ഫീൽഡിൽ പാസ്‌വേഡ് സ്വയമേവ പൂരിപ്പിക്കില്ല.</translation>
 <translation id="285960592395650245">വീണ്ടും ഡൗൺലോഡ് ചെയ്യാൻ ശ്രമിക്കുക</translation>
 <translation id="2870560284913253234">സൈറ്റ്</translation>
 <translation id="2871695793448672541">മറച്ചിരിക്കുന്ന പാസ്‌വേഡ്</translation>
@@ -281,7 +281,7 @@
 <translation id="2898963176829412617">പുതിയ ഫോൾഡർ…</translation>
 <translation id="2902684821701498619">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിൽ ചേർക്കുക</translation>
 <translation id="291754862089661335">ഈ ഫ്രെയിമിൽ QR കോഡോ ബാർ‌കോഡോ സ്ഥാപിക്കുക</translation>
-<translation id="2920866371965792875">ഈ സൈറ്റിൽ നിന്നുള്ള അപ്ഡേറ്റുകൾ കാണാൻ ഇവിടെ അത് പിന്തുടരുക.</translation>
+<translation id="2920866371965792875">ഈ സൈറ്റിൽ നിന്നുള്ള അപ്ഡേറ്റുകൾ കാണാൻ ഇവിടെ അത് ഫോളോ ചെയ്യുക.</translation>
 <translation id="2921219216347069551">പേജ് പങ്കിടാൻ കഴിയില്ല</translation>
 <translation id="2923448633003185837">ഒട്ടിച്ചാൽ മാത്രം മതി</translation>
 <translation id="292639812446257861">വായിക്കാത്തതായി അടയാളപ്പെടുത്തുക</translation>
@@ -397,7 +397,7 @@
 <translation id="3775743491439407556">സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="3779810277399252432">ഇന്റർനെറ്റ് കണക്ഷനില്ല.</translation>
 <translation id="3783017676699494206">ചിത്രം സംരക്ഷിക്കുക</translation>
-<translation id="3789294999358192700">ചുവടെയുള്ള ഘട്ടങ്ങൾ പിന്തുടരുക:</translation>
+<translation id="3789294999358192700">ചുവടെയുള്ള ഘട്ടങ്ങൾ ഫോളോ ചെയ്യുക:</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="380329542618494757">പേര്</translation>
 <translation id="3803696231112616155">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>
@@ -411,7 +411,7 @@
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> എന്നിവയുടെയും മറ്റ് <ph name="NUMBER_OF_ACCOUNTS" /> അക്കൗണ്ടുകളുടെയും പാസ്‌വേഡുകൾ ഇല്ലാതാക്കും. നിങ്ങളുടെ അക്കൗണ്ടുകൾ ഇല്ലാതാക്കില്ല.</translation>
 <translation id="3858860766373142691">പേര്</translation>
-<translation id="3861486700625780712">പിന്തുടരുന്നത് ഒഴിവാക്കുക</translation>
+<translation id="3861486700625780712">അൺഫോളോ ചെയ്യൂ</translation>
 <translation id="3863769054730344136">നിങ്ങളുടെ ഉപകരണങ്ങളിലേക്ക് അയയ്ക്കുക</translation>
 <translation id="387280738075653372">ഇവിടെ Chrome ഡൗൺലോഡ് ചെയ്യുക.</translation>
 <translation id="3888863481921783344">നിങ്ങളുടെ ഇവന്റിലേക്ക് ക്ഷണിക്കപ്പെടാൻ സാധ്യതയുള്ള ആളുകളെ കാണിക്കാൻ ഇത് ഉപയോഗിക്കും.</translation>
@@ -780,7 +780,7 @@
 <translation id="6347953390226388422">{count,plural, =1{നിങ്ങളുടെ Google അക്കൗണ്ടിൽ (<ph name="USER_EMAIL" />) നിന്നും ഈ ഉപകരണത്തിൽ നിന്നും ഈ വിലാസം ഇല്ലാതാക്കും.}other{നിങ്ങളുടെ Google അക്കൗണ്ടിൽ (<ph name="USER_EMAIL" />) നിന്നും ഈ ഉപകരണത്തിൽ നിന്നും ഈ വിലാസങ്ങൾ ഇല്ലാതാക്കും.}}</translation>
 <translation id="634878792104344809">നിങ്ങളുടെ പാസ്‌വേഡുകളും ചരിത്രവും മറ്റും എല്ലാ ഉപകരണങ്ങളിലും സമന്വയിപ്പിക്കുക</translation>
 <translation id="6355820205320395730">ദുർബലമായ പാസ്‌വേഡുകൾ ഊഹിക്കാൻ എളുപ്പമാണ്. നിങ്ങൾ സൃഷ്‌ടിക്കുന്നത് ശക്തമായ പാസ്‌വേഡുകളാണെന്ന് ഉറപ്പാക്കുക. <ph name="BEGIN_LINK" />കൂടുതൽ സുരക്ഷാ നുറുങ്ങുകൾ കാണുക.<ph name="END_LINK" /></translation>
-<translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> പിന്തുടരുക</translation>
+<translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> ഫോളോ ചെയ്യുക</translation>
 <translation id="6362362396625799311">ആൾമാറാട്ട ടാബുകളൊന്നുമില്ല</translation>
 <translation id="6363526231572697780">ഉപയോക്തൃനാമമില്ല</translation>
 <translation id="6366190659675876144">സ്‌റ്റാൻഡേർഡ് പരിരക്ഷ</translation>
@@ -827,7 +827,7 @@
 <translation id="6524918542306337007">അദൃശ്യ മോഡ് ലഭ്യമല്ല</translation>
 <translation id="6530992499366869131">പാസ്‌വേഡുകൾ, ഡാറ്റാ ലംഘനത്തിന്റെ ഭാഗമായി വെളിപ്പെട്ടാൽ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു</translation>
 <translation id="6537746030088321027">example.com</translation>
-<translation id="6540120577248033958">ഒരു സൈറ്റ് സന്ദർശിച്ച ശേഷം Chrome മെനുവിലെ പിന്തുടരുക ക്ലിക്ക് ചെയ്യുക</translation>
+<translation id="6540120577248033958">ഒരു സൈറ്റ് സന്ദർശിച്ച ശേഷം Chrome മെനുവിലെ ഫോളോ ചെയ്യുക ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="6561262006871132942">സൂം ഇൻ ചെയ്യുക</translation>
 <translation id="6583087784430677195">ഓഫാക്കാൻ, <ph name="BEGIN_LINK" />ക്രമീകരണം<ph name="END_LINK" /> തുറന്ന് പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കൽ എന്നതിലേക്ക് പോകുക.</translation>
 <translation id="6585618849026997638">ബുക്ക്‌മാർക്ക് ചേർക്കുന്നതിലൂടെ, നിങ്ങൾക്ക് പ്രധാനപ്പെട്ട പേജിലേക്ക് മടങ്ങാനാകും</translation>
@@ -1013,7 +1013,7 @@
 <translation id="7870750252270996949">പകർത്തിയ Lens ഇമേജ്</translation>
 <translation id="7879275349003161544">ഡൗൺലോഡുകൾ കാണിക്കുക</translation>
 <translation id="7884694604461143138">തിരയൽ ചരിത്രം (<ph name="COUNT" /> കണ്ടെത്തി)</translation>
-<translation id="7887198238286927132">നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കാൻ, Chrome ഈ ഫീൽഡ് സ്വമേധയാ പൂരിപ്പിക്കില്ല.</translation>
+<translation id="7887198238286927132">നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കാൻ, Chrome ഈ ഫീൽഡ് സ്വയമേവ പൂരിപ്പിക്കില്ല.</translation>
 <translation id="7911190106180361398">എല്ലാം സമന്വയിപ്പിക്കാൻ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കുന്നില്ല.</translation>
 <translation id="7920949005883349320">സ്വകാര്യതയും സുരക്ഷയും</translation>
 <translation id="7930998711684428189">പാസ്‌വേഡുകൾ, ഡാറ്റാ ലംഘനത്തിന്റെ ഭാഗമായി വെളിപ്പെട്ടാൽ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു.</translation>
@@ -1136,7 +1136,7 @@
 <translation id="8750037785291841318">നിങ്ങളുടെ ടാബുകൾ ഇവിടെ കാണാം</translation>
 <translation id="8756969031206844760">പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="8763613688786959833">അവസാന ടാബിലേക്ക് പോകുക</translation>
-<translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> പിന്തുടരുന്നത് ഒഴിവാക്കുക</translation>
+<translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> അൺഫോളോ ചെയ്യൂ</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> എന്നിവയുടെ പാസ്‌വേഡുകൾ ഇല്ലാതാക്കും. നിങ്ങളുടെ അക്കൗണ്ടുകൾ ഇല്ലാതാക്കില്ല.</translation>
 <translation id="8775144690796719618">URL അസാധുവാണ്</translation>
 <translation id="8787968206789828143">വെബിൽ തിരയുക</translation>

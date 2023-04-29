@@ -16,7 +16,7 @@
 <translation id="2277224997687551299">Топтун аталышын өзгөртүү</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Топтогу тандалган <ph name="TABS_COUNT_ONE" /> өтмөк өчүрүлсүн.}other{Топтогу тандалган <ph name="TABS_COUNT_MANY" /> өтмөк өчүрүлсүн.}}</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Кыстарылган өтмөк}other{Кыстарылган өтмөктөр}}</translation>
-<translation id="2479148705183875116">Жөндөөлөргө өтүү</translation>
+<translation id="2479148705183875116">Параметрлерге өтүү</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк жыйыштырылсын.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобу жыйыштырылсын.}}</translation>
 <translation id="2569352796411618312">Сунуш: Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
 <translation id="257674075312929031">Топ</translation>
