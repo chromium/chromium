@@ -50,7 +50,7 @@ ExtendedDragSource* ExtendedDragSource::instance_ = nullptr;
 // Internal representation of a toplevel window, backed by an Exo shell surface,
 // which is being dragged. It supports both already mapped/visible windows as
 // well as newly created ones (i.e: not added to a root window yet), in which
-// case OnDraggedWindowVisibilityChanged callback is called to notify when it
+// case OnDraggedWindowVisibilityChanging callback is called to notify when it
 // has just got visible.
 class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver,
                                                 public SurfaceObserver {
@@ -102,12 +102,6 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver,
     DCHECK(window);
     if (window == toplevel_window_)
       source_->OnDraggedWindowVisibilityChanging(visible);
-  }
-
-  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
-    DCHECK(window);
-    if (window == toplevel_window_)
-      source_->OnDraggedWindowVisibilityChanged(visible);
   }
 
   void OnWindowDestroying(aura::Window* window) override {
@@ -358,19 +352,6 @@ void ExtendedDragSource::OnDraggedWindowVisibilityChanging(bool visible) {
   aura::Window* toplevel = dragged_window_holder_->toplevel_window();
   DCHECK(toplevel);
   toplevel->SetProperty(ash::kIsDraggingTabsKey, true);
-}
-
-void ExtendedDragSource::OnDraggedWindowVisibilityChanged(bool visible) {
-  DCHECK(dragged_window_holder_);
-  DVLOG(1) << "Dragged window visibility changed. visible=" << visible;
-
-  if (!visible) {
-    dragged_window_holder_.reset();
-    return;
-  }
-
-  aura::Window* toplevel = dragged_window_holder_->toplevel_window();
-  DCHECK(toplevel);
 
   // The |toplevel| window for the dragged surface has just been created and
   // it's about to be mapped. Calculate and set its position based on

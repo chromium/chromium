@@ -359,7 +359,7 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
             *extended_drag_source_->GetDragOffsetForTesting());
 
   // Ensure drag 'n drop starts after
-  // ExtendedDragSource::OnDraggedWindowVisibilityChanged()
+  // ExtendedDragSource::OnDraggedWindowVisibilityChanging()
   aura::Window* toplevel_window;
   WindowObserverHookChecker checker(detached_surface->window());
   EXPECT_CALL(checker, OnWindowVisibilityChanging(_, _))
@@ -368,17 +368,9 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
           SaveArg<0>(&toplevel_window), InvokeWithoutArgs([&]() {
             auto* toplevel_handler =
                 ash::Shell::Get()->toplevel_window_event_handler();
-            EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
+            EXPECT_TRUE(toplevel_handler->is_drag_in_progress());
             EXPECT_TRUE(toplevel_window->GetProperty(ash::kIsDraggingTabsKey));
           })));
-
-  EXPECT_CALL(checker, OnWindowVisibilityChanged(_, _))
-      .Times(1)
-      .WillOnce(InvokeWithoutArgs([]() {
-        auto* toplevel_handler =
-            ash::Shell::Get()->toplevel_window_event_handler();
-        EXPECT_TRUE(toplevel_handler->is_drag_in_progress());
-      }));
 
   // Map the |detached_surface|.
   auto detached_buffer = CreateBuffer({50, 50});
