@@ -197,17 +197,23 @@ void AudioToolboxAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
 void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                       DecodeCB decode_cb) {
+  DecodeCB decode_cb_bound =
+      base::BindPostTaskToCurrentDefault(std::move(decode_cb));
+
   // Make sure we are notified if https://crbug.com/49709 returns. Issue also
   // occurs with some damaged files.
   if (!buffer->end_of_stream() && buffer->timestamp() == kNoTimestamp) {
     DLOG(ERROR) << "Received a buffer without timestamps!";
-    base::BindPostTaskToCurrentDefault(std::move(decode_cb))
-        .Run(DecoderStatus::Codes::kMissingTimestamp);
+    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kMissingTimestamp);
     return;
   }
 
-  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
-    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+  if (!buffer->end_of_stream() && buffer->decrypt_config() &&
+      buffer->decrypt_config()->encryption_scheme() !=
+          EncryptionScheme::kUnencrypted) {
+    DLOG(ERROR) << "Encrypted buffer not supported";
+    std::move(decode_cb_bound)
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
@@ -235,14 +241,14 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
       output_buffer_list_.get(), nullptr);
 
   if (result == kNoMoreDataError && !num_frames) {
-    base::BindPostTaskToCurrentDefault(std::move(decode_cb)).Run(OkStatus());
+    std::move(decode_cb_bound).Run(OkStatus());
     return;
   }
 
   if (result != noErr && result != kNoMoreDataError) {
     OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
         << "AudioConverterFillComplexBuffer() failed";
-    base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+    std::move(decode_cb_bound)
         .Run(DecoderStatus::Codes::kPlatformDecodeFailure);
     return;
   }
@@ -259,7 +265,7 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
         .Run(std::move(output_buffer));
   }
 
-  base::BindPostTaskToCurrentDefault(std::move(decode_cb)).Run(OkStatus());
+  std::move(decode_cb_bound).Run(OkStatus());
 }
 
 void AudioToolboxAudioDecoder::Reset(base::OnceClosure reset_cb) {
