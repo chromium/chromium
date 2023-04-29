@@ -84094,6 +84094,32 @@
        {}
       ]
      ],
+     "color-mix-currentcolor-border-repaint-parent.html": [
+      "5182dd8d0fbd968bff3931a0a32884d7aa4cf6f2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "color-mix-currentcolor-border-repaint.html": [
+      "5496be32a69efde070c5767b3c84c09dbd44de8a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "css-border-radius-001.html": [
       "8b0e2e9a36c67393f0497b174784c5245cee1d7c",
       [
@@ -84344,6 +84370,19 @@
        [
         [
          "/css/css-backgrounds/reference/css3-box-shadow-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "currentcolor-border-repaint-parent.html": [
+      "7058e9969b311619969d5f87d859084edee36545",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -371248,7 +371287,7 @@
     ]
    },
    "lint.ignore": [
-    "5ef072ee0292995ae4e17e746478145bf92a9f69",
+    "6f8ec10470ba416e3e282ddfa3afc97354e66650",
     []
    ],
    "loading": {
