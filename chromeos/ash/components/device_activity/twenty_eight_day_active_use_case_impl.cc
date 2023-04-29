@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/device_activity/twenty_eight_day_active_use_case_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
@@ -56,6 +57,22 @@ TwentyEightDayActiveUseCaseImpl::GenerateImportRequestBody() {
   // without check membership for debugging purposes.
   device_metadata->set_hardware_id(GetFullHardwareClass());
   device_metadata->set_market_segment(GetMarketSegment());
+
+  if (new_import_data_.empty()) {
+    LOG(ERROR) << "PSM Error - new import data is empty.";
+    base::Time cur_ts = GetActiveTs();
+    LOG(ERROR) << "Current timestamp = " << cur_ts;
+    LOG(ERROR) << "28DA Last Known Ping Timestamp = "
+               << GetLastKnownPingTimestamp();
+    SetPsmIdentifiersToImport(cur_ts);
+
+    if (new_import_data_.empty()) {
+      LOG(ERROR)
+          << "PSM Error - reattempt to set the psm id's to import failed.";
+      LOG(ERROR) << "Continuing to send empty import data body.";
+    }
+    base::debug::DumpWithoutCrashing();
+  }
 
   for (auto v : new_import_data_) {
     FresnelImportData* import_data = import_request.add_import_data();
@@ -145,6 +162,14 @@ bool TwentyEightDayActiveUseCaseImpl::SetPsmIdentifiersToImport(
     import_data.set_is_pt_window_identifier(true);
 
     new_import_data_.push_back(import_data);
+  }
+
+  // Add logs if |new_import_data_| is empty.
+  if (new_import_data_.empty()) {
+    LOG(ERROR) << "Current timestamp = " << GetActiveTs();
+    LOG(ERROR) << "28DA Last Known Ping Timestamp = "
+               << GetLastKnownPingTimestamp();
+    base::debug::DumpWithoutCrashing();
   }
 
   return true;
