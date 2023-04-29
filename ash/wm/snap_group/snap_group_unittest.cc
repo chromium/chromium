@@ -14,7 +14,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/ash_test_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
@@ -27,6 +26,7 @@
 #include "ash/wm/splitview/split_view_divider_view.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/multi_window_resize_controller.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
@@ -332,7 +332,7 @@ TEST_F(SnapGroupTest, WindowActivationTest) {
   // before `w2`.
   // TODO(michelefan): Keep an eye out for changes in the activation logic and
   // update this test if needed in future.
-  EXPECT_TRUE(IsStackedBelow(w3.get(), w2.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(w3.get(), w2.get()));
 }
 
 // A test fixture that tests the snap group entry point arm 1 which will create
@@ -585,7 +585,7 @@ TEST_F(SnapGroupEntryPointArm1Test,
 
   std::unique_ptr<aura::Window> w3(CreateTestWindow());
   wm::ActivateWindow(w2.get());
-  EXPECT_TRUE(IsStackedBelow(w3.get(), w1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(w3.get(), w1.get()));
 
   w1.reset();
   EXPECT_FALSE(split_view_divider());
@@ -605,20 +605,20 @@ TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerStackingOrderTest) {
   SplitViewDivider* divider = split_view_divider();
   auto* divider_widget = divider->divider_widget();
   aura::Window* divider_window = divider_widget->GetNativeWindow();
-  EXPECT_TRUE(IsStackedBelow(w2.get(), w1.get()));
-  EXPECT_TRUE(IsStackedBelow(w1.get(), divider_window));
-  EXPECT_TRUE(IsStackedBelow(w2.get(), divider_window));
+  EXPECT_TRUE(window_util::IsStackedBelow(w2.get(), w1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(w1.get(), divider_window));
+  EXPECT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
 
   std::unique_ptr<aura::Window> w3(
       CreateTestWindow(gfx::Rect(100, 200, 300, 400)));
-  EXPECT_TRUE(IsStackedBelow(divider_window, w3.get()));
-  EXPECT_TRUE(IsStackedBelow(w1.get(), divider_window));
-  EXPECT_TRUE(IsStackedBelow(w2.get(), w1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(divider_window, w3.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(w1.get(), divider_window));
+  EXPECT_TRUE(window_util::IsStackedBelow(w2.get(), w1.get()));
 
   wm::ActivateWindow(w2.get());
-  EXPECT_TRUE(IsStackedBelow(w3.get(), w1.get()));
-  EXPECT_TRUE(IsStackedBelow(w1.get(), w2.get()));
-  EXPECT_TRUE(IsStackedBelow(w2.get(), divider_window));
+  EXPECT_TRUE(window_util::IsStackedBelow(w3.get(), w1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(w1.get(), w2.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
 }
 
 // Tests that the union bounds of the primary window, secondary window in a snap
@@ -1025,7 +1025,7 @@ TEST_F(SnapGroupEntryPointArm2Test, SnapGroupCreationTest) {
   std::unique_ptr<aura::Window> w3(CreateTestWindow());
   wm::ActivateWindow(w3.get());
   wm::ActivateWindow(w1.get());
-  EXPECT_TRUE(IsStackedBelow(w3.get(), w2.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(w3.get(), w2.get()));
 }
 
 }  // namespace ash

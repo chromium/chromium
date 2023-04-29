@@ -32,7 +32,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/ash_test_util.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -814,10 +813,10 @@ TEST_F(SplitViewControllerTest, SplitDividerBasicTest) {
   EXPECT_TRUE(split_view_divider());
   EXPECT_EQ(ui::ZOrderLevel::kNormal,
             split_view_divider()->divider_widget()->GetZOrderLevel());
-  EXPECT_TRUE(IsStackedBelow(
+  EXPECT_TRUE(window_util::IsStackedBelow(
       window1.get(),
       split_view_divider()->divider_widget()->GetNativeWindow()));
-  EXPECT_TRUE(IsStackedBelow(
+  EXPECT_TRUE(window_util::IsStackedBelow(
       window2.get(),
       split_view_divider()->divider_widget()->GetNativeWindow()));
 
@@ -860,8 +859,8 @@ TEST_F(SplitViewControllerTest, DividerStateWhenDraggedOverviewItemDestroyed) {
       window3.get(), SplitViewController::SnapPosition::kSecondary);
   EXPECT_EQ(ui::ZOrderLevel::kNormal,
             split_view_divider()->divider_widget()->GetZOrderLevel());
-  EXPECT_TRUE(IsStackedBelow(window1.get(), window3.get()));
-  EXPECT_TRUE(IsStackedBelow(
+  EXPECT_TRUE(window_util::IsStackedBelow(window1.get(), window3.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(
       window3.get(),
       split_view_divider()->divider_widget()->GetNativeWindow()));
 }
@@ -903,10 +902,10 @@ TEST_F(SplitViewControllerTest, DividerStateWhenOverviewItemDragCancelled) {
   wm::ActivateWindow(window3.get());
   EXPECT_EQ(ui::ZOrderLevel::kNormal,
             split_view_divider()->divider_widget()->GetZOrderLevel());
-  EXPECT_TRUE(IsStackedBelow(
+  EXPECT_TRUE(window_util::IsStackedBelow(
       window1.get(),
       split_view_divider()->divider_widget()->GetNativeWindow()));
-  EXPECT_TRUE(IsStackedBelow(
+  EXPECT_TRUE(window_util::IsStackedBelow(
       window3.get(),
       split_view_divider()->divider_widget()->GetNativeWindow()));
 }
@@ -3524,15 +3523,20 @@ TEST_F(SplitViewControllerTest, StackingOrderWithDivider) {
   ASSERT_TRUE(divider);
   aura::Window* divider_widget_native_window =
       divider->divider_widget()->GetNativeWindow();
-  EXPECT_TRUE(IsStackedBelow(w1.get(), divider_widget_native_window));
-  EXPECT_TRUE(IsStackedBelow(w2.get(), divider_widget_native_window));
+  EXPECT_TRUE(
+      window_util::IsStackedBelow(w1.get(), divider_widget_native_window));
+  EXPECT_TRUE(
+      window_util::IsStackedBelow(w2.get(), divider_widget_native_window));
 
   controller->OnWindowDragStarted(w1.get());
-  EXPECT_TRUE(IsStackedBelow(divider_widget_native_window, w1.get()));
+  EXPECT_TRUE(
+      window_util::IsStackedBelow(divider_widget_native_window, w1.get()));
 
   controller->OnWindowDragCanceled();
-  EXPECT_TRUE(IsStackedBelow(w1.get(), divider_widget_native_window));
-  EXPECT_TRUE(IsStackedBelow(w2.get(), divider_widget_native_window));
+  EXPECT_TRUE(
+      window_util::IsStackedBelow(w1.get(), divider_widget_native_window));
+  EXPECT_TRUE(
+      window_util::IsStackedBelow(w2.get(), divider_widget_native_window));
 }
 
 // Tests that windows with different containers can be snapped properly with no
@@ -3565,23 +3569,23 @@ TEST_F(SplitViewControllerTest, SnapWindowsWithDifferentParentContainers) {
   EXPECT_EQ(controller->state(), SplitViewController::State::kBothSnapped);
   EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow,
             always_on_top_window->GetProperty(aura::client::kZOrderingKey));
-  EXPECT_TRUE(
-      IsStackedBelow(always_on_top_window.get(), divider_widget_native_window));
+  EXPECT_TRUE(window_util::IsStackedBelow(always_on_top_window.get(),
+                                          divider_widget_native_window));
 
   wm::ActivateWindow(normal_window.get());
   EXPECT_EQ(controller->state(), SplitViewController::State::kBothSnapped);
   EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow,
             always_on_top_window->GetProperty(aura::client::kZOrderingKey));
-  EXPECT_TRUE(
-      IsStackedBelow(always_on_top_window.get(), divider_widget_native_window));
+  EXPECT_TRUE(window_util::IsStackedBelow(always_on_top_window.get(),
+                                          divider_widget_native_window));
 
   // The split view divider will be stacked below the dragged window i.e.
   // `normal_window` temporarily during dragging. The divider will also be
   // reparented to be sibling of `normal_window` while dragging.
   controller->OnWindowDragStarted(normal_window.get());
   EXPECT_EQ(divider_widget_native_window->parent(), normal_window->parent());
-  EXPECT_TRUE(
-      IsStackedBelow(divider_widget_native_window, normal_window.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(divider_widget_native_window,
+                                          normal_window.get()));
 
   // On drag ended, the split view divider will be stacked back on top of the
   // above window i.e. the `always_on_top_window`. The divider will also be
@@ -3589,8 +3593,8 @@ TEST_F(SplitViewControllerTest, SnapWindowsWithDifferentParentContainers) {
   controller->OnWindowDragCanceled();
   EXPECT_EQ(divider_widget_native_window->parent(),
             always_on_top_window->parent());
-  EXPECT_TRUE(
-      IsStackedBelow(always_on_top_window.get(), divider_widget_native_window));
+  EXPECT_TRUE(window_util::IsStackedBelow(always_on_top_window.get(),
+                                          divider_widget_native_window));
 }
 
 TEST_F(SplitViewControllerTest, WMSnapEventDeviceOrientationMetricsInTablet) {

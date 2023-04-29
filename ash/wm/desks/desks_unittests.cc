@@ -39,7 +39,6 @@
 #include "ash/style/close_button.h"
 #include "ash/style/color_util.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/ash_test_util.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/cros_next_default_desk_button.h"
 #include "ash/wm/desks/cros_next_desk_button_base.h"
@@ -1044,9 +1043,9 @@ TEST_P(DesksTest, WindowStackingAfterWindowMoveToAnotherDesk) {
                            /*unminimize=*/true);
   desk_2->MoveWindowToDesk(win3.get(), desk_1, win1->GetRootWindow(),
                            /*unminimize=*/true);
-  EXPECT_TRUE(IsStackedBelow(win1.get(), win2.get()));
-  EXPECT_TRUE(IsStackedBelow(win2.get(), win0.get()));
-  EXPECT_TRUE(IsStackedBelow(win0.get(), win3.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(win1.get(), win2.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(win2.get(), win0.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(win0.get(), win3.get()));
 }
 
 TEST_P(DesksTest, TransientModalChildren) {
@@ -3252,8 +3251,8 @@ TEST_P(TabletModeDesksTest,
   EXPECT_FALSE(desk_2_backdrop_controller->backdrop_window());
   EXPECT_EQ(window.get(), desk_1_backdrop_controller->window_having_backdrop());
   EXPECT_FALSE(desk_2_backdrop_controller->window_having_backdrop());
-  EXPECT_TRUE(IsStackedBelow(desk_1_backdrop_controller->backdrop_window(),
-                             window.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      desk_1_backdrop_controller->backdrop_window(), window.get()));
 
   // Prepare to drag and drop |window| on desk_2's mini view.
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
@@ -3288,8 +3287,8 @@ TEST_P(TabletModeDesksTest,
   ASSERT_TRUE(desk_2_backdrop_controller->backdrop_window());
   EXPECT_FALSE(desk_1_backdrop_controller->window_having_backdrop());
   EXPECT_EQ(window.get(), desk_2_backdrop_controller->window_having_backdrop());
-  EXPECT_TRUE(IsStackedBelow(desk_2_backdrop_controller->backdrop_window(),
-                             window.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      desk_2_backdrop_controller->backdrop_window(), window.get()));
 
   // The mini views should only be updated once for both desks.
   EXPECT_EQ(1, observer1.notify_counts());
@@ -3675,16 +3674,16 @@ TEST_P(TabletModeDesksTest, BackdropsStacking) {
 
   // The backdrop window should be stacked below both snapped windows.
   auto* desk_1_backdrop = desk_1_backdrop_controller->backdrop_window();
-  EXPECT_TRUE(IsStackedBelow(desk_1_backdrop, win1.get()));
-  EXPECT_TRUE(IsStackedBelow(desk_1_backdrop, win2.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(desk_1_backdrop, win1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(desk_1_backdrop, win2.get()));
 
   // Switching to another desk doesn't change the backdrop state of the inactive
   // desk.
   ActivateDesk(desk_2);
   ASSERT_TRUE(desk_1_backdrop_controller->backdrop_window());
   EXPECT_FALSE(desk_2_backdrop_controller->backdrop_window());
-  EXPECT_TRUE(IsStackedBelow(desk_1_backdrop, win1.get()));
-  EXPECT_TRUE(IsStackedBelow(desk_1_backdrop, win2.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(desk_1_backdrop, win1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(desk_1_backdrop, win2.get()));
 
   // Snapping new windows in desk_2 should update the backdrop state of desk_2,
   // but should not affect desk_1.
@@ -3697,8 +3696,8 @@ TEST_P(TabletModeDesksTest, BackdropsStacking) {
   ASSERT_TRUE(desk_1_backdrop_controller->backdrop_window());
   ASSERT_TRUE(desk_2_backdrop_controller->backdrop_window());
   auto* desk_2_backdrop = desk_2_backdrop_controller->backdrop_window();
-  EXPECT_TRUE(IsStackedBelow(desk_2_backdrop, win3.get()));
-  EXPECT_TRUE(IsStackedBelow(desk_2_backdrop, win4.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(desk_2_backdrop, win3.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(desk_2_backdrop, win4.get()));
 }
 
 TEST_P(TabletModeDesksTest, HotSeatStateAfterMovingAWindowToAnotherDesk) {
@@ -6081,14 +6080,14 @@ TEST_P(DesksTest, VisibleOnAllDesksGlobalZOrder) {
   auto* widget0 = views::Widget::GetWidgetForNativeWindow(win0.get());
   auto* widget1 = views::Widget::GetWidgetForNativeWindow(win1.get());
   auto* widget2 = views::Widget::GetWidgetForNativeWindow(win2.get());
-  ASSERT_TRUE(IsStackedBelow(win0.get(), win1.get()));
-  ASSERT_TRUE(IsStackedBelow(win1.get(), win2.get()));
+  ASSERT_TRUE(window_util::IsStackedBelow(win0.get(), win1.get()));
+  ASSERT_TRUE(window_util::IsStackedBelow(win1.get(), win2.get()));
 
   // Assign |win1| to all desks. It shouldn't change stacking order.
   widget1->SetVisibleOnAllWorkspaces(true);
   ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(win1.get()));
-  EXPECT_TRUE(IsStackedBelow(win0.get(), win1.get()));
-  EXPECT_TRUE(IsStackedBelow(win1.get(), win2.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(win0.get(), win1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(win1.get(), win2.get()));
   EXPECT_EQ(1u, controller->visible_on_all_desks_windows().size());
 
   // Move to desk 2. The only window on the new desk should be |win1|.
@@ -6102,8 +6101,8 @@ TEST_P(DesksTest, VisibleOnAllDesksGlobalZOrder) {
   ActivateDesk(desk_1);
   auto desk_1_children = desk_1->GetDeskContainerForRoot(root)->children();
   EXPECT_EQ(3u, desk_1_children.size());
-  EXPECT_TRUE(IsStackedBelow(win0.get(), win2.get()));
-  EXPECT_TRUE(IsStackedBelow(win2.get(), win1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(win0.get(), win2.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(win2.get(), win1.get()));
 
   // Assign all the other windows and rearrange the order by activating the
   // windows.
@@ -6114,8 +6113,8 @@ TEST_P(DesksTest, VisibleOnAllDesksGlobalZOrder) {
   wm::ActivateWindow(win2.get());
   wm::ActivateWindow(win1.get());
   wm::ActivateWindow(win0.get());
-  EXPECT_TRUE(IsStackedBelow(win2.get(), win1.get()));
-  EXPECT_TRUE(IsStackedBelow(win1.get(), win0.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(win2.get(), win1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(win1.get(), win0.get()));
   EXPECT_EQ(3u, controller->visible_on_all_desks_windows().size());
 
   // Move to desk 2. All the windows should move to the new desk and maintain
@@ -6123,8 +6122,8 @@ TEST_P(DesksTest, VisibleOnAllDesksGlobalZOrder) {
   ActivateDesk(desk_2);
   desk_2_children = desk_2->GetDeskContainerForRoot(root)->children();
   EXPECT_EQ(3u, desk_2_children.size());
-  EXPECT_TRUE(IsStackedBelow(win2.get(), win1.get()));
-  EXPECT_TRUE(IsStackedBelow(win1.get(), win0.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(win2.get(), win1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(win1.get(), win0.get()));
 }
 
 // Tests the behavior of windows that are visible on all desks when the active
@@ -6152,7 +6151,7 @@ TEST_P(DesksTest, VisibleOnAllDesksActiveDeskRemoval) {
   RemoveDesk(desk_1);
   auto desk_2_children = desk_2->GetDeskContainerForRoot(root)->children();
   EXPECT_EQ(2u, desk_2_children.size());
-  EXPECT_TRUE(IsStackedBelow(win0.get(), win1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(win0.get(), win1.get()));
   EXPECT_EQ(2u, controller->visible_on_all_desks_windows().size());
 }
 

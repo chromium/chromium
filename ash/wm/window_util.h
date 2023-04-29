@@ -36,6 +36,10 @@ namespace window_util {
 ASH_EXPORT aura::Window* GetActiveWindow();
 ASH_EXPORT aura::Window* GetFocusedWindow();
 
+// Returns true if `win1` is stacked (not directly) below `win2`. Note that this
+// API only applies for windows with the same direct parent.
+ASH_EXPORT bool IsStackedBelow(aura::Window* win1, aura::Window* win2);
+
 // Returns the window with capture, null if no window currently has capture.
 ASH_EXPORT aura::Window* GetCaptureWindow();
 

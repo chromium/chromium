@@ -20,7 +20,6 @@
 #include "ash/shelf/window_scale_animation.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/ash_test_util.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
@@ -1172,12 +1171,12 @@ TEST_F(DragWindowFromShelfControllerTest, DropsIntoOverviewAtCorrectPosition) {
   aura::Window* parent = window1->parent();
   ASSERT_EQ(parent, window2->parent());
   ASSERT_EQ(parent, window3->parent());
-  EXPECT_TRUE(IsStackedBelow(
+  EXPECT_TRUE(window_util::IsStackedBelow(
       GetOverviewItemForWindow(window1.get())->item_widget()->GetNativeWindow(),
       GetOverviewItemForWindow(window2.get())
           ->item_widget()
           ->GetNativeWindow()));
-  EXPECT_TRUE(IsStackedBelow(
+  EXPECT_TRUE(window_util::IsStackedBelow(
       GetOverviewItemForWindow(window3.get())->item_widget()->GetNativeWindow(),
       GetOverviewItemForWindow(window1.get())
           ->item_widget()

@@ -104,6 +104,18 @@ aura::Window* GetFocusedWindow() {
       ->GetFocusedWindow();
 }
 
+bool IsStackedBelow(aura::Window* win1, aura::Window* win2) {
+  CHECK_NE(win1, win2);
+  CHECK_EQ(win1->parent(), win2->parent());
+
+  const auto& children = win1->parent()->children();
+  auto win1_iter = base::ranges::find(children, win1);
+  auto win2_iter = base::ranges::find(children, win2);
+  CHECK(win1_iter != children.end());
+  CHECK(win2_iter != children.end());
+  return win1_iter < win2_iter;
+}
+
 aura::Window* GetCaptureWindow() {
   return aura::client::GetCaptureWindow(Shell::GetPrimaryRootWindow());
 }
