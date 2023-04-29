@@ -4506,7 +4506,6 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
 
   // Finally, try accessing a privileged API, which shouldn't be available to
   // the embedded resource.
-  std::string app_window_result;
   static constexpr char kCallAppWindowCreate[] =
       R"(var message;
          if (chrome.app && chrome.app.window) {
@@ -4514,10 +4513,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
          } else {
            message = 'success';
          }
-         domAutomationController.send(message);)";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_view_frame, kCallAppWindowCreate, &app_window_result));
-  EXPECT_EQ("success", app_window_result);
+         message;)";
+  EXPECT_EQ("success", content::EvalJs(web_view_frame, kCallAppWindowCreate));
 }
 
 // Tests that a WebView can navigate an iframe to a blob URL that it creates

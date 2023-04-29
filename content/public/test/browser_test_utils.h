@@ -591,19 +591,15 @@ void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
 void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
                                           const std::string& script);
 
-// The following methods execute the passed |script| in the specified frame and
+// The following method executes the passed |script| in the specified frame and
 // sets |result| to the value passed to "window.domAutomationController.send" by
-// the executed script. They return true on success, false if the script
+// the executed script. It returns true on success, false if the script
 // execution failed or did not evaluate to the expected type.
 //
 // Deprecated: Use EvalJs().
 [[nodiscard]] bool ExecuteScriptAndExtractBool(const ToRenderFrameHost& adapter,
                                                const std::string& script,
                                                bool* result);
-[[nodiscard]] bool ExecuteScriptAndExtractString(
-    const ToRenderFrameHost& adapter,
-    const std::string& script,
-    std::string* result);
 
 // JsLiteralHelper is a helper class that determines what types are legal to
 // pass to StringifyJsLiteral. Legal types include int, string, StringPiece,
@@ -886,9 +882,8 @@ enum EvalJsOptions {
 //       some error-catching safeguards, but you still get the benefit of having
 //       an EvalJsResult that can be passed to EXPECT.
 //
-// Why prefer EvalJs over ExecuteScriptAndExtractString(), etc? Because:
+// Why prefer EvalJs over ExecuteScriptAndExtractBool()? Because:
 //
-//  - It's one function, that does everything, and more succinctly.
 //  - Can be used directly in EXPECT_EQ macros (no out- param pointers like
 //    ExecuteScriptAndExtractBool()) -- no temporary variable is required,
 //    usually resulting in fewer lines of code.

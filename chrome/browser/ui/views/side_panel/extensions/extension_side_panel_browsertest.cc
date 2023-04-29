@@ -215,16 +215,13 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
                   browser())
                   ->GetExtensionCoordinatorForTesting(extension_id);
 
-    std::string result;
     static constexpr char kScript[] = R"(
-      domAutomationController.send(document.sidePanelTemp ?
-          document.sidePanelTemp : 'undefined');
+      document.sidePanelTemp ? document.sidePanelTemp : 'undefined';
     )";
 
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        extension_coordinator->GetHostWebContentsForTesting(), kScript,
-        &result));
-    return result;
+    return content::EvalJs(
+               extension_coordinator->GetHostWebContentsForTesting(), kScript)
+        .ExtractString();
   }
 
   // Runs a script in the extension's side panel WebContents to set the value of

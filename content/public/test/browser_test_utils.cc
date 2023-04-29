@@ -522,13 +522,12 @@ void AppendGzippedResource(const base::RefCountedMemory& encoded,
 // no-video-input-devices otherwise.
 const char kHasVideoInputDeviceOnSystem[] = R"(
     (function() {
-      navigator.mediaDevices.enumerateDevices()
+      return navigator.mediaDevices.enumerateDevices()
       .then(function(devices) {
         if (devices.some((device) => device.kind == 'videoinput')) {
-          window.domAutomationController.send('has-video-input-device');
-        } else {
-          window.domAutomationController.send('no-video-input-devices');
+          return 'has-video-input-device';
         }
+        return 'no-video-input-devices';
       });
     })()
 )";
@@ -1424,10 +1423,8 @@ void ScopedSimulateModifierKeyPress::KeyPressWithoutChar(
 }
 
 bool IsWebcamAvailableOnSystem(WebContents* web_contents) {
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      web_contents, kHasVideoInputDeviceOnSystem, &result));
-  return result == kHasVideoInputDevice;
+  return EvalJs(web_contents, kHasVideoInputDeviceOnSystem).ExtractString() ==
+         kHasVideoInputDevice;
 }
 
 RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents) {
@@ -1482,25 +1479,6 @@ bool ExecuteScriptAndExtractBool(const ToRenderFrameHost& adapter,
                           ISOLATED_WORLD_ID_GLOBAL, &value) &&
       value && value->is_bool()) {
     *result = value->GetBool();
-    return true;
-  }
-  return false;
-}
-
-bool ExecuteScriptAndExtractString(const ToRenderFrameHost& adapter,
-                                   const std::string& script,
-                                   std::string* result) {
-  DCHECK(result);
-  std::unique_ptr<base::Value> value;
-  // Prerendering pages will never have user gesture.
-  bool user_gesture = adapter.render_frame_host()->GetLifecycleState() !=
-                      RenderFrameHost::LifecycleState::kPrerendering;
-  if (!ExecuteScriptHelper(adapter.render_frame_host(), script, user_gesture,
-                           ISOLATED_WORLD_ID_GLOBAL, &value)) {
-    return false;
-  }
-  if (value && value->is_string()) {
-    *result = value->GetString();
     return true;
   }
   return false;
