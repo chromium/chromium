@@ -327,8 +327,12 @@ class Device final : public ui::GbmDevice {
       fd_data.num_fds = gbm_bo_get_plane_count(bo);
       fd_data.modifier = gbm_bo_get_modifier(bo);
 
+      // Store fds in the vector of base::ScopedFDs. Will be released
+      // automatically.
+      std::vector<base::ScopedFD> fds;
       for (size_t i = 0; i < static_cast<size_t>(fd_data.num_fds); ++i) {
-        fd_data.fds[i] = GetPlaneFdForBo(bo, i);
+        fds.emplace_back(GetPlaneFdForBo(bo, i));
+        fd_data.fds[i] = fds.back().get();
         fd_data.strides[i] = gbm_bo_get_stride_for_plane(bo, i);
         fd_data.offsets[i] = gbm_bo_get_offset(bo, i);
       }
