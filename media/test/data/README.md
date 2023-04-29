@@ -124,6 +124,11 @@ ffmpeg -i bbb.y4m -vf scale=480x360 bbb_480x360.yuv
 vvencapp --preset medium -i bbb_480x360.yuv -s 480x360 -r 15 -b 1000000 -p 2 -f 60 -o bbb_360p.vvc
 ```
 
+#### basketball_2_layers.vvc
+2 spatial layer VVC video with layer 0 at 208x120 and layer 1 at 832x480.
+Used for vvc parser test. Once vvencapp supports multi-layer encoding, the
+creation command needs to be provided.
+
 ### AV1
 
 Unless noted otherwise, the codec string is `av01.0.04M.08` for 8-bit files,

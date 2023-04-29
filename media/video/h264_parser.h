@@ -552,15 +552,6 @@ class MEDIA_EXPORT H264Parser {
   // - the size in bytes of the start code is returned in |*start_code_size|.
   bool LocateNALU(off_t* nalu_size, off_t* start_code_size);
 
-  // Exp-Golomb code parsing as specified in chapter 9.1 of the spec.
-  // Read one unsigned exp-Golomb code from the stream and return in |*val|
-  // with total bits read return in |*num_bits_read|.
-  Result ReadUE(int* val, int* num_bits_read);
-
-  // Read one signed exp-Golomb code from the stream and return in |*val|
-  // with total bits read return in |*num_bits_read|.
-  Result ReadSE(int* val, int* num_bits_read);
-
   // Parse scaling lists (see spec).
   Result ParseScalingList(int size, uint8_t* scaling_list, bool* use_default);
   Result ParseSPSScalingLists(H264SPS* sps);

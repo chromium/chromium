@@ -541,15 +541,6 @@ class MEDIA_EXPORT H265Parser : public H265NaluParser {
   static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
 
  private:
-  // Exp-Golomb code parsing as specified in chapter 9.2 of the spec.
-  // Read one unsigned exp-Golomb code from the stream and return in |*val|
-  // with total bits read return in |*num_bits_read|.
-  Result ReadUE(int* val, int* num_bits_read);
-
-  // Read one signed exp-Golomb code from the stream and return in |*val|
-  // with total bits read return in |*num_bits_read|.
-  Result ReadSE(int* val, int* num_bits_read);
-
   Result ParseProfileTierLevel(bool profile_present,
                                int max_num_sub_layers_minus1,
                                H265ProfileTierLevel* profile_tier_level);
