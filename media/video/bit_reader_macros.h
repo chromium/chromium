@@ -169,6 +169,14 @@
     }                                                                 \
   } while (0)
 
+#define GE_OR_RETURN(val1, val2)                                      \
+  do {                                                                \
+    if ((val1) < (val2)) {                                            \
+      DVLOG(1) << "Error in stream, " #val1 " is larger than " #val2; \
+      return kInvalidStream;                                          \
+    }                                                                 \
+  } while (0)
+
 #define BYTE_ALIGNMENT()                            \
   do {                                              \
     int bits_left_to_align = br_.NumBitsLeft() % 8; \
