@@ -71,7 +71,6 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
   // views::View:
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
-  void OnThemeChanged() override;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;

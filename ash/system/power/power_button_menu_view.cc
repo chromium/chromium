@@ -309,10 +309,6 @@ gfx::Size PowerButtonMenuView::CalculatePreferredSize() const {
   return menu_size;
 }
 
-void PowerButtonMenuView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-}
-
 void PowerButtonMenuView::OnImplicitAnimationsCompleted() {
   if (layer()->opacity() == 0.f) {
     SetVisible(false);
