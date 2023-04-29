@@ -52,8 +52,8 @@ void ReportSchedulerAndroid::OnExtensionRequestUploaded() {
 policy::DMToken ReportSchedulerAndroid::GetProfileDMToken() {
   absl::optional<std::string> dm_token = reporting::GetUserDmToken(profile_);
   if (!dm_token || dm_token->empty())
-    return policy::DMToken();
-  return policy::DMToken(policy::DMToken::Status::kValid, *dm_token);
+    return policy::DMToken::CreateEmptyToken();
+  return policy::DMToken::CreateValidToken(*dm_token);
 }
 
 std::string ReportSchedulerAndroid::GetProfileClientId() {

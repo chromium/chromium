@@ -48,7 +48,7 @@ void ReportSchedulerIOS::OnExtensionRequestUploaded() {
 
 policy::DMToken ReportSchedulerIOS::GetProfileDMToken() {
   // Profile reporting is not supported.
-  return policy::DMToken();
+  return policy::DMToken::CreateEmptyToken();
 }
 std::string ReportSchedulerIOS::GetProfileClientId() {
   // Profile reporting is not supported.

@@ -517,6 +517,7 @@ source_set("unit_tests") {
     "cloud/cloud_policy_refresh_scheduler_unittest.cc",
     "cloud/cloud_policy_service_unittest.cc",
     "cloud/device_management_service_unittest.cc",
+    "cloud/dm_token_unittest.cc",
     "cloud/user_info_fetcher_unittest.cc",
     "command_line_policy_provider_unittest.cc",
     "generate_policy_source_unittest.cc",
