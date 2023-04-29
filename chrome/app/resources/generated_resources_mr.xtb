@@ -1344,7 +1344,7 @@
 <translation id="2156877321344104010">सुरक्षा तपासणी पुन्हा रन करा</translation>
 <translation id="2157474325782140681">अतिरिक्त वैशिष्‍ट्ये मिळवण्यासाठी, या Chromebook सोबत काम करणारे Dell डॉक स्टेशन वापरा.</translation>
 <translation id="215753907730220065">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
-<translation id="2157875535253991059">हे पृष्ठ आता फुल स्‍क्रीन असेल.</translation>
+<translation id="2157875535253991059">हे पेज आता फुल स्‍क्रीन असेल.</translation>
 <translation id="2158475082070321257">हायलाइट करण्यासाठी लिंक कॉपी करा</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> साठी <ph name="SHORTCUT" /> ची व्याप्ती</translation>
@@ -1499,7 +1499,7 @@
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> च्या <ph name="EMAIL" /> मध्ये साइन इन करताना डिव्हाइस ऑनलाइन असणे आवश्यक आहे</translation>
 <translation id="2296218178174497398">डिव्हाइस शोध</translation>
 <translation id="2297705863329999812">प्रिंटर शोधा</translation>
-<translation id="2297822946037605517">हे पृष्ठ शेअर करा</translation>
+<translation id="2297822946037605517">हे पेज शेअर करा</translation>
 <translation id="2299734369537008228">स्लायडर: <ph name="MIN_LABEL" /> ते <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">debugd ने गोळा केलेल्या सर्व लॉग फाइलचा स्वतंत्र संग्रहण म्हणून समावेश करा.</translation>
 <translation id="2300214399009193026">PCIe</translation>
@@ -1567,7 +1567,7 @@
 <translation id="2332948465534020594">व्यत्यय आणू नका सुरू केले</translation>
 <translation id="233471714539944337">संवेदनशील आशय</translation>
 <translation id="2335111415680198280">{0,plural, =1{# विंडो बंद करा}other{# विंडो बंद करा}}</translation>
-<translation id="2335122562899522968">हे पृष्ठ कुकीज सेट करते.</translation>
+<translation id="2335122562899522968">हे पेज कुकीज सेट करते.</translation>
 <translation id="2336228925368920074">सर्व टॅब बुकमार्क करा...</translation>
 <translation id="2336376423977300504">विंडो बंद असताना नेहमी कुकी साफ करा</translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -2118,7 +2118,7 @@
 <translation id="2812049959647166806">थंडरबोल्टला सपोर्ट करत नाही</translation>
 <translation id="2813094189969465044">पालक नियंत्रणे</translation>
 <translation id="281390819046738856">विनंतीवर साइन करता आले नाही.</translation>
-<translation id="2814489978934728345">हे पृष्ठ लोड करणे थांबवा</translation>
+<translation id="2814489978934728345">हे पेज लोड करणे थांबवा</translation>
 <translation id="2815693974042551705">बुकमार्क फोल्डर</translation>
 <translation id="2816319641769218778">तुमच्या Google खाते मध्ये पासवर्ड सेव्ह करण्यासाठी सिंक सुरू करा.</translation>
 <translation id="2816628817680324566">या साइटला तुमची सिक्युरिटी की ओळखण्याची अनुमती द्यायची का?</translation>
@@ -2501,7 +2501,7 @@
 <translation id="3169930038976362151">तुमच्या आवश्यकतांची पूर्तता करणारी थीम निवडा. तुमची थीम, वॉलपेपर, स्क्रीन सेव्हर आणि आणखी बरेच काही बदलण्यासाठी, डेस्कटॉपवर फक्त स्पर्श करून धरून ठेवा.</translation>
 <translation id="3170072451822350649">तुम्ही साइन इन वगळुन <ph name="LINK_START" />अतिथी म्हणून ब्राउझ<ph name="LINK_END" /> देखील करू शकता.</translation>
 <translation id="31774765611822736">डावीकडील नवीन टॅब</translation>
-<translation id="3177909033752230686">पृष्ठ भाषा:</translation>
+<translation id="3177909033752230686">पेज भाषा:</translation>
 <translation id="3177914167275935955">तुमच्या डिव्हाइसमध्ये Chrome Education अपग्रेड याचा समावेश आहे, पण तुमचे वापरकर्ता नाव हे Google for Education खात्याशी संबंधित नाही. कृपया दुय्यम डिव्हाइसवर g.co/workspace/edusignup ला भेट देऊन Google for Education खाते तयार करा.</translation>
 <translation id="3179982752812949580">मजकुराचा फाँट</translation>
 <translation id="3180284704187420717">सिंक वापरून तुमचे बुकमार्क, पासवर्ड आणि बरेच काही सेव्ह करा</translation>
@@ -2635,7 +2635,7 @@
 <translation id="3305389145870741612">स्वरूपन प्रक्रियेस दोन सेकंद लागू शकतात. कृपया प्रतीक्षा करा.</translation>
 <translation id="3305661444342691068">पूर्वावलोकनात पीडीएफ उघडा</translation>
 <translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> साठीच्या सवलती मिळवा</translation>
-<translation id="3308116878371095290">हे पृष्ठ कुकीज सेट करण्यापासून प्रतिबंधित केलेले होते.</translation>
+<translation id="3308116878371095290">हे पेज कुकीज सेट करण्यापासून प्रतिबंधित केलेले होते.</translation>
 <translation id="3308134619352333507">बटण लपवा</translation>
 <translation id="3308852433423051161">Google Assistant लोड करत आहे...</translation>
 <translation id="3309330461362844500">सर्टिफिकेट प्रोफाइल आयडी</translation>
@@ -4052,7 +4052,7 @@
 <translation id="4581774856936278355">Linux रिस्टोअर करताना एरर आली</translation>
 <translation id="4582297591746054421">तुम्ही कॉपी केलेल्या मजकुराचे फॉरमॅटिंग कायम ठेवणे यासारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे तुमचा क्लिपबोर्ड वाचतात</translation>
 <translation id="4582563038311694664">सर्व सेटिंग्ज रीसेट करा</translation>
-<translation id="4585793705637313973">पृष्ठ संपादित करा</translation>
+<translation id="4585793705637313973">पेज संपादित करा</translation>
 <translation id="4586275095964870617"><ph name="URL" /> पर्यायी ब्राउझरमध्ये उघडता आले नाही. कृपया तुमच्या सिस्टम अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4589713469967853491">डाउनलोड डिरेक्टरीमध्ये लॉग यशस्वीरीत्या राइट केले गेले.</translation>
@@ -5182,7 +5182,7 @@
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> वापरण्यासाठी तुमच्या प्रथम <ph name="LINK_START" />नेटवर्कच्या साइन-इन पेजला भेट देणे<ph name="LINK_END" /> आवश्यक आहे, जे काही सेकंदांमध्ये आपोआप उघडेल. तसे न झाल्यास, नेटवर्क वापरणे शक्य नाही.</translation>
 <translation id="5637476008227280525">मोबाइल डेटा सुरू आहे</translation>
 <translation id="5638309510554459422">विस्तार आणि थीम <ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> मध्ये शोधा</translation>
-<translation id="5639549361331209298">हे पृष्ठ रीलोड करा, अधिक पर्याय पहाण्यासाठी होल्ड करा</translation>
+<translation id="5639549361331209298">हे पेज रीलोड करा, अधिक पर्याय पहाण्यासाठी होल्ड करा</translation>
 <translation id="5640133431808313291">सिक्युरिटी की व्यवस्थापित करा</translation>
 <translation id="5641608986289282154"><ph name="DEVICE_OS" /> वापरणे सुरू करा</translation>
 <translation id="5641648607875312660">स्क्रीनशॉट इमेज संपादक</translation>
@@ -5212,7 +5212,7 @@
 <translation id="567587836466137939"><ph name="MONTH_AND_YEAR" /> पर्यंत या डिव्हाइसवर ऑटोमॅटिक सॉफ्टवेअर आणि सुरक्षा अपडेट मिळतील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="567643736130151854">सर्व डिव्हाइसवर तुमचे बुकमार्क, पासवर्ड आणि बरेच काही मिळविण्यासाठी साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="567740581294087470">तुम्ही कोणत्या प्रकारचा फीडबॅक देत आहात?</translation>
-<translation id="5677503058916217575">पृष्ठ भाषा:</translation>
+<translation id="5677503058916217575">पेज भाषा:</translation>
 <translation id="5677928146339483299">ब्लॉक केले</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> ला रीड आणि राइट ॲक्सेस मंजूर केला आहे.</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> ला पाठवत आहे</translation>
@@ -6190,7 +6190,7 @@
 <translation id="657229725818377235">धोकादायक वेबसाइट आणि डाउनलोडपासून अधिक संरक्षण मिळवा</translation>
 <translation id="6573096386450695060">नेहमी अनुमती द्या</translation>
 <translation id="6573497332121198392">शॉर्टकट काढून टाकू शकत नाही</translation>
-<translation id="657402800789773160">हे पृष्ठ &amp;रीलोड करा</translation>
+<translation id="657402800789773160">हे पेज &amp;रीलोड करा</translation>
 <translation id="6577284282025554716">डाउनलोड रद्द केले: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">नेटवर्क हेल्थ स्नॅपशॉट</translation>
 <translation id="6579369886355986318">सर्व नियंत्रणे दाखवा</translation>
@@ -6710,7 +6710,7 @@
 <translation id="7014961128696979283">Steam लाँच करा</translation>
 <translation id="7015088858756332848">Steam ही Chromebook वर लाँच करता आली नाही. कृपया पुन्हा प्रयत्न करा</translation>
 <translation id="7017004637493394352">पुन्हा "Ok Google" म्हणा</translation>
-<translation id="7017219178341817193">एक नवीन पृष्ठ जोडा</translation>
+<translation id="7017219178341817193">एक नवीन पेज जोडा</translation>
 <translation id="7017354871202642555">विंडो सेट केल्यानंतर मोड सेट करणे शक्य नाही.</translation>
 <translation id="7018275672629230621">तुमचा ब्राउझिंग इतिहास वाचा आणि बदला</translation>
 <translation id="7019546817926942979">तुमचे डिव्हाइस प्लग-इन केलेले असणे आवश्यक आहे. Linux अपग्रेड करणे तुमची बॅटरी मोठ्या प्रमाणात संपवू शकते. कृपया तुमचे डिव्हाइस चार्जरशी कनेक्ट करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -6773,7 +6773,7 @@
 <translation id="7075513071073410194">PKCS #1 MD5 With RSA एंक्रिप्शन</translation>
 <translation id="7075625805486468288">तुमची HTTPS/SSL प्रमाणपत्रे आणि सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="7076875098323397992">अपग्रेड सुरू करू शकत नाही</translation>
-<translation id="7077829361966535409">वर्तमान प्रॉक्सी सेटिंग्ज वापरून साइन-इन पृष्ठ लोड करण्यास अयशस्वी झाले. कृपया <ph name="GAIA_RELOAD_LINK_START" />पुन्हा साइन इन करण्याचा प्रयत्न करा<ph name="GAIA_RELOAD_LINK_END" />, किंवा भिन्न <ph name="PROXY_SETTINGS_LINK_START" />प्रॉक्सी सेटिंग्ज<ph name="PROXY_SETTINGS_LINK_END" /> वापरा.</translation>
+<translation id="7077829361966535409">वर्तमान प्रॉक्सी सेटिंग्ज वापरून साइन-इन पेज लोड करण्यास अयशस्वी झाले. कृपया <ph name="GAIA_RELOAD_LINK_START" />पुन्हा साइन इन करण्याचा प्रयत्न करा<ph name="GAIA_RELOAD_LINK_END" />, किंवा भिन्न <ph name="PROXY_SETTINGS_LINK_START" />प्रॉक्सी सेटिंग्ज<ph name="PROXY_SETTINGS_LINK_END" /> वापरा.</translation>
 <translation id="7078120482318506217">सर्व नेटवर्क</translation>
 <translation id="708060913198414444">ऑडिओ पत्ता कॉपी करा</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> हे तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते</translation>
@@ -7118,7 +7118,7 @@
 <translation id="741906494724992817">हा ॲप ला कोणत्याही विशेष परवानग्यांची आवश्यकता नाही.</translation>
 <translation id="7419565702166471774">नेहमी सुरक्षित कनेक्शन वापरा</translation>
 <translation id="742130257665691897">बुकमार्क काढून टाकले</translation>
-<translation id="7421925624202799674">पृष्ठ स्रोत &amp;पहा</translation>
+<translation id="7421925624202799674">पेज स्रोत &amp;पहा</translation>
 <translation id="7422192691352527311">प्राधान्ये...</translation>
 <translation id="7423098979219808738">प्रथम विचारा</translation>
 <translation id="7423425410216218516"><ph name="MINUTES" /> मिनिटांसाठी दृश्यमानता सुरू आहे</translation>
@@ -7839,7 +7839,7 @@
 <translation id="8051193500142930381">कॅमेर्‍याची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="8051390370038326517"><ph name="HOST" /> ला MIDI डिव्हाइसचे पूर्ण नियंत्रण असण्याची नेहमी अनुमती द्या</translation>
 <translation id="8053278772142718589">PKCS #12 फाइल</translation>
-<translation id="8053390638574070785">हे पृष्ठ रीलोड करा</translation>
+<translation id="8053390638574070785">हे पेज रीलोड करा</translation>
 <translation id="8054517699425078995">या प्रकारची फाईल आपल्‍या डिव्‍हाइसला हानी पोहचवू शकते. तुम्ही <ph name="FILE_NAME" /> तरीही ठेवू इच्‍छिता?</translation>
 <translation id="8054563304616131773">कृपया एक वैध ईमेल ॲड्रेस एंटर करा</translation>
 <translation id="8054883179223321715">विशिष्ट व्हिडिओ साइटसाठी उपलब्ध</translation>
@@ -8482,7 +8482,7 @@
 <translation id="864892689521194669">ChromeOS Flex ची वैशिष्‍ट्ये आणि परफॉर्मन्स सुधारण्यात मदत करा</translation>
 <translation id="8649026945479135076">सर्वसाधारणपणे, तुम्ही भेट देता त्या साइट तुमचा अनुभव पर्सनलाइझ करण्यासाठी, तुम्हाला स्वारस्य असलेल्या गोष्टी लक्षात ठेवतात. साइट तुमच्या स्वारस्यांबद्दलची माहिती Chrome वापरून स्टोअरदेखील करू शकतात.</translation>
 <translation id="8650543407998814195">जरी तुम्ही आता तुमची जुनी प्रोफाइल अ‍ॅक्सेस करू शकत नसलात, तरीही तुम्ही ती काढून टाकू शकता.</translation>
-<translation id="8651585100578802546">सक्तीने हे पृष्ठ रीलोड करा</translation>
+<translation id="8651585100578802546">सक्तीने हे पेज रीलोड करा</translation>
 <translation id="8652400352452647993">पॅक एक्स्टेंशन एरर</translation>
 <translation id="8654151524613148204">तुमच्या कॉंप्युटरला हाताळण्‍यासाठी ही फाइल खूप मोठी आहे. क्षमस्व.</translation>
 <translation id="8655295600908251630">खाडी</translation>
@@ -8496,7 +8496,7 @@
 <translation id="8662911384982557515">तुमचे होम पेज यावर बदला: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome वॉलपेपर सेट करू शकत नाही.</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> वरील एकाधिक ऑटोमॅटिक डाउनलोड नेहमी ब्लॉक करा</translation>
-<translation id="8664389313780386848">पृष्ठ स्रोत &amp;पहा</translation>
+<translation id="8664389313780386848">पेज स्रोत &amp;पहा</translation>
 <translation id="8665110742939124773">तुम्ही चुकीचा अ‍ॅक्सेस कोड एंटर केला आहे. पुन्हा प्रयत्न करा.</translation>
 <translation id="8665180165765946056">बॅकअप पूर्ण झाला</translation>
 <translation id="866611985033792019">ईमेल वापरकर्त्यांना ओळखण्यासाठी या सर्टिफिकेटवर विश्वास ठेवा</translation>

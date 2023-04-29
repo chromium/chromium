@@ -186,7 +186,7 @@
 <translation id="2533048460510040082">Сунушталган пайдалуу материалдар</translation>
 <translation id="2536159006530886390">Интернетке туташпай жатат.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тести аткарылууда...</translation>
-<translation id="2584559707064218956">Тууралоо үчүн Жөндөөлөргө өтүңүз</translation>
+<translation id="2584559707064218956">Тууралоо үчүн Параметрлерге өтүңүз</translation>
 <translation id="2597774443162333062">Файлдар мүчүлүштүктөрдү оңдоо үчүн Google'га жөнөтүлөт</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Скандалып бүттү. 1 бет скандалды}other{Скандалып бүттү. {NUMBER_OF_PAGES} бет скандалды}}</translation>
 <translation id="2619761439309613843">Күн сайын жаңыртуу</translation>
@@ -435,7 +435,7 @@
 <translation id="4917889632206600977">Токтоду – Кагаз түгөнүп калды</translation>
 <translation id="491791267030419270">Пикир жазуу боюнча кеңештер</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> кубатталды.</translation>
-<translation id="4930320165497208503">Туташууну тууралоо же жаңыртуу үчүн <ph name="BEGIN_LINK" />Жөндөөлөргө<ph name="END_LINK" /> өтүңүз.</translation>
+<translation id="4930320165497208503">Туташууну тууралоо же жаңыртуу үчүн <ph name="BEGIN_LINK" />Параметрлерге<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="4932733599132424254">Күнү</translation>
 <translation id="4937657825850660613">Жарымы</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> түзмөгүнө орнотулган программа <ph name="VERSION" /> версиясына жаңыртылды</translation>
@@ -763,7 +763,7 @@
 <translation id="7943235353293548836">Туруктуу сактоочу интервал</translation>
 <translation id="7955587717700691983">Bluetooth баскычтобу</translation>
 <translation id="7960831585769876809">Температура</translation>
-<translation id="7977800524392185497"><ph name="NETWORK_NAME" /> тармагына кошулуу үчүн Жөндөөлөргө өтүңүз</translation>
+<translation id="7977800524392185497"><ph name="NETWORK_NAME" /> тармагына кошулуу үчүн Параметрлерге өтүңүз</translation>
 <translation id="7978412674231730200">Жеке ачкыч</translation>
 <translation id="7994702968232966508">EAP ыкмасы</translation>
 <translation id="802154636333426148">Жүктөлүп алынбай калды</translation>
@@ -891,7 +891,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үчүн билетти жаңыртыңыз</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет скандалууда</translation>
 <translation id="9111102763498581341">Кулпуну ачуу</translation>
-<translation id="9122602430962285795">Кайра туташуу үчүн Жөндөөлөргө өтүңүз</translation>
+<translation id="9122602430962285795">Кайра туташуу үчүн Параметрлерге өтүңүз</translation>
 <translation id="9126720536733509015">Бир нече бетти бир PDF файлына сактаңыз</translation>
 <translation id="9137526406337347448">Google кызматтары</translation>
 <translation id="9138630967333032450">Сол жактагы Shift баскычы</translation>

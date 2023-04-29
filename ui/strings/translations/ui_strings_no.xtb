@@ -186,7 +186,7 @@
 <translation id="8086866675552927481">{MINUTES,plural, =1{om 1 m}other{om # m}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + <ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Nummer fra <ph name="ORIGIN" /></translation>
-<translation id="8106081041558092062">{HOURS,plural, =1{For 1 time siden}other{For # timer siden}}</translation>
+<translation id="8106081041558092062">{HOURS,plural, =1{For 1 time siden}other{# timer siden}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 sek igjen}other{# sek igjen}}</translation>
 <translation id="8134065097954893699">Laster inn denne siden på nytt</translation>
 <translation id="815598010540052116">Rull ned</translation>

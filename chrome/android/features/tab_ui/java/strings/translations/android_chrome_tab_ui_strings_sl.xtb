@@ -44,7 +44,7 @@
 <translation id="4212246570487010370">Nadaljevanje brskanja</translation>
 <translation id="4648718555153979859">Zavihki so združeni tukaj</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> mnenje)}one{(<ph name="REVIEWS_COUNT_MANY" /> mnenje)}two{(<ph name="REVIEWS_COUNT_MANY" /> mnenji)}few{(<ph name="REVIEWS_COUNT_MANY" /> mnenja)}other{(<ph name="REVIEWS_COUNT_MANY" /> mnenj)}}</translation>
-<translation id="4850886885716139402">Pogled</translation>
+<translation id="4850886885716139402">Prikaži</translation>
 <translation id="4870911314065352661">Želite zapreti vse zavihke?</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Zapri zavihek}one{Zapri zavihke}two{Zapri zavihke}few{Zapri zavihke}other{Zapri zavihke}}</translation>
 <translation id="492284538114688557">Zaznano je znižanje cene</translation>

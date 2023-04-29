@@ -303,7 +303,7 @@
 <translation id="2656405586795711023">वेब अ‍ॅप्स</translation>
 <translation id="2669454659051515572">हे डिव्हाइस वापरणारे कोणीही डाउनलोड केलेल्या फाइल पाहू शकते</translation>
 <translation id="2702516483241149200">नवीन: या मजकुरापर्यंत स्क्रोल करणारी लिंक शेअर करा</translation>
-<translation id="2707726405694321444">पृष्ठ रिफ्रेश करा</translation>
+<translation id="2707726405694321444">पेज रिफ्रेश करा</translation>
 <translation id="271033894570825754">नवीन</translation>
 <translation id="2711073837061989559">चाचण्या</translation>
 <translation id="2718352093833049315">केवळ वाय-फाय वर</translation>
@@ -335,7 +335,7 @@
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> याला तुमच्याकडून या वेबसाइटची मंजुरी हवी आहे:</translation>
 <translation id="2886836735871983413">तुम्ही वेब ब्राउझ कराल तसे साइटची सूची येथे दिसेल</translation>
 <translation id="2888126860611144412">Chrome बद्दल</translation>
-<translation id="2891154217021530873">पृष्ठ लोड करणे थांबवा</translation>
+<translation id="2891154217021530873">पेज लोड करणे थांबवा</translation>
 <translation id="2893180576842394309">शोध आणि इतर Google सेवा पर्सनलाइझ करण्यासाठी Google कदाचित तुमच्या इतिहासाचा वापर करू शकते.</translation>
 <translation id="2900528713135656174">इव्हेंट तयार करा</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> साठी सूचना दाखवत आहे</translation>
@@ -1406,7 +1406,7 @@
 <translation id="847433688444405067">सर्व डिव्हाइसवर ब्राउझ करा</translation>
 <translation id="8481980314595922412">चाचणी वैशिष्ट्ये सुरू आहेत</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
-<translation id="8489271220582375723">इतिहास पृष्ठ उघडा</translation>
+<translation id="8489271220582375723">इतिहास पेज उघडा</translation>
 <translation id="8493948351860045254">जागा मोकळी करा</translation>
 <translation id="8497242791509864205">क्रमाने लावण्याचे पर्याय उघडा</translation>
 <translation id="8497480609928300907">गोपनीयता मार्गदर्शक स्पष्टीकरण</translation>
@@ -1420,7 +1420,7 @@
 <translation id="8523928698583292556">स्टोअर केलेला पासवर्ड हटवा</translation>
 <translation id="8526855376374973824">सूचना परवानगी फ्लो</translation>
 <translation id="8540136935098276800">योग्य प्रकारे फॉरमॅट केलेली URL एंटर करा</translation>
-<translation id="854522910157234410">हे पृष्ठ उघडा</translation>
+<translation id="854522910157234410">हे पेज उघडा</translation>
 <translation id="8551513938758868521">तुम्ही Chrome मधून बाहेर पडता तेव्हा, गुप्त टॅब लॉक करा</translation>
 <translation id="8559961053328923750">जाहिरात परफॉर्मन्स मोजण्यासाठी साइट ब्राउझरद्वारे शेअर करू शकतील अशा एकूण डेटाचे प्रमाण Chrome मर्यादित करते</translation>
 <translation id="8559990750235505898">पेज अन्य भाषांमध्ये भाषांतरित करण्यास ऑफर करा</translation>

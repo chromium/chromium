@@ -111,7 +111,7 @@
 <translation id="2968755619301702150">Сертификат көру құралы</translation>
 <translation id="300526633675317032">Вебсайттың барлық деректері жойылады (<ph name="SIZE_IN_KB" />).</translation>
 <translation id="3008272652534848354">Рұқсаттарды бастапқы күйіне қайтару</translation>
-<translation id="301521992641321250">Автоматты түрде бөгелген</translation>
+<translation id="301521992641321250">Автоматты түрде блокталған</translation>
 <translation id="3069226013421428034">Белгілі бір сайт үшін бөгде қызметтер арқылы кіруге рұқсат беру.</translation>
 <translation id="3109724472072898302">Жиылған</translation>
 <translation id="3114012059975132928">Бейне ойнатқыш</translation>
@@ -257,7 +257,7 @@
 <translation id="5690795753582697420">Камера Android параметрлерінде өшірілген.</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> арналған cookie файлдары мен басқа да сайт деректері өшіріледі.</translation>
 <translation id="5719847187258001597">Негізгі экрандағы <ph name="ORIGIN" /> сайты мен қолданбада сақталған барлық деректер мен cookie файлдары өшіріледі.</translation>
-<translation id="5723967018671998714">Үшінші тараптың cookie файлдары инкогнито режимінде бөгелген.</translation>
+<translation id="5723967018671998714">Үшінші тараптың cookie файлдары инкогнито режимінде блокталған.</translation>
 <translation id="5740126560802162366">Сайттар деректерді құрылғыңызда сақтай алады.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> үшін тыйым салынған.</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
@@ -420,7 +420,7 @@
 <translation id="857943718398505171">Рұқсат етілген (ең дұрысы)</translation>
 <translation id="8609465669617005112">Жоғары қарай жылжыту</translation>
 <translation id="8676374126336081632">Енгізілгенді өшіру</translation>
-<translation id="8681886425883659911">Мазалайтын немесе жалған ақпаратты жарнамаларды көрсететіні белгілі сайттарда жарнамалар бөгелген</translation>
+<translation id="8681886425883659911">Мазалайтын немесе жалған ақпаратты жарнамаларды көрсететіні белгілі сайттарда жарнамалар блокталған</translation>
 <translation id="868929229000858085">Контактілеріңізді іздеңіз</translation>
 <translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8719283222052720129"><ph name="APP_NAME" /> браузері үшін рұқсатты <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> қосыңыз.</translation>

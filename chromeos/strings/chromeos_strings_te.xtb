@@ -23,7 +23,7 @@
 <translation id="1195447618553298278">తెలియని ఎర్రర్.</translation>
 <translation id="1196959502276349371">వెర్షన్ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ప్లే చేయండి/పాజ్ చేయండి</translation>
-<translation id="1201402288615127009">తరువాత</translation>
+<translation id="1201402288615127009">తర్వాత</translation>
 <translation id="1204296502688602597">DNS ప్రతిస్పందన సమయం</translation>
 <translation id="1207734034680156868">సూచనలు మీ వివరణపై ఆధారపడి ఉంటాయి</translation>
 <translation id="123124571410524056">పోర్టల్‌తో సమస్య ఉన్నట్టుగా ఉంది</translation>
@@ -321,7 +321,7 @@
 <translation id="4021031199988160623">పరీక్షించడానికి ల్యాప్‌టాప్ మోడ్‌కి మారండి</translation>
 <translation id="4034824040120875894">ప్రింటర్</translation>
 <translation id="4044093238444069296">గేట్‌వేను సంప్రదించడం సాధ్యపడదు</translation>
-<translation id="4046123991198612571">తరువాత ట్రాక్</translation>
+<translation id="4046123991198612571">తర్వాత ట్రాక్</translation>
 <translation id="404928562651467259">హెచ్చరిక</translation>
 <translation id="4054683689023980771">ఇమేజ్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="4060260348856573701">కొత్త APN</translation>
@@ -366,7 +366,7 @@
 <translation id="4415951057168511744">ప్రస్తుత అవతార్</translation>
 <translation id="4425149324548788773">నా డ్రైవ్‌</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ఆఫ్‌లో ఉంది</translation>
-<translation id="4429881212383817840">Kerberos టిక్కెట్ గడువు త్వరలో ముగుస్తుంది</translation>
+<translation id="4429881212383817840">Kerberos టికెట్ గడువు త్వరలో ముగుస్తుంది</translation>
 <translation id="4431821876790500265">రిపోర్ట్‌ను చూడండి</translation>
 <translation id="445059817448385655">పాత పాస్‌వర్డ్</translation>
 <translation id="4453205916657964690">సబ్‌నెట్ మాస్క్</translation>
@@ -545,7 +545,7 @@
 <translation id="5916664084637901428">ఆన్ చేయి</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{మీ ఫైల్ విజయవంతంగా స్కాన్ చేయబడి, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />కు సేవ్ చేయబడింది.}other{మీ ఫైళ్లు విజయవంతంగా స్కాన్ చేయబడి, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />కు సేవ్ చేయబడ్డాయి.}}</translation>
 <translation id="5931523347251946569">ఫైల్ కనుగొనబడలేదు</translation>
-<translation id="5939518447894949180">రీసెట్ చేయి</translation>
+<translation id="5939518447894949180">రీసెట్ చేయండి</translation>
 <translation id="594552776027197022">ర్యాండమ్ కీపెయిర్‌ను జెనరేట్ చేయండి</translation>
 <translation id="5972388717451707488">ఇంజిన్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="5984145644188835034">ఆటోమేటిక్ వాల్‌పేపర్</translation>
