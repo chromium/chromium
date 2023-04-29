@@ -488,8 +488,20 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   // on cursor hiding (e.g. hiding hover, too).
   // We need to fix the implementation here, though, it depends on the fix of
   // multi-display event tracking.
-  if (event->flags() & ui::EF_CURSOR_HIDE)
+  if (event->flags() & ui::EF_CURSOR_HIDE) {
     return;
+  }
+
+  // Fling cancel is generated very generously at every touch of the
+  // touchpad. Since it's not directly supported by the delegate, we want
+  // limit this event to only right after a fling start has been generated
+  // to prevent erronous behavior.
+  if (event->type() == ui::ET_SCROLL_FLING_CANCEL &&
+      last_event_type_ != ui::ET_SCROLL_FLING_START) {
+    // Should we update this for above cases?
+    last_event_type_ = event->type();
+    return;
+  }
 
   gfx::PointF location_in_target;
   Surface* target = GetEffectiveTargetForEvent(event, &location_in_target);
@@ -609,19 +621,12 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
       break;
     }
     case ui::ET_SCROLL_FLING_CANCEL: {
-      // Fling cancel is generated very generously at every touch of the
-      // touchpad. Since it's not directly supported by the delegate, we do not
-      // want limit this event to only right after a fling start has been
-      // generated to prevent erronous behavior.
-      if (last_event_type_ == ui::ET_SCROLL_FLING_START) {
-        // We emulate fling cancel by starting a new scroll sequence that
-        // scrolls by 0 pixels, effectively stopping any kinetic scroll motion.
-        delegate_->OnPointerScroll(event->time_stamp(), gfx::Vector2dF(),
-                                   false);
-        delegate_->OnPointerFrame();
-        delegate_->OnPointerScrollStop(event->time_stamp());
-        delegate_->OnPointerFrame();
-      }
+      // We emulate fling cancel by starting a new scroll sequence that
+      // scrolls by 0 pixels, effectively stopping any kinetic scroll motion.
+      delegate_->OnPointerScroll(event->time_stamp(), gfx::Vector2dF(), false);
+      delegate_->OnPointerFrame();
+      delegate_->OnPointerScrollStop(event->time_stamp());
+      delegate_->OnPointerFrame();
       break;
     }
     case ui::ET_MOUSE_MOVED:
