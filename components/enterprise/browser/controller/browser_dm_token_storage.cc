@@ -33,15 +33,15 @@ constexpr char kInvalidTokenValue[] = "INVALID_DM_TOKEN";
 DMToken CreateValidToken(const std::string& dm_token) {
   DCHECK_NE(dm_token, kInvalidTokenValue);
   DCHECK(!dm_token.empty());
-  return DMToken(DMToken::Status::kValid, dm_token);
+  return DMToken::CreateValidToken(dm_token);
 }
 
 DMToken CreateInvalidToken() {
-  return DMToken(DMToken::Status::kInvalid, "");
+  return DMToken::CreateInvalidToken();
 }
 
 DMToken CreateEmptyToken() {
-  return DMToken(DMToken::Status::kEmpty, "");
+  return DMToken::CreateEmptyToken();
 }
 
 }  // namespace

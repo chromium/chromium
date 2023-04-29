@@ -64,7 +64,7 @@ class MachineLevelUserCloudPolicyStoreTest : public ::testing::Test {
   std::unique_ptr<MachineLevelUserCloudPolicyStore> CreateStore() {
     std::unique_ptr<MachineLevelUserCloudPolicyStore> store =
         MachineLevelUserCloudPolicyStore::Create(
-            DMToken::CreateValidTokenForTesting(PolicyBuilder::kFakeToken),
+            DMToken::CreateValidToken(PolicyBuilder::kFakeToken),
             PolicyBuilder::kFakeDeviceId, updater_policy_dir_,
             tmp_policy_dir_.GetPath(),
             base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -116,8 +116,7 @@ class MachineLevelUserCloudPolicyStoreTest : public ::testing::Test {
 };
 
 TEST_F(MachineLevelUserCloudPolicyStoreTest, LoadWithoutDMToken) {
-  store_->SetupRegistration(DMToken::CreateEmptyTokenForTesting(),
-                            std::string());
+  store_->SetupRegistration(DMToken::CreateEmptyToken(), std::string());
   EXPECT_FALSE(store_->policy());
   EXPECT_TRUE(store_->policy_map().empty());
 
@@ -134,8 +133,7 @@ TEST_F(MachineLevelUserCloudPolicyStoreTest, LoadWithoutDMToken) {
 }
 
 TEST_F(MachineLevelUserCloudPolicyStoreTest, LoadImmediatelyWithoutDMToken) {
-  store_->SetupRegistration(DMToken::CreateEmptyTokenForTesting(),
-                            std::string());
+  store_->SetupRegistration(DMToken::CreateEmptyToken(), std::string());
   EXPECT_FALSE(store_->policy());
   EXPECT_TRUE(store_->policy_map().empty());
 
@@ -382,7 +380,7 @@ TEST_F(MachineLevelUserCloudPolicyStoreTest,
   ::testing::Mock::VerifyAndClearExpectations(&observer_);
 
   std::unique_ptr<MachineLevelUserCloudPolicyStore> loader = CreateStore();
-  loader->SetupRegistration(DMToken(DMToken::Status::kValid, "bad_token"),
+  loader->SetupRegistration(DMToken::CreateValidToken("bad_token"),
                             "invalid_client_id");
   EXPECT_CALL(observer_, OnStoreError(loader.get()));
   loader->Load();

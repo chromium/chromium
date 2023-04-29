@@ -25,9 +25,6 @@ namespace policy {
 //    enrollment token is present.
 class POLICY_EXPORT DMToken {
  public:
-  // TODO(b/280046033) Make the enum private.
-  enum class Status { kValid, kInvalid, kEmpty };
-
   static DMToken CreateValidToken(const std::string& value);
   static DMToken CreateInvalidToken();
   static DMToken CreateEmptyToken();
@@ -36,9 +33,6 @@ class POLICY_EXPORT DMToken {
   static DMToken CreateValidTokenForTesting(const std::string& value);
   static DMToken CreateInvalidTokenForTesting();
   static DMToken CreateEmptyTokenForTesting();
-
-  // TODO(b/280046033) Make this constructor private.
-  DMToken(Status status, const base::StringPiece value);
 
   DMToken(const DMToken& other) = default;
   DMToken(DMToken&& other) = default;
@@ -57,6 +51,10 @@ class POLICY_EXPORT DMToken {
   bool is_empty() const;
 
  private:
+  enum class Status { kValid, kInvalid, kEmpty };
+
+  DMToken(Status status, const base::StringPiece value);
+
   Status status_;
   std::string value_;
 };
