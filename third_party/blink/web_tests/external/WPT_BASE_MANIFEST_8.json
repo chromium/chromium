@@ -126233,6 +126233,19 @@
        {}
       ]
      ],
+     "size-adjust-03.html": [
+      "f9de6499fa3f07d8b493a5bc9b718262108d7d48",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/size-adjust-03-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "size-adjust-text-decoration.tentative.html": [
       "f1183dcf209051e6e657869b1b3911315baf647d",
       [
@@ -245325,6 +245338,158 @@
        {}
       ]
      ],
+     "offset-path-shape-circle-001.html": [
+      "13df077df06f81bac68b537be14bbc04967bcecd",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-circle-001-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            200
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "offset-path-shape-circle-002.html": [
+      "8264abbbca0901c5b477a7075c29ad968bcf27ef",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-circle-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-shape-circle-003.html": [
+      "eb00dacab30e1763ff0fed7405ee8a215001982d",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-circle-003-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            10
+           ],
+           [
+            0,
+            20
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "offset-path-shape-circle-004.html": [
+      "39e80fa861b10c0bfed22469f00d2c5a8f42daf2",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-circle-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-shape-ellipse-001.html": [
+      "35482636ba169d221f852c6c0dcb3ca6e80cf145",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-ellipse-001-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            200
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "offset-path-shape-ellipse-002.html": [
+      "298e1dd52edb5c09ff8d369a488d6937e3bce404",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-ellipse-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-shape-ellipse-003.html": [
+      "2b79367b0bcb2773dd295ea6d0bd627d05d3997c",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-ellipse-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-shape-ellipse-004.html": [
+      "2c95415b11f266938c72363d6d4383121c7350fa",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-ellipse-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "offset-path-shape.html": [
       "2750fd9f2fc2b63d50df63cbbf071577c8f24438",
       [
@@ -264692,6 +264857,19 @@
      }
     },
     "painting": {
+     "color-mix-currentcolor-fill-stroke-repaint.html": [
+      "216948038ca866c615409c73bb7bb4b4bc7fef1f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "currentColor-override-pserver-fallback.svg": [
       "49d7fea59ca8105e86c5d70aea339f4e51579b0d",
       [
@@ -264725,6 +264903,19 @@
        [
         [
          "/svg/painting/currentColor-override-pserver-stroke-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "currentcolor-fill-stroke-repaint.html": [
+      "4e4fa20450c2dc2f86963ece4fba1ac18dbf740a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -277929,7 +278120,7 @@
       []
      ],
      "fedcm-mock.js": [
-      "e9fd2ea289c1ce1ae6531b66834311fadaee536b",
+      "18634355b8ee39196f9ebf44105be2897961df95",
       []
      ],
      "fedcm-mojojs-helper.js": [
@@ -290728,14 +290919,6 @@
       "6ee9f4fb8f2111609c7573f199ab7958cfd9eb5a",
       []
      ],
-     "contain-inline-size-replaced-expected.txt": [
-      "7253607e7929813509fe7abe1d6b5c6a854e2de4",
-      []
-     ],
-     "contain-inline-size-replaced.html.ini": [
-      "37e403bea0400e25e34986b7b0d2aeeaae8410ee",
-      []
-     ],
      "contain-layout-004.html.ini": [
       "8d01ca5818bcb2db00ada0b83bdf3f39e42481c5",
       []
@@ -297300,6 +297483,10 @@
      ],
      "size-adjust-02-ref.html": [
       "44bf8a130bea06a037de837fdd9d4fe4b0292d81",
+      []
+     ],
+     "size-adjust-03-ref.html": [
+      "eff794d2130961f1aa3ed4a81ce61c133b4ddc41",
       []
      ],
      "size-adjust-tentative-ref.html": [
@@ -335870,6 +336057,38 @@
       "7fdbe8d8347067969b702384bb31588ba80bc922",
       []
      ],
+     "offset-path-shape-circle-001-ref.html": [
+      "7bc29af79c6ce74f1b7748f0234ac8346984e18e",
+      []
+     ],
+     "offset-path-shape-circle-002-ref.html": [
+      "e56acaaa260640da5bb0cfcaa4b0ecb1f7b7443d",
+      []
+     ],
+     "offset-path-shape-circle-003-ref.html": [
+      "327d325137c399499b681f6552750ff3d008968c",
+      []
+     ],
+     "offset-path-shape-circle-004-ref.html": [
+      "86c67dcdedcb2625216cd064384545113f2a96fc",
+      []
+     ],
+     "offset-path-shape-ellipse-001-ref.html": [
+      "32236bbc239a98c6a512d64037fcda32a8c5e976",
+      []
+     ],
+     "offset-path-shape-ellipse-002-ref.html": [
+      "e3dfaf51227d4d6d7028d9b455d4cd65e27a795d",
+      []
+     ],
+     "offset-path-shape-ellipse-003-ref.html": [
+      "4a9fed4c86ab7d08bbe1d32ff74d26e42f50e675",
+      []
+     ],
+     "offset-path-shape-ellipse-004-ref.html": [
+      "fca4b190db514034fd7b3647cebda99d25aae0dc",
+      []
+     ],
      "offset-path-shape-ref.html": [
       "a659b287fdab1ed7bda453c36c17140e0c2740f2",
       []
@@ -335908,7 +336127,7 @@
        []
       ],
       "offset-path-parsing-valid-expected.txt": [
-       "374a10d75dd829478f852f23f5eee1841b4692ae",
+       "b6ce3f099f91af71a74493008577f9d866c1d9e0",
        []
       ],
       "offset-path-parsing-valid.html.ini": [
@@ -371029,7 +371248,7 @@
     ]
    },
    "lint.ignore": [
-    "1433b2b4f72348a02671c16176694bb459f44bac",
+    "5ef072ee0292995ae4e17e746478145bf92a9f69",
     []
    ],
    "loading": {
@@ -440243,7 +440462,7 @@
       ]
      ],
      "contain-inline-size-replaced.html": [
-      "b22e0063283b1ebe00de03a76e6d7cba12dd94f4",
+      "71c9fd77117c5441bf18fc52d21b0476507f8122",
       [
        null,
        {}
@@ -468932,7 +469151,7 @@
        ]
       ],
       "offset-path-parsing-valid.html": [
-       "25915b9a29ee454ddbde1e972e2a7f7d47ef4258",
+       "95a9f8aabbc96eed703d86c512a5206036dd8dac",
        [
         null,
         {}
@@ -551683,7 +551902,7 @@
         ]
        ],
        "selection-pointer.html": [
-        "8cb0ead44148dfb431839fdbac23a9c7faaa9155",
+        "7f06ae24a2d5d86e09e466d75639a07dd41f5504",
         [
          null,
          {
