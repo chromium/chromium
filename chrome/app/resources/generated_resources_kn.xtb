@@ -91,6 +91,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382"><ph name="COUNTDOWN_SECONDS" /> ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಪರ್ಯಾಯ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಲಾಗುತ್ತಿದೆ</translation>
+<translation id="1071735803834535661">ಎಕ್ಸ್‌ಟರ್ನಲ್ ಮೆಟಾ</translation>
 <translation id="1071917609930274619">ಡೇಟಾ ಎನ್ಸಿಫರ್ಮೆಂಟ್</translation>
 <translation id="1072700771426194907">USB ಸಾಧನವನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="107278043869924952">ಪಾಸ್‌ವರ್ಡ್‌ಗೆ ಹೆಚ್ಚುವರಿಯಾಗಿ ಪಿನ್ ಅನ್ನು ಬಳಸಿ</translation>
@@ -1380,6 +1381,7 @@
 <translation id="2146263598007866206">ಸೈಟ್‌ಗಳು, ನಿಮ್ಮ ಸಮಯವನ್ನು ಉಳಿಸಲು ಸಂಬಂಧಿತ ಫೈಲ್‌ಗಳನ್ನು ಒಂದೇ ಬಾರಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬಹುದು</translation>
 <translation id="2147151613919729065">ಅತಿಥಿ ಮೋಡ್ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು, ಎಲ್ಲಾ ಅತಿಥಿ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ.</translation>
 <translation id="2147218225094845757">ಪಾರ್ಶ್ವ ಫಲಕವನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="2147282432401652483">ಕಮಾಂಡ್</translation>
 <translation id="2148219725039824548">ಹಂಚಿಕೆಯನ್ನು ಅಳವಡಿಸುವುದರಲ್ಲಿ ದೋಷವಿದೆ. ನಿರ್ದಿಷ್ಟಪಡಿಸಿದ ಹಂಚಿಕೆಯು ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿ ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="2148756636027685713">ಫಾರ್ಮ್ಯಾಟ್‌ ಮಾಡುವಿಕೆ ಮುಗಿದಿದೆ</translation>
 <translation id="2148892889047469596">ಟ್ಯಾಬ್ ಬಿತ್ತರಿಸಿ</translation>
@@ -4958,6 +4960,7 @@
 <translation id="5298219193514155779">ಇವರಿಂದ ಥೀಮ್ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="5299109548848736476">ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಡಿ</translation>
 <translation id="5299558715747014286">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="529986401483187205">ಡಿಸೇಬಲ್ಡ್</translation>
 <translation id="5300287940468717207">ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ಮರುಹೊಂದಿಸುವುದೇ?</translation>
 <translation id="5300426565656326054">ಬ್ರೌಸರ್-ಆಧಾರಿತ ಜಾಹೀರಾತು ವೈಯಕ್ತಿಕಗೊಳಿಸುವಿಕೆ</translation>
 <translation id="5300589172476337783">ತೋರಿಸಿ</translation>
@@ -6863,6 +6866,7 @@
 <translation id="6981982820502123353">ಪ್ರವೇಶ</translation>
 <translation id="6983507711977005608">ತತ್‌ಕ್ಷಣದ ಟೆಥರಿಂಗ್ ನೆಟ್‌ವರ್ಕ್‌ನ ಕನೆಕ್ಷನ್ ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="6983783921975806247">ನೋಂದಾಯಿತ OID</translation>
+<translation id="6983890893900549383">ಎಸ್ಕೇಪ್</translation>
 <translation id="6985235333261347343">Microsoft Key Recovery Agent</translation>
 <translation id="698524779381350301">ಈ ಕೆಳಗಿನ ಸೈಟ್‌ಗಳಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="6985607387932385770">ಪ್ರಿಂಟರ್‌ಗಳು</translation>
@@ -8033,6 +8037,7 @@
 <translation id="8009225694047762179">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="8011875486979733097">Steam ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="8012188750847319132">ಕ್ಯಾಪ್ಸ್ ಲಾಕ್</translation>
 <translation id="8013993649590906847">ಚಿತ್ರದಲ್ಲಿ ಉಪಯುಕ್ತ ವಿವರಣೆಯು ಇಲ್ಲದಿದ್ದರೆ, Chrome ನಿಮಗಾಗಿ ಒಂದು ವಿವರಣೆಯನ್ನು ಒದಗಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತದೆ. ವಿವರಣೆಗಳನ್ನು ರಚಿಸಲು, ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="8014154204619229810">ಅಪ್‌ಡೇಟರ್ ಪ್ರಸ್ತುತ ರನ್ ಆಗುತ್ತಿದೆ. ಮತ್ತೊಮ್ಮೆ ಪರಿಶೀಲಿಸಲು ಒಂದು ನಿಮಿಷದಲ್ಲಿ ರಿಫ್ರೆಶ್ ಮಾಡಿ.</translation>
 <translation id="8014206674403687691">ಈ ಹಿಂದೆ ಸ್ಥಾಪಿಸಲಾದ ಆವೃತ್ತಿಗೆ ಹಿಂತಿರುಗಲು <ph name="IDS_SHORT_PRODUCT_NAME" /> ಅಸಮರ್ಥವಾಗಿದೆ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪವರ್‌ವಾಶ್ ಮಾಡಲು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>

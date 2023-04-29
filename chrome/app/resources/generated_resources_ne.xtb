@@ -89,6 +89,7 @@
 <translation id="1069814191880976658">अर्को स्क्रिन छनौट गर्नुहोस्</translation>
 <translation id="1070377999570795893">तपाईँको कम्प्युटरमा अर्को प्रोग्रामले एउटा विस्तार थप्यो जसले Chrome को कार्य गर्ने तरिकालाई बदल्न सक्छ। <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382"><ph name="COUNTDOWN_SECONDS" /> सेकेन्डमा वैकल्पिक ब्राउजरमा खोल्दै</translation>
+<translation id="1071735803834535661">बाह्य मेटा</translation>
 <translation id="1071917609930274619">लगत एन्सिफरमेन्ट</translation>
 <translation id="1072700771426194907">USB यन्त्र फेला पारियो</translation>
 <translation id="107278043869924952">पासवर्डका साथै PIN प्रयोग गर्नुहोस्</translation>
@@ -1372,6 +1373,7 @@
 <translation id="2146263598007866206">साइटहरूले तपाईंको समय बचत गर्न सम्बन्धित फाइलहरू स्वतः एकसाथ डाउनलोड गर्न सक्छन्</translation>
 <translation id="2147151613919729065">गेस्ट मोडमा गरिएका क्रियाकलापसम्बन्धी इतिहास मेटाउन सबै गेस्ट विन्डो बन्द गर्नुहोस्।</translation>
 <translation id="2147218225094845757">किनाराको प्यानल लुकाइयोस्</translation>
+<translation id="2147282432401652483">कमान्ड</translation>
 <translation id="2148219725039824548">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। तोकिएको आदान प्रदान नेटवर्कमा फेला परेन।</translation>
 <translation id="2148756636027685713">फर्म्याट समाप्त भयो</translation>
 <translation id="2148892889047469596">Cast ट्याब</translation>
@@ -4942,6 +4944,7 @@
 <translation id="5298219193514155779">द्वार प्रकरण सिर्जना गरिएको</translation>
 <translation id="5299109548848736476">ट्रयाक नगर्नुहोस्</translation>
 <translation id="5299558715747014286">आफ्ना ट्याब समूहहरू हेर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>
+<translation id="529986401483187205">अफ गरिएको</translation>
 <translation id="5300287940468717207">साइटका अनुमतिहरू रिसेट गर्ने हो?</translation>
 <translation id="5300426565656326054">ब्राउजरमा आधारित विज्ञापनको पर्सनलाइजेसन</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
@@ -6842,6 +6845,7 @@
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="6983507711977005608">तात्कालिक टेदरिङ डिस्कनेक्ट गर्नुहोस्</translation>
 <translation id="6983783921975806247">दर्ता गरिएको OID</translation>
+<translation id="6983890893900549383">इस्केप</translation>
 <translation id="6985235333261347343">Microsoft कुँजी रिकभरी एजेन्ट</translation>
 <translation id="698524779381350301">निम्न साइटहरूमा स्वतः पहुँच गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6985607387932385770">प्रिन्टरहरू</translation>
@@ -8013,6 +8017,7 @@
 <translation id="8009225694047762179">पासवर्डहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' सारियो।</translation>
 <translation id="8011875486979733097">Steam इन्स्टल गर्न मिल्दैन</translation>
+<translation id="8012188750847319132">क्याप्स लक</translation>
 <translation id="8013993649590906847">कुनै छविमा उपयोगी विवरण नभएका खण्डमा Chrome ले तपाईंलाई एउटा विवरण उपलब्ध गराउने प्रयास गर्ने छ। विवरणहरू सिर्जना गर्न फोटो Google मा पठाइन्छ।</translation>
 <translation id="8014154204619229810">अद्यावधिककर्ता हालै चलिरहेको छ । फेरि जाँच गर्न एक मिनेट पछि पुन:ताजा गर्नुहोस्।</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> ले अघिल्लो स्थापित संस्करणमा फिर्ता जान सकेन। कृपया तपाइँको यन्त्रलाई पावरवास गर्नको लागि पुन: प्रयास गर्नुहोस्।</translation>

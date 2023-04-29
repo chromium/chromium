@@ -117,6 +117,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2929907241665500097">Chrome uppfærðist ekki, eitthvað fór úrskeiðis. <ph name="BEGIN_LINK" />Lagaðu uppfærsluvandamál Chrome og uppfærslur sem mistókust.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – innskráning á net – Chrome</translation>
 <translation id="3019382870990049182">Endurræsa til að uppfæra &amp;ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome-viðbætur voru með aðgang að HID-tækjum}=1{Google Chrome-viðbætur eru með aðgang að HID-tækjum}one{Google Chrome-viðbætur eru með aðgang að # HID-tæki}other{Google Chrome-viðbætur eru með aðgang að # HID-tækjum}}</translation>
 <translation id="303514781271618814">Chrome er að kanna nýja eiginleika sem gera vefsvæðum kleift að skila sömu vafraupplifun án þess að nota jafn mikið af gögnum frá þér</translation>
 <translation id="3037838751736561277">Google Chrome er í bakgrunnsstillingu.</translation>
 <translation id="3038232873781883849">Bíður eftir uppsetningu...</translation>
@@ -222,6 +223,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4970880042055371251">Útgáfa ChromeOS</translation>
 <translation id="4970947549776831107">Chrome útilokaði þessa skrá af því að þessi gerð af skrám er hættuleg</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome-viðbót var með aðgang að HID-tækjum}=1{Google Chrome-viðbót er með aðgang að 1 HID-tæki}one{Google Chrome-viðbót er með aðgang að # HID-tæki}other{Google Chrome-viðbót er með aðgang að # HID-tækjum}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Stjórnandinn lokar Chrome sjálfkrafa eftir aðgerðaleysi í 1 mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}one{Stjórnandinn lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}other{Stjórnandinn lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútur. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}}</translation>
 <translation id="5098668839038261629">Þegar þetta er virkt verður þú einnig skráð(ur) út úr Chrome</translation>
 <translation id="5132929315877954718">Uppgötvaðu frábær forrit, leiki, viðbætur og þemu fyrir Google Chrome</translation>

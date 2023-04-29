@@ -26,7 +26,7 @@
 <translation id="1087110696012418426">Доброго дня, <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242">Шукайте <ph name="CATEGORY" />, файли, додатки тощо. Натискайте клавіші зі стрілками, щоб переходити між додатками.</translation>
 <translation id="109942774857561566">Мені нудно</translation>
-<translation id="1104084341931202936">Показати налаштування спеціальних можливостей</translation>
+<translation id="1104084341931202936">Показати налаштування функцій доступності</translation>
 <translation id="1104621072296271835">Ваші пристрої працюватимуть разом ще краще</translation>
 <translation id="1111021433905331574">Щоб змінити колір підсвічування клавіатури, перейдіть у налаштування &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1112998165730922436">Трансляцію призупинено</translation>
@@ -114,7 +114,7 @@
 <translation id="1467432559032391204">Ліворуч</translation>
 <translation id="146902737843070955">Ваш адміністратор надіслав запит на цю зміну</translation>
 <translation id="147310119694673958">Заряд акумулятора телефона – <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="1479909375538722835">Плаваюче меню спеціальних можливостей</translation>
+<translation id="1479909375538722835">Плаваюче меню функцій доступності</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />; натисніть клавішу Enter, щоб відкрити запис у Календарі</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Заміна: "<ph name="FIRST_ITEM_TITLE" />" на "<ph name="SECOND_ITEM_TITLE" />"</translation>
@@ -1293,7 +1293,7 @@
 <translation id="6972754398087986839">Почати</translation>
 <translation id="6979158407327259162">Диск Google</translation>
 <translation id="6981291220124935078">Увімкнути доступ</translation>
-<translation id="6981982820502123353">Спеціальні можливості</translation>
+<translation id="6981982820502123353">Доступність</translation>
 <translation id="698231206551913481">Якщо видалити цього користувача, усі файли та локальні дані, зв’язані з ним, буде видалено назавжди.</translation>
 <translation id="7005239792648594238">Щоб почати, відкрийте додаток</translation>
 <translation id="7007983414944123363">Не вдалося підтвердити PIN-код або пароль. Повторіть спробу.</translation>
@@ -1637,7 +1637,7 @@
 <translation id="8619138598101195078">Зменшити гучність</translation>
 <translation id="8627191004499078455">Під’єднано до пристрою: <ph name="DEVICE_NAME" /></translation>
 <translation id="8630991711272431708">Вимкнути доступ до камери</translation>
-<translation id="8631727435199967028">Налаштування спеціальних можливостей</translation>
+<translation id="8631727435199967028">Налаштування функцій доступності</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="8638637208069328956">Увімкнути або вимкнути мікрофон</translation>
 <translation id="8639760480004882931">Залишилося <ph name="PERCENTAGE" /></translation>
