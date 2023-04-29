@@ -38,6 +38,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -53,6 +54,8 @@
 namespace ash {
 
 namespace {
+
+using ::ui::mojom::CursorType;
 
 SplitViewController* split_view_controller() {
   return SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -919,6 +922,55 @@ TEST_F(SnapGroupEntryPointArm1Test, SwapWindowsSourceHistogramTest) {
           1);
     }
   }
+}
+
+// Tests that the cursor type gets updated on mouse hovering over everywhere on
+// the split view divider excluding the kebab button.
+TEST_F(SnapGroupEntryPointArm1Test, CursorUpdateTest) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* divider = split_view_divider();
+  ASSERT_TRUE(divider);
+
+  auto divider_bounds = split_view_divider_bounds_in_screen();
+  auto outside_point = split_view_divider_bounds_in_screen().CenterPoint();
+  outside_point.Offset(-kSplitviewDividerShortSideLength * 5, 0);
+  EXPECT_FALSE(divider_bounds.Contains(outside_point));
+
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  cursor_manager->SetCursor(CursorType::kPointer);
+
+  // Test that the default cursor type when mouse is not hovered over the split
+  // view divider.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(outside_point);
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+  EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
+
+  // Test that the cursor changed to resize cursor while hovering over the split
+  // view divider.
+  const auto delta_vector = gfx::Vector2d(0, -10);
+  const gfx::Point cached_hover_point =
+      divider_bounds.CenterPoint() + delta_vector;
+  event_generator->MoveMouseTo(cached_hover_point);
+  EXPECT_EQ(CursorType::kColumnResize, cursor_manager->GetCursor().type());
+
+  // Test that after resizing, the cursor type is still the resize cursor.
+  event_generator->PressLeftButton();
+  const auto move_vector = gfx::Vector2d(20, 0);
+  event_generator->MoveMouseTo(cached_hover_point + move_vector);
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(CursorType::kColumnResize, cursor_manager->GetCursor().type());
+  EXPECT_EQ(split_view_divider_bounds_in_screen().CenterPoint() + delta_vector,
+            cached_hover_point + move_vector);
+
+  // Test that when hovering over the kebab button, the cursor type changed back
+  // to the default type.
+  event_generator->MoveMouseTo(
+      kebab_button()->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
 }
 
 // A test fixture that tests the user-initiated snap group entry point. This

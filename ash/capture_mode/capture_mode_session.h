@@ -42,6 +42,7 @@ class CaptureModeController;
 class CaptureModeSessionFocusCycler;
 class CaptureModeSettingsView;
 class CaptureWindowObserver;
+class CursorSetter;
 class RecordingTypeMenuView;
 class UserNudgeController;
 class WindowDimmer;
@@ -256,7 +257,6 @@ class ASH_EXPORT CaptureModeSession
   friend class CaptureModeSessionFocusCycler;
   friend class CaptureModeSessionTestApi;
   friend class CaptureModeTestApi;
-  class CursorSetter;
   class ParentContainerObserver;
 
   enum class CaptureLabelAnimation {

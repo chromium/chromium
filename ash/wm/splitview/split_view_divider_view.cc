@@ -11,7 +11,9 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/screen_layout_observer.h"
+#include "ash/utility/cursor_setter.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_expanded_menu_view.h"
@@ -25,11 +27,15 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/view.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -86,6 +92,8 @@ SplitViewDividerView::SplitViewDividerView(SplitViewController* controller,
   }
 }
 
+SplitViewDividerView::~SplitViewDividerView() = default;
+
 void SplitViewDividerView::DoSpawningAnimation(int spawn_position) {
   const gfx::Rect bounds = GetBoundsInScreen();
   int divider_signed_offset;
@@ -140,6 +148,35 @@ void SplitViewDividerView::Layout() {
         kebab_button_size.width(), kebab_button_size.height());
     kebab_button_->SetBoundsRect(kebab_button_bounds);
   }
+}
+
+void SplitViewDividerView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  background()->SetNativeControlColor(
+      AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kOpaque));
+}
+
+void SplitViewDividerView::OnMouseEntered(const ui::MouseEvent& event) {
+  gfx::Point screen_location = event.location();
+  ConvertPointToScreen(this, &screen_location);
+
+  // Only set cursor type as the resize cursor when it's on the split view
+  // divider.
+  if (kebab_button_ &&
+      !kebab_button_->GetBoundsInScreen().Contains(screen_location)) {
+    // TODO(b/276801578): Use `kRowResize` cursor type for vertical split view.
+    cursor_setter_.UpdateCursor(split_view_controller_->root_window(),
+                                ui::mojom::CursorType::kColumnResize);
+  }
+}
+
+void SplitViewDividerView::OnMouseExited(const ui::MouseEvent& event) {
+  // Since `notify_enter_exit_on_child_` in view.h is default to false, on mouse
+  // exit `this` the cursor will be reset, which includes resetting the cursor
+  // when hovering over the kebab button area.
+  cursor_setter_.ResetCursor();
 }
 
 bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {
