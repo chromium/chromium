@@ -129,5 +129,9 @@ void BackForwardButton::OnMouseEntered(const ui::MouseEvent& event) {
   ToolbarButton::OnMouseEntered(event);
 }
 
+bool BackForwardButton::ShouldShowInkdropAfterIphInteraction() {
+  return false;
+}
+
 BEGIN_METADATA(BackForwardButton, ToolbarButton)
 END_METADATA

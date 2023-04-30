@@ -30,6 +30,7 @@ class BackForwardButton : public ToolbarButton {
   void NotifyClick(const ui::Event& event) override;
   void StateChanged(ButtonState old_state) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
+  bool ShouldShowInkdropAfterIphInteraction() override;
 
   const std::u16string GetAccessiblePageLoadingMessage();
 
