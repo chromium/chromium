@@ -306,6 +306,7 @@ enum SharesheetLaunchSource {
 enum IOTaskState {
   queued,
   scanning,
+  warning,
   in_progress,
   paused,
   success,
@@ -324,6 +325,12 @@ enum IOTaskType {
   restore_to_destination,
   trash,
   zip
+};
+
+enum SecurityErrorType {
+  dlp,
+  enterprise_connectors,
+  dlp_warning_timeout
 };
 
 enum RecentDateBucket {
@@ -1089,6 +1096,10 @@ dictionary ProgressStatus {
 
   // Current state of the task sending the progress.
   IOTaskState state;
+
+  // Type of security error that occurred, if any.
+  // Used only if Data Leak Prevention or Enterprise Connectors policies apply.
+  SecurityErrorType securityError;
 
   // Name of the first source entry.
   DOMString sourceName;

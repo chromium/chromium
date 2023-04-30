@@ -89,6 +89,8 @@ export class FileOperationHandler {
         break;
       case chrome.fileManagerPrivate.IOTaskState.IN_PROGRESS:
       case chrome.fileManagerPrivate.IOTaskState.PAUSED:
+      // TODO(b/276738113): Properly handle warning.
+      case chrome.fileManagerPrivate.IOTaskState.WARNING:
         item.progressMax = event.totalBytes;
         item.progressValue = event.bytesTransferred;
         item.remainingTime = event.remainingSeconds;
