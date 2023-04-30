@@ -41,7 +41,8 @@ void OverrideTextInputMethod(ash::TextInputMethod* text_input_method) {
 
 bool HasCapability(const base::StringPiece capability) {
   return capability == kInputMethodTestCapabilitySendKeyModifiers ||
-         capability == kInputMethodTestCapabilityConfirmComposition;
+         capability == kInputMethodTestCapabilityConfirmComposition ||
+         capability == kInputMethodTestCapabilityAlwaysConfirmComposition;
 }
 
 }  // namespace

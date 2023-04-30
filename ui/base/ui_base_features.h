@@ -137,6 +137,9 @@ bool IsShortcutCustomizationEnabled();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kLacrosResourcesFileSharing);
+
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kAlwaysConfirmComposition);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Indicates whether DrmOverlayManager should used the synchronous API to

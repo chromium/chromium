@@ -45,7 +45,9 @@ int GetInputMethodTestInterfaceVersion() {
 // Used to parameterize these tests.
 struct TestParam {
   // Enables fixes for b/265853952.
-  // Enables the following feature flags: WaylandKeepSelectionFix (Lacros).
+  // Enables the following feature flags:
+  // - WaylandKeepSelectionFix (Lacros),
+  // - AlwaysConfirmComposition (Ash).
   bool fix_265853952 = false;
 };
 
@@ -117,6 +119,10 @@ bool RenderHtmlInLacros(Browser* browser, const std::string& html) {
   return true;
 }
 
+content::WebContents* GetActiveWebContents(Browser* browser) {
+  return browser->tab_strip_model()->GetActiveWebContents();
+}
+
 // Renders a focused input field in `browser`.
 // Returns the ID of the input field.
 std::string RenderAutofocusedInputFieldInLacros(Browser* browser) {
@@ -127,8 +133,19 @@ std::string RenderAutofocusedInputFieldInLacros(Browser* browser) {
   return "test-input";
 }
 
-content::WebContents* GetActiveWebContents(Browser* browser) {
-  return browser->tab_strip_model()->GetActiveWebContents();
+// Renders a focused contenteditable div in `browser`.
+// Returns the ID of the div.
+std::string RenderAutofocusedContentEditableInLacros(Browser* browser) {
+  if (!RenderHtmlInLacros(
+          browser,
+          R"(<div id="contenteditable-test-input" contenteditable></div>)")) {
+    return "";
+  }
+  // <div>s do not have an autofocus attribute, so focus it manually.
+  std::ignore = ExecJs(GetActiveWebContents(browser), R"(
+    document.getElementById('contenteditable-test-input').focus();
+  )");
+  return "contenteditable-test-input";
 }
 
 struct Modifiers {
@@ -342,9 +359,19 @@ bool WaitUntilInputFieldHasText(content::WebContents* web_content,
         let retriesLeft = 10;
         elem = document.getElementById($1);
         function checkValue() {
+          // Handle <input> elements.
           if (elem.value == $2 &&
               elem.selectionStart == $3 &&
               elem.selectionEnd == $4) {
+            return resolve(true);
+          }
+          // Handle contenteditable elements.
+          const selection = window.getSelection();
+          if (elem.contains(selection.anchorNode) &&
+              elem.contains(selection.focusNode) &&
+              selection.anchorNode.textContent == $2 &&
+              selection.anchorOffset == $3 &&
+              selection.focusOffset == $4) {
             return resolve(true);
           }
           if (retriesLeft == 0) return resolve(false);
@@ -502,12 +529,26 @@ class InputMethodLacrosBrowserTest
       public ::testing::WithParamInterface<TestParam> {
  public:
   InputMethodLacrosBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> enabled_lacros_features;
     if (GetParam().fix_265853952) {
-      enabled_features.push_back(features::kWaylandKeepSelectionFix);
+      enabled_lacros_features.push_back(features::kWaylandKeepSelectionFix);
     }
-    feature_list_override_.InitWithFeatures(enabled_features,
+    feature_list_override_.InitWithFeatures(enabled_lacros_features,
                                             /*disabled_features=*/{});
+  }
+
+  void SetUp() override {
+    std::vector<std::string> enabled_ash_features;
+    if (GetParam().fix_265853952) {
+      enabled_ash_features.push_back("AlwaysConfirmComposition");
+    }
+    if (!enabled_ash_features.empty()) {
+      StartUniqueAshChrome(
+          enabled_ash_features, /*disabled_features=*/{},
+          /*additional_cmdline_switches=*/{},
+          "Use shared Ash once all the feature flags above are default.");
+    }
+    InProcessBrowserTest::SetUp();
   }
 
  private:
@@ -1371,6 +1412,56 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "hello", gfx::Range(1, 3)));
+}
+
+// See b/265853952.
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
+                       ConfirmCompositionWithIncorrectSurroundingText) {
+  if (!GetParam().fix_265853952) {
+    return;
+  }
+
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          GetParam(),
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kSetCompositionMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kWaitForNextSurroundingTextChangeMinVersion},
+          {kInputMethodTestCapabilityConfirmComposition,
+           kInputMethodTestCapabilityAlwaysConfirmComposition});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedContentEditableInLacros(browser());
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+
+  // Simulate an input field that gives unreliable surrounding text by appending
+  // '!' to the surrounding text on every 'input' event. This approach changes
+  // the surrounding text without canceling any composition or affecting the
+  // contents of the input field.
+  std::ignore = ExecJs(
+      GetActiveWebContents(browser()),
+      content::JsReplace(
+          R"(document.getElementById($1).addEventListener('input', (e) => {
+         e.target.insertAdjacentHTML('beforeend', '<span>!</span>');
+       });)",
+          id));
+
+  input_method_async_waiter.SetComposition("a", 1);
+  WaitUntilSurroundingTextIs(input_method_async_waiter, "a!", gfx::Range(1));
+
+  // This ConfirmComposition should still go through even if the surrounding
+  // text information is incorrect for this input field. If it doesn't, then
+  // the next CommitText will replace the current composition of 'a'.
+  input_method_async_waiter.ConfirmComposition();
+  input_method_async_waiter.CommitText("b");
+
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "ab", gfx::Range(2)));
 }
 
 }  // namespace

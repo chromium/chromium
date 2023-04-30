@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/char_iterator.h"
 #include "base/strings/string_util.h"
@@ -30,6 +31,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/ozone/events_ozone.h"
@@ -559,7 +561,9 @@ void InputMethodAsh::ConfirmComposition(bool reset_engine) {
     pending_composition_ = absl::nullopt;
     composition_changed_ = false;
   }
-  if (client && client->HasCompositionText()) {
+  if (client &&
+      (client->HasCompositionText() ||
+       base::FeatureList::IsEnabled(features::kAlwaysConfirmComposition))) {
     const size_t characters_committed =
         client->ConfirmCompositionText(/*keep_selection*/ true);
     typing_session_manager_.CommitCharacters(characters_committed);
