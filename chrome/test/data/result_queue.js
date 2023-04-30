@@ -15,9 +15,9 @@ function ResultQueue() {
 ResultQueue.prototype.push = function(data) {
   if (this.pendingGets.length > 0) {
     const resolve = this.pendingGets.pop();
-    resolve(String(data));
+    resolve(data);
   } else {
-    this.queue.unshift(String(data));
+    this.queue.unshift(data);
   }
 };
 
