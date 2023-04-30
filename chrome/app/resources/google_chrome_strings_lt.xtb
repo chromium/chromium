@@ -118,6 +118,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2929907241665500097">Nepavyko atnaujinti „Chrome“, įvyko klaida. <ph name="BEGIN_LINK" />Pašalinkite „Chrome“ naujinimo problemas ir naujinių klaidas.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736">„<ph name="PAGE_TITLE" />“ – prisijungimas prie tinklo – „Chrome“</translation>
 <translation id="3019382870990049182">Iš naujo paleisti norint atnaujinti &amp;„ChromeOS Flex“</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{„Google Chrome“ plėtiniai pasiekė ŽSĮ įrenginius}=1{„Google Chrome“ plėtiniai pasiekia ŽSĮ įrenginius}one{„Google Chrome“ plėtiniai pasiekia # ŽSĮ įrenginį}few{„Google Chrome“ plėtiniai pasiekia # ŽSĮ įrenginius}many{„Google Chrome“ plėtiniai pasiekia # ŽSĮ įrenginio}other{„Google Chrome“ plėtiniai pasiekia # ŽSĮ įrenginių}}</translation>
 <translation id="303514781271618814">„Chrome“ tyrinėja naujas funkcijas, leidžiančias svetainėms teikti tas pačias naršymo funkcijas, naudojant mažiau jūsų duomenų</translation>
 <translation id="3037838751736561277">„Google Chrome“ veikia fono režimu.</translation>
 <translation id="3038232873781883849">Laukiama, kol bus įdiegta...</translation>
@@ -223,6 +224,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4970880042055371251">„Chrome“ OS versija</translation>
 <translation id="4970947549776831107">„Chrome“ užblokavo šį failą, nes šio tipo failai pavojingi</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{„Google Chrome“ plėtinys pasiekė ŽSĮ įrenginius}=1{„Google Chrome“ plėtinys pasiekia vieną ŽSĮ įrenginį}one{„Google Chrome“ plėtinys pasiekia # ŽSĮ įrenginį}few{„Google Chrome“ plėtinys pasiekia # ŽSĮ įrenginius}many{„Google Chrome“ plėtinys pasiekia # ŽSĮ įrenginio}other{„Google Chrome“ plėtinys pasiekia # ŽSĮ įrenginių}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Administratorius automatiškai uždaro „Chrome“, kai nenaudojama vieną minutę. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}one{Administratorius automatiškai uždaro „Chrome“, kai nenaudojama # minutę. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}few{Administratorius automatiškai uždaro „Chrome“, kai nenaudojama # minutes. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}many{Administratorius automatiškai uždaro „Chrome“, kai nenaudojama # minutės. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}other{Administratorius automatiškai uždaro „Chrome“, kai nenaudojama # minučių. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}}</translation>
 <translation id="5098668839038261629">Kai tai bus įjungta, taip pat būsite atjungti nuo „Chrome“</translation>
 <translation id="5132929315877954718">Suraskite puikių „Google Chrome“ programų, žaidimų, plėtinių ir temų.</translation>
