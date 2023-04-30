@@ -1,8 +1,5 @@
 file://components/global_media_controls/OWNERS
 
-per-file cast_*=muyaoxu@google.com
-per-file cast_*=takumif@chromium.org
 per-file cast_*=file://chrome/browser/media/router/OWNERS
-per-file presentation_request_*=muyaoxu@google.com
-per-file presentation_request_*=takumif@chromium.org
 per-file presentation_request_*=file://chrome/browser/media/router/OWNERS
+per-file supplemental_device_picker*=file://chrome/browser/media/router/OWNERS

@@ -679,7 +679,7 @@ static_library("ui") {
     "//v8:v8_version",
   ]
 
-  # TODO(crbug/925153): Remove this circular dependency.
+  # TODO(crbug.com/925153): Remove this circular dependency.
   allow_circular_includes_from = [
     # TODO(crbug.com/1158905): Remove this circular dependency.
     "//chrome/browser/devtools",
@@ -1133,6 +1133,10 @@ static_library("ui") {
       "global_media_controls/presentation_request_notification_item.h",
       "global_media_controls/presentation_request_notification_producer.cc",
       "global_media_controls/presentation_request_notification_producer.h",
+      "global_media_controls/supplemental_device_picker_item.cc",
+      "global_media_controls/supplemental_device_picker_item.h",
+      "global_media_controls/supplemental_device_picker_producer.cc",
+      "global_media_controls/supplemental_device_picker_producer.h",
       "hats/hats_helper.cc",
       "hats/hats_helper.h",
       "hats/hats_service.cc",
@@ -4256,7 +4260,8 @@ static_library("ui") {
       ]
     }
 
-    # TODO(1239521): ozone_platform_x11 should not be leaked outside ozone.
+    # TODO(crbug.com/1239521): ozone_platform_x11 should not be leaked outside
+    # ozone.
     if (use_dbus && ozone_platform_x11) {
       sources += [
         "views/frame/dbus_appmenu.cc",

@@ -40,6 +40,7 @@
 
 using global_media_controls::mojom::DeviceListClient;
 using global_media_controls::mojom::DeviceListHost;
+using global_media_controls::mojom::DevicePickerProvider;
 using media_session::mojom::AudioFocusRequestState;
 using media_session::mojom::AudioFocusRequestStatePtr;
 using media_session::mojom::MediaSessionInfo;
@@ -72,6 +73,9 @@ class MockDeviceService : public global_media_controls::mojom::DeviceService {
               GetDeviceListHostForPresentation,
               (mojo::PendingReceiver<DeviceListHost> host_receiver,
                mojo::PendingRemote<DeviceListClient> client_remote));
+  MOCK_METHOD(void,
+              SetDevicePickerProvider,
+              (mojo::PendingRemote<DevicePickerProvider> provider_remote));
 };
 
 class MockMediaNotificationProviderObserver

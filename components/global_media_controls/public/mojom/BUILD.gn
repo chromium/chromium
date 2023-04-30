@@ -6,4 +6,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("device_service") {
   sources = [ "device_service.mojom" ]
+  public_deps = [
+    "//services/media_session/public/mojom",
+    "//ui/gfx/image/mojom",
+  ]
 }

@@ -17,6 +17,7 @@ using testing::_;
 namespace mojom {
 using global_media_controls::mojom::DeviceListClient;
 using global_media_controls::mojom::DeviceListHost;
+using global_media_controls::mojom::DevicePickerProvider;
 using global_media_controls::mojom::DeviceService;
 }  // namespace mojom
 
@@ -48,6 +49,11 @@ class MockDeviceService : public ::mojom::DeviceService {
               GetDeviceListHostForPresentation,
               (mojo::PendingReceiver<::mojom::DeviceListHost> host_receiver,
                mojo::PendingRemote<::mojom::DeviceListClient> client_remote));
+
+  MOCK_METHOD(
+      void,
+      SetDevicePickerProvider,
+      (mojo::PendingRemote<::mojom::DevicePickerProvider> provider_remote));
 
  private:
   mojo::Receiver<::mojom::DeviceService> receiver_{this};

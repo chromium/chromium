@@ -4,6 +4,10 @@
 
 module global_media_controls.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/media_session/public/mojom/media_session.mojom";
+import "ui/gfx/image/mojom/image.mojom";
+
 // These interfaces are a part of the crosapi but are also shared with
 // non-Chrome-OS desktop platforms. All the code implementing the interfaces in
 // this file runs in the browser process (either on the Ash side or the Lacros
@@ -66,8 +70,8 @@ interface DeviceListClient {
 // registers itself with Ash via crosapi.mojom.MediaUI. DeviceService instances
 // are per-profile.
 //
-// Next version: 1
-// Next method id: 2
+// Next version: 2
+// Next method id: 3
 [Stable, Uuid="a0822b52-40d9-444b-abfa-d35f0d30d69f"]
 interface DeviceService {
   // Lets DeviceListClient start observing the DeviceListHost associated with
@@ -94,4 +98,76 @@ interface DeviceService {
   GetDeviceListHostForPresentation@1(
       pending_receiver<DeviceListHost> host_receiver,
       pending_remote<DeviceListClient> client_remote);
+
+  // Provides a remote to DevicePickerProvider. This is expected to be called
+  // just once during initialization.
+  [MinVersion=1]
+  SetDevicePickerProvider@2(
+      pending_remote<DevicePickerProvider> provider_remote);
+};
+
+// The implementer of this interface shows a device picker in the Global Media
+// Controls UI that is not associated with a media session. That may become
+// necessary e.g. when a PresentationRequest is started on a website with no or
+// muted media.
+//
+// On Chrome OS, this is implemented on the Ash side of the crosapi split.
+//
+// Next version: 1
+// Next method id: 9
+[Stable, Uuid="48835cb0-d095-4ddc-bbe0-6102a7764e79"]
+interface DevicePickerProvider {
+  // Creates but doesn't show an item.
+  // Is a no-op if an item has already been created.
+  CreateItem@0(mojo_base.mojom.UnguessableToken source_id);
+
+  // The metadata and image info are discarded.
+  // Is a no-op if an item hasn't previously been created with CreateItem().
+  DeleteItem@1();
+
+  // Is a no-op if an item hasn't previously been created with CreateItem().
+  ShowItem@2();
+
+  // Unlike DeleteItem(), the item retains its metadata and artwork info, so
+  // they can be shown again if ShowItem() is called.
+  // Is a no-op if an item hasn't previously been created with CreateItem().
+  HideItem@3();
+
+  // Updates the picker UI with the metadata.
+  OnMetadataChanged@4(media_session.mojom.MediaMetadata metadata);
+
+  // Updates the picker UI with the artwork.
+  OnArtworkImageChanged@5(gfx.mojom.ImageSkia? artwork_image);
+
+  // Updates the picker UI with the favicon image.
+  OnFaviconImageChanged@6(gfx.mojom.ImageSkia? favicon_image);
+
+  // Adds an observer. An observer is removed by severing the Mojo connection.
+  // Multiple observers can be added.
+  AddObserver@7(pending_remote<DevicePickerObserver> observer);
+
+  // Hides the entire media UI containing the picker.
+  HideMediaUI@8();
+};
+
+// Observes DevicePickerProvider.
+//
+// On Chrome OS, this is implemented on the browser side of the crosapi split.
+//
+// Next version: 1
+// Next method id: 4
+[Stable, Uuid="a673ddaa-ffb5-4baa-bb8f-07e079c42e5c"]
+interface DevicePickerObserver {
+  // Called when the media UI containing the picker is opened.
+  OnMediaUIOpened@0();
+
+  // Called when the media UI containing the picker is closed.
+  OnMediaUIClosed@1();
+
+  // Called when the media UI containing the picker has its contents updated,
+  // e.g. when the list of media items shown is changed.
+  OnMediaUIUpdated@2();
+
+  // Called when the picker UI is dismissed by the user.
+  OnPickerDismissed@3();
 };

@@ -50,7 +50,11 @@ bool MediaRouterDialogControllerViews::ShowMediaRouterDialogForPresentation(
     return MediaRouterDialogController::ShowMediaRouterDialogForPresentation(
         std::move(context));
   }
+#if BUILDFLAG(IS_CHROMEOS)
   ShowGlobalMediaControlsDialog(std::move(context));
+#else
+  ShowGlobalMediaControlsDialogAsync(std::move(context));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return true;
 }
 
@@ -170,14 +174,17 @@ void MediaRouterDialogControllerViews::DestroyMediaRouterUI() {
   ui_.reset();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog(
     std::unique_ptr<StartPresentationContext> context) {
-#if BUILDFLAG(IS_CHROMEOS)
   Profile* const profile =
       Profile::FromBrowserContext(initiator()->GetBrowserContext());
   MediaNotificationServiceFactory::GetForProfile(profile)->ShowDialogAsh(
       std::move(context));
+}
 #else
+void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialogAsync(
+    std::unique_ptr<StartPresentationContext> context) {
   // Show the WebContents requesting a dialog.
   initiator()->GetDelegate()->ActivateContents(initiator());
 
@@ -186,7 +193,21 @@ void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog(
   MediaNotificationService* const service =
       MediaNotificationServiceFactory::GetForProfile(profile);
   service->OnStartPresentationContextCreated(std::move(context));
+  // This needs to be async because it needs to happen after UI preparations
+  // (done through OnStartPresentationContextCreated()) that may happen
+  // asynchronously as it crosses a Mojo boundary.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog,
+          weak_ptr_factory_.GetWeakPtr()));
+}
 
+void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog() {
+  Profile* const profile =
+      Profile::FromBrowserContext(initiator()->GetBrowserContext());
+  MediaNotificationService* const service =
+      MediaNotificationServiceFactory::GetForProfile(profile);
   MediaToolbarButtonView* const media_button = GetMediaButton();
   // If there exists a media button, anchor the dialog to this media button.
   if (media_button) {
@@ -217,8 +238,8 @@ void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog(
             global_media_controls::GlobalMediaControlsEntryPoint::
                 kPresentation));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 MediaToolbarButtonView* MediaRouterDialogControllerViews::GetMediaButton() {
   if (hide_media_button_for_testing_) {
