@@ -636,7 +636,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="4508528996305412043">Feedkortmenuen er åbnet</translation>
 <translation id="4508642716788467538">Vælg dit sprog</translation>
 <translation id="4509501256689523862">Om de annoncer, du ser på nettet, er tilpassede, afhænger af denne indstilling for <ph name="BEGIN_LINK_1" />annonceemner<ph name="END_LINK_1" />, dine <ph name="BEGIN_LINK_2" />cookieindstillinger<ph name="END_LINK_2" />, og om det website, du besøger, tilpasser annoncer.</translation>
-<translation id="4513387527876475750">{DAYS,plural, =1{For 1 dag siden}one{1 dag siden}other{For # dage siden}}</translation>
+<translation id="4513387527876475750">{DAYS,plural, =1{1 dag siden}one{1 dag siden}other{# dag siden}}</translation>
 <translation id="451872707440238414">Søg i dine bogmærker</translation>
 <translation id="4521489764227272523">De valgte data er fjernet fra Chrome og synkroniserede enheder.
 
