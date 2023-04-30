@@ -266,6 +266,9 @@ component("skia") {
   if (is_linux || is_chromeos) {
     sources += [ "ext/fontmgr_default_linux.cc" ]
   }
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
   if (is_ios) {
     public += [ "ext/skia_utils_ios.h" ]
     sources += [ "ext/skia_utils_ios.mm" ]
@@ -882,6 +885,7 @@ source_set("test_fonts") {
   if (is_mac) {
     public = [ "ext/test_fonts.h" ]
     sources = [ "ext/test_fonts_mac.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [ "//base" ]
   }
 }
@@ -896,6 +900,9 @@ test("skia_unittests") {
     "ext/skia_memory_dump_provider_unittest.cc",
     "ext/skia_utils_base_unittest.cc",
   ]
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
   if (is_ios) {
     sources += [ "ext/skia_utils_ios_unittest.mm" ]
   }

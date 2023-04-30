@@ -14,6 +14,10 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 const uint8_t kICOHeaderMagic[4] = {0x00, 0x00, 0x01, 0x00};

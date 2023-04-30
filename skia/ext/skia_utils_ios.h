@@ -16,9 +16,8 @@
 @class UIImage;
 @class NSData;
 #else
-class UIColor;
+// TODO(https://crbug.com/1433041): Remove this.
 class UIImage;
-class NSData;
 #endif
 
 namespace skia {
@@ -29,9 +28,12 @@ SK_API SkBitmap CGImageToSkBitmap(CGImageRef image,
                                   bool is_opaque);
 
 // Given an SkBitmap and a color space, return an autoreleased UIImage.
+// TODO(https://crbug.com/1433041): Restrict this to Objective-C callers.
 SK_API UIImage* SkBitmapToUIImageWithColorSpace(const SkBitmap& skia_bitmap,
                                                 CGFloat scale,
                                                 CGColorSpaceRef color_space);
+
+#ifdef __OBJC__
 
 // Decodes all image representations inside the data into a vector of SkBitmaps.
 // Returns a vector of all the successfully decoded representations or an empty
@@ -46,8 +48,10 @@ SK_API std::vector<SkBitmap> ImageDataToSkBitmaps(NSData* image_data);
 SK_API std::vector<SkBitmap> ImageDataToSkBitmapsWithMaxSize(NSData* image_data,
                                                              CGFloat max_size);
 
-// Returns a UIColor for an SKColor. Used by iOS downstream.
+// Returns a UIColor for an SKColor.
 SK_API UIColor* UIColorFromSkColor(SkColor color);
+
+#endif  // __OBJC__
 
 }  // namespace skia
 

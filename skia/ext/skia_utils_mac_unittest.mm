@@ -8,10 +8,13 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -76,27 +79,25 @@ SkBitmap SkiaUtilsMacTest::CreateSkBitmap(int width,
 NSImage* SkiaUtilsMacTest::CreateNSImage(int width, int height) {
   // An `NSBitmapImageRep` can only be created with a handful of named color
   // spaces, and sRGB isn't one. Do a retagging after creation to switch it.
-  base::scoped_nsobject<NSBitmapImageRep> initial_bitmap(
-      [[NSBitmapImageRep alloc]
-          initWithBitmapDataPlanes:nil
-                        pixelsWide:width
-                        pixelsHigh:height
-                     bitsPerSample:8
-                   samplesPerPixel:4
-                          hasAlpha:YES
-                          isPlanar:NO
-                    colorSpaceName:NSCalibratedRGBColorSpace
-                      bitmapFormat:0
-                       bytesPerRow:4 * width
-                      bitsPerPixel:32]);
+  NSBitmapImageRep* initial_bitmap = [[NSBitmapImageRep alloc]
+      initWithBitmapDataPlanes:nil
+                    pixelsWide:width
+                    pixelsHigh:height
+                 bitsPerSample:8
+               samplesPerPixel:4
+                      hasAlpha:YES
+                      isPlanar:NO
+                colorSpaceName:NSCalibratedRGBColorSpace
+                  bitmapFormat:0
+                   bytesPerRow:4 * width
+                  bitsPerPixel:32];
   NSBitmapImageRep* bitmap = [initial_bitmap
       bitmapImageRepByRetaggingWithColorSpace:NSColorSpace.sRGBColorSpace];
 
   {
     gfx::ScopedNSGraphicsContextSaveGState scopedGState;
-    [NSGraphicsContext
-        setCurrentContext:[NSGraphicsContext
-                              graphicsContextWithBitmapImageRep:bitmap]];
+    NSGraphicsContext.currentContext =
+        [NSGraphicsContext graphicsContextWithBitmapImageRep:bitmap];
 
     CGFloat comps[] = {1.0, 0.0, 0.0, 1.0};
     NSColor* color = [NSColor colorWithColorSpace:NSColorSpace.sRGBColorSpace
@@ -106,11 +107,10 @@ NSImage* SkiaUtilsMacTest::CreateNSImage(int width, int height) {
     NSRectFill(NSMakeRect(0, 0, width, height));
   }
 
-  base::scoped_nsobject<NSImage> image(
-      [[NSImage alloc] initWithSize:NSMakeSize(width, height)]);
+  NSImage* image = [[NSImage alloc] initWithSize:NSMakeSize(width, height)];
   [image addRepresentation:bitmap];
 
-  return [image.release() autorelease];
+  return image;
 }
 
 void SkiaUtilsMacTest::TestImageRep(NSBitmapImageRep* image_rep,

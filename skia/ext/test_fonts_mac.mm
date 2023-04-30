@@ -9,7 +9,12 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/mac/bridging.h"
 #include "base/mac/foundation_util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace skia {
 
@@ -27,7 +32,7 @@ void InitializeSkFontMgrForTest() {
 
   if (@available(macOS 10.15, *)) {
     CTFontManagerRegisterFontURLs(
-        base::mac::NSToCFCast(font_urls), kCTFontManagerScopeProcess,
+        base::mac::NSToCFPtrCast(font_urls), kCTFontManagerScopeProcess,
         /*enabled=*/true, ^bool(CFArrayRef errors, bool done) {
           if (CFArrayGetCount(errors)) {
             DLOG(FATAL) << "Failed to activate fonts.";
@@ -35,12 +40,10 @@ void InitializeSkFontMgrForTest() {
           return true;
         });
   } else {
-    CFArrayRef errors = nullptr;
-    if (!CTFontManagerRegisterFontsForURLs(base::mac::NSToCFCast(font_urls),
+    if (!CTFontManagerRegisterFontsForURLs(base::mac::NSToCFPtrCast(font_urls),
                                            kCTFontManagerScopeProcess,
-                                           &errors)) {
+                                           /*errors=*/nullptr)) {
       DLOG(FATAL) << "Failed to activate fonts.";
-      CFRelease(errors);
     }
   }
 }
