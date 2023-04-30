@@ -311,13 +311,14 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NavigateAwayFromHungRenderer) {
   // SiteInstance. Then immediately hang the renderer so that title3.html can't
   // load in this process.
   content::WebContentsAddedObserver web_contents_added_observer;
-  bool dummy_value;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      tab1->GetPrimaryMainFrame(),
-      "window.open('title3.html', '_blank');\n"
-      "window.domAutomationController.send(false);\n"
-      "while(1);",
-      &dummy_value));
+  content::DOMMessageQueue message_queue;
+  content::ExecuteScriptAsync(tab1->GetPrimaryMainFrame(),
+                              "window.open('title3.html', '_blank');\n"
+                              "window.domAutomationController.send(false);\n"
+                              "while(1);");
+  std::string message;
+  EXPECT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("false", message);
 
   // Blocks until a new WebContents appears as a result of window.open().
   WebContents* tab2 = web_contents_added_observer.GetWebContents();
