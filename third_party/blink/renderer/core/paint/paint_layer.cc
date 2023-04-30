@@ -126,7 +126,6 @@ struct SameSizeAsPaintLayer : GarbageCollected<PaintLayer>, DisplayItemClient {
 #endif
   Member<void*> members[9];
   PhysicalOffset offset;
-  LayoutSize size;
   LayoutUnit layout_units[2];
   std::unique_ptr<void*> pointer;
 };
@@ -560,11 +559,6 @@ void PaintLayer::Update3DTransformedDescendantStatus() {
 }
 
 void PaintLayer::UpdateLayerPosition() {
-  // LayoutBoxes will call UpdateSizeAndScrollingAfterLayout() from
-  // LayoutBox::UpdateAfterLayout, but LayoutInlines will still need to update
-  // their size.
-  if (GetLayoutObject().IsLayoutInline())
-    UpdateSize();
   if (RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
     return;
   }
@@ -593,30 +587,15 @@ void PaintLayer::UpdateLayerPosition() {
 #endif
 }
 
-bool PaintLayer::UpdateSize() {
-  LayoutSize old_size = size_;
-  if (IsRootLayer()) {
-    size_ = LayoutSize(GetLayoutObject().GetDocument().View()->Size());
-  } else if (GetLayoutObject().IsInline() &&
-             GetLayoutObject().IsLayoutInline()) {
-    auto& inline_flow = To<LayoutInline>(GetLayoutObject());
-    gfx::Rect line_box =
-        ToEnclosingRect(inline_flow.PhysicalLinesBoundingBox());
-    size_ = LayoutSize(line_box.size());
-  } else if (LayoutBox* box = GetLayoutBox()) {
-    size_ = box->Size();
-  }
-
-  return old_size != size_;
-}
-
-void PaintLayer::UpdateSizeAndScrollingAfterLayout() {
-  bool did_resize = UpdateSize();
+void PaintLayer::UpdateScrollingAfterLayout() {
   if (RequiresScrollableArea()) {
     DCHECK(scrollable_area_);
     scrollable_area_->UpdateAfterLayout();
-    if (did_resize)
+    LayoutBox* layout_box = GetLayoutBox();
+    if (layout_box->ScrollableAreaSizeChanged()) {
       scrollable_area_->VisibleSizeChanged();
+      layout_box->SetScrollableAreaSizeChanged(false);
+    }
   }
 }
 

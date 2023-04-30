@@ -922,12 +922,12 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
     DCHECK(!physical_fragment.HasItems());
   }
 
-  CopyFragmentDataToLayoutBox(constraint_space, *layout_result, break_token);
   if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
       !layout_result->PhysicalFragment().BreakToken() &&
       box_->Size() != old_box_size) {
     box_->SizeChanged();
   }
+  CopyFragmentDataToLayoutBox(constraint_space, *layout_result, break_token);
 }
 
 void NGBlockNode::StoreResultInLayoutBox(const NGLayoutResult* result,

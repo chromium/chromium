@@ -1241,7 +1241,6 @@ void LocalFrameView::ViewportSizeChanged(bool width_changed,
     // TODO(bokan): IsOutermostMainFrame may need to be reevaluated for
     // portals.
     if (GetFrame().IsOutermostMainFrame()) {
-      layout_view->Layer()->UpdateSize();
       if (auto* scrollable_area = layout_view->GetScrollableArea())
         scrollable_area->ClampScrollOffsetAfterOverflowChange();
     }

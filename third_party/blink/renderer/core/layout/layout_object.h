@@ -3494,6 +3494,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(b);
   }
 
+  bool ScrollableAreaSizeChanged() const {
+    NOT_DESTROYED();
+    return bitfields_.ScrollableAreaSizeChanged();
+  }
+  void SetScrollableAreaSizeChanged(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetScrollableAreaSizeChanged(b);
+  }
+
   // Returns true if this layout object is created for an element which will be
   // changing behaviour for overflow: visible.
   // See
@@ -3721,12 +3730,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetMightTraversePhysicalFragments(b);
   }
 
-  // See LayoutObjectBitfields::has_valid_cached_geometry_.
   void SetHasValidCachedGeometry(bool b) {
     NOT_DESTROYED();
     bitfields_.SetHasValidCachedGeometry(b);
   }
-  // See LayoutObjectBitfields::has_valid_cached_geometry_.
   bool HasValidCachedGeometry() const {
     NOT_DESTROYED();
     return bitfields_.HasValidCachedGeometry();
@@ -4300,6 +4307,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // physical fragments.
     // This is set to false when LayoutBox::layout_results_ is updated.
     ADD_BOOLEAN_BITFIELD(has_valid_cached_geometry_, HasValidCachedGeometry);
+
+    // True if the size has changed since the associated PaintLayer updated
+    // its scrollable area.
+    ADD_BOOLEAN_BITFIELD(scrollable_area_size_changed_,
+                         ScrollableAreaSizeChanged);
   };
 
 #undef ADD_BOOLEAN_BITFIELD

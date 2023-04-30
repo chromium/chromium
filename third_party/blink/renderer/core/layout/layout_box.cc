@@ -1254,7 +1254,7 @@ void LayoutBox::UpdateAfterLayout() {
   // transform after layout.
   if (HasLayer()) {
     Layer()->UpdateTransform();
-    Layer()->UpdateSizeAndScrollingAfterLayout();
+    Layer()->UpdateScrollingAfterLayout();
   }
 
   GetFrame()->GetInputMethodController().DidUpdateLayout(*this);
@@ -1513,7 +1513,7 @@ void LayoutBox::SetLocationAndUpdateOverflowControlsIfNeeded(
       old_pixel_snapped_border_rect_size) {
     bool needed_layout = NeedsLayout();
     PaintLayerScrollableArea::FreezeScrollbarsScope freeze_scrollbar;
-    Layer()->UpdateSizeAndScrollingAfterLayout();
+    Layer()->UpdateScrollingAfterLayout();
     // The above call should not schedule new NeedsLayout.
     DCHECK(needed_layout || !NeedsLayout());
   }
@@ -2712,6 +2712,7 @@ void LayoutBox::LocationChanged() {
 
 void LayoutBox::SizeChanged() {
   NOT_DESTROYED();
+  SetScrollableAreaSizeChanged(true);
   // The size may change because of layout of other objects. Should check this
   // object for paint invalidation.
   if (!NeedsLayout())
