@@ -134507,6 +134507,19 @@
         ]
        },
        "track-sizing": {
+        "masonry-track-sizing-explicit-block.html": [
+         "05f60893900f44753d4873e60d4b348bd6270a07",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/track-sizing/masonry-track-sizing-explicit-block-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "masonry-track-sizing-overflow-left-side.html": [
          "cd1b78a47b6d2f9feed861a75ba19b4331c748a1",
          [
@@ -134527,6 +134540,19 @@
           [
            [
             "/css/css-grid/masonry/tentative/track-sizing/masonry-track-sizing-overflow-right-side-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "masonry-track-sizing-span-row.html": [
+         "6058ca5e7441c87db5f29cdb37d09e55134ead82",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/track-sizing/masonry-track-sizing-span-row-ref.html",
             "=="
            ]
           ],
@@ -270664,16 +270690,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "6c540c1c9190a0badfcbba4699ebc5fcc80375ab",
-     []
-    ],
-    "mtime.json": [
-     "796d55ec7c99a2cd9b11e91801d64397f63a99d4",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -305405,12 +305421,20 @@
         ]
        },
        "track-sizing": {
+        "masonry-track-sizing-explicit-block-ref.html": [
+         "993017919f39d72a8408de68b0c797e59ff3aebd",
+         []
+        ],
         "masonry-track-sizing-overflow-left-side-ref.html": [
          "5a31517183244d714a18e48bec3e65d890a5434d",
          []
         ],
         "masonry-track-sizing-overflow-right-side-ref.html": [
          "51e657e2a4292fa97bd2617114509a6bd0ba48d7",
+         []
+        ],
+        "masonry-track-sizing-span-row-ref.html": [
+         "b3e5fef233b3fe8bc9947ca6eb20580c70889f37",
          []
         ]
        }
