@@ -1593,8 +1593,6 @@ component("platform") {
       "fonts/mac/font_matcher_mac.mm",
       "fonts/mac/font_platform_data_mac.h",
       "fonts/mac/font_platform_data_mac.mm",
-      "mac/block_exceptions.h",
-      "mac/block_exceptions.mm",
       "mac/color_mac.h",
       "mac/color_mac.mm",
       "mac/graphics_context_canvas.h",
