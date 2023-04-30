@@ -293,6 +293,7 @@
 <translation id="3484914941826596830">ဖားမ်ဝဲအပ်ဒိတ်လုပ်နေစဉ် ဤပြင်ပကိရိယာကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင်၏ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ ယခုအပ်ဒိတ်သည် မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပကိရိယာ အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="3486220673238053218">အဓိပ္ပါယ် ဖွင့်ဆိုချက်</translation>
 <translation id="3488065109653206955">တစ်စိတ်တစ်ဒေသ ဖွင့်သုံးနေ</translation>
+<translation id="3502426834823382181">အက်ပ်အားလုံး ကြည့်ရန်</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />စွမ်းဆောင်ရည် မှတ်တမ်းဒေတာ<ph name="END_LINK1" /> ပို့ရန်</translation>
 <translation id="3517001332549868749">ChromeOS အပ်ဒိတ်</translation>
 <translation id="3527036260304016759">မအောင်မြင်ပါ - အမည်မသိ အမှား</translation>
@@ -636,6 +637,7 @@
 <translation id="6278428485366576908">အပြင်အဆင်</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">အမှောင်နောက်ခံ ဖွင့်ရန်</translation>
+<translation id="6285899124799306373">Launcher ဖွင့်ရန်</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> စစ်ဆေးမှုကို ပယ်ဖျက်လိုက်သည်</translation>
 <translation id="631063167932043783">Explore အက်ပ်</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> တွင် ဖာမ်းဝဲအပ်ဒိတ်လုပ်ရန်</translation>
@@ -651,6 +653,7 @@
 <translation id="6382182670717268353">စခရင်နားချိန်ပုံ အစမ်းကြည့်ရှုခြင်း</translation>
 <translation id="6388847657025262518">စကင်ဖတ်စက်၏ စာရွက်ထည့်ရန်ဗန်း ညပ်နေသည်။ ဗန်းကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6394634179843537518">ဖိုင်ထည့်ရန်</translation>
+<translation id="6401427872449207797">ဘရောင်ဇာ ရှာဖွေမှု</translation>
 <translation id="6410257289063177456">ပုံ ဖိုင်များ</translation>
 <translation id="641081527798843608">တိုက်ဆိုင်သည့် အကြောင်းအရာ</translation>
 <translation id="6412715219990689313">အသင့်ပါကီးဘုတ်</translation>
@@ -876,6 +879,7 @@
 <translation id="8312330582793120272">မီဒီယာဖွင့်ရန်</translation>
 <translation id="8318753676953949627">ပုံများ မရှိပါ</translation>
 <translation id="8329018942023753850">ဂဏန်းတွက်စက် အက်ပ်</translation>
+<translation id="8335869473001018124">ရှာဖွေမှုကို ဖွင့်ရန်</translation>
 <translation id="8336739000755212683">စက်ပစ္စည်း၏ အကောင့်ပုံ ပြောင်းရန်</translation>
 <translation id="8347227221149377169">ပရင့်ထုတ်ရန် ဖိုင်များ</translation>
 <translation id="8351855506390808906">ကီးနေရာချသည့် ထိမှတ်</translation>

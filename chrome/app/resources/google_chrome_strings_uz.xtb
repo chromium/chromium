@@ -115,6 +115,7 @@
 <translation id="2929907241665500097">Notanish xatolik tufayli Chrome yangilanmadi. <ph name="BEGIN_LINK" />Chromedagi yangilanish muammolari va xatoliklarni tuzatish.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Tarmoqqa kirish - Chrome</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex yangilanishi uchun qayta ishga tushirish</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome HID qurilmalarga kirgan}=1{Google Chrome kengaytmalari HID qurilmalarga kirmoqda}other{Google Chrome kengaytmalari # ta HID qurilmaga kirmoqda}}</translation>
 <translation id="303514781271618814">Chrome saytlarga kamroq maʼlumotlaringiz bilan bir xil brauzer xizmatlarini taqdim etishiga imkon beruvchi yangi funksiyalarni oʻrganib chiqmoqda</translation>
 <translation id="3037838751736561277">Google Chrome orqa fon rejimida ishlamoqda.</translation>
 <translation id="3038232873781883849">Oʻrnatish kutilmoqda…</translation>
@@ -220,6 +221,7 @@
 <translation id="4970880042055371251">ChromeOS versiyasi</translation>
 <translation id="4970947549776831107">Bu fayl turi zararli boʻlgani sababli Chrome uni blokladi</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome kengaytmasi HID qurilmalarga kirgan}=1{Google Chrome kengaytmasi 1 ta HID qurilmaga kirmoqda}other{Google Chrome kengaytmasi # ta HID qurilmaga kirmoqda}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Administrator Chrome 1 daqiqa davomida ishlatilmasa avtomatik yopilishini sozlagan. Brauzer maʼlumotlari oʻchiriladi. Jumladan, tarix, avtomatik kiritish va yuklanmalar.}other{Administrator Chrome # daqiqa davomida ishlatilmasa avtomatik yopilishini sozlagan. Brauzer maʼlumotlari oʻchiriladi. Jumladan, tarix, avtomatik kiritish va yuklanmalar.}}</translation>
 <translation id="5098668839038261629">Bu yoqilsa, Chrome dasturida ham hisobingizdan chiqasiz</translation>
 <translation id="5132929315877954718">Google Chrome uchun zo‘r ilovalar, o‘yinlar, kengaytmalar va mavzular bilan tanishing.</translation>
