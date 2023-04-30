@@ -8,7 +8,7 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {SettingsChromeVoxSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {BluetoothBrailleDisplayUiElement, SettingsChromeVoxSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {ChromeVoxSubpageBrowserProxyImpl, CrSettingsPrefs, SettingsDropdownMenuElement, SettingsPrefsElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -276,5 +276,41 @@ suite('<settings-chromevox-subpage>', () => {
       {name: 'bnx', value: 'bnx'},
     ];
     assertDeepEquals(expectedMenuOptions, voiceDropdown.menuOptions);
+  });
+
+  test('connect button works', async function() {
+    // Mock chrome.bluetooth.getDevice using `display` as the backing source.
+    const displays = [{name: 'VarioUltra', address: 'abcd1234', paired: true}];
+    chrome.bluetooth.getDevice = async address =>
+        displays.find(display => display.address === address)!;
+
+    // Get Bluetooth Braille Display UI element.
+    const bluetoothBrailleDisplayUi =
+        page.shadowRoot!.querySelector<BluetoothBrailleDisplayUiElement>(
+            'bluetooth-braille-display-ui');
+    assert(bluetoothBrailleDisplayUi);
+
+    // Update list of devices.
+    await bluetoothBrailleDisplayUi.onDisplayListChanged(displays);
+
+    // Get Bluetooth Braille Display dropdown element.
+    const dropdownMenu =
+        bluetoothBrailleDisplayUi.shadowRoot!
+            .querySelector<SettingsDropdownMenuElement>('#displaySelect');
+    assert(dropdownMenu);
+
+    // Get Bluetooth Braille Display select element.
+    const selectElement =
+        dropdownMenu.shadowRoot!.querySelector<HTMLSelectElement>('select');
+    assert(selectElement);
+
+    // Select VarioUltra simulated device.
+    selectElement.value = 'abcd1234';
+    selectElement.dispatchEvent(
+        new CustomEvent('change', {bubbles: true, composed: true}));
+    await waitAfterNextRender(selectElement);
+
+    // Update list of devices.
+    await bluetoothBrailleDisplayUi.onDisplayListChanged(displays);
   });
 });

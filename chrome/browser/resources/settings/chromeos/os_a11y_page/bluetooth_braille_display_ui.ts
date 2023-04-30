@@ -20,6 +20,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 
 import {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './bluetooth_braille_display_manager.js';
@@ -28,15 +29,6 @@ import {getTemplate} from './bluetooth_braille_display_ui.html.js';
 const CONNECTED_METRIC_NAME =
     'Accessibility.ChromeVox.BluetoothBrailleDisplayConnectedButtonClick';
 const PINCODE_TIMEOUT_MS = 60000;
-
-export interface BluetoothBrailleDisplayUiElement {
-  $: {
-    connectOrDisconnect: CrButtonElement,
-    forget: CrButtonElement,
-    displaySelect: SettingsDropdownMenuElement,
-    controls: HTMLDivElement,
-  };
-}
 
 /**
  * A widget used for interacting with bluetooth braille displays.
@@ -174,8 +166,12 @@ export class BluetoothBrailleDisplayUiElement extends
       }
     }
 
-    const connectOrDisconnect = this.$.connectOrDisconnect;
-    const displaySelect = this.$.displaySelect;
+    const connectOrDisconnect =
+        castExists(this.shadowRoot!.querySelector<CrButtonElement>(
+            '#connectOrDisconnect'));
+    const displaySelect =
+        castExists(this.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#displaySelect'));
 
     connectOrDisconnect.disabled = display.connecting!;
     displaySelect.disabled = display.connecting!;
@@ -192,7 +188,8 @@ export class BluetoothBrailleDisplayUiElement extends
       }
     };
 
-    const forget = this.$.forget;
+    const forget =
+        castExists(this.shadowRoot!.querySelector<CrButtonElement>('#forget'));
     forget.disabled = (!display.paired || display.connecting)!;
     forget.onclick = () => this.manager_.forget(display);
   }
