@@ -2029,8 +2029,7 @@ FrameNavigationDisabler::~FrameNavigationDisabler() {
 
 LocalFrame::LazyLoadImageSetting LocalFrame::GetLazyLoadImageSetting() const {
   DCHECK(GetSettings());
-  if (!RuntimeEnabledFeatures::LazyImageLoadingEnabled() ||
-      !GetSettings()->GetLazyLoadEnabled()) {
+  if (!GetSettings()->GetLazyLoadEnabled()) {
     return LocalFrame::LazyLoadImageSetting::kDisabled;
   }
 
