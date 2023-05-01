@@ -15,12 +15,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAnimatedImageResume);
 CC_BASE_EXPORT extern bool IsImpulseScrollAnimationEnabled();
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSynchronizedScrolling);
 
-// Elastic overscroll on Android can change scale causing a lot of raster.
-// This is wasteful and visually unnecessary since it's a short animation
-// that resets the scale at the end. When enabled, this aovids recomputing
-// raster scale during elastic overscroll.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAvoidRasterDuringElasticOverscroll);
-
 // When enabled, the double tap to zoom will be disabled when the viewport
 // meta tag is properly set for mobile using content=width=device-width
 // or content=initial-scale=1.0

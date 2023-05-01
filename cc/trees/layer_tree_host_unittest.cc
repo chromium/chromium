@@ -5989,8 +5989,6 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAvoidRasterDuringElasticOverscroll};
   FakeContentLayerClient client_;
   raw_ptr<Layer> root_layer_;
   raw_ptr<ScrollElasticityHelper> scroll_elasticity_helper_;
