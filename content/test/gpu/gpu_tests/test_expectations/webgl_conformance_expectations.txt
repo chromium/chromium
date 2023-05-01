@@ -466,6 +466,10 @@ crbug.com/1276186 [ mac amd-0x67ef angle-opengl ] conformance/rendering/clear-de
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/1435021 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/texture-active-bind.html [ Failure ]
 
+## Mac Intel ##
+
+crbug.com/1440905 [ mac intel ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
+
 ## Mac Retina NVidia failures / flakes ##
 
 crbug.com/996344 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop.html [ Failure ]
