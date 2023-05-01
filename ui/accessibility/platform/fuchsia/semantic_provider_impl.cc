@@ -4,21 +4,32 @@
 
 #include "ui/accessibility/platform/fuchsia/semantic_provider_impl.h"
 
+#include <fidl/fuchsia.ui.gfx/cpp/fidl.h>
+#include <lib/async/default.h>
 #include <lib/sys/cpp/component_context.h>
-#include <lib/ui/scenic/cpp/commands.h>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/process_context.h"
+#include "base/strings/string_piece.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 namespace {
 
-using fuchsia::accessibility::semantics::Node;
+using fuchsia_accessibility_semantics::Node;
 
 constexpr size_t kMaxOperationsPerBatch = 16;
+
+SemanticTreeEventHandler::SemanticTreeEventHandler(
+    base::OnceCallback<void(fidl::UnbindInfo)> on_fidl_error_callback)
+    : on_fidl_error_callback_(std::move(on_fidl_error_callback)) {}
+SemanticTreeEventHandler::~SemanticTreeEventHandler() = default;
+
+void SemanticTreeEventHandler::on_fidl_error(fidl::UnbindInfo error) {
+  std::move(on_fidl_error_callback_).Run(error);
+}
 
 }  // namespace
 
@@ -34,7 +45,7 @@ bool AXFuchsiaSemanticProviderImpl::Batch::IsFull() const {
 }
 
 void AXFuchsiaSemanticProviderImpl::Batch::Append(
-    fuchsia::accessibility::semantics::Node node) {
+    fuchsia_accessibility_semantics::Node node) {
   DCHECK_EQ(type_, Type::kUpdate);
   DCHECK(!IsFull());
   updates_.push_back(std::move(node));
@@ -48,11 +59,18 @@ void AXFuchsiaSemanticProviderImpl::Batch::AppendDeletion(
 }
 
 void AXFuchsiaSemanticProviderImpl::Batch::Apply(
-    fuchsia::accessibility::semantics::SemanticTreePtr* semantic_tree) {
-  if (type_ == Type::kUpdate && !updates_.empty())
-    (*semantic_tree)->UpdateSemanticNodes(std::move(updates_));
-  else if (type_ == Type::kDelete && !delete_node_ids_.empty())
-    (*semantic_tree)->DeleteSemanticNodes(std::move(delete_node_ids_));
+    fidl::Client<fuchsia_accessibility_semantics::SemanticTree>*
+        semantic_tree) {
+  if (type_ == Type::kUpdate && !updates_.empty()) {
+    auto result = (*semantic_tree)->UpdateSemanticNodes(std::move(updates_));
+    LOG_IF(ERROR, result.is_error())
+        << base::FidlMethodResultErrorMessage(result, "UpdateSemanticNodes");
+  } else if (type_ == Type::kDelete && !delete_node_ids_.empty()) {
+    auto result =
+        (*semantic_tree)->DeleteSemanticNodes(std::move(delete_node_ids_));
+    LOG_IF(ERROR, result.is_error())
+        << base::FidlMethodResultErrorMessage(result, "DeleteSemanticNodes");
+  }
 }
 
 AXFuchsiaSemanticProviderImpl::NodeInfo ::NodeInfo() = default;
@@ -62,35 +80,68 @@ AXFuchsiaSemanticProviderImpl::Delegate::Delegate() = default;
 AXFuchsiaSemanticProviderImpl::Delegate::~Delegate() = default;
 
 AXFuchsiaSemanticProviderImpl::AXFuchsiaSemanticProviderImpl(
-    fuchsia::ui::views::ViewRef view_ref,
+    fuchsia_ui_views::ViewRef view_ref,
     Delegate* delegate)
-    : view_ref_(std::move(view_ref)),
-      delegate_(delegate),
-      semantic_listener_binding_(this) {
-  sys::ComponentContext* component_context = base::ComponentContextForProcess();
-  DCHECK(component_context);
+    : delegate_(delegate) {
   DCHECK(delegate_);
 
-  component_context->svc()
-      ->Connect<fuchsia::accessibility::semantics::SemanticsManager>()
-      ->RegisterViewForSemantics(std::move(view_ref_),
-                                 semantic_listener_binding_.NewBinding(),
-                                 semantic_tree_.NewRequest());
-  semantic_tree_.set_error_handler([this](zx_status_t status) {
-    ZX_LOG(ERROR, status) << "SemanticTree disconnected";
-    delegate_->OnSemanticsManagerConnectionClosed(status);
-    semantic_updates_enabled_ = false;
-  });
+  auto semantics_manager_client_end = base::fuchsia_component::Connect<
+      fuchsia_accessibility_semantics::SemanticsManager>();
+  // TODO(crbug.com/1431519): Create a path for gracefully failing to connect to
+  // SemanticsManager instead of CHECKing.
+  CHECK(semantics_manager_client_end.is_ok())
+      << base::FidlConnectionErrorMessage(semantics_manager_client_end);
+  fidl::Client semantics_manager(
+      std::move(semantics_manager_client_end.value()),
+      async_get_default_dispatcher());
+
+  auto semantic_listener_endpoints = fidl::CreateEndpoints<
+      fuchsia_accessibility_semantics::SemanticListener>();
+  ZX_CHECK(semantic_listener_endpoints.is_ok(),
+           semantic_listener_endpoints.status_value());
+  semantic_listener_binding_.emplace(
+      async_get_default_dispatcher(),
+      std::move(semantic_listener_endpoints->server), this,
+      base::FidlBindingClosureWarningLogger(
+          "fuchsia.accessibility.semantics.SemanticListener"));
+
+  semantic_tree_event_handler_.emplace(base::BindOnce(
+      [](AXFuchsiaSemanticProviderImpl* semantic_provider,
+         fidl::UnbindInfo info) {
+        ZX_LOG(ERROR, info.status()) << "SemanticListener disconnected";
+        semantic_provider->delegate_->OnSemanticsManagerConnectionClosed(
+            info.status());
+        semantic_provider->semantic_updates_enabled_ = false;
+      },
+      this));
+
+  auto semantic_tree_endpoints =
+      fidl::CreateEndpoints<fuchsia_accessibility_semantics::SemanticTree>();
+  ZX_CHECK(semantic_tree_endpoints.is_ok(),
+           semantic_tree_endpoints.status_value());
+  semantic_tree_.Bind(std::move(semantic_tree_endpoints->client),
+                      async_get_default_dispatcher(),
+                      &semantic_tree_event_handler_.value());
+
+  auto result = semantics_manager->RegisterViewForSemantics({{
+      .view_ref = std::move(view_ref),
+      .listener = std::move(semantic_listener_endpoints->client),
+      .semantic_tree_request = std::move(semantic_tree_endpoints->server),
+  }});
+  if (result.is_error()) {
+    ZX_LOG(ERROR, result.error_value().status())
+        << "Error calling RegisterViewForSemantics()";
+  }
 }
 
 AXFuchsiaSemanticProviderImpl::~AXFuchsiaSemanticProviderImpl() = default;
 
 bool AXFuchsiaSemanticProviderImpl::Update(
-    fuchsia::accessibility::semantics::Node node) {
+    fuchsia_accessibility_semantics::Node node) {
   if (!semantic_updates_enabled())
     return false;
 
-  DCHECK(node.has_node_id());
+  DCHECK(node.node_id().has_value());
 
   // If the updated node is the root, we need to account for the pixel scale in
   // its transform.
@@ -103,37 +154,41 @@ bool AXFuchsiaSemanticProviderImpl::Update(
     // Convert to fuchsia's transform type.
     std::array<float, 16> mat = {};
     transform.GetColMajorF(mat.data());
-    fuchsia::ui::gfx::Matrix4Value fuchsia_transform =
-        scenic::NewMatrix4Value(mat);
+    fuchsia_ui_gfx::Matrix4Value fuchsia_transform{{
+        .value = {{
+            .matrix = std::move(mat),
+        }},
+        .variable_id = 0,
+    }};
 
     // The root node will never have an offset container, so its transform will
     // always be the identity matrix. Thus, we can safely overwrite it here.
-    node.set_node_to_container_transform(std::move(fuchsia_transform.value));
+    node.node_to_container_transform(std::move(fuchsia_transform.value()));
   } else {
-    auto found_not_reachable = not_reachable_.find(node.node_id());
+    auto found_not_reachable = not_reachable_.find(node.node_id().value());
     const bool is_not_reachable = found_not_reachable != not_reachable_.end();
     const absl::optional<uint32_t> parent_node_id =
-        GetParentForNode(node.node_id());
+        GetParentForNode(node.node_id().value());
     if (is_not_reachable && parent_node_id) {
       // Connection parent -> |node| exists now.
       not_reachable_.erase(found_not_reachable);
-      nodes_[node.node_id()].parents.insert(*parent_node_id);
+      nodes_[node.node_id().value()].parents.insert(*parent_node_id);
     } else if (!parent_node_id) {
       // No node or multiple nodes points to this one, so it is not reachable.
       if (!is_not_reachable)
-        not_reachable_[node.node_id()] = {};
+        not_reachable_[node.node_id().value()] = {};
     }
   }
 
   // If the node is not present in the map, the list of children will be empty
   // so this is a no-op in the call below.
-  std::vector<uint32_t>& children = nodes_[node.node_id()].children;
+  std::vector<uint32_t>& children = nodes_[node.node_id().value()].children;
 
   // Before updating the node, update the list of children to be not reachable,
   // in case the new list of children change.
-  MarkChildrenAsNotReachable(children, node.node_id());
-  children = node.has_child_ids() ? node.child_ids() : std::vector<uint32_t>();
-  MarkChildrenAsReachable(children, node.node_id());
+  MarkChildrenAsNotReachable(children, node.node_id().value());
+  children = node.child_ids().value_or(std::vector<uint32_t>());
+  MarkChildrenAsReachable(children, node.node_id().value());
 
   Batch& batch = GetCurrentUnfilledBatch(Batch::Type::kUpdate);
   batch.Append(std::move(node));
@@ -159,7 +214,7 @@ void AXFuchsiaSemanticProviderImpl::TryToCommit() {
   }
 
   batches_.clear();
-  semantic_tree_->CommitUpdates(
+  semantic_tree_->CommitUpdates().Then(
       fit::bind_member(this, &AXFuchsiaSemanticProviderImpl::OnCommitComplete));
   commit_inflight_ = true;
 }
@@ -191,8 +246,14 @@ bool AXFuchsiaSemanticProviderImpl::Delete(uint32_t node_id) {
 }
 
 void AXFuchsiaSemanticProviderImpl::SendEvent(
-    fuchsia::accessibility::semantics::SemanticEvent event) {
-  semantic_tree_->SendSemanticEvent(std::move(event), [](auto...) {});
+    fuchsia_accessibility_semantics::SemanticEvent event) {
+  semantic_tree_->SendSemanticEvent({{.semantic_event = std::move(event)}})
+      .Then(
+          [](fidl::Result<
+              fuchsia_accessibility_semantics::SemanticTree::SendSemanticEvent>&
+                 result) {
+            ZX_LOG_IF(ERROR, result.is_error(), result.error_value().status());
+          });
 }
 
 bool AXFuchsiaSemanticProviderImpl::HasPendingUpdates() const {
@@ -213,37 +274,46 @@ bool AXFuchsiaSemanticProviderImpl::Clear() {
 }
 
 void AXFuchsiaSemanticProviderImpl::OnAccessibilityActionRequested(
-    uint32_t node_id,
-    fuchsia::accessibility::semantics::Action action,
-    fuchsia::accessibility::semantics::SemanticListener::
-        OnAccessibilityActionRequestedCallback callback) {
-  if (delegate_->OnAccessibilityAction(node_id, action)) {
-    callback(true);
+    AXFuchsiaSemanticProviderImpl::OnAccessibilityActionRequestedRequest&
+        request,
+    AXFuchsiaSemanticProviderImpl::OnAccessibilityActionRequestedCompleter::
+        Sync& completer) {
+  if (delegate_->OnAccessibilityAction(request.node_id(), request.action())) {
+    completer.Reply(true);
     return;
   }
 
   // The action was not handled.
-  callback(false);
+  completer.Reply(false);
 }
 
-void AXFuchsiaSemanticProviderImpl::HitTest(fuchsia::math::PointF local_point,
-                                            HitTestCallback callback) {
-  fuchsia::math::PointF point;
-  point.x = local_point.x * pixel_scale_;
-  point.y = local_point.y * pixel_scale_;
-
-  delegate_->OnHitTest(point, std::move(callback));
+void AXFuchsiaSemanticProviderImpl::HitTest(
+    AXFuchsiaSemanticProviderImpl::HitTestRequest& request,
+    AXFuchsiaSemanticProviderImpl::HitTestCompleter::Sync& completer) {
+  delegate_->OnHitTest(
+      {{
+          .x = request.local_point().x() * pixel_scale_,
+          .y = request.local_point().y() * pixel_scale_,
+      }},
+      base::BindOnce(
+          [](HitTestCompleter::Async async_completer,
+             const fidl::Response<
+                 fuchsia_accessibility_semantics::SemanticListener::HitTest>&
+                 result) { async_completer.Reply(result); },
+          completer.ToAsync()));
   return;
 }
 
 void AXFuchsiaSemanticProviderImpl::OnSemanticsModeChanged(
-    bool update_enabled,
-    OnSemanticsModeChangedCallback callback) {
-  if (semantic_updates_enabled_ != update_enabled)
-    delegate_->OnSemanticsEnabled(update_enabled);
+    AXFuchsiaSemanticProviderImpl::OnSemanticsModeChangedRequest& request,
+    AXFuchsiaSemanticProviderImpl::OnSemanticsModeChangedCompleter::Sync&
+        completer) {
+  if (semantic_updates_enabled_ != request.updates_enabled()) {
+    delegate_->OnSemanticsEnabled(request.updates_enabled());
+  }
 
-  semantic_updates_enabled_ = update_enabled;
-  callback();
+  semantic_updates_enabled_ = request.updates_enabled();
+  completer.Reply();
 }
 
 void AXFuchsiaSemanticProviderImpl::MarkChildrenAsNotReachable(
@@ -312,12 +382,15 @@ AXFuchsiaSemanticProviderImpl::Batch&
 AXFuchsiaSemanticProviderImpl::GetCurrentUnfilledBatch(Batch::Type type) {
   if (batches_.empty() || batches_.back().type() != type ||
       batches_.back().IsFull())
-    batches_.push_back(Batch(type));
+    batches_.emplace_back(type);
 
   return batches_.back();
 }
 
-void AXFuchsiaSemanticProviderImpl::OnCommitComplete() {
+void AXFuchsiaSemanticProviderImpl::OnCommitComplete(
+    fidl::Result<fuchsia_accessibility_semantics::SemanticTree::CommitUpdates>&
+        result) {
+  ZX_LOG_IF(ERROR, result.is_error(), result.error_value().status());
   commit_inflight_ = false;
   TryToCommit();
 }
@@ -337,10 +410,10 @@ void AXFuchsiaSemanticProviderImpl::SetPixelScale(float pixel_scale) {
   // We need to fill the `child_ids` field to prevent Update() from trampling
   // our connectivity bookkeeping. Update() will handle setting the
   // `node_to_container_transform` field.
-  fuchsia::accessibility::semantics::Node root_node_update;
-  root_node_update.set_node_id(kFuchsiaRootNodeId);
-  root_node_update.set_child_ids(nodes_[kFuchsiaRootNodeId].children);
-  Update(std::move(root_node_update));
+  Update({{
+      .node_id = kFuchsiaRootNodeId,
+      .child_ids = nodes_[kFuchsiaRootNodeId].children,
+  }});
 }
 
 }  // namespace ui

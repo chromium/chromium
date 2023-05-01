@@ -2978,10 +2978,7 @@ test("content_unittests") {
   }
 
   if (is_fuchsia) {
-    deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics:fuchsia.accessibility.semantics_cpp",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics:fuchsia.accessibility.semantics_hlcpp",
-    ]
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics:fuchsia.accessibility.semantics_cpp" ]
   }
 
   if (enable_printing || enable_printing_unittests) {

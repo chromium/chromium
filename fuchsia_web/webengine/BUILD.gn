@@ -245,6 +245,7 @@ component("web_engine_core") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.settings:fuchsia.settings_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx:fuchsia.ui.gfx_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic:fuchsia.ui.scenic_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views:fuchsia.ui.views_cpp_hlcpp_conversion",
     "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",

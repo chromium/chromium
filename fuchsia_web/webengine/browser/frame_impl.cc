@@ -7,6 +7,7 @@
 #include <fidl/fuchsia.logger/cpp/fidl.h>
 #include <fidl/fuchsia.logger/cpp/hlcpp_conversion.h>
 #include <fidl/fuchsia.media.sessions2/cpp/hlcpp_conversion.h>
+#include <fidl/fuchsia.ui.views/cpp/hlcpp_conversion.h>
 #include <fuchsia/ui/gfx/cpp/fidl.h>
 #include <lib/fpromise/result.h>
 #include <lib/sys/cpp/component_context.h>
@@ -797,7 +798,7 @@ void FrameImpl::ConnectToAccessibilityBridge() {
   // TODO(crbug.com/1291613): Replace callbacks with an interface that
   // FrameImpl implements.
   accessibility_bridge_ = std::make_unique<ui::AccessibilityBridgeFuchsiaImpl>(
-      root_window(), window_tree_host_->CreateViewRef(),
+      root_window(), fidl::HLCPPToNatural(window_tree_host_->CreateViewRef()),
       base::BindRepeating(&FrameImpl::SetAccessibilityEnabled,
                           base::Unretained(this)),
       base::BindRepeating(&FrameImpl::OnAccessibilityError,
