@@ -23,7 +23,7 @@ namespace media_message_center {
 
 class MediaNotificationContainer;
 class MediaNotificationItem;
-class MediaControlsProgressView;
+class MediaSquigglyProgressView;
 
 namespace {
 class MediaButton;
@@ -91,7 +91,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
   // Callback for media action buttons.
   void ButtonPressed(views::Button* button);
 
-  // Callback for progress view to update media position.
+  // Callback for when the media squiggly progress view wants to update the
+  // progress position.
   void SeekTo(double seek_progress);
 
   // Raw pointer to the container holding this view. The |container_| should
@@ -121,7 +122,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::ImageView> chevron_icon_ = nullptr;
 
-  raw_ptr<MediaControlsProgressView> progress_view_ = nullptr;
+  raw_ptr<MediaSquigglyProgressView> squiggly_progress_view_ = nullptr;
   raw_ptr<MediaButton> play_pause_button_ = nullptr;
   raw_ptr<MediaButton> picture_in_picture_button_ = nullptr;
 };

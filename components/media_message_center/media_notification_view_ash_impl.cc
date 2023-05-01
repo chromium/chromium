@@ -4,10 +4,10 @@
 
 #include "components/media_message_center/media_notification_view_ash_impl.h"
 
-#include "components/media_message_center/media_controls_progress_view.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
+#include "components/media_message_center/media_squiggly_progress_view.h"
 #include "components/media_message_center/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -32,12 +32,12 @@ constexpr auto kBorderInsets = gfx::Insets::TLBR(16, 8, 8, 8);
 constexpr auto kMainRowInsets = gfx::Insets::VH(0, 8);
 constexpr auto kInfoColumnInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr auto kPlayPauseContainerInsets = gfx::Insets::VH(8, 0);
-constexpr auto kProgressViewInsets = gfx::Insets::VH(0, 14);
 constexpr auto kSourceLabelInsets = gfx::Insets::TLBR(0, 0, 10, 0);
 
 constexpr int kMainSeparator = 12;
 constexpr int kMainRowSeparator = 8;
 constexpr int kMediaInfoSeparator = 4;
+constexpr int kControlsRowSeparator = 2;
 constexpr int kChevronIconSize = 15;
 constexpr int kPlayPauseIconSize = 26;
 constexpr int kControlsIconSize = 20;
@@ -190,27 +190,29 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
       theme_.secondary_container_color_id, kPlayPauseButtonSize.height() / 2));
 
-  // |controls_row| holds all available media action buttons and the progress
-  // bar.
-  auto* controls_row = AddChildView(std::make_unique<views::View>());
-  auto* controls_row_layout =
-      controls_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
-  controls_row_layout->set_cross_axis_alignment(
+  // |controls_row| holds all the available media action buttons and the
+  // progress view.
+  auto* controls_row = AddChildView(std::make_unique<views::BoxLayoutView>());
+  controls_row->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+  controls_row->SetBetweenChildSpacing(kControlsRowSeparator);
 
+  // Create the previous track button.
   CreateMediaButton(controls_row, MediaSessionAction::kPreviousTrack);
-  progress_view_ =
-      controls_row->AddChildView(std::make_unique<MediaControlsProgressView>(
-          base::BindRepeating(&MediaNotificationViewAshImpl::SeekTo,
-                              base::Unretained(this)),
-          /*is_modern_notification=*/true));
-  progress_view_->SetForegroundColorId(theme_.primary_container_color_id);
-  progress_view_->SetBackgroundColorId(theme_.secondary_container_color_id);
-  progress_view_->SetProperty(views::kMarginsKey, kProgressViewInsets);
-  controls_row_layout->SetFlexForView(progress_view_, 1);
 
+  // Create the squiggly progress view.
+  squiggly_progress_view_ =
+      controls_row->AddChildView(std::make_unique<MediaSquigglyProgressView>(
+          theme_.primary_container_color_id,
+          theme_.secondary_container_color_id,
+          base::BindRepeating(&MediaNotificationViewAshImpl::SeekTo,
+                              base::Unretained(this))));
+  controls_row->SetFlexForView(squiggly_progress_view_, 1);
+
+  // Create the next track button.
   CreateMediaButton(controls_row, MediaSessionAction::kNextTrack);
+
+  // Create the picture in picture button.
   picture_in_picture_button_ = CreateMediaButton(
       controls_row, MediaSessionAction::kEnterPictureInPicture);
 
@@ -281,7 +283,7 @@ void MediaNotificationViewAshImpl::UpdateWithMediaActions(
 void MediaNotificationViewAshImpl::UpdateWithMediaPosition(
     const media_session::MediaPosition& position) {
   position_ = position;
-  progress_view_->UpdateProgress(position);
+  squiggly_progress_view_->UpdateProgress(position);
 }
 
 void MediaNotificationViewAshImpl::UpdateWithMediaArtwork(

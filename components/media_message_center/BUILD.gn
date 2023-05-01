@@ -27,6 +27,8 @@ component("media_message_center") {
     "media_notification_view_modern_impl.h",
     "media_notification_volume_slider_view.cc",
     "media_notification_volume_slider_view.h",
+    "media_squiggly_progress_view.cc",
+    "media_squiggly_progress_view.h",
     "notification_theme.h",
   ]
 
@@ -64,6 +66,7 @@ source_set("unit_tests") {
     "media_notification_view_impl_unittest.cc",
     "media_notification_view_modern_impl_unittest.cc",
     "media_notification_volume_slider_view_unittest.cc",
+    "media_squiggly_progress_view_unittest.cc",
   ]
 
   deps = [
