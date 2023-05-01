@@ -75,11 +75,8 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   //    for separately.
   //  - Term matches are always performed against the start of a word. 'def'
   //    will match against 'define' but not against 'indefinite'.
-  //  - Terms must be at least three characters in length in order to perform
-  //    partial word matches. Any term of lesser length will only be used as an
-  //    exact match. 'def' will match against 'define' but 'de' will not match.
-  //    (Unless either |IsShortBookmarkSuggestionsEnabled()| or
-  //    |IsShortBookmarkSuggestionsByTotalInputLengthEnabled()| is true.)
+  //  - Terms perform partial word matches only if the the total search text
+  //    length is at least 3 characters.
   //  - A search containing multiple terms will return results with those words
   //    occurring in any order.
   //  - Terms enclosed in quotes comprises a phrase that must match exactly.
@@ -153,26 +150,13 @@ query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(
   //  specifically, since we might still get bookmarks suggestions in
   //  non-bookmarks keyword mode. This is enough of an edge case it makes sense
   //  to just stick with simplicity for now.
-  if (OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled() ||
-      (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
-       InKeywordMode(input))) {
+  if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+      InKeywordMode(input)) {
     return query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
   }
 
-  if (OmniboxFieldTrial::
-          IsShortBookmarkSuggestionsByTotalInputLengthEnabled() &&
-      input.text().length() >=
-          OmniboxFieldTrial::
-              ShortBookmarkSuggestionsByTotalInputLengthThreshold()) {
-    client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-        metrics::
-            OmniboxEventProto_Feature_SHORT_BOOKMARK_SUGGESTIONS_BY_TOTAL_INPUT_LENGTH);
-    return OmniboxFieldTrial::
-                   kShortBookmarkSuggestionsByTotalInputLengthCounterfactual
-                       .Get()
-               ? query_parser::MatchingAlgorithm::DEFAULT
-               : query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
-  }
+  if (input.text().length() >= 3)
+    return query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
 
   return query_parser::MatchingAlgorithm::DEFAULT;
 }

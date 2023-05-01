@@ -280,23 +280,6 @@ BASE_FEATURE(kDisableCGIParamMatching,
              "OmniboxDisableCGIParamMatching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Features used to enable matching short inputs to bookmarks for suggestions.
-// By default, if both of the following are disabled, input words shorter than 3
-//   characters won't prefix match bookmarks. E.g., the inputs 'abc x' or 'x'
-//   won't match bookmark text 'abc xyz'.
-// If |kShortBookmarkSuggestions()| is enabled, this limitation is lifted and
-//   both inputs 'abc x' and 'x' can match bookmark text 'abc xyz'.
-// If |kShortBookmarkSuggestionsByTotalInputLength()| is enabled, matching is
-//   limited by input length rather than input word length. Input 'abc x' can
-//   but input 'x' can't match bookmark text 'abc xyz'.
-BASE_FEATURE(kShortBookmarkSuggestions,
-             "OmniboxShortBookmarkSuggestions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// TODO(manukh): Clean up 4/4/23 when m112 reaches stable.
-BASE_FEATURE(kShortBookmarkSuggestionsByTotalInputLength,
-             "OmniboxShortBookmarkSuggestionsByTotalInputLength",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, the shortcut provider is more aggressive in scoring. The exact
 // details will change over time; but ATM, the shortcut provider will chose 1
 // candidate to compete with HUP's URL-what-you-typed suggestion for the default

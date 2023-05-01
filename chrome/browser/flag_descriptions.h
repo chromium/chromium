@@ -1319,9 +1319,6 @@ extern const char kOmniboxFocusTriggersContextualWebZeroSuggestDescription[];
 extern const char kOmniboxOnClobberFocusTypeOnContentName[];
 extern const char kOmniboxOnClobberFocusTypeOnContentDescription[];
 
-extern const char kOmniboxShortBookmarkSuggestionsName[];
-extern const char kOmniboxShortBookmarkSuggestionsDescription[];
-
 extern const char kOmniboxShortcutBoostName[];
 extern const char kOmniboxShortcutBoostDescription[];
 
