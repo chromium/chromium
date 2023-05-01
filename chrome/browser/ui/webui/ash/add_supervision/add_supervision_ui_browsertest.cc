@@ -96,14 +96,8 @@ class AddSupervisionBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsScreenActive(const std::string& element_selector) {
-    bool found;
-    bool active;
-    std::string is_active = std::string("domAutomationController.send(") +
-                            element_selector +
-                            ".classList.contains('active'));";
-    found =
-        content::ExecuteScriptAndExtractBool(contents(), is_active, &active);
-    return found && active;
+    std::string is_active = element_selector + ".classList.contains('active');";
+    return content::EvalJs(contents(), is_active).ExtractBool();
   }
 
  private:
