@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
@@ -16,6 +17,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
@@ -36,6 +38,7 @@ class ContentStabilityMetricsProvider
       public crash_reporter::CrashMetricsReporter::Observer,
 #endif
       public content::RenderProcessHostCreationObserver,
+      public content::RenderProcessHostObserver,
       public content::NotificationObserver {
  public:
   // |extensions_helper| is used to determine if a process corresponds to an
@@ -75,6 +78,11 @@ class ContentStabilityMetricsProvider
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
+  // content::RenderProcessHostObserver:
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
+
   // content::NotificationObserver:
   void Observe(int type,
                const content::NotificationSource& source,
@@ -103,6 +111,10 @@ class ContentStabilityMetricsProvider
 #endif  // BUILDFLAG(IS_ANDROID)
 
   StabilityMetricsHelper helper_;
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      host_observation_{this};
 
   // Registrar for receiving stability-related notifications.
   content::NotificationRegistrar registrar_;
