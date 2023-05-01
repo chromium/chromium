@@ -711,4 +711,30 @@ suite('shortcutCustomizationAppTest', function() {
         AcceleratorSource.kAmbient, expectedCycleTabsAction);
     assertEquals(1, textLookup.length);
   });
+
+  test('LaunchOldKeyboardSettings', async () => {
+    loadTimeData.overrideValues({
+      isInputDeviceSettingsSplitEnabled: false,
+    });
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+    const actualLink =
+        getPage()
+            .shadowRoot!.querySelector('#keyboardSettingsLinkContainer')!
+            .querySelector('#keyboardSettingsLink') as HTMLLinkElement;
+    assertEquals('chrome://os-settings/keyboard-overlay', actualLink.href);
+  });
+
+  test('LaunchNewKeyboardSettings', async () => {
+    loadTimeData.overrideValues({
+      isInputDeviceSettingsSplitEnabled: true,
+    });
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+    const actualLink =
+        getPage()
+            .shadowRoot!.querySelector('#keyboardSettingsLinkContainer')!
+            .querySelector('#keyboardSettingsLink') as HTMLLinkElement;
+    assertEquals('chrome://os-settings/per-device-keyboard', actualLink.href);
+  });
 });

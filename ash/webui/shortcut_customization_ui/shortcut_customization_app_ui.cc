@@ -190,6 +190,8 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "isJellyEnabledForShortcutCustomization",
       ash::features::IsJellyEnabledForShortcutCustomization());
+  html_source->AddBoolean("isInputDeviceSettingsSplitEnabled",
+                          features::IsInputDeviceSettingsSplitEnabled());
 }
 
 }  // namespace
