@@ -47,6 +47,8 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/view_fragmentation_context.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -241,6 +243,22 @@ void LayoutView::ComputeLogicalHeight(
     LogicalExtentComputedValues& computed_values) const {
   NOT_DESTROYED();
   computed_values.extent_ = LayoutUnit(ViewLogicalHeightForBoxSizing());
+}
+
+LayoutUnit LayoutView::ComputeMinimumWidth() {
+  if (!RuntimeEnabledFeatures::RemoveLegacySizeComputationEnabled()) {
+    return PreferredLogicalWidths().min_size;
+  }
+  const ComputedStyle& style = StyleRef();
+  WritingMode mode = style.GetWritingMode();
+  NGConstraintSpaceBuilder builder(mode, style.GetWritingDirection(),
+                                   /* is_new_fc */ true);
+  LayoutUnit min = NGBlockNode(this)
+                       .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,
+                                           builder.ToConstraintSpace())
+                       .sizes.min_size;
+  DCHECK_EQ(min, PreferredLogicalWidths().min_size);
+  return min;
 }
 
 bool LayoutView::IsChildAllowed(LayoutObject* child,

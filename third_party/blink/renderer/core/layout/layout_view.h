@@ -104,6 +104,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   void ComputeLogicalHeight(LayoutUnit logical_height,
                             LayoutUnit logical_top,
                             LogicalExtentComputedValues&) const override;
+  LayoutUnit ComputeMinimumWidth();
 
   // Based on LocalFrameView::LayoutSize, but:
   // - checks for null LocalFrameView

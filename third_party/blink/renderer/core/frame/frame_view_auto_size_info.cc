@@ -76,7 +76,7 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
   // TODO(bokan): This code doesn't handle subpixel sizes correctly. Because
   // of that, it's forced to maintain all the special ScrollbarMode code
   // below. https://crbug.com/812311.
-  int width = layout_view->PreferredLogicalWidths().min_size.ToInt();
+  int width = layout_view->ComputeMinimumWidth().ToInt();
 
   LayoutBox* document_layout_box = document_element->GetLayoutBox();
   if (!document_layout_box)
