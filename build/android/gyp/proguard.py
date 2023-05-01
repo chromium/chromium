@@ -212,11 +212,7 @@ class _SplitContext:
     shutil.move(tmp_jar_output, self.final_output_path)
 
 
-def _OptimizeWithR8(options,
-                    config_paths,
-                    libraries,
-                    dynamic_config_data,
-                    print_stdout=False):
+def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
   with build_utils.TempDir() as tmp_dir:
     if dynamic_config_data:
       dynamic_config_path = os.path.join(tmp_dir, 'dynamic_config.flags')
@@ -321,11 +317,14 @@ def _OptimizeWithR8(options,
     cmd += sorted(base_context.input_jars)
 
     try:
-      stderr_filter = dex.CreateStderrFilter(
-          options.show_desugar_default_interface_warnings)
+      if options.verbose or os.environ.get('R8_VERBOSE') == '1':
+        stderr_filter = None
+      else:
+        stderr_filter = dex.CreateStderrFilter(
+            options.show_desugar_default_interface_warnings)
       logging.debug('Running R8')
       build_utils.CheckOutput(cmd,
-                              print_stdout=print_stdout,
+                              print_stdout=True,
                               stderr_filter=stderr_filter,
                               fail_on_output=options.warnings_as_errors)
     except build_utils.CalledProcessError as e:
@@ -551,10 +550,6 @@ def _ExtractEmbeddedConfigs(jar_path, embedded_configs):
       embedded_configs[config_path] = z.read(filename).decode('utf-8').rstrip()
 
 
-def _ContainsDebuggingConfig(config_str):
-  return '-whyareyoukeeping' in config_str
-
-
 def _MaybeWriteStampAndDepFile(options, inputs):
   output = options.output_path
   if options.stamp:
@@ -629,7 +624,6 @@ def _Run(options):
                                    dynamic_config_data,
                                    embedded_configs,
                                    exclude_generated=True)
-  print_stdout = _ContainsDebuggingConfig(merged_configs) or options.verbose
 
   depfile_inputs = options.proguard_configs + options.input_paths + libraries
   if options.expected_file:
@@ -647,8 +641,7 @@ def _Run(options):
     return
 
   split_contexts_by_name = _OptimizeWithR8(options, options.proguard_configs,
-                                           libraries, dynamic_config_data,
-                                           print_stdout)
+                                           libraries, dynamic_config_data)
 
   if not options.disable_checks:
     logging.debug('Running tracereferences')
