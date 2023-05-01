@@ -374,6 +374,16 @@ PrerenderManager::StartPrerenderBookmark(
                                     : nullptr;
 }
 
+void PrerenderManager::StopPrerenderBookmark(
+    base::WeakPtr<content::PrerenderHandle> prerender_handle) {
+  if (!prerender_handle) {
+    return;
+  }
+  CHECK_EQ(prerender_handle.get(),
+           bookmark_prerender_handle_->GetWeakPtr().get());
+  bookmark_prerender_handle_.reset();
+}
+
 base::WeakPtr<content::PrerenderHandle>
 PrerenderManager::StartPrerenderDirectUrlInput(
     const GURL& prerendering_url,
