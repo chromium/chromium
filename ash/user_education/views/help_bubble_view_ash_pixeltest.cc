@@ -199,7 +199,7 @@ TEST_P(HelpBubbleViewAshPixelTest, Appearance) {
                            with_body_icon(), with_buttons(), with_progress());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "appearance", /*revision_number=*/1u, help_bubble_view,
+      "appearance", /*revision_number=*/2u, help_bubble_view,
       help_bubble_view->anchor_widget()));
 }
 
@@ -265,7 +265,7 @@ TEST_P(HelpBubbleViewAshArrowPixelTest, Placement) {
       /*with_buttons=*/true, /*with_progress=*/true);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "placement", /*revision_number=*/1u, help_bubble_view,
+      "placement", /*revision_number=*/2u, help_bubble_view,
       help_bubble_view->anchor_widget()));
 }
 
