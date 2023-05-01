@@ -495,12 +495,30 @@ TEST_F(VideoDecoderTest, Initialize) {
   EXPECT_EQ(tvp->GetEventCount(DecoderListener::Event::kInitialized), 1u);
 }
 
-// Test video decoder re-initialization. Re-initialization is only supported by
-// the media::VideoDecoder interface, so the test will be skipped if
-// --use-legacy or --use_vd_vda are specified.
+// Test video decoder simple re-initialization: Initialize, then without
+// playing, re-initialize.
 TEST_F(VideoDecoderTest, Reinitialize) {
-  if (g_env->GetDecoderImplementation() != DecoderImplementation::kVD)
-    GTEST_SKIP();
+  if (g_env->GetDecoderImplementation() != DecoderImplementation::kVD) {
+    GTEST_SKIP() << "Re-initialization is only supported by the "
+                    "media::VideoDecoder interface;";
+  }
+  // Create and initialize the video decoder.
+  auto tvp = CreateDecoderListener(g_env->Video());
+
+  EXPECT_EQ(tvp->GetEventCount(DecoderListener::Event::kInitialized), 1u);
+
+  // Re-initialize the video decoder, without having played the video.
+  EXPECT_TRUE(tvp->Initialize(g_env->Video()));
+  EXPECT_EQ(tvp->GetEventCount(DecoderListener::Event::kInitialized), 2u);
+}
+
+// Test video decoder simple re-initialization, then re-initialization after a
+// successful play.
+TEST_F(VideoDecoderTest, ReinitializeThenPlayThenInitialize) {
+  if (g_env->GetDecoderImplementation() != DecoderImplementation::kVD) {
+    GTEST_SKIP() << "Re-initialization is only supported by the "
+                    "media::VideoDecoder interface;";
+  }
 
   // Create and initialize the video decoder.
   auto tvp = CreateDecoderListener(g_env->Video());
