@@ -347,6 +347,13 @@ bool PinManager::CanPin(const FileMetadata& md, const Path& path) {
     return false;
   }
 
+  // Hosted docs are heuristically cached via the Docs offline extension.
+  // Ignore explicitly pinning them and prefer caching.
+  if (md.type == Type::kHosted) {
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Hosted doc";
+    return false;
+  }
+
   if (md.can_pin != FileMetadata::CanPinStatus::kOk) {
     VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Cannot be pinned";
     return false;

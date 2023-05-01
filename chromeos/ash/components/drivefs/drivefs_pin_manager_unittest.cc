@@ -286,10 +286,10 @@ TEST_F(DriveFsPinManagerTest, CanPin) {
   md.type = Type::kFile;
   EXPECT_TRUE(PinManager::CanPin(md, path));
 
-  // Hosted doc can be pinned.
+  // Hosted doc can't be pinned.
   md.size = 0;
   md.type = Type::kHosted;
-  EXPECT_TRUE(PinManager::CanPin(md, path));
+  EXPECT_FALSE(PinManager::CanPin(md, path));
 
   // Directory cannot be pinned.
   md.type = Type::kDirectory;
@@ -2161,7 +2161,7 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(target_id));
   reset();
 
-  // Valid shortcut to hosted doc.
+  // Shortcut to hosted doc, that gets skipped.
   md.shortcut_details = mojom::ShortcutDetails::New();
   md.shortcut_details->target_lookup_status = LookupStatus::kOk;
   md.shortcut_details->target_stable_id = static_cast<int64_t>(target_id);
@@ -2171,7 +2171,7 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_FALSE(md.shortcut_details);
   EXPECT_EQ(Id(md.stable_id), target_id);
-  EXPECT_EQ(manager.progress_.skipped_items, 0);
+  EXPECT_EQ(manager.progress_.skipped_items, 1);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 1);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
@@ -2181,7 +2181,7 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   EXPECT_THAT(manager.listed_items_,
               UnorderedElementsAre<PinManager::ListedItems::value_type>(
                   {target_id, dir_id}));
-  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(target_id));
+  EXPECT_THAT(manager.files_to_pin_, SizeIs(0));
   reset();
 
   // Valid shortcut to directory.
@@ -2245,12 +2245,12 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   item.path = Path("/root/Folder/Doc");
 
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
-  EXPECT_EQ(manager.progress_.skipped_items, 0);
+  EXPECT_EQ(manager.progress_.skipped_items, 1);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 0);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
   EXPECT_EQ(manager.progress_.listed_docs, 1);
-  EXPECT_EQ(manager.progress_.files_to_pin, 1);
+  EXPECT_EQ(manager.progress_.files_to_pin, 0);
   EXPECT_THAT(manager.listed_items_, SizeIs(1));
   reset();
 
