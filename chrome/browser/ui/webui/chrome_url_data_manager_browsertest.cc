@@ -381,6 +381,8 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://proximity-auth/proximity_auth.html",
     "chrome://set-time",
     "chrome://slow",
+    "chrome://smb-credentials-dialog/",
+    "chrome://smb-share-dialog/",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
     "chrome://apps",
