@@ -254,10 +254,6 @@ SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::
     NOTREACHED() << "Before ending write access TakeEndState() must be called "
                     "and the result passed to skia to make sure all layout and "
                     "ownership transitions are done.";
-
-    static std::atomic_int count = 0;
-    if (count++ < 3)
-      base::debug::DumpWithoutCrashing();
   }
 }
 
@@ -279,7 +275,6 @@ void SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::
       if (!ganesh_representation()->gr_context()->setBackendTextureState(
               promise_image_texture(plane)->backendTexture(), *end_state_)) {
         LOG(ERROR) << "setBackendTextureState() failed for plane: " << plane;
-        return;
       }
     }
   }
@@ -371,10 +366,6 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
     NOTREACHED() << "Before ending read access TakeEndState() must be called "
                     "and the result passed to skia to make sure all layout and "
                     "ownership transitions are done.";
-    static std::atomic_int count = 0;
-    if (count++ < 3) {
-      base::debug::DumpWithoutCrashing();
-    }
   }
 }
 
@@ -456,7 +447,6 @@ void SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
     if (!ganesh_representation()->gr_context()->setBackendTextureState(
             promise_image_texture(plane)->backendTexture(), *end_state_)) {
       LOG(ERROR) << "setBackendTextureState() failed for plane: " << plane;
-      return;
     }
   }
   end_state_ = nullptr;
