@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
@@ -27,14 +28,20 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.ShoppingAccessoryViewProperties.PriceInfo;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
+import org.chromium.url.GURLJavaTestHelper;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,6 +53,9 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 public class ShoppingAccessoryViewRenderTest {
+    private static final long MICRO_CURRENCY_QUOTIENT = 1000000;
+    private static final long MICRO_CURRENCY_QUOTIENT_WITH_CENTS = 10000;
+
     @ClassParameter
     private static List<ParameterSet> sClassParams = new NightModeParams().getParameters();
 
@@ -68,7 +78,9 @@ public class ShoppingAccessoryViewRenderTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
+    private CurrencyFormatter mFormatter;
     private ShoppingAccessoryView mShoppingAccessoryView;
+    private PropertyModel mModel;
     private LinearLayout mContentView;
 
     public ShoppingAccessoryViewRenderTest(boolean nightModeEnabled) {
@@ -82,6 +94,11 @@ public class ShoppingAccessoryViewRenderTest {
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
 
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        GURLJavaTestHelper.nativeInitializeICU();
+
+        mFormatter = new CurrencyFormatter("USD", LocaleUtils.forLanguageTag("en-US"));
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mContentView = new LinearLayout(mActivityTestRule.getActivity());
             mContentView.setBackgroundColor(Color.WHITE);
@@ -91,7 +108,11 @@ public class ShoppingAccessoryViewRenderTest {
             mActivityTestRule.getActivity().setContentView(mContentView, params);
 
             mShoppingAccessoryView =
-                    ShoppingAccessoryView.buildView(mActivityTestRule.getActivity());
+                    ShoppingAccessoryCoordinator.buildView(mActivityTestRule.getActivity());
+            mModel = new PropertyModel(ShoppingAccessoryViewProperties.ALL_KEYS);
+            PropertyModelChangeProcessor.create(
+                    mModel, mShoppingAccessoryView, ShoppingAccessoryViewBinder::bind);
+
             mContentView.addView(mShoppingAccessoryView);
         });
     }
@@ -101,21 +122,53 @@ public class ShoppingAccessoryViewRenderTest {
     @Feature({"RenderTest"})
     public void testNormal() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mShoppingAccessoryView.setPriceTracked(true, true);
-            mShoppingAccessoryView.setPriceInformation(10000L, "$100", 10000L, "$100");
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_INFO,
+                    new PriceInfo(100L * MICRO_CURRENCY_QUOTIENT, 100L * MICRO_CURRENCY_QUOTIENT,
+                            mFormatter));
         });
-        mRenderTestRule.render(mContentView, "normal");
+        mRenderTestRule.render(mContentView, "testNormal");
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testNormal_noIcon() throws IOException {
+    public void testPrice_UntrackAfterInfoSet() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mShoppingAccessoryView.setPriceTracked(true, false);
-            mShoppingAccessoryView.setPriceInformation(1999L, "$19.99", 1999L, "$19.99");
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_INFO,
+                    new PriceInfo(100L * MICRO_CURRENCY_QUOTIENT, 100L * MICRO_CURRENCY_QUOTIENT,
+                            mFormatter));
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, false);
         });
-        mRenderTestRule.render(mContentView, "normal_noIcon");
+        mRenderTestRule.render(mContentView, "testPrice_UntrackAfterInfoSet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPrice_TrackAfterInfoSet() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, false);
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_INFO,
+                    new PriceInfo(100L * MICRO_CURRENCY_QUOTIENT, 100L * MICRO_CURRENCY_QUOTIENT,
+                            mFormatter));
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
+        });
+        mRenderTestRule.render(mContentView, "testPrice_TrackAfterInfoSet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testNormal_WithCents() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_INFO,
+                    new PriceInfo(1999L * MICRO_CURRENCY_QUOTIENT_WITH_CENTS,
+                            1999L * MICRO_CURRENCY_QUOTIENT_WITH_CENTS, mFormatter));
+        });
+        mRenderTestRule.render(mContentView, "testNormal_WithCents");
     }
 
     @Test
@@ -123,20 +176,65 @@ public class ShoppingAccessoryViewRenderTest {
     @Feature({"RenderTest"})
     public void testPriceDrop() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mShoppingAccessoryView.setPriceTracked(true, true);
-            mShoppingAccessoryView.setPriceInformation(100L, "$100", 50L, "$50");
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_INFO,
+                    new PriceInfo(100L * MICRO_CURRENCY_QUOTIENT, 50L * MICRO_CURRENCY_QUOTIENT,
+                            mFormatter));
         });
-        mRenderTestRule.render(mContentView, "priceDrop");
+        mRenderTestRule.render(mContentView, "testPriceDrop");
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testPriceDrop_noIcon() throws IOException {
+    public void testPriceDrop_Untracked() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mShoppingAccessoryView.setPriceTracked(true, false);
-            mShoppingAccessoryView.setPriceInformation(2999L, "$29.99", 1999L, "$19.99");
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, false);
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_INFO,
+                    new PriceInfo(100L * MICRO_CURRENCY_QUOTIENT, 50L * MICRO_CURRENCY_QUOTIENT,
+                            mFormatter));
         });
-        mRenderTestRule.render(mContentView, "priceDrop_noIcon");
+        mRenderTestRule.render(mContentView, "testPriceDrop_Untracked");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPriceDrop_UntrackedAfterInfoSet() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_INFO,
+                    new PriceInfo(100L * MICRO_CURRENCY_QUOTIENT, 50L * MICRO_CURRENCY_QUOTIENT,
+                            mFormatter));
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, false);
+        });
+        mRenderTestRule.render(mContentView, "testPriceDrop_UntrackedAfterInfoSet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPriceDrop_TrackedAfterInfoSet() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, false);
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_INFO,
+                    new PriceInfo(100L * MICRO_CURRENCY_QUOTIENT, 50L * MICRO_CURRENCY_QUOTIENT,
+                            mFormatter));
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
+        });
+        mRenderTestRule.render(mContentView, "testPriceDrop_TrackedAfterInfoSet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPriceDrop_withCents() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
+            mModel.set(ShoppingAccessoryViewProperties.PRICE_INFO,
+                    new PriceInfo(2999L * MICRO_CURRENCY_QUOTIENT_WITH_CENTS,
+                            1999L * MICRO_CURRENCY_QUOTIENT_WITH_CENTS, mFormatter));
+        });
+        mRenderTestRule.render(mContentView, "testPriceDrop_withCents");
     }
 }

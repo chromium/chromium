@@ -28,7 +28,8 @@ class ImprovedBookmarkRowProperties {
     static final WritableObjectPropertyKey<Runnable> OPEN_BOOKMARK_CALLBACK =
             new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = {TITLE, DESCRIPTION, ICON, ACCESSORY_VIEW, LIST_MENU,
-            POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED, EDITABLE,
+    static final PropertyKey[] ALL_KEYS = {BookmarkManagerProperties.BOOKMARK_LIST_ENTRY,
+            BookmarkManagerProperties.BOOKMARK_ID, TITLE, DESCRIPTION, ICON, ACCESSORY_VIEW,
+            LIST_MENU, POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED, EDITABLE,
             OPEN_BOOKMARK_CALLBACK};
 }

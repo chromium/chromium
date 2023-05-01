@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.bookmarks;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.ShoppingAccessoryViewProperties.PriceInfo;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
@@ -32,21 +34,7 @@ public class ShoppingAccessoryView extends FrameLayout {
     // Used for the original price when there's a price drop.
     private TextView mOriginalPriceText;
 
-    /**
-     * Factory constructor for building the view programmatically.
-     * @param context The calling context, usually the parent view.
-     * @param visual Whether the visual row should be used.
-     */
-    protected static ShoppingAccessoryView buildView(Context context) {
-        ShoppingAccessoryView view = new ShoppingAccessoryView(context, null);
-        view.setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        LayoutInflater.from(context).inflate(
-                org.chromium.chrome.R.layout.shopping_accessory_view_layout, view);
-        view.onFinishInflate();
-        return view;
-    }
+    private PriceInfo mInfo;
 
     /** Constructor for inflating from XML. */
     public ShoppingAccessoryView(Context context, AttributeSet attrs) {
@@ -65,44 +53,56 @@ public class ShoppingAccessoryView extends FrameLayout {
         mOriginalPriceText = findViewById(R.id.original_price_text);
     }
 
-    void setPriceTracked(boolean tracked, boolean showIcon) {
-        mPriceTrackedIcon.setVisibility(showIcon ? View.VISIBLE : View.GONE);
-        mPriceTrackedIcon.setImageResource(tracked ? R.drawable.price_tracking_enabled_outline
-                                                   : R.drawable.price_tracking_disabled);
+    void setPriceTracked(boolean tracked) {
+        mPriceTrackedIcon.setVisibility(tracked ? View.VISIBLE : View.GONE);
+        mContainer.setBackgroundResource(
+                tracked ? R.drawable.shopping_accessory_view_background : Resources.ID_NULL);
+
+        // Changing the tracked status should update the price info, since the background might
+        // not have been updated.
+        if (mInfo != null) setPriceInfo(mInfo);
     }
 
-    void setPriceInformation(long originalPrice, String originalPriceText, long currentPrice,
-            String currentPriceText) {
-        boolean priceDrop = originalPrice > currentPrice;
+    void setPriceInfo(PriceInfo info) {
+        mInfo = info;
+
+        boolean priceDrop = info.isPriceDrop();
         mNormalPriceText.setVisibility(priceDrop ? View.GONE : View.VISIBLE);
         mPriceDropText.setVisibility(priceDrop ? View.VISIBLE : View.GONE);
         mOriginalPriceText.setVisibility(priceDrop ? View.VISIBLE : View.GONE);
 
         if (priceDrop) {
-            mContainer.getBackground().setColorFilter(
-                    getContext().getResources().getColor(R.color.price_drop_annotation_bg_color),
-                    PorterDuff.Mode.SRC_ATOP);
+            // Our background will be null if the price isn't tracked.
+            if (mContainer.getBackground() != null) {
+                mContainer.getBackground().setColorFilter(
+                        getContext().getResources().getColor(
+                                R.color.price_drop_annotation_bg_color),
+                        PorterDuff.Mode.SRC_ATOP);
+            }
             ImageViewCompat.setImageTintList(mPriceTrackedIcon,
                     ColorStateList.valueOf(getContext().getResources().getColor(
                             R.color.price_drop_annotation_text_green)));
 
             // Primary text displays the current price.
-            mPriceDropText.setText(currentPriceText);
+            mPriceDropText.setText(info.getCurrentPriceText());
 
             // Secondary text displays the original price with a strikethrough.
-            mOriginalPriceText.setText(originalPriceText);
+            mOriginalPriceText.setText(info.getOriginalPriceText());
             mOriginalPriceText.setPaintFlags(
                     mOriginalPriceText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
-            mContainer.getBackground().setColorFilter(
-                    ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_2),
-                    PorterDuff.Mode.SRC_ATOP);
+            // Our background will be null if the price isn't tracked.
+            if (mContainer.getBackground() != null) {
+                mContainer.getBackground().setColorFilter(
+                        ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_2),
+                        PorterDuff.Mode.SRC_ATOP);
+            }
 
             ImageViewCompat.setImageTintList(mPriceTrackedIcon,
                     ColorStateList.valueOf(
                             SemanticColorUtils.getDefaultIconColorSecondary(getContext())));
 
-            mNormalPriceText.setText(currentPriceText);
+            mNormalPriceText.setText(info.getCurrentPriceText());
         }
     }
 }

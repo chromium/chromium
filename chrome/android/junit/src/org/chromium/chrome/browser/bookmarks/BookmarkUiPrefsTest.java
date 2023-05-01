@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,14 +42,19 @@ public class BookmarkUiPrefsTest {
 
     @Mock
     BookmarkUiPrefs.Observer mObserver;
-    @Mock
-    SharedPreferencesManager mSharedPreferencesManager;
 
+    SharedPreferencesManager mSharedPreferencesManager;
     BookmarkUiPrefs mBookmarkUiPrefs;
 
     @Before
     public void setUp() {
+        mSharedPreferencesManager = SharedPreferencesManager.getInstance();
         mBookmarkUiPrefs = new BookmarkUiPrefs(mSharedPreferencesManager);
+    }
+
+    @After
+    public void tearDown() {
+        mSharedPreferencesManager.removeKey(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF);
     }
 
     @Test
@@ -60,12 +63,8 @@ public class BookmarkUiPrefsTest {
     public void legacyVisualFlags() {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
 
-        // Nothing has been written to shared prefs manager.
         Assert.assertEquals(
-                BookmarkRowDisplayPref.VISUAL, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
-        // It should also persist that value to prefs.
-        verify(mSharedPreferencesManager, times(0))
-                .writeInt(eq(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF), anyInt());
+                BookmarkRowDisplayPref.VISUAL, BookmarkUiPrefs.getBookmarkRowDisplayPref());
 
         ShoppingFeatures.setShoppingListEligibleForTesting(false);
     }
@@ -78,38 +77,26 @@ public class BookmarkUiPrefsTest {
 
         // Nothing has been written to shared prefs manager.
         Assert.assertEquals(
-                BookmarkRowDisplayPref.COMPACT, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
-        // It should also persist that value to prefs.
-        verify(mSharedPreferencesManager, times(0))
-                .writeInt(eq(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF), anyInt());
+                BookmarkRowDisplayPref.COMPACT, BookmarkUiPrefs.getBookmarkRowDisplayPref());
     }
 
     @Test
     public void initialBookmarkRowDisplayPref() {
         // Nothing has been written to shared prefs manager.
         Assert.assertEquals(
-                BookmarkRowDisplayPref.COMPACT, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
-        // It should also persist that value to prefs.
-        verify(mSharedPreferencesManager)
-                .writeInt(
-                        ChromePreferenceKeys.BOOKMARK_VISUALS_PREF, BookmarkRowDisplayPref.COMPACT);
+                BookmarkRowDisplayPref.COMPACT, BookmarkUiPrefs.getBookmarkRowDisplayPref());
     }
 
     @Test
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void returnsStoredPref() {
-        doReturn(true)
-                .when(mSharedPreferencesManager)
-                .contains(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF);
-        doReturn(BookmarkRowDisplayPref.VISUAL)
-                .when(mSharedPreferencesManager)
-                .readInt(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF);
-
-        // Nothing has been written to shared prefs manager.
+        mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
         Assert.assertEquals(
-                BookmarkRowDisplayPref.VISUAL, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
-        // It shouldn't persist that value to prefs.
-        verify(mSharedPreferencesManager, times(0))
-                .writeInt(eq(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF), anyInt());
+                BookmarkRowDisplayPref.VISUAL, BookmarkUiPrefs.getBookmarkRowDisplayPref());
+
+        mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
+        Assert.assertEquals(
+                BookmarkRowDisplayPref.COMPACT, BookmarkUiPrefs.getBookmarkRowDisplayPref());
     }
 
     @Test

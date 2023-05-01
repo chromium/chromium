@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
+import org.chromium.chrome.browser.bookmarks.ShoppingAccessoryViewProperties.PriceInfo;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -36,8 +37,6 @@ import java.util.Locale;
 
 /** A row view that shows shopping info in the bookmarks UI. */
 public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
-    private static final long MICRO_CURRENCY_QUOTIENT = 1000000;
-
     // UI elements.
     // Allows subclasses to add special views below the description (e.g. the price for shopping).
     protected FrameLayout mCustomTextContainer;
@@ -167,7 +166,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
                     setIconDrawable(new BitmapDrawable(getResources(), image));
                 });
 
-        setPriceInfoChip(originalPrice, currentPrice);
+        setPriceInfoChip(new PriceInfo(originalPrice, currentPrice, mCurrencyFormatter));
         setPriceTrackingButton(priceTrackingEnabled);
         mTitleView.setLabelFor(mPriceTrackingButton.getId());
         PowerBookmarkMetrics.reportBookmarkShoppingItemRowPriceTrackingState(
@@ -175,31 +174,26 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
     }
 
     /** Sets up the chip that displays product price information. */
-    private void setPriceInfoChip(long originalPrice, long currentPrice) {
-        String formattedCurrentPrice = getFormattedCurrencyStringForPrice(currentPrice);
+    private void setPriceInfoChip(PriceInfo info) {
         // Note: chips should only be shown for price drops
-        if (originalPrice <= currentPrice) {
-            mNormalPriceText.setText(formattedCurrentPrice);
-            mNormalPriceText.setVisibility(View.VISIBLE);
-            mPriceDropText.setVisibility(View.GONE);
-            mOriginalPriceText.setVisibility(View.GONE);
-        } else {
-            assignPriceDropProperties(mPriceDropText, mOriginalPriceText,
-                    getFormattedCurrencyStringForPrice(originalPrice), formattedCurrentPrice);
+        if (info.isPriceDrop()) {
+            // Primary text displays the current price.
+            mPriceDropText.setText(info.getCurrentPriceText());
+
+            // Secondary text displays the original price with a strikethrough.
+            mOriginalPriceText.setText(info.getOriginalPriceText());
+            mOriginalPriceText.setPaintFlags(
+                    mOriginalPriceText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+
             mNormalPriceText.setVisibility(View.GONE);
             mPriceDropText.setVisibility(View.VISIBLE);
             mOriginalPriceText.setVisibility(View.VISIBLE);
+        } else {
+            mNormalPriceText.setText(info.getCurrentPriceText());
+            mNormalPriceText.setVisibility(View.VISIBLE);
+            mPriceDropText.setVisibility(View.GONE);
+            mOriginalPriceText.setVisibility(View.GONE);
         }
-    }
-
-    private void assignPriceDropProperties(TextView primaryText, TextView secondaryText,
-            String formattedOriginalPrice, String formattedCurrentPrice) {
-        // Primary text displays the current price.
-        primaryText.setText(formattedCurrentPrice);
-
-        // Secondary text displays the original price with a strikethrough.
-        secondaryText.setText(formattedOriginalPrice);
-        secondaryText.setPaintFlags(secondaryText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
     }
 
     /** Sets up the button that allows you to un/subscribe to price-tracking updates. */
@@ -234,11 +228,6 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         mPriceTrackingButton.setImageResource(mIsPriceTrackingEnabled
                         ? R.drawable.price_tracking_enabled_filled
                         : R.drawable.price_tracking_disabled);
-    }
-
-    private String getFormattedCurrencyStringForPrice(long price) {
-        // Note: We'll lose some precision here, but it's fine.
-        return mCurrencyFormatter.format("" + (price / MICRO_CURRENCY_QUOTIENT));
     }
 
     void setCurrencyFormatterForTesting(CurrencyFormatter currencyFormatter) {

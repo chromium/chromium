@@ -48,7 +48,7 @@ public class ImprovedBookmarkRowTest {
     @Mock
     Drawable mIcon;
     @Mock
-    View mAccessoryView;
+    View mView;
     @Mock
     ListMenu mListMenu;
     @Mock
@@ -69,7 +69,6 @@ public class ImprovedBookmarkRowTest {
                          .with(ImprovedBookmarkRowProperties.TITLE, TITLE)
                          .with(ImprovedBookmarkRowProperties.DESCRIPTION, DESCRIPTION)
                          .with(ImprovedBookmarkRowProperties.ICON, mIcon)
-                         .with(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, mAccessoryView)
                          .with(ImprovedBookmarkRowProperties.LIST_MENU, mListMenu)
                          .with(ImprovedBookmarkRowProperties.POPUP_LISTENER, mPopupListener)
                          .with(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK,
@@ -91,16 +90,15 @@ public class ImprovedBookmarkRowTest {
 
     @Test
     public void testNullAccessoryViewClearsExistingViews() {
-        TextView tv = new TextView(mActivity);
-        mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, tv);
+        mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, mView);
         Assert.assertEquals(0,
                 ((ViewGroup) mImprovedBookmarkRow.findViewById(R.id.custom_content_container))
-                        .indexOfChild(tv));
+                        .indexOfChild(mView));
 
         mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, null);
         Assert.assertEquals(-1,
                 ((ViewGroup) mImprovedBookmarkRow.findViewById(R.id.custom_content_container))
-                        .indexOfChild(tv));
+                        .indexOfChild(mView));
     }
 
     @Test

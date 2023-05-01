@@ -37,6 +37,8 @@ class ImprovedBookmarkRowViewBinder {
         } else if (key == ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK) {
             row.setOpenBookmarkCallback(
                     model.get(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK));
+        } else if (key == BookmarkManagerProperties.BOOKMARK_ID) {
+            row.setItem(model.get(BookmarkManagerProperties.BOOKMARK_ID));
         }
     }
 }
