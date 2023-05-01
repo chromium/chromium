@@ -45,9 +45,8 @@ class BaseSystemWebAppUIConfig : public content::WebUIConfig {
 template <typename T>
 class SystemWebAppUIConfig : public internal::BaseSystemWebAppUIConfig {
  public:
-  using CreateWebUIControllerFunc =
-      std::unique_ptr<content::WebUIController> (*)(content::WebUI*,
-                                                    const GURL& url);
+  using CreateWebUIControllerFunc = base::RepeatingCallback<std::unique_ptr<
+      content::WebUIController>(content::WebUI*, const GURL& url)>;
 
   // Constructs a WebUIConfig for chrome://`host` and enables it if
   // System Web Apps are enabled and `swa_type` is enabled.
@@ -55,10 +54,11 @@ class SystemWebAppUIConfig : public internal::BaseSystemWebAppUIConfig {
       : SystemWebAppUIConfig(
             host,
             swa_type,
-            [](content::WebUI* web_ui,
-               const GURL& url) -> std::unique_ptr<content::WebUIController> {
-              return std::make_unique<T>(web_ui);
-            }) {}
+            base::BindRepeating(
+                [](content::WebUI* web_ui, const GURL& url)
+                    -> std::unique_ptr<content::WebUIController> {
+                  return std::make_unique<T>(web_ui);
+                })) {}
 
   // Same as above, but takes in an extra `create_controller_func` argument that
   // can be used to pass a function to construct T. Used when we need to inject
@@ -80,7 +80,7 @@ class SystemWebAppUIConfig : public internal::BaseSystemWebAppUIConfig {
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,
       const GURL& url) override {
-    return create_controller_func_(web_ui, url);
+    return create_controller_func_.Run(web_ui, url);
   }
 
  private:

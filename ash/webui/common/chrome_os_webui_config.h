@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -21,32 +22,32 @@ namespace ash {
 template <typename T>
 class ChromeOSWebUIConfig : public content::WebUIConfig {
  public:
-  using CreateWebUIControllerFunc =
-      std::unique_ptr<content::WebUIController> (*)(content::WebUI*,
-                                                    const GURL& url);
+  using CreateWebUIControllerFunc = base::RepeatingCallback<std::unique_ptr<
+      content::WebUIController>(content::WebUI*, const GURL& url)>;
+
+  static std::unique_ptr<content::WebUIController>
+  DefaultCreateWebUIControllerFunc(content::WebUI* web_ui, const GURL& url) {
+    // We need to determine the correct WebUIController
+    // constructor to use at compile time, depending on whether it
+    // requires only WebUI* or both WebUI* and GURL. We currently
+    // don't support WebUIControllers that have two constructors
+    // where one has a single WebUI* arg and the other has both
+    // WebUI* and GURL params.
+    static_assert(!(std::is_constructible_v<T, content::WebUI*> &&
+                    std::is_constructible_v<T, content::WebUI*, GURL>));
+    if constexpr (std::is_constructible_v<T, content::WebUI*, GURL>) {
+      return std::make_unique<T>(web_ui, url);
+    } else {
+      return std::make_unique<T>(web_ui);
+    }
+  }
 
   // Constructs a WebUIConfig for a ChromeOS WebUI.
   ChromeOSWebUIConfig(base::StringPiece scheme, base::StringPiece host)
       : ChromeOSWebUIConfig(
             scheme,
             host,
-            [](content::WebUI* web_ui,
-               const GURL& url) -> std::unique_ptr<content::WebUIController> {
-              // We need to determine the correct WebUIController constructor to
-              // use at compile time, depending on whether it requires only
-              // WebUI* or both WebUI* and GURL. We currently don't support
-              // WebUIControllers that have two constructors where one has a
-              // single WebUI* arg and the other has both WebUI* and GURL
-              // params.
-              static_assert(
-                  !(std::is_constructible_v<T, content::WebUI*> &&
-                    std::is_constructible_v<T, content::WebUI*, GURL>));
-              if constexpr (std::is_constructible_v<T, content::WebUI*, GURL>) {
-                return std::make_unique<T>(web_ui, url);
-              } else {
-                return std::make_unique<T>(web_ui);
-              }
-            }) {}
+            base::BindRepeating(&DefaultCreateWebUIControllerFunc)) {}
 
   // Same as above, but takes in an extra `create_controller_func` argument that
   // can be used to pass a function to construct T. Used when we need to inject
@@ -63,7 +64,7 @@ class ChromeOSWebUIConfig : public content::WebUIConfig {
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,
       const GURL& url) override {
-    return create_controller_func_(web_ui, url);
+    return create_controller_func_.Run(web_ui, url);
   }
 
  private:

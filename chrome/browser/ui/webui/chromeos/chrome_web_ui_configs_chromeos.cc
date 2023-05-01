@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/chrome_untrusted_web_ui_configs_chromeos.h"
 
+#include "base/functional/callback.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/webui_config_map.h"
 #include "url/gurl.h"
@@ -96,88 +97,78 @@ class WebUIController;
 }  // namespace content
 
 namespace {
-using CreateWebUIControllerFunc =
-    std::unique_ptr<content::WebUIController> (*)(content::WebUI*,
-                                                  const GURL& url);
+using CreateWebUIControllerFunc = base::RepeatingCallback<std::unique_ptr<
+    content::WebUIController>(content::WebUI*, const GURL& url)>;
+
+// Consider the following approaches when registering component
+// WebUIConfigs, in order of preference:
+//   1. Using a Delegate with MakeComponentConfigWithDelegate,
+//   2. Using custom arguments with MakeComponentConfigWithArgs,
+//   3. Using a custom MakeConfig() method (least preferred, avoid if possible).
 
 template <class Config, class Controller, class Delegate>
-std::unique_ptr<content::WebUIConfig> MakeComponentConfig() {
-  CreateWebUIControllerFunc create_controller_func =
+std::unique_ptr<content::WebUIConfig> MakeComponentConfigWithDelegate() {
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
       [](content::WebUI* web_ui,
          const GURL& url) -> std::unique_ptr<content::WebUIController> {
-    auto delegate = std::make_unique<Delegate>(web_ui);
-    return std::make_unique<Controller>(web_ui, std::move(delegate));
-  };
+        auto delegate = std::make_unique<Delegate>(web_ui);
+        return std::make_unique<Controller>(web_ui, std::move(delegate));
+      });
+
+  return std::make_unique<Config>(create_controller_func);
+}
+
+template <class Config, class Controller, typename... Args>
+std::unique_ptr<content::WebUIConfig> MakeComponentConfigWithArgs(
+    Args&&... args) {
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
+      [](const std::decay_t<Args>&... args, content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        return std::make_unique<Controller>(web_ui, args...);
+      },
+      args...);
 
   return std::make_unique<Config>(create_controller_func);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<content::WebUIConfig> MakeConnectivityDiagnosticsUIConfig() {
-  CreateWebUIControllerFunc create_controller_func =
-      [](content::WebUI* web_ui,
-         const GURL& url) -> std::unique_ptr<content::WebUIController> {
-    return std::make_unique<ash::ConnectivityDiagnosticsUI>(
-        web_ui,
-        /* BindNetworkDiagnosticsServiceCallback */
-        base::BindRepeating(
-            [](mojo::PendingReceiver<chromeos::network_diagnostics::mojom::
-                                         NetworkDiagnosticsRoutines> receiver) {
-              ash::network_health::NetworkHealthManager::GetInstance()
-                  ->BindDiagnosticsReceiver(std::move(receiver));
-            }),
-        /* BindNetworkHealthServiceCallback */
-        base::BindRepeating(
-            [](mojo::PendingReceiver<
-                chromeos::network_health::mojom::NetworkHealthService>
-                   receiver) {
-              ash::network_health::NetworkHealthManager::GetInstance()
-                  ->BindHealthReceiver(std::move(receiver));
-            }),
-        /* SendFeedbackReportCallback */
-        base::BindRepeating(
-            &chrome::ShowFeedbackDialogForWebUI,
-            chrome::WebUIFeedbackSource::kConnectivityDiagnostics),
-        /*show_feedback_button=*/!chrome::IsRunningInAppMode());
-  };
-
-  return std::make_unique<ash::ConnectivityDiagnosticsUIConfig>(
-      create_controller_func);
-}
-
-std::unique_ptr<content::WebUIConfig> MakeGuestOSInstallerUIConfig() {
-  CreateWebUIControllerFunc create_controller_func =
-      [](content::WebUI* web_ui,
-         const GURL& url) -> std::unique_ptr<content::WebUIController> {
-    return std::make_unique<ash::GuestOSInstallerUI>(
-        web_ui, base::BindRepeating(&guest_os::InstallerDelegateFactory));
-  };
-
-  return std::make_unique<ash::GuestOSInstallerUIConfig>(
-      create_controller_func);
+  return MakeComponentConfigWithArgs<ash::ConnectivityDiagnosticsUIConfig,
+                                     ash::ConnectivityDiagnosticsUI>(
+      /* BindNetworkDiagnosticsServiceCallback */
+      base::BindRepeating(&ash::network_health::NetworkHealthManager::
+                              NetworkDiagnosticsServiceCallback),
+      /* BindNetworkHealthServiceCallback */
+      base::BindRepeating(&ash::network_health::NetworkHealthManager::
+                              NetworkHealthServiceCallback),
+      /* SendFeedbackReportCallback */
+      base::BindRepeating(
+          &chrome::ShowFeedbackDialogForWebUI,
+          chrome::WebUIFeedbackSource::kConnectivityDiagnostics),
+      /*show_feedback_button=*/!chrome::IsRunningInAppMode());
 }
 
 std::unique_ptr<content::WebUIConfig> MakeDiagnosticsUIConfig() {
-  CreateWebUIControllerFunc create_controller_func =
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
       [](content::WebUI* web_ui,
          const GURL& url) -> std::unique_ptr<content::WebUIController> {
-    ash::HoldingSpaceKeyedService* holding_space_keyed_service =
-        ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
-            web_ui->GetWebContents()->GetBrowserContext());
-    // This directory stores routine and network event logs for a given
-    // |profile|.
-    static constexpr base::FilePath::CharType kDiagnosticsLogDirectoryName[] =
-        FILE_PATH_LITERAL("diagnostics");
-    return std::make_unique<ash::DiagnosticsDialogUI>(
-        web_ui,
-        base::BindRepeating([](content::WebContents* web_contents)
-                                -> std::unique_ptr<ui::SelectFilePolicy> {
-          return std::make_unique<ChromeSelectFilePolicy>(web_contents);
-        }),
-        holding_space_keyed_service->client(),
-        Profile::FromWebUI(web_ui)->GetPath().Append(
-            kDiagnosticsLogDirectoryName));
-  };
+        ash::HoldingSpaceKeyedService* holding_space_keyed_service =
+            ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+                web_ui->GetWebContents()->GetBrowserContext());
+        // This directory stores routine and network event logs for a given
+        // |profile|.
+        static constexpr base::FilePath::CharType
+            kDiagnosticsLogDirectoryName[] = FILE_PATH_LITERAL("diagnostics");
+        return std::make_unique<ash::DiagnosticsDialogUI>(
+            web_ui,
+            base::BindRepeating([](content::WebContents* web_contents)
+                                    -> std::unique_ptr<ui::SelectFilePolicy> {
+              return std::make_unique<ChromeSelectFilePolicy>(web_contents);
+            }),
+            holding_space_keyed_service->client(),
+            Profile::FromWebUI(web_ui)->GetPath().Append(
+                kDiagnosticsLogDirectoryName));
+      });
 
   return std::make_unique<ash::DiagnosticsDialogUIConfig>(
       create_controller_func);
@@ -187,8 +178,8 @@ void RegisterAshChromeWebUIConfigs() {
   // Add `WebUIConfig`s for Ash ChromeOS to the list here.
   auto& map = content::WebUIConfigMap::GetInstance();
   map.AddWebUIConfig(
-      MakeComponentConfig<ash::CameraAppUIConfig, ash::CameraAppUI,
-                          ChromeCameraAppUIDelegate>());
+      MakeComponentConfigWithDelegate<ash::CameraAppUIConfig, ash::CameraAppUI,
+                                      ChromeCameraAppUIDelegate>());
   map.AddWebUIConfig(std::make_unique<ash::AccountManagerErrorUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::AccountMigrationWelcomeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::AddSupervisionUIConfig>());
@@ -213,10 +204,13 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::DriveInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::EmojiUIConfig>());
   map.AddWebUIConfig(
-      MakeComponentConfig<ash::FilesInternalsUIConfig, ash::FilesInternalsUI,
-                          ChromeFilesInternalsUIDelegate>());
+      MakeComponentConfigWithDelegate<ash::FilesInternalsUIConfig,
+                                      ash::FilesInternalsUI,
+                                      ChromeFilesInternalsUIDelegate>());
   map.AddWebUIConfig(std::make_unique<ash::FirmwareUpdateAppUIConfig>());
-  map.AddWebUIConfig(MakeGuestOSInstallerUIConfig());
+  map.AddWebUIConfig(MakeComponentConfigWithArgs<ash::GuestOSInstallerUIConfig,
+                                                 ash::GuestOSInstallerUI>(
+      base::BindRepeating(&guest_os::InstallerDelegateFactory)));
   map.AddWebUIConfig(std::make_unique<ash::HealthdInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::HumanPresenceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::InternetConfigDialogUIConfig>());
@@ -237,8 +231,9 @@ void RegisterAshChromeWebUIConfigs() {
       std::make_unique<ash::office_fallback::OfficeFallbackUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::OobeUIConfig>());
   map.AddWebUIConfig(
-      MakeComponentConfig<ash::OSFeedbackUIConfig, ash::OSFeedbackUI,
-                          ash::ChromeOsFeedbackDelegate>());
+      MakeComponentConfigWithDelegate<ash::OSFeedbackUIConfig,
+                                      ash::OSFeedbackUI,
+                                      ash::ChromeOsFeedbackDelegate>());
   map.AddWebUIConfig(std::make_unique<ash::settings::OSSettingsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ParentAccessUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::PasswordChangeUIConfig>());
