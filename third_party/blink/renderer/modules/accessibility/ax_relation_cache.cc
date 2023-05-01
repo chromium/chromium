@@ -527,6 +527,12 @@ void AXRelationCache::GetReverseRelated(
 }
 
 void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
+  // This can happen if MarkAXObjectDirtyWithCleanLayout is
+  /// called and then UpdateRelatedTree is called on the same object,
+  // e.g. in TextChangedWithCleanLayout.
+  if (obj && obj->IsDetached()) {
+    return;
+  }
   HeapVector<Member<AXObject>> related_sources;
 #if DCHECK_IS_ON()
   DCHECK(node);
