@@ -1800,6 +1800,9 @@ extern const char kFoldableJankFixAndroidDescription[];
 extern const char kBaselineGM3SurfaceColorsName[];
 extern const char kBaselineGM3SurfaceColorsDescription[];
 
+extern const char kDelayTempStripRemovalName[];
+extern const char kDelayTempStripRemovalDescription[];
+
 extern const char kTextBasedAudioDescriptionName[];
 extern const char kTextBasedAudioDescriptionDescription[];
 

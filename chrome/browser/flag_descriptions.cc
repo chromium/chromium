@@ -4291,6 +4291,12 @@ const char kBaselineGM3SurfaceColorsName[] = "Baseline GM3 Surface Colors";
 const char kBaselineGM3SurfaceColorsDescription[] =
     "Updates baseline surface colors to match the GM3 formula.";
 
+const char kDelayTempStripRemovalName[] =
+    "Delay temp tab strip removal on startup";
+const char kDelayTempStripRemovalDescription[] =
+    "By delaying the removal of the placeholder tab strip, we mitigate the "
+    "jank seen as tabs are being restored on startup.";
+
 const char kTouchDragAndContextMenuName[] =
     "Simultaneous touch drag and context menu";
 const char kTouchDragAndContextMenuDescription[] =
