@@ -3998,12 +3998,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.ServiceWorkerBackground.StartWorker_FailStatus"
+    enum="ServiceWorkerStatusCode" expires_after="2023-04-28">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks when a background service worker fails to start what is the
+    ServiceWorkerStatusCode that occurred. Logged each time a service worker
+    fails to start when we attempt to start it for extension tasks.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ServiceWorkerBackground.StartWorkerStatus"
     enum="Boolean" expires_after="2023-10-22">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>dbertoni@chromium.org</owner>
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
-    Tracks whether background service worker starting succeeded or not.
+    Tracks whether background service worker starting succeeded or not. Logged
+    each time a service worker has been started for extension tasks.
   </summary>
 </histogram>
 

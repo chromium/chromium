@@ -677,9 +677,13 @@ using ServiceWorkerOnStartupEventTest =
 
 // Tests "runtime.onStartup" for extension SW.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerOnStartupEventTest, PRE_Event) {
+  base::HistogramTester histograms;
   ASSERT_TRUE(RunExtensionTest(
       "service_worker/worker_based_background/on_startup_event"))
       << message_;
+  histograms.ExpectUniqueSample(
+      "Extensions.ServiceWorkerBackground.StartWorkerStatus", /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerOnStartupEventTest, Event) {
@@ -2342,6 +2346,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 
   ServiceWorkerTaskQueue* service_worker_task_queue =
       ServiceWorkerTaskQueue::Get(browser()->profile());
+  base::HistogramTester histograms;
   // Adding a pending task to ServiceWorkerTaskQueue will try to start the
   // worker that failed during installation before. This enables us to ensure
   // that this pending task is cleared on failure.
@@ -2354,6 +2359,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
       0u);
   // Ensure DidStartWorkerFail finished clearing tasks.
   base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectUniqueSample(
+      "Extensions.ServiceWorkerBackground.StartWorkerStatus", /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      "Extensions.ServiceWorkerBackground.StartWorker_FailStatus",
+      // TODO(crbug.com/1441221): Shouldn't this be kErrorInstallWorkerFailed
+      // since failure is due to throwing error in oninstall?
+      /*sample=*/blink::ServiceWorkerStatusCode::kErrorNotFound,
+      /*expected_bucket_count=*/1);
 
   // And the task count will be reset to zero afterwards.
   EXPECT_EQ(0u,

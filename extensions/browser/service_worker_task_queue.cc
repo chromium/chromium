@@ -219,6 +219,8 @@ void ServiceWorkerTaskQueue::DidStartWorkerFail(
 
   UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.StartWorkerStatus",
                         false);
+  UMA_HISTOGRAM_ENUMERATION(
+      "Extensions.ServiceWorkerBackground.StartWorker_FailStatus", status_code);
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
