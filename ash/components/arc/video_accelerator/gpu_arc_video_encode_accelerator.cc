@@ -92,7 +92,7 @@ void GpuArcVideoEncodeAccelerator::NotifyErrorStatus(
              << ", message=" << status.message();
   DCHECK(client_);
   client_->NotifyError(
-      media::VideoEncodeAccelerator::Error::kPlatformFailureError);
+      mojom::VideoEncodeAccelerator::Error::kPlatformFailureError);
 }
 
 // ::arc::mojom::VideoEncodeAccelerator implementation.
