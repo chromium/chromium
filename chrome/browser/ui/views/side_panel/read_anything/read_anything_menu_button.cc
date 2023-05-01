@@ -23,7 +23,8 @@ ReadAnythingMenuButton::ReadAnythingMenuButton(
                                      base::Unretained(this))) {
   ConfigureInkDropForToolbar(this);
   views::InstallCircleHighlightPathGenerator(this);
-  SetIcon(icon, kIconSize, gfx::kPlaceholderColor);
+  SetIcon(icon, kIconSize, /* icon_color= */ gfx::kPlaceholderColor,
+          /* focus_ring_color= */ gfx::kPlaceholderColor);
   SetAccessibleName(tooltip);
   SetTooltipText(tooltip);
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -70,11 +71,14 @@ absl::optional<size_t> ReadAnythingMenuButton::GetSelectedIndex() const {
 
 void ReadAnythingMenuButton::SetIcon(const gfx::VectorIcon& icon,
                                      int icon_size,
-                                     ui::ColorId icon_color) {
+                                     ui::ColorId icon_color,
+                                     ui::ColorId focus_ring_color) {
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(icon, icon_color, icon_size));
   DCHECK(views::InkDrop::Get(this));
+  DCHECK(views::FocusRing::Get(this));
   views::InkDrop::Get(this)->SetBaseColorId(icon_color);
+  views::FocusRing::Get(this)->SetColorId(focus_ring_color);
 }
 
 void ReadAnythingMenuButton::SetDropdownColorIds(ui::ColorId background_color,

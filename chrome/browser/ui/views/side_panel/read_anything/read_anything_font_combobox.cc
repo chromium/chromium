@@ -76,6 +76,12 @@ gfx::Size ReadAnythingFontCombobox::GetMinimumSize() const {
   return gfx::Size(kMinimumComboboxWidth, CalculatePreferredSize().height());
 }
 
+void ReadAnythingFontCombobox::SetFocusRingColorId(
+    ui::ColorId focus_ring_color) {
+  DCHECK(views::FocusRing::Get(this));
+  views::FocusRing::Get(this)->SetColorId(focus_ring_color);
+}
+
 void ReadAnythingFontCombobox::SetDropdownColorIds(ui::ColorId background_color,
                                                    ui::ColorId foreground_color,
                                                    ui::ColorId selected_color) {

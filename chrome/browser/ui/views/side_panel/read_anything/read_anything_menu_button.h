@@ -34,7 +34,8 @@ class ReadAnythingMenuButton : public views::MenuButton {
   absl::optional<size_t> GetSelectedIndex() const;
   void SetIcon(const gfx::VectorIcon& icon,
                int icon_size,
-               ui::ColorId icon_color);
+               ui::ColorId icon_color,
+               ui::ColorId focus_ring_color);
   void SetDropdownColorIds(ui::ColorId background_color,
                            ui::ColorId foreground_color,
                            ui::ColorId selected_color);

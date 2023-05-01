@@ -79,6 +79,7 @@ void ReadAnythingModel::Init(const std::string& font_name,
   separator_color_id_ = initial_colors.separator_color_id;
   dropdown_color_id_ = initial_colors.dropdown_color_id;
   selected_dropdown_color_id_ = initial_colors.selected_dropdown_color_id;
+  focus_ring_color_id_ = initial_colors.focus_ring_color_id;
 
   line_spacing_ = line_spacing_model_->GetLineSpacingAt(
       line_spacing_model_->GetSelectedIndex().value());
@@ -118,6 +119,7 @@ void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
   separator_color_id_ = new_colors.separator_color_id;
   dropdown_color_id_ = new_colors.dropdown_color_id;
   selected_dropdown_color_id_ = new_colors.selected_dropdown_color_id;
+  focus_ring_color_id_ = new_colors.focus_ring_color_id;
 
   NotifyThemeChanged();
 }
@@ -172,7 +174,7 @@ void ReadAnythingModel::NotifyThemeChanged() {
     obs.OnReadAnythingThemeChanged(
         font_name_, font_scale_, foreground_color_id_, background_color_id_,
         separator_color_id_, dropdown_color_id_, selected_dropdown_color_id_,
-        line_spacing_, letter_spacing_);
+        focus_ring_color_id_, line_spacing_, letter_spacing_);
   }
 }
 
@@ -284,6 +286,7 @@ ReadAnythingColorsModel::ColorInfo::ColorInfo(
     ui::ColorId separator_color_id,
     ui::ColorId dropdown_color_id,
     ui::ColorId selected_dropdown_color_id,
+    ui::ColorId focus_ring_color_id,
     ColorInfo::ReadAnythingColor logging_value)
     : name(name),
       icon_asset(icon_asset),
@@ -292,6 +295,7 @@ ReadAnythingColorsModel::ColorInfo::ColorInfo(
       separator_color_id(separator_color_id),
       dropdown_color_id(dropdown_color_id),
       selected_dropdown_color_id(selected_dropdown_color_id),
+      focus_ring_color_id(focus_ring_color_id),
       logging_value(logging_value) {}
 ReadAnythingColorsModel::ColorInfo::ColorInfo(const ColorInfo& other) = default;
 ReadAnythingColorsModel::ColorInfo::ColorInfo(ColorInfo&&) = default;
@@ -310,6 +314,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingSeparator,
       kColorReadAnythingDropdownBackground,
       kColorReadAnythingDropdownSelected,
+      kColorReadAnythingFocusRingBackground,
       ColorInfo::ReadAnythingColor::kDefault};
 
   ColorInfo kLightColors = {
@@ -320,6 +325,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingSeparatorLight,
       kColorReadAnythingDropdownBackgroundLight,
       kColorReadAnythingDropdownSelectedLight,
+      kColorReadAnythingFocusRingBackgroundLight,
       ColorInfo::ReadAnythingColor::kLight};
 
   ColorInfo kDarkColors = {
@@ -330,6 +336,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingSeparatorDark,
       kColorReadAnythingDropdownBackgroundDark,
       kColorReadAnythingDropdownSelectedDark,
+      kColorReadAnythingFocusRingBackgroundDark,
       ColorInfo::ReadAnythingColor::kDark};
 
   ColorInfo kYellowColors = {
@@ -340,6 +347,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingSeparatorYellow,
       kColorReadAnythingDropdownBackgroundYellow,
       kColorReadAnythingDropdownSelectedYellow,
+      kColorReadAnythingFocusRingBackgroundYellow,
       ColorInfo::ReadAnythingColor::kYellow};
 
   ColorInfo kBlueColors = {
@@ -350,6 +358,7 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
       kColorReadAnythingSeparatorBlue,
       kColorReadAnythingDropdownBackgroundBlue,
       kColorReadAnythingDropdownSelectedBlue,
+      kColorReadAnythingFocusRingBackgroundBlue,
       ColorInfo::ReadAnythingColor::kBlue};
 
   colors_choices_.emplace_back(kDefaultColors);

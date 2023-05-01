@@ -35,7 +35,8 @@ class ReadAnythingButtonView : public views::ImageButton {
 
   void UpdateIcon(const gfx::VectorIcon& icon,
                   int icon_size,
-                  ui::ColorId icon_color);
+                  ui::ColorId icon_color,
+                  ui::ColorId focus_ring_color);
 
   void Enable();
   void Disable();

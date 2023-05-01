@@ -173,6 +173,7 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
     ui::ColorId separator_color_id,
     ui::ColorId dropdown_color_id,
     ui::ColorId selected_dropdown_color_id,
+    ui::ColorId focus_ring_color_id,
     read_anything::mojom::LineSpacing line_spacing,
     read_anything::mojom::LetterSpacing letter_spacing) {
   if (font_scale > kReadAnythingMinimumFontScale) {
@@ -191,6 +192,7 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
 
   SetBackground(views::CreateThemedSolidBackground(background_color_id));
   font_combobox_->SetBackgroundColorId(background_color_id);
+  font_combobox_->SetFocusRingColorId(focus_ring_color_id);
   colors_button_->SetBackground(
       views::CreateThemedSolidBackground(background_color_id));
   line_spacing_button_->SetBackground(
@@ -198,18 +200,19 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   letter_spacing_button_->SetBackground(
       views::CreateThemedSolidBackground(background_color_id));
 
-  decrease_text_size_button_->UpdateIcon(kTextDecreaseIcon, kIconSize,
-                                         foreground_color_id);
+  decrease_text_size_button_->UpdateIcon(
+      kTextDecreaseIcon, kIconSize, foreground_color_id, focus_ring_color_id);
 
-  increase_text_size_button_->UpdateIcon(kTextIncreaseIcon, kIconSize,
-                                         foreground_color_id);
+  increase_text_size_button_->UpdateIcon(
+      kTextIncreaseIcon, kIconSize, foreground_color_id, focus_ring_color_id);
 
-  colors_button_->SetIcon(kPaletteIcon, kIconSize, foreground_color_id);
+  colors_button_->SetIcon(kPaletteIcon, kIconSize, foreground_color_id,
+                          focus_ring_color_id);
 
   line_spacing_button_->SetIcon(kReadAnythingLineSpacingIcon, kIconSize,
-                                foreground_color_id);
+                                foreground_color_id, focus_ring_color_id);
   letter_spacing_button_->SetIcon(kReadAnythingLetterSpacingIcon, kIconSize,
-                                  foreground_color_id);
+                                  foreground_color_id, focus_ring_color_id);
 
   // Update fonts.
   colors_button_->SetFont(font_name);
