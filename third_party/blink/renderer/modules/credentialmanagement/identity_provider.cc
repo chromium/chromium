@@ -147,6 +147,12 @@ void IdentityProvider::logout(ScriptState* script_state) {
                               mojom::blink::IdpSigninStatus::kSignedOut);
 }
 
+void IdentityProvider::close(ScriptState* script_state) {
+  auto* request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  request->CloseModalDialogView();
+}
+
 void OnRegisterIdP(ScriptPromiseResolver* resolver, bool accepted) {
   if (!accepted) {
     resolver->Reject(MakeGarbageCollected<DOMException>(

@@ -15,7 +15,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
+#include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/test/mock_mdoc_provider.h"
+#include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -47,6 +49,7 @@ using net::test_server::HttpMethod;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::WithArg;
 
 namespace content {
@@ -190,6 +193,21 @@ class IdpTestServer {
   ConfigDetails config_details_;
 };
 
+class TestFederatedIdentityModalDialogViewDelegate
+    : public NiceMock<MockModalDialogViewDelegate> {
+ public:
+  base::OnceClosure closure_;
+  bool closed_{false};
+
+  void SetClosure(base::OnceClosure closure) { closure_ = std::move(closure); }
+
+  void NotifyClose() override {
+    DCHECK(closure_);
+    std::move(closure_).Run();
+    closed_ = true;
+  }
+};
+
 }  // namespace
 
 class WebIdBrowserTest : public ContentBrowserTest {
@@ -216,6 +234,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
     test_browser_client_ = std::make_unique<WebIdTestContentBrowserClient>();
     SetTestIdentityRequestDialogController("not_real_account");
     SetTestMDocProvider();
+    SetTestModalDialogViewDelegate();
   }
 
   void TearDown() override { ContentBrowserTest::TearDown(); }
@@ -282,9 +301,19 @@ class WebIdBrowserTest : public ContentBrowserTest {
     test_browser_client_->SetMDocProvider(std::move(provider));
   }
 
+  void SetTestModalDialogViewDelegate() {
+    test_modal_dialog_view_delegate_ =
+        std::make_unique<TestFederatedIdentityModalDialogViewDelegate>();
+    test_browser_client_->SetIdentityRegistry(
+        shell()->web_contents(), test_modal_dialog_view_delegate_.get(),
+        url::Origin::Create(GURL(BaseIdpUrl())));
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
+  std::unique_ptr<TestFederatedIdentityModalDialogViewDelegate>
+      test_modal_dialog_view_delegate_;
 
  private:
   EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -511,6 +540,38 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest,
   value = sharing_context()->GetIdpSigninStatus(origin);
   ASSERT_TRUE(value.has_value());
   EXPECT_FALSE(*value);
+}
+
+// Verify that an IdP can call close to close modal dialog views.
+IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdPClose) {
+  GURL configURL = GURL(BaseIdpUrl());
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  // We navigate to the IdP's configURL so that we can run
+  // the script below with the IdP's origin as the top level
+  // first party context.
+  EXPECT_TRUE(NavigateToURL(shell(), configURL));
+
+  std::string script = R"(
+        (async () => {
+          await IdentityProvider.close();
+          return true;
+        }) ()
+    )";
+
+  // Check that modal dialog is not closed.
+  EXPECT_FALSE(test_modal_dialog_view_delegate_->closed_);
+
+  // Run the script.
+  {
+    base::RunLoop run_loop;
+    test_modal_dialog_view_delegate_->SetClosure(run_loop.QuitClosure());
+    EXPECT_EQ(true, EvalJs(shell(), script));
+    run_loop.Run();
+  }
+
+  // Check that modal dialog is closed.
+  EXPECT_TRUE(test_modal_dialog_view_delegate_->closed_);
 }
 
 class WebIdMDocsBrowserTest : public WebIdBrowserTest {
