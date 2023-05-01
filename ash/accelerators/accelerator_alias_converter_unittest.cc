@@ -30,7 +30,7 @@ constexpr char kKbdTopRowLayoutDrallionTag[] = "4";
 
 struct AcceleratorAliasConverterTestData {
   ui::Accelerator accelerator_;
-  absl::optional<ui::Accelerator> expected_accelerator_;
+  absl::optional<ui::Accelerator> expected_accelerators_;
 };
 
 struct TopRowAcceleratorAliasConverterTestData {
@@ -40,7 +40,7 @@ struct TopRowAcceleratorAliasConverterTestData {
   // All currently connected keyboards' layout types.
   std::vector<std::string> keyboard_layout_types_;
   ui::Accelerator accelerator_;
-  std::vector<ui::Accelerator> expected_accelerator_;
+  std::vector<ui::Accelerator> expected_accelerators_;
 };
 
 class FakeDeviceManager {
@@ -226,7 +226,7 @@ class TopRowAliasTest : public AcceleratorAliasConverterTest,
     keyboard_connection_type_ = test_data.keyboard_connection_type_;
     keyboard_layout_types_ = test_data.keyboard_layout_types_;
     accelerator_ = test_data.accelerator_;
-    expected_accelerator_ = test_data.expected_accelerator_;
+    expected_accelerators_ = test_data.expected_accelerators_;
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
   }
 
@@ -234,7 +234,7 @@ class TopRowAliasTest : public AcceleratorAliasConverterTest,
   std::vector<ui::InputDeviceType> keyboard_connection_type_;
   std::vector<std::string> keyboard_layout_types_;
   ui::Accelerator accelerator_;
-  std::vector<ui::Accelerator> expected_accelerator_;
+  std::vector<ui::Accelerator> expected_accelerators_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
 
@@ -379,31 +379,33 @@ INSTANTIATE_TEST_SUITE_P(
 
         // Aliasing should be for the most recently connected external keyboard
         // (last item in the list).
+        // In this case, the most recently connected external keyboard does not
+        // have a browser forward key.
         {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
           ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
           ui::InputDeviceType::INPUT_DEVICE_USB},
          {kKbdTopRowLayout1Tag, kKbdTopRowLayoutUnspecified,
           kKbdTopRowLayout2Tag},
-         ui::Accelerator{ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_NONE},
-         {ui::Accelerator{ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_COMMAND_DOWN}}},
+         ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_NONE},
+         {ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_COMMAND_DOWN}}},
 
-        // Since the external keyboard uses Layout1 by default, it does not have
-        // play/pause which means there should be no mapped accelerator.
+        // Since the external keyboard uses Layout1 by default, it should map to
+        // F2.
         {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
           ui::InputDeviceType::INPUT_DEVICE_USB},
-         {kKbdTopRowLayout2Tag, kKbdTopRowLayoutUnspecified},
-         ui::Accelerator{ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_NONE},
-         {}},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayoutUnspecified},
+         ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_NONE},
+         {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN},
+          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_COMMAND_DOWN}}},
 
-        // Since the external keyboard uses Layout1 by default, it does not have
-        // play/pause which means there should be no mapped accelerator.
-        // Eventhough the internal keyboard is listed last, the external
-        // keyboard should still be used for aliasing.
+        // Since the external keyboard uses Layout1 by default, it should map to
+        // F2, even if the most recently connected keyboard (which is internal)
+        // does not have the key.
         {{ui::InputDeviceType::INPUT_DEVICE_USB,
           ui::InputDeviceType::INPUT_DEVICE_INTERNAL},
          {kKbdTopRowLayoutUnspecified, kKbdTopRowLayout2Tag},
-         ui::Accelerator{ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_NONE},
-         {}},
+         ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_NONE},
+         {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN}}},
     }));
 
 TEST_P(TopRowAliasTest, CheckTopRowAlias) {
@@ -422,11 +424,13 @@ TEST_P(TopRowAliasTest, CheckTopRowAlias) {
 
   std::vector<ui::Accelerator> accelerator_alias =
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
+  base::ranges::sort(accelerator_alias);
+  base::ranges::sort(expected_accelerators_);
 
   ASSERT_TRUE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
-  ASSERT_EQ(expected_accelerator_.size(), accelerator_alias.size());
-  for (size_t i = 0; i < expected_accelerator_.size(); i++) {
-    EXPECT_EQ(expected_accelerator_[i], accelerator_alias[i]);
+  ASSERT_EQ(expected_accelerators_.size(), accelerator_alias.size());
+  for (size_t i = 0; i < expected_accelerators_.size(); i++) {
+    EXPECT_EQ(expected_accelerators_[i], accelerator_alias[i]);
   }
 }
 
@@ -437,13 +441,13 @@ class SixPackAliasTestWithExternalKeyboard
     AcceleratorAliasConverterTest::SetUp();
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
-    expected_accelerator_ = test_data.expected_accelerator_;
+    expected_accelerators_ = test_data.expected_accelerators_;
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
   }
 
  protected:
   ui::Accelerator accelerator_;
-  absl::optional<ui::Accelerator> expected_accelerator_;
+  absl::optional<ui::Accelerator> expected_accelerators_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
 
@@ -512,10 +516,10 @@ TEST_P(SixPackAliasTestWithExternalKeyboard, CheckSixPackAlias) {
   std::vector<ui::Accelerator> accelerator_alias =
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
 
-  if (expected_accelerator_.has_value()) {
+  if (expected_accelerators_.has_value()) {
     // Accelerator has valid a remapping.
     EXPECT_EQ(2u, accelerator_alias.size());
-    EXPECT_EQ(expected_accelerator_, accelerator_alias[0]);
+    EXPECT_EQ(expected_accelerators_, accelerator_alias[0]);
     EXPECT_EQ(accelerator_, accelerator_alias[1]);
   } else {
     // Accelerator doesn't have a valid remapping.
@@ -531,13 +535,13 @@ class SixPackAliasTestWithInternalKeyboard
     AcceleratorAliasConverterTest::SetUp();
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
-    expected_accelerator_ = test_data.expected_accelerator_;
+    expected_accelerators_ = test_data.expected_accelerators_;
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
   }
 
  protected:
   ui::Accelerator accelerator_;
-  absl::optional<ui::Accelerator> expected_accelerator_;
+  absl::optional<ui::Accelerator> expected_accelerators_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
 
@@ -605,10 +609,10 @@ TEST_P(SixPackAliasTestWithInternalKeyboard, CheckSixPackAlias) {
   std::vector<ui::Accelerator> accelerator_alias =
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
 
-  if (expected_accelerator_.has_value()) {
+  if (expected_accelerators_.has_value()) {
     // Accelerator has valid a remapping.
     EXPECT_EQ(1u, accelerator_alias.size());
-    EXPECT_EQ(expected_accelerator_, accelerator_alias[0]);
+    EXPECT_EQ(expected_accelerators_, accelerator_alias[0]);
   } else if (ui::KeyboardCapability::IsSixPackKey(accelerator_.key_code())) {
     // Original accelerator has six pack key, which is not supported by internal
     // keyboard.

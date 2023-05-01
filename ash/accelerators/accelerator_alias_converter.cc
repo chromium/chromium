@@ -33,8 +33,7 @@ bool IsChromeOSKeyboard(const ui::InputDevice& keyboard) {
 
 // Gets the most recently plugged in external keyboard. If there are no external
 // keyboards, return the internal keyboard.
-absl::optional<ui::InputDevice> GetPriorityKeyboard() {
-  DeviceType priority_device_type = DeviceType::kDeviceUnknown;
+absl::optional<ui::InputDevice> GetPriorityExternalKeyboard() {
   absl::optional<ui::InputDevice> priority_keyboard;
   for (const ui::InputDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
@@ -43,10 +42,6 @@ absl::optional<ui::InputDevice> GetPriorityKeyboard() {
     switch (device_type) {
       case DeviceType::kDeviceUnknown:
       case DeviceType::kDeviceInternalKeyboard:
-        if (!priority_keyboard) {
-          priority_keyboard = keyboard;
-          priority_device_type = DeviceType::kDeviceInternalKeyboard;
-        }
         break;
       case DeviceType::kDeviceExternalChromeOsKeyboard:
       case DeviceType::kDeviceExternalAppleKeyboard:
@@ -54,11 +49,8 @@ absl::optional<ui::InputDevice> GetPriorityKeyboard() {
       case DeviceType::kDeviceExternalUnknown:
       case DeviceType::kDeviceHotrodRemote:
       case DeviceType::kDeviceVirtualCoreKeyboard:
-        if (!priority_keyboard ||
-            priority_device_type == DeviceType::kDeviceInternalKeyboard ||
-            keyboard.id > priority_keyboard->id) {
+        if (!priority_keyboard || keyboard.id > priority_keyboard->id) {
           priority_keyboard = keyboard;
-          priority_device_type = device_type;
         }
         break;
     }
@@ -66,33 +58,81 @@ absl::optional<ui::InputDevice> GetPriorityKeyboard() {
   return priority_keyboard;
 }
 
+absl::optional<ui::InputDevice> GetInternalKeyboard() {
+  for (const ui::InputDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    const auto device_type =
+        Shell::Get()->keyboard_capability()->GetDeviceType(keyboard);
+    switch (device_type) {
+      case DeviceType::kDeviceUnknown:
+      case DeviceType::kDeviceInternalKeyboard:
+        return keyboard;
+      case DeviceType::kDeviceExternalChromeOsKeyboard:
+      case DeviceType::kDeviceExternalAppleKeyboard:
+      case DeviceType::kDeviceExternalGenericKeyboard:
+      case DeviceType::kDeviceExternalUnknown:
+      case DeviceType::kDeviceHotrodRemote:
+      case DeviceType::kDeviceVirtualCoreKeyboard:
+        break;
+    }
+  }
+  return absl::nullopt;
+}
+
 }  // namespace
 
-// TODO(zhangwenyu): Handle cases when an accelerator should be suppressed
-// because certain keys are unavailable.
 std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
     const ui::Accelerator& accelerator) const {
-  // For |top_row_key|, replace the base accelerator with top-row remapped
-  // accelerator if applicable. Otherwise, only show base accelerator.
-  std::vector<ui::Accelerator> aliases = CreateTopRowAliases(accelerator);
-  // Return early here since an accelerator can never have a top row alias and a
-  // six pack alias at the same time. Because top row keys and six pack keys are
-  // two completely different sets of keys.
-  if (!aliases.empty()) {
-    return FilterAliasBySupportedKeys(aliases);
+  absl::optional<ui::InputDevice> priority_external_keyboard =
+      GetPriorityExternalKeyboard();
+  absl::optional<ui::InputDevice> internal_keyboard = GetInternalKeyboard();
+
+  // Set is used to get rid of possible duplicate accelerators.
+  base::flat_set<ui::Accelerator> aliases_set;
+
+  // Generate aliases for both the priority external keyboard + the internal
+  // keyboard for top row action keys.
+  if (priority_external_keyboard) {
+    if (const auto alias =
+            CreateTopRowAliases(*priority_external_keyboard, accelerator);
+        alias) {
+      aliases_set.insert(*alias);
+    }
+  }
+  if (internal_keyboard) {
+    if (const auto alias = CreateTopRowAliases(*internal_keyboard, accelerator);
+        alias) {
+      aliases_set.insert(*alias);
+    }
+  }
+  if (!aliases_set.empty()) {
+    return FilterAliasBySupportedKeys(std::move(aliases_set).extract());
   }
 
-  // For |function_key|, replace the base accelerator with the action key
-  // remapped accelerator if the priority keyboard is a ChromeOS keyboard.
-  aliases = CreateFunctionKeyAliases(accelerator);
-  if (!aliases.empty()) {
-    return FilterAliasBySupportedKeys(aliases);
+  // Generate aliases for both the priority external keyboard + the internal
+  // keyboard for f-keys.
+  if (priority_external_keyboard) {
+    if (const auto alias =
+            CreateFunctionKeyAliases(*priority_external_keyboard, accelerator);
+        alias) {
+      aliases_set.insert(*alias);
+    }
+  }
+  if (internal_keyboard) {
+    if (const auto alias =
+            CreateFunctionKeyAliases(*internal_keyboard, accelerator);
+        alias) {
+      aliases_set.insert(*alias);
+    }
+  }
+  if (!aliases_set.empty()) {
+    return FilterAliasBySupportedKeys(std::move(aliases_set).extract());
   }
 
   // For |six_pack_key| and |reversed_six_pack_key|, show both the base
   // accelerator and the remapped accelerator if applicable. Otherwise, only
   // show base accelerator.
-  aliases = CreateSixPackAliases(accelerator);
+  std::vector<ui::Accelerator> aliases = CreateSixPackAliases(accelerator);
   std::vector<ui::Accelerator> reversed_aliases =
       CreateReversedSixPackAliases(accelerator);
   // An accelerator can never have both six pack alias and reversed six
@@ -106,8 +146,9 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
   return FilterAliasBySupportedKeys(aliases);
 }
 
-std::vector<ui::Accelerator>
+absl::optional<ui::Accelerator>
 AcceleratorAliasConverter::CreateFunctionKeyAliases(
+    const ui::InputDevice& keyboard,
     const ui::Accelerator& accelerator) const {
   // TODO(dpad): Handle the case when meta + top row key rewrite is
   // suppressed.
@@ -122,16 +163,11 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
     return {};
   }
 
-  absl::optional<ui::InputDevice> priority_keyboard = GetPriorityKeyboard();
-  if (!priority_keyboard.has_value()) {
-    return {};
-  }
-
   const bool top_row_are_fkeys = [&]() -> bool {
     if (features::IsInputDeviceSettingsSplitEnabled()) {
       const auto* settings =
           Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
-              priority_keyboard->id);
+              keyboard.id);
       return settings && settings->top_row_are_fkeys;
     }
     return Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys();
@@ -140,7 +176,7 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
   // Attempt to get the corresponding `ui::TopRowActionKey` for the given F-Key.
   absl::optional<ui::TopRowActionKey> action_key =
       Shell::Get()->keyboard_capability()->GetCorrespondingActionKeyForFKey(
-          *priority_keyboard, accelerator.key_code());
+          keyboard, accelerator.key_code());
   if (!action_key) {
     return {};
   }
@@ -152,7 +188,7 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
     return {};
   }
 
-  if (IsChromeOSKeyboard(*priority_keyboard)) {
+  if (IsChromeOSKeyboard(keyboard)) {
     // If `priority_keyboard` is a ChromeOS keyboard, the UI should show the
     // corresponding action key, the the F-Key glyph.
     if (top_row_are_fkeys) {
@@ -175,7 +211,8 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
   }
 }
 
-std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
+absl::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
+    const ui::InputDevice& keyboard,
     const ui::Accelerator& accelerator) const {
   // TODO(zhangwenyu): Handle the case when meta + top row key rewrite is
   // suppressed, following https://crrev.com/c/4160339.
@@ -191,28 +228,23 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
     return {};
   }
 
-  absl::optional<ui::InputDevice> priority_keyboard = GetPriorityKeyboard();
-  if (!priority_keyboard.has_value()) {
-    return {};
-  }
-
   const bool top_row_are_fkeys = [&]() -> bool {
     if (features::IsInputDeviceSettingsSplitEnabled()) {
       const auto* settings =
           Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
-              priority_keyboard->id);
+              keyboard.id);
       return settings && settings->top_row_are_fkeys;
     }
     return Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys();
   }();
   absl::optional<ui::KeyboardCode> function_key =
       Shell::Get()->keyboard_capability()->GetCorrespondingFunctionKey(
-          *priority_keyboard, *action_key);
+          keyboard, *action_key);
   if (!function_key.has_value()) {
     return {};
   }
 
-  if (IsChromeOSKeyboard(*priority_keyboard)) {
+  if (IsChromeOSKeyboard(keyboard)) {
     // If its a ChromeOS Keyboard, the UI should show the Action Key glyph. If
     // `top_row_are_fkeys` is true, Search must be added so convert the "F-Key"
     // into the action key.
@@ -312,14 +344,17 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
   CHECK(keyboard_capability);
 
   std::vector<ui::Accelerator> filtered_accelerators;
-  auto priority_keyboard = GetPriorityKeyboard();
+  auto priority_keyboard = GetPriorityExternalKeyboard();
+  auto internal_keyboard = GetInternalKeyboard();
 
   for (const auto& accelerator : accelerators) {
     if (auto action_key = ui::KeyboardCapability::ConvertToTopRowActionKey(
             accelerator.key_code());
         action_key.has_value()) {
-      if (priority_keyboard && keyboard_capability->HasTopRowActionKey(
-                                   *priority_keyboard, *action_key)) {
+      if ((priority_keyboard && keyboard_capability->HasTopRowActionKey(
+                                    *priority_keyboard, *action_key)) ||
+          (internal_keyboard && keyboard_capability->HasTopRowActionKey(
+                                    *internal_keyboard, *action_key))) {
         filtered_accelerators.push_back(accelerator);
       }
       continue;
