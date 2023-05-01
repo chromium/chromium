@@ -211,6 +211,19 @@ sk_sp<SkImage> WrapGLTexture(
       kRGBA_8888_SkColorType, kPremul_SkAlphaType);
 }
 
+void BindAndTexImage2D(gpu::gles2::GLES2Interface* gl,
+                       unsigned int target,
+                       unsigned int texture,
+                       unsigned int internal_format,
+                       unsigned int format,
+                       unsigned int type,
+                       int level,
+                       const gfx::Size& size) {
+  gl->BindTexture(target, texture);
+  gl->TexImage2D(target, level, internal_format, size.width(), size.height(), 0,
+                 format, type, nullptr);
+}
+
 void CopyMailboxToTexture(gpu::gles2::GLES2Interface* gl,
                           const gfx::Size& coded_size,
                           const gfx::Rect& visible_rect,
@@ -244,9 +257,8 @@ void CopyMailboxToTexture(gpu::gles2::GLES2Interface* gl,
       DCHECK_LE(visible_rect.width(), coded_size.width());
       DCHECK_LE(visible_rect.height(), coded_size.height());
 
-      gl->BindTexture(target, texture);
-      gl->TexImage2D(target, level, internal_format, visible_rect.width(),
-                     visible_rect.height(), 0, format, type, nullptr);
+      BindAndTexImage2D(gl, target, texture, internal_format, format, type,
+                        level, visible_rect.size());
       gl->CopySubTextureCHROMIUM(source_texture, 0, target, texture, level, 0,
                                  0, visible_rect.x(), visible_rect.y(),
                                  visible_rect.width(), visible_rect.height(),
@@ -1579,11 +1591,8 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
 
     // Trigger resource allocation for dst texture to back SkSurface.
     // Dst texture size should equal to video frame visible rect.
-    destination_gl->BindTexture(target, texture);
-    destination_gl->TexImage2D(
-        target, 0, internal_format, video_frame->visible_rect().width(),
-        video_frame->visible_rect().height(), 0, format, type, nullptr);
-
+    BindAndTexImage2D(destination_gl, target, texture, internal_format, format,
+                      type, /*level=*/0, video_frame->visible_rect().size());
     gpu::MailboxHolder mailbox_holder;
     mailbox_holder.texture_target = target;
     destination_gl->ProduceTextureDirectCHROMIUM(texture,
@@ -1619,11 +1628,8 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   } else {
     // Trigger resource allocation for dst texture to back SkSurface.
     // Dst texture size should equal to video frame visible rect.
-    destination_gl->BindTexture(target, texture);
-    destination_gl->TexImage2D(
-        target, 0, internal_format, video_frame->visible_rect().width(),
-        video_frame->visible_rect().height(), 0, format, type, nullptr);
-
+    BindAndTexImage2D(destination_gl, target, texture, internal_format, format,
+                      type, /*level=*/0, video_frame->visible_rect().size());
     gpu::MailboxHolder mailbox_holder =
         GetVideoFrameMailboxHolder(video_frame.get());
     destination_gl->WaitSyncTokenCHROMIUM(
@@ -1680,11 +1686,10 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrameForWebGL(
 
     // Take webgl video texture as 2D texture. Setting it as external render
     // target backend for skia.
-    destination_gl->BindTexture(target, texture);
-    destination_gl->TexImage2D(target, 0, GL_RGBA,
-                               video_frame->coded_size().width(),
-                               video_frame->coded_size().height(), 0, GL_RGBA,
-                               GL_UNSIGNED_BYTE, nullptr);
+    BindAndTexImage2D(destination_gl, target, texture,
+                      /*internal_format=*/GL_RGBA, /*format=*/GL_RGBA,
+                      /*type=*/GL_UNSIGNED_BYTE, /*level=*/0,
+                      video_frame->coded_size());
 
     CHECK_GT(video_frame->NumTextures(), 1u);
     gpu::MailboxHolder mailbox_holder;
@@ -1713,11 +1718,10 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrameForWebGL(
   } else {
     // Take webgl video texture as 2D texture. Setting it as external render
     // target backend for skia.
-    destination_gl->BindTexture(target, texture);
-    destination_gl->TexImage2D(target, 0, GL_RGBA,
-                               video_frame->coded_size().width(),
-                               video_frame->coded_size().height(), 0, GL_RGBA,
-                               GL_UNSIGNED_BYTE, nullptr);
+    BindAndTexImage2D(destination_gl, target, texture,
+                      /*internal_format=*/GL_RGBA, /*format=*/GL_RGBA,
+                      /*type=*/GL_UNSIGNED_BYTE, /*level=*/0,
+                      video_frame->coded_size());
 
     CHECK_EQ(video_frame->NumTextures(), 1u);
     CHECK_EQ(video_frame->shared_image_format_type(),
