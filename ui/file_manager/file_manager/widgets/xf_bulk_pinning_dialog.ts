@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import {str} from '../common/js/util.js';
@@ -16,9 +17,11 @@ import {css, customElement, html, query, XfBase} from './xf_base.js';
 export class XfBulkPinningDialog extends XfBase {
   @query('cr-dialog') private $dialog_!: CrDialogElement;
   @query('#point1') private $point1_!: HTMLElement;
+  @query('#continue-button') private $button_!: CrButtonElement;
 
   show() {
     this.$point1_.innerHTML = str('BULK_PINNING_POINT_1');
+    this.$button_.disabled = true;
     this.$dialog_.showModal();
   }
 
@@ -60,16 +63,24 @@ export class XfBulkPinningDialog extends XfBase {
               ${str('BULK_PINNING_POINT_2')}
             </li>
           </ul>
-          <div class="note">
+          <div class="normal-footer">
             ${str('BULK_PINNING_SPACE')}
+          </div>
+          <div class="error-footer">
+            ${str('BULK_PINNING_NOT_ENOUGH_SPACE')}
+            &ensp;
+            <a href="_blank">${str('BULK_PINNING_VIEW_STORAGE')}</a>
+          </div>
+          <div class="offline-footer">
+            ${str('BULK_PINNING_OFFLINE')}
           </div>
         </div>
         <div slot="button-container">
           <cr-button class="cancel-button" @click="${this.onCancel}">
             ${str('CANCEL_LABEL')}
           </cr-button>
-          <cr-button class="continue-button action-button" @click="${
-        this.onContinue}">
+          <cr-button id="continue-button" class="continue-button action-button"
+            @click="${this.onContinue}">
             ${str('BULK_PINNING_CONTINUE')}
           </cr-button>
         </div>
@@ -106,18 +117,42 @@ function getCSS() {
     ul {
       border-radius: 12px 12px 0 0;
       border: 1px solid var(--cros-separator-color);
+      border-bottom-style: none;
       margin: 0;
       padding: 20px 18px;
     }
 
-    .note {
+    .normal-footer {
       background-color: var(--cros-sys-app_base_shaded);
-      border-block-end: 1px solid var(--cros-separator-color);
-      border-inline-end: 1px solid var(--cros-separator-color);
-      border-inline-start: 1px solid var(--cros-separator-color);
+      border: 1px solid var(--cros-separator-color);
       border-radius: 0 0 12px 12px;
+      border-top-style: none;
       color: var(--cros-sys-on_surface);
+      display: none;
       padding: 16px;
+    }
+
+    .error-footer {
+      background-color: var(--cros-sys-error_container);
+      border: 1px solid var(--cros-separator-color);
+      border-radius: 0 0 12px 12px;
+      border-top-style: none;
+      color: var(--cros-sys-on_error_container);
+      padding: 16px;
+    }
+
+    .offline-footer {
+      background-color: var(--cros-sys-surface_variant);
+      border: 1px solid var(--cros-separator-color);
+      border-radius: 0 0 12px 12px;
+      border-top-style: none;
+      color: var(--cros-sys-on_surface_variant);
+      display: none;
+      padding: 16px;
+    }
+
+    a {
+      color: var(--cros-sys-on_error_container);
     }
 
     li {
