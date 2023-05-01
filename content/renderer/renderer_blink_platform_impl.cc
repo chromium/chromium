@@ -30,6 +30,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/time/time_delta_from_string.h"
 #include "build/build_config.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
 #include "components/url_formatter/url_formatter.h"
@@ -1035,92 +1036,39 @@ void RendererBlinkPlatformImpl::SetPrivateMemoryFootprint(
   render_thread->SetPrivateMemoryFootprint(private_memory_footprint_bytes);
 }
 
-namespace {
-// Negative inert interval disables delayed memory pressure signals
-// This is intended to keep the old behavior.
-base::TimeDelta kDefaultInertInterval = base::TimeDelta::Min();
-
-bool IsFeatureEnabledWithoutActivation(const base::Feature& feature) {
-  base::FieldTrial* trial = base::FeatureList::GetFieldTrial(feature);
-  // If --enable-features is specified with no study names, no group names, and
-  // no field trial parameters, no trial will be associated.
-  // e.g. --enable-features=UserLevelMemoryPressureSignalOn6GbDevices
-  if (!trial) {
-    // Since no trial is associated, base::FeatureList::IsEnabled() doesn't
-    // activate any trials.
-    return base::FeatureList::IsEnabled(feature);
-  }
-
-  // If no --enable-features or --enable-features is specified with a study
-  // name and a group name, a field trial is created and associated with
-  // the feature.
-  // In the case, see if there exists an activate group of the field trial.
-  // If there are no active groups, the condition of physcal memory didn't
-  // match and no base::FeatureList::IsEnable() was invoked.
-  // (e.g. amount of physcal_memory < 3.2GB)
-  if (!base::FieldTrialList::IsTrialActive(trial->trial_name())) {
-    // See the default value if there are no active groups.
-    return feature.default_state == base::FEATURE_ENABLED_BY_DEFAULT;
-  }
-
-  // Since the field trial has been already activated, we can use IsEnabled().
-  return base::FeatureList::IsEnabled(feature);
-}
-
-bool IsUserLevelMemoryPressureSignalOn4GbDevicesEnabledWithoutActivation() {
-  return IsFeatureEnabledWithoutActivation(
-      kUserLevelMemoryPressureSignalOn4GbDevices);
-}
-
-bool IsUserLevelMemoryPressureSignalOn6GbDevicesEnabledWithoutActivation() {
-  return IsFeatureEnabledWithoutActivation(
-      kUserLevelMemoryPressureSignalOn6GbDevices);
-}
-
-base::TimeDelta InertIntervalFor4GbDevices() {
-  static const base::FeatureParam<base::TimeDelta> kInertInterval{
-      &kUserLevelMemoryPressureSignalOn4GbDevices,
-      "inert_interval_after_loading", kDefaultInertInterval};
-  return kInertInterval.Get();
-}
-
-base::TimeDelta InertIntervalFor6GbDevices() {
-  static const base::FeatureParam<base::TimeDelta> kInertInterval{
-      &kUserLevelMemoryPressureSignalOn6GbDevices,
-      "inert_interval_after_loading", kDefaultInertInterval};
-  return kInertInterval.Get();
-}
-}  // namespace
-
 bool RendererBlinkPlatformImpl::IsUserLevelMemoryPressureSignalEnabled() {
-  return IsUserLevelMemoryPressureSignalOn4GbDevicesEnabledWithoutActivation() ||
-         IsUserLevelMemoryPressureSignalOn6GbDevicesEnabledWithoutActivation();
+  static bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kUserLevelMemoryPressureSignalParams);
+  return enabled;
 }
 
-base::TimeDelta
-RendererBlinkPlatformImpl::InertIntervalOfUserLevelMemoryPressureSignal() {
-  if (IsUserLevelMemoryPressureSignalOn4GbDevicesEnabledWithoutActivation()) {
-    return InertIntervalFor4GbDevices();
+std::pair<base::TimeDelta, base::TimeDelta> RendererBlinkPlatformImpl::
+    InertAndMinimumIntervalOfUserLevelMemoryPressureSignal() {
+  constexpr std::pair<base::TimeDelta, base::TimeDelta>
+      kDefaultInertAndMinInterval =
+          std::make_pair(base::TimeDelta::Min(), base::Minutes(10));
+
+  if (!IsUserLevelMemoryPressureSignalEnabled()) {
+    return kDefaultInertAndMinInterval;
   }
 
-  if (IsUserLevelMemoryPressureSignalOn6GbDevicesEnabledWithoutActivation()) {
-    return InertIntervalFor6GbDevices();
+  std::vector<base::StringPiece> parameters = base::SplitStringPiece(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kUserLevelMemoryPressureSignalParams),
+      ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (parameters.size() != 2) {
+    return kDefaultInertAndMinInterval;
   }
 
-  return base::TimeDelta();
-}
-
-base::TimeDelta
-RendererBlinkPlatformImpl::MinimumIntervalOfUserLevelMemoryPressureSignal() {
-  if (IsUserLevelMemoryPressureSignalOn4GbDevicesEnabledWithoutActivation()) {
-    return MinimumIntervalOfUserLevelMemoryPressureSignalOn4GbDevices();
+  absl::optional<base::TimeDelta> inert_interval =
+      base::TimeDeltaFromString(parameters.at(0));
+  absl::optional<base::TimeDelta> minimum_interval =
+      base::TimeDeltaFromString(parameters.at(1));
+  if (!inert_interval.has_value() || !minimum_interval.has_value()) {
+    return kDefaultInertAndMinInterval;
   }
 
-  if (IsUserLevelMemoryPressureSignalOn6GbDevicesEnabledWithoutActivation()) {
-    return MinimumIntervalOfUserLevelMemoryPressureSignalOn6GbDevices();
-  }
-
-  return base::TimeDelta();
+  return std::make_pair(inert_interval.value(), minimum_interval.value());
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
