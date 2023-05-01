@@ -633,7 +633,7 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
     use_first_line_style_ = false;
   }
 
-  line_info->SetStartOffset(current_.text_offset);
+  line_info->SetStart(current_);
   line_info->SetLineStyle(node_, items_data_, use_first_line_style_);
 
   DCHECK(!line_info->TextIndent());

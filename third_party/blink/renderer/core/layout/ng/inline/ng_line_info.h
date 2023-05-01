@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_text_index.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
@@ -155,8 +156,9 @@ class CORE_EXPORT NGLineInfo {
   }
 
   // Start text offset of this line.
-  unsigned StartOffset() const { return start_offset_; }
-  void SetStartOffset(unsigned offset) { start_offset_ = offset; }
+  const NGInlineItemTextIndex& Start() const { return start_; }
+  unsigned StartOffset() const { return start_.text_offset; }
+  void SetStart(const NGInlineItemTextIndex& index) { start_ = index; }
   // End text offset of this line, excluding out-of-flow objects such as
   // floating or positioned.
   unsigned InflowEndOffset() const;
@@ -237,7 +239,7 @@ class CORE_EXPORT NGLineInfo {
       unsigned* end_offset_out = nullptr) const;
 
   const NGInlineItemsData* items_data_ = nullptr;
-  const ComputedStyle* line_style_ = nullptr;
+  scoped_refptr<const ComputedStyle> line_style_;
   NGInlineItemResults results_;
 
   NGBfcOffset bfc_offset_;
@@ -256,7 +258,7 @@ class CORE_EXPORT NGLineInfo {
   LayoutUnit initial_letter_box_block_start_adjustment_;
   LayoutUnit initial_letter_box_block_size_;
 
-  unsigned start_offset_;
+  NGInlineItemTextIndex start_;
   unsigned end_item_index_;
   unsigned end_offset_for_justify_;
 

@@ -32,7 +32,7 @@ void NGLineInfo::Reset() {
   initial_letter_box_block_start_adjustment_ = LayoutUnit();
   initial_letter_box_block_size_ = LayoutUnit();
 
-  start_offset_ = 0;
+  start_ = {0, 0};
   end_item_index_ = 0;
   end_offset_for_justify_ = 0;
 
