@@ -35,6 +35,8 @@ html:not(body) {
 
 {%- for name, value in legacy_mappings.items() %}
   {{name | to_css_var_name_unscoped}}: {{value | process_simple_ref}};
+  {{name | to_css_var_name_unscoped}}-light: {{value | process_simple_ref}};
+  {{name | to_css_var_name_unscoped}}-dark: {{value | process_simple_ref}};
 {%  endfor -%}
 
 }

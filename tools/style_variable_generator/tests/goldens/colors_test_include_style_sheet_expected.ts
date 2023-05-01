@@ -64,6 +64,8 @@ const TYPOGRAPHY_CSS = window ? `` : '';
 
 const LEGACY_MAPPINGS_CSS = window ? `
   --legacy_color: var(--cros-text-color-primary);
+  --legacy_color-light: var(--cros-text-color-primary);
+  --legacy_color-dark: var(--cros-text-color-primary);
 ` : '';
 
 /**

@@ -31,6 +31,8 @@ html:not(body) {
   --cros-sys-reference_opacity: var(--cros-sys-disabled_opacity);
 
   --cros-color-primary: var(--cros-sys-primary_container);
+  --cros-color-primary-light: var(--cros-sys-primary_container);
+  --cros-color-primary-dark: var(--cros-sys-primary_container);
 }
 
 @media (prefers-color-scheme: dark) {

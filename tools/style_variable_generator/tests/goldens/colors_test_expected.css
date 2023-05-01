@@ -28,6 +28,8 @@ html:not(body) {
   --cros-reference-opacity: var(--cros-disabled-opacity);
 
   --legacy_color: var(--cros-text-color-primary);
+  --legacy_color-light: var(--cros-text-color-primary);
+  --legacy_color-dark: var(--cros-text-color-primary);
 }
 
 @media (prefers-color-scheme: dark) {
