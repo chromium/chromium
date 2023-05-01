@@ -96,6 +96,16 @@ export class CloudPanelContainer {
       return;
     }
 
+    // If the bulk pinning is paused, this indicates that it is currently
+    // offline. This could be from either the network not being connected or
+    // cellular being disabled for syncing.
+    if (bulkPinProgress.stage === BulkPinStage.PAUSED) {
+      this.panel_.setAttribute('type', 'offline');
+      this.increaseUpdates_();
+      return;
+    }
+    this.panel_.removeAttribute('type');
+
     // Files to pin can't be negative the pinned bytes should never exceed
     // the bytes to pin (>100%).
     if (bulkPinProgress.filesToPin < 0 ||
@@ -109,9 +119,14 @@ export class CloudPanelContainer {
         (bulkPinProgress.pinnedBytes / bulkPinProgress.bytesToPin * 100)
             .toFixed(0);
     this.panel_.setAttribute('percentage', String(percentage));
+    this.increaseUpdates_();
+  }
 
-    // If in a test environment, keep track of the number of updates that have
-    // been performed based on state changes.
+  /**
+   * If in a test environment, keep track of the number of updates that have
+   * been performed based on state changes.
+   */
+  private increaseUpdates_() {
     if (this.test_) {
       ++this.updates_;
     }
