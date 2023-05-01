@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/host/gpu_disk_cache.h"
 
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -96,6 +97,20 @@ TEST_F(GpuDiskCacheTest, ClearByPathWithEmptyPathTriggersCallback) {
       base::FilePath(), base::Time(), base::Time::Max(),
       base::BindLambdaForTesting([&]() { test_callback.callback().Run(1); }));
   ASSERT_TRUE(test_callback.WaitForResult());
+}
+
+TEST_F(GpuDiskCacheTest, ClearByPathWithNoExistingCache) {
+  // Create a dir but not creating a gpu cache under it.
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+  net::TestCompletionCallback test_callback;
+  factory()->ClearByPath(
+      cache_path(), base::Time(), base::Time::Max(),
+      base::BindLambdaForTesting([&]() { test_callback.callback().Run(1); }));
+  ASSERT_TRUE(test_callback.WaitForResult());
+
+  // No files should be written to the cache path.
+  EXPECT_EQ(0, base::ComputeDirectorySize(cache_path()));
 }
 
 // For https://crbug.com/663589.
