@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
@@ -74,6 +75,7 @@ Registry CreateRegistryForTesting(const std::string& base_url, int num_apps) {
     web_app->SetName("Name" + base::NumberToString(i));
     web_app->SetDisplayMode(DisplayMode::kBrowser);
     web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+    web_app->SetIsLocallyInstalled(true);
 
     registry.emplace(app_id, std::move(web_app));
   }
@@ -393,6 +395,61 @@ TEST_F(WebAppRegistrarTest, FilterApps) {
     EXPECT_EQ(1U, num_removed);
   }
   EXPECT_TRUE(ids.empty());
+}
+
+TEST_F(WebAppRegistrarTest, AppsInstalledByUserMetric) {
+  base::HistogramTester histogram_tester;
+
+  // All of these apps are marked as 'not locally installed'.
+  InitRegistrarWithApps("https://example.com/path", 10);
+  registrar().Start();
+
+  histogram_tester.ExpectUniqueSample("WebApp.InstalledCount.ByUser",
+                                      /*sample=*/10,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstalledCount.ByUserNotLocallyInstalled", /*sample=*/0,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(WebAppRegistrarTest, AppsNonUserInstalledMetric) {
+  base::HistogramTester histogram_tester;
+
+  auto web_app = std::make_unique<WebApp>("app_id");
+  web_app->AddSource(WebAppManagement::kPolicy);
+  web_app->SetDisplayMode(DisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
+  web_app->SetName("name");
+  web_app->SetStartUrl(GURL("https://example.com/path"));
+  InitRegistrarWithApp(std::move(web_app));
+  registrar().Start();
+
+  histogram_tester.ExpectUniqueSample("WebApp.InstalledCount.ByUser",
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstalledCount.ByUserNotLocallyInstalled", /*sample=*/0,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(WebAppRegistrarTest, AppsNotLocallyInstalledMetric) {
+  base::HistogramTester histogram_tester;
+
+  auto web_app = std::make_unique<WebApp>("app_id");
+  web_app->AddSource(WebAppManagement::kSync);
+  web_app->SetDisplayMode(DisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
+  web_app->SetName("name");
+  web_app->SetStartUrl(GURL("https://example.com/path"));
+  InitRegistrarWithApp(std::move(web_app));
+  registrar().Start();
+
+  histogram_tester.ExpectUniqueSample("WebApp.InstalledCount.ByUser",
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstalledCount.ByUserNotLocallyInstalled", /*sample=*/1,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(WebAppRegistrarTest, GetApps) {

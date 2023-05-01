@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/to_string.h"
 #include "build/chromeos_buildflags.h"
@@ -640,6 +641,15 @@ void WebAppRegistrar::Start() {
   // Profile manager can be null in unit tests.
   if (ProfileManager* profile_manager = g_browser_process->profile_manager())
     profile_manager_observation_.Observe(profile_manager);
+
+  int num_user_installed_apps = CountUserInstalledApps();
+  int num_non_locally_installed = CountUserInstalledNotLocallyInstalledApps();
+
+  base::UmaHistogramCounts1000("WebApp.InstalledCount.ByUser",
+                               num_user_installed_apps);
+  base::UmaHistogramCounts1000(
+      "WebApp.InstalledCount.ByUserNotLocallyInstalled",
+      num_non_locally_installed);
 }
 
 void WebAppRegistrar::Shutdown() {
@@ -795,6 +805,16 @@ int WebAppRegistrar::CountUserInstalledApps() const {
       ++num_user_installed;
   }
   return num_user_installed;
+}
+
+int WebAppRegistrar::CountUserInstalledNotLocallyInstalledApps() const {
+  int num_non_locally_installed = 0;
+  for (const WebApp& app : GetApps()) {
+    if (!app.is_locally_installed() && app.WasInstalledByUser()) {
+      ++num_non_locally_installed;
+    }
+  }
+  return num_non_locally_installed;
 }
 
 std::vector<content::StoragePartitionConfig>

@@ -186,6 +186,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Requires app registry to be in a ready state.
   int CountUserInstalledApps() const;
 
+  // Count a number of all apps which are installed by the user but not locally
+  // installed (aka installed via sync).
+  int CountUserInstalledNotLocallyInstalledApps() const;
+
   // All names are UTF8 encoded.
   std::string GetAppShortName(const AppId& app_id) const;
   std::string GetAppDescription(const AppId& app_id) const;
