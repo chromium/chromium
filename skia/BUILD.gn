@@ -471,13 +471,6 @@ component("skia") {
     ]
   }
 
-  if (is_clang && !is_nacl) {
-    # Skia won't compile with some of the more strict clang warnings.
-    # e.g. it does:
-    #  SkASSERT(!"sk_out_of_memory");
-    configs -= [ "//build/config/clang:extra_warnings" ]
-  }
-
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     ":skia_config",
@@ -576,7 +569,10 @@ component("skia") {
     # Ganesh sources, since both Ganesh and Graphite use the same defines for
     # enabling backends, otherwise we'll get undefined symbol errors in Ganesh.
     if (skia_use_dawn) {
-      deps += [ ":skia_ganesh_dawn" ]
+      # It's ok to not make these public since they aren't meant to be used
+      # outside of Skia.
+      sources += skia_gpu_dawn_public
+      sources += skia_gpu_dawn_private
     }
     if (skia_use_metal) {
       deps += [ ":skia_ganesh_metal" ]
@@ -816,20 +812,6 @@ if (skia_support_gpu) {
     visibility = [ ":skia" ]
   }
 
-  if (skia_use_dawn) {
-    # Split out Ganesh Dawn sources, because they require error suppression.
-    skia_source_set("skia_ganesh_dawn") {
-      sources = skia_gpu_dawn_public
-      sources += skia_gpu_dawn_private
-
-      # Ganesh Dawn backend has SkASSERT(!"umimplemented") calls which cause
-      # -Wstring-conversion to fail - exempt this code since it's unused anyway.
-      cflags_cc = [ "-Wno-string-conversion" ]
-
-      deps = [ "//gpu/config:workaround_list" ]
-      visibility = [ ":skia" ]
-    }
-  }
   if (skia_use_metal) {
     # Split out Ganesh Metal sources, because they require ARC.
     skia_source_set("skia_ganesh_metal") {
