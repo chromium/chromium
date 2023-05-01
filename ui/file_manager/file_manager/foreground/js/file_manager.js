@@ -1156,7 +1156,7 @@ export class FileManager extends EventTarget {
 
     // Create task controller.
     this.taskController_ = new TaskController(
-        this.dialogType, this.volumeManager_, this.ui_, this.metadataModel_,
+        this.volumeManager_, this.ui_, this.metadataModel_,
         this.directoryModel_, this.selectionHandler_,
         this.metadataUpdateController_, assert(this.crostini_),
         this.progressCenter);
