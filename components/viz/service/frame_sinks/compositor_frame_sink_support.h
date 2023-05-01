@@ -348,6 +348,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // Counts the number of ACKs that have been received from a Surface and have
   // not yet been sent to the CompositorFrameSinkClient.
   int ack_queued_for_client_count_ = 0;
+  bool ack_pending_during_on_begin_frame_ = false;
 
   // When `true` we have received frames from a client using its own
   // BeginFrameSource. While dealing with frames from multiple sources we cannot
