@@ -153,7 +153,6 @@ void Start() {
     crash_reporter::SetCrashpadRunning(true);
   }
   UMA_HISTOGRAM_BOOLEAN("Stability.IOS.Crashpad.Initialized", initialized);
-  crash_reporter::InitializeCrashKeys();
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   static crash_reporter::CrashKeyString<4> key("partition_alloc");

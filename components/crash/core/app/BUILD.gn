@@ -79,10 +79,7 @@ static_library("app") {
   ]
 
   if (is_ios) {
-    deps -= [
-      "//components/crash/core/common:crash_key",
-      "//content/public/common:content_descriptors",
-    ]
+    deps -= [ "//content/public/common:content_descriptors" ]
   }
 
   if (is_android) {
