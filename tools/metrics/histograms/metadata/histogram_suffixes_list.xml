@@ -2021,25 +2021,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="GPU.Error"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GoogleUpdate_Result_UpdateType" separator=".">
-  <suffix base="true" name="Intent" label="Intent Updates"/>
-  <suffix base="true" name="Unknown" label="Unknown Update Type"/>
-  <affected-histogram name="GoogleUpdate.Result.Session"/>
-  <affected-histogram name="GoogleUpdate.Result.TimeWindow"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="GoogleUpdate_Result_UpdateType_UpdateSource"
-    separator=".">
-  <suffix name="Infobar" label="Update initiated from the infobar"/>
-  <suffix name="Menu" label="Update initiated from the menu"/>
-  <suffix name="Notification" label="Update initiated from the notification"/>
-  <suffix name="Unknown" label="Update initiated from an unknown source"/>
-  <affected-histogram name="GoogleUpdate.Result.Session.Intent"/>
-  <affected-histogram name="GoogleUpdate.Result.Session.Unknown"/>
-  <affected-histogram name="GoogleUpdate.Result.TimeWindow.Intent"/>
-  <affected-histogram name="GoogleUpdate.Result.TimeWindow.Unknown"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GPU_ProtectedVideoType" separator=".">
   <suffix name="Clear" label="Clear"/>
   <suffix name="HardwareProtected" label="HardwareProtected"/>
