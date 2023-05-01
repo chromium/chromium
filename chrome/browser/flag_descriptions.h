@@ -1118,6 +1118,9 @@ extern const char kLensImageFormatOptimizationsDescription[];
 extern const char kLensImageTranslateName[];
 extern const char kLensImageTranslateDescription[];
 
+extern const char kEnableLensPingName[];
+extern const char kEnableLensPingDescription[];
+
 extern const char kCscName[];
 extern const char kCscDescription[];
 
