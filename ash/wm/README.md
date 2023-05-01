@@ -63,6 +63,17 @@ switching desks, the windows associated with the old active desk slide out, and
 the windows associated with the new active desk slide in. Desks can be created,
 accessed and destroyed using accelerators or a desk UI in overview mode.
 
+#### Float
+
+Float is another productivity feature that allows users to place one window per
+desk above others. This is done by moving the window to a container stacked
+above the desk containers.
+
+In tablet mode, floated windows have a fixed size and are always magnetized to
+the corners but can be dragged to other corners. The can also be tucked by
+flinging the window horizontally offscreen. You can bring the window back by
+pressing on the UI provided while tucked.
+
 #### Gestures
 
 Gestures provide a quick way of doing window management. This folder contains
