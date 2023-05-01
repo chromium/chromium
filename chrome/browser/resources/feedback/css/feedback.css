@@ -264,6 +264,15 @@ button.blue-button {
   width: 1px;
 }
 
+#autofill-checkbox-container {
+  align-items: flex-start;
+  display: flex;
+}
+
+#autofill-metadata-label {
+  margin-top: 1px;
+}
+
 option {
   background: var(--feedback-bg-color) linear-gradient(
       rgba(255,255,255, 0.06),rgba(255,255,255, 0.06));
