@@ -139,7 +139,6 @@ void InitGlobalNt() {
   INIT_NT(OpenFile);
   INIT_NT(OpenThread);
   INIT_NT(OpenProcess);
-  INIT_NT(OpenProcessToken);
   INIT_NT(OpenProcessTokenEx);
   INIT_NT(ProtectVirtualMemory);
   INIT_NT(QueryAttributesFile);
@@ -168,6 +167,21 @@ void InitGlobalNt() {
   INIT_RTL(memcpy);
   sandbox::g_nt.Initialized = true;
 }
+
+// The TEB structure defined in winternl.h doesn't have the ClientId member.
+// Provide a partial definition here.
+struct PARTIAL_TEB {
+  PVOID NtTib[7];
+  PVOID EnvironmentPointer;
+  CLIENT_ID ClientId;
+  PVOID ActiveRpcHandle;
+  PVOID ThreadLocalStoragePointer;
+  PPEB ProcessEnvironmentBlock;
+};
+
+// Check PEB offset between the partial definition and the public one.
+static_assert(offsetof(PARTIAL_TEB, ProcessEnvironmentBlock) ==
+              offsetof(TEB, ProcessEnvironmentBlock));
 
 }  // namespace.
 
@@ -716,6 +730,10 @@ bool NtGetPathFromHandle(HANDLE handle,
   if (STATUS_SUCCESS != status)
     return false;
   return true;
+}
+
+CLIENT_ID GetCurrentClientId() {
+  return reinterpret_cast<PARTIAL_TEB*>(NtCurrentTeb())->ClientId;
 }
 
 }  // namespace sandbox

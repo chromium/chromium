@@ -49,55 +49,6 @@ NTSTATUS ProcessPolicy::OpenThreadAction(const ClientInfo& client_info,
   return status;
 }
 
-NTSTATUS ProcessPolicy::OpenProcessAction(const ClientInfo& client_info,
-                                          uint32_t desired_access,
-                                          uint32_t process_id,
-                                          HANDLE* handle) {
-  *handle = nullptr;
-
-  if (client_info.process_id != process_id)
-    return STATUS_ACCESS_DENIED;
-
-  OBJECT_ATTRIBUTES attributes = {0};
-  attributes.Length = sizeof(attributes);
-  CLIENT_ID client_id = {0};
-  client_id.UniqueProcess =
-      reinterpret_cast<PVOID>(static_cast<ULONG_PTR>(client_info.process_id));
-  HANDLE local_handle = nullptr;
-  NTSTATUS status = GetNtExports()->OpenProcess(&local_handle, desired_access,
-                                                &attributes, &client_id);
-  if (NT_SUCCESS(status)) {
-    if (!::DuplicateHandle(::GetCurrentProcess(), local_handle,
-                           client_info.process, handle, 0, false,
-                           DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
-      return STATUS_ACCESS_DENIED;
-    }
-  }
-
-  return status;
-}
-
-NTSTATUS ProcessPolicy::OpenProcessTokenAction(const ClientInfo& client_info,
-                                               HANDLE process,
-                                               uint32_t desired_access,
-                                               HANDLE* handle) {
-  *handle = nullptr;
-  if (CURRENT_PROCESS != process)
-    return STATUS_ACCESS_DENIED;
-
-  HANDLE local_handle = nullptr;
-  NTSTATUS status = GetNtExports()->OpenProcessToken(
-      client_info.process, desired_access, &local_handle);
-  if (NT_SUCCESS(status)) {
-    if (!::DuplicateHandle(::GetCurrentProcess(), local_handle,
-                           client_info.process, handle, 0, false,
-                           DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
-      return STATUS_ACCESS_DENIED;
-    }
-  }
-  return status;
-}
-
 NTSTATUS ProcessPolicy::OpenProcessTokenExAction(const ClientInfo& client_info,
                                                  HANDLE process,
                                                  uint32_t desired_access,

@@ -14,8 +14,93 @@
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sharedmem_ipc_client.h"
 #include "sandbox/win/src/target_services.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
+
+namespace {
+
+NTSTATUS DuplicateObject(HANDLE handle,
+                         ACCESS_MASK desired_access,
+                         PHANDLE out_handle) {
+  if (desired_access & MAXIMUM_ALLOWED) {
+    desired_access |= GENERIC_ALL;
+  }
+
+  return GetNtExports()->DuplicateObject(CURRENT_PROCESS, handle,
+                                         CURRENT_PROCESS, out_handle,
+                                         desired_access, 0, 0);
+}
+
+template <typename T>
+absl::optional<T> CaptureParameter(const T* parameter) {
+  if (parameter) {
+    __try {
+      return *parameter;
+    } __except (EXCEPTION_EXECUTE_HANDLER) {
+    }
+  }
+  return absl::nullopt;
+}
+
+bool ValidObjectAttributes(const OBJECT_ATTRIBUTES* object_attributes) {
+  if (!object_attributes) {
+    return true;
+  }
+  absl::optional<OBJECT_ATTRIBUTES> valid_obj_attr =
+      CaptureParameter(object_attributes);
+  return valid_obj_attr.has_value() && !valid_obj_attr->Attributes &&
+         !valid_obj_attr->ObjectName && !valid_obj_attr->RootDirectory &&
+         !valid_obj_attr->SecurityDescriptor &&
+         !valid_obj_attr->SecurityQualityOfService;
+}
+
+NTSTATUS CallNtOpenProcessTokenEx(NTSTATUS status,
+                                  HANDLE process,
+                                  ACCESS_MASK desired_access,
+                                  ULONG handle_attributes,
+                                  PHANDLE token) {
+  if (NT_SUCCESS(status)) {
+    return status;
+  }
+
+  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled()) {
+    return status;
+  }
+
+  if (CURRENT_PROCESS != process ||
+      !ValidParameter(token, sizeof(HANDLE), WRITE)) {
+    return status;
+  }
+
+  void* memory = GetGlobalIPCMemory();
+  if (!memory) {
+    return status;
+  }
+
+  SharedMemIPCClient ipc(memory);
+  CrossCallReturn answer = {0};
+  ResultCode code = CrossCall(ipc, IpcTag::NTOPENPROCESSTOKENEX, process,
+                              desired_access, handle_attributes, &answer);
+  if (SBOX_ALL_OK != code) {
+    return status;
+  }
+
+  if (!NT_SUCCESS(answer.nt_status)) {
+    return answer.nt_status;
+  }
+
+  __try {
+    // Write the output parameters.
+    *token = answer.handle;
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
+    return status;
+  }
+
+  return answer.nt_status;
+}
+
+}  // namespace
 
 // Hooks NtOpenThread and proxy the call to the broker if it's trying to
 // open a thread in the same process.
@@ -26,81 +111,67 @@ NTSTATUS WINAPI TargetNtOpenThread(NtOpenThreadFunction orig_OpenThread,
                                    PCLIENT_ID client_id) {
   NTSTATUS status =
       orig_OpenThread(thread, desired_access, object_attributes, client_id);
-  if (NT_SUCCESS(status))
+  if (NT_SUCCESS(status)) {
     return status;
+  }
 
-  do {
-    if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
-      break;
-    if (!client_id)
-      break;
+  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled()) {
+    return status;
+  }
 
-    uint32_t thread_id = 0;
-    bool should_break = false;
-    __try {
-      // We support only the calls for the current process
-      if (client_id->UniqueProcess)
-        should_break = true;
+  if (!ValidParameter(thread, sizeof(HANDLE), WRITE) ||
+      !ValidObjectAttributes(object_attributes)) {
+    return status;
+  }
 
-      // Object attributes should be nullptr or empty.
-      if (!should_break && object_attributes) {
-        if (object_attributes->Attributes || object_attributes->ObjectName ||
-            object_attributes->RootDirectory ||
-            object_attributes->SecurityDescriptor ||
-            object_attributes->SecurityQualityOfService) {
-          should_break = true;
-        }
-      }
+  absl::optional<CLIENT_ID> valid_client_id = CaptureParameter(client_id);
+  if (!valid_client_id.has_value() || valid_client_id->UniqueProcess) {
+    return status;
+  }
 
-      thread_id = static_cast<uint32_t>(
-          reinterpret_cast<ULONG_PTR>(client_id->UniqueThread));
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-      break;
-    }
+  if (valid_client_id->UniqueThread == GetCurrentClientId().UniqueThread) {
+    return DuplicateObject(CURRENT_THREAD, desired_access, thread);
+  }
 
-    if (should_break)
-      break;
+  void* memory = GetGlobalIPCMemory();
+  if (!memory) {
+    return status;
+  }
 
-    if (!ValidParameter(thread, sizeof(HANDLE), WRITE))
-      break;
+  SharedMemIPCClient ipc(memory);
+  CrossCallReturn answer = {0};
+  ResultCode code = CrossCall(ipc, IpcTag::NTOPENTHREAD, desired_access,
+                              static_cast<uint32_t>(reinterpret_cast<ULONG_PTR>(
+                                  valid_client_id->UniqueThread)),
+                              &answer);
+  if (SBOX_ALL_OK != code) {
+    return status;
+  }
 
-    void* memory = GetGlobalIPCMemory();
-    if (!memory)
-      break;
+  if (!NT_SUCCESS(answer.nt_status)) {
+    // The nt_status here is most likely STATUS_INVALID_CID because
+    // in the broker we set the process id in the CID (client ID) param
+    // to be the current process. If you try to open a thread from another
+    // process you will get this INVALID_CID error. On the other hand, if you
+    // try to open a thread in your own process, it should return success.
+    // We don't want to return STATUS_INVALID_CID here, so we return the
+    // return of the original open thread status, which is most likely
+    // STATUS_ACCESS_DENIED.
+    return status;
+  }
 
-    SharedMemIPCClient ipc(memory);
-    CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IpcTag::NTOPENTHREAD, desired_access,
-                                thread_id, &answer);
-    if (SBOX_ALL_OK != code)
-      break;
+  __try {
+    // Write the output parameters.
+    *thread = answer.handle;
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
+    return status;
+  }
 
-    if (!NT_SUCCESS(answer.nt_status))
-      // The nt_status here is most likely STATUS_INVALID_CID because
-      // in the broker we set the process id in the CID (client ID) param
-      // to be the current process. If you try to open a thread from another
-      // process you will get this INVALID_CID error. On the other hand, if you
-      // try to open a thread in your own process, it should return success.
-      // We don't want to return STATUS_INVALID_CID here, so we return the
-      // return of the original open thread status, which is most likely
-      // STATUS_ACCESS_DENIED.
-      break;
-
-    __try {
-      // Write the output parameters.
-      *thread = answer.handle;
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-      break;
-    }
-
-    return answer.nt_status;
-  } while (false);
-
-  return status;
+  return answer.nt_status;
 }
 
-// Hooks NtOpenProcess and proxy the call to the broker if it's trying to
-// open the current process.
+// Hooks NtOpenProcess and duplicates the current process handle if opening the
+// current process.
 NTSTATUS WINAPI TargetNtOpenProcess(NtOpenProcessFunction orig_OpenProcess,
                                     PHANDLE process,
                                     ACCESS_MASK desired_access,
@@ -108,65 +179,21 @@ NTSTATUS WINAPI TargetNtOpenProcess(NtOpenProcessFunction orig_OpenProcess,
                                     PCLIENT_ID client_id) {
   NTSTATUS status =
       orig_OpenProcess(process, desired_access, object_attributes, client_id);
-  if (NT_SUCCESS(status))
+  if (NT_SUCCESS(status)) {
     return status;
+  }
 
-  do {
-    if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
-      break;
-    if (!client_id)
-      break;
+  if (!ValidObjectAttributes(object_attributes)) {
+    return status;
+  }
 
-    uint32_t process_id = 0;
-    bool should_break = false;
-    __try {
-      // Object attributes should be nullptr or empty.
-      if (!should_break && object_attributes) {
-        if (object_attributes->Attributes || object_attributes->ObjectName ||
-            object_attributes->RootDirectory ||
-            object_attributes->SecurityDescriptor ||
-            object_attributes->SecurityQualityOfService) {
-          should_break = true;
-        }
-      }
+  absl::optional<CLIENT_ID> valid_client_id = CaptureParameter(client_id);
+  if (!valid_client_id.has_value() ||
+      valid_client_id->UniqueProcess != GetCurrentClientId().UniqueProcess) {
+    return status;
+  }
 
-      process_id = static_cast<uint32_t>(
-          reinterpret_cast<ULONG_PTR>(client_id->UniqueProcess));
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-      break;
-    }
-
-    if (should_break)
-      break;
-
-    if (!ValidParameter(process, sizeof(HANDLE), WRITE))
-      break;
-
-    void* memory = GetGlobalIPCMemory();
-    if (!memory)
-      break;
-
-    SharedMemIPCClient ipc(memory);
-    CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IpcTag::NTOPENPROCESS, desired_access,
-                                process_id, &answer);
-    if (SBOX_ALL_OK != code)
-      break;
-
-    if (!NT_SUCCESS(answer.nt_status))
-      return answer.nt_status;
-
-    __try {
-      // Write the output parameters.
-      *process = answer.handle;
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-      break;
-    }
-
-    return answer.nt_status;
-  } while (false);
-
-  return status;
+  return DuplicateObject(CURRENT_PROCESS, desired_access, process);
 }
 
 NTSTATUS WINAPI
@@ -174,45 +201,11 @@ TargetNtOpenProcessToken(NtOpenProcessTokenFunction orig_OpenProcessToken,
                          HANDLE process,
                          ACCESS_MASK desired_access,
                          PHANDLE token) {
-  NTSTATUS status = orig_OpenProcessToken(process, desired_access, token);
-  if (NT_SUCCESS(status))
-    return status;
-
-  do {
-    if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
-      break;
-
-    if (CURRENT_PROCESS != process)
-      break;
-
-    if (!ValidParameter(token, sizeof(HANDLE), WRITE))
-      break;
-
-    void* memory = GetGlobalIPCMemory();
-    if (!memory)
-      break;
-
-    SharedMemIPCClient ipc(memory);
-    CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IpcTag::NTOPENPROCESSTOKEN, process,
-                                desired_access, &answer);
-    if (SBOX_ALL_OK != code)
-      break;
-
-    if (!NT_SUCCESS(answer.nt_status))
-      return answer.nt_status;
-
-    __try {
-      // Write the output parameters.
-      *token = answer.handle;
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-      break;
-    }
-
-    return answer.nt_status;
-  } while (false);
-
-  return status;
+  // NtOpenProcessToken is just NtOpenProcessTokenEx with handle_attributes set
+  // to 0.
+  return CallNtOpenProcessTokenEx(
+      orig_OpenProcessToken(process, desired_access, token), process,
+      desired_access, 0, token);
 }
 
 NTSTATUS WINAPI
@@ -221,46 +214,10 @@ TargetNtOpenProcessTokenEx(NtOpenProcessTokenExFunction orig_OpenProcessTokenEx,
                            ACCESS_MASK desired_access,
                            ULONG handle_attributes,
                            PHANDLE token) {
-  NTSTATUS status = orig_OpenProcessTokenEx(process, desired_access,
-                                            handle_attributes, token);
-  if (NT_SUCCESS(status))
-    return status;
-
-  do {
-    if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
-      break;
-
-    if (CURRENT_PROCESS != process)
-      break;
-
-    if (!ValidParameter(token, sizeof(HANDLE), WRITE))
-      break;
-
-    void* memory = GetGlobalIPCMemory();
-    if (!memory)
-      break;
-
-    SharedMemIPCClient ipc(memory);
-    CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IpcTag::NTOPENPROCESSTOKENEX, process,
-                                desired_access, handle_attributes, &answer);
-    if (SBOX_ALL_OK != code)
-      break;
-
-    if (!NT_SUCCESS(answer.nt_status))
-      return answer.nt_status;
-
-    __try {
-      // Write the output parameters.
-      *token = answer.handle;
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-      break;
-    }
-
-    return answer.nt_status;
-  } while (false);
-
-  return status;
+  return CallNtOpenProcessTokenEx(
+      orig_OpenProcessTokenEx(process, desired_access, handle_attributes,
+                              token),
+      process, desired_access, handle_attributes, token);
 }
 
 HANDLE WINAPI TargetCreateThread(CreateThreadFunction orig_CreateThread,

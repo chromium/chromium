@@ -42,8 +42,6 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
 
   dispatcher = new ThreadProcessDispatcher();
   ipc_targets_[static_cast<size_t>(IpcTag::NTOPENTHREAD)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::NTOPENPROCESS)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::NTOPENPROCESSTOKEN)] = dispatcher;
   ipc_targets_[static_cast<size_t>(IpcTag::NTOPENPROCESSTOKENEX)] = dispatcher;
   ipc_targets_[static_cast<size_t>(IpcTag::CREATETHREAD)] = dispatcher;
   thread_process_dispatcher_.reset(dispatcher);

@@ -26,22 +26,6 @@ class ProcessPolicy {
                                    uint32_t thread_id,
                                    HANDLE* handle);
 
-  // Opens the process id passed in and returns the duplicated handle to
-  // the child. We only allow the child processes to open themselves. Any other
-  // pid open is denied.
-  static NTSTATUS OpenProcessAction(const ClientInfo& client_info,
-                                    uint32_t desired_access,
-                                    uint32_t process_id,
-                                    HANDLE* handle);
-
-  // Opens the token associated with the process and returns the duplicated
-  // handle to the child. We only allow the child processes to open its own
-  // token (using ::GetCurrentProcess()).
-  static NTSTATUS OpenProcessTokenAction(const ClientInfo& client_info,
-                                         HANDLE process,
-                                         uint32_t desired_access,
-                                         HANDLE* handle);
-
   // Opens the token associated with the process and returns the duplicated
   // handle to the child. We only allow the child processes to open its own
   // token (using ::GetCurrentProcess()).

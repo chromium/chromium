@@ -162,10 +162,6 @@ std::string GetIpcTagAsString(IpcTag service) {
       return "CreateNamedPipeW";
     case IpcTag::NTOPENTHREAD:
       return "NtOpenThread";
-    case IpcTag::NTOPENPROCESS:
-      return "NtOpenProcess";
-    case IpcTag::NTOPENPROCESSTOKEN:
-      return "NtOpenProcessToken";
     case IpcTag::NTOPENPROCESSTOKENEX:
       return "NtOpenProcessTokenEx";
     case IpcTag::GDI_GDIDLLINITIALIZE:

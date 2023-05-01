@@ -26,16 +26,6 @@ ThreadProcessDispatcher::ThreadProcessDispatcher() {
       reinterpret_cast<CallbackGeneric>(
           &ThreadProcessDispatcher::NtOpenThread)};
 
-  static const IPCCall open_process = {
-      {IpcTag::NTOPENPROCESS, {UINT32_TYPE, UINT32_TYPE}},
-      reinterpret_cast<CallbackGeneric>(
-          &ThreadProcessDispatcher::NtOpenProcess)};
-
-  static const IPCCall process_token = {
-      {IpcTag::NTOPENPROCESSTOKEN, {VOIDPTR_TYPE, UINT32_TYPE}},
-      reinterpret_cast<CallbackGeneric>(
-          &ThreadProcessDispatcher::NtOpenProcessToken)};
-
   static const IPCCall process_tokenex = {
       {IpcTag::NTOPENPROCESSTOKENEX, {VOIDPTR_TYPE, UINT32_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(
@@ -52,8 +42,6 @@ ThreadProcessDispatcher::ThreadProcessDispatcher() {
           &ThreadProcessDispatcher::CreateThread)};
 
   ipc_calls_.push_back(open_thread);
-  ipc_calls_.push_back(open_process);
-  ipc_calls_.push_back(process_token);
   ipc_calls_.push_back(process_tokenex);
   ipc_calls_.push_back(create_thread_params);
 }
@@ -62,8 +50,6 @@ bool ThreadProcessDispatcher::SetupService(InterceptionManager* manager,
                                            IpcTag service) {
   switch (service) {
     case IpcTag::NTOPENTHREAD:
-    case IpcTag::NTOPENPROCESS:
-    case IpcTag::NTOPENPROCESSTOKEN:
     case IpcTag::NTOPENPROCESSTOKENEX:
     case IpcTag::CREATETHREAD:
       // There is no explicit policy for these services.
@@ -81,28 +67,6 @@ bool ThreadProcessDispatcher::NtOpenThread(IPCInfo* ipc,
   HANDLE handle;
   NTSTATUS ret = ProcessPolicy::OpenThreadAction(
       *ipc->client_info, desired_access, thread_id, &handle);
-  ipc->return_info.nt_status = ret;
-  ipc->return_info.handle = handle;
-  return true;
-}
-
-bool ThreadProcessDispatcher::NtOpenProcess(IPCInfo* ipc,
-                                            uint32_t desired_access,
-                                            uint32_t process_id) {
-  HANDLE handle;
-  NTSTATUS ret = ProcessPolicy::OpenProcessAction(
-      *ipc->client_info, desired_access, process_id, &handle);
-  ipc->return_info.nt_status = ret;
-  ipc->return_info.handle = handle;
-  return true;
-}
-
-bool ThreadProcessDispatcher::NtOpenProcessToken(IPCInfo* ipc,
-                                                 HANDLE process,
-                                                 uint32_t desired_access) {
-  HANDLE handle;
-  NTSTATUS ret = ProcessPolicy::OpenProcessTokenAction(
-      *ipc->client_info, process, desired_access, &handle);
   ipc->return_info.nt_status = ret;
   ipc->return_info.handle = handle;
   return true;

@@ -350,5 +350,13 @@ TEST(SandboxNtUtil, ExtractModuleName) {
   }
 }
 
+TEST(SandboxNtUtil, GetCurrentClientId) {
+  CLIENT_ID client_id = GetCurrentClientId();
+  EXPECT_EQ(client_id.UniqueProcess,
+            reinterpret_cast<LPVOID>(::GetCurrentProcessId()));
+  EXPECT_EQ(client_id.UniqueThread,
+            reinterpret_cast<LPVOID>(::GetCurrentThreadId()));
+}
+
 }  // namespace
 }  // namespace sandbox

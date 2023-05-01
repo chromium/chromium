@@ -220,6 +220,9 @@ bool IsSupportedRenameCall(FILE_RENAME_INFORMATION* file_info,
                            DWORD length,
                            uint32_t file_info_class);
 
+// Get the CLIENT_ID from the current TEB.
+CLIENT_ID GetCurrentClientId();
+
 }  // namespace sandbox
 
 #endif  // SANDBOX_WIN_SRC_SANDBOX_NT_UTIL_H_
