@@ -48,12 +48,14 @@ MATCHER_P(MemoryEq, other, "Eq matcher for base::RefCountedMemory contents") {
 class MockDataDecoderDelegate
     : public SanitizedImageSource::DataDecoderDelegate {
  public:
-  MOCK_METHOD2(DecodeImage,
-               void(const std::string& data,
-                    SanitizedImageSource::DecodeImageCallback callback));
-  MOCK_METHOD2(DecodeAnimation,
-               void(const std::string& data,
-                    SanitizedImageSource::DecodeAnimationCallback callback));
+  MOCK_METHOD(void,
+              DecodeImage,
+              (const std::string& data,
+               SanitizedImageSource::DecodeImageCallback callback));
+  MOCK_METHOD(void,
+              DecodeAnimation,
+              (const std::string& data,
+               SanitizedImageSource::DecodeAnimationCallback callback));
 };
 
 class SanitizedImageSourceTest : public testing::Test {

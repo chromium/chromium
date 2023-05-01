@@ -77,7 +77,7 @@ class TestFaviconSource : public FaviconSource {
 
   ~TestFaviconSource() override {}
 
-  MOCK_METHOD2(LoadIconBytes, base::RefCountedMemory*(float, int));
+  MOCK_METHOD(base::RefCountedMemory*, LoadIconBytes, (float, int));
 
  protected:
   // FaviconSource:

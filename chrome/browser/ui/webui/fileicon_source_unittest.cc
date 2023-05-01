@@ -28,11 +28,12 @@ class TestFileIconSource : public FileIconSource {
       content::URLDataSource::GotDataCallback callback) override {
     FetchFileIcon_(path, scale_factor, icon_size, callback);
   }
-  MOCK_METHOD4(FetchFileIcon_,
-               void(const base::FilePath& path,
-                    float scale_factor,
-                    IconLoader::IconSize icon_size,
-                    content::URLDataSource::GotDataCallback& callback));
+  MOCK_METHOD(void,
+              FetchFileIcon_,
+              (const base::FilePath& path,
+               float scale_factor,
+               IconLoader::IconSize icon_size,
+               content::URLDataSource::GotDataCallback& callback));
 
   ~TestFileIconSource() override {}
 };
