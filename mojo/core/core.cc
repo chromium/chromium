@@ -1240,6 +1240,8 @@ MojoResult Core::ExtractMessagePipeFromInvitation(
     uint32_t name_num_bytes,
     const MojoExtractMessagePipeFromInvitationOptions* options,
     MojoHandle* message_pipe_handle) {
+  recordreplay::Assert("[RUN-1816] Core::ExtractMessagePipeFromInvitation");
+
   if (options && options->struct_size < sizeof(*options))
     return MOJO_RESULT_INVALID_ARGUMENT;
   if (!message_pipe_handle)
@@ -1258,12 +1260,15 @@ MojoResult Core::ExtractMessagePipeFromInvitation(
   // First attempt to extract from the invitation object itself. This is for
   // cases where this invitation was created in-process or is an accepted
   // isolated invitation.
+  recordreplay::Assert("[RUN-1816] Core::ExtractMessagePipeFromInvitation #4");
   MojoResult extract_result = invitation_dispatcher->ExtractMessagePipe(
       name_string, message_pipe_handle);
   if (extract_result == MOJO_RESULT_OK ||
       extract_result == MOJO_RESULT_RESOURCE_EXHAUSTED) {
     return extract_result;
   }
+
+  recordreplay::Assert("[RUN-1816] Core::ExtractMessagePipeFromInvitation #5");
 
   *message_pipe_handle =
       ExtractMessagePipeFromInvitation(std::string(name_string));

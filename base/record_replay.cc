@@ -95,6 +95,7 @@ namespace recordreplay {
         (const char* kind, const char* url), (kind, url))               \
   Macro(V8RecordReplayAddOrderedSRWLock,                                \
         (const char* name, void* lock), (name, lock))                   \
+  Macro(V8RecordReplayRemoveOrderedSRWLock, (void* lock), (lock))       \
   Macro(V8RecordReplayMaybeTerminate,                                   \
         (void (*callback)(void*), void* data), (callback, data))
 
@@ -441,6 +442,10 @@ void RecordReplayString(const char* why, std::string& str) {
 
 void AddOrderedSRWLock(const char* name, void* lock) {
   V8RecordReplayAddOrderedSRWLock(name, lock);
+}
+
+void RemoveOrderedSRWLock(void* lock) {
+  V8RecordReplayRemoveOrderedSRWLock(lock);
 }
 
 void MaybeTerminate(void (*callback)(void*), void* data) {

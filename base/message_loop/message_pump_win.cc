@@ -22,6 +22,8 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_message_pump.pbzero.h"
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
+#include "base/record_replay.h"
+
 namespace base {
 
 namespace {
@@ -640,9 +642,15 @@ void MessagePumpForIO::ScheduleWork() {
   // This is the only MessagePumpForIO method which can be called outside of
   // |bound_thread_|.
 
+  recordreplay::Assert("[RUN-1815] MessagePumpForIO::ScheduleWork");
+
   bool not_scheduled = false;
-  if (!work_scheduled_.compare_exchange_strong(not_scheduled, true))
+  if (!work_scheduled_.compare_exchange_strong(not_scheduled, true)) {
+    recordreplay::Assert("[RUN-1815] MessagePumpForIO::ScheduleWork #1");
     return;  // Someone else continued the pumping.
+  }
+
+  recordreplay::Assert("[RUN-1815] MessagePumpForIO::ScheduleWork #2");
 
   // Make sure the MessagePump does some work for us.
   const BOOL ret = ::PostQueuedCompletionStatus(

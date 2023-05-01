@@ -102,7 +102,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   NOT_DESTROYED();
   *out_cache_status = NGLayoutCacheStatus::kNeedsLayout;
 
-  recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult Start %d %d %d %d",
+  recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult Start %d %d %d",
     this->RecordReplayId(),
     (int) new_space.CacheSlot(),
     layout_results_.empty()
