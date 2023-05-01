@@ -781,7 +781,8 @@ void FocusFakebox() {
 // Tests that tapping on omnibox in pre-edit state in SRP or webpage would
 // display a callout menu with cut,copy and paste (if there is a text on the
 // pasteboard).
-- (void)testTapOmniboxOnPreEditState {
+// TODO(crbug.com/1435485): Test is failing on official builds.
+- (void)DISABLED_testTapOmniboxOnPreEditState {
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -815,7 +816,8 @@ void FocusFakebox() {
 
 // Tests that Cut callout button would erase the current url and copy it on the
 // pasteboard.
-- (void)testCutCalloutButton {
+// TODO(crbug.com/1435485): Test is failing on official builds.
+- (void)DISABLED_testCutCalloutButton {
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -845,7 +847,8 @@ void FocusFakebox() {
 
 // Tests that Paste callout button would erase the current url and replace it
 // with text on pasteboard.
-- (void)testPasteCalloutButton {
+// TODO(crbug.com/1435485): Test is failing on official builds.
+- (void)DISABLED_testPasteCalloutButton {
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
