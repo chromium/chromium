@@ -534,11 +534,6 @@
     "expiry_milestone": 122
   },
   {
-      "name": "autofill-enable-new-card-unmask-prompt-view",
-      "owners": [ "eic", "bling-flags@google.com" ],
-      "expiry_milestone": 109
-  },
-  {
     "name": "autofill-enable-new-save-card-bubble-ui",
     "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 120
