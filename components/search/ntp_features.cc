@@ -42,7 +42,7 @@ BASE_FEATURE(kCustomizeChromeSidePanel,
 // NTP treatment in the case of unexpected regressions.
 BASE_FEATURE(kCwsScrimRemoval,
              "CwsScrimRemoval",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, "middle slot" promos on the bottom of the NTP will show a dismiss
 // UI that allows users to close them and not see them again.
