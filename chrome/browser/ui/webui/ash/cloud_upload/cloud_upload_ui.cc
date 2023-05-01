@@ -22,7 +22,8 @@ namespace ash::cloud_upload {
 
 bool CloudUploadUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud();
+  return cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
+      Profile::FromBrowserContext(browser_context));
 }
 
 CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)

@@ -191,9 +191,8 @@ class CloudOpenTask : public BrowserListObserver,
 };
 
 // Return True if feature `kUploadOfficeToCloud` is enabled and is eligible for
-// the user, otherwise return False. A user is eligible if they are not managed
-// or a Google employee.
-bool IsEligibleAndEnabledUploadOfficeToCloud();
+// the user of the |profile|. A user is eligible if they are not managed.
+bool IsEligibleAndEnabledUploadOfficeToCloud(Profile* profile);
 
 // Returns True if OneDrive is the selected `cloud_provider` but either ODFS
 // is not mounted or the Office PWA is not installed. Returns False otherwise.

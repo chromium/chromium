@@ -367,7 +367,7 @@ void PostProcessFoundTasks(Profile* profile,
   disabled_actions.emplace("view-pdf");
 #endif  // !BUILDFLAG(ENABLE_PDF)
 
-  if (!ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud()) {
+  if (!ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     disabled_actions.emplace(kActionIdWebDriveOfficeWord);
     disabled_actions.emplace(kActionIdWebDriveOfficeExcel);
     disabled_actions.emplace(kActionIdWebDriveOfficePowerPoint);

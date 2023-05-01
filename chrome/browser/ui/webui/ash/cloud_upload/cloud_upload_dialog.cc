@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -40,7 +41,6 @@
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -340,41 +340,18 @@ void CloudOpenTask::ConfirmMoveOrStartUpload() {
   }
 }
 
-bool IsEligibleAndEnabledUploadOfficeToCloud() {
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (!user_manager) {
+bool IsEligibleAndEnabledUploadOfficeToCloud(Profile* profile) {
+  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return false;
   }
-
-  user_manager::User* user = user_manager->GetActiveUser();
-  if (!user) {
-    return false;
-  }
-
-  // |profile_manager| can be null in unit tests, even though a user was
-  // created. If it is null, `GetBrowserContextByUser` call will cause crash.
-  auto* profile_manager = g_browser_process->profile_manager();
-  if (!profile_manager) {
-    return false;
-  }
-
-  Profile* profile = Profile::FromBrowserContext(
-      BrowserContextHelper::Get()->GetBrowserContextByUser(user));
   if (!profile) {
     return false;
   }
-
-  // Managed users, e.g. enterprise account, child account, are not eligible
-  // with the exception of Google employees. `GetUserCloudPolicyManagerAsh`
-  // returns non-nullptr if a profile is a managed account. This approach is
-  // taken in `UserTypeByDeviceTypeMetricsProvider::GetUserSegment`.
-  if (profile->GetUserCloudPolicyManagerAsh() &&
-      !gaia::IsGoogleInternalAccountEmail(
-          user->GetAccountId().GetUserEmail())) {
+  // Managed users, e.g. enterprise account, child account, are not eligible.
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
     return false;
   }
-
-  return chromeos::features::IsUploadOfficeToCloudEnabled();
+  return true;
 }
 
 bool ShouldFixUpOffice(Profile* profile, const CloudProvider cloud_provider) {

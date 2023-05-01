@@ -90,7 +90,7 @@ FilesSection::FilesSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetFilesSearchConcepts());
-  if (cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud()) {
+  if (cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     updater.AddSearchTags(GetFilesOfficeSearchConcepts());
   }
   if (ash::features::IsDriveFsBulkPinningEnabled()) {
@@ -177,7 +177,7 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean(
       "showOfficeSettings",
-      cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+      cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile()));
 
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile());

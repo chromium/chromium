@@ -1401,13 +1401,15 @@ void PopulateChromeWebUIFrameBinders(
         ash::ManageMirrorSyncUI>(map);
   }
 
-  if (ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud()) {
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  if (ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     RegisterWebUIControllerInterfaceBinder<
         ash::cloud_upload::mojom::PageHandlerFactory,
         ash::cloud_upload::CloudUploadUI>(map);
   }
 
-  if (ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud()) {
+  if (ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     RegisterWebUIControllerInterfaceBinder<
         ash::office_fallback::mojom::PageHandlerFactory,
         ash::office_fallback::OfficeFallbackUI>(map);

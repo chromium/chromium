@@ -23,7 +23,8 @@ namespace ash::office_fallback {
 
 bool OfficeFallbackUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud();
+  return cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
+      Profile::FromBrowserContext(browser_context));
 }
 
 OfficeFallbackUI::OfficeFallbackUI(content::WebUI* web_ui)

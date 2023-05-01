@@ -752,21 +752,14 @@ IN_PROC_BROWSER_TEST_P(FileTasksPolicyBrowserTest, TasksMarkedAsBlocked) {
 }
 
 // |InProcessBrowserTest| which allows a fake user to login. Login a non-managed
-// or Google user to ensure |IsEligibleAndEnabledUploadOfficeToCloud| returns
-// the result of |IsUploadOfficeToCloudEnabled|.
+// to ensure |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
+// |IsUploadOfficeToCloudEnabled|.
 class TestAccountBrowserTest : public MixinBasedInProcessBrowserTest {
  public:
-  TestAccountBrowserTest(TestAccountType test_account_type,
-                         bool is_google_account) {
-    ash::LoggedInUserMixin::LogInType log_in_type;
-    absl::optional<AccountId> account_id;
-    if (is_google_account) {
-      log_in_type = ash::LoggedInUserMixin::LogInType::kRegular;
-      account_id = AccountId::FromUserEmailGaiaId("user@google.com", "12345");
-    } else {
-      log_in_type = LogInTypeFor(test_account_type);
-      account_id = AccountIdFor(test_account_type);
-    }
+  explicit TestAccountBrowserTest(TestAccountType test_account_type) {
+    ash::LoggedInUserMixin::LogInType log_in_type =
+        LogInTypeFor(test_account_type);
+    absl::optional<AccountId> account_id = AccountIdFor(test_account_type);
 
     logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
         &mixin_host_, log_in_type, embedded_test_server(), this,
@@ -808,8 +801,7 @@ class TestAccountBrowserTest : public MixinBasedInProcessBrowserTest {
 
 class NonManagedAccount : public TestAccountBrowserTest {
  public:
-  NonManagedAccount()
-      : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {
+  NonManagedAccount() : TestAccountBrowserTest(kNonManaged) {
     feature_list_.InitAndEnableFeature(
         chromeos::features::kUploadOfficeToCloud);
   }
@@ -835,7 +827,8 @@ class NonManagedAccount : public TestAccountBrowserTest {
 // non-managed user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(NonManagedAccount,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_TRUE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+  ASSERT_TRUE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
+      browser()->profile()));
 }
 
 // Test that the office PWA file handler is hidden from the available file
@@ -882,8 +875,7 @@ IN_PROC_BROWSER_TEST_F(NonManagedAccount, OfficePwaHandlerHidden) {
 
 class EnterpriseAccount : public TestAccountBrowserTest {
  public:
-  EnterpriseAccount()
-      : TestAccountBrowserTest(kEnterprise, /*is_google_account=*/false) {
+  EnterpriseAccount() : TestAccountBrowserTest(kEnterprise) {
     feature_list_.InitAndEnableFeature(
         chromeos::features::kUploadOfficeToCloud);
   }
@@ -896,12 +888,13 @@ class EnterpriseAccount : public TestAccountBrowserTest {
 // enterprise user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(EnterpriseAccount,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
+      browser()->profile()));
 }
 
 class ChildAccount : public TestAccountBrowserTest {
  public:
-  ChildAccount() : TestAccountBrowserTest(kChild, /*is_google_account=*/false) {
+  ChildAccount() : TestAccountBrowserTest(kChild) {
     feature_list_.InitAndEnableFeature(
         chromeos::features::kUploadOfficeToCloud);
   }
@@ -913,39 +906,21 @@ class ChildAccount : public TestAccountBrowserTest {
 // Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when a
 // child user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(ChildAccount, IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
-}
-
-class GoogleAccount : public TestAccountBrowserTest {
- public:
-  GoogleAccount()
-      : TestAccountBrowserTest(kTestAccountTypeNotSet,
-                               /*is_google_account=*/true) {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kUploadOfficeToCloud);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns true when a
-// google user is logged in and |kUploadOfficeToCloud| is enabled.
-IN_PROC_BROWSER_TEST_F(GoogleAccount, IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_TRUE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
+      browser()->profile()));
 }
 
 class NonManagedAccountNoFlag : public TestAccountBrowserTest {
  public:
-  NonManagedAccountNoFlag()
-      : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {}
+  NonManagedAccountNoFlag() : TestAccountBrowserTest(kNonManaged) {}
 };
 
 // Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when a
 // non-managed user is logged in but |kUploadOfficeToCloud| is disabled.
 IN_PROC_BROWSER_TEST_F(NonManagedAccountNoFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
+      browser()->profile()));
 }
 
 // TODO(cassycc): move this class to a more appropriate spot.
@@ -1017,8 +992,7 @@ class FakeSimpleDriveFsHelper : public drive::FakeDriveFsHelper {
 // a user fails to open an office file from Drive.
 class DriveTest : public TestAccountBrowserTest {
  public:
-  DriveTest()
-      : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {
+  DriveTest() : TestAccountBrowserTest(kNonManaged) {
     feature_list_.InitAndEnableFeature(
         chromeos::features::kUploadOfficeToCloud);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -1423,8 +1397,7 @@ class FakeWebAppPublisher : public apps::AppPublisher {
 // user fails to open an office file from ODFS.
 class OneDriveTest : public TestAccountBrowserTest {
  public:
-  OneDriveTest()
-      : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {
+  OneDriveTest() : TestAccountBrowserTest(kNonManaged) {
     feature_list_.InitAndEnableFeature(
         chromeos::features::kUploadOfficeToCloud);
     test_file_name_ = "text.docx";
