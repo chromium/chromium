@@ -139,6 +139,9 @@ class Keyboard : public ui::EventHandler,
   // Delay until a key state change expected to be acknowledged is expired.
   const base::TimeDelta expiration_delay_for_pending_key_acks_;
 
+  // Tracks whether the last key event is the target of autorepeat.
+  bool auto_repeat_enabled_ = true;
+
   // True when the ARC app window is focused.
   // TODO(yhanada, https://crbug.com/847500): Remove this when we find a way to
   // fix https://crbug.com/847500 without breaking ARC++ apps.
