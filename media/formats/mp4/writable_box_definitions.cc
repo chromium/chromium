@@ -6,6 +6,9 @@
 
 namespace media::mp4::writable_boxes {
 
+MovieExtends::MovieExtends() = default;
+MovieExtends::~MovieExtends() = default;
+
 MovieHeader::MovieHeader() = default;
 MovieHeader::~MovieHeader() = default;
 

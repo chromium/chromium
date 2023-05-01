@@ -39,7 +39,7 @@ TEST(BoxByteStreamTest, Default) {
   for (auto& data : test_data) {
     switch (data.type) {
       case DataType::kPlaceHolder:
-        box_byte_stream.WritePlaceholderSizeU32();
+        box_byte_stream.StartBox();
         break;
       case DataType::kType_8:
         box_byte_stream.WriteU8(static_cast<uint8_t>(data.value));
@@ -59,7 +59,7 @@ TEST(BoxByteStreamTest, Default) {
     }
   }
 
-  std::vector<uint8_t> written_data = box_byte_stream.EndWrite();
+  std::vector<uint8_t> written_data = box_byte_stream.Flush();
   base::BigEndianReader reader(written_data.data(), written_data.size());
   for (auto& data : test_data) {
     uint64_t ret_value = 0;
@@ -96,16 +96,17 @@ TEST(BoxByteStreamTest, GrowLimit) {
   // Test GrowWriter feature.
   BoxByteStream box_byte_stream;
 
-  box_byte_stream.WritePlaceholderSizeU32();
+  box_byte_stream.StartBox();
   for (int i = 0; i < BoxByteStream::kDefaultBufferLimit; ++i) {
     box_byte_stream.WriteU8(0);
   }
-
-  box_byte_stream.WritePlaceholderSizeU32();
+  box_byte_stream.StartBox();
   box_byte_stream.WriteU16(0x1617);
   box_byte_stream.WriteU32(0);
+  box_byte_stream.EndBox();
+  box_byte_stream.EndBox();
 
-  std::vector<uint8_t> written_data = box_byte_stream.EndWrite();
+  std::vector<uint8_t> written_data = box_byte_stream.Flush();
   base::BigEndianReader reader(written_data.data(), written_data.size());
 
   uint32_t expected_total_size =
@@ -123,6 +124,118 @@ TEST(BoxByteStreamTest, GrowLimit) {
   EXPECT_EQ(0x1617u, value16);
   reader.ReadU32(&value);
   EXPECT_EQ(0u, value);
+}
+
+TEST(BoxByteStreamTest, EndBoxAndFlushDiff) {
+  // Test Flush and EndBox difference.
+  // EndBox use.
+  {
+    BoxByteStream box_byte_stream;
+
+    // <parent>
+    box_byte_stream.StartBox();
+    box_byte_stream.WriteU64(0);
+    {
+      // <child 1>
+      box_byte_stream.StartBox();
+      EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 2u);
+
+      box_byte_stream.WriteU32(0x1617);
+      {
+        // <grand child 1>
+        box_byte_stream.StartBox();
+        EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 3u);
+        box_byte_stream.WriteU16(0);
+        box_byte_stream.EndBox();
+        EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 2u);
+      }
+      box_byte_stream.EndBox();
+      EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 1u);
+
+      // <child 2>
+      box_byte_stream.StartBox();
+      EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 2u);
+      box_byte_stream.WriteU32(0);
+      box_byte_stream.EndBox();
+      EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 1u);
+    }
+    box_byte_stream.EndBox();
+    EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 0u);
+
+    // Read.
+    std::vector<uint8_t> written_data = box_byte_stream.Flush();
+    base::BigEndianReader reader(written_data.data(), written_data.size());
+
+    uint32_t parent;
+    reader.ReadU32(&parent);
+    EXPECT_EQ(34u, parent);
+    reader.Skip(8);
+
+    uint32_t child_1;
+    reader.ReadU32(&child_1);
+    EXPECT_EQ(14u, child_1);
+    reader.Skip(4);
+
+    uint32_t grand_child_1;
+    reader.ReadU32(&grand_child_1);
+    EXPECT_EQ(6u, grand_child_1);
+    reader.Skip(2);
+
+    uint32_t child_2;
+    reader.ReadU32(&child_2);
+    EXPECT_EQ(8u, child_2);
+  }
+
+  // Flush use.
+  {
+    BoxByteStream box_byte_stream;
+
+    // <parent>
+    box_byte_stream.StartBox();
+    box_byte_stream.WriteU64(0);
+    {
+      // <child 1>
+      box_byte_stream.StartBox();
+      EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 2u);
+
+      box_byte_stream.WriteU32(0x1617);
+      {
+        // <grand child 1>
+        box_byte_stream.StartBox();
+        EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 3u);
+        box_byte_stream.WriteU16(0);
+      }
+
+      // <child 2>
+      box_byte_stream.StartBox();
+      EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 4u);
+      box_byte_stream.WriteU32(0);
+    }
+
+    // Read.
+    EXPECT_EQ(box_byte_stream.GetSizeOffsetsForTesting().size(), 4u);
+    std::vector<uint8_t> written_data = box_byte_stream.Flush();
+    base::BigEndianReader reader(written_data.data(), written_data.size());
+
+    uint32_t parent;
+    reader.ReadU32(&parent);
+    EXPECT_EQ(34u, parent);
+    reader.Skip(8);
+
+    uint32_t child_1;
+    reader.ReadU32(&child_1);
+    EXPECT_EQ(22u, child_1);
+    reader.Skip(4);
+
+    uint32_t grand_child_1;
+    reader.ReadU32(&grand_child_1);
+    EXPECT_EQ(14u, grand_child_1);
+    reader.Skip(2);
+
+    uint32_t child_2;
+    reader.ReadU32(&child_2);
+    EXPECT_EQ(8u, child_2);
+  }
 }
 
 }  // namespace media

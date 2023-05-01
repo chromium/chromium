@@ -17,37 +17,27 @@ namespace media {
 
 class Mp4MuxerContext;
 
-class MEDIA_EXPORT Mp4MovieBoxWriter : public Mp4BoxWriter {
- public:
-  Mp4MovieBoxWriter(const Mp4MuxerContext& context,
-                    const mp4::writable_boxes::Movie& box);
-  ~Mp4MovieBoxWriter() override;
+#define DECLARE_MP4_WRITER_CLASS_WITH_BOX(CLASS_NAME, BOX_TYPE)      \
+  class MEDIA_EXPORT CLASS_NAME : public Mp4BoxWriter {              \
+   public:                                                           \
+    CLASS_NAME(const Mp4MuxerContext& context, const BOX_TYPE& box); \
+    ~CLASS_NAME() override;                                          \
+    CLASS_NAME(const CLASS_NAME&) = delete;                          \
+    CLASS_NAME& operator=(const CLASS_NAME&) = delete;               \
+    void Write(BoxByteStream& writer) override;                      \
+                                                                     \
+   private:                                                          \
+    const BOX_TYPE& box_;                                            \
+    SEQUENCE_CHECKER(sequence_checker_);                             \
+  };
 
-  Mp4MovieBoxWriter(const Mp4MovieBoxWriter&) = delete;
-  Mp4MovieBoxWriter& operator=(const Mp4MovieBoxWriter&) = delete;
-
-  void Write(BoxByteStream& writer) override;
-
- private:
-  const mp4::writable_boxes::Movie& movie_box_;
-  SEQUENCE_CHECKER(sequence_checker_);
-};
-
-class MEDIA_EXPORT Mp4MovieHeaderBoxWriter : public Mp4BoxWriter {
- public:
-  Mp4MovieHeaderBoxWriter(const Mp4MuxerContext& context,
-                          const mp4::writable_boxes::MovieHeader& box);
-  ~Mp4MovieHeaderBoxWriter() override;
-
-  Mp4MovieHeaderBoxWriter(const Mp4MovieHeaderBoxWriter&) = delete;
-  Mp4MovieHeaderBoxWriter& operator=(const Mp4MovieHeaderBoxWriter&) = delete;
-
-  void Write(BoxByteStream& writer) override;
-
- private:
-  const mp4::writable_boxes::MovieHeader& movie_header_box_;
-  SEQUENCE_CHECKER(sequence_checker_);
-};
+DECLARE_MP4_WRITER_CLASS_WITH_BOX(Mp4MovieBoxWriter, mp4::writable_boxes::Movie)
+DECLARE_MP4_WRITER_CLASS_WITH_BOX(Mp4MovieHeaderBoxWriter,
+                                  mp4::writable_boxes::MovieHeader)
+DECLARE_MP4_WRITER_CLASS_WITH_BOX(Mp4MovieExtendsBoxWriter,
+                                  mp4::writable_boxes::MovieExtends)
+DECLARE_MP4_WRITER_CLASS_WITH_BOX(Mp4MovieTrackExtendsBoxWriter,
+                                  mp4::writable_boxes::TrackExtends)
 
 }  // namespace media
 
