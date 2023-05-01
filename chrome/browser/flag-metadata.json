@@ -3535,7 +3535,7 @@
   {
     "name": "enable-web-usb-on-extension-service-worker",
     "owners": [ "deviceapi-team@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "enable-webassembly-baseline",
