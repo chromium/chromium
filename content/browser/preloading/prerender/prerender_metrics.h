@@ -151,6 +151,13 @@ void CONTENT_EXPORT AnalyzePrerenderActivationHeader(
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
+// Records ui::PageTransition of prerender activation navigation when transition
+// mismatch happens on prerender activation.
+void RecordPrerenderActivationTransition(
+    int32_t potential_activation_transition,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix);
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // These are also mapped onto the second content internal range of

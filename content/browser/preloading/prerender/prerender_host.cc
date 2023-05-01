@@ -741,8 +741,12 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // The renderer may add the client redirect flag when it has enough
   // information to be certain that this navigation would replace the current
   // history entry (e.g., a renderer-initiated navigation to the current URL).
-  if ((potential_activation.transition &
-       ~ui::PAGE_TRANSITION_CLIENT_REDIRECT) != common_params_->transition) {
+  int32_t potential_activation_transition =
+      potential_activation.transition & ~ui::PAGE_TRANSITION_CLIENT_REDIRECT;
+  if (potential_activation_transition != common_params_->transition) {
+    RecordPrerenderActivationTransition(potential_activation_transition,
+                                        trigger_type(),
+                                        embedder_histogram_suffix());
     return ActivationNavigationParamsMatch::kTransition;
   }
 

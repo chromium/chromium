@@ -849,6 +849,10 @@ TEST_F(PrerenderHostRegistryTest,
       })));
   ExpectUniqueSampleOfActivationNavigationParamsMatch(
       PrerenderHost::ActivationNavigationParamsMatch::kTransition);
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.ActivationTransitionMismatch.SpeculationRule",
+      ui::PAGE_TRANSITION_FORM_SUBMIT, 1);
 }
 
 TEST_F(PrerenderHostRegistryTest,
