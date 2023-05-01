@@ -34,7 +34,7 @@
 <translation id="1173894706177603556">이름 바꾸기</translation>
 <translation id="1177863135347784049">맞춤설정</translation>
 <translation id="1181037720776840403">삭제</translation>
-<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1181366777303791449">(도메인: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" />)</translation>
 <translation id="1193729455103054076">안전한 비밀번호를 사용하시겠습니까?</translation>
 <translation id="1197267115302279827">북마크 이동</translation>
 <translation id="1201402288615127009">다음</translation>

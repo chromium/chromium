@@ -216,7 +216,7 @@
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="117916940443676133">보안 키가 PIN으로 보호되어 있지 않습니다. 로그인 데이터를 관리하려면 PIN을 만드세요.</translation>
 <translation id="1181037720776840403">삭제</translation>
-<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1181366777303791449">(도메인: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" />)</translation>
 <translation id="1183237619868651138">로컬 캐시에 <ph name="EXTERNAL_CRX_FILE" />을(를) 설치할 수 없습니다.</translation>
 <translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> 애플리케이션을 사용하려면 유효한 <ph name="APPLICATION_NAME" /> URL이 있어야 합니다.</translation>
 <translation id="1185924365081634987"><ph name="GUEST_SIGNIN_LINK_START" />게스트로 로그인<ph name="GUEST_SIGNIN_LINK_END" />하여 네트워크 오류를 수정할 수도 있습니다.</translation>
