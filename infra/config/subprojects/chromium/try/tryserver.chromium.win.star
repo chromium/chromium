@@ -215,6 +215,14 @@ try_.builder(
     builderless = True,
     os = os.WINDOWS_10,
     coverage_test_types = ["unit", "overall"],
+    tryjob = try_.job(
+        # TODO(https://crbug.com/1441206): Enable after resources verified.
+        experiment_percentage = 10,
+        location_filters = [
+            "sandbox/win/.+",
+            "sandbox/policy/win/.+",
+        ],
+    ),
     use_clang_coverage = True,
 )
 

@@ -100,5 +100,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.win",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }
