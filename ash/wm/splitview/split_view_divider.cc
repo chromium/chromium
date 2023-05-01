@@ -17,10 +17,10 @@
 #include "ash/wm/splitview/split_view_divider_view.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "ui/aura/window_targeter.h"
@@ -34,71 +34,6 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
-
-namespace {
-
-// Returns the lowest common parent of the given `windows` by traversing up from
-// one of the observed windows' direct parent and check if the intermediate
-// parent contains all the observed window. If yes, it will be the lowest common
-// parent.
-aura::Window* FindLowestCommonParent(const aura::Window::Windows& windows) {
-  if (windows.empty()) {
-    return nullptr;
-  }
-
-  auto contains_all = [&](aura::Window* parent) {
-    for (aura::Window* window : windows) {
-      if (!parent->Contains(window)) {
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  // As a window can `Contains` itself, which is not the common parent, we start
-  // traversing from its parent instead.
-  for (aura::Window* parent = windows.front()->parent(); parent;
-       parent = parent->parent()) {
-    if (contains_all(parent)) {
-      return parent;
-    }
-  }
-
-  return nullptr;
-}
-
-// Uses DFS to find the topmost child of the `parent` that is included in
-// `windows`. With the reverse traversing of the children, the first observed
-// window found will be the topmost one.
-aura::Window* FindTopMostChild(aura::Window* parent,
-                               const aura::Window::Windows& windows) {
-  for (aura::Window* child : base::Reversed(parent->children())) {
-    for (aura::Window* window : windows) {
-      if (child == window) {
-        return window;
-      }
-      if (child->Contains(window)) {
-        return FindTopMostChild(child, windows);
-      }
-    }
-  }
-
-  return nullptr;
-}
-
-// Returns the top most window for the given `windows` set by first finding the
-// lowest common parent of all the `windows` and then applying DFS to look for
-// the first appeared observed window by reversely iterating through all the
-// children under the lowest common parent.
-aura::Window* GetTopMostWindow(const aura::Window::Windows& windows) {
-  aura::Window* lowest_common_parent = FindLowestCommonParent(windows);
-  CHECK(lowest_common_parent);
-
-  return FindTopMostChild(lowest_common_parent, windows);
-}
-
-}  // namespace
 
 SplitViewDivider::SplitViewDivider(SplitViewController* controller)
     : controller_(controller) {
@@ -311,7 +246,7 @@ void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
     parent_container =
         desks_util::GetActiveDeskContainerForRoot(controller_->root_window());
   } else {
-    aura::Window* top_window = GetTopMostWindow(observed_windows_);
+    aura::Window* top_window = window_util::GetTopMostWindow(observed_windows_);
     CHECK(top_window);
     parent_container = top_window->parent();
   }
@@ -342,7 +277,7 @@ void SplitViewDivider::RefreshStackingOrder() {
     return;
   }
 
-  aura::Window* top_window = GetTopMostWindow(observed_windows_);
+  aura::Window* top_window = window_util::GetTopMostWindow(observed_windows_);
   CHECK(top_window);
   aura::Window* divider_window = divider_widget_->GetNativeWindow();
 
