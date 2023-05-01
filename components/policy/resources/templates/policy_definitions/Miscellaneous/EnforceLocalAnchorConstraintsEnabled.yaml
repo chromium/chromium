@@ -29,7 +29,7 @@ desc: |-
   policy is disabled.
 
   This policy is planned to be removed in
-  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 115.
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 118.
 
 example_value: false
 features:
