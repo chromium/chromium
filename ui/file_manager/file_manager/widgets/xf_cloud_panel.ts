@@ -19,8 +19,8 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
  * The `<xf-cloud-panel>` represents the current state that the Drive bulk
  * pinning process is currently in. When files are being pinned and downloaded,
  * the `items` and `progress` attributes are used to signify that the panel is
- * in progress.
- * TODO(b/275635747): Include various error states for the panel.
+ * in progress. The `type` attribute can be used with `not-enough-space` and
+ * `offline` to signify possible error or paused states.
  */
 @customElement('xf-cloud-panel')
 export class XfCloudPanel extends XfBase {
@@ -153,6 +153,13 @@ export class XfCloudPanel extends XfBase {
             ${str('DRIVE_BULK_PINNING_OFFLINE')}
           </div>
         </div>
+        <div class="static" id="progress-not-enough-space">
+        <xf-icon type="${
+        constants.ICON_TYPES.ERROR_BANNER}" size="large"></xf-icon>
+          <div class="status-description">
+            ${str('DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE')}
+          </div>
+        </div>
         <div class="divider"></div>
         <div class="menu">
           <button class="action" @click=${this.onSettingsClicked_}>${
@@ -187,6 +194,10 @@ function getCSS() {
       display: none;
     }
 
+    :host(:not([type="not-enough-space"])) #progress-not-enough-space {
+      display: none;
+    }
+
     .body {
       display: flex;
       flex-direction: column;
@@ -200,14 +211,20 @@ function getCSS() {
       flex-direction: column;
     }
 
+    xf-icon {
+      padding: 27px 0px 20px;
+    }
+
     xf-icon[type="bulk_pinning_done"] {
       --xf-icon-color: var(--cros-sys-positive);
-      padding: 27px 0px 20px;
     }
 
     xf-icon[type="bulk_pinning_offline"] {
       --xf-icon-color: var(--cros-sys-secondary);
-      padding: 27px 0px 20px;
+    }
+
+    xf-icon[type="error_banner"] {
+      --xf-icon-color: var(--cros-sys-error);
     }
 
     .status-description {

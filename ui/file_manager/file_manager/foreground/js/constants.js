@@ -151,6 +151,7 @@ constants.ICON_TYPES = {
   DRIVE: 'drive',
   ENCRYPTED: 'encrypted',
   ERROR: 'error',
+  ERROR_BANNER: 'error_banner',
   EXCEL: 'excel',
   EXTERNAL_MEDIA: 'external_media',
   FOLDER: 'folder',

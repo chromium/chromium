@@ -374,6 +374,10 @@ function getCSS() {
     :host([type="bulk_pinning_offline"]) span {
       -webkit-mask-image: url(../foreground/images/files/ui/bulk_pinning_offline.svg);
     }
+
+    :host([type="error_banner"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/error_banner_icon.svg);
+    }
   `;
 }
 

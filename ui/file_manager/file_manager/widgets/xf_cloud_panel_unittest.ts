@@ -183,10 +183,10 @@ export async function testWhenPercentage100OnlyDoneStateShows(
 }
 
 /**
- * Tests that when the type attribute is supplied, the other states should all
- * be hidden.
+ * Tests that when the offline type attribute is supplied, the other states
+ * should all be hidden.
  */
-export async function testWhenTypeAttributeInUseOtherStatesHidden(
+export async function testWhenOfflineTypeAttributeInUseOtherStatesHidden(
     done: () => void) {
   const element = getCloudPanelElement();
   const progressStateElement =
@@ -217,5 +217,59 @@ export async function testWhenTypeAttributeInUseOtherStatesHidden(
   await waitForStyles(progressStateElement, 'display', 'none');
   await waitForStyles(progressFinishedElement, 'display', 'none');
   await waitForStyles(progressOfflineElement, 'display', 'flex');
+  done();
+}
+
+
+/**
+ * Tests that when the not-enough-space type attribute is supplied, the other
+ * states should all be hidden.
+ */
+export async function testWhenNotEnoughSpaceTypeAttributeInUseOtherStatesHidden(
+    done: () => void) {
+  const element = getCloudPanelElement();
+  const progressStateElement =
+      await getElement<HTMLDivElement>(element.shadowRoot!, '#progress-state');
+  const progressFinishedElement = await getElement<HTMLDivElement>(
+      element.shadowRoot!, '#progress-finished');
+  const progressOfflineElement = await getElement<HTMLDivElement>(
+      element.shadowRoot!, '#progress-offline');
+  const progressNotEnoughSpaceElement = await getElement<HTMLDivElement>(
+      element.shadowRoot!, '#progress-not-enough-space');
+
+  // When no attributes have been set, no div should be visible.
+  await waitForStyles(progressStateElement, 'display', 'none');
+  await waitForStyles(progressFinishedElement, 'display', 'none');
+  await waitForStyles(progressOfflineElement, 'display', 'none');
+  await waitForStyles(progressNotEnoughSpaceElement, 'display', 'none');
+
+  // Update the items to 3 and total percentage to 50%.
+  element.setAttribute('items', '3');
+  element.setAttribute('percentage', '50');
+
+  // Ensure only the in progress element is visible.
+  await waitForStyles(progressStateElement, 'display', 'block');
+  await waitForStyles(progressFinishedElement, 'display', 'none');
+  await waitForStyles(progressOfflineElement, 'display', 'none');
+  await waitForStyles(progressNotEnoughSpaceElement, 'display', 'none');
+
+  // Update the type to be offline.
+  element.setAttribute('type', 'offline');
+
+  // Ensure the only visible div is the offline one.
+  await waitForStyles(progressStateElement, 'display', 'none');
+  await waitForStyles(progressFinishedElement, 'display', 'none');
+  await waitForStyles(progressOfflineElement, 'display', 'flex');
+  await waitForStyles(progressNotEnoughSpaceElement, 'display', 'none');
+
+  // Update the type to be not-enough-space.
+  element.setAttribute('type', 'not-enough-space');
+
+  // Ensure the only visible div is the not-enough-space one.
+  await waitForStyles(progressStateElement, 'display', 'none');
+  await waitForStyles(progressFinishedElement, 'display', 'none');
+  await waitForStyles(progressOfflineElement, 'display', 'none');
+  await waitForStyles(progressNotEnoughSpaceElement, 'display', 'flex');
+
   done();
 }
