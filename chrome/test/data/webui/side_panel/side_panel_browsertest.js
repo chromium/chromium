@@ -114,18 +114,6 @@ TEST_F('SidePanelBookmarksDragManagerTest', 'All', function() {
   mocha.run();
 });
 
-var SidePanelPowerBookmarksDragManagerTest =
-    class extends SidePanelBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://bookmarks-side-panel.top-chrome/test_loader.html?module=side_panel/bookmarks/power_bookmarks_drag_manager_test.js';
-  }
-};
-
-TEST_F('SidePanelPowerBookmarksDragManagerTest', 'All', function() {
-  mocha.run();
-});
-
 var ReadingListAppTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
