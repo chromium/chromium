@@ -11,10 +11,12 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
 #include "ui/events/event_handler.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
 
 namespace views {
 class ImageButton;
+class ImageView;
 class Label;
 class LabelButton;
 class WebView;
@@ -61,6 +63,8 @@ class QuickAnswersView : public views::View {
 
   void ShowRetryView();
 
+  ui::ImageModel GetIconImageModelForTesting();
+
  private:
   void InitLayout();
   void InitWidget();
@@ -71,6 +75,7 @@ class QuickAnswersView : public views::View {
       View* container);
   void AddAssistantIcon();
   void AddGoogleIcon();
+  void AddResultTypeIcon();
   int GetBoundsWidth();
   int GetLabelWidth();
   void ResetContentView();
@@ -103,6 +108,7 @@ class QuickAnswersView : public views::View {
   raw_ptr<views::ImageButton> dogfood_feedback_button_ = nullptr;
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
   raw_ptr<views::ImageButton> phonetics_audio_button_ = nullptr;
+  raw_ptr<views::ImageView> vector_icon_ = nullptr;
 
   // Invisible web view to play phonetics audio for definition results.
   raw_ptr<views::WebView> phonetics_audio_web_view_ = nullptr;
