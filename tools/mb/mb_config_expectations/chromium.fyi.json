@@ -414,7 +414,8 @@
       "is_debug": true,
       "symbol_level": 2,
       "target_cpu": "arm64",
-      "target_os": "android"
+      "target_os": "android",
+      "use_remoteexec": true
     }
   },
   "android-fieldtrial-rel": {
@@ -973,7 +974,8 @@
       "enable_nacl": false,
       "is_component_build": true,
       "is_debug": true,
-      "symbol_level": 2
+      "symbol_level": 2,
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-annotator-rel": {
@@ -1323,7 +1325,8 @@
       "enable_nacl": false,
       "is_component_build": true,
       "is_debug": true,
-      "symbol_level": 2
+      "symbol_level": 2,
+      "use_remoteexec": true
     }
   },
   "win-celab-builder-rel": {
