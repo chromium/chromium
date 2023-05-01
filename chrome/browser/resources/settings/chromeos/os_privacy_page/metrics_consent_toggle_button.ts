@@ -64,8 +64,7 @@ class SettingsMetricsConsentToggleButtonElement extends
     this.metricsConsentBrowserProxy_ =
         MetricsConsentBrowserProxyImpl.getInstance();
     this.metricsConsentBrowserProxy_.getMetricsConsentState().then(state => {
-      const pref = /** @type {?chrome.settingsPrivate.PrefObject} */ (
-          this.get(state.prefName, this.prefs));
+      const pref = this.get(state.prefName, this.prefs);
       if (pref) {
         this.metricsConsentPref_ = pref;
         this.isMetricsConsentConfigurable_ = state.isConfigurable;
@@ -74,22 +73,20 @@ class SettingsMetricsConsentToggleButtonElement extends
   }
 
   override focus() {
-    this.getMetricsToggle_().focus();
+    this.metricsToggle_.focus();
   }
 
-  private onMetricsConsentChange_(): void {
-    this.metricsConsentBrowserProxy_
-        .updateMetricsConsent(this.getMetricsToggle_().checked)
-        .then(consent => {
-          if (consent === this.getMetricsToggle_().checked) {
-            this.getMetricsToggle_().sendPrefChange();
-          } else {
-            this.getMetricsToggle_().resetToPrefValue();
-          }
-        });
+  private async onMetricsConsentChange_(): Promise<void> {
+    const consent = await this.metricsConsentBrowserProxy_.updateMetricsConsent(
+        this.metricsToggle_.checked);
+    if (consent === this.metricsToggle_.checked) {
+      this.metricsToggle_.sendPrefChange();
+    } else {
+      this.metricsToggle_.resetToPrefValue();
+    }
   }
 
-  private getMetricsToggle_(): SettingsToggleButtonElement {
+  private get metricsToggle_(): SettingsToggleButtonElement {
     return castExists(
         this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#settingsToggle'));
