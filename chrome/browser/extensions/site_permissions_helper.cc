@@ -159,23 +159,6 @@ bool SitePermissionsHelper::PageNeedsRefreshToRun(int blocked_actions) {
   return blocked_actions & kRefreshRequiredActionsMask;
 }
 
-void SitePermissionsHelper::UpdateUserSiteSettings(
-    const base::flat_set<ToolbarActionsModel::ActionId>& action_ids,
-    content::WebContents* web_contents,
-    extensions::PermissionsManager::UserSiteSetting site_setting) {
-  DCHECK(web_contents);
-
-  ExtensionActionRunner* runner =
-      ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!runner) {
-    return;
-  }
-
-  runner->HandleUserSiteSettingModified(
-      action_ids, web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-      site_setting);
-}
-
 bool SitePermissionsHelper::HasBeenBlocked(
     const Extension& extension,
     content::WebContents* web_contents) const {

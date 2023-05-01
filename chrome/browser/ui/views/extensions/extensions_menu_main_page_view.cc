@@ -283,6 +283,9 @@ void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
 
   PermissionsManager::Get(browser_->profile())
       ->UpdateUserSiteSetting(origin, site_setting);
+
+  // TODO(crbug.com/1390952): Show reload message in menu if any extension needs
+  // a page refresh for the update to take effect.
 }
 
 void ExtensionsMenuMainPageView::Update(std::u16string current_site,

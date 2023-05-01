@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/blocked_action_type.h"
 #include "extensions/browser/extension_action.h"
@@ -86,13 +85,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // callback will reload the page.
   void ShowReloadPageBubbleWithReloadPageCallback(
       const ExtensionId& extension_id);
-
-  // Notifies the ExtensionActionRunner that the user site setting for
-  // `origin` with `action_ids` has changed.
-  void HandleUserSiteSettingModified(
-      const base::flat_set<ToolbarActionsModel::ActionId>& action_ids,
-      const url::Origin& origin,
-      PermissionsManager::UserSiteSetting new_site_settings);
 
   // Notifies the ExtensionActionRunner that an extension has been granted
   // active tab permissions. This will run any pending injections for that
@@ -205,12 +197,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   // Reloads the current page.
   void OnReloadPageBubbleAccepted();
-
-  // Called when the reload page bubble is accepted. Updates user site setting
-  // of `origin` to `site_settings`.
-  void OnReloadPageBubbleAcceptedForUserSiteSettingsChange(
-      const url::Origin& origin,
-      extensions::PermissionsManager::UserSiteSetting site_settings);
 
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
