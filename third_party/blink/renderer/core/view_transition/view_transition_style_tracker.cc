@@ -1829,6 +1829,18 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
       result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
     }
     result.Unite(box.PhysicalVisualOverflowRectIncludingFilters());
+
+    // TODO(crbug.com/1432868): This captures a couple of common cases --
+    // box-shadow and no box shadow on the element. However, this isn't at all
+    // comprehensive. The paint system determines per element whether it
+    // should pixel snap or enclosing rect or something else. We need to think
+    // of a better way to fix this for all cases.
+    result.Move(box.FirstFragment().PaintOffset());
+    if (box.StyleRef().BoxShadow()) {
+      result = PhysicalRect(ToEnclosingRect(result));
+    } else {
+      result = PhysicalRect(ToPixelSnappedRect(result));
+    }
   }
   return result;
 }
