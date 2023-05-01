@@ -2402,8 +2402,6 @@ crbug.com/893480 external/wpt/html/semantics/interactive-elements/the-dialog-ele
 # tests in this group need implementation of focus navigation forward/backward
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/delegatesFocus-highlight-sibling.html [ Failure ]
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation.html [ Failure ]
-crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-scroller-delegatesFocus.html [ Failure ]
-crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-scroller-tabindex.html [ Failure ]
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-fallback.html [ Failure ]
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-fallback-default-tabindex.html [ Failure ]
 crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-nested.html [ Failure ]
