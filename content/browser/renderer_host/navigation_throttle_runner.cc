@@ -328,7 +328,9 @@ void NavigationThrottleRunner::InformDelegate(
 void NavigationThrottleRunner::RecordDeferTimeUKM() {
   if (!is_primary_main_frame_)
     return;
-  DCHECK(GetDeferringThrottle());
+  if (!GetDeferringThrottle()) {
+    return;
+  }
   ukm::builders::NavigationThrottleDeferredTime builder(
       ukm::ConvertToSourceId(navigation_id_, ukm::SourceIdType::NAVIGATION_ID));
   builder.SetDurationOfNavigationDeferralMs(
