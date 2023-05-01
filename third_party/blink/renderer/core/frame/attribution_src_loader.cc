@@ -793,6 +793,9 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   }
 
 #if BUILDFLAG(IS_ANDROID)
+  UseCounter::Count(loader_->local_frame_->DomWindow(),
+                    mojom::blink::WebFeature::kAttributionReportingCrossAppWeb);
+
   GURL registration_url = attribution_reporting::ParseOsSourceOrTriggerHeader(
       StringUTF8Adaptor(headers.os_source).AsStringPiece());
   if (!registration_url.is_valid()) {
@@ -853,6 +856,9 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
   }
 
 #if BUILDFLAG(IS_ANDROID)
+  UseCounter::Count(loader_->local_frame_->DomWindow(),
+                    mojom::blink::WebFeature::kAttributionReportingCrossAppWeb);
+
   GURL registration_url = attribution_reporting::ParseOsSourceOrTriggerHeader(
       StringUTF8Adaptor(headers.os_trigger).AsStringPiece());
   if (!registration_url.is_valid()) {
