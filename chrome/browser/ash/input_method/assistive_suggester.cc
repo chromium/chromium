@@ -442,7 +442,7 @@ AssistiveSuggesterKeyResult AssistiveSuggester::HandleLongpressEnabledKeyEvent(
         FROM_HERE, kLongpressActivationDelay,
         base::BindOnce(&AssistiveSuggester::OnLongpressDetected,
                        weak_ptr_factory_.GetWeakPtr()));
-    return AssistiveSuggesterKeyResult::kNotHandled;
+    return AssistiveSuggesterKeyResult::kNotHandledSuppressAutoRepeat;
   }
 
   // Process longpress interrupted event (key press up before timer callback

@@ -33,6 +33,9 @@ enum class KeyEventHandledState {
   kNotHandled = 0,
   kHandledByIME = 1,
   kHandledByAssistiveSuggester = 2,
+  // Same as kNotHandled, except that the autorepeat for this key should be
+  // suppressed.
+  kNotHandledSuppressAutoRepeat = 3,
 };
 }  // namespace ime
 }  // namespace ui

@@ -35,6 +35,9 @@ enum class AssistiveSuggesterKeyResult {
   // dispatched as a PROCESS key to prevent the client from triggering the
   // default behaviour for the key.
   kHandled,
+  // Same as not kNotHandled, except the key event should not trigger
+  // autorepeat.
+  kNotHandledSuppressAutoRepeat,
 };
 
 // An agent to suggest assistive information when the user types, and adopt or

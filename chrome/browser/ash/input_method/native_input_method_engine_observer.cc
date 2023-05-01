@@ -1008,6 +1008,10 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
         std::move(callback).Run(
             ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester);
         return;
+      case AssistiveSuggesterKeyResult::kNotHandledSuppressAutoRepeat:
+        std::move(callback).Run(
+            ui::ime::KeyEventHandledState::kNotHandledSuppressAutoRepeat);
+        return;
       case AssistiveSuggesterKeyResult::kNotHandled:
         break;
     }

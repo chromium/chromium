@@ -61,6 +61,8 @@ component("ime") {
   sources = [
     "constants.cc",
     "constants.h",
+    "events.cc",
+    "events.h",
     "ime_key_event_dispatcher.h",
     "input_method.h",
     "input_method_base.cc",

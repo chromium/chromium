@@ -27,6 +27,8 @@
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/ash/typing_session_manager.h"
 #include "ui/base/ime/composition_text.h"
+#include "ui/base/ime/constants.h"
+#include "ui/base/ime/events.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
@@ -613,11 +615,23 @@ ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
     ui::KeyEvent* event,
     ui::ime::KeyEventHandledState handled_state,
     bool stopped_propagation) {
-  bool handled = (handled_state != ui::ime::KeyEventHandledState::kNotHandled);
+  bool handled =
+      handled_state == ui::ime::KeyEventHandledState::kHandledByIME ||
+      handled_state ==
+          ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester;
 
+  auto properties =
+      event->properties() ? *event->properties() : ui::Event::Properties();
   // Mark whether the key is handled by IME or not.
-  ui::SetKeyboardImeFlags(event, handled ? ui::kPropertyKeyboardImeHandledFlag
+  ui::SetKeyboardImeFlagProperty(&properties,
+                                 handled ? ui::kPropertyKeyboardImeHandledFlag
                                          : ui::kPropertyKeyboardImeIgnoredFlag);
+  // Mark whether autorepeat needs to be suppressed.
+  if (handled_state ==
+      ui::ime::KeyEventHandledState::kNotHandledSuppressAutoRepeat) {
+    ui::SetKeyEventSuppressAutoRepeat(properties);
+  }
+  event->SetProperties(properties);
 
   TextInputClient* client = GetTextInputClient();
   if (!client) {
