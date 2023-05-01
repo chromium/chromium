@@ -290,22 +290,6 @@ struct CrossThreadCopier<SignaledValue> {
 namespace blink {
 
 namespace {
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "RTCVideoEncoderShutdownReason" in src/tools/metrics/histograms/enums.xml.
-enum class RTCVideoEncoderShutdownReason {
-  kSuccessfulRelease = 0,
-  kInvalidArgument = 1,
-  kIllegalState = 2,
-  kPlatformFailure = 3,
-  kMaxValue = kPlatformFailure,
-};
-
-static_assert(static_cast<int>(RTCVideoEncoderShutdownReason::kMaxValue) ==
-                  media::VideoEncodeAccelerator::kErrorMax + 1,
-              "RTCVideoEncoderShutdownReason should follow "
-              "VideoEncodeAccelerator::Error (+1 for the success case)");
-
 media::VideoEncodeAccelerator::Config::InterLayerPredMode
 CopyFromWebRtcInterLayerPredMode(
     const webrtc::InterLayerPredMode inter_layer_pred) {
@@ -488,29 +472,27 @@ void RecordInitEncodeUMA(int32_t init_retval,
                             media::VIDEO_CODEC_PROFILE_MAX + 1);
 }
 
-void RecordEncoderShutdownReasonUMA(RTCVideoEncoderShutdownReason reason,
-                                    webrtc::VideoCodecType type) {
+void RecordEncoderStatusUMA(const media::EncoderStatus& status,
+                            webrtc::VideoCodecType type) {
+  std::string histogram_name = "Media.RTCVideoEncoderStatus.";
   switch (type) {
     case webrtc::VideoCodecType::kVideoCodecH264:
-      base::UmaHistogramEnumeration("Media.RTCVideoEncoderShutdownReason.H264",
-                                    reason);
+      histogram_name += "H264";
       break;
     case webrtc::VideoCodecType::kVideoCodecVP8:
-      base::UmaHistogramEnumeration("Media.RTCVideoEncoderShutdownReason.VP8",
-                                    reason);
+      histogram_name += "VP8";
       break;
     case webrtc::VideoCodecType::kVideoCodecVP9:
-      base::UmaHistogramEnumeration("Media.RTCVideoEncoderShutdownReason.VP9",
-                                    reason);
+      histogram_name += "VP9";
       break;
     case webrtc::VideoCodecType::kVideoCodecAV1:
-      base::UmaHistogramEnumeration("Media.RTCVideoEncoderShutdownReason.AV1",
-                                    reason);
+      histogram_name += "AV1";
       break;
     default:
-      base::UmaHistogramEnumeration("Media.RTCVideoEncoderShutdownReason.Other",
-                                    reason);
+      histogram_name += "Other";
+      break;
   }
+  base::UmaHistogramEnumeration(histogram_name, status.code());
 }
 
 bool SupportGpuMemoryBufferEncoding() {
@@ -1291,36 +1273,12 @@ void RTCVideoEncoder::Impl::NotifyErrorStatus(
   LOG(ERROR) << "NotifyErrorStatus is called with code="
              << static_cast<int>(status.code())
              << ", message=" << status.message();
-  // TODO(b/275663480): Deprecate RTCVideoEncoderShutdownReason
-  // in favor of UKM.
-  int32_t retval = WEBRTC_VIDEO_CODEC_ERROR;
-  switch (media::ConvertStatusToVideoEncodeAcceleratorError(status)) {
-    case media::VideoEncodeAccelerator::kInvalidArgumentError:
-      retval = WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
-      RecordEncoderShutdownReasonUMA(
-          RTCVideoEncoderShutdownReason::kInvalidArgument, video_codec_type_);
-      break;
-    case media::VideoEncodeAccelerator::kIllegalStateError:
-      RecordEncoderShutdownReasonUMA(
-          RTCVideoEncoderShutdownReason::kIllegalState, video_codec_type_);
-      retval = WEBRTC_VIDEO_CODEC_ERROR;
-      break;
-    case media::VideoEncodeAccelerator::kPlatformFailureError:
-      // Some platforms(i.e. Android) do not have SW H264 implementation so
-      // check if it is available before asking for fallback.
-      retval = video_codec_type_ != webrtc::kVideoCodecH264 ||
-                       webrtc::H264Encoder::IsSupported()
-                   ? WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE
-                   : WEBRTC_VIDEO_CODEC_ERROR;
-      RecordEncoderShutdownReasonUMA(
-          RTCVideoEncoderShutdownReason::kPlatformFailure, video_codec_type_);
-  }
+  RecordEncoderStatusUMA(status, video_codec_type_);
   video_encoder_.reset();
+  status_ = WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
 
-  status_ = retval;
-
-  async_init_event_.SetAndReset(retval);
-  async_encode_event_.SetAndReset(retval);
+  async_init_event_.SetAndReset(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
+  async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
 
   execute_software_fallback_.Run();
 }
@@ -1332,8 +1290,7 @@ RTCVideoEncoder::Impl::~Impl() {
   if (video_encoder_) {
     video_encoder_.reset();
     status_ = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
-    RecordEncoderShutdownReasonUMA(
-        RTCVideoEncoderShutdownReason::kSuccessfulRelease, video_codec_type_);
+    RecordEncoderStatusUMA(media::EncoderStatus::Codes::kOk, video_codec_type_);
   }
 
   async_init_event_.reset();

@@ -4681,10 +4681,11 @@ chromium-metrics-reviews@google.com.
   <summary>Video codec profile used in RTC video encoder.</summary>
 </histogram>
 
-<histogram name="Media.RTCVideoEncoderShutdownReason.{Codecs}"
-    enum="RTCVideoEncoderShutdownReason" expires_after="never">
+<histogram name="Media.RTCVideoEncoderStatus.{Codecs}" enum="EncoderStatus"
+    expires_after="never">
 <!-- expires-never: Codec and container support planning metric. -->
 
+  <owner>hiroh@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <owner>sprang@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>

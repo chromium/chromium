@@ -10,6 +10,9 @@
 namespace media {
 
 struct EncoderStatusTraits {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep the consistency with
+  // EncoderStatus in tools/metrics/histograms/enums.xml.
   enum class Codes : StatusCodeType {
     kOk = 0,
     kEncoderInitializeNeverCompleted = 1,
@@ -29,6 +32,7 @@ struct EncoderStatusTraits {
     kSystemAPICallError = 15,
     kInvalidInputFrame = 16,
     kInvalidOutputBuffer = 17,
+    kMaxValue = kInvalidOutputBuffer,
   };
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
 };

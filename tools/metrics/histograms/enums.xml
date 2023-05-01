@@ -30849,6 +30849,27 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="The stale DNS request has valid results"/>
 </enum>
 
+<enum name="EncoderStatus">
+  <int value="0" label="kOk"/>
+  <int value="1" label="kEncoderInitializeNeverCompleted"/>
+  <int value="2" label="kEncoderInitializeTwice"/>
+  <int value="3" label="kEncoderFailedEncode"/>
+  <int value="4" label="kEncoderUnsupportedProfile"/>
+  <int value="5" label="kEncoderUnsupportedCodec"/>
+  <int value="6" label="kEncoderUnsupportedConfig"/>
+  <int value="7" label="kEncoderInitializationError"/>
+  <int value="8" label="kEncoderFailedFlush"/>
+  <int value="9" label="kEncoderMojoConnectionError"/>
+  <int value="10" label="kUnsupportedFrameFormat"/>
+  <int value="11" label="kScalingError"/>
+  <int value="12" label="kFormatConversionError"/>
+  <int value="13" label="kEncoderHardwareDriverError"/>
+  <int value="14" label="kEncoderIllegalState"/>
+  <int value="15" label="kSystemAPICallError"/>
+  <int value="16" label="kInvalidInputFrame"/>
+  <int value="17" label="kInvalidOutputBuffer"/>
+</enum>
+
 <enum name="EncodingMethod">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="Big5"/>
@@ -90684,13 +90705,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="PreviousErrorOnDecode"/>
   <int value="4" label="PreviousErrorOnRegisterCallback"/>
   <int value="5" label="ConsecutivePendingBufferOverflowDuringInit"/>
-</enum>
-
-<enum name="RTCVideoEncoderShutdownReason">
-  <int value="0" label="kSuccessfulRelease"/>
-  <int value="1" label="kInvalidArgument"/>
-  <int value="2" label="kIllegalState"/>
-  <int value="3" label="kPlatformFailure"/>
 </enum>
 
 <enum name="RulesetVerificationStatus">
