@@ -90,48 +90,13 @@ std::vector<std::string> GetSurveyEligibleModuleIds() {
       base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
-// Returns true if the scrim (dark gradient overlay) should be hidden for the
-// NTP's background image. This is done to fix specific GWS themes where the
-// visual impact of the scrim does not align with the artistic intent of
-// partnered artists (see crbug.com/1329556).
-// TODO(crbug.com/1320107): Remove the scrim for all GWS and custom background
-// image configurations on the NTP.
-bool ShouldHideScrim(const ThemeService* theme_service) {
-  DCHECK(theme_service);
-  const auto* theme_supplier = theme_service->GetThemeSupplier();
-  if (!theme_supplier ||
-      theme_supplier->get_theme_type() !=
-          ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType::
-              kExtension) {
-    return false;
-  }
-
-  static constexpr auto kPrideThemeExtensionIdsNoScrim = base::MakeFixedFlatSet<
-      base::StringPiece>({
-      "kkdpcclippggiadgghfmkggpemadbfcj", "jogkmkalhlbppkpmjdpncmpdcinbkekh",
-      "gfkcjfbbpmldkajnebkophpelmcimglf", "mchijkgkaabamaokgcnbmjpfoagkpjfc",
-      "cdabkdaechplopdfoahhjgkbjgillcme", "depfhkphmnoonikdokgpejilanmcdonk",
-      "efiamifmcbajfehbkjemggiafognbljk", "iclkbhippclhfamkdoigedgnnfbhefpl",
-      "ckfehdejjppobbllbkjgcpaockgdigen", "figmdifbokklifinmmjcjdkkopjflhnj",
-      "nkgiaofmleojhehacfognclpmoolihko", "npkdokffjmnleabnfihminmikibdhmfa",
-      "klnkeldihpjnjoopojllmnpepbpljico", "iffdmpenldeofnlfjmbjcdmafhoekmka",
-      "mckialangcdpcdcflekinnpamfkmkobo", "gpgkmnadnanefkpfkmdeijfiobhjagfk",
-      "hhdddgombcggoeedkgelollagijjgnmo", "inneonpkbfaipkmpldnhnpefjkacjlcl",
-      "inmnnmkfonobaklbnnfgekapnhnhlnnk",
-  });
-
-  const std::string& extension_id = theme_supplier->extension_id();
-  return base::Contains(kPrideThemeExtensionIdsNoScrim, extension_id);
-}
-
 // Returns true if we should force dark foreground colors for the Google logo
 // and the One Google Bar. This is done to fix specific GWS themes where the
 // always-light logo and OGB colors do not sufficiently contrast with lighter
 // image backgrounds (see crbug.com/1329552).
 // TODO(crbug.com/1328918): Address this in a general way and extend support to
 // custom background images, not just CWS themes.
-bool ShouldForceDarkForegroundColorsForLogoAndOGB(
-    const ThemeService* theme_service) {
+bool ShouldForceDarkForegroundColorsForLogo(const ThemeService* theme_service) {
   const auto* theme_supplier = theme_service->GetThemeSupplier();
   if (!theme_supplier ||
       theme_supplier->get_theme_type() !=
@@ -291,21 +256,16 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     background_image->scrim_display = "none";
   }
 
-  // The special case handling that removes the scrim and forces dark foreground
-  // colors should only be applied when the user does not have a custom
-  // background selected and has installed a GWS theme with a bundled background
-  // image. The first condition is necessary as a custom background image can be
-  // set while a GWS theme with a bundled image is concurrently enabled (see
-  // crbug.com/1329556 and crbug.com/1329552).
-  if (base::FeatureList::IsEnabled(ntp_features::kCwsScrimRemoval) &&
-      !custom_background.has_value() && theme_has_custom_image) {
-    if (ShouldForceDarkForegroundColorsForLogoAndOGB(theme_service)) {
-      theme->is_dark = false;
-      theme->logo_color =
-          color_provider.GetColor(kColorNewTabPageLogoUnthemedDark);
-    }
-    if (ShouldHideScrim(theme_service))
-      background_image->scrim_display = "none";
+  // The special case handling that forces a dark Google logo should only be
+  // applied when the user does not have a custom background selected and has
+  // installed a CWS theme with a bundled background image. The first condition
+  // is necessary as a custom background image can be set while a CWS theme with
+  // a bundled image is concurrently enabled (see crbug.com/1329552).
+  if (base::FeatureList::IsEnabled(ntp_features::kCwsDarkLogo) &&
+      !custom_background.has_value() && theme_has_custom_image &&
+      ShouldForceDarkForegroundColorsForLogo(theme_service)) {
+    theme->logo_color =
+        color_provider.GetColor(kColorNewTabPageLogoUnthemedDark);
   }
 
   theme->background_image = std::move(background_image);
