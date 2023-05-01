@@ -568,9 +568,15 @@ function getCSS() {
       text-align: start;
     }
 
-    :host-context(.focus-outline-visible) #elider-menu button:focus {
-      outline: 2px solid var(--cros-sys-focus_ring);
-      outline-offset: -2px;
+    :host-context(.focus-outline-visible) #elider-menu button:focus::after {
+      border: 2px solid var(--cros-sys-focus_ring);
+      border-radius: 4px;
+      content: '';
+      height: 32px; /* option height - 2 x border width */
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: calc(100% - 4px); /* 2 x border width */
     }
 
     /** Reset the hover color when using keyboard to navigate the menu items. */
