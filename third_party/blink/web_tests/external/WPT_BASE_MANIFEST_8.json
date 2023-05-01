@@ -78323,7 +78323,7 @@
        }
       ]
      ],
-     "background-rounded-image-clip.html": [
+     "background-rounded-image-clip-001.html": [
       "e6222190c192c0fa3db307e2c0cecf6d9a99a13c",
       [
        null,
@@ -78345,6 +78345,35 @@
            [
             0,
             22547
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "background-rounded-image-clip-002.html": [
+      "4af7702602027ae39c26befcd1f04d2e323e4642",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-200px-square.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            5
+           ],
+           [
+            0,
+            100
            ]
           ]
          ]
@@ -250637,63 +250666,60 @@
          {}
         ]
        ],
-       "2d.layer.global-states.alpha.filter.globalcompositeoperation.html": [
-        "54bafb9e65244d633d484d1583008f3c8b29663b",
+       "2d.layer.global-states.alpha.blending.html": [
+        "8e15a2b936417297761da7150e64d6ede9c4f8c6",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.alpha.filter.globalcompositeoperation-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.alpha.blending-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.alpha.filter.html": [
-        "bf522c29457fc4a3bf36e7b0ff914a8508479834",
+       "2d.layer.global-states.alpha.blending.shadow.html": [
+        "22946174cdeac849a545dad2d1b44f0a7640a0e0",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.alpha.filter-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.alpha.blending.shadow-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.alpha.filter.shadow.html": [
-        "3b4727bfc34f1e4639c2d7e4c7d933fd1f401419",
+       "2d.layer.global-states.alpha.composite.html": [
+        "1ac6a2cbfe819e1d8b07d402b78585d27b85d5de",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.alpha.filter.shadow-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.alpha.composite-expected.html",
            "=="
           ]
          ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              2
-             ],
-             [
-              0,
-              5824
-             ]
-            ]
-           ]
+         {}
+        ]
+       ],
+       "2d.layer.global-states.alpha.composite.shadow.html": [
+        "c07e717a663ba67b0c9e37f4989ec050c9350d6b",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.alpha.composite.shadow-expected.html",
+           "=="
           ]
-         }
+         ],
+         {}
         ]
        ],
        "2d.layer.global-states.alpha.html": [
-        "10ef0e7b221553d58f28e189d106be8fa17af265",
+        "829796acbf9802f2dd8a81ef25d41d4d3448bad9",
         [
          null,
          [
@@ -250706,7 +250732,7 @@
         ]
        ],
        "2d.layer.global-states.alpha.shadow.html": [
-        "a0f4d79a22380a5b14a257c0080c4173a721a55e",
+        "bcb7fe5096297ebccd6254845b4ac0524997bf11",
         [
          null,
          [
@@ -250718,26 +250744,195 @@
          {}
         ]
        ],
-       "2d.layer.global-states.filter.globalcompositeoperation.html": [
-        "1f23dba96cc378079365b1da8dbc1f84f4fd08f2",
+       "2d.layer.global-states.blending.html": [
+        "7d4d9ae4b5ba5ab2d5729122a5a727529a962bc1",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.globalcompositeoperation-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.blending-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.filter.html": [
-        "7524ef56bb98e52e0af23b954759a31f3755b78a",
+       "2d.layer.global-states.blending.shadow.html": [
+        "80f414d4ee5e6ab5853fed1f94fdcd0f6c29146a",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.filter-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.blending.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.composite.html": [
+        "898d14992412b19391b2e5e6bd82d58c9ac83815",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.composite-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.composite.shadow.html": [
+        "9e32dddd40da4cd4361838bea19a29ea2550d90b",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.composite.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.blending.html": [
+        "6f92e6d33f036aef7fb97eed1e186103a69fcb35",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.filter.alpha.blending-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.blending.shadow.html": [
+        "68bdee684d3e03957553ef7c4709db5a9df7dce7",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.filter.alpha.blending.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.composite.html": [
+        "72282d6559816e3ca6f830692d0dbec9e00e3f59",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.filter.alpha.composite-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.composite.shadow.html": [
+        "71c99dba353e7ef318ca4c984cf8e0abccf20f8e",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.filter.alpha.composite.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.html": [
+        "9e687bcaf8a31d8ebb42b26a831dea2b45a0eb4a",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.filter.alpha-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.shadow.html": [
+        "a9564c44a7cfe22f256b77a8c41187d28467b8a7",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.filter.alpha.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.blending.html": [
+        "a812563398e00719b3fb4ecca581dc56a69135f2",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.filter.blending-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.blending.shadow.html": [
+        "bf30126ff2f8ebff98b58a754784f319aaff6599",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.filter.blending.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.composite.html": [
+        "a2636d85255a56615e1e769bd2d93c7aacc8859c",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.filter.composite-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.composite.shadow.html": [
+        "85b83b59b906e4268d29258eb3f4ebe35728ea64",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.filter.composite.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.no-global-states.html": [
+        "af495b21cd240aeebe4f55a75d6537194d04706d",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.filter.no-global-states-expected.html",
            "=="
           ]
          ],
@@ -250745,7 +250940,7 @@
         ]
        ],
        "2d.layer.global-states.filter.shadow.html": [
-        "efa5dca2ae03e68b23abe5c3d642da86fa25c0dd",
+        "2c692d6db76ba7f3d30d083ca124b1b203587dd0",
         [
          null,
          [
@@ -250754,45 +250949,16 @@
            "=="
           ]
          ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              1
-             ],
-             [
-              0,
-              49
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
-       "2d.layer.global-states.globalcompositeoperation.html": [
-        "f27336adf4bbee1443e447360958ef35bf600fe9",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.globalcompositeoperation-expected.html",
-           "=="
-          ]
-         ],
          {}
         ]
        ],
-       "2d.layer.global-states.no_global_states.html": [
-        "93d2bdeb9276f283f15331cf562511b45dd90fd1",
+       "2d.layer.global-states.no-global-states.html": [
+        "d561be234103c400f17410bbeb02624e5722d962",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.no_global_states-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.no-global-states-expected.html",
            "=="
           ]
          ],
@@ -250800,7 +250966,7 @@
         ]
        ],
        "2d.layer.global-states.shadow.html": [
-        "da78b3435c780cb63f0ee06c797cb08692552e60",
+        "bd9e868d1ef0f8e93060bc2601b3f1dbd6ac4566",
         [
          null,
          [
@@ -250855,7 +251021,7 @@
         ]
        ],
        "2d.layer.several-complex.html": [
-        "f99357bd7fd1b6bf56cc05e37ba56badd9f6fadd",
+        "6ae78f690aeaac3b57502a91c56420e01232eaa8",
         [
          null,
          [
@@ -251948,110 +252114,104 @@
          {}
         ]
        ],
-       "2d.layer.global-states.alpha.filter.globalcompositeoperation.html": [
-        "88d339fb1b112763151ad8573f6edc082d2be611",
+       "2d.layer.global-states.alpha.blending.html": [
+        "bb7dd933372556976d06a0f4aac312ccf3874e94",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.filter.globalcompositeoperation-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.blending-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.alpha.filter.globalcompositeoperation.w.html": [
-        "a95085ca8946cf8afb172dbc32218a458bf6e31f",
+       "2d.layer.global-states.alpha.blending.shadow.html": [
+        "70b32e43395d65654062d7471fe1cd7e77906964",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.filter.globalcompositeoperation-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.blending.shadow-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.alpha.filter.html": [
-        "e8d3d5691bb4e7c04e2af9f34bcdd7447dc4bd77",
+       "2d.layer.global-states.alpha.blending.shadow.w.html": [
+        "45932d4cd5d182e47a6d588485ed1bde32f266c7",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.filter-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.blending.shadow-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.alpha.filter.shadow.html": [
-        "07d5d793791dc923c681c79a97682b4dbe05cd5f",
+       "2d.layer.global-states.alpha.blending.w.html": [
+        "ff33fc450529c74a612c663b83d40e5a9df584ef",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.filter.shadow-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.blending-expected.html",
            "=="
           ]
          ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              2
-             ],
-             [
-              0,
-              5824
-             ]
-            ]
-           ]
-          ]
-         }
+         {}
         ]
        ],
-       "2d.layer.global-states.alpha.filter.shadow.w.html": [
-        "40039c247d6507a442017081dd0fd349f16d5efb",
+       "2d.layer.global-states.alpha.composite.html": [
+        "21582189b1d800e96fed5317f92c23090092b0a7",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.filter.shadow-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.composite-expected.html",
            "=="
           ]
          ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              2
-             ],
-             [
-              0,
-              5824
-             ]
-            ]
-           ]
-          ]
-         }
+         {}
         ]
        ],
-       "2d.layer.global-states.alpha.filter.w.html": [
-        "177bae4e32d12b1ce0609c3c698c3beefa76a964",
+       "2d.layer.global-states.alpha.composite.shadow.html": [
+        "bb3d886b54fb0ea2f836a991ab88200101269880",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.filter-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.composite.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.alpha.composite.shadow.w.html": [
+        "592f92921b8b6fb97d833c0f2fad37efba7bf52e",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.composite.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.alpha.composite.w.html": [
+        "2359e92790fa03dc25a3fdb4b1a2a9ff74e8415a",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.alpha.composite-expected.html",
            "=="
           ]
          ],
@@ -252059,7 +252219,7 @@
         ]
        ],
        "2d.layer.global-states.alpha.html": [
-        "7064f47b20ab5287c2740bc97a93c5365f9b1ad9",
+        "67a8ae60249f12d79bb424abcec7258da5ce199b",
         [
          null,
          [
@@ -252072,7 +252232,7 @@
         ]
        ],
        "2d.layer.global-states.alpha.shadow.html": [
-        "afbbac881e72dcb1780db420421e671478735a0f",
+        "a67f5872f78f204248ebd6dd5cea041f1a72d24a",
         [
          null,
          [
@@ -252085,7 +252245,7 @@
         ]
        ],
        "2d.layer.global-states.alpha.shadow.w.html": [
-        "9e0e70993409dd2e0aebb706805ac2c35cad4860",
+        "35df72aabcd888df0e7b51e118aa931bd4db4a6f",
         [
          null,
          [
@@ -252098,7 +252258,7 @@
         ]
        ],
        "2d.layer.global-states.alpha.w.html": [
-        "59d528b2099a48f5fe16a526a8f9bd28d3e1a50a",
+        "2db6b64738cb94c675146e298111e63763f1777e",
         [
          null,
          [
@@ -252110,39 +252270,390 @@
          {}
         ]
        ],
-       "2d.layer.global-states.filter.globalcompositeoperation.html": [
-        "b3ce2285dc922db002df6b50f55af48178efe509",
+       "2d.layer.global-states.blending.html": [
+        "6bcfd2854a607bbaddba85d8c07b4ebb01126dbf",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.globalcompositeoperation-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.blending-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.filter.globalcompositeoperation.w.html": [
-        "6d21ffb8157d775871685066fc07fcea09660947",
+       "2d.layer.global-states.blending.shadow.html": [
+        "f1e9b7d23a31ae4b3b50cad0bc0d6a16b64f9640",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.globalcompositeoperation-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.blending.shadow-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.filter.html": [
-        "a36a34d78e044eeea4760d419cf0a64c6c627fb4",
+       "2d.layer.global-states.blending.shadow.w.html": [
+        "1d22e94f6f9e7a9cbb025f9ba2ef246f90a24d85",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.blending.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.blending.w.html": [
+        "227c72b80ac676eaa38277e78a8479d432bb8c2a",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.blending-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.composite.html": [
+        "9d4d1dce8a422ffc5125ece855e54ff9ee8aeb60",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.composite-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.composite.shadow.html": [
+        "9ad39065c6a32facdbcd0b2cbf1b4383e1447757",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.composite.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.composite.shadow.w.html": [
+        "b45c9d3aadc678748d6982ca904b8e40e3e720fc",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.composite.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.composite.w.html": [
+        "66493889b20c5c7412cae395e40761b1597ec6c8",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.composite-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.blending.html": [
+        "37d0e3dd1c5543e400cc3a087fcc7437330c4149",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.blending-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.blending.shadow.html": [
+        "93278cb5aa380fb59c953a2f3d4c9c4460e05e98",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.blending.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.blending.shadow.w.html": [
+        "783693f2c1430e558d23b332d2e6b260bd325134",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.blending.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.blending.w.html": [
+        "53533e4ece628306624a49e871ef9c5b4667ceea",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.blending-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.composite.html": [
+        "f0af85f8f51fa31982720f87ef4092d88870a29d",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.composite-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.composite.shadow.html": [
+        "46cd28b6c2b8b08875eb4621b283d2d994b26b5f",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.composite.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.composite.shadow.w.html": [
+        "044b75927b399edc9601c3c52159f628fb688073",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.composite.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.composite.w.html": [
+        "be25ca66b169c6d873cfbfcac8ad28ba3ec36b22",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.composite-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.html": [
+        "6567094376b6a31b375cfa08e6fe4e99991163fb",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.shadow.html": [
+        "3059bf306cd76531ca094ca4fea104af64b54b96",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.shadow.w.html": [
+        "a481073ccfc59b244c0af2ad11b88f3de6e74b2b",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.alpha.w.html": [
+        "b5d81078899bcdd88adf63e62a9c52a87ba66262",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.blending.html": [
+        "a574e82932871d2ffb023962c4d32712cd766a65",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.blending.shadow.html": [
+        "4bdf80337f8a93087c2530b6690dbd7b3e84d63e",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.blending.shadow.w.html": [
+        "23cd4e834b04f23cca1dafee2659e24000a972ff",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.blending.w.html": [
+        "bd7a51d89877bb871c8532870549e5e47b3d4794",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.composite.html": [
+        "663a953a29e2725f46b3a00acb711e150ae7d517",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.composite.shadow.html": [
+        "52ad8646f01c2f58cad4e68ad116987cdd765a47",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.composite.shadow.w.html": [
+        "bf7139edce6c23f2891d1fecb33ed4a9be622cdb",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite.shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.composite.w.html": [
+        "1f30d1e5644f373683def54c618abd3f19a33aef",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.no-global-states.html": [
+        "0619faa944ffea351f61b7cd4841b933895868a1",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-global-states-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.no-global-states.w.html": [
+        "3a7168382006be4f6fbc4bd324b87532b578084f",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-global-states-expected.html",
            "=="
           ]
          ],
@@ -252150,7 +252661,7 @@
         ]
        ],
        "2d.layer.global-states.filter.shadow.html": [
-        "16439c60c68cf5d9dc6f36c5bfee89ae6a2fdb81",
+        "69120c105e5d17f1d5c6cbd1aa8a3d3a30948e0b",
         [
          null,
          [
@@ -252159,27 +252670,11 @@
            "=="
           ]
          ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              1
-             ],
-             [
-              0,
-              49
-             ]
-            ]
-           ]
-          ]
-         }
+         {}
         ]
        ],
        "2d.layer.global-states.filter.shadow.w.html": [
-        "7abddb27c517f1b44aad901d1caa22b92e9c46ef",
+        "8a770b2911e58e78b66a528bd92c25edb963af05",
         [
          null,
          [
@@ -252188,84 +252683,29 @@
            "=="
           ]
          ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              1
-             ],
-             [
-              0,
-              49
-             ]
-            ]
-           ]
-          ]
-         }
+         {}
         ]
        ],
-       "2d.layer.global-states.filter.w.html": [
-        "08e6c253562855709488d49737d47c9b82dafb1d",
+       "2d.layer.global-states.no-global-states.html": [
+        "022736c7b5b46c6eba7b22615cc166eaacf7accb",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.no-global-states-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.globalcompositeoperation.html": [
-        "1be83170f116998212e66da401e1be9097336728",
+       "2d.layer.global-states.no-global-states.w.html": [
+        "80ed4e4503d02b12b4c4b6e657935cd451510868",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.globalcompositeoperation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.globalcompositeoperation.w.html": [
-        "7757aa5d8a95afff121c70055a54f3cd34683f6c",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.globalcompositeoperation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no_global_states.html": [
-        "6769d47e7716f30eb047d9938b6825015fcd1258",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.no_global_states-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no_global_states.w.html": [
-        "7628d387e994fac5dde8f9a726edbc222aea950b",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.no_global_states-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.no-global-states-expected.html",
            "=="
           ]
          ],
@@ -252273,7 +252713,7 @@
         ]
        ],
        "2d.layer.global-states.shadow.html": [
-        "87b8224f856acedb3d30342bba45a40adb646841",
+        "6402dc5760751d92a0642a1fd55285068fee7106",
         [
          null,
          [
@@ -252286,7 +252726,7 @@
         ]
        ],
        "2d.layer.global-states.shadow.w.html": [
-        "b8d598887290da085ea03646b21d19e0ca317a71",
+        "e41e7aee4641bf6d32f5465c622daef21ffb5691",
         [
          null,
          [
@@ -252383,7 +252823,7 @@
         ]
        ],
        "2d.layer.several-complex.html": [
-        "b4b2a8da602e6326af41c2b674d5fda8ef7b217f",
+        "1d50bd4de6160a6fce2fd641236cb7e086cc0d4f",
         [
          null,
          [
@@ -252412,7 +252852,7 @@
         ]
        ],
        "2d.layer.several-complex.w.html": [
-        "5260cc2724d38f90a038410f3184e5a47ecb4a5a",
+        "7982a8dbc4fbbee7e3492f7fe269ea3046c30b4b",
         [
          null,
          [
@@ -270690,16 +271130,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "23d57f1aef5281cabe068a820b522a9f1221dc79",
-     []
-    ],
-    "mtime.json": [
-     "b8904a4127c5c8910d6129b408d07569bc8d8e0c",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -338952,10 +339382,6 @@
       "eacc9d17af31abf10bb2b49695ba08dfb90e17b7",
       []
      ],
-     "Node-lookupNamespaceURI-expected.txt": [
-      "ffb4df800377d7a9fc884dc723c47686b6249366",
-      []
-     ],
      "Node-lookupNamespaceURI.html.ini": [
       "f26f3d46ddd6ace5a880dfb83a8532bf1a63f5d0",
       []
@@ -339272,7 +339698,7 @@
      []
     ],
     "callback-interface-expected.txt": [
-     "a89cd980a750fb8a20e48b4cde3f25913ed5ed41",
+     "c07a911eb0928beac01d53e0f96e34485f5fc0c4",
      []
     ],
     "helpers.js": [
@@ -339319,10 +339745,6 @@
     },
     "xml_xpath_tests.xml": [
      "91d6428f48a15056fb6d7f4a3d567dcfe580511d",
-     []
-    ],
-    "xpathevaluatorbase-creatensresolver-expected.txt": [
-     "acb48c3a0dccd9f77f62e5d60a3bc71fd1429a22",
      []
     ],
     "xpathevaluatorbase-creatensresolver.html.ini": [
@@ -352623,47 +353045,99 @@
         []
        ],
        "2d.layer.global-states.alpha-expected.html": [
-        "72d97c663f863ca503eeaa42d8d1a78fbd0f32a8",
+        "0666e3098a79e1b54d2155f9af1b6c0f18978f7e",
         []
        ],
-       "2d.layer.global-states.alpha.filter-expected.html": [
-        "b4512e2455e2062df69460a2910c30a50f48ec28",
+       "2d.layer.global-states.alpha.blending-expected.html": [
+        "8a450275889487c7975f14b1b203170ed5d9a089",
         []
        ],
-       "2d.layer.global-states.alpha.filter.globalcompositeoperation-expected.html": [
-        "ab7e6cc6c194a9471dab267b7fb6fde6b731eb39",
+       "2d.layer.global-states.alpha.blending.shadow-expected.html": [
+        "d7ba158d161d44ddd127fb10bf11f5bdef62dc51",
         []
        ],
-       "2d.layer.global-states.alpha.filter.shadow-expected.html": [
-        "857db7ba99191ba9af42b091753388975d5473fd",
+       "2d.layer.global-states.alpha.composite-expected.html": [
+        "951049e638c818182da1aa3ed3296a152dfb798f",
+        []
+       ],
+       "2d.layer.global-states.alpha.composite.shadow-expected.html": [
+        "a669a2271e96b8f4e5087bb9ffb1888a231a0c78",
         []
        ],
        "2d.layer.global-states.alpha.shadow-expected.html": [
-        "9daefc377bde8aa05b21689f89ff249924615dd7",
+        "206eb750139475dc0fada14fe27a040cb00f2fe4",
         []
        ],
-       "2d.layer.global-states.filter-expected.html": [
-        "cff8783b3921b7579bb87b038a063fe59be9158c",
+       "2d.layer.global-states.blending-expected.html": [
+        "33fdf46a28711a9c2a5fe88108fef23513a81f9b",
         []
        ],
-       "2d.layer.global-states.filter.globalcompositeoperation-expected.html": [
-        "12fc31209ac942878df5f9b2d81f8e6a1ecc2e70",
+       "2d.layer.global-states.blending.shadow-expected.html": [
+        "02275c8cc2150fac3bdc54f5000a44dc08299b69",
+        []
+       ],
+       "2d.layer.global-states.composite-expected.html": [
+        "ed7669c4cfabd17b7bf9e4302c4a65fdc4a7bb3a",
+        []
+       ],
+       "2d.layer.global-states.composite.shadow-expected.html": [
+        "e380cccab8245f77803000d4eb44dc956b3cf709",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha-expected.html": [
+        "f304700feb32ca8fdea1f0b2254dcd7f36735379",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.blending-expected.html": [
+        "7c91ce42293771932f84301de8d51d3c513c0d62",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.blending.shadow-expected.html": [
+        "d9c93719b9923dbe75f3135fd9bc7b91cfe56518",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.composite-expected.html": [
+        "8e0d98648ea721c720a678a161d0053d8d395cf8",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.composite.shadow-expected.html": [
+        "26d13a4cae95274c0edf26ab3e62f74857521fe3",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.shadow-expected.html": [
+        "9cc735fd42c1c01a69989eee514311cadf6cb5c3",
+        []
+       ],
+       "2d.layer.global-states.filter.blending-expected.html": [
+        "f81dcf72dc2e2d42e8bc7a1b26f72eed67972ae7",
+        []
+       ],
+       "2d.layer.global-states.filter.blending.shadow-expected.html": [
+        "a48485f7e8a1b9b843a8f6324ea822aa81abde93",
+        []
+       ],
+       "2d.layer.global-states.filter.composite-expected.html": [
+        "97e85a1593b63c24fb7b708b5c28fdc3beb85a0f",
+        []
+       ],
+       "2d.layer.global-states.filter.composite.shadow-expected.html": [
+        "79191ee3910f49c9f69a2454940d8ca88ef7eb78",
+        []
+       ],
+       "2d.layer.global-states.filter.no-global-states-expected.html": [
+        "e56fe0b3602d05f394436482449ba3387e0e4ca4",
         []
        ],
        "2d.layer.global-states.filter.shadow-expected.html": [
-        "6ec9b02f7cb4e5d7a0a1da41b0a5a45a777db53c",
+        "59cf16fa87d6dbc3c73f9dae81452889cc5e33eb",
         []
        ],
-       "2d.layer.global-states.globalcompositeoperation-expected.html": [
-        "7e2e021b552e5ab6d6007caa3fbe01f3d5a4bea6",
-        []
-       ],
-       "2d.layer.global-states.no_global_states-expected.html": [
-        "139ff8ac944e5a84a3d98045036edb3c92f9f1b0",
+       "2d.layer.global-states.no-global-states-expected.html": [
+        "b91a2ae8b52c2570325c951df61003c3989aaf70",
         []
        ],
        "2d.layer.global-states.shadow-expected.html": [
-        "6787bdd1e50496f3cb05bcbecb2ffb29854e0442",
+        "ba56644d6c233415f147cb6c17911df099b0446a",
         []
        ],
        "2d.layer.nested-expected.html": [
@@ -352675,7 +353149,7 @@
         []
        ],
        "2d.layer.several-complex-expected.html": [
-        "1944ea6d2ac8f11f3c17d4114070547c5c8ccb73",
+        "84ad6244740e997d62cd0bdf4f017a7a6c15d713",
         []
        ]
       },
@@ -353653,47 +354127,99 @@
         []
        ],
        "2d.layer.global-states.alpha-expected.html": [
-        "72d97c663f863ca503eeaa42d8d1a78fbd0f32a8",
+        "0666e3098a79e1b54d2155f9af1b6c0f18978f7e",
         []
        ],
-       "2d.layer.global-states.alpha.filter-expected.html": [
-        "b4512e2455e2062df69460a2910c30a50f48ec28",
+       "2d.layer.global-states.alpha.blending-expected.html": [
+        "8a450275889487c7975f14b1b203170ed5d9a089",
         []
        ],
-       "2d.layer.global-states.alpha.filter.globalcompositeoperation-expected.html": [
-        "ab7e6cc6c194a9471dab267b7fb6fde6b731eb39",
+       "2d.layer.global-states.alpha.blending.shadow-expected.html": [
+        "d7ba158d161d44ddd127fb10bf11f5bdef62dc51",
         []
        ],
-       "2d.layer.global-states.alpha.filter.shadow-expected.html": [
-        "857db7ba99191ba9af42b091753388975d5473fd",
+       "2d.layer.global-states.alpha.composite-expected.html": [
+        "951049e638c818182da1aa3ed3296a152dfb798f",
+        []
+       ],
+       "2d.layer.global-states.alpha.composite.shadow-expected.html": [
+        "a669a2271e96b8f4e5087bb9ffb1888a231a0c78",
         []
        ],
        "2d.layer.global-states.alpha.shadow-expected.html": [
-        "9daefc377bde8aa05b21689f89ff249924615dd7",
+        "206eb750139475dc0fada14fe27a040cb00f2fe4",
         []
        ],
-       "2d.layer.global-states.filter-expected.html": [
-        "cff8783b3921b7579bb87b038a063fe59be9158c",
+       "2d.layer.global-states.blending-expected.html": [
+        "33fdf46a28711a9c2a5fe88108fef23513a81f9b",
         []
        ],
-       "2d.layer.global-states.filter.globalcompositeoperation-expected.html": [
-        "12fc31209ac942878df5f9b2d81f8e6a1ecc2e70",
+       "2d.layer.global-states.blending.shadow-expected.html": [
+        "02275c8cc2150fac3bdc54f5000a44dc08299b69",
+        []
+       ],
+       "2d.layer.global-states.composite-expected.html": [
+        "ed7669c4cfabd17b7bf9e4302c4a65fdc4a7bb3a",
+        []
+       ],
+       "2d.layer.global-states.composite.shadow-expected.html": [
+        "e380cccab8245f77803000d4eb44dc956b3cf709",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha-expected.html": [
+        "f304700feb32ca8fdea1f0b2254dcd7f36735379",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.blending-expected.html": [
+        "7c91ce42293771932f84301de8d51d3c513c0d62",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.blending.shadow-expected.html": [
+        "d9c93719b9923dbe75f3135fd9bc7b91cfe56518",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.composite-expected.html": [
+        "8e0d98648ea721c720a678a161d0053d8d395cf8",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.composite.shadow-expected.html": [
+        "26d13a4cae95274c0edf26ab3e62f74857521fe3",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.shadow-expected.html": [
+        "9cc735fd42c1c01a69989eee514311cadf6cb5c3",
+        []
+       ],
+       "2d.layer.global-states.filter.blending-expected.html": [
+        "f81dcf72dc2e2d42e8bc7a1b26f72eed67972ae7",
+        []
+       ],
+       "2d.layer.global-states.filter.blending.shadow-expected.html": [
+        "a48485f7e8a1b9b843a8f6324ea822aa81abde93",
+        []
+       ],
+       "2d.layer.global-states.filter.composite-expected.html": [
+        "97e85a1593b63c24fb7b708b5c28fdc3beb85a0f",
+        []
+       ],
+       "2d.layer.global-states.filter.composite.shadow-expected.html": [
+        "79191ee3910f49c9f69a2454940d8ca88ef7eb78",
+        []
+       ],
+       "2d.layer.global-states.filter.no-global-states-expected.html": [
+        "e56fe0b3602d05f394436482449ba3387e0e4ca4",
         []
        ],
        "2d.layer.global-states.filter.shadow-expected.html": [
-        "6ec9b02f7cb4e5d7a0a1da41b0a5a45a777db53c",
+        "59cf16fa87d6dbc3c73f9dae81452889cc5e33eb",
         []
        ],
-       "2d.layer.global-states.globalcompositeoperation-expected.html": [
-        "7e2e021b552e5ab6d6007caa3fbe01f3d5a4bea6",
-        []
-       ],
-       "2d.layer.global-states.no_global_states-expected.html": [
-        "139ff8ac944e5a84a3d98045036edb3c92f9f1b0",
+       "2d.layer.global-states.no-global-states-expected.html": [
+        "b91a2ae8b52c2570325c951df61003c3989aaf70",
         []
        ],
        "2d.layer.global-states.shadow-expected.html": [
-        "6787bdd1e50496f3cb05bcbecb2ffb29854e0442",
+        "ba56644d6c233415f147cb6c17911df099b0446a",
         []
        ],
        "2d.layer.nested-expected.html": [
@@ -353705,7 +354231,7 @@
         []
        ],
        "2d.layer.several-complex-expected.html": [
-        "1944ea6d2ac8f11f3c17d4114070547c5c8ccb73",
+        "84ad6244740e997d62cd0bdf4f017a7a6c15d713",
         []
        ]
       },
@@ -354145,7 +354671,7 @@
         []
        ],
        "layers.yaml": [
-        "6889e164bfb32d860deadde3b4b3e6a3e3dc2352",
+        "d398ef2b5a2a62aed4d675a2cb71b9d7a5e805e1",
         []
        ],
        "line-styles.yaml": [
