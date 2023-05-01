@@ -9,6 +9,9 @@ import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
+import {PropStatus} from '../../externs/ts/state.js';
+import {clearSearch, updateSearch} from '../../state/actions/search.js';
+import {getEmptyState, getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {EmptyFolderController} from './empty_folder_controller.js';
@@ -166,10 +169,27 @@ export function testShownForTrash() {
  * @suppress {accessControls} access private method in test.
  */
 export function testShowNoSearchResult() {
-  directoryModel.isSearching = () => true;
   util.isSearchV2Enabled = () => true;
+  const store = getStore();
+  store.init(getEmptyState());
+  // Test 1: Store indicates we are not searching. No matter if the directory is
+  // empty or not, we must not show "No matching search results" panel.
+  emptyFolderController.updateUI_();
+  assertTrue(element.hidden);
+
+  // Test 2: Dispatch search update so that the store indicates we are
+  // searchhing. Expect "No matching search results" panel.
+  store.dispatch(updateSearch({
+    query: 'any-string-will-do',
+    status: PropStatus.STARTED,
+    options: undefined,
+  }));
+
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
   const text = emptyFolderController.label_.innerText;
   assertTrue(text.includes(str('SEARCH_NO_MATCHING_RESULTS_TITLE')));
+
+  // Clean up the store.
+  store.dispatch(clearSearch());
 }

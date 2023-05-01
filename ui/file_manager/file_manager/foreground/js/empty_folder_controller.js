@@ -8,6 +8,8 @@ import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
+import {PropStatus} from '../../externs/ts/state.js';
+import {getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
 
@@ -142,9 +144,12 @@ export class EmptyFolderController {
       svgRef = RECENTS_EMPTY_FOLDER;
     } else if (currentRootType === VolumeManagerCommon.RootType.TRASH) {
       svgRef = TRASH_EMPTY_FOLDER;
-    } else if (this.directoryModel_.isSearching()) {
+    } else {
       if (util.isSearchV2Enabled()) {
-        svgRef = SEARCH_EMPTY_RESULTS;
+        const {search} = getStore().getState();
+        if (search && search.query) {
+          svgRef = SEARCH_EMPTY_RESULTS;
+        }
       }
     }
 
