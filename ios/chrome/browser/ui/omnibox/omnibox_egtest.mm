@@ -781,8 +781,13 @@ void FocusFakebox() {
 // Tests that tapping on omnibox in pre-edit state in SRP or webpage would
 // display a callout menu with cut,copy and paste (if there is a text on the
 // pasteboard).
-// TODO(crbug.com/1435485): Test is failing on official builds.
-- (void)DISABLED_testTapOmniboxOnPreEditState {
+// TODO(crbug.com/1435485): Test is failing on official device builds.
+#if !defined(TARGET_OS_SIMULATOR) && defined(OFFICIAL_BUILD)
+#define MAYBE_testTapOmniboxOnPreEditState DISABLED_testTapOmniboxOnPreEditState
+#else
+#define MAYBE_testTapOmniboxOnPreEditState testTapOmniboxOnPreEditState
+#endif
+- (void)MAYBE_testTapOmniboxOnPreEditState {
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -816,8 +821,13 @@ void FocusFakebox() {
 
 // Tests that Cut callout button would erase the current url and copy it on the
 // pasteboard.
-// TODO(crbug.com/1435485): Test is failing on official builds.
-- (void)DISABLED_testCutCalloutButton {
+// TODO(crbug.com/1435485): Test is failing on official device builds.
+#if !defined(TARGET_OS_SIMULATOR) && defined(OFFICIAL_BUILD)
+#define MAYBE_testCutCalloutButton DISABLED_testCutCalloutButton
+#else
+#define MAYBE_testCutCalloutButton testCutCalloutButton
+#endif
+- (void)MAYBE_testCutCalloutButton {
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -847,8 +857,13 @@ void FocusFakebox() {
 
 // Tests that Paste callout button would erase the current url and replace it
 // with text on pasteboard.
-// TODO(crbug.com/1435485): Test is failing on official builds.
-- (void)DISABLED_testPasteCalloutButton {
+// TODO(crbug.com/1435485): Test is failing on official device builds.
+#if !defined(TARGET_OS_SIMULATOR) && defined(OFFICIAL_BUILD)
+#define MAYBE_testPasteCalloutButton DISABLED_testPasteCalloutButton
+#else
+#define MAYBE_testPasteCalloutButton testPasteCalloutButton
+#endif
+- (void)MAYBE_testPasteCalloutButton {
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
