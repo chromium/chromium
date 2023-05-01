@@ -439,4 +439,11 @@ suite('searchBoxTest', function() {
         CycleTabsTextSearchResult.acceleratorLayoutInfo.description,
         searchBoxElement.searchResults[0]?.acceleratorLayoutInfo.description);
   });
+
+  test('Max query length has been set', async () => {
+    [searchBoxElement, searchFieldElement, dropdownElement,
+     resultsListElement] = initSearchBoxElement();
+
+    assertTrue(!!searchFieldElement.getSearchInput().maxLength);
+  });
 });
