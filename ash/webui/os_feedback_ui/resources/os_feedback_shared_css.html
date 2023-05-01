@@ -15,6 +15,10 @@
       transform: rotate(180deg);
     }
 
+    :host-context(body.jelly-enabled) .md-select {
+      --md-select-bg-color: var(--cros-sys-app_base);
+    }
+
     :host-context(body:not(jelly-enabled)) cr-checkbox {
       --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
     }

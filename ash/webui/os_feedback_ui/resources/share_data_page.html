@@ -10,6 +10,21 @@
     border-radius: 4px;
   }
 
+  :host-context(body.jelly-enabled) .card-frame {
+    background-color: var(--cros-sys-app_base);
+    border: none;
+    border-radius: 12px;
+  }
+
+  :host-context(body.jelly-enabled) #screenshotContainer {
+    margin-inline-end: 16px;
+  }
+
+  :host-context(body.jelly-enabled) #screenshotImage {
+    border-radius: 0 12px 12px 0;
+  }
+
+
   #privacyNote {
     color: var(--cros-color-secondary);
     font-size: 13px;

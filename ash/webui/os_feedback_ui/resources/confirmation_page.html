@@ -1,8 +1,14 @@
-<style include="os-feedback-shared">
+<style include="os-feedback-shared cros-color-overrides">
   :host {
     --cr-icon-button-margin-start: 20px;
     --cr-section-vertical-padding: 11px;
     --iron-icon-height: 40px;
+  }
+
+  :host-context(body.jelly-enabled) cr-link-row {
+    background-color: var(--cros-sys-app_base);
+    border: none;
+    border-radius: 16px;
   }
 
   cr-link-row {

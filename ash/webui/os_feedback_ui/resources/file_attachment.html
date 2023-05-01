@@ -1,4 +1,12 @@
 <style include="os-feedback-shared">
+  :host-context(body.jelly-enabled) .file-input {
+    color: var(--cros-sys-on_surface);
+  }
+
+  :host-context(body.jelly-enabled) #addFileIcon {
+    --cr-icon-button-fill-color: var(--cros-sys-on_surface);
+  }
+
   /* Special attribute to hide elements. */
   [hidden] {
     display: none !important;
