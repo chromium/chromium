@@ -193,6 +193,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.QRCodeGeneration.Duration" units="ms"
+    expires_after="M117">
+  <owner>danakj@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <owner>petewil@chromium.org</owner>
+  <summary>The time to encode a QR code</summary>
+</histogram>
+
 <histogram name="Sharing.RemoteCopyDecodeImageTime" units="ms"
     expires_after="M97">
   <owner>mvanouwerkerk@chromium.org</owner>
