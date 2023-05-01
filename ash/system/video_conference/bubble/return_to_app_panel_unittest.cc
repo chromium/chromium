@@ -16,13 +16,18 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -131,10 +136,11 @@ class ReturnToAppPanelTest : public AshTestBase {
         ->AnimationProgressed(animation);
   }
 
-  void SimulateAnimationEnded() {
-    auto* animation = GetBoundsChangeAnimation();
-    animation->End();
-    GetReturnToAppContainer(GetReturnToAppPanel())->AnimationEnded(animation);
+  // Wait until the bounds change animation is completed.
+  void WaitForAnimation() {
+    do {
+      base::RunLoop().RunUntilIdle();
+    } while (GetBoundsChangeAnimation()->is_animating());
   }
 
  private:
@@ -401,7 +407,7 @@ TEST_F(ReturnToAppPanelTest, ExpandAnimation) {
             bubble_mid_animation_height - bubble_initial_height);
 
   // Test the same thing when animation ends.
-  SimulateAnimationEnded();
+  WaitForAnimation();
 
   auto panel_end_animation_height = return_to_app_panel->size().height();
   auto bubble_end_animation_height = vc_bubble->size().height();
@@ -433,7 +439,8 @@ TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
       return_to_app_container->children().front());
 
   LeftClickOn(summary_row);
-  SimulateAnimationEnded();
+  WaitForAnimation();
+
   ASSERT_TRUE(summary_row->expanded());
 
   auto panel_initial_height = return_to_app_panel->size().height();
@@ -469,7 +476,7 @@ TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
             bubble_mid_animation_height - bubble_initial_height);
 
   // Test the same thing when animation ends.
-  SimulateAnimationEnded();
+  WaitForAnimation();
 
   auto panel_end_animation_height = return_to_app_panel->size().height();
   auto bubble_end_animation_height = vc_bubble->size().height();
@@ -521,7 +528,7 @@ TEST_F(ReturnToAppPanelTest, LayerAnimations) {
   EXPECT_EQ(1, second_app_row->layer()->opacity());
 
   // End the rest of the animation to test collapse animation.
-  SimulateAnimationEnded();
+  WaitForAnimation();
   ASSERT_TRUE(summary_row->expanded());
 
   // Collapse animation: The return to app buttons should fade out and the

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
+#include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/button/button.h"
@@ -185,6 +186,9 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
 
     // Target expand state of the panel after the animation is completed.
     bool expanded_target_ = false;
+
+    // Measure animation smoothness metrics for all the animations.
+    absl::optional<ui::ThroughputTracker> throughput_tracker_;
   };
 
   // ReturnToAppButton::Observer:
