@@ -266,7 +266,8 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsInstalled) {
   histogram_tester_.ExpectTotalCount(kFailureCrxInstallErrorStats, 0);
   histogram_tester_.ExpectUniqueSample(
       kTotalCountStats,
-      prefs()->GetManagedPref(pref_names::kInstallForceList)->DictSize(), 1);
+      prefs()->GetManagedPref(pref_names::kInstallForceList)->GetDict().size(),
+      1);
 }
 
 // Verifies that failure is reported for the extensions which are listed in
@@ -303,7 +304,8 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsInstallationTimedOut) {
   histogram_tester_.ExpectTotalCount(kFailureCrxInstallErrorStats, 0);
   histogram_tester_.ExpectUniqueSample(
       kTotalCountStats,
-      prefs()->GetManagedPref(pref_names::kInstallForceList)->DictSize(), 1);
+      prefs()->GetManagedPref(pref_names::kInstallForceList)->GetDict().size(),
+      1);
 }
 
 // Reporting the time for downloading the manifest of an extension and verifying
@@ -590,7 +592,8 @@ TEST_F(ForceInstalledMetricsTest,
                                        CrxInstallErrorDetail::UNEXPECTED_ID, 1);
   histogram_tester_.ExpectUniqueSample(
       kTotalCountStats,
-      prefs()->GetManagedPref(pref_names::kInstallForceList)->DictSize(), 1);
+      prefs()->GetManagedPref(pref_names::kInstallForceList)->GetDict().size(),
+      1);
 }
 
 // Reporting SandboxedUnpackerFailureReason when the force installed extension
@@ -863,7 +866,8 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsStuck) {
   histogram_tester_.ExpectTotalCount(kFailureCrxInstallErrorStats, 0);
   histogram_tester_.ExpectUniqueSample(
       kTotalCountStats,
-      prefs()->GetManagedPref(pref_names::kInstallForceList)->DictSize(), 1);
+      prefs()->GetManagedPref(pref_names::kInstallForceList)->GetDict().size(),
+      1);
 }
 
 TEST_F(ForceInstalledMetricsTest, ExtensionStuckInCreatedStage) {
@@ -1018,7 +1022,8 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsAreDownloading) {
       ExtensionDownloaderDelegate::Stage::DOWNLOADING_CRX, 1);
   histogram_tester_.ExpectUniqueSample(
       kTotalCountStats,
-      prefs()->GetManagedPref(pref_names::kInstallForceList)->DictSize(), 1);
+      prefs()->GetManagedPref(pref_names::kInstallForceList)->GetDict().size(),
+      1);
 }
 
 // Error Codes in case of CRX_FETCH_FAILED for CWS extensions.
