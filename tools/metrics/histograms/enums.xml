@@ -19821,6 +19821,9 @@ Called by update_net_error_codes.py.-->
   <int value="28" label="aggregation_coordinator_identifier has unknown value"/>
   <int value="29" label="aggregatable_deduplication_keys has wrong type"/>
   <int value="31" label="aggregatable_deduplication_keys value has wrong type"/>
+  <int value="32" label="aggregatable_source_registration_time has wrong type"/>
+  <int value="33"
+      label="aggregatable_source_registration_time has unknown value"/>
 </enum>
 
 <enum name="CookieAccessType">

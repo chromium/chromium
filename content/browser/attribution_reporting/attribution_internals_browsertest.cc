@@ -25,6 +25,7 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -1148,7 +1149,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             *attribution_reporting::AggregatableValues::Create(
                 {{"a", 123}, {"b", 456}}),
             /*debug_reporting=*/false,
-            ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+            ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+            attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                kInclude),
         *SuitableOrigin::Deserialize("https://d.test"), std::move(attestation),
         /*is_within_fenced_frame=*/false);
   };

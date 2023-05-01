@@ -38,6 +38,7 @@ message AttributionCommonAggregatableMetadata {
 
   enum SourceRegistrationTimeConfig {
     INCLUDE = 0;
+    EXCLUDE = 1;
   }
 
   optional Coordinator coordinator = 1;

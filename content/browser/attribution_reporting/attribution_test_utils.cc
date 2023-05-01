@@ -350,6 +350,13 @@ TriggerBuilder& TriggerBuilder::SetAggregationCoordinator(
   return *this;
 }
 
+TriggerBuilder& TriggerBuilder::SetSourceRegistrationTimeConfig(
+    attribution_reporting::mojom::SourceRegistrationTimeConfig
+        source_registration_time_config) {
+  source_registration_time_config_ = source_registration_time_config;
+  return *this;
+}
+
 TriggerBuilder& TriggerBuilder::SetAttestation(
     absl::optional<network::TriggerAttestation> attestation) {
   attestation_ = std::move(attestation);
@@ -382,7 +389,8 @@ AttributionTrigger TriggerBuilder::Build(
           {attribution_reporting::AggregatableDedupKey(
               /*dedup_key=*/aggregatable_dedup_key_, FilterPair())},
           std::move(event_triggers), aggregatable_trigger_data_,
-          aggregatable_values_, debug_reporting_, aggregation_coordinator_),
+          aggregatable_values_, debug_reporting_, aggregation_coordinator_,
+          source_registration_time_config_),
       destination_origin_, attestation_, is_within_fenced_frame_);
 }
 
@@ -466,6 +474,13 @@ ReportBuilder& ReportBuilder::SetAttestationToken(
   return *this;
 }
 
+ReportBuilder& ReportBuilder::SetSourceRegistrationTimeConfig(
+    attribution_reporting::mojom::SourceRegistrationTimeConfig
+        source_registration_time_config) {
+  source_registration_time_config_ = source_registration_time_config;
+  return *this;
+}
+
 AttributionReport ReportBuilder::Build() const {
   return AttributionReport(
       attribution_info_, report_id_, report_time_,
@@ -476,26 +491,28 @@ AttributionReport ReportBuilder::Build() const {
 }
 
 AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
-  return AttributionReport(
-      attribution_info_, report_id_, report_time_,
-      /*initial_report_time=*/report_time_, external_report_id_,
-      /*failed_send_attempts=*/0,
-      AttributionReport::AggregatableAttributionData(
-          AttributionReport::CommonAggregatableData(aggregation_coordinator_,
-                                                    attestation_token_),
-          contributions_, source_));
+  return AttributionReport(attribution_info_, report_id_, report_time_,
+                           /*initial_report_time=*/report_time_,
+                           external_report_id_,
+                           /*failed_send_attempts=*/0,
+                           AttributionReport::AggregatableAttributionData(
+                               AttributionReport::CommonAggregatableData(
+                                   aggregation_coordinator_, attestation_token_,
+                                   source_registration_time_config_),
+                               contributions_, source_));
 }
 
 AttributionReport ReportBuilder::BuildNullAggregatable() const {
-  return AttributionReport(
-      attribution_info_, report_id_, report_time_,
-      /*initial_report_time=*/report_time_, external_report_id_,
-      /*failed_send_attempts=*/0,
-      AttributionReport::NullAggregatableData(
-          AttributionReport::CommonAggregatableData(aggregation_coordinator_,
-                                                    attestation_token_),
-          source_.common_info().reporting_origin(),
-          source_.common_info().source_time()));
+  return AttributionReport(attribution_info_, report_id_, report_time_,
+                           /*initial_report_time=*/report_time_,
+                           external_report_id_,
+                           /*failed_send_attempts=*/0,
+                           AttributionReport::NullAggregatableData(
+                               AttributionReport::CommonAggregatableData(
+                                   aggregation_coordinator_, attestation_token_,
+                                   source_registration_time_config_),
+                               source_.common_info().reporting_origin(),
+                               source_.common_info().source_time()));
 }
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
@@ -585,8 +602,8 @@ bool operator==(const AttributionReport::EventLevelData& a,
 bool operator==(const AttributionReport::CommonAggregatableData& a,
                 const AttributionReport::CommonAggregatableData& b) {
   const auto tie = [](const AttributionReport::CommonAggregatableData& data) {
-    return std::make_tuple(data.attestation_token,
-                           data.aggregation_coordinator);
+    return std::make_tuple(data.attestation_token, data.aggregation_coordinator,
+                           data.source_registration_time_config);
   };
   return tie(a) == tie(b);
 }
@@ -848,7 +865,8 @@ std::ostream& operator<<(
     out << "(null)";
   }
 
-  return out << "}";
+  return out << ",source_registration_time_config="
+             << data.source_registration_time_config << "}";
 }
 
 std::ostream& operator<<(
@@ -997,7 +1015,10 @@ TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
     ::testing::Matcher<const attribution_reporting::AggregatableValues&>
         aggregatable_values,
     ::testing::Matcher<::aggregation_service::mojom::AggregationCoordinator>
-        aggregation_coordinator)
+        aggregation_coordinator,
+    ::testing::Matcher<
+        attribution_reporting::mojom::SourceRegistrationTimeConfig>
+        source_registration_time_config)
     : filters(std::move(filters)),
       debug_key(std::move(debug_key)),
       event_triggers(std::move(event_triggers)),
@@ -1005,7 +1026,8 @@ TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
       debug_reporting(std::move(debug_reporting)),
       aggregatable_trigger_data(std::move(aggregatable_trigger_data)),
       aggregatable_values(std::move(aggregatable_values)),
-      aggregation_coordinator(std::move(aggregation_coordinator)) {}
+      source_registration_time_config(
+          std::move(source_registration_time_config)) {}
 
 TriggerRegistrationMatcherConfig::~TriggerRegistrationMatcherConfig() = default;
 
@@ -1036,7 +1058,11 @@ TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig& cfg) {
       Field(
           "aggregation_coordinator",
           &attribution_reporting::TriggerRegistration::aggregation_coordinator,
-          cfg.aggregation_coordinator));
+          cfg.aggregation_coordinator),
+      Field("source_registration_time_config",
+            &attribution_reporting::TriggerRegistration::
+                source_registration_time_config,
+            cfg.source_registration_time_config));
 }
 
 AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(

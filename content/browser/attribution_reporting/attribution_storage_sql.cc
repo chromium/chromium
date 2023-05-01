@@ -36,6 +36,7 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -81,6 +82,7 @@ using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using ::aggregation_service::mojom::AggregationCoordinator;
 
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 using ::attribution_reporting::mojom::SourceType;
 
 const base::FilePath::CharType kDatabasePath[] =
@@ -317,8 +319,16 @@ void SerializeCommonAggregatableData(
     msg.set_attestation_token(*attestation_token);
   }
 
-  msg.set_source_registration_time_config(
-      proto::AttributionCommonAggregatableMetadata::INCLUDE);
+  switch (data.source_registration_time_config) {
+    case SourceRegistrationTimeConfig::kInclude:
+      msg.set_source_registration_time_config(
+          proto::AttributionCommonAggregatableMetadata::INCLUDE);
+      break;
+    case SourceRegistrationTimeConfig::kExclude:
+      msg.set_source_registration_time_config(
+          proto::AttributionCommonAggregatableMetadata::EXCLUDE);
+      break;
+  }
 }
 
 [[nodiscard]] bool DeserializeCommonAggregatableData(
@@ -338,8 +348,12 @@ void SerializeCommonAggregatableData(
 
   switch (msg.source_registration_time_config()) {
     case proto::AttributionCommonAggregatableMetadata::INCLUDE:
-      // TODO(crbug.com/1432558): Add the corresponding field in
-      // `AttributionReport::CommonAggregatableData` and set the value.
+      data.source_registration_time_config =
+          SourceRegistrationTimeConfig::kInclude;
+      break;
+    case proto::AttributionCommonAggregatableMetadata::EXCLUDE:
+      data.source_registration_time_config =
+          SourceRegistrationTimeConfig::kExclude;
       break;
     default:
       return false;
@@ -2784,7 +2798,8 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
       AttributionReport::AggregatableAttributionData(
           AttributionReport::CommonAggregatableData(
               trigger_registration.aggregation_coordinator,
-              /*attestation_token=*/absl::nullopt),
+              /*attestation_token=*/absl::nullopt,
+              trigger_registration.source_registration_time_config),
           std::move(contributions), source));
 
   return AggregatableResult::kSuccess;
@@ -2922,7 +2937,8 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
           AttributionReport::NullAggregatableData(
               AttributionReport::CommonAggregatableData(
                   trigger.registration().aggregation_coordinator,
-                  /*attestation_token=*/absl::nullopt),
+                  /*attestation_token=*/absl::nullopt,
+                  trigger.registration().source_registration_time_config),
               trigger.reporting_origin(),
               null_aggregatable_report.fake_source_time));
     }

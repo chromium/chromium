@@ -36,6 +36,7 @@
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
@@ -275,7 +276,9 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
                   std::vector<attribution_reporting::AggregatableTriggerData>(),
                   attribution_reporting::AggregatableValues(),
                   ::aggregation_service::mojom::AggregationCoordinator::
-                      kDefault)),
+                      kDefault,
+                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                      kInclude)),
               destination_origin)),
           kFrameId));
 

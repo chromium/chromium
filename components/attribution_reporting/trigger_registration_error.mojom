@@ -38,4 +38,7 @@ enum TriggerRegistrationError {
 
   kAggregatableDedupKeyListWrongType = 29,
   kAggregatableDedupKeyWrongType = 31,
+
+  kAggregatableSourceRegistrationTimeWrongType = 32,
+  kAggregatableSourceRegistrationTimeUnknownValue = 33,
 };

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/enum_set.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
@@ -32,6 +33,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -2201,7 +2203,8 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
               /*dedup_key=*/123, FilterPair())},
           /*event_triggers=*/{}, aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+          ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
       /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
       /*is_within_fenced_frame=*/false);
 
@@ -2271,7 +2274,9 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
             /*event_triggers=*/{}, aggregatable_trigger_data,
             aggregatable_values,
             /*debug_reporting=*/false,
-            ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+            ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+            attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                kInclude),
         /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
         /*is_within_fenced_frame=*/false);
 
@@ -3012,7 +3017,9 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
               /*aggregatable_values=*/
               attribution_reporting::AggregatableValues(),
               /*debug_reporting=*/false,
-              ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+              ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+              attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                  kInclude),
           /*destination_origin=*/origin,
           /*attestation=*/absl::nullopt,
           /*is_within_fenced_frame=*/false)));
@@ -3093,7 +3100,9 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
               /*aggregatable_values=*/
               attribution_reporting::AggregatableValues(),
               /*debug_reporting=*/false,
-              ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+              ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+              attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                  kInclude),
           /*destination_origin=*/origin,
           /*attestation=*/absl::nullopt,
           /*is_within_fenced_frame=*/false)));
@@ -3144,7 +3153,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           /*aggregatable_dedup_keys=*/{}, event_triggers,
           aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+          ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
       /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
       /*is_within_fenced_frame=*/false);
 
@@ -3159,7 +3169,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           /*aggregatable_dedup_keys=*/{}, event_triggers,
           aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+          ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
       /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
       /*is_within_fenced_frame=*/false);
 
@@ -3173,7 +3184,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           /*aggregatable_dedup_keys=*/{}, event_triggers,
           aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+          ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
       /*destination_origin=*/origin,
       /*attestation=*/absl::nullopt,
       /*is_within_fenced_frame=*/false);
@@ -3533,6 +3545,42 @@ TEST_F(AttributionStorageTest, BothRealAndNullAggregatableReports) {
   EXPECT_THAT(
       storage()->GetAttributionReports(base::Time::Max()),
       UnorderedElementsAre(expected_aggregatable_report, expected_null_report));
+}
+
+TEST_F(AttributionStorageTest, SourceRegistrationTimeConfig_RoundTrip) {
+  delegate()->set_null_aggregatable_reports(
+      {AttributionStorageDelegate::NullAggregatableReport{
+          .fake_source_time = base::Time::Now(),
+      }});
+  for (auto config :
+       base::EnumSet<attribution_reporting::mojom::SourceRegistrationTimeConfig,
+                     attribution_reporting::mojom::
+                         SourceRegistrationTimeConfig::kMinValue,
+                     attribution_reporting::mojom::
+                         SourceRegistrationTimeConfig::kMaxValue>::All()) {
+    storage()->StoreSource(
+        TestAggregatableSourceProvider().GetBuilder().Build());
+    EXPECT_THAT(
+        storage()->MaybeCreateAndStoreReport(
+            DefaultAggregatableTriggerBuilder()
+                .SetSourceRegistrationTimeConfig(config)
+                .Build(/*generate_event_trigger_data=*/false)),
+        AllOf(CreateReportAggregatableStatusIs(
+                  AttributionTrigger::AggregatableResult::kSuccess),
+              NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
+                  SourceRegistrationTimeConfigIs(config))))));
+    EXPECT_THAT(
+        storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
+        UnorderedElementsAre(
+            AggregatableAttributionDataIs(
+                SourceRegistrationTimeConfigIs(config)),
+            NullAggregatableDataIs(SourceRegistrationTimeConfigIs(config))));
+
+    storage()->ClearData(/*delete_begin=*/base::Time::Min(),
+                         /*delete_end=*/base::Time::Max(),
+                         /*filter=*/base::NullCallback());
+  }
+  delegate()->set_null_aggregatable_reports({});
 }
 
 }  // namespace content

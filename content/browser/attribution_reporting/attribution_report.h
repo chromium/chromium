@@ -15,7 +15,8 @@
 #include "base/types/strong_alias.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/aggregation_service/aggregation_service.mojom-forward.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -72,8 +73,10 @@ class CONTENT_EXPORT AttributionReport {
   };
 
   struct CONTENT_EXPORT CommonAggregatableData {
-    CommonAggregatableData(::aggregation_service::mojom::AggregationCoordinator,
-                           absl::optional<std::string> attestation_token);
+    CommonAggregatableData(
+        ::aggregation_service::mojom::AggregationCoordinator,
+        absl::optional<std::string> attestation_token,
+        attribution_reporting::mojom::SourceRegistrationTimeConfig);
     CommonAggregatableData();
     CommonAggregatableData(const CommonAggregatableData&);
     CommonAggregatableData(CommonAggregatableData&&);
@@ -99,6 +102,10 @@ class CONTENT_EXPORT AttributionReport {
     // A token that can be sent alongside the report to complete trigger
     // attestation.
     absl::optional<std::string> attestation_token;
+
+    attribution_reporting::mojom::SourceRegistrationTimeConfig
+        source_registration_time_config = attribution_reporting::mojom::
+            SourceRegistrationTimeConfig::kInclude;
 
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.

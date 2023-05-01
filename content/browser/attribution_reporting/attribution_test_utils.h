@@ -20,6 +20,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -206,6 +207,9 @@ class TriggerBuilder {
   TriggerBuilder& SetAggregationCoordinator(
       ::aggregation_service::mojom::AggregationCoordinator);
 
+  TriggerBuilder& SetSourceRegistrationTimeConfig(
+      attribution_reporting::mojom::SourceRegistrationTimeConfig);
+
   TriggerBuilder& SetAttestation(
       absl::optional<network::TriggerAttestation> attestation);
 
@@ -229,6 +233,9 @@ class TriggerBuilder {
       aggregation_coordinator_ =
           ::aggregation_service::mojom::AggregationCoordinator::kDefault;
   absl::optional<network::TriggerAttestation> attestation_;
+  attribution_reporting::mojom::SourceRegistrationTimeConfig
+      source_registration_time_config_ =
+          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -278,6 +285,9 @@ class ReportBuilder {
   ReportBuilder& SetAggregationCoordinator(
       ::aggregation_service::mojom::AggregationCoordinator);
 
+  ReportBuilder& SetSourceRegistrationTimeConfig(
+      attribution_reporting::mojom::SourceRegistrationTimeConfig);
+
   ReportBuilder& SetAttestationToken(
       absl::optional<std::string> attestation_token);
 
@@ -301,6 +311,9 @@ class ReportBuilder {
       aggregation_coordinator_ =
           ::aggregation_service::mojom::AggregationCoordinator::kDefault;
   absl::optional<std::string> attestation_token_;
+  attribution_reporting::mojom::SourceRegistrationTimeConfig
+      source_registration_time_config_ =
+          attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
 };
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b);
@@ -521,12 +534,24 @@ MATCHER_P(AggregatableAttributionDataIs, matcher, "") {
       arg.data(), result_listener);
 }
 
+MATCHER_P(NullAggregatableDataIs, matcher, "") {
+  return ExplainMatchResult(
+      ::testing::VariantWith<AttributionReport::NullAggregatableData>(matcher),
+      arg.data(), result_listener);
+}
+
 MATCHER_P(AggregatableHistogramContributionsAre, matcher, "") {
   return ExplainMatchResult(matcher, arg.contributions, result_listener);
 }
 
 MATCHER_P(AggregationCoordinatorIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.common_data.aggregation_coordinator,
+                            result_listener);
+}
+
+MATCHER_P(SourceRegistrationTimeConfigIs, matcher, "") {
+  return ExplainMatchResult(matcher,
+                            arg.common_data.source_registration_time_config,
                             result_listener);
 }
 
@@ -629,6 +654,8 @@ struct TriggerRegistrationMatcherConfig {
       aggregatable_values = ::testing::_;
   ::testing::Matcher<::aggregation_service::mojom::AggregationCoordinator>
       aggregation_coordinator = ::testing::_;
+  ::testing::Matcher<attribution_reporting::mojom::SourceRegistrationTimeConfig>
+      source_registration_time_config = ::testing::_;
 
   TriggerRegistrationMatcherConfig() = delete;
   explicit TriggerRegistrationMatcherConfig(
@@ -648,7 +675,10 @@ struct TriggerRegistrationMatcherConfig {
       ::testing::Matcher<const attribution_reporting::AggregatableValues&>
           aggregatable_values = ::testing::_,
       ::testing::Matcher<::aggregation_service::mojom::AggregationCoordinator>
-          aggregation_coordinator = ::testing::_);
+          aggregation_coordinator = ::testing::_,
+      ::testing::Matcher<
+          attribution_reporting::mojom::SourceRegistrationTimeConfig>
+          source_registration_time_config = ::testing::_);
   ~TriggerRegistrationMatcherConfig();
 };
 
