@@ -670,6 +670,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.PartitionedCookieCount.{NonceType}" units="cookies"
+    expires_after="2023-10-22">
+  <owner>dylancutler@google.com</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    This histogram records the number of partitioned cookies whose partition key
+    is {NonceType}. This metric is only recorded when partitioned cookies are
+    enabled. This metric is recorded every 10 minutes.
+  </summary>
+  <token key="NonceType">
+    <variant name="Nonced"/>
+    <variant name="Unnonced"/>
+  </token>
+</histogram>
+
 <histogram name="Cookie.PartitionedCookiesInRequest" units="cookies"
     expires_after="2023-10-22">
   <owner>dylancutler@google.com</owner>

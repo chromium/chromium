@@ -1461,6 +1461,10 @@ CookieMonster::InternalInsertPartitionedCookie(
   CookieMap::iterator cookie_it = partition_it->second->insert(
       CookieMap::value_type(std::move(key), std::move(cc)));
   ++num_partitioned_cookies_;
+  if (partition_it->first.nonce()) {
+    ++num_nonced_partitioned_cookies_;
+  }
+  CHECK_GE(num_partitioned_cookies_, num_nonced_partitioned_cookies_);
 
   LogCookieTypeToUMA(cc_ptr, access_result);
 
@@ -1779,6 +1783,10 @@ void CookieMonster::InternalDeletePartitionedCookie(
       << "Called erase with an iterator not in this partitioned cookie map";
   partition_it->second->erase(cookie_it);
   --num_partitioned_cookies_;
+  if (partition_it->first.nonce()) {
+    --num_nonced_partitioned_cookies_;
+  }
+  CHECK_GE(num_partitioned_cookies_, num_nonced_partitioned_cookies_);
 
   if (partition_it->second->empty())
     partitioned_cookies_.erase(partition_it);
@@ -2292,6 +2300,11 @@ bool CookieMonster::DoRecordPeriodicStats() {
                                  partitioned_cookies_.size());
     base::UmaHistogramCounts100000("Cookie.PartitionedCookieCount",
                                    num_partitioned_cookies_);
+    base::UmaHistogramCounts100000("Cookie.PartitionedCookieCount.Nonced",
+                                   num_nonced_partitioned_cookies_);
+    base::UmaHistogramCounts100000(
+        "Cookie.PartitionedCookieCount.Unnonced",
+        num_partitioned_cookies_ - num_nonced_partitioned_cookies_);
   }
 
   return true;
