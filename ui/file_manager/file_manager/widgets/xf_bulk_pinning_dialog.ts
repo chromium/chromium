@@ -14,26 +14,23 @@ import {css, customElement, html, query, XfBase} from './xf_base.js';
  */
 @customElement('xf-bulk-pinning-dialog')
 export class XfBulkPinningDialog extends XfBase {
-  @query('cr-dialog') private $dialog_?: CrDialogElement;
-
-  private copy_ = {
-    cancel: str('CANCEL_LABEL'),
-    continue: 'Continue',  // TODO: replace with final copy when available.
-  };
+  @query('cr-dialog') private $dialog_!: CrDialogElement;
+  @query('#point1') private $point1_!: HTMLElement;
 
   show() {
-    this.$dialog_!.showModal();
+    this.$point1_.innerHTML = str('BULK_PINNING_POINT_1');
+    this.$dialog_.showModal();
   }
 
   private onContinue() {
-    this.$dialog_!.close();
+    this.$dialog_.close();
     chrome.fileManagerPrivate.setPreferences(
         {driveFsBulkPinningEnabled: true} as
         chrome.fileManagerPrivate.PreferencesChange);
   }
 
   private onCancel() {
-    this.$dialog_!.cancel();
+    this.$dialog_.cancel();
   }
 
   static override get styles() {
@@ -46,33 +43,35 @@ export class XfBulkPinningDialog extends XfBase {
         <div slot="title">
           <xf-icon type="drive_logo" size="large"></xf-icon>
           <div class="title">
-            Keep your files available when you’re offline
+            ${str('BULK_PINNING_TITLE')}
           </div>
         </div>
         <div slot="body">
           <div class="description">
-            Everything in your My Drive will be synced automatically so you can
-            access your files without an internet connection.
+            ${str('BULK_PINNING_EXPLANATION')}
           </div>
           <ul>
             <li>
               <xf-icon type="my_files"></xf-icon>
-              My Drive files are stored in the cloud and on this device
+              <span id="point1"></span>
             </li>
             <li>
               <xf-icon type="offline"></xf-icon>
-              Files will be automatically available offline
+              ${str('BULK_PINNING_POINT_2')}
             </li>
           </ul>
           <div class="note">
-            This will use about 12.2 GB leaving 96.8 GB available
+            ${str('BULK_PINNING_SPACE')}
           </div>
         </div>
         <div slot="button-container">
-          <cr-button class="cancel-button" @click="${this.onCancel}"> ${
-        this.copy_.cancel} </cr-button>
+          <cr-button class="cancel-button" @click="${this.onCancel}">
+            ${str('CANCEL_LABEL')}
+          </cr-button>
           <cr-button class="continue-button action-button" @click="${
-        this.onContinue}"> ${this.copy_.continue} </cr-button>
+        this.onContinue}">
+            ${str('BULK_PINNING_CONTINUE')}
+          </cr-button>
         </div>
       </cr-dialog>
     `;

@@ -1765,4 +1765,31 @@
   <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_BULK_PINNING_OFFLINE_LABEL" translateable="false" desc="The text used when the device is in an offline mode and has paused syncing.">
     You are currently offline. Sync will resume when the connection is back on.
   </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_TITLE" translateable="false" desc="The title of the dialog offering the Google Drive bulk pinning feature">
+    Keep your files available when you’re offline
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_EXPLANATION" translateable="false" desc="The main text of the dialog offering the Google Drive bulk pinning feature">
+    Everything in your My Drive will be synced automatically so you can access your files without an internet connection.
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_POINT_1" translateable="false" desc="First bullet point of the dialog offering the Google Drive bulk pinning feature">
+    My Drive files are stored in the cloud <ph name="BEGIN_BOLD">&lt;b&gt;</ph>and<ph name="END_BOLD">&lt;/b&gt;</ph> on this device
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_POINT_2" translateable="false" desc="Second bullet point of the dialog offering the Google Drive bulk pinning feature">
+    Files will be automatically available offline
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_SPACE" translateable="false" desc="Text in the dialog offering the Google Drive bulk pinning feature">
+    This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph> leaving <ph name="FREE_SPACE">$2<ex>96.8 GB</ex></ph> available
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE" translateable="false" desc="Error message displayed when there is not enough space to enable the Google Drive bulk pinning feature">
+    You don’t have enough storage available.
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_VIEW_STORAGE" translateable="false" desc="Text of the 'View storage' link displayed next to the error message when there is not enough space to enable the Google Drive bulk pinning feature">
+    View storage
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_OFFLINE" translateable="false" desc="Error message displayed when the Google Drive bulk pinning feature cannot be enabled because of lack of internet connection">
+    You are currently offline. Try again when you are connected to the internet.
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_CONTINUE" translateable="false" desc="Text in the Continue button of the dialog offering the Google Drive bulk pinning feature">
+    Continue
+  </message>
 </grit-part>
