@@ -24,7 +24,7 @@ message PromoState {
 // URL query params for the companion URL request.
 // Next ID: 6
 message CompanionUrlParams {
-  reserved 5;
+  reserved 4, 5;
 
   // URL of the main contents. Empty, if MSBB is off.
   string page_url = 1;
@@ -35,6 +35,9 @@ message CompanionUrlParams {
   // State for driving promo related decisions.
   PromoState promo_state = 3;
 
-  // Whether user is not already signed in and allowed to sign in.
-  bool signin_allowed_and_required = 4;
+  // Whether user is already signed in.
+  bool is_signed_in = 6;
+
+  // Whether user is allowed to sign in.
+  bool is_sign_in_allowed = 7;
 }

@@ -30,6 +30,7 @@ constexpr char kOrigin[] = "chrome-untrusted://companion-side-panel.top-chrome";
 class MockSigninDelegate : public SigninDelegate {
  public:
   MOCK_METHOD0(AllowedSignin, bool());
+  MOCK_METHOD0(IsSignedIn, bool());
   MOCK_METHOD0(StartSigninFlow, void());
 };
 
@@ -48,11 +49,9 @@ class CompanionUrlBuilderTest : public testing::Test {
     PromoHandler::RegisterProfilePrefs(pref_service_.registry());
 
     pref_service_.SetUserPref(kSigninPromoDeclinedCountPref, base::Value(1));
-    pref_service_.SetUserPref(
-        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
-        base::Value(true));
-    EXPECT_CALL(signin_delegate_, AllowedSignin())
-        .WillRepeatedly(testing::Return(false));
+    SetSignInAndMsbbExpectations(/*is_sign_in_allowed=*/true,
+                                 /*is_signed_in=*/true,
+                                 /*msbb_pref_enabled=*/true);
     url_builder_ = std::make_unique<CompanionUrlBuilder>(&pref_service_,
                                                          &signin_delegate_);
   }
@@ -88,16 +87,59 @@ class CompanionUrlBuilderTest : public testing::Test {
     return proto;
   }
 
+  void SetSignInAndMsbbExpectations(bool is_sign_in_allowed,
+                                    bool is_signed_in,
+                                    bool msbb_pref_enabled) {
+    EXPECT_CALL(signin_delegate_, AllowedSignin())
+        .WillRepeatedly(testing::Return(is_sign_in_allowed));
+    EXPECT_CALL(signin_delegate_, IsSignedIn())
+        .WillRepeatedly(testing::Return(is_signed_in));
+    pref_service_.SetUserPref(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+        base::Value(msbb_pref_enabled));
+  }
+
   TestingPrefServiceSimple pref_service_;
   MockSigninDelegate signin_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
 };
 
+TEST_F(CompanionUrlBuilderTest, SignIn) {
+  GURL page_url(kValidUrl);
+
+  // Not signed in, no msbb.
+  SetSignInAndMsbbExpectations(/*is_sign_in_allowed=*/false,
+                               /*is_signed_in=*/false,
+                               /*msbb_pref_enabled=*/false);
+
+  std::string encoded_proto =
+      url_builder_->BuildCompanionUrlParamProto(page_url);
+  companion::proto::CompanionUrlParams proto =
+      DeserializeCompanionRequest(encoded_proto);
+
+  EXPECT_EQ(proto.page_url(), std::string());
+  EXPECT_FALSE(proto.is_sign_in_allowed());
+  EXPECT_FALSE(proto.is_signed_in());
+  EXPECT_FALSE(proto.has_msbb_enabled());
+
+  // Allowed to sign-in, but not signed in, no msbb.
+  SetSignInAndMsbbExpectations(/*is_sign_in_allowed=*/true,
+                               /*is_signed_in=*/false,
+                               /*msbb_pref_enabled=*/false);
+  encoded_proto = url_builder_->BuildCompanionUrlParamProto(page_url);
+  proto = DeserializeCompanionRequest(encoded_proto);
+
+  EXPECT_EQ(proto.page_url(), std::string());
+  EXPECT_TRUE(proto.is_sign_in_allowed());
+  EXPECT_FALSE(proto.is_signed_in());
+  EXPECT_FALSE(proto.has_msbb_enabled());
+}
+
 TEST_F(CompanionUrlBuilderTest, MsbbOff) {
   pref_service_.SetUserPref(kSigninPromoDeclinedCountPref, base::Value(1));
-  pref_service_.SetUserPref(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
-      base::Value(false));
+  SetSignInAndMsbbExpectations(/*is_sign_in_allowed=*/true,
+                               /*is_signed_in=*/true,
+                               /*msbb_pref_enabled=*/false);
   pref_service_.SetUserPref(kSigninPromoDeclinedCountPref, base::Value(1));
 
   GURL page_url(kValidUrl);
@@ -124,12 +166,13 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
 
   // URL shouldn't be sent when MSBB is off.
   EXPECT_EQ(proto.page_url(), std::string());
-  EXPECT_FALSE(proto.signin_allowed_and_required());
+  EXPECT_TRUE(proto.is_signed_in());
+  EXPECT_TRUE(proto.is_sign_in_allowed());
   EXPECT_FALSE(proto.has_msbb_enabled());
 }
 
 TEST_F(CompanionUrlBuilderTest, MsbbOn) {
-  EXPECT_CALL(signin_delegate_, AllowedSignin())
+  EXPECT_CALL(signin_delegate_, IsSignedIn())
       .WillRepeatedly(testing::Return(true));
   GURL page_url(kValidUrl);
   GURL companion_url = url_builder_->BuildCompanionURL(page_url);
@@ -157,7 +200,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   // Verify fields inside protobuf.
   EXPECT_EQ(proto.page_url(), page_url.spec());
   EXPECT_TRUE(proto.has_msbb_enabled());
-  EXPECT_TRUE(proto.signin_allowed_and_required());
+  EXPECT_TRUE(proto.is_signed_in());
 
   // Verify promo state.
   EXPECT_TRUE(proto.has_promo_state());

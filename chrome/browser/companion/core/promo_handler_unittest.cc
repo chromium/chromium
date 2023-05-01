@@ -25,6 +25,7 @@ class MockMsbbDelegate : public MsbbDelegate {
 class MockSigninDelegate : public SigninDelegate {
  public:
   MOCK_METHOD0(AllowedSignin, bool());
+  MOCK_METHOD0(IsSignedIn, bool());
   MOCK_METHOD0(StartSigninFlow, void());
 };
 
