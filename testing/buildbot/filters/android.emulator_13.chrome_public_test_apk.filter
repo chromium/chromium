@@ -44,3 +44,19 @@
 
 # crbug.com/1036571
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
+
+# crbug.com/1276402
+-org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.*
+
+# crbug.com/1441680
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchSystemTest.testAppMenuSuppressedWhenMaximized*
+
+# crbug.com/1374103
+-org.chromium.chrome.browser.tasks.tab_management.PriceAlertsMessageCardTest.testSwipeMessage
+
+# crbug.com/1441681
+-org.chromium.chrome.browser.tasks.tab_management.PriceAlertsMessageCardTest.testRenderMessageCard_Landscape_AppNotificationsDisabled
+-org.chromium.chrome.browser.tasks.tab_management.PriceAlertsMessageCardTest.testRenderMessageCard_Landscape_AppNotificationsEnabled
+
+# crbug.com/1441685
+-org.chromium.chrome.browser.share.SaveBitmapDelegateTest.*
