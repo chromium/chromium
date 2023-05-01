@@ -7,6 +7,7 @@
 #include <atlsecurity.h>
 #include <sddl.h>
 
+#include <ios>
 #include <string>
 #include <type_traits>
 
@@ -124,9 +125,10 @@ void ServiceMain::ServiceMainImpl(const base::CommandLine& command_line) {
   SetServiceStatus(SERVICE_RUNNING);
 
   // When the Run function returns, the service has stopped.
-  // `hr` can be either a HRESULT or a Windows error code.
+  // `hr` can be either an HRESULT or a Windows error code.
   const HRESULT hr = Run(command_line);
   if (hr != S_OK) {
+    VLOG(2) << "Run returned: " << std::hex << hr;
     service_status_.dwWin32ExitCode = ERROR_SERVICE_SPECIFIC_ERROR;
     service_status_.dwServiceSpecificExitCode = hr;
   }
