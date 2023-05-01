@@ -563,6 +563,7 @@ chromium-metrics-reviews@google.com.
   <token key="Priority">
     <variant name="BestEffort"/>
     <variant name="Control"/>
+    <variant name="ExtremelyHigh"/>
     <variant name="High"/>
     <variant name="HighContinuation"/>
     <variant name="Highest"/>

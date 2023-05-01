@@ -1105,6 +1105,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKeepAliveInBrowserMigration);
 // Tracker: https://crbug.com/1404000
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGainmapHdrImages);
 
+// If enabled, image loading tasks on visible pages have high priority.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMainThreadHighPriorityImageLoading);
+
 }  // namespace features
 }  // namespace blink
 

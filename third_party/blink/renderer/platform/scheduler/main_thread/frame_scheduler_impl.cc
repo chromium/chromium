@@ -387,6 +387,15 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
       return IsInflightNetworkRequestBackForwardCacheSupportEnabled()
                  ? UnfreezableLoadingTaskQueueTraits()
                  : LoadingTaskQueueTraits();
+    case TaskType::kNetworkingUnfreezableImageLoading: {
+      QueueTraits queue_traits =
+          IsInflightNetworkRequestBackForwardCacheSupportEnabled()
+              ? UnfreezableLoadingTaskQueueTraits()
+              : LoadingTaskQueueTraits();
+      queue_traits.SetPrioritisationType(
+          QueueTraits::PrioritisationType::kRenderBlocking);
+      return queue_traits;
+    }
     case TaskType::kNetworkingControl:
       return LoadingControlTaskQueueTraits();
     case TaskType::kLowPriorityScriptExecution:
@@ -969,6 +978,13 @@ TaskPriority FrameSchedulerImpl::ComputePriority(
     // visibility. Consider changing this before shipping anything.
     return parent_page_scheduler_->IsPageVisible()
                ? TaskPriority::kHighPriority
+               : TaskPriority::kNormalPriority;
+  }
+
+  if (task_queue->GetPrioritisationType() ==
+      MainThreadTaskQueue::QueueTraits::PrioritisationType::kRenderBlocking) {
+    return parent_page_scheduler_->IsPageVisible()
+               ? TaskPriority::kExtremelyHighPriority
                : TaskPriority::kNormalPriority;
   }
 

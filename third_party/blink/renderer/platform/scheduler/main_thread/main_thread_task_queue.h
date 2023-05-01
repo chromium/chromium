@@ -164,8 +164,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       kInput = 10,
       kPostMessageForwarding = 11,
       kInternalNavigationCancellation = 12,
+      kRenderBlocking = 13,
 
-      kCount = 13
+      kCount = 14
     };
 
     // kPrioritisationTypeWidthBits is the number of bits required

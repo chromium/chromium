@@ -9,7 +9,7 @@ message SequenceManagerTestDescription {
 
   // This should be consistent with blink::scheduler::TaskPriority.
   enum QueuePriority {
-    // NEXT ID = 11
+    // NEXT ID = 12
 
     UNDEFINED = 0;
     BEST_EFFORT = 1;
@@ -20,8 +20,9 @@ message SequenceManagerTestDescription {
     HIGH = 6;
     HIGH_CONTINUATION = 7;
     VERY_HIGH = 8;
-    HIGHEST = 9;
-    CONTROL = 10;
+    EXTREMELY_HIGH = 9;
+    HIGHEST = 10;
+    CONTROL = 11;
   }
 
   message Action {

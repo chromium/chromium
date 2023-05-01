@@ -20,7 +20,7 @@ namespace blink {
 //   "RendererSchedulerTaskType" enum
 // * update TaskTypes.md
 //
-// Next value: 83
+// Next value: 84
 enum class TaskType : unsigned char {
   ///////////////////////////////////////
   // Speced tasks should use one of the following task types
@@ -53,6 +53,9 @@ enum class TaskType : unsigned char {
   // This is a part of Networking task that should not be frozen when a page is
   // frozen.
   kNetworkingUnfreezable = 75,
+  // Tasks associated with image loading. Split off from kNetworkingUnfreezable
+  // so image loading tasks can be prioritized.
+  kNetworkingUnfreezableImageLoading = 83,
   // This task source is used for control messages between kNetworking tasks.
   kNetworkingControl = 4,
   // Tasks used to run low priority scripts.
@@ -301,7 +304,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kMaxValue = kStorage,
+  kMaxValue = kNetworkingUnfreezableImageLoading,
 };
 
 }  // namespace blink

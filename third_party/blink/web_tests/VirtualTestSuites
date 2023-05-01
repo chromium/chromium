@@ -1966,5 +1966,16 @@
     "bases": ["external/wpt/fetch/api/response"],
     "args": ["--disable-features=ReadableStreamTeeCloneForBranch2"],
     "expires": "Aug 1, 2023"
+  },
+  {
+    "prefix": "main-thread-high-priority-image-loading",
+    "platforms": ["Linux"],
+    "bases": [
+      "images/image-change-src.html"
+    ],
+    "args": [
+      "--enable-features=MainThreadHighPriorityImageLoading"
+    ],
+    "expires": "Dec 1, 2023"
   }
 ]

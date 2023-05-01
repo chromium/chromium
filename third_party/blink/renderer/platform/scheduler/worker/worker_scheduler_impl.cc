@@ -215,6 +215,7 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
       // Get(LocalFrame). (https://crbug.com/670534)
       return unpausable_task_queue_->CreateTaskRunner(type);
     case TaskType::kNetworkingUnfreezable:
+    case TaskType::kNetworkingUnfreezableImageLoading:
       return IsInflightNetworkRequestBackForwardCacheSupportEnabled()
                  ? unpausable_task_queue_->CreateTaskRunner(type)
                  : pausable_non_vt_task_queue_->CreateTaskRunner(type);

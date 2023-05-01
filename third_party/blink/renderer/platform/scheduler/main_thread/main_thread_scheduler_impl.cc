@@ -86,6 +86,12 @@ const int64_t kSecondsPerMinute = 60;
 constexpr base::TimeDelta kDefaultPrioritizeCompositingAfterDelay =
     base::Milliseconds(100);
 
+// Duration before rendering is considered starved by render-blocking tasks,
+// which is a safeguard against pathological cases for render-blocking image
+// prioritization.
+constexpr base::TimeDelta kRenderBlockingStarvationThreshold =
+    base::Milliseconds(500);
+
 v8::RAILMode RAILModeToV8RAILMode(RAILMode rail_mode) {
   switch (rail_mode) {
     case RAILMode::kResponse:
@@ -228,6 +234,8 @@ const char* RenderingPrioritizationStateToString(
       return "none";
     case RenderingPrioritizationState::kRenderingStarved:
       return "rendering_starved";
+    case RenderingPrioritizationState::kRenderingStarvedByRenderBlocking:
+      return "rendering_starved_by_render_blocking";
     case RenderingPrioritizationState::kWaitingForInputResponse:
       return "waiting_for_input_response";
   }
@@ -2568,8 +2576,11 @@ TaskPriority MainThreadSchedulerImpl::ComputeCompositorPriority() const {
   // Otherwise, this must be a combination of UseCase::kCompositorGesture and
   // rendering starvation since all other states set the priority to highest.
   CHECK(current_use_case() == UseCase::kCompositorGesture &&
-        main_thread_only().main_frame_prioritization_state ==
-            RenderingPrioritizationState::kRenderingStarved);
+        (main_thread_only().main_frame_prioritization_state ==
+             RenderingPrioritizationState::kRenderingStarved ||
+         main_thread_only().main_frame_prioritization_state ==
+             RenderingPrioritizationState::kRenderingStarvedByRenderBlocking));
+
   // The default behavior for compositor gestures like compositor-driven
   // scrolling is to deprioritize compositor TQ tasks (low priority) and not
   // apply delay-based anti-starvation. This can lead to degraded user
@@ -2610,6 +2621,12 @@ void MainThreadSchedulerImpl::
         const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
   RenderingPrioritizationState old_state =
       main_thread_only().main_frame_prioritization_state;
+  if (queue &&
+      queue->GetQueuePriority() == TaskPriority::kExtremelyHighPriority) {
+    main_thread_only().rendering_blocking_duration_since_last_frame +=
+        task_timing.wall_duration();
+  }
+
   // A main frame task resets the rendering prioritization state. Otherwise if
   // the scheduler is waiting for a frame because of discrete input, the state
   // will only change once a main frame happens. Otherwise, compute the state in
@@ -2619,6 +2636,8 @@ void MainThreadSchedulerImpl::
       main_thread_only().is_current_task_main_frame) {
     main_thread_only().last_frame_time = task_timing.end_time();
     main_thread_only().is_current_task_main_frame = false;
+    main_thread_only().rendering_blocking_duration_since_last_frame =
+        base::TimeDelta();
     main_thread_only().main_frame_prioritization_state =
         RenderingPrioritizationState::kNone;
   } else if (main_thread_only().main_frame_prioritization_state !=
@@ -2629,6 +2648,11 @@ void MainThreadSchedulerImpl::
       // Assume this input will result in a frame, which we want to show ASAP.
       main_thread_only().main_frame_prioritization_state =
           RenderingPrioritizationState::kWaitingForInputResponse;
+    } else if (main_thread_only()
+                   .rendering_blocking_duration_since_last_frame >=
+               kRenderBlockingStarvationThreshold) {
+      main_thread_only().main_frame_prioritization_state =
+          RenderingPrioritizationState::kRenderingStarvedByRenderBlocking;
     } else {
       base::TimeDelta threshold;
       switch (current_use_case()) {
@@ -2716,8 +2740,13 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityForMainFrame() const {
     case RenderingPrioritizationState::kNone:
       return absl::nullopt;
     case RenderingPrioritizationState::kRenderingStarved:
-      // Set higher than most tasks, but lower than input.
+      // Set higher than most tasks, but lower than render blocking tasks and
+      // input.
       return TaskPriority::kVeryHighPriority;
+    case RenderingPrioritizationState::kRenderingStarvedByRenderBlocking:
+      // Set to rendering blocking to prevent starvation by render blocking
+      // tasks, but don't block input.
+      return TaskPriority::kExtremelyHighPriority;
     case RenderingPrioritizationState::kWaitingForInputResponse:
       // Return the highest priority here otherwise consecutive heavy inputs
       // (e.g. typing) will starve rendering.

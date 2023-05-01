@@ -70,6 +70,7 @@ MainThreadMetricsHelper::MainThreadMetricsHelper(
       queueing_delay_histograms_{
           {QUEUEING_DELAY_HISTOGRAM_INIT("Control")},
           {QUEUEING_DELAY_HISTOGRAM_INIT("Highest")},
+          {QUEUEING_DELAY_HISTOGRAM_INIT("ExtremelyHigh")},
           {QUEUEING_DELAY_HISTOGRAM_INIT("VeryHigh")},
           {QUEUEING_DELAY_HISTOGRAM_INIT("HighContinuation")},
           {QUEUEING_DELAY_HISTOGRAM_INIT("High")},
