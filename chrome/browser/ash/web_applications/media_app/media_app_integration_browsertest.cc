@@ -1263,7 +1263,13 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 }
 
 // Ensures audio files opened in the media app successfully autoplay.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, Autoplay) {
+// Flaky on ChromeOS (crbug.com/1441607).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_Autoplay DISABLED_Autoplay
+#else
+#define MAYBE_Autoplay Autoplay
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MAYBE_Autoplay) {
   content::WebContents* web_ui = LaunchWithOneTestFile(kFileAudioOgg);
 
   EXPECT_EQ(kFileAudioOgg, WaitForAudioTrackTitle(web_ui));
