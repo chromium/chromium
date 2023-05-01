@@ -1175,7 +1175,7 @@ TEST_F(AutocompleteResultTest, SortAndCullWithPreserveDefaultMatch) {
   // Run SortAndCull, but try to keep the first entry of last_matches on top.
   current_result.SortAndCull(input, template_url_service_.get(),
                              triggered_feature_service(),
-                             last_result.match_at(0));
+                             *last_result.match_at(0));
 
   // Assert that the lower scoring match has been promoted to the top to keep
   // the default match stable.
