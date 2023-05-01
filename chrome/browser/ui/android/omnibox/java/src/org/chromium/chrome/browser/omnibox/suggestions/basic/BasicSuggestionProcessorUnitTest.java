@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -368,6 +371,25 @@ public class BasicSuggestionProcessorUnitTest {
 
         Assert.assertNotEquals(icon1, icon2);
         Assert.assertEquals(mBitmap, ((BitmapDrawable) icon2.drawable).getBitmap());
+    }
+
+    @Test
+    @SmallTest
+    public void suggestionFavicons_doNotFetchForSearchSuggestions() {
+        mProcessor.onNativeInitialized();
+        createSearchSuggestion(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "");
+
+        verify(mIconFetcher, never()).fetchFaviconWithBackoff(any(), anyBoolean(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void suggestionFavicons_doNotFetchForBookmarked() {
+        mProcessor.onNativeInitialized();
+        mIsBookmarked.mState = true;
+        createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
+
+        verify(mIconFetcher, never()).fetchFaviconWithBackoff(any(), anyBoolean(), any());
     }
 
     @Test
