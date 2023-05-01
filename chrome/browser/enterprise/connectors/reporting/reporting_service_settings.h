@@ -20,7 +20,6 @@ namespace enterprise_connectors {
 
 // Feature flags for individual event types.
 BASE_DECLARE_FEATURE(kExtensionEventsEnabled);
-BASE_DECLARE_FEATURE(kBrowserCrashEventsEnabled);
 
 // The settings for a report service obtained from a connector policy.
 class ReportingServiceSettings {
