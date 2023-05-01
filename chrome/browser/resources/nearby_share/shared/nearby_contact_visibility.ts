@@ -87,6 +87,11 @@ const CONTACTS_EMPTY_ICON = 'nearby-images:contacts-empty';
 
 const CONTACTS_EMPTY_JELLY_ICON = 'nearby-images:contacts-empty-jelly';
 
+const CONTACTS_FAILED_ICON = 'nearby-images:contacts-download-failed';
+
+const CONTACTS_FAILED_JELLY_ICON =
+    'nearby-images:contacts-download-failed-jelly';
+
 export interface NearbyVisibilityContact {
   id: string;
   name: string;
@@ -607,6 +612,14 @@ export class NearbyContactVisibilityElement extends
   private getContactsEmptyIcon_(): string {
     return this.isJellyEnabled_ ? CONTACTS_EMPTY_JELLY_ICON :
                                   CONTACTS_EMPTY_ICON;
+  }
+
+  /**
+   * Returns the contacts failed icon based on Jelly enablement.
+   */
+  private getContactsFailedIcon_(): string {
+    return this.isJellyEnabled_ ? CONTACTS_FAILED_JELLY_ICON :
+                                  CONTACTS_FAILED_ICON;
   }
 }
 

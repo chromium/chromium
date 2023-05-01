@@ -295,7 +295,7 @@
       on-dom-change="domChangeDownloadFailed_">
     <div id="contactsFailed" class="content">
       <iron-icon id="contactsFailedImage"
-          icon="nearby-images:contacts-download-failed">
+        icon$="[[getContactsFailedIcon_(isJellyEnabled_)]]">
       </iron-icon>
       <div id="contactsFailedMessage"></div>
     </div>
