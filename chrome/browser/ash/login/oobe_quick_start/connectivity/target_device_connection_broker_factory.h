@@ -14,16 +14,13 @@ class NearbyConnectionsManager;
 
 namespace ash::quick_start {
 
-class RandomSessionId;
-
 // A factory class for creating instances of TargetDeviceConnectionBroker.
 // Calling code should use the static Create() method.
 class TargetDeviceConnectionBrokerFactory {
  public:
-  // A RandomSessionId may be provided in order to resume a connection.
   static std::unique_ptr<TargetDeviceConnectionBroker> Create(
       base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-      absl::optional<RandomSessionId> session_id);
+      bool is_resume_after_update = false);
 
   static void SetFactoryForTesting(
       TargetDeviceConnectionBrokerFactory* test_factory);
@@ -38,7 +35,7 @@ class TargetDeviceConnectionBrokerFactory {
  protected:
   virtual std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
       base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-      RandomSessionId session_id) = 0;
+      bool is_resume_after_update) = 0;
 
  private:
   static TargetDeviceConnectionBrokerFactory* test_factory_;

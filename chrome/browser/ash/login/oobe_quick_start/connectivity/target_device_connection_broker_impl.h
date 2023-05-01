@@ -47,9 +47,9 @@ class TargetDeviceConnectionBrokerImpl
   };
 
   TargetDeviceConnectionBrokerImpl(
-      RandomSessionId session_id,
       base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-      std::unique_ptr<Connection::Factory> connection_factory);
+      std::unique_ptr<Connection::Factory> connection_factory,
+      bool is_resume_after_update = false);
   TargetDeviceConnectionBrokerImpl(TargetDeviceConnectionBrokerImpl&) = delete;
   TargetDeviceConnectionBrokerImpl& operator=(
       TargetDeviceConnectionBrokerImpl&) = delete;
@@ -67,6 +67,12 @@ class TargetDeviceConnectionBrokerImpl
   // Used to access the |random_session_id_| in tests, and to allow testing
   // |GenerateEndpointInfo()| directly.
   friend class TargetDeviceConnectionBrokerImplTest;
+
+  // When Quick Start is automatically resumed after the target device updates,
+  // this method retrieves the previously-persisted |random_session_id_| and
+  // |shared_secret_|.
+  void FetchPersistedSessionContext();
+  void DecodeSharedSecret(const std::string& encoded_shared_secret);
 
   // NearbyConnectionsManager::IncomingConnectionListener:
   void OnIncomingConnectionInitiated(
@@ -108,6 +114,8 @@ class TargetDeviceConnectionBrokerImpl
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
   RandomSessionId random_session_id_;
   SharedSecret shared_secret_;
+  // The |secondary_shared_secret_| is never set when automatically resuming
+  // Quick Start after an update.
   SharedSecret secondary_shared_secret_;
 
   base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager_;

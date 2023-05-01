@@ -9,6 +9,8 @@ assert(is_chromeos_ash)
 source_set("connectivity") {
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start_pref_names",
     "//chrome/browser/ash/login/oobe_quick_start/logging",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chrome/browser/nearby_sharing/public/cpp",
@@ -16,6 +18,7 @@ source_set("connectivity") {
     "//chromeos/ash/services/nearby/public/cpp",
     "//chromeos/ash/services/nearby/public/mojom",
     "//components/cbor",
+    "//components/prefs",
     "//crypto",
     "//device/bluetooth",
     "//ui/chromeos",

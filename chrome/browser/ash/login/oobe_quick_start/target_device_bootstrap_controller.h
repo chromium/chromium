@@ -22,7 +22,8 @@ class TargetDeviceBootstrapController
     : public TargetDeviceConnectionBroker::ConnectionLifecycleListener {
  public:
   explicit TargetDeviceBootstrapController(
-      base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager);
+      base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
+      bool is_resume_after_update = false);
   TargetDeviceBootstrapController(TargetDeviceBootstrapController&) = delete;
   TargetDeviceBootstrapController& operator=(TargetDeviceBootstrapController&) =
       delete;

@@ -15,12 +15,16 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
+#include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service_factory.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/constants/devicetype.h"
+#include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,11 +41,6 @@ constexpr uint8_t kEndpointInfoVerificationStyle = 5u;
 constexpr uint8_t kEndpointInfoDeviceType = 8u;
 
 constexpr size_t kEndpointInfoRandomSessionIdLength = 10;
-
-// 10 random bytes to use as the RandomSessionId. The corresponding display name
-// code is (0x135e % 1000) = 958.
-constexpr std::array<uint8_t, 6> kRandomSessionId = {0x13, 0x5e, 0xfb,
-                                                     0x0f, 0x3a, 0x20};
 
 // Base qr code url ("https://signin.google/qs/") represented in a 25 byte
 // array.
@@ -93,11 +92,12 @@ struct EndpointInfoTestCase {
 };
 
 const EndpointInfoTestCase kEndpointInfoTestCases[] = {
-    {chromeos::DeviceType::kChromebook, "Chromebook (958)"},
-    {chromeos::DeviceType::kChromebox, "Chromebox (958)"},
-    {chromeos::DeviceType::kChromebit, "Chromebit (958)"},
-    {chromeos::DeviceType::kChromebase, "Chromebase (958)"},
-    {chromeos::DeviceType::kUnknown, "Chrome devic (958)"},
+    {chromeos::DeviceType::kChromebook, "Chromebook"},
+    {chromeos::DeviceType::kChromebox, "Chromebox"},
+    {chromeos::DeviceType::kChromebit, "Chromebit"},
+    {chromeos::DeviceType::kChromebase, "Chromebase"},
+    {chromeos::DeviceType::kUnknown,
+     "Chrome devic"},  // The "e" is truncated to fit within endpoint bytes.
 };
 
 using testing::NiceMock;
@@ -333,11 +333,12 @@ class FakeTargetDeviceConnectionBrokerFactory
   // TargetDeviceConnectionBrokerFactory:
   std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
       base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-      RandomSessionId session_id) override {
+      bool is_resume_after_update = false) override {
     auto connection_factory = std::make_unique<FakeConnection::Factory>();
     connection_factory_ = connection_factory.get();
     return std::make_unique<TargetDeviceConnectionBrokerImpl>(
-        session_id, nearby_connections_manager, std::move(connection_factory));
+        nearby_connections_manager, std::move(connection_factory),
+        is_resume_after_update);
   }
 
   raw_ptr<FakeConnection::Factory, ExperimentalAsh> connection_factory_ =
@@ -348,7 +349,8 @@ class FakeTargetDeviceConnectionBrokerFactory
 
 class TargetDeviceConnectionBrokerImplTest : public testing::Test {
  public:
-  TargetDeviceConnectionBrokerImplTest() = default;
+  TargetDeviceConnectionBrokerImplTest()
+      : local_state_(TestingBrowserProcess::GetGlobal()) {}
   TargetDeviceConnectionBrokerImplTest(TargetDeviceConnectionBrokerImplTest&) =
       delete;
   TargetDeviceConnectionBrokerImplTest& operator=(
@@ -379,10 +381,9 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   }
 
   void CreateConnectionBroker() {
-    RandomSessionId session_id(kRandomSessionId);
     connection_broker_ =
         ash::quick_start::TargetDeviceConnectionBrokerFactory::Create(
-            fake_nearby_connections_manager_.GetWeakPtr(), session_id);
+            fake_nearby_connections_manager_.GetWeakPtr());
   }
 
   void FinishFetchingBluetoothAdapter() {
@@ -425,10 +426,21 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
         ->random_session_id_;
   }
 
+  const TargetDeviceConnectionBroker::SharedSecret GetSharedSecret() {
+    return static_cast<TargetDeviceConnectionBrokerImpl*>(
+               connection_broker_.get())
+        ->shared_secret_;
+  }
+
+  const TargetDeviceConnectionBroker::SharedSecret GetSecondarySharedSecret() {
+    return static_cast<TargetDeviceConnectionBrokerImpl*>(
+               connection_broker_.get())
+        ->secondary_shared_secret_;
+  }
+
   std::string GetSecondarySharedSecretString() {
     TargetDeviceConnectionBroker::SharedSecret secondary_shared_secret =
-        static_cast<TargetDeviceConnectionBrokerImpl*>(connection_broker_.get())
-            ->secondary_shared_secret_;
+        GetSecondarySharedSecret();
     std::string secondary_shared_secret_bytes(secondary_shared_secret.begin(),
                                               secondary_shared_secret.end());
     std::string secondary_shared_secret_base64;
@@ -454,6 +466,8 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
     return connection_broker_factory_.connection_factory_->instance_.get();
   }
 
+  PrefService* GetLocalState() { return local_state_.Get(); }
+
  protected:
   bool is_bluetooth_powered_ = true;
   bool is_bluetooth_present_ = true;
@@ -470,6 +484,7 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   FakeConnectionLifecycleListener connection_lifecycle_listener_;
   FakeConnection::Factory connection_factory_;
+  ScopedTestingLocalState local_state_;
   base::WeakPtrFactory<TargetDeviceConnectionBrokerImplTest> weak_ptr_factory_{
       this};
 };
@@ -670,7 +685,10 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
   }
   std::string display_name =
       std::string(display_name_bytes.begin(), display_name_bytes.end());
-  EXPECT_EQ(GetParam().expected_display_name, display_name);
+  std::string expected_display_name = GetParam().expected_display_name + " (" +
+                                      GetRandomSessionId().GetDisplayCode() +
+                                      ")";
+  EXPECT_EQ(expected_display_name, display_name);
   i += j;
 
   // The remaining advertising info fields are base64-encoded. Decode them
@@ -849,6 +867,34 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   ASSERT_EQ(
       connection_lifecycle_listener_.connection_closed_reason_,
       TargetDeviceConnectionBroker::ConnectionClosedReason::kConnectionLost);
+}
+
+TEST_F(TargetDeviceConnectionBrokerImplTest, ConstructWhenResumeAfterUpdate) {
+  // The connection broker expects these prefs to be set if resuming after an
+  // update.
+  base::Value::Dict prepare_for_update_info =
+      connection_broker_->GetPrepareForUpdateInfo();
+  GetLocalState()->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
+  base::Value::Dict info = connection_broker_->GetPrepareForUpdateInfo();
+  GetLocalState()->SetDict(prefs::kResumeQuickStartAfterRebootInfo,
+                           std::move(info));
+  std::string expected_random_session_id = GetRandomSessionId().ToString();
+  TargetDeviceConnectionBroker::SharedSecret expected_shared_secret =
+      GetSecondarySharedSecret();
+
+  connection_broker_ =
+      ash::quick_start::TargetDeviceConnectionBrokerFactory::Create(
+          fake_nearby_connections_manager_.GetWeakPtr(),
+          /*is_resume_after_update=*/true);
+  EXPECT_EQ(expected_random_session_id, GetRandomSessionId().ToString());
+  EXPECT_EQ(expected_shared_secret, GetSharedSecret());
+
+  // Prefs should be cleared after the |connection_broker_| construction.
+  ASSERT_FALSE(
+      GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
+  ASSERT_TRUE(GetLocalState()
+                  ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
+                  .empty());
 }
 
 }  // namespace ash::quick_start

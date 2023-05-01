@@ -6,8 +6,16 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
+source_set("oobe_quick_start_pref_names") {
+  sources = [
+    "oobe_quick_start_pref_names.cc",
+    "oobe_quick_start_pref_names.h",
+  ]
+}
+
 source_set("oobe_quick_start") {
   deps = [
+    ":oobe_quick_start_pref_names",
     "connectivity",
     "logging",
     "//base",
@@ -27,8 +35,6 @@ source_set("oobe_quick_start") {
     "//services/network/public/cpp:cpp",
   ]
   sources = [
-    "oobe_quick_start_pref_names.cc",
-    "oobe_quick_start_pref_names.h",
     "second_device_auth_broker.cc",
     "second_device_auth_broker.h",
     "target_device_bootstrap_controller.cc",

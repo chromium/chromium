@@ -7,9 +7,40 @@
 #include "base/base64url.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "crypto/random.h"
 
 namespace ash::quick_start {
+
+// static
+absl::optional<RandomSessionId> RandomSessionId::ParseFromBase64(
+    const std::string& encoded_random_session_id) {
+  std::string decoded_output;
+
+  if (!base::Base64UrlDecode(encoded_random_session_id,
+                             base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+                             &decoded_output)) {
+    QS_LOG(ERROR)
+        << "Failed to decode the random session ID. Encoded random session ID: "
+        << encoded_random_session_id;
+    return absl::nullopt;
+  }
+
+  if (decoded_output.length() != kLength) {
+    QS_LOG(ERROR) << "Decoded random session ID is an unexpected length. "
+                     "Decoded random session ID output: "
+                  << decoded_output;
+    return absl::nullopt;
+  }
+
+  std::array<uint8_t, kLength> bytes;
+
+  for (size_t i = 0; i < decoded_output.length(); i++) {
+    bytes[i] = uint8_t(decoded_output[i]);
+  }
+
+  return RandomSessionId(std::move(bytes));
+}
 
 RandomSessionId::RandomSessionId() {
   crypto::RandBytes(bytes_);

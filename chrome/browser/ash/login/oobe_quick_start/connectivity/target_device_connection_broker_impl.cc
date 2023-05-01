@@ -19,9 +19,13 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
+#include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
+#include "chrome/browser/browser_process.h"
+#include "components/prefs/pref_service.h"
 #include "crypto/random.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace ash::quick_start {
@@ -128,14 +132,19 @@ TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper*
         bluetooth_adapter_factory_wrapper_for_testing_ = nullptr;
 
 TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl(
-    RandomSessionId session_id,
     base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-    std::unique_ptr<Connection::Factory> connection_factory)
-    : random_session_id_(session_id),
-      nearby_connections_manager_(nearby_connections_manager),
+    std::unique_ptr<Connection::Factory> connection_factory,
+    bool is_resume_after_update)
+    : nearby_connections_manager_(nearby_connections_manager),
       connection_factory_(std::move(connection_factory)) {
-  crypto::RandBytes(shared_secret_);
-  crypto::RandBytes(secondary_shared_secret_);
+  if (is_resume_after_update) {
+    FetchPersistedSessionContext();
+  } else {
+    random_session_id_ = RandomSessionId();
+    crypto::RandBytes(shared_secret_);
+    crypto::RandBytes(secondary_shared_secret_);
+  }
+
   GetBluetoothAdapter();
 }
 
@@ -282,6 +291,61 @@ base::Value::Dict TargetDeviceConnectionBrokerImpl::GetPrepareForUpdateInfo() {
                               secondary_shared_secret_base64);
 
   return prepare_for_update_info;
+}
+
+void TargetDeviceConnectionBrokerImpl::FetchPersistedSessionContext() {
+  PrefService* prefs = g_browser_process->local_state();
+  CHECK(prefs->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
+  prefs->ClearPref(prefs::kShouldResumeQuickStartAfterReboot);
+
+  const base::Value::Dict& session_info =
+      prefs->GetDict(prefs::kResumeQuickStartAfterRebootInfo);
+  const std::string* random_session_id_str =
+      session_info.FindString(kPrepareForUpdateRandomSessionIdKey);
+  CHECK(random_session_id_str);
+  absl::optional<RandomSessionId> random_session_id =
+      RandomSessionId::ParseFromBase64(*random_session_id_str);
+  if (!random_session_id.has_value()) {
+    // TODO(b/234655072) Cancel Quick Start if this error occurs. The secondary
+    // connection cannot bootstrap if the RandomSessionId doesn't match.
+    prefs->ClearPref(prefs::kResumeQuickStartAfterRebootInfo);
+    return;
+  }
+  random_session_id_ = random_session_id.value();
+
+  const std::string* secondary_shared_secret_str =
+      session_info.FindString(kPrepareForUpdateSecondarySharedSecretKey);
+  CHECK(secondary_shared_secret_str);
+  DecodeSharedSecret(*secondary_shared_secret_str);
+  prefs->ClearPref(prefs::kResumeQuickStartAfterRebootInfo);
+}
+
+void TargetDeviceConnectionBrokerImpl::DecodeSharedSecret(
+    const std::string& encoded_shared_secret) {
+  std::string decoded_output;
+
+  if (!base::Base64Decode(encoded_shared_secret, &decoded_output)) {
+    // TODO(b/234655072) Cancel Quick Start if this error occurs. The secondary
+    // connection can't bootstrap if the SharedSecret doesn't match the
+    // secondary SharedSecret of the primary connection.
+    QS_LOG(ERROR)
+        << "Failed to decode the secondary shared secret from previous "
+           "session. Encoded secondary shared secret: "
+        << encoded_shared_secret;
+    return;
+  }
+
+  if (decoded_output.length() != shared_secret_.size()) {
+    // TODO(b/234655072) Cancel Quick Start if this error occurs.
+    QS_LOG(ERROR) << "Decoded shared secret is an unexpected length. Decoded "
+                     "shared secret output: "
+                  << decoded_output;
+    return;
+  }
+
+  for (size_t i = 0; i < decoded_output.length(); i++) {
+    shared_secret_[i] = uint8_t(decoded_output[i]);
+  }
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
