@@ -321,9 +321,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 #endif  // BUILDFLAG(IS_POSIX)
   }
 
-  auto result = EvalJs(
-      shell(), JsReplace("(async () => {"
-                         "  return (await self.entry.createWritable()); })()"));
+  auto result = EvalJs(shell(),
+                       "(async () => {"
+                       "  return (await self.entry.createWritable()); })()");
   EXPECT_TRUE(result.error.find("Cannot write to a read-only file.") !=
               std::string::npos)
       << result.error;
