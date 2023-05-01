@@ -237,12 +237,12 @@ public class TabSwitcherLayout extends Layout {
                 showOverviewWithTranslateUp(shouldAnimate);
             } else if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())
                     && GTS_ACCESSIBILITY_SUPPORT.getValue()
-                    && ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
-                // Intentionally disable the shrinking animation when accessibility is enabled.
-                // During the shrinking animation, since the ComponsitorViewHolder is not focusable.
-                // Chrome is in a temporary no "valid" focus target state, so the focus shifts
-                // to the omnibox and triggers visual jank and accessibility announcement of the
-                // URL. Disable the animation and run immediately to avoid this temporary state.
+                    && ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
+                // Intentionally disable the shrinking animation when touch exploration is enabled.
+                // During the shrinking animation, since the ComponsitorViewHolder is not focusable,
+                // Chrome is in a temporary no "valid" focus target state. This result in focus
+                // shifting to the omnibox and triggers visual jank and accessibility announcement
+                // of the URL. Disable the animation and run immediately to avoid this state.
                 showOverviewWithTabShrink(false, () -> null, true);
             } else {
                 mDeferredAnimationRunnable = () -> {

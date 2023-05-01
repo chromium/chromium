@@ -37,6 +37,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.logo.LogoView;
@@ -359,9 +361,15 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         boolean shouldShowAnimation =
                 mIsTabToGtsFadeAnimationEnabled && (wasOnGridTabSwitcher || isOnGridTabSwitcher());
 
-        if (!shouldShowAnimation) {
-            finishAlphaAnimator(shouldShowStartSurfaceToolbar);
-            return;
+        // When animating into the TabSwitcherMode when the GTS supports accessibility then the
+        // transition should also be immediate if touch exploration is enabled as the animation
+        // causes races in the Android accessibility focus framework.
+        if (shouldShowAnimation && !wasOnGridTabSwitcher
+                && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()
+                && ChromeFeatureList.sTabGroupsAndroid.isEnabled()
+                && DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.getValue()
+                && ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
+            shouldShowAnimation = false;
         }
 
         mPropertyModel.set(IS_VISIBLE, true);
@@ -389,7 +397,12 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
                 }
             });
         }
+
         mAlphaAnimator.start();
+        if (!shouldShowAnimation) {
+            mAlphaAnimator.end();
+            return;
+        }
     }
 
     private void finishAlphaAnimator(boolean shouldShowStartSurfaceToolbar) {

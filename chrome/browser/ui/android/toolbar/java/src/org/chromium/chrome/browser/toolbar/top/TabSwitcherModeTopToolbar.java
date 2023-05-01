@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarAlphaInOverviewObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
@@ -206,9 +208,23 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
                 }
             });
         }
-        mVisiblityAnimator.start();
 
-        if (DeviceClassManager.enableAccessibilityLayout(getContext())) mVisiblityAnimator.end();
+        // If the accessibility layout is showing the transition is immediate.
+        boolean skipAnimation = DeviceClassManager.enableAccessibilityLayout(getContext());
+
+        // When animating into the TabSwitcherMode when the GTS supports accessibility then the
+        // transition should also be immediate if touch exploration is enabled as the animation
+        // causes races in the Android accessibility focus framework.
+        skipAnimation |=
+                (inTabSwitcherMode && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()
+                        && ChromeFeatureList.sTabGroupsAndroid.isEnabled()
+                        && DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.getValue()
+                        && ChromeAccessibilityUtil.get().isTouchExplorationEnabled());
+
+        mVisiblityAnimator.start();
+        if (skipAnimation) {
+            mVisiblityAnimator.end();
+        }
     }
 
     /**
