@@ -57,8 +57,8 @@ class BroadcastChannelService {
   mojo::UniqueAssociatedReceiverSet<blink::mojom::BroadcastChannelProvider>
       associated_receivers_;
 
-  std::map<blink::StorageKey,
-           std::multimap<std::string, std::unique_ptr<Connection>>>
+  std::multimap<std::pair<blink::StorageKey, std::string>,
+                std::unique_ptr<Connection>>
       connections_;
 };
 

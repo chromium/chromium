@@ -74,26 +74,23 @@ BroadcastChannelService::BroadcastChannelService() = default;
 BroadcastChannelService::~BroadcastChannelService() = default;
 
 void BroadcastChannelService::UnregisterConnection(Connection* c) {
-  const blink::StorageKey storage_key = c->storage_key();
-  auto& connections = connections_[storage_key];
-  for (auto it = connections.lower_bound(c->name()),
-            end = connections.upper_bound(c->name());
+  const auto key = std::make_pair(c->storage_key(), c->name());
+  for (auto it = connections_.lower_bound(key),
+            end = connections_.upper_bound(key);
        it != end; ++it) {
     if (it->second.get() == c) {
-      connections.erase(it);
+      connections_.erase(it);
       break;
     }
   }
-  if (connections.empty())
-    connections_.erase(storage_key);
 }
 
 void BroadcastChannelService::ReceivedMessageOnConnection(
     Connection* c,
     const blink::CloneableMessage& message) {
-  auto& connections = connections_[c->storage_key()];
-  for (auto it = connections.lower_bound(c->name()),
-            end = connections.upper_bound(c->name());
+  const auto key = std::make_pair(c->storage_key(), c->name());
+  for (auto it = connections_.lower_bound(key),
+            end = connections_.upper_bound(key);
        it != end; ++it) {
     if (it->second.get() != c)
       it->second->MessageToClient(message);
@@ -112,7 +109,7 @@ void BroadcastChannelService::ConnectToChannel(
   c->set_connection_error_handler(
       base::BindRepeating(&BroadcastChannelService::UnregisterConnection,
                           base::Unretained(this), c.get()));
-  connections_[storage_key].insert(std::make_pair(name, std::move(c)));
+  connections_.emplace(std::make_pair(storage_key, name), std::move(c));
 }
 
 void BroadcastChannelService::AddReceiver(
