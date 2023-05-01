@@ -10,6 +10,7 @@ export const Context = {
   EMPTY_EDITABLE: 2,
   NO_SELECTION: 3,
   INVALID_INPUT: 4,
+  NO_PREVIOUS_MACRO: 5,
 };
 
 /** A class that can be used to specify and check contexts. */

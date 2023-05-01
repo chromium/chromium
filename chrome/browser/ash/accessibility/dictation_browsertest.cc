@@ -2192,6 +2192,31 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CopySuccessful) {
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, RepeatFail) {
+  SendFinalResultAndWait("repeat");
+  WaitForProperties(
+      /*visible=*/true,
+      /*icon=*/DictationBubbleIconType::kMacroFail,
+      /*text=*/u"Can't repeat, no previous command",
+      /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, RepeatFailUnselect) {
+  RunEmptyEditableTest("unselect");
+  // Wait for UI to return to standby mode.
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kStandby,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+  RunEmptyEditableTest("repeat");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, RepeatSuccessful) {
+  SendFinalResultAndWaitForEditableValue("Test", "Test");
+  SendFinalResultAndWaitForEditableValue("Repeat", "Test test");
+  SendFinalResultAndWaitForEditableValue("Repeat", "Test test test");
+}
+
 class NotificationCenterDictationTest : public DictationTest {
  public:
   NotificationCenterDictationTest() = default;

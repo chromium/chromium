@@ -96,4 +96,7 @@
   <message name="IDS_DICTATION_CONTEXT_ERROR_REASON_INVALID_INPUT" desc="An error message displayed to the user when a command fails because of unrecognized input. ">
     unrecognized input
   </message>
+  <message name="IDS_DICTATION_CONTEXT_ERROR_REASON_NO_PREVIOUS_MACRO" desc="An error message displayed to the user when the repeat command fails because there is no previously detected command.">
+    no previous command
+  </message>
 </grit-part>

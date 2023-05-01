@@ -554,15 +554,21 @@ export class Dictation {
    * @private
    */
   handleRepeat_(macro) {
-    let newMacro = macro;
-    if (newMacro.getName() === MacroName.REPEAT && this.prevMacro_) {
-      // If this is the REPEAT macro, then we actually want the previously
-      // executed macro.
-      newMacro = this.prevMacro_;
+    if (macro.getName() !== MacroName.REPEAT) {
+      // If this macro is not the RepeatMacro, save it and return the existing
+      // macro.
+      this.prevMacro_ = macro;
+      return macro;
     }
 
-    this.prevMacro_ = newMacro;
-    return newMacro;
+    // Handle cases where `macro` is the RepeatMacro.
+    if (!this.prevMacro_) {
+      // If there is no previous macro, return the RepeatMacro.
+      return macro;
+    }
+
+    // Otherwise, return the previous macro.
+    return this.prevMacro_;
   }
 
   /** Disables Pumpkin for tests that use regex-based command parsing. */
@@ -588,6 +594,9 @@ export class Dictation {
       case Context.INVALID_INPUT:
         return chrome.i18n.getMessage(
             'dictation_context_error_reason_invalid_input');
+      case Context.NO_PREVIOUS_MACRO:
+        return chrome.i18n.getMessage(
+            'dictation_context_error_reason_no_previous_macro');
     }
 
     throw new Error(
