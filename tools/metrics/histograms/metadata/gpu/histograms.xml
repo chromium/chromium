@@ -310,6 +310,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.ANGLE.MetalShader.CacheHitCount" units="count"
+    expires_after="2023-12-17">
+  <owner>sky@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    An integer that is logged shortly after the gpu process starts up. The value
+    is the number of shaders that were needed and were available in the shader
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="GPU.ANGLE.MetalShader.CacheMissCount" units="count"
+    expires_after="2023-12-17">
+  <owner>sky@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    An integer that is logged shortly after the gpu process starts up. The value
+    is the number of shaders that were needed and were not in the shader cache.
+  </summary>
+</histogram>
+
 <histogram name="GPU.ANGLE.MetalShaderInBlobCache" enum="Boolean"
     expires_after="2023-12-17">
   <owner>sky@chromium.org</owner>
