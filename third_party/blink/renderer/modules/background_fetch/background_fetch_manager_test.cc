@@ -23,12 +23,9 @@ class BackgroundFetchManagerTest : public testing::Test {
   // declarations necessary in the BackgroundFetchManager.
   Vector<mojom::blink::FetchAPIRequestPtr> CreateFetchAPIRequestVector(
       V8TestingScope& scope,
-      const V8UnionRequestInfoOrRequestOrUSVStringSequence* requests
-  ) {
-    bool has_requests_with_body;
+      const V8UnionRequestInfoOrRequestOrUSVStringSequence* requests) {
     return BackgroundFetchManager::CreateFetchAPIRequestVector(
-        scope.GetScriptState(), requests, scope.GetExceptionState(),
-        &has_requests_with_body);
+        scope.GetScriptState(), requests, scope.GetExceptionState());
   }
 };
 
