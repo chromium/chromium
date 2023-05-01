@@ -11,5 +11,6 @@ group("resources") {
     "indexed_db:resources",
     "process:resources",
     "quota:resources",
+    "service_worker:resources",
   ]
 }

@@ -290,6 +290,7 @@ repack("dev_ui_paks") {
     "$root_gen_dir/content/dev_ui_content_resources.pak",
     "$root_gen_dir/content/gpu_resources.pak",
     "$root_gen_dir/content/process_resources.pak",
+    "$root_gen_dir/content/service_worker_resources.pak",
   ]
   deps = [
     "//chrome/browser:dev_ui_browser_resources",
@@ -313,6 +314,7 @@ repack("dev_ui_paks") {
     "//content/browser/resources/gpu:resources",
     "//content/browser/resources/media:resources",
     "//content/browser/resources/process:resources",
+    "//content/browser/resources/service_worker:resources",
     "//content/browser/webrtc/resources",
   ]
 
