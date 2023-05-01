@@ -845,6 +845,8 @@ bool AXPlatformNodeBase::IsStructuredAnnotation() const {
   return !reverse_relations.empty();
 }
 
+// TODO(accessibility): This is only used in AXPlatformNodeWin and therefore
+// should be moved there.
 bool AXPlatformNodeBase::IsSelectionItemSupported() const {
   switch (GetRole()) {
     // An ARIA 1.1+ role of "cell", or a role of "row" inside
@@ -881,9 +883,13 @@ bool AXPlatformNodeBase::IsSelectionItemSupported() const {
     case ax::mojom::Role::kListBoxOption:
     case ax::mojom::Role::kListItem:
     case ax::mojom::Role::kMenuListOption:
-    case ax::mojom::Role::kTab:
     case ax::mojom::Role::kTreeItem:
       return HasBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+    case ax::mojom::Role::kTab:
+      // According to the UIA documentation, this role should always support the
+      // SelectionItem control pattern:
+      // https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-supporttabitemcontroltype#required-control-patterns.
+      return true;
     default:
       return false;
   }

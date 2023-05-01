@@ -6150,12 +6150,13 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   constexpr AXNodeID tree_item_checked_id = 23;
   constexpr AXNodeID tree_item_unchecked_id = 24;
   constexpr AXNodeID tree_item_id = 25;
+  constexpr AXNodeID tab_id = 26;
 
   AXTreeUpdate update;
   update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
   update.has_tree_data = true;
   update.root_id = root_id;
-  update.nodes.resize(25);
+  update.nodes.resize(26);
   update.nodes[0].id = root_id;
   update.nodes[0].role = ax::mojom::Role::kRootWebArea;
   update.nodes[0].child_ids = {text_field_with_combo_box_id,
@@ -6171,7 +6172,8 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                                button_without_value,
                                tree_item_checked_id,
                                tree_item_unchecked_id,
-                               tree_item_id};
+                               tree_item_id,
+                               tab_id};
   update.nodes[1].id = text_field_with_combo_box_id;
   update.nodes[1].role = ax::mojom::Role::kTextFieldWithComboBox;
   update.nodes[1].AddState(ax::mojom::State::kEditable);
@@ -6246,6 +6248,8 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
       static_cast<int>(ax::mojom::CheckedState::kFalse));
   update.nodes[24].id = tree_item_id;
   update.nodes[24].role = ax::mojom::Role::kTreeItem;
+  update.nodes[25].id = tab_id;
+  update.nodes[25].role = ax::mojom::Role::kTab;
 
   Init(update);
 
@@ -6335,6 +6339,9 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ExpandCollapsePatternId,
                         UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(tree_item_id));
+  EXPECT_EQ(PatternSet({UIA_SelectionItemPatternId, UIA_ScrollItemPatternId,
+                        UIA_TextChildPatternId}),
+            GetSupportedPatternsFromNodeId(tab_id));
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {
@@ -6954,7 +6961,7 @@ TEST_F(AXPlatformNodeWinTest, ISelectionItemProviderDisabled) {
 TEST_F(AXPlatformNodeWinTest, ISelectionItemProviderNotSelectable) {
   AXNodeData root;
   root.id = 1;
-  root.role = ax::mojom::Role::kTab;
+  root.role = ax::mojom::Role::kListBoxOption;
 
   Init(root);
 

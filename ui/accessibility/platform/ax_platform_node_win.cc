@@ -8011,7 +8011,21 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
       break;
 
     case UIA_InvokePatternId:
-      if (GetData().IsInvocable()) {
+      // According to the Accessibility Insights rules [1] and UIA
+      // documentation [2][3], the Invoke control pattern should not be
+      // supported on the following control types because another control
+      // pattern will always be available to support the same invocable
+      // behavior:
+      //   - UIA_AppBarControlTypeId
+      //   - UIA_TabItemControlTypeId
+      //
+      // [1]:https://github.com/microsoft/axe-windows/blob/main/src/Rules/Library/ControlShouldNotSupportInvokePattern.cs
+      // [2]:https://learn.microsoft.com/en-us/dotnet/framework/ui-automation/implementing-the-ui-automation-invoke-control-pattern
+      // [3]:https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-supporttabitemcontroltype#required-control-patterns
+      //
+      // TODO(accessibility): Add the condition for the UIA_AppBarControlTypeId
+      // if we ever start exposing this control type in Chromium.
+      if (GetData().IsInvocable() && GetRole() != ax::mojom::Role::kTab) {
         return &PatternProvider<IInvokeProvider>;
       }
       break;
