@@ -9,12 +9,8 @@
 #include "ipc/ipc_message_macros.h"
 #include "media/base/ipc/media_param_traits.h"
 #include "media/video/video_decode_accelerator.h"
-#include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
-
-IPC_ENUM_TRAITS_MAX_VALUE(media::VideoEncodeAccelerator::Error,
-                          media::VideoEncodeAccelerator::kErrorMax)
 
 IPC_STRUCT_TRAITS_BEGIN(media::VideoDecodeAccelerator::Config)
   IPC_STRUCT_TRAITS_MEMBER(profile)
