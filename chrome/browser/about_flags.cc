@@ -1449,16 +1449,6 @@ const FeatureEntry::FeatureVariation kChromeRefresh2023Variations[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
-const FeatureEntry::FeatureParam
-    kOmniboxDocumentProviderCapLowQualitySuggestionsTo1[] = {
-        {"DocumentProviderMaxLowQualitySuggestions", "1"},
-};
-
-const FeatureEntry::FeatureVariation kOmniboxDocumentProviderVariations[] = {
-    {"cap low quality suggestions to 1",
-     kOmniboxDocumentProviderCapLowQualitySuggestionsTo1,
-     std::size(kOmniboxDocumentProviderCapLowQualitySuggestionsTo1), nullptr}};
-
 const FeatureEntry::FeatureParam kShortcutBoostSearchAndUrl1414[] = {
     {"ShortcutBoostSearchScore", "1414"},
     {"ShortcutBoostUrlScore", "1414"}};
@@ -5705,9 +5695,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-drive-suggestions",
      flag_descriptions::kOmniboxDriveSuggestionsName,
      flag_descriptions::kOmniboxDriveSuggestionsDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDocumentProvider,
-                                    kOmniboxDocumentProviderVariations,
-                                    "OmniboxBundledExperimentV1")},
+     FEATURE_VALUE_TYPE(omnibox::kDocumentProvider)},
     {"omnibox-shortcut-boost", flag_descriptions::kOmniboxShortcutBoostName,
      flag_descriptions::kOmniboxShortcutBoostDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kShortcutBoost,

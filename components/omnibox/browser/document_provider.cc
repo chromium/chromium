@@ -839,15 +839,13 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
       score = std::max(previous_score - 1, 0);
     previous_score = score;
 
-    // Only allow up to `kDocumentProviderMaxLowQualitySuggestions`  docs that
-    // are neither owned nor a complete title or owner match.
+    // Only allow up to 1 doc that is neither owned nor a complete title or
+    // owner match.
     bool is_owned = IsOwnedByUser(client_->ProfileUserName(), result);
     bool is_completely_matched_in_title_and_owner =
         IsCompletelyMatchedInTitleOrOwner(input_.text(), result);
     if (!is_owned && !is_completely_matched_in_title_and_owner &&
-        ++low_quality_match_count >
-            OmniboxFieldTrial::kDocumentProviderMaxLowQualitySuggestions
-                .Get()) {
+        ++low_quality_match_count > 1) {
       score = 0;
     }
 
