@@ -36,7 +36,10 @@ export class AppManagementPermissionItemElement extends PolymerElement {
        * A string version of the permission type. Must be a value of the
        * permission type enum in appManagement.mojom.PermissionType.
        */
-      permissionType: String,
+      permissionType: {
+        type: String,
+        reflectToAttribute: true,
+      },
 
       icon: String,
 

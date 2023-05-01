@@ -151,6 +151,7 @@ web_component_files = [
   "chromeos/os_apps_page/app_management_page/main_view.ts",
   "chromeos/os_apps_page/app_management_page/pin_to_shelf_item.ts",
   "chromeos/os_apps_page/app_management_page/pwa_detail_view.ts",
+  "chromeos/os_apps_page/app_management_page/read_only_permission_item.ts",
   "chromeos/os_apps_page/app_management_page/resize_lock_item.ts",
   "chromeos/os_apps_page/app_management_page/supported_links_dialog.ts",
   "chromeos/os_apps_page/app_management_page/supported_links_item.ts",

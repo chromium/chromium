@@ -272,6 +272,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementNoPermissions",
        IDS_APPLICATION_INFO_APP_NO_PERMISSIONS_TEXT},
       {"appManagementNotificationsLabel", IDS_APP_MANAGEMENT_NOTIFICATIONS},
+      {"appManagementPermissionAllowed", IDS_APP_MANAGEMENT_PERMISSION_ALLOWED},
+      {"appManagementPermissionDenied", IDS_APP_MANAGEMENT_PERMISSION_DENIED},
       {"appManagementPermissionsLabel", IDS_APP_MANAGEMENT_PERMISSIONS},
       {"appManagementPinToShelfLabel", IDS_APP_MANAGEMENT_PIN_TO_SHELF},
       {"appManagementPresetWindowSizesLabel",

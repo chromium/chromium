@@ -23,37 +23,30 @@
     </div>
     <div id="subpermissionList"
         class="permission-list indented-permission-block">
-      <app-management-permission-item class="subpermission-row"
-          app="[[app_]]"
-          icon="app-management:location"
-          permission-label="$i18n{appManagementLocationPermissionLabel}"
-          permission-type="kLocation">
-      </app-management-permission-item>
-      <app-management-permission-item class="subpermission-row"
-          app="[[app_]]"
-          icon="app-management:camera"
-          permission-label="$i18n{appManagementCameraPermissionLabel}"
-          permission-type="kCamera">
-      </app-management-permission-item>
-      <app-management-permission-item class="subpermission-row"
-          app="[[app_]]"
-          icon="app-management:microphone"
-          permission-label="$i18n{appManagementMicrophonePermissionLabel}"
-          permission-type="kMicrophone">
-      </app-management-permission-item>
-      <app-management-permission-item class="subpermission-row"
-          app="[[app_]]"
-          icon="app-management:contacts"
-          permission-label="$i18n{appManagementContactsPermissionLabel}"
-          permission-type="kContacts">
-      </app-management-permission-item>
-      <app-management-permission-item class="subpermission-row"
-          app="[[app_]]"
-          icon="app-management:storage"
-          permission-label="$i18n{appManagementStoragePermissionLabel}"
-          permission-type="kStorage">
-      </app-management-permission-item>
-      <template is="dom-if" if="[[noPermissionsRequested_(app_)]]">
+
+      <template is="dom-repeat" items="[[permissionDefinitions_]]">
+        <template is="dom-if" if="[[hasReadOnlyPermissions_]]">
+          <app-management-read-only-permission-item class="subpermission-row"
+            app="[[app_]]"
+            icon="[[item.icon]]"
+            permission-label="[[i18n(item.labelId)]]"
+            permission-type="[[item.type]]">
+          </app-management-read-only-permission-item>
+        </template>
+
+        <template is="dom-if" if="[[!hasReadOnlyPermissions_]]">
+          <app-management-permission-item class="subpermission-row"
+            app="[[app_]]"
+            icon="[[item.icon]]"
+            permission-label="[[i18n(item.labelId)]]"
+            permission-type="[[item.type]]">
+          </app-management-permission-item>
+        </template>
+      </template>
+
+      <template
+          is="dom-if"
+          if="[[noPermissionsRequested_(app_, permissionDefinitions_)]]">
         <div id="noPermissions" class="permission-text-row">
           $i18n{appManagementNoPermissions}
         </div>

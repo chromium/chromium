@@ -151,6 +151,12 @@
   <message name="IDS_APP_MANAGEMENT_ARC_MANAGE_PERMISSIONS" desc="Label for a link to manage permissions and more settings for an app.">
     Manage permissions and settings
   </message>
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED" desc="Label explaining that access to a permission (e.g. camera access) is allowed for an app.">
+    Allowed
+  </message>
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_DENIED" desc="Label explaining that access to a permission (e.g. camera access) is denied for an app.">
+    Denied
+  </message>
 
   <!-- File Handling -->
   <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_HEADER" desc="Main text for toggling a web app's ability to use the File Handling API. This controls whether the app can appear in an 'Open With' list in a file's context menu.">
