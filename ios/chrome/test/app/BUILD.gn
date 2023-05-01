@@ -90,6 +90,7 @@ source_set("test_support") {
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/browser/ui/main",
+    "//ios/chrome/browser/ui/passwords/bottom_sheet:common",
     "//ios/chrome/browser/ui/settings",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/password",

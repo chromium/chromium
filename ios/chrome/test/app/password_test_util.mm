@@ -74,4 +74,12 @@ SetUpAndReturnMockReauthenticationModuleForExportFromSettings() {
       mock_reauthentication_module);
 }
 
+std::unique_ptr<ScopedPasswordSuggestionBottomSheetReauthModuleOverride>
+SetUpAndReturnMockReauthenticationModuleForPasswordSuggestionBottomSheet() {
+  MockReauthenticationModule* mock_reauthentication_module =
+      [[MockReauthenticationModule alloc] init];
+  return ScopedPasswordSuggestionBottomSheetReauthModuleOverride::
+      MakeAndArmForTesting(mock_reauthentication_module);
+}
+
 }  // namespace

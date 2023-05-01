@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/ui/passwords/bottom_sheet/scoped_password_suggestion_bottom_sheet_reauth_module_override.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,6 +37,9 @@
 // This view controller is used to display the bottom sheet.
 @property(nonatomic, strong)
     PasswordSuggestionBottomSheetViewController* viewController;
+
+// Module handling reauthentication before accessing sensitive data.
+@property(nonatomic, strong) id<ReauthenticationProtocol> reauthModule;
 
 @end
 
@@ -62,13 +67,19 @@
             IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
                 browserState, ServiceAccessType::EXPLICIT_ACCESS));
 
+    self.reauthModule =
+        ScopedPasswordSuggestionBottomSheetReauthModuleOverride::instance
+            ? ScopedPasswordSuggestionBottomSheetReauthModuleOverride::instance
+                  ->module
+            : [[ReauthenticationModule alloc] init];
     self.mediator = [[PasswordSuggestionBottomSheetMediator alloc]
            initWithWebStateList:browser->GetWebStateList()
                   faviconLoader:IOSChromeFaviconLoaderFactory::
                                     GetForBrowserState(browserState)
                     prefService:browserState->GetPrefs()
                          params:params
-        savedPasswordsPresenter:_savedPasswordsPresenter.get()];
+        savedPasswordsPresenter:_savedPasswordsPresenter.get()
+                   reauthModule:_reauthModule];
     self.viewController.delegate = self.mediator;
 
     self.mediator.consumer = self.viewController;

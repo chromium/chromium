@@ -143,6 +143,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
     "//ios/chrome/browser/ui/partial_translate:eg_app_support+eg2",
     "//ios/chrome/browser/ui/passwords:eg_app_support+eg2",
+    "//ios/chrome/browser/ui/passwords/bottom_sheet:eg_app_support+eg2",
     "//ios/chrome/browser/ui/permissions:eg_app_support+eg2",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",

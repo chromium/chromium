@@ -73,22 +73,27 @@
 
   // Preference service from the application context.
   PrefService* _prefService;
+
+  // Module containing the reauthentication mechanism.
+  __weak id<ReauthenticationProtocol> _reauthenticationModule;
 }
 
 @synthesize defaultGlobeIconAttributes = _defaultGlobeIconAttributes;
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                       faviconLoader:(FaviconLoader*)faviconLoader
-                         prefService:(PrefService*)prefService
-                              params:(const autofill::FormActivityParams&)params
-             savedPasswordsPresenter:
-                 (raw_ptr<password_manager::SavedPasswordsPresenter>)
-                     passwordPresenter {
+- (instancetype)
+       initWithWebStateList:(WebStateList*)webStateList
+              faviconLoader:(FaviconLoader*)faviconLoader
+                prefService:(PrefService*)prefService
+                     params:(const autofill::FormActivityParams&)params
+    savedPasswordsPresenter:
+        (raw_ptr<password_manager::SavedPasswordsPresenter>)passwordPresenter
+               reauthModule:(id<ReauthenticationProtocol>)reauthModule {
   if (self = [super init]) {
     _needsRefocus = true;
     _frameId = params.frame_id;
     _faviconLoader = faviconLoader;
     _prefService = prefService;
+    _reauthenticationModule = reauthModule;
 
     _webStateList = webStateList;
     web::WebState* activeWebState = _webStateList->GetActiveWebState();

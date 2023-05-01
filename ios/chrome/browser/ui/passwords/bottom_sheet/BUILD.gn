@@ -16,6 +16,7 @@ source_set("bottom_sheet") {
     "password_suggestion_bottom_sheet_view_controller.mm",
   ]
   deps = [
+    ":common",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
     "//components/password_manager/core/browser",
@@ -42,9 +43,57 @@ source_set("bottom_sheet") {
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+  ]
+}
+
+source_set("common") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "scoped_password_suggestion_bottom_sheet_reauth_module_override.h",
+    "scoped_password_suggestion_bottom_sheet_reauth_module_override.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/reauthentication",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "password_suggestion_bottom_sheet_app_interface.h",
+    "password_suggestion_bottom_sheet_app_interface.mm",
+  ]
+  deps = [
+    ":common",
+    "//base",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "password_suggestion_bottom_sheet_app_interface.h",
+    "password_suggestion_bottom_sheet_app_interface_stub.mm",
+  ]
+  deps = [
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }
 

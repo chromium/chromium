@@ -20,6 +20,7 @@ class PrefService;
 class WebStateList;
 
 @protocol PasswordSuggestionBottomSheetConsumer;
+@protocol ReauthenticationProtocol;
 
 // This mediator fetches a list suggestions to display in the bottom sheet.
 // It also manages filling the form when a suggestion is selected, as well
@@ -33,7 +34,8 @@ class WebStateList;
                               params:(const autofill::FormActivityParams&)params
              savedPasswordsPresenter:
                  (raw_ptr<password_manager::SavedPasswordsPresenter>)
-                     passwordPresenter;
+                     passwordPresenter
+                        reauthModule:(id<ReauthenticationProtocol>)reauthModule;
 
 // Disconnects the mediator.
 - (void)disconnect;
