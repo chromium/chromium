@@ -37,6 +37,14 @@
                 "light": "rgba(255, 255, 255, 1)",
                 "dark": "blend(rgba(255, 255, 255, 0.04), cros.ref.primary50)"
             }
+        },
+        {
+            "token_name": "cros.sys.blend-opac",
+            "css_variable": "--cros-sys-blend_opac",
+            "mode_values": {
+                "light": "blend(rgba(255, 255, 255, 1), 40, cros.ref.primary50)",
+                "dark": "blend(rgba(255, 255, 255, 1), 40, cros.ref.primary50)"
+            }
         }
     ]
 }

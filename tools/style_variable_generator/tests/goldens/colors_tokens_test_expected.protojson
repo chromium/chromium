@@ -36,5 +36,12 @@ test_colors: [
       light_value: 0xFFFFFFFF,
       dark_value: 0xFF292A2D
     }
+  },
+  {
+    key: "cros.sys.blend-opac",
+    value: {
+      light_value: 0xFFFFFFFF,
+      dark_value: 0xFFFFFFFF
+    }
   }
 ]

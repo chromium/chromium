@@ -14,5 +14,6 @@ export const CROS_SYS_PRIMARY = css`var(--cros-sys-primary)`;
 export const CROS_SYS_ON_PRIMARY = css`var(--cros-sys-on_primary)`;
 export const CROS_SYS_PRIMARY_CONTAINER = css`var(--cros-sys-primary_container)`;
 export const CROS_SYS_ON_PRIMARY_CONTAINER = css`var(--cros-sys-on_primary_container)`;
+export const CROS_SYS_BLEND_OPAC = css`var(--cros-sys-blend_opac)`;
 export const CROS_SYS_DISABLED_OPACITY = css`var(--cros-sys-disabled_opacity)`;
 export const CROS_SYS_REFERENCE_OPACITY = css`var(--cros-sys-reference_opacity)`;

@@ -104,15 +104,18 @@ def ParseColor(value):
         match = re.match(r'^blend\((.*)\)$', value)
         if not match:
             return None
-        color = ColorBlend()
 
         values = list(split_args(match.group(1)))
         if len(values) == 2:
-            color.blended_colors.append(ParseColor(values[0]))
-            color.blended_colors.append(ParseColor(values[1]))
-            return color
+            # blend(color1, color2)
+            return ColorBlend([ParseColor(values[0]), ParseColor(values[1])])
+        elif len(values) == 3:
+            # blend(color1, blendPercentage%, color2)
+            blendPercentage = int(re.match(r'(\d+)%', values[1]).group(1))
+            return ColorBlend([ParseColor(values[0]),
+                               ParseColor(values[2])], blendPercentage)
 
-        raise ValueError('blend() expected to have 2 colors')
+        raise ValueError('Unexpected number of arguments for blend()')
 
     def ParseVariableReference(value):
         match = re.match(r'^\$([\w\.\-]+)$', value)
@@ -242,15 +245,29 @@ class ColorBlend(Color):
     '''This color is the result of blending two other colors
 
     It uses the "A over B" operation, where A is blended_colors[0] and B is
-    blended_colors[1].
+    blended_colors[1]. The mix percentace is `opacity`. If `opacity` is not
+    provided, the mix percentage may be taken from A's opacity.
     '''
-    def __init__(self):
+    def __init__(self, colors=[], blendPercentage=None):
         super().__init__()
-        self.blended_colors = []
+        if len(colors) not in [0, 2]:
+            raise ValueError(
+                f'Can only color-mix 2 colors. Found: {len(colors)}')
+        if not all(isinstance(c, Color) for c in colors):
+            raise ValueError(f'Non-Color found in {colors}')
+
+        self.blended_colors = colors
+        self.blendPercentage = blendPercentage
 
     def GetFormula(self):
-        return 'blend(%s, %s)' % (self.blended_colors[0].GetFormula(),
-                                  self.blended_colors[1].GetFormula())
+        if self.blendPercentage is None:
+            return 'blend(%s, %s)' % (self.blended_colors[0].GetFormula(),
+                                      self.blended_colors[1].GetFormula())
+        return 'blend(%s, %s, %s)' % (self.blended_colors[0].GetFormula(),
+                                      self.blendPercentage,
+                                      self.blended_colors[1].GetFormula())
 
     def __repr__(self):
-        return 'blend(' + repr(self.blended_colors) + ")"
+        return (
+            f'blend({repr(self.blended_colors)}, {repr(self.blendPercentage)})'
+        )

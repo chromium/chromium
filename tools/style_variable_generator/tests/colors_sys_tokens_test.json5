@@ -30,6 +30,7 @@
       light: "$white",
       dark: "blend(rgba($white.rgb, 0.04), $cros.ref.primary50)",
     },
+    'blend-opac': "blend(rgb($white.rgb), 40%, $cros.ref.primary50)",
   },
   opacities: {
     'disabled-opacity': 0.38,

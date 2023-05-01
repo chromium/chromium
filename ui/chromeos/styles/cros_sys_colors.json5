@@ -201,7 +201,11 @@
     'base-elevated': {
       light: '$cros.ref.neutralvariant100',
       /* In dark mode we layer primary80 @ 11% ontop of neutral80 @ 2% ontop of neutral 10. */
-      dark: 'blend(rgba($cros.ref.primary80.rgb, .11), blend(rgba($cros.ref.neutral80.rgb, .02), $cros.ref.neutral10))',
+      /* TODO(b/278121949): This should be:
+      dark: 'blend(rgba($cros.ref.primary80.rgb, .11),
+                   blend(rgba($cros.ref.neutral80.rgb, .02),
+                         $cros.ref.neutral10))' */
+      dark: 'blend(rgba($cros.ref.primary80.rgb, .11), $black)',
       generate_per_mode: true,
     },
 
