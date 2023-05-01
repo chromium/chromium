@@ -1,8 +1,8 @@
-# Security Sheriff ClusterFuzz instructions
+# Security Shepherd ClusterFuzz instructions
 
 [TOC]
 
-This page has instructions for [Security Sheriffs](sheriff.md) in how best to use
+This page has instructions for [Security Shepherds](shepherd.md) in how best to use
 [ClusterFuzz](https://clusterfuzz.com) to reproduce and label bugs.
 
 ## Basics

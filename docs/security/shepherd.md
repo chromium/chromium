@@ -1,4 +1,4 @@
-# Security Sheriff
+# Security Shepherd
 
 [TOC]
 
@@ -11,11 +11,11 @@ go/chrome-security-bugs](http://go/chrome-security-bugs).
 
 [Security Labels](security-labels.md).
 
-[Current Sheriffs](http://go/whos-the-sheriff).
+[Current Shepherds](http://go/whos-the-shepherd).
 
-[Sheriff Handoff Log](http://go/chrome-security-sheriff-handoff).
+[Shepherd Handoff Log](http://go/chrome-security-shepherd-handoff).
 
-You might also like the [HOWTO: Be A Security Sheriff
+You might also like the [HOWTO: Be A Security Shepherd
 deck](https://docs.google.com/presentation/d/1eISJXxyv7dUCGUKk_rvUI9t9s2xb98QY4d_-dZSa7Wg/edit#slide=id.p).
 
 The [Chrome Security FAQ](faq.md), [Extensions Security
@@ -24,18 +24,18 @@ FAQ](service-worker-security-faq.md) include commonly-raised questions about
 security and what is or is not considered a security bug. When triaging new
 bugs, you may want to reference these to see if there's an established stance.
 
-## What Is A Security Sheriff Or Marshal?
+## What Is A Security Shepherd?
 
-A security sheriff (as well as a security marshal) is a member of a rotation
+A security shepherd is a member of a rotation
 that occurs in 1-week time slots, starting on Tuesdays and ending the following
-Monday. All sheriffs and marshals are Googlers and so some links on this page
-might not be externally accessible (or indeed locked down to just Chrome
-Security Googlers).
+Monday. There is a primary and secondary shepherd on each rotation. All
+shepherds are Googlers and so some links on this page might not be externally
+accessible (or indeed locked down to just Chrome Security Googlers).
 
 [Here is the rotation
 schedule](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0).
 
-Sheriffs and marshals ensure that all incoming security issues are triaged
+Shepherds ensure that all incoming security issues are triaged
 quickly and correctly. We aim to have every bug triaged and assigned **within
 two business days** (preferably one). This does not include weekends, but please
 ensure you leave a clear queue before the weekend (i.e. on Friday, unless there
@@ -43,19 +43,19 @@ is a holiday) and check first thing after the weekend (i.e. on Monday morning,
 unless there is a holiday).
 
 
-## When Am I The Security Sheriff Or Marshal?
+## When Am I The Primary or Secondary Shepherd?
 
 You should get a calendar invite. Please accept it to acknowledge. If you need
 to swap shifts, ask around for a volunteer and then just update the
 [rotation sheet](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0)
 and wait 10 minutes for the calendar invites to be updated.
 
-## I'm The Security Sheriff Or Marshal. What Do I Do?
+## I'm The Security Primary or Secondary Shepherd. What Do I Do?
 
-Each week has a sheriff and marshal, and during their rotation both have
+Each week has a primary and secondary, and during their rotation both have
 various important responsibilities:
 
-### Sheriff
+### Primary Shepherd
 
 * Look at every incoming security bug report on the
   [dashboard](http://go/chrome-security-bugs). Ensure each is accurately
@@ -63,45 +63,45 @@ various important responsibilities:
 * Don't forget to fully triage the low severity bugs. Once a bug is labeled with
   `Security_Severity-Low `, it disappears from the first sheet and may slip
   under your radar.
-* Keep the [Sheriff Handoff Log](http://go/chrome-security-sheriff-handoff) up
+* Keep the [Shepherd Handoff Log](http://go/chrome-security-shepherd-handoff) up
   to date.
 * Shout for help if the incoming bug rate is too high ([suggested vocal
   exercises](https://youtu.be/5y_SbnPx_cE?t=37s)). The first person to ask is
-  the marshal.
+  the secondary.
 * Make sure all **new bug reports** are triaged completely. That means no red
   cells on the top of the dashboard. Double-check that OS flags are set
   properly. For most of the bugs, typically more than one OS is affected, but
   the dashboard will not highlight it in red.
 * Stay sharp, keep in shape ([hand-stand
   pushups](https://www.youtube.com/watch?v=jZ1ZDlLImF8#t=50) are standard for
-  the sheriff), and remember you may be [called upon during
+  the primary shepherd), and remember you may be [called upon during
   emergencies](https://www.youtube.com/watch?v=buHaKYL9Jhg).
 
-### Marshal
+### Secondary Shepherd
 
 * Ensure that all incoming queries to the
   [security@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/security),
   [security-dev@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/security-dev),
   and
   [chrome-security@google.com](https://groups.google.com/a/google.com/forum/#!forum/chrome-security)
-  lists get a reply (by someone; not necessarily the marshal themselves). See
+  lists get a reply (by someone; not necessarily the secondary themselves). See
   [go/chrome-security-emails](https://goto.google.com/chrome-security-emails)
   for a dashboard.
   * Note: external emails will always come in on security@chromium.org or
     security-dev@chromium.org, as chrome-security@google.com is a Google-only
     list, but all need to be triaged.
   * When triaging an email to be handled off of the list, make sure to bcc: the
-    list that it arrived on, so that other people including future marshals can
+    list that it arrived on, so that other people including future secondaries can
     see that it has been handled.
   * Some of these emails are requests for inclusion of third party code.
-    By the time you hand over to the next Marshal, please
+    By the time you hand over to the next Secondary, please
     ensure these are either completed or have been acknowledged by some other
     owner. If not, you may need to do them yourself. Please see
     [How to do Chrome Third-Party Security Reviews](https://goto.google.com/how-to-do-chrome-third-party-security-reviews)
     for hints.
 * Look at the open security bug reports and check that progress is occurring.
   This does not apply to the **new bug reports** (these are handled by the
-  sheriff). The rule of thumb is *if there is any red cell on the dashboard, it
+  primary shepherd). The rule of thumb is *if there is any red cell on the dashboard, it
   needs your attention*: that especially includes the "last updated" column.
   (Our [severity guidelines](severity-guidelines.md) contain the expected duration
   for shipping fixes, but remember, to get a fix to all users in - say - 60
@@ -109,7 +109,7 @@ various important responsibilities:
   Hints:
   * Don't just add a comment to the bug: sometimes they can disappear into spam.
     (Although a hand-crafted, meaningful comment can be effective).
-  * Contact via chat or e-mail (ideally, also comment on the bug so other marshals
+  * Contact via chat or e-mail (ideally, also comment on the bug so other secondaries
     can see you did so).
   * CC more people!
   * Think about what you can do to unblock the bug. What would _you_ do next?
@@ -122,9 +122,9 @@ various important responsibilities:
     thumb, perhaps expect to spend a solid ten hours progressing bugs during
     your shift.
   * Use the 'last updated' column to avoid duplicating the work of the previous
-    marshal.
+    secondary.
 * Stay sharp, keep in shape ([finger
-  exercises](https://youtu.be/20elMaVZ9lg?t=47s) are standard for the marshal),
+  exercises](https://youtu.be/20elMaVZ9lg?t=47s) are standard for the secondary),
   and remember you may be called upon during emergencies.
 
 ## Life Of A Security Bug
@@ -194,7 +194,7 @@ i like that.")
 
 #### Step 1. Reproduce legitimate-sounding issues.
 
-Ideally, sheriffs should reproduce each bug before triaging, but being efficient
+Ideally, primary shepherds should reproduce each bug before triaging, but being efficient
 is also important. It's fine to delegate reproducing bugs in the following
 cases:
 
@@ -232,7 +232,7 @@ help.
 Note that **even when you are handing off triage to another team or point of
 contact**, it is your responsibility to ensure that the `Security_Severity` and
 `FoundIn` fields are set as soon as possible (and definitely before the end of
-your sheriffing shift). Work with your point of contact to set these. For
+your shepherding shift). Work with your point of contact to set these. For
 instance, you may want to set initial/provisional values for these fields and
 ask them whether it matches their understanding.
 
@@ -242,15 +242,15 @@ Tips for reproducing bugs:
   on your local machine if you're completely certain that you understand
   100% of the test case. If not, use a disposable virtual machine. If you're
   inside Google, a good way to do this is using
-  [Redshell](https://goto.google.com/redshell-for-chrome-sheriffs).
+  [Redshell](https://goto.google.com/redshell-for-chrome-shepherds).
 * For any sort of a crash, CHECK/DCHECK or memory safety problem
-  [use ClusterFuzz](clusterfuzz-for-sheriffs.md). As well as reproducing bugs,
+  [use ClusterFuzz](clusterfuzz-for-shepherds.md). As well as reproducing bugs,
   ClusterFuzz will help you with lots of subsequent bisection and labelling
   tasks. Currently ClusterFuzz cannot guard against malicious test cases,
   so be just as paranoid as if you were running a test case locally.
 * [Instructions for using an Android emulator can be found
   here](/docs/android_emulator.md). If you're inside Google, we have a
-  [guide for testing using Google infrastructure](https://goto.google.com/android-for-chrome-sheriffs).
+  [guide for testing using Google infrastructure](https://goto.google.com/android-for-chrome-shepherds).
 * When you can't just build from a specific branch locally, check out
   [https://dev.chromium.org/getting-involved/dev-channel](https://dev.chromium.org/getting-involved/dev-channel)
   or
@@ -347,8 +347,8 @@ was filed using the Security template):
   closed, add **Restrict-View-SecurityEmbargo**. This should be done if the
   reporter wishes to remain anonymous, if the description or comments contain
   PII, or if the bug contains malware samples.
-* **Security_Severity** - your responsibility as Sheriff.
-* **FoundIn** - your responsibility as Sheriff.
+* **Security_Severity** - your responsibility as Shepherd.
+* **FoundIn** - your responsibility as Shepherd.
 * **reward_to** - if the bug was filed internally on behalf of somebody
   external (for instance, a @chromium.org email reporting "I'm filing this on
   behalf of" and the like). This is also very important; please check.
@@ -391,7 +391,7 @@ explanatory text.
 ### Find An Owner To Fix The Bug
 
 That owner can be you! Otherwise, this is one of the more grey areas of
-sheriffing. With experience, you'll figure out good goto people for certain
+shepherding. With experience, you'll figure out good goto people for certain
 areas. Until then, here are some tips.
 
 **Determine the correct component before continuing.** It's not enough on its
@@ -439,7 +439,7 @@ affect(s) the relevant area of code.)
 fixed.** Check the stale bug list on the security dashboard and try resolve
 some of the problems that might be blocking these issues. If you get in touch
 with a bug owner off of the issue tracker, be sure to have them update the bug
-so that future sheriffs are aware of the status.
+so that future shepherds are aware of the status.
 
 > Q: Why isn’t setting the component alone good enough?
 >
@@ -461,4 +461,4 @@ instructions](https://docs.google.com/document/d/17JeYt3c1GgghYoxy4NKJnlxrteAX8F
 
 ## End Of Rotation
 
-Update the [Sheriff Handoff Log](http://go/chrome-security-sheriff-handoff).
+Update the [Shepherd Handoff Log](http://go/chrome-security-shepherd-handoff).
