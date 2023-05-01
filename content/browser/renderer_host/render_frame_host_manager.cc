@@ -346,6 +346,24 @@ void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
       });
 }
 
+// If `site_instance` is for a main frame, try to reuse an existing process
+// when an experimental process-per-site-up-to-main-frame-threshold feature is
+// enabled, subject to a threshold for the maximum number of main frames that
+// the process can host.
+void UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
+    SiteInstanceImpl* site_instance,
+    FrameTreeNode* frame_tree_node) {
+  if (base::FeatureList::IsEnabled(
+          features::kProcessPerSiteUpToMainFrameThreshold) &&
+      !base::FeatureList::IsEnabled(features::kDisableProcessReuse) &&
+      site_instance->RequiresDedicatedProcess() &&
+      frame_tree_node->IsOutermostMainFrame()) {
+    site_instance->set_process_reuse_policy(
+        SiteInstanceImpl::ProcessReusePolicy::
+            REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD);
+  }
+}
+
 }  // namespace
 
 RenderFrameHostManager::IsSameSiteGetter::IsSameSiteGetter()
@@ -429,6 +447,8 @@ void RenderFrameHostManager::InitRoot(
               : site_instance->GetBrowsingInstanceId());
   browsing_context_state->CommitFramePolicy(initial_main_frame_policy);
   browsing_context_state->SetFrameName(name, "");
+  UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
+      site_instance, frame_tree_node_);
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitRoot, site_instance,
       /*frame_routing_id=*/MSG_ROUTING_NONE,
@@ -2395,6 +2415,9 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
               REUSE_PENDING_OR_COMMITTED_SITE);
     }
   }
+
+  UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
+      new_instance.get(), frame_tree_node_);
 
   bool is_proactive_swap = (should_swap_result->type() ==
                             BrowsingContextGroupSwapType::kProactiveSwap);

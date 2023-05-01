@@ -196,6 +196,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
     // randomly.
     REUSE_PENDING_OR_COMMITTED_SITE,
 
+    // Similar to REUSE_PENDING_OR_COMMITTED_SITE, but limits the number of
+    // main frames a RenderProcessHost can host to a certain threshold.
+    REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD,
+
     // In this mode, SiteInstances don't proactively reuse processes. An
     // existing process with an unmatched service worker for the site is reused
     // only for navigations, not for service workers. When the process limit has
