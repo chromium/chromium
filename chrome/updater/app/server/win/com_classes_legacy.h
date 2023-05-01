@@ -35,9 +35,12 @@ namespace updater {
 // Implements `IDispatch` for interface `T`, where `T` is a dual interface. The
 // IDispatch implementation relies on the typelib/typeinfo for interface `T`.
 //
+// The REFIIDs `iid_user` and `iid_system` is to allow for distinct TypeLibs to
+// be registered and marshaled for user/system.
+//
 // Usage: derive your COM class that implements interface `T` from
-// `IDispatchImpl<T>`.
-template <typename T>
+// `IDispatchImpl<T, iid_user, iid_system>`.
+template <typename T, REFIID iid_user, REFIID iid_system>
 class IDispatchImpl
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
@@ -48,6 +51,16 @@ class IDispatchImpl
   IDispatchImpl(const IDispatchImpl&) = delete;
   IDispatchImpl& operator=(const IDispatchImpl&) = delete;
   ~IDispatchImpl() override = default;
+
+  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
+    return Microsoft::WRL::RuntimeClass<
+        Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, T,
+        IDispatch>::QueryInterface(riid == (IsSystemInstall() ? iid_system
+                                                              : iid_user)
+                                       ? __uuidof(T)
+                                       : riid,
+                                   object);
+  }
 
   // Overrides for IDispatch.
   IFACEMETHODIMP GetTypeInfoCount(UINT* type_info_count) override {
@@ -140,7 +153,10 @@ class IDispatchImpl
 
 // This class implements the legacy Omaha3 IGoogleUpdate3Web interface as
 // expected by Chrome's on-demand client.
-class LegacyOnDemandImpl : public IDispatchImpl<IGoogleUpdate3Web> {
+class LegacyOnDemandImpl
+    : public IDispatchImpl<IGoogleUpdate3Web,
+                           __uuidof(IGoogleUpdate3WebUser),
+                           __uuidof(IGoogleUpdate3WebSystem)> {
  public:
   LegacyOnDemandImpl();
   LegacyOnDemandImpl(const LegacyOnDemandImpl&) = delete;
@@ -218,7 +234,10 @@ class LegacyProcessLauncherImpl
 //
 // Placeholders may be embedded within words, and appropriate quoting of
 // back-slash, double-quotes, space, and tab is applied if necessary.
-class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
+class LegacyAppCommandWebImpl
+    : public IDispatchImpl<IAppCommandWeb,
+                           __uuidof(IAppCommandWebUser),
+                           __uuidof(IAppCommandWebSystem)> {
  public:
   LegacyAppCommandWebImpl();
   LegacyAppCommandWebImpl(const LegacyAppCommandWebImpl&) = delete;

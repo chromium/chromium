@@ -100,7 +100,9 @@ std::string GetStringFromValue(const std::vector<std::string>& value) {
 namespace updater {
 
 // Implements `IAppVersionWeb`.
-class AppVersionWebImpl : public IDispatchImpl<IAppVersionWeb> {
+class AppVersionWebImpl : public IDispatchImpl<IAppVersionWeb,
+                                               __uuidof(IAppVersionWebUser),
+                                               __uuidof(IAppVersionWebSystem)> {
  public:
   AppVersionWebImpl() = default;
   AppVersionWebImpl(const AppVersionWebImpl&) = delete;
@@ -138,7 +140,9 @@ class AppVersionWebImpl : public IDispatchImpl<IAppVersionWeb> {
 
 // Implements `ICurrentState`. Initialized with a snapshot of the current state
 // of the install.
-class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
+class CurrentStateImpl : public IDispatchImpl<ICurrentState,
+                                              __uuidof(ICurrentStateUser),
+                                              __uuidof(ICurrentStateSystem)> {
  public:
   CurrentStateImpl() = default;
   CurrentStateImpl(const CurrentStateImpl&) = delete;
@@ -334,7 +338,9 @@ class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
 
 // This class implements the legacy Omaha3 IAppWeb interface as expected by
 // Chrome's on-demand client.
-class AppWebImpl : public IDispatchImpl<IAppWeb> {
+class AppWebImpl : public IDispatchImpl<IAppWeb,
+                                        __uuidof(IAppWebUser),
+                                        __uuidof(IAppWebSystem)> {
  public:
   AppWebImpl()
       : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -638,7 +644,9 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
 // This class implements the legacy Omaha3 IAppBundleWeb interface as expected
 // by Chrome's on-demand client.
-class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
+class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb,
+                                              __uuidof(IAppBundleWebUser),
+                                              __uuidof(IAppBundleWebSystem)> {
  public:
   AppBundleWebImpl() = default;
   AppBundleWebImpl(const AppBundleWebImpl&) = delete;
