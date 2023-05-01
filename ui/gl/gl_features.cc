@@ -76,7 +76,7 @@ bool IsDeviceBlocked(const char* field, const std::string& block_list) {
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAndroidFrameDeadline,
              "AndroidFrameDeadline",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
