@@ -201,7 +201,6 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
 }
 
 GrContextType ParseGrContextType(const base::CommandLine* command_line) {
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
   if (base::FeatureList::IsEnabled(features::kSkiaGraphite)) {
     [[maybe_unused]] auto value =
         command_line->GetSwitchValueASCII(switches::kSkiaGraphiteBackend);
@@ -215,13 +214,12 @@ GrContextType ParseGrContextType(const base::CommandLine* command_line) {
       return GrContextType::kGraphiteMetal;
     }
 #endif  // BUILDFLAG(SKIA_USE_METAL)
+    LOG(ERROR) << "Skia Graphite backend = \"" << value
+               << "\" not found - falling back to Ganesh!";
   }
-#endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
-
   if (features::IsUsingVulkan()) {
     return GrContextType::kVulkan;
   }
-
   return GrContextType::kGL;
 }
 

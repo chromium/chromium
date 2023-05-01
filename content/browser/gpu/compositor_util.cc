@@ -220,13 +220,11 @@ const GpuFeatureData GetGpuFeatureData(
      DisableInfo::Problem(
          "WebGPU has been disabled via blocklist or the command line."),
      false},
-#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
     {"skia_graphite",
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE),
      !base::FeatureList::IsEnabled(features::kSkiaGraphite),
      DisableInfo::NotProblem(), false},
-#endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE)
   };
   DCHECK(index < std::size(kGpuFeatureData));
   *eof = (index == std::size(kGpuFeatureData) - 1);
