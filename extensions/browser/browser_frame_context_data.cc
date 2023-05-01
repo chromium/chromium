@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -22,6 +23,8 @@ BrowserFrameContextData::CloneFrameContextData() const {
 
 bool BrowserFrameContextData::IsIsolatedApplication() const {
   return frame_ &&
+         content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
+             frame_->GetBrowserContext()) &&
          frame_->GetWebExposedIsolationLevel() >=
              content::WebExposedIsolationLevel::kMaybeIsolatedApplication;
 }
