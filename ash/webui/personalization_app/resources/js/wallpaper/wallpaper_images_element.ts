@@ -15,6 +15,7 @@ import '../../css/wallpaper.css.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {ColorScheme, CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import {dismissTimeOfDayBanner} from '../ambient/ambient_controller.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {setColorModeAutoSchedule, setColorSchemePref} from '../theme/theme_controller.js';
@@ -169,6 +170,7 @@ export class WallpaperImages extends WithPersonalizationStore {
         type: Array,
         computed:
             'computeTiles_(images_, imagesLoading_, collectionId, isDarkModeActive)',
+        observer: 'onTilesChanged_',
       },
 
       pendingTimeOfDayWallpaper_: Object,
@@ -273,6 +275,14 @@ export class WallpaperImages extends WithPersonalizationStore {
 
     const imageArr = images[collectionId]!;
     return getImageTiles(isDarkModeActive, imageArr);
+  }
+
+  private onTilesChanged_(tiles: ImageTile[]) {
+    if (tiles.some((tile => this.isTimeOfDayWallpaper_(tile)))) {
+      // Dismisses the banner after the Time of Day collection images are
+      // displayed.
+      dismissTimeOfDayBanner(this.getStore());
+    }
   }
 
   private getMainAriaLabel_(

@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {emptyState, GooglePhotosEnablementState, kDefaultImageSymbol, PersonalizationRouter, WallpaperActionName, WallpaperCollections, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -261,34 +261,4 @@ suite('WallpaperCollectionsTest', function() {
         Array.from(onlineTiles).map(item => item.infoText),
         'correct info text set for both online collections');
   });
-
-  test(
-      'dismisses the banner after clicking on time of day collection',
-      async () => {
-        personalizationStore.data.ambient.shouldShowTimeOfDayBanner = true;
-        personalizationStore.data.wallpaper.backdrop.collections =
-            wallpaperProvider.collections;
-        personalizationStore.data.wallpaper.backdrop.images = {
-          [wallpaperProvider.timeOfDayCollectionId]: wallpaperProvider.images,
-        };
-        personalizationStore.data.wallpaper.loading.collections = false;
-        personalizationStore.data.wallpaper.loading.images = {
-          [wallpaperProvider.timeOfDayCollectionId]: false,
-        };
-        wallpaperCollectionsElement = initElement(WallpaperCollections);
-        await waitAfterNextRender(wallpaperCollectionsElement);
-
-        const onlineTiles =
-            wallpaperCollectionsElement.shadowRoot!
-                .querySelectorAll<WallpaperGridItem>(`${
-                    WallpaperGridItem
-                        .is}[data-online][data-is-time-of-day-collection]`);
-        assertEquals(1, onlineTiles.length);
-
-        personalizationStore.setReducersEnabled(true);
-        onlineTiles[0]!.click();
-        assertFalse(
-            personalizationStore.data.ambient.shouldShowTimeOfDayBanner,
-            'banner is dismissed');
-      });
 });

@@ -6,7 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ColorScheme, OnlineImageType, PersonalizationRouter, TimeOfDayWallpaperDialog, WallpaperGridItem, WallpaperImages} from 'chrome://personalization/js/personalization_app.js';
-import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -349,6 +349,17 @@ suite('WallpaperImagesTest', function() {
         wallpaperImagesElement.shadowRoot!.querySelector(
             TimeOfDayWallpaperDialog.is),
         'dialog element exists');
+  });
+
+  test('dismiss time of day promo banner after showing images', async () => {
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.data.ambient.shouldShowTimeOfDayBanner = true;
+    wallpaperImagesElement =
+        await createWithDefaultData(wallpaperProvider.timeOfDayCollectionId);
+
+    assertFalse(
+        personalizationStore.data.ambient.shouldShowTimeOfDayBanner,
+        'banner is dismissed');
   });
 
   test('do not show time of day dialog with proper settings', async () => {
