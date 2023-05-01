@@ -379,6 +379,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   void EnableAccessibility() override;
   void HandleAccessibilityAction(
       const AccessibilityActionData& action_data) override;
+  void LoadOrReloadAccessibility() override;
 
   // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;
@@ -401,6 +402,14 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
 
   AccessibilityDocInfo GetAccessibilityDocInfoForTesting() const {
     return GetAccessibilityDocInfo();
+  }
+
+  int32_t next_accessibility_page_index_for_testing() const {
+    return next_accessibility_page_index_;
+  }
+
+  void set_next_accessibility_page_index_for_testing(int32_t index) {
+    next_accessibility_page_index_ = index;
   }
 
  private:

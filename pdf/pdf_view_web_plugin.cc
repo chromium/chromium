@@ -1909,16 +1909,22 @@ void PdfViewWebPlugin::EnableAccessibility() {
   if (accessibility_state_ == AccessibilityState::kLoaded)
     return;
 
-  if (accessibility_state_ == AccessibilityState::kOff)
-    accessibility_state_ = AccessibilityState::kPending;
-
-  if (document_load_state_ == DocumentLoadState::kComplete)
-    LoadAccessibility();
+  LoadOrReloadAccessibility();
 }
 
 void PdfViewWebPlugin::HandleAccessibilityAction(
     const AccessibilityActionData& action_data) {
   engine_->HandleAccessibilityAction(action_data);
+}
+
+void PdfViewWebPlugin::LoadOrReloadAccessibility() {
+  if (accessibility_state_ == AccessibilityState::kOff) {
+    accessibility_state_ = AccessibilityState::kPending;
+  }
+
+  if (document_load_state_ == DocumentLoadState::kComplete) {
+    LoadAccessibility();
+  }
 }
 
 void PdfViewWebPlugin::OnViewportChanged(

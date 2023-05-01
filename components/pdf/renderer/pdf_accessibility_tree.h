@@ -127,6 +127,8 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   void OnDestruct() override;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void CreateOcrService();
+
   // Removes the image node in the accessibility tree with the specified ID, and
   // adds a page node and its child nodes built from OCR results. OCR results
   // are provided in the format of AXTreeUpdate, which is used for storing both
@@ -205,8 +207,10 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   std::unique_ptr<gfx::Transform> MakeTransformFromViewInfo() const;
 
   // Handles an accessibility change only if there is a valid
-  // `RenderAccessibility` for the frame.
-  void MaybeHandleAccessibilityChange();
+  // `RenderAccessibility` for the frame. `LoadAccessibility()` will be
+  // triggered in `PdfViewWebPlugin` when `always_load_or_reload_accessibility`
+  // is true, even if the accessibility state is `AccessibilityState::kLoaded`.
+  void MaybeHandleAccessibilityChange(bool always_load_or_reload_accessibility);
 
   // Returns a weak pointer for an instance of this class.
   base::WeakPtr<PdfAccessibilityTree> GetWeakPtr() {
