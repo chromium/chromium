@@ -3637,21 +3637,6 @@
             ]
         }
     ],
-    "CrosHiddenNetworkMigration": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HiddenNetworkMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrosLazyLoginWebUI": [
         {
             "platforms": [
