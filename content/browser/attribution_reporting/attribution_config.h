@@ -105,6 +105,9 @@ struct CONTENT_EXPORT AttributionConfig {
     base::TimeDelta min_delay = kDefaultMinDelay;
     base::TimeDelta delay_span = kDefaultDelaySpan;
 
+    double null_reports_rate_include_source_registration_time = .008;
+    double null_reports_rate_exclude_source_registration_time = .05;
+
     // When adding new members, the corresponding `Validate()` definition and
     // `operator==()` definition in `attribution_interop_parser_unittest.cc`
     // should also be updated.

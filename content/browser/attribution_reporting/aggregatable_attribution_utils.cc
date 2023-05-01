@@ -43,9 +43,7 @@ namespace {
 std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
   // TODO(csharrison, linnan): Validate that `time` is valid (e.g. not null /
   // inf).
-  base::Time rounded =
-      base::Time::UnixEpoch() +
-      (time - base::Time::UnixEpoch()).FloorToMultiple(base::Days(1));
+  base::Time rounded = RoundDownToWholeDaySinceUnixEpoch(time);
   return base::NumberToString(rounded.ToJavaTime() /
                               base::Time::kMillisecondsPerSecond);
 }
@@ -189,6 +187,11 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           report.GetReportingOrigin(), debug_mode, std::move(additional_fields),
           AttributionReport::CommonAggregatableData::kVersion,
           AttributionReport::CommonAggregatableData::kApiIdentifier));
+}
+
+base::Time RoundDownToWholeDaySinceUnixEpoch(base::Time time) {
+  return base::Time::UnixEpoch() +
+         (time - base::Time::UnixEpoch()).FloorToMultiple(base::Days(1));
 }
 
 }  // namespace content

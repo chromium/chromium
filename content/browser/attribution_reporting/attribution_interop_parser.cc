@@ -193,6 +193,8 @@ class AttributionInteropParser {
           base::Minutes(aggregatable_report_delay_span);
     }
 
+    // TODO(linnan): Parse null reports rate if it's supported in interop tests.
+
     return error_stream_.str();
   }
 

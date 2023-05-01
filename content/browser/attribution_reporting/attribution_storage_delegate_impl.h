@@ -139,6 +139,10 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   base::Time ReportTimeAtWindow(const CommonSourceInfo&,
                                 const std::vector<base::TimeDelta>& deadlines,
                                 int window_index) const;
+  std::vector<NullAggregatableReport> GetNullAggregatableReportsImpl(
+      const AttributionTrigger&,
+      base::Time trigger_time,
+      absl::optional<base::Time> attributed_source_time) const;
 };
 
 }  // namespace content

@@ -11,7 +11,10 @@
 #include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/features.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
+#include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
@@ -28,6 +31,8 @@ namespace {
 using ::attribution_reporting::mojom::SourceType;
 using ::testing::AllOf;
 using ::testing::Ge;
+using ::testing::IsEmpty;
+using ::testing::Le;
 using ::testing::Lt;
 
 using FakeReport = ::content::AttributionStorageDelegate::FakeReport;
@@ -651,6 +656,59 @@ TEST_F(AttributionStorageDelegateImplTestInvalidFeatureConfigured,
       AttributionStorageDelegateImpl().GetAggregatableReportTime(trigger_time),
       AllOf(Ge(trigger_time + base::Minutes(10)),
             Lt(trigger_time + base::Hours(1))));
+}
+
+TEST(AttributionStorageDelegateImplTest,
+     NullAggregatableReports_IncludeSourceRegistrationTime) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      attribution_reporting::kAttributionReportingNullAggregatableReports);
+
+  const auto trigger = DefaultTrigger();
+
+  EXPECT_THAT(AttributionStorageDelegateImpl()
+                  .GetNullAggregatableReports(
+                      trigger, /*trigger_time=*/base::Time::Now(),
+                      /*attributed_source_time=*/absl::nullopt)
+                  .size(),
+              Le(31u));
+
+  base::Time attributed_source_time = base::Time::Now() - base::Days(1);
+  auto null_reports =
+      AttributionStorageDelegateImpl().GetNullAggregatableReports(
+          trigger, /*trigger_time=*/base::Time::Now(), attributed_source_time);
+  EXPECT_THAT(null_reports.size(), Lt(31u));
+
+  auto same_source_time_report =
+      base::ranges::find_if(null_reports, [&](const auto& null_report) {
+        return RoundDownToWholeDaySinceUnixEpoch(
+                   null_report.fake_source_time) ==
+               RoundDownToWholeDaySinceUnixEpoch(attributed_source_time);
+      });
+  EXPECT_TRUE(same_source_time_report == null_reports.end());
+}
+
+TEST(AttributionStorageDelegateImplTest,
+     NullAggregatableReports_ExcludeSourceRegistrationTime) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      attribution_reporting::kAttributionReportingNullAggregatableReports);
+
+  const auto trigger = TriggerBuilder()
+                           .SetSourceRegistrationTimeConfig(
+                               attribution_reporting::mojom::
+                                   SourceRegistrationTimeConfig::kExclude)
+                           .Build();
+
+  EXPECT_THAT(AttributionStorageDelegateImpl()
+                  .GetNullAggregatableReports(
+                      trigger, /*trigger_time=*/base::Time::Now(),
+                      /*attributed_source_time=*/absl::nullopt)
+                  .size(),
+              Le(1u));
+
+  EXPECT_THAT(AttributionStorageDelegateImpl().GetNullAggregatableReports(
+                  trigger, /*trigger_time=*/base::Time::Now(),
+                  /*attributed_source_time=*/base::Time::Now() - base::Days(1)),
+              IsEmpty());
 }
 
 }  // namespace

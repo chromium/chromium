@@ -83,9 +83,12 @@ bool operator==(AttributionConfig::EventLevelLimit a,
 bool operator==(AttributionConfig::AggregateLimit a,
                 AttributionConfig::AggregateLimit b) {
   const auto tie = [](AttributionConfig::AggregateLimit config) {
-    return std::make_tuple(config.max_reports_per_destination,
-                           config.aggregatable_budget_per_source,
-                           config.min_delay, config.delay_span);
+    return std::make_tuple(
+        config.max_reports_per_destination,
+        config.aggregatable_budget_per_source, config.min_delay,
+        config.delay_span,
+        config.null_reports_rate_include_source_registration_time,
+        config.null_reports_rate_exclude_source_registration_time);
   };
   return tie(a) == tie(b);
 }

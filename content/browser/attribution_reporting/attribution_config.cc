@@ -105,6 +105,16 @@ bool AttributionConfig::AggregateLimit::Validate() const {
     return false;
   }
 
+  if (null_reports_rate_include_source_registration_time < 0 ||
+      null_reports_rate_include_source_registration_time > 1) {
+    return false;
+  }
+
+  if (null_reports_rate_exclude_source_registration_time < 0 ||
+      null_reports_rate_exclude_source_registration_time > 1) {
+    return false;
+  }
+
   return true;
 }
 

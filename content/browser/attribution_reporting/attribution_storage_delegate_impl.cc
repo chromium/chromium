@@ -14,16 +14,22 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/attribution_reporting/features.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
+#include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/combinatorics.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -57,6 +63,37 @@ base::Time GetClampedTime(base::TimeDelta time_delta, base::Time source_time) {
   constexpr base::TimeDelta kMinDeltaTime = base::Days(1);
   return source_time +
          std::clamp(time_delta, kMinDeltaTime, kDefaultAttributionSourceExpiry);
+}
+
+bool GenerateWithRate(double r) {
+  DCHECK_GE(r, 0);
+  DCHECK_LE(r, 1);
+  return base::RandDouble() < r;
+}
+
+std::vector<AttributionStorageDelegate::NullAggregatableReport>
+GetNullAggregatableReportsForLookback(
+    const AttributionTrigger& trigger,
+    base::Time trigger_time,
+    absl::optional<base::Time> attributed_source_time,
+    int days_lookback,
+    double rate) {
+  std::vector<AttributionStorageDelegate::NullAggregatableReport> reports;
+  for (int i = 0; i <= days_lookback; i++) {
+    base::Time fake_source_time = trigger_time - base::Days(i);
+    if (attributed_source_time &&
+        RoundDownToWholeDaySinceUnixEpoch(fake_source_time) ==
+            *attributed_source_time) {
+      continue;
+    }
+
+    if (GenerateWithRate(rate)) {
+      reports.push_back(AttributionStorageDelegate::NullAggregatableReport{
+          .fake_source_time = fake_source_time,
+      });
+    }
+  }
+  return reports;
 }
 
 }  // namespace
@@ -243,10 +280,7 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
       double randomized_trigger_rate = GetRandomizedResponseRate(
           source.source_type(),
           ExpiryDeadline(source.source_time(), event_report_window_time));
-      DCHECK_GE(randomized_trigger_rate, 0);
-      DCHECK_LE(randomized_trigger_rate, 1);
-
-      return base::RandDouble() < randomized_trigger_rate
+      return GenerateWithRate(randomized_trigger_rate)
                  ? absl::make_optional(
                        GetRandomFakeReports(source, event_report_window_time))
                  : absl::nullopt;
@@ -396,8 +430,64 @@ AttributionStorageDelegateImpl::GetNullAggregatableReports(
     const AttributionTrigger& trigger,
     base::Time trigger_time,
     absl::optional<base::Time> attributed_source_time) const {
-  // TODO(crbug.com/1432558): Generate null reports.
-  return {};
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!base::FeatureList::IsEnabled(
+          attribution_reporting::
+              kAttributionReportingNullAggregatableReports)) {
+    return {};
+  }
+
+  switch (noise_mode_) {
+    case AttributionNoiseMode::kDefault:
+      return GetNullAggregatableReportsImpl(trigger, trigger_time,
+                                            attributed_source_time);
+    case AttributionNoiseMode::kNone:
+      return {};
+  }
+}
+
+std::vector<AttributionStorageDelegate::NullAggregatableReport>
+AttributionStorageDelegateImpl::GetNullAggregatableReportsImpl(
+    const AttributionTrigger& trigger,
+    base::Time trigger_time,
+    absl::optional<base::Time> attributed_source_time) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // See spec
+  // https://wicg.github.io/attribution-reporting-api/#generate-null-reports.
+
+  switch (trigger.registration().source_registration_time_config) {
+    case attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude: {
+      absl::optional<base::Time> rounded_attributed_source_time;
+      if (attributed_source_time) {
+        rounded_attributed_source_time =
+            RoundDownToWholeDaySinceUnixEpoch(*attributed_source_time);
+      }
+
+      static_assert(kDefaultAttributionSourceExpiry == base::Days(30),
+                    "update null reports rate");
+
+      return GetNullAggregatableReportsForLookback(
+          trigger, trigger_time, rounded_attributed_source_time,
+          /*days_lookback=*/
+          kDefaultAttributionSourceExpiry.RoundToMultiple(base::Days(1))
+              .InDays(),
+          config_.aggregate_limit
+              .null_reports_rate_include_source_registration_time);
+    }
+    case attribution_reporting::mojom::SourceRegistrationTimeConfig::kExclude: {
+      const bool has_real_report = attributed_source_time.has_value();
+      if (has_real_report) {
+        return {};
+      }
+
+      return GetNullAggregatableReportsForLookback(
+          trigger, trigger_time, attributed_source_time, /*days_lookback=*/0,
+          config_.aggregate_limit
+              .null_reports_rate_exclude_source_registration_time);
+    }
+  }
 }
 
 }  // namespace content
