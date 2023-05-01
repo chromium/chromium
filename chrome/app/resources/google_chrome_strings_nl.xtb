@@ -117,6 +117,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2929907241665500097">Chrome is niet geüpdatet. Er is een fout opgetreden. <ph name="BEGIN_LINK" />Updateproblemen en mislukte updates voor Chrome verhelpen<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Inloggen bij netwerk - Chrome</translation>
 <translation id="3019382870990049182">Herstarten om &amp;Chrome OS Flex te updaten</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome-extensies hadden toegang tot HID-apparaten}=1{Google Chrome-extensies hebben toegang tot 1 HID-apparaat}other{Google Chrome-extensies hebben toegang tot # HID-apparaten}}</translation>
 <translation id="303514781271618814">Chrome bevat nieuwe experimentele functies waarmee sites dezelfde browsefunctionaliteit kunnen leveren terwijl er minder van je gegevens worden gebruikt</translation>
 <translation id="3037838751736561277">Google Chrome bevindt zich in de achtergrondmodus.</translation>
 <translation id="3038232873781883849">Wachten op installatie...</translation>
@@ -222,6 +223,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4970880042055371251">Chrome OS-versie</translation>
 <translation id="4970947549776831107">Chrome heeft dit bestand geblokkeerd omdat dit type bestand gevaarlijk is</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Een Google Chrome-extensie had toegang tot HID-apparaten}=1{Een Google Chrome-extensie heeft toegang tot 1 HID-apparaat}other{Een Google Chrome-extensie heeft toegang tot # HID-apparaten}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Je beheerder sluit Chrome automatisch als deze 1 minuut niet wordt gebruikt. Browsegegevens worden verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.}other{Je beheerder sluit Chrome automatisch als deze # minuten niet wordt gebruikt. Browsegegevens worden verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.}}</translation>
 <translation id="5098668839038261629">Als de schakelaar aanstaat, word je ook uitgelogd van Chrome</translation>
 <translation id="5132929315877954718">Ontdek fantastische apps, games, extensies en thema's voor Google Chrome.</translation>

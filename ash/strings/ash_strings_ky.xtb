@@ -382,6 +382,7 @@
 <translation id="2791421900609674576">Токтогон жериңизден улантуу үчүн сунуштарды көрөсүз. Сунуштарды өчүрүү үчүн коё бербей басып туруңуз.</translation>
 <translation id="2792498699870441125">Alt+Издөө</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" /> тандалды</translation>
 <translation id="2805756323405976993">Колдонмолор</translation>
 <translation id="2814448776515246190">Сүрөткө жарым-жартылай тартып алуу</translation>
 <translation id="2819276065543622893">Сиз азыр чыгарыласыз.</translation>
@@ -1392,6 +1393,7 @@
 <translation id="7497767806359279797">Тилди жана баскычтопту тандоо</translation>
 <translation id="7508690557411636492">Өткөн айда ачылган</translation>
 <translation id="7509246181739783082">Өздүгүңүздү ырастаңыз</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" /> тандалган жок</translation>
 <translation id="7513622367902644023">Скриншот режими тандалды</translation>
 <translation id="7513922695575567867">Жылнаама, <ph name="DATE" /> аптасы, учурда <ph name="SELECTED_DATE" /> тандалып турат.</translation>
 <translation id="7514365320538308">Жүктөп алуу</translation>

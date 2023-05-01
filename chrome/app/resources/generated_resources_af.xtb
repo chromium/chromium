@@ -3977,6 +3977,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4412632005703201014">Chrome-apps migreer tans na progressiewe webapps. Jou organisasie het hierdie Chrome-app op jou blaaier geïnstalleer. As jy die progressiewe webapp van die applysinskrywing af wil oopmaak, moet jy eers jou administrateur kontak en hulle vra om die Chrome-app te deïnstalleer. Jy kan intussen na <ph name="EXTENSION_LAUNCH_URL" /> gaan om <ph name="EXTENSION_NAME" /> op die web oop te maak.</translation>
 <translation id="4412698727486357573">Hulpsentrum</translation>
 <translation id="4412992751769744546">Laat derdeparty-webkoekies toe</translation>
+<translation id="4413087696295876280">Lees ChromeOS Flex-toestelinligting en -data</translation>
 <translation id="44141919652824029">Laat "<ph name="APP_NAME" />" toe om die lys van jou aangehegte USB-toestelle te kry?</translation>
 <translation id="4414232939543644979">Nuwe incognito-venster</translation>
 <translation id="4414648713167199100">Gebruik jou Chromebook se mobiele data. Jou diensverskaffer kan bykomende fooie hef. Kan batterygebruik verhoog. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -6854,6 +6855,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6993000214273684335">Oortjie is verwyder uit naamlose groep – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Dateer tans Chrome-blaaier op</translation>
 <translation id="6995899638241819463">Waarsku jou as wagwoorde in 'n dataskending blootgestel is</translation>
+<translation id="6995984090981858039">Lees Chrome-toestelinligting en -data</translation>
 <translation id="6997553674029032185">Gaan na werf</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – aktiwiteitloglêer</translation>
 <translation id="6997707937646349884">Op jou toestelle:</translation>
@@ -7057,6 +7059,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7193051357671784796">Hierdie program is deur jou organisasie bygevoeg. Herbegin die program om installering te voltooi.</translation>
 <translation id="7193374945610105795">Geen wagwoorde vir <ph name="ORIGIN" /> is gestoor nie</translation>
 <translation id="7194873994243265344">Jou organisasie het hierdie lêer geblokkeer omdat dit geënkripteer is. Vra die eienaar om dit te dekripteer.</translation>
+<translation id="7196107899576756066">{COUNT,plural, =1{1 aflaai is aan die gang}other{# aflaaie is aan die gang}}</translation>
 <translation id="7196272782924897510">Gebruik ’n wagwoordsleutel van ’n ander toestel af?</translation>
 <translation id="7196913789568937443">Rugsteun in Google Drive. Stel jou data maklik terug of wissel enige tyd tussen toestelle. Jou rugsteun sluit programdata in. Jou rugsteune word in Google opgelaai en met jou Google-rekeningwagwoord geënkripteer. <ph name="BEGIN_LINK1" />Kom meer te wete<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Kry Google Search en Google-slimhede elke keer wanneer jy blaai</translation>

@@ -148,6 +148,7 @@
 <translation id="3600792891314830896">將播放音效的網站設為靜音</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3628308229821498208">建議搜尋</translation>
+<translation id="3707034683772193706">您瀏覽的網站可將少量資料儲存至 Chrome，主要用來證明您不是機器人</translation>
 <translation id="3721953990244350188">閂同顯示下一個可以執行嘅操作</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕按影片的左或右面兩下即可略過 10 秒</translation>
@@ -344,6 +345,7 @@
 <translation id="7302486331832100261">您通常會封鎖通知。如要允許，請輕按 [詳情]。</translation>
 <translation id="7366415735885268578">新增網站</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> 的設定</translation>
+<translation id="7406113532070524618">此設定運作時不需識別您的身份或允許網站查看您的瀏覽記錄，不過網站可在驗證過程中分享少量資料</translation>
 <translation id="7423098979219808738">事先詢問</translation>
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>
 <translation id="7425915948813553151">網站深色主題背景</translation>
@@ -433,6 +435,7 @@
 <translation id="8816026460808729765">禁止網站存取感應器</translation>
 <translation id="8823559166155093873">封鎖 Cookie</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">您隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資料，確認您應該是真人</translation>
 <translation id="8899807382908246773">滋擾性廣告</translation>
 <translation id="8903921497873541725">放大</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

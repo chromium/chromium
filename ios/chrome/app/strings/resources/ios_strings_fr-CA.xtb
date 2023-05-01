@@ -608,6 +608,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser vos favoris, vos mots de passe, votre historique et vos autres paramètres sur tous vos appareils</translation>
 <translation id="4986678885919050584">Retirer de cet appareil</translation>
 <translation id="498985224078955265">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chrome sur les deux appareils.</translation>
+<translation id="4996567535980789550">Activez la synchronisation pour gérer le contenu que vous voyez</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5016420433031926653">Envoyer à <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Me le rappeler plus tard</translation>
@@ -664,6 +665,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5433691172869980887">Nom d'utilisateur copié</translation>
 <translation id="5439599923922718668">Fréquemment consultés</translation>
+<translation id="5439618055789623719">Connecté en tant que <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Information sur la sécurité de la page</translation>
 <translation id="5443952882982198570">Cartes de crédit</translation>
 <translation id="5444892875087332195">Favoris</translation>
@@ -1233,6 +1235,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9034759925968272072">Vous ne serez pas déconnecté de votre compte Google. D'autres formes d'historique de navigation peuvent exister sur votre compte Google. Plus de détails à <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Afficher la version d'origine</translation>
 <translation id="9039373489628511875">Bande passante</translation>
+<translation id="9043368763795653245">Pour personnaliser votre flux Découvrir et Chrome, activez la synchronisation.</translation>
 <translation id="9055772144595778347">Connexion impossible</translation>
 <translation id="9055960261314198756">La protection renforcée est désactivée</translation>
 <translation id="9057972802061533987">L'abonnement a échoué. Un problème est survenu.</translation>

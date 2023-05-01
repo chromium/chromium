@@ -114,6 +114,7 @@
 <translation id="2929907241665500097">Chrome blev ikke opdateret, da der opstod en fejl. <ph name="BEGIN_LINK" />Løs problemer med opdatering af Chrome og mislykkede opdateringer.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Login på netværk – Chrome</translation>
 <translation id="3019382870990049182">Genstart for at opdatere &amp;ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome-udvidelser havde adgang til HID-enheder}=1{Google Chrome-udvidelser har adgang til 1 HID-enhed}one{Google Chrome-udvidelser har adgang til # HID-enhed}other{Google Chrome-udvidelser har adgang til # HID-enheder}}</translation>
 <translation id="303514781271618814">Chromium afprøver nye funktioner, der giver websites mulighed for at levere den samme browseroplevelse med færre af dine data</translation>
 <translation id="3037838751736561277">Google Chrome kører i baggrunden.</translation>
 <translation id="3038232873781883849">Venter på at installere…</translation>
@@ -219,6 +220,7 @@
 <translation id="4970880042055371251">ChromeOS-version</translation>
 <translation id="4970947549776831107">Chrome har blokeret denne fil, fordi denne type fil er skadelig</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{En Google Chrome-udvidelse havde adgang til HID-enheder}=1{En Google Chrome-udvidelse har adgang til 1 HID-enhed}one{En Google Chrome-udvidelse har adgang til # HID-enhed}other{En Google Chrome-udvidelse har adgang til # HID-enheder}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Din administrator lukker automatisk Chrome, når den ikke bruges i 1 minut. Browserdataene slettes. Disse kan omfatte historik, Autofyld og downloads.}one{Din administrator lukker automatisk Chrome, når den ikke bruges i # minut. Browserdataene slettes. Disse kan omfatte historik, Autofyld og downloads.}other{Din administrator lukker automatisk Chrome, når den ikke bruges i # minutter. Browserdataene slettes. Disse kan omfatte historik, Autofyld og downloads.}}</translation>
 <translation id="5098668839038261629">Når den er slået til, bliver du også logget ud af Chrome</translation>
 <translation id="5132929315877954718">Find fantastiske apps, spil, udvidelser og temaer til Google Chrome.</translation>

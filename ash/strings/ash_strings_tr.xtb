@@ -382,6 +382,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2791421900609674576">Kaldığınız yerden devam edebilmeniz için öneriler gösterilir. Dokunup basılı tutarak önerileri kaldırabilirsiniz.</translation>
 <translation id="2792498699870441125">Alt+Arama</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, seçildi</translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="2814448776515246190">Kısmi ekran görüntüsü alma</translation>
 <translation id="2819276065543622893">Şimdi çıkış yapacaksınız.</translation>
@@ -1392,6 +1393,7 @@ Yeni yüklenmiş</translation>
 <translation id="7497767806359279797">Dil ve klavye seçin</translation>
 <translation id="7508690557411636492">Geçen ay açıldı</translation>
 <translation id="7509246181739783082">Kimliğinizi doğrulayın</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, seçilmedi</translation>
 <translation id="7513622367902644023">Ekran görüntüsü modu seçildi</translation>
 <translation id="7513922695575567867">Takvim, <ph name="DATE" /> haftası, şu anda <ph name="SELECTED_DATE" /> seçili.</translation>
 <translation id="7514365320538308">İndir</translation>

@@ -3153,6 +3153,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3706463572498736864">Yaprak başına sayfa</translation>
 <translation id="370649949373421643">Kablosuzu Etkinleştir</translation>
 <translation id="370665806235115550">Yükleniyor...</translation>
+<translation id="3707034683772193706">Ziyaret ettiğiniz bir site, esasen bot olmadığınızı doğrulayan az miktarda bilgiyi Chrome'a kaydedebilir</translation>
 <translation id="3707163604290651814"><ph name="NAME" /> olarak oturum açmış durumdasınız</translation>
 <translation id="3707348585109246684">Bağlantıyı yeni <ph name="APP" /> sekmesinde aç</translation>
 <translation id="3708295717182051206">Altyazı</translation>
@@ -3664,6 +3665,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4135746311382563554">Google Chrome ve ChromeOS ek hizmet şartları</translation>
 <translation id="4136203100490971508">Gece Işığı güneş doğduğunda otomatik olarak kapatılır</translation>
 <translation id="41365691917097717">Devam edilirse ADB hata ayıklama işlevi, Android uygulaması oluşturmak ve test etmek için etkinleştirilir. Bu işlemin Google tarafından doğrulanmamış Android uygulamalarının yüklenmesine izin verdiğini, fabrika ayarlarına sıfırlama işlemi yapılmadan devre dışı bırakılamayacağını unutmayın.</translation>
+<translation id="4137923333452716643">Okuma modunda gösterilmesini istediğiniz metni vurgulayın</translation>
 <translation id="4138267921960073861">Oturum açma ekranında kullanıcı adlarını ve fotoğrafları göster</translation>
 <translation id="4138598238327913711">Dil bilgisi denetimi şu anda yalnızca İngilizce dilinde kullanılabilir</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID cihazı bağlandı</translation>
@@ -3704,6 +3706,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4180788401304023883">"<ph name="CERTIFICATE_NAME" />" CA sertifikası silinsin mi?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Diller</translation>
+<translation id="4182339886482390129">Gelişmiş Güvenli Tarama sizi tehlikeli web sitelerinden, indirmelerden ve uzantılardan korumak için daha fazlasını yapar</translation>
 <translation id="4184803915913850597">HID cihazı (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Arama</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> kuruluyor...</translation>
@@ -3855,6 +3858,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4322394346347055525">Diğer Sekmeleri Kapat</translation>
 <translation id="4324577459193912240">Dosya eksik</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> uygulamasının yüklemesi kaldırılıyor...</translation>
+<translation id="4326146840124313313">Chrome’un en güçlü güvenlik özelliği sizi tehlikeli web sitelerinden, indirmelerden ve uzantılardan korumak için daha fazlasını yapar</translation>
 <translation id="4330191372652740264">Buzlu su</translation>
 <translation id="4330387663455830245">Bu Dili (<ph name="LANGUAGE" />) Asla Çevirme</translation>
 <translation id="4332976768901252016">Ebeveyn Denetimlerini ayarlama</translation>
@@ -5511,6 +5515,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5833726373896279253">Bu ayarlar yalnızca sahibi tarafından değiştirilebilir:</translation>
 <translation id="583431638776747">Siteye ulaşılamadı</translation>
 <translation id="5834581999798853053">Yaklaşık <ph name="TIME" /> dakika kaldı</translation>
+<translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" />, HID cihazlarına erişiyor}=2{Cihazlara erişen uzantılar: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Cihazlara erişen uzantılar: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> ve {3} uzantı daha}}</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Kamera veya mikrofon kaydediyor</translation>
 <translation id="583673505367439042">Siteler cihazınızdaki dosyaları veya klasörleri düzenlemek isteyebilir</translation>
 <translation id="5836999627049108525">Çevirinin Kaynak Dili</translation>
@@ -7180,6 +7185,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7339763383339757376">PKCS #7, tek sertifika</translation>
 <translation id="7339785458027436441">Yazarken Yazımı Denetle</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
+<translation id="7340179705876485790">Birden fazla sayfadan geri dönmek için Geri'yi tıklayıp basılı tutun.</translation>
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> şimdi tam ekran görüntüleniyor.</translation>
 <translation id="7340650977506865820">Site, ekranınızı paylaşıyor</translation>
 <translation id="7340757554212515731">Kilitlenme raporlarının yanı sıra teşhis ve kullanım verilerini Google'a otomatik olarak gönderir</translation>
@@ -7226,6 +7232,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7374376573160927383">USB cihazları yönet</translation>
 <translation id="7376124766545122644">Bu bağlantı kullanılamıyor. Tekrar denemek için bağlantınızın "http://" ya da "https://" ile başladığından emin olun.</translation>
 <translation id="7376553024552204454">Hareket ederken fare imlecini vurgula</translation>
+<translation id="7377250337652426186">Birden fazla sayfadan geri dönmek için Geri düğmesini tıklayıp basılı tutun.</translation>
 <translation id="737728204345822099">Bu siteye ziyaretinizin bir kaydı güvenlik anahtarınızda saklanabilir.</translation>
 <translation id="7377451353532943397">Sensör erişimini engellemeye devam et</translation>
 <translation id="7377481913241237033">Kod kullanarak bağlanma</translation>
@@ -7261,6 +7268,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7403642243184989645">Kaynaklar indiriliyor</translation>
 <translation id="7404065585741198296">USB kablosuyla bağlı telefonunuz</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Güvenlik kontrolü 1 saat önce çalıştırıldı}other{Güvenlik kontrolü {NUM_HOURS} saat önce çalıştırıldı}}</translation>
+<translation id="7406113532070524618">Bu ayar çalışırken kimliğinizin belirlenmesine veya sitelerin tarama geçmişinizi görmesine izin verilmez. Ancak siteler, doğrulama kapsamında az miktarda bilgi paylaşabilir</translation>
 <translation id="740624631517654988">Pop-up engellendi</translation>
 <translation id="7406912950279255498">Rengi ters çevirme modu</translation>
 <translation id="7407430846095439694">İçe Aktar ve Bağla</translation>
@@ -8991,6 +8999,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Verilerinizi yönetme:<ph name="END_BOLD" /> Gizliliğinizi korumak için 4 haftadan daha uzun süre önce ziyaret edilmiş siteleri otomatik olarak sileriz. Tekrar ziyaret ettiğiniz siteler yine listede görünebilir. Ayrıca, hiçbir zaman ilgi alanlarınızı tanımlamasını istemediğiniz siteleri kaldırabilirsiniz.</translation>
 <translation id="8884570509232205463">Cihazınız saat <ph name="UNLOCK_TIME" /> olduğunda artık kilitlenecek.</translation>
 <translation id="8888253246822647887">Uygulamanız, yeni sürüme geçme işlemi tamamlandığında açılır. Yeni sürüme geçme işlemi birkaç dakika sürebilir.</translation>
+<translation id="8889294078294184559">Siz sitelere göz atarken siteler de Chrome'dan kontrol ederek ziyaret ettiğiniz önceki bir siteden büyük olasılıkla gerçek bir kişi olduğunuzu doğrular</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> sitesi şu dosya ve klasörleri düzenleyebilir:</translation>
 <translation id="8890170499370378450">Mobil veri ücretleri alınabilir</translation>
 <translation id="8890516388109605451">Kaynaklar</translation>

@@ -382,6 +382,7 @@
 <translation id="2791421900609674576">이전에 중단한 부분부터 계속할 수 있도록 추천 항목이 표시됩니다. 추천 항목을 삭제하려면 길게 터치하세요.</translation>
 <translation id="2792498699870441125">Alt+검색 키</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, 선택됨</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="2814448776515246190">부분 캡처</translation>
 <translation id="2819276065543622893">지금 로그아웃됩니다.</translation>
@@ -1392,6 +1393,7 @@
 <translation id="7497767806359279797">언어 및 키보드 선택</translation>
 <translation id="7508690557411636492">지난달에 열림</translation>
 <translation id="7509246181739783082">본인 확인</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, 선택되지 않음</translation>
 <translation id="7513622367902644023">스크린샷 모드 선택됨</translation>
 <translation id="7513922695575567867">현재 캘린더에서 <ph name="DATE" />이 속한 주를 표지 중이며 선택된 날짜는 <ph name="SELECTED_DATE" />입니다.</translation>
 <translation id="7514365320538308">다운로드</translation>

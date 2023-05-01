@@ -478,6 +478,7 @@
 <translation id="1410616244180625362"><ph name="HOST" /> የካሜራዎ መዳረሻ መስጠቱን ይቀጥሉ</translation>
 <translation id="1410797069449661718">ወደ የመጀመሪያው ትር ይሸብልሉ</translation>
 <translation id="1410806973194718079">መመሪያችን መፈተሽ አልተቻለም</translation>
+<translation id="1411400282355634827">ሁሉም የብሉቱዝ መሣሪያ ፈቃዶች እንደገና ይጀምሩ?</translation>
 <translation id="1411724932979011919">የእርስዎ ግቤት የLPA:1$&lt;smdp address&gt;$&lt;activation code&gt; ቅርጸት ሊኖረው ይገባል።</translation>
 <translation id="1412681350727866021">ተጨማሪ ቅጥያዎች</translation>
 <translation id="1414315029670184034">ጣቢያዎች ካሜራዎን እንዲጠቀሙ አይፍቀዱ</translation>
@@ -4798,6 +4799,7 @@
 <translation id="5178667623289523808">ቀዳሚውን አግኝ</translation>
 <translation id="5181140330217080051">በማውረድ ላይ</translation>
 <translation id="5181172023548002891">ወደ የGoogle የይለፍ ቃል አስተዳዳሪ ለ<ph name="ACCOUNT" /></translation>
+<translation id="5183344263225877832">ሁሉም የኤችአይዲ መሣሪያ ፈቃዶች እንደገና ይጀምሩ?</translation>
 <translation id="5184063094292164363">&amp;ጃቫስክሪፕት ኮንሶል</translation>
 <translation id="5184209580557088469">ይህ የተጠቃሚ ስም ያለው ቲኬት አስቀድሞ አለ</translation>
 <translation id="5184662919967270437">መሣሪያዎን በማዘመን ላይ</translation>
@@ -6481,6 +6483,7 @@
 <translation id="6691541770654083180">ምድር</translation>
 <translation id="6691936601825168937">&amp;ወደ ፊት</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 ገፅ}one{{COUNT} ገጾች}other{{COUNT} ገጾች}}</translation>
+<translation id="6693820805264897502">ነባር የይለፍ ቃላትን መተካት</translation>
 <translation id="6697172646384837537">የእርስዎ የይለፍ ቃላት ወዴት እንደሚመጡ ይምረጡ</translation>
 <translation id="6697492270171225480">አንድ ገፅ ሊገኝ ካልቻለ የተመሳሳይ ገጾች የአስተያየት ጥቆማዎችን አሳይ</translation>
 <translation id="6697690052557311665">ለማጋራት በፋይሎች መተግበሪያው ውስጥ አንድ አቃፊን በቀኝ ጠቅ ያድርጉ፣ ከዚያ «ለLinux አጋራ»ን ይምረጡ።</translation>
@@ -7595,6 +7598,7 @@
 <translation id="7674542105240814168">የአካባቢ መዳረሻ ተከልክሏል</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> ትር ለ«<ph name="SEARCH_TEXT" />» ተገኝቷል</translation>
 <translation id="7676867886086876795">ወደ ማናቸውም የጽሑፍ መስክ በቃል ማስጻፍን ለመፍቀድ ድምጽዎን ወደ Google ይላኩ።</translation>
+<translation id="7678588695732963732">ሁሉንም የUSB መሣሪያ ፈቃዶች እንደገና ያስጀምር?</translation>
 <translation id="7679171213002716280"><ph name="PRINTER_COUNT" /> የሚተዳደሩ ማተሚያዎች አሉ።</translation>
 <translation id="7680416688940118410">የሚነካ ማያ መለካት</translation>
 <translation id="7681095912841365527">ጣቢያ ብሉቱዝን መጠቀም ይችላል</translation>
@@ -9355,6 +9359,7 @@ nil</translation>
 <translation id="9192019773545828776">የመሣሪያዎን ማያ ገፅ ሳይመለከቱ መጠቀም እንዲችሉ የቃል ግብረመልስን ይስሙ። የብሬይል ግብረመልስ በተገናኘ መሣሪያ ይገኛል። ChromeVoxን ለማብራት እና ለማጥፋት Ctrl + Alt + Zን ይጠቀሙ። ለማሰስ Search + የግራ ቀስት ወይም የቀኝ ቀስትን ይጠቀሙ። ለመምረጥ (ማግበር) Search + Spaceን ይጠቀሙ።</translation>
 <translation id="919686179725692564">የእርስዎን መተግበሪያዎች ምትኬ ስለማስቀመጥ የበለጠ ይወቁ</translation>
 <translation id="9199503643457729322">ከግላዊነት መመሪያ ለማሰስ ጠቅ ያድርጉ።</translation>
+<translation id="9199695835892108985">ሁሉም የተከታታይ ወደብ ፈቃዶች እንደገና ይጀምሩ?</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> በ<ph name="FOLDERNAME" /> ውስጥ ያሉ ፋይሎችን አርትዕ ማድረግ ይችላል</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />ን ፈልግ</translation>
 <translation id="9201023452444595544">ማናቸውም የመስመር ውጭ ውሂብ ይጸዳል</translation>

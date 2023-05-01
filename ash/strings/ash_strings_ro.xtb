@@ -382,6 +382,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2791421900609674576">Vei vedea recomandări ca să poți continua de unde ai rămas. Poți să atingi lung ca să elimini recomandările.</translation>
 <translation id="2792498699870441125">Alt+Căutare</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, selectat</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="2814448776515246190">Captură parțială</translation>
 <translation id="2819276065543622893">Veți fi deconectat(ă) acum.</translation>
@@ -1392,6 +1393,7 @@ Instalare nouă</translation>
 <translation id="7497767806359279797">Alege limba și tastatura</translation>
 <translation id="7508690557411636492">Deschis în ultima lună</translation>
 <translation id="7509246181739783082">Confirmă-ți identitatea</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, neselectat</translation>
 <translation id="7513622367902644023">Modul Captură de ecran selectat</translation>
 <translation id="7513922695575567867">Calendar, săptămâna <ph name="DATE" />, data de <ph name="SELECTED_DATE" /> momentan selectată.</translation>
 <translation id="7514365320538308">Descarcă</translation>

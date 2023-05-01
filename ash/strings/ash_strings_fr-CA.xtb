@@ -382,6 +382,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2791421900609674576">Des recommandations s'afficheront pour vous permettre de reprendre le cours de vos activités. Vous pouvez maintenir le doigt pour retirer les recommandations.</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
 <translation id="2797741504905337289">Mode Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, sélectionné</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2814448776515246190">Capture partielle</translation>
 <translation id="2819276065543622893">Vous allez maintenant être déconnecté.</translation>
@@ -1392,6 +1393,7 @@ Nouvelle installation</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
 <translation id="7508690557411636492">Ouvert au cours du dernier mois</translation>
 <translation id="7509246181739783082">Vérifier votre identité</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, non sélectionné(s)</translation>
 <translation id="7513622367902644023">Mode de capture d'écran sélectionné</translation>
 <translation id="7513922695575567867">Agenda, semaine du <ph name="DATE" />, le <ph name="SELECTED_DATE" /> est actuellement sélectionné.</translation>
 <translation id="7514365320538308">Télécharger</translation>

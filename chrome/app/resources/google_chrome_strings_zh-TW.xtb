@@ -114,6 +114,7 @@
 <translation id="2929907241665500097">發生錯誤，Chrome 未能更新。<ph name="BEGIN_LINK" />請修正 Chrome 更新問題與更新失敗項目。<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 網路登入 - Chrome</translation>
 <translation id="3019382870990049182">重新啟動以更新 ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome 擴充功能當時正在存取 HID 裝置}=1{Google Chrome 擴充功能正在存取 HID 裝置}other{Google Chrome 擴充功能正在存取 # 部 HID 裝置}}</translation>
 <translation id="303514781271618814">Chrome 團隊正在研究新功能，設法讓網站減少存取個人資訊的情況，同時讓使用者享有相同的瀏覽體驗</translation>
 <translation id="3037838751736561277">Google Chrome 正在背景模式中執行。</translation>
 <translation id="3038232873781883849">正在等待安裝...</translation>
@@ -219,6 +220,7 @@
 <translation id="4970880042055371251">Chrome OS 版本</translation>
 <translation id="4970947549776831107">這個類型的檔案有安全疑慮，因此 Chrome 已封鎖這個檔案</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome 擴充功能當時正在存取 HID 裝置}=1{Google Chrome 擴充功能正在存取 1 部 HID 裝置}other{Google Chrome 擴充功能正在存取 # 部 HID 裝置}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{根據管理員規定，Chrome 閒置 1 分鐘就會自動關閉，屆時系統將刪除瀏覽資料，當中可能包括歷史記錄、自動填入的資料和下載內容。}other{根據管理員規定，Chrome 閒置 # 分鐘就會自動關閉，屆時系統將刪除瀏覽資料，當中可能包括歷史記錄、自動填入的資料和下載內容。}}</translation>
 <translation id="5098668839038261629">如果啟用此選項，系統也會將你從 Chrome 登出</translation>
 <translation id="5132929315877954718">幫你的 Google Chrome 物色各種實用有趣的應用程式、遊戲、擴充功能和主題。</translation>

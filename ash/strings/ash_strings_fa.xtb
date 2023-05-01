@@ -382,6 +382,7 @@
 <translation id="2791421900609674576">توصیه‌هایی خواهید دید تا بتوانید کارتان را از جایی که رها کرده‌اید ادامه دهید. برای حذف توصیه‌ها می‌توانید لمس کنید و نگه دارید.</translation>
 <translation id="2792498699870441125">‏Alt+جستجو</translation>
 <translation id="2797741504905337289">گروه قفسه‌ها</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />، انتخاب شده</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2814448776515246190">ضبط جزئی</translation>
 <translation id="2819276065543622893">هم‌اکنون از سیستم خارج خواهید شد.</translation>
@@ -1391,6 +1392,7 @@
 <translation id="7497767806359279797">انتخاب زبان و صفحه‌کلید</translation>
 <translation id="7508690557411636492">ماه گذشته باز شده است</translation>
 <translation id="7509246181739783082">هویتتان را به‌تأیید برسانید</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />، انتخاب نشده</translation>
 <translation id="7513622367902644023">حالت نماگرفت انتخاب شد</translation>
 <translation id="7513922695575567867">تقویم، هفته <ph name="DATE" />، درحال‌حاضر <ph name="SELECTED_DATE" /> انتخاب شده است.</translation>
 <translation id="7514365320538308">بارگیری</translation>

@@ -293,6 +293,7 @@
 <translation id="3484914941826596830">ჩაშენებული პროგრამული უზრუნველყოფის განახლების პროცესში არ გამოაერთოთ ეს გარე მოწყობილობა ან არ გამორთოთ კომპიუტერი. შეგიძლიათ ამ ფანჯრის ჩაკეცვა. ამ განახლებას შეიძლება დასჭირდეს რამდენიმე წუთი და გარე მოწყობილობამ შეიძლება ამ დროს არ იმუშაოს.</translation>
 <translation id="3486220673238053218">განსაზღვრება</translation>
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
+<translation id="3502426834823382181">ყველა აპის ნახვა</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ეფექტურობის ტრასირების მონაცემების<ph name="END_LINK1" /> გაგზავნა</translation>
 <translation id="3517001332549868749">ChromeOS განახლება</translation>
 <translation id="3527036260304016759">ვერ მოხერხდა — უცნობი შეცდომა</translation>
@@ -636,6 +637,7 @@
 <translation id="6278428485366576908">თემა</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">მუქი თემის გააქტიურება</translation>
+<translation id="6285899124799306373">გამშვების გახსნა</translation>
 <translation id="6302401976930124515">ტესტი „<ph name="TEST_NAME" />“ გაუქმდა</translation>
 <translation id="631063167932043783">გაცნობის აპი</translation>
 <translation id="6319207335391420837">განაახლეთ ჩაშენებული პროგრამული უზრუნველყოფა <ph name="DEVICE_NAME" />-ზე</translation>
@@ -651,6 +653,7 @@
 <translation id="6382182670717268353">ეკანმზოგის გადახედვა</translation>
 <translation id="6388847657025262518">სკანერის დოკუმენტების მიმწოდი გაიჭედა. შეამოწმეთ მიმწოდი და ცადეთ ხელახლა.</translation>
 <translation id="6394634179843537518">ფაილის დამატება</translation>
+<translation id="6401427872449207797">ბრაუზერში ძიება</translation>
 <translation id="6410257289063177456">გამოსახულების ფაილები</translation>
 <translation id="641081527798843608">თემის თანხვედრა</translation>
 <translation id="6412715219990689313">ჩაშენებული კლავიატურა</translation>
@@ -876,6 +879,7 @@
 <translation id="8312330582793120272">მედიის დაკვრა</translation>
 <translation id="8318753676953949627">სურათები არ არის</translation>
 <translation id="8329018942023753850">კალკულატორის აპი</translation>
+<translation id="8335869473001018124">ძიების გახსნა</translation>
 <translation id="8336739000755212683">მოწყობილობის ანგარიშის სურათის შეცვლა</translation>
 <translation id="8347227221149377169">ბეჭდვის დავალებები</translation>
 <translation id="8351855506390808906">კლავიშთა დანიშვნის შეხების წერტილი</translation>

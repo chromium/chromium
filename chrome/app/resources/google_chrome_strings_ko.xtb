@@ -118,6 +118,7 @@
 <translation id="2929907241665500097">문제가 발생하여 Chromium을 업데이트할 수 없습니다. <ph name="BEGIN_LINK" />Chrome 업데이트 문제 및 업데이트 실패 문제 해결하기<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 네트워크 로그인 - Chrome</translation>
 <translation id="3019382870990049182">다시 실행하여 ChromeOS Flex 업데이트(&amp;C)</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Chrome 확장 프로그램에서 HID 기기에 액세스함}=1{Chrome 확장 프로그램에서 HID 기기에 액세스하는 중}other{Chrome 확장 프로그램에서 #대의 HID 기기에 액세스하는 중}}</translation>
 <translation id="303514781271618814">Chrome은 사용자의 데이터를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다.</translation>
 <translation id="3037838751736561277">Chrome이 백그라운드 모드로 실행 중입니다.</translation>
 <translation id="3038232873781883849">설치 대기 중...</translation>
@@ -223,6 +224,7 @@
 <translation id="4970880042055371251">ChromeOS 버전</translation>
 <translation id="4970947549776831107">위험한 유형의 파일이기 때문에 Chrome에서 파일을 차단했습니다.</translation>
 <translation id="4990567037958725628">Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Chrome 확장 프로그램에서 HID 기기에 액세스함}=1{Chrome 확장 프로그램에서 1대의 HID 기기에 액세스하는 중}other{Chrome 확장 프로그램에서 #대의 HID 기기에 액세스하는 중}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Chrome을 1분 동안 사용하지 않으면 관리자가 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}other{Chrome을 #분 동안 사용하지 않으면 관리자가 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}}</translation>
 <translation id="5098668839038261629">이 설정을 사용하면 Chrome에서도 로그아웃됩니다</translation>
 <translation id="5132929315877954718">Chrome에 사용할 유용한 애플리케이션, 게임, 확장 프로그램 및 테마를 찾아보세요.</translation>

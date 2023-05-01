@@ -10,6 +10,7 @@
 <translation id="1104942323762546749">Chromium quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="113122355610423240">Chromium é o teu navegador predeterminado</translation>
 <translation id="1131805035311359397">Para comprobar se os teus contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chromium<ph name="END_LINK" />.</translation>
+<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{As extensións de Chromium tiñan acceso a dispositivos de interface humana}=1{As extensións de Chromium teñen acceso a dispositivos de interface humana}other{As extensións de Chromium teñen acceso a # dispositivos de interface humana}}</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1202417120496358351">{COUNT,plural, =1{O teu administrador pecha Chromium automaticamente cando non se usa durante 1 minuto. Os datos de navegación elimínanse. Poden incluír o historial, os datos da función de autocompletar e as descargas.}other{O teu administrador pecha Chromium automaticamente cando non se usa durante # minutos. Os datos de navegación elimínanse. Poden incluír o historial, os datos da función de autocompletar e as descargas.}}</translation>
 <translation id="1203500561924088507">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o navegador.</translation>
@@ -357,6 +358,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Como usamos estes datos?<ph name="END_BOLD" /> Os sitios poden almacenar con Chromium información sobre os teus intereses. Por exemplo, se visitas un sitio para comprar zapatillas deportivas para un maratón, ese sitio podería determinar que che interesa correr maratóns. Máis tarde, se visitas un sitio distinto que che permite rexistrarte para participar nunha carreira, pode mostrárseche nel un anuncio de zapatillas deportivas baseado nos teus intereses.</translation>
 <translation id="8619360774459241877">Iniciando Chromium…</translation>
 <translation id="8621669128220841554">Non se puido efectuar a instalación debido a un erro. Volve descargar Chromium.</translation>
+<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Unha extensión de Chromium tiña acceso a dispositivos de interface humana}=1{Unha extensión de Chromium ten acceso a 1 dispositivo de interface humana}other{Unha extensión de Chromium ten acceso a # dispositivos de interface humana}}</translation>
 <translation id="8697124171261953979">Tamén controla a páxina que se mostra ao iniciar Chromium ou ao realizar unha busca desde Omnibox.</translation>
 <translation id="8704119203788522458">Este é o teu Chromium</translation>
 <translation id="8796602469536043152">Chromium necesita permiso para acceder á cámara e ao micrófono neste sitio</translation>

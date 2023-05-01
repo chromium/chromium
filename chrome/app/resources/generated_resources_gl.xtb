@@ -3154,6 +3154,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3706463572498736864">Páxinas por folla</translation>
 <translation id="370649949373421643">Activar wifi</translation>
 <translation id="370665806235115550">Cargando...</translation>
+<translation id="3707034683772193706">Calquera sitio que visites poderá gardar unha pequena cantidade de información con Chrome, basicamente, para confirmar que non es un bot</translation>
 <translation id="3707163604290651814">Tes a sesión iniciada como <ph name="NAME" /></translation>
 <translation id="3707348585109246684">Abrir ligazón nunha pestana nova de <ph name="APP" /></translation>
 <translation id="3708295717182051206">Subtítulos</translation>
@@ -3665,6 +3666,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4135746311382563554">Condicións de servizo adicionais de Google Chrome e Chrome OS</translation>
 <translation id="4136203100490971508">A opción Luz nocturna desactivarase automaticamente ao amencer</translation>
 <translation id="41365691917097717">Ao continuar, activarase a depuración de ADB para crear e probar aplicacións para Android. Ten en conta que esta acción permite a instalación de aplicacións para Android non verificadas por Google e que require un restablecemento dos valores de fábrica para desactivarse.</translation>
+<translation id="4137923333452716643">Destaca o texto que queiras abrir no modo de lectura</translation>
 <translation id="4138267921960073861">Mostrar nomes de usuario e fotos na pantalla de inicio de sesión</translation>
 <translation id="4138598238327913711">O corrector gramatical só está dispoñible en inglés actualmente</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" />: conectouse o dispositivo HID</translation>
@@ -3705,6 +3707,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4180788401304023883">Queres eliminar o certificado de CA "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4182339886482390129">Navegación segura mellorada é máis eficaz á hora de protexerte de descargas, sitios web e extensións perigosos</translation>
 <translation id="4184803915913850597">Dispositivo HID (<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" />: Busca de <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">Configurando <ph name="APP_NAME" />…</translation>
@@ -3856,6 +3859,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4322394346347055525">Pechar outras pestanas</translation>
 <translation id="4324577459193912240">Ficheiro incompleto</translation>
 <translation id="4325237902968425115">Desinstalando <ph name="LINUX_APP_NAME" />…</translation>
+<translation id="4326146840124313313">A potentísima seguranza de Chrome é máis eficaz á hora de protexerte de sitios web, descargas e extensións perigosos</translation>
 <translation id="4330191372652740264">Auga xeada</translation>
 <translation id="4330387663455830245">Non traducir nunca do <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Configurar os controis parentais</translation>
@@ -5509,6 +5513,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5833726373896279253">O único que pode modificar esta configuración é o propietario:</translation>
 <translation id="583431638776747">O sitio non estaba dispoñible</translation>
 <translation id="5834581999798853053">Quedan uns <ph name="TIME" /> minutos</translation>
+<translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> ten acceso a dispositivos de interface humana}=2{Extensións con acceso a dispositivos: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Extensións con acceso a dispositivos: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> e {3} máis}}</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: estase gravando contido coa cámara ou co micrófono</translation>
 <translation id="583673505367439042">Os sitios poden pedirche permiso para editar ficheiros e cartafoles do teu dispositivo</translation>
 <translation id="5836999627049108525">Idioma do que traducir</translation>
@@ -7177,6 +7182,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7339763383339757376">PKCS #7, certificado único</translation>
 <translation id="7339785458027436441">Comprobar a ortografía durante a escritura</translation>
 <translation id="7339898014177206373">Nova ventá</translation>
+<translation id="7340179705876485790">Para retroceder máis de 1 páxina, fai clic sen soltar en Atrás.</translation>
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> móstrase agora en pantalla completa.</translation>
 <translation id="7340650977506865820">O sitio está compartindo a túa pantalla</translation>
 <translation id="7340757554212515731">Envía a Google de forma automática os informes de fallos, así como os datos de uso e de diagnóstico</translation>
@@ -7223,6 +7229,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7374376573160927383">Xestionar dispositivos USB</translation>
 <translation id="7376124766545122644">Non se pode usar esta ligazón. Comproba que comece por "http://" ou "https://" e téntao de novo.</translation>
 <translation id="7376553024552204454">Destacar o cursor do rato cando se move</translation>
+<translation id="7377250337652426186">Para retroceder máis de 1 páxina, fai clic sen soltar no botón Atrás.</translation>
 <translation id="737728204345822099">Conservarase un rexistro da túa visita a este sitio na túa chave de seguranza</translation>
 <translation id="7377451353532943397">Continuar bloqueando o acceso aos sensores</translation>
 <translation id="7377481913241237033">Conectar cun código</translation>
@@ -7258,6 +7265,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7403642243184989645">Descargando recursos</translation>
 <translation id="7404065585741198296">O teu teléfono cun cable USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{A comprobación de seguranza executouse hai 1 hora}other{A comprobación de seguranza executouse hai {NUM_HOURS} horas}}</translation>
+<translation id="7406113532070524618">Esta opción de configuración non te identifica nin permite que os sitios vexan o teu historial de navegación. Aínda así, os sitios poden compartir certa información mínima como parte da verificación</translation>
 <translation id="740624631517654988">Ventá emerxente bloqueada</translation>
 <translation id="7406912950279255498">Modo de inversión da cor</translation>
 <translation id="7407430846095439694">Importar e vincular</translation>
@@ -8988,6 +8996,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Como podes xestionar os teus datos?<ph name="END_BOLD" /> Para protexer a túa privacidade, eliminamos automaticamente da lista os sitios que leven nela máis de 4 semanas. Algúns poderían volver incluírse na lista ao visitalos de novo. Se non queres que os teus intereses se determinen a partir dun sitio concreto, podes quitalo.</translation>
 <translation id="8884570509232205463">O teu dispositivo bloquearase a esta hora: <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8888253246822647887">A aplicación abrirase cando finalice a actualización. As actualizacións poden tardar uns minutos.</translation>
+<translation id="8889294078294184559">Cando navegues, os sitios poderán facer comprobacións con Chrome e verificar con outros sitios que xa visitases que es unha persoa real</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> pode editar os seguintes ficheiros e cartafoles</translation>
 <translation id="8890170499370378450">É posible que se apliquen cargos polo uso de datos móbiles</translation>
 <translation id="8890516388109605451">Fontes</translation>

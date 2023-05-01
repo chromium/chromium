@@ -293,6 +293,7 @@
 <translation id="3484914941826596830">Pendant la mise à jour du micrologiciel, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
 <translation id="3486220673238053218">définition</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
+<translation id="3502426834823382181">afficher toutes les applications</translation>
 <translation id="3510890413042482857">Envoyer des <ph name="BEGIN_LINK1" />données de suivi des performances<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Mise à jour Chrome OS</translation>
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
@@ -636,6 +637,7 @@
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Activer le thème sombre</translation>
+<translation id="6285899124799306373">lanceur ouvert</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="631063167932043783">Application Explorer</translation>
 <translation id="6319207335391420837">Mettre à jour le micrologiciel de <ph name="DEVICE_NAME" /></translation>
@@ -651,6 +653,7 @@
 <translation id="6382182670717268353">Aperçu de l'économiseur d'écran</translation>
 <translation id="6388847657025262518">Le chargeur de documents du numériseur est bloqué. Vérifiez le chargeur de documents et réessayez.</translation>
 <translation id="6394634179843537518">Ajouter un fichier</translation>
+<translation id="6401427872449207797">recherche de navigateur</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
 <translation id="641081527798843608">Correspondance d'objet</translation>
 <translation id="6412715219990689313">Clavier intégré</translation>
@@ -876,6 +879,7 @@
 <translation id="8312330582793120272">lire le contenu multimédia</translation>
 <translation id="8318753676953949627">Aucune image</translation>
 <translation id="8329018942023753850">application calculatrice</translation>
+<translation id="8335869473001018124">ouvrir la recherche</translation>
 <translation id="8336739000755212683">Changer l'image du compte sur l'appareil</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
 <translation id="8351855506390808906">Point de contact d'affectation des touches</translation>

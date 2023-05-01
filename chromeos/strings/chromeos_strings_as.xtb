@@ -293,6 +293,7 @@
 <translation id="3484914941826596830">ফাৰ্মৱেৰটো আপডে’ট হৈ থকাৰ সময়ত, এই বাহ্যিক ডিভাইচটো আনপ্লাগ অথবা আপোনাৰ কম্পিউটাৰটো শ্বাট ডাউন নকৰিব। আপুনি এই ৱিণ্ড’খন মিনিমাইজ কৰিব পাৰে। এই আপডে’টটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে আৰু এই সময়খিনিত আপোনাৰ বাহ্যিক ডিভাইচটোৱে কাম নকৰিব পাৰে।</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3488065109653206955">আংশিকভাৱে সক্ৰিয় কৰা হৈছে</translation>
+<translation id="3502426834823382181">আটাইবোৰ এপ্‌ চাওক</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />কাৰ্যদক্ষতাৰ ট্ৰে’চ ডেটা<ph name="END_LINK1" /> পঠিয়াওক</translation>
 <translation id="3517001332549868749">ChromeOSৰ আপডে’ট</translation>
 <translation id="3527036260304016759">বিফল হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
@@ -636,6 +637,7 @@
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6280912520669706465">এআৰচি</translation>
 <translation id="6284632978374966585">গাঢ় ৰঙৰ থীম অন কৰক</translation>
+<translation id="6285899124799306373">লঞ্চাৰ খোলক</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পৰীক্ষাটো বাতিল কৰা হৈছে</translation>
 <translation id="631063167932043783">Explore এপ্‌</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />ত ফাৰ্মৱেৰ আপডে’ট কৰক</translation>
@@ -651,6 +653,7 @@
 <translation id="6382182670717268353">স্ক্ৰীন ছেভাৰৰ পূৰ্বদৰ্শন</translation>
 <translation id="6388847657025262518">স্কেনাৰৰ নথিৰ ফীডাৰটো জাম লাগিছে। ফীডাৰটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6394634179843537518">ফাইল যোগ দিয়ক</translation>
+<translation id="6401427872449207797">ব্ৰাউজাৰ সন্ধান</translation>
 <translation id="6410257289063177456">প্ৰতিচ্ছবিৰ ফাইল</translation>
 <translation id="641081527798843608">বিষয়ৰ মিল</translation>
 <translation id="6412715219990689313">বিল্ট-ইন কীব’ৰ্ড</translation>
@@ -808,7 +811,7 @@
 <translation id="7747039790905080783">পূৰ্বতে শ্বেয়াৰ কৰা চাবি</translation>
 <translation id="7762130827864645708">আপোনাৰ পাছৱৰ্ড সলনি কৰাৰ প্ৰক্ৰিয়াটো সফল হৈছে। অনুগ্ৰহ কৰি এতিয়াৰ পৰা নতুন পাছৱৰ্ডটো ব্যৱহাৰ কৰক।</translation>
 <translation id="7763470514545477072">ডমেইন চাফিক্সৰ সৈতে মিলা</translation>
-<translation id="7769672763586021400">ম’ডেল আইডি:</translation>
+<translation id="7769672763586021400">মডেল আইডি:</translation>
 <translation id="7770834998503326261">আপুনি কৰা বাছনিৰ সৈতে সম্পৰ্কিত অতিৰিক্ত তথ্য</translation>
 <translation id="7778717409420828014">আপোনাৰ মতামতে আমাক Chromebook ব্যৱহাৰৰ অভিজ্ঞতা উন্নত কৰাত সহায় কৰে আৰু আমাৰ দলে সেয়া পৰ্যালোচনা কৰিব। ৰিপ’ৰ্টৰ সংখ্যা বেছি হোৱাৰ বাবে আমি কোনো প্ৰত্যুত্তৰ পঠিয়াব নোৱাৰিম।</translation>
 <translation id="7784116172884276937">কোনো DNS ছাৰ্ভাৰ ছেট আপ কৰা হোৱা নাই</translation>
@@ -876,6 +879,7 @@
 <translation id="8312330582793120272">মিডিয়া প্লে’ কৰক</translation>
 <translation id="8318753676953949627">কোনো প্ৰতিচ্ছবি নাই</translation>
 <translation id="8329018942023753850">কেলকুলেটৰ এপ্</translation>
+<translation id="8335869473001018124">সন্ধান খোলক</translation>
 <translation id="8336739000755212683">ডিভাইচ একাউণ্টৰ প্ৰতিচ্ছবি সলনি কৰক</translation>
 <translation id="8347227221149377169">প্ৰিণ্টিঙৰ কামসমূহ</translation>
 <translation id="8351855506390808906">কীমেপিং টাচ্চ পইণ্ট</translation>

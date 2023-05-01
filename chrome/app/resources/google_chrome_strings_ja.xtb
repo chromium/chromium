@@ -113,6 +113,7 @@
 <translation id="2929907241665500097">エラーが発生したため、Chrome が更新されませんでした。<ph name="BEGIN_LINK" />Chrome の更新に関する問題を解決してください。<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ネットワークにログイン - Chrome</translation>
 <translation id="3019382870990049182">再起動して ChromeOS Flex を更新(&amp;C)</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome 拡張機能が HID デバイスにアクセスしていました}=1{Google Chrome 拡張機能が HID デバイスにアクセスしています}other{Google Chrome 拡張機能が # 個の HID デバイスにアクセスしています}}</translation>
 <translation id="303514781271618814">Chrome では、使用するユーザー情報量を減らしながら、これまでと同様にブラウジングできる新機能をテストしています</translation>
 <translation id="3037838751736561277">Google Chrome はバックグラウンド モードです。</translation>
 <translation id="3038232873781883849">インストールの待機中...</translation>
@@ -218,6 +219,7 @@
 <translation id="4970880042055371251">Chrome OS のバージョン</translation>
 <translation id="4970947549776831107">危険なファイル形式のため Chrome でブロックされました</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome 拡張機能が HID デバイスにアクセスしていました}=1{Google Chrome 拡張機能が 1 個の HID デバイスにアクセスしています}other{Google Chrome 拡張機能が # 個の HID デバイスにアクセスしています}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{1 分間使用しなかった場合、管理者は Chrome を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}other{# 分間使用しなかった場合、管理者は Chrome を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}}</translation>
 <translation id="5098668839038261629">オンにすると、Chrome からもログアウトします</translation>
 <translation id="5132929315877954718">Google Chrome のすばらしいアプリ、ゲーム、拡張機能、テーマをぜひご利用ください。</translation>

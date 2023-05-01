@@ -3169,6 +3169,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3706463572498736864">Laponkénti oldalszám</translation>
 <translation id="370649949373421643">Wi-Fi engedélyezése</translation>
 <translation id="370665806235115550">Betöltés...</translation>
+<translation id="3707034683772193706">A felkeresett webhelyek menthetnek kis mennyiségű adatot a Chrome-ban, elsősorban annak ellenőrzéséhez, hogy Ön nem robot.</translation>
 <translation id="3707163604290651814">Jelenleg bejelentkezve mint <ph name="NAME" /></translation>
 <translation id="3707348585109246684">Link megnyitása új lapon itt: <ph name="APP" /></translation>
 <translation id="3708295717182051206">Feliratok</translation>
@@ -3679,6 +3680,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4135746311382563554">A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételei</translation>
 <translation id="4136203100490971508">Az Éjszakai fény automatikusan kikapcsol napkeltekor</translation>
 <translation id="41365691917097717">A folytatással engedélyezi az ADB-hibakeresés számára az Android-alkalmazások létrehozását és tesztelését. Ne feledje, hogy ez a művelet engedélyezi a Google által nem jóváhagyott Android-alkalmazások telepítését, és az eszköz letiltásához szükség van az eszköz gyári beállításainak visszaállítására.</translation>
+<translation id="4137923333452716643">Jelölje ki azt a szöveget, amelyet olvasási módban szeretne megnyitni</translation>
 <translation id="4138267921960073861">Felhasználónevek és képek megjelenítése a bejelentkezési oldalon</translation>
 <translation id="4138598238327913711">A nyelvhelyesség ellenőrzése jelenleg csak angol nyelven áll rendelkezésre.</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID-eszköz csatlakoztatva</translation>
@@ -3719,6 +3721,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4180788401304023883">"<ph name="CERTIFICATE_NAME" />" tanúsítványkibocsátói (CA) tanúsítvány törlése?</translation>
 <translation id="4181602000363099176">20×</translation>
 <translation id="4181841719683918333">Nyelvek</translation>
+<translation id="4182339886482390129">A Biztonságos Böngészés fokozott védelemmel funkció többet tesz a veszélyes webhelyekkel, letöltésekkel és bővítményekkel szembeni védekezésért</translation>
 <translation id="4184803915913850597">HID-eszköz (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Kereső</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> beállítása…</translation>
@@ -3870,6 +3873,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4322394346347055525">Egyéb lapok bezárása</translation>
 <translation id="4324577459193912240">A fájl hiányos</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> eltávolítása…</translation>
+<translation id="4326146840124313313">A Chrome legerősebb biztonsági megoldása többet tesz a veszélyes webhelyekkel, letöltésekkel és bővítményekkel szembeni védekezésért</translation>
 <translation id="4330191372652740264">Jeges víz</translation>
 <translation id="4330387663455830245">Soha ne fordítsa le a(z) <ph name="LANGUAGE" /> nyelvű szöveget</translation>
 <translation id="4332976768901252016">Szülői felügyelet beállítása</translation>
@@ -5528,6 +5532,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5833726373896279253">Ezeket a beállításokat csak a tulajdonos módosíthatja:</translation>
 <translation id="583431638776747">A webhelyhez nem lehetett hozzáférni</translation>
 <translation id="5834581999798853053">Körülbelül <ph name="TIME" /> perc van hátra</translation>
+<translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{A(z) <ph name="EXTENSION1" /> hozzáfér HID-eszközökhöz}=2{Az eszközökhöz hozzáférő bővítmények: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Az eszközökhöz hozzáférő bővítmények: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> +{3} további}}</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – A kamera vagy a mikrofon felvételt készít</translation>
 <translation id="583673505367439042">A webhelyek engedélyt kérhetnek arra, hogy szerkeszthessék az Ön eszközén található fájlokat és mappákat</translation>
 <translation id="5836999627049108525">Fordítás forrásnyelve</translation>
@@ -7197,6 +7202,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7339763383339757376">PKCS #7, egyedüli tanúsítvány</translation>
 <translation id="7339785458027436441">Helyesírás-ellenőrzés gépeléskor</translation>
 <translation id="7339898014177206373">Új ablak</translation>
+<translation id="7340179705876485790">Ha nem csak egy oldalt szeretne visszalépni, tartsa lenyomva a Vissza gombot.</translation>
 <translation id="7340431621085453413">A <ph name="FULLSCREEN_ORIGIN" /> most teljes képernyős nézetben van.</translation>
 <translation id="7340650977506865820">A webhely megosztja a képernyőjét</translation>
 <translation id="7340757554212515731">A hibajelentések, valamint a diagnosztikai és használati adatok automatikus elküldése a Google-nak</translation>
@@ -7243,6 +7249,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7374376573160927383">USB-eszközök kezelése</translation>
 <translation id="7376124766545122644">Ez a link nem használható. Ellenőrizze, hogy a link „http://” vagy „https://” előtaggal kezdődik-e, majd próbálkozzon újra.</translation>
 <translation id="7376553024552204454">Az egérmutató kiemelése mozgás közben</translation>
+<translation id="7377250337652426186">Ha nem csak egy oldalt szeretne visszalépni, tartsa lenyomva a Vissza gombot.</translation>
 <translation id="737728204345822099">A biztonsági kulcs tárolhatja, hogy Ön felkereste ezt a webhelyet.</translation>
 <translation id="7377451353532943397">Érzékelő-hozzáférés tiltásának fenntartása</translation>
 <translation id="7377481913241237033">Összekapcsolás kód használatával</translation>
@@ -7278,6 +7285,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7403642243184989645">Erőforrások letöltése…</translation>
 <translation id="7404065585741198296">Telefon USB-kábellel</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{A biztonsági ellenőrzés 1 órával ezelőtt futott}other{A biztonsági ellenőrzés {NUM_HOURS} órával ezelőtt futott}}</translation>
+<translation id="7406113532070524618">Ez a beállítás a személyazonosságának azonosítása nélkül, és anélkül is működik, hogy a webhelyek számára engedélyezné a böngészési előzményei megtekintését. A webhelyek ugyanakkor megoszthatnak kis mennyiségű adatot az ellenőrzés részeként.</translation>
 <translation id="740624631517654988">Előugró ablak letiltva</translation>
 <translation id="7406912950279255498">Színinvertálás mód</translation>
 <translation id="7407430846095439694">Importálás és összekapcsolás</translation>
@@ -9008,6 +9016,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Az adatok kezelésének módja<ph name="END_BOLD" />: Adatai védelme érdekében a négy hétnél régebbi webhelyeket automatikusan töröljük a listáról. Előfordulhat, hogy egy újra felkeresett webhely ismét megjelenik a listán. Arra is lehetősége van, hogy eltávolítsa valamelyik webhelyet, ha nem szeretné, hogy az adott webhely a jövőben bármikor is meghatározza az Ön érdeklődési köreit.</translation>
 <translation id="8884570509232205463">Az eszköz zárolásának új időpontja: <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8888253246822647887">A frissítés befejezése után megnyílik az alkalmazás. A frissítési folyamat eltarthat néhány percig.</translation>
+<translation id="8889294078294184559">Böngészési tevékenységei során a webhelyek egyeztethetnek a Chrome-mal, és az előzőleg felkeresett webhely segítségével meggyőződhetnek arról, hogy Ön valószínűleg valódi felhasználó.</translation>
 <translation id="8889651696183044030">A(z) <ph name="ORIGIN" /> szerkesztheti a következő fájlokat és mappákat:</translation>
 <translation id="8890170499370378450">Mobiladat-forgalmi díjjal járhat</translation>
 <translation id="8890516388109605451">Források</translation>

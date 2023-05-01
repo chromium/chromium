@@ -113,6 +113,7 @@
 <translation id="2929907241665500097">Chrome güncellenmedi. Bir sorun oluştu. <ph name="BEGIN_LINK" />Chrome güncelleme sorunlarını ve başarısız güncellemeleri düzeltin.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Ağda Oturum Açın - Chrome</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex'i güncellemek için yeniden başlatın</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome uzantıları, HID cihazlarına erişiyordu}=1{Google Chrome uzantıları, HID cihazlarına erişiyor}other{Google Chrome uzantıları, # HID cihazına erişiyor}}</translation>
 <translation id="303514781271618814">Chrome, sitelerin daha az veri kullanarak aynı tarama deneyimini sunmasını sağlayan yeni özellikleri keşfediyor</translation>
 <translation id="3037838751736561277">Google Chrome arka plan modunda.</translation>
 <translation id="3038232873781883849">Yüklenmesi bekleniyor...</translation>
@@ -218,6 +219,7 @@
 <translation id="4970880042055371251">ChromeOS sürümü</translation>
 <translation id="4970947549776831107">Dosya türünün tehlikeli olması nedeniyle bu dosya Chrome tarafından engellendi</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Bir Google Chrome uzantısı, HID cihazlarına erişiyordu}=1{Bir Google Chrome uzantısı, 1 HID cihazına erişiyor}other{Bir Google Chrome uzantısı, # HID cihazına erişiyor}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Yöneticiniz, 1 dakika kullanılmadığında Chrome'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}other{Yöneticiniz, # dakika kullanılmadığında Chrome'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}}</translation>
 <translation id="5098668839038261629">Etkin durumdayken Chrome oturumunuz da kapatılır</translation>
 <translation id="5132929315877954718">Google Chrome'a özgü harika uygulamaları, oyunları, uzantıları ve temaları keşfedin.</translation>

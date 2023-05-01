@@ -117,6 +117,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2929907241665500097">La mise à jour de Chrome n'a pas été installée. Une erreur s'est produite. <ph name="BEGIN_LINK" />Découvrez comment résoudre les problèmes de mise à jour de Chrome.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Connexion au réseau – Chrome</translation>
 <translation id="3019382870990049182">Relancer pour mettre à jour Chrome OS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Les extensions Google Chrome accédaient aux appareils HID}=1{Les extensions Google Chrome accèdent aux appareils HID}one{Les extensions Google Chrome accèdent à # appareils HID}other{Les extensions Google Chrome accèdent à # appareils HID}}</translation>
 <translation id="303514781271618814">Chrome explore de nouvelles fonctionnalités qui permettent aux sites d'offrir la même expérience de navigateur tout en utilisant moins de vos données</translation>
 <translation id="3037838751736561277">Google Chrome fonctionne en mode arrière-plan.</translation>
 <translation id="3038232873781883849">Installation en attente…</translation>
@@ -222,6 +223,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4970880042055371251">Version de Chrome OS</translation>
 <translation id="4970947549776831107">Chrome a bloqué le téléchargement parce que ce type de fichier est dangereux</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Une extension Google Chrome accédait aux appareils HID}=1{Une extension Google Chrome accède à 1 appareil HID}one{Une extension Google Chrome accède à # appareils HID}other{Une extension Google Chrome accède à # appareils HID}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Votre administrateur ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant 1 minute. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}one{Votre administrateur ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minute. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}other{Votre administrateur ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minutes. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}}</translation>
 <translation id="5098668839038261629">Si ce paramètre est activé, vous serez aussi déconnecté de Chrome</translation>
 <translation id="5132929315877954718">Découvrez des applications, des jeux, des extensions et des thèmes exceptionnels conçus pour Google Chrome.</translation>

@@ -382,6 +382,7 @@
 <translation id="2791421900609674576">前回中断したところから再開できるように、おすすめが表示されます。おすすめは長押しで削除できます。</translation>
 <translation id="2792498699870441125">Alt+ 検索</translation>
 <translation id="2797741504905337289">シェルフ グループ</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />、選択済み</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="2814448776515246190">画面の一部のキャプチャ</translation>
 <translation id="2819276065543622893">ログアウトします。</translation>
@@ -1393,6 +1394,7 @@
 <translation id="7497767806359279797">言語とキーボードを選択</translation>
 <translation id="7508690557411636492">過去 1 か月以内に開いたファイル</translation>
 <translation id="7509246181739783082">本人確認</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />、未選択</translation>
 <translation id="7513622367902644023">スクリーンショット モードを選択しました</translation>
 <translation id="7513922695575567867">カレンダー、<ph name="DATE" /> の週、現在 <ph name="SELECTED_DATE" /> が選択されています。</translation>
 <translation id="7514365320538308">ダウンロード</translation>

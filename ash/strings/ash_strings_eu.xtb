@@ -382,6 +382,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2791421900609674576">Gomendioak ikusiko dituzu utzi zenuen tokitik jarraitu ahal izateko. Haiek kentzeko, eduki itzazu sakatuta.</translation>
 <translation id="2792498699870441125">Alt + Bilaketa</translation>
 <translation id="2797741504905337289">Apal-festa</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, hautatuta</translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="2814448776515246190">Pantaila-kaptura partziala</translation>
 <translation id="2819276065543622893">Saioa amaituko zaizu.</translation>
@@ -1392,6 +1393,7 @@ Berriki instalatu da</translation>
 <translation id="7497767806359279797">Aukeratu hizkuntza eta teklatua</translation>
 <translation id="7508690557411636492">Azken hilabetean ireki da</translation>
 <translation id="7509246181739783082">Egiaztatu zeu zarela</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, ez dago hautatuta</translation>
 <translation id="7513622367902644023">Pantaila-argazkiak ateratzeko modua hautatu da</translation>
 <translation id="7513922695575567867">Egutegia, <ph name="DATE" /> egunari dagokion astea, une honetan <ph name="SELECTED_DATE" /> dago hautatuta.</translation>
 <translation id="7514365320538308">Deskargatu</translation>

@@ -3962,6 +3962,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4412632005703201014">È in corso la migrazione delle app di Chrome alle app web progressive. Questa app di Chrome è stata installata sul tuo browser dalla tua organizzazione. Per aprire l'app web progressiva dall'elenco App, contatta innanzitutto l'amministratore e chiedigli di disinstallare l'app Chrome. Nel frattempo, puoi visitare <ph name="EXTENSION_LAUNCH_URL" /> per aprire <ph name="EXTENSION_NAME" /> sul Web.</translation>
 <translation id="4412698727486357573">Centro assistenza</translation>
 <translation id="4412992751769744546">Consenti cookie di terze parti</translation>
+<translation id="4413087696295876280">Lettura di dati e informazioni del dispositivo ChromeOS Flex</translation>
 <translation id="44141919652824029">Vuoi consentire a "<ph name="APP_NAME" />" di recuperare l'elenco di dispositivi USB collegati?</translation>
 <translation id="4414232939543644979">Nuova finestra di navigazione in &amp;incognito</translation>
 <translation id="4414648713167199100">Usa i dati mobili di Chromebook e il tuo operatore potrebbe addebitare costi aggiuntivi. Potrebbe anche aumentare l'utilizzo della batteria. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -6834,6 +6835,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6993000214273684335">Scheda rimossa da gruppo senza nome - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Aggiornamento del browser Chrome in corso…</translation>
 <translation id="6995899638241819463">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>
+<translation id="6995984090981858039">Lettura di dati e informazioni del dispositivo ChromeOS</translation>
 <translation id="6997553674029032185">Vai al sito</translation>
 <translation id="6997642619627518301">Log delle attività - <ph name="NAME_PH" /></translation>
 <translation id="6997707937646349884">Sui tuoi dispositivi:</translation>
@@ -7037,6 +7039,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7193051357671784796">Questa app è stata aggiunta dalla tua organizzazione. Riavvia l'app per terminarne l'installazione.</translation>
 <translation id="7193374945610105795">Nessuna password salvata per il sito <ph name="ORIGIN" /></translation>
 <translation id="7194873994243265344">La tua organizzazione ha bloccato questo file perché è criptato. Chiedi al proprietario di decriptarlo.</translation>
+<translation id="7196107899576756066">{COUNT,plural, =1{1 download in corso}other{# download in corso}}</translation>
 <translation id="7196272782924897510">Utilizzare una passkey di un altro dispositivo?</translation>
 <translation id="7196913789568937443">Effettua il backup su Google Drive. Ripristina i dati o cambia facilmente dispositivo in qualsiasi momento. Il backup include i dati delle app. Le copie di backup vengono caricate su Google e criptate mediante la password del tuo Account Google. <ph name="BEGIN_LINK1" />Ulteriori informazioni<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Sfrutta tutti i vantaggi di Ricerca Google e Google ogni volta che navighi</translation>

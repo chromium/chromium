@@ -114,6 +114,7 @@
 <translation id="2929907241665500097">Ismeretlen hiba történt, ezért a Chrome nem frissült. <ph name="BEGIN_LINK" />A Chrome frissítési problémáinak megoldása.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Hálózati bejelentkezés – Chrome</translation>
 <translation id="3019382870990049182">A ChromeOS Flex újraindítása és frissítése</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{A Google Chrome-bővítmények hozzáfértek a HID-eszközökhöz}=1{A Google Chrome-bővítmények hozzáférnek a HID-eszközökhöz}other{A Google Chrome-bővítmények # HID-eszközhöz férnek hozzá}}</translation>
 <translation id="303514781271618814">A Chrome olyan funkciók fejlesztésén dolgozik, amelyek ugyanazt a böngészési élményt nyújtják kevesebb adatfelhasználás mellett</translation>
 <translation id="3037838751736561277">A Google Chrome háttérmódban van.</translation>
 <translation id="3038232873781883849">Várakozás a telepítésre…</translation>
@@ -219,6 +220,7 @@
 <translation id="4970880042055371251">ChromeOS verziószáma</translation>
 <translation id="4970947549776831107">A Chrome letiltotta ezt a fájlt, mert az ilyen típusú fájl veszélyes</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Az egyik Google Chrome-bővítmény hozzáfért a HID-eszközökhöz}=1{Az egyik Google Chrome-bővítmény 1 HID-eszközhöz fér hozzá}other{Az egyik Google Chrome-bővítmény # HID-eszközhöz fér hozzá}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{A rendszergazda automatikusan bezárja a Chrome-ot, ha 1 percig nincs használatban. A böngészési adatok ekkor törlődnek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések is.}other{A rendszergazda automatikusan bezárja a Chrome-ot, ha # percig nincs használatban. A böngészési adatok ekkor törlődnek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések is.}}</translation>
 <translation id="5098668839038261629">Amikor be van kapcsolva, a Chrome-ból is kijelentkezteti Önt a rendszer</translation>
 <translation id="5132929315877954718">Fedezzen fel nagyszerű alkalmazásokat, játékokat, bővítményeket és témákat a Google Chrome-hoz.</translation>

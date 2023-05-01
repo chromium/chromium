@@ -148,6 +148,7 @@
 <translation id="3600792891314830896">Lyden slås fra for websites, der afspiller lyd</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3628308229821498208">Foreslåede søgninger</translation>
+<translation id="3707034683772193706">Et website, du besøger, kan gemme en lille mængde oplysninger i Chrome, primært for at tjekke, at du ikke er en bot</translation>
 <translation id="3721953990244350188">Afvis, og vis næste tilgængelige handling</translation>
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3763247130972274048">Tryk to gange i videoens venstre eller højre side for at springe ti sekunder frem eller tilbage</translation>
@@ -344,6 +345,7 @@
 <translation id="7302486331832100261">Du blokerer som regel notifikationer. Tryk på Info for at give tilladelse.</translation>
 <translation id="7366415735885268578">Tilføj et website</translation>
 <translation id="7383715096023715447">Indstillinger for <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Denne indstilling fungerer uden at identificere dig eller give websites tilladelse til at se din browserhistorik, men websites kan dele en lille mængde oplysninger som en del af verificeringen</translation>
 <translation id="7423098979219808738">Spørg først</translation>
 <translation id="7423538860840206698">Blokeret fra at læse udklipsholderen</translation>
 <translation id="7425915948813553151">Mørkt tema på websites</translation>
@@ -433,6 +435,7 @@
 <translation id="8816026460808729765">Bloker adgang til sensorer på websites</translation>
 <translation id="8823559166155093873">Bloker cookies</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Når du derefter bruger nettet, kan websites ved hjælp af Chrome tjekke og verificere via et website, du tidligere har besøgt, at du sandsynligvis er en rigtig person</translation>
 <translation id="8899807382908246773">Påtrængende annoncer</translation>
 <translation id="8903921497873541725">Zoom ind</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

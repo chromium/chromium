@@ -3964,6 +3964,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4412632005703201014">Chrome ilovalari progressiv veb ilovalarga koʻchirilmoqda. Bu Chrome ilovasi tashkilotingiz tomonidan brauzeringizga oʻrnatilgan. Ilovalar roʻyxatidan progressiv veb ilovasini ochish uchun avval administratoringizga murojaat qiling va undan Chrome ilovasini oʻchirib tashlashni talab qiling. Bu vaqtda vebda <ph name="EXTENSION_NAME" /> kengaytmasini ochish uchun <ph name="EXTENSION_LAUNCH_URL" /> sahifasiga kiring.</translation>
 <translation id="4412698727486357573">Yordam markazi</translation>
 <translation id="4412992751769744546">Tashqi saytlarga cookie fayllarni saqlashga ruxsat berish</translation>
+<translation id="4413087696295876280">ChromeOS Flex qurilmasi haqidagi axborot va maʼlumotlarni oʻqish.</translation>
 <translation id="44141919652824029">“<ph name="APP_NAME" />” uchun biriktirilgan USB qurilmalar ro‘yxatini olishiga ruxsat berilsinmi?</translation>
 <translation id="4414232939543644979">Yangi &amp;inkognito oynasi</translation>
 <translation id="4414648713167199100">Chromebook mobil internetidan foydalanadi va mobil trafik uchun qoʻshimcha haq olinishi mumkin. Batareya sarfini oshirishi mumkin. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -6840,6 +6841,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6993000214273684335">Varaq nomsiz guruhdan olib tashlandi – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Chrome brauzerini yangilash</translation>
 <translation id="6995899638241819463">Parolim oshkor etilganda ogohlantirilsin</translation>
+<translation id="6995984090981858039">ChromeOS qurilmasi haqidagi axborot va maʼlumotlarni oʻqish.</translation>
 <translation id="6997553674029032185">Saytni ochish</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Faollik jurnali</translation>
 <translation id="6997707937646349884">Qurilmalaringizda:</translation>
@@ -7043,6 +7045,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7193051357671784796">Bu ilova tashkilotingiz tomonidan kiritildi. Ilova oʻrnatilishini yakunlash uchun uni oʻchirib yoqing.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> uchun birorta ham parol saqlanmagan</translation>
 <translation id="7194873994243265344">Bu fayl shifrlangani uchun tashkilotingiz uni bloklagan. Egasidan uning shifrini yechishini soʻrang.</translation>
+<translation id="7196107899576756066">{COUNT,plural, =1{Yuklab olinmoqda (1)}other{Yuklab olinmoqda (#)}}</translation>
 <translation id="7196272782924897510">Boshqa qurilma kodi ishlatilsinmi?</translation>
 <translation id="7196913789568937443">Google Drive xizmatiga zaxiralash. Axborotlaringizni osongina tiklashingiz yoki qurilmangizni xohlagan vaqtda almashtirishingiz mumkin. Zaxira ichida ilova ma’lumotlari ham bor. Zaxiralar Google serverlariga yuklanadi va Google hisobingiz paroli bilan shifrlanadi. <ph name="BEGIN_LINK1" />Batafsil axborot<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Qidiruv va boshqa Google xizmatlariga oʻzingizni yaxshiroq tanishtiring</translation>
@@ -8812,6 +8815,9 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8725178340343806893">Sevimlilar/Xatcho‘plar</translation>
 <translation id="87254326763805752">Kodni tasdiqlang</translation>
 <translation id="8726206820263995930">Serverdan qoidalar sozlamalarini qabul qilishda yuz bergan xatolik: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165"><ph name="BEGIN_LINK1" />Avtomatik kiritish meta-axborotini<ph name="END_LINK1" /> yuborish
+          <ph name="LINE_BREAK" />
+          (axborot birovga berilmaydi)</translation>
 <translation id="8728351286589123703">Tanlagan ruxsatlaringiz tozalanadi</translation>
 <translation id="8729133765463465108">QR kodni kamera yordamida skanerlang</translation>
 <translation id="8730621377337864115">Tayyor</translation>

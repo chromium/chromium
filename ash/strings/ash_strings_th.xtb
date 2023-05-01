@@ -382,6 +382,7 @@
 <translation id="2791421900609674576">คุณจะเห็นคำแนะนำเพื่อให้ดำเนินการต่อจากจุดที่คุณค้างไว้ได้ โดยสามารถแตะค้างไว้หากต้องการนำคำแนะนำออก</translation>
 <translation id="2792498699870441125">Alt+ค้นหา</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" /> เลือกอยู่</translation>
 <translation id="2805756323405976993">แอป</translation>
 <translation id="2814448776515246190">จับภาพบางส่วน</translation>
 <translation id="2819276065543622893">คุณจะออกจากระบบในตอนนี้</translation>
@@ -1388,6 +1389,7 @@
 <translation id="7497767806359279797">เลือกภาษาและแป้นพิมพ์</translation>
 <translation id="7508690557411636492">เปิดในเดือนที่ผ่านมา</translation>
 <translation id="7509246181739783082">ยืนยันตัวตนของคุณ</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" /> ไม่ได้เลือกอยู่</translation>
 <translation id="7513622367902644023">เลือกโหมดภาพหน้าจอแล้ว</translation>
 <translation id="7513922695575567867">ปฏิทิน, สัปดาห์วันที่ <ph name="DATE" />, เลือกวันที่ <ph name="SELECTED_DATE" /> อยู่</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>

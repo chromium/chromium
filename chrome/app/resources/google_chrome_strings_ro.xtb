@@ -113,6 +113,7 @@
 <translation id="2929907241665500097">Chrome nu s-a actualizat. A apărut o eroare. <ph name="BEGIN_LINK" />Remediază problemele de actualizare și actualizările nereușite în Chrome.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – conectare la rețea – Chrome</translation>
 <translation id="3019382870990049182">Relansează pentru a actualiza &amp;sistemul de operare Chrome Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Extensiile Google Chrome accesau dispozitive HID}=1{Extensiile Google Chrome accesează dispozitive HID}few{Extensiile Google Chrome accesează # dispozitive HID}other{Extensiile Google Chrome accesează # de dispozitive HID}}</translation>
 <translation id="303514781271618814">Chrome explorează noi funcții care le dau site-urilor posibilitatea să ofere aceeași experiență de navigare, folosind mai puține date despre tine</translation>
 <translation id="3037838751736561277">Google Chrome este în modul fundal.</translation>
 <translation id="3038232873781883849">Se așteaptă instalarea…</translation>
@@ -218,6 +219,7 @@
 <translation id="4970880042055371251">Versiunea sistemului de operare Chrome</translation>
 <translation id="4970947549776831107">Chrome a blocat fișierul deoarece acest tip de fișier este periculos</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{O extensie Google Chrome accesa dispozitive HID}=1{O extensie Google Chrome accesează un dispozitiv HID}few{O extensie Google Chrome accesează # dispozitive HID}other{O extensie Google Chrome accesează # de dispozitive HID}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Administratorul închide automat Chrome dacă nu este folosit timp de un minut. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}few{Administratorul închide automat Chrome dacă nu este folosit timp de # minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}other{Administratorul închide automat Chrome dacă nu este folosit timp de # de minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}}</translation>
 <translation id="5098668839038261629">Când opțiunea este activată, te vei deconecta de la Chrome</translation>
 <translation id="5132929315877954718">Descoperă aplicații, jocuri, extensii și teme extraordinare pentru Google Chrome.</translation>

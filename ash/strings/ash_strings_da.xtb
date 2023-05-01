@@ -382,6 +382,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2791421900609674576">Du får vist anbefalinger, så du kan fortsætte, hvor du slap. Du kan fjerne anbefalinger ved at trykke og holde fingeren nede.</translation>
 <translation id="2792498699870441125">Alt+Søg</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, valgt</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Afgrænset screenshot</translation>
 <translation id="2819276065543622893">Du bliver logget ud nu.</translation>
@@ -1392,6 +1393,7 @@ Installeret for nylig</translation>
 <translation id="7497767806359279797">Vælg sprog og tastatur</translation>
 <translation id="7508690557411636492">Åbnet inden for den seneste måned</translation>
 <translation id="7509246181739783082">Verificer din identitet</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, ikke valgt</translation>
 <translation id="7513622367902644023">Screenshottilstand er valgt</translation>
 <translation id="7513922695575567867">Kalender for ugen med <ph name="DATE" /> – <ph name="SELECTED_DATE" /> er valgt.</translation>
 <translation id="7514365320538308">Download</translation>

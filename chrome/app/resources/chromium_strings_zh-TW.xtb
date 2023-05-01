@@ -8,6 +8,7 @@
 <translation id="1104942323762546749">Chromium 要求匯出你的密碼。如果允許，請輸入你的 Windows 密碼。</translation>
 <translation id="113122355610423240">Chromium 是你的預設瀏覽器</translation>
 <translation id="1131805035311359397">如要檢查你的密碼是否因資料侵害事件而遭到外洩，或是否有其他安全性問題，<ph name="BEGIN_LINK" />請登入 Chromium<ph name="END_LINK" />。</translation>
+<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium 擴充功能當時正在存取 HID 裝置}=1{Chromium 擴充功能正在存取 HID 裝置}other{Chromium 擴充功能正在存取 # 部 HID 裝置}}</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1202417120496358351">{COUNT,plural, =1{根據管理員規定，Chromium 閒置 1 分鐘就會自動關閉，屆時系統將刪除瀏覽資料，當中可能包括歷史記錄、自動填入的資料和下載內容。}other{根據管理員規定，Chromium 閒置 # 分鐘就會自動關閉，屆時系統將刪除瀏覽資料，當中可能包括歷史記錄、自動填入的資料和下載內容。}}</translation>
 <translation id="1203500561924088507">感謝你安裝本服務。你必須重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
@@ -356,6 +357,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Google 如何使用這些資料：<ph name="END_BOLD" />網站可以將你的興趣喜好相關資訊儲存在 Chromium 中。舉例來說，如果你造訪某個網站想購買適合馬拉松活動的慢跑鞋，網站可能會判斷你的興趣是跑馬拉松。在此之後，如果你造訪另一個網站報名參加比賽，該網站就可以根據你的興趣喜好向你顯示慢跑鞋的廣告。</translation>
 <translation id="8619360774459241877">正在啟動 Chromium…</translation>
 <translation id="8621669128220841554">不明錯誤導致安裝失敗，請重新下載 Chromium。</translation>
+<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Chromium 擴充功能當時正在存取 HID 裝置}=1{Chromium 擴充功能正在存取 1 個 HID 裝置}other{Chromium 擴充功能正在存取 # 部 HID 裝置}}</translation>
 <translation id="8697124171261953979">這個擴充功能也會控管 Chromium 啟動時或你使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="8704119203788522458">這是你專屬的 Chromium</translation>
 <translation id="8796602469536043152">Chromium 需要相關權限，才能讓這個網站使用你的攝影機和麥克風</translation>

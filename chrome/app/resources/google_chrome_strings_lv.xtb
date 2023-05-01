@@ -115,6 +115,7 @@
 <translation id="2929907241665500097">Pārlūkprogramma Chrome netika atjaunināta. Radās problēma. <ph name="BEGIN_LINK" />Novērsiet Chrome atjaunināšanas problēmas.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> — pierakstīšanās tīklā — Chrome</translation>
 <translation id="3019382870990049182">Palaist atkārtoti, lai atjauninātu &amp;Chrome OS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome paplašinājumi piekļuva HID ierīcēm}=1{Google Chrome paplašinājumi piekļūst HID ierīcei}zero{Google Chrome paplašinājumi piekļūst # HID ierīcēm}one{Google Chrome paplašinājumi piekļūst # HID ierīcei}other{Google Chrome paplašinājumi piekļūst # HID ierīcēm}}</translation>
 <translation id="303514781271618814">Chrome pēta jaunas funkcijas, kas ļauj vietnēm nodrošināt tādas pašas pārlūkošanas iespējas, izmantojot mazāk datu.</translation>
 <translation id="3037838751736561277">Google Chrome darbojas fona režīmā.</translation>
 <translation id="3038232873781883849">Gaida, lai instalētu...</translation>
@@ -220,6 +221,7 @@
 <translation id="4970880042055371251">Chrome OS versija</translation>
 <translation id="4970947549776831107">Pārlūkā Chrome šis fails tika bloķēts, jo šī tipa faili ir bīstami.</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome paplašinājums piekļuva HID ierīcēm}=1{Google Chrome paplašinājums piekļūst vienai HID ierīcei}zero{Google Chrome paplašinājums piekļūst # HID ierīcēm}one{Google Chrome paplašinājums piekļūst # HID ierīcei}other{Google Chrome paplašinājums piekļūst # HID ierīcēm}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Jūsu administrators automātiski aizver pārlūku Chrome, ja tas nav izmantots vienu minūti. Pārlūkošanas dati tiek izdzēsti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.}zero{Jūsu administrators automātiski aizver pārlūku Chrome, ja tas nav izmantots # minūtes. Pārlūkošanas dati tiek izdzēsti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.}one{Jūsu administrators automātiski aizver pārlūku Chrome, ja tas nav izmantots # minūti. Pārlūkošanas dati tiek izdzēsti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.}other{Jūsu administrators automātiski aizver pārlūku Chrome, ja tas nav izmantots # minūtes. Pārlūkošanas dati tiek izdzēsti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.}}</translation>
 <translation id="5098668839038261629">Iestatījumam esot ieslēgtam, jūs tiksiet izrakstīts arī no pārlūka Chrome.</translation>
 <translation id="5132929315877954718">Atklājiet lieliskas lietotnes, spēles, paplašinājumus un motīvus, ko varat izmantot pārlūkā Google Chrome.</translation>

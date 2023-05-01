@@ -293,6 +293,7 @@
 <translation id="3484914941826596830">Mikrodastur yangilanayotganda tashqi qurilmani uzmay va kompyuterni oʻchirmay turing. Bu oynani yigʻish mumkin. Bu yangilanish bir necha daqiqa vaqt oladi va bu vaqtda tashqi qurilma ishlamay turishi mumkin.</translation>
 <translation id="3486220673238053218">ta’rif</translation>
 <translation id="3488065109653206955">Qisman faollashtirilgan</translation>
+<translation id="3502426834823382181">barcha ilovalarni koʻrish</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Unumdorlik kuzatuvi maʼlumotlarini<ph name="END_LINK1" /> joʻnatish</translation>
 <translation id="3517001332549868749">ChromeOS yangilanishi</translation>
 <translation id="3527036260304016759">Bajarilmadi - Notanish xato</translation>
@@ -636,6 +637,7 @@
 <translation id="6278428485366576908">Mavzu</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Tungi mavzuni yoqish</translation>
+<translation id="6285899124799306373">ishga tushirgichni ochish</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> sinovi bekor qilindi</translation>
 <translation id="631063167932043783">Ilovani varaqlash</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> mikrodasturini yangilang</translation>
@@ -651,6 +653,7 @@
 <translation id="6382182670717268353">Ekran lavhasi koʻrinishi</translation>
 <translation id="6388847657025262518">Skanerga joylanadigan qogʻozlar tiqilib qoldi. Hujjat joylash panelini tekshirib, qaytadan urining.</translation>
 <translation id="6394634179843537518">Fayl qoʻshish</translation>
+<translation id="6401427872449207797">brauzerda qidiruv</translation>
 <translation id="6410257289063177456">Tasvir fayllar</translation>
 <translation id="641081527798843608">Mavzu mosligi</translation>
 <translation id="6412715219990689313">Ichki klaviatura</translation>
@@ -876,6 +879,7 @@
 <translation id="8312330582793120272">media ijrosi</translation>
 <translation id="8318753676953949627">Rasmlarsiz</translation>
 <translation id="8329018942023753850">kalkulyator ilovasi</translation>
+<translation id="8335869473001018124">qidiruvni ochish</translation>
 <translation id="8336739000755212683">Qurilmadagi hisob rasmini almashtirish</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
 <translation id="8351855506390808906">Tugma tayinlash: teginish nuqtasi</translation>

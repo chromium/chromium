@@ -3976,6 +3976,7 @@
 <translation id="4412632005703201014">ແອັບ Chrome ກຳລັງໂອນຍ້າຍໄປເປັນ Progressive Web Apps. ແອັບ Chrome ຖືກຕິດຕັ້ງຢູ່ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໂດຍອົງກອນຂອງທ່ານ. ເພື່ອເປີດ Progressive Web App ຈາກລາຍການແອັບ, ທຳອິດໃຫ້ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ ແລະ ຂໍໃຫ້ພວກເຂົາຖອນການຕິດຕັ້ງແອັບ Chrome. ໃນລະຫວ່າງນີ້, ທ່ານສາມາດເຂົ້າເບິ່ງ <ph name="EXTENSION_LAUNCH_URL" /> ເພື່ອເປີດ <ph name="EXTENSION_NAME" /> ຢູ່ເວັບໄດ້.</translation>
 <translation id="4412698727486357573">ສູນຊ່ວຍເຫຼືອ</translation>
 <translation id="4412992751769744546">ອະ​ນຸ​ຍາດ​ຄຸກ​ກີ້​ບຸກ​ຄົນ​ທີ​ສາມ</translation>
+<translation id="4413087696295876280">ອ່ານຂໍ້ມູນອຸປະກອນ ChromeOS Flex ແລະ ຂໍ້ມູນ</translation>
 <translation id="44141919652824029">ອະນຸຍາດໃຫ້ "<ph name="APP_NAME" />" ໄດ້ຮັບລາຍການອຸປະກອນ USB ທີ່ຄັດຕິດຂອງທ່ານບໍ?</translation>
 <translation id="4414232939543644979">ໜ້າ​ຕ່າງທີ່ບໍ່ເຜີຍຕົວໃໝ່</translation>
 <translation id="4414648713167199100">ໃຊ້ອິນເຕີເນັດມືຖືໃນ Chromebook ຂອງທ່ານ ແລະ ຜູ້ໃຫ້ບໍລິການຂອງທ່ານອາດຮຽກເກັບຄ່າບໍລິການເພີ່ມເຕີມ. ອາດເພີ່ມການໃຊ້ແບັດເຕີຣີ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -6851,6 +6852,7 @@
 <translation id="6993000214273684335">ລຶບແຖບອອກຈາກກຸ່ມທີ່ບໍ່ມີຊື່ - <ph name="GROUP_CONTENTS" /> ແລ້ວ</translation>
 <translation id="6993050154661569036">ກຳລັງອັບເດດໂປຣແກຣມທ່ອງເວັບ Chrome</translation>
 <translation id="6995899638241819463">ເຕືອນບອກທ່ານຖ້າລະຫັດຜ່ານຮົ່ວໄຫຼໃນການລະເມີດຂໍ້ມູນ</translation>
+<translation id="6995984090981858039">ອ່ານຂໍ້ມູນອຸປະກອນ ChromeOS ແລະ ຂໍ້ມູນ</translation>
 <translation id="6997553674029032185">ເຂົ້າໄປເວັບໄຊ</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - ບັນທຶກການເຄື່ອນໄຫວ</translation>
 <translation id="6997707937646349884">ໃນອຸປະກອນຂອງທ່ານ:</translation>
@@ -7054,6 +7056,7 @@
 <translation id="7193051357671784796">ແອັບນີ້ຖືກເພີ່ມເຂົ້າໂດຍອົງການຂອງທ່ານ. ປິດເປີດແອັບຄືນໃໝ່ເພື່ອສຳເລັດການຕິດຕັ້ງມັນ.</translation>
 <translation id="7193374945610105795">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ <ph name="ORIGIN" /></translation>
 <translation id="7194873994243265344">ອົງການຂອງທ່ານບລັອກໄຟລ໌ນີ້ໄວ້ເນື່ອງຈາກມັນຖືກເຂົ້າລະຫັດ. ກະລຸນາຂໍໃຫ້ເຈົ້າຂອງມັນຖອດລະຫັດ.</translation>
+<translation id="7196107899576756066">{COUNT,plural, =1{ກຳລັງດາວໂຫຼດ 1 ລາຍການ}other{ກຳລັງດາວໂຫຼດ # ລາຍການ}}</translation>
 <translation id="7196272782924897510">ໃຊ້ກະແຈຜ່ານຈາກອຸປະກອນອື່ນບໍ?</translation>
 <translation id="7196913789568937443">ສຳຮອງຂໍ້ມູນໄວ້ໃນ Google Drive. ກູ້ຄືນຂໍ້ມູນຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍ ຫຼື ປ່ຽນອຸປະກອນໄດ້ທຸກເວລາ. ຂໍ້ມູນທີ່ສຳຮອງໄວ້ຂອງທ່ານຮວມເອົາຂໍ້ມູນແອັບ. ຂໍ້ມູນທີ່ສຳຮອງໄວ້ຂອງທ່ານຖືກອັບໂຫຼດໄວ້ໃນ Google ແລະ ເຂົ້າລະຫັດໄວ້ໂດຍໃຊ້ລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານ. <ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">ໃຊ້ Google ຊອກຫາ ແລະ Google ອັດສະລິຍະທຸກຄັ້ງທີ່ທ່ານທ່ອງເວັບ</translation>

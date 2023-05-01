@@ -117,6 +117,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2929907241665500097">Chrome ez da eguneratu arazoren bat izan delako. <ph name="BEGIN_LINK" />Konpondu Chrome eguneratzeko arazoak eta huts egindako eguneratzeak.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Hasi saioa sarean - Chrome</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex eguneratzeko, abiaraz ezazu berriro</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome-rako luzapen batzuk giza interfazeko gailu batzuk erabiltzen ari ziren}=1{Google Chrome-rako luzapen batzuk giza interfazeko gailu batzuk erabiltzen ari dira}other{Google Chrome-rako luzapen batzuk giza interfazeko # gailu erabiltzen ari dira}}</translation>
 <translation id="303514781271618814">Chrome eginbide berriak probatzen ari da; haiei esker, datu gutxiago erabilita sarea modu berean arakatzeko aukera eskainiko dute webguneek</translation>
 <translation id="3037838751736561277">Google Chrome atzeko planoko moduan dago.</translation>
 <translation id="3038232873781883849">Instalatzeko zain…</translation>
@@ -222,6 +223,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4970880042055371251">Chrome OS-ren bertsioa</translation>
 <translation id="4970947549776831107">Chrome-k blokeatu egin du fitxategia mota horretako fitxategiak arriskutsuak direlako</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome-rako luzapen bat giza interfazeko gailu batzuk erabiltzen ari zen}=1{Google Chrome-rako luzapen bat giza interfazeko gailu bat erabiltzen ari da}other{Google Chrome-rako luzapen bat giza interfazeko # gailu erabiltzen ari da}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Administratzaileak automatikoki itxiko du Chrome minutu batez erabiltzen ez bada. Arakatze-datuak ezabatuko dira. Arakatze-datuen barnean daude historia, automatikoki betetako datuak eta deskargak.}other{Administratzaileak automatikoki itxiko du Chrome # minutuz erabiltzen ez bada. Arakatze-datuak ezabatuko dira. Arakatze-datuen barnean daude historia, automatikoki betetako datuak eta deskargak.}}</translation>
 <translation id="5098668839038261629">Aktibatuta dagoenean, Chrome-ko saioa ere amaituko da</translation>
 <translation id="5132929315877954718">Ezagutu Google Chrome-rako aplikazio, joko, luzapen eta gai bikainak.</translation>

@@ -3970,6 +3970,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4412632005703201014">Chrome-apper overføres til progressive nettprogrammer. Organisasjonen din har installert denne Chrome-appen i nettleseren din. For å åpne det progressive nettprogrammet fra listen over apper må du først kontakte og be administratoren om å avinstallere Chrome-appen. I mellomtiden kan du gå til <ph name="EXTENSION_LAUNCH_URL" /> for å åpne <ph name="EXTENSION_NAME" /> på nettet.</translation>
 <translation id="4412698727486357573">Brukerstøtte</translation>
 <translation id="4412992751769744546">Tillat informasjonskapsler fra tredjeparter</translation>
+<translation id="4413087696295876280">lese ChromeOS Flex-enhetsinformasjon og -data</translation>
 <translation id="44141919652824029">Vil du gi «<ph name="APP_NAME" />» tilgang til listen over tilkoblede USB-enheter?</translation>
 <translation id="4414232939543644979">Nytt &amp;inkognitovindu</translation>
 <translation id="4414648713167199100">Bruker mobildata på Chromebooken din. Det kan hende at operatøren din krever ekstragebyrer. Dette kan øke batteribruken. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -6844,6 +6845,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6993000214273684335">Fanen er fjernet fra en gruppe uten navn – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Oppdaterer Chrome-nettleseren</translation>
 <translation id="6995899638241819463">Få en advarsel hvis passord blir avdekket i databrudd</translation>
+<translation id="6995984090981858039">lese ChromeOS-enhetsinformasjon og -data</translation>
 <translation id="6997553674029032185">Gå til nettstedet</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – aktivitetslogg</translation>
 <translation id="6997707937646349884">På enhetene dine:</translation>
@@ -7047,6 +7049,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7193051357671784796">Denne appen er lagt til av organisasjonen din. Start appen på nytt for å fullføre installasjonen.</translation>
 <translation id="7193374945610105795">Ingen passord er lagret for <ph name="ORIGIN" /></translation>
 <translation id="7194873994243265344">Organisasjonen din har blokkert denne filen fordi den er kryptert. Be eieren om å dekryptere den.</translation>
+<translation id="7196107899576756066">{COUNT,plural, =1{1 nedlasting pågår}other{# nedlastinger pågår}}</translation>
 <translation id="7196272782924897510">Vil du bruke en tilgangsnøkkel fra en annen enhet?</translation>
 <translation id="7196913789568937443">Sikkerhetskopiér til Google Disk. Gjenopprett data eller bytt enhet når som helst – helt enkelt. Sikkerhetskopiene dine lastes opp til Google og krypteres med passordet for Google-kontoen din. <ph name="BEGIN_LINK1" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Få Google Søk og smarte funksjoner fra Google hver gang du surfer på nettet</translation>
