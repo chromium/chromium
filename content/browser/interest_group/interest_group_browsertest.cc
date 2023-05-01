@@ -12310,28 +12310,6 @@ class InterestGroupFencedFrameAdComponentAutomaticBeaconBrowserTest
                                               "/report_event.html");
   }
 
-  void RunAdAuctionAndLoadAdComponent(GURL ad_component_url) {
-    // Run ad auction with ad components and register ad beacons.
-    ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(
-        ad_component_url, /*component_ad_urn=*/nullptr,
-        "bidding_logic_register_ad_beacon.js",
-        "decision_logic_register_ad_beacon.js"));
-
-    RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
-
-    // Validate the ad components.
-    CheckAdComponents(
-        /*expected_ad_component_urls=*/std::vector<GURL>{ad_component_url},
-        ad_frame);
-
-    // Navigate the existing nested fenced frame to the ad component urn.
-    absl::optional<std::vector<GURL>> all_component_urls =
-        GetAdAuctionComponentsInJS(ad_frame, blink::kMaxAdAuctionAdComponents);
-    ASSERT_TRUE(all_component_urls);
-    NavigateFencedFrameAndWait((*all_component_urls)[0], ad_component_url,
-                               ad_frame);
-  }
-
   // Send a request that has the content "Basic request data" to the reporting
   // destination. This function is used in negative test cases where a reporting
   // beacon is expected not to be sent. For example:
@@ -12387,7 +12365,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL ad_component_url = https_server_->GetURL(
       "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
 
-  ASSERT_NO_FATAL_FAILURE(RunAdAuctionAndLoadAdComponent(ad_component_url));
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(
+      ad_component_url, /*component_ad_urn=*/nullptr,
+      "bidding_logic_register_ad_beacon.js",
+      "decision_logic_register_ad_beacon.js"));
 
   RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
   RenderFrameHostImpl* ad_component_frame =
@@ -12443,7 +12424,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL ad_component_url = https_server_->GetURL(
       "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
 
-  ASSERT_NO_FATAL_FAILURE(RunAdAuctionAndLoadAdComponent(ad_component_url));
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(
+      ad_component_url, /*component_ad_urn=*/nullptr,
+      "bidding_logic_register_ad_beacon.js",
+      "decision_logic_register_ad_beacon.js"));
 
   RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
   RenderFrameHostImpl* ad_component_frame =
@@ -12485,7 +12469,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL ad_component_url = https_server_->GetURL(
       "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
 
-  ASSERT_NO_FATAL_FAILURE(RunAdAuctionAndLoadAdComponent(ad_component_url));
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(
+      ad_component_url, /*component_ad_urn=*/nullptr,
+      "bidding_logic_register_ad_beacon.js",
+      "decision_logic_register_ad_beacon.js"));
 
   RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
   RenderFrameHostImpl* ad_component_frame =
@@ -12524,7 +12511,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL ad_component_url = https_server_->GetURL(
       "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
 
-  ASSERT_NO_FATAL_FAILURE(RunAdAuctionAndLoadAdComponent(ad_component_url));
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(
+      ad_component_url, /*component_ad_urn=*/nullptr,
+      "bidding_logic_register_ad_beacon.js",
+      "decision_logic_register_ad_beacon.js"));
 
   RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
   RenderFrameHostImpl* ad_component_frame =
@@ -12561,7 +12551,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL ad_component_url = https_server_->GetURL(
       "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
 
-  ASSERT_NO_FATAL_FAILURE(RunAdAuctionAndLoadAdComponent(ad_component_url));
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(
+      ad_component_url, /*component_ad_urn=*/nullptr,
+      "bidding_logic_register_ad_beacon.js",
+      "decision_logic_register_ad_beacon.js"));
 
   RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
   RenderFrameHostImpl* ad_component_frame =
@@ -12592,7 +12585,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL ad_component_url = https_server_->GetURL(
       "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
 
-  ASSERT_NO_FATAL_FAILURE(RunAdAuctionAndLoadAdComponent(ad_component_url));
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(
+      ad_component_url, /*component_ad_urn=*/nullptr,
+      "bidding_logic_register_ad_beacon.js",
+      "decision_logic_register_ad_beacon.js"));
 
   RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
   RenderFrameHostImpl* ad_component_frame =
@@ -12631,7 +12627,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL ad_component_url = https_server_->GetURL(
       "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
 
-  ASSERT_NO_FATAL_FAILURE(RunAdAuctionAndLoadAdComponent(ad_component_url));
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(
+      ad_component_url, /*component_ad_urn=*/nullptr,
+      "bidding_logic_register_ad_beacon.js",
+      "decision_logic_register_ad_beacon.js"));
 
   RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
   RenderFrameHostImpl* ad_component_frame =
@@ -12677,7 +12676,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL ad_component_url = https_server_->GetURL(
       "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
 
-  ASSERT_NO_FATAL_FAILURE(RunAdAuctionAndLoadAdComponent(ad_component_url));
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(
+      ad_component_url, /*component_ad_urn=*/nullptr,
+      "bidding_logic_register_ad_beacon.js",
+      "decision_logic_register_ad_beacon.js"));
 
   RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
   RenderFrameHostImpl* ad_component_frame =
