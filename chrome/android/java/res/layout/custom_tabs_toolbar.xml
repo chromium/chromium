@@ -46,6 +46,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:importantForAccessibility="no"
             android:background="@null" >
             <TextView
                 android:id="@+id/title_bar"
