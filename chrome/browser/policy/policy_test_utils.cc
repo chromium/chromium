@@ -79,19 +79,18 @@ bool PolicyTest::FetchSubresource(content::WebContents* web_contents,
       "xhr.open('GET', '");
   script += url.spec() +
             "', true);"
-            "xhr.onload = function (e) {"
-            "  if (xhr.readyState === 4) {"
-            "    window.domAutomationController.send(xhr.status === 200);"
-            "  }"
-            "};"
-            "xhr.onerror = function () {"
-            "  window.domAutomationController.send(false);"
-            "};"
-            "xhr.send(null)";
-  bool xhr_result = false;
-  bool execute_result =
-      content::ExecuteScriptAndExtractBool(web_contents, script, &xhr_result);
-  return xhr_result && execute_result;
+            "new Promise(resolve => {"
+            "  xhr.onload = function (e) {"
+            "    if (xhr.readyState === 4) {"
+            "      resolve(xhr.status === 200);"
+            "    }"
+            "  };"
+            "  xhr.onerror = function () {"
+            "    resolve(false);"
+            "  };"
+            "  xhr.send(null)"
+            "});";
+  return content::EvalJs(web_contents, script).ExtractBool();
 }
 
 void PolicyTest::FlushBlocklistPolicy() {
