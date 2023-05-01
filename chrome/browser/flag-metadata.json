@@ -1325,7 +1325,7 @@
   {
     "name": "crostini-ime-support",
     "owners": [ "timloh", "sophialin@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "crostini-multi-container",
