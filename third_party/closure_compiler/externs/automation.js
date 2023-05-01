@@ -1945,6 +1945,13 @@ chrome.automation.AutomationNode.prototype.isComboBox;
 chrome.automation.AutomationNode.prototype.isImage;
 
 /**
+ * Whether the node contains hidden nodes.
+ * @type {boolean}
+ * @see https://developer.chrome.com/extensions/automation#type-hasHiddenOffscreenNodes
+ */
+chrome.automation.AutomationNode.prototype.hasHiddenOffscreenNodes;
+
+/**
  * Aria auto complete.
  * @type {(string|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-autoComplete

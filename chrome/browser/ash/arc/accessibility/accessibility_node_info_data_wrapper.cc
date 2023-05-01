@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -74,17 +75,21 @@ bool AccessibilityNodeInfoDataWrapper::IsVirtualNode() const {
 }
 
 bool AccessibilityNodeInfoDataWrapper::IsIgnored() const {
-  if (!tree_source_->UseFullFocusMode())
+  if (!tree_source_->UseFullFocusMode()) {
     return !IsImportantInAndroid();
+  }
 
-  if (!IsImportantInAndroid() || !HasImportantProperty())
+  if (!IsImportantInAndroid() || !HasImportantProperty()) {
     return true;
+  }
 
-  if (IsAccessibilityFocusableContainer())
+  if (IsAccessibilityFocusableContainer()) {
     return false;
+  }
 
-  if (!HasText())
+  if (!HasText()) {
     return false;  // A layout container with a11y importance.
+  }
 
   return !HasAccessibilityFocusableText();
 }
@@ -94,8 +99,10 @@ bool AccessibilityNodeInfoDataWrapper::IsImportantInAndroid() const {
 }
 
 bool AccessibilityNodeInfoDataWrapper::IsFocusableInFullFocusMode() const {
-  if (!IsAccessibilityFocusableContainer() && !HasAccessibilityFocusableText())
+  if (!IsAccessibilityFocusableContainer() &&
+      !HasAccessibilityFocusableText()) {
     return false;
+  }
 
   ui::AXNodeData data;
   PopulateAXRole(&data);
@@ -109,8 +116,9 @@ bool AccessibilityNodeInfoDataWrapper::IsAccessibilityFocusableContainer()
            IsFocusable();
   }
 
-  if (!IsImportantInAndroid() || (IsScrollableContainer() && !HasText()))
+  if (!IsImportantInAndroid() || (IsScrollableContainer() && !HasText())) {
     return false;
+  }
 
   return GetProperty(AXBooleanProperty::SCREEN_READER_FOCUSABLE) ||
          IsFocusable() || IsClickable() || IsLongClickable() ||
@@ -128,11 +136,6 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
 
   if (GetProperty(AXBooleanProperty::EDITABLE)) {
     out_data->role = ax::mojom::Role::kTextField;
-    return;
-  }
-
-  if (GetProperty(AXBooleanProperty::HEADING)) {
-    out_data->role = ax::mojom::Role::kHeading;
     return;
   }
 
@@ -167,7 +170,7 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
     AXCollectionItemInfoData* collection_item_info =
         node_ptr_->collection_item_info.get();
     if (collection_item_info->is_heading) {
-      out_data->role = ax::mojom::Role::kHeading;
+      out_data->role = ax::mojom::Role::kColumnHeader;
       return;
     }
 
@@ -178,8 +181,9 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
     for (AccessibilityInfoDataWrapper* container =
              const_cast<AccessibilityNodeInfoDataWrapper*>(this);
          container;) {
-      if (!container || !container->IsNode())
+      if (!container || !container->IsNode()) {
         break;
+      }
       if (container->IsNode() && container->GetNode()->collection_info) {
         collection_info = container->GetNode()->collection_info.get();
         break;
@@ -191,10 +195,15 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
     if (collection_info) {
       if (collection_info->row_count > 1 && collection_info->column_count > 1) {
         out_data->role = ax::mojom::Role::kCell;
-        out_data->AddIntAttribute(ax::mojom::IntAttribute::kTableRowIndex,
+        out_data->AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex,
                                   collection_item_info->row_index);
-        out_data->AddIntAttribute(ax::mojom::IntAttribute::kTableColumnIndex,
-                                  collection_item_info->column_index);
+        out_data->AddIntAttribute(
+            ax::mojom::IntAttribute::kTableCellColumnIndex,
+            collection_item_info->column_index);
+        out_data->AddIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex,
+                                  collection_item_info->row_index + 1);
+        out_data->AddIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex,
+                                  collection_item_info->column_index + 1);
         return;
       }
 
@@ -204,6 +213,11 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
                                          collection_item_info->column_index));
       return;
     }
+  }
+
+  if (GetProperty(AXBooleanProperty::HEADING)) {
+    out_data->role = ax::mojom::Role::kHeading;
+    return;
   }
 
   std::string chrome_role;
@@ -274,10 +288,11 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
   GetProperty(AXStringProperty::TEXT, &text);
   std::vector<AccessibilityInfoDataWrapper*> children;
   GetChildren(&children);
-  if (!text.empty() && children.empty())
+  if (!text.empty() && children.empty()) {
     out_data->role = ax::mojom::Role::kStaticText;
-  else
+  } else {
     out_data->role = ax::mojom::Role::kGenericContainer;
+  }
 }
 
 void AccessibilityNodeInfoDataWrapper::PopulateAXState(
@@ -298,8 +313,9 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXState(
   const bool focusable = tree_source_->UseFullFocusMode()
                              ? IsAccessibilityFocusableContainer()
                              : IsFocusable();
-  if (focusable)
+  if (focusable) {
     out_data->AddState(ax::mojom::State::kFocusable);
+  }
 
   if (GetProperty(AXBooleanProperty::CHECKABLE)) {
     const bool is_checked = GetProperty(AXBooleanProperty::CHECKED);
@@ -307,14 +323,17 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXState(
                                          : ax::mojom::CheckedState::kFalse);
   }
 
-  if (!GetProperty(AXBooleanProperty::ENABLED))
+  if (!GetProperty(AXBooleanProperty::ENABLED)) {
     out_data->SetRestriction(ax::mojom::Restriction::kDisabled);
+  }
 
-  if (!GetProperty(AXBooleanProperty::VISIBLE_TO_USER))
+  if (!GetProperty(AXBooleanProperty::VISIBLE_TO_USER)) {
     out_data->AddState(ax::mojom::State::kInvisible);
+  }
 
-  if (IsIgnored())
+  if (IsIgnored()) {
     out_data->AddState(ax::mojom::State::kIgnored);
+  }
 }
 
 void AccessibilityNodeInfoDataWrapper::Serialize(
@@ -329,8 +348,9 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
 
   // String properties.
   const std::string name = ComputeAXName(true);
-  if (!name.empty())
+  if (!name.empty()) {
     out_data->SetName(name);
+  }
 
   // For a textField, the editable text is contained in the text property, and
   // this should be set as the value instead of the name.
@@ -342,8 +362,9 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
       !GetProperty(AXBooleanProperty::SHOWING_HINT_TEXT)) {
     std::string text;
     GetProperty(AXStringProperty::TEXT, &text);
-    if (!text.empty())
+    if (!text.empty()) {
       out_data->SetValue(text);
+    }
   }
 
   std::string role_description;
@@ -364,8 +385,9 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
 
   // If it exists, set tooltip value as on node.
   std::string tooltip;
-  if (GetProperty(AXStringProperty::TOOLTIP, &tooltip))
+  if (GetProperty(AXStringProperty::TOOLTIP, &tooltip)) {
     out_data->AddStringAttribute(ax::mojom::StringAttribute::kTooltip, tooltip);
+  }
 
   std::string state_description;
   if (GetProperty(AXStringProperty::STATE_DESCRIPTION, &state_description)) {
@@ -398,11 +420,13 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
 
   // Boolean properties.
   PopulateAXState(out_data);
-  if (GetProperty(AXBooleanProperty::SCROLLABLE))
+  if (GetProperty(AXBooleanProperty::SCROLLABLE)) {
     out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kScrollable, true);
+  }
 
-  if (IsClickable())
+  if (IsClickable()) {
     out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kClickable, true);
+  }
 
   if (IsLongClickable()) {
     out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kLongClickable, true);
@@ -422,6 +446,13 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
                                true);
   }
 
+  // All scrollable containers have the potential to have offscreen hidden
+  // nodes.
+  if (IsScrollableContainer()) {
+    out_data->AddBoolAttribute(
+        ax::mojom::BoolAttribute::kHasHiddenOffscreenNodes, true);
+  }
+
   // Range info.
   if (node_ptr_->range_info) {
     AXRangeInfoData* range_info = node_ptr_->range_info.get();
@@ -435,11 +466,13 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
 
   // Integer properties.
   int32_t val;
-  if (GetProperty(AXIntProperty::TEXT_SELECTION_START, &val) && val >= 0)
+  if (GetProperty(AXIntProperty::TEXT_SELECTION_START, &val) && val >= 0) {
     out_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart, val);
+  }
 
-  if (GetProperty(AXIntProperty::TEXT_SELECTION_END, &val) && val >= 0)
+  if (GetProperty(AXIntProperty::TEXT_SELECTION_END, &val) && val >= 0) {
     out_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, val);
+  }
 
   if (GetProperty(AXIntProperty::LIVE_REGION, &val) && val >= 0 &&
       static_cast<mojom::AccessibilityLiveRegionType>(val) !=
@@ -453,14 +486,17 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
   }
 
   // Standard actions.
-  if (HasStandardAction(AXActionType::SCROLL_BACKWARD))
+  if (HasStandardAction(AXActionType::SCROLL_BACKWARD)) {
     out_data->AddAction(ax::mojom::Action::kScrollBackward);
+  }
 
-  if (HasStandardAction(AXActionType::SCROLL_FORWARD))
+  if (HasStandardAction(AXActionType::SCROLL_FORWARD)) {
     out_data->AddAction(ax::mojom::Action::kScrollForward);
+  }
 
-  if (HasStandardAction(AXActionType::SCROLL_TO_POSITION))
+  if (HasStandardAction(AXActionType::SCROLL_TO_POSITION)) {
     out_data->AddAction(ax::mojom::Action::kScrollToPositionAtRowColumn);
+  }
 
   if (HasStandardAction(AXActionType::EXPAND)) {
     out_data->AddAction(ax::mojom::Action::kExpand);
@@ -550,8 +586,9 @@ std::string AccessibilityNodeInfoDataWrapper::ComputeAXName(
   if (do_recursive && GetProperty(AXIntProperty::LABELED_BY, &labeled_by)) {
     AccessibilityInfoDataWrapper* labeled_by_node =
         tree_source_->GetFromId(labeled_by);
-    if (labeled_by_node && labeled_by_node->IsNode())
+    if (labeled_by_node && labeled_by_node->IsNode()) {
       label = labeled_by_node->ComputeAXName(false);
+    }
   }
 
   std::string pane_title;
@@ -564,37 +601,44 @@ std::string AccessibilityNodeInfoDataWrapper::ComputeAXName(
 
   std::vector<std::string> names;
   // Append non empty properties to name attribute.
-  if (!content_description.empty())
+  if (!content_description.empty()) {
     names.push_back(content_description);
-  if (!label.empty())
+  }
+  if (!label.empty()) {
     names.push_back(label);
-  if (!pane_title.empty())
+  }
+  if (!pane_title.empty()) {
     names.push_back(pane_title);
+  }
   if (!text.empty() && !GetProperty(AXBooleanProperty::EDITABLE)) {
     // EDITABLE is checked here, as EDITABLE field will have text set as value,
     // this is done in Serialize() function.
     names.push_back(text);
   }
-  if (!hint_text.empty())
+  if (!hint_text.empty()) {
     names.push_back(hint_text);
+  }
 
   // If a node is accessibility focusable, but has no name, the name should be
   // computed from its descendants.
   if (names.empty() && tree_source_->UseFullFocusMode() &&
-      IsAccessibilityFocusableContainer())
+      IsAccessibilityFocusableContainer()) {
     ComputeNameFromContents(&names);
+  }
 
   return base::JoinString(names, " ");
 }
 
 void AccessibilityNodeInfoDataWrapper::GetChildren(
     std::vector<AccessibilityInfoDataWrapper*>* children) const {
-  if (!node_ptr_->int_list_properties)
+  if (!node_ptr_->int_list_properties) {
     return;
+  }
   const auto& it =
       node_ptr_->int_list_properties->find(AXIntListProperty::CHILD_NODE_IDS);
-  if (it == node_ptr_->int_list_properties->end())
+  if (it == node_ptr_->int_list_properties->end()) {
     return;
+  }
   for (const int32_t id : it->second) {
     auto* child = tree_source_->GetFromId(id);
     if (child != nullptr) {
@@ -646,23 +690,27 @@ bool AccessibilityNodeInfoDataWrapper::HasStandardAction(
     AXActionType action) const {
   if (node_ptr_->standard_actions) {
     for (const auto& supported_action : node_ptr_->standard_actions.value()) {
-      if (static_cast<AXActionType>(supported_action->id) == action)
+      if (static_cast<AXActionType>(supported_action->id) == action) {
         return true;
+      }
     }
     return false;
   }
 
-  if (!node_ptr_->int_list_properties)
+  if (!node_ptr_->int_list_properties) {
     return false;
+  }
 
   auto itr = node_ptr_->int_list_properties->find(
       AXIntListProperty::STANDARD_ACTION_IDS_DEPRECATED);
-  if (itr == node_ptr_->int_list_properties->end())
+  if (itr == node_ptr_->int_list_properties->end()) {
     return false;
+  }
 
   for (const auto supported_action : itr->second) {
-    if (static_cast<AXActionType>(supported_action) == action)
+    if (static_cast<AXActionType>(supported_action) == action) {
       return true;
+    }
   }
   return false;
 }
@@ -670,33 +718,38 @@ bool AccessibilityNodeInfoDataWrapper::HasStandardAction(
 bool AccessibilityNodeInfoDataWrapper::HasCoveringSpan(
     AXStringProperty prop,
     mojom::SpanType span_type) const {
-  if (!node_ptr_->spannable_string_properties)
+  if (!node_ptr_->spannable_string_properties) {
     return false;
+  }
 
   std::string text;
   GetProperty(prop, &text);
-  if (text.empty())
+  if (text.empty()) {
     return false;
+  }
 
   auto span_entries_it = node_ptr_->spannable_string_properties->find(prop);
-  if (span_entries_it == node_ptr_->spannable_string_properties->end())
+  if (span_entries_it == node_ptr_->spannable_string_properties->end()) {
     return false;
+  }
 
-  for (size_t i = 0; i < span_entries_it->second.size(); ++i) {
-    if (span_entries_it->second[i]->span_type != span_type)
+  for (const auto& entry : span_entries_it->second) {
+    if (entry->span_type != span_type) {
       continue;
+    }
 
-    size_t span_size =
-        span_entries_it->second[i]->end - span_entries_it->second[i]->start;
-    if (span_size == text.size())
+    size_t span_size = entry->end - entry->start;
+    if (span_size == text.size()) {
       return true;
+    }
   }
   return false;
 }
 
 bool AccessibilityNodeInfoDataWrapper::HasText() const {
-  if (!IsImportantInAndroid())
+  if (!IsImportantInAndroid()) {
     return false;
+  }
 
   for (const auto it : text_properties_) {
     if (HasNonEmptyStringProperty(node_ptr_.get(), it)) {
@@ -707,19 +760,22 @@ bool AccessibilityNodeInfoDataWrapper::HasText() const {
 }
 
 bool AccessibilityNodeInfoDataWrapper::HasAccessibilityFocusableText() const {
-  if (IsVirtualNode())
+  if (IsVirtualNode()) {
     return HasText();
+  }
 
-  if (!IsImportantInAndroid() || !HasText())
+  if (!IsImportantInAndroid() || !HasText()) {
     return false;
+  }
 
   // If any ancestor has a focusable property, the text is used by that node.
   AccessibilityInfoDataWrapper* parent =
       tree_source_->GetFirstImportantAncestor(
           const_cast<AccessibilityNodeInfoDataWrapper*>(this));
   while (parent && parent->IsNode()) {
-    if (parent->IsAccessibilityFocusableContainer())
+    if (parent->IsAccessibilityFocusableContainer()) {
       return false;
+    }
     parent = tree_source_->GetFirstImportantAncestor(parent);
   }
   return true;
@@ -737,8 +793,9 @@ void AccessibilityNodeInfoDataWrapper::ComputeNameFromContents(
 
 void AccessibilityNodeInfoDataWrapper::ComputeNameFromContentsInternal(
     std::vector<std::string>* names) const {
-  if (IsVirtualNode() || IsAccessibilityFocusableContainer())
+  if (IsVirtualNode() || IsAccessibilityFocusableContainer()) {
     return;
+  }
 
   if (IsImportantInAndroid()) {
     std::string name;
@@ -777,8 +834,9 @@ bool AccessibilityNodeInfoDataWrapper::IsFocusable() const {
 }
 
 bool AccessibilityNodeInfoDataWrapper::IsScrollableContainer() const {
-  if (GetProperty(AXBooleanProperty::SCROLLABLE))
+  if (GetProperty(AXBooleanProperty::SCROLLABLE)) {
     return true;
+  }
 
   ui::AXNodeData data;
   PopulateAXRole(&data);
@@ -788,22 +846,25 @@ bool AccessibilityNodeInfoDataWrapper::IsScrollableContainer() const {
 }
 
 bool AccessibilityNodeInfoDataWrapper::IsToplevelScrollItem() const {
-  if (!IsVisibleToUser())
+  if (!IsVisibleToUser()) {
     return false;
+  }
 
   AccessibilityInfoDataWrapper* parent =
       tree_source_->GetFirstImportantAncestor(
           const_cast<AccessibilityNodeInfoDataWrapper*>(this));
-  if (!parent || !parent->IsNode())
+  if (!parent || !parent->IsNode()) {
     return false;
+  }
 
   return static_cast<AccessibilityNodeInfoDataWrapper*>(parent)
       ->IsScrollableContainer();
 }
 
 bool AccessibilityNodeInfoDataWrapper::HasImportantProperty() const {
-  if (!has_important_property_cache_.has_value())
+  if (!has_important_property_cache_.has_value()) {
     has_important_property_cache_ = HasImportantPropertyInternal();
+  }
 
   return *has_important_property_cache_;
 }
@@ -818,8 +879,9 @@ bool AccessibilityNodeInfoDataWrapper::HasImportantPropertyInternal() const {
     return true;
   }
 
-  if (IsFocusable() || IsClickable() || IsLongClickable())
+  if (IsFocusable() || IsClickable() || IsLongClickable()) {
     return true;
+  }
 
   // These properties are sorted in the same order of mojom file.
   if (GetProperty(AXBooleanProperty::CHECKABLE) ||
@@ -830,8 +892,9 @@ bool AccessibilityNodeInfoDataWrapper::HasImportantPropertyInternal() const {
 
   ui::AXNodeData data;
   PopulateAXRole(&data);
-  if (ui::IsControl(data.role))
+  if (ui::IsControl(data.role)) {
     return true;
+  }
 
   // Check if any ancestor has an important property.
   std::vector<AccessibilityInfoDataWrapper*> children;

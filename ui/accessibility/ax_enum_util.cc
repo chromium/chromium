@@ -1746,6 +1746,8 @@ const char* ToString(ax::mojom::BoolAttribute bool_attribute) {
       return "touchPassthrough";
     case ax::mojom::BoolAttribute::kLongClickable:
       return "longClickable";
+    case ax::mojom::BoolAttribute::kHasHiddenOffscreenNodes:
+      return "hasHiddenOffscreenNodes";
   }
 
   return "";

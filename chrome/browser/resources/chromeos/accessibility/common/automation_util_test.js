@@ -111,7 +111,6 @@ AX_TEST_F(
       while (rightmost.lastChild) {
         rightmost = rightmost.lastChild;
       }
-
       const leftAncestors = getNonDesktopAncestors(leftmost);
       const rightAncestors = getNonDesktopAncestors(rightmost);
       assertEquals(RoleType.LINK, leftmost.role);

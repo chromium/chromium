@@ -467,7 +467,7 @@ export class CommandHandler extends CommandHandlerInterface {
       case Command.PREVIOUS_OBJECT:
         skipSettingSelection = true;
         dir = Dir.BACKWARD;
-        // Falls through.
+      // Falls through.
       case Command.RIGHT:
       case Command.NEXT_OBJECT:
         skipSettingSelection = true;
@@ -493,14 +493,14 @@ export class CommandHandler extends CommandHandlerInterface {
         return false;
       case Command.PREVIOUS_SIMILAR_ITEM:
         dir = Dir.BACKWARD;
-        // Falls through.
+      // Falls through.
       case Command.NEXT_SIMILAR_ITEM:
         skipSync = true;
         pred = this.getPredicateForNextOrPreviousSimilarItem_(node);
         break;
       case Command.PREVIOUS_INVALID_ITEM:
         dir = Dir.BACKWARD;
-        // Falls through.
+      // Falls through.
       case Command.NEXT_INVALID_ITEM:
         pred = AutomationPredicate.isInvalid;
         rootPred = AutomationPredicate.root;
@@ -717,9 +717,23 @@ export class CommandHandler extends CommandHandlerInterface {
               bound, dir, pred, {skipInitialAncestry, root: rootPred});
         }
 
+        // Scroll here for table navigation with arrow keys where some nodes may
+        // be hidden. The scroll must happen here because |node| will remain
+        // undefined, causing this command to return before the next autoscroll
+        // check.
+        if (!node &&
+            !AutoScrollHandler.instance.scrollToFindNodes(
+                bound, command, currentRange, dir, () => {
+                  this.onCommand(command);
+                  this.onFinishCommand();
+                })) {
+          this.onFinishCommand();
+          return false;
+        }
+
         if (node && !skipSync) {
           node = AutomationUtil.findNodePre(
-                     node, Dir.FORWARD, AutomationPredicate.object) ||
+                     node, Dir.FORWARD, AutomationPredicate.object) ??
               node;
         }
 

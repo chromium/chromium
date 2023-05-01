@@ -106,12 +106,28 @@ class AX_EXPORT AXTableInfo {
   std::string ToString() const;
 
  private:
+  struct CellBuildState {
+   public:
+    size_t cell_index;
+    size_t current_col_index;
+    size_t current_row_index;
+    size_t spanned_col_index;
+    size_t current_aria_row_index;
+    size_t current_aria_col_index;
+    bool is_first_cell_in_row;
+  };
+
   AXTableInfo(AXTree* tree, AXNode* table_node);
 
   void ClearVectors();
   void BuildCellDataVectorFromRowAndCellNodes(
       const std::vector<AXNode*>& row_node_list,
       const std::vector<std::vector<AXNode*>>& cell_nodes_per_row);
+  void BuildCellDataVectorFromCellNodes(
+      const std::vector<std::vector<AXNode*>>& cell_nodes_per_row);
+  void BuildCellData(AXNode* cell,
+                     AXNode* row_or_first_cell,
+                     CellBuildState& state);
   void BuildCellAndHeaderVectorsFromCellData();
   void UpdateExtraMacNodes();
   void ClearExtraMacNodes();

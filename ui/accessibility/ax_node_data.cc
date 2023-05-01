@@ -1860,6 +1860,9 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::BoolAttribute::kLongClickable:
         result += " long_clickable=" + value;
         break;
+      case ax::mojom::BoolAttribute::kHasHiddenOffscreenNodes:
+        result += " has_hidden_nodes=" + value;
+        break;
       case ax::mojom::BoolAttribute::kNone:
         break;
     }

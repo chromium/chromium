@@ -16,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
@@ -515,6 +516,10 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, SelectedState) {
 
   ui::AXNodeData data = CallSerialize(cell_wrapper);
   ASSERT_EQ(ax::mojom::Role::kCell, data.role);
+  ASSERT_EQ(0,
+            data.GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex));
+  ASSERT_EQ(
+      0, data.GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex));
   ASSERT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   ASSERT_FALSE(
       data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
@@ -535,6 +540,52 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, SelectedState) {
                                       &description));
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ARC_ACCESSIBILITY_SELECTED_STATUS),
             description);
+}
+
+TEST_F(AccessibilityNodeInfoDataWrapperTest, CellIndexes) {
+  AXNodeInfoData grid;
+  grid.id = 1;
+  SetProperty(grid, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({10, 11, 12, 13}));
+  grid.collection_info = AXCollectionInfoData::New();
+  grid.collection_info->row_count = 2;
+  grid.collection_info->column_count = 2;
+
+  AccessibilityNodeInfoDataWrapper grid_wrapper(tree_source(), &grid);
+  SetIdToWrapper(&grid_wrapper);
+
+  std::vector<AXNodeInfoData> cells(4);
+  for (int i = 0; i < 4; i++) {
+    AXNodeInfoData& node = cells[i];
+    node.id = 10 + i;
+    node.collection_item_info = AXCollectionItemInfoData::New();
+    node.collection_item_info->row_index = i % 2;
+    node.collection_item_info->column_index = i / 2;
+    SetProperty(node, AXBooleanProperty::SELECTED, true);
+
+    SetParentId(node.id, grid.id);
+  }
+
+  // Verify that the cells get indexes and aria indexes set.
+  for (int i = 0; i < 4; i++) {
+    auto& cell = cells[i];
+    AccessibilityNodeInfoDataWrapper cell_wrapper(tree_source(), &cell);
+    ui::AXNodeData data = CallSerialize(cell_wrapper);
+    ASSERT_EQ(ax::mojom::Role::kCell, data.role);
+    int expected_row_index = i % 2;
+    int expected_col_index = i / 2;
+    ASSERT_EQ(
+        expected_row_index,
+        data.GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex));
+    ASSERT_EQ(
+        expected_col_index,
+        data.GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex));
+    ASSERT_EQ(expected_row_index + 1,
+              data.GetIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex));
+    ASSERT_EQ(
+        expected_col_index + 1,
+        data.GetIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex));
+  }
 }
 
 TEST_F(AccessibilityNodeInfoDataWrapperTest, EditTextRole) {
