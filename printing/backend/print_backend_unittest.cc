@@ -68,10 +68,15 @@ TEST_F(PrintBackendTest, MANUAL_GetXmlPrinterCapabilitiesForXpsDriver) {
   EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
             mojom::ResultCode::kSuccess);
   for (const auto& printer : printer_list) {
-    EXPECT_TRUE(
-        GetPrintBackend()
-            ->GetXmlPrinterCapabilitiesForXpsDriver(printer.printer_name)
-            .has_value());
+    auto caps = GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
+        printer.printer_name);
+    DLOG(WARNING) << "Capabilities for printer " << printer.printer_name;
+    // Do not fail with assert on lack of value, so that entire list of
+    // printers can be checked.
+    EXPECT_TRUE(caps.has_value());
+    if (caps.has_value()) {
+      DLOG(WARNING) << caps.value();
+    }
   }
 }
 
