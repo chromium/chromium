@@ -29,18 +29,31 @@ class ExtensionsToolbarControlsUnitTest : public ExtensionsToolbarUnitTest {
   const ExtensionsToolbarControlsUnitTest& operator=(
       const ExtensionsToolbarControlsUnitTest&) = delete;
 
+  // Navigates to `url`.
+  void NavigateAndCommit(const GURL& URL);
+
   ExtensionsRequestAccessButton* request_access_button();
+  ExtensionsToolbarButton* extensions_button();
 
   // Returns whether the request access button is visible or not.
   bool IsRequestAccessButtonVisible();
 
+  // ExtensionsToolbarUnitTest:
+  void SetUp() override;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<content::WebContentsTester> web_contents_tester_;
 };
 
 ExtensionsToolbarControlsUnitTest::ExtensionsToolbarControlsUnitTest() {
   scoped_feature_list_.InitAndEnableFeature(
       extensions_features::kExtensionsMenuAccessControl);
+}
+
+void ExtensionsToolbarControlsUnitTest::NavigateAndCommit(const GURL& url) {
+  web_contents_tester_->NavigateAndCommit(url);
+  WaitForAnimation();
 }
 
 ExtensionsRequestAccessButton*
@@ -50,8 +63,67 @@ ExtensionsToolbarControlsUnitTest::request_access_button() {
       ->request_access_button_for_testing();
 }
 
+ExtensionsToolbarButton*
+ExtensionsToolbarControlsUnitTest::extensions_button() {
+  return extensions_container()->GetExtensionsButton();
+}
+
 bool ExtensionsToolbarControlsUnitTest::IsRequestAccessButtonVisible() {
   return request_access_button()->GetVisible();
+}
+
+void ExtensionsToolbarControlsUnitTest::SetUp() {
+  ExtensionsToolbarUnitTest::SetUp();
+  web_contents_tester_ = AddWebContentsAndGetTester();
+}
+
+TEST_F(ExtensionsToolbarControlsUnitTest, ExtensionsButton_UserSiteSetting) {
+  // Install an extension that requests host permissions, and withhold them.
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  const GURL url("http://www.url.com");
+  auto url_origin = url::Origin::Create(url);
+  NavigateAndCommit(url);
+
+  auto* manager = extensions::PermissionsManager::Get(profile());
+  {
+    // Extensions button has "all extensions blocked" icon type when it's
+    // an user restricted site.
+    extensions::PermissionsManagerWaiter manager_waiter(manager);
+    manager->AddUserRestrictedSite(url_origin);
+    manager_waiter.WaitForUserPermissionsSettingsChange();
+    WaitForAnimation();
+    EXPECT_EQ(extensions_button()->GetStateForTesting(),
+              ExtensionsToolbarButton::State::kAllExtensionsBlocked);
+  }
+
+  {
+    // Extensions button has "default" icon type when it's not
+    // an user restricted site. Even though the extension has site access
+    // withheld, extension is not explicitly blocked on site since it can still
+    // run on click.
+    extensions::PermissionsManagerWaiter manager_waiter(manager);
+    manager->RemoveUserRestrictedSite(url_origin);
+    manager_waiter.WaitForUserPermissionsSettingsChange();
+    WaitForAnimation();
+    EXPECT_EQ(extensions_button()->GetStateForTesting(),
+              ExtensionsToolbarButton::State::kDefault);
+  }
+}
+
+TEST_F(ExtensionsToolbarControlsUnitTest,
+       ExtensionsButton_ChromeRestrictedSite) {
+  InstallExtension("Extension");
+
+  const GURL restricted_url("chrome://extensions");
+  NavigateAndCommit(restricted_url);
+
+  // Extensions button has "all extensions blocked" icon type for chrome
+  // restricted sites.
+  EXPECT_EQ(extensions_button()->GetStateForTesting(),
+            ExtensionsToolbarButton::State::kAllExtensionsBlocked);
 }
 
 TEST_F(ExtensionsToolbarControlsUnitTest,

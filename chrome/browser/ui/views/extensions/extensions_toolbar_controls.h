@@ -40,9 +40,10 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
     return request_access_button_;
   }
 
-  // Update the controls given `actions` and the user `site_setting` in the
-  // `current_web_contents`.
+  // Update the controls given whether `is_restricted_url`, the `actions` and
+  // the user `site_setting` in the `current_web_contents`.
   void UpdateControls(
+      bool is_restricted_url,
       const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
       extensions::PermissionsManager::UserSiteSetting site_setting,
       content::WebContents* current_web_contents);
@@ -51,6 +52,12 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
   void UpdateAllIcons() override;
 
  private:
+  // Updates `extensions_button_` icon given the user `site_setting` and whether
+  // `is_restricted_url`.
+  void UpdateExtensionsButton(
+      bool is_restricted_url,
+      extensions::PermissionsManager::UserSiteSetting site_setting);
+
   // Updates `request_access_button_` visibility given the user `site_setting`
   // and `actions` in `web_contents`.
   void UpdateRequestAccessButton(

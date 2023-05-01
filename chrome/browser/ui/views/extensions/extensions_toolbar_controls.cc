@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
@@ -31,9 +32,11 @@ ExtensionsToolbarControls::~ExtensionsToolbarControls() = default;
 void ExtensionsToolbarControls::UpdateAllIcons() {}
 
 void ExtensionsToolbarControls::UpdateControls(
+    bool is_restricted_url,
     const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
     extensions::PermissionsManager::UserSiteSetting site_setting,
     content::WebContents* current_web_contents) {
+  UpdateExtensionsButton(is_restricted_url, site_setting);
   UpdateRequestAccessButton(actions, site_setting, current_web_contents);
 
   // Display background only when multiple buttons are visible. Since
@@ -48,6 +51,21 @@ void ExtensionsToolbarControls::UpdateControls(
   // Resets the layout since layout animation does not handle host view
   // visibility changing. This should be called after any visibility changes.
   GetAnimatingLayoutManager()->ResetLayout();
+}
+
+void ExtensionsToolbarControls::UpdateExtensionsButton(
+    bool is_restricted_url,
+    extensions::PermissionsManager::UserSiteSetting site_setting) {
+  bool extensions_are_blocked =
+      is_restricted_url ||
+      site_setting ==
+          extensions::PermissionsManager::UserSiteSetting::kBlockAllExtensions;
+  ExtensionsToolbarButton::State extensions_button_state =
+      extensions_are_blocked
+          ? ExtensionsToolbarButton::State::kAllExtensionsBlocked
+          : ExtensionsToolbarButton::State::kDefault;
+
+  extensions_button_->UpdateState(extensions_button_state);
 }
 
 void ExtensionsToolbarControls::UpdateRequestAccessButton(
