@@ -259,6 +259,13 @@ found in the LICENSE file.
         </label>
       </div>
       <div class="checkbox-wrapper">
+        <input type="checkbox" id="cb-filter-arsc" name="type" value="a"
+               checked>
+        <label class="checkbox-label" for="cb-filter-arsc">
+          ARSC Assets
+        </label>
+      </div>
+      <div class="checkbox-wrapper">
         <input type="checkbox" id="cb-filter-other" name="type" value="o"
                checked>
         <label class="checkbox-label" for="cb-filter-other">
@@ -389,6 +396,11 @@ found in the LICENSE file.
       <svg class="icon nonlocalpakicon" height="24" width="24" fill="#0d652d">
         <title>Non-locale pak entry</title>
         <path d="M5 3a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5zm0 2h5v2h2V5h7v14H5V5zm7 2v2h2V7h-2zm0 2h-2v2h2V9zm0 2v2h2v-2h-2zm0 2h-2v2h2v-2zm0 2v2h2v-2h-2z"
+        />
+      </svg>
+      <svg class="icon arscicon" height="24" width="24" fill="#ea4335">
+        <title>ARSC entry</title>
+        <path d="M10.88 2l-.85 1.36L4 13h6v-2H7.6l3.28-5.23L12.28 8h2.35l-3.75-6zM12 10v10h10V10H12zm2 2h6v6h-6v-6zM2.21 15A5.52 5.52 0 0 0 10 21.4v-2.45A3.48 3.48 0 0 1 7.5 20a3.48 3.48 0 0 1-3.15-5H2.2z"
         />
       </svg>
       <svg class="icon othericon" height="24" width="24" fill="#5f6368">
@@ -534,6 +546,22 @@ found in the LICENSE file.
               </tr>
             </thead>
             <tbody>
+              <tr class="arsc-info">
+                <td>
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18"
+                       fill="#ea4335">
+                    <path d="M10.88 2l-.85 1.36L4 13h6v-2H7.6l3.28-5.23L12.28 8h2.35l-3.75-6zM12 10v10h10V10H12zm2 2h6v6h-6v-6zM2.21 15A5.52 5.52 0 0 0 10 21.4v-2.45A3.48 3.48 0 0 1 7.5 20a3.48 3.48 0 0 1-3.15-5H2.2z"
+                    />
+                  </svg>
+                </td>
+                <th scope="row">ARSC entries</th>
+                <td class="count"></td>
+                <td class="added"></td>
+                <td class="removed"></td>
+                <td class="changed"></td>
+                <td class="size"></td>
+                <td class="percent"></td>
+              </tr>
               <tr class="bss-info">
                 <td>
                   <svg class="icon" viewBox="0 0 24 24" height="18" width="18"

@@ -35,6 +35,7 @@ enum class ArtifactType : char {
 enum class SectionId : char {
   // kNone is unused except for default-initializing in containers
   kNone = '\0',
+  kArsc = 'a',
   kBss = 'b',
   kData = 'd',
   kDataRelRo = 'R',
