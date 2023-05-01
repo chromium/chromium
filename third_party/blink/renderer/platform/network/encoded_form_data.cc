@@ -36,10 +36,7 @@ FormDataElement::FormDataElement() : type_(kData) {}
 
 FormDataElement::FormDataElement(const Vector<char>& array)
     : type_(kData), data_(array)
-{
-  recordreplay::Assert("[RUN-1350-1386] FormDataElement::FormDataElement len=%u",
-    (unsigned) data_.size());
-}
+{}
 
 FormDataElement::FormDataElement(
     const String& filename,
@@ -166,20 +163,6 @@ scoped_refptr<EncodedFormData> EncodedFormData::DeepCopy() const {
 void EncodedFormData::AppendData(const void* data, wtf_size_t size) {
   if (elements_.empty() || elements_.back().type_ != FormDataElement::kData)
     elements_.push_back(FormDataElement());
-
-  if (recordreplay::IsRecordingOrReplaying()) {
-    uintptr_t replayed_size = size;
-    uintptr_t recorded_size = recordreplay::RecordReplayValue(
-      "EncodedFormData::AppendData", replayed_size
-    );
-    if (recorded_size != replayed_size) {
-      recordreplay::Warning(
-        "[RUN-1350-1805] EncodedFormData::AppendData size mismatch: "
-        "recorded %u, replayed %u",
-        (unsigned) recorded_size, (unsigned) replayed_size
-      );
-    }
-  }
 
   FormDataElement& e = elements_.back();
   wtf_size_t old_size = e.data_.size();

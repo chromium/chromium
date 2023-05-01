@@ -62,22 +62,6 @@ std::string TextEncoding::Encode(const String& string,
   if (string.empty())
     return std::string();
 
-  if (recordreplay::IsRecordingOrReplaying()) {
-    uintptr_t len = string.length();
-    uintptr_t reclen = recordreplay::RecordReplayValue("TextEncoding::Encode", len);
-    if (reclen != len) {
-      recordreplay::Warning("TextEncoding::Encode: %s rep=%d rec=%d", GetName(), len, reclen);
-
-      std::string strUtf8 = string.Utf8();
-      recordreplay::Print("[RUN-1350-1805] TextEncoding::Encode %u %s %d (%s)",
-        string.length(),
-        GetName(),
-        (int)handling,
-        strUtf8.c_str()
-      );
-    }
-  }
-
   std::unique_ptr<TextCodec> text_codec = NewTextCodec(*this);
   std::string encoded_string;
   if (string.Is8Bit())
