@@ -1625,6 +1625,17 @@ chromium-metrics-reviews@google.com.
   <summary>The length of the selection received from javascript.</summary>
 </histogram>
 
+<histogram name="IOS.PasswordBottomSheet.ExitReason"
+    enum="PasswordSuggestionBottomSheetExitReason" expires_after="2024-04-26">
+  <owner>sugoi@chromium.org</owner>
+  <owner>veronguyen@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    Tracks the bottom sheet dismissal, use of a password suggestion and long
+    press menu events.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PasswordManager.Favicons.Count" units="count"
     expires_after="2023-09-03">
   <owner>veronguyen@google.com</owner>
@@ -1916,6 +1927,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the results and attempts of reauthentication when using password
     Autofill suggestions.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Reauth.Password.BottomSheet" enum="ReauthenticationEvent"
+    expires_after="2024-04-26">
+  <owner>sugoi@chromium.org</owner>
+  <owner>veronguyen@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    Tracks the results and attempts of reauthentication when using suggestions
+    from the password bottom sheet.
   </summary>
 </histogram>
 

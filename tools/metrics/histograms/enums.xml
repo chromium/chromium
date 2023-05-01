@@ -80918,6 +80918,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Generated password submission failed"/>
 </enum>
 
+<enum name="PasswordSuggestionBottomSheetExitReason">
+  <int value="0" label="Bottom Sheet dismissed"/>
+  <int value="1" label="Used password suggestion"/>
+  <int value="2" label="Accessed Password Manager through the long press menu"/>
+  <int value="3" label="Accessed Password Details through the long press menu"/>
+</enum>
+
 <enum name="PasswordSuggestionType">
   <int value="0" label="Credential"/>
   <int value="1" label="Show All"/>

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
 
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
+#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_exit_reason.h"
 
 namespace autofill {
 struct FormActivityParams;
@@ -45,6 +46,9 @@ class WebStateList;
 
 // The bottom sheet suggestions consumer.
 @property(nonatomic, strong) id<PasswordSuggestionBottomSheetConsumer> consumer;
+
+// Logs bottom sheet exit reasons, like dismissal or using a password.
+- (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason;
 
 @end
 

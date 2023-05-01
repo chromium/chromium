@@ -22,6 +22,8 @@
 #error "This file requires ARC support."
 #endif
 
+using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
+
 @interface PasswordSuggestionBottomSheetCoordinator () {
   // The password controller delegate used to open the password manager.
   id<PasswordControllerDelegate> _passwordControllerDelegate;
@@ -115,6 +117,7 @@
 #pragma mark - PasswordSuggestionBottomSheetHandler
 
 - (void)displayPasswordManager {
+  [_mediator logExitReason:kShowPasswordManager];
   [_passwordControllerDelegate displaySavedPasswordList];
 }
 

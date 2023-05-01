@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -32,6 +34,13 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using PasswordSuggestionBottomSheetExitReason::kDismissal;
+using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
+using ReauthenticationEvent::kAttempt;
+using ReauthenticationEvent::kFailure;
+using ReauthenticationEvent::kMissingPasscode;
+using ReauthenticationEvent::kSuccess;
 
 @interface PasswordSuggestionBottomSheetMediator () <
     WebStateListObserving,
@@ -143,13 +152,18 @@
   _passwordsPresenterObserver.reset();
   _prefService = nullptr;
   _faviconLoader = nullptr;
-  _webStateList = nullptr;
   _forwarder = nullptr;
   _observer = nullptr;
+  _webStateList = nullptr;
 }
 
 - (BOOL)hasSuggestions {
   return [self.suggestions count] > 0;
+}
+
+- (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason {
+  base::UmaHistogramEnumeration("IOS.PasswordBottomSheet.ExitReason",
+                                exitReason);
 }
 
 #pragma mark - Accessors
@@ -170,7 +184,11 @@
 
   FormSuggestion* suggestion = [self.suggestions objectAtIndex:row];
 
+  [self logExitReason:kUsePasswordSuggestion];
+  [self logReauthEvent:kAttempt];
+
   if (!suggestion.requiresReauth) {
+    [self logReauthEvent:kSuccess];
     [self selectSuggestion:suggestion];
     return;
   }
@@ -178,7 +196,10 @@
     __weak __typeof(self) weakSelf = self;
     auto completionHandler = ^(ReauthenticationResult result) {
       if (result != ReauthenticationResult::kFailure) {
+        [self logReauthEvent:kSuccess];
         [weakSelf selectSuggestion:suggestion];
+      } else {
+        [self logReauthEvent:kFailure];
       }
     };
 
@@ -188,12 +209,14 @@
                     canReusePreviousAuth:YES
                                  handler:completionHandler];
   } else {
+    [self logReauthEvent:kMissingPasscode];
     [self selectSuggestion:suggestion];
   }
 }
 
 - (void)refocus {
   if (_needsRefocus && _webStateList) {
+    [self logExitReason:kDismissal];
     [self incrementDismissCount];
 
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
@@ -285,6 +308,7 @@
 
 // Perform suggestion selection
 - (void)selectSuggestion:(FormSuggestion*)suggestion {
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
   [self.suggestionsProvider didSelectSuggestion:suggestion];
 }
 
@@ -314,6 +338,11 @@
         _prefService->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) +
             1);
   }
+}
+
+// Logs reauthentication events.
+- (void)logReauthEvent:(ReauthenticationEvent)event {
+  base::UmaHistogramEnumeration("IOS.Reauth.Password.BottomSheet", event);
 }
 
 @end
