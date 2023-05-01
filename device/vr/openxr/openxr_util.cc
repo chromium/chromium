@@ -9,13 +9,16 @@
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
-#include "base/win/scoped_handle.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_handle.h"
+#endif
 
 namespace device {
 
@@ -82,10 +85,6 @@ bool IsRunningInWin32AppContainer() {
 
   return isAppContainer;
 }
-#else
-bool IsRunningInWin32AppContainer() {
-  return false;
-}
 #endif
 
 XrResult CreateInstance(
@@ -123,9 +122,12 @@ XrResult CreateInstance(
   // XR_ERROR_EXTENSION_NOT_PRESENT if an extension is not supported,
   // so we don't need to call xrEnumerateInstanceExtensionProperties
   // to validate these extensions.
-  // Since the OpenXR backend only knows how to draw with D3D11 at the moment,
-  // the XR_KHR_D3D11_ENABLE_EXTENSION_NAME is required.
-  std::vector<const char*> extensions{XR_KHR_D3D11_ENABLE_EXTENSION_NAME};
+  std::vector<const char*> extensions;
+
+#if BUILDFLAG(IS_WIN)
+  // Since the Windows OpenXR backend only knows how to draw with D3D11 at the
+  // moment, the XR_KHR_D3D11_ENABLE_EXTENSION_NAME is required.
+  extensions.push_back(XR_KHR_D3D11_ENABLE_EXTENSION_NAME);
 
   // If we are in an app container, we must require the app container extension
   // to ensure robust execution of the OpenXR runtime
@@ -135,6 +137,7 @@ XrResult CreateInstance(
     // container environment, one of xrCreateInstance or xrGetSystem will fail.
     extensions.push_back(XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME);
   }
+#endif
 
   auto EnableExtensionIfSupported = [&extension_enumeration,
                                      &extensions](const char* extension) {
@@ -166,8 +169,10 @@ XrResult CreateInstance(
     EnableExtensionIfSupported(XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME);
   }
 
+#if BUILDFLAG(IS_WIN)
   EnableExtensionIfSupported(
       XR_KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME);
+#endif
 
   instance_create_info.enabledExtensionCount =
       static_cast<uint32_t>(extensions.size());

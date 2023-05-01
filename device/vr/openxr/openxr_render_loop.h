@@ -13,6 +13,7 @@
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "device/vr/openxr/context_provider_callbacks.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
+#include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/windows/compositor_base.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -53,6 +54,9 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   gpu::gles2::GLES2Interface* GetContextGL() override;
   void ClearPendingFrameInternal() override;
   bool IsUsingSharedImages() const override;
+  void SubmitFrame(int16_t frame_index,
+                   const gpu::MailboxHolder& mailbox,
+                   base::TimeDelta time_waited) override;
   void SubmitFrameDrawnIntoTexture(int16_t frame_index,
                                    const gpu::SyncToken&,
                                    base::TimeDelta time_waited) override;
@@ -145,6 +149,8 @@ class OpenXrRenderLoop : public XRCompositorCommon,
 
   scoped_refptr<viz::ContextProvider> context_provider_;
   VizContextProviderFactoryAsync context_provider_factory_async_;
+
+  std::unique_ptr<OpenXrGraphicsBinding> graphics_binding_;
 
   // This must be the last member
   base::WeakPtrFactory<OpenXrRenderLoop> weak_ptr_factory_{this};

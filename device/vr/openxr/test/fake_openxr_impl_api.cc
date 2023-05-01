@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <wrl.h>
-
 #include "base/containers/contains.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/test/openxr_negotiate.h"
 #include "device/vr/openxr/test/openxr_test_helper.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <wrl.h>
+#endif
 
 namespace {
 // Global test helper that communicates with the test and contains the mock
@@ -596,6 +598,7 @@ XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
   return XR_SUCCESS;
 }
 
+#if BUILDFLAG(IS_WIN)
 __stdcall XrResult xrGetD3D11GraphicsRequirementsKHR(
     XrInstance instance,
     XrSystemId system_id,
@@ -630,6 +633,7 @@ __stdcall XrResult xrGetD3D11GraphicsRequirementsKHR(
   RETURN_IF_FALSE(false, XR_ERROR_VALIDATION_FAILURE,
                   "Unable to create query DXGI Adapter");
 }
+#endif
 
 XrResult xrGetActionStateFloat(XrSession session,
                                const XrActionStateGetInfo* get_info,
@@ -1136,9 +1140,11 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
   } else if (strcmp(name, "xrEnumerateViewConfigurationViews") == 0) {
     *function =
         reinterpret_cast<PFN_xrVoidFunction>(xrEnumerateViewConfigurationViews);
+#if BUILDFLAG(IS_WIN)
   } else if (strcmp(name, "xrGetD3D11GraphicsRequirementsKHR") == 0) {
     *function =
         reinterpret_cast<PFN_xrVoidFunction>(xrGetD3D11GraphicsRequirementsKHR);
+#endif
   } else if (strcmp(name, "xrGetActionStateFloat") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrGetActionStateFloat);
   } else if (strcmp(name, "xrGetActionStateBoolean") == 0) {

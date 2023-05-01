@@ -263,8 +263,13 @@ void XRCompositorCommon::StartRuntimeFinish(
     transport_options->transport_method =
         device::mojom::XRPresentationTransportMethod::DRAW_INTO_TEXTURE_MAILBOX;
   } else {
+#if BUILDFLAG(IS_WIN)
     transport_options->transport_method =
         device::mojom::XRPresentationTransportMethod::SUBMIT_AS_TEXTURE_HANDLE;
+#else
+    transport_options->transport_method =
+        device::mojom::XRPresentationTransportMethod::SUBMIT_AS_MAILBOX_HOLDER;
+#endif
   }
 
   // Only set boolean options that we need. Default is false, and we should be
@@ -299,7 +304,9 @@ void XRCompositorCommon::StartRuntimeFinish(
       FROM_HERE, base::BindOnce(std::move(callback), true, std::move(session)));
   is_presenting_ = true;
 
+#if BUILDFLAG(IS_WIN)
   texture_helper_.SetSourceAndOverlayVisible(webxr_visible_, overlay_visible_);
+#endif
 }
 
 void XRCompositorCommon::ExitPresent(ExitXrPresentReason reason) {
@@ -324,7 +331,9 @@ void XRCompositorCommon::ExitPresent(ExitXrPresentReason reason) {
   overlay_visible_ = false;
   overlay_receiver_.reset();
 
+#if BUILDFLAG(IS_WIN)
   texture_helper_.SetSourceAndOverlayVisible(false, false);
+#endif
 
   // Don't call StopRuntime until this thread has finished the rest of the work.
   // This is to prevent the OpenXrApiWrapper from being deleted before its
@@ -543,7 +552,9 @@ void XRCompositorCommon::SetOverlayAndWebXRVisibility(bool overlay_visible,
   }
 
   // Update texture helper.
+#if BUILDFLAG(IS_WIN)
   texture_helper_.SetSourceAndOverlayVisible(webxr_visible, overlay_visible);
+#endif
 
   // Maybe composite and submit if we have a pending that is now valid to
   // submit.
@@ -570,32 +581,32 @@ void XRCompositorCommon::MaybeCompositeAndSubmit() {
     return;
   }
 
-  bool no_submit = false;
-  if (!(pending_frame_->webxr_submitted_ && webxr_visible_) &&
-      !(pending_frame_->overlay_submitted_ && overlay_visible_)) {
-    // Nothing visible was submitted - we can't composite/submit to headset.
-    no_submit = true;
-  }
+  // TODO(https://crbug.com/1441073): Refactor OpenXR Rendering.
+  bool copy_successful = false;
+#if BUILDFLAG(IS_WIN)
+  bool has_webxr_content = pending_frame_->webxr_submitted_ && webxr_visible_;
+  bool has_overlay_content =
+      pending_frame_->overlay_submitted_ && overlay_visible_;
+  bool can_submit = has_webxr_content || has_overlay_content;
 
-  bool copy_successful;
-
-  // If so, tell texture helper to composite, then grab the output texture, and
-  // submit. If we submitted, set up the next frame, and send outstanding pose
-  // requests.
-  if (no_submit) {
-    copy_successful = false;
-    texture_helper_.CleanupNoSubmit();
-  } else {
+  // Tell texture helper to composite, then grab the output texture, and submit.
+  // If we submitted, set up the next frame, and send outstanding pose requests.
+  if (can_submit) {
     copy_successful = texture_helper_.UpdateBackbufferSizes() &&
                       texture_helper_.CompositeToBackBuffer();
-    if (copy_successful) {
-      pending_frame_->frame_ready_time_ = base::TimeTicks::Now();
-      if (!SubmitCompositedFrame()) {
-        ExitPresent(ExitXrPresentReason::kSubmitFrameFailed);
-        // ExitPresent() clears pending_frame_, so return here to avoid
-        // accessing it below.
-        return;
-      }
+  } else {
+    texture_helper_.CleanupNoSubmit();
+  }
+#endif
+
+  // A copy can only be succesful if we actually tried to submit.
+  if (copy_successful) {
+    pending_frame_->frame_ready_time_ = base::TimeTicks::Now();
+    if (!SubmitCompositedFrame()) {
+      ExitPresent(ExitXrPresentReason::kSubmitFrameFailed);
+      // ExitPresent() clears pending_frame_, so return here to avoid
+      // accessing it below.
+      return;
     }
   }
 

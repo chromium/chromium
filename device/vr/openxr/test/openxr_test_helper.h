@@ -5,10 +5,6 @@
 #ifndef DEVICE_VR_OPENXR_TEST_OPENXR_TEST_HELPER_H_
 #define DEVICE_VR_OPENXR_TEST_OPENXR_TEST_HELPER_H_
 
-#include <d3d11.h>
-#include <unknwn.h>
-#include <wrl.h>
-
 #include <array>
 #include <queue>
 #include <unordered_map>
@@ -23,6 +19,10 @@
 #include "device/vr/test/test_hook.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <wrl.h>
+#endif
 
 namespace gfx {
 class Transform;

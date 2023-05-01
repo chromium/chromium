@@ -132,6 +132,14 @@ class XRCompositorCommon : public base::Thread,
   // processes
   virtual bool IsUsingSharedImages() const;
 
+  // XRPresentationProvider overrides:
+  void SubmitFrame(int16_t frame_index,
+                   const gpu::MailboxHolder& mailbox,
+                   base::TimeDelta time_waited) override;
+  void SubmitFrameDrawnIntoTexture(int16_t frame_index,
+                                   const gpu::SyncToken&,
+                                   base::TimeDelta time_waited) override;
+  void SubmitFrameMissing(int16_t frame_index, const gpu::SyncToken&) final;
 #if BUILDFLAG(IS_WIN)
   void SubmitFrameWithTextureHandle(int16_t frame_index,
                                     mojo::PlatformHandle texture_handle,
@@ -163,13 +171,6 @@ class XRCompositorCommon : public base::Thread,
   void MaybeCompositeAndSubmit();
 
   // XRPresentationProvider overrides:
-  void SubmitFrameMissing(int16_t frame_index, const gpu::SyncToken&) final;
-  void SubmitFrame(int16_t frame_index,
-                   const gpu::MailboxHolder& mailbox,
-                   base::TimeDelta time_waited) final;
-  void SubmitFrameDrawnIntoTexture(int16_t frame_index,
-                                   const gpu::SyncToken&,
-                                   base::TimeDelta time_waited) override;
   void UpdateLayerBounds(int16_t frame_id,
                          const gfx::RectF& left_bounds,
                          const gfx::RectF& right_bounds,

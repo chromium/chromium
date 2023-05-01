@@ -7,6 +7,10 @@
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_util.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <d3d11.h>
+#endif
+
 namespace device {
 
 OpenXrStatics* OpenXrStatics::GetInstance() {

@@ -5,8 +5,6 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_STATICS_H_
 #define DEVICE_VR_OPENXR_OPENXR_STATICS_H_
 
-#include <d3d11.h>
-
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_platform.h"

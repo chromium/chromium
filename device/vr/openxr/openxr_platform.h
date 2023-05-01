@@ -14,7 +14,14 @@
 #error "Do not directly include the external openxr_platform.h"
 #endif
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
 #include <d3d11.h>
+#elif BUILDFLAG(IS_ANDROID)
+#include <EGL/egl.h>
+#include <jni.h>
+#endif
 
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 

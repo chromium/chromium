@@ -5,7 +5,6 @@
 #ifndef DEVICE_VR_OPENXR_TEST_OPENXR_NEGOTIATE_H_
 #define DEVICE_VR_OPENXR_TEST_OPENXR_NEGOTIATE_H_
 
-#include <d3d11.h>
 #include <unknwn.h>
 
 #include "device/vr/openxr/openxr_platform.h"

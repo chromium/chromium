@@ -14,7 +14,7 @@ include_rules = [
   "+third_party/skia/include/core/SkColor.h",
   "+ui/display",
   "+ui/gfx",
-  "+ui/gl/gl_bindings.h",
+  "+ui/gl",
   # The third_party version of openxr_platform depends on certain platform
   # headers being included before it, so we disallow direct dependency on it.
   # Places needing to take a dependency on code in openxr_platform.h should

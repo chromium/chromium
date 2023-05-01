@@ -5,5 +5,4 @@ include_rules = [
   "+gpu/command_buffer/service",
   "+gpu/config/gpu_driver_bug_workaround_type.h",
   "+gpu/ipc/common",
-  "+ui/gl",
 ]

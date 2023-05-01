@@ -12,6 +12,7 @@ if (enable_openxr) {
     # DEPS rules for it as are present in the below locations.
     visibility = [
       "//chrome/browser/vr/*",
+      "//components/webxr/*",
       "//device/vr/*",
     ]
 
@@ -32,6 +33,7 @@ if (enable_openxr) {
     # DEPS rules for it as are present in the below locations.
     visibility = [
       "//chrome/browser/vr/*",
+      "//components/webxr/*",
       "//device/vr/*",
     ]
     sources = [
@@ -102,6 +104,13 @@ if (enable_openxr) {
         "XR_OS_WINDOWS",
         "XR_USE_PLATFORM_WIN32",
         "XR_USE_GRAPHICS_API_D3D11",
+      ]
+    } else {
+      defines = [
+        "XRLOADER_DISABLE_EXCEPTION_HANDLING",
+        "XR_OS_ANDROID",
+        "XR_USE_PLATFORM_ANDROID",
+        "XR_USE_GRAPHICS_API_OPENGL_ES",
       ]
     }
   }
