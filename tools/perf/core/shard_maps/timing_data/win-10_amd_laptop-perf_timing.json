@@ -1,6 +1,6 @@
 [
     {
-        "duration": "91.0",
+        "duration": "84.0",
         "name": "jetstream2/JetStream2"
     },
     {
@@ -8,7 +8,7 @@
         "name": "octane/Octane"
     },
     {
-        "duration": "46.0",
+        "duration": "37.0",
         "name": "speedometer2/Speedometer2"
     }
 ]
