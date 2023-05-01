@@ -142,7 +142,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
     config->trigger = EventConfig("battery_saver_info_triggered",
-                                  Comparator(LESS_THAN, 3), 360, 360);
+                                  Comparator(LESS_THAN, 1), 360, 360);
     config->used =
         EventConfig("battery_saver_info_shown", Comparator(EQUAL, 0), 7, 360);
     return config;
@@ -161,7 +161,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(EQUAL, 0), 360, 360);
     config->event_configs.insert(
         EventConfig("high_efficiency_prompt_in_trigger",
-                    Comparator(LESS_THAN, 3), 360, 360));
+                    Comparator(LESS_THAN, 1), 360, 360));
     return config;
   }
 

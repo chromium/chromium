@@ -419,7 +419,7 @@ void MaybeRegisterChromeFeaturePromos(
                 RecordHighEfficiencyIPHEnableMode(true);
               }))
           .SetCustomActionIsDefault(true)
-          .SetCustomActionDismissText(IDS_NOT_NOW)
+          .SetCustomActionDismissText(IDS_NO_THANKS)
           .SetBubbleTitleText(IDS_HIGH_EFFICIENCY_MODE_PROMO_TITLE)));
 
   // kIPHPriceTrackingInSidePanelFeature;
