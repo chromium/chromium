@@ -107,9 +107,10 @@ class _ArscStreamReader(stream_reader.StreamReader):
 
   def NextArscChunk(self, parent=None):
     chunk_type = self.PeekArscHeaderType()
-    arsc_class = self.GetArscResTypeToClassMap().get(chunk_type)
-    assert arsc_class, 'Failed to get class for chunk_type = %d' % chunk_type
-    return arsc_class(self, parent=parent)
+    arsc_class = self.GetArscResTypeToClassMap().get(chunk_type) or ArscChunk
+    chunk = arsc_class(self, parent=parent)
+    self.Seek(chunk.end_addr)
+    return chunk
 
 
 def _SplitBits(value, *widths):
@@ -368,7 +369,7 @@ class ArscChunk:
     return '%s: %s%s: %s' % (r, '  ' * depth, name, f)
 
   def __str__(self):
-    return self.StrHelper('UNKNOWN (type=%d)' % self.type, {})
+    return self.StrHelper('GENERIC', {'type': self.type})
 
 
 class ArscStringPool(ArscChunk):
@@ -575,7 +576,6 @@ class ArscResTableType(ArscChunk):
     self.entry_padding += sum(4 for o in entries_offsets
                               if o == ArscResTableType.NO_ENTRY)
     # Skip reading actual entries.
-    reader.Seek(self.end_addr)
 
   @property
   def padding(self):
