@@ -313,6 +313,8 @@ public final class ProductionSupportedFlagList {
                     CcFeatures.AVOID_RASTER_DURING_ELASTIC_OVERSCROLL, "No effect on webview"),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_ENCODER_ASYNC_ENCODE,
                     "Make RTCVideoEncoder encode call asynchronous."),
+            Flag.baseFeature(BlinkFeatures.WEB_RTC_INITIALIZE_ON_FIRST_FRAME,
+                    "Initialize VideoEncodeAccelerator on the first encode."),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_METRONOME,
                     "Inject a metronome into webrtc to allow task coalescing, "
                             + " including synchronized decoding."),

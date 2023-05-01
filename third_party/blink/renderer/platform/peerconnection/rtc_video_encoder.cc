@@ -547,10 +547,6 @@ bool IsZeroCopyEnabled(webrtc::VideoContentType content_type) {
 }  // namespace
 
 namespace features {
-// Initialize VideoEncodeAccelerator on the first encode.
-BASE_FEATURE(kWebRtcInitializeOnFirstFrame,
-             "WebRtcInitializeEncoderOnFirstFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 // Fallback from hardware encoder (if available) to software, for WebRTC
 // screensharing that uses temporal scalability.
 BASE_FEATURE(kWebRtcScreenshareSwEncoding,

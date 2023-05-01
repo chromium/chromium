@@ -1547,6 +1547,10 @@ BASE_FEATURE(kWebRtcEncoderAsyncEncode,
              "WebRtcEncoderAsyncEncode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebRtcInitializeOnFirstFrame,
+             "WebRtcInitializeEncoderOnFirstFrame",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kWebRtcThreadsUseResourceEfficientType,
              "WebRtcThreadsUseResourceEfficientType",
              base::FEATURE_DISABLED_BY_DEFAULT);

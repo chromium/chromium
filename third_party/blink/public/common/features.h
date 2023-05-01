@@ -811,6 +811,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kClipboardUnsanitizedContent);
 // Make RTCVideoEncoder::Encode() asynchronous.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcEncoderAsyncEncode);
 
+// Initialize VideoEncodeAccelerator on the first encode.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcInitializeOnFirstFrame);
+
 // If enabled, the WebRTC_* threads in peerconnection module will use
 // kResourceEfficient thread type.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
