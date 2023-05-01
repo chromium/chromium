@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL createNSResolver() should return the specified node as is. (HTMLDocument) assert_equals: Document expected Document node with 2 children but got object "[object NativeXPathNSResolver]"
-FAIL createNSResolver() resultant object should not add support of 'xml' prefix. (HTMLDocument) assert_equals: Document expected (object) null but got (string) "http://www.w3.org/XML/1998/namespace"
-FAIL createNSResolver() should return the specified node as is. (XPathEvaluator) assert_equals: Document expected Document node with 2 children but got object "[object NativeXPathNSResolver]"
-FAIL createNSResolver() resultant object should not add support of 'xml' prefix. (XPathEvaluator) assert_equals: Document expected (object) null but got (string) "http://www.w3.org/XML/1998/namespace"
-Harness: the test ran to completion.
-

@@ -24,7 +24,7 @@
 ] partial interface Document {
     [MeasureAs=DocumentXPathCreateExpression, RaisesException] XPathExpression createExpression(DOMString expression, optional XPathNSResolver? resolver = null);
 
-    [MeasureAs=DocumentXPathCreateNSResolver] NativeXPathNSResolver createNSResolver(Node nodeResolver);
+    [MeasureAs=DocumentXPathCreateNSResolver] (NativeXPathNSResolver or Node) createNSResolver(Node nodeResolver);
 
     [MeasureAs=DocumentXPathEvaluate, RaisesException] XPathResult evaluate(DOMString expression, Node contextNode, optional XPathNSResolver? resolver = null, optional unsigned short type = 0, optional object? inResult = null);
 };

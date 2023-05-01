@@ -60,7 +60,7 @@ XPathExpression* DocumentXPathEvaluator::createExpression(
                                                       exception_state);
 }
 
-NativeXPathNSResolver* DocumentXPathEvaluator::createNSResolver(
+V8UnionNativeXPathNSResolverOrNode* DocumentXPathEvaluator::createNSResolver(
     Document& document,
     Node* node_resolver) {
   DocumentXPathEvaluator& suplement = From(document);

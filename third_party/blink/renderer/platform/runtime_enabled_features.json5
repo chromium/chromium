@@ -2346,6 +2346,10 @@
       status: "test",
     },
     {
+      name: "NodeAsNSResolver",
+      status: "experimental",
+    },
+    {
       name: "NoIdleEncodingForWebTests",
       status: "test",
       base_feature: "none",

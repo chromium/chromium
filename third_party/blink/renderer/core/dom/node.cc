@@ -126,6 +126,8 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
+#include "third_party/blink/renderer/core/xml_names.h"
+#include "third_party/blink/renderer/core/xmlns_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
@@ -1919,12 +1921,24 @@ const AtomicString& Node::lookupNamespaceURI(
     case kElementNode: {
       const auto& element = To<Element>(*this);
 
-      // 1. If its namespace is not null and its namespace prefix is prefix,
+      if (RuntimeEnabledFeatures::NodeAsNSResolverEnabled()) {
+        // 1. If prefix is "xml", then return the XML namespace.
+        if (prefix == g_xml_atom) {
+          return xml_names::kNamespaceURI;
+        }
+
+        // 2. If prefix is "xmlns", then return the XMLNS namespace.
+        if (prefix == g_xmlns_atom) {
+          return xmlns_names::kNamespaceURI;
+        }
+      }
+
+      // 3. If its namespace is not null and its namespace prefix is prefix,
       // then return namespace.
       if (!element.namespaceURI().IsNull() && element.prefix() == prefix)
         return element.namespaceURI();
 
-      // 2. If it has an attribute whose namespace is the XMLNS namespace,
+      // 4. If it has an attribute whose namespace is the XMLNS namespace,
       // namespace prefix is "xmlns", and local name is prefix, or if prefix is
       // null and it has an attribute whose namespace is the XMLNS namespace,
       // namespace prefix is null, and local name is "xmlns", then return its
@@ -1943,8 +1957,8 @@ const AtomicString& Node::lookupNamespaceURI(
         }
       }
 
-      // 3. If its parent element is null, then return null.
-      // 4. Return the result of running locate a namespace on its parent
+      // 5. If its parent element is null, then return null.
+      // 6. Return the result of running locate a namespace on its parent
       // element using prefix.
       if (Element* parent = parentElement())
         return parent->lookupNamespaceURI(prefix);

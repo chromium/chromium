@@ -33,9 +33,9 @@
 namespace blink {
 
 class ExceptionState;
-class NativeXPathNSResolver;
 class Node;
 class ScriptValue;
+class V8UnionNativeXPathNSResolverOrNode;
 class V8XPathNSResolver;
 class XPathExpression;
 class XPathResult;
@@ -53,7 +53,7 @@ class XPathEvaluator final : public ScriptWrappable {
   XPathExpression* createExpression(const String& expression,
                                     V8XPathNSResolver*,
                                     ExceptionState&);
-  NativeXPathNSResolver* createNSResolver(Node* node_resolver);
+  V8UnionNativeXPathNSResolverOrNode* createNSResolver(Node* node_resolver);
   XPathResult* evaluate(const String& expression,
                         Node* context_node,
                         V8XPathNSResolver*,

@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/xml/xpath_evaluator.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_nativexpathnsresolver_node.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/xml/native_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/core/xml/xpath_expression.h"
@@ -44,8 +45,17 @@ XPathExpression* XPathEvaluator::createExpression(
                                            exception_state);
 }
 
-NativeXPathNSResolver* XPathEvaluator::createNSResolver(Node* node_resolver) {
-  return MakeGarbageCollected<NativeXPathNSResolver>(node_resolver);
+V8UnionNativeXPathNSResolverOrNode* XPathEvaluator::createNSResolver(
+    Node* node_resolver) {
+  if (!RuntimeEnabledFeatures::NodeAsNSResolverEnabled()) {
+    // https://dom.spec.whatwg.org/#dom-xpathevaluatorbase-creatensresolver
+    // The createNSResolver(nodeResolver) method steps are to return
+    // nodeResolver.
+    return MakeGarbageCollected<V8UnionNativeXPathNSResolverOrNode>(
+        MakeGarbageCollected<NativeXPathNSResolver>(node_resolver));
+  }
+  return MakeGarbageCollected<V8UnionNativeXPathNSResolverOrNode>(
+      node_resolver);
 }
 
 XPathResult* XPathEvaluator::evaluate(const String& expression,
