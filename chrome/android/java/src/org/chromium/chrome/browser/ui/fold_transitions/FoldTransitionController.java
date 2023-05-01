@@ -11,7 +11,11 @@ import android.os.SystemClock;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -30,37 +34,44 @@ public class FoldTransitionController {
     static final String URL_BAR_EDIT_TEXT = "url_bar_edit_text";
     static final String KEYBOARD_VISIBILITY_STATE = "keyboard_visibility_state";
 
+    private final OneshotSupplier<ToolbarManager> mToolbarManagerSupplier;
+    private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
+    private final ActivityTabProvider mActivityTabProvider;
+    private final Handler mLayoutStateHandler;
+    private boolean mKeyboardVisibleDuringFoldTransition;
+    private Long mKeyboardVisibilityTimestamp;
+
+    public FoldTransitionController(
+            @NonNull OneshotSupplierImpl<ToolbarManager> toolbarManagerSupplier,
+            @NonNull ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            @NonNull ActivityTabProvider activityTabProvider, Handler layoutStateHandler) {
+        mToolbarManagerSupplier = toolbarManagerSupplier;
+        mLayoutManagerSupplier = layoutManagerSupplier;
+        mActivityTabProvider = activityTabProvider;
+        mLayoutStateHandler = layoutStateHandler;
+    }
+
     /**
      * Saves the relevant UI when the activity is recreated on a device fold transition. Expected to
      * be invoked during {@code Activity#onSaveInstanceState()}.
      *
      * @param savedInstanceState The {@link Bundle} where the UI state will be saved.
-     * @param toolbarManager The {@link ToolbarManager} for the current activity.
      * @param didChangeTabletMode Whether the activity is recreated due to a fold configuration
      *         change. {@code true} if the fold configuration changed, {@code false} otherwise.
-     * @param actualKeyboardVisibilityState Whether the soft keyboard is visible, {@code true} if it
-     *         is, {@code false} otherwise.
      */
-    public static void saveUiState(Bundle savedInstanceState, ToolbarManager toolbarManager,
-            boolean didChangeTabletMode, boolean actualKeyboardVisibilityState) {
+    public void saveUiState(Bundle savedInstanceState, boolean didChangeTabletMode) {
         savedInstanceState.putBoolean(DID_CHANGE_TABLET_MODE, didChangeTabletMode);
-        saveOmniboxState(savedInstanceState, toolbarManager);
-        saveKeyboardState(savedInstanceState, actualKeyboardVisibilityState);
+        saveOmniboxState(savedInstanceState, mToolbarManagerSupplier.get());
+        saveKeyboardState(savedInstanceState, getKeyboardVisibilityState());
     }
 
     /**
      * Restores the relevant UI state when the activity is recreated on a device fold transition.
      *
      * @param savedInstanceState The {@link Bundle} that is used to restore the UI state.
-     * @param toolbarManager The {@link ToolbarManager} for the current activity.
-     * @param layoutManager The {@link LayoutStateProvider} for the current activity.
-     * @param layoutStateHandler The {@link Handler} to post UI state restoration.
-     * @param activityTabProvider The current activity tab provider.
      */
-    public static void restoreUiState(Bundle savedInstanceState, ToolbarManager toolbarManager,
-            LayoutStateProvider layoutManager, Handler layoutStateHandler,
-            ActivityTabProvider activityTabProvider) {
-        if (savedInstanceState == null || layoutManager == null) {
+    public void restoreUiState(Bundle savedInstanceState) {
+        if (savedInstanceState == null || mLayoutManagerSupplier.get() == null) {
             return;
         }
 
@@ -69,9 +80,51 @@ public class FoldTransitionController {
             return;
         }
 
-        restoreOmniboxState(savedInstanceState, toolbarManager, layoutManager, layoutStateHandler);
-        restoreKeyboardState(
-                savedInstanceState, activityTabProvider, layoutManager, layoutStateHandler);
+        restoreOmniboxState(savedInstanceState, mToolbarManagerSupplier.get(),
+                mLayoutManagerSupplier.get(), mLayoutStateHandler);
+        restoreKeyboardState(savedInstanceState, mActivityTabProvider, mLayoutManagerSupplier.get(),
+                mLayoutStateHandler);
+    }
+
+    @VisibleForTesting
+    boolean getKeyboardVisibleDuringFoldTransitionForTesting() {
+        return mKeyboardVisibleDuringFoldTransition;
+    }
+
+    @VisibleForTesting
+    Long getKeyboardVisibilityTimestampForTesting() {
+        return mKeyboardVisibilityTimestamp;
+    }
+
+    private boolean getKeyboardVisibilityState() {
+        if (!shouldSaveKeyboardState(mActivityTabProvider)) {
+            return false;
+        }
+
+        var actualKeyboardVisibilityState = false;
+        var keyboardVisible = isKeyboardVisible(mActivityTabProvider);
+        if (keyboardVisible) {
+            // The keyboard is currently visible.
+            actualKeyboardVisibilityState = true;
+            mKeyboardVisibleDuringFoldTransition = true;
+            mKeyboardVisibilityTimestamp = SystemClock.elapsedRealtime();
+        } else if (mKeyboardVisibleDuringFoldTransition) {
+            // This is to handle the case when folding a device invokes Activity#onStop twice
+            // (see crbug.com/1426678 for details), thereby invoking #onSaveInstanceState twice.
+            // In this flow, Activity#onPause is also invoked twice, and the first call to
+            // #onPause hides the keyboard if it is visible, while also clearing the previous
+            // instance state. The actual keyboard visibility state during the second invocation
+            // is determined by |mKeyboardVisibleDuringFoldTransition| that will be used only if
+            // it is valid in terms of a timeout within which the fold transition occurs, to
+            // avoid erroneously setting the keyboard state under other circumstances if
+            // |mKeyboardVisibleDuringFoldTransition| is not reset.
+            if (isKeyboardStateValid(mKeyboardVisibilityTimestamp)) {
+                actualKeyboardVisibilityState = true;
+            }
+            mKeyboardVisibleDuringFoldTransition = false;
+            mKeyboardVisibilityTimestamp = null;
+        }
+        return actualKeyboardVisibilityState;
     }
 
     /**
@@ -81,7 +134,7 @@ public class FoldTransitionController {
      * @param activityTabProvider The current activity tab provider.
      * @return {@code true} if the keyboard state should be saved, {@code false} otherwise.
      */
-    public static boolean shouldSaveKeyboardState(ActivityTabProvider activityTabProvider) {
+    private static boolean shouldSaveKeyboardState(ActivityTabProvider activityTabProvider) {
         if (activityTabProvider.get() == null
                 || activityTabProvider.get().getWebContents() == null) {
             return false;
@@ -93,9 +146,9 @@ public class FoldTransitionController {
      * Determines whether the soft keyboard is visible.
      *
      * @param activityTabProvider The current activity tab provider.
-     * @return {@code true} if the keyboard is visible, false otherwise.
+     * @return {@code true} if the keyboard is visible, {@code false} otherwise.
      */
-    public static boolean isKeyboardVisible(@NonNull ActivityTabProvider activityTabProvider) {
+    private static boolean isKeyboardVisible(@NonNull ActivityTabProvider activityTabProvider) {
         if (activityTabProvider.get() == null || activityTabProvider.get().getWebContents() == null
                 || activityTabProvider.get().getWebContents().getViewAndroidDelegate() == null) {
             return false;
@@ -118,7 +171,7 @@ public class FoldTransitionController {
      * @return {@code true} if the keyboard visibility state is valid for restoration, {@code false}
      *         otherwise.
      */
-    public static boolean isKeyboardStateValid(Long timestamp) {
+    private static boolean isKeyboardStateValid(Long timestamp) {
         return timestamp != null
                 && SystemClock.elapsedRealtime() - timestamp <= KEYBOARD_RESTORATION_TIMEOUT_MS;
     }

@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -313,6 +312,10 @@ public class RootUiCoordinator
     private boolean mKeyboardVisibleDuringFoldTransition;
     private Long mKeyboardVisibilityTimestamp;
 
+    private OneshotSupplierImpl<ToolbarManager> mToolbarManagerOneshotSupplier =
+            new OneshotSupplierImpl<>();
+    private FoldTransitionController mFoldTransitionController;
+
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
      * @param activity The activity whose UI the coordinator is responsible for.
@@ -496,6 +499,8 @@ public class RootUiCoordinator
                 return Profile.getLastUsedRegularProfile();
             }
         });
+        mFoldTransitionController = new FoldTransitionController(mToolbarManagerOneshotSupplier,
+                mLayoutManagerSupplier, mActivityTabProvider, new Handler());
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -649,6 +654,10 @@ public class RootUiCoordinator
 
         if (mBrowserControlsObserver != null) {
             mBrowserControlsManager.removeObserver(mBrowserControlsObserver);
+        }
+
+        if (mFoldTransitionController != null) {
+            mFoldTransitionController = null;
         }
 
         mActivity = null;
@@ -1204,6 +1213,7 @@ public class RootUiCoordinator
                 mMicStateObserver = voiceToolbarButtonController::updateMicButtonState;
                 voiceRecognitionHandler.addObserver(mMicStateObserver);
             }
+            mToolbarManagerOneshotSupplier.set(mToolbarManager);
         }
     }
 
@@ -1590,36 +1600,7 @@ public class RootUiCoordinator
      *         otherwise.
      */
     public void onSaveInstanceState(Bundle outState, boolean isRecreatingForTabletModeChange) {
-        boolean actualKeyboardVisibilityState = false;
-        // TODO (crbug.com/1440558): Move this logic to FoldTransitionController once it is made
-        // non-static.
-        if (FoldTransitionController.shouldSaveKeyboardState(mActivityTabProvider)) {
-            var keyboardVisible = FoldTransitionController.isKeyboardVisible(mActivityTabProvider);
-            if (keyboardVisible) {
-                // The keyboard is currently visible.
-                actualKeyboardVisibilityState = true;
-                mKeyboardVisibleDuringFoldTransition = true;
-                mKeyboardVisibilityTimestamp = SystemClock.elapsedRealtime();
-            } else if (mKeyboardVisibleDuringFoldTransition) {
-                // This is to handle the case when folding a device invokes Activity#onStop twice
-                // (see crbug.com/1426678 for details), thereby invoking #onSaveInstanceState twice.
-                // In this flow, Activity#onPause is also invoked twice, and the first call to
-                // #onPause hides the keyboard if it is visible, while also clearing the previous
-                // instance state. The actual keyboard visibility state during the second invocation
-                // is determined by |mKeyboardVisibleDuringFoldTransition| that will be used only if
-                // it is valid in terms of a timeout within which the fold transition occurs, to
-                // avoid erroneously setting the keyboard state under other circumstances if
-                // |mKeyboardVisibleDuringFoldTransition| is not reset.
-                if (FoldTransitionController.isKeyboardStateValid(mKeyboardVisibilityTimestamp)) {
-                    actualKeyboardVisibilityState = true;
-                }
-                mKeyboardVisibleDuringFoldTransition = false;
-                mKeyboardVisibilityTimestamp = null;
-            }
-        }
-
-        FoldTransitionController.saveUiState(outState, getToolbarManager(),
-                isRecreatingForTabletModeChange, actualKeyboardVisibilityState);
+        mFoldTransitionController.saveUiState(outState, isRecreatingForTabletModeChange);
     }
 
     /**
@@ -1628,8 +1609,7 @@ public class RootUiCoordinator
      * @param savedInstanceState The {@link Bundle} that is used to restore the UI state.
      */
     public void restoreUiState(Bundle savedInstanceState) {
-        FoldTransitionController.restoreUiState(savedInstanceState, getToolbarManager(),
-                mLayoutManager, new Handler(), mActivityTabProvider);
+        mFoldTransitionController.restoreUiState(savedInstanceState);
     }
 
     // Testing methods
