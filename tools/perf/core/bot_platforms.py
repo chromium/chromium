@@ -818,7 +818,7 @@ ANDROID_NEW_PIXEL_PRO_PGO = PerfPlatform('android-new-pixel-pro-perf-pgo',
 
 # Cros/Lacros
 LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '',
-                               _LACROS_EVE_PERF_BENCHMARK_CONFIGS, 4,
+                               _LACROS_EVE_PERF_BENCHMARK_CONFIGS, 2,
                                'chromeos')
 LACROS_X86_PERF = PerfPlatform('lacros-x86-perf', '', _LACROS_BENCHMARK_CONFIGS,
                                13, 'chromeos')

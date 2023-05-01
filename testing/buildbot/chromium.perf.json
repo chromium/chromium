@@ -1405,7 +1405,7 @@
           "hard_timeout": 43200,
           "io_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 2
         },
         "trigger_script": {
           "args": [
