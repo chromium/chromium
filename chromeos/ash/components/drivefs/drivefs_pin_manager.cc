@@ -595,7 +595,7 @@ void PinManager::Start() {
 void PinManager::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!progress_.IsError()) {
+  if (progress_.stage != Stage::kStopped && !progress_.IsError()) {
     VLOG(1) << "Stopping";
     Complete(Stage::kStopped);
   }

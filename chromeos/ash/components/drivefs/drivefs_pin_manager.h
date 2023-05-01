@@ -129,7 +129,7 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // Returns whether required_space + some margin is less than free_space.
   bool HasEnoughFreeSpace() const;
 
-  // Returns whether the stage is a stopped or error stage.
+  // Returns whether the stage is a final error stage.
   bool IsError() const;
 };
 
