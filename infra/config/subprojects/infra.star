@@ -53,11 +53,8 @@ builders.builder(
     name = "autosharder",
     bucket = "infra",
     executable = "recipe:chromium/autosharder",
-    # TODO(crbug/1418199): Change to daily schedule once verified that the
-    # builds run correctly
-    # Triggered manually through the scheduler UI
-    # https://luci-scheduler.appspot.com/jobs/chromium/autosharder
-    schedule = "triggered",
+    # Run once daily at 12 AM Pacific/7 AM UTC.
+    schedule = "0 7 * * *",
     triggered_by = [],
     pool = "luci.chromium.ci",
     builderless = True,
