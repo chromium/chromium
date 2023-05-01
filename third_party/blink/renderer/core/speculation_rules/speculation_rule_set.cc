@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "services/network/public/mojom/no_vary_search.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -294,7 +295,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     }
   }
 
-  absl::optional<mojom::blink::SpeculationEagerness> eagerness;
+  mojom::blink::SpeculationEagerness eagerness;
   if (JSONValue* eagerness_value = input->Get("eagerness")) {
     // Feature gated due to known keys check above.
     DCHECK(speculation_rules::EagernessEnabled(context));
@@ -318,6 +319,10 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     }
 
     UseCounter::Count(context, WebFeature::kSpeculationRulesExplicitEagerness);
+  } else {
+    eagerness = source == "list"
+                    ? mojom::blink::SpeculationEagerness::kEager
+                    : mojom::blink::SpeculationEagerness::kConservative;
   }
 
   network::mojom::blink::NoVarySearchPtr no_vary_search = nullptr;
@@ -487,6 +492,10 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
           if (rule->predicate()) {
             result->has_document_rule_ = true;
             result->selectors_.AppendVector(rule->predicate()->GetStyleRules());
+          }
+
+          if (rule->eagerness() != mojom::blink::SpeculationEagerness::kEager) {
+            result->requires_unfiltered_input_ = true;
           }
 
           // Append rule to result's prefetch/prerender rules.

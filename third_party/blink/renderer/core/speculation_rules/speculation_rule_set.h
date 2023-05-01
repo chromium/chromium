@@ -81,6 +81,7 @@ class CORE_EXPORT SpeculationRuleSet final
   }
 
   bool has_document_rule() const { return has_document_rule_; }
+  bool requires_unfiltered_input() const { return requires_unfiltered_input_; }
 
   Source* source() const { return source_; }
 
@@ -111,6 +112,13 @@ class CORE_EXPORT SpeculationRuleSet final
   Member<Source> source_;
   HeapVector<Member<StyleRule>> selectors_;
   bool has_document_rule_ = false;
+
+  // If true, this ruleset contains a rule which may not work correctly if input
+  // is filtered.
+  // TODO(crbug.com/1425870): Remove this once such rules work without this
+  // hack.
+  bool requires_unfiltered_input_ = false;
+
   SpeculationRuleSetErrorType error_type_ =
       SpeculationRuleSetErrorType::kNoError;
   String error_message_;

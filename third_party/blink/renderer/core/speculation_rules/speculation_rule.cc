@@ -16,7 +16,7 @@ SpeculationRule::SpeculationRule(
     RequiresAnonymousClientIPWhenCrossOrigin requires_anonymous_client_ip,
     absl::optional<mojom::blink::SpeculationTargetHint> target_hint,
     absl::optional<network::mojom::ReferrerPolicy> referrer_policy,
-    absl::optional<mojom::blink::SpeculationEagerness> eagerness,
+    mojom::blink::SpeculationEagerness eagerness,
     network::mojom::blink::NoVarySearchPtr no_vary_search_expected,
     mojom::blink::SpeculationInjectionWorld injection_world)
     : urls_(std::move(urls)),
