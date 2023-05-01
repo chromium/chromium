@@ -114,17 +114,10 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
         }
         VirtualCardUsageData remote = VirtualCardUsageDataFromUsageSpecifics(
             change->data().specifics.autofill_wallet_usage());
-        if (table && table->GetVirtualCardUsageData(change->storage_key())) {
-          if (!table->UpdateVirtualCardUsageData(remote)) {
-            return syncer::ModelError(
-                FROM_HERE,
-                "Failed to update virtual card usage data in table.");
-          }
-        } else {
-          if (!table->AddVirtualCardUsageData(remote)) {
-            return syncer::ModelError(
-                FROM_HERE, "Failed to add virtual card usage data in table.");
-          }
+        if (table && !table->AddOrUpdateVirtualCardUsageData(remote)) {
+          return syncer::ModelError(
+              FROM_HERE,
+              "Failed to add or update virtual card usage data in table.");
         }
       }
     }

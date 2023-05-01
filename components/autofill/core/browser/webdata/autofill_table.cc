@@ -2650,31 +2650,19 @@ bool AutofillTable::GetAutofillOffers(
   return s.Succeeded();
 }
 
-bool AutofillTable::AddVirtualCardUsageData(
+bool AutofillTable::AddOrUpdateVirtualCardUsageData(
     const VirtualCardUsageData& virtual_card_usage_data) {
-  if (GetVirtualCardUsageData(*virtual_card_usage_data.usage_data_id())) {
-    return false;
-  }
-  sql::Statement s;
-  InsertBuilder(db_, s, kVirtualCardUsageDataTable,
-                {kId, kInstrumentId, kMerchantDomain, kLastFour});
-  BindVirtualCardUsageDataToStatement(virtual_card_usage_data, s);
-  return s.Run();
-}
-
-bool AutofillTable::UpdateVirtualCardUsageData(
-    const VirtualCardUsageData& virtual_card_usage_data) {
-  std::unique_ptr<VirtualCardUsageData> old_data =
+  std::unique_ptr<VirtualCardUsageData> existing_data =
       GetVirtualCardUsageData(*virtual_card_usage_data.usage_data_id());
-  if (!old_data) {
-    return false;
-  }
-
   sql::Statement s;
-  UpdateBuilder(db_, s, kVirtualCardUsageDataTable,
-                {kId, kInstrumentId, kMerchantDomain, kLastFour}, "id=?1");
+  if (!existing_data) {
+    InsertBuilder(db_, s, kVirtualCardUsageDataTable,
+                  {kId, kInstrumentId, kMerchantDomain, kLastFour});
+  } else {
+    UpdateBuilder(db_, s, kVirtualCardUsageDataTable,
+                  {kId, kInstrumentId, kMerchantDomain, kLastFour}, "id=?1");
+  }
   BindVirtualCardUsageDataToStatement(virtual_card_usage_data, s);
-
   return s.Run();
 }
 

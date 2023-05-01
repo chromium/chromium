@@ -713,9 +713,7 @@ class AutofillTable : public WebDatabaseTable,
 
   // CRUD operations for VirtualCardUsageData in the virtual_card_usage_data
   // table
-  bool AddVirtualCardUsageData(
-      const VirtualCardUsageData& virtual_card_usage_data);
-  bool UpdateVirtualCardUsageData(
+  bool AddOrUpdateVirtualCardUsageData(
       const VirtualCardUsageData& virtual_card_usage_data);
   std::unique_ptr<VirtualCardUsageData> GetVirtualCardUsageData(
       const std::string& usage_data_id);

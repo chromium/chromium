@@ -3288,7 +3288,7 @@ TEST_F(AutofillTableTest, AddUpdateRemoveVirtualCardUsageData) {
   // Add a valid VirtualCardUsageData.
   VirtualCardUsageData virtual_card_usage_data =
       test::GetVirtualCardUsageData1();
-  EXPECT_TRUE(table_->AddVirtualCardUsageData(virtual_card_usage_data));
+  EXPECT_TRUE(table_->AddOrUpdateVirtualCardUsageData(virtual_card_usage_data));
 
   // Get the inserted VirtualCardUsageData.
   std::string usage_data_id = *virtual_card_usage_data.usage_data_id();
@@ -3304,7 +3304,7 @@ TEST_F(AutofillTableTest, AddUpdateRemoveVirtualCardUsageData) {
                            VirtualCardUsageData::VirtualCardLastFour(u"4444"),
                            virtual_card_usage_data.merchant_origin());
   EXPECT_TRUE(
-      table_->UpdateVirtualCardUsageData(virtual_card_usage_data_update));
+      table_->AddOrUpdateVirtualCardUsageData(virtual_card_usage_data_update));
   usage_data = table_->GetVirtualCardUsageData(usage_data_id);
   ASSERT_TRUE(usage_data);
   EXPECT_EQ(virtual_card_usage_data_update, *usage_data);
@@ -3316,8 +3316,8 @@ TEST_F(AutofillTableTest, AddUpdateRemoveVirtualCardUsageData) {
 }
 
 TEST_F(AutofillTableTest, RemoveAllVirtualCardUsageData) {
-  EXPECT_TRUE(
-      table_->AddVirtualCardUsageData(test::GetVirtualCardUsageData1()));
+  EXPECT_TRUE(table_->AddOrUpdateVirtualCardUsageData(
+      test::GetVirtualCardUsageData1()));
 
   EXPECT_TRUE(table_->RemoveAllVirtualCardUsageData());
 
