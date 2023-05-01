@@ -16,6 +16,8 @@
 
 class CommercePushNotificationClientTest;
 
+class Browser;
+
 namespace base {
 class RunLoop;
 }  // namespace base
@@ -40,12 +42,17 @@ class CommercePushNotificationClient
   UIBackgroundFetchResult HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
+  void OnBrowserReady() override;
 
  private:
   friend class ::CommercePushNotificationClientTest;
 
   commerce::ShoppingService* GetShoppingService();
   bookmarks::BookmarkModel* GetBookmarkModel();
+  // Returns the first active browser found
+  Browser* GetActiveBrowser();
+
+  std::vector<const std::string> urls_delayed_for_loading_;
 
   // Handle the interaction from the user be it tapping the notification or
   // long pressing and then presing 'Visit Site' or 'Untrack Price'.

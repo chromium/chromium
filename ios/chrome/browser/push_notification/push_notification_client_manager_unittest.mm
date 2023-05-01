@@ -121,3 +121,10 @@ TEST_F(PushNotificationClientManagerTest,
     ASSERT_TRUE(GetClient(manager, i)->HasNotificationReceivedInteraction());
   }
 }
+
+TEST_F(PushNotificationClientManagerTest, BrowserReady) {
+  GenerateClients(manager, 1);
+  EXPECT_FALSE(GetClient(manager, 0)->IsBrowserReady());
+  manager->OnBrowserReady();
+  EXPECT_TRUE(GetClient(manager, 0)->IsBrowserReady());
+}
