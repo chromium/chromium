@@ -6148,6 +6148,28 @@
             ]
         }
     ],
+    "HappinessTrackingOsSettingsSearch": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.01",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1678393016",
+                        "trigger_id": "Fa3H4WsCf0jBnuKU19R0Sq6aUpgf"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingOsSettingsSearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingPersonalizationAvatar": [
         {
             "platforms": [
