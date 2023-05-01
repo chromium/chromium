@@ -341,16 +341,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.WebApkService.BindSuccess" enum="BooleanSuccess"
-    expires_after="2023-06-01">
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    Records whether Chrome can bind to a WebAPK's &quot;WebAPK service&quot;.
-    Recorded each time that Chrome attempts to bind to a WebAPK service.
-  </summary>
-</histogram>
-
 <histogram name="WebApk.WebappRegistry.NumberOfOrigins" units="count"
     expires_after="2023-09-17">
   <owner>eirage@chromium.org</owner>
