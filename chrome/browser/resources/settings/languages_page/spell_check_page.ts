@@ -21,8 +21,8 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 // </if>
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../controls/controlled_radio_button.js';
-import '../controls/settings_radio_group.js';
+import '/shared/settings/controls/controlled_radio_button.js';
+import '/shared/settings/controls/settings_radio_group.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_page/settings_animated_pages.js';

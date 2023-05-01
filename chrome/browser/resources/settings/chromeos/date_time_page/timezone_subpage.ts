@@ -7,9 +7,9 @@
  * time zone settings.
  */
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import '../../controls/controlled_radio_button.js';
+import '/shared/settings/controls/controlled_radio_button.js';
 import '/shared/settings/controls/settings_dropdown_menu.js';
-import '../../controls/settings_radio_group.js';
+import '/shared/settings/controls/settings_radio_group.js';
 import '../../settings_shared.css.js';
 import './timezone_selector.js';
 

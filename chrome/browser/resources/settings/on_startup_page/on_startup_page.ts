@@ -8,9 +8,9 @@
  */
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../controls/controlled_radio_button.js';
+import '/shared/settings/controls/controlled_radio_button.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
-import '../controls/settings_radio_group.js';
+import '/shared/settings/controls/settings_radio_group.js';
 import './startup_urls_page.js';
 import '../i18n_setup.js';
 import '../settings_shared.css.js';

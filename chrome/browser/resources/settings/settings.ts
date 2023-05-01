@@ -4,6 +4,7 @@
 
 import './settings_ui/settings_ui.js';
 
+export {ControlledRadioButtonElement} from '/shared/settings/controls/controlled_radio_button.js';
 export {ExtensionControlledIndicatorElement} from '/shared/settings/controls/extension_controlled_indicator.js';
 export {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE} from '/shared/settings/controls/settings_boolean_control_mixin.js';
 export {SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
@@ -44,7 +45,6 @@ export {SettingsAutofillPageElement} from './autofill_page/autofill_page.js';
 export {AccountStorageOptInStateChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckReferrer, PasswordCheckStatusChangedListener, PasswordExceptionListChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerImpl, PasswordManagerPage, PasswordManagerProxy, PasswordsFileExportProgressListener, SavedPasswordListChangedListener} from './autofill_page/password_manager_proxy.js';
 export {BaseMixin} from './base_mixin.js';
 export {SettingsBasicPageElement} from './basic_page/basic_page.js';
-export {ControlledRadioButtonElement} from './controls/controlled_radio_button.js';
 export {SettingsIdleLoadElement} from './controls/settings_idle_load.js';
 // <if expr="not is_chromeos">
 export {DefaultBrowserBrowserProxy, DefaultBrowserBrowserProxyImpl, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';
