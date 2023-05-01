@@ -19,6 +19,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/cros_next_default_desk_button.h"
@@ -68,12 +69,14 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/throughput_tracker.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/animation/animation_builder.h"
@@ -138,10 +141,6 @@ constexpr base::TimeDelta kZeroDesksBarSlideDuration = base::Milliseconds(250);
 constexpr char kMoveVisibleOnAllDesksWindowToastId[] =
     "ash.wm.overview.move_visible_on_all_desks_window_toast";
 
-constexpr SkColor kDropTargetBackgroundColor =
-    SkColorSetARGB(0x24, 0xFF, 0XFF, 0XFF);
-constexpr SkColor kDropTargetBorderColor =
-    SkColorSetARGB(0x4C, 0xE8, 0XEA, 0XED);
 constexpr int kDropTargetBorderThickness = 2;
 
 // Histogram names for overview enter/exit smoothness in clamshell,
@@ -280,16 +279,15 @@ class DropTargetView : public views::View {
   METADATA_HEADER(DropTargetView);
   DropTargetView() {
     SetUseDefaultFillLayout(true);
-    const int corner_radius =
-        views::LayoutProvider::Get()->GetCornerRadiusMetric(
-            views::Emphasis::kLow);
+
+    int top_corner_radius = GetCornerRadius().first;
+    int bottom_corner_radius = GetCornerRadius().second;
 
     background_view_ = AddChildView(std::make_unique<views::View>());
-    background_view_->SetBackground(views::CreateRoundedRectBackground(
-        kDropTargetBackgroundColor, corner_radius));
-
-    SetBorder(views::CreateRoundedRectBorder(
-        kDropTargetBorderThickness, corner_radius, kDropTargetBorderColor));
+    // TODO(b/280330100): Replace the color token once the new color token is
+    // added.
+    background_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+        kColorAshShieldAndBase20, top_corner_radius, bottom_corner_radius, 0));
   }
   DropTargetView(const DropTargetView&) = delete;
   DropTargetView& operator=(const DropTargetView&) = delete;
@@ -301,7 +299,46 @@ class DropTargetView : public views::View {
     background_view_->SetVisible(visible);
   }
 
+  // Paint the border for the drop target view. The reason we don't use the
+  // existing Border class here is the Border class only accepts one corner
+  // radius for all four corners, in our use case, the top corner radius could
+  // be different than the bottom corner radius.
+  void OnPaintBorder(gfx::Canvas* canvas) override {
+    gfx::Rect rect(GetLocalBounds());
+    rect.Inset(kDropTargetBorderThickness / 2);
+    float top_corner_radius = GetCornerRadius().first;
+    float bottom_corner_radius = GetCornerRadius().second;
+
+    SkScalar sk_radii[8] = {top_corner_radius,    top_corner_radius,
+                            top_corner_radius,    top_corner_radius,
+                            bottom_corner_radius, bottom_corner_radius,
+                            bottom_corner_radius, bottom_corner_radius};
+    SkPath path;
+    path.addRoundRect(gfx::RectToSkRect(rect), sk_radii);
+
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setStrokeWidth(kDropTargetBorderThickness);
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    // TODO(b/280330100): Replace the color token once the new color token is
+    // added.
+    flags.setColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBaseElevated));
+    canvas->DrawPath(path, flags);
+  }
+
  private:
+  std::pair<float, float> GetCornerRadius() const {
+    if (chromeos::features::IsJellyrollEnabled()) {
+      return {0.f, kOverviewItemCornerRadius};
+    }
+
+    const float corner_radius =
+        views::LayoutProvider::Get()->GetCornerRadiusMetric(
+            views::Emphasis::kLow);
+    return {corner_radius, corner_radius};
+  }
+
   raw_ptr<views::View, ExperimentalAsh> background_view_ = nullptr;
 };
 
