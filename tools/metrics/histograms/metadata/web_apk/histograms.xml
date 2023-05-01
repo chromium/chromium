@@ -148,17 +148,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Navigation.InScope" enum="Boolean"
-    expires_after="2023-06-01">
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    Recorded each time that a WebAPK is navigated. Records whether the
-    navigation is within the scope of the WebAPK's Web Manifest. Not recorded
-    for child tabs - e.g. tabs opened via window.open()
-  </summary>
-</histogram>
-
 <histogram name="WebApk.Notification.Permission.Status"
     enum="BooleanWebApkNotificationPermission" expires_after="2022-12-04">
   <obsolete>

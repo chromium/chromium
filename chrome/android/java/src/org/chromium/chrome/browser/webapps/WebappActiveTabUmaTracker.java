@@ -10,12 +10,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
-import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
-import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.NavigationHandle;
 
 /**
@@ -41,14 +37,6 @@ public class WebappActiveTabUmaTracker extends ActivityTabTabObserver {
         if (navigation.hasCommitted() && !navigation.isSameDocument()) {
             RecordHistogram.recordBooleanHistogram(
                     HISTOGRAM_NAVIGATION_STATUS, !navigation.isErrorPage());
-
-            if (mIntentDataProvider.isWebApkActivity()
-                    && CriticalPersistedTabData.from(tab).getParentId() == Tab.INVALID_TAB_ID) {
-                VerificationState verificationState = mCurrentPageVerifier.getState();
-                boolean isNavigationInScope = (verificationState == null
-                        || verificationState.status != VerificationStatus.FAILURE);
-                WebApkUmaRecorder.recordNavigation(isNavigationInScope);
-            }
         }
     }
 }

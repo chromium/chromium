@@ -218,15 +218,6 @@ public class WebApkUmaRecorder {
         RecordHistogram.recordSparseHistogram("WebApk.Launch.NetworkError", -errorCode);
     }
 
-    /**
-     * Records whether a WebAPK navigation is within the WebAPK's scope.
-     * @param isChildTab Whether {@link Tab#getParentId()} is non-empty.
-     * @param isNavigationInScope
-     */
-    public static void recordNavigation(boolean isNavigationInScope) {
-        RecordHistogram.recordBooleanHistogram("WebApk.Navigation.InScope", isNavigationInScope);
-    }
-
     /** Records number of unique origins for WebAPKs in WebappRegistry */
     public static void recordWebApksCount(int count) {
         RecordHistogram.recordCount100Histogram("WebApk.WebappRegistry.NumberOfOrigins", count);
