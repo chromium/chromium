@@ -108,6 +108,10 @@ class TestCommandHandler : public BrowserCommandHandler {
     customize_chrome_side_panel_feature_supported_ = is_supported;
   }
 
+  void SetDefaultSearchProviderToGoogle(bool is_google) {
+    default_search_provider_is_google_ = is_google;
+  }
+
  protected:
   bool BrowserSupportsTabGroups() override {
     return tab_groups_feature_supported_;
@@ -119,6 +123,10 @@ class TestCommandHandler : public BrowserCommandHandler {
     return customize_chrome_side_panel_feature_supported_;
   }
 
+  bool DefaultSearchProviderIsGoogle() override {
+    return default_search_provider_is_google_;
+  }
+
  private:
   raw_ptr<user_education::TutorialService> tutorial_service_;
   std::unique_ptr<CommandUpdater> command_updater_;
@@ -126,6 +134,7 @@ class TestCommandHandler : public BrowserCommandHandler {
   bool tab_groups_feature_supported_ = true;
   bool has_tab_groups_ = false;
   bool customize_chrome_side_panel_feature_supported_ = true;
+  bool default_search_provider_is_google_ = true;
 };
 
 class TestTutorialService : public user_education::TutorialService {
@@ -554,9 +563,16 @@ TEST_F(BrowserCommandHandlerTest,
   command_handler_->SetBrowserSupportsCustomizeChromeSidePanel(false);
   EXPECT_FALSE(
       CanExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial));
-
-  // If the browser has feature enabled, allow running command
   command_handler_->SetBrowserSupportsCustomizeChromeSidePanel(true);
+
+  // If the search provider is not set to Google, dont run the command
+  command_handler_->SetDefaultSearchProviderToGoogle(false);
+  EXPECT_FALSE(
+      CanExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial));
+  command_handler_->SetDefaultSearchProviderToGoogle(true);
+
+  // If the browser has feature enabled and google is default search
+  // provider, allow running command
   EXPECT_TRUE(
       CanExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial));
 
@@ -570,6 +586,9 @@ TEST_F(BrowserCommandHandlerTest,
     EXPECT_CALL(service, IsRunningTutorial).WillOnce(testing::Return(true));
     EXPECT_CALL(service, LogStartedFromWhatsNewPage(
                              kSidePanelCustomizeChromeTutorialId, true));
+    EXPECT_CALL(*command_handler_,
+                NavigateToURL(GURL(chrome::kChromeUINewTabPageURL),
+                              DispositionFromClick(*info)));
     EXPECT_TRUE(ExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial,
                                std::move(info)));
   }
