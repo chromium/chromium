@@ -129,6 +129,11 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void SetPowerSource(const std::string& id) override;
   void SetBacklightsForcedOff(bool forced_off) override;
   void GetBacklightsForcedOff(DBusMethodCallback<bool> callback) override;
+  void GetBatterySaverModeState(
+      DBusMethodCallback<power_manager::BatterySaverModeState> callback)
+      override;
+  void SetBatterySaverModeState(
+      const power_manager::SetBatterySaverModeStateRequest& request) override;
   void GetSwitchStates(DBusMethodCallback<SwitchStates> callback) override;
   void GetInactivityDelays(
       DBusMethodCallback<power_manager::PowerManagementPolicy::Delays> callback)
@@ -278,6 +283,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // Display and keyboard backlights (if present) forced off state set in
   // SetBacklightsForcedOff().
   bool backlights_forced_off_ = false;
+
+  // Last battery saver mode state set in SetBatterySaverModeState().
+  bool battery_saver_mode_enabled_ = false;
 
   // Whether screen brightness changes in SetBacklightsForcedOff() should be
   // enqueued.

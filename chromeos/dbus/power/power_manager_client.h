@@ -17,6 +17,7 @@
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/power_manager/battery_saver.pb.h"
 #include "chromeos/dbus/power_manager/charge_history_state.pb.h"
 #include "chromeos/dbus/power_manager/peripheral_battery_status.pb.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
@@ -100,6 +101,11 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
     // locks or audio activity.
     virtual void InactivityDelaysChanged(
         const power_manager::PowerManagementPolicy::Delays& delays) {}
+
+    // Called when the state of Battery Saver Mode has changed, and on powerd
+    // startup.
+    virtual void BatterySaverModeStateChanged(
+        const power_manager::BatterySaverModeState& state) {}
 
     // Called when peripheral device battery status is received.
     // |path| is the sysfs path for the battery of the peripheral device.
@@ -315,6 +321,15 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // Gets the display and (if present) keyboard backlights' forced-off state. On
   // error (e.g. powerd not running), |callback| will be called with nullopt.
   virtual void GetBacklightsForcedOff(DBusMethodCallback<bool> callback) = 0;
+
+  // Gets the current state of Battery Saver Mode. On error (e.g. powerd not
+  // running), |callback| will be called with nullopt.
+  virtual void GetBatterySaverModeState(
+      DBusMethodCallback<power_manager::BatterySaverModeState> callback) = 0;
+
+  // Updates the state of Battery Saver Mode.
+  virtual void SetBatterySaverModeState(
+      const power_manager::SetBatterySaverModeStateRequest& request) = 0;
 
   // Asynchronously fetches the current state of various hardware switches (e.g.
   // the lid switch and the tablet-mode switch). On error (e.g. powerd not

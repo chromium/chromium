@@ -117,6 +117,9 @@ class TestObserver : public PowerManagerClient::Observer {
   int32_t ambient_color_temperature() const {
     return ambient_color_temperature_;
   }
+  power_manager::BatterySaverModeState battery_saver_mode_state() const {
+    return battery_saver_mode_state_;
+  }
 
   void set_should_block_suspend(bool take_callback) {
     should_block_suspend_ = take_callback;
@@ -159,6 +162,10 @@ class TestObserver : public PowerManagerClient::Observer {
   void AmbientColorChanged(const int32_t color_temperature) override {
     ambient_color_temperature_ = color_temperature;
   }
+  void BatterySaverModeStateChanged(
+      const power_manager::BatterySaverModeState& state) override {
+    battery_saver_mode_state_ = state;
+  }
   void RestartRequested(power_manager::RequestRestartReason reason) override {
     num_restart_requested_++;
   }
@@ -185,8 +192,11 @@ class TestObserver : public PowerManagerClient::Observer {
   // When non-empty, the token for the outstanding block-suspend registration.
   base::UnguessableToken block_suspend_token_;
 
-  // Ambient color temperature
+  // Ambient color temperature.
   int32_t ambient_color_temperature_ = 0;
+
+  // Battery saver mode state.
+  power_manager::BatterySaverModeState battery_saver_mode_state_;
 };
 
 // Stub implementation of PowerManagerClient::RenderProcessManagerDelegate.
@@ -315,6 +325,19 @@ class PowerManagerClientTest : public testing::Test {
   }
 
   void TearDown() override { PowerManagerClient::Shutdown(); }
+
+  void HandleGetBatterySaverModeState(
+      dbus::MethodCall* method_call,
+      int timeout_ms,
+      dbus::ObjectProxy::ResponseCallback* callback) {
+    power_manager::BatterySaverModeState proto;
+    proto.set_enabled(true);
+
+    auto response = ::dbus::Response::CreateEmpty();
+    dbus::MessageWriter(response.get()).AppendProtoAsArrayOfBytes(proto);
+
+    std::move(*callback).Run(response.get());
+  }
 
  protected:
   // Synchronously passes |signal| to |client_|'s handler, simulating the signal
@@ -725,6 +748,43 @@ TEST_F(PowerManagerClientTest, ObserverCalledAfterRequestRestart) {
       power_manager::RequestRestartReason::REQUEST_RESTART_OTHER,
       "test restart");
   EXPECT_EQ(1, observer.num_restart_requested());
+}
+
+// Tests that |(Get|Set)BatterySaverModeState| call the DBus methods with the
+// same names.
+TEST_F(PowerManagerClientTest, GetSetBatterySaverModeState) {
+  EXPECT_CALL(
+      *proxy_,
+      DoCallMethod(HasMember(power_manager::kSetBatterySaverModeState), _, _));
+
+  power_manager::SetBatterySaverModeStateRequest proto;
+  proto.set_enabled(true);
+  client_->SetBatterySaverModeState(proto);
+
+  EXPECT_CALL(
+      *proxy_,
+      DoCallMethod(HasMember(power_manager::kGetBatterySaverModeState), _, _))
+      .WillOnce(Invoke(
+          this, &PowerManagerClientTest::HandleGetBatterySaverModeState));
+
+  client_->GetBatterySaverModeState(base::BindOnce(
+      [](absl::optional<power_manager::BatterySaverModeState> state) {
+        ASSERT_TRUE(state.has_value());
+        EXPECT_TRUE(state->enabled());
+      }));
+}
+
+// Tests that observers are notified about changes in Battery Saver Mode state.
+TEST_F(PowerManagerClientTest, BatterySaverModeStateChanged) {
+  TestObserver observer(client_);
+
+  power_manager::BatterySaverModeState proto;
+  proto.set_enabled(true);
+  dbus::Signal signal(kInterface, power_manager::kBatterySaverModeStateChanged);
+  dbus::MessageWriter(&signal).AppendProtoAsArrayOfBytes(proto);
+  EmitSignal(&signal);
+
+  EXPECT_EQ(proto.enabled(), observer.battery_saver_mode_state().enabled());
 }
 
 }  // namespace chromeos
