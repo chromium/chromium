@@ -188,8 +188,8 @@ void SetUpTrailingIconAndAccessoryType(
   self.title = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP);
 
   _headerImageView = [self createHeaderImageView];
-  self.tableView.tableHeaderView = _headerImageView;
   [self updateHeaderImage];
+  [self updateTableViewHeaderView];
 
   [self loadModel];
 }
