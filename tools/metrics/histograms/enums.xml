@@ -37176,6 +37176,11 @@ Called by update_extension_permission.py.-->
   <int value="30"
       label="Failed to connect to discovered device after pairing when the
              device is known to the adapter."/>
+  <int value="31"
+      label="Failed to write to Additional Data GATT characteristic."/>
+  <int value="32" label="Failed to find the Additional Data characteristic."/>
+  <int value="33"
+      label="Timed out while writing to Additional Data characteristic."/>
 </enum>
 
 <enum name="FastPairPairingMethod">

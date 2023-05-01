@@ -85,5 +85,19 @@ void FakeFastPairGattServiceClient::RunWriteAccountKeyCallback(
   std::move(write_account_key_callback_).Run(failure);
 }
 
+void FakeFastPairGattServiceClient::WritePersonalizedName(
+    const std::string& name,
+    const std::string& provider_address,
+    FastPairDataEncryptor* fast_pair_data_encryptor,
+    base::OnceCallback<void(absl::optional<PairFailure>)>
+        write_additional_data_callback) {
+  write_personalized_name_callback_ = std::move(write_additional_data_callback);
+}
+
+void FakeFastPairGattServiceClient::RunWritePersonalizedNameCallback(
+    absl::optional<PairFailure> failure) {
+  std::move(write_personalized_name_callback_).Run(failure);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

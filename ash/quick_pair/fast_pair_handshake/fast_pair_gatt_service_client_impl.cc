@@ -34,11 +34,31 @@ const device::BluetoothUUID kPasskeyCharacteristicUuidV2(
 const device::BluetoothUUID kAccountKeyCharacteristicUuidV1("1236");
 const device::BluetoothUUID kAccountKeyCharacteristicUuidV2(
     "FE2C1236-8366-4814-8EB0-01DE32100BEA");
+const device::BluetoothUUID kAdditionalDataCharacteristicUuidV1("1237");
+const device::BluetoothUUID kAdditionalDataCharacteristicUuidV2(
+    "FE2C1237-8366-4814-8EB0-01DE32100BEA");
 
 constexpr uint8_t kProviderAddressStartIndex = 2;
 constexpr uint8_t kSeekerAddressStartIndex = 8;
 constexpr uint8_t kSeekerPasskey = 0x02;
 constexpr uint8_t kAccountKeyStartByte = 0x04;
+
+constexpr uint8_t kEmptyFlags = 0x00;
+
+// Action Request constants.
+constexpr uint8_t kActionRequestDeviceActionFlags = 0x80;
+constexpr uint8_t kActionRequestAdditionalDataFlags = 0x40;
+constexpr uint8_t kActionMessage = 0x10;
+constexpr size_t kMessageTypeIndex = 0;
+constexpr size_t kFlagsIndex = 1;
+constexpr size_t kMessageGroupIndex = 8;
+constexpr size_t kMessageCodeIndex = 9;
+constexpr size_t kDataIdOrSizeIndex = 10;
+constexpr size_t kAdditionalDataStartIndex = 11;
+constexpr uint8_t kAdditionalDataMaxSizeBytes = 5;
+
+// Personalized Name data request constants.
+constexpr uint8_t kPersonalizedNameDataId = 0x10;
 
 constexpr base::TimeDelta kGattOperationTimeout = base::Seconds(15);
 constexpr int kMaxNumGattConnectionAttempts = 3;
@@ -118,6 +138,93 @@ constexpr const char* ToString(
       NOTREACHED();
       return "";
   }
+}
+
+// *** Prefer to use CreateActionRequestBeforeAdditionalData or create analogous
+// function for requesting device action using `kActionRequestDeviceActionFlag`.
+// ***
+//
+// Creates Action Request data array based on Table 2.2 of the Fast Pair spec:
+// https://developers.google.com/nearby/fast-pair/specifications/characteristics#table1.2.2.
+// Note: if the intended `additional_data` vector will have size 0, it is
+// sufficient to pass a `nullopt` instead of an empty vector.
+const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
+    const uint8_t flags,
+    const std::string& provider_address,
+    absl::optional<const uint8_t> message_group,
+    absl::optional<const uint8_t> message_code,
+    absl::optional<const uint8_t> data_id_or_size,
+    absl::optional<const std::vector<uint8_t>> additional_data) {
+  std::array<uint8_t, kBlockByteSize> request;
+
+  request[kMessageTypeIndex] = kActionMessage;
+  request[kFlagsIndex] = flags;
+
+  // Copy provider address bytes.
+  std::array<uint8_t, 6> provider_address_bytes;
+  device::ParseBluetoothAddress(provider_address, provider_address_bytes);
+  base::ranges::copy(
+      provider_address_bytes,
+      std::next(std::begin(request), kProviderAddressStartIndex));
+
+  // Construct `request` based on `flags`. Optional values CHECKed for are
+  // required based on the flag case.
+  switch (flags) {
+    case kEmptyFlags:
+      break;
+    case kActionRequestDeviceActionFlags:
+      CHECK(message_group.has_value());
+      CHECK(message_code.has_value());
+      CHECK(data_id_or_size.has_value());
+
+      request[kMessageGroupIndex] = message_group.value();
+      request[kMessageCodeIndex] = message_code.value();
+
+      if (additional_data.has_value()) {
+        CHECK(additional_data.value().size() <= kAdditionalDataMaxSizeBytes);
+        CHECK(data_id_or_size.value() == additional_data.value().size());
+        base::ranges::copy(
+            additional_data.value(),
+            std::next(std::begin(request), kAdditionalDataStartIndex));
+      } else {
+        CHECK(data_id_or_size.value() == 0);
+      }
+      ABSL_FALLTHROUGH_INTENDED;
+    case kActionRequestAdditionalDataFlags:
+      CHECK(data_id_or_size.has_value());
+
+      request[kDataIdOrSizeIndex] = data_id_or_size.value();
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+
+  // Fill unused trailing bytes with random (salt) values.
+  if (flags == kActionRequestDeviceActionFlags) {
+    // `data_id_or_size` will contain the additional data size in this case.
+    if (data_id_or_size.value() < kAdditionalDataMaxSizeBytes) {
+      RAND_bytes(request.data() + kAdditionalDataStartIndex +
+                     additional_data.value().size(),
+                 kAdditionalDataMaxSizeBytes - data_id_or_size.value());
+    }
+  } else {
+    RAND_bytes(request.data() + kAdditionalDataStartIndex,
+               kAdditionalDataMaxSizeBytes);
+  }
+
+  return request;
+}
+
+// Creates Action Request data array with flag 0x40 based on Table 2.2 of the
+// Fast Pair spec:
+// https://developers.google.com/nearby/fast-pair/specifications/characteristics#table1.2.2.
+// The flag indicates that an Additional Data packet write will follow this
+// request.
+const std::array<uint8_t, kBlockByteSize>
+CreateActionRequestBeforeAdditionalData(const std::string& provider_address) {
+  return CreateActionRequest(kActionRequestAdditionalDataFlags,
+                             provider_address, absl::nullopt, absl::nullopt,
+                             kPersonalizedNameDataId, absl::nullopt);
 }
 
 }  // namespace
@@ -459,6 +566,13 @@ FastPairGattServiceClientImpl::SetGattCharacteristics() {
   // session for it later.
   account_key_characteristic_ = account_key_characteristics[0];
 
+  auto additional_data_characteristics = GetCharacteristicsByUUIDs(
+      kAdditionalDataCharacteristicUuidV1, kAdditionalDataCharacteristicUuidV2);
+  if (additional_data_characteristics.empty()) {
+    return PairFailure::kAdditionalDataCharacteristicDiscovery;
+  }
+  additional_data_characteristic_ = additional_data_characteristics[0];
+
   // No failure.
   return absl::nullopt;
 }
@@ -773,6 +887,42 @@ void FastPairGattServiceClientImpl::OnWriteAccountKeyError(
   // |this| may be destroyed after this line.
 }
 
+void FastPairGattServiceClientImpl::WritePersonalizedName(
+    const std::string& name,
+    const std::string& provider_address,
+    FastPairDataEncryptor* fast_pair_data_encryptor,
+    base::OnceCallback<void(absl::optional<PairFailure>)>
+        write_additional_data_callback) {
+  DCHECK(write_additional_data_callback_.is_null());
+  write_additional_data_callback_ = std::move(write_additional_data_callback);
+
+  // Write Action Request to inform the Additional Data characteristic that the
+  // next message is the personalized name.
+  const std::array<uint8_t, kBlockSizeBytes> encrypted_data =
+      fast_pair_data_encryptor->EncryptBytes(
+          CreateActionRequestBeforeAdditionalData(provider_address));
+
+  std::vector<uint8_t> encrypted_request;
+  encrypted_request.reserve(kBlockSizeBytes);
+
+  encrypted_request.insert(
+      encrypted_request.end(), std::begin(encrypted_data),
+      std::next(std::begin(encrypted_data), kBlockSizeBytes));
+
+  WriteGattCharacteristicWithTimeout(
+      additional_data_characteristic_, encrypted_request,
+      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
+      base::BindOnce(
+          &FastPairGattServiceClientImpl::OnWriteAdditionalDataTimeout,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &FastPairGattServiceClientImpl::OnWritePersonalizedNameRequest,
+          weak_ptr_factory_.GetWeakPtr(), name, provider_address,
+          fast_pair_data_encryptor),
+      base::BindOnce(&FastPairGattServiceClientImpl::OnWriteAdditionalDataError,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void FastPairGattServiceClientImpl::WriteGattCharacteristicWithTimeout(
     device::BluetoothRemoteGattCharacteristic* characteristic,
     const std::vector<uint8_t>& encrypted_request,
@@ -816,7 +966,9 @@ void FastPairGattServiceClientImpl::StopTimerRunFailure(
 
 void FastPairGattServiceClientImpl::StopAllWriteRequestTimers() {
   for (auto& [characteristic, timer] : characteristic_write_request_timers_) {
-    timer->Stop();
+    if (timer->IsRunning()) {
+      timer->Stop();
+    }
   }
 }
 
@@ -824,7 +976,52 @@ void FastPairGattServiceClientImpl::StopWriteRequestTimer(
     device::BluetoothRemoteGattCharacteristic* characteristic) {
   if (characteristic_write_request_timers_.contains(characteristic)) {
     characteristic_write_request_timers_[characteristic]->Stop();
+    characteristic_write_request_timers_.erase(characteristic);
   }
+}
+
+void FastPairGattServiceClientImpl::OnWriteAdditionalData() {
+  QP_LOG(VERBOSE) << __func__;
+  std::move(write_additional_data_callback_).Run(/*error=*/absl::nullopt);
+}
+
+void FastPairGattServiceClientImpl::OnWriteAdditionalDataError(
+    device::BluetoothGattService::GattErrorCode error) {
+  QP_LOG(WARNING) << ": Error: " << ToString(error);
+  std::move(write_additional_data_callback_)
+      .Run(
+          /*error=*/PairFailure::kAdditionalDataCharacteristicWrite);
+}
+
+void FastPairGattServiceClientImpl::OnWriteAdditionalDataTimeout() {
+  QP_LOG(WARNING) << __func__;
+  std::move(write_additional_data_callback_)
+      .Run(
+          /*error=*/PairFailure::kAdditionalDataCharacteristicWriteTimeout);
+}
+
+void FastPairGattServiceClientImpl::OnWritePersonalizedNameRequest(
+    const std::string& name,
+    const std::string& provider_address,
+    FastPairDataEncryptor* fast_pair_data_encryptor) {
+  QP_LOG(VERBOSE) << __func__;
+  std::array<uint8_t, kNonceSizeBytes> nonce;
+  RAND_bytes(nonce.data(), kNonceSizeBytes);
+  const std::vector<uint8_t> name_bytes(name.begin(), name.end());
+
+  const std::vector<uint8_t> additional_data_packet =
+      fast_pair_data_encryptor->CreateAdditionalDataPacket(nonce, name_bytes);
+
+  WriteGattCharacteristicWithTimeout(
+      additional_data_characteristic_, additional_data_packet,
+      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
+      base::BindOnce(
+          &FastPairGattServiceClientImpl::OnWriteAdditionalDataTimeout,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&FastPairGattServiceClientImpl::OnWriteAdditionalData,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&FastPairGattServiceClientImpl::OnWriteAdditionalDataError,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace quick_pair
