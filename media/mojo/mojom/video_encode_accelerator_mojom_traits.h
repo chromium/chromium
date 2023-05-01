@@ -89,16 +89,6 @@ struct StructTraits<
 };
 
 template <>
-struct EnumTraits<media::mojom::VideoEncodeAccelerator_Error,
-                  media::VideoEncodeAccelerator::Error> {
-  static media::mojom::VideoEncodeAccelerator_Error ToMojom(
-      media::VideoEncodeAccelerator::Error error);
-
-  static bool FromMojom(media::mojom::VideoEncodeAccelerator_Error input,
-                        media::VideoEncodeAccelerator::Error* out);
-};
-
-template <>
 class StructTraits<media::mojom::VariableBitratePeakDataView, uint32_t> {
  public:
   static constexpr uint32_t bps(const uint32_t peak_bps) { return peak_bps; }

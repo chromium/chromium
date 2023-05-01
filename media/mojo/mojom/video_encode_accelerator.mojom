@@ -189,13 +189,6 @@ struct VideoEncodeAcceleratorConfig {
 };
 
 interface VideoEncodeAccelerator {
-  // See media::VideoEncodeAccelerator::Error
-  enum Error {
-    ILLEGAL_STATE,
-    INVALID_ARGUMENT,
-    PLATFORM_FAILURE
-  };
-
   // Responded by VideoEncodeAcceleratorClient.RequireBitstreamBuffers().
   [Sync]
   Initialize(VideoEncodeAcceleratorConfig config,
