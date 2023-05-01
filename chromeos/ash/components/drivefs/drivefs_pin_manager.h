@@ -384,6 +384,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
         [](const Files::value_type& entry) { return entry.second.pinned; });
   }
 
+  // Maximum number of items that can be pinned but not cached yet at the same
+  // time.
+  static constexpr int kMaxQueueSize = 200;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   const Path profile_path_ GUARDED_BY_CONTEXT(sequence_checker_);

@@ -2563,8 +2563,8 @@ TEST_F(DriveFsPinManagerTest, PinSomeFiles) {
     EXPECT_TRUE(file.in_progress);
   }
 
-  // Add 70 items to pin.
-  for (int i = 0; i < 70; ++i) {
+  // Add PinManager::kMaxQueueSize + 20 items to pin.
+  for (int i = 0; i < PinManager::kMaxQueueSize + 20; ++i) {
     FileMetadata md;
     md.stable_id = 200 + i;
     md.type = FileMetadata::Type::kFile;
@@ -2576,16 +2576,17 @@ TEST_F(DriveFsPinManagerTest, PinSomeFiles) {
         manager.Add(md, Path(base::StringPrintf("/root/Path %02d", i))));
   }
 
-  EXPECT_THAT(manager.files_to_pin_, SizeIs(70));
-  EXPECT_THAT(manager.files_to_track_, SizeIs(71));
+  EXPECT_THAT(manager.files_to_pin_, SizeIs(PinManager::kMaxQueueSize + 20));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(PinManager::kMaxQueueSize + 21));
   EXPECT_EQ(manager.progress_.syncing_files, 1);
 
-  EXPECT_CALL(drivefs_, SetPinnedByStableId(_, true, _)).Times(49);
+  EXPECT_CALL(drivefs_, SetPinnedByStableId(_, true, _))
+      .Times(PinManager::kMaxQueueSize - 1);
   manager.PinSomeFiles();
   EXPECT_EQ(manager.progress_.stage, Stage::kSyncing);
   EXPECT_THAT(manager.files_to_pin_, SizeIs(21));
-  EXPECT_THAT(manager.files_to_track_, SizeIs(71));
-  EXPECT_EQ(manager.progress_.syncing_files, 50);
+  EXPECT_THAT(manager.files_to_track_, SizeIs(PinManager::kMaxQueueSize + 21));
+  EXPECT_EQ(manager.progress_.syncing_files, PinManager::kMaxQueueSize);
 
   // Remove 30 files from the set of files to track.
   {
@@ -2597,7 +2598,7 @@ TEST_F(DriveFsPinManagerTest, PinSomeFiles) {
       }
     }
 
-    EXPECT_THAT(pinned_ids, SizeIs(50));
+    EXPECT_THAT(pinned_ids, SizeIs(PinManager::kMaxQueueSize));
     pinned_ids.resize(30);
     for (const Id id : pinned_ids) {
       manager.Remove(id, Path(), 0);
@@ -2605,15 +2606,15 @@ TEST_F(DriveFsPinManagerTest, PinSomeFiles) {
   }
 
   EXPECT_THAT(manager.files_to_pin_, SizeIs(21));
-  EXPECT_THAT(manager.files_to_track_, SizeIs(41));
-  EXPECT_EQ(manager.progress_.syncing_files, 20);
+  EXPECT_THAT(manager.files_to_track_, SizeIs(PinManager::kMaxQueueSize - 9));
+  EXPECT_EQ(manager.progress_.syncing_files, PinManager::kMaxQueueSize - 30);
 
   EXPECT_CALL(drivefs_, SetPinnedByStableId(_, true, _)).Times(21);
   manager.PinSomeFiles();
   EXPECT_EQ(manager.progress_.stage, Stage::kSyncing);
   EXPECT_THAT(manager.files_to_pin_, IsEmpty());
-  EXPECT_THAT(manager.files_to_track_, SizeIs(41));
-  EXPECT_EQ(manager.progress_.syncing_files, 41);
+  EXPECT_THAT(manager.files_to_track_, SizeIs(PinManager::kMaxQueueSize - 9));
+  EXPECT_EQ(manager.progress_.syncing_files, PinManager::kMaxQueueSize - 9);
 
   manager.files_to_track_.clear();
   manager.progress_.syncing_files = 0;
