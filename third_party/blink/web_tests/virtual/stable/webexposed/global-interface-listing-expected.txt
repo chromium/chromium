@@ -8905,6 +8905,9 @@ interface VirtualKeyboard : EventTarget
 interface VirtualKeyboardGeometryChangeEvent : Event
     attribute @@toStringTag
     method constructor
+interface VisibilityStateEntry : PerformanceEntry
+    attribute @@toStringTag
+    method constructor
 interface VisualViewport : EventTarget
     attribute @@toStringTag
     getter height
