@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -90,6 +91,9 @@ static constexpr base::TimeDelta kLongTaskObserverThreshold =
 namespace blink {
 
 namespace {
+
+const char kEventTimingPendingPresentationPromiseCount[] =
+    "PageLoad.Internal.EventTiming.PendingPresentationPromiseCount";
 
 AtomicString GetFrameAttribute(HTMLFrameOwnerElement* frame_owner,
                                const QualifiedName& attr_name) {
@@ -481,6 +485,20 @@ void WindowPerformance::OnPresentationPromiseResolved(
     return;
   }
 
+  CHECK(!events_data_.empty());
+  const bool is_painted_presentation_promise =
+      presentation_index < event_presentation_promise_count_ ||
+      need_new_promise_for_event_presentation_time_;
+  if (is_painted_presentation_promise &&
+      events_data_.front()->GetPresentationIndex() < presentation_index) {
+    // Counts when a painted presentation promise got resolved but an earlier
+    // one is still pending.
+    UseCounter::Count(
+        GetExecutionContext(),
+        WebFeature::
+            kEventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved);
+  }
+
   // If the resolved presentation promise is the latest one we registered, then
   // events arrive after will need a new presentation promise to provide
   // presentation feedback.
@@ -497,6 +515,14 @@ void WindowPerformance::OnPresentationPromiseResolved(
   DOMHighResTimeStamp end_time =
       MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
   responsiveness_metrics_->MaybeFlushKeyboardEntries(end_time);
+
+  // Record histogram for pending presentation promise count.
+  UMA_HISTOGRAM_COUNTS_1000(
+      kEventTimingPendingPresentationPromiseCount,
+      events_data_.empty()
+          ? 0
+          : static_cast<int>(event_presentation_promise_count_ -
+                             events_data_.front()->GetPresentationIndex() + 1));
 }
 
 void WindowPerformance::ReportEventTimings() {

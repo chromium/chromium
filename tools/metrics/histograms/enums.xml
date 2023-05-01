@@ -42242,6 +42242,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4558" label="CSSValueAppearanceSliderthumbVertical"/>
   <int value="4559"
       label="ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial"/>
+  <int value="4560"
+      label="EventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

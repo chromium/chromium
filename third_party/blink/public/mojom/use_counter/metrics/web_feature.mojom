@@ -3898,6 +3898,7 @@ enum WebFeature {
   kCSSValueAppearanceSliderthumbHorizontal = 4557,
   kCSSValueAppearanceSliderthumbVertical = 4558,
   kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial = 4559,
+  kEventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved = 4560,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
