@@ -3170,6 +3170,15 @@ bool RenderProcessHostImpl::IsSpareProcessForCrashReporting(
                                     .spare_render_process_host();
 }
 
+// static
+void RenderProcessHostImpl::ClearAllResourceCaches() {
+  for (iterator iter(AllHostsIterator()); !iter.IsAtEnd(); iter.Advance()) {
+    mojom::Renderer* renderer_interface =
+        iter.GetCurrentValue()->GetRendererInterface();
+    renderer_interface->PurgeResourceCache(base::DoNothing());
+  }
+}
+
 bool RenderProcessHostImpl::HostHasNotBeenUsed() {
   return IsUnused() && listeners_.IsEmpty() && AreAllRefCountsZero() &&
          pending_views_ == 0;

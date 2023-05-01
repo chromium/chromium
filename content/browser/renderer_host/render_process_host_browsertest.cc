@@ -28,8 +28,10 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -45,6 +47,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -2274,6 +2277,71 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
   EXPECT_TRUE(process->IsReady());
   EXPECT_EQ(nullptr, creation_observer2.get());
   process->Cleanup();
+}
+
+namespace {
+
+bool FetchScript(Shell* shell, GURL url) {
+  EvalJsResult result = EvalJs(shell, JsReplace(R"(
+      new Promise(resolve => {
+        const script = document.createElement("script");
+        script.src = $1;
+        script.onerror = () => resolve("error");
+        script.onload = () => resolve("fetched");
+        document.body.appendChild(script);
+      });
+    )",
+                                                url));
+  return result.ExtractString() == "fetched";
+}
+
+}  // namespace
+
+// Tests that BrowsingDataRemover clears renderer's in-memory resource cache.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ClearResourceCache) {
+  constexpr const char* kScriptPath = "/cacheable.js";
+
+  // Count the number of requests from the renderer. This doesn't count requests
+  // that are served via the renderer's in-memory cache.
+  size_t num_script_requests_from_renderer = 0;
+  embedded_test_server()->RegisterRequestMonitor(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request) {
+        if (request.relative_url == kScriptPath) {
+          ++num_script_requests_from_renderer;
+        }
+      }));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL kUrl = embedded_test_server()->GetURL("/title1.html");
+  const GURL kScriptUrl = embedded_test_server()->GetURL(kScriptPath);
+
+  EXPECT_TRUE(NavigateToURL(shell(), kUrl));
+
+  // The first fetch. The renderer's in-memory cache doesn't contain a response
+  // so the counter should be incremented.
+  EXPECT_TRUE(FetchScript(shell(), kScriptUrl));
+  ASSERT_EQ(num_script_requests_from_renderer, 1u);
+
+  // The second fetch. The response will be served from the renderer's in-memory
+  // cache. The counter should not be incremented.
+  EXPECT_TRUE(FetchScript(shell(), kScriptUrl));
+  ASSERT_EQ(num_script_requests_from_renderer, 1u);
+
+  // Clear the renderer's in-memory cache.
+  BrowsingDataRemover* remover =
+      shell()->web_contents()->GetBrowserContext()->GetBrowsingDataRemover();
+  BrowsingDataRemoverCompletionObserver observer(remover);
+  remover->RemoveAndReply(
+      /*delete_begin=*/base::Time(), /*delete_end=*/base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_CACHE,
+      BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, &observer);
+  observer.BlockUntilCompletion();
+
+  // Fetch again. The response in the renderer's in-memory cache was evicted so
+  // the counter should be incremented.
+  EXPECT_TRUE(FetchScript(shell(), kScriptUrl));
+  ASSERT_EQ(num_script_requests_from_renderer, 2u);
 }
 
 }  // namespace content

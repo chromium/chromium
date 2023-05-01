@@ -130,6 +130,8 @@ interface Renderer {
   // pages containing plugins.
   PurgePluginListCache(bool reload_pages);
 
+  // Tells the renderer to purge its in-memory resource cache.
+  PurgeResourceCache() => ();
 
   // Tells the renderer process of a change in visibility or background state.
   SetProcessState(RenderProcessBackgroundState background_state,

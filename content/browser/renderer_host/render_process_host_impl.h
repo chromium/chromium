@@ -552,6 +552,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Returns true if a spare RenderProcessHost should be kept at all times.
   static bool IsSpareProcessKeptAtAllTimes();
 
+  // Iterate over all renderers and clear their in-memory resource cache.
+  static void ClearAllResourceCaches();
+
   // Helper method that allows crash reporting logic to determine if a
   // specific RenderProcessHost is the current spare process.
   // Returns true if |render_process_host| is the current spare

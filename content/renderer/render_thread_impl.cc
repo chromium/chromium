@@ -1626,6 +1626,11 @@ void RenderThreadImpl::PurgePluginListCache(bool reload_pages) {
 #endif
 }
 
+void RenderThreadImpl::PurgeResourceCache(PurgeResourceCacheCallback callback) {
+  blink::WebCache::Clear();
+  std::move(callback).Run();
+}
+
 void RenderThreadImpl::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   TRACE_EVENT(

@@ -440,6 +440,7 @@ class CONTENT_EXPORT RenderThreadImpl
   void UpdateSystemColorInfo(
       mojom::UpdateSystemColorInfoParamsPtr params) override;
   void PurgePluginListCache(bool reload_pages) override;
+  void PurgeResourceCache(PurgeResourceCacheCallback callback) override;
   void SetProcessState(mojom::RenderProcessBackgroundState background_state,
                        mojom::RenderProcessVisibleState visible_state) override;
   void SetIsLockedToSite() override;
