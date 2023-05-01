@@ -41,6 +41,10 @@ class ActiveTabPermissionGranter
   // tab-specific permissions to it until the next page navigation or refresh.
   void GrantIfRequested(const Extension* extension);
 
+  // Clears any tab-specific permissions for an extension with `id` if it has
+  // been granted (otherwise does nothing) on `tab_id_` and notifies renderers.
+  void ClearActiveExtensionAndNotify(const ExtensionId& id);
+
   // Clears tab-specific permissions for all extensions. Used only for testing.
   void RevokeForTesting();
 
@@ -58,9 +62,14 @@ class ActiveTabPermissionGranter
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  // Clears any tab-specific permissions for all extensions on |tab_id_| and
+  // Clears any tab-specific permissions for all extensions on `tab_id_` and
   // notifies renderers.
-  void ClearActiveExtensionsAndNotify();
+  void ClearGrantedExtensionsAndNotify();
+
+  // Clears any tab-specific permissions for all extensions in
+  // `granted_extensions_to_remove` on `tab_id_` and notifies renderers.
+  void ClearGrantedExtensionsAndNotify(
+      const ExtensionSet& granted_extensions_to_remove);
 
   // The tab ID for this tab.
   int tab_id_;
