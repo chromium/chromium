@@ -134,8 +134,10 @@ void FrameSinkImpl::MaybeCompositeNow() {
 
 void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
                                      cc::UIResourceBitmap resource_bitmap) {
-  const gpu::Capabilities& caps = context_provider_->ContextCapabilities();
   gfx::Size size = resource_bitmap.GetSize();
+  TRACE_EVENT1("cc", "slim::FrameSinkImpl::UploadUIResource", "size",
+               size.ToString());
+  const gpu::Capabilities& caps = context_provider_->ContextCapabilities();
   if (size.width() > caps.max_texture_size ||
       size.height() > caps.max_texture_size) {
     LOG(ERROR) << "Size exceeds max texture size";
