@@ -1,8 +1,8 @@
 Name: Eigen
 Short Name: eigen3
 URL: http://eigen.tuxfamily.org/
-Version: b378014fef017a829fb42c7fad15f3764bfb8ef9
-Date: 2023/04/25
+Version: 0b51f763cbbd0ed08168f88972724329f0375498
+Date: 2023/05/01
 License: MPL 2
 License File: LICENSE
 Security Critical: Yes

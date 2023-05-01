@@ -28,7 +28,7 @@ limitations under the License.
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
+#include "tensorflow/lite/core/kernels/register.h"
 #include "tensorflow/lite/string_type.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -103,7 +103,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
   CreateFromOptions(
       const tflite::task::text::NLClassifierOptions& options,
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   // Creates an NLClassifier from TFLite model buffer.
   ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
@@ -113,7 +113,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
       size_t model_buffer_size,
       const NLClassifierOptions& options = {},
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   // Creates an NLClassifier from TFLite model file.
   ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
@@ -122,7 +122,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
       const std::string& path_to_model,
       const NLClassifierOptions& options = {},
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   // Creates an NLClassifier from TFLite model file descriptor.
   ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
@@ -131,7 +131,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
       int fd,
       const NLClassifierOptions& options = {},
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   ABSL_DEPRECATED("Prefer using `ClassifyText`")
   std::vector<core::Category> Classify(const std::string& text);

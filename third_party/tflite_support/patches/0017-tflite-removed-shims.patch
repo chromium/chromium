@@ -1,0 +1,282 @@
+From 8c26c9e09aadd00efeba9cd7d7ee84989610767d Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Mon, 1 May 2023 08:51:43 -0700
+Subject: [PATCH] TFLite removed shim headers
+
+---
+ .../cc/task/core/task_api_factory.h                | 12 ++++++------
+ .../cc/task/core/tflite_engine.cc                  | 10 +++++-----
+ .../cc/task/core/tflite_engine.h                   | 14 +++++++-------
+ .../cc/task/processor/processor.h                  |  2 +-
+ .../cc/task/text/bert_nl_classifier.h              | 10 +++++-----
+ .../cc/task/text/nlclassifier/nl_classifier.h      | 10 +++++-----
+ .../cc/task/vision/image_classifier.h              |  4 ++--
+ 7 files changed, 31 insertions(+), 31 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h
+index bbe549a802b39..2e423f37ef46d 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h
+@@ -51,7 +51,7 @@ class TaskAPIFactory {
+       const char* buffer_data,
+       size_t buffer_size,
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>(),
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>(),
+       int num_threads = 1,
+       const tflite::proto::ComputeSettings& compute_settings =
+           tflite::proto::ComputeSettings()) {
+@@ -69,7 +69,7 @@ class TaskAPIFactory {
+   static tflite::support::StatusOr<std::unique_ptr<T>> CreateFromFile(
+       const std::string& file_name,
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>(),
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>(),
+       int num_threads = 1,
+       const tflite::proto::ComputeSettings& compute_settings =
+           tflite::proto::ComputeSettings()) {
+@@ -86,7 +86,7 @@ class TaskAPIFactory {
+   static tflite::support::StatusOr<std::unique_ptr<T>> CreateFromFileDescriptor(
+       int file_descriptor,
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>(),
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>(),
+       int num_threads = 1,
+       const tflite::proto::ComputeSettings& compute_settings =
+           tflite::proto::ComputeSettings()) {
+@@ -104,8 +104,8 @@ class TaskAPIFactory {
+   static tflite::support::
+       StatusOr<std::unique_ptr<T>> CreateFromExternalFileProto(
+           const ExternalFile* external_file,
+-          std::unique_ptr<tflite::OpResolver> resolver = absl::make_unique<
+-              tflite_shims::ops::builtin::BuiltinOpResolver>(),
++          std::unique_ptr<tflite::OpResolver> resolver =
++              absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>(),
+           int num_threads = 1,
+           const tflite::proto::ComputeSettings& compute_settings =
+               tflite::proto::ComputeSettings()) {
+@@ -123,7 +123,7 @@ class TaskAPIFactory {
+   static tflite::support::StatusOr<std::unique_ptr<T>> CreateFromBaseOptions(
+       const BaseOptions* base_options,
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>()) {
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>()) {
+     if (!base_options->has_model_file()) {
+       return CreateStatusWithPayload(
+           absl::StatusCode::kInvalidArgument,
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
+index 1ccd1e1480f51..1f00f96abd082 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
+@@ -24,8 +24,8 @@ limitations under the License.
+ #include "absl/strings/match.h"    // from @com_google_absl
+ #include "absl/strings/str_cat.h"  // from @com_google_absl
+ #include "tensorflow/lite/builtin_ops.h"
+-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
+-#include "tensorflow/lite/core/shims/cc/tools/verifier.h"
++#include "tensorflow/lite/core/kernels/register.h"
++#include "tensorflow/lite/core/tools/verifier.h"
+ #include "tensorflow/lite/stderr_reporter.h"
+ #include "tensorflow_lite_support/cc/common.h"
+ #include "tensorflow_lite_support/cc/port/configuration_proto_inc.h"
+@@ -45,7 +45,7 @@ using ::tflite::support::TfLiteSupportStatus;
+ bool TfLiteEngine::Verifier::Verify(const char* data,
+                                     int length,
+                                     tflite::ErrorReporter* reporter) {
+-  return tflite_shims::Verify(data, length, reporter);
++  return tflite::Verify(data, length, reporter);
+ }
+ 
+ TfLiteEngine::TfLiteEngine(std::unique_ptr<tflite::OpResolver> resolver)
+@@ -77,7 +77,7 @@ void TfLiteEngine::VerifyAndBuildModelFromBuffer(
+     const char* buffer_data,
+     size_t buffer_size,
+     TfLiteVerifier* extra_verifier) {
+-  model_ = tflite_shims::FlatBufferModel::VerifyAndBuildFromBuffer(
++  model_ = tflite::FlatBufferModel::VerifyAndBuildFromBuffer(
+       buffer_data, buffer_size, extra_verifier, &error_reporter_);
+ }
+ 
+@@ -233,7 +233,7 @@ absl::Status TfLiteEngine::InitInterpreter(
+       [this](const InterpreterCreationResources& resources,
+              std::unique_ptr<Interpreter, InterpreterDeleter>* interpreter_out)
+       -> absl::Status {
+-    tflite_shims::InterpreterBuilder interpreter_builder(*model_, *resolver_);
++    tflite::InterpreterBuilder interpreter_builder(*model_, *resolver_);
+     resources.ApplyTo(&interpreter_builder);
+     if (interpreter_builder(interpreter_out) != kTfLiteOk) {
+       return CreateStatusWithPayload(
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h
+index 840b7ccbda201..b96043dbefd1e 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h
+@@ -22,10 +22,10 @@ limitations under the License.
+ #include "absl/status/status.h"        // from @com_google_absl
+ #include "absl/strings/string_view.h"  // from @com_google_absl
+ #include "tensorflow/lite/core/api/op_resolver.h"
+-#include "tensorflow/lite/core/shims/c/common.h"
+-#include "tensorflow/lite/core/shims/cc/interpreter.h"
+-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
+-#include "tensorflow/lite/core/shims/cc/model.h"
++#include "tensorflow/lite/core/c/common.h"
++#include "tensorflow/lite/core/kernels/register.h"
++#include "tensorflow/lite/core/model.h"
++#include "tensorflow/lite/interpreter.h"
+ #include "tensorflow_lite_support/cc/port/configuration_proto_inc.h"
+ #include "tensorflow_lite_support/cc/port/tflite_wrapper.h"
+ #include "tensorflow_lite_support/cc/task/core/error_reporter.h"
+@@ -47,15 +47,15 @@ class TfLiteEngine {
+  public:
+   // Types.
+   using InterpreterWrapper = ::tflite::support::TfLiteInterpreterWrapper;
+-  using Model = ::tflite_shims::FlatBufferModel;
+-  using Interpreter = ::tflite_shims::Interpreter;
++  using Model = ::tflite::FlatBufferModel;
++  using Interpreter = ::tflite::Interpreter;
+   using ModelDeleter = std::default_delete<Model>;
+   using InterpreterDeleter = std::default_delete<Interpreter>;
+ 
+   // Constructors.
+   explicit TfLiteEngine(
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
+   // Model is neither copyable nor movable.
+   TfLiteEngine(const TfLiteEngine&) = delete;
+   TfLiteEngine& operator=(const TfLiteEngine&) = delete;
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/processor.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/processor.h
+index b3c43605ac82e..bc56e6a43f102 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/processor.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/processor.h
+@@ -20,7 +20,7 @@ limitations under the License.
+ 
+ #include "absl/status/status.h"       // from @com_google_absl
+ #include "absl/strings/str_format.h"  // from @com_google_absl
+-#include "tensorflow/lite/core/shims/c/common.h"
++#include "tensorflow/lite/core/c/common.h"
+ #include "tensorflow_lite_support/cc/common.h"
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ #include "tensorflow_lite_support/cc/port/statusor.h"
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.h
+index bcc9c5a533a3f..d7d797f0db5d7 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.h
+@@ -26,7 +26,7 @@ limitations under the License.
+ #include "absl/status/status.h"  // from @com_google_absl
+ #include "tensorflow/lite/c/common.h"
+ #include "tensorflow/lite/core/api/op_resolver.h"
+-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
++#include "tensorflow/lite/core/kernels/register.h"
+ #include "tensorflow/lite/string_type.h"
+ #include "tensorflow_lite_support/cc/task/core/category.h"
+ #include "tensorflow_lite_support/cc/task/processor/bert_preprocessor.h"
+@@ -58,7 +58,7 @@ class BertNLClassifier : public tflite::task::text::nlclassifier::NLClassifier {
+   CreateFromOptions(
+       const BertNLClassifierOptions& options,
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
+ 
+   // Factory function to create a BertNLClassifier from TFLite model with
+   // metadata.
+@@ -67,7 +67,7 @@ class BertNLClassifier : public tflite::task::text::nlclassifier::NLClassifier {
+   CreateFromFile(
+       const std::string& path_to_model_with_metadata,
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>()) {
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>()) {
+     BertNLClassifierOptions options;
+     options.mutable_base_options()->mutable_model_file()->set_file_name(
+         path_to_model_with_metadata);
+@@ -82,7 +82,7 @@ class BertNLClassifier : public tflite::task::text::nlclassifier::NLClassifier {
+       const char* model_with_metadata_buffer_data,
+       size_t model_with_metadata_buffer_size,
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>()) {
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>()) {
+     BertNLClassifierOptions options;
+     options.mutable_base_options()->mutable_model_file()->set_file_content(
+         model_with_metadata_buffer_data, model_with_metadata_buffer_size);
+@@ -96,7 +96,7 @@ class BertNLClassifier : public tflite::task::text::nlclassifier::NLClassifier {
+   CreateFromFd(
+       int fd,
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>()) {
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>()) {
+     BertNLClassifierOptions options;
+     options.mutable_base_options()
+         ->mutable_model_file()
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
+index 68ddc4b5312b7..ce00f0344b063 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
+@@ -28,7 +28,7 @@ limitations under the License.
+ #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
+ #include "tensorflow/lite/c/common.h"
+ #include "tensorflow/lite/core/api/op_resolver.h"
+-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
++#include "tensorflow/lite/core/kernels/register.h"
+ #include "tensorflow/lite/string_type.h"
+ #include "tensorflow_lite_support/cc/common.h"
+ #include "tensorflow_lite_support/cc/port/statusor.h"
+@@ -103,7 +103,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
+   CreateFromOptions(
+       const tflite::task::text::NLClassifierOptions& options,
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
+ 
+   // Creates an NLClassifier from TFLite model buffer.
+   ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
+@@ -113,7 +113,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
+       size_t model_buffer_size,
+       const NLClassifierOptions& options = {},
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
+ 
+   // Creates an NLClassifier from TFLite model file.
+   ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
+@@ -122,7 +122,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
+       const std::string& path_to_model,
+       const NLClassifierOptions& options = {},
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
+ 
+   // Creates an NLClassifier from TFLite model file descriptor.
+   ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
+@@ -131,7 +131,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
+       int fd,
+       const NLClassifierOptions& options = {},
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
+ 
+   ABSL_DEPRECATED("Prefer using `ClassifyText`")
+   std::vector<core::Category> Classify(const std::string& text);
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h
+index eb0c13ec55c5b..bfd1ee8c98197 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h
+@@ -23,7 +23,7 @@ limitations under the License.
+ #include "absl/status/status.h"            // from @com_google_absl
+ #include "tensorflow/lite/c/common.h"
+ #include "tensorflow/lite/core/api/op_resolver.h"
+-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
++#include "tensorflow/lite/core/kernels/register.h"
+ #include "tensorflow_lite_support/cc/port/integral_types.h"
+ #include "tensorflow_lite_support/cc/port/statusor.h"
+ #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
+@@ -81,7 +81,7 @@ class ImageClassifier : public BaseVisionTaskApi<ClassificationResult> {
+   CreateFromOptions(
+       const ImageClassifierOptions& options,
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
+ 
+   // Performs actual classification on the provided FrameBuffer.
+   //
+-- 
+2.40.1.495.gc816e09b53d-goog
+
