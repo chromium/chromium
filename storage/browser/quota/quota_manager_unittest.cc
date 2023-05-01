@@ -101,6 +101,7 @@ struct ClientBucketData {
   std::string name;
   StorageType type;
   int64_t usage;
+  int64_t quota = 0;
 };
 
 struct UsageWithBreakdown {
@@ -215,9 +216,10 @@ class QuotaManagerImplTest : public testing::Test {
     std::map<BucketLocator, int64_t> buckets_data;
     for (const ClientBucketData& data : mock_data) {
       base::test::TestFuture<QuotaErrorOr<BucketInfo>> future;
-      quota_manager_impl_->GetOrCreateBucketDeprecated(
-          {ToStorageKey(data.origin), data.name}, data.type,
-          future.GetCallback());
+      BucketInitParams params(ToStorageKey(data.origin), data.name);
+      params.quota = data.quota;
+      quota_manager_impl_->GetOrCreateBucketDeprecated(params, data.type,
+                                                       future.GetCallback());
       auto bucket = future.Take();
       ASSERT_TRUE(bucket.has_value());
       buckets_data.insert(std::pair<BucketLocator, int64_t>(
@@ -329,6 +331,14 @@ class QuotaManagerImplTest : public testing::Test {
     quota_manager_impl_->GetUsageAndQuota(storage_key, type,
                                           future.GetCallback());
     return {future.Get<0>(), future.Get<1>(), future.Get<2>()};
+  }
+
+  bool CheckForSufficientSpace(const BucketLocator& bucket,
+                               int64_t bytes_to_be_written) {
+    base::test::TestFuture<QuotaErrorOr<int64_t>> future;
+    quota_manager_impl_->GetBucketSpaceRemaining(bucket, future.GetCallback());
+    auto result = future.Take();
+    return result.has_value() && (result.value() >= bytes_to_be_written);
   }
 
   void SetQuotaSettings(int64_t pool_size,
@@ -1205,6 +1215,44 @@ TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey_Expiration) {
   EXPECT_EQ(*buckets.begin(), bucket_1);
 
   QuotaDatabase::SetClockForTesting(nullptr);
+}
+
+TEST_F(QuotaManagerImplTest, EnforceQuota) {
+  const int kPoolSize = 10000;
+  const int kPerStorageKeyQuota = 5000;
+  SetQuotaSettings(kPoolSize, kPerStorageKeyQuota,
+                   kMustRemainAvailableForSystem);
+
+  static const ClientBucketData kData[] = {
+      {"https://foo.com/", "logs", kTemp, /*usage=*/1000, /*quota=*/1025},
+      {
+          "https://foo.com/",
+          "cache",
+          kTemp,
+          /*usage=*/0,
+      },
+      {"https://foo.com/", kDefaultBucketName, kTemp, /*usage=*/3900},
+  };
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kSync});
+  RegisterClientBucketData(fs_client, kData);
+
+  // Check a non-default bucket's custom quota is enforced.
+  auto logs_bucket = GetBucket(ToStorageKey("https://foo.com/"), "logs", kTemp);
+  EXPECT_TRUE(CheckForSufficientSpace(logs_bucket->ToBucketLocator(), 20));
+  EXPECT_FALSE(CheckForSufficientSpace(logs_bucket->ToBucketLocator(), 26));
+
+  // Check the StorageKey quota is enforced for a non-default bucket.
+  auto cache_bucket =
+      GetBucket(ToStorageKey("https://foo.com/"), "cache", kTemp);
+  EXPECT_TRUE(CheckForSufficientSpace(cache_bucket->ToBucketLocator(), 75));
+  EXPECT_FALSE(CheckForSufficientSpace(cache_bucket->ToBucketLocator(), 200));
+
+  // Check the StorageKeyQuota is enforced for a default bucket.
+  BucketLocator default_bucket =
+      BucketLocator::ForDefaultBucket(ToStorageKey("https://foo.com/"));
+  EXPECT_TRUE(CheckForSufficientSpace(default_bucket, 75));
+  EXPECT_FALSE(CheckForSufficientSpace(default_bucket, 200));
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {

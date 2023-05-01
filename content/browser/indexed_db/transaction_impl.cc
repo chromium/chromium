@@ -46,8 +46,9 @@ void TransactionImpl::CreateObjectStore(int64_t object_store_id,
                                         const blink::IndexedDBKeyPath& key_path,
                                         bool auto_increment) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!transaction_)
+  if (!transaction_) {
     return;
+  }
 
   if (transaction_->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
     mojo::ReportBadMessage(
@@ -65,8 +66,9 @@ void TransactionImpl::CreateObjectStore(int64_t object_store_id,
   }
 
   IndexedDBConnection* connection = transaction_->connection();
-  if (!connection->IsConnected())
+  if (!connection->IsConnected()) {
     return;
+  }
 
   transaction_->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
@@ -77,8 +79,9 @@ void TransactionImpl::CreateObjectStore(int64_t object_store_id,
 
 void TransactionImpl::DeleteObjectStore(int64_t object_store_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!transaction_)
+  if (!transaction_) {
     return;
+  }
 
   if (transaction_->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
     mojo::ReportBadMessage(
@@ -96,8 +99,9 @@ void TransactionImpl::DeleteObjectStore(int64_t object_store_id) {
   }
 
   IndexedDBConnection* connection = transaction_->connection();
-  if (!connection->IsConnected())
+  if (!connection->IsConnected()) {
     return;
+  }
 
   transaction_->ScheduleTask(
       BindWeakOperation(&IndexedDBDatabase::DeleteObjectStoreOperation,
@@ -115,8 +119,9 @@ void TransactionImpl::Put(
   CHECK(dispatcher_host_);
 
   std::vector<IndexedDBExternalObject> external_objects;
-  if (!input_value->external_objects.empty())
+  if (!input_value->external_objects.empty()) {
     CreateExternalObjects(input_value, &external_objects);
+  }
 
   if (!transaction_) {
     IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
@@ -219,8 +224,9 @@ void TransactionImpl::CreateExternalObjects(
 
 void TransactionImpl::Commit(int64_t num_errors_handled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!transaction_)
+  if (!transaction_) {
     return;
+  }
 
   if (!transaction_->IsAcceptingRequests()) {
     // TODO(https://crbug.com/1249908): If the transaction was already committed
@@ -232,8 +238,9 @@ void TransactionImpl::Commit(int64_t num_errors_handled) {
   }
 
   IndexedDBConnection* connection = transaction_->connection();
-  if (!connection->IsConnected())
+  if (!connection->IsConnected()) {
     return;
+  }
 
   transaction_->SetNumErrorsHandled(num_errors_handled);
 
@@ -243,28 +250,26 @@ void TransactionImpl::Commit(int64_t num_errors_handled) {
     return;
   }
 
-  indexed_db_context_->quota_manager_proxy()->GetUsageAndQuota(
-      bucket_locator_.storage_key, blink::mojom::StorageType::kTemporary,
-      indexed_db_context_->IDBTaskRunner(),
-      base::BindOnce(&TransactionImpl::OnGotUsageAndQuotaForCommit,
+  indexed_db_context_->quota_manager_proxy()->GetBucketSpaceRemaining(
+      bucket_locator_, indexed_db_context_->IDBTaskRunner(),
+      base::BindOnce(&TransactionImpl::OnQuotaCheckDone,
                      weak_factory_.GetWeakPtr()));
 }
 
-void TransactionImpl::OnGotUsageAndQuotaForCommit(
-    blink::mojom::QuotaStatusCode status,
-    int64_t usage,
-    int64_t quota) {
+void TransactionImpl::OnQuotaCheckDone(
+    storage::QuotaErrorOr<int64_t> space_left) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!transaction_)
+  if (!transaction_) {
     return;
+  }
 
   // May have disconnected while quota check was pending.
   IndexedDBConnection* connection = transaction_->connection();
-  if (!connection->IsConnected())
+  if (!connection->IsConnected()) {
     return;
+  }
 
-  if (status == blink::mojom::QuotaStatusCode::kOk &&
-      usage + transaction_->size() <= quota) {
+  if (space_left.has_value() && space_left.value() >= transaction_->size()) {
     connection->database()->Commit(transaction_.get());
   } else {
     connection->AbortTransactionAndTearDownOnError(

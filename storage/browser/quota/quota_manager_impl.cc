@@ -1353,6 +1353,59 @@ void QuotaManagerImpl::GetBucketUsageAndQuota(BucketId id,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void QuotaManagerImpl::GetBucketSpaceRemaining(
+    const BucketLocator& bucket,
+    base::OnceCallback<void(QuotaErrorOr<int64_t>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // This barrier is run once with each space restriction --- the StorageKey
+  // usage/quota and the bucket's usage/quota (if it exists). The final value is
+  // the more restrictive of the two.
+  auto barrier_aggregator = base::BindOnce(
+      [](base::OnceCallback<void(QuotaErrorOr<int64_t>)> final_space_remaining,
+         std::vector<int64_t> space_checks) {
+        int64_t space_left =
+            *std::min_element(space_checks.begin(), space_checks.end());
+        if (space_left == std::numeric_limits<int64_t>::min()) {
+          std::move(final_space_remaining)
+              .Run(base::unexpected(QuotaError::kUnknownError));
+        } else {
+          std::move(final_space_remaining).Run(space_left);
+        }
+      },
+      std::move(callback));
+  auto barrier = base::BarrierCallback<int64_t>(
+      /*num_callbacks=*/bucket.is_default ? 1 : 2,
+      std::move(barrier_aggregator));
+
+  // Translates a UsageAndQuota result into a single number for the barrier.
+  auto on_got_usage = base::BindRepeating(
+      [](base::RepeatingCallback<void(int64_t)> report_space_remaining,
+         blink::mojom::QuotaStatusCode code, int64_t usage, int64_t quota) {
+        // Report the amount of allocated space remaining, or min() for an
+        // error, or max() if there's no limit.
+        int64_t leftover_space = 0;
+        if (code != blink::mojom::QuotaStatusCode::kOk) {
+          leftover_space = std::numeric_limits<int64_t>::min();
+        } else if (quota == 0) {
+          leftover_space = std::numeric_limits<int64_t>::max();
+        } else {
+          leftover_space = quota - usage;
+        }
+        std::move(report_space_remaining).Run(leftover_space);
+      },
+      barrier);
+
+  // Check the usage for the whole StorageKey.
+  GetUsageAndQuota(bucket.storage_key, bucket.type, on_got_usage);
+
+  // If this is the default bucket, we're done. Otherwise, additionally check
+  // the usage of the specific bucket against its quota.
+  if (!bucket.is_default) {
+    GetBucketUsageAndQuota(bucket.id, on_got_usage);
+  }
+}
+
 void QuotaManagerImpl::OnClientWriteFailed(const StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnFullDiskError(storage_key);
