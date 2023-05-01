@@ -299,7 +299,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   bool GetSingleReturningAccount(const IdentityProviderData** out_idp_data,
                                  const IdentityRequestAccount** out_account);
 
-  void CreateIdentityRegistry(content::WebContents* web_contents);
+  void CreateIdentityRegistry(const url::Origin& idp_origin,
+                              content::WebContents* web_contents);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;

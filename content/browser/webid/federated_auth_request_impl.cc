@@ -1240,12 +1240,13 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
                      TokenStatus::kNotSignedInWithIdp,
                      /*should_delay_callback=*/true),
       base::BindOnce(&FederatedAuthRequestImpl::CreateIdentityRegistry,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), idp_origin));
 }
 
 void FederatedAuthRequestImpl::CreateIdentityRegistry(
+    const url::Origin& idp_origin,
     content::WebContents* web_contents) {
-  IdentityRegistry::CreateForWebContents(web_contents, this, origin());
+  IdentityRegistry::CreateForWebContents(web_contents, this, idp_origin);
 }
 
 void FederatedAuthRequestImpl::CloseModalDialogView() {
