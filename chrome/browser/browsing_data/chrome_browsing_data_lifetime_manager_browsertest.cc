@@ -455,8 +455,14 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 }
 
 // Disabled because "autofill::AddTestProfile" times out when sync is disabled.
+// TODO(crbug.com/1441381): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Autofill DISABLED_Autofill
+#else
+#define MAYBE_Autofill Autofill
+#endif
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
-                       Autofill) {
+                       MAYBE_Autofill) {
   // No autofill data saved in incognito mode.
   if (IsIncognito())
     return;
