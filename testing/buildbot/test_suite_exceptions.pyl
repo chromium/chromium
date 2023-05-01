@@ -2827,6 +2827,11 @@
           'shards': 9,
         },
       },
+      'win10-code-coverage': {
+        'swarming': {
+          'shards': 32,
+        },
+      },
     },
   },
   'interactive_ui_tests amd64-generic': {
