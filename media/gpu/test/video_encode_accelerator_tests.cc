@@ -274,28 +274,9 @@ class VideoEncoderTest : public ::testing::Test {
       return bitstream_processors;
     }
 
-    switch (codec) {
-      case VideoCodec::kH264:
-        bitstream_processors.emplace_back(new H264Validator(
-            config.output_profile, visible_rect, config.num_temporal_layers));
-        break;
-      case VideoCodec::kVP8:
-        bitstream_processors.emplace_back(
-            new VP8Validator(visible_rect, config.num_temporal_layers));
-        break;
-      case VideoCodec::kVP9:
-        bitstream_processors.emplace_back(new VP9Validator(
-            config.output_profile, visible_rect, config.num_spatial_layers,
-            config.num_temporal_layers));
-        break;
-      case VideoCodec::kAV1:
-        bitstream_processors.emplace_back(new AV1Validator(visible_rect));
-        break;
-      default:
-        LOG(ERROR) << "Unsupported profile: "
-                   << GetProfileName(config.output_profile);
-        break;
-    }
+    bitstream_processors.emplace_back(DecoderBufferValidator::Create(
+        config.output_profile, visible_rect, config.num_spatial_layers,
+        config.num_temporal_layers));
 
     raw_data_helper_ = RawDataHelper::Create(video, g_env->Reverse());
     if (!raw_data_helper_) {

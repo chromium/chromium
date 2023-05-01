@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -22,6 +23,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_encoder/bitstream_validator.h"
+#include "media/gpu/test/video_encoder/decoder_buffer_validator.h"
 #include "media/gpu/test/video_encoder/video_encoder.h"
 #include "media/gpu/test/video_encoder/video_encoder_client.h"
 #include "media/gpu/test/video_encoder/video_encoder_test_environment.h"
@@ -327,6 +329,7 @@ struct BitstreamQualityMetrics {
       const PSNRVideoFrameValidator* const bottom_row_psnr_validator,
       const LogLikelihoodRatioVideoFrameValidator* const
           log_likelihood_validator,
+      const DecoderBufferValidator* const decoder_buffer_validator,
       const absl::optional<size_t>& spatial_idx,
       const absl::optional<size_t>& temporal_idx);
 
@@ -350,13 +353,14 @@ struct BitstreamQualityMetrics {
 
   static QualityStats ComputeQualityStats(
       const std::map<size_t, double>& values);
-
+  static QualityStats ComputeQualityStats(const std::vector<int>& values);
   void WriteToConsole(
       const std::string& svc_text,
       const BitstreamQualityMetrics::QualityStats& psnr_stats,
       const BitstreamQualityMetrics::QualityStats& ssim_stats,
       const BitstreamQualityMetrics::QualityStats& bottom_row_psnr_stats,
       const BitstreamQualityMetrics::QualityStats& log_likelihood_stats,
+      const BitstreamQualityMetrics::QualityStats& qp_stats,
       uint32_t target_bitrate,
       uint32_t actual_bitrate) const;
   void WriteToFile(
@@ -365,6 +369,7 @@ struct BitstreamQualityMetrics {
       const BitstreamQualityMetrics::QualityStats& ssim_stats,
       const BitstreamQualityMetrics::QualityStats& bottom_row_psnr_stats,
       const BitstreamQualityMetrics::QualityStats& log_likelihood_stats,
+      const BitstreamQualityMetrics::QualityStats& qp_stats,
       uint32_t target_bitrate,
       uint32_t actual_bitrate) const;
 
@@ -373,6 +378,7 @@ struct BitstreamQualityMetrics {
   const raw_ptr<const PSNRVideoFrameValidator> bottom_row_psnr_validator;
   const raw_ptr<const LogLikelihoodRatioVideoFrameValidator>
       log_likelihood_validator;
+  const raw_ptr<const DecoderBufferValidator> decoder_buffer_validator;
 };
 
 BitstreamQualityMetrics::BitstreamQualityMetrics(
@@ -380,6 +386,7 @@ BitstreamQualityMetrics::BitstreamQualityMetrics(
     const SSIMVideoFrameValidator* const ssim_validator,
     const PSNRVideoFrameValidator* const bottom_row_psnr_validator,
     const LogLikelihoodRatioVideoFrameValidator* const log_likelihood_validator,
+    const DecoderBufferValidator* const decoder_buffer_validator,
     const absl::optional<size_t>& spatial_idx,
     const absl::optional<size_t>& temporal_idx)
     : spatial_idx(spatial_idx),
@@ -387,7 +394,8 @@ BitstreamQualityMetrics::BitstreamQualityMetrics(
       psnr_validator(psnr_validator),
       ssim_validator(ssim_validator),
       bottom_row_psnr_validator(bottom_row_psnr_validator),
-      log_likelihood_validator(log_likelihood_validator) {}
+      log_likelihood_validator(log_likelihood_validator),
+      decoder_buffer_validator(decoder_buffer_validator) {}
 
 // static
 BitstreamQualityMetrics::QualityStats
@@ -417,6 +425,25 @@ BitstreamQualityMetrics::ComputeQualityStats(
   return stats;
 }
 
+// static
+BitstreamQualityMetrics::QualityStats
+BitstreamQualityMetrics::ComputeQualityStats(const std::vector<int>& values) {
+  if (values.empty()) {
+    return QualityStats();
+  }
+
+  std::vector<int> sorted_values = values;
+  QualityStats stats;
+  std::sort(sorted_values.begin(), sorted_values.end());
+  stats.avg = std::accumulate(sorted_values.begin(), sorted_values.end(), 0.0) /
+              sorted_values.size();
+  stats.percentile_25 = sorted_values[sorted_values.size() / 4];
+  stats.percentile_50 = sorted_values[sorted_values.size() / 2];
+  stats.percentile_75 = sorted_values[(sorted_values.size() * 3) / 4];
+  stats.values_in_order = std::vector<double>(values.begin(), values.end());
+  return stats;
+}
+
 void BitstreamQualityMetrics::Output(uint32_t target_bitrate,
                                      uint32_t actual_bitrate) {
   std::string svc_text;
@@ -431,11 +458,13 @@ void BitstreamQualityMetrics::Output(uint32_t target_bitrate,
       ComputeQualityStats(bottom_row_psnr_validator->GetPSNRValues());
   auto log_likelihood_stats = ComputeQualityStats(
       log_likelihood_validator->get_log_likelihood_ratio_values());
-
+  auto qp_stats = ComputeQualityStats(decoder_buffer_validator->GetQPValues(
+      spatial_idx.value_or(0), temporal_idx.value_or(0)));
   WriteToConsole(svc_text, psnr_stats, ssim_stats, bottom_row_psnr_stats,
-                 log_likelihood_stats, target_bitrate, actual_bitrate);
+                 log_likelihood_stats, qp_stats, target_bitrate,
+                 actual_bitrate);
   WriteToFile(svc_text, psnr_stats, ssim_stats, bottom_row_psnr_stats,
-              log_likelihood_stats, target_bitrate, actual_bitrate);
+              log_likelihood_stats, qp_stats, target_bitrate, actual_bitrate);
 }
 
 void BitstreamQualityMetrics::WriteToConsole(
@@ -444,6 +473,7 @@ void BitstreamQualityMetrics::WriteToConsole(
     const BitstreamQualityMetrics::QualityStats& ssim_stats,
     const BitstreamQualityMetrics::QualityStats& bottom_row_psnr_stats,
     const BitstreamQualityMetrics::QualityStats& log_likelihood_stats,
+    const BitstreamQualityMetrics::QualityStats& qp_stats,
     uint32_t target_bitrate,
     uint32_t actual_bitrate) const {
   const auto default_ssize = std::cout.precision();
@@ -485,6 +515,10 @@ void BitstreamQualityMetrics::WriteToConsole(
             << log_likelihood_stats.percentile_50 << std::endl;
   std::cout << "Log likelihood ratio - percentile 75: "
             << log_likelihood_stats.percentile_75 << std::endl;
+  std::cout << "QP - average:       " << qp_stats.avg << std::endl;
+  std::cout << "QP - percentile 25: " << qp_stats.percentile_25 << std::endl;
+  std::cout << "QP - percentile 50: " << qp_stats.percentile_50 << std::endl;
+  std::cout << "QP - percentile 75: " << qp_stats.percentile_75 << std::endl;
   std::cout.precision(default_ssize);
 }
 
@@ -494,6 +528,7 @@ void BitstreamQualityMetrics::WriteToFile(
     const BitstreamQualityMetrics::QualityStats& ssim_stats,
     const BitstreamQualityMetrics::QualityStats& bottom_row_psnr_stats,
     const BitstreamQualityMetrics::QualityStats& log_likelihood_stats,
+    const BitstreamQualityMetrics::QualityStats& qp_stats,
     uint32_t target_bitrate,
     uint32_t actual_bitrate) const {
   base::FilePath output_folder_path = base::FilePath(g_env->OutputFolder());
@@ -535,6 +570,13 @@ void BitstreamQualityMetrics::WriteToFile(
     log_likelihood_values.Append(value);
   }
   metrics.Set("LogLikelihoodRatioValues", std::move(log_likelihood_values));
+
+  // Write QP values to json.
+  base::Value::List qp_values;
+  for (double value : qp_stats.values_in_order) {
+    qp_values.Append(value);
+  }
+  metrics.Set("QPValues", std::move(qp_values));
 
   // Write json to file.
   std::string metrics_str;
@@ -605,6 +647,7 @@ class VideoEncoderTest : public ::testing::Test {
 
  protected:
   raw_ptr<PerformanceEvaluator> performance_evaluator_;
+  raw_ptr<DecoderBufferValidator> decoder_buffer_validator_;
   std::vector<BitstreamQualityMetrics> quality_metrics_;
 
  private:
@@ -613,7 +656,8 @@ class VideoEncoderTest : public ::testing::Test {
       const gfx::Rect& visible_rect,
       const absl::optional<size_t>& spatial_layer_index_to_decode,
       const absl::optional<size_t>& temporal_layer_index_to_decode,
-      const std::vector<gfx::Size>& spatial_layer_resolutions) {
+      const std::vector<gfx::Size>& spatial_layer_resolutions,
+      DecoderBufferValidator* const decoder_buffer_validator) {
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors;
     VideoFrameValidator::GetModelFrameCB get_model_frame_cb =
         base::BindRepeating(&VideoEncoderTest::GetModelFrame,
@@ -645,7 +689,8 @@ class VideoEncoderTest : public ::testing::Test {
     quality_metrics_.push_back(BitstreamQualityMetrics(
         psnr_validator.get(), ssim_validator.get(),
         bottom_row_psnr_validator.get(), log_likelihood_validator.get(),
-        spatial_layer_index_to_decode, temporal_layer_index_to_decode));
+        decoder_buffer_validator, spatial_layer_index_to_decode,
+        temporal_layer_index_to_decode));
     video_frame_processors.push_back(std::move(ssim_validator));
     video_frame_processors.push_back(std::move(psnr_validator));
     video_frame_processors.push_back(std::move(bottom_row_psnr_validator));
@@ -678,14 +723,19 @@ class VideoEncoderTest : public ::testing::Test {
       return bitstream_processors;
     }
 
+    auto decoder_buffer_validator = DecoderBufferValidator::Create(
+        profile, gfx::Rect(video->Resolution()),
+        spatial_layers.empty() ? 1u : spatial_layers.size(),
+        spatial_layers.empty() ? 1u : spatial_layers[0].num_of_temporal_layers);
+    decoder_buffer_validator_ = decoder_buffer_validator.get();
+    bitstream_processors.push_back(std::move(decoder_buffer_validator));
     if (spatial_layers.empty()) {
       // Simple stream encoding.
       bitstream_processors.push_back(CreateBitstreamValidator(
           profile, gfx::Rect(video->Resolution()),
           /*spatial_layer_index_to_decode=*/absl::nullopt,
           /*temporal_layer_index_to_decode=*/absl::nullopt,
-          /*spatial_layer_resolutions=*/{}));
-      LOG_ASSERT(!!bitstream_processors.back());
+          /*spatial_layer_resolutions=*/{}, decoder_buffer_validator_));
     } else {
       // Temporal/Spatial layer encoding.
       std::vector<gfx::Size> spatial_layer_resolutions;
@@ -697,12 +747,11 @@ class VideoEncoderTest : public ::testing::Test {
              ++tid) {
           bitstream_processors.push_back(CreateBitstreamValidator(
               profile, gfx::Rect(spatial_layer_resolutions[sid]), sid, tid,
-              spatial_layer_resolutions));
-          LOG_ASSERT(!!bitstream_processors.back());
+              spatial_layer_resolutions, decoder_buffer_validator_));
         }
       }
     }
-
+    LOG_ASSERT(!base::Contains(bitstream_processors, nullptr));
     return bitstream_processors;
   }
 

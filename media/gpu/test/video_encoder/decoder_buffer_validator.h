@@ -21,10 +21,14 @@ namespace media {
 class DecoderBuffer;
 
 namespace test {
+
 class DecoderBufferValidator : public BitstreamProcessor {
  public:
-  DecoderBufferValidator(const gfx::Rect& visible_rect,
-                         size_t num_temporal_layers);
+  static std::unique_ptr<DecoderBufferValidator> Create(
+      VideoCodecProfile profile,
+      const gfx::Rect& visible_rect,
+      size_t num_spatial_layers,
+      size_t num_temporal_layers);
   ~DecoderBufferValidator() override;
 
   // BitstreamProcessor implementation.
@@ -32,7 +36,18 @@ class DecoderBufferValidator : public BitstreamProcessor {
                         size_t frame_index) override;
   bool WaitUntilDone() override;
 
+  const std::vector<int>& GetQPValues(size_t spatial_idx,
+                                      size_t temporal_idx) const {
+    return qp_values_[spatial_idx][temporal_idx];
+  }
+
  protected:
+  static constexpr size_t kMaxTemporalLayers = 3;
+  static constexpr size_t kMaxSpatialLayers = 3;
+
+  DecoderBufferValidator(const gfx::Rect& visible_rect,
+                         size_t num_temporal_layers);
+
   // Returns true if decoder_buffer is valid and expected, otherwise false.
   virtual bool Validate(const DecoderBuffer& decoder_buffer,
                         const BitstreamBufferMetadata& metadata) = 0;
@@ -41,6 +56,8 @@ class DecoderBufferValidator : public BitstreamProcessor {
   const gfx::Rect visible_rect_;
   // The number of temporal layers.
   const size_t num_temporal_layers_;
+
+  std::vector<int> qp_values_[kMaxSpatialLayers][kMaxTemporalLayers];
 
  private:
   // The number of detected errors by Validate().
