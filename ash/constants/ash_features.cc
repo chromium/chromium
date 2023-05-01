@@ -1739,6 +1739,11 @@ BASE_FEATURE(kPrinterSettingsRevamp,
              "PrinterSettingsRevamp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables showing printer status on the OS Printer Settings UI.
+BASE_FEATURE(kPrinterSettingsPrinterStatus,
+             "PrinterSettingsPrinterStatus",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables to allocate more video capture buffers.
 BASE_FEATURE(kMoreVideoCaptureBuffers,
              "MoreVideoCaptureBuffers",
@@ -3180,6 +3185,10 @@ bool IsPinAutosubmitBackfillFeatureEnabled() {
 
 bool IsPinAutosubmitFeatureEnabled() {
   return base::FeatureList::IsEnabled(kQuickUnlockPinAutosubmit);
+}
+
+bool IsPrinterSettingsPrinterStatusEnabled() {
+  return base::FeatureList::IsEnabled(kPrinterSettingsPrinterStatus);
 }
 
 bool IsPrinterSettingsRevampEnabled() {

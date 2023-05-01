@@ -6194,6 +6194,13 @@
     "expiry_milestone": 122
   },
   {
+    "name": "printer-settings-printer-status",
+    "owners": [
+      "//ash/webui/print_management/OWNERS"
+    ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "printer-settings-revamp",
     "owners": [
       "//ash/webui/print_management/OWNERS"
