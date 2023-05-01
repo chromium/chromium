@@ -197,8 +197,8 @@ bool HighEfficiencyChipView::ShouldHighlightMemorySavingsWithExpandedChip(
           PreDiscardResourceUsage::FromWebContents(GetWebContents());
   bool const tab_discard_time_over_threshold =
       pre_discard_resource_usage &&
-      (base::TimeTicks::Now() -
-       pre_discard_resource_usage->discard_timetick()) >
+      (base::LiveTicks::Now() -
+       pre_discard_resource_usage->discard_liveticks()) >
           performance_manager::features::
               kExpandedHighEfficiencyChipDiscardedDuration.Get();
 

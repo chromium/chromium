@@ -146,7 +146,7 @@ UserPerformanceTuningManager::PreDiscardResourceUsage::PreDiscardResourceUsage(
     : content::WebContentsUserData<PreDiscardResourceUsage>(*contents),
       memory_footprint_estimate_(memory_footprint_estimate),
       discard_reason_(discard_reason),
-      discard_timetick_(base::TimeTicks::Now()) {}
+      discard_liveticks_(base::LiveTicks::Now()) {}
 
 UserPerformanceTuningManager::PreDiscardResourceUsage::
     ~PreDiscardResourceUsage() = default;

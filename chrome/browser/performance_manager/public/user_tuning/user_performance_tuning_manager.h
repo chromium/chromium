@@ -124,7 +124,7 @@ class UserPerformanceTuningManager
       return discard_reason_;
     }
 
-    base::TimeTicks discard_timetick() const { return discard_timetick_; }
+    base::LiveTicks discard_liveticks() const { return discard_liveticks_; }
 
    private:
     friend WebContentsUserData;
@@ -132,7 +132,7 @@ class UserPerformanceTuningManager
 
     uint64_t memory_footprint_estimate_ = 0;
     ::mojom::LifecycleUnitDiscardReason discard_reason_;
-    base::TimeTicks discard_timetick_;
+    base::LiveTicks discard_liveticks_;
   };
 
   // Returns whether a UserPerformanceTuningManager was created and installed.
