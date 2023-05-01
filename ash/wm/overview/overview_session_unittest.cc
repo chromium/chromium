@@ -795,11 +795,7 @@ TEST_P(OverviewSessionTest, CloseButtonOnMultipleDisplay) {
 }
 
 // Tests entering overview mode with two windows and selecting one.
-// TODO(crbug.com/1323145): Flaky.
-TEST_P(OverviewSessionTest, DISABLED_FullscreenWindow) {
-  ui::ScopedAnimationDurationScaleMode anmatin_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
+TEST_P(OverviewSessionTest, FullscreenWindow) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   wm::ActivateWindow(window1.get());
@@ -810,34 +806,20 @@ TEST_P(OverviewSessionTest, DISABLED_FullscreenWindow) {
 
   // Enter overview and select the fullscreen window.
   ToggleOverview();
-  WaitForOverviewEnterAnimation();
-  CheckOverviewEnterExitHistogram("FullscreenWindowEnter1", {0, 1, 0, 0, 0},
-                                  {0, 0, 0, 0, 0});
   ClickWindow(window1.get());
-  WaitForOverviewExitAnimation();
+  ASSERT_FALSE(InOverviewSession());
   EXPECT_TRUE(WindowState::Get(window1.get())->IsFullscreen());
-  CheckOverviewEnterExitHistogram("FullscreenWindowExit1", {0, 1, 0, 0, 0},
-                                  {0, 1, 0, 0, 0});
 
   // Entering overview and selecting another window, the previous window remains
   // fullscreen.
   ToggleOverview();
-  WaitForOverviewEnterAnimation();
-  CheckOverviewEnterExitHistogram("FullscreenWindowEnter2", {0, 2, 0, 0, 0},
-                                  {0, 1, 0, 0, 0});
   ClickWindow(window2.get());
-  WaitForOverviewExitAnimation();
+  EXPECT_FALSE(InOverviewSession());
   EXPECT_TRUE(WindowState::Get(window1.get())->IsFullscreen());
-  CheckOverviewEnterExitHistogram("FullscreenWindowExit2", {0, 2, 0, 0, 0},
-                                  {1, 1, 0, 0, 0});
 }
 
 // Tests entering overview mode with maximized window.
-// TODO(crbug.com/1325386): Flaky.
-TEST_P(OverviewSessionTest, DISABLED_MaximizedWindow) {
-  ui::ScopedAnimationDurationScaleMode anmatin_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
+TEST_P(OverviewSessionTest, MaximizedWindow) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   wm::ActivateWindow(window1.get());
@@ -846,26 +828,58 @@ TEST_P(OverviewSessionTest, DISABLED_MaximizedWindow) {
   WindowState::Get(window1.get())->OnWMEvent(&maximize_event);
   EXPECT_TRUE(WindowState::Get(window1.get())->IsMaximized());
 
-  // Enter overview and select the fullscreen window.
+  // Enter overview and select the maximized window.
+  ToggleOverview();
+  ClickWindow(window1.get());
+  ASSERT_FALSE(InOverviewSession());
+  EXPECT_TRUE(WindowState::Get(window1.get())->IsMaximized());
+
+  ToggleOverview();
+  ClickWindow(window2.get());
+  EXPECT_FALSE(InOverviewSession());
+  EXPECT_TRUE(WindowState::Get(window1.get())->IsMaximized());
+}
+
+// Tests the animation histograms when entering and exiting overview with a
+// maximized and fullscreen window.
+// TODO(b/252523767): Reenable this test.
+TEST_P(OverviewSessionTest, DISABLED_MaximizedFullscreenHistograms) {
+  std::unique_ptr<aura::Window> maximized_window(CreateTestWindow());
+  std::unique_ptr<aura::Window> fullscreen_window(CreateTestWindow());
+
+  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  WindowState::Get(maximized_window.get())->OnWMEvent(&maximize_event);
+  ASSERT_TRUE(WindowState::Get(maximized_window.get())->IsMaximized());
+
+  const WMEvent toggle_fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
+  WindowState::Get(fullscreen_window.get())
+      ->OnWMEvent(&toggle_fullscreen_event);
+  ASSERT_TRUE(WindowState::Get(fullscreen_window.get())->IsFullscreen());
+
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Enter and exit overview with the maximized window activated.
+  wm::ActivateWindow(maximized_window.get());
   ToggleOverview();
   WaitForOverviewEnterAnimation();
   CheckOverviewEnterExitHistogram("MaximizedWindowEnter1", {0, 1, 0, 0, 0},
                                   {0, 0, 0, 0, 0});
-  ClickWindow(window1.get());
+  ToggleOverview();
   WaitForOverviewExitAnimation();
-  EXPECT_TRUE(WindowState::Get(window1.get())->IsMaximized());
   CheckOverviewEnterExitHistogram("MaximizedWindowExit1", {0, 1, 0, 0, 0},
                                   {0, 1, 0, 0, 0});
 
+  // Enter and exit overview with the fullscreen window activated.
+  wm::ActivateWindow(fullscreen_window.get());
   ToggleOverview();
   WaitForOverviewEnterAnimation();
-  CheckOverviewEnterExitHistogram("MaximizedWindowEnter2", {0, 2, 0, 0, 0},
+  CheckOverviewEnterExitHistogram("FullscreenWindowEnter1", {0, 2, 0, 0, 0},
                                   {0, 1, 0, 0, 0});
-  ClickWindow(window2.get());
+  ToggleOverview();
   WaitForOverviewExitAnimation();
-  EXPECT_TRUE(WindowState::Get(window1.get())->IsMaximized());
-  CheckOverviewEnterExitHistogram("MaximizedWindowExit2", {0, 2, 0, 0, 0},
-                                  {1, 1, 0, 0, 0});
+  CheckOverviewEnterExitHistogram("FullscreenWindowExit1", {0, 2, 0, 0, 0},
+                                  {0, 2, 0, 0, 0});
 }
 
 TEST_P(OverviewSessionTest, TabletModeHistograms) {
