@@ -6586,14 +6586,16 @@ const char kExperimentalWebAppProfileIsolationName[] =
     "Enable experimental web app profile isolation";
 const char kExperimentalWebAppProfileIsolationDescription[] =
     "This is a highly experimental feature to isolate a web app with a "
-    "dedicated profile. Enabling this flag could break things. And a factory"
+    "dedicated profile. ExperimentalWebAppStoragePartitionIsolation is ignored "
+    "if this flag is on. Enabling this flag could break things. And a factory "
     "reset might be needed to fully recover the state.";
 
 const char kExperimentalWebAppStoragePartitionIsolationName[] =
     "Enable experimental web app stroage partition isolation";
 const char kExperimentalWebAppStoragePartitionIsolationDescription[] =
-    "This is highly experimental. Enabling this flag could break things. And a "
-    "factory reset might be needed to fully recover the state.";
+    "Ignored if ExperimentalWebAppProfileIsolation is on. This is highly "
+    "experimental. Enabling this flag could break things. And a factory reset"
+    "might be needed to fully recover the state.";
 
 const char kLacrosAuraCaptureName[] = "Enable Lacros Aura Capture";
 const char kLacrosAuraCaptureDescription[] =

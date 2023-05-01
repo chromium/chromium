@@ -153,6 +153,16 @@ bool IsMainProfileCheckSkippedForTesting();
 // Generates an appropriate path for a new web app profile. This does not create
 // the profile.
 base::FilePath GenerateWebAppProfilePath(const AppId& app_id);
+
+enum class ExperimentalWebAppIsolationMode {
+  kDisabled,
+  kStoragePartition,
+  kProfile,
+};
+
+// Get the experimental web app isolation mode. Prefer using this instead of
+// using the flag directly since this respects the precedence of the flags.
+ExperimentalWebAppIsolationMode ResolveExperimentalWebAppIsolationFeature();
 #endif
 
 constexpr char kAppSettingsPageEntryPointsHistogramName[] =

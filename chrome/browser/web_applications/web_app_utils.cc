@@ -320,8 +320,8 @@ bool AreWebAppsEnabled(const Profile* profile) {
   // * the testing condition is set
   // * it is an app profile.
   if (!(profile->IsMainProfile() || g_skip_main_profile_check_for_testing ||
-        (base::FeatureList::IsEnabled(
-             chromeos::features::kExperimentalWebAppProfileIsolation) &&
+        (ResolveExperimentalWebAppIsolationFeature() ==
+             ExperimentalWebAppIsolationMode::kProfile &&
          Profile::IsWebAppProfilePath(profile->GetPath())))) {
     return false;
   }
@@ -524,8 +524,8 @@ bool IsMainProfileCheckSkippedForTesting() {
 }
 
 base::FilePath GenerateWebAppProfilePath(const std::string& app_id) {
-  CHECK(base::FeatureList::IsEnabled(
-      chromeos::features::kExperimentalWebAppProfileIsolation));
+  CHECK(ResolveExperimentalWebAppIsolationFeature() ==
+        ExperimentalWebAppIsolationMode::kProfile);
   auto* profile_manager = g_browser_process->profile_manager();
   const base::FilePath& user_data_dir = profile_manager->user_data_dir();
 
@@ -551,6 +551,19 @@ base::FilePath GenerateWebAppProfilePath(const std::string& app_id) {
 
   // Reaching here is extremely unlikely. Something else must be wrong.
   NOTREACHED_NORETURN();
+}
+
+ExperimentalWebAppIsolationMode ResolveExperimentalWebAppIsolationFeature() {
+  // Profile isolation takes precedence.
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kExperimentalWebAppProfileIsolation)) {
+    return ExperimentalWebAppIsolationMode::kProfile;
+  }
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kExperimentalWebAppStoragePartitionIsolation)) {
+    return ExperimentalWebAppIsolationMode::kStoragePartition;
+  }
+  return ExperimentalWebAppIsolationMode::kDisabled;
 }
 #endif
 

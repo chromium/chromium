@@ -1047,8 +1047,8 @@ void WebAppPublisherHelper::LaunchAppWithParams(
       std::move(on_complete));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kExperimentalWebAppProfileIsolation)) {
+  if (ResolveExperimentalWebAppIsolationFeature() ==
+      ExperimentalWebAppIsolationMode::kProfile) {
     WebAppRegistrar& registrar = provider_->registrar_unsafe();
     const WebApp* web_app = registrar.GetAppById(params.app_id);
     const auto& chromeos_data = web_app->chromeos_data();

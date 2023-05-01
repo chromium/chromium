@@ -27,7 +27,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
@@ -138,8 +138,8 @@ void WebAppUninstallJob::Start(
                               weak_ptr_factory_.GetWeakPtr()));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kExperimentalWebAppProfileIsolation) &&
+  if (ResolveExperimentalWebAppIsolationFeature() ==
+          ExperimentalWebAppIsolationMode::kProfile &&
       app_profile_path.has_value()) {
     CHECK(Profile::IsWebAppProfilePath(app_profile_path.value()));
     auto* profile_manager = g_browser_process->profile_manager();
