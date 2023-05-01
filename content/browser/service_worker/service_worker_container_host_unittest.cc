@@ -517,6 +517,11 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CorrectStorageKey) {
   const GURL url3("https://origin3.example.com/sw.js");
   const blink::StorageKey key3 =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url3));
+  const GURL url4("https://origin3.example.com/sw.js");
+  const GURL url4_top_level_site("https://other.com/");
+  const blink::StorageKey key4 = blink::StorageKey::Create(
+      url::Origin::Create(url4), net::SchemefulSite(url4_top_level_site),
+      blink::mojom::AncestorChainBit::kCrossSite, true);
 
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
       CreateContainerHost(url1);
@@ -532,6 +537,10 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CorrectStorageKey) {
   container_host_for_service_worker->UpdateUrls(url3, url::Origin::Create(url3),
                                                 key3);
   EXPECT_EQ(key3, container_host_for_service_worker->key());
+
+  container_host_for_service_worker->UpdateUrls(
+      url4, url::Origin::Create(url4_top_level_site), key4);
+  EXPECT_EQ(key4, container_host_for_service_worker->key());
 }
 
 TEST_F(ServiceWorkerContainerHostTest,
