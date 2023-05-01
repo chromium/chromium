@@ -53,7 +53,7 @@ testcase.fileDisplayLaunchOnLocalFolder = async () => {
       {name: 'launchAppOnLocalFolder', localPath: 'Downloads/photos'});
 
   // Wait for app window to open.
-  const appId = await remoteCall.waitForWindow('files#');
+  const appId = await remoteCall.waitForWindow();
 
   // Check: The current directory is MyFiles/Downloads/photos.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
@@ -78,7 +78,7 @@ testcase.fileDisplayLaunchOnLocalFile = async () => {
       {name: 'showItemInFolder', localPath: 'Downloads/hello.txt'});
 
   // Wait for app window to open.
-  const appId = await remoteCall.waitForWindow('files#');
+  const appId = await remoteCall.waitForWindow();
 
   // Check: The current directory is MyFiles/Downloads.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
@@ -103,7 +103,7 @@ testcase.fileDisplayLaunchOnDrive = async () => {
   await sendTestMessage({name: 'launchAppOnDrive'});
 
   // Wait for app window to open.
-  const appId = await remoteCall.waitForWindow('files#');
+  const appId = await remoteCall.waitForWindow();
 
   // Check: the app should be open on My Drive.
   await remoteCall.waitForElement(
@@ -204,7 +204,7 @@ testcase.fileDisplayDriveOnlineNewWindow = async () => {
   await sendTestMessage({name: 'launchAppOnDrive'});
 
   // Wait for app window to open.
-  const appId = await remoteCall.waitForWindow('files#');
+  const appId = await remoteCall.waitForWindow();
 
   // Wait for Files app to finish loading.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);

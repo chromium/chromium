@@ -131,24 +131,25 @@ export class RemoteCall {
   }
 
   /**
-   * Waits until a window having the given ID prefix appears.
-   * @param {string} windowIdPrefix ID prefix of the requested window.
-   * @return {!Promise<string>} promise Promise to be fulfilled with a found
-   *     window's ID.
+   * Wait for a SWA window to be open.
+   * @param {boolean=} debug Whether to debug the findSwaWindow.
+   * @return {!Promise<string>}
    */
-  waitForWindow(windowIdPrefix) {
+  async waitForWindow(debug = false) {
     const caller = getCaller();
-    const windowIdRegex = new RegExp(windowIdPrefix);
-    return repeatUntil(async () => {
-      const windows = await this.callRemoteTestUtil('getWindows', null, []);
-      for (const id in windows) {
-        if (id.indexOf(windowIdPrefix) === 0 || windowIdRegex.test(id)) {
-          return id;
-        }
+    const appId = await repeatUntil(async () => {
+      const msg = {name: 'findSwaWindow'};
+      if (debug) {
+        msg['debug'] = true;
       }
-      return pending(
-          caller, 'Window with the prefix %s is not found.', windowIdPrefix);
+      const ret = await sendTestMessage(msg);
+      if (ret === 'none') {
+        return pending(caller, 'Wait for SWA window');
+      }
+      return ret;
     });
+
+    return appId;
   }
 
   /**
@@ -489,30 +490,8 @@ export class RemoteCallFilesApp extends RemoteCall {
     });
   }
 
-  /** @override */
-  async waitForWindow(windowIdPrefix) {
-    return this.waitForSwaWindow();
-  }
-
   async getWindows() {
     return JSON.parse(await sendTestMessage({name: 'getWindows'}));
-  }
-
-  /**
-   * Wait for a SWA window to be open.
-   * @return {!Promise<string>}
-   */
-  async waitForSwaWindow() {
-    const caller = getCaller();
-    const appId = await repeatUntil(async () => {
-      const ret = await sendTestMessage({name: 'findSwaWindow'});
-      if (ret === 'none') {
-        return pending(caller, 'Wait for SWA window');
-      }
-      return ret;
-    });
-
-    return appId;
   }
 
   /**

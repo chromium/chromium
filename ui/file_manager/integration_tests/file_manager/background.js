@@ -157,12 +157,13 @@ export async function pollForChosenEntry(caller) {
  *     dialog.
  * @param {boolean} useBrowserOpen Whether to launch the select file dialog via
  *     a browser OpenFile() call.
+ * @param {boolean=} debug Whether to debug the waitForWindow().
  * @return {Promise} Promise to be fulfilled with the result entry of the
  *     dialog.
  */
 export async function openAndWaitForClosingDialog(
-    dialogParams, volumeName, expectedSet, closeDialog,
-    useBrowserOpen = false) {
+    dialogParams, volumeName, expectedSet, closeDialog, useBrowserOpen = false,
+    debug = false) {
   const caller = getCaller();
   let resultPromise;
   if (useBrowserOpen) {
@@ -172,7 +173,7 @@ export async function openAndWaitForClosingDialog(
     resultPromise = pollForChosenEntry(caller);
   }
 
-  const appId = await remoteCall.waitForWindow('dialog#');
+  const appId = await remoteCall.waitForWindow(debug);
   await remoteCall.waitForElement(appId, '#file-list');
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
   chrome.test.assertTrue(

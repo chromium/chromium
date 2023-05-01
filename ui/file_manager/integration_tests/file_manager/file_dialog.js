@@ -266,7 +266,7 @@ async function openFileDialogSendEscapeKey(volume, name) {
  * @returns {!Promise<string>} dialog's id.
  */
 export async function waitForDialog() {
-  const dialog = await remoteCall.waitForWindow('dialog#');
+  const dialog = await remoteCall.waitForWindow();
 
   // Wait for Files app to finish loading.
   await remoteCall.waitFor('isFileManagerLoaded', dialog, true);
@@ -999,7 +999,7 @@ testcase.openFileDialogGuestOs = async () => {
   await openEntryChoosingWindow({type: 'openFile'});
 
   // Wait for the dialog to be fully loaded.
-  const appId = await remoteCall.waitForWindow('dialog#');
+  const appId = await remoteCall.waitForWindow();
   await remoteCall.waitForElement(appId, '#file-list');
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
@@ -1031,7 +1031,7 @@ testcase.saveFileDialogGuestOs = async () => {
   await openEntryChoosingWindow({type: 'saveFile'});
 
   // Wait for the dialog to be fully loaded.
-  const appId = await remoteCall.waitForWindow('dialog#');
+  const appId = await remoteCall.waitForWindow();
   await remoteCall.waitForElement(appId, '#file-list');
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
