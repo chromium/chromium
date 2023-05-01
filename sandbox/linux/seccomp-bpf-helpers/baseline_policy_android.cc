@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <linux/android/binder.h>
 #include <linux/ashmem.h>
+#include <linux/incrementalfs.h>
 #include <linux/nbd.h>
 #include <linux/net.h>
 #include <linux/userfaultfd.h>
@@ -90,7 +91,7 @@ ResultExpr RestrictAndroidIoctl(bool allow_userfaultfd_ioctls) {
   // 64-bit systems, so handle both.
   const unsigned int kAndroidAlarmGetTimeElapsedRealtime32 = 0x40086134;
   const unsigned int kAndroidAlarmGetTimeElapsedRealtime64 = 0x40106134;
-
+  /* clang-format off */
   return Switch(request)
       .Cases({
                  // Android shared memory.
@@ -100,7 +101,11 @@ ResultExpr RestrictAndroidIoctl(bool allow_userfaultfd_ioctls) {
                  // Binder.
                  kBinderWriteRead32, kBinderWriteRead64, BINDER_SET_MAX_THREADS,
                  BINDER_THREAD_EXIT, BINDER_VERSION,
-                 BINDER_ENABLE_ONEWAY_SPAM_DETECTION},
+                 BINDER_ENABLE_ONEWAY_SPAM_DETECTION,
+                 // incfs read ops.
+                 INCFS_IOC_READ_FILE_SIGNATURE, INCFS_IOC_GET_FILLED_BLOCKS,
+                 INCFS_IOC_GET_READ_TIMEOUTS, INCFS_IOC_GET_LAST_READ_ERROR,
+                 INCFS_IOC_GET_BLOCK_COUNT, INCFS_IOC_SET_READ_TIMEOUTS},
              Allow())
       .Cases({
                  // userfaultfd ART GC (https://crbug.com/1300653).
@@ -117,6 +122,7 @@ ResultExpr RestrictAndroidIoctl(bool allow_userfaultfd_ioctls) {
                  NBD_CLEAR_SOCK, NBD_SET_BLKSIZE},
              Error(EINVAL))
       .Default(RestrictIoctl());
+  /* clang-format on */
 }
 
 }  // namespace
