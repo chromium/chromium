@@ -64,7 +64,7 @@ vfs::PseudoDir* GetWebInstancesCollectionDir(
 }
 
 // Returns an instance's name given its unique id.
-std::string InstanceNameFromId(const base::GUID& id) {
+std::string InstanceNameFromId(const base::Uuid& id) {
   return base::StrCat({kCollectionName, "_", id.AsLowercaseString()});
 }
 
@@ -85,10 +85,10 @@ void DestroyInstanceDirectory(vfs::PseudoDir* instances_dir,
 }
 
 struct Instance {
-  base::GUID id;
+  base::Uuid id;
   fuchsia::component::BinderPtr binder_ptr;
 
-  Instance(base::GUID id, fuchsia::component::BinderPtr binder_ptr)
+  Instance(base::Uuid id, fuchsia::component::BinderPtr binder_ptr)
       : id(std::move(id)), binder_ptr(std::move(binder_ptr)) {}
 };
 
@@ -147,7 +147,7 @@ class InstanceBuilder {
  private:
   InstanceBuilder(sys::OutgoingDirectory& outgoing_directory,
                   fuchsia::component::Realm& realm,
-                  base::GUID id,
+                  base::Uuid id,
                   std::string name,
                   vfs::PseudoDir* instance_dir,
                   const base::CommandLine& launch_args);
@@ -213,7 +213,7 @@ class InstanceBuilder {
 
   const raw_ref<sys::OutgoingDirectory> outgoing_directory_;
   const raw_ref<fuchsia::component::Realm> realm_;
-  const base::GUID id_;
+  const base::Uuid id_;
   const std::string name_;
   raw_ptr<vfs::PseudoDir> instance_dir_;
   base::CommandLine args_;
@@ -231,7 +231,7 @@ InstanceBuilder::Create(sys::OutgoingDirectory& outgoing_directory,
                         fuchsia::component::Realm& realm,
                         const base::CommandLine& launch_args) {
   // Pick a unique identifier for the new instance.
-  base::GUID instance_id = base::GUID::GenerateRandomV4();
+  base::Uuid instance_id = base::Uuid::GenerateRandomV4();
   auto instance_name = InstanceNameFromId(instance_id);
 
   // Create a pseudo-directory to contain the various directory capabilities
@@ -256,7 +256,7 @@ InstanceBuilder::Create(sys::OutgoingDirectory& outgoing_directory,
 
 InstanceBuilder::InstanceBuilder(sys::OutgoingDirectory& outgoing_directory,
                                  fuchsia::component::Realm& realm,
-                                 base::GUID id,
+                                 base::Uuid id,
                                  std::string name,
                                  vfs::PseudoDir* instance_dir,
                                  const base::CommandLine& launch_args)
@@ -694,7 +694,7 @@ void WebInstanceHost::OnRealmError(zx_status_t status) {
   Uninitialize();
 }
 
-void WebInstanceHost::OnComponentBinderClosed(const base::GUID& id,
+void WebInstanceHost::OnComponentBinderClosed(const base::Uuid& id,
                                               zx_status_t status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

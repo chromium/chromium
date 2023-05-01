@@ -15,10 +15,10 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
+#include "base/uuid.h"
 #include "fuchsia_web/webinstance_host/fuchsia_web_debug_proxy.h"
 
 namespace fuchsia::io {
@@ -93,7 +93,7 @@ class WebInstanceHost {
   void OnRealmError(zx_status_t status);
 
   // Error handler for the channel to an instance's Binder.
-  void OnComponentBinderClosed(const base::GUID& id, zx_status_t status);
+  void OnComponentBinderClosed(const base::Uuid& id, zx_status_t status);
 
   // The directory via which directory capabilities are dynamically provided to
   // child instances.
@@ -106,7 +106,7 @@ class WebInstanceHost {
 
   // A mapping of child instance GUID to the child's Binder interface, by which
   // child instance shutdown is observed.
-  base::flat_map<base::GUID, fidl::InterfacePtr<fuchsia::component::Binder>>
+  base::flat_map<base::Uuid, fidl::InterfacePtr<fuchsia::component::Binder>>
       instances_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Implements the fuchsia.web.Debug API across all instances.
