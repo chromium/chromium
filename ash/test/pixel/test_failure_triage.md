@@ -1,5 +1,8 @@
 # Ash Pixel Unit Testing: Test Failure Triage
 
+TL;DR: If you made a UI change that you expect to change ash_pixeltests, you
+need to increment the revision number of the test by 1 in the C++ test source.
+
 ## 1. Introduction
 
 `ash_pixeltests` is the test suite of image-based testing. If your CL breaks
@@ -8,20 +11,22 @@ but not limited to colors or view locations) and generates the screenshots
 different from the benchmark images. This doc teaches you how to handle
 `ash_pixeltests` failure.
 
+If you have any questions, please reach out to //ash/test/pixel/OWNERS.
+
 ## 2. Finding Failed Tests
 
 When `ash_pixeltests` is broken, the Gerrit review UI will display a redbox with
 the message "X untriaged, Y new images on patchset Z". For example:
 
-|    ![Alt](markdown_resources/triage_intro/fig1.png)    |
+|    ![Alt](markdown_resources/triage_intro/gold_ui.png)    |
 | :---------------------------------------: |
 | Fig 1: the red box |
 
-To view the details of the failed tests, click on the redbox. This will open a
-list of records, each of which corresponds to a failed test. Here is one example
-record:
+To view the details of the failed tests, click on the redbox. This will
+open a list of records, each of which corresponds to a failed test. Here
+is one example record:
 
-|    ![Alt](markdown_resources/triage_intro/fig2.png)    |
+|    ![Alt](markdown_resources/triage_intro/failure_digest.png)    |
 | :---------------------------------------: |
 | Fig 2: an example record |
 
@@ -33,9 +38,9 @@ your CL breaks. In the example record, the benchmark image name is
 DemoAshPixelDiffTest.VerifyTopLevelWidgets.check_widgets.rev_1.ash.
 
 There are always three images in a record. The images from left to right are:
-- the new screenshot
-- the image difference
-- the original benchmark image.
+- The new screenshot
+- The image difference
+- The original benchmark image.
 
 If the new screenshot seems wrong to you, the pixel test could catch a bug in
 your CL.
@@ -102,9 +107,3 @@ EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
 The only difference in the pixel test code should be the revision number.
 
 Submit your new CL and wait for LGTM from the test owner.
-
-## 5. Conclusion
-
-This document has provided instructions on how to handle `ash_pixeltests`
-failures. If you have any questions, please reach out to
-//ash/test/pixel/OWNERS.
