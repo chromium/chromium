@@ -295,6 +295,33 @@ crbug.com/1243128 [ Win ] external/wpt/html/canvas/element/wide-gamut-canvas/2d.
 crbug.com/1170337 [ Mac10.13 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.zero.worker.html [ Skip Timeout ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-inherit-rtl.html [ Failure ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-rtl.html [ Failure ]
+# Canvas 2d layers with shadow and globalcompositeoperation.
+# Composite operations.
+crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.global-states.alpha.composite.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.global-states.filter.alpha.composite.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.global-states.filter.composite.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.global-states.composite.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.alpha.composite.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.composite.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.composite.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.alpha.composite.shadow.w.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.composite.shadow.w.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite.shadow.w.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.composite.shadow.w.html [ Failure ]
+# Blending operations.
+crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.global-states.alpha.blending.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.global-states.filter.alpha.blending.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.global-states.filter.blending.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.global-states.blending.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.alpha.blending.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.blending.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.blending.shadow.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.alpha.blending.shadow.w.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.blending.shadow.w.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.shadow.w.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.blending.shadow.w.html [ Failure ]
 
 # Off by one pixel error on ref test
 crbug.com/1259367 [ Mac ] printing/offscreencanvas-webgl-printing.html [ Failure ]

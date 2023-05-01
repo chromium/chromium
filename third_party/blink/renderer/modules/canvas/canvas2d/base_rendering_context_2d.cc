@@ -8,6 +8,7 @@
 #include <cmath>
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -25,14 +26,16 @@
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_color_cache.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_operation_resolver.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/v8_canvas_style.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
@@ -184,7 +187,9 @@ void BaseRenderingContext2D::pushLayerStack(
       std::max(state_stack_.size(), max_state_stack_depth_);
 }
 
-void BaseRenderingContext2D::beginLayer() {
+void BaseRenderingContext2D::beginLayer(ExecutionContext* execution_context,
+                                        const V8CanvasFilterInput* filter_init,
+                                        ExceptionState& exception_state) {
   if (UNLIKELY(isContextLost())) {
     return;
   }
@@ -204,41 +209,53 @@ void BaseRenderingContext2D::beginLayer() {
 
   layer_count_++;
 
-  using SaveType = CanvasRenderingContext2DState::SaveType;
-  const int initial_save_count = canvas->getSaveCount();
-  SaveType save_type = SaveType::kBeginEndLayer;
-  bool composite_op_handled = false;
+  sk_sp<PaintFilter> paint_filter;
+  if (filter_init != nullptr) {
+    FilterEffectBuilder filter_effect_builder(
+        gfx::RectF(Width(), Height()),
+        1.0f);  // Deliberately ignore zoom on the canvas element.
+    paint_filter = paint_filter_builder::Build(
+        filter_effect_builder.BuildFilterEffect(
+            CanvasFilterOperationResolver::CreateFilterOperations(
+                CHECK_DEREF(filter_init), CHECK_DEREF(execution_context),
+                exception_state),
+            !OriginClean()),
+        kInterpolationSpaceSRGB);
+  }
 
-  // For alpha and shadows (which include filters because they can also produce
-  // shadows), we must use two nested layers. The inner one applies the alpha
-  // and the outer one applies the shadow/filter. This is needed to to get a
-  // transparent shadow foreground, as the alpha would otherwise be applied to
-  // the result of foreground+shadow.
-  if (GetState().ShouldDrawShadows() || StateHasFilter()) {
+  using SaveType = CanvasRenderingContext2DState::SaveType;
+  SaveType save_type = SaveType::kBeginEndLayer;
+  const int initial_save_count = canvas->getSaveCount();
+  bool needs_compositing =
+      GetState().GlobalComposite() != SkBlendMode::kSrcOver;
+
+  // Global states must be applied on the result of the layer's filter.
+  // For alpha + shadows or compositing, we must use two nested layers. The
+  // inner one applies the alpha and the outer one applies the shadow and/or
+  // compositing. This is needed to to get a transparent foreground, as the
+  // alpha would otherwise be applied to the result of foreground+background.
+  if (GetState().ShouldDrawShadows() ||
+      BlendModeRequiresCompositedDraw(GetState().GlobalComposite())) {
     pushLayerStack(save_type);
     save_type = SaveType::kInternalLayer;
 
     cc::PaintFlags flags;
     flags.setBlendMode(GetState().GlobalComposite());
-    composite_op_handled = true;
-
-    if (GetState().ShouldDrawShadows() && StateHasFilter()) {
-      flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
-          GetState().ShadowAndForegroundImageFilter(), StateGetFilter()));
-    } else if (GetState().ShouldDrawShadows()) {
+    needs_compositing = false;
+    if (GetState().ShouldDrawShadows()) {
       flags.setImageFilter(GetState().ShadowAndForegroundImageFilter());
-    } else if (StateHasFilter()) {
-      flags.setImageFilter(StateGetFilter());
     }
     canvas->saveLayer(flags);
   }
 
-  if (GetState().GlobalComposite() != SkBlendMode::kSrcOver &&
-      !composite_op_handled) {
+  if (paint_filter || needs_compositing) {
     pushLayerStack(save_type);
     cc::PaintFlags flags;
-    flags.setBlendMode(GetState().GlobalComposite());
     flags.setAlphaf(static_cast<float>(globalAlpha()));
+    flags.setImageFilter(std::move(paint_filter));
+    if (needs_compositing) {
+      flags.setBlendMode(GetState().GlobalComposite());
+    }
     canvas->saveLayer(flags);
   } else if (globalAlpha() != 1 ||
              initial_save_count == canvas->getSaveCount()) {
@@ -256,9 +273,8 @@ void BaseRenderingContext2D::beginLayer() {
   DCHECK(!GetState().ShouldDrawShadows());
   setGlobalAlpha(1.0);
   setGlobalCompositeOperation("source-over");
-  V8UnionCanvasFilterOrString* filter =
-      MakeGarbageCollected<V8UnionCanvasFilterOrString>("none");
-  setFilter(GetTopExecutionContext(), filter);
+  setFilter(GetTopExecutionContext(),
+            MakeGarbageCollected<V8UnionCanvasFilterOrString>("none"));
 }
 
 void BaseRenderingContext2D::endLayer() {

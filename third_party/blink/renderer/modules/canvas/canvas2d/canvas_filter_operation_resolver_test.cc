@@ -7,25 +7,26 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_operation_resolver.h"
 
+#include "base/check_deref.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
 #include "third_party/blink/renderer/core/style/shadow_data.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_test_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "v8/include/v8-local-handle.h"
-#include "v8/include/v8-primitive.h"
-#include "v8/include/v8-script.h"
 
 namespace blink {
 namespace {
 
+using ::blink_testing::ParseFilter;
 using ::testing::ByRef;
 using ::testing::Combine;
 using ::testing::ElementsAreArray;
@@ -36,16 +37,6 @@ using ::testing::TestParamInfo;
 using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
-
-ScriptValue ParseScriptValue(V8TestingScope& scope, const std::string& value) {
-  v8::Local<v8::String> source =
-      v8::String::NewFromUtf8(scope.GetIsolate(), value.c_str())
-          .ToLocalChecked();
-  v8::Local<v8::Script> script =
-      v8::Script::Compile(scope.GetContext(), source).ToLocalChecked();
-  return ScriptValue(scope.GetIsolate(),
-                     script->Run(scope.GetContext()).ToLocalChecked());
-}
 
 // Matcher testing equality between garbage collected objects.
 //
@@ -80,12 +71,12 @@ using FilterTest = TestWithParam<FilterTestParams>;
 
 TEST_P(FilterTest, CreatesFilterOperations) {
   V8TestingScope scope;
-  EXPECT_THAT(CanvasFilterOperationResolver::CreateFilterOperations(
-                  scope.GetExecutionContext(),
-                  {ParseScriptValue(scope, GetParam().filter)},
-                  scope.GetExceptionState())
-                  .Operations(),
-              ElementsAreArray(GetParam().expected_ops));
+  EXPECT_THAT(
+      CanvasFilterOperationResolver::CreateFilterOperations(
+          CHECK_DEREF(ParseFilter(scope, GetParam().filter)),
+          CHECK_DEREF(scope.GetExecutionContext()), scope.GetExceptionState())
+          .Operations(),
+      ElementsAreArray(GetParam().expected_ops));
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 }
 
@@ -164,12 +155,11 @@ TEST_P(FilterApiTest, RaisesExceptionForInvalidType) {
 
   EXPECT_THAT(
       CanvasFilterOperationResolver::CreateFilterOperations(
-          scope.GetExecutionContext(),
-          {ParseScriptValue(
+          CHECK_DEREF(ParseFilter(
               scope, base::StringPrintf("({filter: '%s', %s: %s})",
                                         filter_name.c_str(), param_key.c_str(),
-                                        param_value.c_str()))},
-          scope.GetExceptionState())
+                                        param_value.c_str()))),
+          CHECK_DEREF(scope.GetExecutionContext()), scope.GetExceptionState())
           .Operations(),
       SizeIs(expected_error == ToExceptionCode(DOMExceptionCode::kNoError)
                  ? 1

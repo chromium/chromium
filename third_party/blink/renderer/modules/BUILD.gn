@@ -439,6 +439,8 @@ source_set("unit_tests") {
     "canvas/canvas2d/base_rendering_context_2d_test.cc",
     "canvas/canvas2d/canvas_color_cache_test.cc",
     "canvas/canvas2d/canvas_filter_operation_resolver_test.cc",
+    "canvas/canvas2d/canvas_filter_test_utils.cc",
+    "canvas/canvas2d/canvas_filter_test_utils.h",
     "canvas/canvas2d/canvas_path_test.cc",
     "canvas/canvas2d/canvas_rendering_context_2d_api_test.cc",
     "canvas/canvas2d/canvas_rendering_context_2d_test.cc",

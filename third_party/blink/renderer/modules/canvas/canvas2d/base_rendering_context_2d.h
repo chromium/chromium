@@ -105,7 +105,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void save();
   void restore();
   // Push state on state stack and creates bitmap for subsequent draw ops.
-  void beginLayer();
+  void beginLayer(ExecutionContext* execution_context,
+                  const V8CanvasFilterInput* filter_init,
+                  ExceptionState& exception_state);
   // Pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap.
   void endLayer();
   void reset();          // Called by the javascript interface

@@ -14,6 +14,8 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -29,6 +31,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_component_transfer.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_convolve_matrix.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_turbulence.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -419,14 +422,24 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
       type, base_frequency_x, base_frequency_y, num_octaves, seed,
       stitch_tiles == kSvgStitchtypeStitch ? true : false);
 }
+
 }  // namespace
 
 FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
-    ExecutionContext* execution_context,
-    HeapVector<ScriptValue> filters,
+    const V8CanvasFilterInput& filter_init,
+    ExecutionContext& execution_context,
     ExceptionState& exception_state) {
-  FilterOperations operations;
+  HeapVector<ScriptValue> filters;
+  switch (filter_init.GetContentType()) {
+    case V8CanvasFilterInput::ContentType::kObject:
+      filters.push_back(filter_init.GetAsObject());
+      break;
+    case V8CanvasFilterInput::ContentType::kObjectArray:
+      filters = filter_init.GetAsObjectArray();
+      break;
+  }
 
+  FilterOperations operations;
   for (auto filter : filters) {
     Dictionary filter_dict = Dictionary(filter);
     absl::optional<String> name =
@@ -470,7 +483,7 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
       }
     } else if (name == "dropShadow") {
       if (FilterOperation* drop_shadow_operation = ResolveDropShadow(
-              *execution_context, filter_dict, exception_state)) {
+              execution_context, filter_dict, exception_state)) {
         operations.Operations().push_back(drop_shadow_operation);
       }
     } else if (name == "turbulence") {
@@ -489,7 +502,7 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
                 : String::Format(
                       "\"%s\" is not among supported CanvasFilter types.",
                       name->Utf8().c_str());
-        execution_context->AddConsoleMessage(
+        execution_context.AddConsoleMessage(
             MakeGarbageCollected<ConsoleMessage>(
                 mojom::blink::ConsoleMessageSource::kRendering,
                 mojom::blink::ConsoleMessageLevel::kWarning, message));
@@ -498,7 +511,7 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
         const String& message =
             "CanvasFilter: too many errors, no more errors will be reported to "
             "the console for this process.";
-        execution_context->AddConsoleMessage(
+        execution_context.AddConsoleMessage(
             MakeGarbageCollected<ConsoleMessage>(
                 mojom::blink::ConsoleMessageSource::kRendering,
                 mojom::blink::ConsoleMessageLevel::kWarning, message));

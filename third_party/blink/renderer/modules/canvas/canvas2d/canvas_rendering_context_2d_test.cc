@@ -1430,7 +1430,9 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
       nullptr, std::move(fake_accelerate_surface), size);
-  Context2D()->beginLayer();
+  NonThrowableExceptionState exception_state;
+  Context2D()->beginLayer(GetExecutionContext(), /*filter_init=*/nullptr,
+                          exception_state);
   const size_t initial_op_count =
       CanvasElement().ResourceProvider()->TotalOpCount();
   while (CanvasElement().ResourceProvider()->TotalOpBytesUsed() <=
