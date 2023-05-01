@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
@@ -392,7 +393,7 @@ public class UrlOverridingTest {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent = LaunchIntentDispatcher.createCustomTabActivityIntent(
-                    InstrumentationRegistry.getTargetContext(), intent);
+                    ApplicationProvider.getApplicationContext(), intent);
             IntentUtils.addTrustedIntentExtras(intent);
             return intent;
         });

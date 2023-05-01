@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -38,8 +38,9 @@ public class PaymentRequestContactDetailsSectionUnitTest {
             boolean requestPayerName, boolean requestPayerPhone, boolean requestPayerEmail) {
         mContactEditor = new ContactEditor(
                 requestPayerName, requestPayerPhone, requestPayerEmail, /*saveToDisk=*/true);
-        mContactDetailsSection = new ContactDetailsSection(
-                InstrumentationRegistry.getTargetContext(), autofillProfiles, mContactEditor, null);
+        mContactDetailsSection =
+                new ContactDetailsSection(ApplicationProvider.getApplicationContext(),
+                        autofillProfiles, mContactEditor, null);
     }
 
     /** Tests the creation of the contact list, with most complete first. */
@@ -159,7 +160,7 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                 "" /* honorific prefix */, "Jane Doe", "Edge corp.", "123 Main", "Washington",
                 "Seattle", "", "10110", "", "US", "555-212-1212", "jane@example.test", "");
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(InstrumentationRegistry.getTargetContext(), newProfile));
+                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
         // We now expect the new item to be last.
         items = mContactDetailsSection.getItems();
@@ -204,7 +205,7 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                 "" /* honorific prefix */, "Jane Doe", "Edge corp.", "123 Main", "Washington",
                 "Seattle", "", "10110", "", "US", "555-212-1212", "" /* No email */, "");
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(InstrumentationRegistry.getTargetContext(), newProfile));
+                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
         // We now expect the new item, because it is incomplete, to be last.
         items = mContactDetailsSection.getItems();
@@ -241,7 +242,7 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                 "" /* honorific prefix */, "Jane Doe", "Edge corp.", "123 Main", "Washington",
                 "Seattle", "", "10110", "", "US", "555-212-1212", "jane@example.test", "");
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(InstrumentationRegistry.getTargetContext(), newProfile));
+                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
         // We now expect the new item to be first. The selection is not changed.
         items = mContactDetailsSection.getItems();
@@ -284,7 +285,7 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                 "" /* honorific prefix */, "John Major", "Acme Inc.", "456 Main", "California",
                 "Los Angeles", "", "90210", "", "US", "514-555-1212", "john@example.test", "");
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(InstrumentationRegistry.getTargetContext(), newProfile));
+                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
         items = mContactDetailsSection.getItems();
         Assert.assertEquals(1, items.size());
@@ -316,7 +317,7 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                 "" /* honorific prefix */, "Jane Doe", "Edge corp.", "123 Main", "Washington",
                 "Seattle", "", "10110", "", "US", "555-212-1212", "" /* no email */, "");
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(InstrumentationRegistry.getTargetContext(), newProfile));
+                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
         // We now expect the new item to be first, but unselected because incomplete.
         items = mContactDetailsSection.getItems();

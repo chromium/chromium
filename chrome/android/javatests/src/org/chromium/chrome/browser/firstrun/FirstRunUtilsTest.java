@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.accounts.AuthenticatorDescription;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -49,7 +49,7 @@ public class FirstRunUtilsTest {
         // GetInstrumentation().getTargetContext() cannot be called in
         // constructor due to external dependencies.
         mAccountTestingContext =
-                new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
+                new AdvancedMockContext(ApplicationProvider.getApplicationContext());
     }
 
     @After

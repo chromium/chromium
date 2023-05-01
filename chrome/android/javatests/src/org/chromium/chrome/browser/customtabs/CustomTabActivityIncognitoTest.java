@@ -37,7 +37,6 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
@@ -135,7 +134,7 @@ public class CustomTabActivityIncognitoTest {
     }
 
     private Bitmap createVectorDrawableBitmap(@DrawableRes int resId, int widthDp, int heightDp) {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Drawable vectorDrawable = AppCompatResources.getDrawable(context, resId);
         Bitmap bitmap = createTestBitmap(widthDp, heightDp);
         Canvas canvas = new Canvas(bitmap);
@@ -469,7 +468,7 @@ public class CustomTabActivityIncognitoTest {
         // constraint that a) it already exists in production code, and b) it only contains
         // views with the @RemoteView annotation.
         RemoteViews remoteViews =
-                new RemoteViews(InstrumentationRegistry.getTargetContext().getPackageName(),
+                new RemoteViews(ApplicationProvider.getApplicationContext().getPackageName(),
                         R.layout.share_sheet_item);
         remoteViews.setTextViewText(R.id.text, "Kittens!");
         remoteViews.setTextViewText(R.id.display_new, "So fluffy");

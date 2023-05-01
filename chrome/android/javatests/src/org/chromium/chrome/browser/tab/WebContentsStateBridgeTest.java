@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -37,7 +37,7 @@ public class WebContentsStateBridgeTest {
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         mTestTabModelDirectory = new TestTabModelDirectory(
-                InstrumentationRegistry.getTargetContext(), "WebContentsStateBridgeTest", null);
+                ApplicationProvider.getApplicationContext(), "WebContentsStateBridgeTest", null);
     }
 
     @After

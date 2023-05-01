@@ -45,6 +45,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -2021,7 +2022,7 @@ public class SiteSettingsTest {
         triggerEmbargoForOrigin(url);
 
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent intent = settingsLauncher.createSettingsActivityIntent(context,
                 SingleWebsiteSettings.class.getName(),
                 SingleWebsiteSettings.createFragmentArgsForSite(url));
@@ -2098,7 +2099,7 @@ public class SiteSettingsTest {
             // Only |url| has been added under embargo.
             Assert.assertEquals(2, blockedGroup.getPreferenceCount());
 
-            Assert.assertEquals(InstrumentationRegistry.getTargetContext().getString(
+            Assert.assertEquals(ApplicationProvider.getApplicationContext().getString(
                                         R.string.automatically_blocked),
                     blockedGroup.getPreference(0).getSummary());
 
@@ -2124,7 +2125,7 @@ public class SiteSettingsTest {
                 () -> { FederatedIdentityTestUtils.embargoFedCmForRelyingParty(new GURL(rpUrl)); });
 
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent intent = settingsLauncher.createSettingsActivityIntent(context,
                 SingleWebsiteSettings.class.getName(),
                 SingleWebsiteSettings.createFragmentArgsForSite(rpUrl));
@@ -2414,7 +2415,7 @@ public class SiteSettingsTest {
     public void testCookiesSettingsManagedForURL(String setting) throws Exception {
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        String managedText = InstrumentationRegistry.getTargetContext().getString(
+        String managedText = ApplicationProvider.getApplicationContext().getString(
                 R.string.managed_by_your_organization);
 
         SingleCategorySettings websitePreferences =

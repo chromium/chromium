@@ -17,6 +17,7 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -105,7 +106,7 @@ public class SearchWidgetProviderTest {
 
     @Before
     public void setUp() {
-        ChromeApplicationTestUtils.setUp(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.setUp(ApplicationProvider.getApplicationContext());
         SearchActivity.setDelegateForTests(new TestSearchDelegate());
 
         mContext = new TestContext();
@@ -115,7 +116,7 @@ public class SearchWidgetProviderTest {
 
     @After
     public void tearDown() {
-        ChromeApplicationTestUtils.tearDown(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.tearDown(ApplicationProvider.getApplicationContext());
     }
 
     /**

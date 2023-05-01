@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.util.Pair;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -55,7 +56,7 @@ public class MediaLauncherActivityTest {
 
     @Before
     public void setUp() {
-        mContext = InstrumentationRegistry.getTargetContext();
+        mContext = ApplicationProvider.getApplicationContext();
         MediaViewerUtils.forceEnableMediaLauncherActivityForTest();
     }
 

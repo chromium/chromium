@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import static org.junit.Assert.assertEquals;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
@@ -73,7 +73,7 @@ public class TabObserverRegistrarTest {
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(), windowOpenUrl));
+                        ApplicationProvider.getApplicationContext(), windowOpenUrl));
 
         // Register TabObserver via TabObserverRegistrar#registerActiveTabObserver()
         CustomTabActivity customTabActivity = mCustomTabActivityTestRule.getActivity();

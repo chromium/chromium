@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.safe_browsing.settings;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -208,7 +208,7 @@ public class StandardProtectionSettingsFragmentTest {
             Assert.assertEquals(
                     "Leak detection summary should not be null if it should be checked but "
                             + "not checked due to lack of account.",
-                    InstrumentationRegistry.getTargetContext().getString(
+                    ApplicationProvider.getApplicationContext().getString(
                             R.string.passwords_leak_detection_switch_signed_out_enable_description),
                     mPasswordLeakDetectionPreference.getSummary());
         });

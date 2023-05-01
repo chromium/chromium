@@ -15,7 +15,7 @@ import android.test.mock.MockContentProvider;
 import android.test.mock.MockContentResolver;
 
 import androidx.core.content.ContextCompat;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -89,7 +89,7 @@ public class ScreenshotMonitorTest {
         // Replaces the application context with a test implementation which will return true for
         // permission requests. This is needed for the permission check in
         // ScreenshotMonitorImpl#doesChangeLookLikeScreenshot.
-        Context context = new TestContext(InstrumentationRegistry.getTargetContext());
+        Context context = new TestContext(ApplicationProvider.getApplicationContext());
         ContextUtils.initApplicationContextForTests(context);
         Assume.assumeTrue(
                 ContextCompat.checkSelfPermission(ContextUtils.getApplicationContext(),

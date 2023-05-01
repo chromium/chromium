@@ -14,7 +14,7 @@ import android.os.Bundle;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
@@ -144,8 +144,8 @@ public class CustomTabsIntentTestUtils {
      */
     public static PendingIntent addMenuEntriesToIntent(
             Intent customTabIntent, int numEntries, Intent callbackIntent, String menuTitle) {
-        PendingIntent pi = PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
-                callbackIntent,
+        PendingIntent pi = PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(),
+                0, callbackIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(true));
         ArrayList<Bundle> menuItems = new ArrayList<>();
@@ -192,8 +192,8 @@ public class CustomTabsIntentTestUtils {
      */
     public static PendingIntent addActionButtonToIntent(
             Intent intent, Bitmap icon, String description, int id) {
-        PendingIntent pi = PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
-                new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
+        PendingIntent pi = PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(),
+                0, new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
         intent.putExtra(CustomTabsIntent.EXTRA_ACTION_BUTTON_BUNDLE,
                 makeToolbarItemBundle(icon, description, pi, id));
         return pi;

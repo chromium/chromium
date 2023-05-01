@@ -35,7 +35,7 @@ import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -225,10 +225,10 @@ public class ClearBrowsingDataFragmentTest {
             Assert.assertEquals(2, adapter.getItemCount());
             Assert.assertEquals(1, viewPager.getCurrentItem());
             TabLayout tabLayout = preferences.getView().findViewById(R.id.clear_browsing_data_tabs);
-            Assert.assertEquals(InstrumentationRegistry.getTargetContext().getString(
+            Assert.assertEquals(ApplicationProvider.getApplicationContext().getString(
                                         R.string.clear_browsing_data_basic_tab_title),
                     tabLayout.getTabAt(0).getText());
-            Assert.assertEquals(InstrumentationRegistry.getTargetContext().getString(
+            Assert.assertEquals(ApplicationProvider.getApplicationContext().getString(
                                         R.string.prefs_section_advanced),
                     tabLayout.getTabAt(1).getText());
             viewPager.setCurrentItem(0);

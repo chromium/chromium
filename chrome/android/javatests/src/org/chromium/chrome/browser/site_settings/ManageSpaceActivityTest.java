@@ -65,7 +65,7 @@ public class ManageSpaceActivityTest {
 
     private ManageSpaceActivity startManageSpaceActivity() {
         Intent intent =
-                new Intent(InstrumentationRegistry.getTargetContext(), ManageSpaceActivity.class);
+                new Intent(ApplicationProvider.getApplicationContext(), ManageSpaceActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return (ManageSpaceActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.view.MenuItem;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -284,7 +285,7 @@ public class BookmarkEditTest {
     }
 
     private void startEditActivity(BookmarkId bookmarkId) {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent intent = new Intent(context, BookmarkEditActivity.class);
         intent.putExtra(BookmarkEditActivity.INTENT_BOOKMARK_ID, bookmarkId.toString());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

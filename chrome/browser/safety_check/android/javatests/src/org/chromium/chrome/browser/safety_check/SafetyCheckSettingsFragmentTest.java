@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 
 import androidx.preference.Preference;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -90,7 +90,7 @@ public class SafetyCheckSettingsFragmentTest {
     @SmallTest
     public void testLastRunTimestampStrings() {
         long t0 = 12345;
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         // Start time not set - returns an empty string.
         assertEquals("", SafetyCheckViewBinder.getLastRunTimestampText(context, 0, 123));
         assertEquals("Checked just now",
@@ -159,7 +159,7 @@ public class SafetyCheckSettingsFragmentTest {
 
         assertEquals("", passwords.getSummary());
         assertEquals("", safeBrowsing.getSummary());
-        assertEquals(InstrumentationRegistry.getTargetContext().getString(
+        assertEquals(ApplicationProvider.getApplicationContext().getString(
                              R.string.safety_check_updates_outdated),
                 updates.getSummary());
     }

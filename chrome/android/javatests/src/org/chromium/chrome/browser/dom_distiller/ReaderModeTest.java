@@ -199,10 +199,10 @@ public class ReaderModeTest implements CustomMainActivityStart {
         CustomTabActivity customTabActivity = openReaderModeInIncognitoCCT();
 
         // Click on "Close all Incognito tabs" notification.
-        PendingIntent clearIntent =
-                IncognitoNotificationServiceImpl
-                        .getRemoveAllIncognitoTabsIntent(InstrumentationRegistry.getTargetContext())
-                        .getPendingIntent();
+        PendingIntent clearIntent = IncognitoNotificationServiceImpl
+                                            .getRemoveAllIncognitoTabsIntent(
+                                                    ApplicationProvider.getApplicationContext())
+                                            .getPendingIntent();
         clearIntent.send();
 
         // Verify the Incognito CCT is closed.

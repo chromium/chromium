@@ -36,7 +36,7 @@ import android.os.Build;
 import android.text.format.DateUtils;
 import android.view.View;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -137,7 +137,7 @@ public class PageInfoViewTest {
     public static class HistorySummaryTestParams implements ParameterProvider {
         @Override
         public Iterable<ParameterSet> getParameters() {
-            Resources res = InstrumentationRegistry.getTargetContext().getResources();
+            Resources res = ApplicationProvider.getApplicationContext().getResources();
             Random random = new Random();
             long timestamp;
 
@@ -749,7 +749,7 @@ public class PageInfoViewTest {
                 mTestServerRule.getServer().getURL(sSimpleHtml), ContentSettingsType.GEOLOCATION);
         onView(withId(R.id.page_info_permissions_row)).perform(click());
         onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         // Find the preference and check its background color.
         onView(allOf(withParent(withId(R.id.recycler_view)),
                        hasDescendant(withText(

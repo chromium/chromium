@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.equalTo;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
@@ -146,8 +145,8 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
 
         // Wait for data to feed into the DownloadDirectoryAdapter.
         String defaultOptionName =
-                InstrumentationRegistry.getTargetContext().getString(R.string.menu_downloads);
-        String sdCardOptionName = InstrumentationRegistry.getTargetContext().getString(
+                ApplicationProvider.getApplicationContext().getString(R.string.menu_downloads);
+        String sdCardOptionName = ApplicationProvider.getApplicationContext().getString(
                 R.string.downloads_location_sd_card);
         onData(new DirectoryOptionMatcher(equalTo(defaultOptionName))).atPosition(0);
         onData(new DirectoryOptionMatcher(equalTo(sdCardOptionName))).atPosition(1);

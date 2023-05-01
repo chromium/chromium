@@ -18,7 +18,6 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.preference.TwoStatePreference;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 
@@ -363,7 +362,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                     }
                     mSyncService = SyncService.get();
 
-                    mContext = InstrumentationRegistry.getTargetContext();
+                    mContext = ApplicationProvider.getApplicationContext();
                     mFakeServerHelper = FakeServerHelper.createInstanceAndGet();
                 });
 

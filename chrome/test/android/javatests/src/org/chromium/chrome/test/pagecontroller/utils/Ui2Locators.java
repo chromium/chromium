@@ -9,7 +9,7 @@ import android.content.res.Resources;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.uiautomator.By;
 
 import java.util.regex.Pattern;
@@ -281,7 +281,7 @@ public final class Ui2Locators {
 
     private static Resources getTargetResources() {
         if (sMockResources == null) {
-            return InstrumentationRegistry.getTargetContext().getResources();
+            return ApplicationProvider.getApplicationContext().getResources();
         } else {
             return sMockResources;
         }

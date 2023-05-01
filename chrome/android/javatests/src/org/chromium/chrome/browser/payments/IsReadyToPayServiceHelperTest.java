@@ -14,7 +14,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -178,7 +178,7 @@ public class IsReadyToPayServiceHelperTest {
         mErrorReceived = false;
         Intent intent = new Intent();
         intent.setClassName("mock.package.name", "mock.service.name");
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         IsReadyToPayServiceHelper helper = new IsReadyToPayServiceHelper(
                 context, intent, new IsReadyToPayServiceHelper.ResultHandler() {
                     @Override

@@ -155,7 +155,8 @@ public class ReturnToChromeUtilTest {
         assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
 
         // Trigger hide and resume.
-        ChromeApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
+        ChromeApplicationTestUtils.fireHomeScreenIntent(
+                ApplicationProvider.getApplicationContext());
         mActivityTestRule.resumeMainActivityFromLauncher();
 
         Assert.assertTrue(

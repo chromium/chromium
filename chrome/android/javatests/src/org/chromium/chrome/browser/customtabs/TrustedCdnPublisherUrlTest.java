@@ -20,6 +20,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.core.widget.ImageViewCompat;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -350,7 +351,7 @@ public class TrustedCdnPublisherUrlTest {
             headers = null;
         }
         String testUrl = mWebServer.setResponse("/test.html", PAGE_WITH_TITLE, headers);
-        Context targetContext = InstrumentationRegistry.getTargetContext();
+        Context targetContext = ApplicationProvider.getApplicationContext();
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(targetContext, testUrl);
         intent.putExtra(
@@ -390,11 +391,11 @@ public class TrustedCdnPublisherUrlTest {
             Assert.assertEquals(R.drawable.omnibox_info, expectedSecurityIcon);
             Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
 
-            ColorStateList colorStateList =
-                    AppCompatResources.getColorStateList(InstrumentationRegistry.getTargetContext(),
-                            R.color.default_icon_color_light_tint_list);
+            ColorStateList colorStateList = AppCompatResources.getColorStateList(
+                    ApplicationProvider.getApplicationContext(),
+                    R.color.default_icon_color_light_tint_list);
             ImageView expectedSecurityButton =
-                    new ImageView(InstrumentationRegistry.getTargetContext());
+                    new ImageView(ApplicationProvider.getApplicationContext());
             expectedSecurityButton.setImageResource(expectedSecurityIcon);
             ImageViewCompat.setImageTintList(expectedSecurityButton, colorStateList);
 

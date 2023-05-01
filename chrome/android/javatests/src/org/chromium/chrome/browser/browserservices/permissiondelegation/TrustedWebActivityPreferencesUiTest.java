@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -54,7 +54,7 @@ public class TrustedWebActivityPreferencesUiTest {
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        mPackage = InstrumentationRegistry.getTargetContext().getPackageName();
+        mPackage = ApplicationProvider.getApplicationContext().getPackageName();
         mPermissionMananger = ChromeApplicationImpl.getComponent().resolvePermissionManager();
     }
 

@@ -278,7 +278,7 @@ public class TabSuspensionTest {
     @MediumTest
     public void testTabAddedFromCustomTab() {
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), mStartingUrl);
+                ApplicationProvider.getApplicationContext(), mStartingUrl);
         IntentUtils.addTrustedIntentExtras(intent);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);

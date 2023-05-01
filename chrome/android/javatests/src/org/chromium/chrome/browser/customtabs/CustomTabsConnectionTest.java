@@ -19,7 +19,6 @@ import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.browser.customtabs.CustomTabsSessionToken;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
@@ -602,7 +601,7 @@ public class CustomTabsConnectionTest {
         final AtomicReference<CustomTabsClient> clientReference = new AtomicReference<>(null);
         final CallbackHelper waitForConnection = new CallbackHelper();
         CustomTabsClient.bindCustomTabsService(ApplicationProvider.getApplicationContext(),
-                InstrumentationRegistry.getTargetContext().getPackageName(),
+                ApplicationProvider.getApplicationContext().getPackageName(),
                 new CustomTabsServiceConnection() {
                     @Override
                     public void onServiceDisconnected(ComponentName name) {}

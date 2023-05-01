@@ -10,7 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -99,9 +99,9 @@ public final class WebApkActivityTest {
         Class<? extends ChromeActivity> mainClass = ChromeTabbedActivity.class;
 
         // Move WebAPK to the background by launching Chrome.
-        Intent intent = new Intent(InstrumentationRegistry.getTargetContext(), mainClass);
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), mainClass);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        InstrumentationRegistry.getTargetContext().startActivity(intent);
+        ApplicationProvider.getApplicationContext().startActivity(intent);
         ChromeActivityTestRule.waitFor(mainClass);
 
         ApplicationTestUtils.waitForActivityState(webApkActivity, Stage.STOPPED);

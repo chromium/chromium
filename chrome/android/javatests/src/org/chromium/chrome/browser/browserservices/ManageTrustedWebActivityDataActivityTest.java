@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Test;
@@ -75,7 +76,7 @@ public class ManageTrustedWebActivityDataActivityTest {
         Intent intent = new Intent();
         intent.setAction(
                 "android.support.customtabs.action.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA");
-        intent.setPackage(InstrumentationRegistry.getTargetContext().getPackageName());
+        intent.setPackage(ApplicationProvider.getApplicationContext().getPackageName());
         intent.setData(uri);
         intent.putExtra(WebApkConstants.EXTRA_IS_WEBAPK, true);
         // The following flag is required because the test starts the intent outside of an activity.

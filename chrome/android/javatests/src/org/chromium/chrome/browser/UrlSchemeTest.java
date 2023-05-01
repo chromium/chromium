@@ -8,7 +8,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
@@ -60,9 +59,9 @@ public class UrlSchemeTest {
 
     @Before
     public void setUp() {
-        TestContentProvider.resetResourceRequestCounts(InstrumentationRegistry.getTargetContext());
+        TestContentProvider.resetResourceRequestCounts(ApplicationProvider.getApplicationContext());
         TestContentProvider.setDataFilePath(
-                InstrumentationRegistry.getTargetContext(), UrlUtils.getTestFilePath(""));
+                ApplicationProvider.getApplicationContext(), UrlUtils.getTestFilePath(""));
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
     }
@@ -323,7 +322,7 @@ public class UrlSchemeTest {
      * @param expectedCount Expected resource requests count
      */
     private void ensureResourceRequestCountInContentProvider(String resource, int expectedCount) {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         int actualCount = TestContentProvider.getResourceRequestCount(context, resource);
         Assert.assertEquals(expectedCount, actualCount);
     }
@@ -335,7 +334,7 @@ public class UrlSchemeTest {
      */
     private void ensureResourceRequestCountInContentProviderNotLessThan(
             String resource, int expectedMinimalCount) {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         int actualCount = TestContentProvider.getResourceRequestCount(context, resource);
         Assert.assertTrue("Minimal expected: " + expectedMinimalCount + ", actual: " + actualCount,
                 actualCount >= expectedMinimalCount);

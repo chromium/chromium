@@ -18,7 +18,7 @@ import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.browser.customtabs.TrustedWebUtils;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -150,7 +150,7 @@ public class QualityEnforcerTest {
         CustomTabsSession session = CustomTabsTestUtils.bindWithCallback(mCallback).session;
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         intent.setComponent(new ComponentName(
-                InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class));
+                ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
         intent.setAction(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(testPage));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

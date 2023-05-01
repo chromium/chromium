@@ -9,7 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -30,7 +30,7 @@ public class GSAAccountChangeListenerTest {
     @Test(expected = AssertionError.class)
     @SmallTest
     public void testReceivesBroadcastIntents() {
-        final Context context = InstrumentationRegistry.getTargetContext();
+        final Context context = ApplicationProvider.getApplicationContext();
         BroadcastReceiver receiver = new GSAAccountChangeListener.AccountChangeBroadcastReceiver();
         context.registerReceiver(receiver,
                 new IntentFilter(GSAAccountChangeListener.ACCOUNT_UPDATE_BROADCAST_INTENT));

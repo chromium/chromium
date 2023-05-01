@@ -16,7 +16,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 import androidx.test.rule.ServiceTestRule;
@@ -134,7 +133,7 @@ public class TrustedWebActivityClientTest {
 
     @Before
     public void setUp() throws TimeoutException, RemoteException {
-        mTargetContext = InstrumentationRegistry.getTargetContext();
+        mTargetContext = ApplicationProvider.getApplicationContext();
         mBuilder = new StandardNotificationBuilder(mTargetContext);
 
         ChromeAppComponent component = ChromeApplicationImpl.getComponent();

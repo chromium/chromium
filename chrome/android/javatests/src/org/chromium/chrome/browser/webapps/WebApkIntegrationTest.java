@@ -15,7 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
@@ -87,7 +87,7 @@ public class WebApkIntegrationTest {
         intent.setPackage("org.chromium.webapk.test");
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        InstrumentationRegistry.getTargetContext().startActivity(intent);
+        ApplicationProvider.getApplicationContext().startActivity(intent);
 
         WebappActivity lastActivity =
                 ChromeActivityTestRule.waitFor(WebappActivity.class, STARTUP_TIMEOUT);
@@ -104,7 +104,7 @@ public class WebApkIntegrationTest {
     @Feature({"Webapps"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.S)
     public void testWebApkTrampoline() {
-        Context targetContext = InstrumentationRegistry.getTargetContext();
+        Context targetContext = ApplicationProvider.getApplicationContext();
         String pageUrl = "https://pwa-directory.appspot.com/defaultresponse";
 
         // Make a standard browsable Intent to a page within the WebAPK's scope.
@@ -145,7 +145,7 @@ public class WebApkIntegrationTest {
         intent.putExtra(Intent.EXTRA_TEXT, sharedText);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        InstrumentationRegistry.getTargetContext().startActivity(intent);
+        ApplicationProvider.getApplicationContext().startActivity(intent);
 
         WebappActivity lastActivity =
                 ChromeActivityTestRule.waitFor(WebappActivity.class, STARTUP_TIMEOUT);
@@ -167,7 +167,7 @@ public class WebApkIntegrationTest {
     @DisabledTest(message = "https://crbug.com/1246127")
     @Feature({"Webapps"})
     public void testWebApkServiceIntegration() throws Exception {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         // Launch WebAPK in order to cache host browser.
         Intent intent = new Intent(
@@ -186,7 +186,7 @@ public class WebApkIntegrationTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         WebApkServiceConnectionManager connectionManager = new WebApkServiceConnectionManager(
                 TaskTraits.UI_DEFAULT, WebApkServiceClient.CATEGORY_WEBAPK_API, null /* action */);
-        connectionManager.connect(InstrumentationRegistry.getTargetContext(),
+        connectionManager.connect(ApplicationProvider.getApplicationContext(),
                 "org.chromium.webapk.test",
                 new WebApkServiceConnectionManager.ConnectionCallback() {
                     @Override

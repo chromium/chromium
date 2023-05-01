@@ -15,7 +15,7 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -67,7 +67,7 @@ public class SiteChannelsManagerTest {
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
-        Context mContext = InstrumentationRegistry.getTargetContext();
+        Context mContext = ApplicationProvider.getApplicationContext();
         NotificationManagerProxy notificationManagerProxy =
                 new NotificationManagerProxyImpl(mContext);
         clearExistingSiteChannels(notificationManagerProxy);

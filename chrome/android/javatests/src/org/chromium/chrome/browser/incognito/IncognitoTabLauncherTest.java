@@ -12,7 +12,6 @@ import android.os.Bundle;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.core.app.BundleCompat;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -85,7 +84,7 @@ public class IncognitoTabLauncherTest {
     @Feature("Incognito")
     @SmallTest
     public void testEnableComponent() throws TimeoutException {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         IncognitoTabLauncher.setComponentEnabled(true);
         Assert.assertNotNull(
                 context.getPackageManager().resolveActivity(createLaunchIntent(context), 0));
@@ -95,7 +94,7 @@ public class IncognitoTabLauncherTest {
     @Feature("Incognito")
     @SmallTest
     public void testDisableComponent() throws TimeoutException {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         IncognitoTabLauncher.setComponentEnabled(false);
         Assert.assertNull(
                 context.getPackageManager().resolveActivity(createLaunchIntent(context), 0));

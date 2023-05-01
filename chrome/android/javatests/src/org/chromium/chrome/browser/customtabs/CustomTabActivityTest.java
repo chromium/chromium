@@ -296,7 +296,7 @@ public class CustomTabActivityTest {
      */
     private Intent createMinimalCustomTabIntent() {
         return CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), mTestPage);
+                ApplicationProvider.getApplicationContext(), mTestPage);
     }
 
     @Test
@@ -350,8 +350,8 @@ public class CustomTabActivityTest {
 
     private Bundle makeBottomBarBundle(int id, Bitmap icon, String description) {
         Bundle bundle = new Bundle();
-        PendingIntent pi = PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
-                new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
+        PendingIntent pi = PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(),
+                0, new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
 
         bundle.putInt(CustomTabsIntent.KEY_ID, sIdToIncrement++);
         bundle.putString(CustomTabsIntent.KEY_DESCRIPTION, description);
@@ -373,7 +373,7 @@ public class CustomTabActivityTest {
     }
 
     private Bitmap createVectorDrawableBitmap(@DrawableRes int resId, int widthDp, int heightDp) {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Drawable vectorDrawable = AppCompatResources.getDrawable(context, resId);
         Bitmap bitmap = createTestBitmap(widthDp, heightDp);
         Canvas canvas = new Canvas(bitmap);
@@ -519,13 +519,13 @@ public class CustomTabActivityTest {
 
         ArrayList<Bundle> toolbarItems = new ArrayList<>(2);
         final PendingIntent pi1 =
-                PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
+                PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(), 0,
                         new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
         final OnFinishedForTest onFinished1 = new OnFinishedForTest(pi1);
         toolbarItems.add(CustomTabsIntentTestUtils.makeToolbarItemBundle(
                 expectedIcon1, "Good test", pi1, sIdToIncrement++));
         final PendingIntent pi2 =
-                PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 1,
+                PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(), 1,
                         new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
         assertThat(pi2, not(equalTo(pi1)));
         final OnFinishedForTest onFinished2 = new OnFinishedForTest(pi2);
@@ -660,14 +660,14 @@ public class CustomTabActivityTest {
         // constraint that a) it already exists in production code, and b) it only contains views
         // with the @RemoteView annotation.
         RemoteViews remoteViews =
-                new RemoteViews(InstrumentationRegistry.getTargetContext().getPackageName(),
+                new RemoteViews(ApplicationProvider.getApplicationContext().getPackageName(),
                         R.layout.share_sheet_item);
         remoteViews.setTextViewText(R.id.text, "Kittens!");
         remoteViews.setTextViewText(R.id.display_new, "So fluffy");
         remoteViews.setImageViewResource(R.id.icon, R.drawable.ic_email_googblue_36dp);
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS, remoteViews);
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_VIEW_IDS, new int[] {R.id.icon});
-        PendingIntent pi2 = PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(),
+        PendingIntent pi2 = PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(),
                 0, new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
         intent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_PENDINGINTENT, pi2);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -753,7 +753,7 @@ public class CustomTabActivityTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1308065")
     public void testLoadNewUrlWithSession() throws Exception {
-        final Context context = InstrumentationRegistry.getTargetContext();
+        final Context context = ApplicationProvider.getApplicationContext();
         final Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
         CustomTabsSessionToken session = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
@@ -800,7 +800,7 @@ public class CustomTabActivityTest {
                 "/chrome/test/data/android/customtabs/test_window_open.html");
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(), testUrl));
+                        ApplicationProvider.getApplicationContext(), testUrl));
         final TabModelSelector tabSelector =
                 mCustomTabActivityTestRule.getActivity().getTabModelSelector();
 
@@ -925,7 +925,7 @@ public class CustomTabActivityTest {
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         intent.setData(Uri.parse(mTestPage));
         intent.setComponent(new ComponentName(
-                InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class));
+                ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -982,7 +982,7 @@ public class CustomTabActivityTest {
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         intent.setData(Uri.parse(mTestPage));
         intent.setComponent(new ComponentName(
-                InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class));
+                ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_PAGE_LOAD_SECONDS, TimeUnit.SECONDS));
@@ -1030,7 +1030,7 @@ public class CustomTabActivityTest {
     private void hideDomainAndEnsureTitleIsSet(
             final String url, boolean useHiddenTab, final String expectedTitle) throws Exception {
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
         intent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
@@ -1068,7 +1068,7 @@ public class CustomTabActivityTest {
     @SmallTest
     public void testPrecreatedRenderer() throws Exception {
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         Assert.assertTrue(connection.newSession(token));
@@ -1122,7 +1122,7 @@ public class CustomTabActivityTest {
     public void testWarmupAndLaunchRegularChrome() throws Exception {
         CustomTabsTestUtils.warmUpAndWait();
         Intent intent = new Intent(
-                InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class);
+                ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         Instrumentation.ActivityMonitor monitor =
@@ -1201,7 +1201,7 @@ public class CustomTabActivityTest {
         String url = mTestServer.getURL("/echoheader?Cookie");
         Uri requestUri = Uri.parse(mTestServer.getURL("/set-cookie?acookie"));
 
-        final Context context = InstrumentationRegistry.getTargetContext();
+        final Context context = ApplicationProvider.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
@@ -2027,7 +2027,7 @@ public class CustomTabActivityTest {
 
         intent.setData(Uri.parse(mTestPage));
         intent.setComponent(new ComponentName(
-                InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class));
+                ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         activityStartTimeMs.set(SystemClock.uptimeMillis());
@@ -2088,7 +2088,7 @@ public class CustomTabActivityTest {
 
     private CustomTabsSessionToken warmUpAndLaunchUrlWithSession() throws Exception {
         return warmUpAndLaunchUrlWithSession(CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), mTestPage));
+                ApplicationProvider.getApplicationContext(), mTestPage));
     }
 
     private Activity startBlankUiTestActivity() {
@@ -2161,7 +2161,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     public void doesNotLaunchJavaScriptUrls_dispatchToCustomTabActivity() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         String javaScriptUrl = "javascript: alert('Hello');";
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -2179,7 +2179,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     public void doesNotLaunchJavaScriptUrls_dispatch() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         String javaScriptUrl = "javascript: alert('Hello');";
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {

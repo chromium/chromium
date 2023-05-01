@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.view.View;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -75,7 +76,7 @@ public class WebappModeTest {
     private Intent createIntent(String id, String url, String title, String icon, boolean addMac) {
         Intent intent = WebappTestHelper.createMinimalWebappIntent(id, url);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setPackage(InstrumentationRegistry.getTargetContext().getPackageName());
+        intent.setPackage(ApplicationProvider.getApplicationContext().getPackageName());
         intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
         if (addMac) {
             // Needed for security reasons.  If the MAC is excluded, the URL of the webapp is opened
@@ -93,7 +94,7 @@ public class WebappModeTest {
             boolean addMac) {
         Intent intent = createIntent(id, url, title, icon, addMac);
 
-        InstrumentationRegistry.getTargetContext().startActivity(intent);
+        ApplicationProvider.getApplicationContext().startActivity(intent);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         ChromeApplicationTestUtils.waitUntilChromeInForeground();
     }
@@ -195,7 +196,7 @@ public class WebappModeTest {
         final int webappTabId = firstActivity.getActivityTab().getId();
 
         // Return home.
-        final Context context = InstrumentationRegistry.getTargetContext();
+        final Context context = ApplicationProvider.getApplicationContext();
         ChromeApplicationTestUtils.fireHomeScreenIntent(context);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
