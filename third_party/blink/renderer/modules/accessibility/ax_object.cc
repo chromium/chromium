@@ -102,6 +102,9 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
+#if DCHECK_IS_ON()
+#include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
+#endif
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
@@ -1080,11 +1083,10 @@ void AXObject::EnsureCorrectParentComputation() {
   if (GetNode() && GetNode()->IsPseudoElement())
     return;
 
-    // Verify that the algorithm in ComputeParent() provides same results as
-    // parents that init their children with themselves as the parent.
-    // Inconsistency indicates a problem could potentially exist where a child's
-    // parent does not include the child in its children.
-#if DCHECK_IS_ON()
+  // Verify that the algorithm in ComputeParent() provides same results as
+  // parents that init their children with themselves as the parent.
+  // Inconsistency indicates a problem could potentially exist where a child's
+  // parent does not include the child in its children.
   AXObject* computed_parent = ComputeParent();
 
   DCHECK(computed_parent) << "Computed parent was null for " << this
@@ -1095,8 +1097,14 @@ void AXObject::EnsureCorrectParentComputation() {
       << computed_parent->GetLayoutObject()
       << "\n**** Actual parent's layout object was "
       << parent_->GetLayoutObject() << "\n**** Child was " << this;
-#endif
 }
+
+void AXObject::ShowAXTreeForThis() {
+  DLOG(INFO) << "\n"
+             << TreeToStringWithMarkedObjectHelper(AXObjectCache().Root(),
+                                                   this);
+}
+
 #endif
 
 const AtomicString& AXObject::GetAOMPropertyOrARIAAttribute(

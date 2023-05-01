@@ -1133,6 +1133,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // When the parent on children during AddChildren(), take the opportunity to
   // check out ComputeParent() implementation. It should match.
   void EnsureCorrectParentComputation();
+
+  // Prints the entire AX subtree to the screen for debugging, with |this|
+  // highlighted via a "*" notation.
+  void ShowAXTreeForThis();
 #endif
 
   // Get or create the first ancestor that's not accessibility ignored.

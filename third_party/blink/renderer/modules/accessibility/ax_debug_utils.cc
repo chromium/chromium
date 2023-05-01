@@ -20,18 +20,31 @@ std::string NewlineToSpaceReplacer(std::string str) {
 
 }  // namespace
 
-std::string TreeToStringHelper(const AXObject* obj, int indent, bool verbose) {
+std::string TreeToStringWithHelper(const AXObject* obj,
+                                   int indent,
+                                   bool verbose) {
+  return TreeToStringWithMarkedObjectHelper(obj, nullptr, indent, verbose);
+}
+
+std::string TreeToStringWithMarkedObjectHelper(const AXObject* obj,
+                                               const AXObject* marked_object,
+                                               int indent,
+                                               bool verbose) {
   if (!obj) {
     return "";
   }
 
+  std::string extra = obj == marked_object ? "*" : " ";
+
   return std::accumulate(
       obj->CachedChildrenIncludingIgnored().begin(),
       obj->CachedChildrenIncludingIgnored().end(),
-      std::string(2 * indent, ' ') +
+      extra + std::string(std::max(2 * indent - 1, 0), ' ') +
           NewlineToSpaceReplacer(obj->ToString(verbose).Utf8()) + "\n",
-      [indent, verbose](const std::string& str, const AXObject* child) {
-        return str + TreeToStringHelper(child, indent + 1, verbose);
+      [indent, verbose, marked_object](const std::string& str,
+                                       const AXObject* child) {
+        return str + TreeToStringWithMarkedObjectHelper(child, marked_object,
+                                                        indent + 1, verbose);
       });
 }
 
