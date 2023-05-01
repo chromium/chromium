@@ -16,6 +16,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -983,6 +984,9 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
 }
 
 TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kIwaControlledFrame}, {});
+
   // Test a feature that requires a delegated availability check, but the check
   // fails.
   std::string expected_feature_name = "DisallowedFeature";

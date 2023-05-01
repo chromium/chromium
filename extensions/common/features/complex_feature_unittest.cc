@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "content/public/common/content_features.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest.h"
@@ -135,6 +137,8 @@ TEST(ComplexFeatureTest, Dependencies) {
 }
 
 TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kIwaControlledFrame}, {});
   std::vector<Feature*> features;
 
   // Test a complex feature where |requires_delegated_availability_check| hasn't
