@@ -15,6 +15,10 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import ChromeOptions
 from selenium.webdriver.chrome.service import Service
 
+pytest_plugins = [
+  'fixtures.skia_gold',
+]
+
 def pytest_addoption(parser):
   # By default, running on the hosted platform.
   parser.addoption('--target-platform',
