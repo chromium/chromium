@@ -1,4 +1,4 @@
-# Copyright 2023 The Chromium Authors. All rights reserved.
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,6 +14,15 @@ source_set("webnn") {
     "webnn_service.h",
   ]
 
+  if (is_win) {
+    sources += [
+      "dml/adapter.cc",
+      "dml/adapter.h",
+      "dml/platform_functions.cc",
+      "dml/platform_functions.h",
+    ]
+  }
+
   deps = [
     "//base",
     "//mojo/public/cpp/bindings",
@@ -26,6 +35,13 @@ source_set("tests") {
 
   sources = [ "webnn_context_impl_unittest.cc" ]
 
+  if (is_win) {
+    sources += [
+      "dml/adapter_test.cc",
+      "dml/platform_functions_test.cc",
+    ]
+  }
+
   deps = [
     ":webnn",
     "//base",
@@ -35,4 +51,11 @@ source_set("tests") {
     "//services/webnn/public/mojom",
     "//testing/gtest",
   ]
+
+  if (is_win) {
+    deps += [
+      "//ui/gl",
+      "//ui/gl/init",
+    ]
+  }
 }
