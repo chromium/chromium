@@ -186,10 +186,9 @@ IN_PROC_BROWSER_TEST_F(DefaultKeyboardExtensionBrowserTest, EndToEndTest) {
   }
   EXPECT_TRUE(content::ExecuteScript(keyboard_wc, script));
   // Verify 'a' appeared on test page.
-  bool success = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser_wc, "success ? verifyInput('a') : waitForInput('a');", &success));
-  ASSERT_TRUE(success);
+  ASSERT_EQ(true,
+            content::EvalJs(browser_wc,
+                            "success ? verifyInput('a') : waitForInput('a');"));
 }
 
 // TODO(kevers|rsadam|bshe):  Add UI tests for remaining virtual keyboard
