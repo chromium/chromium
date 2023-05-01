@@ -44,7 +44,7 @@
 #include "content/browser/attribution_reporting/test/configurable_storage_delegate.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/cpp/trigger_verification.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -416,10 +416,10 @@ TEST_F(AttributionStorageSqlTest, VersionTooNew_RazesDB) {
 }
 
 TEST_F(AttributionStorageSqlTest,
-       StoreAndRetrieveReportWithAttestation_FeatureEnabled) {
+       StoreAndRetrieveReportWithVerification_FeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      network::features::kAttributionReportingTriggerAttestation);
+      network::features::kAttributionReportingReportVerification);
   base::HistogramTester histograms;
 
   OpenDatabase();
@@ -430,11 +430,11 @@ TEST_F(AttributionStorageSqlTest,
                               .Build();
   storage()->StoreSource(source);
 
-  auto trigger_attestation = network::TriggerAttestation::Create(
-      /*token=*/"attestation-token", /*aggregatable_report_id=*/
+  auto trigger_verification = network::TriggerVerification::Create(
+      /*token=*/"verification-token", /*aggregatable_report_id=*/
       "55865da3-fb0e-4b71-965e-64fc4bf0a323");
   AttributionTrigger trigger = DefaultAggregatableTriggerBuilder()
-                                   .SetAttestation(trigger_attestation)
+                                   .SetVerification(trigger_verification)
                                    .Build();
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger),
               AllOf(CreateReportEventLevelStatusIs(
@@ -442,31 +442,31 @@ TEST_F(AttributionStorageSqlTest,
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess)));
   histograms.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.ReportHasAttestation", true,
+      "Conversions.ReportVerification.ReportHasVerification", true,
       /*expected_bucket_count=*/1);
 
   AttributionReport aggregatable_report =
       storage()->GetAttributionReports(base::Time::Max()).at(1);
-  // Should create the report with the id from the trigger attestation.
+  // Should create the report with the id from the trigger verification.
   EXPECT_EQ(aggregatable_report.external_report_id(),
-            trigger_attestation->aggregatable_report_id());
+            trigger_verification->aggregatable_report_id());
 
-  // Should store the attestation token on the report.
+  // Should store the verification token on the report.
   const auto* data =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &aggregatable_report.data());
-  EXPECT_EQ(data->common_data.attestation_token.value(),
-            trigger_attestation->token());
+  EXPECT_EQ(data->common_data.verification_token.value(),
+            trigger_verification->token());
 
   CloseDatabase();
 }
 
 TEST_F(AttributionStorageSqlTest,
-       StoreAndRetrieveReportWithoutAttestation_FeatureEnabled) {
+       StoreAndRetrieveReportWithoutVerification_FeatureEnabled) {
   OpenDatabase();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      network::features::kAttributionReportingTriggerAttestation);
+      network::features::kAttributionReportingReportVerification);
   base::HistogramTester histograms;
 
   StorableSource source = TestAggregatableSourceProvider()
@@ -481,7 +481,7 @@ TEST_F(AttributionStorageSqlTest,
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess)));
   histograms.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.ReportHasAttestation", false,
+      "Conversions.ReportVerification.ReportHasVerification", false,
       /*expected_bucket_count=*/1);
 
   AttributionReport aggregatable_report =
@@ -490,19 +490,19 @@ TEST_F(AttributionStorageSqlTest,
   const auto* data =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &aggregatable_report.data());
-  EXPECT_FALSE(data->common_data.attestation_token.has_value());
+  EXPECT_FALSE(data->common_data.verification_token.has_value());
 
   CloseDatabase();
 }
 
 TEST_F(
     AttributionStorageSqlTest,
-    StoreAndRetrieveReportWithoutAttestation_FeatureDisabled_HasAttestationNotRecorded) {
+    StoreAndRetrieveReportWithoutVerification_FeatureDisabled_HasVerificationNotRecorded) {
   OpenDatabase();
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      network::features::kAttributionReportingTriggerAttestation);
+      network::features::kAttributionReportingReportVerification);
   base::HistogramTester histograms;
 
   StorableSource source = TestAggregatableSourceProvider()
@@ -517,7 +517,7 @@ TEST_F(
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess)));
   histograms.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.ReportHasAttestation", false,
+      "Conversions.ReportVerification.ReportHasVerification", false,
       /*expected_bucket_count=*/0);
 
   AttributionReport aggregatable_report =
@@ -526,17 +526,17 @@ TEST_F(
   const auto* data =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &aggregatable_report.data());
-  EXPECT_FALSE(data->common_data.attestation_token.has_value());
+  EXPECT_FALSE(data->common_data.verification_token.has_value());
 
   CloseDatabase();
 }
 
-TEST_F(AttributionStorageSqlTest, NullReportWithAttestation_FeatureEnabled) {
+TEST_F(AttributionStorageSqlTest, NullReportWithVerification_FeatureEnabled) {
   OpenDatabase();
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      network::features::kAttributionReportingTriggerAttestation);
+      network::features::kAttributionReportingReportVerification);
   base::HistogramTester histograms;
 
   delegate()->set_null_aggregatable_reports({
@@ -547,44 +547,45 @@ TEST_F(AttributionStorageSqlTest, NullReportWithAttestation_FeatureEnabled) {
           .fake_source_time = base::Time::Now() - base::Days(1),
       },
   });
-  auto trigger_attestation = network::TriggerAttestation::Create(
-      /*token=*/"attestation-token", /*aggregatable_report_id=*/
+  auto trigger_verification = network::TriggerVerification::Create(
+      /*token=*/"verification-token", /*aggregatable_report_id=*/
       "55865da3-fb0e-4b71-965e-64fc4bf0a323");
   AttributionTrigger trigger = DefaultAggregatableTriggerBuilder()
-                                   .SetAttestation(trigger_attestation)
+                                   .SetVerification(trigger_verification)
                                    .Build();
   auto result = storage()->MaybeCreateAndStoreReport(trigger);
   EXPECT_TRUE(result.min_null_aggregatable_report_time().has_value());
 
   histograms.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.ReportHasAttestation", true,
+      "Conversions.ReportVerification.ReportHasVerification", true,
       /*expected_bucket_count=*/1);
 
   auto reports = storage()->GetAttributionReports(base::Time::Max());
   ASSERT_THAT(reports, SizeIs(2));
   base::ranges::sort(reports, std::less<>(), &AttributionReport::id);
 
-  // Only the first report was created with the id from the trigger attestation.
+  // Only the first report was created with the id from the trigger
+  // verification.
   const AttributionReport& first_report = reports.front();
   EXPECT_EQ(first_report.external_report_id(),
-            trigger_attestation->aggregatable_report_id());
-  // Should store the attestation token on the report.
+            trigger_verification->aggregatable_report_id());
+  // Should store the verification token on the report.
   const auto* data = absl::get_if<AttributionReport::NullAggregatableData>(
       &first_report.data());
-  EXPECT_EQ(data->common_data.attestation_token.value(),
-            trigger_attestation->token());
+  EXPECT_EQ(data->common_data.verification_token.value(),
+            trigger_verification->token());
 
-  // The second report was not created with the trigger attestation.
+  // The second report was not created with the trigger verification.
   const AttributionReport& second_report = reports.back();
   EXPECT_EQ(second_report.external_report_id(), DefaultExternalReportID());
   data = absl::get_if<AttributionReport::NullAggregatableData>(
       &second_report.data());
-  EXPECT_FALSE(data->common_data.attestation_token.has_value());
+  EXPECT_FALSE(data->common_data.verification_token.has_value());
   CloseDatabase();
 }
 
 TEST_F(AttributionStorageSqlTest,
-       BothRealAndNullReports_OnlyOneReportWithAttestation) {
+       BothRealAndNullReports_OnlyOneReportWithVerification) {
   OpenDatabase();
 
   StorableSource source = TestAggregatableSourceProvider().GetBuilder().Build();
@@ -595,12 +596,12 @@ TEST_F(AttributionStorageSqlTest,
           .fake_source_time = base::Time::Now(),
       },
   });
-  auto trigger_attestation = network::TriggerAttestation::Create(
-      /*token=*/"attestation-token", /*aggregatable_report_id=*/
+  auto trigger_verification = network::TriggerVerification::Create(
+      /*token=*/"verification-token", /*aggregatable_report_id=*/
       "55865da3-fb0e-4b71-965e-64fc4bf0a323");
   AttributionTrigger trigger =
       DefaultAggregatableTriggerBuilder()
-          .SetAttestation(trigger_attestation)
+          .SetVerification(trigger_verification)
           .Build(/*generate_event_trigger_data=*/false);
   auto result = storage()->MaybeCreateAndStoreReport(trigger);
 
@@ -612,28 +613,29 @@ TEST_F(AttributionStorageSqlTest,
   ASSERT_THAT(reports, SizeIs(2));
   base::ranges::sort(reports, std::less<>(), &AttributionReport::id);
 
-  // Only the first report was created with the id from the trigger attestation.
+  // Only the first report was created with the id from the trigger
+  // verification.
   const AttributionReport& first_report = reports.front();
   EXPECT_EQ(first_report.external_report_id(),
-            trigger_attestation->aggregatable_report_id());
-  // Should store the attestation token on the report.
+            trigger_verification->aggregatable_report_id());
+  // Should store the verification token on the report.
   const auto* aggregatable_data =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &first_report.data());
-  EXPECT_EQ(aggregatable_data->common_data.attestation_token.value(),
-            trigger_attestation->token());
+  EXPECT_EQ(aggregatable_data->common_data.verification_token.value(),
+            trigger_verification->token());
 
-  // The second report was not created with the trigger attestation.
+  // The second report was not created with the trigger verification.
   const AttributionReport& second_report = reports.back();
   EXPECT_EQ(second_report.external_report_id(), DefaultExternalReportID());
   const auto* null_data = absl::get_if<AttributionReport::NullAggregatableData>(
       &second_report.data());
-  EXPECT_FALSE(null_data->common_data.attestation_token.has_value());
+  EXPECT_FALSE(null_data->common_data.verification_token.has_value());
   CloseDatabase();
 }
 
 TEST_F(AttributionStorageSqlTest,
-       BothRealAndNullReportsReverseShuffle_OnlyOneReportWithAttestation) {
+       BothRealAndNullReportsReverseShuffle_OnlyOneReportWithVerification) {
   OpenDatabase();
 
   StorableSource source = TestAggregatableSourceProvider().GetBuilder().Build();
@@ -645,12 +647,12 @@ TEST_F(AttributionStorageSqlTest,
       },
   });
   delegate()->set_reverse_reports_on_shuffle(true);
-  auto trigger_attestation = network::TriggerAttestation::Create(
-      /*token=*/"attestation-token", /*aggregatable_report_id=*/
+  auto trigger_verification = network::TriggerVerification::Create(
+      /*token=*/"verification-token", /*aggregatable_report_id=*/
       "55865da3-fb0e-4b71-965e-64fc4bf0a323");
   AttributionTrigger trigger =
       DefaultAggregatableTriggerBuilder()
-          .SetAttestation(trigger_attestation)
+          .SetVerification(trigger_verification)
           .Build(/*generate_event_trigger_data=*/false);
   auto result = storage()->MaybeCreateAndStoreReport(trigger);
 
@@ -662,23 +664,24 @@ TEST_F(AttributionStorageSqlTest,
   ASSERT_THAT(reports, SizeIs(2));
   base::ranges::sort(reports, std::less<>(), &AttributionReport::id);
 
-  // Only the first report was created with the id from the trigger attestation.
+  // Only the first report was created with the id from the trigger
+  // verification.
   const AttributionReport& first_report = reports.front();
   EXPECT_EQ(first_report.external_report_id(),
-            trigger_attestation->aggregatable_report_id());
-  // Should store the attestation token on the report.
+            trigger_verification->aggregatable_report_id());
+  // Should store the verification token on the report.
   const auto* null_data = absl::get_if<AttributionReport::NullAggregatableData>(
       &first_report.data());
-  EXPECT_EQ(null_data->common_data.attestation_token.value(),
-            trigger_attestation->token());
+  EXPECT_EQ(null_data->common_data.verification_token.value(),
+            trigger_verification->token());
 
-  // The second report was not created with the trigger attestation.
+  // The second report was not created with the trigger verification.
   const AttributionReport& second_report = reports.back();
   EXPECT_EQ(second_report.external_report_id(), DefaultExternalReportID());
   const auto* aggregatable_data =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &second_report.data());
-  EXPECT_FALSE(aggregatable_data->common_data.attestation_token.has_value());
+  EXPECT_FALSE(aggregatable_data->common_data.verification_token.has_value());
   CloseDatabase();
 }
 

@@ -49,7 +49,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -684,7 +684,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
     attribution_reporting::SuitableOrigin reporting_origin,
     attribution_reporting::TriggerRegistration data,
-    absl::optional<network::TriggerAttestation> attestation) {
+    absl::optional<network::TriggerVerification> verification) {
   // This is validated by the Mojo typemapping.
   DCHECK(reporting_origin.IsValid());
 
@@ -696,7 +696,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   attribution_manager_->HandleTrigger(
       AttributionTrigger(std::move(reporting_origin), std::move(data),
                          /*destination_origin=*/context->context_origin(),
-                         std::move(attestation),
+                         std::move(verification),
                          context->is_within_fenced_frame()),
       context->render_frame_id());
 }

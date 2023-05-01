@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/attribution/attribution_attestation_mediator.h"
+#include "services/network/attribution/attribution_verification_mediator.h"
 
 #include <memory>
 #include <utility>
@@ -12,7 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
-#include "services/network/attribution/attribution_attestation_mediator_metrics_recorder.h"
+#include "services/network/attribution/attribution_verification_mediator_metrics_recorder.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
@@ -22,20 +22,20 @@
 
 namespace network {
 
-using Cryptographer = AttributionAttestationMediator::Cryptographer;
-using metrics_recorder = AttributionAttestationMediator::MetricsRecorder;
+using Cryptographer = AttributionVerificationMediator::Cryptographer;
+using metrics_recorder = AttributionVerificationMediator::MetricsRecorder;
 
-struct AttributionAttestationMediator::CryptographerAndBlindMessage {
+struct AttributionVerificationMediator::CryptographerAndBlindMessage {
   std::unique_ptr<Cryptographer> cryptographer;
   absl::optional<std::string> blind_message;
 };
 
-struct AttributionAttestationMediator::CryptographerAndToken {
+struct AttributionVerificationMediator::CryptographerAndToken {
   std::unique_ptr<Cryptographer> cryptographer;
   absl::optional<std::string> token;
 };
 
-AttributionAttestationMediator::AttributionAttestationMediator(
+AttributionVerificationMediator::AttributionVerificationMediator(
     const TrustTokenKeyCommitmentGetter* key_commitment_getter,
     std::unique_ptr<Cryptographer> cryptographer,
     std::unique_ptr<MetricsRecorder> metrics_recorder)
@@ -47,9 +47,9 @@ AttributionAttestationMediator::AttributionAttestationMediator(
   DCHECK(metrics_recorder_);
 }
 
-AttributionAttestationMediator::~AttributionAttestationMediator() = default;
+AttributionVerificationMediator::~AttributionVerificationMediator() = default;
 
-void AttributionAttestationMediator::GetHeadersForAttestation(
+void AttributionVerificationMediator::GetHeadersForVerification(
     const GURL& url,
     const std::string& message,
     base::OnceCallback<void(net::HttpRequestHeaders)> done) {
@@ -69,11 +69,11 @@ void AttributionAttestationMediator::GetHeadersForAttestation(
 
   key_commitment_getter_->Get(
       issuer.value(),
-      base::BindOnce(&AttributionAttestationMediator::OnGotKeyCommitment,
+      base::BindOnce(&AttributionVerificationMediator::OnGotKeyCommitment,
                      weak_ptr_factory_.GetWeakPtr(), std::move(done)));
 }
 
-void AttributionAttestationMediator::OnGotKeyCommitment(
+void AttributionVerificationMediator::OnGotKeyCommitment(
     base::OnceCallback<void(net::HttpRequestHeaders)> done,
     mojom::TrustTokenKeyCommitmentResultPtr commitment_result) {
   metrics_recorder_->Complete(Step::kGetKeyCommitment);
@@ -109,19 +109,20 @@ void AttributionAttestationMediator::OnGotKeyCommitment(
              std::string message) {
             absl::optional<std::string> blind_message =
                 cryptographer->BeginIssuance(message);
-            return AttributionAttestationMediator::CryptographerAndBlindMessage{
-                std::move(cryptographer), std::move(blind_message)};
+            return AttributionVerificationMediator::
+                CryptographerAndBlindMessage{std::move(cryptographer),
+                                             std::move(blind_message)};
           },
           std::move(cryptographer_), message_.value()),
-      base::BindOnce(&AttributionAttestationMediator::OnDoneBeginIssuance,
+      base::BindOnce(&AttributionVerificationMediator::OnDoneBeginIssuance,
                      weak_ptr_factory_.GetWeakPtr(),
                      commitment_result->protocol_version, std::move(done)));
 }
 
-void AttributionAttestationMediator::OnDoneBeginIssuance(
+void AttributionVerificationMediator::OnDoneBeginIssuance(
     mojom::TrustTokenProtocolVersion protocol_version,
     base::OnceCallback<void(net::HttpRequestHeaders)> done,
-    AttributionAttestationMediator::CryptographerAndBlindMessage
+    AttributionVerificationMediator::CryptographerAndBlindMessage
         cryptographer_and_blind_message) {
   cryptographer_ = std::move(cryptographer_and_blind_message.cryptographer);
   metrics_recorder_->Complete(Step::kBlindMessage);
@@ -135,7 +136,7 @@ void AttributionAttestationMediator::OnDoneBeginIssuance(
 
   net::HttpRequestHeaders request_headers;
   request_headers.SetHeader(
-      kTriggerAttestationHeader,
+      kReportVerificationHeader,
       std::move(cryptographer_and_blind_message.blind_message.value()));
   request_headers.SetHeader(
       kTrustTokensSecTrustTokenVersionHeader,
@@ -145,7 +146,7 @@ void AttributionAttestationMediator::OnDoneBeginIssuance(
   std::move(done).Run(std::move(request_headers));
 }
 
-void AttributionAttestationMediator::ProcessAttestationToGetToken(
+void AttributionVerificationMediator::ProcessVerificationToGetToken(
     net::HttpResponseHeaders& response_headers,
     base::OnceCallback<void(absl::optional<std::string>)> done) {
   DCHECK(message_.has_value());
@@ -155,17 +156,16 @@ void AttributionAttestationMediator::ProcessAttestationToGetToken(
   std::string header_value;
 
   // EnumerateHeader(|iter|=nullptr) asks for the first instance of the header,
-  // if any. At most one `kTriggerAttestationHeader` is expected as only one
-  // token can attest to a trigger. Subsequent instances of the header are
-  // ignored.
+  // if any. At most one `kReportVerificationHeader` is expected as only one
+  // token can verify a trigger. Subsequent instances of the header are ignored.
   if (!response_headers.EnumerateHeader(
-          /*iter=*/nullptr, kTriggerAttestationHeader, &header_value)) {
-    metrics_recorder_->FinishProcessAttestationWith(
-        ProcessAttestationStatus::kNoSignatureReceivedFromIssuer);
+          /*iter=*/nullptr, kReportVerificationHeader, &header_value)) {
+    metrics_recorder_->FinishProcessVerificationWith(
+        ProcessVerificationStatus::kNoSignatureReceivedFromIssuer);
     std::move(done).Run(absl::nullopt);
     return;
   }
-  response_headers.RemoveHeader(kTriggerAttestationHeader);
+  response_headers.RemoveHeader(kReportVerificationHeader);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -175,18 +175,18 @@ void AttributionAttestationMediator::ProcessAttestationToGetToken(
             absl::optional<std::string> token =
                 cryptographer->ConfirmIssuanceAndBeginRedemption(blind_token);
 
-            return AttributionAttestationMediator::CryptographerAndToken{
+            return AttributionVerificationMediator::CryptographerAndToken{
                 std::move(cryptographer), std::move(token)};
           },
           std::move(cryptographer_), std::move(header_value)),
       base::BindOnce(
-          &AttributionAttestationMediator::OnDoneProcessingIssuanceResponse,
+          &AttributionVerificationMediator::OnDoneProcessingIssuanceResponse,
           weak_ptr_factory_.GetWeakPtr(), std::move(done)));
 }
 
-void AttributionAttestationMediator::OnDoneProcessingIssuanceResponse(
+void AttributionVerificationMediator::OnDoneProcessingIssuanceResponse(
     base::OnceCallback<void(absl::optional<std::string>)> done,
-    AttributionAttestationMediator::CryptographerAndToken
+    AttributionVerificationMediator::CryptographerAndToken
         cryptographer_and_token) {
   cryptographer_ = std::move(cryptographer_and_token.cryptographer);
 
@@ -195,14 +195,14 @@ void AttributionAttestationMediator::OnDoneProcessingIssuanceResponse(
   if (!cryptographer_and_token.token.has_value()) {
     // The response was rejected by the underlying cryptographic library as
     // malformed or otherwise invalid.
-    metrics_recorder_->FinishProcessAttestationWith(
-        ProcessAttestationStatus::kUnableToUnblindSignature);
+    metrics_recorder_->FinishProcessVerificationWith(
+        ProcessVerificationStatus::kUnableToUnblindSignature);
     std::move(done).Run(absl::nullopt);
     return;
   }
 
-  metrics_recorder_->FinishProcessAttestationWith(
-      ProcessAttestationStatus::kSuccess);
+  metrics_recorder_->FinishProcessVerificationWith(
+      ProcessVerificationStatus::kSuccess);
   std::move(done).Run(std::move(cryptographer_and_token.token.value()));
 }
 

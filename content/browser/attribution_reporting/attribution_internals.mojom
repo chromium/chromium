@@ -35,7 +35,7 @@ struct AggregatableHistogramContribution {
 // Contains aggregatable attribution data to be displayed.
 struct WebUIReportAggregatableAttributionData {
   array<AggregatableHistogramContribution> contributions;
-  string? attestation_token;
+  string? verification_token;
   string aggregation_coordinator;
   bool is_null_report;
 };
@@ -128,7 +128,7 @@ struct WebUIRegistration {
 
 struct WebUITrigger {
   WebUIRegistration registration;
-  network.mojom.TriggerAttestation? attestation;
+  network.mojom.TriggerVerification? verification;
 
   enum Status {
     // Shared statuses:

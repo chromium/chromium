@@ -5,10 +5,10 @@
 module network.mojom;
 
 // Structure containing a redemption token that can be sent to the reporting
-// origin alongside an aggregatable report for them to attest the validity of a
+// origin alongside an aggregatable report for them to verify the validity of a
 // trigger. The token was signed over the included aggregatable_report_id which
 // must therefore be used when creating the report.
-struct TriggerAttestation {
+struct TriggerVerification {
   string token;
   // TODO(https://crbug.com/1240405): replace with `guid` once a type-mapping exists.
   string aggregatable_report_id;

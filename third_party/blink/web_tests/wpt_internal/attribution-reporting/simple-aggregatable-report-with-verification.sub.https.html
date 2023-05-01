@@ -34,7 +34,7 @@ attribution_reporting_promise_test(async (t) => {
     aggregatable_values: { campaignCounts: 32768, geoValue: 1664 },
   };
   const triggerRegistrationResponse = await fetch(
-    '/wpt_internal/attribution-reporting/resources/trigger_with_attestation.py',
+    '/wpt_internal/attribution-reporting/resources/trigger_with_verification.py',
     {
       attributionReporting: {triggerEligible: true, eventSourceEligible: false},
       headers: {
@@ -56,9 +56,9 @@ attribution_reporting_promise_test(async (t) => {
   // 4. We check that the redemption header can be validated. The implementation
   //    in trust_token_voprf.py is not complete (e.g. were not passing the message
   //    required for redemption and it still pass), but it still ensure that there
-  //    is an attestation token and it has the right shape.
+  //    is a verification token and it has the right shape.
   const redemptionResponse = await fetch(
-    '/wpt_internal/attribution-reporting/resources/validate_attestation_header.py',
+    '/wpt_internal/attribution-reporting/resources/validate_verification_header.py',
     {
       headers: {
         'Test-Sec-Attribution-Reporting-Private-State-Token': redemptionHeader,
@@ -67,6 +67,6 @@ attribution_reporting_promise_test(async (t) => {
   );
   assert_equals(redemptionResponse.status, 200);
 
-}, 'Ensure aggregatable attribution with trigger attestation is received.');
+}, 'Ensure aggregatable attribution with report verification is received.');
 
 </script>

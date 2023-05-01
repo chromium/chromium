@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace network {
-class TriggerAttestation;
+class TriggerVerification;
 }  // namespace network
 
 namespace attribution_reporting {
@@ -133,7 +133,7 @@ class CORE_EXPORT AttributionSrcLoader
       attribution_reporting::mojom::blink::RegistrationType,
       attribution_reporting::SuitableOrigin reporting_origin,
       const AttributionHeaders&,
-      const absl::optional<network::TriggerAttestation>& trigger_attestation);
+      const absl::optional<network::TriggerVerification>&);
 
   const Member<LocalFrame> local_frame_;
 };

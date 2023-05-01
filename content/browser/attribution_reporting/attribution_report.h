@@ -75,7 +75,7 @@ class CONTENT_EXPORT AttributionReport {
   struct CONTENT_EXPORT CommonAggregatableData {
     CommonAggregatableData(
         ::aggregation_service::mojom::AggregationCoordinator,
-        absl::optional<std::string> attestation_token,
+        absl::optional<std::string> verification_token,
         attribution_reporting::mojom::SourceRegistrationTimeConfig);
     CommonAggregatableData();
     CommonAggregatableData(const CommonAggregatableData&);
@@ -99,9 +99,9 @@ class CONTENT_EXPORT AttributionReport {
         aggregation_coordinator =
             ::aggregation_service::mojom::AggregationCoordinator::kDefault;
 
-    // A token that can be sent alongside the report to complete trigger
-    // attestation.
-    absl::optional<std::string> attestation_token;
+    // A token that can be sent alongside the report to complete its
+    // verification.
+    absl::optional<std::string> verification_token;
 
     attribution_reporting::mojom::SourceRegistrationTimeConfig
         source_registration_time_config = attribution_reporting::mojom::

@@ -35,7 +35,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
-#include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -294,13 +294,13 @@ class PLATFORM_EXPORT ResourceResponse final {
     remote_ip_endpoint_ = value;
   }
 
-  const absl::optional<network::TriggerAttestation>& GetTriggerAttestation()
+  const absl::optional<network::TriggerVerification>& GetTriggerVerification()
       const {
-    return trigger_attestation_;
+    return trigger_verification_;
   }
-  void SetTriggerAttestation(
-      const absl::optional<network::TriggerAttestation>& value) {
-    trigger_attestation_ = value;
+  void SetTriggerVerification(
+      const absl::optional<network::TriggerVerification>& value) {
+    trigger_verification_ = value;
   }
 
   network::mojom::IPAddressSpace AddressSpace() const { return address_space_; }
@@ -657,7 +657,7 @@ class PLATFORM_EXPORT ResourceResponse final {
 
   bool emitted_extra_info_ = false;
 
-  absl::optional<network::TriggerAttestation> trigger_attestation_;
+  absl::optional<network::TriggerVerification> trigger_verification_;
 };
 
 }  // namespace blink

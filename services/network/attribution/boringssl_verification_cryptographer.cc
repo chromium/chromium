@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/attribution/boringssl_attestation_cryptographer.h"
+#include "services/network/attribution/boringssl_verification_cryptographer.h"
 
 #include <string>
 
@@ -19,13 +19,13 @@
 
 namespace network {
 
-BoringsslAttestationCryptographer::BoringsslAttestationCryptographer() =
+BoringsslVerificationCryptographer::BoringsslVerificationCryptographer() =
     default;
 
-BoringsslAttestationCryptographer::~BoringsslAttestationCryptographer() =
+BoringsslVerificationCryptographer::~BoringsslVerificationCryptographer() =
     default;
 
-bool BoringsslAttestationCryptographer::Initialize(
+bool BoringsslVerificationCryptographer::Initialize(
     mojom::TrustTokenProtocolVersion issuer_configured_version) {
   state_ = BoringsslTrustTokenState::Create(
       issuer_configured_version,
@@ -33,7 +33,7 @@ bool BoringsslAttestationCryptographer::Initialize(
   return !!state_;
 }
 
-bool BoringsslAttestationCryptographer::AddKey(base::StringPiece key) {
+bool BoringsslVerificationCryptographer::AddKey(base::StringPiece key) {
   if (!state_) {
     return false;
   }
@@ -49,7 +49,7 @@ bool BoringsslAttestationCryptographer::AddKey(base::StringPiece key) {
   return true;
 }
 
-absl::optional<std::string> BoringsslAttestationCryptographer::BeginIssuance(
+absl::optional<std::string> BoringsslVerificationCryptographer::BeginIssuance(
     base::StringPiece message) {
   if (!state_) {
     return absl::nullopt;
@@ -69,7 +69,7 @@ absl::optional<std::string> BoringsslAttestationCryptographer::BeginIssuance(
 }
 
 absl::optional<std::string>
-BoringsslAttestationCryptographer::ConfirmIssuanceAndBeginRedemption(
+BoringsslVerificationCryptographer::ConfirmIssuanceAndBeginRedemption(
     base::StringPiece response_header) {
   if (!state_) {
     return absl::nullopt;

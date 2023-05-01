@@ -135,7 +135,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void TriggerDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration,
-      absl::optional<network::TriggerAttestation> attestation) override;
+      absl::optional<network::TriggerVerification> verification) override;
 #if BUILDFLAG(IS_ANDROID)
   void OsSourceDataAvailable(const GURL& registration_url) override;
   void OsTriggerDataAvailable(const GURL& registration_url) override;

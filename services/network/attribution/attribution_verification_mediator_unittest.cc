@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/attribution/attribution_attestation_mediator.h"
+#include "services/network/attribution/attribution_verification_mediator.h"
 
 #include <memory>
 #include <set>
@@ -15,8 +15,8 @@
 #include "base/test/task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
-#include "services/network/attribution/attribution_attestation_mediator_metrics_recorder.h"
 #include "services/network/attribution/attribution_test_utils.h"
+#include "services/network/attribution/attribution_verification_mediator_metrics_recorder.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
@@ -26,7 +26,7 @@
 
 namespace network {
 
-class AttributionAttestationMediatorTest : public testing::Test {
+class AttributionVerificationMediatorTest : public testing::Test {
  protected:
   void SetUp() override {
     key_commitment_getter_ = CreateTestTrustTokenKeyCommitments(
@@ -37,18 +37,18 @@ class AttributionAttestationMediatorTest : public testing::Test {
     auto fake_cryptographer = std::make_unique<FakeCryptographer>();
     fake_cryptographer_ = fake_cryptographer.get();
 
-    mediator_ = std::make_unique<AttributionAttestationMediator>(
+    mediator_ = std::make_unique<AttributionVerificationMediator>(
         key_commitment_getter_.get(), std::move(fake_cryptographer),
-        std::make_unique<AttributionAttestationMediatorMetricsRecorder>());
+        std::make_unique<AttributionVerificationMediatorMetricsRecorder>());
   }
 
-  net::HttpRequestHeaders RunGetHeadersForAttestationWith(
+  net::HttpRequestHeaders RunGetHeadersForVerificationWith(
       const GURL& url,
       const std::string& message) {
     base::RunLoop run_loop;
 
     net::HttpRequestHeaders headers;
-    mediator_->GetHeadersForAttestation(
+    mediator_->GetHeadersForVerification(
         url, message,
         base::BindLambdaForTesting(
             [&run_loop, &headers](net::HttpRequestHeaders h) {
@@ -60,17 +60,17 @@ class AttributionAttestationMediatorTest : public testing::Test {
     return headers;
   }
 
-  void RunGetHeadersForAttestationWithValidParams() {
-    RunGetHeadersForAttestationWith(
+  void RunGetHeadersForVerificationWithValidParams() {
+    RunGetHeadersForVerificationWith(
         /*url=*/example_valid_request_url_, /*message=*/"message");
   }
 
-  absl::optional<std::string> RunProcessAttestationToGetTokenWith(
+  absl::optional<std::string> RunProcessVerificationToGetTokenWith(
       net::HttpResponseHeaders& response_headers) {
     base::RunLoop run_loop;
 
     absl::optional<std::string> maybe_token;
-    mediator_->ProcessAttestationToGetToken(
+    mediator_->ProcessVerificationToGetToken(
         response_headers,
         base::BindLambdaForTesting(
             [&run_loop, &maybe_token](absl::optional<std::string> m) {
@@ -97,22 +97,23 @@ class AttributionAttestationMediatorTest : public testing::Test {
   // We hold onto a raw ptr to configure the call expectations, the helper owns
   // the unique_ptr.
   raw_ptr<FakeCryptographer> fake_cryptographer_;
-  std::unique_ptr<AttributionAttestationMediator> mediator_;
+  std::unique_ptr<AttributionVerificationMediator> mediator_;
 
   base::HistogramTester histograms_;
 };
 
-TEST_F(AttributionAttestationMediatorTest,
-       GetHeadersForAttestation_HeadersReturned) {
-  net::HttpRequestHeaders headers = RunGetHeadersForAttestationWith(
+TEST_F(AttributionVerificationMediatorTest,
+       GetHeadersForVerification_HeadersReturned) {
+  net::HttpRequestHeaders headers = RunGetHeadersForVerificationWith(
       /*url=*/example_valid_request_url_, /*message=*/"message");
 
-  std::string attestation_header;
+  std::string verification_header;
   headers.GetHeader("Sec-Attribution-Reporting-Private-State-Token",
-                    &attestation_header);
+                    &verification_header);
   // Check that the message was blinded by the Cryptographer before being added
-  // as an attestation header.
-  EXPECT_TRUE(FakeCryptographer::IsBlindMessage(attestation_header, "message"));
+  // as a verification header.
+  EXPECT_TRUE(
+      FakeCryptographer::IsBlindMessage(verification_header, "message"));
 
   std::string version_header;
   headers.GetHeader("Sec-Private-State-Token-Crypto-Version", &version_header);
@@ -123,90 +124,90 @@ TEST_F(AttributionAttestationMediatorTest,
       base::Contains(fake_cryptographer_->keys, example_verification_key_));
 
   histograms_.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.GetHeadersStatus",
-      AttributionAttestationMediator::GetHeadersStatus::kSuccess,
+      "Conversions.ReportVerification.GetHeadersStatus",
+      AttributionVerificationMediator::GetHeadersStatus::kSuccess,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(AttributionAttestationMediatorTest,
-       GetHeadersForAttestation_NonSuitableIssuer) {
-  net::HttpRequestHeaders headers = RunGetHeadersForAttestationWith(
+TEST_F(AttributionVerificationMediatorTest,
+       GetHeadersForVerification_NonSuitableIssuer) {
+  net::HttpRequestHeaders headers = RunGetHeadersForVerificationWith(
       /*url=*/GURL("http://not-https-url.example/path"),
       /*message=*/"does-not-matter");
 
   EXPECT_TRUE(headers.IsEmpty());
 
   histograms_.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.GetHeadersStatus",
-      AttributionAttestationMediator::GetHeadersStatus::
+      "Conversions.ReportVerification.GetHeadersStatus",
+      AttributionVerificationMediator::GetHeadersStatus::
           kIssuerOriginNotSuitable,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(AttributionAttestationMediatorTest,
-       GetHeadersForAttestation_NoIssuerReturned) {
-  net::HttpRequestHeaders headers = RunGetHeadersForAttestationWith(
+TEST_F(AttributionVerificationMediatorTest,
+       GetHeadersForVerification_NoIssuerReturned) {
+  net::HttpRequestHeaders headers = RunGetHeadersForVerificationWith(
       /*url=*/GURL("https://not-registered-origin-url.example/path"),
       /*message=*/"does-not-matter");
 
   EXPECT_TRUE(headers.IsEmpty());
 
   histograms_.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.GetHeadersStatus",
-      AttributionAttestationMediator::GetHeadersStatus::kIssuerNotRegistered,
+      "Conversions.ReportVerification.GetHeadersStatus",
+      AttributionVerificationMediator::GetHeadersStatus::kIssuerNotRegistered,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(AttributionAttestationMediatorTest,
-       GetHeadersForAttestation_CryptographerInitializationFails) {
+TEST_F(AttributionVerificationMediatorTest,
+       GetHeadersForVerification_CryptographerInitializationFails) {
   fake_cryptographer_->set_should_fail_initialize(true);
 
-  net::HttpRequestHeaders headers = RunGetHeadersForAttestationWith(
+  net::HttpRequestHeaders headers = RunGetHeadersForVerificationWith(
       /*url=*/example_valid_request_url_, /*message=*/"does-not-matter");
 
   EXPECT_TRUE(headers.IsEmpty());
 
   histograms_.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.GetHeadersStatus",
-      AttributionAttestationMediator::GetHeadersStatus::
+      "Conversions.ReportVerification.GetHeadersStatus",
+      AttributionVerificationMediator::GetHeadersStatus::
           kUnableToInitializeCryptographer,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(AttributionAttestationMediatorTest,
-       GetHeadersForAttestation_CryprographerAddKeyFails) {
+TEST_F(AttributionVerificationMediatorTest,
+       GetHeadersForVerification_CryprographerAddKeyFails) {
   fake_cryptographer_->set_should_fail_add_key(true);
 
-  net::HttpRequestHeaders headers = RunGetHeadersForAttestationWith(
+  net::HttpRequestHeaders headers = RunGetHeadersForVerificationWith(
       /*url=*/example_valid_request_url_, /*message=*/"does-not-matter");
 
   EXPECT_TRUE(headers.IsEmpty());
 
   histograms_.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.GetHeadersStatus",
-      AttributionAttestationMediator::GetHeadersStatus::
+      "Conversions.ReportVerification.GetHeadersStatus",
+      AttributionVerificationMediator::GetHeadersStatus::
           kUnableToAddKeysOnCryptographer,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(AttributionAttestationMediatorTest,
-       GetHeadersForAttestation_CryptographerReturnsNoBlindMessage) {
+TEST_F(AttributionVerificationMediatorTest,
+       GetHeadersForVerification_CryptographerReturnsNoBlindMessage) {
   fake_cryptographer_->set_should_fail_begin_issuance(true);
 
-  net::HttpRequestHeaders headers = RunGetHeadersForAttestationWith(
+  net::HttpRequestHeaders headers = RunGetHeadersForVerificationWith(
       /*url=*/example_valid_request_url_, /*message=*/"does-not-matter");
 
   EXPECT_TRUE(headers.IsEmpty());
 
   histograms_.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.GetHeadersStatus",
-      AttributionAttestationMediator::GetHeadersStatus::kUnableToBlindMessage,
+      "Conversions.ReportVerification.GetHeadersStatus",
+      AttributionVerificationMediator::GetHeadersStatus::kUnableToBlindMessage,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(AttributionAttestationMediatorTest,
-       ProcessAttestationToGetToken_HeaderValueReturned) {
-  RunGetHeadersForAttestationWithValidParams();
+TEST_F(AttributionVerificationMediatorTest,
+       ProcessVerificationToGetToken_HeaderValueReturned) {
+  RunGetHeadersForVerificationWithValidParams();
 
   auto response_head = mojom::URLResponseHead::New();
   response_head->headers = net::HttpResponseHeaders::TryToCreate("");
@@ -214,7 +215,7 @@ TEST_F(AttributionAttestationMediatorTest,
       "Sec-Attribution-Reporting-Private-State-Token", "blind-token");
 
   absl::optional<std::string> maybe_token =
-      RunProcessAttestationToGetTokenWith(*response_head->headers.get());
+      RunProcessVerificationToGetTokenWith(*response_head->headers.get());
   // Check that that the blind-token returned by the issuer has been formed in
   // a token by the Cryptographer.
   EXPECT_TRUE(FakeCryptographer::IsToken(maybe_token.value(), "blind-token"));
@@ -224,33 +225,33 @@ TEST_F(AttributionAttestationMediatorTest,
       "Sec-Attribution-Reporting-Private-State-Token"));
 
   histograms_.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.ProcessAttestationStatus",
-      AttributionAttestationMediator::ProcessAttestationStatus::kSuccess,
+      "Conversions.ReportVerification.ProcessVerificationStatus",
+      AttributionVerificationMediator::ProcessVerificationStatus::kSuccess,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(AttributionAttestationMediatorTest,
-       ProcessAttestationToGetToken_ResponseHeaderIsMissing) {
-  RunGetHeadersForAttestationWithValidParams();
+TEST_F(AttributionVerificationMediatorTest,
+       ProcessVerificationToGetToken_ResponseHeaderIsMissing) {
+  RunGetHeadersForVerificationWithValidParams();
 
   auto response_head = mojom::URLResponseHead::New();
   response_head->headers = net::HttpResponseHeaders::TryToCreate("");
 
   absl::optional<std::string> maybe_token =
-      RunProcessAttestationToGetTokenWith(*response_head->headers.get());
+      RunProcessVerificationToGetTokenWith(*response_head->headers.get());
 
   EXPECT_FALSE(maybe_token.has_value());
 
   histograms_.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.ProcessAttestationStatus",
-      AttributionAttestationMediator::ProcessAttestationStatus::
+      "Conversions.ReportVerification.ProcessVerificationStatus",
+      AttributionVerificationMediator::ProcessVerificationStatus::
           kNoSignatureReceivedFromIssuer,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(AttributionAttestationMediatorTest,
-       ProcessAttestationToGetToken_CryptographerReturnsNoToken) {
-  RunGetHeadersForAttestationWithValidParams();
+TEST_F(AttributionVerificationMediatorTest,
+       ProcessVerificationToGetToken_CryptographerReturnsNoToken) {
+  RunGetHeadersForVerificationWithValidParams();
 
   auto response_head = mojom::URLResponseHead::New();
   response_head->headers = net::HttpResponseHeaders::TryToCreate("");
@@ -260,7 +261,7 @@ TEST_F(AttributionAttestationMediatorTest,
   fake_cryptographer_->set_should_fail_confirm_issuance(true);
 
   absl::optional<std::string> maybe_token =
-      RunProcessAttestationToGetTokenWith(*response_head->headers.get());
+      RunProcessVerificationToGetTokenWith(*response_head->headers.get());
 
   EXPECT_FALSE(maybe_token.has_value());
 
@@ -270,8 +271,8 @@ TEST_F(AttributionAttestationMediatorTest,
       "Sec-Attribution-Reporting-Private-State-Token"));
 
   histograms_.ExpectUniqueSample(
-      "Conversions.TriggerAttestation.ProcessAttestationStatus",
-      AttributionAttestationMediator::ProcessAttestationStatus::
+      "Conversions.ReportVerification.ProcessVerificationStatus",
+      AttributionVerificationMediator::ProcessVerificationStatus::
           kUnableToUnblindSignature,
       /*expected_bucket_count=*/1);
 }

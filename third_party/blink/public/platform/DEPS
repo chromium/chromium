@@ -51,7 +51,7 @@ include_rules = [
     "+services/network/public/cpp/cors/preflight_result.h",
     "+services/network/public/cpp/resource_request_body.h",
     "+services/network/public/cpp/shared_url_loader_factory.h",
-    "+services/network/public/cpp/trigger_attestation.h",
+    "+services/network/public/cpp/trigger_verification.h",
 
     # Enforce to use mojom-shared.h in blink/public so that it can compile
     # inside and outside Blink.

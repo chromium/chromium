@@ -38,7 +38,7 @@ BASE_DECLARE_FEATURE(kOpaqueResponseBlockingV01_LAUNCHED);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kOpaqueResponseBlockingV02);
 
 COMPONENT_EXPORT(NETWORK_CPP)
-BASE_DECLARE_FEATURE(kAttributionReportingTriggerAttestation);
+BASE_DECLARE_FEATURE(kAttributionReportingReportVerification);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kAttributionReportingCrossAppWeb);

@@ -19764,7 +19764,7 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Failed to initialize schema"/>
 </enum>
 
-<enum name="ConversionsTriggerAttestationDestinationOriginStatus">
+<enum name="ConversionsTriggerVerificationDestinationOriginStatus">
   <int value="0"
       label="Valid - The destination origin is present and suitable"/>
   <int value="1"
@@ -19772,21 +19772,6 @@ Called by update_net_error_codes.py.-->
   <int value="2"
       label="Non Suitable - The is a destination origin on the request but it
              is not suitable"/>
-</enum>
-
-<enum name="ConversionTriggerAttestationGetHeadersStatus">
-  <int value="0" label="Success - Attestation headers added to the request"/>
-  <int value="1" label="Issuer's origin is not suitable for attestation"/>
-  <int value="2" label="Issuer does not have key commitment"/>
-  <int value="3" label="Unable to initialize the cryptographer"/>
-  <int value="4" label="Unable to add issuer's keys on the cryptographer"/>
-  <int value="5" label="Cryptographer unable to blind the message"/>
-</enum>
-
-<enum name="ConversionTriggerAttestationProcessAttestationStatus">
-  <int value="0" label="Success - A token was returned"/>
-  <int value="1" label="No attestation header containing a signature received"/>
-  <int value="2" label="Unable to unblind the the signature"/>
 </enum>
 
 <enum name="ConversionTriggerRegistrationError">
@@ -19824,6 +19809,22 @@ Called by update_net_error_codes.py.-->
   <int value="32" label="aggregatable_source_registration_time has wrong type"/>
   <int value="33"
       label="aggregatable_source_registration_time has unknown value"/>
+</enum>
+
+<enum name="ConversionTriggerVerificationGetHeadersStatus">
+  <int value="0" label="Success - Verification headers added to the request"/>
+  <int value="1" label="Issuer's origin is not suitable for verification"/>
+  <int value="2" label="Issuer does not have key commitment"/>
+  <int value="3" label="Unable to initialize the cryptographer"/>
+  <int value="4" label="Unable to add issuer's keys on the cryptographer"/>
+  <int value="5" label="Cryptographer unable to blind the message"/>
+</enum>
+
+<enum name="ConversionTriggerVerificationProcessVerificationStatus">
+  <int value="0" label="Success - A token was returned"/>
+  <int value="1"
+      label="No verification header containing a signature received"/>
+  <int value="2" label="Unable to unblind the the signature"/>
 </enum>
 
 <enum name="CookieAccessType">

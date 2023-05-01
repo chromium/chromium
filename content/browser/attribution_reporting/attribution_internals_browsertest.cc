@@ -55,7 +55,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/cpp/trigger_verification.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -1017,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(
                     SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(3))
           .SetAggregatableHistogramContributions(contributions)
-          .SetAttestationToken("abc")
+          .SetVerificationToken("abc")
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
       SendResult(SendResult::Status::kSent, net::OK,
@@ -1112,8 +1112,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        TriggersDisplayed) {
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  const auto create_trigger = [](absl::optional<network::TriggerAttestation>
-                                     attestation) {
+  const auto create_trigger = [](absl::optional<network::TriggerVerification>
+                                     verification) {
     return AttributionTrigger(
         /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
         attribution_reporting::TriggerRegistration(
@@ -1152,12 +1152,12 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             ::aggregation_service::mojom::AggregationCoordinator::kDefault,
             attribution_reporting::mojom::SourceRegistrationTimeConfig::
                 kInclude),
-        *SuitableOrigin::Deserialize("https://d.test"), std::move(attestation),
+        *SuitableOrigin::Deserialize("https://d.test"), std::move(verification),
         /*is_within_fenced_frame=*/false);
   };
 
   static constexpr char kScript[] = R"(
-    const expectedAttestation =
+    const expectedVerification =
       '<dl><dt>Token</dt><dd>abc</dd>' +
       '<dt>Report ID</dt><dd>a2ab30b9-d664-4dfc-a9db-85f9729b9a30</dd></dl>';
 
@@ -1172,7 +1172,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[3]?.innerText.includes('{') &&
           table.children[0].children[4]?.innerText === '' &&
           table.children[1].children[4]?.innerText === '123' &&
-          table.children[1].children[7]?.innerHTML === expectedAttestation) {
+          table.children[1].children[7]?.innerHTML === expectedVerification) {
         obs.disconnect();
         document.title = $1;
       }
@@ -1201,11 +1201,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             cleared_debug_key);
       };
 
-  notify_trigger_handled(create_trigger(/*attestation=*/absl::nullopt),
+  notify_trigger_handled(create_trigger(/*verification=*/absl::nullopt),
                          AttributionTrigger::EventLevelResult::kSuccess,
                          AttributionTrigger::AggregatableResult::kSuccess);
 
-  notify_trigger_handled(create_trigger(network::TriggerAttestation::Create(
+  notify_trigger_handled(create_trigger(network::TriggerVerification::Create(
                              "abc", "a2ab30b9-d664-4dfc-a9db-85f9729b9a30")),
                          AttributionTrigger::EventLevelResult::kSuccess,
                          AttributionTrigger::AggregatableResult::kSuccess,

@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/attribution/attribution_attestation_mediator_metrics_recorder.h"
+#include "services/network/attribution/attribution_verification_mediator_metrics_recorder.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "services/network/attribution/attribution_attestation_mediator.h"
+#include "services/network/attribution/attribution_verification_mediator.h"
 
 namespace network {
 
-using Step = AttributionAttestationMediator::Step;
-using GetHeadersStatus = AttributionAttestationMediator::GetHeadersStatus;
-using ProcessAttestationStatus =
-    AttributionAttestationMediator::ProcessAttestationStatus;
+using Step = AttributionVerificationMediator::Step;
+using GetHeadersStatus = AttributionVerificationMediator::GetHeadersStatus;
+using ProcessVerificationStatus =
+    AttributionVerificationMediator::ProcessVerificationStatus;
 
 namespace {
 
@@ -55,7 +55,7 @@ void RecordTiming(TimeSpan time_span, bool is_success, base::TimeDelta delta) {
   base::StringPiece outcome_string = is_success ? "Success" : "Failure";
 
   base::UmaHistogramTimes(
-      base::JoinString({"Conversions.TriggerAttestation.Duration",
+      base::JoinString({"Conversions.ReportVerification.Duration",
                         time_span_string, outcome_string},
                        "."),
       delta);
@@ -63,17 +63,17 @@ void RecordTiming(TimeSpan time_span, bool is_success, base::TimeDelta delta) {
 
 }  // namespace
 
-AttributionAttestationMediatorMetricsRecorder::
-    AttributionAttestationMediatorMetricsRecorder() = default;
-AttributionAttestationMediatorMetricsRecorder::
-    ~AttributionAttestationMediatorMetricsRecorder() = default;
+AttributionVerificationMediatorMetricsRecorder::
+    AttributionVerificationMediatorMetricsRecorder() = default;
+AttributionVerificationMediatorMetricsRecorder::
+    ~AttributionVerificationMediatorMetricsRecorder() = default;
 
-void AttributionAttestationMediatorMetricsRecorder::Start() {
+void AttributionVerificationMediatorMetricsRecorder::Start() {
   DCHECK(get_headers_start_.is_null());
   get_headers_start_ = base::TimeTicks::Now();
 }
 
-void AttributionAttestationMediatorMetricsRecorder::Complete(Step step) {
+void AttributionVerificationMediatorMetricsRecorder::Complete(Step step) {
   switch (step) {
     case Step::kGetKeyCommitment:
       DCHECK(!get_headers_start_.is_null());
@@ -103,14 +103,14 @@ void AttributionAttestationMediatorMetricsRecorder::Complete(Step step) {
   }
 }
 
-void AttributionAttestationMediatorMetricsRecorder::FinishGetHeadersWith(
+void AttributionVerificationMediatorMetricsRecorder::FinishGetHeadersWith(
     GetHeadersStatus status) {
   DCHECK(!get_headers_start_.is_null());
 
   if (!get_key_commitment_end_.is_null()) {
     bool is_success =
         status !=
-        AttributionAttestationMediator::GetHeadersStatus::kIssuerNotRegistered;
+        AttributionVerificationMediator::GetHeadersStatus::kIssuerNotRegistered;
     RecordTiming(TimeSpan::kGetKeyCommitment, is_success,
                  /*delta=*/get_key_commitment_end_ - get_headers_start_);
   }
@@ -131,35 +131,35 @@ void AttributionAttestationMediatorMetricsRecorder::FinishGetHeadersWith(
   }
 
   base::UmaHistogramEnumeration(
-      "Conversions.TriggerAttestation.GetHeadersStatus", status);
+      "Conversions.ReportVerification.GetHeadersStatus", status);
 }
 
-void AttributionAttestationMediatorMetricsRecorder::
-    FinishProcessAttestationWith(ProcessAttestationStatus status) {
+void AttributionVerificationMediatorMetricsRecorder::
+    FinishProcessVerificationWith(ProcessVerificationStatus status) {
   DCHECK(!blind_message_end_.is_null());
 
   auto finish_end = base::TimeTicks::Now();
 
   if (!sign_blind_message_end_.is_null()) {
     bool is_success =
-        status != ProcessAttestationStatus::kNoSignatureReceivedFromIssuer;
+        status != ProcessVerificationStatus::kNoSignatureReceivedFromIssuer;
     RecordTiming(TimeSpan::kSignBlindMessage, is_success,
                  /*delta=*/sign_blind_message_end_ - blind_message_end_);
   }
 
   if (!unblind_message_end_.is_null()) {
     bool is_success =
-        status != ProcessAttestationStatus::kUnableToUnblindSignature;
+        status != ProcessVerificationStatus::kUnableToUnblindSignature;
     RecordTiming(TimeSpan::kUnblindSignature, is_success,
                  /*delta=*/unblind_message_end_ - sign_blind_message_end_);
   }
 
   RecordTiming(TimeSpan::kTotal,
-               /*is_success=*/status == ProcessAttestationStatus::kSuccess,
+               /*is_success=*/status == ProcessVerificationStatus::kSuccess,
                /*delta=*/finish_end - get_headers_start_);
 
   base::UmaHistogramEnumeration(
-      "Conversions.TriggerAttestation.ProcessAttestationStatus", status);
+      "Conversions.ReportVerification.ProcessVerificationStatus", status);
 }
 
 }  // namespace network

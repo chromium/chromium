@@ -44,7 +44,7 @@ class SchemefulSite;
 }  // namespace net
 
 namespace network {
-class TriggerAttestation;
+class TriggerVerification;
 }  // namespace network
 
 namespace content {
@@ -210,8 +210,8 @@ class TriggerBuilder {
   TriggerBuilder& SetSourceRegistrationTimeConfig(
       attribution_reporting::mojom::SourceRegistrationTimeConfig);
 
-  TriggerBuilder& SetAttestation(
-      absl::optional<network::TriggerAttestation> attestation);
+  TriggerBuilder& SetVerification(
+      absl::optional<network::TriggerVerification> verification);
 
   AttributionTrigger Build(bool generate_event_trigger_data = true) const;
 
@@ -232,7 +232,7 @@ class TriggerBuilder {
   ::aggregation_service::mojom::AggregationCoordinator
       aggregation_coordinator_ =
           ::aggregation_service::mojom::AggregationCoordinator::kDefault;
-  absl::optional<network::TriggerAttestation> attestation_;
+  absl::optional<network::TriggerVerification> verification_;
   attribution_reporting::mojom::SourceRegistrationTimeConfig
       source_registration_time_config_ =
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
@@ -288,8 +288,8 @@ class ReportBuilder {
   ReportBuilder& SetSourceRegistrationTimeConfig(
       attribution_reporting::mojom::SourceRegistrationTimeConfig);
 
-  ReportBuilder& SetAttestationToken(
-      absl::optional<std::string> attestation_token);
+  ReportBuilder& SetVerificationToken(
+      absl::optional<std::string> verification_token);
 
   AttributionReport Build() const;
 
@@ -310,7 +310,8 @@ class ReportBuilder {
   ::aggregation_service::mojom::AggregationCoordinator
       aggregation_coordinator_ =
           ::aggregation_service::mojom::AggregationCoordinator::kDefault;
-  absl::optional<std::string> attestation_token_;
+
+  absl::optional<std::string> verification_token_;
   attribution_reporting::mojom::SourceRegistrationTimeConfig
       source_registration_time_config_ =
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
@@ -692,8 +693,8 @@ struct AttributionTriggerMatcherConfig {
       registration = ::testing::_;
   ::testing::Matcher<const attribution_reporting::SuitableOrigin&>
       destination_origin = ::testing::_;
-  ::testing::Matcher<const absl::optional<network::TriggerAttestation>&>
-      attestation = ::testing::_;
+  ::testing::Matcher<const absl::optional<network::TriggerVerification>&>
+      verification = ::testing::_;
 
   ::testing::Matcher<bool> is_within_fenced_frame = ::testing::_;
 

@@ -761,7 +761,7 @@ class URLLoaderTest : public testing::Test {
     test_server_.AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("services/test/data")));
     test_server_.RegisterRequestHandler(
-        base::BindRepeating(&HandleAttestationRequest));
+        base::BindRepeating(&HandleVerificationRequest));
     // This Unretained is safe because test_server_ is owned by |this|.
     test_server_.RegisterRequestMonitor(
         base::BindRepeating(&URLLoaderTest::Monitor, base::Unretained(this)));
@@ -6363,7 +6363,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
        HandlesTrustTokenFollowedByAttribution) {
   GURL request_url = test_server_.GetURL(
-      base::JoinString({kAttestationHandlerPathPrefix, "some-path"}, "/"));
+      base::JoinString({kVerificationHandlerPathPrefix, "some-path"}, "/"));
 
   ResourceRequest request = CreateTrustTokenResourceRequest(request_url);
 
@@ -6372,7 +6372,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   mojo::PendingRemote<mojom::URLLoader> loader_remote;
   std::unique_ptr<URLLoader> url_loader;
 
-  // Request must come from a valid origin for attestation operation to run.
+  // Request must come from a valid origin for verification operation to run.
   context().mutable_factory_params().isolation_info =
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(
           GURL("https://valid-destination-origin.example")));
@@ -6402,9 +6402,9 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
-  ASSERT_TRUE(client()->response_head()->trigger_attestation);
+  ASSERT_TRUE(client()->response_head()->trigger_verification);
   EXPECT_TRUE(FakeCryptographer::IsToken(
-      client()->response_head()->trigger_attestation->token(),
+      client()->response_head()->trigger_verification->token(),
       kTestBlindToken));
 }
 
@@ -6590,9 +6590,9 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
           test_server()->GetOrigin(), test_server()->GetOrigin(), true)));
 }
 
-TEST_F(URLLoaderTest, HandlesTriggerAttestationRequest) {
+TEST_F(URLLoaderTest, HandlesTriggerVerificationRequest) {
   GURL request_url = test_server_.GetURL(
-      base::JoinString({kAttestationHandlerPathPrefix, "some-path"}, "/"));
+      base::JoinString({kVerificationHandlerPathPrefix, "some-path"}, "/"));
   ResourceRequest request = CreateResourceRequest("GET", request_url);
 
   base::RunLoop delete_run_loop;
@@ -6600,7 +6600,7 @@ TEST_F(URLLoaderTest, HandlesTriggerAttestationRequest) {
   mojo::PendingRemote<mojom::URLLoader> loader_remote;
   std::unique_ptr<URLLoader> url_loader;
 
-  // Request must come from a valid origin for attestation operation to run.
+  // Request must come from a valid origin for verification operation to run.
   context().mutable_factory_params().isolation_info =
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(
           GURL("https://valid-destination-origin.example")));
@@ -6623,15 +6623,15 @@ TEST_F(URLLoaderTest, HandlesTriggerAttestationRequest) {
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
-  absl::optional<::network::TriggerAttestation> response_attestation =
-      client()->response_head()->trigger_attestation;
-  ASSERT_TRUE(response_attestation.has_value());
-  EXPECT_TRUE(FakeCryptographer::IsToken(response_attestation->token(),
+  absl::optional<::network::TriggerVerification> response_verification =
+      client()->response_head()->trigger_verification;
+  ASSERT_TRUE(response_verification.has_value());
+  EXPECT_TRUE(FakeCryptographer::IsToken(response_verification->token(),
                                          kTestBlindToken));
 }
 
-TEST_F(URLLoaderTest, HandlesTriggerAttestationRequestWithRedirect) {
-  GURL request_url = test_server_.GetURL(kRedirectAttestationRequestPath);
+TEST_F(URLLoaderTest, HandlesTriggerVerificationRequestWithRedirect) {
+  GURL request_url = test_server_.GetURL(kRedirectVerificationRequestPath);
   ResourceRequest request = CreateResourceRequest("GET", request_url);
 
   base::RunLoop delete_run_loop;
@@ -6639,7 +6639,7 @@ TEST_F(URLLoaderTest, HandlesTriggerAttestationRequestWithRedirect) {
   mojo::PendingRemote<mojom::URLLoader> loader_remote;
   std::unique_ptr<URLLoader> url_loader;
 
-  // Request must come from a valid origin for attestation operation to run.
+  // Request must come from a valid origin for verification operation to run.
   context().mutable_factory_params().isolation_info =
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(
           GURL("https://valid-destination-origin.example")));
@@ -6662,10 +6662,10 @@ TEST_F(URLLoaderTest, HandlesTriggerAttestationRequestWithRedirect) {
   client()->RunUntilRedirectReceived();
   ASSERT_TRUE(client()->has_received_redirect());
 
-  absl::optional<TriggerAttestation> redirect_attestation =
-      client()->response_head()->trigger_attestation;
-  ASSERT_TRUE(redirect_attestation.has_value());
-  EXPECT_TRUE(FakeCryptographer::IsToken(redirect_attestation->token(),
+  absl::optional<TriggerVerification> redirect_verification =
+      client()->response_head()->trigger_verification;
+  ASSERT_TRUE(redirect_verification.has_value());
+  EXPECT_TRUE(FakeCryptographer::IsToken(redirect_verification->token(),
                                          kTestBlindToken));
   // Follow redirect is called by the client. Even if the attribution request
   // helper adds/remove headers follow redirect would/can still be called by the
@@ -6676,14 +6676,14 @@ TEST_F(URLLoaderTest, HandlesTriggerAttestationRequestWithRedirect) {
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
-  absl::optional<TriggerAttestation> response_attestation =
-      client()->response_head()->trigger_attestation;
-  ASSERT_TRUE(response_attestation.has_value());
-  EXPECT_TRUE(FakeCryptographer::IsToken(response_attestation->token(),
+  absl::optional<TriggerVerification> response_verification =
+      client()->response_head()->trigger_verification;
+  ASSERT_TRUE(response_verification.has_value());
+  EXPECT_TRUE(FakeCryptographer::IsToken(response_verification->token(),
                                          kTestBlindToken));
 
-  EXPECT_NE(redirect_attestation->aggregatable_report_id(),
-            response_attestation->aggregatable_report_id());
+  EXPECT_NE(redirect_verification->aggregatable_report_id(),
+            response_verification->aggregatable_report_id());
 }
 
 TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateFactory) {

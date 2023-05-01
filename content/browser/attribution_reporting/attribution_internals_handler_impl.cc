@@ -177,7 +177,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
                     std::move(contributions),
-                    aggregatable_data.common_data.attestation_token,
+                    aggregatable_data.common_data.verification_token,
                     aggregation_service::SerializeAggregationCoordinator(
                         aggregatable_data.common_data.aggregation_coordinator),
                     /*is_null_report=*/false));
@@ -194,7 +194,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
                     std::move(contributions),
-                    null_data.common_data.attestation_token,
+                    null_data.common_data.verification_token,
                     aggregation_service::SerializeAggregationCoordinator(
                         null_data.common_data.aggregation_coordinator),
                     /*is_null_report=*/true));
@@ -539,7 +539,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
       GetWebUITriggerStatus(result.event_level_status());
   web_ui_trigger->aggregatable_status =
       GetWebUITriggerStatus(result.aggregatable_status());
-  web_ui_trigger->attestation = trigger.attestation();
+  web_ui_trigger->verification = trigger.verification();
 
   observer_->OnTriggerHandled(std::move(web_ui_trigger));
 

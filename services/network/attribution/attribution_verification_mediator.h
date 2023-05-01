@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_ATTRIBUTION_ATTRIBUTION_ATTESTATION_MEDIATOR_H_
-#define SERVICES_NETWORK_ATTRIBUTION_ATTRIBUTION_ATTESTATION_MEDIATOR_H_
+#ifndef SERVICES_NETWORK_ATTRIBUTION_ATTRIBUTION_VERIFICATION_MEDIATOR_H_
+#define SERVICES_NETWORK_ATTRIBUTION_ATTRIBUTION_VERIFICATION_MEDIATOR_H_
 
 #include <memory>
 #include <string>
@@ -19,17 +19,17 @@ namespace network {
 
 class TrustTokenKeyCommitmentGetter;
 
-//  Class `AttributionAttestationMediator` handles a single trigger attestation
+//  Class `AttributionVerificationMediator` handles a single report verification
 //  operation
-//  (https://github.com/WICG/attribution-reporting-api/blob/main/trigger_attestation.md):
+//  (https://github.com/WICG/attribution-reporting-api/blob/main/report_verification.md):
 //  it generates a blind message using an underlying cryptographic library, asks
 //  a private state token issuer to sign the blind message to obtain a blind
 //  token, verifies and unblinds it using the cryptographic library to obtain a
 //  token which is returned.
-class AttributionAttestationMediator {
+class AttributionVerificationMediator {
  public:
   // Represents the status/outcome of the execution of
-  // `GetHeadersForAttestation`. These values are persisted to logs.
+  // `GetHeadersForVerification`. These values are persisted to logs.
   enum class GetHeadersStatus {
     kSuccess = 0,
     kIssuerOriginNotSuitable = 1,
@@ -41,15 +41,15 @@ class AttributionAttestationMediator {
   };
 
   // Represents the status/outcome of the execution of
-  // `ProcessAttestationToGetToken`. These values are persisted to logs.
-  enum class ProcessAttestationStatus {
+  // `ProcessVerificationToGetToken`. These values are persisted to logs.
+  enum class ProcessVerificationStatus {
     kSuccess = 0,
     kNoSignatureReceivedFromIssuer = 1,
     kUnableToUnblindSignature = 2,
     kMaxValue = kUnableToUnblindSignature,
   };
 
-  // Describe the ordered steps associated to completing an attestation
+  // Describe the ordered steps associated to completing a verification
   // operation.
   enum class Step {
     kGetKeyCommitment = 0,
@@ -108,26 +108,26 @@ class AttributionAttestationMediator {
     virtual void Start() = 0;
     virtual void Complete(Step step) = 0;
     virtual void FinishGetHeadersWith(GetHeadersStatus status) = 0;
-    virtual void FinishProcessAttestationWith(
-        ProcessAttestationStatus status) = 0;
+    virtual void FinishProcessVerificationWith(
+        ProcessVerificationStatus status) = 0;
   };
 
-  static constexpr char kTriggerAttestationHeader[] =
+  static constexpr char kReportVerificationHeader[] =
       "Sec-Attribution-Reporting-Private-State-Token";
 
-  AttributionAttestationMediator(
+  AttributionVerificationMediator(
       const TrustTokenKeyCommitmentGetter* key_commitment_getter,
       std::unique_ptr<Cryptographer> cryptographer,
       std::unique_ptr<MetricsRecorder> metrics_recorder);
-  ~AttributionAttestationMediator();
+  ~AttributionVerificationMediator();
 
-  AttributionAttestationMediator(const AttributionAttestationMediator&) =
+  AttributionVerificationMediator(const AttributionVerificationMediator&) =
       delete;
-  AttributionAttestationMediator& operator=(
-      const AttributionAttestationMediator&) = delete;
+  AttributionVerificationMediator& operator=(
+      const AttributionVerificationMediator&) = delete;
 
-  // Returns headers used for attestation if the `url`'s origin is configured as
-  // a private state tokens issuer.
+  // Returns headers used for report verification if the `url`'s origin is
+  // configured as a private state tokens issuer.
   //
   // 1. Get the issuer's key commitment; if unavailable or unsuccessful, returns
   //    no headers
@@ -143,21 +143,21 @@ class AttributionAttestationMediator {
   //
   // Later, when receiving the data with a token, the issuer will need to
   // re-generate this message to verify the token.
-  void GetHeadersForAttestation(
+  void GetHeadersForVerification(
       const GURL& url,
       const std::string& message,
       base::OnceCallback<void(net::HttpRequestHeaders)> done);
 
-  // Process headers from an attestation response; if present and valid,
+  // Process headers from an verification response; if present and valid,
   // generates and returns a token that can be used for redemption.
-  // 1. Checks `response_headers` for an attestation response header.
+  // 1. Checks `response_headers` for a verification response header.
   // 2. If the header is present, strips it from `response_headers` and passes
   //    its value (blind token) to an underlying cryptographic library, which
   //    parses, validates and unblind the header to return a token.
   //
   // If both of these steps are successful, returns a token that can be send to
   // and verified by the issuer that signed the blind message.
-  void ProcessAttestationToGetToken(
+  void ProcessVerificationToGetToken(
       net::HttpResponseHeaders& response_headers,
       base::OnceCallback<
           void(absl::optional<std::string> maybe_redemption_token)> done);
@@ -166,30 +166,30 @@ class AttributionAttestationMediator {
   struct CryptographerAndToken;
   struct CryptographerAndBlindMessage;
 
-  // Continuation of `GetHeadersForAttestation` after asynchronous key
-  // commitment fetching concludes. `done` is `GetHeadersForAttestation`'s
+  // Continuation of `GetHeadersForVerification` after asynchronous key
+  // commitment fetching concludes. `done` is `GetHeadersForVerification`'s
   // parameter, passed on to the continuation; `commitment_result` is the result
   // of the key commitment fetch.
   void OnGotKeyCommitment(
       base::OnceCallback<void(net::HttpRequestHeaders)> done,
       mojom::TrustTokenKeyCommitmentResultPtr commitment_result);
 
-  // Continuation of `GetHeadersForAttestation` after an off-thread execution of
-  // issuance operation (`Cryptographer::BeginIssuance`).`protocol_version` is
-  // the private state issuer configured protocol versions; `done` is
-  // `GetHeadersForAttestation`'s parameter, passed on to the continuation.
+  // Continuation of `GetHeadersForVerification` after an off-thread execution
+  // of issuance operation (`Cryptographer::BeginIssuance`).`protocol_version`
+  // is the private state issuer configured protocol versions; `done` is
+  // `GetHeadersForVerification`'s parameter, passed on to the continuation.
   // Receives ownership of the cryptographer back from the asynchronous callback
   // and stores it back in `cryptographer_` to reuse during
-  // `ProcessAttestationToGetToken`.
+  // `ProcessVerificationToGetToken`.
   void OnDoneBeginIssuance(
       mojom::TrustTokenProtocolVersion protocol_version,
       base::OnceCallback<void(net::HttpRequestHeaders)> done,
       CryptographerAndBlindMessage cryptographer_and_blinded_token);
 
-  // Continuation of `ProcessAttestationToGetToken` after an off-thread
+  // Continuation of `ProcessVerificationToGetToken` after an off-thread
   // execution to complete the issuance
   // (`Cryptographer::ConfirmIssuanceAndBeginRedemption`). `done` is
-  // `ProcessAttestationToGetToken`'s parameter, passed on to the continuation.
+  // `ProcessVerificationToGetToken`'s parameter, passed on to the continuation.
   // Receives ownership of the cryptographer back from the asynchronous
   // callback.
   void OnDoneProcessingIssuanceResponse(
@@ -197,8 +197,8 @@ class AttributionAttestationMediator {
       CryptographerAndToken cryptographer_and_redemption_token);
 
   // `message_` needs to be a nullable type because it is initialized in
-  // `GetHeadersForAttestation`, but, once initialized, it will never be mutated
-  // over the course of the operation's execution.
+  // `GetHeadersForVerification`, but, once initialized, it will never be
+  // mutated over the course of the operation's execution.
   absl::optional<std::string> message_;
 
   // The key_commitment_getter_ instance is a singleton owned by NetworkService,
@@ -215,9 +215,9 @@ class AttributionAttestationMediator {
   // The metrics recorder will be defined for the full lifecycle of this.
   std::unique_ptr<MetricsRecorder> metrics_recorder_;
 
-  base::WeakPtrFactory<AttributionAttestationMediator> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AttributionVerificationMediator> weak_ptr_factory_{this};
 };
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_ATTRIBUTION_ATTRIBUTION_ATTESTATION_MEDIATOR_H_
+#endif  // SERVICES_NETWORK_ATTRIBUTION_ATTRIBUTION_VERIFICATION_MEDIATOR_H_

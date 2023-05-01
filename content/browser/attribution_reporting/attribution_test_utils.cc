@@ -36,8 +36,8 @@
 #include "content/public/browser/attribution_data_model.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/public/cpp/trigger_attestation.h"
-#include "services/network/public/cpp/trigger_attestation_test_utils.h"
+#include "services/network/public/cpp/trigger_verification.h"
+#include "services/network/public/cpp/trigger_verification_test_utils.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -357,9 +357,9 @@ TriggerBuilder& TriggerBuilder::SetSourceRegistrationTimeConfig(
   return *this;
 }
 
-TriggerBuilder& TriggerBuilder::SetAttestation(
-    absl::optional<network::TriggerAttestation> attestation) {
-  attestation_ = std::move(attestation);
+TriggerBuilder& TriggerBuilder::SetVerification(
+    absl::optional<network::TriggerVerification> verification) {
+  verification_ = std::move(verification);
   return *this;
 }
 
@@ -391,7 +391,7 @@ AttributionTrigger TriggerBuilder::Build(
           std::move(event_triggers), aggregatable_trigger_data_,
           aggregatable_values_, debug_reporting_, aggregation_coordinator_,
           source_registration_time_config_),
-      destination_origin_, attestation_, is_within_fenced_frame_);
+      destination_origin_, verification_, is_within_fenced_frame_);
 }
 
 AttributionInfoBuilder::AttributionInfoBuilder(
@@ -468,9 +468,9 @@ ReportBuilder& ReportBuilder::SetAggregationCoordinator(
   return *this;
 }
 
-ReportBuilder& ReportBuilder::SetAttestationToken(
-    absl::optional<std::string> attestation_token) {
-  attestation_token_ = std::move(attestation_token);
+ReportBuilder& ReportBuilder::SetVerificationToken(
+    absl::optional<std::string> verification_token) {
+  verification_token_ = std::move(verification_token);
   return *this;
 }
 
@@ -491,28 +491,28 @@ AttributionReport ReportBuilder::Build() const {
 }
 
 AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
-  return AttributionReport(attribution_info_, report_id_, report_time_,
-                           /*initial_report_time=*/report_time_,
-                           external_report_id_,
-                           /*failed_send_attempts=*/0,
-                           AttributionReport::AggregatableAttributionData(
-                               AttributionReport::CommonAggregatableData(
-                                   aggregation_coordinator_, attestation_token_,
-                                   source_registration_time_config_),
-                               contributions_, source_));
+  return AttributionReport(
+      attribution_info_, report_id_, report_time_,
+      /*initial_report_time=*/report_time_, external_report_id_,
+      /*failed_send_attempts=*/0,
+      AttributionReport::AggregatableAttributionData(
+          AttributionReport::CommonAggregatableData(
+              aggregation_coordinator_, verification_token_,
+              source_registration_time_config_),
+          contributions_, source_));
 }
 
 AttributionReport ReportBuilder::BuildNullAggregatable() const {
-  return AttributionReport(attribution_info_, report_id_, report_time_,
-                           /*initial_report_time=*/report_time_,
-                           external_report_id_,
-                           /*failed_send_attempts=*/0,
-                           AttributionReport::NullAggregatableData(
-                               AttributionReport::CommonAggregatableData(
-                                   aggregation_coordinator_, attestation_token_,
-                                   source_registration_time_config_),
-                               source_.common_info().reporting_origin(),
-                               source_.common_info().source_time()));
+  return AttributionReport(
+      attribution_info_, report_id_, report_time_,
+      /*initial_report_time=*/report_time_, external_report_id_,
+      /*failed_send_attempts=*/0,
+      AttributionReport::NullAggregatableData(
+          AttributionReport::CommonAggregatableData(
+              aggregation_coordinator_, verification_token_,
+              source_registration_time_config_),
+          source_.common_info().reporting_origin(),
+          source_.common_info().source_time()));
 }
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
@@ -602,7 +602,8 @@ bool operator==(const AttributionReport::EventLevelData& a,
 bool operator==(const AttributionReport::CommonAggregatableData& a,
                 const AttributionReport::CommonAggregatableData& b) {
   const auto tie = [](const AttributionReport::CommonAggregatableData& data) {
-    return std::make_tuple(data.attestation_token, data.aggregation_coordinator,
+    return std::make_tuple(data.verification_token,
+                           data.aggregation_coordinator,
                            data.source_registration_time_config);
   };
   return tie(a) == tie(b);
@@ -762,10 +763,10 @@ std::ostream& operator<<(std::ostream& out,
       << ",destination_origin=" << conversion.destination_origin()
       << ",is_within_fenced_frame=" << conversion.is_within_fenced_frame();
 
-  if (conversion.attestation().has_value()) {
-    out << ",attestation=" << conversion.attestation().value();
+  if (conversion.verification().has_value()) {
+    out << ",verification=" << conversion.verification().value();
   } else {
-    out << ",attestation=(null)";
+    out << ",verification=(null)";
   }
 
   return out << "}";
@@ -856,11 +857,11 @@ std::ostream& operator<<(
     std::ostream& out,
     const AttributionReport::CommonAggregatableData& data) {
   out << "{aggregation_coordinator=" << data.aggregation_coordinator
-      << ",attestation_token=";
+      << ",verification_token=";
 
-  if (const auto& attestation_token = data.attestation_token;
-      attestation_token.has_value()) {
-    out << *attestation_token;
+  if (const auto& verification_token = data.verification_token;
+      verification_token.has_value()) {
+    out << *verification_token;
   } else {
     out << "(null)";
   }
@@ -1090,8 +1091,8 @@ AttributionTriggerMatcherConfig::~AttributionTriggerMatcherConfig() = default;
       Property("is_within_fenced_frame",
                &AttributionTrigger::is_within_fenced_frame,
                cfg.is_within_fenced_frame),
-      Property("trigger_attestation", &AttributionTrigger::attestation,
-               cfg.attestation));
+      Property("trigger_verification", &AttributionTrigger::verification,
+               cfg.verification));
 }
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(

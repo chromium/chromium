@@ -9,7 +9,7 @@ import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {TriggerAttestation} from './attribution.mojom-webui.js';
+import {TriggerVerification} from './attribution.mojom-webui.js';
 import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverReceiver, ReportID, SourceStatus, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {OsRegistrationResult, OsRegistrationType} from './attribution_reporting.mojom-webui.js';
@@ -390,30 +390,30 @@ class RegistrationTableModel<T extends Registration> extends TableModel<T> {
 class Trigger extends Registration {
   readonly eventLevelStatus: string;
   readonly aggregatableStatus: string;
-  readonly attestation?: TriggerAttestation;
+  readonly verification?: TriggerVerification;
 
   constructor(mojo: WebUITrigger) {
     super(mojo.registration);
     this.eventLevelStatus = triggerStatusToText(mojo.eventLevelStatus);
     this.aggregatableStatus = triggerStatusToText(mojo.aggregatableStatus);
-    this.attestation = mojo.attestation;
+    this.verification = mojo.verification;
   }
 }
 
-const ATTESTATION_COLS: Array<Column<TriggerAttestation>> = [
-  new ValueColumn<TriggerAttestation, string>('Token', e => e.token),
-  new ValueColumn<TriggerAttestation, string>(
+const VERIFICATION_COLS: Array<Column<TriggerVerification>> = [
+  new ValueColumn<TriggerVerification, string>('Token', e => e.token),
+  new ValueColumn<TriggerVerification, string>(
       'Report ID', e => e.aggregatableReportId),
 ];
 
-class AttestationColumn implements Column<Trigger> {
+class ReportVerificationColumn implements Column<Trigger> {
   renderHeader(th: HTMLElement) {
-    th.innerText = 'Attestation';
+    th.innerText = 'Report Verification';
   }
 
   render(td: HTMLElement, row: Trigger) {
-    if (row.attestation) {
-      renderDL(td, row.attestation, ATTESTATION_COLS);
+    if (row.verification) {
+      renderDL(td, row.verification, VERIFICATION_COLS);
     }
   }
 }
@@ -425,7 +425,7 @@ class TriggerTableModel extends RegistrationTableModel<Trigger> {
           'Event-Level Status', (e) => e.eventLevelStatus),
       new ValueColumn<Trigger, string>(
           'Aggregatable Status', (e) => e.aggregatableStatus),
-      new AttestationColumn(),
+      new ReportVerificationColumn(),
     ]);
   }
 }
@@ -515,7 +515,7 @@ class EventLevelReport extends Report {
 
 class AggregatableAttributionReport extends Report {
   contributions: string;
-  attestationToken: string;
+  verificationToken: string;
   aggregationCoordinator: string;
   isNullReport: boolean;
 
@@ -526,8 +526,8 @@ class AggregatableAttributionReport extends Report {
         mojo.data.aggregatableAttributionData!.contributions, bigintReplacer,
         ' ');
 
-    this.attestationToken =
-        mojo.data.aggregatableAttributionData!.attestationToken || '';
+    this.verificationToken =
+        mojo.data.aggregatableAttributionData!.verificationToken || '';
 
     this.aggregationCoordinator =
         mojo.data.aggregatableAttributionData!.aggregationCoordinator;
@@ -691,7 +691,7 @@ class AggregatableAttributionReportTableModel extends
           new CodeColumn<AggregatableAttributionReport>(
               'Histograms', (e) => e.contributions),
           new ValueColumn<AggregatableAttributionReport, string>(
-              'Attestation Token', (e) => e.attestationToken),
+              'Verification Token', (e) => e.verificationToken),
           new ValueColumn<AggregatableAttributionReport, string>(
               'Aggregation Coordinator', (e) => e.aggregationCoordinator),
           new ValueColumn<AggregatableAttributionReport, boolean>(

@@ -242,20 +242,20 @@ TEST(AttributionReportTest, PopulateAdditionalHeaders) {
       "foo",
   };
 
-  for (const auto& attestation_token : kTestCases) {
+  for (const auto& verification_token : kTestCases) {
     AttributionReport report = ReportBuilder(AttributionInfoBuilder().Build(),
                                              SourceBuilder().BuildStored())
-                                   .SetAttestationToken(attestation_token)
+                                   .SetVerificationToken(verification_token)
                                    .BuildAggregatableAttribution();
 
     net::HttpRequestHeaders headers;
     report.PopulateAdditionalHeaders(headers);
 
-    if (attestation_token.has_value()) {
+    if (verification_token.has_value()) {
       std::string header;
       headers.GetHeader("Sec-Attribution-Reporting-Private-State-Token",
                         &header);
-      EXPECT_EQ(header, *attestation_token);
+      EXPECT_EQ(header, *verification_token);
     } else {
       EXPECT_TRUE(headers.IsEmpty());
     }

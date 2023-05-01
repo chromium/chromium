@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/cpp/trigger_verification.h"
 
 #include <string>
 
@@ -12,7 +12,7 @@
 namespace network {
 namespace {
 
-TEST(TriggerAttestationTest, Create) {
+TEST(TriggerVerificationTest, Create) {
   const struct {
     std::string id;
     std::string token;
@@ -44,8 +44,8 @@ TEST(TriggerAttestationTest, Create) {
   };
 
   for (const auto& test_case : kTestCases) {
-    absl::optional<TriggerAttestation> actual =
-        TriggerAttestation::Create(test_case.token, test_case.id);
+    absl::optional<TriggerVerification> actual =
+        TriggerVerification::Create(test_case.token, test_case.id);
 
     EXPECT_EQ(test_case.expected_created, actual.has_value())
         << "id: " << test_case.id << " token: " << test_case.token;

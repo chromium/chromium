@@ -314,27 +314,27 @@ component("cross_origin_embedder_policy") {
 }
 
 # This component is separate from `:cpp_base` to avoid a circular dependency as
-# its needed by :trigger_attestation_traits.
-component("trigger_attestation") {
+# its needed by :trigger_verification_traits.
+component("trigger_verification") {
   sources = [
-    "trigger_attestation.cc",
-    "trigger_attestation.h",
+    "trigger_verification.cc",
+    "trigger_verification.h",
   ]
   deps = [ "//base" ]
-  defines = [ "IS_NETWORK_CPP_TRIGGER_ATTESTATION_IMPL" ]
+  defines = [ "IS_NETWORK_CPP_TRIGGER_VERIFICATION_IMPL" ]
 }
 
 # This component is separate from
 # //services/network/public/mojom:url_loader_base to use the same typemap for
 # both Blink and non-Blink bindings.
-component("trigger_attestation_traits") {
+component("trigger_verification_traits") {
   sources = [
     "attribution_mojom_traits.cc",
     "attribution_mojom_traits.h",
-    "trigger_attestation.h",
+    "trigger_verification.h",
   ]
   deps = [
-    ":trigger_attestation",
+    ":trigger_verification",
     "//base",
     "//services/network/public/mojom:mojom_attribution_shared",
   ]
@@ -438,7 +438,7 @@ component("cpp_base") {
     ":proxy_config_mojom_support",
     ":schemeful_site_mojom_support",
     ":structured_headers_mojom_support",
-    ":trigger_attestation",
+    ":trigger_verification",
     "//services/network/public/mojom:url_loader_base",
     "//url/ipc:url_ipc",
     "//url/mojom:url_mojom_gurl",
@@ -499,13 +499,13 @@ source_set("test_support") {
 
   sources = [
     "is_potentially_trustworthy_unittest.h",
-    "trigger_attestation_test_utils.cc",
-    "trigger_attestation_test_utils.h",
+    "trigger_verification_test_utils.cc",
+    "trigger_verification_test_utils.h",
   ]
 
   public_deps = [
     ":cpp",
-    ":trigger_attestation",
+    ":trigger_verification",
     "//base",
     "//base/test:test_support",
     "//testing/gmock",
@@ -574,7 +574,7 @@ source_set("tests") {
     "timing_allow_origin_parser_unittest.cc",
     "transferable_directory_unittest.cc",
     "transferable_socket_unittest.cc",
-    "trigger_attestation_unittest.cc",
+    "trigger_verification_unittest.cc",
     "url_loader_completion_status_mojom_traits_unittest.cc",
     "url_request_mojom_traits_unittest.cc",
     "variants_header_parser_unittest.cc",

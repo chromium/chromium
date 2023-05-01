@@ -30,7 +30,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -246,7 +246,7 @@ class AttributionSrcLoader::ResourceClient
   void HandleResponseHeaders(
       attribution_reporting::SuitableOrigin reporting_origin,
       const AttributionHeaders&,
-      const absl::optional<network::TriggerAttestation>& trigger_attestation);
+      const absl::optional<network::TriggerVerification>& trigger_verification);
 
   void Finish();
 
@@ -261,7 +261,7 @@ class AttributionSrcLoader::ResourceClient
   void HandleTriggerRegistration(
       const AttributionHeaders&,
       attribution_reporting::SuitableOrigin reporting_origin,
-      const absl::optional<network::TriggerAttestation>& trigger_attestation);
+      const absl::optional<network::TriggerVerification>& trigger_verification);
 
   [[nodiscard]] bool HasEitherWebOrOsHeader(int header_count,
                                             uint64_t request_id);
@@ -597,10 +597,10 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     document->AddPostPrerenderingActivationStep(WTF::BindOnce(
         &AttributionSrcLoader::RegisterAttributionHeaders,
         WrapPersistentIfNeeded(this), src_type, std::move(*reporting_origin),
-        std::move(headers), response.GetTriggerAttestation()));
+        std::move(headers), response.GetTriggerVerification()));
   } else {
     RegisterAttributionHeaders(src_type, std::move(*reporting_origin), headers,
-                               response.GetTriggerAttestation());
+                               response.GetTriggerVerification());
   }
 
   return true;
@@ -610,7 +610,7 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
     RegistrationType src_type,
     attribution_reporting::SuitableOrigin reporting_origin,
     const AttributionHeaders& headers,
-    const absl::optional<network::TriggerAttestation>& trigger_attestation) {
+    const absl::optional<network::TriggerVerification>& trigger_verification) {
   mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
   local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       &conversion_host);
@@ -626,7 +626,7 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
   auto* client = MakeGarbageCollected<ResourceClient>(this, src_type,
                                                       std::move(data_host));
   client->HandleResponseHeaders(std::move(reporting_origin), headers,
-                                trigger_attestation);
+                                trigger_verification);
   client->Finish();
 }
 
@@ -693,13 +693,13 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     return;
 
   HandleResponseHeaders(std::move(*reporting_origin), headers,
-                        response.GetTriggerAttestation());
+                        response.GetTriggerVerification());
 }
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     attribution_reporting::SuitableOrigin reporting_origin,
     const AttributionHeaders& headers,
-    const absl::optional<network::TriggerAttestation>& trigger_attestation) {
+    const absl::optional<network::TriggerVerification>& trigger_verification) {
   DCHECK_GT(headers.count(), 0);
 
   switch (type_) {
@@ -708,7 +708,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
       break;
     case RegistrationType::kTrigger:
       HandleTriggerRegistration(headers, std::move(reporting_origin),
-                                trigger_attestation);
+                                trigger_verification);
       break;
     case RegistrationType::kSourceOrTrigger: {
       const bool has_source = headers.source_count() > 0;
@@ -729,7 +729,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 
       DCHECK(has_trigger);
       HandleTriggerRegistration(headers, std::move(reporting_origin),
-                                trigger_attestation);
+                                trigger_verification);
       break;
     }
   }
@@ -815,7 +815,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
 void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     const AttributionHeaders& headers,
     attribution_reporting::SuitableOrigin reporting_origin,
-    const absl::optional<network::TriggerAttestation>& trigger_attestation) {
+    const absl::optional<network::TriggerVerification>& trigger_verification) {
   DCHECK_NE(type_, RegistrationType::kSource);
 
   headers.MaybeLogAllSourceHeadersIgnored(loader_->local_frame_->DomWindow());
@@ -844,7 +844,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
 
     data_host_->TriggerDataAvailable(std::move(reporting_origin),
                                      std::move(*trigger_data),
-                                     std::move(trigger_attestation));
+                                     std::move(trigger_verification));
     ++num_registrations_;
     return;
   }

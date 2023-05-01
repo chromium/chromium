@@ -7,27 +7,27 @@
 
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 
 namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_ATTRIBUTION_MOJOM_TRAITS)
-    StructTraits<network::mojom::TriggerAttestationDataView,
-                 network::TriggerAttestation> {
+    StructTraits<network::mojom::TriggerVerificationDataView,
+                 network::TriggerVerification> {
   static const std::string& token(
-      const network::TriggerAttestation& attestation) {
-    return attestation.token();
+      const network::TriggerVerification& verification) {
+    return verification.token();
   }
 
   static std::string aggregatable_report_id(
-      const network::TriggerAttestation& attestation) {
-    return attestation.aggregatable_report_id().AsLowercaseString();
+      const network::TriggerVerification& verification) {
+    return verification.aggregatable_report_id().AsLowercaseString();
   }
 
-  static bool Read(network::mojom::TriggerAttestationDataView data,
-                   network::TriggerAttestation* out);
+  static bool Read(network::mojom::TriggerVerificationDataView data,
+                   network::TriggerVerification* out);
 };
 
 }  // namespace mojo

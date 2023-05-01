@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/strings/string_piece_forward.h"
-#include "services/network/attribution/attribution_attestation_mediator.h"
+#include "services/network/attribution/attribution_verification_mediator.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "url/gurl.h"
@@ -24,7 +24,8 @@ namespace network {
 
 class AttributionRequestHelper;
 
-class FakeCryptographer : public AttributionAttestationMediator::Cryptographer {
+class FakeCryptographer
+    : public AttributionVerificationMediator::Cryptographer {
  public:
   FakeCryptographer();
   ~FakeCryptographer() override;
@@ -87,22 +88,22 @@ class FakeCryptographer : public AttributionAttestationMediator::Cryptographer {
 };
 
 static constexpr char kTestBlindToken[] = "blind-token";
-static constexpr char kAttestationHandlerPathPrefix[] = "/test-attestation";
-static constexpr char kRedirectAttestationRequestPath[] =
-    "/test-attestation/server-redirect";
+static constexpr char kVerificationHandlerPathPrefix[] = "/test-verification";
+static constexpr char kRedirectVerificationRequestPath[] =
+    "/test-verification/server-redirect";
 
 // Returns `nullptr` when the request relative url does not start with
-// `kAttestationHandlerPathPrefix`. When it does, it expects that the request
+// `kVerificationHandlerPathPrefix`. When it does, it expects that the request
 // has a `Sec-Attribution-Reporting-Private-State-Token` header and a
 // 'Sec-Private-State-Token-Crypto-Version header set. It then returns a
-// response containing an attestation header with a value set to
+// response containing a verification header with a value set to
 // `kTestBlindToken`. If the request relative url equals
-// `kRedirectAttestationRequestPath`, it returns an `HTTP_FOUND` otherwise,
-// it returns an `HTTP_OK`.
-std::unique_ptr<net::test_server::HttpResponse> HandleAttestationRequest(
+// `kRedirectVerificationRequestPath`, it returns an `HTTP_FOUND` otherwise, it
+// returns an `HTTP_OK`.
+std::unique_ptr<net::test_server::HttpResponse> HandleVerificationRequest(
     const net::test_server::HttpRequest& request);
 
-AttributionAttestationMediator CreateTestAttestationMediator(
+AttributionVerificationMediator CreateTestVerificationMediator(
     TrustTokenKeyCommitments*);
 
 std::unique_ptr<AttributionRequestHelper> CreateTestAttributionRequestHelper(

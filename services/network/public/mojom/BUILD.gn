@@ -374,15 +374,15 @@ mojom("mojom_attribution") {
     {
       types = [
         {
-          mojom = "network.mojom.TriggerAttestation"
-          cpp = "::network::TriggerAttestation"
+          mojom = "network.mojom.TriggerVerification"
+          cpp = "::network::TriggerVerification"
           move_only = true
         },
       ]
       traits_headers =
           [ "//services/network/public/cpp/attribution_mojom_traits.h" ]
       traits_deps =
-          [ "//services/network/public/cpp:trigger_attestation_traits" ]
+          [ "//services/network/public/cpp:trigger_verification_traits" ]
     },
   ]
 

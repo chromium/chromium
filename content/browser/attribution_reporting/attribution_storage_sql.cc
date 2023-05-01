@@ -314,9 +314,9 @@ void SerializeCommonAggregatableData(
       break;
   }
 
-  if (const auto& attestation_token = data.attestation_token;
-      attestation_token.has_value()) {
-    msg.set_attestation_token(*attestation_token);
+  if (const auto& verification_token = data.verification_token;
+      verification_token.has_value()) {
+    msg.set_verification_token(*verification_token);
   }
 
   switch (data.source_registration_time_config) {
@@ -359,8 +359,8 @@ void SerializeCommonAggregatableData(
       return false;
   }
 
-  if (msg.has_attestation_token()) {
-    data.attestation_token = msg.attestation_token();
+  if (msg.has_verification_token()) {
+    data.verification_token = msg.verification_token();
   }
 
   return true;
@@ -2798,7 +2798,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
       AttributionReport::AggregatableAttributionData(
           AttributionReport::CommonAggregatableData(
               trigger_registration.aggregation_coordinator,
-              /*attestation_token=*/absl::nullopt,
+              /*verification_token=*/absl::nullopt,
               trigger_registration.source_registration_time_config),
           std::move(contributions), source));
 
@@ -2937,7 +2937,7 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
           AttributionReport::NullAggregatableData(
               AttributionReport::CommonAggregatableData(
                   trigger.registration().aggregation_coordinator,
-                  /*attestation_token=*/absl::nullopt,
+                  /*verification_token=*/absl::nullopt,
                   trigger.registration().source_registration_time_config),
               trigger.reporting_origin(),
               null_aggregatable_report.fake_source_time));
@@ -2948,7 +2948,7 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
     return true;
   }
 
-  AssignTriggerAttestationData(reports, trigger);
+  AssignTriggerVerificationData(reports, trigger);
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -2970,25 +2970,25 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
   return transaction.Commit();
 }
 
-void AttributionStorageSql::AssignTriggerAttestationData(
+void AttributionStorageSql::AssignTriggerVerificationData(
     std::vector<AttributionReport>& reports,
     const AttributionTrigger& trigger) {
   DCHECK(!reports.empty());
 
-  // TODO(crbug.com/1435014): Multiple attestation tokens should be randomly
-  // assigned to the reports.
+  // TODO(crbug.com/1435014): Multiple verification tokens should be
+  // randomly assigned to the reports.
 
   // TODO(crbug.com/1435014): Consider how this metric changes when multiple
-  // attestation tokens are supported and whether it can be recorded in
+  // verification tokens are supported and whether it can be recorded in
   // `AttributionManagerImpl`.
   if (base::FeatureList::IsEnabled(
-          network::features::kAttributionReportingTriggerAttestation)) {
+          network::features::kAttributionReportingReportVerification)) {
     base::UmaHistogramBoolean(
-        "Conversions.TriggerAttestation.ReportHasAttestation",
-        trigger.attestation().has_value());
+        "Conversions.ReportVerification.ReportHasVerification",
+        trigger.verification().has_value());
   }
 
-  if (!trigger.attestation().has_value()) {
+  if (!trigger.verification().has_value()) {
     return;
   }
 
@@ -2996,21 +2996,21 @@ void AttributionStorageSql::AssignTriggerAttestationData(
 
   AttributionReport& random_report = reports.front();
 
-  const auto assign_trigger_attestation =
+  const auto assign_trigger_verification =
       [&](AttributionReport::CommonAggregatableData& data) {
-        data.attestation_token = trigger.attestation()->token();
+        data.verification_token = trigger.verification()->token();
         random_report.set_external_report_id(
-            trigger.attestation()->aggregatable_report_id());
+            trigger.verification()->aggregatable_report_id());
       };
 
   absl::visit(
       base::Overloaded{
           [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
           [&](AttributionReport::AggregatableAttributionData& data) {
-            assign_trigger_attestation(data.common_data);
+            assign_trigger_verification(data.common_data);
           },
           [&](AttributionReport::NullAggregatableData& data) {
-            assign_trigger_attestation(data.common_data);
+            assign_trigger_verification(data.common_data);
           }},
       random_report.data());
 }
