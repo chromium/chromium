@@ -27,6 +27,13 @@ const ui::InputDevice kSampleKeyboardBluetooth = {
 const ui::InputDevice kSampleKeyboardUsb = {15, ui::INPUT_DEVICE_USB,
                                             "kSampleKeyboardUsb"};
 
+const ui::InputDevice kSampleMouseUsb = {20, ui::INPUT_DEVICE_USB,
+                                         "kSampleMouseUsb"};
+const ui::InputDevice kSampleMouseBluetooth = {25, ui::INPUT_DEVICE_BLUETOOTH,
+                                               "kSampleMouseBluetooth"};
+const ui::InputDevice kSampleMouseInternal = {30, ui::INPUT_DEVICE_INTERNAL,
+                                              "kSampleMouseInternal"};
+
 template <typename Comp = base::ranges::less>
 void SortDevices(std::vector<ui::InputDevice>& devices, Comp comp = {}) {
   base::ranges::sort(devices, comp, [](const ui::InputDevice& keyboard) {
@@ -209,6 +216,58 @@ TEST_P(InputDeviceStateNotifierTest, OnInputDeviceConfigurationChanged) {
 TEST_P(InputDeviceStateNotifierTest, OnDeviceListsComplete) {
   ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
   CheckNotifierResults();
+}
+
+class InputDeviceMouseNotifierTest : public AshTestBase {
+ public:
+  InputDeviceMouseNotifierTest() = default;
+  InputDeviceMouseNotifierTest(const InputDeviceMouseNotifierTest&) = delete;
+  InputDeviceMouseNotifierTest& operator=(const InputDeviceMouseNotifierTest&) =
+      delete;
+  ~InputDeviceMouseNotifierTest() override = default;
+
+  // testing::Test:
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    notifier_ = std::make_unique<InputDeviceNotifier<mojom::MousePtr>>(
+        &mice_,
+        base::BindRepeating(&InputDeviceMouseNotifierTest::SaveNotifierResults,
+                            base::Unretained(this)));
+  }
+
+  void TearDown() override {
+    devices_to_add_.clear();
+    device_ids_to_remove_.clear();
+    AshTestBase::TearDown();
+  }
+
+  void SaveNotifierResults(std::vector<ui::InputDevice> devices_to_add,
+                           std::vector<DeviceId> device_ids_to_remove) {
+    devices_to_add_ = std::move(devices_to_add);
+    device_ids_to_remove_ = std::move(device_ids_to_remove);
+  }
+
+ protected:
+  InputDeviceStateNotifierTestData test_data_;
+  std::unique_ptr<InputDeviceNotifier<mojom::MousePtr>> notifier_;
+  base::flat_map<DeviceId, mojom::MousePtr> mice_;
+
+  std::vector<ui::InputDevice> devices_to_add_;
+  std::vector<DeviceId> device_ids_to_remove_;
+};
+
+// When an internal mouse in the list received from DeviceDataManager, filter it
+// out as this is likely not a real device.
+TEST_F(InputDeviceMouseNotifierTest, InternalMiceFilteredOut) {
+  ui::DeviceDataManagerTestApi().SetMouseDevices(
+      {kSampleMouseUsb, kSampleMouseBluetooth, kSampleMouseInternal});
+  EXPECT_TRUE(device_ids_to_remove_.empty());
+  ASSERT_EQ(2u, devices_to_add_.size());
+  EXPECT_EQ(kSampleMouseUsb.name, devices_to_add_[0].name);
+  EXPECT_EQ(kSampleMouseUsb.id, devices_to_add_[0].id);
+  EXPECT_EQ(kSampleMouseBluetooth.name, devices_to_add_[1].name);
+  EXPECT_EQ(kSampleMouseBluetooth.id, devices_to_add_[1].id);
 }
 
 }  // namespace ash

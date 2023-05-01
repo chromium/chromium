@@ -79,8 +79,8 @@ const ui::InputDevice kSampleTouchpadInternal = {1,
                                                  0};
 const ui::InputDevice kSamplePointingStickInternal = {
     2, ui::INPUT_DEVICE_INTERNAL, "kSamplePointingStickInternal"};
-const ui::InputDevice kSampleMouseInternal = {3, ui::INPUT_DEVICE_INTERNAL,
-                                              "kSampleMouseInternal"};
+const ui::InputDevice kSampleMouseUsb = {3, ui::INPUT_DEVICE_USB,
+                                         "kSampleMouseUsb"};
 
 constexpr char kUserEmail1[] = "example1@abc.com";
 constexpr char kUserEmail2[] = "joy@abc.com";
@@ -496,8 +496,8 @@ TEST_F(InputDeviceSettingsControllerTest,
 
 TEST_F(InputDeviceSettingsControllerTest, RecordSetMouseSetttingsValidMetric) {
   base::HistogramTester histogram_tester;
-  ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleMouseInternal});
-  controller_->SetMouseSettings((DeviceId)kSampleMouseInternal.id,
+  ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleMouseUsb});
+  controller_->SetMouseSettings((DeviceId)kSampleMouseUsb.id,
                                 mojom::MouseSettings::New());
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", true,

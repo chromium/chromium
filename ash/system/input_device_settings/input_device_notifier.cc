@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/ranges/algorithm.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -129,7 +130,14 @@ InputDeviceNotifier<mojom::TouchpadPtr>::GetUpdatedDeviceList() {
 template <>
 std::vector<ui::InputDevice>
 InputDeviceNotifier<mojom::MousePtr>::GetUpdatedDeviceList() {
-  return ui::DeviceDataManager::GetInstance()->GetMouseDevices();
+  auto mice = ui::DeviceDataManager::GetInstance()->GetMouseDevices();
+  base::EraseIf(mice, [](const auto& mouse) {
+    // Some I2C touchpads falsely claim to be mice, see b/205272718
+    // By filtering out internal mice, i2c touchpads are prevented from being in
+    // the "mouse" category in settings.
+    return mouse.type == ui::INPUT_DEVICE_INTERNAL;
+  });
+  return mice;
 }
 
 template <>
