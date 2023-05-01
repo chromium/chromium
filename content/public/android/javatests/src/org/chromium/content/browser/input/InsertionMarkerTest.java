@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 
@@ -46,6 +47,7 @@ public class InsertionMarkerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1441435")
     public void boundsSentOnFocus() throws Exception {
         requestCursorUpdates(InputConnection.CURSOR_UPDATE_MONITOR);
 
