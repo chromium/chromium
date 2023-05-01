@@ -106,9 +106,13 @@ PageAnchorsMetricsObserver::UserInteractionsData&
 NavigationPredictor::GetUserInteractionsData() const {
   // Create the UserInteractionsData object for this WebContents if it doesn't
   // already exist.
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  PageAnchorsMetricsObserver::UserInteractionsData::CreateForWebContents(
+      web_contents);
   PageAnchorsMetricsObserver::UserInteractionsData* data =
-      PageAnchorsMetricsObserver::UserInteractionsData::
-          GetOrCreateForCurrentDocument(&render_frame_host());
+      PageAnchorsMetricsObserver::UserInteractionsData::FromWebContents(
+          web_contents);
   DCHECK(data);
   return *data;
 }
@@ -122,9 +126,11 @@ void NavigationPredictor::ReportNewAnchorElements(
   // Create the AnchorsData object for this WebContents if it doesn't already
   // exist. Note that NavigationPredictor only runs on the main frame, but get
   // reports for links from all same-process iframes.
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  PageAnchorsMetricsObserver::AnchorsData::CreateForWebContents(web_contents);
   PageAnchorsMetricsObserver::AnchorsData* data =
-      PageAnchorsMetricsObserver::AnchorsData::GetOrCreateForCurrentDocument(
-          &render_frame_host());
+      PageAnchorsMetricsObserver::AnchorsData::FromWebContents(web_contents);
   DCHECK(data);
   GURL document_url;
   std::vector<GURL> new_predictions;
@@ -173,9 +179,6 @@ void NavigationPredictor::ReportNewAnchorElements(
             Profile::FromBrowserContext(
                 render_frame_host().GetBrowserContext()));
     DCHECK(service);
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(&render_frame_host());
-
     service->OnPredictionUpdated(
         web_contents, document_url,
         NavigationPredictorKeyedService::PredictionSource::
@@ -216,10 +219,9 @@ void NavigationPredictor::ReportAnchorElementClick(
     // navigation_start_to_click_ is set to click->navigation_start_to_click and
     // should always has a value.
     CHECK(navigation_start_to_click_.has_value());
-    if (user_interactions_data.IsValidUkmSourceId(ukm_source_id_) &&
-        (user_interaction.last_navigation_start_to_pointer_over.has_value() ||
-         user_interaction.last_navigation_start_to_last_pointer_down
-             .has_value())) {
+    if (user_interaction.last_navigation_start_to_pointer_over.has_value() ||
+        user_interaction.last_navigation_start_to_last_pointer_down
+            .has_value()) {
       ukm::builders::NavigationPredictorPreloadOnHover preload_on_hover_builder(
           ukm_source_id_);
       if (user_interaction.last_navigation_start_to_pointer_over.has_value()) {
@@ -254,11 +256,8 @@ void NavigationPredictor::ReportAnchorElementClick(
     builder.SetHrefUnchanged(it->second->target_url == click->target_url);
   }
   navigation_start_to_click_ = click->navigation_start_to_click;
-  auto& user_interactions_data = GetUserInteractionsData();
-  if (user_interactions_data.IsValidUkmSourceId(ukm_source_id_)) {
-    user_interactions_data.navigation_start_to_click_ =
-        navigation_start_to_click_;
-  }
+  GetUserInteractionsData().navigation_start_to_click_ =
+      navigation_start_to_click_;
 
   // navigation_start_to_click_ is set to click->navigation_start_to_click and
   // should always has a value.
@@ -271,9 +270,6 @@ void NavigationPredictor::ReportAnchorElementClick(
 void NavigationPredictor::ReportAnchorElementsLeftViewport(
     std::vector<blink::mojom::AnchorElementLeftViewportPtr> elements) {
   auto& user_interactions_data = GetUserInteractionsData();
-  if (!user_interactions_data.IsValidUkmSourceId(ukm_source_id_)) {
-    return;
-  }
   auto& user_interactions = user_interactions_data.user_interactions_;
   for (const auto& element : elements) {
     auto index_it =
@@ -293,9 +289,6 @@ void NavigationPredictor::ReportAnchorElementsLeftViewport(
 void NavigationPredictor::ReportAnchorElementPointerOver(
     blink::mojom::AnchorElementPointerOverPtr pointer_over_event) {
   auto& user_interactions_data = GetUserInteractionsData();
-  if (!user_interactions_data.IsValidUkmSourceId(ukm_source_id_)) {
-    return;
-  }
   auto& user_interactions = user_interactions_data.user_interactions_;
   auto index_it =
       tracked_anchor_id_to_index_.find(AnchorId(pointer_over_event->anchor_id));
@@ -315,9 +308,6 @@ void NavigationPredictor::ReportAnchorElementPointerOver(
 void NavigationPredictor::ReportAnchorElementPointerOut(
     blink::mojom::AnchorElementPointerOutPtr hover_event) {
   auto& user_interactions_data = GetUserInteractionsData();
-  if (!user_interactions_data.IsValidUkmSourceId(ukm_source_id_)) {
-    return;
-  }
   auto& user_interactions = user_interactions_data.user_interactions_;
   auto index_it =
       tracked_anchor_id_to_index_.find(AnchorId(hover_event->anchor_id));
@@ -365,9 +355,6 @@ void NavigationPredictor::ReportAnchorElementPointerDown(
   }
 
   auto& user_interactions_data = GetUserInteractionsData();
-  if (!user_interactions_data.IsValidUkmSourceId(ukm_source_id_)) {
-    return;
-  }
   auto& user_interactions = user_interactions_data.user_interactions_;
   auto& user_interaction = user_interactions[index_it->second];
   user_interaction.last_navigation_start_to_last_pointer_down =
@@ -394,12 +381,10 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
       // NavigationPredictorAnchorElementMetrics record.
       continue;
     }
-    if (user_interactions_data.IsValidUkmSourceId(ukm_source_id_)) {
-      auto& user_interaction = user_interactions[index_it->second];
-      user_interaction.is_in_viewport = true;
-      user_interaction.last_navigation_start_to_entered_viewport =
-          element->navigation_start_to_entered_viewport;
-    }
+    auto& user_interaction = user_interactions[index_it->second];
+    user_interaction.is_in_viewport = true;
+    user_interaction.last_navigation_start_to_entered_viewport =
+        element->navigation_start_to_entered_viewport;
 
     auto anchor_it = anchors_.find(anchor_id);
     if (anchor_it == anchors_.end()) {
