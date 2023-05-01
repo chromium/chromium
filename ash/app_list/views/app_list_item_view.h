@@ -369,6 +369,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void OnBlur() override;
   int GetDragOperations(const gfx::Point& press_pt) override;
   void WriteDragData(const gfx::Point& press_pt, OSExchangeData* data) override;
+  void OnDragDone() override;
 
   // Called when the drag registered for this view starts moving.
   // `drag_start_callback` passed to `GridDelegate::InitiateDrag()`.

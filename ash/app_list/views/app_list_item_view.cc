@@ -866,6 +866,7 @@ bool AppListItemView::InitiateDrag(const gfx::Point& location,
     return false;
   }
   drag_state_ = DragState::kInitialized;
+  SilentlyRequestFocus();
   return true;
 }
 
@@ -889,6 +890,10 @@ void AppListItemView::OnDragEnded() {
 
   SetUIState(UI_STATE_NORMAL);
   drag_state_ = DragState::kNone;
+}
+
+void AppListItemView::OnDragDone() {
+  EnsureSelected();
 }
 
 void AppListItemView::CancelContextMenu() {
