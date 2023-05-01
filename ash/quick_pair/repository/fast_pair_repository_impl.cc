@@ -98,6 +98,7 @@ FastPairRepositoryImpl::FastPairRepositoryImpl()
     NetworkHandler::Get()->network_state_handler()->AddObserver(this,
                                                                 FROM_HERE);
   }
+  SetInstance(this);
 }
 
 void FastPairRepositoryImpl::OnGetAdapter(
@@ -132,6 +133,7 @@ FastPairRepositoryImpl::~FastPairRepositoryImpl() {
     NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
                                                                    FROM_HERE);
   }
+  SetInstance(nullptr);
 }
 
 void FastPairRepositoryImpl::GetDeviceMetadata(
