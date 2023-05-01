@@ -78,6 +78,8 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -224,6 +226,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private long mLastShownTimeMs = LAST_SHOW_TIME_NOT_SET;
     private boolean mIsStartSurfaceRefactorEnabled;
     private OnClickListener mTabSwitcherClickHandler;
+    private ObservableSupplier<Profile> mProfileSupplier;
 
     // TODO(crbug.com/1315676): Clean up TabSwitcher#Controller once the start surface refactoring
     // is done.
@@ -240,7 +243,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             View logoContainerView, @Nullable BackPressManager backPressManager,
             ViewGroup feedPlaceholderParentView,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            OnClickListener tabSwitcherClickHandler) {
+            OnClickListener tabSwitcherClickHandler, ObservableSupplier<Profile> profileSupplier) {
         mTabSwitcherContainer = tabSwitcherContainer;
         mTabSwitcherModule = tabSwitcherModule;
         mController = mTabSwitcherModule != null ? mTabSwitcherModule.getController() : controller;
@@ -270,6 +273,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context);
         mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
         mTabSwitcherClickHandler = tabSwitcherClickHandler;
+        mProfileSupplier = profileSupplier;
+        mProfileSupplier.addObserver(this::onProfileAvailable);
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;
@@ -479,9 +484,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             // Note that isVoiceSearchEnabled will return false in incognito mode.
             mPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE,
                     mOmniboxStub.getVoiceRecognitionHandler().isVoiceSearchEnabled());
-            boolean shouldShowLensButton = mOmniboxStub.isLensEnabled(LensEntryPoint.TASKS_SURFACE);
-            LensMetrics.recordShown(LensEntryPoint.TASKS_SURFACE, shouldShowLensButton);
-            mPropertyModel.set(IS_LENS_BUTTON_VISIBLE, shouldShowLensButton);
+            updateLensVisibility();
 
             // This is for Instant Start when overview is already visible while the omnibox, Feed
             // and MV tiles haven't been set.
@@ -547,6 +550,21 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         maybeScheduleSpareTabCreation();
     }
 
+    void onProfileAvailable(Profile profile) {
+        if (profile.isOffTheRecord()) return;
+
+        TemplateUrlServiceFactory.getForProfile(profile).addObserver(this::updateLensVisibility);
+        mProfileSupplier.removeObserver(this::onProfileAvailable);
+    }
+
+    private void updateLensVisibility() {
+        if (mOmniboxStub == null) return;
+
+        boolean shouldShowLensButton = mOmniboxStub.isLensEnabled(LensEntryPoint.TASKS_SURFACE);
+        LensMetrics.recordShown(LensEntryPoint.TASKS_SURFACE, shouldShowLensButton);
+        mPropertyModel.set(IS_LENS_BUTTON_VISIBLE, shouldShowLensButton);
+    }
+
     void destroy() {
         if (mLogoCoordinator != null) {
             mLogoCoordinator.destroy();
@@ -555,6 +573,11 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         if (mCallbackController != null) {
             mCallbackController.destroy();
         }
+        if (mProfileSupplier.get() != null) {
+            TemplateUrlServiceFactory.getForProfile(mProfileSupplier.get())
+                    .removeObserver(this::updateLensVisibility);
+        }
+        mProfileSupplier.removeObserver(this::onProfileAvailable);
         mayRecordHomepageSessionEnd();
         mActivityLifecycleDispatcher.unregister(this);
     }

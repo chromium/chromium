@@ -737,7 +737,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getTabCreatorManagerSupplier().get(), getMenuOrKeyboardActionController(),
                 getMultiWindowModeStateDispatcher(), getToolbarManager()::getToolbar,
                 mBackPressManager, mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
-                v -> onTabSwitcherClicked());
+                v -> onTabSwitcherClicked(), mTabModelProfileSupplier);
     }
 
     private void createGridTabSwitcher(
