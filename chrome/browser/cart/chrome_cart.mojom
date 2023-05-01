@@ -30,6 +30,8 @@ enum ConsentStatus {
 interface CartHandler {
   // Returns the merchant carts in chrome cart.
   GetMerchantCarts() => (array<MerchantCart> carts);
+  // Returns whether the ChromeCart feature is enabled.
+  GetCartFeatureEnabled() => (bool enabled);
   // Temporarily hide the cart module.
   HideCartModule();
   // Restores the cart module that has been temporarily hidden.

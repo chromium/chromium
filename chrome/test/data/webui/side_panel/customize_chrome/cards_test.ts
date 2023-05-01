@@ -326,4 +326,264 @@ suite('CardsTest', () => {
     // Assert (still animation after update).
     assertFalse(getCollapseElement().noAnimation!);
   });
+
+  suite('History Cluster', () => {
+    let cartHandler: TestMock<CartHandlerRemote>;
+
+    suiteSetup(() => {
+      cartHandler = installMock(CartHandlerRemote, ChromeCartProxy.setHandler);
+    });
+
+    [true, false].forEach(visible => {
+      test(`Cart option ${(visible ? '' : 'not ')} visible`, async () => {
+        // Arrange.
+        cartHandler.setResultFor(
+            'getDiscountToggleVisible',
+            Promise.resolve({toggleVisible: false}));
+        cartHandler.setResultFor(
+            'getDiscountEnabled', Promise.resolve({enabled: false}));
+        cartHandler.setResultFor(
+            'getCartFeatureEnabled', Promise.resolve({enabled: true}));
+        loadTimeData.overrideValues({'showCartInQuestModuleSetting': visible});
+
+        await setupTest(
+            [
+              {id: 'history_clusters', name: 'History Cluster', enabled: true},
+            ],
+            /*modulesManaged=*/ false,
+            /*modulesVisible=*/ true);
+
+        // Assert.
+        assertEquals(true, getToggleElement().checked);
+        const cards = getCardsMap();
+        assertCardCheckedStatus(cards, 'History Cluster', true);
+        if (visible) {
+          assertCardCheckedStatus(
+              cards, loadTimeData.getString('modulesCartSentence'), true);
+        }
+
+        const cardOptions =
+            customizeCards.shadowRoot!.querySelectorAll('.card-option-name');
+        assertEquals(visible ? 1 : 0, cardOptions.length);
+        const cartOption =
+            customizeCards.shadowRoot!.querySelector('#cartOption');
+        assertEquals(!!cartOption, visible);
+      });
+    });
+
+    test(`cart checkbox sets cart status`, async () => {
+      // Arrange.
+      cartHandler.setResultFor(
+          'getDiscountToggleVisible', Promise.resolve({toggleVisible: false}));
+      cartHandler.setResultFor(
+          'getDiscountEnabled', Promise.resolve({enabled: false}));
+      cartHandler.setResultFor(
+          'getCartFeatureEnabled', Promise.resolve({enabled: true}));
+      loadTimeData.overrideValues({'showCartInQuestModuleSetting': true});
+
+      await setupTest(
+          [
+            {id: 'history_clusters', name: 'History Cluster', enabled: true},
+          ],
+          /*modulesManaged=*/ false,
+          /*modulesVisible=*/ true);
+
+      // Act.
+      const cartCardOptionName =
+          customizeCards.shadowRoot!.querySelector('#cartOption')!;
+      const cartCheckbox: CrCheckboxElement =
+          cartCardOptionName.nextElementSibling! as CrCheckboxElement;
+      cartCheckbox.click();
+
+      // Assert.
+      assertEquals(1, handler.getCallCount('setModuleDisabled'));
+      assertDeepEquals(
+          'chrome_cart', handler.getArgs('setModuleDisabled')[0][0]);
+      assertDeepEquals(true, handler.getArgs('setModuleDisabled')[0][1]);
+
+      // Act.
+      cartCheckbox.click();
+
+      // Assert.
+      assertEquals(2, handler.getCallCount('setModuleDisabled'));
+      assertDeepEquals(
+          'chrome_cart', handler.getArgs('setModuleDisabled')[1][0]);
+      assertDeepEquals(false, handler.getArgs('setModuleDisabled')[1][1]);
+    });
+
+    [true, false].forEach(visible => {
+      test(`Discount option ${(visible ? '' : 'not ')} visible`, async () => {
+        // Arrange.
+        cartHandler.setResultFor(
+            'getDiscountToggleVisible',
+            Promise.resolve({toggleVisible: visible}));
+        cartHandler.setResultFor(
+            'getDiscountEnabled', Promise.resolve({enabled: false}));
+        cartHandler.setResultFor(
+            'getCartFeatureEnabled', Promise.resolve({enabled: true}));
+        loadTimeData.overrideValues({'showCartInQuestModuleSetting': true});
+
+        await setupTest(
+            [
+              {id: 'history_clusters', name: 'History Cluster', enabled: true},
+            ],
+            /*modulesManaged=*/ false,
+            /*modulesVisible=*/ true);
+
+        // Assert.
+        assertEquals(true, getToggleElement().checked);
+        const cards = getCardsMap();
+        assertCardCheckedStatus(cards, 'History Cluster', true);
+        assertCardCheckedStatus(
+            cards, loadTimeData.getString('modulesCartSentence'), true);
+        const cardOptions =
+            customizeCards.shadowRoot!.querySelectorAll('.card-option-name');
+        assertEquals(visible ? 2 : 1, cardOptions.length);
+        const discountOption =
+            customizeCards.shadowRoot!.querySelector('#discountOption');
+        assertEquals(!!discountOption, visible);
+      });
+    });
+
+    test(`discount checkbox sets discount status`, async () => {
+      // Arrange.
+      cartHandler.setResultFor(
+          'getDiscountToggleVisible', Promise.resolve({toggleVisible: true}));
+      cartHandler.setResultFor(
+          'getDiscountEnabled', Promise.resolve({enabled: true}));
+      cartHandler.setResultFor(
+          'getCartFeatureEnabled', Promise.resolve({enabled: true}));
+      loadTimeData.overrideValues({'showCartInQuestModuleSetting': true});
+
+      await setupTest(
+          [
+            {id: 'history_clusters', name: 'History Cluster', enabled: true},
+          ],
+          /*modulesManaged=*/ false,
+          /*modulesVisible=*/ true);
+
+      // Act.
+      const discountCardOptionName =
+          customizeCards.shadowRoot!.querySelector('#discountOption')!;
+      const discountCheckbox: CrCheckboxElement =
+          discountCardOptionName.nextElementSibling! as CrCheckboxElement;
+      discountCheckbox.click();
+
+      // Assert.
+      assertEquals(1, cartHandler.getCallCount('setDiscountEnabled'));
+      assertDeepEquals(false, cartHandler.getArgs('setDiscountEnabled')[0]);
+
+      // Act.
+      discountCheckbox.click();
+
+      // Assert.
+      assertEquals(2, cartHandler.getCallCount('setDiscountEnabled'));
+      assertDeepEquals(true, cartHandler.getArgs('setDiscountEnabled')[1]);
+    });
+
+    test(`Unchecking cart option hides discount option`, async () => {
+      // Arrange.
+      cartHandler.setResultFor(
+          'getDiscountToggleVisible', Promise.resolve({toggleVisible: true}));
+      cartHandler.setResultFor(
+          'getDiscountEnabled', Promise.resolve({enabled: true}));
+      cartHandler.setResultFor(
+          'getCartFeatureEnabled', Promise.resolve({enabled: true}));
+      loadTimeData.overrideValues({'showCartInQuestModuleSetting': true});
+
+      await setupTest(
+          [
+            {id: 'history_clusters', name: 'History Cluster', enabled: true},
+            {id: 'bar', name: 'bar name', enabled: false},
+          ],
+          /*modulesManaged=*/ false,
+          /*modulesVisible=*/ true);
+
+      // Assert.
+      assertTrue(getToggleElement().checked);
+      assertTrue(getCollapseElement().opened);
+      let cards = getCardsMap();
+      assertCardCheckedStatus(cards, 'History Cluster', true);
+      assertCardCheckedStatus(
+          cards, loadTimeData.getString('modulesCartSentence'), true);
+      assertCardCheckedStatus(
+          cards, loadTimeData.getString('modulesCartDiscountConsentAccept'),
+          true);
+      assertCardCheckedStatus(cards, 'bar name', false);
+
+      // Act.
+      const cartCardCheckbox =
+          cards.get(loadTimeData.getString(
+              'modulesCartSentence'))!.querySelector('cr-checkbox')!;
+      cartCardCheckbox.click();
+      await handler.whenCalled('setModuleDisabled');
+      await waitAfterNextRender(customizeCards);
+
+      // Assert.
+      const discountCardOptionName =
+          customizeCards.shadowRoot!.querySelector('#discountOption')!;
+      assertFalse(isVisible(discountCardOptionName));
+      cards = getCardsMap();
+      assertCardCheckedStatus(cards, 'History Cluster', true);
+      assertCardCheckedStatus(
+          cards, loadTimeData.getString('modulesCartSentence'), false);
+      assertCardCheckedStatus(cards, 'bar name', false);
+    });
+
+    test(
+        `Unchecking history module hides both cart option and discount option`,
+        async () => {
+          // Arrange.
+          cartHandler.setResultFor(
+              'getDiscountToggleVisible',
+              Promise.resolve({toggleVisible: true}));
+          cartHandler.setResultFor(
+              'getDiscountEnabled', Promise.resolve({enabled: true}));
+          cartHandler.setResultFor(
+              'getCartFeatureEnabled', Promise.resolve({enabled: true}));
+          loadTimeData.overrideValues({'showCartInQuestModuleSetting': true});
+
+          await setupTest(
+              [
+                {
+                  id: 'history_clusters',
+                  name: 'History Cluster',
+                  enabled: true,
+                },
+                {id: 'bar', name: 'bar name', enabled: false},
+              ],
+              /*modulesManaged=*/ false,
+              /*modulesVisible=*/ true);
+
+          // Assert.
+          assertTrue(getToggleElement().checked);
+          assertTrue(getCollapseElement().opened);
+          let cards = getCardsMap();
+          assertCardCheckedStatus(cards, 'History Cluster', true);
+          assertCardCheckedStatus(
+              cards, loadTimeData.getString('modulesCartSentence'), true);
+          assertCardCheckedStatus(
+              cards, loadTimeData.getString('modulesCartDiscountConsentAccept'),
+              true);
+          assertCardCheckedStatus(cards, 'bar name', false);
+
+          // Act.
+          const historyCardCheckbox =
+              cards.get('History Cluster')!.querySelector('cr-checkbox')!;
+          historyCardCheckbox.click();
+          await handler.whenCalled('setModuleDisabled');
+          await waitAfterNextRender(customizeCards);
+
+          // Assert.
+          const discountCardOptionName =
+              customizeCards.shadowRoot!.querySelector('#discountOption')!;
+          assertFalse(isVisible(discountCardOptionName));
+          const cartCardOptionName =
+              customizeCards.shadowRoot!.querySelector('#cartOption')!;
+          assertFalse(isVisible(cartCardOptionName));
+          cards = getCardsMap();
+          assertCardCheckedStatus(cards, 'History Cluster', false);
+          assertCardCheckedStatus(cards, 'bar name', false);
+        });
+  });
 });

@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class Profile;
+class PrefService;
 
 namespace content {
 class WebContents;
@@ -27,6 +28,7 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
 
   // chrome_cart::mojom::CartHandler:
   void GetMerchantCarts(GetMerchantCartsCallback callback) override;
+  void GetCartFeatureEnabled(GetCartFeatureEnabledCallback callback) override;
   void HideCartModule() override;
   void RestoreHiddenCartModule() override;
   void HideCart(const GURL& cart_url, HideCartCallback callback) override;
@@ -58,6 +60,7 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
   mojo::Receiver<chrome_cart::mojom::CartHandler> handler_;
   raw_ptr<CartService> cart_service_;
   raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<PrefService> pref_service_;
   base::WeakPtrFactory<CartHandler> weak_factory_{this};
 };
 

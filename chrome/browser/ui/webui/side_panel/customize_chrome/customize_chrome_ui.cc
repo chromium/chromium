@@ -9,6 +9,7 @@
 
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -23,6 +24,7 @@
 #include "chrome/grit/side_panel_customize_chrome_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
+#include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -88,6 +90,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"showCardsToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_CARDS_LABEL},
       {"modulesCartDiscountConsentAccept",
        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_ACCEPT},
+      {"modulesCartSentence", IDS_NTP_MODULES_CART_SENTENCE},
       // Required by <managed-dialog>.
       {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
       {"close", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
@@ -99,6 +102,11 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       "modulesEnabled",
       ntp::HasModulesEnabled(module_id_names_,
                              IdentityManagerFactory::GetForProfile(profile_)));
+  source->AddBoolean(
+      "showCartInQuestModuleSetting",
+      IsCartModuleEnabled() &&
+          base::FeatureList::IsEnabled(
+              ntp_features::kNtpChromeCartInHistoryClusterModule));
   webui::SetupChromeRefresh2023(source);
 
   webui::SetupWebUIDataSource(
