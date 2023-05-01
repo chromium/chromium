@@ -277,9 +277,7 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   // inputs with trailing whitespace wouldn't match a shortcut even if the user
   // previously used the input with a trailing whitespace.
   const auto text_trimmed =
-      OmniboxFieldTrial::IsShortcutExpandingEnabled()
-          ? base::TrimWhitespace(text, base::TrimPositions::TRIM_TRAILING)
-          : text;
+      base::TrimWhitespace(text, base::TrimPositions::TRIM_TRAILING);
 
   // `text` may be empty for pedal and zero suggest navigations. `text_trimmed`
   // can additionally be empty for whitespace-only inputs. It's unlikely users
@@ -316,9 +314,7 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
       const auto text_and_3_chars = base::StrCat(
           {text_trimmed, it->second.text.substr(text_trimmed.length(), 3)});
       const auto expanded_text =
-          OmniboxFieldTrial::IsShortcutExpandingEnabled()
-              ? ExpandToFullWord(text_and_3_chars, it->second.text)
-              : text_and_3_chars;
+          ExpandToFullWord(text_and_3_chars, it->second.text);
       UpdateShortcut(ShortcutsDatabase::Shortcut(
           it->second.id, expanded_text,
           MatchToMatchCore(match, template_url_service_,
@@ -339,12 +335,9 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   // is usually also recognizable and helpful when there are whitespace or other
   // discrepancies between the title and host (e.g. 'Stack Overflow' and
   // 'stackoverflow.com').
-  const auto expanded_text =
-      OmniboxFieldTrial::IsShortcutExpandingEnabled()
-          ? ExpandToFullWord(
-                text, GetSwappedContents(match) + u" " +
-                          base::UTF8ToUTF16(match.destination_url.host()))
-          : text;
+  const auto expanded_text = ExpandToFullWord(
+      text, GetSwappedContents(match) + u" " +
+                base::UTF8ToUTF16(match.destination_url.host()));
   AddShortcut(ShortcutsDatabase::Shortcut(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), expanded_text,
       MatchToMatchCore(match, template_url_service_, search_terms_data_.get()),

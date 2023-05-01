@@ -297,12 +297,6 @@ BASE_FEATURE(kShortBookmarkSuggestionsByTotalInputLength,
              "OmniboxShortBookmarkSuggestionsByTotalInputLength",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, when updating or creating a shortcut, the last word of the input
-// is expanded, if possible, to a complete word in the suggestion description.
-BASE_FEATURE(kShortcutExpanding,
-             "OmniboxShortcutExpanding",
-             enabled_by_default_desktop_only);
-
 // If enabled, the shortcut provider is more aggressive in scoring. The exact
 // details will change over time; but ATM, the shortcut provider will chose 1
 // candidate to compete with HUP's URL-what-you-typed suggestion for the default

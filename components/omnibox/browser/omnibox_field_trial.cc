@@ -924,12 +924,6 @@ const base::FeatureParam<int>
         "ShortBookmarkSuggestionsByTotalInputLengthThreshold",
         3);
 
-// Shortcut Expanding
-
-bool IsShortcutExpandingEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kShortcutExpanding);
-}
-
 // Shortcut boost
 const base::FeatureParam<int> kShortcutBoostSearchScore(
     &omnibox::kShortcutBoost,

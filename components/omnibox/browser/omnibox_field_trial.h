@@ -540,9 +540,6 @@ extern const base::FeatureParam<bool>
 extern const base::FeatureParam<int>
     kShortBookmarkSuggestionsByTotalInputLengthThreshold;
 
-// Shortcut Expanding.
-bool IsShortcutExpandingEnabled();
-
 // Shortcut boost
 // The scores to use for boosting search and URL suggestions respectively.
 // Default to 1414 (`kScoreForBestInlineableResult` + 1). Setting to 0 will

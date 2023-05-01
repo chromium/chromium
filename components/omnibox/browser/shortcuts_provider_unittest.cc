@@ -279,14 +279,12 @@ ShortcutsProviderTest::ShortcutsProviderTest() {
   // Even though these are enabled by default on desktop, they aren't enabled by
   // default on mobile. To avoid having 2 sets of tests around, explicitly
   // enable them for all platforms for tests.
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{omnibox::kRichAutocompletion,
-        {{"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
-         {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-         {"RichAutocompletionAutocompleteShortcutText", "true"},
-         {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}}},
-       {omnibox::kShortcutExpanding, {}}},
-      {});
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      omnibox::kRichAutocompletion,
+      {{"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
+       {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+       {"RichAutocompletionAutocompleteShortcutText", "true"},
+       {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}});
   RichAutocompletionParams::ClearParamsForTesting();
 }
 
