@@ -48,7 +48,6 @@ async function waitForStyles(
     if (!styleMap.has(tag) || !styleMap.get(tag)) {
       return false;
     }
-    console.log('waitForStyles', styleMap.get(tag)!.toString());
     return styleMap.get(tag)!.toString() === want;
   });
 }
@@ -180,5 +179,43 @@ export async function testWhenPercentage100OnlyDoneStateShows(
   // showing.
   await waitForStyles(progressStateElement, 'display', 'none');
   await waitForStyles(progressFinishedElement, 'display', 'flex');
+  done();
+}
+
+/**
+ * Tests that when the type attribute is supplied, the other states should all
+ * be hidden.
+ */
+export async function testWhenTypeAttributeInUseOtherStatesHidden(
+    done: () => void) {
+  const element = getCloudPanelElement();
+  const progressStateElement =
+      await getElement<HTMLDivElement>(element.shadowRoot!, '#progress-state');
+  const progressFinishedElement = await getElement<HTMLDivElement>(
+      element.shadowRoot!, '#progress-finished');
+  const progressOfflineElement = await getElement<HTMLDivElement>(
+      element.shadowRoot!, '#progress-offline');
+
+  // When no attributes have been set, no div should be visible.
+  await waitForStyles(progressStateElement, 'display', 'none');
+  await waitForStyles(progressFinishedElement, 'display', 'none');
+  await waitForStyles(progressOfflineElement, 'display', 'none');
+
+  // Update the items to 3 and total percentage to 50%.
+  element.setAttribute('items', '3');
+  element.setAttribute('percentage', '50');
+
+  // Ensure only the in progress element is visible.
+  await waitForStyles(progressStateElement, 'display', 'block');
+  await waitForStyles(progressFinishedElement, 'display', 'none');
+  await waitForStyles(progressOfflineElement, 'display', 'none');
+
+  // Update the type to be offline.
+  element.setAttribute('type', 'offline');
+
+  // Ensure the only visible div is the offline one.
+  await waitForStyles(progressStateElement, 'display', 'none');
+  await waitForStyles(progressFinishedElement, 'display', 'none');
+  await waitForStyles(progressOfflineElement, 'display', 'flex');
   done();
 }

@@ -370,6 +370,10 @@ function getCSS() {
     :host([type="bulk_pinning_done"]) span {
       -webkit-mask-image: url(../foreground/images/files/ui/bulk_pinning_done.svg);
     }
+
+    :host([type="bulk_pinning_offline"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/bulk_pinning_offline.svg);
+    }
   `;
 }
 

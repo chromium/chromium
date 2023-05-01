@@ -1762,4 +1762,7 @@
   <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_ALL_FILES_SYNCED_LABEL" translateable="false" desc="The text used when all the Drive items have successfully finished downloading and are synced.">
     Your files are synced
   </message>
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_BULK_PINNING_OFFLINE_LABEL" translateable="false" desc="The text used when the device is in an offline mode and has paused syncing.">
+    You are currently offline. Sync will resume when the connection is back on.
+  </message>
 </grit-part>

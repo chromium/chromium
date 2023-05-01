@@ -139,11 +139,18 @@ export class XfCloudPanel extends XfBase {
           </progress>
           <div class="progress-description">3 minutes remaining</div>
         </div>
-        <div id="progress-finished">
+        <div class="static" id="progress-finished">
           <xf-icon type="${
         constants.ICON_TYPES.BULK_PINNING_DONE}" size="large"></xf-icon>
           <div class="status-description">
             ${str('DRIVE_ALL_FILES_SYNCED')}
+          </div>
+        </div>
+        <div class="static" id="progress-offline">
+        <xf-icon type="${
+        constants.ICON_TYPES.BULK_PINNING_OFFLINE}" size="large"></xf-icon>
+          <div class="status-description">
+            ${str('DRIVE_BULK_PINNING_OFFLINE')}
           </div>
         </div>
         <div class="divider"></div>
@@ -166,11 +173,17 @@ function getCSS() {
     }
 
     :host(:not([items][percentage])) #progress-state,
-    :host([percentage="100"]) #progress-state {
+    :host([percentage="100"]) #progress-state,
+    :host([type]) #progress-state {
       display: none;
     }
 
-    :host(:not([items][percentage="100"])) #progress-finished {
+    :host(:not([items][percentage="100"])) #progress-finished,
+    :host([type]) #progress-finished {
+      display: none;
+    }
+
+    :host(:not([type="offline"])) #progress-offline {
       display: none;
     }
 
@@ -181,7 +194,7 @@ function getCSS() {
       width: 320px;
     }
 
-    #progress-finished {
+    .static {
       align-items: center;
       display: flex;
       flex-direction: column;
@@ -189,6 +202,11 @@ function getCSS() {
 
     xf-icon[type="bulk_pinning_done"] {
       --xf-icon-color: var(--cros-sys-positive);
+      padding: 27px 0px 20px;
+    }
+
+    xf-icon[type="bulk_pinning_offline"] {
+      --xf-icon-color: var(--cros-sys-secondary);
       padding: 27px 0px 20px;
     }
 
