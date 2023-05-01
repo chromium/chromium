@@ -247,6 +247,7 @@
 #define IDC_READING_LIST_MENU_SHOW_UI   40272
 #define IDC_BOOKMARKS_LIST_TITLE        40273
 #define IDC_SHOW_BOOKMARK_SIDE_PANEL    40274
+#define IDC_SHOW_SEARCH_COMPANION       40275
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

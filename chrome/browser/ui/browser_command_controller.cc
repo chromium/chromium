@@ -778,6 +778,10 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_FEEDBACK:
       OpenFeedbackDialog(browser_, kFeedbackSourceBrowserCommand);
       break;
+    case IDC_SHOW_SEARCH_COMPANION:
+      browser_->window()->ShowSidePanel(SidePanelEntryId::kSearchCompanion,
+                                        SidePanelOpenTrigger::kAppMenu);
+      break;
 #endif
     case IDC_SHOW_BOOKMARK_BAR:
       ToggleBookmarkBar(browser_);
@@ -1305,6 +1309,9 @@ void BrowserCommandController::InitCommandState() {
 
   if (features::IsChromeRefresh2023()) {
     if (browser_->is_type_normal()) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      command_updater_.UpdateCommandEnabled(IDC_SHOW_SEARCH_COMPANION, true);
+#endif
       command_updater_.UpdateCommandEnabled(IDC_SHOW_BOOKMARK_SIDE_PANEL, true);
       // Reading list commands.
       command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU, true);

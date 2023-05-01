@@ -1099,8 +1099,14 @@ void AppMenuModel::Build() {
   if (media_router::MediaRouterEnabled(browser()->profile()))
     AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
 
-  // TODO(josephjoopark): Update translate string with StringId when finalized.
   if (features::IsChromeRefresh2023()) {
+    // TODO(josephjoopark): Update CSC string with StringId when finalized.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    AddItem(IDC_SHOW_SEARCH_COMPANION, u"Chrome Search Companion");
+#endif
+
+    // TODO(josephjoopark): Update translate string with StringId when
+    // finalized.
     AddItem(IDC_TRANSLATE_PAGE, u"Google Translate");
   }
 
@@ -1265,6 +1271,8 @@ void AppMenuModel::Build() {
     set_icon(IDC_OPTIONS, kSettingsMenuIcon);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     set_icon(IDC_HELP_MENU, kHelpMenuIcon);
+    set_icon(IDC_SHOW_SEARCH_COMPANION,
+             vector_icons::kGoogleGLogoMonochromeIcon);
 #endif
     set_icon(IDC_EXIT, kExitMenuIcon);
   }
