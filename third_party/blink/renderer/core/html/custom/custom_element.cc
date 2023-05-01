@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
@@ -22,12 +23,20 @@
 namespace blink {
 
 CustomElementRegistry* CustomElement::Registry(const Element& element) {
-  return Registry(element.GetDocument());
+  return Registry(element.GetTreeScope());
 }
 
-CustomElementRegistry* CustomElement::Registry(const Document& document) {
-  if (LocalDOMWindow* window = document.domWindow())
+CustomElementRegistry* CustomElement::Registry(const TreeScope& tree_scope) {
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    if (const ShadowRoot* shadow = DynamicTo<ShadowRoot>(tree_scope)) {
+      if (CustomElementRegistry* registry = shadow->registry()) {
+        return registry;
+      }
+    }
+  }
+  if (LocalDOMWindow* window = tree_scope.GetDocument().domWindow()) {
     return window->customElements();
+  }
   return nullptr;
 }
 

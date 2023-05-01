@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Re-entry via upgrade before calling super() Illegal constructor
+FAIL Re-entry via upgrade after calling super() Illegal constructor
+FAIL Re-entry via direct constructor call before calling super() Illegal constructor
+FAIL Re-entry via direct constructor call after calling super() Illegal constructor
+Harness: the test ran to completion.
+

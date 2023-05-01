@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_CONSTRUCTION_STACK_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_constructor_hash.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
-class CustomElementDefinition;
-class Element;
 class LocalDOMWindow;
 
 // https://html.spec.whatwg.org/multipage/custom-elements.html#concept-custom-element-definition-construction-stack
@@ -22,7 +22,32 @@ class LocalDOMWindow;
 // find out which definition to use, instead of always looking up the global
 // registry.
 
-using CustomElementConstructionStack = HeapVector<Member<Element>, 1>;
+struct CustomElementConstructionStackEntry {
+  DISALLOW_NEW();
+
+  CustomElementConstructionStackEntry() = default;
+  CustomElementConstructionStackEntry(Element& element,
+                                      CustomElementDefinition& definition)
+      : element(element), definition(definition) {}
+
+  Member<Element> element;
+  Member<CustomElementDefinition> definition;
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(element);
+    visitor->Trace(definition);
+  }
+};
+
+}  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::CustomElementConstructionStackEntry)
+
+namespace blink {
+
+using CustomElementConstructionStack =
+    HeapVector<CustomElementConstructionStackEntry, 1>;
 
 // Returns the construction stack associated with the construction in the
 // window. Nullptr return value means the stack is empty (when the memory

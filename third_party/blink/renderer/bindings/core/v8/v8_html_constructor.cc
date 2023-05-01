@@ -54,15 +54,26 @@ void V8HTMLConstructor::HtmlConstructor(
   }
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-  CustomElementRegistry* registry = window->customElements();
 
   // 3. Let definition be the entry in registry with constructor equal to
   // NewTarget.
   // If there is no such definition, then throw a TypeError and abort these
   // steps.
   v8::Local<v8::Object> constructor = new_target.As<v8::Object>();
-  CustomElementDefinition* definition =
-      registry->DefinitionForConstructor(constructor);
+  CustomElementDefinition* definition = nullptr;
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    // For scoped registries, we first check the construction stack for
+    // definition in a scoped registry.
+    CustomElementConstructionStack* construction_stack =
+        GetCustomElementConstructionStack(window, constructor);
+    if (construction_stack && construction_stack->size()) {
+      definition = construction_stack->back().definition;
+    }
+  }
+  if (!definition) {
+    definition =
+        window->customElements()->DefinitionForConstructor(constructor);
+  }
   if (!definition) {
     V8ThrowException::ThrowTypeError(isolate, "Illegal constructor");
     return;
@@ -123,10 +134,10 @@ void V8HTMLConstructor::HtmlConstructor(
     // This is an element being created with 'new' from script
     element = definition->CreateElementForConstructor(*window->document());
   } else {
-    element = construction_stack->back();
+    element = construction_stack->back().element;
     if (element) {
       // This is an element being upgraded that has called super
-      construction_stack->back().Clear();
+      construction_stack->back() = CustomElementConstructionStackEntry();
     } else {
       // During upgrade an element has invoked the same constructor
       // before calling 'super' and that invocation has poached the

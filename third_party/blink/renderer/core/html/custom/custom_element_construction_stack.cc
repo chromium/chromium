@@ -4,9 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_construction_stack.h"
 
-#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
@@ -100,7 +98,8 @@ CustomElementConstructionStackScope::CustomElementConstructionStackScope(
     Element& element)
     : construction_stack_(EnsureConstructionStack(definition)) {
   // Push the construction stack.
-  construction_stack_.push_back(&element);
+  construction_stack_.push_back(
+      CustomElementConstructionStackEntry(element, definition));
   ++nesting_level_;
 #if DCHECK_IS_ON()
   element_ = &element;
@@ -110,7 +109,8 @@ CustomElementConstructionStackScope::CustomElementConstructionStackScope(
 
 CustomElementConstructionStackScope::~CustomElementConstructionStackScope() {
 #if DCHECK_IS_ON()
-  DCHECK(!construction_stack_.back() || construction_stack_.back() == element_);
+  DCHECK(!construction_stack_.back().element ||
+         construction_stack_.back().element == element_);
   DCHECK_EQ(construction_stack_.size(), depth_);  // It's a *stack*.
 #endif
   // Pop the construction stack.
