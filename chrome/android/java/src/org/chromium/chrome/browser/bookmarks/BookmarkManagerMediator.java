@@ -284,8 +284,9 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
         @Override
         public boolean isPassivelyDraggable(PropertyModel propertyModel) {
-            BookmarkId bookmarkId = propertyModel.get(BookmarkManagerProperties.BOOKMARK_ID);
-            BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+            BookmarkListEntry bookmarkListEntry =
+                    propertyModel.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
+            BookmarkItem bookmarkItem = bookmarkListEntry.getBookmarkItem();
             return bookmarkItem.isReorderable();
         }
     };
@@ -356,7 +357,12 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
         mPromoHeaderManager = new BookmarkPromoHeader(mContext, mProfile, this::updateHeader);
         mBookmarkUndoController = bookmarkUndoController;
-        mBookmarkQueryHandler = new LegacyBookmarkQueryHandler(mBookmarkModel);
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            mBookmarkQueryHandler = new ImprovedBookmarkQueryHandler(mBookmarkModel);
+        } else {
+            mBookmarkQueryHandler = new LegacyBookmarkQueryHandler(mBookmarkModel);
+        }
+
         mModelList = modelList;
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mBookmarkUiPrefs.addObserver(this);
@@ -812,8 +818,9 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             updateOrAdd(index++, buildBookmarkListItem(bookmarkListEntry));
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST)
-                && topLevelFoldersShowing()) {
+        // TODO(https://crbug.com/1441191): Move this into the query handler.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST) && topLevelFoldersShowing()
+                && !BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             updateOrAdd(index++, buildDividerListItem());
             updateOrAdd(index++, buildShoppingFilterListItem());
         }
