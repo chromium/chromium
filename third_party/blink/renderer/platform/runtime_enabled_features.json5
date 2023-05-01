@@ -800,7 +800,7 @@
     },
     {
       name: "CSSDisplayAnimation",
-      status: "stable",
+      status: "experimental",
     },
     {
       // crbug.com/995106
@@ -1139,7 +1139,7 @@
     },
     {
       name: "CSSTransitionDiscrete",
-      status: "stable",
+      status: "experimental",
     },
     {
       // Support for tree-scoped [1] timeline names (e.g. produced by
