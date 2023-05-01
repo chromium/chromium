@@ -120,8 +120,7 @@ class ProcessMap : public KeyedService {
   bool IsPrivilegedExtensionProcess(const Extension& extension, int process_id);
 
   // Returns true if the given `context_type` - associated with the given
-  // `extension`, if provided - is a valid for the process with the given
-  // `process_id`.
+  // `extension`, if provided - is valid for the given `process`.
   //
   // Use this method to validate whether a context type claimed by the renderer
   // is possible.
@@ -150,7 +149,7 @@ class ProcessMap : public KeyedService {
   // GetMostLikelyContextType() cannot (and has to just "pick" a possible
   // context type).
   bool CanProcessHostContextType(const Extension* extension,
-                                 int process_id,
+                                 const content::RenderProcessHost& process,
                                  Feature::Context context_type);
 
   // Gets the most likely context type for the process with ID |process_id|

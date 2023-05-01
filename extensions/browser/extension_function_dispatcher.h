@@ -20,6 +20,7 @@
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
+class RenderProcessHost;
 class WebContents;
 }
 
@@ -147,7 +148,7 @@ class ExtensionFunctionDispatcher {
   void DispatchWithCallbackInternal(
       const mojom::RequestParams& params,
       content::RenderFrameHost* render_frame_host,
-      int render_process_id,
+      content::RenderProcessHost& render_process_host,
       ExtensionFunction::ResponseCallback callback);
 
   void RemoveWorkerCallbacksForProcess(int render_process_id);

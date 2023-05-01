@@ -421,7 +421,7 @@ void ExtensionFunctionDispatcher::Dispatch(
   }
 
   DispatchWithCallbackInternal(
-      *params, &frame, frame.GetProcess()->GetID(),
+      *params, &frame, *frame.GetProcess(),
       callback_wrapper->CreateCallback(std::move(callback)));
 }
 
@@ -463,7 +463,7 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
   }
 
   DispatchWithCallbackInternal(
-      *params, nullptr, render_process_id,
+      *params, nullptr, *rph,
       callback_wrapper->CreateCallback(params->request_id,
                                        params->worker_thread_id));
 }
@@ -471,7 +471,7 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
 void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
     const mojom::RequestParams& params,
     content::RenderFrameHost* render_frame_host,
-    int render_process_id,
+    content::RenderProcessHost& render_process_host,
     ExtensionFunction::ResponseCallback callback) {
   ProcessMap* process_map = ProcessMap::Get(browser_context_);
   if (!process_map) {
@@ -481,6 +481,8 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
                             kProcessNotFound);
     return;
   }
+
+  const int render_process_id = render_process_host.GetID();
 
   const GURL* rfh_url = nullptr;
   if (render_frame_host) {
@@ -501,7 +503,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   Feature::Context context_type =
       MojomContextToFeatureContext(params.context_type);
-  if (!process_map->CanProcessHostContextType(extension, render_process_id,
+  if (!process_map->CanProcessHostContextType(extension, render_process_host,
                                               context_type)) {
     // TODO(https://crbug.com/1186557): Ideally, we'd be able to mark some
     // of these as bad messages. We can't do that in all cases because there

@@ -7,7 +7,9 @@
 #include <tuple>
 
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map_factory.h"
@@ -148,9 +150,11 @@ bool ProcessMap::IsPrivilegedExtensionProcess(const Extension& extension,
          !is_lock_screen_context_;
 }
 
-bool ProcessMap::CanProcessHostContextType(const Extension* extension,
-                                           int process_id,
-                                           Feature::Context context_type) {
+bool ProcessMap::CanProcessHostContextType(
+    const Extension* extension,
+    const content::RenderProcessHost& process,
+    Feature::Context context_type) {
+  const int process_id = process.GetID();
   switch (context_type) {
     case Feature::UNSPECIFIED_CONTEXT:
       // We never consider unspecified contexts valid. Even though they would be
@@ -166,13 +170,14 @@ bool ProcessMap::CanProcessHostContextType(const Extension* extension,
       return extension &&
              IsWebViewProcessForExtension(process_id, extension->id());
     case Feature::CONTENT_SCRIPT_CONTEXT:
-    case Feature::USER_SCRIPT_CONTEXT:
-      // Currently, we assume any process can host a content script or user
-      // script.
+      // Currently, we assume any process can host a content script.
       // TODO(crbug.com/1186557): This could be better by looking at
-      // ContentScriptTracker for (which also means hooking user scripts up to
-      // ContentScriptTracker).
+      // ContentScriptTracker, as we do for user scripts below.
       return !!extension;
+    case Feature::USER_SCRIPT_CONTEXT:
+      return extension &&
+             ContentScriptTracker::DidProcessRunUserScriptFromExtension(
+                 process, extension->id());
     case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
       // Lock screen contexts are essentially blessed contexts that run on the
       // lock screen profile. We don't run component hosted apps there, so no

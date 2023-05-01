@@ -46,8 +46,12 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  content::RenderProcessHost& GetActiveMainFrameProcess() {
+    return *GetActiveTab()->GetPrimaryMainFrame()->GetProcess();
+  }
+
   int GetActiveMainFrameProcessID() {
-    return GetActiveTab()->GetPrimaryMainFrame()->GetProcess()->GetID();
+    return GetActiveMainFrameProcess().GetID();
   }
 
   // Adds a new extension with the given `extension_name` and host permission to
@@ -95,6 +99,34 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
     const Extension* extension = LoadExtension(extension_dir->UnpackedPath());
     extension_dirs_.push_back(std::move(extension_dir));
     return extension;
+  }
+
+  void ExecuteUserScriptInActiveTab(const ExtensionId& extension_id) {
+    base::RunLoop run_loop;
+    content::WebContents* web_contents = GetActiveTab();
+    // TODO(https://crbug.com/1429408): Add a utility method for user script
+    // injection in browser tests.
+    ScriptExecutor script_executor(web_contents);
+    std::vector<mojom::JSSourcePtr> sources;
+    sources.push_back(
+        mojom::JSSource::New("document.title = 'injected';", GURL()));
+    script_executor.ExecuteScript(
+        mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id),
+        mojom::CodeInjection::NewJs(mojom::JSInjection::New(
+            std::move(sources), mojom::ExecutionWorld::kUserScript,
+            blink::mojom::WantResultOption::kWantResult,
+            blink::mojom::UserActivationOption::kDoNotActivate,
+            blink::mojom::PromiseResultOption::kAwait)),
+        ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
+        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
+        GURL() /* webview_src */,
+        base::IgnoreArgs<std::vector<ScriptExecutor::FrameResult>>(
+            run_loop.QuitWhenIdleClosure()));
+
+    run_loop.Run();
+
+    EXPECT_EQ(u"injected", web_contents->GetTitle());
   }
 
   // Adds a new extension with a sandboxed frame, `sandboxed.html`, and a parent
@@ -250,12 +282,12 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   }
 
   // Iterates over every context type and checks if it could be hosted given the
-  // pairing of `extension` and `process_id`, expecting it to be allowed if and
+  // pairing of `extension` and `process`, expecting it to be allowed if and
   // only if the context type is in `allowed_contexts`. `debug_string` is used
   // in a scoped trace to make test failures more meaningful.
   void RunCanProcessHostContextTypeChecks(
       const Extension* extension,
-      int process_id,
+      const content::RenderProcessHost& process,
       const std::vector<Feature::Context>& allowed_contexts,
       base::StringPiece debug_string) {
     std::vector<Feature::Context> all_types = {
@@ -281,7 +313,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
       bool expected_to_be_allowed =
           base::Contains(allowed_contexts, context_type);
       EXPECT_EQ(expected_to_be_allowed,
-                process_map()->CanProcessHostContextType(extension, process_id,
+                process_map()->CanProcessHostContextType(extension, process,
                                                          context_type));
     }
   }
@@ -320,14 +352,13 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebPages) {
   ASSERT_TRUE(extension);
 
   OpenDomain("example.com");
-  int web_page_process_id = GetActiveMainFrameProcessID();
+  content::RenderProcessHost& web_page_process = GetActiveMainFrameProcess();
 
+  RunCanProcessHostContextTypeChecks(extension, web_page_process,
+                                     {Feature::CONTENT_SCRIPT_CONTEXT},
+                                     "web page with extension passed");
   RunCanProcessHostContextTypeChecks(
-      extension, web_page_process_id,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT},
-      "web page with extension passed");
-  RunCanProcessHostContextTypeChecks(
-      nullptr, web_page_process_id,
+      nullptr, web_page_process,
       {Feature::WEB_PAGE_CONTEXT, Feature::WEBUI_UNTRUSTED_CONTEXT},
       "web page without extension passed");
 }
@@ -352,13 +383,12 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebUiPages) {
   ASSERT_TRUE(extension);
 
   OpenWebUi();
-  int webui_process_id = GetActiveMainFrameProcessID();
+  content::RenderProcessHost& webui_process = GetActiveMainFrameProcess();
 
-  RunCanProcessHostContextTypeChecks(
-      extension, webui_process_id,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT},
-      "webui page with extension passed");
-  RunCanProcessHostContextTypeChecks(nullptr, webui_process_id,
+  RunCanProcessHostContextTypeChecks(extension, webui_process,
+                                     {Feature::CONTENT_SCRIPT_CONTEXT},
+                                     "webui page with extension passed");
+  RunCanProcessHostContextTypeChecks(nullptr, webui_process,
                                      {Feature::WEBUI_CONTEXT},
                                      "webui page without extension passed");
 }
@@ -407,42 +437,36 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   // page for that extension, but not the other.
   OpenExtensionPage(*extension1);
 
-  int extension1_process_id =
-      GetActiveTab()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  content::RenderProcessHost& extension1_process = GetActiveMainFrameProcess();
 
   RunCanProcessHostContextTypeChecks(
-      extension1, extension1_process_id,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT,
-       Feature::BLESSED_EXTENSION_CONTEXT,
+      extension1, extension1_process,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::BLESSED_EXTENSION_CONTEXT,
        Feature::OFFSCREEN_EXTENSION_CONTEXT},
       "extension1 page with extension1 passed");
+  RunCanProcessHostContextTypeChecks(extension2, extension1_process,
+                                     {Feature::CONTENT_SCRIPT_CONTEXT},
+                                     "extension1 page with extension2 passed");
   RunCanProcessHostContextTypeChecks(
-      extension2, extension1_process_id,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT},
-      "extension1 page with extension2 passed");
-  RunCanProcessHostContextTypeChecks(
-      nullptr, extension1_process_id, {},
+      nullptr, extension1_process, {},
       "extension1 page without extension passed");
 
   // Inversion: Navigate to the page of the second extension. It should be a
   // privileged page in the second, but not the first.
   OpenExtensionPage(*extension2);
 
-  int extension2_process_id =
-      GetActiveTab()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  content::RenderProcessHost& extension2_process = GetActiveMainFrameProcess();
 
   RunCanProcessHostContextTypeChecks(
-      extension2, extension2_process_id,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT,
-       Feature::BLESSED_EXTENSION_CONTEXT,
+      extension2, extension2_process,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::BLESSED_EXTENSION_CONTEXT,
        Feature::OFFSCREEN_EXTENSION_CONTEXT},
       "extension2 page with extension2 passed");
+  RunCanProcessHostContextTypeChecks(extension1, extension2_process,
+                                     {Feature::CONTENT_SCRIPT_CONTEXT},
+                                     "extension2 page with extension1 passed");
   RunCanProcessHostContextTypeChecks(
-      extension1, extension2_process_id,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT},
-      "extension2 page with extension1 passed");
-  RunCanProcessHostContextTypeChecks(
-      nullptr, extension2_process_id, {},
+      nullptr, extension2_process, {},
       "extension2 page without extension passed");
 }
 
@@ -472,14 +496,13 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 
   // Navigate to a web page and wait for the content script to inject.
   OpenDomainAndWaitForContentScript("example.com");
-  int page_process_id = GetActiveMainFrameProcessID();
+  content::RenderProcessHost& page_process = GetActiveMainFrameProcess();
 
+  RunCanProcessHostContextTypeChecks(extension, page_process,
+                                     {Feature::CONTENT_SCRIPT_CONTEXT},
+                                     "web page with extension passed");
   RunCanProcessHostContextTypeChecks(
-      extension, page_process_id,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT},
-      "web page with extension passed");
-  RunCanProcessHostContextTypeChecks(
-      nullptr, page_process_id,
+      nullptr, page_process,
       {Feature::WEB_PAGE_CONTEXT, Feature::WEBUI_UNTRUSTED_CONTEXT},
       "web page without extension passed");
 }
@@ -532,29 +555,28 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   EXPECT_FALSE(ExtensionFrameIsSandboxed(main_frame));
   EXPECT_TRUE(ExtensionFrameIsSandboxed(sandboxed_frame));
 
-  int main_frame_process_id = main_frame->GetProcess()->GetID();
-  int sandboxed_frame_process_id = sandboxed_frame->GetProcess()->GetID();
+  content::RenderProcessHost& main_frame_process = *main_frame->GetProcess();
+  content::RenderProcessHost& sandboxed_frame_process =
+      *sandboxed_frame->GetProcess();
 
-  EXPECT_EQ(main_frame_process_id, sandboxed_frame_process_id);
+  EXPECT_EQ(main_frame_process.GetID(), sandboxed_frame_process.GetID());
 
   RunCanProcessHostContextTypeChecks(
-      extension, main_frame_process_id,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT,
-       Feature::BLESSED_EXTENSION_CONTEXT,
+      extension, main_frame_process,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::BLESSED_EXTENSION_CONTEXT,
        Feature::OFFSCREEN_EXTENSION_CONTEXT},
       "main frame process with extension passed");
   RunCanProcessHostContextTypeChecks(
-      nullptr, main_frame_process_id, {},
+      nullptr, main_frame_process, {},
       "main frame process without extension passed");
 
   RunCanProcessHostContextTypeChecks(
-      extension, sandboxed_frame_process_id,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT,
-       Feature::BLESSED_EXTENSION_CONTEXT,
+      extension, sandboxed_frame_process,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::BLESSED_EXTENSION_CONTEXT,
        Feature::OFFSCREEN_EXTENSION_CONTEXT},
       "sandboxed frame process with extension passed");
   RunCanProcessHostContextTypeChecks(
-      nullptr, sandboxed_frame_process_id, {},
+      nullptr, sandboxed_frame_process, {},
       "sandboxed frame process without extension passed");
 }
 
@@ -591,26 +613,57 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebViews) {
   // except an unblessed extension context (which is only available to
   // webviews).
   RunCanProcessHostContextTypeChecks(
-      extension, embedder->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT,
-       Feature::BLESSED_EXTENSION_CONTEXT,
+      extension, *embedder->GetPrimaryMainFrame()->GetProcess(),
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::BLESSED_EXTENSION_CONTEXT,
        Feature::OFFSCREEN_EXTENSION_CONTEXT},
       "embedder process");
 
   // The webview can only host content scripts, user scripts, and
   // unblessed extension contexts (accessible resources).
   RunCanProcessHostContextTypeChecks(
-      extension, webview->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT,
-       Feature::UNBLESSED_EXTENSION_CONTEXT},
+      extension, *webview->GetPrimaryMainFrame()->GetProcess(),
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::UNBLESSED_EXTENSION_CONTEXT},
       "webview process with extension passed");
 
   // If the extension isn't associated with the call, the webview could only
   // possibly contain web pages and untrusted web ui.
   RunCanProcessHostContextTypeChecks(
-      nullptr, webview->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      nullptr, *webview->GetPrimaryMainFrame()->GetProcess(),
       {Feature::WEB_PAGE_CONTEXT, Feature::WEBUI_UNTRUSTED_CONTEXT},
       "webview process without extension passed");
+}
+
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
+                       IsPrivilegedExtensionProcess_UserScripts) {
+  const Extension* extension =
+      AddExtensionWithHostPermission("test", "*://example.com/*");
+  ASSERT_TRUE(extension);
+
+  OpenDomain("example.com");
+  ExecuteUserScriptInActiveTab(extension->id());
+
+  EXPECT_FALSE(process_map()->IsPrivilegedExtensionProcess(
+      *extension, GetActiveMainFrameProcessID()));
+}
+
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_UserScripts) {
+  const Extension* extension =
+      AddExtensionWithHostPermission("test", "*://example.com/*");
+  ASSERT_TRUE(extension);
+
+  OpenDomain("example.com");
+  ExecuteUserScriptInActiveTab(extension->id());
+
+  content::RenderProcessHost& web_page_process = GetActiveMainFrameProcess();
+
+  RunCanProcessHostContextTypeChecks(
+      extension, web_page_process,
+      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT},
+      "page with injected user script with extension passed");
+  RunCanProcessHostContextTypeChecks(
+      nullptr, web_page_process,
+      {Feature::WEB_PAGE_CONTEXT, Feature::WEBUI_UNTRUSTED_CONTEXT},
+      "page with injected user script without extension passed");
 }
 
 }  // namespace extensions
