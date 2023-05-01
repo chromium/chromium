@@ -236,7 +236,7 @@
 <translation id="2328985652426384049">Аккаунтка кирүү мүмкүн эмес</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> орнотулган жок.</translation>
 <translation id="234265804618409743">Камера ачылбай жатат. Бир жерден ката кетти.</translation>
-<translation id="2349710944427398404">Chrome пайдаланган жалпы дайындардын, анын ичинде каттоо эсептери, кыстармалар жана сакталган жөндөөлөрдүн жалпы өлчөмү</translation>
+<translation id="2349710944427398404">Chrome пайдаланган жалпы дайындардын, анын ичинде каттоо эсептери, кыстармалар жана сакталган параметрлердин жалпы өлчөмү</translation>
 <translation id="235789365079050412">Google Купуялык саясаты</translation>
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2386938421315164605">Темаларды жашыруу жана көрсөтүү</translation>
@@ -459,7 +459,7 @@
 <translation id="3518985090088779359">Кабыл алып, улантуу</translation>
 <translation id="3522247891732774234">Жаңыртуу бар. Дагы опциялар</translation>
 <translation id="3524138585025253783">Иштеп чыгуучунун интерфейси</translation>
-<translation id="3524334353996115845"><ph name="ORIGIN" /> кызматына бул сиз экениңизди ырастоого уруксат бериңиз</translation>
+<translation id="3524334353996115845"><ph name="ORIGIN" /> кызматына өзүңүздү ырастоого уруксат бериңиз</translation>
 <translation id="3527085408025491307">Куржун</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" />Кб жеткиликтүү</translation>
 <translation id="3549657413697417275">Серептөө таржымалынан издеңиз</translation>
@@ -806,7 +806,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="543338862236136125">Сырсөздү түзөтүү</translation>
 <translation id="5433691172869980887">Колдонуучунун аты көчүрүлдү</translation>
 <translation id="5438292632479953702">Кайра жүктөп алуу</translation>
-<translation id="5441466871879044658">Төмөнкү тилге которуу</translation>
+<translation id="5441466871879044658">Кайсы тилге</translation>
 <translation id="5441522332038954058">Дарек тилкесине секирүү</translation>
 <translation id="5444999712122199445">Сайтка кайтуу</translation>
 <translation id="544776284582297024">Бир учурда бир нече өтмөктү ачып, бир нече баракка өтүү үчүн өтмөктөрдү ачуу баскычын басыңыз</translation>
@@ -1226,7 +1226,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7581273696622423628">Сурамжылоого катышуу</translation>
 <translation id="7583262514280211622">Окуу тизмеңизди ушул жерден табасыз</translation>
 <translation id="7588219262685291874">Түзмөгүңүз кубатты үнөмдөө режиминде иштегенде, Батареяны үнөмдөгүчтү күйгүзүңүз</translation>
-<translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> кызматына <ph name="TOP_ORIGIN" /> үчүн бул сиз экениңизди ырастоого уруксат бериңиз</translation>
+<translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> кызматына <ph name="TOP_ORIGIN" /> үчүн өзүңүздү ырастоого уруксат бериңиз</translation>
 <translation id="7596558890252710462">Иштөө тутуму</translation>
 <translation id="7605594153474022051">Шайкештирүү иштебей жатат</translation>
 <translation id="7612619742409846846">Google'га төмөнкү аркылуу кирип турасыз</translation>
@@ -1257,6 +1257,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7709918231054955894">Бардык өтмөктөрүңүздү көрүңүз</translation>
 <translation id="772434085369393266">Өтүү аракеттери HTTPS'ке чейин жаңыртылып, алар колдоого алынбаган сайттарды жүктөөдөн мурда эскертилет. Өркүндөтүлгөн коргоо иштетилгендиктен, бул параметрди өзгөртө албайсыз.</translation>
 <translation id="7725024127233776428">Сиз кыстарма катары сактаган барактар ушул жерде көрүнөт</translation>
+<translation id="7733878270780732638">Түзмөктө орун жетишсиз.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> түзмөгүнөн көчүрүлгөн текст</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" />-SD-карта</translation>
 <translation id="7764225426217299476">Дарек кошуу</translation>
@@ -1295,7 +1296,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7930998711684428189">Сырсөзүңүздү кимдир-бирөө билип алса, эскертүү жөнөтүлсүн.</translation>
 <translation id="7939485076072265087">Бөлүп көрсөтүлгөн текст үчүн стилдештирилген карта түзүү</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> эскирип калган.</translation>
-<translation id="7944772052836377867">Шайкештирүү бул сиз экениңизди ырасташы керек</translation>
+<translation id="7944772052836377867">Шайкештирүү өзүңүздү ырасташы керек</translation>
 <translation id="7947953824732555851">Кабыл алуу жана кирүү</translation>
 <translation id="7957413488482743710">Шылуундуктан коргоого жардам берүү үчүн виртуалдык карта чыныгы картаңыздын маалыматын жашырат. <ph name="BEGIN_LINK1" />Виртуалдык карталар жөнүндө кеңири маалымат алыңыз<ph name="END_LINK1" /></translation>
 <translation id="7961015016161918242">Эч качан</translation>

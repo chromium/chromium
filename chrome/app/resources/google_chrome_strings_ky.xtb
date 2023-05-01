@@ -118,6 +118,7 @@
 <translation id="2929907241665500097">Chrome жаңырган жок. Бир жерден ката кетти. <ph name="BEGIN_LINK" />Chrome'догу жаңыртуу маселелерин оңдоңуз.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Тармакка кирүү – Chrome</translation>
 <translation id="3019382870990049182">ChromeOS Flex системасын жаңыртуу үчүн кайра иштетүү</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome кеңейтүүлөрү HID түзмөктөрүнө кирип жаткан}=1{Google Chrome кеңейтүүлөрү HID түзмөктөрүнө кирүүдө}other{Google Chrome кеңейтүүлөрү # HID түзмөгүнө кирүүдө}}</translation>
 <translation id="303514781271618814">Chrome сайттар дайын-даректериңизди азыраак колдонуу менен бирдей карап чыгуу мүмкүнчүлүгүн бере турган жаңы функцияларды изилдеп жатат</translation>
 <translation id="3037838751736561277">Google Chrome фондук режимде.</translation>
 <translation id="3038232873781883849">Орнотулушу күтүлүүдө...</translation>
@@ -223,6 +224,7 @@
 <translation id="4970880042055371251">ChromeOS версиясы</translation>
 <translation id="4970947549776831107">Файлдын мындай түрү кооптуу болгондуктан, Chrome аны бөгөттөп койду</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome кеңейтүүсү HID түзмөктөрүнө кирип жаткан}=1{Google Chrome кеңейтүүсү 1 HID түзмөгүнө кирүүдө}other{Google Chrome кеңейтүүсү # HID түзмөгүнө кирүүдө}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Chrome 1 мүнөттөй колдонулбаса, администраторуңуз аны автоматтык түрдө жабат. Серептөө дайындары өчүрүлөт. Бул таржымалды, автотолтурууну жана жүктөлүп алынгандарды камтышы мүмкүн.}other{Chrome # мүнөттөй колдонулбаса, администраторуңуз аны автоматтык түрдө жабат. Серептөө дайындары өчүрүлөт. Бул таржымалды, автотолтурууну жана жүктөлүп алынгандарды камтышы мүмкүн.}}</translation>
 <translation id="5098668839038261629">Күйгүзүлсө, Chrome'дон да чыгарыласыз</translation>
 <translation id="5132929315877954718">Google Chrome'дун мыкты колдонмолор, оюндар, кеңейтүүлөр жана темалар дүйнөсүн ачыңыз.</translation>

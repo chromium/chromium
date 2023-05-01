@@ -116,6 +116,7 @@
 <translation id="2929907241665500097">Chrome अद्यावधिक भएन, केही चिज गडबड भयो। <ph name="BEGIN_LINK" />Chrome अद्यावधिक गर्दा देखिएका समस्या तथा अद्यावधिक नहुने समस्याहरू समाधान गर्नुहोस्।<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chrome</translation>
 <translation id="3019382870990049182">तपाईं &amp;ChromeOS Flex अपडेट गर्न चाहनुहुन्छ भने रिलन्च गर्नुहोस्</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome एक्स्टेन्सनहरूले HID डिभाइसहरू प्रयोग गरिरहेका थिए}=1{Google Chrome एक्स्टेन्सनहरूले HID डिभाइसहरू प्रयोग गरिरहेका छन्}other{Google Chrome एक्स्टेन्सनहरूले # वटा HID डिभाइस प्रयोग गरिरहेका छन्}}</translation>
 <translation id="303514781271618814">Chrome ले साइटहरूलाई कम डेटा प्रयोग गरेर उही स्तरको ब्राउजिङ अनुभव प्रदान गर्न सघाउने नयाँ सुविधाहरूको जाँच गरिरहेको छ</translation>
 <translation id="3037838751736561277">Google Chrome पृष्ठभूमि मोडमा छ।</translation>
 <translation id="3038232873781883849">इन्स्टल गर्ने प्रतीक्षा गरिँदै छ...</translation>
@@ -221,6 +222,7 @@
 <translation id="4970880042055371251">ChromeOS को संस्करण</translation>
 <translation id="4970947549776831107">यस्तो प्रकारको फाइल खतरनाक हुने भएकाले Chrome ले यो फाइल ब्लक गरेको छ</translation>
 <translation id="4990567037958725628">Google Chrome क्यानरी</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{कुनै Google Chrome एक्स्टेन्सनले HID डिभाइसहरू प्रयोग गरिरहेको थियो}=1{कुनै Google Chrome एक्स्टेन्सनले एउटा HID डिभाइस प्रयोग गरिरहेको छ}other{कुनै Google Chrome एक्स्टेन्सनले # वटा HID डिभाइस प्रयोग गरिरहेको छ}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{तपाईंका एड्मिनका अनुसार तपाईंले १ मिनेटसम्म Chrome प्रयोग गर्नुभएन भने Chrome स्वतः बन्द हुन्छ। ब्राउजिङ डेटा मेटाइएको छ। यसअन्तर्गत हिस्ट्री, अटोफिल तथा डाउनलोड समावेश हुन सक्छन्।}other{तपाईंका एड्मिनका अनुसार तपाईंले # मिनेटसम्म Chrome प्रयोग गर्नुभएन भने Chrome स्वतः बन्द हुन्छ। ब्राउजिङ डेटा मेटाइएको छ। यसअन्तर्गत हिस्ट्री, अटोफिल तथा डाउनलोड समावेश हुन सक्छन्।}}</translation>
 <translation id="5098668839038261629">टगल अन गरिएका खण्डमा तपाईंलाई Chrome बाट साइन आउट पनि गरिने छ</translation>
 <translation id="5132929315877954718">Google Chrome को लागि उत्कृष्ट एप्स, खेलहरू, एक्स्टेन्सनहरू र थिमहरू पत्ता लगाउनुहोस्।</translation>

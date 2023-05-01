@@ -480,7 +480,7 @@
 <translation id="1410616244180625362">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಗೆ ಅನುಮತಿಸುವುದನ್ನು ಮುಂದುವರೆಸಿ</translation>
 <translation id="1410797069449661718">ಮೊದಲ ಟ್ಯಾಬ್ ಕಡೆಗೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="1410806973194718079">ನೀತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
-<translation id="1411400282355634827">ಎಲ್ಲಾ ಬ್ಲೂಟೂತ್ ಸಾಧನದ ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡುವುದೇ?</translation>
+<translation id="1411400282355634827">ಎಲ್ಲಾ ಬ್ಲೂಟೂತ್ ಸಾಧನದ ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="1411724932979011919">ನಿಮ್ಮ ನಮೂದು LPA ಫಾರ್ಮ್ಯಾಟ್‌ನಲ್ಲಿರಬೇಕು:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1412681350727866021">ಹೆಚ್ಚುವರಿ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು</translation>
 <translation id="1414315029670184034">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು‌ ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
@@ -4825,7 +4825,7 @@
 <translation id="5178667623289523808">ಹಿಂದೆ ಕಂಡುಹಿಡಿಯಿರಿ</translation>
 <translation id="5181140330217080051">ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> ಗಾಗಿ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
-<translation id="5183344263225877832">ಎಲ್ಲಾ HID ಸಾಧನದ ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡುವುದೇ?</translation>
+<translation id="5183344263225877832">ಎಲ್ಲಾ HID ಸಾಧನದ ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5184063094292164363">&amp;JavaScript ಕನ್ಸೋಲ್</translation>
 <translation id="5184209580557088469">ಈ ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಹೊಂದಿರುವ ಟಿಕೆಟ್ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
 <translation id="5184662919967270437">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -7643,7 +7643,7 @@
 <translation id="7674542105240814168">ಸ್ಥಳ ಪ್ರವೇಶವನ್ನು ನಿರಾಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' ಗಾಗಿ <ph name="NUM" /> ಟ್ಯಾಬ್‌ಗಳು ಕಂಡುಬಂದಿವೆ</translation>
 <translation id="7676867886086876795">ಯಾವುದೇ ಪಠ್ಯ ಫೀಲ್ಡ್‌ನಲ್ಲಿ ಡಿಕ್ಟೇಷನ್ ಅನ್ನು ಅನುಮತಿಸಲು ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು Google ಗೆ ಕಳುಹಿಸಿ.</translation>
-<translation id="7678588695732963732">ಎಲ್ಲಾ USB ಸಾಧನದ ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡುವುದೇ?</translation>
+<translation id="7678588695732963732">ಎಲ್ಲಾ USB ಸಾಧನದ ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="7679171213002716280">ನಿರ್ವಹಿಸಲಾದ <ph name="PRINTER_COUNT" /> ಪ್ರಿಂಟರ್‌ಗಳಿವೆ.</translation>
 <translation id="7680416688940118410">ಟಚ್‌ಸ್ಕ್ರೀನ್ ಕ್ಯಾಲಿಬ್ರೇಶನ್</translation>
 <translation id="7681095912841365527">ಸೈಟ್‌ ಬ್ಲೂಟೂತ್ ಅನ್ನು ಬಳಸಬಹುದು</translation>
@@ -9402,7 +9402,7 @@
 <translation id="9192019773545828776">ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಆಲಿಸಿ ಇದರಿಂದ ನೀವು ಸ್ಕ್ರೀನ್ ಅನ್ನು ನೋಡದೆಯೇ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಬಳಸಬಹುದು. ಸಂಪರ್ಕಿತ ಸಾಧನದೊಂದಿಗೆ ಬ್ರೈಲ್ ಪ್ರತಿಕ್ರಿಯೆ ಲಭ್ಯವಿದೆ. ChromeVox ಅನ್ನು ಆನ್ ಮತ್ತು ಆಫ್ ಮಾಡಲು Ctrl + Alt + Z ಬಳಸಿ. ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು Search + ಲೆಫ್ಟ್ ಆ್ಯರೋ ಅಥವಾ ರೈಟ್ ಗುರುತನ್ನು ಬಳಸಿ. ಆಯ್ಕೆ ಮಾಡಲು (ಸಕ್ರಿಯಗೊಳಿಸಲು) Search + ಸ್ಪೇಸ್  ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="919686179725692564">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡುವ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="9199503643457729322">ಗೌಪ್ಯತೆ ಗೈಡ್‌ನಿಂದ ದೂರ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
-<translation id="9199695835892108985">ಎಲ್ಲಾ USB ಸೀರಿಯಲ್ ಪೋರ್ಟ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡುವುದೇ?</translation>
+<translation id="9199695835892108985">ಎಲ್ಲಾ USB ಸೀರಿಯಲ್ ಪೋರ್ಟ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="9200339982498053969"><ph name="FOLDERNAME" /> ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> ಹುಡುಕಾಟ</translation>
 <translation id="9201023452444595544">ಯಾವುದೇ ಆಫ್‌ಲೈನ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
