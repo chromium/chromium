@@ -1442,6 +1442,7 @@
         'browser_config': 'cros-chrome',
         'mixins': [
           'chromeos-amd64-generic',
+          'linux-jammy',
         ],
         'os_type': 'chromeos',
         'test_suites': {

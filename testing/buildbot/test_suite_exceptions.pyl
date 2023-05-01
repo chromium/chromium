@@ -3162,12 +3162,6 @@
       },
       'chromeos-amd64-generic-rel': {
         'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1412588): Move all the bot's tests to Jammy.
-              'os': 'Ubuntu-22.04',
-            },
-          ],
           'quickrun_shards': 6,
         },
       },
@@ -4330,12 +4324,6 @@
           '--extra-browser-args=--disable-features=BackgroundVideoPauseOptimization --disable-background-media-suspend --disable-renderer-backgrounding --disable-background-timer-throttling',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1412588): Move all the bot's tests to Jammy.
-              'os': 'Ubuntu-22.04',
-            },
-          ],
           'quickrun_shards': 40,
         },
       },
