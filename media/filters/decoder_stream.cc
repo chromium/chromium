@@ -913,6 +913,14 @@ void DecoderStream<StreamType>::CompleteDecoderReinitialization(
 
   state_ = status.is_ok() ? STATE_NORMAL : STATE_ERROR;
 
+  // If there's a pending read and no pending reset, report error via
+  // `read_cb_`, otherwise report it via MediaLog.
+  if (!status.is_ok() && (reset_cb_ || !read_cb_)) {
+    media_log_->NotifyError(std::move(status));
+    MEDIA_LOG(ERROR, media_log_)
+        << GetStreamTypeString() << " decoder reinitialization failed";
+  }
+
   if (reset_cb_) {
     std::move(reset_cb_).Run();
     return;
@@ -922,8 +930,6 @@ void DecoderStream<StreamType>::CompleteDecoderReinitialization(
     return;
 
   if (state_ == STATE_ERROR) {
-    MEDIA_LOG(ERROR, media_log_)
-        << GetStreamTypeString() << " decoder reinitialization failed";
     SatisfyRead(std::move(status));
     return;
   }
