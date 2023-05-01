@@ -97,9 +97,14 @@ JsParams HistogramsMessageHandler::AllowJavascriptAndUnpackParams(
 }
 
 void HistogramsMessageHandler::ImportHistograms(bool include_subprocesses) {
-  base::StatisticsRecorder::ImportProvidedHistograms();
-  if (include_subprocesses)
+  if (include_subprocesses) {
+    // Synchronously fetch subprocess histograms that live in shared memory.
+    base::StatisticsRecorder::ImportProvidedHistograms();
+
+    // Asynchronously fetch subprocess histograms that do not live in shared
+    // memory (e.g., they were emitted before the shared memory was set up).
     HistogramSynchronizer::FetchHistograms();
+  }
 }
 
 void HistogramsMessageHandler::HandleRequestHistograms(
