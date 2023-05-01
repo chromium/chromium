@@ -18,7 +18,6 @@
 #include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/browsing_topics/util.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -322,26 +321,21 @@ BrowsingTopicsServiceImpl::BrowsingTopicsServiceImpl(
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     history::HistoryService* history_service,
     content::BrowsingTopicsSiteDataManager* site_data_manager,
-    optimization_guide::PageContentAnnotationsService* annotations_service,
+    std::unique_ptr<Annotator> annotator,
     TopicAccessedCallback topic_accessed_callback)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       history_service_(history_service),
       site_data_manager_(site_data_manager),
-      annotations_service_(annotations_service),
       browsing_topics_state_(
           profile_path,
           base::BindOnce(
               &BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded,
               base::Unretained(this))),
+      annotator_(std::move(annotator)),
       topic_accessed_callback_(std::move(topic_accessed_callback)) {
   DCHECK(topic_accessed_callback_);
   privacy_sandbox_settings_observation_.Observe(privacy_sandbox_settings);
   history_service_observation_.Observe(history_service);
-
-  // Greedily request the model to be available to reduce the latency in later
-  // topics calculation.
-  annotations_service_->RequestAndNotifyWhenModelAvailable(
-      optimization_guide::AnnotationType::kPageTopics, base::DoNothing());
 }
 
 bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
@@ -526,6 +520,10 @@ BrowsingTopicsServiceImpl::GetTopTopicsForDisplay() const {
   return result;
 }
 
+Annotator* BrowsingTopicsServiceImpl::GetAnnotator() {
+  return annotator_.get();
+}
+
 void BrowsingTopicsServiceImpl::ClearTopic(
     const privacy_sandbox::CanonicalTopic& canonical_topic) {
   if (!browsing_topics_state_loaded_)
@@ -565,12 +563,12 @@ BrowsingTopicsServiceImpl::CreateCalculator(
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     history::HistoryService* history_service,
     content::BrowsingTopicsSiteDataManager* site_data_manager,
-    optimization_guide::PageContentAnnotationsService* annotations_service,
+    Annotator* annotator,
     const base::circular_deque<EpochTopics>& epochs,
     BrowsingTopicsCalculator::CalculateCompletedCallback callback) {
   return std::make_unique<BrowsingTopicsCalculator>(
-      privacy_sandbox_settings, history_service, site_data_manager,
-      annotations_service, epochs, std::move(callback));
+      privacy_sandbox_settings, history_service, site_data_manager, annotator,
+      epochs, std::move(callback));
 }
 
 const BrowsingTopicsState& BrowsingTopicsServiceImpl::browsing_topics_state() {
@@ -598,7 +596,7 @@ void BrowsingTopicsServiceImpl::CalculateBrowsingTopics() {
   // the callback once it's destroyed.
   topics_calculator_ = CreateCalculator(
       privacy_sandbox_settings_, history_service_, site_data_manager_,
-      annotations_service_, browsing_topics_state_.epochs(),
+      annotator_.get(), browsing_topics_state_.epochs(),
       base::BindOnce(
           &BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted,
           base::Unretained(this)));

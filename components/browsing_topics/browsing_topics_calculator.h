@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "components/browsing_topics/annotator.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/epoch_topics.h"
 #include "components/history/core/browser/history_types.h"
@@ -29,11 +30,6 @@ namespace content {
 class BrowsingTopicsSiteDataManager;
 }  // namespace content
 
-namespace optimization_guide {
-class PageContentAnnotationsService;
-class BatchAnnotationResult;
-}  // namespace optimization_guide
-
 namespace browsing_topics {
 
 // Responsible for doing a one-off browsing topics calculation. It will:
@@ -42,8 +38,8 @@ namespace browsing_topics {
 // Topics API was called on.
 // 3) Query the `HistoryService` for the hosts of the pages the API was called
 // on.
-// 4) Query the `PageContentAnnotationsService` with a set of hosts, to get the
-// corresponding topics.
+// 4) Query the `Annotator` with a set of hosts, to get the corresponding
+// topics.
 // 5) Derive `EpochTopics` (i.e. the top topics and the their observed-by
 // contexts), and return it as the final result.
 class BrowsingTopicsCalculator {
@@ -66,7 +62,7 @@ class BrowsingTopicsCalculator {
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
       history::HistoryService* history_service,
       content::BrowsingTopicsSiteDataManager* site_data_manager,
-      optimization_guide::PageContentAnnotationsService* annotations_service,
+      Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
       CalculateCompletedCallback callback);
 
@@ -101,11 +97,9 @@ class BrowsingTopicsCalculator {
 
   void OnGetRecentlyVisitedURLsCompleted(history::QueryResults results);
 
-  void OnRequestModelCompleted(std::vector<std::string> raw_hosts,
-                               bool successful);
+  void OnRequestModelCompleted(std::vector<std::string> raw_hosts);
 
-  void OnGetTopicsForHostsCompleted(
-      const std::vector<optimization_guide::BatchAnnotationResult>& results);
+  void OnGetTopicsForHostsCompleted(const std::vector<Annotation>& results);
 
   void OnCalculateCompleted(CalculatorResultStatus status,
                             EpochTopics epoch_topics);
@@ -115,8 +109,7 @@ class BrowsingTopicsCalculator {
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
   raw_ptr<history::HistoryService> history_service_;
   raw_ptr<content::BrowsingTopicsSiteDataManager> site_data_manager_;
-  raw_ptr<optimization_guide::PageContentAnnotationsService>
-      annotations_service_;
+  raw_ptr<Annotator> annotator_;
 
   CalculateCompletedCallback calculate_completed_callback_;
 

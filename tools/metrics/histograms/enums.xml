@@ -13956,6 +13956,14 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Candicate topics filtered"/>
 </enum>
 
+<enum name="BrowsingTopicsOverrideListFileLoadResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Could not read file"/>
+  <int value="3" label="Could not uncompress file"/>
+  <int value="4" label="Could not unmarshal the encoded protobuf"/>
+</enum>
+
 <enum name="BruschettaInstallResult">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kSuccess"/>

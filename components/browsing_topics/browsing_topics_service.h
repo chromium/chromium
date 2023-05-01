@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSING_TOPICS_BROWSING_TOPICS_SERVICE_H_
 #define COMPONENTS_BROWSING_TOPICS_BROWSING_TOPICS_SERVICE_H_
 
+#include "components/browsing_topics/annotator.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom-forward.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -47,6 +48,8 @@ class BrowsingTopicsService : public KeyedService {
   // the browser. Padded top topics won't be returned.
   virtual std::vector<privacy_sandbox::CanonicalTopic> GetTopTopicsForDisplay()
       const = 0;
+
+  virtual Annotator* GetAnnotator() = 0;
 
   // Removes topic from any existing epoch.
   virtual void ClearTopic(

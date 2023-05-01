@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "components/browsing_topics/annotator.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/browsing_topics_state.h"
@@ -19,10 +20,6 @@
 namespace content {
 class BrowsingTopicsSiteDataManager;
 }  // namespace content
-
-namespace optimization_guide {
-class PageContentAnnotationsService;
-}  // namespace optimization_guide
 
 namespace browsing_topics {
 
@@ -60,6 +57,8 @@ class BrowsingTopicsServiceImpl
   std::vector<privacy_sandbox::CanonicalTopic> GetTopTopicsForDisplay()
       const override;
 
+  Annotator* GetAnnotator() override;
+
   void ClearTopic(
       const privacy_sandbox::CanonicalTopic& canonical_topic) override;
 
@@ -75,7 +74,7 @@ class BrowsingTopicsServiceImpl
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
       history::HistoryService* history_service,
       content::BrowsingTopicsSiteDataManager* site_data_manager,
-      optimization_guide::PageContentAnnotationsService* annotations_service,
+      Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
       BrowsingTopicsCalculator::CalculateCompletedCallback callback);
 
@@ -117,7 +116,7 @@ class BrowsingTopicsServiceImpl
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
       history::HistoryService* history_service,
       content::BrowsingTopicsSiteDataManager* site_data_manager,
-      optimization_guide::PageContentAnnotationsService* annotations_service,
+      std::unique_ptr<Annotator> annotator,
       TopicAccessedCallback topic_accessed_callback);
 
   void ScheduleBrowsingTopicsCalculation(base::TimeDelta delay);
@@ -138,9 +137,8 @@ class BrowsingTopicsServiceImpl
 
   // These pointers are safe to hold and use throughout the lifetime of
   // `this`:
-  // - For `privacy_sandbox_settings_`, `history_service_` and
-  // `annotations_service_`: the dependency declared in
-  // `BrowsingTopicsServiceFactory`'s constructor guarantees that
+  // - For `privacy_sandbox_settings_`, `history_service_`: the dependency
+  // declared in `BrowsingTopicsServiceFactory`'s constructor guarantees that
   // `BrowsingTopicsService` will be destroyed first before those depend-on
   // services.
   // - For `site_data_manager_`: it lives in the StoragePartition which lives
@@ -148,8 +146,6 @@ class BrowsingTopicsServiceImpl
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
   raw_ptr<history::HistoryService> history_service_;
   raw_ptr<content::BrowsingTopicsSiteDataManager> site_data_manager_;
-  raw_ptr<optimization_guide::PageContentAnnotationsService>
-      annotations_service_;
 
   BrowsingTopicsState browsing_topics_state_;
 
@@ -159,6 +155,11 @@ class BrowsingTopicsServiceImpl
   // in practice, as the loading should be reasonably fast, and normally the API
   // usage or data deletion won't happen at the browser start.
   bool browsing_topics_state_loaded_ = false;
+
+  // Owns the ML model and all associated logic. Its lifetime is the same as
+  // |this| so that the model can be downloaded as early as possible after the
+  // start of a browsing session.
+  std::unique_ptr<Annotator> annotator_;
 
   // This is non-null if a calculation is in progress. A calculation can be
   // triggered periodically, or due to the "Calculate Now" request from the

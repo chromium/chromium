@@ -11,6 +11,7 @@ include_rules = [
   "+net/base/registry_controlled_domains",
   "+services/metrics/public/cpp",
   "+third_party/blink/public",
+  "+third_party/zlib/google",
 ]
 
 specific_include_rules = {

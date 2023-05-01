@@ -5,10 +5,6 @@
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/optimization_guide/browser_test_util.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,12 +15,7 @@
 #include "components/browsing_topics/epoch_topics.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
-#include "components/optimization_guide/content/browser/test_page_content_annotations_service.h"
-#include "components/optimization_guide/content/browser/test_page_content_annotator.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -45,17 +36,6 @@ namespace {
 const char kBrowsingTopicsInternalsUrl[] = "chrome://topics-internals/";
 const char kBrowsingTopicsInternalsConsentInfoUrl[] =
     "chrome://topics-internals/#consent-info";
-
-std::vector<optimization_guide::WeightedIdentifier> TopicsWithUniformWeight(
-    const std::vector<int32_t>& topics,
-    double weight) {
-  std::vector<optimization_guide::WeightedIdentifier> result;
-  for (int32_t topic : topics) {
-    result.emplace_back(topic, weight);
-  }
-
-  return result;
-}
 
 class FixedBrowsingTopicsService
     : public browsing_topics::BrowsingTopicsService {
@@ -87,6 +67,8 @@ class FixedBrowsingTopicsService
     return {};
   }
 
+  Annotator* GetAnnotator() override { return &test_annotator_; }
+
   void ClearTopic(
       const privacy_sandbox::CanonicalTopic& canonical_topic) override {}
 
@@ -99,8 +81,11 @@ class FixedBrowsingTopicsService
     result_override_ = std::move(result);
   }
 
+  TestAnnotator* test_annotator() { return &test_annotator_; }
+
  private:
   browsing_topics::mojom::WebUIGetBrowsingTopicsStateResultPtr result_override_;
+  TestAnnotator test_annotator_;
 };
 
 }  //  namespace
@@ -348,9 +333,6 @@ class BrowsingTopicsDisabledInternalsBrowserTest
             features::kPrivacySandboxAdsAPIsOverride,
             privacy_sandbox::kPrivacySandboxSettings3,
             privacy_sandbox::kPrivacySandboxSettings4,
-            optimization_guide::features::kPageContentAnnotations,
-            optimization_guide::features::kPageContentAnnotationsValidation,
-            optimization_guide::features::kRemotePageMetadata,
         });
   }
 
@@ -398,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsDisabledInternalsBrowserTest,
 
   EXPECT_EQ(
       GetModelInfoContent(),
-      R"(No PageContentAnnotationsService: the "BrowsingTopics" feature is disabled.
+      R"(No BrowsingTopicsService: the "BrowsingTopics" or other depend-on features are disabled.
 )");
 }
 
@@ -448,11 +430,6 @@ class BrowsingTopicsInternalsBrowserTest
 
  protected:
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    PageContentAnnotationsServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BrowsingTopicsInternalsBrowserTest::
-                                         CreatePageContentAnnotationsService,
-                                     base::Unretained(this)));
-
     browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
         ->SetTestingFactory(
             context, base::BindRepeating(&BrowsingTopicsInternalsBrowserTest::
@@ -464,33 +441,6 @@ class BrowsingTopicsInternalsBrowserTest
       content::BrowserContext* context) {
     return std::make_unique<FixedBrowsingTopicsService>();
   }
-
-  std::unique_ptr<KeyedService> CreatePageContentAnnotationsService(
-      content::BrowserContext* context) {
-    Profile* profile = Profile::FromBrowserContext(context);
-
-    DCHECK(!base::Contains(optimization_guide_model_providers_, profile));
-    optimization_guide_model_providers_.emplace(
-        profile, std::make_unique<
-                     optimization_guide::TestOptimizationGuideModelProvider>());
-
-    auto page_content_annotations_service =
-        optimization_guide::TestPageContentAnnotationsService::Create(
-            optimization_guide_model_providers_.at(profile).get(),
-            /*history_service=*/nullptr);
-
-    page_content_annotations_service->OverridePageContentAnnotatorForTesting(
-        &test_page_content_annotator_);
-
-    return page_content_annotations_service;
-  }
-
-  std::map<
-      Profile*,
-      std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>>
-      optimization_guide_model_providers_;
-
-  optimization_guide::TestPageContentAnnotator test_page_content_annotator_;
 
   base::CallbackListSubscription subscription_;
 
@@ -713,8 +663,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest,
       browsing_topics::mojom::WebUIGetBrowsingTopicsStateResult::
           NewOverrideStatusMessage("Failed to get the topics state."));
 
-  // Configure the (mock) model.
-  test_page_content_annotator_.UsePageTopics(absl::nullopt, {});
+  // The |ModelInfo| is not set so the model will not be marked as available.
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(kBrowsingTopicsInternalsUrl)));
@@ -730,14 +679,17 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest, ClassifierTab) {
           NewOverrideStatusMessage("Failed to get the topics state."));
 
   // Configure the (mock) model.
-  test_page_content_annotator_.UsePageTopics(
+
+  fixed_browsing_topics_service()->test_annotator()->UseModelInfo(
       *optimization_guide::TestModelInfoBuilder()
            .SetVersion(1)
            .SetModelFilePath(
                base::FilePath::FromASCII("/test_path/test_model.tflite"))
-           .Build(),
-      {{"foo2.com", TopicsWithUniformWeight({3, 4, 5}, 0.1)},
-       {"foo1.com", TopicsWithUniformWeight({1, 2}, 0.1)}});
+           .Build());
+  fixed_browsing_topics_service()->test_annotator()->UseAnnotations({
+      {"foo1.com", {1, 2}},
+      {"foo2.com", {3, 4, 5}},
+  });
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(kBrowsingTopicsInternalsUrl)));
@@ -772,14 +724,17 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest,
           NewOverrideStatusMessage("Failed to get the topics state."));
 
   // Configure the (mock) model.
-  test_page_content_annotator_.UsePageTopics(
+
+  fixed_browsing_topics_service()->test_annotator()->UseModelInfo(
       *optimization_guide::TestModelInfoBuilder()
            .SetVersion(1)
            .SetModelFilePath(
                base::FilePath::FromASCII("/test_path/test_model.tflite"))
-           .Build(),
-      {{"foo2.com", TopicsWithUniformWeight({3, 4, 5}, 0.1)},
-       {"foo1.com", TopicsWithUniformWeight({1, 2}, 0.1)}});
+           .Build());
+  fixed_browsing_topics_service()->test_annotator()->UseAnnotations({
+      {"foo1.com", {1, 2}},
+      {"foo2.com", {3, 4, 5}},
+  });
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(kBrowsingTopicsInternalsUrl)));
