@@ -8663,6 +8663,7 @@
                         "RepeatableQueriesMinVisitCount": "12"
                     },
                     "enable_features": [
+                        "AdaptiveSuggestionsVisibleGroupEligibilityUpdate",
                         "AndroidAuxiliarySearch",
                         "NewTabPageTilesTitleWrapAround",
                         "OmniboxDynamicMaxAutocomplete",
