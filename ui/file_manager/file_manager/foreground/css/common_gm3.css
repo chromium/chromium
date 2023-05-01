@@ -94,42 +94,16 @@ cr-menu.chrome-menu > [checked]::before {
   display: none;
 }
 
-/* Style for <button>s to have similar style with Polymer's <paper-button>. */
-.imitate-paper-button {
-  background: transparent;
-  border: 0;
-  border-image: none;
-  border-radius: 3px;
-  box-sizing: border-box;
-  color: inherit;
-  cursor: pointer;
-  display: inline-block;
-  font: inherit;
-  height: auto;
-  margin: 0 0.29em;
-  min-width: 5.14em;
-  outline: none;
-  overflow: hidden;
-  padding: 0.6em 0.57em;
-  position: relative;
-  text-align: center;
-  text-transform: uppercase;
-  user-select: none;
-  z-index: 0;
-}
-
-.cr-dialog-container .cr-dialog-buttons > button {
+button {
   background-color: var(--cros-sys-primary_container);
   border: none;
   border-radius: 18px;
   box-sizing: border-box;
   color: var(--cros-sys-on_primary_container);
   cursor: pointer;
-  display: inline-block;
   font: var(--cros-button-2-font);
   height: 36px;
   margin: 0;
-  margin-inline-start: 8px;
   min-height: 36px;
   min-width: 5.14em;
   outline: none;
@@ -140,7 +114,7 @@ cr-menu.chrome-menu > [checked]::before {
   z-index: 0;
 }
 
-.cr-dialog-container .cr-dialog-buttons > button > .hover-layer {
+button > .hover-layer {
   border-radius: 18px;
   content: '';
   display: none;
@@ -150,54 +124,56 @@ cr-menu.chrome-menu > [checked]::before {
   z-index: 1;
 }
 
-.cr-dialog-container .cr-dialog-buttons > button > paper-ripple {
+button > paper-ripple {
   --paper-ripple-opacity: 1;
   border-radius: 18px;
   color: var(--cros-sys-ripple_primary);
 }
 
-.cr-dialog-container .cr-dialog-buttons > button:hover > .hover-layer {
+button:hover > .hover-layer {
   display: block;
 }
 
-.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-ok {
+button.cr-dialog-ok,
+button.primary {
   background-color: var(--cros-sys-primary);
   color: var(--cros-sys-on_primary);
-  order: 1;
 }
 
-.cr-dialog-container
-    .cr-dialog-buttons > button.cr-dialog-ok:hover > .hover-layer {
+button.cr-dialog-ok:hover > .hover-layer,
+button.primary:hover > .hover-layer {
   background-color: var(--cros-sys-hover_on_prominent);
 }
 
-.cr-dialog-container .cr-dialog-buttons > button[disabled] {
-  background-color:
-      var(--cros-sys-disabled_container);
-  color: var(--cros-sys-disabled);
-  cursor: default;
+button.cr-dialog-cancel:hover > .hover-layer,
+button.secondary:hover > .hover-layer {
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
-.cr-dialog-container
-    .cr-dialog-buttons > button[disabled]:hover > .hover-layer {
+button[disabled] {
+  background-color: var(--cros-sys-disabled_container);
+  color: var(--cros-sys-disabled);
+  cursor: default;
+  pointer-events: none;
+}
+
+button[disabled]:hover > .hover-layer {
   display: none;
+}
+
+:root.focus-outline-visible button:not(:active):focus,
+:host-context(:root.focus-outline-visible) button:not(:active):focus {
+  outline: 2px solid var(--cros-sys-focus_ring);
+  outline-offset: 2px;
+}
+
+.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-ok {
+  margin-inline-start: 8px;
+  order: 1;
 }
 
 .cr-dialog-container .cr-dialog-buttons > button.cr-dialog-cancel {
   order: 0;
-}
-
-.cr-dialog-container
-    .cr-dialog-buttons > button.cr-dialog-cancel:hover > .hover-layer {
-  background-color: var(--cros-sys-hover_on_subtle);
-}
-
-:root.focus-outline-visible .cr-dialog-container
-    .cr-dialog-buttons > button:not(:active):focus,
-:host-context(:root.focus-outline-visible) .cr-dialog-container
-    .cr-dialog-buttons > button:not(:active):focus {
-  outline: 2px solid var(--cros-sys-focus_ring);
-  outline-offset: 2px;
 }
 
 /* Some files confirm dialogs need to focus their 'Cancel' button by default,
@@ -209,8 +185,8 @@ cr-menu.chrome-menu > [checked]::before {
   outline-offset: 2px;
 }
 
-.buttonbar button {
-  margin-inline-start: 12px;
+.buttonbar button:not(:first-child) {
+  margin-inline-start: 8px;
 }
 
 .progress-bar {

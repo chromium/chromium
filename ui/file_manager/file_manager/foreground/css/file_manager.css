@@ -989,6 +989,11 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
   z-index: 0;
 }
 
+/* This is only for refresh23 style. */
+button > .hover-layer {
+  display: none;
+}
+
 .dialog-footer button[disabled] {
   cursor: auto;
   pointer-events: none;

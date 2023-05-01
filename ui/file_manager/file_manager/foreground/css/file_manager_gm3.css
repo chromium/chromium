@@ -778,8 +778,8 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
 /* Container for the ok/cancel buttons. */
 .dialog-footer {
   align-items: center;
-  background-color: var(--cros-bg-color);
-  border-top: 1px solid var(--cros-separator-color);
+  background-color: var(--cros-sys-app_base);
+  border-top: 1px solid var(--cros-sys-separator);
   display: flex;
   flex: none;
   flex-direction: row;
@@ -795,118 +795,40 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
 }
 
 .dialog-footer cr-input {
-  --cr-input-background-color: var(--cros-textfield-background-color);
-  --cr-input-border-radius: 0;
-  --cr-input-color: var(--cros-textfield-input-color);
-  --cr-input-error-color: var(--cros-textfield-label-color-error);
+  --cr-input-background-color: var(--cros-sys-input_field_on_base);
+  --cr-input-border-radius: 8px;
+  --cr-input-color: var(--cros-sys-on_surface);
+  --cr-input-error-color: var(--cros-sys-error);
   --cr-input-error-display: none;
-  --cr-input-focus-color: var(--cros-textfield-label-color-focus);
-  --cr-input-min-height: 32px;
+  --cr-input-focus-color: var(--cros-sys-primary);
+  --cr-input-min-height: 36px;
+  --cr-input-padding-end: 16px;
+  --cr-input-padding-start: 16px;
+  --cr-input-placeholder-color: var(--cros-sys-secondary);
+  font: var(--cros-body-2-font);
   width: 100%;
+}
+
+.dialog-footer cr-input::part(input)::selection {
+  background-color: var(--cros-sys-highlight_text);
 }
 
 .dialog-footer .buttonbar {
   display: flex;
-  height: 32px;
-}
-
-/* Copy style from paper-button for buttons on the footer. */
-.dialog-footer button {
-  border: 0;
-  border-image: none;
-  border-radius: 4px;
-  box-sizing: border-box;
-  cursor: pointer;
-  margin: 0;
-  outline: none;
-  padding: 1px 16px;
-  position: relative;
-  text-align: center;
-  user-select: none;
-  z-index: 0;
-}
-
-.dialog-footer button[disabled] {
-  cursor: auto;
-  pointer-events: none;
-}
-
-.dialog-footer button {
-  font-weight: 500;
-}
-
-.dialog-footer button:hover {
-  border-image: none;  /* Overrides the definition of common.css. */
-}
-
-.dialog-footer cr-button,
-.dialog-footer button {
-  height: 32px;
-  margin: 0 4px;
-  min-width: 92px;
-}
-
-.dialog-footer cr-button[disabled],
-.dialog-footer cr-button[disabled]:hover,
-.dialog-footer button[disabled],
-.dialog-footer button[disabled]:hover {
-  background-color:
-      var(--cros-button-background-color-primary-disabled);
-  color: var(--cros-button-label-color-primary-disabled);
-}
-
-.dialog-footer .primary {
-  background-color: var(--cros-button-background-color-primary);
-  color: var(--cros-button-label-color-primary);
-}
-
-.dialog-footer .primary:hover {
-   background: var(--cros-button-background-color-primary-hover-preblended);
-}
-
-.dialog-footer .primary paper-ripple {
-  --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
-  color: var(--cros-button-ripple-color-primary);
-}
-
-.dialog-footer .primary:active {
-  box-shadow: 0 1px 2px var(--cros-button-active-shadow-color-key-primary),
-              0 1px 3px var(--cros-button-active-shadow-color-ambient-primary);
-}
-
-.dialog-footer .secondary {
-  background: transparent;
-  border: 1px solid var(--cros-button-stroke-color-secondary);
-  color: var(--cros-button-label-color-secondary);
-  margin-inline-end: 8px;
-}
-
-.dialog-footer .secondary:hover {
-  background: var(--cros-button-background-color-secondary-hover);
-  border: 1px solid var(--cros-button-stroke-color-secondary-hover);
-}
-
-.dialog-footer .secondary paper-ripple {
-  --paper-ripple-opacity: var(--cros-button-secondary-ripple-opacity);
-  color: var(--cros-button-ripple-color-secondary);
-}
-
-.dialog-footer .secondary:active {
-  box-shadow: 0 1px 2px var(--cros-button-active-shadow-color-key-secondary),
-              0 1px 3px var(--cros-button-active-shadow-color-ambient-secondary);
+  height: 36px;
 }
 
 .dialog-footer .select {
-  background-color: var(--cros-textfield-background-color);
+  background-color: var(--cros-sys-input_field_on_base);
   border: 0;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   margin-inline-start: 16px;
   max-width: 152px;
-  min-height: 32px;
+  min-height: 36px;
   min-width: 104px;
   outline: none;
-  padding: 0 36px 0 16px;
+  padding: 0 48px 0 16px;
   position: relative;
 }
 
@@ -914,22 +836,21 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
   -webkit-mask-image: url(../images/files/ui/sort_desc.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--cros-icon-color-primary);
+  background-color: var(--cros-sys-secondary);
   content: '';
-  height: 32px;
+  height: 36px;
   position: absolute;
   right: 0;
-  width: 32px;
+  width: 36px;
 }
 
 .dialog-footer div.select:not(:active):focus {
-  box-shadow: 0 0 0 2px var(--cros-focus-ring-color);
+  outline: 2px solid var(--cros-sys-focus_ring);
 }
 
 .dialog-footer div.select > span {
-  color: var(--cros-text-color-primary);
   display: inline-block;
-  line-height: 32px;
+  line-height: 36px;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -938,8 +859,8 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
 }
 
 .dialog-footer div.select > div.options {
-  background-color: var(--cros-bg-color-elevation-2);
-  border-radius: 4px;
+  background-color: var(--cros-sys-base_elevated);
+  border-radius: 8px;
   bottom: calc(100% + 2px);
   box-shadow: var(--cros-elevation-2-shadow);
   left: 0;
@@ -955,27 +876,46 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
 }
 
 .dialog-footer div.select > div.options option {
-  color: var(--cros-menu-label-color);
-  line-height: 32px;
-  min-height: 32px;
-  padding: 0 12px 0 16px;
+  color: var(--cros-sys-on_surface);
+  font: var(--cros-button-2-font);
+  line-height: 36px;
+  min-height: 36px;
+  padding: 0 16px;
   vertical-align: middle;
 }
 
 .dialog-footer div.select > div.options option:hover,
 .dialog-footer div.select > div.options:not(:hover) option.selected {
-  background-color: var(--cros-menu-item-background-hover);
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
 .dialog-footer select:hover {
   border-image: none;
 }
 
-html.focus-outline-visible .dialog-footer .primary:focus,
-html.focus-outline-visible .dialog-footer .secondary:focus,
 html.focus-outline-visible .dialog-footer select:focus {
-  outline: 2px solid var(--cros-focus-ring-color);
+  outline: 2px solid var(--cros-sys-focus_ring);
   outline-offset: 2px;
+}
+
+/** Reset the hover color when using keyboard to navigate the dropdown items. */
+html.focus-outline-visible .dialog-footer div.select > div.options option:hover,
+html.focus-outline-visible
+    .dialog-footer div.select > div.options:not(:hover) option.selected {
+  background-color: unset;
+}
+
+html.focus-outline-visible
+    .dialog-footer div.select > div.options option:hover::after,
+html.focus-outline-visible
+    .dialog-footer div.select > div.options:not(:hover) option.selected::after {
+  border: 2px solid var(--cros-sys-focus_ring);
+  border-radius: 4px;
+  content: '';
+  height: 32px; /* option height - 2 x border width */
+  left: 0;
+  position: absolute;
+  width: calc(100% - 4px); /* 2 x border width */
 }
 
 .progressable:not([progress]) .progress-bar,
