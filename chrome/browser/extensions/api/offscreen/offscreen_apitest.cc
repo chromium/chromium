@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/offscreen/audio_lifetime_enforcer.h"
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
@@ -19,6 +20,7 @@
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/result_catcher.h"
@@ -154,15 +156,23 @@ class OffscreenApiTest : public ExtensionApiTest {
     EXPECT_EQ("success", result.GetString());
   }
 
-  // Returns the result of an API call to `offscreen.hasDocument()`. Expects the
-  // call to not throw an error, independent of whether a document exists.
+  // Returns the result of an API call to `runtime.getContexts()` to check if
+  // an offscreen document exists. Expects the call to not throw an error,
+  // independent of whether a document exists.
   bool ProgrammaticallyCheckIfHasOffscreenDocument(const Extension& extension,
                                                    Profile& profile) {
     static constexpr char kScript[] =
         R"((async () => {
              let result;
              try {
-               result = await chrome.offscreen.hasDocument();
+               const contexts =
+                   await chrome.runtime.getContexts(
+                       {contextTypes: ['OFFSCREEN_DOCUMENT']});
+               if (!contexts || contexts.length > 1) {
+                 throw new Error(
+                     'Unexpected result: ' + JSON.stringify(contexts));
+               }
+               result = contexts.length == 1;
              } catch (e) {
                result = 'Error: ' + e.toString();
              }
@@ -174,6 +184,11 @@ class OffscreenApiTest : public ExtensionApiTest {
     EXPECT_TRUE(result.is_bool()) << result;
     return result.is_bool() && result.GetBool();
   }
+
+ private:
+  // chrome.runtime.getContexts(), used by these tests, is currently behind
+  // a dev channel restriction.
+  ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
 };
 
 // Tests the general flow of creating an offscreen document.
