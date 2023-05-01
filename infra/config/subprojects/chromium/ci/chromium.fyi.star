@@ -1796,7 +1796,7 @@ This builder measures build performance for Windows developer builds, by simulat
             ],
         ),
     ),
-    os = os.LINUX_DEFAULT,
+    os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "windev",
