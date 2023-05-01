@@ -1844,14 +1844,13 @@ IN_PROC_BROWSER_TEST_F(NavigationConsumingTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Normally, fullscreen should work, as long as there is a user gesture.
-  bool is_fullscreen = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents, "document.body.webkitRequestFullscreen();", &is_fullscreen));
-  EXPECT_TRUE(is_fullscreen);
+  EXPECT_EQ(true, content::EvalJs(contents,
+                                  "document.body.webkitRequestFullscreen();"
+                                  "resultQueue.pop();"));
 
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents, "document.webkitExitFullscreen();", &is_fullscreen));
-  EXPECT_FALSE(is_fullscreen);
+  EXPECT_EQ(false, content::EvalJs(contents,
+                                   "document.webkitExitFullscreen();"
+                                   "resultQueue.pop();"));
 
   // However, starting a navigation should consume the gesture. Fullscreen
   // should not work afterwards. Make sure the navigation is synchronously
@@ -1859,15 +1858,14 @@ IN_PROC_BROWSER_TEST_F(NavigationConsumingTest,
   std::string script = R"(
     document.getElementsByTagName('a')[0].click();
     document.body.webkitRequestFullscreen();
+    resultQueue.pop();
   )";
 
   // Use the TestNavigationManager to ensure the navigation is not finished
   // before fullscreen can occur.
   content::TestNavigationManager nav_manager(
       contents, embedded_test_server()->GetURL("/title1.html"));
-  EXPECT_TRUE(
-      content::ExecuteScriptAndExtractBool(contents, script, &is_fullscreen));
-  EXPECT_FALSE(is_fullscreen);
+  EXPECT_EQ(false, content::EvalJs(contents, script));
 }
 
 // Similar to the fullscreen test above, but checks that popups are successfully

@@ -1,9 +1,12 @@
 <p>Tests for navigation consuming user gestures</p>
 <a href="/title1.html">clickme</a>
+<script src="../result_queue.js"></script>
 <script>
+var resultQueue = new ResultQueue();
+
 document.addEventListener("webkitfullscreenchange", sendFullscreen);
 document.addEventListener("webkitfullscreenerror", sendFullscreen);
 function sendFullscreen() {
-  window.domAutomationController.send(!!document.webkitFullscreenElement);
+  resultQueue.push(!!document.webkitFullscreenElement);
 };
 </script>
