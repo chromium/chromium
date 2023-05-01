@@ -229,7 +229,7 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
     def _ShouldSkipOverResult(self,
                               result: queries_module.QueryResult) -> bool:
         # WebGPU web tests are currently unsupported for various reasons.
-        return 'webgpu/' in result['test_id']
+        return 'wpt_internal/webgpu/' in result['test_id']
 
     def _GetQueryGeneratorForBuilder(
             self, builder: common_data_types.BuilderEntry
