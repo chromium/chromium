@@ -87,6 +87,9 @@ pub enum Dependency {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct FullDependency {
+    /// Include the package's default features. Influences Cargo behavior.
+    #[serde(default = "get_true", skip_serializing_if = "is_true")]
+    pub default_features: bool,
     /// Version constraint on dependency.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub version: Option<VersionConstraint>,

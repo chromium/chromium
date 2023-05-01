@@ -20,6 +20,7 @@ fn test() {
             \"\"\""
         )),
         Ok(FullDependency {
+            default_features: true,
             version: Some(VersionConstraint("1.0.0".to_string())),
             features: vec!["foo".to_string(), "bar".to_string()],
             allow_first_party_usage: false,
@@ -36,11 +37,39 @@ fn test() {
             "build-script-outputs = [\"generated.rs\"]\n",
         )),
         Ok(FullDependency {
+            default_features: true,
             version: Some(VersionConstraint("3.14.159".to_string())),
             features: vec![],
             allow_first_party_usage: true,
             build_script_outputs: vec!["generated.rs".to_string()],
             gn_variables_lib: None,
+        })
+    );
+}
+
+#[gtest(ManifestTest, NoDefaultFeatures)]
+fn test() {
+    expect_eq!(
+        toml::de::from_str(concat!(
+            "default-features = false\n",
+            "version = \"1.0.0\"\n",
+            "features = [\"foo\", \"bar\"]\n",
+            "allow-first-party-usage = false\n",
+            "build-script-outputs = [\"stuff.rs\"]\n",
+            "gn-variables-lib = \"\"\"
+            deps = []
+            configs = []
+            \"\"\""
+        )),
+        Ok(FullDependency {
+            default_features: false,
+            version: Some(VersionConstraint("1.0.0".to_string())),
+            features: vec!["foo".to_string(), "bar".to_string()],
+            allow_first_party_usage: false,
+            build_script_outputs: vec!["stuff.rs".to_string()],
+            gn_variables_lib: Some(
+                "            deps = []\n            configs = []\n            ".to_string()
+            )
         })
     );
 }
@@ -79,6 +108,7 @@ fn test() {
     expect_eq!(
         manifest.dependency_spec.dependencies.get("rustversion"),
         Some(&Dependency::Full(FullDependency {
+            default_features: true,
             version: Some(VersionConstraint("1".to_string())),
             features: vec![],
             allow_first_party_usage: true,
@@ -90,6 +120,7 @@ fn test() {
     expect_eq!(
         manifest.dependency_spec.dependencies.get("unicode-linebreak"),
         Some(&Dependency::Full(FullDependency {
+            default_features: true,
             version: Some(VersionConstraint("0.1".to_string())),
             features: vec![],
             allow_first_party_usage: false,
@@ -101,6 +132,7 @@ fn test() {
     expect_eq!(
         manifest.dependency_spec.dependencies.get("special-stuff"),
         Some(&Dependency::Full(FullDependency {
+            default_features: true,
             version: Some(VersionConstraint("0.1".to_string())),
             features: vec![],
             allow_first_party_usage: true,
@@ -112,6 +144,7 @@ fn test() {
     expect_eq!(
         manifest.dependency_spec.dev_dependencies.get("syn"),
         Some(&Dependency::Full(FullDependency {
+            default_features: true,
             version: Some(VersionConstraint("1".to_string())),
             features: vec!["full".to_string()],
             allow_first_party_usage: true,
