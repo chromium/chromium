@@ -6222,6 +6222,7 @@ chromium-metrics-reviews@google.com.
     disable the effect.
   </summary>
   <token key="EffectName">
+    <variant name="CameraFraming" summary="Camera Framing"/>
     <variant name="LiveCaption" summary="Live Caption"/>
     <variant name="NoiseCancellation" summary="Noise cancellation"/>
     <variant name="PortraitRelighting" summary="Portrait Relighting"/>

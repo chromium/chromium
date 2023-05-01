@@ -51,6 +51,7 @@ bool AudioEffectsController::IsEffectSupported(VcEffectId effect_id) {
       return captions::IsLiveCaptionFeatureSupported();
     case VcEffectId::kBackgroundBlur:
     case VcEffectId::kPortraitRelighting:
+    case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
       NOTREACHED();
       return false;
@@ -68,6 +69,7 @@ absl::optional<int> AudioEffectsController::GetEffectState(
                  : 0;
     case VcEffectId::kBackgroundBlur:
     case VcEffectId::kPortraitRelighting:
+    case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
       NOTREACHED();
       return absl::nullopt;
@@ -97,6 +99,7 @@ void AudioEffectsController::OnEffectControlActivated(
     }
     case VcEffectId::kBackgroundBlur:
     case VcEffectId::kPortraitRelighting:
+    case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
       NOTREACHED();
       return;

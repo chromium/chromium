@@ -18,6 +18,7 @@ constexpr char kBackgroundBlurHistogramName[] = "BackgroundBlur";
 constexpr char kPortraitRelightingHistogramName[] = "PortraitRelighting";
 constexpr char kNoiseCancellationHistogramName[] = "NoiseCancellation";
 constexpr char kLiveCaptionHistogramName[] = "LiveCaption";
+constexpr char kCameraFramingHistogramName[] = "CameraFraming";
 constexpr char kVideoConferenceHistogramPrefix[] = "Ash.VideoConferenceTray";
 
 }  // namespace
@@ -39,6 +40,9 @@ std::string GetEffectHistogramName(VcEffectId effect_id) {
       break;
     case VcEffectId::kLiveCaption:
       effect_name = kLiveCaptionHistogramName;
+      break;
+    case VcEffectId::kCameraFraming:
+      effect_name = kCameraFramingHistogramName;
       break;
   }
   return base::JoinString(

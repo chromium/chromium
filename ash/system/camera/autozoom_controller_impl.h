@@ -55,6 +55,8 @@ class ASH_EXPORT AutozoomControllerImpl
   }
 
  private:
+  friend class CameraEffectsControllerTest;
+
   void InitFromUserPrefs();
 
   void Refresh();

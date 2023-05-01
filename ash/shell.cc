@@ -952,6 +952,10 @@ Shell::~Shell() {
   // Removes itself as an observer of |pref_service_|.
   shelf_controller_.reset();
 
+  // `CameraEffectsController` depends on `AutozoomController`, so it must be
+  // destructed before it.
+  camera_effects_controller_.reset();
+
   // NightLightControllerImpl depends on the PrefService, the window tree host
   // manager, and `geolocation_controller_`, so it must be destructed before
   // them. crbug.com/724231.
@@ -1059,8 +1063,6 @@ Shell::~Shell() {
   // `CalendarController` observes `SessionController` and must be destructed
   // before it.
   calendar_controller_.reset();
-
-  camera_effects_controller_.reset();
 
   audio_effects_controller_.reset();
 
