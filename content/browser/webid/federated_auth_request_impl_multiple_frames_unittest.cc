@@ -255,12 +255,13 @@ class FederatedAuthRequestImplMultipleFramesTest
         blink::mojom::IdentityProvider::NewFederated(std::move(config_ptr));
     idp_ptrs.push_back(std::move(idp_ptr));
     auto get_params = blink::mojom::IdentityProviderGetParameters::New(
-        std::move(idp_ptrs), /*auto_reauthn=*/true,
+        std::move(idp_ptrs),
         /*rp_context=*/blink::mojom::RpContext::kSignIn);
     std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params;
     idp_get_params.push_back(std::move(get_params));
 
     request_remote->RequestToken(std::move(idp_get_params),
+                                 MediationRequirement::kOptional,
                                  std::move(callback));
     request_remote.FlushForTesting();
   }

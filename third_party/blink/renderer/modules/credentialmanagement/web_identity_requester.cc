@@ -13,8 +13,9 @@
 
 namespace blink {
 
-WebIdentityRequester::WebIdentityRequester(ExecutionContext* context)
-    : execution_context_(context) {}
+WebIdentityRequester::WebIdentityRequester(ExecutionContext* context,
+                                           MediationRequirement requirement)
+    : execution_context_(context), requirement_(requirement) {}
 
 void WebIdentityRequester::OnRequestToken(
     mojom::blink::RequestTokenStatus status,
@@ -65,7 +66,7 @@ void WebIdentityRequester::RequestToken() {
   auto* auth_request =
       CredentialManagerProxy::From(execution_context_)->FederatedAuthRequest();
   auth_request->RequestToken(
-      std::move(idp_get_params_),
+      std::move(idp_get_params_), requirement_,
       WTF::BindOnce(&WebIdentityRequester::OnRequestToken,
                     WrapPersistent(this)));
   window_onload_event_listener_.Clear();
@@ -76,7 +77,6 @@ void WebIdentityRequester::RequestToken() {
 void WebIdentityRequester::AppendGetCall(
     ScriptPromiseResolver* resolver,
     const HeapVector<Member<IdentityProviderConfig>>& providers,
-    bool auto_reauthn,
     mojom::blink::RpContext rp_context) {
   if (is_requesting_token_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -107,8 +107,8 @@ void WebIdentityRequester::AppendGetCall(
   }
 
   mojom::blink::IdentityProviderGetParametersPtr get_params =
-      mojom::blink::IdentityProviderGetParameters::New(
-          std::move(idp_ptrs), auto_reauthn, rp_context);
+      mojom::blink::IdentityProviderGetParameters::New(std::move(idp_ptrs),
+                                                       rp_context);
   idp_get_params_.push_back(std::move(get_params));
 
   if (window_onload_event_listener_ || has_posted_task_)

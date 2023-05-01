@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
 
@@ -134,9 +135,6 @@ struct IdentityProviderGetParameters {
   // Details of identity provider(s).
   array<IdentityProvider> providers;
 
-  // Whether auto re-authn is enabled by the caller.
-  bool auto_reauthn;
-
   // Controls the wording of the FedCM prompt.
   // TODO(crbug.com/1335237): consider moving this up to IdentityProviderConfig
   // when/if we support the Context API for Multiple IdPs at a time.
@@ -155,7 +153,7 @@ interface FederatedAuthRequest {
   //   A null URL is returned if the token request failed or did not occur due
   //   to an error earlier in the flow.
   // - Raw content of the token.
-  RequestToken(array<IdentityProviderGetParameters> idp_get_params) =>
+  RequestToken(array<IdentityProviderGetParameters> idp_get_params, CredentialMediationRequirement requirement) =>
       (RequestTokenStatus status,
       url.mojom.Url? selected_identity_provider_config_url,
       string? token);

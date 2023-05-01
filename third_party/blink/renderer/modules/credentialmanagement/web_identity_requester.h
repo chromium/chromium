@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_WEB_IDENTITY_REQUESTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_WEB_IDENTITY_REQUESTER_H_
 
+#include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
@@ -18,11 +19,14 @@ namespace blink {
 class IdentityProviderConfig;
 class WebIdentityWindowOnloadEventListener;
 
+using MediationRequirement = mojom::blink::CredentialMediationRequirement;
+
 // Helper class to handle FedCM token requests.
 class MODULES_EXPORT WebIdentityRequester final
     : public GarbageCollected<WebIdentityRequester> {
  public:
-  explicit WebIdentityRequester(ExecutionContext* context);
+  WebIdentityRequester(ExecutionContext* context,
+                       MediationRequirement requirement);
 
   void OnRequestToken(mojom::blink::RequestTokenStatus status,
                       const absl::optional<KURL>& selected_idp_config_url,
@@ -34,7 +38,6 @@ class MODULES_EXPORT WebIdentityRequester final
   void AppendGetCall(
       ScriptPromiseResolver* resolver,
       const HeapVector<Member<IdentityProviderConfig>>& providers,
-      bool auto_reauthn,
       mojom::blink::RpContext rp_context);
   void InsertScopedAbortState(
       std::unique_ptr<ScopedAbortState> scoped_abort_state);
@@ -63,6 +66,7 @@ class MODULES_EXPORT WebIdentityRequester final
   HashSet<std::unique_ptr<ScopedAbortState>> scoped_abort_states_;
   Member<WebIdentityWindowOnloadEventListener> window_onload_event_listener_;
   HeapHashMap<KURL, Member<ScriptPromiseResolver>> provider_to_resolver_;
+  MediationRequirement requirement_;
   bool is_requesting_token_{false};
   bool has_posted_task_{false};
   base::TimeTicks delay_start_time_;

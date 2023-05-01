@@ -39,7 +39,7 @@ class MockPermissionDelegate
                bool(const url::Origin&,
                     const url::Origin&,
                     const url::Origin& identity_provider,
-                    const std::string& account_id));
+                    const absl::optional<std::string>& account_id));
   MOCK_METHOD4(GrantSharingPermission,
                void(const url::Origin&,
                     const url::Origin&,

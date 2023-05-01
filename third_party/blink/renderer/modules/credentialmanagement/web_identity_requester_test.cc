@@ -29,7 +29,8 @@ TEST(WebIdentityRequesterTest, StartDelayTimerBeforeOnload) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   WebIdentityRequester* web_identity_requester =
-      MakeGarbageCollected<WebIdentityRequester>(WrapPersistent(context));
+      MakeGarbageCollected<WebIdentityRequester>(
+          WrapPersistent(context), MediationRequirement::kOptional);
 
   // Start window onload delay timer before the window onload event starts.
   web_identity_requester->StartDelayTimer(WrapPersistent(resolver));
@@ -69,7 +70,8 @@ TEST(WebIdentityRequesterTest, StartDelayTimerAfterOnload) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   WebIdentityRequester* web_identity_requester =
-      MakeGarbageCollected<WebIdentityRequester>(WrapPersistent(context));
+      MakeGarbageCollected<WebIdentityRequester>(
+          WrapPersistent(context), MediationRequirement::kOptional);
 
   // Before the delay timer has started, histograms should not have been
   // recorded.
