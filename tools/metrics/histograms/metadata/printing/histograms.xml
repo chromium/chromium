@@ -342,6 +342,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Printing.CUPS.SavedPrintersCount" units="printers"
+    expires_after="2024-1-27">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of saved printers when the user launches or refreshes the
+    OS Settings Printing page.
+  </summary>
+</histogram>
+
 <histogram name="Printing.CUPS.TotalNetworkPrintersCount" units="printers"
     expires_after="2023-09-10">
   <owner>bmgordon@chromium.org</owner>

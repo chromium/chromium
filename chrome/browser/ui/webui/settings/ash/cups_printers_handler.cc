@@ -82,6 +82,8 @@ constexpr char kNearbyAutomaticPrintersHistogramName[] =
     "Printing.CUPS.NearbyNetworkAutomaticPrintersCount";
 constexpr char kNearbyDiscoveredPrintersHistogramName[] =
     "Printing.CUPS.NearbyNetworkDiscoveredPrintersCount";
+constexpr char kSavedPrintersCountHistogramName[] =
+    "Printing.CUPS.SavedPrintersCount";
 
 void OnRemovedPrinter(const Printer::PrinterProtocol& protocol, bool success) {
   if (success) {
@@ -403,6 +405,8 @@ void CupsPrintersHandler::HandleGetCupsSavedPrintersList(
 
   std::vector<Printer> printers =
       printers_manager_->GetPrinters(PrinterClass::kSaved);
+  base::UmaHistogramCounts100(kSavedPrintersCountHistogramName,
+                              printers.size());
 
   ResolveJavascriptCallback(base::Value(callback_id),
                             BuildCupsPrintersList(printers));
