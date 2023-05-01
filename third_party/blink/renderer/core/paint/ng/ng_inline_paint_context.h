@@ -31,6 +31,7 @@ class CORE_EXPORT NGInlinePaintContext {
     decorating_boxes_.emplace_back(std::forward<Args>(args)...);
   }
   void PushDecoratingBoxAncestors(const NGInlineCursor& inline_box);
+  void PushDecoratingBoxes(const base::span<NGDecoratingBox>& boxes);
   void PopDecoratingBox(wtf_size_t size);
   void ClearDecoratingBoxes(
       DecoratingBoxList* saved_decorating_boxes = nullptr);
