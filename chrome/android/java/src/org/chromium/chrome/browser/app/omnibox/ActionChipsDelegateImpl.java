@@ -152,6 +152,7 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
      */
     private void startActionInSuggestIntent(OmniboxActionInSuggest actionInSuggest) {
         var actionType = actionInSuggest.actionInfo.getActionType();
+        boolean actionStarted = false;
         Intent intent = null;
 
         try {
@@ -163,37 +164,57 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
                     // Rather than invoking an intent that opens a new tab, load the page in the
                     // current tab.
                     loadPageInCurrentTab(intent.getDataString());
+                    actionStarted = true;
                     break;
 
                 case CALL:
                     // Don't call directly. Use `DIAL` instead to let the user decide.
                     // Note also that ACTION_CALL requires a dedicated permission.
                     intent.setAction(Intent.ACTION_DIAL);
-                    // fall through.
-                case DIRECTIONS:
-                default:
+                    // Start dialer even if the user is in incognito mode. The intent only pre-dials
+                    // the phone number without ever making the call. This gives the user the chance
+                    // to abandon before making a call.
                     startActivity(intent);
+                    actionStarted = true;
                     break;
+
+                case DIRECTIONS:
+                    // Open directions in maps only if maps are installed and the incognito mode is
+                    // not engaged. In all other cases, redirect the action to Browser.
+                    Tab currentTab = mTabSupplier.get();
+                    if (currentTab == null || !currentTab.isIncognito()) {
+                        startActivity(intent);
+                        actionStarted = true;
+                    }
+                    break;
+
+                    // No `default` to capture new variants.
             }
 
-            SuggestionsMetrics.recordActionInSuggestIntentResult(
-                    SuggestionsMetrics.ActionInSuggestIntentResult.SUCCESS);
+            // Record intent started only if it was sent.
+            if (actionStarted) {
+                SuggestionsMetrics.recordActionInSuggestIntentResult(
+                        SuggestionsMetrics.ActionInSuggestIntentResult.SUCCESS);
+            }
         } catch (URISyntaxException e) {
             // Never happens. http://b/279756377.
         } catch (ActivityNotFoundException e) {
             SuggestionsMetrics.recordActionInSuggestIntentResult(
                     SuggestionsMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND);
+        } finally {
             // At this point we know that we were unable to launch the target activity.
             // We may still be able to handle the corresponding action inside the browser.
-            switch (actionType) {
-                case DIRECTIONS:
-                    loadPageInCurrentTab(intent.getDataString());
-                    break;
+            if (!actionStarted) {
+                switch (actionType) {
+                    case DIRECTIONS:
+                        loadPageInCurrentTab(intent.getDataString());
+                        break;
 
-                case CALL:
-                case WEBSITE:
-                    // Give up. Don't add the `default` clause though, capture missed variants.
-                    break;
+                    case CALL:
+                    case WEBSITE:
+                        // Give up. Don't add the `default` clause though, capture missed variants.
+                        break;
+                }
             }
         }
     }

@@ -328,9 +328,12 @@ public class ActionChipsDelegateImplUnitTest {
     @Test
     public void executeActionInSuggest_executeDirectionsWithMaps() {
         mTabSupplier.set(mTab);
+        doReturn(false).when(mTab).isIncognito();
+
         mDelegate.execute(buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.DIRECTIONS,
                 new Intent("Magic Intent Action")));
 
+        verify(mTab, times(1)).isIncognito();
         verify(mActivity, times(1)).startActivity(mIntentCaptor.capture());
         var intent = mIntentCaptor.getValue();
 
@@ -340,6 +343,32 @@ public class ActionChipsDelegateImplUnitTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
                         SuggestionsMetrics.ActionInSuggestIntentResult.SUCCESS));
+        verifyNoMoreInteractions(mTab);
+    }
+
+    @Test
+    public void executeActionInSuggest_executeDirectionsInBrowserForIncognitoMode() {
+        mTabSupplier.set(mTab);
+        doReturn(true).when(mTab).isIncognito();
+
+        var intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
+
+        mDelegate.execute(
+                buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.DIRECTIONS, intent));
+
+        verify(mTab, times(1)).isIncognito();
+        // Should not be recorded.
+        assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Android.Omnibox.ActionInSuggest.IntentResult"));
+
+        var loadParamsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTab, times(1)).loadUrl(loadParamsCaptor.capture());
+
+        var loadUrlParams = loadParamsCaptor.getValue();
+        assertNotNull(loadUrlParams);
+        assertEquals(UrlConstants.CHROME_DINO_URL, loadUrlParams.getUrl());
         verifyNoMoreInteractions(mTab);
     }
 
@@ -355,6 +384,7 @@ public class ActionChipsDelegateImplUnitTest {
         doThrow(new ActivityNotFoundException()).when(mActivity).startActivity(any());
         mDelegate.execute(
                 buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.DIRECTIONS, intent));
+        verify(mTab, times(1)).isIncognito();
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
