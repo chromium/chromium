@@ -146,11 +146,6 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
       classes.push('ambient-mode-disabled');
     }
 
-    /* TODO(b/253470553): Remove this condition after Ambient subpage UI change
-     * is released. */
-    if (!this.isPersonalizationJellyEnabled_) {
-      classes.push('jelly-disabled');
-    }
     return classes.join(' ');
   }
 

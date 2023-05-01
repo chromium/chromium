@@ -34,11 +34,11 @@
     width: 10%;
   }
   /* TODO(b/253470553): Remove after Ambient subpage UI change is released. */
-  ambient-preview-small.jelly-disabled {
-    margin: 20px 8px 0 8px;
-  }
   ambient-preview-small {
     grid-area: preview;
+    margin: 20px 8px 0 8px;
+  }
+  :host-context(body.jelly-enabled) ambient-preview-small {
     margin: 0 8px;
   }
   albums-subpage {
@@ -205,7 +205,7 @@
               <div class="ambient-primary-text-placeholder placeholder"></div>
             </div>
           </div>
-          <ambient-preview-small class="jelly-disabled"></ambient-preview-small>
+          <ambient-preview-small></ambient-preview-small>
           <div id="animationThemePlaceholder">
             <h3 id="animationTitle" class="ambient-subpage-element-title" aria-hidden="true">
               $i18n{ambientModeAnimationTitle}
@@ -254,7 +254,7 @@
             <ambient-zero-state id="zeroState"></ambient-zero-state>
           </template>
           <template is="dom-if" if="[[ambientModeEnabled_]]">
-            <ambient-preview-small class="jelly-disabled"></ambient-preview-small>
+            <ambient-preview-small></ambient-preview-small>
             <animation-theme-list
                 selected-animation-theme="[[animationTheme_]]">
             </animation-theme-list>
