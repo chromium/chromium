@@ -20,7 +20,7 @@ BASE_FEATURE(kSearchPrefetchBlockBeforeHeaders,
 
 BASE_FEATURE(kSearchPrefetchSkipsCancel,
              "SearchPrefetchSkipsCancel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool SearchPrefetchBlockBeforeHeadersIsEnabled() {
   return base::FeatureList::IsEnabled(kSearchPrefetchBlockBeforeHeaders);

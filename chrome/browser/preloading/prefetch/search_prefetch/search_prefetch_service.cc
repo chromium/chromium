@@ -415,12 +415,7 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
       prefetch.current_status() != SearchPrefetchStatus::kPrerendered) {
     return;
   }
-  // If cancellation of prefetches is disabled, there is no need to keep track
-  // of whether the prefetched URL was clicked: tracking the click status of
-  // URLs is only useful to note clicked URLs as non-cancellable in
-  // ShouldBeCancelledOnResultChanges.
-  if (SearchPrefetchSkipsCancel())
-    return;
+
   prefetch.MarkPrefetchAsClicked();
 }
 
