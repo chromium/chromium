@@ -199,17 +199,13 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
             control.addDescription(text);
         }
 
-        // The card container contains two lines. The first line contains the "Virtual Card" title
-        // and the second line contains the card identifier. The second line has a different text
-        // appearance than the first line and thus requires us to set the span.
-        String cardContainerTitle = layout.getContext().getString(
-                R.string.autofill_virtual_card_enrollment_dialog_card_container_title);
-        SpannableString cardContainerText =
-                new SpannableString(String.format("%s\n%s %s", cardContainerTitle,
-                        layout.getContext().getString(
-                                R.string.autofill_virtual_card_enrollment_infobar_card_prefix),
-                        mCardLabel));
-        int spanOffsetStart = cardContainerTitle.length() + 1;
+        // The card container contains two lines. The first line contains the card name and number,
+        // and the second line contains the "Virtual card" label. The second line has a different
+        // text appearance than the first line and thus requires us to set the span.
+        SpannableString cardContainerText = new SpannableString(String.format("%s\n%s", mCardLabel,
+                layout.getContext().getString(
+                        R.string.autofill_virtual_card_enrollment_dialog_card_container_title)));
+        int spanOffsetStart = mCardLabel.length() + 1;
         cardContainerText.setSpan(new TextAppearanceSpan(layout.getContext(),
                                           R.style.TextAppearance_TextSmall_Secondary_Baseline),
                 spanOffsetStart, cardContainerText.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
