@@ -662,28 +662,22 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
   // matches. However, since HQP doesn't dedupe suggestions, this can be
   // problematic when there are multiple duplicate matches. Try counting the
   // unique hosts in the matches instead.
-  static bool count_unique_hosts = base::FeatureList::IsEnabled(
-      omnibox::kHistoryQuickProviderSpecificityScoreCountUniqueHosts);
   size_t num_unique_hosts;
-  if (count_unique_hosts) {
-    std::set<std::string> unique_hosts = {};
-    for (const auto& history_id : history_ids) {
-      DCHECK(history_info_map_.count(history_id));
-      unique_hosts.insert(
-          history_info_map_.find(history_id)->second.url_row.url().host());
-      // `ScoredHistoryMatch` assigns the same specificity to suggestions for
-      // counts 4 or larger.
-      // TODO(manukh) Should share `kMaxUniqueHosts` with `ScoredHistoryMatch`,
-      //  but doing so is complicated as it's derived from parsing the default
-      //  string value for the finch param `kHQPNumMatchesScoresRule`.
-      constexpr size_t kMaxUniqueHosts = 4;
-      if (unique_hosts.size() >= kMaxUniqueHosts)
-        break;
-    }
-    num_unique_hosts = unique_hosts.size();
-  } else {
-    num_unique_hosts = history_ids.size();
+  std::set<std::string> unique_hosts = {};
+  for (const auto& history_id : history_ids) {
+    DCHECK(history_info_map_.count(history_id));
+    unique_hosts.insert(
+        history_info_map_.find(history_id)->second.url_row.url().host());
+    // `ScoredHistoryMatch` assigns the same specificity to suggestions for
+    // counts 4 or larger.
+    // TODO(manukh) Should share `kMaxUniqueHosts` with `ScoredHistoryMatch`,
+    //  but doing so is complicated as it's derived from parsing the default
+    //  string value for the finch param `kHQPNumMatchesScoresRule`.
+    constexpr size_t kMaxUniqueHosts = 4;
+    if (unique_hosts.size() >= kMaxUniqueHosts)
+      break;
   }
+  num_unique_hosts = unique_hosts.size();
 
   for (HistoryID history_id : history_ids) {
     auto hist_pos = history_info_map_.find(history_id);

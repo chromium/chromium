@@ -295,14 +295,6 @@ BASE_FEATURE(kStoreTitleInContentsAndUrlInDescription,
              "OmniboxStoreTitleInContentsAndUrlInDescription",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// HQP scores suggestions higher when it finds fewer matches. When enabled,
-// HQP will consider the count of unique hosts, rather than the total count of
-// matches.
-// TODO(manukh): Clean up 3/7/23 when m111 reaches stable.
-BASE_FEATURE(kHistoryQuickProviderSpecificityScoreCountUniqueHosts,
-             "OmniboxHistoryQuickProviderSpecificityScoreCountUniqueHosts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature used to fetch document suggestions.
 BASE_FEATURE(kDocumentProvider,
              "OmniboxDocumentProvider",

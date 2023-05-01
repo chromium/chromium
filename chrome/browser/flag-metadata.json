@@ -5540,11 +5540,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-history-quick-provider-specificity-score-count-unique-hosts",
-    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-https-upgrades",
     "owners": ["meacer", "trusty-transport@chromium.org" ],
     "expiry_milestone": 110

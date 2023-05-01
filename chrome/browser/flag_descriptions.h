@@ -1251,11 +1251,6 @@ extern const char kOmniboxGroupingFrameworkNonZPSName[];
 extern const char kOmniboxGroupingFrameworkZPSName[];
 extern const char kOmniboxGroupingFrameworkDescription[];
 
-extern const char
-    kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsName[];
-extern const char
-    kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsDescription[];
-
 extern const char kOmniboxInspireMeName[];
 extern const char kOmniboxInspireMeDescription[];
 

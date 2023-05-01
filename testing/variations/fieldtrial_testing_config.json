@@ -4155,8 +4155,7 @@
                         "DomainSuggestionsTypedVisitThreshold": "4"
                     },
                     "enable_features": [
-                        "OmniboxDomainSuggestions",
-                        "OmniboxHistoryQuickProviderSpecificityScoreCountUniqueHosts"
+                        "OmniboxDomainSuggestions"
                     ]
                 }
             ]

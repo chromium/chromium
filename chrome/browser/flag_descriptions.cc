@@ -2229,12 +2229,6 @@ const char kOmniboxGroupingFrameworkDescription[] =
     "Enables an alternative grouping implementation for omnibox "
     "autocompletion.";
 
-const char kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsName[] =
-    "Omnibox HQP Specificity";
-const char
-    kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsDescription[] =
-        "When enabled, HQP doesn't demote same-host suggestions.";
-
 const char kOmniboxInspireMeName[] = "Omnibox Trending and Related Queries";
 const char kOmniboxInspireMeDescription[] =
     "When enabled, appends additional suggestions based on local trends and/or "

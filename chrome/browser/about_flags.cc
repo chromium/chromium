@@ -5684,14 +5684,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxDomainSuggestionsName,
      flag_descriptions::kOmniboxDomainSuggestionsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kDomainSuggestions)},
-    {"omnibox-history-quick-provider-specificity-score-count-unique-hosts",
-     flag_descriptions::
-         kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsName,
-     flag_descriptions::
-         kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         omnibox::kHistoryQuickProviderSpecificityScoreCountUniqueHosts)},
     {"omnibox-drive-suggestions",
      flag_descriptions::kOmniboxDriveSuggestionsName,
      flag_descriptions::kOmniboxDriveSuggestionsDescription, kOsDesktop,
