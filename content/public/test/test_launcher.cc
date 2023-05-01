@@ -370,6 +370,9 @@ int LaunchTestsInternal(TestLauncherDelegate* launcher_delegate,
   // java for child processes.
   if (command_line->HasSwitch(switches::kProcessType) ||
       command_line->HasSwitch(switches::kLaunchAsBrowser)) {
+#if BUILDFLAG(IS_IOS)
+    base::AtExitManager at_exit;
+#endif
     // The main test process has this initialized by the base::TestSuite. But
     // child processes don't have a TestSuite, and must initialize this
     // explicitly before ContentMain.

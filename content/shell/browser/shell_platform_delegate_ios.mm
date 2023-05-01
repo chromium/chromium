@@ -627,7 +627,7 @@ bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
   ShellData& shell_data = shell_data_map_[shell];
 
   [shell_data.window resignKeyWindow];
-  return true;  // The performClose() will do the destruction of Shell.
+  return false;  // We have not destroyed the shell here.
 }
 
 void ShellPlatformDelegate::RunFileChooser(
