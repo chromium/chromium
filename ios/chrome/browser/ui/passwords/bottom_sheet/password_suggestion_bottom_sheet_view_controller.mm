@@ -46,6 +46,12 @@ CGFloat const kTableViewRowHeight = 75;
 
 // Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
+
+// TableView's width constraint multiplier in portrait mode.
+CGFloat const kPortraitTableViewWidthMultiplier = 0.95;
+
+// TableView's width constraint multiplier in landscape mode.
+CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 }  // namespace
 
 @interface PasswordSuggestionBottomSheetViewController () <
@@ -68,6 +74,12 @@ CGFloat const kTableViewCornerRadius = 10;
 
   // Table view for the list of suggestions.
   UITableView* _tableView;
+
+  // TableView's width constraint in portrait mode.
+  NSLayoutConstraint* _portraitTableWidthConstraint;
+
+  // TableView's width constraint in landscape mode.
+  NSLayoutConstraint* _landscapeTableWidthConstraint;
 
   // List of suggestions in the bottom sheet
   // The property is defined by PasswordSuggestionBottomSheetConsumer protocol.
@@ -119,6 +131,16 @@ CGFloat const kTableViewCornerRadius = 10;
       l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS);
 
   [super viewDidLoad];
+
+  // Assign table view's width anchor now that it is in the same hierarchy as
+  // the top view.
+  [self createTableViewWidthConstraint:self.view.layoutMarginsGuide];
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [self adjustTableViewWidthConstraint];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -327,11 +349,6 @@ CGFloat const kTableViewCornerRadius = 10;
   [_tableView registerClass:TableViewURLCell.class
       forCellReuseIdentifier:@"cell"];
 
-  // Set the table view's width so that it's the same for any orientation.
-  CGFloat tableWidth = MIN(frame.size.width, frame.size.height);
-  // TODO(crbug.com/1422350): Adjust this constraint properly
-  [_tableView.widthAnchor constraintEqualToConstant:tableWidth].active = YES;
-
   _minimizedHeightConstraint =
       [_tableView.heightAnchor constraintEqualToConstant:_tableView.rowHeight];
   _minimizedHeightConstraint.active = YES;
@@ -343,6 +360,25 @@ CGFloat const kTableViewCornerRadius = 10;
   _tableView.translatesAutoresizingMaskIntoConstraints = NO;
 
   return _tableView;
+}
+
+// Creates the tableview's width constraints and set their initial active state.
+- (void)createTableViewWidthConstraint:(UILayoutGuide*)margins {
+  _portraitTableWidthConstraint = [_tableView.widthAnchor
+      constraintGreaterThanOrEqualToAnchor:margins.widthAnchor
+                                multiplier:kPortraitTableViewWidthMultiplier];
+  _landscapeTableWidthConstraint = [_tableView.widthAnchor
+      constraintGreaterThanOrEqualToAnchor:margins.widthAnchor
+                                multiplier:kLandscapeTableViewWidthMultiplier];
+  [self adjustTableViewWidthConstraint];
+}
+
+// Change the tableview's width constraint based on the screen's orientation.
+- (void)adjustTableViewWidthConstraint {
+  CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+  BOOL isLandscape = screenSize.width > screenSize.height;
+  _landscapeTableWidthConstraint.active = isLandscape;
+  _portraitTableWidthConstraint.active = !isLandscape;
 }
 
 // Loads the favicon associated with the provided cell.
