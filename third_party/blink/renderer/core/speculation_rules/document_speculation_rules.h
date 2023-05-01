@@ -15,10 +15,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
-namespace base {
-class UnguessableToken;
-}  // namespace base
-
 namespace blink {
 
 class HTMLAnchorElement;
@@ -164,10 +160,6 @@ class CORE_EXPORT DocumentSpeculationRules
   bool was_selector_matches_enabled_ = false;
   PendingUpdateState pending_update_state_ =
       PendingUpdateState::kNoUpdatePending;
-
-  // devtools_navigation_token_ is usually non-null because a null token implies
-  // the document is detached and will be destroyed shortly
-  const absl::optional<base::UnguessableToken> devtools_navigation_token_;
 
   // Set to true if the EventHandlerRegistry has recorded this object's need to
   // observe pointer events.

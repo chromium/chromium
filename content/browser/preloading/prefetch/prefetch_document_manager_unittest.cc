@@ -142,9 +142,8 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
 
     candidates.push_back(std::move(candidate1));
 
-    prefetch_document_manager->ProcessCandidates(
-        base::UnguessableToken::Create(), candidates,
-        /*devtools_observer=*/nullptr);
+    prefetch_document_manager->ProcessCandidates(candidates,
+                                                 /*devtools_observer=*/nullptr);
     // Now call TakePrefetchedResponse
     network::mojom::URLResponseHeadPtr head =
         network::mojom::URLResponseHead::New();
@@ -174,7 +173,6 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(
           &GetPrimaryMainFrame());
-  auto initiator_devtools_navigation_token = base::UnguessableToken::Create();
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   // Create candidate for private cross-origin prefetch. This candidate should
@@ -212,9 +210,8 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
   candidates.push_back(std::move(candidate2));
   candidates.push_back(std::move(candidate3));
 
-  prefetch_document_manager->ProcessCandidates(
-      initiator_devtools_navigation_token, candidates,
-      /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
 
   ASSERT_EQ(GetPrefetches().size(), 3u);
   {
@@ -252,7 +249,6 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(
           &GetPrimaryMainFrame());
   prefetch_document_manager->EnableNoVarySearchSupport();
-  auto initiator_devtools_navigation_token = base::UnguessableToken::Create();
   {
     // Create list of SpeculationCandidatePtrs.
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -267,9 +263,8 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
 
     candidates.push_back(std::move(candidate1));
 
-    prefetch_document_manager->ProcessCandidates(
-        initiator_devtools_navigation_token, candidates,
-        /*devtools_observer=*/nullptr);
+    prefetch_document_manager->ProcessCandidates(candidates,
+                                                 /*devtools_observer=*/nullptr);
     const auto& helper = prefetch_document_manager->GetNoVarySearchHelper();
 
     // Now call TakePrefetchedResponse
@@ -317,9 +312,8 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
     // Create list of SpeculationCandidatePtrs.
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
     candidates.emplace_back(std::move(candidate1));
-    prefetch_document_manager->ProcessCandidates(
-        initiator_devtools_navigation_token, candidates,
-        /*devtools_observer=*/nullptr);
+    prefetch_document_manager->ProcessCandidates(candidates,
+                                                 /*devtools_observer=*/nullptr);
 
     network::mojom::URLResponseHeadPtr head =
         network::mojom::URLResponseHead::New();
@@ -501,8 +495,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(
           &GetPrimaryMainFrame());
-  prefetch_document_manager->ProcessCandidates(base::UnguessableToken::Create(),
-                                               candidates,
+  prefetch_document_manager->ProcessCandidates(candidates,
                                                /*devtools_observer=*/nullptr);
 
   // Check that the candidates that should be prefetched were sent to

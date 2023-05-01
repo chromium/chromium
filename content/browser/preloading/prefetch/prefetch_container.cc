@@ -159,7 +159,6 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
           // before the body is fully received.
           attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
         }
-
         if (initiator_devtools_navigation_token.has_value()) {
           devtools_instrumentation::DidUpdatePrefetchStatus(
               ftn, initiator_devtools_navigation_token.value(), url,
@@ -287,15 +286,12 @@ PrefetchContainer::PrefetchContainer(
                          ? prefetch_document_manager_->render_frame_host()
                                .GetPageUkmSourceId()
                          : ukm::kInvalidSourceId),
-      request_id_(base::UnguessableToken::Create().ToString()),
-      initiator_devtools_navigation_token_(
-          prefetch_document_manager
-              ? prefetch_document_manager->initiator_devtools_navigation_token()
-              : absl::nullopt) {
-  auto* rfh = RenderFrameHost::FromID(referring_render_frame_host_id_);
-  if (rfh) {
+      request_id_(base::UnguessableToken::Create().ToString()) {
+  auto* rfhi = RenderFrameHostImpl::FromID(referring_render_frame_host_id);
+  // Note: |rfhi| is only nullptr in unit tests.
+  if (rfhi) {
     auto* preloading_data = PreloadingData::GetOrCreateForWebContents(
-        WebContents::FromRenderFrameHost(rfh));
+        WebContents::FromRenderFrameHost(rfhi));
     auto matcher =
         base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)
             ? PreloadingDataImpl::GetSameURLAndNoVarySearchURLMatcher(
@@ -305,8 +301,10 @@ PrefetchContainer::PrefetchContainer(
         GetPredictorForSpeculationRules(world), PreloadingType::kPrefetch,
         std::move(matcher));
     attempt_ = attempt->GetWeakPtr();
-    // `PreloadingPrediction` is added in `PreloadingDecider`.
+    initiator_devtools_navigation_token_ = rfhi->GetDevToolsNavigationToken();
   }
+
+  // `PreloadingPrediction` is added in `PreloadingDecider`.
 
   redirect_chain_.push_back(std::make_unique<SinglePrefetch>(prefetch_url_));
 }

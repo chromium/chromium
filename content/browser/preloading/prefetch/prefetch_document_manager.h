@@ -46,8 +46,6 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // prefetched. Any candidates that can be prefetched are removed from
   // |candidates|, and a prefetch for the URL of the candidate is started.
   void ProcessCandidates(
-      const absl::optional<base::UnguessableToken>&
-          initiator_devtools_navigation_token,
       std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
 
@@ -59,11 +57,6 @@ class CONTENT_EXPORT PrefetchDocumentManager
       const network::mojom::NoVarySearchPtr& no_vary_search_expected,
       blink::mojom::SpeculationInjectionWorld world,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
-
-  absl::optional<base::UnguessableToken> initiator_devtools_navigation_token()
-      const {
-    return initiator_devtools_navigation_token_;
-  }
 
   // Releases ownership of the |PrefetchContainer| associated with |url|. The
   // prefetch is removed from |owned_prefetches_|, but a pointer to it remains
@@ -145,10 +138,6 @@ class CONTENT_EXPORT PrefetchDocumentManager
   scoped_refptr<NoVarySearchHelper> no_vary_search_helper_;
 
   bool no_vary_search_support_enabled_ = false;
-
-  // A DevTools token used to identify document. And this token is expected to
-  // be initialized when ProcessCandidates is called by PreloadingDecider.
-  absl::optional<base::UnguessableToken> initiator_devtools_navigation_token_;
 
   base::WeakPtrFactory<PrefetchDocumentManager> weak_method_factory_{this};
 

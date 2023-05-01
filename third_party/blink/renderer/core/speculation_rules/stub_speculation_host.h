@@ -35,9 +35,7 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
   void Bind(mojo::PendingReceiver<SpeculationHost> receiver);
 
   // mojom::blink::SpeculationHost.
-  void UpdateSpeculationCandidates(
-      const base::UnguessableToken& devtools_navigation_token,
-      Candidates candidates) override;
+  void UpdateSpeculationCandidates(Candidates candidates) override;
 
   // mojom::blink::SpeculationHost.
   void EnableNoVarySearchSupport() override;
@@ -50,18 +48,12 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
     return sent_no_vary_search_support_to_browser_;
   }
 
-  absl::optional<base::UnguessableToken> devtools_navigation_token() const {
-    return devtools_navigation_token_;
-  }
-
  private:
   mojo::Receiver<SpeculationHost> receiver_{this};
   Vector<mojom::blink::SpeculationCandidatePtr> candidates_;
   bool sent_no_vary_search_support_to_browser_ = false;
   base::OnceClosure done_closure_;
   base::RepeatingCallback<void(const Candidates&)> candidates_updated_callback_;
-  // A non-nul devtools_navigation_token_ is expected to be always consistent.
-  absl::optional<base::UnguessableToken> devtools_navigation_token_;
 };
 
 }  // namespace blink

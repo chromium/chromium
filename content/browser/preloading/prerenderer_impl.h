@@ -23,13 +23,10 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer, WebContentsObserver {
   void PrimaryPageChanged(Page& page) override;
 
   void ProcessCandidatesForPrerender(
-      const base::UnguessableToken& initiator_devtools_navigation_token,
       const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
       override;
 
   bool MaybePrerender(
-      const absl::optional<base::UnguessableToken>&
-          initiator_devtools_navigation_token,
       const blink::mojom::SpeculationCandidatePtr& candidate) override;
 
   bool ShouldWaitForPrerenderResult(const GURL& url) override;

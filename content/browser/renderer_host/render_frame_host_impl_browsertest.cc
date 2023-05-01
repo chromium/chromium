@@ -7740,6 +7740,179 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_NE(nullptr, pending_rfh->owner_);
 }
 
+// Tests that the devtools_navigation_token is set correctly after:
+// 1) Initialization of the RFH (initial empty document)
+// 2) First navigation
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DevToolsNavigationToken_InitialNavigation) {
+  RenderFrameHostImplWrapper rfh(web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(rfh->GetDevToolsNavigationToken(), absl::nullopt);
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  TestNavigationManager nav_manager(web_contents(), url);
+  shell()->LoadURL(url);
+  ASSERT_TRUE(nav_manager.WaitForFirstYieldAfterDidStartNavigation());
+  base::UnguessableToken devtools_navigation_token =
+      NavigationRequest::From(nav_manager.GetNavigationHandle())
+          ->devtools_navigation_token();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_EQ(rfh.get(), web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(rfh->GetDevToolsNavigationToken(), devtools_navigation_token);
+}
+
+// Tests that the devtools_navigation_token changes after a cross-document
+// navigation where the RFH is swapped.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DevToolsNavigationToken_CrossDocumentNavigation) {
+  // This test requires that a same-site main frame navigation changes
+  // RenderFrameHosts, so we return early if that isn't possible.
+  if (!CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
+    LOG(ERROR) << "Skipping test due to precondition not being met.";
+    return;
+  }
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
+  auto dnt_a = rfh_a->GetDevToolsNavigationToken();
+  EXPECT_TRUE(dnt_a.has_value());
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(rfh_a.get(), rfh_b.get());
+  auto dnt_b = rfh_b->GetDevToolsNavigationToken();
+  EXPECT_TRUE(dnt_b.has_value());
+
+  // The devtools_navigation_token for |rfh_b| should be different from
+  // |rfh_a|'s token.
+  EXPECT_NE(dnt_a, dnt_b);
+}
+
+// Tests that the devtools_navigation_token changes after a cross-document
+// navigation where the RFH stays the same.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DevToolsNavigationToken_SameRFHCrossDocumentNavigation) {
+  // This test requires that a same site main frame navigation reuses the
+  // current RFH, which will not happen if RenderDocument is enabled.
+  if (WillSameSiteNavigationsChangeRenderFrameHosts()) {
+    LOG(ERROR) << "This test case is supposed to test behaviour when a "
+                  "same-site navigation reuses the current RFH, which will not "
+                  "happen if RenderDocument is enabled.";
+    return;
+  }
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("a.com", "/title2.html"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
+  auto dnt_a = rfh_a->GetDevToolsNavigationToken();
+  EXPECT_TRUE(dnt_a.has_value());
+
+  DisableProactiveBrowsingInstanceSwapFor(rfh_a.get());
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(web_contents()->GetPrimaryMainFrame());
+  ASSERT_EQ(rfh_a->GetSiteInstance(), rfh_b->GetSiteInstance());
+  ASSERT_EQ(rfh_a.get(), rfh_b.get());
+  auto dnt_b = rfh_b->GetDevToolsNavigationToken();
+  EXPECT_TRUE(dnt_b.has_value());
+
+  // The devtools_navigation_token should change after the navigation commits.
+  EXPECT_NE(dnt_a, dnt_b);
+}
+
+// Tests that the devtools_navigation_token is unchanged after a same document
+// navigation.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DevToolsNavigationToken_SameDocumentNavigation) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImplWrapper rfh(web_contents()->GetPrimaryMainFrame());
+  auto dnt = rfh->GetDevToolsNavigationToken();
+
+  GURL anchor_url = GURL(url.spec() + "#anchor");
+  TestNavigationManager nav_manager(web_contents(), anchor_url);
+  shell()->LoadURL(anchor_url);
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_EQ(rfh.get(), web_contents()->GetPrimaryMainFrame());
+  auto new_dnt = rfh->GetDevToolsNavigationToken();
+
+  // The devtools_navigation_token should not change after a same-document
+  // navigation.
+  EXPECT_EQ(dnt, new_dnt);
+}
+
+// Tests that a BFCached RFH preserves its devtools_navigation_token
+// after being restored.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DevToolsNavigationToken_BFCacheNavigation) {
+  // This test specifically wants to test with BackForwardCache enabled, so skip
+  // it if BackForwardCache is disabled.
+  if (!IsBackForwardCacheEnabled()) {
+    LOG(ERROR) << "Skipping test because BackForwardCache is not enabled.";
+    return;
+  }
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
+  auto dnt = rfh_a->GetDevToolsNavigationToken();
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+  ASSERT_NE(rfh_a.get(), rfh_b.get());
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_EQ(rfh_a.get(), web_contents()->GetPrimaryMainFrame());
+
+  // |rfh_a|'s devtools_navigation_token should not have changed after being
+  // restored from the BFCache.
+  EXPECT_EQ(rfh_a->GetDevToolsNavigationToken(), dnt);
+}
+
+// Tests that the devtools_navigation_token remains null after a synchronous
+// about:blank navigation in an iframe.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    DevToolsNavigationToken_SynchronousAboutBlankNavigation) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImplWrapper subframe(
+      CreateSubframe(web_contents(), "", GURL(), true));
+  ASSERT_TRUE(subframe->is_initial_empty_document());
+  // Synchronous about:blank navigations are not strictly considered to be
+  // "same-document" navigations; but the synchronously committed about:blank
+  // document is still considered to be the initial empty document, and the
+  // devtools_navigation_token remains null.
+  EXPECT_EQ(subframe->GetDevToolsNavigationToken(), absl::nullopt);
+}
+
+// Tests that the devtools_navigation_token of an RFH is updated after a
+// navigation from a crashed RFH. In particular, this code tries to test the
+// early-commit-of-speculative-rfh code path.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DevToolsNavigationToken_EarlyCommitAfterCrash) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
+  auto dnt_a = rfh_a->GetDevToolsNavigationToken();
+  RenderProcessHost* process = rfh_a->GetProcess();
+  RenderProcessHostWatcher process_exit_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(RESULT_CODE_KILLED);
+  process_exit_observer.Wait();
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(web_contents()->GetPrimaryMainFrame());
+  auto dnt_b = rfh_b->GetDevToolsNavigationToken();
+
+  EXPECT_NE(dnt_a, dnt_b);
+}
+
 class RenderFrameHostImplBrowserTestWithBFCache
     : public RenderFrameHostImplBrowserTest {
  public:

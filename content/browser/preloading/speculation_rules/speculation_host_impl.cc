@@ -59,7 +59,6 @@ SpeculationHostImpl::~SpeculationHostImpl() = default;
 // TODO(crbug/1384419): Add devtools_navigation_token to the preloading related
 // CDPs for Devtools.
 void SpeculationHostImpl::UpdateSpeculationCandidates(
-    const base::UnguessableToken& devtools_navigation_token,
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!CandidatesAreValid(candidates))
@@ -71,18 +70,9 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
   if (render_frame_host().GetParent())
     return;
 
-  if (!devtools_navigation_token_.has_value()) {
-    devtools_navigation_token_ = devtools_navigation_token;
-  } else if (devtools_navigation_token_.value() != devtools_navigation_token) {
-    // A renderer should send the same devtools navigation token every time.
-    mojo::ReportBadMessage("SH_INVALID_DEVTOOLS_TOKEN");
-    return;
-  }
-
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
-  preloading_decider->UpdateSpeculationCandidates(devtools_navigation_token,
-                                                  candidates);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
 }
 
 void SpeculationHostImpl::EnableNoVarySearchSupport() {

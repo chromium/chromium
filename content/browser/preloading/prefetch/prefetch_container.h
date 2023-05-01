@@ -432,8 +432,8 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // A DevTools token used to identify initiator document if the prefetch is
   // triggered by SpeculationRules.
-  const absl::optional<base::UnguessableToken>
-      initiator_devtools_navigation_token_;
+  absl::optional<base::UnguessableToken> initiator_devtools_navigation_token_ =
+      absl::nullopt;
 
   // The time at which |PrefetchService| started blocking until the head of
   // |this| was received.

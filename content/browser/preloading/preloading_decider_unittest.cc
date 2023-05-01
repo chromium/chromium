@@ -55,17 +55,14 @@ class MockPrerenderer : public Prerenderer {
   ~MockPrerenderer() override = default;
 
   void ProcessCandidatesForPrerender(
-      const base::UnguessableToken& initiator_devtools_navigation_token,
       const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
       override {
     for (const auto& candidate : candidates) {
-      MaybePrerender(initiator_devtools_navigation_token, candidate);
+      MaybePrerender(candidate);
     }
   }
 
   bool MaybePrerender(
-      const absl::optional<base::UnguessableToken>&
-          initiator_devtools_navigation_token,
       const blink::mojom::SpeculationCandidatePtr& candidate) override {
     return prerenders_.insert(candidate->url).second;
   }
@@ -223,8 +220,7 @@ TEST_F(PreloadingDeciderTest, DefaultEagernessCandidatesStartOnStandby) {
     candidates.push_back(std::move(candidate));
   }
 
-  preloading_decider->UpdateSpeculationCandidates(
-      base::UnguessableToken::Create(), candidates);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
 
   for (const auto& [should_be_on_standby, url, action, eagerness] :
        test_cases) {
@@ -280,8 +276,7 @@ TEST_P(PreloadingDeciderTest, PrefetchOnPointerEventHeuristics) {
   candidate1->eagerness = eagerness;
   candidates.push_back(std::move(candidate1));
 
-  preloading_decider->UpdateSpeculationCandidates(
-      base::UnguessableToken::Create(), candidates);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
   // It should not pass kModerate or kConservative candidates directly
   EXPECT_TRUE(GetPrefetchService()->prefetches_.empty());
 
@@ -372,8 +367,7 @@ TEST_P(PreloadingDeciderTest, PrerenderOnPointerEventHeuristics) {
   candidates.push_back(create_candidate(
       blink::mojom::SpeculationAction::kPrefetch, "/candidate2.html"));
 
-  preloading_decider->UpdateSpeculationCandidates(
-      base::UnguessableToken::Create(), candidates);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
   // It should not pass kModerate or kConservative candidates directly
   EXPECT_TRUE(prerenderer.Get()->prerenders_.empty());
   EXPECT_TRUE(GetPrefetchService()->prefetches_.empty());
@@ -446,8 +440,7 @@ TEST_F(PreloadingDeciderTest, CanOverridePointerDownEagerness) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(std::move(candidate));
 
-  preloading_decider->UpdateSpeculationCandidates(
-      base::UnguessableToken::Create(), candidates);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
   EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
 
   preloading_decider->OnPointerDown(GetSameOriginUrl("/candidate1.html"));
@@ -475,8 +468,7 @@ TEST_F(PreloadingDeciderTest, CanOverridePointerHoverEagerness) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(std::move(candidate));
 
-  preloading_decider->UpdateSpeculationCandidates(
-      base::UnguessableToken::Create(), candidates);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
   EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
 
   preloading_decider->OnPointerHover(GetSameOriginUrl("/candidate1.html"));

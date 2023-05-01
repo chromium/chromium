@@ -84,8 +84,7 @@ TEST_F(PrerendererTest, StartPrerender) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
 
-  prerenderer.ProcessCandidatesForPrerender(base::UnguessableToken::Create(),
-                                            std::move(candidates));
+  prerenderer.ProcessCandidatesForPrerender(std::move(candidates));
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
@@ -104,8 +103,7 @@ TEST_F(PrerendererTest, ProcessFirstSameOriginPrerenderCandidate) {
   candidates.push_back(
       CreatePrerenderCandidate(kSecondPrerenderingUrlSameOrigin));
 
-  prerenderer.ProcessCandidatesForPrerender(base::UnguessableToken::Create(),
-                                            std::move(candidates));
+  prerenderer.ProcessCandidatesForPrerender(std::move(candidates));
 
   // The first prerender candidate is a cross-site one, so Prerenderer should
   // not prerender it.
@@ -129,21 +127,17 @@ TEST_F(PrerendererTest, RemoveRendererHostAfterCandidateRemoved) {
   for (const auto& url : urls) {
     candidates.push_back(CreatePrerenderCandidate(url));
   }
-  auto initiator_devtools_navigation_token = base::UnguessableToken::Create();
-  prerenderer.ProcessCandidatesForPrerender(initiator_devtools_navigation_token,
-                                            std::move(candidates));
+  prerenderer.ProcessCandidatesForPrerender(std::move(candidates));
   EXPECT_TRUE(registry->FindHostByUrlForTesting(urls[0]));
   EXPECT_TRUE(registry->FindHostByUrlForTesting(urls[1]));
 
   std::vector<blink::mojom::SpeculationCandidatePtr> new_candidates;
   new_candidates.push_back(CreatePrerenderCandidate(urls[1]));
-  prerenderer.ProcessCandidatesForPrerender(initiator_devtools_navigation_token,
-                                            std::move(new_candidates));
+  prerenderer.ProcessCandidatesForPrerender(std::move(new_candidates));
   EXPECT_FALSE(registry->FindHostByUrlForTesting(urls[0]));
   EXPECT_TRUE(registry->FindHostByUrlForTesting(urls[1]));
 
   prerenderer.ProcessCandidatesForPrerender(
-      initiator_devtools_navigation_token,
       std::vector<blink::mojom::SpeculationCandidatePtr>{});
   EXPECT_FALSE(registry->FindHostByUrlForTesting(urls[0]));
   EXPECT_FALSE(registry->FindHostByUrlForTesting(urls[1]));
@@ -162,13 +156,10 @@ TEST_F(PrerendererTest, MaybePrerenderAndShouldWaitForPrerenderResult) {
   // Candidate is not processed yet. So, it should return false.
   EXPECT_FALSE(prerenderer.ShouldWaitForPrerenderResult(kUrlToCancel));
   // Process the candidate.
-  auto initiator_devtools_navigation_token = base::UnguessableToken::Create();
-  prerenderer.ProcessCandidatesForPrerender(initiator_devtools_navigation_token,
-                                            std::move(candidateToCancel));
+  prerenderer.ProcessCandidatesForPrerender(std::move(candidateToCancel));
   EXPECT_TRUE(prerenderer.ShouldWaitForPrerenderResult(kUrlToCancel));
   // Cancel the prerender
   prerenderer.ProcessCandidatesForPrerender(
-      initiator_devtools_navigation_token,
       std::vector<blink::mojom::SpeculationCandidatePtr>{});
   EXPECT_FALSE(prerenderer.ShouldWaitForPrerenderResult(kUrlToCancel));
 
@@ -179,8 +170,7 @@ TEST_F(PrerendererTest, MaybePrerenderAndShouldWaitForPrerenderResult) {
   EXPECT_FALSE(prerenderer.ShouldWaitForPrerenderResult(kPrerenderingUrl));
   // MaybePrerender the candidate and check if ShouldWaitForPrerenderResult
   // returns true.
-  EXPECT_TRUE(prerenderer.MaybePrerender(initiator_devtools_navigation_token,
-                                         candidate));
+  EXPECT_TRUE(prerenderer.MaybePrerender(candidate));
   EXPECT_TRUE(prerenderer.ShouldWaitForPrerenderResult(kPrerenderingUrl));
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }

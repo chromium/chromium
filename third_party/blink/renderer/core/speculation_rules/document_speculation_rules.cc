@@ -136,13 +136,6 @@ absl::optional<Referrer> GetReferrer(SpeculationRule* rule,
   return referrer;
 }
 
-absl::optional<base::UnguessableToken> GetDevToolsNavigationToken(
-    DocumentLoader* document_loader) {
-  return document_loader ? document_loader->GetDevToolsNavigationToken()
-                         : static_cast<absl::optional<base::UnguessableToken>>(
-                               absl::nullopt);
-}
-
 }  // namespace
 
 // static
@@ -166,10 +159,7 @@ DocumentSpeculationRules* DocumentSpeculationRules::FromIfExists(
 }
 
 DocumentSpeculationRules::DocumentSpeculationRules(Document& document)
-    : Supplement(document),
-      host_(document.GetExecutionContext()),
-      devtools_navigation_token_(
-          GetDevToolsNavigationToken(document.Loader())) {}
+    : Supplement(document), host_(document.GetExecutionContext()) {}
 
 void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
   CountSpeculationRulesLoadOutcome(SpeculationRulesLoadOutcome::kSuccess);
@@ -488,9 +478,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
 
   mojom::blink::SpeculationHost* host = GetHost();
   auto* execution_context = GetSupplementable()->GetExecutionContext();
-  // devtools_navigation_token is expected to be non-null because a null token
-  // means the document is detached and will be destroyed shortly.
-  if (!host || !execution_context || !devtools_navigation_token_.has_value()) {
+  if (!host || !execution_context) {
     return;
   }
 
@@ -576,8 +564,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     mojom_candidates.push_back(candidate->ToMojom());
   }
 
-  host->UpdateSpeculationCandidates(devtools_navigation_token_.value(),
-                                    std::move(mojom_candidates));
+  host->UpdateSpeculationCandidates(std::move(mojom_candidates));
 
   if (eagerness_set.Has(SpeculationEagerness::kConservative)) {
     UseCounter::Count(GetSupplementable(),

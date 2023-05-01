@@ -9505,6 +9505,15 @@ void RenderFrameHostImpl::RecordNavigationSuddenTerminationHandlers() {
       NavigationSuddenTerminationDisablerType::kMaxValue * 2);
 }
 
+const absl::optional<base::UnguessableToken>&
+RenderFrameHostImpl::GetDevToolsNavigationToken() {
+  // We shouldn't need to call this method while a RFH is speculative or pending
+  // commit - there is a navigation in progress and its value will change
+  // shortly.
+  CHECK_GT(lifecycle_state(), LifecycleStateImpl::kPendingCommit);
+  return document_associated_data_->devtools_navigation_token();
+}
+
 void RenderFrameHostImpl::CommitNavigation(
     NavigationRequest* navigation_request,
     blink::mojom::CommonNavigationParamsPtr common_params,
@@ -12498,6 +12507,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       CHECK_EQ(document_associated_data_->token(),
                navigation_request->GetDocumentToken());
     }
+
+    document_associated_data_->set_devtools_navigation_token(
+        navigation_request->devtools_navigation_token());
 
     const absl::optional<FencedFrameProperties>& fenced_frame_properties =
         navigation_request->ComputeFencedFrameProperties();
