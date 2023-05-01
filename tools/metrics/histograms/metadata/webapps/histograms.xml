@@ -996,16 +996,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Webapp.NavigationStatus" enum="BooleanSuccess"
-    expires_after="2021-10-25">
-  <owner>peter@chromium.org</owner>
-  <owner>hartmanng@chromium.org</owner>
-  <summary>
-    Records whether the top-level navigations in standalone Web Apps result in
-    presenting the web content or showing the error page.
-  </summary>
-</histogram>
-
 <histogram name="WebApp.OpenMode" enum="WebAppOpenMode" expires_after="never">
 <!-- expires-never: The dPWA team uses this from time to time to see how web
       apps are opened. davidbienvenu@ -->

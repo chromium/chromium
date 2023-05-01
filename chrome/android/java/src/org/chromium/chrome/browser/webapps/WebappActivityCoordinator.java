@@ -56,9 +56,6 @@ public class WebappActivityCoordinator
         mActivity = activity;
         mDeferredStartupWithStorageHandler = deferredStartupWithStorageHandler;
 
-        // WebappActiveTabUmaTracker sets itself as an observer of |activityTabProvider|.
-        new WebappActiveTabUmaTracker(activityTabProvider, intentDataProvider, currentPageVerifier);
-
         mDeferredStartupWithStorageHandler.addTask((storage, didCreateStorage) -> {
             if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
 

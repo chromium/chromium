@@ -14,8 +14,8 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
@@ -38,6 +38,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DoNotBatch(reason = "Activity initialzation test")
 public class WebApkInitializationTest {
     /**
      * {@link ActivityLifecycleDispatcher} wrapper which tracks {@link LifecycleObserver}
@@ -154,9 +155,5 @@ public class WebApkInitializationTest {
                 WebApkActivityLifecycleUmaTracker.class.getName()));
         assertTrue(
                 registeredObserverClassNames.contains(SharedActivityCoordinator.class.getName()));
-
-        // Test that WebappActiveTabUmaTracker is hooked up.
-        assertTrue(0 < RecordHistogram.getHistogramTotalCountForTesting(
-                           WebappActiveTabUmaTracker.HISTOGRAM_NAVIGATION_STATUS));
     }
 }
