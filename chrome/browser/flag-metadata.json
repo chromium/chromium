@@ -7446,7 +7446,7 @@
   {
     "name": "use-dns-https-svcb-alpn",
     "owners": [ "horo" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "use-fake-device-for-media-stream",
