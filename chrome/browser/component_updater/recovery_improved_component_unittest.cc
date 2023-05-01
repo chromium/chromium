@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/path_service.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -24,6 +23,7 @@
 #include "components/crx_file/crx_verifier.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
+#include "components/update_client/test_utils.h"
 #include "components/update_client/update_client_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -116,14 +116,9 @@ TEST_F(RecoveryImprovedActionHandlerTest, HandleSuccess) {
 
   // Tests that the recovery program runs and it returns an expected value.
   constexpr char kActionRunFileName[] = "ChromeRecovery.crx3";
-  base::FilePath from_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &from_path);
-  from_path = from_path.AppendASCII("components")
-                  .AppendASCII("test")
-                  .AppendASCII("data")
-                  .AppendASCII("update_client")
-                  .AppendASCII(kActionRunFileName);
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  const base::FilePath from_path =
+      update_client::GetTestFilePath(kActionRunFileName);
   const base::FilePath to_path =
       temp_dir_.GetPath().AppendASCII(kActionRunFileName);
   ASSERT_TRUE(base::CopyFile(from_path, to_path));

@@ -2,28 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/tools/certificate_tag.h"
-#include "base/base_paths.h"
-#include "base/files/file.h"
+#include <cstdint>
+#include <vector>
+
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/path_service.h"
+#include "chrome/updater/tools/certificate_tag.h"
+#include "chrome/updater/util/unittest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-namespace updater {
-namespace tools {
+namespace updater::tools {
 
 TEST(CertificateTag, RoundTrip) {
-  base::FilePath source_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
-  const base::FilePath exe_path = source_path.AppendASCII("chrome")
-                                      .AppendASCII("updater")
-                                      .AppendASCII("test")
-                                      .AppendASCII("data")
-                                      .AppendASCII("signed.exe.gz");
   std::string exe;
-  ASSERT_TRUE(base::ReadFileToString(exe_path, &exe));
+  ASSERT_TRUE(base::ReadFileToString(
+      updater::test::GetTestFilePath("signed.exe.gz"), &exe));
   ASSERT_TRUE(compression::GzipUncompress(exe, &exe));
   const base::span<const uint8_t> exe_span(
       reinterpret_cast<const uint8_t*>(exe.data()), exe.size());
@@ -35,7 +31,7 @@ TEST(CertificateTag, RoundTrip) {
   absl::optional<base::span<const uint8_t>> orig_tag(bin->tag());
   EXPECT_FALSE(orig_tag);
 
-  static const uint8_t kTag[] = {1, 2, 3, 4, 5};
+  constexpr uint8_t kTag[] = {1, 2, 3, 4, 5};
   absl::optional<std::vector<uint8_t>> updated_exe(bin->SetTag(kTag));
   ASSERT_TRUE(updated_exe);
 
@@ -47,7 +43,7 @@ TEST(CertificateTag, RoundTrip) {
               memcmp(kTag, parsed_tag->data(), sizeof(kTag)) == 0);
 
   // Update an existing tag.
-  static const uint8_t kTag2[] = {1, 2, 3, 4, 6};
+  constexpr uint8_t kTag2[] = {1, 2, 3, 4, 6};
   absl::optional<std::vector<uint8_t>> updated_again_exe(bin2->SetTag(kTag2));
   ASSERT_TRUE(updated_again_exe);
 
@@ -64,5 +60,4 @@ TEST(CertificateTag, RoundTrip) {
   EXPECT_EQ(updated_exe->size(), updated_again_exe->size());
 }
 
-}  // namespace tools
-}  // namespace updater
+}  // namespace updater::tools

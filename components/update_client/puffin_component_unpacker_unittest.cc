@@ -10,29 +10,15 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/puffin_component_unpacker.h"
 #include "components/update_client/test_configurator.h"
+#include "components/update_client/test_utils.h"
 #include "components/update_client/unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace {
-
-base::FilePath TestFile(const char* file) {
-  base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
-  return path.AppendASCII("components")
-      .AppendASCII("test")
-      .AppendASCII("data")
-      .AppendASCII("update_client")
-      .AppendASCII(file);
-}
-
-}  // namespace
 
 namespace update_client {
 
@@ -53,7 +39,7 @@ TEST_F(PuffinComponentUnpackerTest, UnpackFullCrx) {
   base::RunLoop loop;
   PuffinComponentUnpacker::Unpack(
       std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
-      TestFile("jebgalgnebhfojomionfpkfelancnnkf.crx"),
+      GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
       config->GetUnzipperFactory()->Create(), crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
           [&](const PuffinComponentUnpacker::Result& result) {
@@ -85,7 +71,8 @@ TEST_F(PuffinComponentUnpackerTest, UnpackFileNotFound) {
   base::RunLoop loop;
   PuffinComponentUnpacker::Unpack(
       std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
-      TestFile("file_not_found.crx"), nullptr, crx_file::VerifierFormat::CRX3,
+      GetTestFilePath("file_not_found.crx"), nullptr,
+      crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
           [&](const PuffinComponentUnpacker::Result& result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
@@ -107,7 +94,7 @@ TEST_F(PuffinComponentUnpackerTest, UnpackFileHashMismatch) {
   base::RunLoop loop;
   PuffinComponentUnpacker::Unpack(
       std::vector<uint8_t>(std::begin(abag_hash), std::end(abag_hash)),
-      TestFile("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr,
+      GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr,
       crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
           [&](const PuffinComponentUnpacker::Result& result) {
@@ -131,7 +118,7 @@ TEST_F(PuffinComponentUnpackerTest, UnpackWithVerifiedContents) {
   base::RunLoop loop;
   PuffinComponentUnpacker::Unpack(
       std::vector<uint8_t>(),
-      TestFile("gndmhdcefbhlchkhipcnnbkcmicncehk_22_314.crx3"),
+      GetTestFilePath("gndmhdcefbhlchkhipcnnbkcmicncehk_22_314.crx3"),
       config->GetUnzipperFactory()->Create(), crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
           [&](const PuffinComponentUnpacker::Result& result) {

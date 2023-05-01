@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/base_paths.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -10,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -19,6 +17,7 @@
 #include "components/services/patch/content/patch_service.h"
 #include "components/services/patch/public/cpp/patch.h"
 #include "components/update_client/component_patcher_operation.h"
+#include "components/update_client/test_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
@@ -44,23 +43,14 @@ class PatchTest : public InProcessBrowserTest {
   PatchTest(const PatchTest&) = delete;
   PatchTest& operator=(const PatchTest&) = delete;
 
-  static base::FilePath TestFile(const char* name) {
-    base::FilePath path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
-    return path.AppendASCII("components")
-        .AppendASCII("test")
-        .AppendASCII("data")
-        .AppendASCII("update_client")
-        .AppendASCII(name);
-  }
-
   base::FilePath InputFilePath(const char* name) {
     base::FilePath path = installed_dir_.GetPath().AppendASCII(name);
 
     base::RunLoop run_loop;
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, kThreadPoolTaskTraits,
-        base::BindOnce(&PatchTest::CopyFile, TestFile(name), path),
+        base::BindOnce(&PatchTest::CopyFile,
+                       update_client::GetTestFilePath(name), path),
         run_loop.QuitClosure());
 
     run_loop.Run();
@@ -73,7 +63,8 @@ class PatchTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, kThreadPoolTaskTraits,
-        base::BindOnce(&PatchTest::CopyFile, TestFile(name), path),
+        base::BindOnce(&PatchTest::CopyFile,
+                       update_client::GetTestFilePath(name), path),
         run_loop.QuitClosure());
 
     run_loop.Run();
@@ -147,7 +138,8 @@ IN_PROC_BROWSER_TEST_F(PatchTest, CheckBsdiffOperation) {
   RunPatchTest(update_client::kBsdiff, input_file, patch_file, output_file,
                kExpectedResult);
 
-  EXPECT_TRUE(base::ContentsEqual(TestFile("binary_output.bin"), output_file));
+  EXPECT_TRUE(base::ContentsEqual(
+      update_client::GetTestFilePath("binary_output.bin"), output_file));
 }
 
 IN_PROC_BROWSER_TEST_F(PatchTest, CheckCourgetteOperation) {
@@ -160,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(PatchTest, CheckCourgetteOperation) {
   RunPatchTest(update_client::kCourgette, input_file, patch_file, output_file,
                kExpectedResult);
 
-  EXPECT_TRUE(base::ContentsEqual(TestFile("binary_output.bin"), output_file));
+  EXPECT_TRUE(base::ContentsEqual(
+      update_client::GetTestFilePath("binary_output.bin"), output_file));
 }
 
 IN_PROC_BROWSER_TEST_F(PatchTest, InvalidInputFile) {

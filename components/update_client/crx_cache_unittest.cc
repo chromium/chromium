@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/update_client/test_utils.h"
 #include "components/update_client/update_client_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,13 +34,6 @@ base::FilePath BuildCrxFilePathForTest(const base::FilePath& dir_path,
 }
 
 base::FilePath DuplicateTestFile(const char* file) {
-  base::FilePath source_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path);
-  source_path = source_path.AppendASCII("components")
-                    .AppendASCII("test")
-                    .AppendASCII("data")
-                    .AppendASCII("update_client")
-                    .AppendASCII(file);
   base::FilePath dest_path;
   base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &dest_path);
   dest_path = dest_path.AppendASCII("test_dir")
@@ -48,7 +42,7 @@ base::FilePath DuplicateTestFile(const char* file) {
   if (!base::PathExists(dest_path.DirName())) {
     base::CreateDirectory(dest_path.DirName());
   }
-  EXPECT_TRUE(base::CopyFile(source_path, dest_path));
+  EXPECT_TRUE(base::CopyFile(GetTestFilePath(file), dest_path));
   return dest_path;
 }
 
@@ -59,9 +53,7 @@ class CrxCacheTest : public testing::Test {
   CrxCacheTest() = default;
   ~CrxCacheTest() override = default;
 
- protected:
-  // TODO(crbug.com/1353588): We clearly have a TaskEnvironment member
-  // (see env_ below) so why are we getting this warning?
+ private:
   base::test::TaskEnvironment env_;
 };
 

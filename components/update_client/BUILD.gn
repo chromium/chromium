@@ -198,8 +198,13 @@ static_library("update_client") {
   }
 }
 
-static_library("test_support") {
+source_set("test_support") {
   testonly = true
+  visibility = [
+    ":unit_tests",
+    "//chrome/test:test_support",
+    "//components/component_updater:unit_tests",
+  ]
   sources = [
     "net/url_loader_post_interceptor.cc",
     "net/url_loader_post_interceptor.h",
@@ -209,6 +214,8 @@ static_library("test_support") {
     "test_configurator.h",
     "test_installer.cc",
     "test_installer.h",
+    "test_utils.cc",
+    "test_utils.h",
   ]
 
   public_deps = [ ":update_client" ]

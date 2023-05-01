@@ -66,6 +66,7 @@ source_set("unittest") {
     ":certificate_tag_lib",
     "//base",
     "//base/test:test_support",
+    "//chrome/updater:unittest_util_sources",
     "//testing/gtest",
     "//third_party/zlib/google:compression_utils",
   ]
