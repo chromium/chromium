@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -15,7 +15,9 @@
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
@@ -103,6 +105,9 @@ class FakeDetailedViewDelegate : public DetailedViewDelegate {
 class BluetoothDetailedViewLegacyTest : public AshTestBase {
  public:
   void SetUp() override {
+    // BluetoothDetailedViewLegacy is only used pre-QsRevamp.
+    feature_list_.InitAndDisableFeature(features::kQsRevamp);
+
     AshTestBase::SetUp();
 
     std::unique_ptr<BluetoothDetailedView> bluetooth_detailed_view =
@@ -173,6 +178,7 @@ class BluetoothDetailedViewLegacyTest : public AshTestBase {
         static_cast<int>(id)));
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<BluetoothDetailedView, ExperimentalAsh> bluetooth_detailed_view_;
   FakeBluetoothDetailedViewDelegate fake_bluetooth_detailed_view_delegate_;
