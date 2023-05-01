@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
@@ -209,6 +210,10 @@ class NET_EXPORT ClientSocketHandle {
     connect_timing_ = connect_timing;
   }
 
+  base::WeakPtr<ClientSocketHandle> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   // Called on asynchronous completion of an Init() request.
   void OnIOComplete(int result);
@@ -247,6 +252,8 @@ class NET_EXPORT ClientSocketHandle {
 
   // Timing information is set when a connection is successfully established.
   LoadTimingInfo::ConnectTiming connect_timing_;
+
+  base::WeakPtrFactory<ClientSocketHandle> weak_factory_{this};
 };
 
 }  // namespace net

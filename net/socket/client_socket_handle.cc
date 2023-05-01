@@ -24,6 +24,7 @@ ClientSocketHandle::ClientSocketHandle()
     : resolve_error_info_(ResolveErrorInfo(OK)) {}
 
 ClientSocketHandle::~ClientSocketHandle() {
+  weak_factory_.InvalidateWeakPtrs();
   Reset();
 }
 
