@@ -169,6 +169,12 @@ public interface WebContents extends Parcelable {
     RenderFrameHost getFocusedFrame();
 
     /**
+     * @return Whether the focused frame element in this WebContents is editable. Will be false if
+     *         the WebContents does not have focus.
+     */
+    boolean isFocusedElementEditable();
+
+    /**
      * @return The frame associated with the id. Will be null if the ID does not correspond to a
      *         live RenderFrameHost.
      */

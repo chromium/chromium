@@ -99,6 +99,11 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
+    public boolean isFocusedElementEditable() {
+        return false;
+    }
+
+    @Override
     public RenderFrameHost getRenderFrameHostFromId(GlobalRenderFrameHostId id) {
         return null;
     }
