@@ -117,7 +117,7 @@ void RemoteDesktopPortalInjector::ValidateGDPBusProxyResult(
     if (g_error_matches(error.get(), G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
       return;
     }
-    LOG(ERROR) << "Error in input injection (without EI)";
+    LOG(ERROR) << "Error in input injection (without EI): " << error->message;
   }
 }
 
