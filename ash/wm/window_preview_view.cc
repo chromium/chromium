@@ -41,10 +41,7 @@ gfx::Rect GetClientAreaBoundsInScreen(aura::Window* window) {
 
 }  // namespace
 
-WindowPreviewView::WindowPreviewView(aura::Window* window,
-                                     bool trilinear_filtering_on_init)
-    : window_(window),
-      trilinear_filtering_on_init_(trilinear_filtering_on_init) {
+WindowPreviewView::WindowPreviewView(aura::Window* window) : window_(window) {
   DCHECK(window);
   aura::client::GetTransientWindowClient()->AddObserver(this);
 
@@ -158,12 +155,11 @@ void WindowPreviewView::AddWindow(aura::Window* window) {
   if (!window->HasObserver(this))
     window->AddObserver(this);
 
-  auto* mirror_view =
-      window_util::IsArcPipWindow(window)
-          ? new WindowMirrorViewPip(window, trilinear_filtering_on_init_)
-          : new WindowMirrorView(window, trilinear_filtering_on_init_);
-  mirror_views_[window] = mirror_view;
-  AddChildView(mirror_view);
+  auto mirror_view = window_util::IsArcPipWindow(window)
+                         ? std::make_unique<WindowMirrorViewPip>(window)
+                         : std::make_unique<WindowMirrorView>(window);
+  mirror_views_[window] = mirror_view.get();
+  AddChildView(std::move(mirror_view));
 }
 
 void WindowPreviewView::RemoveWindow(aura::Window* window) {
@@ -180,11 +176,10 @@ void WindowPreviewView::RemoveWindow(aura::Window* window) {
     return;
 
   auto* view = it->second;
-  RemoveChildView(view);
+  RemoveChildViewT(view);
   it->first->RemoveObserver(this);
 
   mirror_views_.erase(it);
-  delete view;
 }
 
 gfx::RectF WindowPreviewView::GetUnionRect() const {

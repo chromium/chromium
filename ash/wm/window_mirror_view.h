@@ -27,9 +27,8 @@ namespace ash {
 class ASH_EXPORT WindowMirrorView : public views::View,
                                     public aura::WindowObserver {
  public:
-  WindowMirrorView(aura::Window* source,
-                   bool trilinear_filtering_on_init,
-                   bool show_non_client_view = false);
+  explicit WindowMirrorView(aura::Window* source,
+                            bool show_non_client_view = false);
 
   WindowMirrorView(const WindowMirrorView&) = delete;
   WindowMirrorView& operator=(const WindowMirrorView&) = delete;
@@ -76,10 +75,6 @@ class ASH_EXPORT WindowMirrorView : public views::View,
   // Retains ownership of the mirror layer tree. This is lazily initialized
   // the first time the view becomes visible.
   std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
-
-  // True if trilinear filtering should be performed on the layer in
-  // InitLayerOwner().
-  const bool trilinear_filtering_on_init_;
 
   // If true, shows the non client view in the mirror.
   const bool show_non_client_view_;

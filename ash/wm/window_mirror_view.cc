@@ -32,11 +32,8 @@ void EnsureAllChildrenAreVisible(ui::Layer* layer) {
 }  // namespace
 
 WindowMirrorView::WindowMirrorView(aura::Window* source,
-                                   bool trilinear_filtering_on_init,
                                    bool show_non_client_view)
-    : source_(source),
-      trilinear_filtering_on_init_(trilinear_filtering_on_init),
-      show_non_client_view_(show_non_client_view) {
+    : source_(source), show_non_client_view_(show_non_client_view) {
   source_->AddObserver(this);
   DCHECK(source);
 }
@@ -145,11 +142,6 @@ void WindowMirrorView::InitLayerOwner() {
   if (window_util::IsMinimizedOrTucked(source_) ||
       !desks_util::BelongsToActiveDesk(source_)) {
     EnsureAllChildrenAreVisible(mirror_layer);
-  }
-
-  if (trilinear_filtering_on_init_) {
-    mirror_layer->AddCacheRenderSurfaceRequest();
-    mirror_layer->AddTrilinearFilteringRequest();
   }
 
   Layout();

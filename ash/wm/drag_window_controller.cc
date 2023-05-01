@@ -121,14 +121,13 @@ class DragWindowController::DragWindowDetails {
     widget_->set_focus_on_creation(false);
     widget_->Init(std::move(params));
 
-    // TODO(crbug.com/1026746): Change this to WindowPreviewView.
+    // TODO(b/252525521): Change this to WindowPreviewView.
     // WindowPreviewView can show transient children, but currently does not
     // show popups due to performance reasons. WindowPreviewView also needs to
     // be modified so that it can optionally be clipped to the main window's
     // bounds.
     widget_->SetContentsView(std::make_unique<WindowMirrorView>(
-        original_window, /*trilinear_filtering_on_init=*/false,
-        /*show_non_client_view=*/true));
+        original_window, /*show_non_client_view=*/true));
 
     aura::Window* window = widget_->GetNativeWindow();
     window->SetId(kShellWindowId_PhantomWindow);

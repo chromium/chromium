@@ -24,7 +24,7 @@ class ASH_EXPORT WindowPreviewView
       public aura::client::TransientWindowClientObserver,
       public aura::WindowObserver {
  public:
-  WindowPreviewView(aura::Window* window, bool trilinear_filtering_on_init);
+  explicit WindowPreviewView(aura::Window* window);
 
   WindowPreviewView(const WindowPreviewView&) = delete;
   WindowPreviewView& operator=(const WindowPreviewView&) = delete;
@@ -63,7 +63,6 @@ class ASH_EXPORT WindowPreviewView
   gfx::RectF GetUnionRect() const;
 
   raw_ptr<aura::Window, ExperimentalAsh> window_;
-  bool trilinear_filtering_on_init_;
 
   base::flat_map<aura::Window*, WindowMirrorView*> mirror_views_;
 

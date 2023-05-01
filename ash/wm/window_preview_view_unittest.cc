@@ -27,7 +27,7 @@ std::unique_ptr<views::Widget> CreateTransientChild(
   params.bounds = gfx::Rect{40, 50};
   params.context = params.parent = parent_widget->GetNativeWindow();
   params.init_properties_container.SetProperty(
-      aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+      aura::client::kAppType, static_cast<int>(AppType::ARC_APP));
   widget->Init(std::move(params));
   widget->Show();
   return widget;
@@ -40,10 +40,9 @@ TEST_F(WindowPreviewViewTest, Basic) {
   auto widget1 = CreateTestWidget();
   auto widget2 = CreateTestWidget();
 
-  ::wm::AddTransientChild(widget1->GetNativeWindow(),
-                          widget2->GetNativeWindow());
-  auto preview_view = std::make_unique<WindowPreviewView>(
-      widget1->GetNativeWindow(), /*trilinear_filtering_on_init=*/false);
+  wm::AddTransientChild(widget1->GetNativeWindow(), widget2->GetNativeWindow());
+  auto preview_view =
+      std::make_unique<WindowPreviewView>(widget1->GetNativeWindow());
   WindowPreviewViewTestApi test_api(preview_view.get());
   EXPECT_EQ(2u, test_api.GetMirrorViews().size());
   EXPECT_TRUE(test_api.GetMirrorViews().contains(widget1->GetNativeWindow()));
@@ -56,8 +55,7 @@ TEST_F(WindowPreviewViewTest, AspectRatio) {
   // Default frame header is 32dp, so we expect a window of size 300, 300 to
   // have a preview of 1:1 ratio.
   auto window = CreateAppWindow(gfx::Rect(300, 332));
-  auto preview_view = std::make_unique<WindowPreviewView>(
-      window.get(), /*trilinear_filtering_on_init=*/false);
+  auto preview_view = std::make_unique<WindowPreviewView>(window.get());
 
   const gfx::SizeF preferred_size(preview_view->GetPreferredSize());
   EXPECT_EQ(1.f, preferred_size.width() / preferred_size.height());
@@ -72,8 +70,8 @@ TEST_F(WindowPreviewViewTest, TransientChildAddedAndRemoved) {
 
   ::wm::AddTransientChild(widget1->GetNativeWindow(),
                           widget2->GetNativeWindow());
-  auto preview_view = std::make_unique<WindowPreviewView>(
-      widget1->GetNativeWindow(), /*trilinear_filtering_on_init=*/false);
+  auto preview_view =
+      std::make_unique<WindowPreviewView>(widget1->GetNativeWindow());
   WindowPreviewViewTestApi test_api(preview_view.get());
   ASSERT_EQ(2u, test_api.GetMirrorViews().size());
 
@@ -99,8 +97,8 @@ TEST_F(WindowPreviewViewTest, NoCrashWithTransientChildWithNoWindowState) {
   EXPECT_EQ(widget1->GetNativeWindow(),
             wm::GetTransientParent(transient_child1->GetNativeWindow()));
 
-  auto preview_view = std::make_unique<WindowPreviewView>(
-      widget1->GetNativeWindow(), /*trilinear_filtering_on_init=*/false);
+  auto preview_view =
+      std::make_unique<WindowPreviewView>(widget1->GetNativeWindow());
   WindowPreviewViewTestApi test_api(preview_view.get());
   ASSERT_EQ(2u, test_api.GetMirrorViews().size());
 
@@ -135,8 +133,8 @@ TEST_F(WindowPreviewViewTest,
        NoCrashWhenWindowCyclingIsCanceledWithATransientPopup) {
   auto widget1 = CreateTestWidget();
 
-  auto preview_view = std::make_unique<WindowPreviewView>(
-      widget1->GetNativeWindow(), /*trilinear_filtering_on_init=*/false);
+  auto preview_view =
+      std::make_unique<WindowPreviewView>(widget1->GetNativeWindow());
   WindowPreviewViewTestApi test_api(preview_view.get());
   ASSERT_EQ(1u, test_api.GetMirrorViews().size());
 
@@ -163,8 +161,8 @@ TEST_F(WindowPreviewViewTest, LayoutChildWithinParentBounds) {
                           widget2->GetNativeWindow());
 
   // The top inset is excluded from GetUnionRect() calculations.
-  auto preview_view = std::make_unique<WindowPreviewView>(
-      widget1->GetNativeWindow(), /*trilinear_filtering_on_init=*/false);
+  auto preview_view =
+      std::make_unique<WindowPreviewView>(widget1->GetNativeWindow());
   WindowPreviewViewTestApi test_api(preview_view.get());
   EXPECT_EQ(gfx::RectF(100.f, 100.f), test_api.GetUnionRect());
 
@@ -196,8 +194,8 @@ TEST_F(WindowPreviewViewTest, LayoutChildOutsideParentBounds) {
 
   // Get the union rect of the two windows. The top inset is excluded from
   // calculations.
-  auto preview_view = std::make_unique<WindowPreviewView>(
-      widget1->GetNativeWindow(), /*trilinear_filtering_on_init=*/false);
+  auto preview_view =
+      std::make_unique<WindowPreviewView>(widget1->GetNativeWindow());
   WindowPreviewViewTestApi test_api(preview_view.get());
   EXPECT_EQ(gfx::RectF(400.f, 400.f), test_api.GetUnionRect());
 

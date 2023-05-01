@@ -108,9 +108,8 @@ void WindowMiniView::SetShowPreview(bool show) {
     return;
   }
 
-  preview_view_ = AddChildView(std::make_unique<WindowPreviewView>(
-      source_window_,
-      /*trilinear_filtering_on_init=*/false));
+  preview_view_ =
+      AddChildView(std::make_unique<WindowPreviewView>(source_window_));
   preview_view_->SetPaintToLayer();
   preview_view_->layer()->SetFillsBoundsOpaquely(false);
   Layout();
