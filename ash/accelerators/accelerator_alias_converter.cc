@@ -9,6 +9,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -77,6 +81,51 @@ absl::optional<ui::InputDevice> GetInternalKeyboard() {
     }
   }
   return absl::nullopt;
+}
+
+// Identifies media keys which exist only on external keyboards.
+bool IsMediaKey(ui::KeyboardCode key_code) {
+  static constexpr auto kMediaKeyCodes =
+      base::MakeFixedFlatSet<ui::KeyboardCode>(
+          {ui::VKEY_MEDIA_PAUSE, ui::VKEY_MEDIA_PLAY,
+           ui::VKEY_OEM_103,  // Media Rewind
+           ui::VKEY_OEM_104,  // Media Fast Forward
+           ui::VKEY_MEDIA_STOP});
+  return kMediaKeyCodes.contains(key_code);
+}
+
+// Some `TopRowActionKey` values must always be shown if there is an external
+// keyboard even if the top row of the keyboard does not technically support
+// them. This is because many of these keys are common on external keyboards and
+// are unable to be deduced properly.
+bool ShouldAlwaysShowWithExternalKeyboard(ui::TopRowActionKey action_key) {
+  switch (action_key) {
+    case ui::TopRowActionKey::kNone:
+    case ui::TopRowActionKey::kUnknown:
+    case ui::TopRowActionKey::kBack:
+    case ui::TopRowActionKey::kForward:
+    case ui::TopRowActionKey::kRefresh:
+    case ui::TopRowActionKey::kKeyboardBacklightToggle:
+    case ui::TopRowActionKey::kKeyboardBacklightDown:
+    case ui::TopRowActionKey::kKeyboardBacklightUp:
+    case ui::TopRowActionKey::kAllApplications:
+    case ui::TopRowActionKey::kDictation:
+      return false;
+    case ui::TopRowActionKey::kFullscreen:
+    case ui::TopRowActionKey::kOverview:
+    case ui::TopRowActionKey::kScreenBrightnessDown:
+    case ui::TopRowActionKey::kScreenBrightnessUp:
+    case ui::TopRowActionKey::kMicrophoneMute:
+    case ui::TopRowActionKey::kVolumeMute:
+    case ui::TopRowActionKey::kVolumeDown:
+    case ui::TopRowActionKey::kVolumeUp:
+    case ui::TopRowActionKey::kNextTrack:
+    case ui::TopRowActionKey::kPreviousTrack:
+    case ui::TopRowActionKey::kPlayPause:
+    case ui::TopRowActionKey::kScreenshot:
+    case ui::TopRowActionKey::kEmojiPicker:
+      return true;
+  }
 }
 
 }  // namespace
@@ -351,8 +400,13 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
     if (auto action_key = ui::KeyboardCapability::ConvertToTopRowActionKey(
             accelerator.key_code());
         action_key.has_value()) {
-      if ((priority_keyboard && keyboard_capability->HasTopRowActionKey(
-                                    *priority_keyboard, *action_key)) ||
+      // Accelerator should only be seen if the priority or internal keyboard
+      // have the key OR if there is an external keyboard and the `action_key`
+      // should always been shown when there is an external keyboard.
+      if ((priority_keyboard &&
+           (keyboard_capability->HasTopRowActionKey(*priority_keyboard,
+                                                    *action_key) ||
+            ShouldAlwaysShowWithExternalKeyboard(*action_key))) ||
           (internal_keyboard && keyboard_capability->HasTopRowActionKey(
                                     *internal_keyboard, *action_key))) {
         filtered_accelerators.push_back(accelerator);
@@ -399,6 +453,27 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
 
     if (accelerator.key_code() == ui::VKEY_BROWSER_SEARCH) {
       if (keyboard_capability->HasBrowserSearchKeyOnAnyKeyboard()) {
+        filtered_accelerators.push_back(accelerator);
+      }
+      continue;
+    }
+
+    if (IsMediaKey(accelerator.key_code())) {
+      if (keyboard_capability->HasMediaKeysOnAnyKeyboard()) {
+        filtered_accelerators.push_back(accelerator);
+      }
+      continue;
+    }
+
+    if (accelerator.key_code() == ui::VKEY_SETTINGS) {
+      if (keyboard_capability->HasSettingsKeyOnAnyKeyboard()) {
+        filtered_accelerators.push_back(accelerator);
+      }
+      continue;
+    }
+
+    if (accelerator.key_code() == ui::VKEY_HELP) {
+      if (keyboard_capability->HasHelpKeyOnAnyKeyboard()) {
         filtered_accelerators.push_back(accelerator);
       }
       continue;

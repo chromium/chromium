@@ -191,6 +191,62 @@ TEST_F(AcceleratorAliasConverterTest, CheckBrowserSearchKeyAlias) {
   EXPECT_EQ(accelerator, accelerator_aliases[0]);
 }
 
+TEST_F(AcceleratorAliasConverterTest, CheckHelpKeyAlias) {
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
+      std::make_unique<FakeDeviceManager>();
+  ui::InputDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+
+  AcceleratorAliasConverter accelerator_alias_converter_;
+
+  const ui::Accelerator accelerator{ui::VKEY_HELP, ui::EF_NONE};
+  std::vector<ui::Accelerator> accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+  EXPECT_EQ(0u, accelerator_aliases.size());
+
+  ui::InputDevice wilco_keyboard(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/kKbdTopRowLayoutWilcoTag);
+  wilco_keyboard.sys_path = base::FilePath("path2");
+  fake_keyboard_manager_->AddFakeKeyboard(wilco_keyboard,
+                                          kKbdTopRowLayoutWilcoTag);
+  accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+  EXPECT_EQ(1u, accelerator_aliases.size());
+  EXPECT_EQ(accelerator, accelerator_aliases[0]);
+}
+
+TEST_F(AcceleratorAliasConverterTest, CheckSettingsKeyAlias) {
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
+      std::make_unique<FakeDeviceManager>();
+  ui::InputDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+
+  AcceleratorAliasConverter accelerator_alias_converter_;
+
+  const ui::Accelerator accelerator{ui::VKEY_SETTINGS, ui::EF_NONE};
+  std::vector<ui::Accelerator> accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+  EXPECT_EQ(0u, accelerator_aliases.size());
+
+  ui::InputDevice wilco_keyboard(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/kKbdTopRowLayoutWilcoTag);
+  wilco_keyboard.sys_path = base::FilePath("path2");
+  fake_keyboard_manager_->AddFakeKeyboard(wilco_keyboard,
+                                          kKbdTopRowLayoutWilcoTag);
+  accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+  EXPECT_EQ(1u, accelerator_aliases.size());
+  EXPECT_EQ(accelerator, accelerator_aliases[0]);
+}
+
 TEST_F(AcceleratorAliasConverterTest, CheckCapsLockAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -308,16 +364,30 @@ INSTANTIATE_TEST_SUITE_P(
          {}},
 
         // Layout1 doesn't have VKEY_SNAPSHOT key.
-        {{ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH},
+        {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL},
          {kKbdTopRowLayout1Tag},
          ui::Accelerator{ui::VKEY_SNAPSHOT, ui::EF_ALT_DOWN},
          {}},
 
+        // Layout1 doesn't have VKEY_SNAPSHOT key, but since its external, it
+        // should always be shown.
+        {{ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH},
+         {kKbdTopRowLayout1Tag},
+         ui::Accelerator{ui::VKEY_SNAPSHOT, ui::EF_ALT_DOWN},
+         {ui::Accelerator{ui::VKEY_SNAPSHOT, ui::EF_ALT_DOWN}}},
+
         // LayoutWilco doesn't have VKEY_MICROPHONE_MUTE_TOGGLE key.
-        {{ui::InputDeviceType::INPUT_DEVICE_USB},
+        {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL},
          {kKbdTopRowLayoutWilcoTag},
          ui::Accelerator{ui::VKEY_MICROPHONE_MUTE_TOGGLE, ui::EF_ALT_DOWN},
          {}},
+
+        // LayoutWilco doesn't have VKEY_MICROPHONE_MUTE_TOGGLE key, but since
+        // it is external, it should always be shown.
+        {{ui::InputDeviceType::INPUT_DEVICE_USB},
+         {kKbdTopRowLayoutWilcoTag},
+         ui::Accelerator{ui::VKEY_MICROPHONE_MUTE_TOGGLE, ui::EF_ALT_DOWN},
+         {ui::Accelerator{ui::VKEY_MICROPHONE_MUTE_TOGGLE, ui::EF_ALT_DOWN}}},
 
         // For TopRowLayout1: [Alt] + [Forward] -> [Alt] + [Search] + [F2].
         {{ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH},
@@ -621,6 +691,47 @@ TEST_P(SixPackAliasTestWithInternalKeyboard, CheckSixPackAlias) {
     EXPECT_EQ(1u, accelerator_alias.size());
     EXPECT_EQ(accelerator_, accelerator_alias[0]);
   }
+}
+
+class MediaKeyAliasTest : public AcceleratorAliasConverterTest,
+                          public testing::WithParamInterface<ui::KeyboardCode> {
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MediaKeyAliasTest,
+    testing::Values(ui::VKEY_MEDIA_PAUSE,
+                    ui::VKEY_MEDIA_PLAY,
+                    ui::VKEY_OEM_103,  // Media Rewind
+                    ui::VKEY_OEM_104,  // Media Fast Forward
+                    ui::VKEY_MEDIA_STOP));
+
+TEST_P(MediaKeyAliasTest, CheckMediaKeyAlias) {
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
+      std::make_unique<FakeDeviceManager>();
+  ui::InputDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+
+  AcceleratorAliasConverter accelerator_alias_converter_;
+
+  const ui::Accelerator accelerator{GetParam(), ui::EF_NONE};
+  std::vector<ui::Accelerator> accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+  EXPECT_EQ(0u, accelerator_aliases.size());
+
+  ui::InputDevice wilco_keyboard(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/kKbdTopRowLayoutWilcoTag);
+  wilco_keyboard.sys_path = base::FilePath("path2");
+  fake_keyboard_manager_->AddFakeKeyboard(wilco_keyboard,
+                                          kKbdTopRowLayoutWilcoTag);
+  accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+  EXPECT_EQ(1u, accelerator_aliases.size());
+  EXPECT_EQ(accelerator, accelerator_aliases[0]);
 }
 
 }  // namespace ash

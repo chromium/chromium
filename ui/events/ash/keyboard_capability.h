@@ -369,6 +369,24 @@ class KeyboardCapability : public InputDeviceEventObserver {
   bool HasBrowserSearchKey(const InputDevice& keyboard) const;
   bool HasBrowserSearchKeyOnAnyKeyboard() const;
 
+  // Check if the help key exists on the given keyboard.
+  bool HasHelpKey(const InputDevice& keyboard) const;
+  bool HasHelpKeyOnAnyKeyboard() const;
+
+  // Check if the settings key exists on the given keyboard.
+  bool HasSettingsKey(const InputDevice& keyboard) const;
+  bool HasSettingsKeyOnAnyKeyboard() const;
+
+  // Check if the given keyboard has media keys including:
+  // - Media Rewind
+  // - Media Fastforward
+  // - Media Play
+  // - Media Pause
+  // These keys do not exist on any internal chromeos keyboards, but are likely
+  // to potentially exist on external keyboards.
+  bool HasMediaKeys(const InputDevice& keyboard) const;
+  bool HasMediaKeysOnAnyKeyboard() const;
+
   // Gets the corresponding function key for the given `action_key` on the
   // given `keyboard`.
   absl::optional<KeyboardCode> GetCorrespondingFunctionKey(

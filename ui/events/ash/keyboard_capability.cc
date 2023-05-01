@@ -447,6 +447,16 @@ bool IsInternalKeyboard(const ui::InputDevice& keyboard) {
   return keyboard.type == INPUT_DEVICE_INTERNAL;
 }
 
+bool HasExternalKeyboardConnected() {
+  for (const ui::InputDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (!keyboard.suspected_imposter && !IsInternalKeyboard(keyboard)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 KeyboardCapability::KeyboardCapability(std::unique_ptr<Delegate> delegate)
@@ -881,46 +891,64 @@ bool KeyboardCapability::HasGlobeKeyOnAnyKeyboard() const {
 }
 
 bool KeyboardCapability::HasCalculatorKey(const InputDevice& keyboard) const {
-  const KeyboardInfo* keyboard_info = GetKeyboardInfo(keyboard);
-  if (!keyboard_info) {
-    return false;
-  }
-
   // TODO(dpad): Many external keyboards do not have this key, but currently we
   // do not have a good way to detect these situations.
   return !IsInternalKeyboard(keyboard);
 }
 
 bool KeyboardCapability::HasCalculatorKeyOnAnyKeyboard() const {
-  for (const ui::InputDevice& keyboard :
-       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    if (HasCalculatorKey(keyboard)) {
-      return true;
-    }
-  }
-  return false;
+  // TODO(dpad): Many external keyboards do not have this key, but currently we
+  // do not have a good way to detect these situations.
+  return HasExternalKeyboardConnected();
 }
 
 bool KeyboardCapability::HasBrowserSearchKey(
     const InputDevice& keyboard) const {
-  const KeyboardInfo* keyboard_info = GetKeyboardInfo(keyboard);
-  if (!keyboard_info) {
-    return false;
-  }
-
   // TODO(dpad): Many external keyboards do not have this key, but currently we
   // do not have a good way to detect these situations.
   return !IsInternalKeyboard(keyboard);
 }
 
 bool KeyboardCapability::HasBrowserSearchKeyOnAnyKeyboard() const {
-  for (const ui::InputDevice& keyboard :
-       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    if (HasBrowserSearchKey(keyboard)) {
-      return true;
-    }
-  }
-  return false;
+  // TODO(dpad): Many external keyboards do not have this key, but currently we
+  // do not have a good way to detect these situations.
+  return HasExternalKeyboardConnected();
+}
+
+bool KeyboardCapability::HasHelpKey(const InputDevice& keyboard) const {
+  // TODO(dpad): Many external keyboards do not have this key, but currently we
+  // do not have a good way to detect these situations.
+  return !IsInternalKeyboard(keyboard);
+}
+
+bool KeyboardCapability::HasHelpKeyOnAnyKeyboard() const {
+  // TODO(dpad): Many external keyboards do not have this key, but currently we
+  // do not have a good way to detect these situations.
+  return HasExternalKeyboardConnected();
+}
+
+bool KeyboardCapability::HasSettingsKey(const InputDevice& keyboard) const {
+  // TODO(dpad): Many external keyboards do not have this key, but currently we
+  // do not have a good way to detect these situations.
+  return !IsInternalKeyboard(keyboard);
+}
+
+bool KeyboardCapability::HasSettingsKeyOnAnyKeyboard() const {
+  // TODO(dpad): Many external keyboards do not have this key, but currently we
+  // do not have a good way to detect these situations.
+  return HasExternalKeyboardConnected();
+}
+
+bool KeyboardCapability::HasMediaKeys(const InputDevice& keyboard) const {
+  // TODO(dpad): Many external keyboards do not have these keys, but currently
+  // we do not have a good way to detect these situations.
+  return !IsInternalKeyboard(keyboard);
+}
+
+bool KeyboardCapability::HasMediaKeysOnAnyKeyboard() const {
+  // TODO(dpad): Many external keyboards do not have these keys, but currently
+  // we do not have a good way to detect these situations.
+  return HasExternalKeyboardConnected();
 }
 
 bool KeyboardCapability::HasPrivacyScreenKey(
