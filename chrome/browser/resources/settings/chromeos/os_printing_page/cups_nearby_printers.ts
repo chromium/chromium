@@ -13,6 +13,7 @@ import './cups_printers_browser_proxy.js';
 import './cups_printers_entry.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -286,6 +287,14 @@ export class SettingsCupsNearbyPrintersElement extends
 
   private getFilteredPrintersLength_(): number {
     return this.filteredPrinters_.length;
+  }
+
+  /**
+   * Forces the printer list to re-render all items.
+   */
+  resizePrintersList() {
+    this.shadowRoot!.querySelector<IronListElement>(
+                        '#printerEntryList')!.notifyResize();
   }
 }
 

@@ -181,6 +181,15 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
       },
 
       /**
+       * Indicates whether the nearby printers section is expanded.
+       * @private {boolean}
+       */
+      nearbyPrintersExpanded_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
        * True when the "printer-settings-revamp" feature flag is enabled.
        */
       isPrinterSettingsRevampEnabled_: {
@@ -215,6 +224,8 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
   private savedPrintersAriaLabel_: string;
   private savedPrinters_: PrinterListEntry[];
   private showCupsEditPrinterDialog_: boolean;
+  private nearbyPrintersExpanded_: boolean;
+  private isPrinterSettingsRevampEnabled_: boolean;
 
   constructor() {
     super();
@@ -226,6 +237,11 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
     this.entryManager_ = CupsPrintersEntryManager.getInstance();
 
     this.addPrintServerResultText_ = '';
+
+    // Nearby printers should always show when the revamp flag is disabled.
+    if (!this.isPrinterSettingsRevampEnabled_) {
+      this.nearbyPrintersExpanded_ = true;
+    }
   }
 
   override connectedCallback(): void {
@@ -482,6 +498,23 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
       printerLabel = 'enterprisePrintersCountMany';
     }
     return loadTimeData.getStringF(printerLabel, this.enterprisePrinterCount_);
+  }
+
+  private toggleClicked_() {
+    assert(this.isPrinterSettingsRevampEnabled_);
+    this.nearbyPrintersExpanded_ = !this.nearbyPrintersExpanded_;
+
+    // The iron list containing nearby printers does not get rendered while
+    // hidden so the list needs to be refreshed when the Nearby printer
+    // section is expanded.
+    if (this.nearbyPrintersExpanded_) {
+      this.shadowRoot!.querySelector('settings-cups-nearby-printers')!
+          .resizePrintersList();
+    }
+  }
+
+  private getIconDirection_(): string {
+    return this.nearbyPrintersExpanded_ ? 'cr:expand-less' : 'cr:expand-more';
   }
 }
 

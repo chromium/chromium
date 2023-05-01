@@ -52,10 +52,34 @@
     border-top: var(--cr-separator-line);
   }
 
-  :host(:not([can-add-printer])) #addPrinterSection,
+  :host(:not([can-add-printer])) .add-printer-section,
   :host(:not([can-add-printer])) .nearby-printers-section {
     opacity: var(--cr-disabled-opacity);
     pointer-events: none;
+  }
+
+  #nearbyPrintersRevamp {
+    display: flex;
+  }
+
+  #nearbyPrintersDescription {
+    flex: 1 ;
+  }
+
+  #nearbyPrinterToggleButton {
+    --paper-ripple-opacity: 0;
+    background: none;
+    border: none;
+    border-radius: initial;
+    flex-basis: 0;
+  }
+
+  #nearbyPrinterToggleButton:active {
+    box-shadow: none;
+  }
+
+  #nearbyPrinterToggleButton:focus {
+    outline: none;
   }
 </style>
 
@@ -111,23 +135,31 @@
   </div>
   <div id="nearbyPrintersRevamp" class="padded first nearby-printers-section"
       hidden="[[!isPrinterSettingsRevampEnabled_]]">
-    <div id="availablePrintersReadyTitle"
-        aria-label$="[[nearbyPrintersAriaLabel_]]">
-      $i18n{availablePrintersReadyTitle}
+    <div id="nearbyPrintersDescription">
+      <div id="availablePrintersReadyTitle"
+          aria-label$="[[nearbyPrintersAriaLabel_]]">
+        $i18n{availablePrintersReadyTitle}
+      </div>
+      <div id="availablePrintersReadySubtext" class="secondary"
+          hidden="[[!nearbyPrintersExpanded_]]">
+        $i18n{availablePrintersReadySubtext}
+      </div>
     </div>
-    <div id="availablePrintersReadySubtext" class="secondary">
-      $i18n{availablePrintersReadySubtext}
-    </div>
-    <template is="dom-if" if="[[!addPrinterButtonActive_(canAddPrinter,
-      prefs.native_printing.user_native_printers_allowed.value)]]">
-      <cr-policy-pref-indicator
-          pref="[[prefs.native_printing.user_native_printers_allowed]]"
-          icon-aria-label="$i18n{printingPageTitle}">
-      </cr-policy-pref-indicator>
-    </template>
+    <cr-button id="nearbyPrinterToggleButton" on-click="toggleClicked_"
+        aria-expanded="[[nearbyPrintersExpanded_]]">
+      <iron-icon icon="[[getIconDirection_(nearbyPrintersExpanded_)]]">
+      </iron-icon>
+    </cr-button>
+    <cr-policy-pref-indicator
+        pref="[[prefs.native_printing.user_native_printers_allowed]]"
+        icon-aria-label="$i18n{printingPageTitle}">
+    </cr-policy-pref-indicator>
   </div>
 
-  <div id="addPrinterSection" class="list-frame">
+  <!-- When the revamp flag is enabled hide this Add printer section so
+        the revamp Add printer section will be shown in the correct order. -->
+  <div id="addPrinterSection" class="list-frame add-printer-section"
+      hidden="[[isPrinterSettingsRevampEnabled_]]">
     <div class="layout horizontal center custom-list-item">
       <div id="addPrinterText" aria-hidden="true">
         $i18n{addCupsPrinter}
@@ -144,12 +176,30 @@
   </div>
 
   <template is="dom-if" if="[[canAddPrinter]]" restamp>
-    <settings-cups-nearby-printers search-term="[[searchTerm]]"
-        user-printers-allowed="[[!prefs.native_printing.
-            user_native_printers_allowed.value]]"
-        active-printer="{{activePrinter}}"
-        printers-count="{{nearbyPrinterCount_}}">
-    </settings-cups-nearby-printers>
+    <div id="collapsibleSection" hidden="[[!nearbyPrintersExpanded_]]">
+      <settings-cups-nearby-printers search-term="[[searchTerm]]"
+          user-printers-allowed="[[!prefs.native_printing.
+              user_native_printers_allowed.value]]"
+          active-printer="{{activePrinter}}"
+          printers-count="{{nearbyPrinterCount_}}">
+      </settings-cups-nearby-printers>
+      <div id="addPrinterSectionRevamp" class="list-frame add-printer-section"
+          hidden="[[!isPrinterSettingsRevampEnabled_]]">
+        <div class="layout horizontal center custom-list-item">
+          <div id="addPrinterTextRevamp" aria-hidden="true">
+            $i18n{addCupsPrinter}
+          </div>
+          <cr-icon-button class="action-button" id="addManualPrinterIconRevamp"
+              iron-icon="os-settings:printer-add"
+              on-click="onAddPrinterClick_"
+              disabled="[[!addPrinterButtonActive_(canAddPrinter,
+                  prefs.native_printing.user_native_printers_allowed.value)]]"
+              title="$i18n{addCupsPrinter}"
+              deep-link-focus-id$="[[Setting.kAddPrinter]]">
+          </cr-icon-button>
+        </div>
+      </div>
+    </div>
   </template>
 </template>
 

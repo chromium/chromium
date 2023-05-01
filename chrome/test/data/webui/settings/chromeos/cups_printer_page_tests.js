@@ -4,15 +4,15 @@
 
 import {CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PrinterSetupResult, PrinterType, PrintServerResult} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createCupsPrinterInfo, createPrinterListEntry} from './cups_printer_test_utils.js';
 import {TestCupsPrintersBrowserProxy} from './test_cups_printers_browser_proxy.js';
@@ -88,6 +88,30 @@ suite('CupsPrinterUITests', () => {
           loadTimeData.getString('availablePrintersReadySubtext'),
           page.shadowRoot.querySelector('#availablePrintersReadySubtext')
               .textContent.trim());
+    });
+  });
+
+  // Verify the Nearby printers section can be properly opened and closed.
+  test('CollapsibleNearbyPrinterSection', () => {
+    page.canAddPrinter = true;
+    return flushTasks().then(() => {
+      // The Add printer section above the Nearby printers section should be
+      // hidden.
+      assertFalse(
+          isVisible(page.shadowRoot.querySelector('#addPrinterSection')));
+
+      // The collapsible section should start opened, then after clicking the
+      // button should close.
+      const toggleButton =
+          page.shadowRoot.querySelector('#nearbyPrinterToggleButton');
+      assertTrue(
+          isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
+      toggleButton.click();
+      assertFalse(
+          isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
+      toggleButton.click();
+      assertTrue(
+          isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
     });
   });
 });
