@@ -2135,8 +2135,39 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kContentEditable)));
 
-IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectEmptyEditable) {
-  RunEmptyEditableTest("unselect");
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, EmptyEditable) {
+  std::vector<std::string> commands{
+      "unselect",
+      "cut",
+      "copy",
+      "delete one character",
+      "left one character",
+      "right one character",
+      "up one line",
+      "down one line",
+      "select all",
+      "delete one word",
+      "delete one sentence",
+      "right one word",
+      "left one word",
+      "delete the phrase hello",
+      "replace hello with world",
+      "insert hello before world",
+      "select between hello and world",
+      "left one sentence",
+      "right one sentence",
+      "delete all",
+      "to start",
+      "to end",
+      "select previous word",
+      "select next word",
+      "select previous letter",
+      "select next letter",
+  };
+
+  for (const auto& command : commands) {
+    RunEmptyEditableTest(command);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectNoSelection) {
@@ -2154,10 +2185,6 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectSuccessful) {
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
-IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CutEmptyEditable) {
-  RunEmptyEditableTest("cut");
-}
-
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CutNoSelection) {
   RunNoSelectionTest("cut");
 }
@@ -2171,10 +2198,6 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CutSuccessful) {
                     /*icon=*/DictationBubbleIconType::kMacroSuccess,
                     /*text=*/absl::optional<std::u16string>(),
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CopyEmptyEditable) {
-  RunEmptyEditableTest("copy");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CopyNoSelection) {

@@ -106,10 +106,26 @@ class SimpleMacroFactory {
     switch (this.macroName_) {
       case MacroName.COPY_SELECTED_TEXT:
       case MacroName.CUT_SELECTED_TEXT:
+      case MacroName.DELETE_ALL_TEXT:
+      case MacroName.DELETE_PREV_CHAR:
       case MacroName.DELETE_PREV_SENT:
+      case MacroName.DELETE_PREV_WORD:
+      case MacroName.NAV_END_TEXT:
+      case MacroName.NAV_NEXT_CHAR:
+      case MacroName.NAV_NEXT_LINE:
       case MacroName.NAV_NEXT_SENT:
+      case MacroName.NAV_NEXT_WORD:
+      case MacroName.NAV_START_TEXT:
+      case MacroName.NAV_PREV_CHAR:
+      case MacroName.NAV_PREV_LINE:
       case MacroName.NAV_PREV_SENT:
+      case MacroName.NAV_PREV_WORD:
       case MacroName.NEW_LINE:
+      case MacroName.SELECT_ALL_TEXT:
+      case MacroName.SELECT_NEXT_CHAR:
+      case MacroName.SELECT_NEXT_WORD:
+      case MacroName.SELECT_PREV_CHAR:
+      case MacroName.SELECT_PREV_WORD:
       case MacroName.SMART_DELETE_PHRASE:
       case MacroName.SMART_INSERT_BEFORE:
       case MacroName.SMART_REPLACE_PHRASE:

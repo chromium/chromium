@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Context, ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 
 import {Macro, MacroError} from './macro.js';
@@ -18,7 +19,9 @@ export class SmartReplacePhraseMacro extends Macro {
    * @param {string} insertPhrase
    */
   constructor(inputController, deletePhrase, insertPhrase) {
-    super(MacroName.SMART_REPLACE_PHRASE);
+    super(
+        MacroName.SMART_REPLACE_PHRASE,
+        new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
     /** @private {!InputController} */
     this.inputController_ = inputController;
     /** @private {string} */

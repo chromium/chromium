@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Context, ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 
 import {Macro, MacroError} from './macro.js';
@@ -11,7 +12,9 @@ import {MacroName} from './macro_names.js';
 export class NavNextSentMacro extends Macro {
   /** @param {!InputController} inputController */
   constructor(inputController) {
-    super(MacroName.NAV_NEXT_SENT);
+    super(
+        MacroName.NAV_NEXT_SENT,
+        new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
     /** @private {!InputController} */
     this.inputController_ = inputController;
   }
@@ -36,7 +39,9 @@ export class NavNextSentMacro extends Macro {
 export class NavPrevSentMacro extends Macro {
   /** @param {!InputController} inputController */
   constructor(inputController) {
-    super(MacroName.NAV_PREV_SENT);
+    super(
+        MacroName.NAV_PREV_SENT,
+        new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
     /** @private {!InputController} */
     this.inputController_ = inputController;
   }
