@@ -56,7 +56,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.Core.Timing.Performance.SwapsPerPerformanceEntryInsertion"
-    units="swaps" expires_after="2023-05-01">
+    units="swaps" expires_after="2023-08-01">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
