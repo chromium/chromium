@@ -231,7 +231,7 @@ public class AppBannerManager {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         AppBannerManager getJavaBannerManagerForWebContents(WebContents webContents);
         String getInstallableWebAppName(WebContents webContents);
         String getInstallableWebAppManifestId(WebContents webContents);

@@ -21,13 +21,10 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.components.webapps.WebappsIconUtils;
@@ -187,29 +184,6 @@ public class WebApkUpdateDataFetcherTest {
     }
 
     /**
-     * Test starting WebApkUpdateDataFetcher on page which uses a different manifest URL than the
-     * ManifestUpgradeDetectorFetcher is looking for. Check that the callback is only called once
-     * the user navigates to a page which uses the desired manifest URL.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Webapps"})
-    @DisableFeatures(ChromeFeatureList.WEB_APK_UNIQUE_ID)
-    public void testLaunchWithDifferentManifestUrl() throws Exception {
-        WebappTestPage.navigateToServiceWorkerPageWithManifest(
-                mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL1);
-
-        CallbackWaiter waiter = new CallbackWaiter();
-        startWebApkUpdateDataFetcher(getTestIntentDataProviderBuilder(WEB_MANIFEST_URL2), waiter);
-
-        WebappTestPage.navigateToServiceWorkerPageWithManifest(
-                mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL2);
-        waiter.waitForCallback(0);
-        Assert.assertTrue(waiter.isWebApkCompatible());
-        Assert.assertEquals(WEB_MANIFEST_NAME2, waiter.name());
-    }
-
-    /**
      * Test that large icon murmur2 hashes are correctly plumbed to Java. The hash can take on
      * values up to 2^64 - 1 which is greater than {@link Long#MAX_VALUE}.
      */
@@ -235,7 +209,6 @@ public class WebApkUpdateDataFetcherTest {
     @Test
     @MediumTest
     @Feature({"Webapps"})
-    @EnableFeatures(ChromeFeatureList.WEB_APK_UNIQUE_ID)
     public void testLaunchWithDifferentManifestUrlSameId() throws Exception {
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL1);
@@ -256,7 +229,6 @@ public class WebApkUpdateDataFetcherTest {
     @Test
     @MediumTest
     @Feature({"Webapps"})
-    @EnableFeatures(ChromeFeatureList.WEB_APK_UNIQUE_ID)
     public void testLaunchWithDifferentManifestId() throws Exception {
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL3);
@@ -278,7 +250,6 @@ public class WebApkUpdateDataFetcherTest {
     @Test
     @MediumTest
     @Feature({"Webapps"})
-    @EnableFeatures(ChromeFeatureList.WEB_APK_UNIQUE_ID)
     public void testLaunchWithEmptyOldManifestId() throws Exception {
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL3);

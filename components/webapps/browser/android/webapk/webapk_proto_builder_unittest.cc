@@ -419,8 +419,6 @@ TEST_F(WebApkProtoBuilderTest,
 }
 
 TEST_F(WebApkProtoBuilderTest, BuildWebApkProtoManifestIdAndKey) {
-  base::test::ScopedFeatureList feature_list(
-      webapps::features::kWebApkUniqueId);
   GURL manifest_id_1 = test_server()->GetURL("/test_id");
   GURL app_key_1 = test_server()->GetURL("/test_key");
 

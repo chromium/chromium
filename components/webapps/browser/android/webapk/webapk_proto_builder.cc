@@ -131,10 +131,8 @@ std::unique_ptr<std::string> BuildProtoInBackground(
   web_app_manifest->set_theme_color(
       ui::OptionalSkColorToString(shortcut_info.theme_color));
 
-  if (base::FeatureList::IsEnabled(features::kWebApkUniqueId)) {
-    web_app_manifest->set_id(shortcut_info.manifest_id.spec());
-    webapk->set_app_key(app_key.spec());
-  }
+  web_app_manifest->set_id(shortcut_info.manifest_id.spec());
+  webapk->set_app_key(app_key.spec());
 
   std::string* scope = web_app_manifest->add_scopes();
   scope->assign(shortcut_info.scope.spec());

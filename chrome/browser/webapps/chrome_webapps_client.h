@@ -34,7 +34,6 @@ class ChromeWebappsClient : public WebappsClient {
       content::WebContents* web_contents) override;
 #if BUILDFLAG(IS_ANDROID)
   bool IsInstallationInProgress(content::WebContents* web_contents,
-                                const GURL& manifest_url,
                                 const GURL& manifest_id) override;
   bool CanShowAppBanners(content::WebContents* web_contents) override;
   void OnWebApkInstallInitiatedFromAppMenu(

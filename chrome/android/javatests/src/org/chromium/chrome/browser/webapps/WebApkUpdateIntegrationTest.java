@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.test.MockCertVerifierRuleAndroid;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.components.webapk.proto.WebApkProto;
@@ -51,7 +50,6 @@ import java.io.FileInputStream;
 @DoNotBatch(reason = "The update pipeline runs once per startup.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ChromeSwitches.CHECK_FOR_WEB_MANIFEST_UPDATE_ON_STARTUP})
-@EnableFeatures({ChromeFeatureList.WEB_APK_UNIQUE_ID})
 @DisableFeatures({ChromeFeatureList.PWA_UPDATE_DIALOG_FOR_NAME})
 public class WebApkUpdateIntegrationTest {
     public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();

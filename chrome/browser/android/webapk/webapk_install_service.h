@@ -68,8 +68,7 @@ class WebApkInstallService : public KeyedService {
   ~WebApkInstallService() override;
 
   // Returns whether an install for |web_manifest_url| is in progress.
-  bool IsInstallInProgress(const GURL& web_manifest_url,
-                           const GURL& manifest_id);
+  bool IsInstallInProgress(const GURL& manifest_id);
 
   // Installs WebAPK and adds shortcut to the launcher. It talks to the Chrome
   // WebAPK server to generate a WebAPK on the server and to Google Play to
@@ -119,7 +118,6 @@ class WebApkInstallService : public KeyedService {
   // Triggers the callback to propagate the |WebApkInstallResult| to the
   // scheduling Client.
   void OnFinishedInstallWithProto(
-      const GURL& manifest_url,
       const GURL& manifest_id,
       const GURL& url,
       const std::u16string& short_name,
@@ -172,9 +170,6 @@ class WebApkInstallService : public KeyedService {
       std::unique_ptr<std::string> serialized_webapk);
 
   raw_ptr<content::BrowserContext> browser_context_;
-
-  // In progress installs.
-  std::set<GURL> installs_;
 
   // In progress installs's id.
   std::set<GURL> install_ids_;

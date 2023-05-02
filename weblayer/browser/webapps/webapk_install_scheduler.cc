@@ -113,8 +113,7 @@ void WebApkInstallScheduler::OnResult(webapps::WebApkInstallResult result) {
   // triggered by the Chrome-service, is invoked on the UI thread.
   webapps::WebappsUtils::ShowWebApkInstallResultToast(result);
 
-  std::move(webapps_client_callback_)
-      .Run(shortcut_info_->manifest_url, shortcut_info_->manifest_id);
+  std::move(webapps_client_callback_).Run(shortcut_info_->manifest_id);
   delete this;
 }
 

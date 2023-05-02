@@ -418,7 +418,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &webapps::features::kWebApkInstallFailureNotification,
     &webapps::features::kWebApkInstallFailureRetry,
     &webapps::features::kAmbientBadgeSuppressFirstVisit,
-    &webapps::features::kWebApkUniqueId,
     &network::features::kPrivateStateTokens,
 };
 
