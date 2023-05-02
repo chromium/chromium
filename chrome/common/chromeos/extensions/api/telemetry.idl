@@ -88,6 +88,8 @@ namespace os.telemetry {
     double? idleTimeMs;
     // Information about the logical CPU's time in various C-states.
     CpuCStateInfo[] cStates;
+    // The core number this logical CPU corresponds to.
+    long? coreId;
   };
 
   dictionary PhysicalCpuInfo {

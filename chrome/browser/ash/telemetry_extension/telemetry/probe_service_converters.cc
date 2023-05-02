@@ -277,7 +277,8 @@ crosapi::mojom::ProbeLogicalCpuInfoPtr UncheckedConvertPtr(
       Convert(input->scaling_current_frequency_khz),
       Convert(idle_time_user_hz * kMillisecondsInSecond / user_hz),
       ConvertPtrVector<crosapi::mojom::ProbeCpuCStateInfoPtr>(
-          std::move(input->c_states)));
+          std::move(input->c_states)),
+      Convert(input->core_id));
 }
 
 crosapi::mojom::ProbePhysicalCpuInfoPtr UncheckedConvertPtr(

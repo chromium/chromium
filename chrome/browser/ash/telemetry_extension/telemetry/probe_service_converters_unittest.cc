@@ -687,6 +687,7 @@ TEST(ProbeServiceConverters, LogicalCpuInfoPtr) {
 
   constexpr char kCpuCStateName[] = "C1";
   constexpr uint64_t kCpuCStateTime = (1 << 27) + 50000;
+  constexpr uint32_t kCoreId = 42;
 
   auto input = cros_healthd::mojom::LogicalCpuInfo::New();
   {
@@ -699,6 +700,7 @@ TEST(ProbeServiceConverters, LogicalCpuInfoPtr) {
     input->scaling_current_frequency_khz = kScalingCurrentFrequencyKhz;
     input->idle_time_user_hz = kIdleTime;
     input->c_states.push_back(std::move(c_state));
+    input->core_id = kCoreId;
   }
 
   std::vector<crosapi::mojom::ProbeCpuCStateInfoPtr> expected_c_states;
@@ -711,7 +713,8 @@ TEST(ProbeServiceConverters, LogicalCpuInfoPtr) {
                 crosapi::mojom::UInt32Value::New(kScalingMaxFrequencyKhz),
                 crosapi::mojom::UInt32Value::New(kScalingCurrentFrequencyKhz),
                 crosapi::mojom::UInt64Value::New(kIdleTime),
-                std::move(expected_c_states)));
+                std::move(expected_c_states),
+                crosapi::mojom::UInt32Value::New(kCoreId)));
 }
 
 TEST(ProbeServiceConverters, LogicalCpuInfoPtrNonZeroIdleTime) {
@@ -734,6 +737,7 @@ TEST(ProbeServiceConverters, PhysicalCpuInfoPtr) {
   constexpr uint32_t kMaxClockSpeedKhz = (1 << 31) + 11111;
   constexpr uint32_t kScalingMaxFrequencyKhz = (1 << 30) + 22222;
   constexpr uint32_t kScalingCurrentFrequencyKhz = (1 << 29) + 33333;
+  constexpr uint32_t kCoreId = 432;
 
   // Idle time cannot be tested with ConvertPtr, because it requires
   // USER_HZ system constant to convert idle_time_user_hz to milliseconds.
@@ -746,6 +750,7 @@ TEST(ProbeServiceConverters, PhysicalCpuInfoPtr) {
     logical_info->scaling_max_frequency_khz = kScalingMaxFrequencyKhz;
     logical_info->scaling_current_frequency_khz = kScalingCurrentFrequencyKhz;
     logical_info->idle_time_user_hz = kIdleTime;
+    logical_info->core_id = kCoreId;
 
     input->model_name = kModelName;
     input->logical_cpus.push_back(std::move(logical_info));
@@ -757,7 +762,8 @@ TEST(ProbeServiceConverters, PhysicalCpuInfoPtr) {
       crosapi::mojom::UInt32Value::New(kScalingMaxFrequencyKhz),
       crosapi::mojom::UInt32Value::New(kScalingCurrentFrequencyKhz),
       crosapi::mojom::UInt64Value::New(kIdleTime),
-      std::vector<crosapi::mojom::ProbeCpuCStateInfoPtr>{}));
+      std::vector<crosapi::mojom::ProbeCpuCStateInfoPtr>{},
+      crosapi::mojom::UInt32Value::New(kCoreId)));
 
   EXPECT_EQ(ConvertProbePtr(std::move(input)),
             crosapi::mojom::ProbePhysicalCpuInfo::New(

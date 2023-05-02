@@ -121,6 +121,9 @@ cx_telem::LogicalCpuInfo UncheckedConvertPtr(
   }
   result.c_states =
       ConvertPtrVector<cx_telem::CpuCStateInfo>(std::move(input->c_states));
+  if (input->core_id) {
+    result.core_id = input->core_id->value;
+  }
   return result;
 }
 

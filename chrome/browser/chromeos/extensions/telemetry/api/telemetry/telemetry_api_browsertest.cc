@@ -403,6 +403,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       logical_info1->idle_time_ms = crosapi::UInt64Value::New(0);
       logical_info1->c_states.push_back(std::move(c_state1));
       logical_info1->c_states.push_back(std::move(c_state2));
+      logical_info1->core_id = crosapi::UInt32Value::New(42);
 
       auto logical_info2 = crosapi::ProbeLogicalCpuInfo::New();
       logical_info2->max_clock_speed_khz =
@@ -414,6 +415,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       // Idle time cannot be tested in browser test, because it requires USER_HZ
       // system constant to convert idle_time_user_hz to milliseconds.
       logical_info2->idle_time_ms = crosapi::UInt64Value::New(0);
+      logical_info2->core_id = crosapi::UInt32Value::New(43);
 
       auto physical_info1 = crosapi::ProbePhysicalCpuInfo::New();
       physical_info1->model_name = "i9";
@@ -430,6 +432,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       // Idle time cannot be tested in browser test, because it requires USER_HZ
       // system constant to convert idle_time_user_hz to milliseconds.
       logical_info3->idle_time_ms = crosapi::UInt64Value::New(0);
+      logical_info3->core_id = crosapi::UInt32Value::New(44);
 
       auto physical_info2 = crosapi::ProbePhysicalCpuInfo::New();
       physical_info2->model_name = "i9-low-powered";
@@ -474,12 +477,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                   'name': 'C2',
                   'timeInStateSinceLastBootUs': 1125899906877777,
                 }],
+                'coreId': 42,
                 'idleTimeMs': 0,
                 'maxClockSpeedKhz': 2147473647,
                 'scalingCurrentFrequencyKhz': 536904245,
                 'scalingMaxFrequencyKhz': 1073764046,
             }, {
                 'cStates': [],
+                'coreId': 43,
                 'idleTimeMs': 0,
                 'maxClockSpeedKhz': 1147494759,
                 'scalingCurrentFrequencyKhz': 936904246,
@@ -489,6 +494,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
           }, {
             'logicalCpus': [{
               'cStates': [],
+              'coreId': 44,
               'idleTimeMs': 0,
               'maxClockSpeedKhz': 1247494759,
               'scalingCurrentFrequencyKhz': 946904246,

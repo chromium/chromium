@@ -228,12 +228,14 @@ TEST(TelemetryApiConverters, LogicalCpuInfo) {
   constexpr uint32_t kScalingMaxFrequencyKhz = (1 << 30) + 20000;
   constexpr uint32_t kScalingCurrentFrequencyKhz = (1 << 29) + 30000;
   constexpr uint64_t kIdleTime = (1ULL << 52) + 40000;
+  constexpr uint32_t kCoreId = 200;
 
   auto input = crosapi::ProbeLogicalCpuInfo::New(
       crosapi::UInt32Value::New(kMaxClockSpeedKhz),
       crosapi::UInt32Value::New(kScalingMaxFrequencyKhz),
       crosapi::UInt32Value::New(kScalingCurrentFrequencyKhz),
-      crosapi::UInt64Value::New(kIdleTime), std::move(expected_c_states));
+      crosapi::UInt64Value::New(kIdleTime), std::move(expected_c_states),
+      crosapi::UInt32Value::New(kCoreId));
 
   auto result = ConvertPtr<cx_telem::LogicalCpuInfo>(std::move(input));
   ASSERT_TRUE(result.max_clock_speed_khz);
@@ -259,6 +261,8 @@ TEST(TelemetryApiConverters, LogicalCpuInfo) {
   ASSERT_TRUE(result.c_states[0].time_in_state_since_last_boot_us);
   EXPECT_EQ(kCpuCStateTime,
             *result.c_states[0].time_in_state_since_last_boot_us);
+  ASSERT_TRUE(result.core_id);
+  EXPECT_EQ(kCoreId, static_cast<uint32_t>(*result.core_id));
 }
 
 TEST(TelemetryApiConverters, PhysicalCpuInfo) {
@@ -273,13 +277,15 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
   constexpr uint32_t kScalingMaxFrequencyKhz = (1 << 30) + 70000;
   constexpr uint32_t kScalingCurrentFrequencyKhz = (1 << 29) + 60000;
   constexpr uint64_t kIdleTime = (1ULL << 52) + 50000;
+  constexpr uint32_t kCoreId = 200;
 
   std::vector<crosapi::ProbeLogicalCpuInfoPtr> logical_cpus;
   logical_cpus.push_back(crosapi::ProbeLogicalCpuInfo::New(
       crosapi::UInt32Value::New(kMaxClockSpeedKhz),
       crosapi::UInt32Value::New(kScalingMaxFrequencyKhz),
       crosapi::UInt32Value::New(kScalingCurrentFrequencyKhz),
-      crosapi::UInt64Value::New(kIdleTime), std::move(expected_c_states)));
+      crosapi::UInt64Value::New(kIdleTime), std::move(expected_c_states),
+      crosapi::UInt32Value::New(kCoreId)));
 
   constexpr char kModelName[] = "i9";
 
@@ -319,6 +325,8 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
   EXPECT_EQ(
       kCpuCStateTime,
       *result.logical_cpus[0].c_states[0].time_in_state_since_last_boot_us);
+  ASSERT_TRUE(result.logical_cpus[0].core_id);
+  EXPECT_EQ(kCoreId, static_cast<uint32_t>(*result.logical_cpus[0].core_id));
 }
 
 TEST(TelemetryApiConverters, BatteryInfoWithoutSerialNumberPermission) {
