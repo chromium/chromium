@@ -11,6 +11,6 @@
 
 /* TODO(crbug.com/681917): These form controls don't go vertical if
    FormControlsVerticalWritingModeSupport is disabled. */
-input[type="range"], input[type="color"], meter, progress {
+input[type="range"], input[type="color"], textarea, meter, progress {
   writing-mode: horizontal-tb !important;
 }

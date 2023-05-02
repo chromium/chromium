@@ -408,7 +408,7 @@ button {
 }
 
 /* Form controls don't go vertical. */
-input:not([type="range"]):not([type="color"]), textarea, select {
+input:not([type="range"]):not([type="color"]), select {
     writing-mode: horizontal-tb !important;
 }
 button:not(::-internal-selectmenu-button) {

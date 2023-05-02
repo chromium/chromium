@@ -1468,12 +1468,6 @@ crbug.com/1394042 external/wpt/css/css-writing-modes/forms/select-multiple-appea
 crbug.com/1394042 external/wpt/css/css-writing-modes/forms/select-multiple-appearance-none-horizontal.optional.html [ Failure ]
 crbug.com/1394042 external/wpt/css/css-writing-modes/forms/select-multiple-appearance-none-vlr.optional.html [ Failure ]
 crbug.com/1394042 external/wpt/css/css-writing-modes/forms/select-multiple-appearance-none-vrl.optional.html [ Failure ]
-crbug.com/1394042 external/wpt/css/css-writing-modes/forms/textarea-appearance-native-horizontal.optional.html [ Failure ]
-crbug.com/1394042 external/wpt/css/css-writing-modes/forms/textarea-appearance-native-vlr.optional.html [ Failure ]
-crbug.com/1394042 external/wpt/css/css-writing-modes/forms/textarea-appearance-native-vrl.optional.html [ Failure ]
-crbug.com/1394042 external/wpt/css/css-writing-modes/forms/textarea-appearance-none-horizontal.optional.html [ Failure ]
-crbug.com/1394042 external/wpt/css/css-writing-modes/forms/textarea-appearance-none-vlr.optional.html [ Failure ]
-crbug.com/1394042 external/wpt/css/css-writing-modes/forms/textarea-appearance-none-vrl.optional.html [ Failure ]
 
 ### With LayoutNGFragmentItem enabled
 crbug.com/982194 [ Win10.20h2 ] fast/writing-mode/border-image-vertical-lr.html [ Failure Pass ]
