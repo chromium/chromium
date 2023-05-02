@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
 PASS 'calc(1px * NaN)' as a specified value should serialize as 'calc(NaN * 1px)'.
+PASS 'calc(1% * NaN)' as a specified value should serialize as 'calc(NaN * 1%)'.
 FAIL 'calc(1in * NaN)' as a specified value should serialize as 'calc(NaN * 1px)'. assert_equals: 'calc(1in * NaN)' and 'calc(NaN * 1px)' should serialize the same in specified values. expected "calc(NaN * 1px)" but got "calc(NaN * 1in)"
 FAIL 'calc(1cm * NaN)' as a specified value should serialize as 'calc(NaN * 1px)'. assert_equals: 'calc(1cm * NaN)' and 'calc(NaN * 1px)' should serialize the same in specified values. expected "calc(NaN * 1px)" but got "calc(NaN * 1cm)"
 FAIL 'calc(1mm * NaN)' as a specified value should serialize as 'calc(NaN * 1px)'. assert_equals: 'calc(1mm * NaN)' and 'calc(NaN * 1px)' should serialize the same in specified values. expected "calc(NaN * 1px)" but got "calc(NaN * 1mm)"
@@ -14,6 +15,8 @@ PASS 'calc(1px * (-infinity + infinity))' as a specified value should serialize 
 PASS 'calc(1px * (infinity - infinity))' as a specified value should serialize as 'calc(NaN * 1px)'.
 PASS 'calc(1px * infinity)' as a specified value should serialize as 'calc(infinity * 1px)'.
 PASS 'calc(1px * -infinity)' as a specified value should serialize as 'calc(-infinity * 1px)'.
+PASS 'calc(1% * infinity)' as a specified value should serialize as 'calc(infinity * 1%)'.
+PASS 'calc(1% * -infinity)' as a specified value should serialize as 'calc(-infinity * 1%)'.
 PASS 'calc(1px * iNFinIty)' as a specified value should serialize as 'calc(infinity * 1px)'.
 PASS 'calc(1px * (infinity + infinity))' as a specified value should serialize as 'calc(infinity * 1px)'.
 PASS 'calc(1px * (-infinity + -infinity))' as a specified value should serialize as 'calc(-infinity * 1px)'.
