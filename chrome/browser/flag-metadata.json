@@ -6482,11 +6482,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "remove-crash-infobar",
-    "owners": [ "justincohen", "bling-flags@google.com"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "render-arc-notifications-by-chrome",
     "owners": [ "shuminghao", "arc-framework@google.com" ],
     "expiry_milestone": 118
