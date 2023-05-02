@@ -3644,6 +3644,13 @@
         null,
         {}
        ]
+      ],
+      "text-decoration-on-pseudo-first-line-crash.html": [
+       "9b17dd9042a1525676ce236970255799babd9692",
+       [
+        null,
+        {}
+       ]
       ]
      },
      "text-decoration-line-spelling-error-001-crash.html": [
@@ -96272,6 +96279,19 @@
        [
         [
          "/css/css-color/color-mix-currentcolor-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "color-mix-currentcolor-003.html": [
+      "7d9b110aeb1685f3011f6a819935a550cde13f0b",
+      [
+       null,
+       [
+        [
+         "/css/css-color/color-mix-currentcolor-003-ref.html",
          "=="
         ]
        ],
@@ -225388,6 +225408,124 @@
        }
       ]
      ],
+     "fractional-box-new.html": [
+      "407636b967b2e1c0aa6d437708a58cd14f3407e5",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/fractional-box-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "fractional-box-old.html": [
+      "915cd41704f369c8d24a82f797ea66be8f7ce093",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/fractional-box-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "fractional-box-with-overflow-children-new.html": [
+      "e50e6654a75578559cfb55ee972cb619a954a579",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/fractional-box-with-overflow-children-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          [
+           "/css/css-view-transitions/fractional-box-with-overflow-children-new.html",
+           "/css/css-view-transitions/fractional-box-with-overflow-children-ref.html",
+           "=="
+          ],
+          [
+           [
+            0,
+            3
+           ],
+           [
+            0,
+            100
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "fractional-box-with-overflow-children-old.html": [
+      "acf72e20df5c6e0dcee12f06e4088b31934753b0",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/fractional-box-with-overflow-children-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          [
+           "/css/css-view-transitions/fractional-box-with-overflow-children-old.html",
+           "/css/css-view-transitions/fractional-box-with-overflow-children-ref.html",
+           "=="
+          ],
+          [
+           [
+            0,
+            3
+           ],
+           [
+            0,
+            100
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "fractional-box-with-shadow-new.html": [
+      "820a48b1b0f85a9dc4c238082d4889db324e0347",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/fractional-box-with-shadow-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "fractional-box-with-shadow-old.html": [
+      "882f8992ade215679b18de817cc9ea9e70529357",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/fractional-box-with-shadow-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "fractional-translation-from-position.html": [
       "a09b08cf00c554955ec4c4e041c169fe1575de43",
       [
@@ -271130,6 +271268,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "93b92966d4f558fde1a232a121cfaae27c8b7ab4",
+     []
+    ],
+    "mtime.json": [
+     "917bdd843af7ac22405dd730bbc803d05558cfb7",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -290636,6 +290784,14 @@
      ],
      "color-mix-currentcolor-002-ref.html": [
       "64e60fbf291285fe766cd68ec9204f295308ca5d",
+      []
+     ],
+     "color-mix-currentcolor-003-ref.html": [
+      "b47ee5942b80eef09cf2d1dbf32b20d325c0549c",
+      []
+     ],
+     "color-mix-currentcolor-003.html.ini": [
+      "b61a5a16f2a48fbda3a7f01a748b20015757d51a",
       []
      ],
      "color-mix-non-srgb-001-ref.html": [
@@ -324883,7 +325039,7 @@
       []
      ],
      "3d-rendering-context-and-fixpos.html.ini": [
-      "1f4d4ad54b7a7794b1947e54b3bfca28e306bc46",
+      "e4c1f37541ba79a41f13f80671d8ab4ad2c1644a",
       []
      ],
      "3d-scene-with-iframe-001-ref.html": [
@@ -325299,7 +325455,7 @@
       []
      ],
      "preserve3d-and-flattening-z-order-005.html.ini": [
-      "4213558575242110a545f45c46c0513103bb6fe2",
+      "c8ca8fb6b94724830d0cfc2f5219c8cc5c387261",
       []
      ],
      "preserve3d-and-flattening-z-order-006.html.ini": [
@@ -328000,7 +328156,7 @@
        []
       ],
       "kind-of-widget-fallback-color-input-border-inline-end-style-001.html.ini": [
-       "f507c5f22a9c662a2110ea60ce7672d1d31372fc",
+       "5bc56d3cf7154da70ff2a8de32d4ff3b697314c2",
        []
       ],
       "kind-of-widget-fallback-color-input-border-inline-start-color-001.html.ini": [
@@ -328104,7 +328260,7 @@
        []
       ],
       "kind-of-widget-fallback-input-reset-border-bottom-left-radius-001.html.ini": [
-       "a99265efc1f46bdb74c46fab4e8aeaae7f49ad78",
+       "4af1ae67abc091ef0e1be1ab77764c1c9fce1e96",
        []
       ],
       "kind-of-widget-fallback-input-reset-border-bottom-style-001.html.ini": [
@@ -328611,6 +328767,10 @@
        "9916c48e0e4a60a7ff447d366fc874dc8d470308",
        []
       ],
+      "kind-of-widget-fallback-input-text-border-top-width-001.html.ini": [
+       "e03dc2c460a13ba9d811de331d317028ab346ece",
+       []
+      ],
       "kind-of-widget-fallback-meter-background-attachment-001.html.ini": [
        "5c85d4c8e2f214d8e5287e8ac98f6b1d3a9a274c",
        []
@@ -328852,7 +329012,7 @@
        []
       ],
       "kind-of-widget-fallback-textarea-border-top-right-radius-001.html.ini": [
-       "6ba97de97f9d8f738d8bc4bbbfa0958005aa9a11",
+       "80bbbdb712546ad4e5705ab2e2622ee889985b77",
        []
       ],
       "kind-of-widget-fallback-textarea-border-top-width-001.html.ini": [
@@ -331178,6 +331338,18 @@
      ],
      "far-away-capture-ref.html": [
       "9e10b9b44e302a32f71c0fa7efac78eca9f0456a",
+      []
+     ],
+     "fractional-box-ref.html": [
+      "e5fb0f80d915242b7cbd5963f6efa5084be15675",
+      []
+     ],
+     "fractional-box-with-overflow-children-ref.html": [
+      "8e53dcd26633fbfbd8d069157523caef7321aab0",
+      []
+     ],
+     "fractional-box-with-shadow-ref.html": [
+      "639641aeb5b1ae5a92c085eef4689db39bbbe271",
       []
      ],
      "fractional-translation-from-position-ref.html": [
@@ -335834,6 +336006,10 @@
      ],
      "filtered-inline-is-container-ref.html": [
       "aa6c12e33b5bc3779c9a49ee3c9edd69ffe2ed8f",
+      []
+     ],
+     "filtered-inline-is-container.html.ini": [
+      "539f4ab882a73ac17cfb4eb122573ff538de3d1f",
       []
      ],
      "filters-grayscale-001-ref.html": [
@@ -350059,32 +350235,16 @@
          "9bc3ea9c1aac1f2f1b4def86533c46b83e9411e1",
          []
         ],
-        "form-submit-cross-frame-crossorigin.sub-expected.txt": [
-         "ded9256a967aca9e000610bdd225ba02cef0e490",
-         []
-        ],
         "form-submit-cross-frame-crossorigin.sub.html.ini": [
          "85222202fb95d8d8829419403ede25fe5bf05f35",
-         []
-        ],
-        "form-submit-cross-frame-expected.txt": [
-         "985e92b9c8ce86ec2fdb156b426eb97243100c5a",
          []
         ],
         "form-submit-cross-frame.html.ini": [
          "08ed6def09000e015b76de892933d955b3be5528",
          []
         ],
-        "form-submit-popup-crossorigin.sub-expected.txt": [
-         "362bc69eba427c34866e188a8a9037b7b21e05da",
-         []
-        ],
         "form-submit-popup-crossorigin.sub.html.ini": [
          "9c867cd07b606ab7f13d9e5e1e2b1186b2abab5c",
-         []
-        ],
-        "form-submit-popup-expected.txt": [
-         "d6192b6602d8c8e94682b22b7e9f454bfd569b2d",
          []
         ],
         "form-submit-popup.html.ini": [
@@ -352627,7 +352787,7 @@
         []
        ],
        "2d.drawImage.animated.poster.html.ini": [
-        "841593129de0249f3bb45d8268752af8c4d1aa4c",
+        "c26cd20441d5d1701e9cd4ef2a1968b623576017",
         []
        ],
        "2d.drawImage.svg.html.ini": [
@@ -353056,12 +353216,20 @@
         "d7ba158d161d44ddd127fb10bf11f5bdef62dc51",
         []
        ],
+       "2d.layer.global-states.alpha.blending.shadow.html.ini": [
+        "626eff73360214d83f7cbab5c2022b440368c021",
+        []
+       ],
        "2d.layer.global-states.alpha.composite-expected.html": [
         "951049e638c818182da1aa3ed3296a152dfb798f",
         []
        ],
        "2d.layer.global-states.alpha.composite.shadow-expected.html": [
         "a669a2271e96b8f4e5087bb9ffb1888a231a0c78",
+        []
+       ],
+       "2d.layer.global-states.alpha.composite.shadow.html.ini": [
+        "b55252d1742c6889e475cac86e7e7d9d74072af7",
         []
        ],
        "2d.layer.global-states.alpha.shadow-expected.html": [
@@ -353076,12 +353244,20 @@
         "02275c8cc2150fac3bdc54f5000a44dc08299b69",
         []
        ],
+       "2d.layer.global-states.blending.shadow.html.ini": [
+        "45de62763636556243facbeb172ebdb36f0f3b74",
+        []
+       ],
        "2d.layer.global-states.composite-expected.html": [
         "ed7669c4cfabd17b7bf9e4302c4a65fdc4a7bb3a",
         []
        ],
        "2d.layer.global-states.composite.shadow-expected.html": [
         "e380cccab8245f77803000d4eb44dc956b3cf709",
+        []
+       ],
+       "2d.layer.global-states.composite.shadow.html.ini": [
+        "74c1944327f9b55f3a7212b7fabb0e3e9d7dfe18",
         []
        ],
        "2d.layer.global-states.filter.alpha-expected.html": [
@@ -353096,12 +353272,20 @@
         "d9c93719b9923dbe75f3135fd9bc7b91cfe56518",
         []
        ],
+       "2d.layer.global-states.filter.alpha.blending.shadow.html.ini": [
+        "cc06756d372dc2477a031ff95b698edd5622efc4",
+        []
+       ],
        "2d.layer.global-states.filter.alpha.composite-expected.html": [
         "8e0d98648ea721c720a678a161d0053d8d395cf8",
         []
        ],
        "2d.layer.global-states.filter.alpha.composite.shadow-expected.html": [
         "26d13a4cae95274c0edf26ab3e62f74857521fe3",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.composite.shadow.html.ini": [
+        "c648a53b3beb3fecfd611fdbd3ae1ce50b02079a",
         []
        ],
        "2d.layer.global-states.filter.alpha.shadow-expected.html": [
@@ -353116,12 +353300,20 @@
         "a48485f7e8a1b9b843a8f6324ea822aa81abde93",
         []
        ],
+       "2d.layer.global-states.filter.blending.shadow.html.ini": [
+        "bf8addbcad7fc9d4245d4d78622e780d3e8ed3b6",
+        []
+       ],
        "2d.layer.global-states.filter.composite-expected.html": [
         "97e85a1593b63c24fb7b708b5c28fdc3beb85a0f",
         []
        ],
        "2d.layer.global-states.filter.composite.shadow-expected.html": [
         "79191ee3910f49c9f69a2454940d8ca88ef7eb78",
+        []
+       ],
+       "2d.layer.global-states.filter.composite.shadow.html.ini": [
+        "aceed076abaf3ba05be22751a8df54f1427f81f8",
         []
        ],
        "2d.layer.global-states.filter.no-global-states-expected.html": [
@@ -354085,7 +354277,7 @@
         []
        ],
        "2d.drawImage.animated.poster.html.ini": [
-        "841593129de0249f3bb45d8268752af8c4d1aa4c",
+        "c26cd20441d5d1701e9cd4ef2a1968b623576017",
         []
        ],
        "2d.drawImage.animated.poster.worker-expected.txt": [
@@ -354093,11 +354285,19 @@
         []
        ],
        "2d.drawImage.animated.poster.worker.js.ini": [
-        "72cb7ec8721c0fb251f3f16032520b6f07c56af6",
+        "2c48d688b6af35ef3c65da7c8cda127b80716571",
+        []
+       ],
+       "2d.drawImage.svg.html.ini": [
+        "c66b96999799d78e66aa016ffb9ce8fe3445a67e",
         []
        ],
        "2d.drawImage.transform.html.ini": [
         "1f76e3507603b3deff7a598af11fe90c7d0ff199",
+        []
+       ],
+       "2d.drawImage.zerosource.image.html.ini": [
+        "3f7b04de87c75b45767acb4ad0485be0927ba887",
         []
        ]
       },
@@ -354138,12 +354338,28 @@
         "d7ba158d161d44ddd127fb10bf11f5bdef62dc51",
         []
        ],
+       "2d.layer.global-states.alpha.blending.shadow.html.ini": [
+        "626eff73360214d83f7cbab5c2022b440368c021",
+        []
+       ],
+       "2d.layer.global-states.alpha.blending.shadow.w.html.ini": [
+        "cc1005de7bcddcae64a7995ddd527b34b7241fa8",
+        []
+       ],
        "2d.layer.global-states.alpha.composite-expected.html": [
         "951049e638c818182da1aa3ed3296a152dfb798f",
         []
        ],
        "2d.layer.global-states.alpha.composite.shadow-expected.html": [
         "a669a2271e96b8f4e5087bb9ffb1888a231a0c78",
+        []
+       ],
+       "2d.layer.global-states.alpha.composite.shadow.html.ini": [
+        "b55252d1742c6889e475cac86e7e7d9d74072af7",
+        []
+       ],
+       "2d.layer.global-states.alpha.composite.shadow.w.html.ini": [
+        "b7cde349240c705d60834076639f2c588273c7f5",
         []
        ],
        "2d.layer.global-states.alpha.shadow-expected.html": [
@@ -354158,12 +354374,28 @@
         "02275c8cc2150fac3bdc54f5000a44dc08299b69",
         []
        ],
+       "2d.layer.global-states.blending.shadow.html.ini": [
+        "45de62763636556243facbeb172ebdb36f0f3b74",
+        []
+       ],
+       "2d.layer.global-states.blending.shadow.w.html.ini": [
+        "0c43869412868c4632bf3c7cd4049196a7cd9826",
+        []
+       ],
        "2d.layer.global-states.composite-expected.html": [
         "ed7669c4cfabd17b7bf9e4302c4a65fdc4a7bb3a",
         []
        ],
        "2d.layer.global-states.composite.shadow-expected.html": [
         "e380cccab8245f77803000d4eb44dc956b3cf709",
+        []
+       ],
+       "2d.layer.global-states.composite.shadow.html.ini": [
+        "74c1944327f9b55f3a7212b7fabb0e3e9d7dfe18",
+        []
+       ],
+       "2d.layer.global-states.composite.shadow.w.html.ini": [
+        "67c26830ea513d9c0b2e7196b1b394659c39384d",
         []
        ],
        "2d.layer.global-states.filter.alpha-expected.html": [
@@ -354178,12 +354410,28 @@
         "d9c93719b9923dbe75f3135fd9bc7b91cfe56518",
         []
        ],
+       "2d.layer.global-states.filter.alpha.blending.shadow.html.ini": [
+        "cc06756d372dc2477a031ff95b698edd5622efc4",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.blending.shadow.w.html.ini": [
+        "2424d8989430bcb2463f2472a53c82464a685fda",
+        []
+       ],
        "2d.layer.global-states.filter.alpha.composite-expected.html": [
         "8e0d98648ea721c720a678a161d0053d8d395cf8",
         []
        ],
        "2d.layer.global-states.filter.alpha.composite.shadow-expected.html": [
         "26d13a4cae95274c0edf26ab3e62f74857521fe3",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.composite.shadow.html.ini": [
+        "c648a53b3beb3fecfd611fdbd3ae1ce50b02079a",
+        []
+       ],
+       "2d.layer.global-states.filter.alpha.composite.shadow.w.html.ini": [
+        "302d4ecf1b22c5ebf6e0fc7279ff3d3a2396d6a1",
         []
        ],
        "2d.layer.global-states.filter.alpha.shadow-expected.html": [
@@ -354198,12 +354446,28 @@
         "a48485f7e8a1b9b843a8f6324ea822aa81abde93",
         []
        ],
+       "2d.layer.global-states.filter.blending.shadow.html.ini": [
+        "bf8addbcad7fc9d4245d4d78622e780d3e8ed3b6",
+        []
+       ],
+       "2d.layer.global-states.filter.blending.shadow.w.html.ini": [
+        "b4003b92a4f3c643222407bc24a434cd135c6b5a",
+        []
+       ],
        "2d.layer.global-states.filter.composite-expected.html": [
         "97e85a1593b63c24fb7b708b5c28fdc3beb85a0f",
         []
        ],
        "2d.layer.global-states.filter.composite.shadow-expected.html": [
         "79191ee3910f49c9f69a2454940d8ca88ef7eb78",
+        []
+       ],
+       "2d.layer.global-states.filter.composite.shadow.html.ini": [
+        "aceed076abaf3ba05be22751a8df54f1427f81f8",
+        []
+       ],
+       "2d.layer.global-states.filter.composite.shadow.w.html.ini": [
+        "67f8b6af3278995558dd3ce690a2b94a84808a95",
         []
        ],
        "2d.layer.global-states.filter.no-global-states-expected.html": [
@@ -354593,10 +354857,6 @@
          "e8c425042668653f6908e6cf25ad6bf658aeb2f5",
          []
         ],
-        "path-objects.yaml": [
-         "eec142c7692bc5fd14478fedcd4ed95c66a546cd",
-         []
-        ],
         "shadows.yaml": [
          "7a7c115a7c44d450fc60d2e5bbb544cc5c75d225",
          []
@@ -354621,10 +354881,6 @@
         ],
         "meta.yaml": [
          "43a67d54ab49dd5f5a2822f9fd6e8cc12e261c88",
-         []
-        ],
-        "path-objects.yaml": [
-         "9c70daf59fca7fd33ea0a2256b7d1ce19f1fb192",
          []
         ],
         "shadows.yaml": [
@@ -354676,6 +354932,10 @@
        ],
        "line-styles.yaml": [
         "604f4f3659a40b89b05f1bce3968f2580dce3c6f",
+        []
+       ],
+       "path-objects.yaml": [
+        "eec142c7692bc5fd14478fedcd4ed95c66a546cd",
         []
        ],
        "pixel-manipulation.yaml": [
@@ -472219,6 +472479,27 @@
        null,
        {}
       ]
+     ],
+     "ShadowRoot-innerHTML-upgrade.tentative.html": [
+      "e21c9dd03326d68976bffc99483d04edd1bb8145",
+      [
+       null,
+       {}
+      ]
+     ],
+     "constructor-call.tentative.html": [
+      "19a8e3f4d8ac690aef9903c492df7a2f8fe99fad",
+      [
+       null,
+       {}
+      ]
+     ],
+     "constructor-reentry-with-different-definition.tentative.html": [
+      "dc93e3c702d5789657f92d81294b378bcf37c6e4",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "state": {
@@ -472833,10 +473114,10 @@
        {}
       ]
      ],
-     "abort-signal-any.tentative.any.js": [
+     "abort-signal-any.any.js": [
       "b4abb14c1a3eff64cee0c171c1ca03cf89ccc9af",
       [
-       "dom/abort/abort-signal-any.tentative.any.html",
+       "dom/abort/abort-signal-any.any.html",
        {
         "script_metadata": [
          [
@@ -472847,7 +473128,7 @@
        }
       ],
       [
-       "dom/abort/abort-signal-any.tentative.any.worker.html",
+       "dom/abort/abort-signal-any.any.worker.html",
        {
         "script_metadata": [
          [
@@ -522354,1176 +522635,1176 @@
       },
       "path-objects": {
        "2d.path.arc.angle.1.html": [
-        "838492d182a845512df72cd61c83d6bdbe9f4446",
+        "85ebff4c0ab150b4530365ba022c65481cb4bd4a",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.angle.2.html": [
-        "7ddcbcbe47749ca253a9aa8a3e1eb271555ee115",
+        "7eefabd993c6f822fc9813aa8703b184998c51ef",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.angle.3.html": [
-        "f5df8a2bf2cf7d9238b60cf32c2aa5e76ba335eb",
+        "899c50dc90439ff05c24415528e8b1578e57ffd3",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.angle.4.html": [
-        "635112f76bc8d1ff468bab4a3ad426531672e4c9",
+        "3f1bd84d69805e0a60e9c2c9e50c4357b405dba5",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.angle.5.html": [
-        "59edd27bbeff7929ce8c60f8db64082590a6def9",
+        "2373bd4f0a635a47c1e2f28ae89166b7052744d1",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.angle.6.html": [
-        "83f960b60e2481d5b8db3e71c8550342bfe8c31a",
+        "b0b03cff79faaf8a881605ee629493663f1a60f9",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.default.html": [
-        "51c1f1a8f809d2bd805bb6fa5cab53ce347dd803",
+        "b52941fe3f241e65b997961651eafe8b323f9483",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.empty.html": [
-        "bff802900152098db1802ddbb729840f58868525",
+        "295ee4bbb29c831119d12cb3b6bf0eff3ad05524",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.end.html": [
-        "aa26b65921874efe96806af26b1aa82d73855dae",
+        "a581a40e8e9fde25929e773eb2218535083a4ddf",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.negative.html": [
-        "9d1f4d8919383d062e5578b810a9cafe713807bf",
+        "fd81ebadcd7b9bb1ce3b87c1ce1bfe8f13dde34f",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.nonempty.html": [
-        "63a472ba9af24ffe24919f16628cb3dfce6556cf",
+        "982829013d7f0d1d5ce7bcc3ebaa528a814b71cd",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.nonfinite.html": [
-        "04d51bffc0fb1386782bbe853ab922f29d4cc61a",
+        "a1b15e7a88ee10175f5eaaed227f1ab7403ae8b2",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.scale.1.html": [
-        "c100c6476fa878ec3e7ae31cd1b0f783a6bcb07c",
+        "951c9ae26c3eef15d664ccd00b00b779d8b31f7e",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.scale.2.html": [
-        "1045e4027693df6a18ded63ca5835579ae0b5516",
+        "6b39e162222bf8609bf53748b0541483ee364d73",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.selfintersect.1.html": [
-        "c97c833ec1aea76c75fce66a40c81457918b2497",
+        "3bc81bd77a78426ab1214a82a8e2e9095bf0c79b",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.selfintersect.2.html": [
-        "58c51e32ec852a8146c8c588275b793da539b0b1",
+        "e3b14a782f690c59d024a2e0b51c093d92af9313",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.shape.1.html": [
-        "29bf2cf6532a30a917a67715190f61fa3b9932ea",
+        "8a456841ad6f10bc08397a6a4697822fe0894915",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.shape.2.html": [
-        "aad3a51964566cc0a9400e069543383af772ee40",
+        "f820eed761e22b0c0a302cbba7db53d05b2591ed",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.shape.3.html": [
-        "8f9e2735828cbf696205c5bf82cbba3083b340f7",
+        "aa08d441944be3ee3fe1ed5f70f4f1895c5af112",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.shape.4.html": [
-        "4efa26369f9f1d234e02538def426085db10dbbf",
+        "b00d4468f2baee7d5170843e174b2faf67892238",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.shape.5.html": [
-        "21727d4f4992b63a4b9056669e1e6cd26fca9619",
+        "f5574d2773e2a263a5a9ada2aeb0f0aba5e6acdb",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.twopie.1.html": [
-        "a07eb101bd8d29694e56bff9788b318e56c7aeda",
+        "6312efb3e89bb3ef19f90d9930c97a93627da53e",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.twopie.2.html": [
-        "5ea0c1e60f044fefd859a1c5002093ba3ca52895",
+        "132c2d38ddf39976c3bd7f4c63a7c4ea5e20eede",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.twopie.3.html": [
-        "8e1d50e002f7a343e04a642b7ccbc852bf40902c",
+        "204ed54a1ec2f13e86cf9f12f5445c0143358e12",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.twopie.4.html": [
-        "914fc4b18d8e8d8468ba39d79fc0338cef0b2c91",
+        "d5535a794977ea7056becc1648399cf0e4a5b7ff",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.zero.1.html": [
-        "b648c869adc275af00d0dc8cdbcf07993d7ce603",
+        "2c93425b1e106ac468fa15d5d0aecda034f32588",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.zero.2.html": [
-        "4aab17a7a5a0a9b48af2113462f66555fe914818",
+        "c290c2f32f63c8e6737a50f558ccf868b2d74097",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.zeroradius.html": [
-        "6f50bb474f9cfe2c84e2b9597ab49eac29629451",
+        "f75403b2f3459da5b98769ae204f19f975c27d97",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.coincide.1.html": [
-        "9b963505ee2d0e22241b214be27b16e658ad0cd2",
+        "01c8091c463e62dddfc7d78bc89403be3a19778f",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.coincide.2.html": [
-        "4cabedd056a545dc86aca5678c2c0613a5dd3b17",
+        "d216949aae91098943802f5c5a783ddc7720ae9a",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.collinear.1.html": [
-        "393c7a7f67354acc225f5fe57a648da913edc1fb",
+        "e91e2e4b1b46f2e09700dfed277c454566b5f8ce",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.collinear.2.html": [
-        "7dc386b518397761384e9f6640a9427c35e0eef2",
+        "97b1339295cb478c22a19de26d54f7b966b61a4f",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.collinear.3.html": [
-        "76930e5fd1235e88d62a4356475a3fa7945c55c7",
+        "2f4394f038dc802785b833815fe5229c69b10396",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.ensuresubpath.1.html": [
-        "756cfe602c7ab9709ec083683a2aed23111d7a9c",
+        "2781bcbba375020c8adcc5babc32807a4cb0ec77",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.ensuresubpath.2.html": [
-        "18b1992d89db2e7672e17ee874c958f89deabc4d",
+        "f5da07c1c6ac5102b6fe666903d97fecd8ba5191",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.negative.html": [
-        "78f4fcebf7b37b844d86fbab832fe81eb6bf2877",
+        "0091ca2a6713d332476d5e881e399dddea74f0ce",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.nonfinite.html": [
-        "d05e05d278147b4a40aa35f9a7530c9846fb89ce",
+        "0d7be1d360867cb28ed9d91129b32ae596cf9885",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.scale.html": [
-        "00d9f99b96a3731768dfbd365c802a85f7ee75ad",
+        "6645f0526035374d1a4b2c9be50f9a5310e65d37",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.shape.curve1.html": [
-        "0caf25048d345fdc3257eadeca7ae16574478062",
+        "4617b2cbbb6f7aac0cf23a3fc20f0f91942ef7b6",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.shape.curve2.html": [
-        "3e1677bec01ece8796be72c7ba9ce3159823f1cc",
+        "bcc4326eea2de40db4e679fee49739e04b17ec16",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.shape.end.html": [
-        "8a41dcd7b61c09af7c5730afb0f06939f8d7bf98",
+        "829c70f5f4705a70718c383acebca0d8f95d0fc5",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.shape.start.html": [
-        "1ee229ef327cb95c2cc8dea772ee0fe98518a746",
+        "0abeedf433d66064f7067008775785d4702c001d",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.transformation.html": [
-        "32811f2300530ddd032dd0c25e6703e0c143fea4",
+        "5aa8562b1df3ddae0d549246810213a2a736efee",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.zero.1.html": [
-        "4bacbf0dbce7237695844eee3e51584775b4e804",
+        "bb2cc1d3e36739995260a2d2d26b9e60cf7f9105",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.zero.2.html": [
-        "1f26b5942b2fbde6a4f12970a6bd38711f2599fd",
+        "d2eeee535d223dda4912c677c5be3a98bf93eee0",
         [
          null,
          {}
         ]
        ],
        "2d.path.beginPath.html": [
-        "a21282cc3e55d376cff1f653467af553a532018f",
+        "316f6af94282c9ed3d56f6ee5cfd57b1ced5bc7f",
         [
          null,
          {}
         ]
        ],
        "2d.path.bezierCurveTo.basic.html": [
-        "7f90f7bde4698ad415fe32d51ab82a58c4950ebc",
+        "0c3d7f948b9367b3d9afe0443a80de869e563bc7",
         [
          null,
          {}
         ]
        ],
        "2d.path.bezierCurveTo.ensuresubpath.1.html": [
-        "1e6f8298c5ac2d7c4974bd02c4e06c6fb8e0e127",
+        "ebcce3f48cffe177bb77ea0841910f599876efcc",
         [
          null,
          {}
         ]
        ],
        "2d.path.bezierCurveTo.ensuresubpath.2.html": [
-        "875601c5dabd8bc04ffeaaf357cc6e89f38ea7ae",
+        "c269b72d333c0e505024a7d1f3f3b92640d8fa65",
         [
          null,
          {}
         ]
        ],
        "2d.path.bezierCurveTo.nonfinite.html": [
-        "e6da7b2726736d733abf2c65353056865a3a79f5",
+        "6278a67283099011b5ef99484b1cc827be288efb",
         [
          null,
          {}
         ]
        ],
        "2d.path.bezierCurveTo.scaled.html": [
-        "d24b83786fc350dc01d428c12f0e3f714aa0e8eb",
+        "e7a5d8b524cfcee672e59272c361316f78564240",
         [
          null,
          {}
         ]
        ],
        "2d.path.bezierCurveTo.shape.html": [
-        "7ebe1e3460c64f8bc9d51345490fc098270d614d",
+        "cbc28244252ec7ccecb0a94e8332f79139012a02",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.basic.1.html": [
-        "c49afd431ff7cd5902985ed51e7e612925c36b45",
+        "a5515e4f7ee502c4d2862ba57cecc7010e596e5e",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.basic.2.html": [
-        "dfba3b8164a2adcca837d2b317c8bc8ed44c8dde",
+        "27e1ad0b0cfeec1c7e18eeae5d19824b57c699cb",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.empty.html": [
-        "ba7a869f5cdc858e6ca5d96dd16ec8271096f751",
+        "17208ad797ef99c79ef942767b214627a0884d18",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.intersect.html": [
-        "1cdd9603d79eef2d1c18a298095655f1ab98f622",
+        "c1057f264570a822f3d841738b27dca5688954ae",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.unaffected.html": [
-        "893877f876d2f4efdc5ec40b6c02cbc0dd68f906",
+        "66f0379602148e807034f2431d93db80c423423c",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.winding.1.html": [
-        "5e8fa814243901a67cde7889c4e50ae03b49834e",
+        "46e4db9b6c9adfcac81f0ccc5c07dcca83265680",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.winding.2.html": [
-        "ae8fd4c4d94576e3e5c5e3a9cfb3a903d7072e57",
+        "9341353a8d16e552431cd16a117eabf9a9e7161d",
         [
          null,
          {}
         ]
        ],
        "2d.path.closePath.empty.html": [
-        "e9840f195a3e78430abce062b73ee4b3497f35e0",
+        "898cdc5fa6d5092f449785505fc2a9979f8d4a36",
         [
          null,
          {}
         ]
        ],
        "2d.path.closePath.newline.html": [
-        "2ad2609e1aec28c1e8855f7f66c936c1b1140eb3",
+        "07ec4b2a829fe8d4b553cf62fcb6ff94dbb9205d",
         [
          null,
          {}
         ]
        ],
        "2d.path.closePath.nextpoint.html": [
-        "7538af29f3033658274fb16472c150d0bb98c1af",
+        "648d7ad37af8a68185982924fb530706066812bb",
         [
          null,
          {}
         ]
        ],
        "2d.path.ellipse.basics.html": [
-        "13ba8be5b6e48f153ffb8202453c25b6bcd60cb2",
+        "d46dc31d261d4567f8f95db91dd0cd5891764ce3",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.closed.basic.html": [
-        "890c15cf4b29310c019f07e4e97049950e842a25",
+        "010dbf43e1a5e18da21cc776d1cc83a4de4cc6f9",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.closed.unaffected.html": [
-        "bd42e95181f743e5ee17779acb301fb9c5fafd62",
+        "e00a6c8f5509aa7e694a9970f117feab62bdef5a",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.overlap.html": [
-        "eb50ac6846bfee3394ea2de2b239c327360b27d6",
+        "08782ed11ee893ba2d449224cb60e390967aa981",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.winding.add.html": [
-        "5fbcd65260170528099fa6aed30cafb39e0837c7",
+        "ef9a2a0f939d247d9f4df7cc22cb65a7b7c20be5",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.winding.subtract.1.html": [
-        "963e5d3c75d5cb627dc7477bf235e5a95e3d9e54",
+        "eecf0198e27d4e126426b04df0d88bc07ebb560e",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.winding.subtract.2.html": [
-        "305d628b9e56b2f188e7f2602e17f855b9edd8bb",
+        "cf8b6a6ce984e4cfe5172cb8b027c08da073e977",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.winding.subtract.3.html": [
-        "4bda1bd248f32c3c5f3d7ee0cb4949a7647240ca",
+        "e056e330039ce8047d103f4ac473704c2baee85a",
         [
          null,
          {}
         ]
        ],
        "2d.path.initial.html": [
-        "ec17cc330aa55db43ae7982239ed5ede8c611023",
+        "a3de93a7999e8c93bc1bad4a1e931c4d791b9eaf",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.arc.html": [
-        "ecf184227d0935fce4f2a63146fe7bcb6521bcab",
+        "bc4bc560e5652e104db8a33c24b47c063ef974df",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.basic.1.html": [
-        "09cdfd2c9e2b778dd1bc1519f0ceef105a57fb47",
+        "22562c60a2871ff8a84f69d6050ebe8aed515e94",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.basic.2.html": [
-        "f2bd51a216f12cd7f842414e8e74af40d7d86893",
+        "9fc1060df8d42175dc32146625c62b30f63c43de",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.basic.html": [
-        "fc30dfe4645f08c04ae774a72cbc30b4ab4bc773",
+        "5e3edfcc80955473215da4a3d7b7c3ba72ff945b",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.bezier.html": [
-        "576c4f26e99978fcf99f15d07fc2ef057854a0dd",
+        "b2f2d23724a5bbb4dd4eead86047683b931f5724",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.bigarc.html": [
-        "a9995208e4a88f1adbfa178be0fe2c5471c6a2b6",
+        "77cb495137d6b25778f143e04420c43bdb7a1a94",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.edge.html": [
-        "01106f92a702b76aae5bbd0ba23bf91a122dbc93",
+        "b00da5a2a7117f0f971504f53e0cabdda9c83a10",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.empty.html": [
-        "5ba237094b43425d2bdce58e494726b508e9f34d",
+        "3edfe01a2ae4bdd2717b7af46a201fd24cbbacfd",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.nonfinite.html": [
-        "1523f4ca81d3e98e5ddc73d4bedc5fff387db32c",
+        "4ef541a4313752e0a47429091703d9fa384a0e05",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.outside.html": [
-        "4f3b38f69569fd56e958dc0e632072382add4215",
+        "6431879eb66c66dd8f6f04bd614c64c123d6076b",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.subpath.html": [
-        "92e25e249830f420e91954310134af3fc2606448",
+        "5d664557d8e8c8bb6f0174cf97c6164cbfceddbd",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.transform.1.html": [
-        "a210993ab98f422a9a1b231edb29ccd60ed96854",
+        "7268c3255ff5fcacf7154ccd7842e908322ca024",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.transform.2.html": [
-        "f74cdde1ef880c5d6decd5a32348f8b5de15c8a8",
+        "3adac7a419167efc687321c08f956aa3959e37d5",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.transform.3.html": [
-        "3469734dc94822034054a3d497c5d54f23ccb02f",
+        "8769c8a593b53393a8f7a92f3d90e56f97e3d370",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.transform.4.html": [
-        "94a2e15936634e0ecaa9c70ca679d3d9409c2544",
+        "1bcc0bc3a3f02a1a0d1a25da4440348f85321ab5",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.unclosed.html": [
-        "41aa9c695b84908efb9c69561ecfaec5d74e6648",
+        "2e3b711129ef99c0aff9d57b048618186889b629",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.winding.html": [
-        "82c78c7e378b4aa7bea4a437e385486de63674cf",
+        "ec2257079742c453d629479fabe466ea749ea935",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInStroke.scaleddashes.html": [
-        "1d1c9ba938df27599e10f947cbdc40f2aa444df1",
+        "e27baa154931ae3004323d6732556b57c6517a86",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInpath.invalid.html": [
-        "3bdd8f770c22170b2a10d6647e11498661bc304a",
+        "301c7c447d30cc2c1a0c44655dca09c9a297aa0d",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInpath.multi.path.html": [
-        "38949b89c835805beb2e6cb9fcfde75a80fb39d9",
+        "d71bd8a4c442999a2be6615e09bf64656f2ae831",
         [
          null,
          {}
         ]
        ],
        "2d.path.lineTo.basic.html": [
-        "4a2cca3a3affa9922656b33a5cee7436a79de139",
+        "c6f2caa196836898b665557d412699fe3b4a9a13",
         [
          null,
          {}
         ]
        ],
        "2d.path.lineTo.ensuresubpath.1.html": [
-        "0fa8f1c0549101dc57eef4e90aef3910806d80a0",
+        "ada8f0ca296d65aaf27238124534fe3bad7dda9f",
         [
          null,
          {}
         ]
        ],
        "2d.path.lineTo.ensuresubpath.2.html": [
-        "e5b2aa335c24e057a05d5cf60352b2b9b4b9054c",
+        "ac1f9238ffd9007280d04a3ca795cc72c090f51a",
         [
          null,
          {}
         ]
        ],
        "2d.path.lineTo.nextpoint.html": [
-        "54b586176de9f623e858f91ed1d3d0f7449d0879",
+        "f403c6b5088b2960c066c962a23783d7952cd21e",
         [
          null,
          {}
         ]
        ],
        "2d.path.lineTo.nonfinite.details.html": [
-        "12643d65fd01daafd4c070159b5cfbe73df1bbb4",
+        "d7595db7d137372521c2d3fa12628f7595622581",
         [
          null,
          {}
         ]
        ],
        "2d.path.lineTo.nonfinite.html": [
-        "fa3acf53851985da11df88e314a7642519c349c5",
+        "8246064ea3409a3b3f4b49f52f5ca298b7a24747",
         [
          null,
          {}
         ]
        ],
        "2d.path.moveTo.basic.html": [
-        "3ab41dc039920345ab4639d057ed3b9005c76142",
+        "d08d67621eb96a5df9450eeb092704a10ca95f7f",
         [
          null,
          {}
         ]
        ],
        "2d.path.moveTo.multiple.html": [
-        "24307b4e9ed56676cff8c7c014662a9f50d2b786",
+        "384d9fb437e827414822c6c65776d6cc1dad4490",
         [
          null,
          {}
         ]
        ],
        "2d.path.moveTo.newsubpath.html": [
-        "456b7538ace7dec8e0b78c7c82eae394d2b486ac",
+        "2a3d69b63752c313274d9986665fa1c662f92396",
         [
          null,
          {}
         ]
        ],
        "2d.path.moveTo.nonfinite.html": [
-        "4f61d9e58b9c59b0ce8930ede43169e7e72a5272",
+        "c6cd6f8178600ea9ceced955a1dfe9de0c48670e",
         [
          null,
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.basic.html": [
-        "1c2da33f9673517f85422fc938846b3bbee2e632",
+        "ffbf039440f96527c35fd27d9f24dbb267683840",
         [
          null,
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.ensuresubpath.1.html": [
-        "6c75732dacafabec8d81f2493db81d7d1ee01b5d",
+        "f8b8b515bab1b4fd5f19a923837e5d2085cb36ff",
         [
          null,
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.ensuresubpath.2.html": [
-        "8da6964cc2fad05bc12572a37133633a51a45cd2",
+        "189c744c659c6f075a8b94cb5faa84c5994d4be3",
         [
          null,
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.nonfinite.html": [
-        "4bc7107fca2718781ba4e30b911835c8d539ba69",
+        "1488e78a00ae990ee756025f6cca681aa5d195cf",
         [
          null,
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.scaled.html": [
-        "4b6ffaa741b42809281a9e3e5b8dc918fe8979d6",
+        "90973a8f9771fb5f1bf74cca8e2fbaf5b5cf2c99",
         [
          null,
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.shape.html": [
-        "58d35dc22f266696d65cd6816282fd7b6e9d3e70",
+        "23725c24210e785371b1d197907a12b9232de4a8",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.basic.html": [
-        "296800decd521871d675dc5e9c3950b41df5c8b9",
+        "716cd29af70a2af44311f08ece16832f3dcc950b",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.closed.html": [
-        "60a237770fa3ea7208ea122a845bd0ff66a6de04",
+        "385a88ab7ef57df4bade4f2d4ee0d42e5927ac53",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.end.1.html": [
-        "6f3338b84114879325d5775e863f32541806468a",
+        "e1fd8052d8d85e1ce4cf91643af385f4843fa853",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.end.2.html": [
-        "e5a1776dd64e13a8bdc30b017ac6786a3468eb31",
+        "d30bb111f1245491edbecf99639c47f1b78f45f3",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.negative.html": [
-        "e7e51371e164ece9089eccf5d7e05c2723269e1e",
+        "b917137baea885bde1e59319c98aa56d369dfd01",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.newsubpath.html": [
-        "e2c5a4cff83673f4c0ee908f05b308ea2abd8104",
+        "32b70ff2d8e142994e4b19292be91c1720f4c9d6",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.nonfinite.html": [
-        "b8517e8fa4dca487159939f95a4bb321b322d85f",
+        "c0d245a49c8cfa6f96af91cf641f1ea90e5ab82c",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.selfintersect.html": [
-        "e7c73dfaffbd449fec3708e7dfda7b8dcd8b56b3",
+        "8ebbf0c1f5bd090f51a874d68c43e37bdcd32ea3",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.winding.html": [
-        "c9547fe32aae0b69152fa1124932d7a3ec99d335",
+        "d7350ef38c772d442aeb452ba8a75e3cae8d286b",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.zero.1.html": [
-        "9a210e74414751d8e2605aaac7f8ca722dad4c0a",
+        "c773ef61d051a779f9b52892ac498d266027975c",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.zero.2.html": [
-        "0e3a7c87d66d486127453599695f4d3e7ac1d3ea",
+        "5888231fc6dd75647759e7363631ed28fb65b8b5",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.zero.3.html": [
-        "e92b121f312528300851fa10d8120b37cfc72c44",
+        "c000b008fb8d98d71a5ca58b5f1d96412730484b",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.zero.4.html": [
-        "086ef94f29210ccf9109de8ec081b430ff5f7b96",
+        "bb3ecb3aa56b553b50784fd76837b63ad7cf2ee8",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.zero.5.html": [
-        "880cab561409cfa3a70b800b2cfe0f1ff2009153",
+        "081c753d9198257494a4f719e5f69089bbe052bb",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.zero.6.html": [
-        "34c9d15cfede26225a53676e3e15f8a3d000e7b8",
+        "dafb273d562a67f05b6cad39dbebfa6ff9dfc6dd",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.1.radius.dompoint.html": [
-        "bdcf60d44ccdd14410da530108535806a354b93f",
+        "3bb890ae969d9489663fee40db2b3162ff7f7a23",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.1.radius.dompoint.single argument.html": [
-        "6e13276c987d1e6cee90d64e3f0b686372666285",
+        "96e933870babaff3f080e04084a9220f58ffc495",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.1.radius.dompointinit.html": [
-        "6186d98eafa5db93fa1cda6ccfb7c13a9b8752e2",
+        "1315233d79b99b9a736ae3606d6fd30803b5896a",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.1.radius.dompointinit.single.argument.html": [
-        "7bf91ffe35c088849d954828d7d8bbc77f198abd",
+        "f5c6d00959124771b9dd0c1e3cc220d11643cc4f",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.1.radius.double.html": [
-        "250bf7d6ab545046864641e9a20e185af922de48",
+        "402631a7a00c551ee4cec9c4d77a5249a3d0caf9",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.1.radius.double.single.argument.html": [
-        "e5e953de74bb9e1931988841c49789cb3d23ef8f",
+        "ed4887c2debc03d62a32dab39e368dbadb46035f",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.1.dompoint.html": [
-        "699603b4fdb93dbd96d57c9206720e0c7321c6d2",
+        "00a9c1458244e0cc26a85d56e57fc6635eeb170d",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.1.dompointinit.html": [
-        "55c06ca2ebb81c71a7fd459d0372e59a27525de1",
+        "e9b3a7bf79806fe20394cec75cd7a387e767cebd",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.1.double.html": [
-        "1d38197baff9dc1efd99f1ac9f267265512d36ad",
+        "a2f02104e27b55ec38cda31005fb917649468bf0",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.2.dompoint.html": [
-        "701109d4f2e61cef64625cad2acade509d359773",
+        "57df30d5ae06ef5c5819fbe5f111a7fb7c7bdd60",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.2.dompointinit.html": [
-        "409d5014c3175a9247f444d9c576748d9d8428f1",
+        "5942ab750fe9b2ef8cb2c89e3ca6c39b873a240e",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.2.double.html": [
-        "a0c458f006d80abcf5db3cd555d45f1af3429e1f",
+        "2390a61dfd8e9212eac9d92083508e257632d758",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.1.dompoint.html": [
-        "ac4a3ddd89417a3f2941b113e937156cc36ad765",
+        "f4fa76afac3ba36d81cb31886de64529c68fd259",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.1.dompointinit.html": [
-        "bdfba5df41986c45cf4a28589e8c7857c8dd0b60",
+        "4e7dc947f43547a773a53e7194e9fd316bc85184",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.1.double.html": [
-        "3e8931e7fc00d07dc1017ca4ae6639cae6151aaf",
+        "d7888da6d9a13d937ce256afeb4c9fcd72ae5354",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.2.dompoint.html": [
-        "7546120a6992f1adb5695f66cff981d0cab009ff",
+        "38a8baac53938363574553037c2fa17a84ebf81a",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.2.dompointinit.html": [
-        "d8c805c28b6933371660a0a507e5a1c8339e2c16",
+        "5e867caf4281d879a4c1a2d6527692a6b8a7c8d3",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.2.double.html": [
-        "c3d722bac4e41525fa6a9d52a1192712c1fb7c81",
+        "41edff205cf5a8e6af6a9549178a0a2771b29af6",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.3.dompoint.html": [
-        "1d61ce570594205aa7b1f49834c39d6d2e29b027",
+        "6d6a1a6ae05b4b84bdee9e94cb9b3677ee75f4f8",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.3.dompointinit.html": [
-        "f1714a84e322c849a03cee70aa796f3cc95c591c",
+        "132420e34324a3a044fe84a78a2d577f5a9717c3",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.3.double.html": [
-        "f3f5721a729f07c5348fc5e925c7a90aa74ee392",
+        "75a8e924ff427166ea599d8133ed8b7f31f6ff02",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.1.dompoint.html": [
-        "4ecff46aeec9960045585e4cfa61cdf8ac7f5712",
+        "b681b59f4e21679d5188b1ef93288fa0c260bab2",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.1.dompointinit.html": [
-        "e5b1feed32f08d54a11e17f5581de746bb79a6f2",
+        "e5542894b36bfee0b8e9ea97a5e83d4990d49056",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.1.double.html": [
-        "7c22f2457cb3d8004852d55209bb024a33fd7953",
+        "028effa82b1f8b90b06cdff493773bf1ba531a5a",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.2.dompoint.html": [
-        "f897a721cf7e02509aeee773f78c749d13abc935",
+        "d3c16eb4936ea99d49399c621d3ef260ff88e77c",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.2.dompointinit.html": [
-        "826befa02a57063851805ccaefaf9bb65f38d838",
+        "ab5ad3f4da93933ab5f94be82f5296598ea18dfe",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.2.double.html": [
-        "a0db8fa25e374a005501c9d63a3a780afa66ac4d",
+        "ec229e396a8a674191393ebfef1c52238041e0cd",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.3.dompoint.html": [
-        "ac4f0795c68cc771221832dcdd59e884223de972",
+        "5367543fa3d308e18a2a6778502d4097d77febd5",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.3.dompointinit.html": [
-        "b902fb9fce29fc7d1a9259a521d255c6b2e84ec9",
+        "89df524d53a0bbd59ee5e52de1105b84e614456b",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.3.double.html": [
-        "d69e2da221d3f4785b46611b581bc3cc9c15774c",
+        "22ba747b377d1fb33c0d47dec225d854b41a69e2",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.4.dompoint.html": [
-        "f660fdaa6485fb1d9ed620cb5d5163fdcc77a9cd",
+        "b15c29188407f51c4746830119a05c934d2899c0",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.4.dompointinit.html": [
-        "0764d3e0014a761c23d4e72ed852fb50a65ff164",
+        "d9b03a1225b336ce83e229277c0784ac90287f08",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.4.double.html": [
-        "7a2cd952e6087ba8a18dc0f3bd3e0d27c8b16cf6",
+        "62ccf85958200042599fe6099a47163fee774121",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.badinput.html": [
-        "d18e99b4ed10a71ffd0c46eb3068f1d1a070e025",
+        "39e1d0c6554b7cac0717f22fd4e42df2ec2b3c7d",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.closed.html": [
-        "40756e5d941c3bfb183135ad914f02e394614565",
+        "89aeb3b865c6f4b93ba1e869000cd319d679c48b",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.end.1.html": [
-        "10ab8c1fb8320192810fefa34ca3eda0561d37df",
+        "be98ce5841b2e1124e7fa17655a569c261dcf52c",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.end.2.html": [
-        "3b95d1ca88e95818cd2f28a815f2396991b62559",
+        "16131ad345ac0b3b83f5632889b748953ad54ac1",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.end.3.html": [
-        "48fc4988aa8db76b680fb7b0cf88b9813141b3de",
+        "f9454080eb07418c60c8e009bbfeaa6e4a7722a7",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.end.4.html": [
-        "4b70fbc344a736c3ca6bf1127f1698182ccda619",
+        "52d49c32e737905253fe108496dcac4f8b9c5bde",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.negative.html": [
-        "81ffe8c93e4cdfb5d97a99fda527e030f1470b06",
+        "66e1172432adec85ef6f588d2019066e942c0147",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.newsubpath.html": [
-        "892ef6e5f195331059532e707a3b7820218a355d",
+        "df3990a37672ba07b0f821439a29f063cee47ba8",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.nonfinite.html": [
-        "a047b73177f7ae9b5fd18993c1c19d35e8c65b57",
+        "5f0f0b6eafacd84f641101dcba25f59bbeaa2230",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.radius.intersecting.1.html": [
-        "e7675ba35c35ce108814eec2fc7eadb063a39b7e",
+        "913b17e45e907e35e6dcad31215e7d3ed558d84f",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.radius.intersecting.2.html": [
-        "48140ca60ed47ed22704a3b41d57bb1adb2065c3",
+        "abd7f860880cc91636638ff9f8553cef48864cfb",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.radius.negative.html": [
-        "c7c0bda6ff71befc9232dfeedbc5a9fe417557a0",
+        "ac2532dcfebf0cb176d166db4b18c685a49b0aae",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.radius.noargument.html": [
-        "e45b20b7a0762b20c8f423efb5eee16fe3df0488",
+        "cfaf87ecf22d748e4ee95a19732de20e1d03e657",
         [
          null,
          {}
@@ -523537,182 +523818,182 @@
         ]
        ],
        "2d.path.roundrect.radius.none.html": [
-        "16a03c1fdc5d5b77557b5ba574a233007511f63e",
+        "8363285ffc2db4feaab7d7dc7ee947afb8590707",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.radius.toomany.html": [
-        "c6a960b0590d1b67d4e18d437c170dd0957baf51",
+        "d8fe4bb45cc45041447c4a52d227ac247bbf5bda",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.selfintersect.html": [
-        "d644d66e7ca6e4014ed7c140a0058fab319f87ba",
+        "7a69aaf4c6049075b2c364ecbd1f40ae48b089cd",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.winding.html": [
-        "6bcad2c9642c9737c801e4555110c688ab4eb103",
+        "9c1f985eb92af5ac361d675fa5a1336700afc74d",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.zero.1.html": [
-        "690087f0aa0ef4ff9b6fb74512ab46441a81ca0d",
+        "4e9a804dc23cfd93d534160983ad894d4e336ad4",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.zero.2.html": [
-        "cfeb923299a2aa67cc86a4eb3e4261e8b9c125c6",
+        "ac64fa7818c15f210306515d1c270642aa42223c",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.zero.3.html": [
-        "39151f38c76276cefd116b198c85fe8d3e2e7127",
+        "a807715b35290041eba760d131b10512fbd1b594",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.zero.4.html": [
-        "20dccbeaa0b68eecbafbe71f8a09237accc517f0",
+        "fc51918c27d5cc43a5b6b9a9519b2ecd309a1c83",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.zero.5.html": [
-        "bcb84a591710530d85bfdc5ee9576570d927bd81",
+        "de7d41b68fab6d808409552420946d8a199a25bc",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.zero.6.html": [
-        "829503767dc9b88022f0509d00f64ff6f2ad4cc0",
+        "1e8e338a739248c503eb5d260f8e3a32dea27dd7",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.empty.html": [
-        "5a2a91bd0fe8ab6de13837c6f3ceb5b6030a02b0",
+        "aa459ec9869679f5204163d0f1f9cc6f3497d742",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.overlap.html": [
-        "c1b425d18c7a7fd5a239cb26ff11499e09054bac",
+        "a577f22769721e191671ae660f468e5105aba584",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.prune.arc.html": [
-        "abef923f6a6db5638ffec013cdcfd6262a01727a",
+        "6474a15424c3cfa08bd5f92bc1df3d6138815d29",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.prune.closed.html": [
-        "4515669bc8e536670d7ece6bee7af68a8d63ae82",
+        "16b46852a1b1ac6160608eaeb40e7494069555bc",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.prune.corner.html": [
-        "532c74659500dc2758eec6caa4d4693ad94e2d4e",
+        "226fccc6d4bb93393eeca5f15f0a7bc7f0595c96",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.prune.curve.html": [
-        "6055d8b3f4c46aba63804aa52d0ee7efc4146ee8",
+        "8023b7b3f934682ec625ec8871243cd5af72c5be",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.prune.line.html": [
-        "2d8dcbe49954e6fe3ae2fa187a81b0c967680f31",
+        "97f88847c0b5cb634f085755ce7238b8c6534fdb",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.prune.rect.html": [
-        "28b02ca3255633527496f838e9ffa21e40134431",
+        "bf1fc9aa20780826cdb96e1e80b05732fb2f7b32",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.scale1.html": [
-        "29ccc6613dace91eeff0848315b2a6fd0579f1bd",
+        "3e4651ec4a1f0f15eaf958df4a56c1a7420130a7",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.scale2.html": [
-        "bc72c5c140f80bf8382f2627074110da4f6e2222",
+        "099efec76c477679d51d6e5b3ac31bb60d06012c",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.skew.html": [
-        "b902a1dc2754c0fd1bffc3f53d5bdd8f6f67a8dd",
+        "86f3eebf1d5f8a1393ce5c2ed38afc8630e5e13a",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.unaffected.html": [
-        "9b05a6aa0dbb9e62eec3230c4deaecf6562e8fd0",
+        "8e6b41946fb37d79be6e79e2b693acc6c37df1f3",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.union.html": [
-        "daa8da9349378e75078b432212a3b35af20a0f9e",
+        "73198ab24d18b127aa2067138b8aa1e98f6e3e9a",
         [
          null,
          {}
         ]
        ],
        "2d.path.transformation.basic.html": [
-        "d77b66a68fc9624becca5cf7e2757a2cbf0662da",
+        "1cdc81e4f65bfb36bd3c14cc6ba2cd2c2d427c7a",
         [
          null,
          {}
         ]
        ],
        "2d.path.transformation.changing.html": [
-        "5f79285a81dd413673df7dff5c7457f9f99a3b20",
+        "8f711b6b9ae51919629d69bbacaf216ee89318a7",
         [
          null,
          {}
         ]
        ],
        "2d.path.transformation.multiple.html": [
-        "aafa11c127b6ff4385510ada8fcd1f95d6558a87",
+        "af06c0637137bc8eb99d31fadabc02fb15546309",
         [
          null,
          {}
@@ -531341,1204 +531622,1204 @@
       },
       "path-objects": {
        "2d.path.arc.angle.1.html": [
-        "cf358e38fc1d3beb55d8b72d7969635780fce3f3",
+        "bdd2c7a65fe019d11be271f07ea195448306b536",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.angle.1.worker.js": [
-        "5a1f54c4c2fb2ff7504e61858c9bedc92c77e265",
+        "1b6a534c23b4bb1049110cfa981c87f99c1cc0b0",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.angle.1.worker.html",
          {}
         ]
        ],
        "2d.path.arc.angle.2.html": [
-        "9b3983fb370c1303cea9c46835e753a30e36f77f",
+        "c92e83abd7a21bdd61a1f2e83e747842433cfe9c",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.angle.2.worker.js": [
-        "15bf295b2d5759c1f21f3e7f42376411bc1bada0",
+        "25598c959d64ba3e0249582b538681436d328c44",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.angle.2.worker.html",
          {}
         ]
        ],
        "2d.path.arc.angle.3.html": [
-        "a757b31efba874479655de4dba3ec6c38db2e3f9",
+        "86170ac8c564cc0e0e90d509850c04422a082ec9",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.angle.3.worker.js": [
-        "646349fb99f3c48f320079e7312f2b253e11bd1f",
+        "6841041d7847884c9c66d7be88f79fef97e2d927",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.angle.3.worker.html",
          {}
         ]
        ],
        "2d.path.arc.angle.4.html": [
-        "b8e4d54027df3ef4b59a1206c321ae826dbe5d49",
+        "e694b99f7076340933def8db15e348104e93b6f1",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.angle.4.worker.js": [
-        "8fa2ef137d7bd645e12d117a0a744b67f3b89eb7",
+        "502175165ff1fe3f6eace1eedd079d35c16a47ef",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.angle.4.worker.html",
          {}
         ]
        ],
        "2d.path.arc.angle.5.html": [
-        "f13a2e41c964b2b4f6bafc0882dd707e16460d63",
+        "7f0d9af19f5b644c57b1d30a8a07c6ff746ed8a8",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.angle.5.worker.js": [
-        "50b23cd9ba88ffaf039bc10b0a9ba65a641236aa",
+        "aa2320a92a525cae13c6f9cc9ff28b07a221055a",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.angle.5.worker.html",
          {}
         ]
        ],
        "2d.path.arc.angle.6.html": [
-        "88184b8d77d44f29246593a27fffe39da8b4c4a3",
+        "64cf6daeef8daf03f318b1269646ea14f6a1ba41",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.angle.6.worker.js": [
-        "38bd40489ba9620a2e8cdb7df34cfb343d3cfa6f",
+        "929db397d3a03b9edf2bb342d19f466d8c03f2db",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.angle.6.worker.html",
          {}
         ]
        ],
        "2d.path.arc.default.html": [
-        "848f20c32fa92bca95971882799a349434de3803",
+        "ee42c040852e230370df3e7757551282758e7118",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.default.worker.js": [
-        "c73829a0eeee543bf2da5a085328898ed13144e6",
+        "da74713e4ab2960a19885abf88fba0fd40f5cac6",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.default.worker.html",
          {}
         ]
        ],
        "2d.path.arc.empty.html": [
-        "9098b7fe02327f971a83850bc90f44f131e14c2b",
+        "25414647b21dd07d1c1f0b471ec8d5df594bfbe7",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.empty.worker.js": [
-        "82281ea4b083a40986213440d77378cfca8f7bbb",
+        "9b1fbb1a387f655b9c4aed944d7d046c777d153f",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.empty.worker.html",
          {}
         ]
        ],
        "2d.path.arc.end.html": [
-        "12be27afa6620d3c7a5332fd90fcf9e3cb66ea00",
+        "b8459053f2ec41eb05b5b5dae651991552df950e",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.end.worker.js": [
-        "a2519f0bad02b9d96fbd6276b628cbe4c8ad550a",
+        "963640a2735d6bc8837024a38026b530f94c27b0",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.end.worker.html",
          {}
         ]
        ],
        "2d.path.arc.negative.html": [
-        "77f1b07bf5c2d11b6598aa3cd7fd5ecc1574c7ca",
+        "6c81b9e0ded88d8af55c4363adc3f81884b6b69c",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.negative.worker.js": [
-        "c1abffa8e9e8f7ebf94456fd51c1cc3bdeb7b888",
+        "b48eb984742950fbfd876b2070f4706926e9d806",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.negative.worker.html",
          {}
         ]
        ],
        "2d.path.arc.nonempty.html": [
-        "542940435af00a1f995af043149a952c50c9c298",
+        "4d9ebe6d8746579c083650b1e6fe745135f09851",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.nonempty.worker.js": [
-        "1d7de77486856830fb5ae78961bb23dcfe4dde11",
+        "af6b4c9853850d68fc1b7906e882b9d58d1fe960",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.nonempty.worker.html",
          {}
         ]
        ],
        "2d.path.arc.nonfinite.html": [
-        "c65af631b54f767af4eb9faf600532e483976b5b",
+        "b347a1e27ad4584362ce14100094acf29270dc1b",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.nonfinite.worker.js": [
-        "f83dcf1080dcfbe8179a5c9544e922406b14fd07",
+        "50ff560e3497a127b1e0e5dbcbea00cc8d0abeb6",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.nonfinite.worker.html",
          {}
         ]
        ],
        "2d.path.arc.scale.1.html": [
-        "3b0aed390f58e405345bc0a0fc240ba72ceb680f",
+        "bf8a6f1f915fbb2d4442dcf14293482715c5360d",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.scale.1.worker.js": [
-        "ec300985c8a69873d8b6030d3cb6f17b7397fda1",
+        "5d9619a920f5bc23bc6b0078dc7da90796299f56",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.scale.1.worker.html",
          {}
         ]
        ],
        "2d.path.arc.scale.2.html": [
-        "f6822f8203fad4c81e7fdf060cb00b60a330e371",
+        "95376882cd3f47cec4e72d50d0014ed6d57fc451",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.scale.2.worker.js": [
-        "d946f7f0fee991cbbd10bb1aaf087ccc99416d7f",
+        "c655dad30f881b5d7c1b04b056925b32e88677a8",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.scale.2.worker.html",
          {}
         ]
        ],
        "2d.path.arc.selfintersect.1.html": [
-        "9e8803a102da055720c8944017e39859e9063439",
+        "624b307af729ddb33b3ee99ced81d50f7aa6255d",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.selfintersect.1.worker.js": [
-        "84cb983f1aae34330cbd0123615f36d227140ce1",
+        "6c77dbd5b19c324ea096704a090a30570f5f4ed8",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.selfintersect.1.worker.html",
          {}
         ]
        ],
        "2d.path.arc.selfintersect.2.html": [
-        "f2118ef29b89df4d5fb6a57d7623a8d5face9907",
+        "b49aa2437aa9a2cd72ddac5ef645cdd306118259",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.selfintersect.2.worker.js": [
-        "be7f13aee7e14032779987b5181b080d1b8bfe1c",
+        "2bbdacd46de8010e7adb802cbd806e6322e9d91e",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.selfintersect.2.worker.html",
          {}
         ]
        ],
        "2d.path.arc.shape.1.html": [
-        "42242536e2bda882433dbc884ccdaf405cd96bf0",
+        "ceb3cb380cb172486e3f1672ab87683755670129",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.shape.1.worker.js": [
-        "b41863bfb7b14d67fc2cc5e8d613b033510fc91f",
+        "e1058ae96dce609fabc08711ecb9773111b799ab",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.shape.1.worker.html",
          {}
         ]
        ],
        "2d.path.arc.shape.2.html": [
-        "1e33a0241633e89de48ce7d99f5ff27171ba0a91",
+        "a39fd03947669a464a618d40c3c5c6f3a341f311",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.shape.2.worker.js": [
-        "d5d6cb7b7e3daef66f634daadecbd8db08d8a723",
+        "d444d9b04eb09c9f91b9e0f55698aadd82aa0325",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.shape.2.worker.html",
          {}
         ]
        ],
        "2d.path.arc.shape.3.html": [
-        "b90284e5798a1962114e271c94a37495754bf12b",
+        "853814aef215ab5d8d7f91d21c59c0a0245b9be7",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.shape.3.worker.js": [
-        "5d0cf805399eeebfbc1ab0d51cc71881a798b1ea",
+        "b8008e778b08e7e979a48fd0361a9c69ae96fe7c",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.shape.3.worker.html",
          {}
         ]
        ],
        "2d.path.arc.shape.4.html": [
-        "dce9547a6b4e360712cc93461dea6cff2e2c7bac",
+        "e6221947dff6046b4067b1f53189245ed4115ac1",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.shape.4.worker.js": [
-        "8bd028b0bd178af918c2249f9554f8ed86a93c52",
+        "9174641c20da350fa282ef0f06dbc9b5172adff3",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.shape.4.worker.html",
          {}
         ]
        ],
        "2d.path.arc.shape.5.html": [
-        "bd7e54af3b91ececb55412cf05d048a7bdd192cb",
+        "968a1c58c08afcdc18e9cdd50f11a5e36dbc5388",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.shape.5.worker.js": [
-        "0584590afb31fa82580165a107f6833b67bfbf2a",
+        "7f40e4341abb77c394b16d1eef49e92c3e894fc5",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.shape.5.worker.html",
          {}
         ]
        ],
        "2d.path.arc.twopie.1.html": [
-        "ddf200c88b59724a550343762dfcced20fa952bf",
+        "ced1207a9b33ae0f2f6d0e542d16aadf9b41bf72",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.twopie.1.worker.js": [
-        "c56d25c70ba13bd1dfe3837e12c93ef415d22a9f",
+        "e9abf086e0c8e8216d9882854eda08f1dab074d9",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.twopie.1.worker.html",
          {}
         ]
        ],
        "2d.path.arc.twopie.2.html": [
-        "0a9e0c782a616afd976d0e8cdab8e88086d64b86",
+        "4948b10f2fa5271bed09fe47673c279d117401a2",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.twopie.2.worker.js": [
-        "5db75de2a26897b71227e3aa6ece0f5ed3ae6337",
+        "5e9c51e5e3f48b90c348e74a34a88021ba36824f",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.twopie.2.worker.html",
          {}
         ]
        ],
        "2d.path.arc.twopie.3.html": [
-        "df1e45480d46f105e590dead06a5659f0971c856",
+        "c4036fc06e725eca7c15a34b5301cb0c9e059dcb",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.twopie.3.worker.js": [
-        "0c984884c9a9556c3688667534059b15ca4bb12e",
+        "ad72fbd0aff69fc092297a6d4b2b463388ede8db",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.twopie.3.worker.html",
          {}
         ]
        ],
        "2d.path.arc.twopie.4.html": [
-        "8afa122c7c2031c848e7972432c224cef5dd0554",
+        "392f00e652fefd6c3bd6aa3b556a15d818c943a3",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.twopie.4.worker.js": [
-        "3158528f6579cb557fe6ab649a96fd414139d263",
+        "15d799209c3c7fbd97036ced9c7af82a2c7fd2b8",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.twopie.4.worker.html",
          {}
         ]
        ],
        "2d.path.arc.zero.1.html": [
-        "f26162f22382f0125498ce7c1715b58ce47bf6cc",
+        "5757ab3ddf706b4a1366f330eed28e86d5290dfb",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.zero.1.worker.js": [
-        "efb137a92af8a0b041735db7c97b9b5c54a1eab9",
+        "5a6d35f69156b8110b71ab7a2ba590bc6f472800",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.zero.1.worker.html",
          {}
         ]
        ],
        "2d.path.arc.zero.2.html": [
-        "f2eda4b8a2de1b3762982fd877dfafcadeb1be52",
+        "69f8472443a075d9f9521ce521aa13412b597a37",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.zero.2.worker.js": [
-        "28f4f3759afd56bff23d8d83e4cc3f20a38b2aaf",
+        "a285462fc067b96cb935783b3b28ee7fb5bf2790",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.zero.2.worker.html",
          {}
         ]
        ],
        "2d.path.arc.zeroradius.html": [
-        "2d56e369b893436a68f3a5af646d7ae7d5440b47",
+        "7303b7dc1c607ee73a42297f98cfb7dfc5336d22",
         [
          null,
          {}
         ]
        ],
        "2d.path.arc.zeroradius.worker.js": [
-        "c57046ab94dbd4a5d714788f6c4b7812ec6dfe50",
+        "183acc1bbbb56f0fc34669fc87c7437dd11501c7",
         [
          "html/canvas/offscreen/path-objects/2d.path.arc.zeroradius.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.coincide.1.html": [
-        "58b26356991c5e3335efc654f0aea90e9311ca5f",
+        "e7558d628fb0569f1232cd04b807c962f95a5f37",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.coincide.1.worker.js": [
-        "44926712fcf1d803e4ec82461bafb3fee163530a",
+        "80a74c6d911a2433e3165b8b8d541dfd8f4f58a4",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.coincide.1.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.coincide.2.html": [
-        "d85e310c85268f090fe6054d41ffd931add69537",
+        "18ac31524d10b99ef9006552b2119db3a466d954",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.coincide.2.worker.js": [
-        "c8b336a494e19861db315dacd649f9183faa8e3d",
+        "a35ffe6977a3ad6d0f06945ed2db9603777aedd9",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.coincide.2.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.collinear.1.html": [
-        "5531ca62ae093921886dfcc11df3ba73e07e98cc",
+        "b9bcc7b2380a0d4123063317ce42787d1d150b17",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.collinear.1.worker.js": [
-        "3864a311db372520d53c04613571415e3c9b272e",
+        "a814b1af0701569c5f03acffe74f0e1b566b1d90",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.collinear.1.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.collinear.2.html": [
-        "a78d626ef0a5fe0b734f894eecc1a5ba2656072d",
+        "f51a7af206a9cf6d3f41ca715be3c248c7ba21b8",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.collinear.2.worker.js": [
-        "6f4c2aa8c65e06be182bc5f808ab454e6a335f08",
+        "ba9a75ed4e6f32453b0924a458719de04b2944a4",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.collinear.2.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.collinear.3.html": [
-        "f2d52e424178d843960ae0ec8a473c4702d0e8b9",
+        "568d0f8f2b6f52854c26b6c1ab2f2868adf4eb4f",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.collinear.3.worker.js": [
-        "2d152b0d83fc0f75c30de3c363b247711bc839a6",
+        "8087909cb7ce643064c96c1f593ccf46b28574b3",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.collinear.3.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.ensuresubpath.1.html": [
-        "81dc7b1bd818584e884d96684383597abbe42c38",
+        "ec1bd0399dcd6bbc360b8d85064b7764d29e4777",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.ensuresubpath.1.worker.js": [
-        "99354ac735a89d0df6bfb7bff9bb5c162d6cbdf5",
+        "74d71b6253f0eb6ff34a5bde2f78ac6b981c3ac6",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.ensuresubpath.1.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.ensuresubpath.2.html": [
-        "43c9aec29411b6ebbcb57b8a22b13cae146121c3",
+        "60ee458524e11fd8ec7ecb38f9973034c79643d6",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.ensuresubpath.2.worker.js": [
-        "aad3d006c992d9bef7c2746905cf7821e1d1d7fa",
+        "76790925afb87a62e205c4f645fa4cace5f008be",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.ensuresubpath.2.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.negative.html": [
-        "59cf9739777137e488cf0b65a8a6055b38937460",
+        "c35e293a6fa5380b1f6ae92176139c598d6134f6",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.negative.worker.js": [
-        "60813e88bc35c662ed751105a8b0ed6bb08367e3",
+        "104e7a6387379509507e86518fc37378f56838b8",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.negative.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.nonfinite.html": [
-        "982ad4a9648c64ea7a4963e898826f956ee63b11",
+        "9d2256d79c999e19220e648e8e119572a44da82f",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.nonfinite.worker.js": [
-        "6aa674fc90d6f890b0094186b40fb0f2d8fe653b",
+        "1d2c913cfe42f52e16dd909b2fdaaf9b6697f8bb",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.nonfinite.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.scale.html": [
-        "7139455bda45dad99548973a6ea80c95311c5251",
+        "26dfa640ff80ec677d4b805708512d0d8c8b3b4c",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.scale.worker.js": [
-        "b06c8f935c5cbd634cc90db89f8b6d0ff44ee3a2",
+        "dc41e6d92dda06bd5fecce812677237049da3eae",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.scale.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.shape.curve1.html": [
-        "659b02ceed445dbe9ba7c38ae93dad9e7adb8e34",
+        "f7d10dd61a3602ffc3ea378b7f9d741b3a66b68f",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.shape.curve1.worker.js": [
-        "5223b55abb29c8d9afe0f8a86588a5a0732f1531",
+        "c7e61ab5761fb30424d65c5b4fa63ccc9fd3eff4",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.shape.curve1.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.shape.curve2.html": [
-        "02ab6c1437d879ccb9e7454f60f95c6fcc0e9ea2",
+        "1a023322b21d239fd8c076eae611c67b62904d2e",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.shape.curve2.worker.js": [
-        "f06c2cdc33f2ff2192af430ff280123e1c9b61b2",
+        "f00e506f30e92071e3c3279f61cc1212d7761a24",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.shape.curve2.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.shape.end.html": [
-        "0871c39157f08c06cbdc7ef5c94a349a2140865b",
+        "3f8af61215c675d06311eff7ebad5054ffdc8d3f",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.shape.end.worker.js": [
-        "f3addb0a0c7f1f42a60539dc29aa372b9fbfdc51",
+        "20cc956a449dcf27d4db5d40753496169f1a6c98",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.shape.end.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.shape.start.html": [
-        "5040462ada3246bd67db2ebf54e81fa1d8bb958f",
+        "a426a19d8a2f7e060fcfffe1adc841156bd21f1e",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.shape.start.worker.js": [
-        "36706d600e2af9324a66c2b7887e405d90a3b140",
+        "cebf27a821b21871b486f13b4034b45dfa5964ad",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.shape.start.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.transformation.html": [
-        "bea6374ea4e0a3300c1f4398c2de12282894c5b0",
+        "842210138a6f9ecb69b7015ca9b925516fe48244",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.transformation.worker.js": [
-        "925140b675018d944fc5ccbb1bc7ede5c40b077f",
+        "585a500079f59eed7fcee0d095c44e17bb836e96",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.transformation.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.zero.1.html": [
-        "00541a938b6655c2bdb4fe6360dba6c8bfcbaeb6",
+        "a367385551b73eceb292426141d0b8429c1ee8c9",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.zero.1.worker.js": [
-        "cee6d1c5baa4074d48e9ad485a0b03df66b8a7ed",
+        "8f6d979a55a7d7a24d713dc65352464fef071e5a",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.zero.1.worker.html",
          {}
         ]
        ],
        "2d.path.arcTo.zero.2.html": [
-        "e10fe5ce95e10c7d14401aa24223d7cbee87c798",
+        "87ab4e13dea257a5f61672c64c9e96378df8a0b9",
         [
          null,
          {}
         ]
        ],
        "2d.path.arcTo.zero.2.worker.js": [
-        "d0cc4a1484a70fadc2f951f2df7a4e7c8d006426",
+        "0a459763254ec0cf13fea4ac77d6cd93753226a1",
         [
          "html/canvas/offscreen/path-objects/2d.path.arcTo.zero.2.worker.html",
          {}
         ]
        ],
        "2d.path.beginPath.html": [
-        "8b9c4cdc7ac45899f2576ddab69f01d7813e5bcf",
+        "b2043d604d986a014a9b9527f2dce89fe2ed7273",
         [
          null,
          {}
         ]
        ],
        "2d.path.beginPath.worker.js": [
-        "18b81afa5c4d5f2dbd3031e48b651e66e8b588db",
+        "35a4acc84d6873abed0c8b5fbbdb33516312d75b",
         [
          "html/canvas/offscreen/path-objects/2d.path.beginPath.worker.html",
          {}
         ]
        ],
        "2d.path.bezierCurveTo.basic.html": [
-        "691728743228409114c0c2b92fef18387bdb93fa",
+        "099919060beac48c97ebd2fbf7729de99bcfecc4",
         [
          null,
          {}
         ]
        ],
        "2d.path.bezierCurveTo.basic.worker.js": [
-        "a365372c9e67ffc195b565d37d08bdef8419f680",
+        "e7c86a08f96109d151b5b672813e0c02d7fd9e61",
         [
          "html/canvas/offscreen/path-objects/2d.path.bezierCurveTo.basic.worker.html",
          {}
         ]
        ],
        "2d.path.bezierCurveTo.ensuresubpath.1.html": [
-        "67dd771fcbe72f4969964f2be2790e571cb041c6",
+        "6a11d1bfbb0fe7ed11e25fb410dc41a748907582",
         [
          null,
          {}
         ]
        ],
        "2d.path.bezierCurveTo.ensuresubpath.1.worker.js": [
-        "beb275ba37811391f2adf3bc1db089da7f9bd58b",
+        "d6ef6f3f1b8698a9cdfa567643b421500960c417",
         [
          "html/canvas/offscreen/path-objects/2d.path.bezierCurveTo.ensuresubpath.1.worker.html",
          {}
         ]
        ],
        "2d.path.bezierCurveTo.ensuresubpath.2.html": [
-        "d4f99e1e2a406445dcb3cacc7bf25edf4a633b1a",
+        "d2afd19f666237b7cbbbd7f72607582f8b4acd9f",
         [
          null,
          {}
         ]
        ],
        "2d.path.bezierCurveTo.ensuresubpath.2.worker.js": [
-        "7176dba0787607d08d421ab4826b24de913ef784",
+        "6860e60f4acec4b2ac83745694beb85c6bc070c4",
         [
          "html/canvas/offscreen/path-objects/2d.path.bezierCurveTo.ensuresubpath.2.worker.html",
          {}
         ]
        ],
        "2d.path.bezierCurveTo.nonfinite.html": [
-        "4c5abfbdc1e594afc4c3e4ea6a53d74cec953143",
+        "b49e2f43f3fa7b9370040365ecd33b86d4eeb18b",
         [
          null,
          {}
         ]
        ],
        "2d.path.bezierCurveTo.nonfinite.worker.js": [
-        "752cb1b0ab8867e3840a9cd1f40560b5aebaa1ab",
+        "7eaf278f6cb490ba1bbfcbd8cb95c19f78b080e6",
         [
          "html/canvas/offscreen/path-objects/2d.path.bezierCurveTo.nonfinite.worker.html",
          {}
         ]
        ],
        "2d.path.bezierCurveTo.scaled.html": [
-        "2608237a6c00dc84494af88bdd7c334fc4ace6b2",
+        "10a085e9dec2eec880e4d48ace3d68fa725e6d60",
         [
          null,
          {}
         ]
        ],
        "2d.path.bezierCurveTo.scaled.worker.js": [
-        "641cccf4b46a2e4f3483c0ae1073bd95c32dbe16",
+        "5098fe83eb6632cb0ac825415fb5ef0296624754",
         [
          "html/canvas/offscreen/path-objects/2d.path.bezierCurveTo.scaled.worker.html",
          {}
         ]
        ],
        "2d.path.bezierCurveTo.shape.html": [
-        "5f8f8daac2a53d2755f017faa69b698965a59958",
+        "fc6b9273e04a3217b64b148615e993b2373c16dc",
         [
          null,
          {}
         ]
        ],
        "2d.path.bezierCurveTo.shape.worker.js": [
-        "ee42982f2f6eba356b8fbdb185e6309435593cb6",
+        "58f601c5d5b85b7e47b5eab1acea59cee6908084",
         [
          "html/canvas/offscreen/path-objects/2d.path.bezierCurveTo.shape.worker.html",
          {}
         ]
        ],
        "2d.path.clip.basic.1.html": [
-        "cca53f6be6d1546a88a420202a4bd326ff51410d",
+        "e90be3d73f0d3b9383188d7ec32e673774ad5cad",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.basic.1.worker.js": [
-        "cf5a5d3b63f4ec3d9f3c6ae79cb831f4284f5f79",
+        "708608e1e00b44eebcbe4654c4a8a2183128fda5",
         [
          "html/canvas/offscreen/path-objects/2d.path.clip.basic.1.worker.html",
          {}
         ]
        ],
        "2d.path.clip.basic.2.html": [
-        "d5ef79bf1a13cf3d852a2b002c724cc989a1b742",
+        "6426ba2d838bace516bc5fe47e7c023f31ba6240",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.basic.2.worker.js": [
-        "bad906d4b73ece1e0857f05de5a5e34b30cb0745",
+        "1ec28b6205eb7280133ce4ed87b1c3edea814f6d",
         [
          "html/canvas/offscreen/path-objects/2d.path.clip.basic.2.worker.html",
          {}
         ]
        ],
        "2d.path.clip.empty.html": [
-        "d74fff0d81fcca4960c2c8552138ec641d297344",
+        "30e0d6cba48f237ddfaf7ca7a1347ebe8ba53597",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.empty.worker.js": [
-        "51beb6426a5a6a0454ed6d4dba5805825442bd2a",
+        "3f91a7e2e785f11a7f344d218cc68eb2ea6cc89d",
         [
          "html/canvas/offscreen/path-objects/2d.path.clip.empty.worker.html",
          {}
         ]
        ],
        "2d.path.clip.intersect.html": [
-        "3b269ce102d5574d8c5d08a98f580dd541acc992",
+        "94607f6d9269a9ee2fd34a4c08c6ca024d7681fd",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.intersect.worker.js": [
-        "791c1bb78481ad33852d0770e3ece9b73044a759",
+        "8c0fcb68bd3ac5aba8323d3d4be59ab4da20c649",
         [
          "html/canvas/offscreen/path-objects/2d.path.clip.intersect.worker.html",
          {}
         ]
        ],
        "2d.path.clip.unaffected.html": [
-        "a0ba94fb8a430f2fe5a294820419baa61a5a4b0a",
+        "e9b69282af90b0a33b639f484fd80e77acdbcde6",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.unaffected.worker.js": [
-        "e03257021c4b758490f3d7384dee20fa4fe21e46",
+        "d65a421d33683e366a4f448029ba311eb861d86e",
         [
          "html/canvas/offscreen/path-objects/2d.path.clip.unaffected.worker.html",
          {}
         ]
        ],
        "2d.path.clip.winding.1.html": [
-        "9a20e493db269e40964332a45e90d334d1f0e117",
+        "2fd7c1abbf94c80c3f1482481d3da7f14ebe7d55",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.winding.1.worker.js": [
-        "02565fcc8b82c4baba382fa0c16f287c1216b1b8",
+        "aa89fd55c3d31de7b1ddb97751c6cb37c28614f6",
         [
          "html/canvas/offscreen/path-objects/2d.path.clip.winding.1.worker.html",
          {}
         ]
        ],
        "2d.path.clip.winding.2.html": [
-        "1f223a3b38fa2acc115e5e6da2f07d0802dfbb0c",
+        "eed064f84ec5c664e9f87b8d6900d344e815a1a9",
         [
          null,
          {}
         ]
        ],
        "2d.path.clip.winding.2.worker.js": [
-        "e7e8c5039def31451d04f73ee3a3a6190380e115",
+        "5c9cac6bb600eed51c78610bb733307360996e35",
         [
          "html/canvas/offscreen/path-objects/2d.path.clip.winding.2.worker.html",
          {}
         ]
        ],
        "2d.path.closePath.empty.html": [
-        "50ea865696cc9e28fda6b9b4ab8881d2c8ce5188",
+        "c7596a8f1ccbd13228d43d1c997f5b1f91fdd7e4",
         [
          null,
          {}
         ]
        ],
        "2d.path.closePath.empty.worker.js": [
-        "c06ce48635f434d8f806dddd6d0097bc1c8421b5",
+        "c9a4030e681d2fa27094053a87a0691e6c6be64b",
         [
          "html/canvas/offscreen/path-objects/2d.path.closePath.empty.worker.html",
          {}
         ]
        ],
        "2d.path.closePath.newline.html": [
-        "dca2e01b7e934b0ba2f2028bc53100758f081027",
+        "771f3d3ca089b21594b7d28dc658eb555efc939d",
         [
          null,
          {}
         ]
        ],
        "2d.path.closePath.newline.worker.js": [
-        "5d27821f5511cc6ca35f156bccfddf1c069397dc",
+        "4dff932086e8853338041464663c14df00da4454",
         [
          "html/canvas/offscreen/path-objects/2d.path.closePath.newline.worker.html",
          {}
         ]
        ],
        "2d.path.closePath.nextpoint.html": [
-        "4cf02d2b64417e8402fe95ede1c8611b1c1dce95",
+        "3dffdeaf5b9414d52e18de4e8ab9a5519da479a6",
         [
          null,
          {}
         ]
        ],
        "2d.path.closePath.nextpoint.worker.js": [
-        "8a84ce7d83ccce1b8d8a9ab09b779ddf3e75d881",
+        "86d931b67146cc3d866015ab7bd81178ec70f99a",
         [
          "html/canvas/offscreen/path-objects/2d.path.closePath.nextpoint.worker.html",
          {}
         ]
        ],
        "2d.path.fill.closed.basic.html": [
-        "72e755f7e8f0e7d799128af86bfdfa3b6a5a4772",
+        "6f8fd51de79c2bc79019b88cdaedf7430b285a83",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.closed.basic.worker.js": [
-        "2c63e1ec97f1d1b66300c2cf2123afc4d8373a75",
+        "9dad73b579b80d91730727529b2de2dfc1762ea6",
         [
          "html/canvas/offscreen/path-objects/2d.path.fill.closed.basic.worker.html",
          {}
         ]
        ],
        "2d.path.fill.closed.unaffected.html": [
-        "9d54512539870412e64e54602b070b867d7949b2",
+        "706e38d176f51f2b446ef93ef15e19ac154409a1",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.closed.unaffected.worker.js": [
-        "6b4aa9244f3deb47efaccb3921b6aa8b739f6f63",
+        "b6d79828668641f1e2f400593f9c88185d84fd0f",
         [
          "html/canvas/offscreen/path-objects/2d.path.fill.closed.unaffected.worker.html",
          {}
         ]
        ],
        "2d.path.fill.overlap.html": [
-        "6eaf88edcde61e5d469b6c6a03457dd225da012d",
+        "da936fab579ba191a2cc9c044d45992a93b0f0dd",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.overlap.worker.js": [
-        "e1d64fe40bfa8dcb676c1f1769ce84490133c906",
+        "8f30cc7af2c73427b325f3d3bbc8b2898b0d062c",
         [
          "html/canvas/offscreen/path-objects/2d.path.fill.overlap.worker.html",
          {}
         ]
        ],
        "2d.path.fill.winding.add.html": [
-        "c5f64924da313f23323507a2d08924729ab9b5f0",
+        "40845a4a7786d2b2a1d3630e9bfbb318c76c48ce",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.winding.add.worker.js": [
-        "b40e1706239ddc35063b00ee3e9bedc686366815",
+        "cdbfc7f3a495c85bf3f0f2e64513eb050156c125",
         [
          "html/canvas/offscreen/path-objects/2d.path.fill.winding.add.worker.html",
          {}
         ]
        ],
        "2d.path.fill.winding.subtract.1.html": [
-        "4f553f2bc32375609f307f0c53c73d45df19ca5a",
+        "e0f9c838b150ef4bcdc1752e2a42ef2e770dbf66",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.winding.subtract.1.worker.js": [
-        "a820915413952806e0f85984d1b2fe7a89dc76d5",
+        "3d6a1660defe31abdee78f51d120061edcc974b7",
         [
          "html/canvas/offscreen/path-objects/2d.path.fill.winding.subtract.1.worker.html",
          {}
         ]
        ],
        "2d.path.fill.winding.subtract.2.html": [
-        "cf1fcaa2d44759f17e58cb0f4ba3a21e5c56f649",
+        "c7de03ae084daa02342e3b29badc2d55829e4f4e",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.winding.subtract.2.worker.js": [
-        "2c83a41ae8e21b7bffb51e9405781ebd10150605",
+        "0e8b4c79a594f87d78f56b45954b12e4c47d649c",
         [
          "html/canvas/offscreen/path-objects/2d.path.fill.winding.subtract.2.worker.html",
          {}
         ]
        ],
        "2d.path.fill.winding.subtract.3.html": [
-        "ffcbfe2518de25cef34b4c2b2ed771ea819cab44",
+        "3d12380357d6aff925ea8fb8d6ed8a218a6d9fb4",
         [
          null,
          {}
         ]
        ],
        "2d.path.fill.winding.subtract.3.worker.js": [
-        "ca5510abf215cd7a015ee8354c2b958da8ae9593",
+        "6c9f07c76a8c26e7676fcb80f8eea1ee6affac40",
         [
          "html/canvas/offscreen/path-objects/2d.path.fill.winding.subtract.3.worker.html",
          {}
         ]
        ],
        "2d.path.initial.html": [
-        "35c96cdab5da97358683d2164c5a76058b4e303f",
+        "e2e02f51423a1676bc95c6fae979b75b1beeeed5",
         [
          null,
          {}
         ]
        ],
        "2d.path.initial.worker.js": [
-        "de8597fbc3c50674defe7d66b187d719692ad0e0",
+        "de1a93503290970d1b5a902b16b8e476529680ee",
         [
          "html/canvas/offscreen/path-objects/2d.path.initial.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.arc.html": [
-        "fe12f9457af15a194f30605bf8ed888f17b2f60e",
+        "ccffcd7d76c3409312d7603b6e43655df1fe22a4",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.arc.worker.js": [
-        "2803e3932567002ae27a86115fe8adaff9832c6a",
+        "13510b744f5786ad44f72c60ee88238be5f1f0f0",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.arc.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.basic.1.html": [
-        "3cd24f548750509c8bd91009b7a5217513174912",
+        "7b9673a81200401f28d587632b5c580aef7ff00c",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.basic.1.worker.js": [
-        "93dd86a5f799b474273f5fd491741a18c2b99ed6",
+        "f51900ea6bf80bb7790d0408da124264799ea7a7",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.basic.1.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.basic.2.html": [
-        "42381d3f552f0e9f0df1ec993d7ba47de6605758",
+        "3710dd185d94fdea0d94c4099180858115cbe6c1",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.basic.2.worker.js": [
-        "7dbc5fc6fb2fa513caf5a180df6e8591b7b44c2b",
+        "6024a0dc390dc68e3d50a12d9c5435537cc8d963",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.basic.2.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.bezier.html": [
-        "f336fe4c7f63fb815c54855920d7e8b9a053554e",
+        "d348110305ef521a00c7b2210a34d9c50a8751d8",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.bezier.worker.js": [
-        "6017efc286e2356ca117d4640125259008848d5a",
+        "894fe5da31427a88ad06377a34fc0223c32e506c",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.bezier.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.bigarc.html": [
-        "2e6e78fedb0c4e0088c1b2b0c19a332a34e7aafb",
+        "fcb4ca88273fecdb0498697a639a1e4279f8dda5",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.bigarc.worker.js": [
-        "1ee00102152a5be1b49e8ac2e9f9cec5a8cf3378",
+        "40233790c810a164533d881ba7dce0f327c349e8",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.bigarc.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.edge.html": [
-        "bcd4eaefd9f32c2b756972772acf4fbde1d7399a",
+        "aa367b4e56cf28856f0b8eabd3d3803b2f08a82e",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.edge.worker.js": [
-        "21222ebc4fbe15d4becbe86630e0975f16e06ba1",
+        "3918a6fe83d6bae4b6f709284079d8916670c685",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.edge.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.empty.html": [
-        "9a875097b021c3de4b196a050503c82988c25d6e",
+        "d2ebf1e7e1b282e36ee0f418c51d76f160c8eaed",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.empty.worker.js": [
-        "e449ee2e69b29d89b2caf2f6f100750988e946d8",
+        "319836dcb583dd23c5429ea90a3ddd19dcc928a3",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.empty.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.nonfinite.html": [
-        "8dc4c1df3a0bd7ed4b418f7b1e32d8539a7235fa",
+        "ef12d057ed54c486ce1382b19b9a9571cdd27c33",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.nonfinite.worker.js": [
-        "70a4ece16213cf6bb84fc4384ac692ecd4a9172b",
+        "dfa6eec766cbf28377d23d7c42fdda54ea46ced9",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.nonfinite.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.outside.html": [
-        "d1a1d86a02c980ca04eae57a0aa99f8d904383e9",
+        "ce2ab819dd83e549c214bb9e293f93059a5cae68",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.outside.worker.js": [
-        "6d0710504695901a346ef52ada4cb3ac0448a7c7",
+        "d4db12ef379aa1426357394ba907d64166b7e725",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.outside.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.subpath.html": [
-        "b0ea1f9a0f1b79767824c5dcd4c20f5b7ce9a0e8",
+        "c4abd9276460d4dedb9fb2a43be05db0e746e57a",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.subpath.worker.js": [
-        "4a82fcc08a16bb4d9937b174f5e021570f4070cb",
+        "82df3b7c70aa167c224106f7f2f477ba47f3c2b1",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.subpath.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.transform.1.html": [
-        "9b7b2e5ee0f6a9a20b47a6b84bad25fe7f938c99",
+        "bccaa842e5257224330bdb834f9f066ba5b10f13",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.transform.1.worker.js": [
-        "2fafbe910e9733647ba403d2f1b3480181cea14f",
+        "0774fd0d62d6c5e656118a55bb67c15cf56fb9db",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.transform.1.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.transform.2.html": [
-        "45b884f2b5c1469f8a67ff4e7e45b949aaf84529",
+        "1e587c1d8a8503dce7182032948cf2a083ff13e6",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.transform.2.worker.js": [
-        "3f37e62057e3991b45cf4dbec8b81d96899a8129",
+        "ff4c42c450cb284d3e06f1b242b0454ae6e3dc59",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.transform.2.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.transform.3.html": [
-        "923da480e8aa8178ee818962b3eaad5137d006cb",
+        "826d7e23c985e16f2836fad3467354f81be25ac4",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.transform.3.worker.js": [
-        "172d0a72a4e0fd939732de02e1dd6d224a80592f",
+        "f6750e910906cfd543219606a5ce0b2402bcd157",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.transform.3.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.transform.4.html": [
-        "0f87cc2b212dba812d28683c2501f663ddf11f25",
+        "97792d688937c5b2d36152552887bb1e15ca6afa",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.transform.4.worker.js": [
-        "993148110a59df8739d9260d5ec43d7667b9611b",
+        "f43a8a3d1ef47a9374bc09a8c99351ec88e4adae",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.transform.4.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.unclosed.html": [
-        "098370f0f7d8f96e5baf760c7e3298b67a779bc6",
+        "3920c7de4b53f76b6e21e9d6fc03233733fdc9f4",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.unclosed.worker.js": [
-        "ad4ac8781bc1d5a7dde7e99b8785a44f030a8287",
+        "7b5ffc4a795c4a6f885d7c286c21e1323d5336a7",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.unclosed.worker.html",
          {}
         ]
        ],
        "2d.path.isPointInPath.winding.html": [
-        "9698017e4fe106b40ab6a4eced4a878114351bda",
+        "b2741a5069f1a43615003cae6247b37515af5554",
         [
          null,
          {}
         ]
        ],
        "2d.path.isPointInPath.winding.worker.js": [
-        "6ef758114a0e9cfb80b0ef4a9e68481e6923eb97",
+        "094bc05910db5be3885c9f7a882b9093b60f1603",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.winding.worker.html",
          {}
@@ -532559,1372 +532840,1372 @@
         ]
        ],
        "2d.path.lineTo.basic.html": [
-        "3247ededcc872686c0881594d7b4c9327d5e82aa",
+        "e0bc64617f9ccb13d3d26d8405d5615cd60469a8",
         [
          null,
          {}
         ]
        ],
        "2d.path.lineTo.basic.worker.js": [
-        "980de5c1b286b8b9fde4ce2ce8ed4345b2a9c78d",
+        "6e02a1f149c73dd2a7ee192c528ef5fa5cfe8c28",
         [
          "html/canvas/offscreen/path-objects/2d.path.lineTo.basic.worker.html",
          {}
         ]
        ],
        "2d.path.lineTo.ensuresubpath.1.html": [
-        "5a15f9ece489e918cbd43b3e127e478845a8fc64",
+        "2561a2f5559f1b1112f40845ff595a20c91ac3ab",
         [
          null,
          {}
         ]
        ],
        "2d.path.lineTo.ensuresubpath.1.worker.js": [
-        "024754ca0ea07155bdce67e70dc1472a62dd1f86",
+        "ae4d85735ec2ca205fe8df429005f47134929eda",
         [
          "html/canvas/offscreen/path-objects/2d.path.lineTo.ensuresubpath.1.worker.html",
          {}
         ]
        ],
        "2d.path.lineTo.ensuresubpath.2.html": [
-        "eaad8dabcceda6ed9ebe1b8e33430dbcc2b6bf7b",
+        "9ca14a13935e4a5799ee396a201a8f68a710872d",
         [
          null,
          {}
         ]
        ],
        "2d.path.lineTo.ensuresubpath.2.worker.js": [
-        "2a15c9e14d4f3c7eb1af219ef25a56ea2905d738",
+        "b6af21235f435edfa4e5e74ecfaec0db87c1cddd",
         [
          "html/canvas/offscreen/path-objects/2d.path.lineTo.ensuresubpath.2.worker.html",
          {}
         ]
        ],
        "2d.path.lineTo.nextpoint.html": [
-        "fc697b9be59ba0426d91c1f0d2ae79261a4c2067",
+        "a649d3a86dab448d7a08914eb50c48b39d97b72d",
         [
          null,
          {}
         ]
        ],
        "2d.path.lineTo.nextpoint.worker.js": [
-        "de9d56be06e71c5c07a31d3f50dce1ea0668eee2",
+        "9e4e24a06de12ec6bdb0875c1ae8f11fa883dd8c",
         [
          "html/canvas/offscreen/path-objects/2d.path.lineTo.nextpoint.worker.html",
          {}
         ]
        ],
        "2d.path.lineTo.nonfinite.details.html": [
-        "82270be5344220b2a65add6ef442db519e7b4279",
+        "35bc80d33694ed0686e3e77d018fb6561867c573",
         [
          null,
          {}
         ]
        ],
        "2d.path.lineTo.nonfinite.details.worker.js": [
-        "bf74ee5b504377c3c514f81b86eacc69803cfc13",
+        "5052c74b94f2542f02b272345047c4b2dfa61a33",
         [
          "html/canvas/offscreen/path-objects/2d.path.lineTo.nonfinite.details.worker.html",
          {}
         ]
        ],
        "2d.path.lineTo.nonfinite.html": [
-        "02d77163fd27f59133bbf62c0f31502fab1dc752",
+        "5a144dd7f614d9e0a9601912de387a42c2744f63",
         [
          null,
          {}
         ]
        ],
        "2d.path.lineTo.nonfinite.worker.js": [
-        "5161b4e43229758d61c405be7b40304ec00e2a49",
+        "82921b7cd9a5aee64304f8c00ab8a34fe31e8147",
         [
          "html/canvas/offscreen/path-objects/2d.path.lineTo.nonfinite.worker.html",
          {}
         ]
        ],
        "2d.path.moveTo.basic.html": [
-        "8363792c7067c02f3ee7c4f418753243392e725a",
+        "f9777c6ca8fd871eeed849ce48509404b4d489a4",
         [
          null,
          {}
         ]
        ],
        "2d.path.moveTo.basic.worker.js": [
-        "eca39660bceea999729a6a09adf3184688121be6",
+        "0b1df374b67722ed6b77a71d9dee169635c14f30",
         [
          "html/canvas/offscreen/path-objects/2d.path.moveTo.basic.worker.html",
          {}
         ]
        ],
        "2d.path.moveTo.multiple.html": [
-        "928c9783d447c17f1afed702157ad28f2c81a051",
+        "0b56cbbfef3b3a808a81ed019539d3d3ba900051",
         [
          null,
          {}
         ]
        ],
        "2d.path.moveTo.multiple.worker.js": [
-        "686f5ae84ad82a27d64d3495e77f6b4bdc21709a",
+        "9f49ea8a1ba88cb1eb913a8053c43fc115c12a86",
         [
          "html/canvas/offscreen/path-objects/2d.path.moveTo.multiple.worker.html",
          {}
         ]
        ],
        "2d.path.moveTo.newsubpath.html": [
-        "89fda23ffc90c7d24844343d306caf1372a7e82f",
+        "c2594c006edfb2818ecae748cb867078f04a4fe6",
         [
          null,
          {}
         ]
        ],
        "2d.path.moveTo.newsubpath.worker.js": [
-        "d00491c42bfe1d65783e90316f65f028d8333f3d",
+        "e3c9c8529d225f3e61871d4880c3d53fd19a0385",
         [
          "html/canvas/offscreen/path-objects/2d.path.moveTo.newsubpath.worker.html",
          {}
         ]
        ],
        "2d.path.moveTo.nonfinite.html": [
-        "1a2e6cfe83977c485fc54fa2936c67c72151bc27",
+        "ea3eb34c767d8a6a08f8dbc825806efa60536829",
         [
          null,
          {}
         ]
        ],
        "2d.path.moveTo.nonfinite.worker.js": [
-        "ced534fb9543e67567798044a1f31212571e368c",
+        "97e2bd72e34f7ef11634b9eebacf7aff12c9a1f6",
         [
          "html/canvas/offscreen/path-objects/2d.path.moveTo.nonfinite.worker.html",
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.basic.html": [
-        "46a83e112c507b030cfdc264e45cb9127235cfaa",
+        "4d14ce5585b12970ed1c814660fcf79127abebef",
         [
          null,
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.basic.worker.js": [
-        "a1dfa045d94486a04de4e0134cc0ed21619f7317",
+        "161e5f1a65f928de17c875170661469554824a46",
         [
          "html/canvas/offscreen/path-objects/2d.path.quadraticCurveTo.basic.worker.html",
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.ensuresubpath.1.html": [
-        "37662e46185236496a6a85b3a0010473c215d6d3",
+        "3e916f00c7d1c41a202be289021670a7e72fbf68",
         [
          null,
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.ensuresubpath.1.worker.js": [
-        "fe20e7b890fb99c0f5ff1af90d46b768a52882da",
+        "95dcf2bed1ccf38120f519459c51c7e47d04081b",
         [
          "html/canvas/offscreen/path-objects/2d.path.quadraticCurveTo.ensuresubpath.1.worker.html",
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.ensuresubpath.2.html": [
-        "2f18424749f100ee7ad65033c47c5a2b77ba5e49",
+        "2fb05a265827aa7425127d6bd768506c2263e67a",
         [
          null,
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.ensuresubpath.2.worker.js": [
-        "f840168f986c2fe693f4d5e90933f982f8d52e74",
+        "4beaf9dae2b0c0bf09f0058f1cbfaf52fd9e92d7",
         [
          "html/canvas/offscreen/path-objects/2d.path.quadraticCurveTo.ensuresubpath.2.worker.html",
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.nonfinite.html": [
-        "1083f027e2c664029660c250402049ca83461fd8",
+        "ee4f333a08ad98bee9d787e29cca88347ffb6d81",
         [
          null,
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.nonfinite.worker.js": [
-        "df17bd6d3627cfabe8765142207bd30dfcedf996",
+        "a61eb9a8cad1eada4936cb149c3618dd0dd16865",
         [
          "html/canvas/offscreen/path-objects/2d.path.quadraticCurveTo.nonfinite.worker.html",
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.scaled.html": [
-        "60ba483f14d2f77071f8370f24257f5ca1f9f7da",
+        "92c9377d6f6ea634411ed6bbff1fd544ea85e5be",
         [
          null,
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.scaled.worker.js": [
-        "298001b212e08c67d3508feb4b347e3221d41699",
+        "04fd6e904d7ce0ea12a52a70f481d638006ce978",
         [
          "html/canvas/offscreen/path-objects/2d.path.quadraticCurveTo.scaled.worker.html",
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.shape.html": [
-        "21cb175d598881728a7402243c59d36998e67767",
+        "ea42d669cb5d65197bbaa7cf3289a197bca9de4d",
         [
          null,
          {}
         ]
        ],
        "2d.path.quadraticCurveTo.shape.worker.js": [
-        "f7aac9135afa3b2e62c0d49f2880b85838876598",
+        "9f2afea09d24e7f7aa3722e9a25f11f94a2b3da0",
         [
          "html/canvas/offscreen/path-objects/2d.path.quadraticCurveTo.shape.worker.html",
          {}
         ]
        ],
        "2d.path.rect.basic.html": [
-        "5214bd8dc059bcbfaf5b6d30f1cef01bfd2dde13",
+        "e8d874709d8c995805dba7a21f1944abfaa0e4d1",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.basic.worker.js": [
-        "dcf3dc2a4bcffb335c4a01f4b486d0f9b7cb4b41",
+        "c8eb3838f9dda1d46acdfa9c16b1aaf395dbd522",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.basic.worker.html",
          {}
         ]
        ],
        "2d.path.rect.closed.html": [
-        "70db3725a1140394eec244d45fb53aef27ed23ac",
+        "6f6187439044f63ad409e6ec558853f6956881e4",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.closed.worker.js": [
-        "6ee09ef8d4379c0b18daf473ced695b6004abe6f",
+        "f40868730b3c97c5fb269ac6845fe89f26fed939",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.closed.worker.html",
          {}
         ]
        ],
        "2d.path.rect.end.1.html": [
-        "bb4bfc0c9065b8a5f70e29216cda973f4644e6b6",
+        "e4d5ece132b48b7bdcbca32d6c831f4d56d0f4e7",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.end.1.worker.js": [
-        "f576ac436642ffd2e2abfcf16fb137f0aff899b3",
+        "fcf9d0526f9fe5dd82c5cde68bf562b32e435e26",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.end.1.worker.html",
          {}
         ]
        ],
        "2d.path.rect.end.2.html": [
-        "1f945a858e9c46272edae786d6a6eb61f42aa8f3",
+        "d6bad78abb6952a039c9e33ad228d761bb3198cb",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.end.2.worker.js": [
-        "8813ed81522a888c947f963eb58c6b4561cbcbee",
+        "84c1b71d71d49f456809ab50fc482abe48d2768f",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.end.2.worker.html",
          {}
         ]
        ],
        "2d.path.rect.negative.html": [
-        "8c9effe2a546e351f8341f87f925febce40bdc5f",
+        "730e2e887a7acc0fa8204a161d093fc136df3547",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.negative.worker.js": [
-        "ea01c6d3f07eae1750131520684ce75d3afa78ab",
+        "44449e85e2c97b3edd506301d3c243f7dc764a3e",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.negative.worker.html",
          {}
         ]
        ],
        "2d.path.rect.newsubpath.html": [
-        "1dcfbe94869d5e6d2198cda8a917e84ee6f2a237",
+        "05b972e045dcf44733a9e9d79d8345fdc48c1cb8",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.newsubpath.worker.js": [
-        "44962c5f2f47e98eda3b91d79189bc3be719e8a5",
+        "bdf4a926c1ff4a9fd62165b32cb5c941f3275cee",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.newsubpath.worker.html",
          {}
         ]
        ],
        "2d.path.rect.nonfinite.html": [
-        "7f92cf5e48cb4bda3063f535195381ac3b573c7d",
+        "16d76aaf185d00b1d84e03d5b99d7132dd02fbbe",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.nonfinite.worker.js": [
-        "6fa1e82ae482e9b3b8d9440f9f3db927d0fc23d6",
+        "307a5ec08f71fe83a28dd4d617877054da5f10ba",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.nonfinite.worker.html",
          {}
         ]
        ],
        "2d.path.rect.selfintersect.html": [
-        "36c3f074194ed92ccb96d9e703dd78032cf4131a",
+        "af97fa6d38cf7fa823972aa230b44cd51345ec09",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.selfintersect.worker.js": [
-        "84c2687f309350ff31b1ddcb46008b1c7e9f4634",
+        "495d016e80ceb81fb549f02108acd94978bb5dcc",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.selfintersect.worker.html",
          {}
         ]
        ],
        "2d.path.rect.winding.html": [
-        "c4f4128188baff61e4456a42a8dc7d229c13f38c",
+        "a7f79c5223a09c82ac694d073eb980cd50825736",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.winding.worker.js": [
-        "90a3d05e8b21c58915b36f6a43d3b0889a574358",
+        "45ff0427e1cb53147f908d4a60c5fb3ea1363434",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.winding.worker.html",
          {}
         ]
        ],
        "2d.path.rect.zero.1.html": [
-        "90c0bb1f68a71e1959dc04cb537f0852b7ebd8d1",
+        "45dac2079d3f93700530e01b6e354ce3ecf6795c",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.zero.1.worker.js": [
-        "4d080710d070bd8149b5521202f7b0c691cd072a",
+        "de6fb58c8a3e0302da2f944a54dca6275e7a07b9",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.zero.1.worker.html",
          {}
         ]
        ],
        "2d.path.rect.zero.2.html": [
-        "4c3ae6f6ddfe8f828c06da68471ba8b6682b30ad",
+        "0386ea06e70db94d568af23c2b0a7239e2b87813",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.zero.2.worker.js": [
-        "93d5a52875969291aa49cecc42343c6420dd7ce8",
+        "8e323d2dd08a4546c62cef9c412c72c97d4dc130",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.zero.2.worker.html",
          {}
         ]
        ],
        "2d.path.rect.zero.3.html": [
-        "86bd7494186b075f7e8438a91892ecbb2dcdadc7",
+        "12990409293aafe8380af4abef33bdc179ab78d9",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.zero.3.worker.js": [
-        "6403de43c03ca076f5fac03dcc2aed1e468dff8c",
+        "5e6f490c73e18b5e1cd7afb0dd6ab762f9c717ff",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.zero.3.worker.html",
          {}
         ]
        ],
        "2d.path.rect.zero.4.html": [
-        "063ef2ba1d5543c6a3d41cf8e42ae055ccc5d4a9",
+        "93da1300de3906c699a7be2ca731f8b9123fa99f",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.zero.4.worker.js": [
-        "87fd69856630e6a241adb078732ca4c3c5ce1c4b",
+        "e19da3b9177c9125bf17fe4a4255c440a6f28d72",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.zero.4.worker.html",
          {}
         ]
        ],
        "2d.path.rect.zero.5.html": [
-        "0fa0b0755043613a09cb4ba66b3b1517045864fa",
+        "45a7f03813f88a91578a04f8ac1feadad0c3f816",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.zero.5.worker.js": [
-        "77851f54d3ecc1a85b26541bae286e94f3cd1876",
+        "d39a7415738f6852e9bbd65694e4fcbda1e0d561",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.zero.5.worker.html",
          {}
         ]
        ],
        "2d.path.rect.zero.6.html": [
-        "a3cf7b60ac7f3339371d08a932ce7b829dec6a39",
+        "ac74e206608a0d8799834932c4de0f7ff54d353b",
         [
          null,
          {}
         ]
        ],
        "2d.path.rect.zero.6.worker.js": [
-        "5db284837c4f6b8d5df023737c8e38c32b6683eb",
+        "a567359c30ab245659cd247b65e01efc11f34389",
         [
          "html/canvas/offscreen/path-objects/2d.path.rect.zero.6.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.1.radius.dompoint.html": [
-        "479ab00cd7df37738c0ffe670431c6ebd8395722",
+        "f7e80a0119f8f81171d30bf969d56d0c4eebfeef",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.1.radius.dompoint.worker.js": [
-        "ba4fb4e611fce50e4a995fe5b24a77532f4d33a6",
+        "06d787437e77c440e10dc364ac95a6828b0217b7",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.1.radius.dompoint.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.1.radius.dompointinit.html": [
-        "18ff259e66cdda04ea2e42ebb7bc4444b1026709",
+        "97084a446fd18d0bb8282a2755d86fd4fe45ad23",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.1.radius.dompointinit.worker.js": [
-        "589950c04e077b0ec7152d14f2f40f093308c8ea",
+        "56c8e1fcef51b2c861956f60585cda1669a56c17",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.1.radius.dompointinit.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.1.radius.double.html": [
-        "4761bb5e5e8693b67921c2c4386079c9f207a902",
+        "33574eeaa0ea7f1a9fe280df73de4386a81930d1",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.1.radius.double.worker.js": [
-        "57f28c77786c46ed867ca9c924ce9605e0e38bac",
+        "ef9da08d618a3149b34420b12026080e7b71f525",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.1.radius.double.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.1.dompoint.html": [
-        "c96ed08f05c6e387f9c1e394a87b26bf0817cdd9",
+        "7f67c42ed48df2bb8bb75d0f2af849289209bdea",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.1.dompoint.worker.js": [
-        "7e7a4efddc0ced8d67a5e6ee3b3a2c86905db43d",
+        "5d0387d0d1f55fb66601d7e103ca0e97fa2c599a",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.2.radii.1.dompoint.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.1.dompointinit.html": [
-        "02b889c7592f75a05f078b7852f402e76a4d08cc",
+        "2ac0347d96bf23369243c91e112939630d3b651e",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.1.dompointinit.worker.js": [
-        "fcc3cb088ae197a54a9932080ef64ebf89c97ed8",
+        "240a36e846a4ab186416365ce9792d77a150fc4f",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.2.radii.1.dompointinit.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.1.double.html": [
-        "2a6a030237bd249b578ab15acdbbdced4070c997",
+        "791e59ee7e059ba93b3576a3ac38aae403537a59",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.1.double.worker.js": [
-        "6d4d029b1c8903f2c75462298dd0880532b76ab3",
+        "0fc351c3d629cbb346a7130fe7a433aa9e12ffa6",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.2.radii.1.double.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.2.dompoint.html": [
-        "bc6e27c6830f46c4d8684ddab40fe17dc7ffc0f1",
+        "d0b085e1703e0e0abf9acc3e09d20d57beba260e",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.2.dompoint.worker.js": [
-        "fead59e863ba9686e6bec03d17daa137f501cfeb",
+        "4c6bb06bdb72e7813dfee8253f3945c3d3cae62a",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.2.radii.2.dompoint.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.2.dompointinit.html": [
-        "fcca1c739fcf93c305d83e0a18e397ad4bde877c",
+        "380dd269978b341226a9cd45954f94893557cfb5",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.2.dompointinit.worker.js": [
-        "ab334e4ca06a36c52a466bb09eb9f7e0ce37a585",
+        "e8cdd2c0153484c612e92e1df685b4bbbf268875",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.2.radii.2.dompointinit.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.2.double.html": [
-        "2bc67375669dbc386f33db9ae0c23ccd377889a5",
+        "b7b25727b9e642fe04f087d6354b04fc5e0a9373",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.2.radii.2.double.worker.js": [
-        "d355852a5ce17e47ebb8caa73f38a6cab0e39ca8",
+        "756328682dfa29ba3d7575451cc15e46b9598ae1",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.2.radii.2.double.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.1.dompoint.html": [
-        "f3388e6562e19b31a39403b5bdfea8829baa6a4c",
+        "b7f3e53261ad13a36000426112fa3ce11e14391f",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.1.dompoint.worker.js": [
-        "36c6401bf3d516e29dfd86caf1c83ac590ed4dfa",
+        "9ac4d731c3aa90b9a4960e25e1fb093a5ebf2bba",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.1.dompoint.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.1.dompointinit.html": [
-        "dd96e859ea1bd932d39a8727a1731e0fbea76064",
+        "93f89159b1da776fae8f5d0c3f43e03a2feaec67",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.1.dompointinit.worker.js": [
-        "a497d5788baaaf15092595e105b925227ca9cd23",
+        "9d00729ce9e3db1ad9afb8fe2c340de67e3a6605",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.1.dompointinit.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.1.double.html": [
-        "4c5f57122cd8b74e2a2f1c691187a13c73306688",
+        "976458bc5f072fd5a2c236eeff7e9110588dc0e0",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.1.double.worker.js": [
-        "171a2ae5e6f6f9dbda76f75f67a7c2ca16b1136f",
+        "c4e1c4fc039818cfd357aa1d9156f049d03094f0",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.1.double.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.2.dompoint.html": [
-        "3459ac27bb2f454d56368270aec905b693937134",
+        "1a89c28d15fc531272cc4622bc3e3a08691804e6",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.2.dompoint.worker.js": [
-        "9588780f978dc0d1e5019d163577502ac20f31ab",
+        "4e4df3a6013f9fcf4eae37707df0c38bba19a936",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.2.dompoint.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.2.dompointinit.html": [
-        "6476be489f78dfa4d4e642ebd6778dbc1bc11037",
+        "82ceb6a7bccd0ed2b4109ded2f55706321427216",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.2.dompointinit.worker.js": [
-        "42dead8509b7c840db9ea91d1139a04fff0c67a3",
+        "1333e2386d78d4685e9241befec430fa73d48bd8",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.2.dompointinit.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.2.double.html": [
-        "652745e0bed6036769074f8f9b4db15ba3e7d3b9",
+        "b466956d580aae1b78f21d1c93ff6225677c3b3b",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.2.double.worker.js": [
-        "e3929fbfdbb4b31ab09e61c0e5e9091084d17a11",
+        "027dbae52acc5bd516fb47d34543a7e1de84943e",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.2.double.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.3.dompoint.html": [
-        "1c295143c814f4f5690feab1003a4ca42576cfe3",
+        "897aeb2685ff4a7347650f29ada2c17f3f82002c",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.3.dompoint.worker.js": [
-        "c8e08ec297f1439ad142101115460dacada6dfb4",
+        "8a80623fc9ac271c26728926265a9ee16e81eae1",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.3.dompoint.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.3.dompointinit.html": [
-        "f8e62a5bf625a8f9af31832b53328aa9fc71d74e",
+        "e1e055cb6439c501c259085ed8d0f8285c11b596",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.3.dompointinit.worker.js": [
-        "0fe2b89877a1641555e755599cd137df1ce20d7c",
+        "d3b188dd7f545c3f1841bbffb445bc25a292c79a",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.3.dompointinit.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.3.double.html": [
-        "ff1301d9cd4308577dc961d8da9b353b349c0bbb",
+        "a0e0553364fa48bafa4d0d5699d8749cd5f29f22",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.3.radii.3.double.worker.js": [
-        "2422435d5264920601be37092d5f4c2f2117bbab",
+        "177e7c5f6d19cc1e389005ff7afdb7f5dcbb2b08",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.3.double.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.1.dompoint.html": [
-        "3110983f7f84aaab0c899803249ca8cde5c3a8eb",
+        "72e8d6ce3356120f6bbb8bb7ec3a419e6fc31b79",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.1.dompoint.worker.js": [
-        "3bdb12e029893c969843fc48140d345a5d8a137f",
+        "f27f696f1c7e05c954520f264b920fa970774c37",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.1.dompoint.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.1.dompointinit.html": [
-        "976b39a10216046702bcea5c883ff667843d5568",
+        "df6bb11e02caaf17b12e7ac05b040213000d043e",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.1.dompointinit.worker.js": [
-        "86b43ad2a1946c48ba33a386009652171e711a77",
+        "2f9d2eb30f844126a7c344fb8863d640705fdda4",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.1.dompointinit.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.1.double.html": [
-        "c75d6420c9c5546f289508354e25214d1a38b681",
+        "b669a7bb6af5694e9fcd814f9b1f07dbe2d995a6",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.1.double.worker.js": [
-        "925c93b0c9098ed97660e921b08e5bd8191aad76",
+        "9658a39cfbb110a07bbc0bc5a969f6f094a792e6",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.1.double.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.2.dompoint.html": [
-        "33d861d6dcef4772dcdb66edbe3f4c8dbea5920b",
+        "b387d88990ba3fe73a05139afabd21ae6cd13269",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.2.dompoint.worker.js": [
-        "12d1a8c8e633c6933789f477ee082e4df567c265",
+        "83d3f66b3cf1b89588ac29cddcf4eac5045a507a",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.2.dompoint.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.2.dompointinit.html": [
-        "b088c2e717b56eb5789b988a17befa6a2de46667",
+        "76719124e2b25689b5bf843a279dee68f3d51cea",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.2.dompointinit.worker.js": [
-        "49a247a26634edf2c57756ed9a32425891160939",
+        "21766040b466593b54c0fc967bb2c8c379229b2b",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.2.dompointinit.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.2.double.html": [
-        "71395e0e9ee069c239bdcc3bc2aea22de35a3b82",
+        "001cb8429caf97d8f1973e1775dcd06ac0911c94",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.2.double.worker.js": [
-        "f868c6272ef19dddbbd67fdc20e82a6ec4cf9b72",
+        "b9935a1bd9b2ecb9b40061e93fe9b54063f36363",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.2.double.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.3.dompoint.html": [
-        "4922bf37f22a0d4bc24edd67ab61061ed4710635",
+        "5c8c686086ebeede3dd34d31cc8cf33c80611720",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.3.dompoint.worker.js": [
-        "2da2f3591c614d01871e9390e192be6cbd413859",
+        "819b1a39867c7097f4c1e0576e73ce64c51b06d6",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.3.dompoint.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.3.dompointinit.html": [
-        "3b6f2fd863f7b75ee6fa59bfa0af3134a5382446",
+        "1b94b7d7ed553a66d4a95d9bd977218c3b3003ee",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.3.dompointinit.worker.js": [
-        "65a3feb36f436c687a2b35f9417d13d404af7409",
+        "e4bd04aa29647a24ec5cef0ab9153461ec40af48",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.3.dompointinit.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.3.double.html": [
-        "3dd2af98007fe9a2a44bd16104ddae43bb07f35f",
+        "2a76d2b7b1f56cc481c20d17945b409da6a5886f",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.3.double.worker.js": [
-        "a327ceac1579cdf60d0966bca11a0366e7d50ead",
+        "ada627b469531edae465311ea67ff5b6e4d5b65c",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.3.double.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.4.dompoint.html": [
-        "d61a3133cc476cab242cf49febe48950fdc8c0fe",
+        "ce86e45e8b3cb137c42ea013540d4f77d5ccf2fb",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.4.dompoint.worker.js": [
-        "d8a121e6da90bcb7c8307c0d5b8f0dae4df22254",
+        "770291c6f9ab231fd5f74a3d8962ce563c38ca76",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.4.dompoint.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.4.dompointinit.html": [
-        "94ffc00433e099c73be839b27962e2f19141f81f",
+        "f0ec6c3b999830be6f476a79ee430342f29eb489",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.4.dompointinit.worker.js": [
-        "b7babb529615683008d95f0a1ad5779dec32554f",
+        "48310c6a30b44f72abb63ef63922edea23f0d007",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.4.dompointinit.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.4.double.html": [
-        "4ab2581847640217efbe0a6c2df7eddfedb15bcc",
+        "6940622cf032b5e65be17a08f32e0c1b7921f42f",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.4.radii.4.double.worker.js": [
-        "ad4cca4953600820750cb5b74d4a3a7f6b5a5428",
+        "e97ebd98ff76931dcc5b1d71d7288759d3db86dd",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.4.double.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.closed.html": [
-        "1b4abf012c7067f6f06563e537e7885e1a1ca5ba",
+        "7407ead9cf5b22218fbdf45ce701cc914ac1fd02",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.closed.worker.js": [
-        "e0f1b81aa42f58fd7379b3b0dd75b2f59b6edc02",
+        "5a9530a68339d217027694d99db324eef043ec98",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.closed.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.end.1.html": [
-        "5c6b3cd537d16384442f62274b8ac3b091845905",
+        "d73b82bee4a9a8c5a30b61b426eb0f6b0e6cabbb",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.end.1.worker.js": [
-        "1ec22bdb6a77046cac6b03ee6c1f8cf4d4276081",
+        "9428df5bbd1edc32f24f667818c1697d0fcc0a3f",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.end.1.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.end.2.html": [
-        "3913f69d412f9afeb140e3c7dee8ddbcc1218ca0",
+        "ce9b44ead125129b1cf002664ccb45b04bae6ff8",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.end.2.worker.js": [
-        "c3085d53c3b05b72c05a387769b72cb62949896d",
+        "28f1ca1787a1b795a7d31e4303dca51bf9d607b0",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.end.2.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.end.3.html": [
-        "349f13485c04eb0b9fc509e074cdd1e59ca7a9af",
+        "72183ecd05e69c1ca5f9a53f84910a777aa2b121",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.end.3.worker.js": [
-        "52b9c442838b618dad02ad4c21dd986b230e40c3",
+        "57cb328cfa53a716534a992cce65c1209b75ee8d",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.end.3.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.end.4.html": [
-        "3c99e3970a1557649637b4bcfa4b0395a0b05dd5",
+        "c4fdee5958ee4fe0a71ebb28c41ac5225b7fe82d",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.end.4.worker.js": [
-        "1d57b8978f2871ee2cc6448e9a72b0c9c2682c72",
+        "a97a37d1572716a9323548d7d3d8fceee0f08931",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.end.4.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.negative.html": [
-        "e3696ca1a5b78c2b27470e220b2fe15d0e45d1ba",
+        "aa8365724487b150ed0d0f50fdde4cc29cc94bdb",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.negative.worker.js": [
-        "c34c20397a898bd866a3c11f2a0178b490abbdb5",
+        "14459238ed1072ac03877d6e5b270485603086f5",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.negative.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.newsubpath.html": [
-        "6d0a8149077a49f4153d14d9ba3d2e07a737d7fb",
+        "3ad7e5bb5b9535baf311a8003d7b842f2c21e483",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.newsubpath.worker.js": [
-        "c6f7934bee952684bfdbf05d909ec53d72c50bcb",
+        "757327c60d310f4d5968fe5738ec581fba8446cf",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.newsubpath.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.nonfinite.html": [
-        "29773503013118e309faa3cd4b3b38c8ebaa0a5e",
+        "adddc7b9b89487a69b523105c084f2613a0d9c06",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.nonfinite.worker.js": [
-        "68d0d8a09a3b3158896dafa73688b233aff65841",
+        "d6d44d6ffe0f04facd2dfd1646f1bf2ff0d66176",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.nonfinite.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.radius.intersecting.1.html": [
-        "c1916bf78f29e60db84ef8b5e24ddba9c06093c1",
+        "db4d871f9f6a9f367a61d8479bf8634ea3219c51",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.radius.intersecting.1.worker.js": [
-        "9da41478d91ec440178fd61a8f4a37f60ff8bc9a",
+        "27076dbe21f1d58b453c30cf98f51fa81a7a8f5d",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.radius.intersecting.1.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.radius.intersecting.2.html": [
-        "f2a69c4ffc722a9c39881d4b8d15f51aa9111b53",
+        "985942ca361a7b94d3a3541862b1ba78f174165a",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.radius.intersecting.2.worker.js": [
-        "f0d3f57ca48d0c2b9f58d55124179f418c79df95",
+        "5b6de579ae12ef295937987217d99cdc958a144f",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.radius.intersecting.2.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.radius.negative.html": [
-        "55e344d37492eeb56a95fce804a8605760b73d1b",
+        "60a7bebd24c2ffacfccd905b490b31928be94d1c",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.radius.negative.worker.js": [
-        "050e5f7f007f68b764e88d0cc7640465185616cd",
+        "554a1ac078e32375a390ada7bd8916577fe20989",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.radius.negative.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.radius.none.html": [
-        "530efe46b1f11d78072a011205cacd7718ebcf88",
+        "763113e43884befead71e3f54ffac0ac0f392b0e",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.radius.none.worker.js": [
-        "3209e421de6e2bcfa3293276785a605cb6d7ec0b",
+        "fefd1b4dd39a65d2dad752adb35938f04ca271e8",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.radius.none.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.radius.toomany.html": [
-        "c667dc690af9e40fefc0a86dd1b4a026b1f67117",
+        "ce330875fb30f7a4b60007f56f790db3596b2eeb",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.radius.toomany.worker.js": [
-        "3b05057eda3d401ce231654671514de73c341b97",
+        "e1250afac705fd7cf954b89529063fbf75981995",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.radius.toomany.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.selfintersect.html": [
-        "0ec253549036ea114cdfdea67461a79c543f523a",
+        "15ee6f4958132be067c018618bebfb964c29308d",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.selfintersect.worker.js": [
-        "8b6221414bab712441cc2dc67048806f0553c0f1",
+        "91741110fc76a405096fde226702ae8e7fe0632e",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.selfintersect.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.winding.html": [
-        "e7f52fbf29252fae0daa9fa661cd249449208073",
+        "47ecd777dc058d3484ff329232f01f463fcaed52",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.winding.worker.js": [
-        "82e6b5c313507f873572bac841318bf580ce5456",
+        "737e99f3731a95eb61fc3c69567ef3d59940c58b",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.winding.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.zero.1.html": [
-        "252475194ee89cdef3dfb4853fbb5b19bd1bce30",
+        "772339dcc692a9af239b05b3671486fe91a34eba",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.zero.1.worker.js": [
-        "17c9be78ec6f064b6258b6a9334a7a405a78158c",
+        "afcaa207699164a602b882d8096d9740c4567616",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.zero.1.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.zero.2.html": [
-        "2463e88f1eb913236d94657b73aea50a495726b1",
+        "2aad5aad4177e3c1165a704b6133f4b2b503a8fa",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.zero.2.worker.js": [
-        "9ae058a847667cc243925cd341956df848f9e152",
+        "dec178bd202e512e813e654d335997ae5590b678",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.zero.2.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.zero.3.html": [
-        "39de433b081bdda5ebf67899c47eb9058113d4be",
+        "485384aaff8dd1af98beb4e4b3cc4197d1d7900f",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.zero.3.worker.js": [
-        "98d37e08e534336b145cb2e3ab83d76fb972acd3",
+        "88adb5c437352583bcc15ad2a4dfc2b429658296",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.zero.3.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.zero.4.html": [
-        "3c6c734b19b15fff1060fbf7a07ca5b0c03e26d8",
+        "dfd4821a841d6e13754c4fc6a21183e147810506",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.zero.4.worker.js": [
-        "462cde2a03e88ed1dd7c5a53a4c15eb9b1b78783",
+        "fe8cc149c5646a441557bc105deaa11f29aa92b8",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.zero.4.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.zero.5.html": [
-        "de66603a66b6168e4c60293f917e531e0073cfa7",
+        "931a737e3bbe95b99e7fb3f82a4b6322dfe97fc0",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.zero.5.worker.js": [
-        "0f706ce246fee9b87a2a595f901d6bc0e6585344",
+        "1fd61246a98709ce91cf6836229db95f165eebc3",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.zero.5.worker.html",
          {}
         ]
        ],
        "2d.path.roundrect.zero.6.html": [
-        "bd7ef0fa94c49c0abf8315a65572a7e0d85a2605",
+        "25ed23d3293b0761fd9869b4228d436248dd6bff",
         [
          null,
          {}
         ]
        ],
        "2d.path.roundrect.zero.6.worker.js": [
-        "f2115cdd4610f77fc279e62b6864eb33191acd65",
+        "c4b6fba5b0a27e381d151b971e2493faa38e4af4",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.zero.6.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.empty.html": [
-        "a873b260da2ba91c4353601c0367f39782fea0de",
+        "29a95da20d521c6d4a50974d7a68d13ef6b4c05d",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.empty.worker.js": [
-        "1852c91876810880da2e27973014b0e6899953cd",
+        "56ee68f185bdc75d2799cc969ea7f3768b0970c6",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.empty.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.overlap.html": [
-        "252a840ed7536c5268649eb71036e031546a5272",
+        "c3847464bb7ad990f37f3dc5fafbd2370f9367bf",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.overlap.worker.js": [
-        "aa7cc51d77402dbbf9ed23e178f00aeced43aa5b",
+        "0e59d3bfc0a3bf9e2b5b9f5cbc28b5a41ea7c575",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.overlap.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.prune.arc.html": [
-        "67f25440dcd3975b3a495b1c7214df962a4c8969",
+        "40a73b85fbb46bd89edec2aaa7084d66494c32b0",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.prune.arc.worker.js": [
-        "ca5844ce2aa5ba7b6e9cf99a84504ea3f2be47b6",
+        "880e8146ba5ae9a60227d79fdf9b1f9a311f09db",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.prune.arc.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.prune.closed.html": [
-        "1012975fcf41e37ae58481629dcef3bcb56db11c",
+        "2a3b40068dd6252e0e656dc9958082acf669260d",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.prune.closed.worker.js": [
-        "9b3426f6d0cabe45976e01da9a05349711199f81",
+        "e1d271bf6aa47b50d1981c7df70d1fc11e490fb6",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.prune.closed.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.prune.corner.html": [
-        "553fdb616575c03269287b82b6eeab5747c8cc03",
+        "45db65d6d11097f5a67571b1803361c7ae04807c",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.prune.corner.worker.js": [
-        "c2233bbc15b90878842baf8d45619c4af716c516",
+        "fff4ba19e98d0b83106514a240789566c61cc507",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.prune.corner.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.prune.curve.html": [
-        "ae2f922a41bd3b205b5be2e6e9827c3ec8aa6254",
+        "946395f1c17615ff0927e83eda85ea008884943a",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.prune.curve.worker.js": [
-        "7dc88a72134ba25ca8691a9b16045235f3f09435",
+        "ed960fdbe7f1a05f7868085c3011ec059fc3e5f0",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.prune.curve.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.prune.line.html": [
-        "e9163cab40d1cec34bbaf480ff680dfc2d149623",
+        "1f0a892455c9eac1ca631d88fe1b3599432f03d5",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.prune.line.worker.js": [
-        "160bbe7eea3c28e9949a1036d4dbc0eaa297c559",
+        "a00e73bcbbe974b6c60c1560e163c14e7c35e9f6",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.prune.line.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.prune.rect.html": [
-        "72d0d6b6e9809f16dd4c0952cbdf8b7624b0965b",
+        "ffce538d91907f119b2ab91707a0bbc12471a701",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.prune.rect.worker.js": [
-        "c6ed67ed9e4aacc957914b00455f24544af4da2c",
+        "87bb533ff9ef982d108dc5d9ff5235b58d2dbeca",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.prune.rect.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.scale1.html": [
-        "e13fd9fe550bdf2ba15bb14411568f5ac035ca52",
+        "47639065d330f71f562508921da189095adc7298",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.scale1.worker.js": [
-        "ef7b2d4d04e6e034f6c90082d5243e2c52539746",
+        "3725fdf6e876feeb028336cb42b8dd05c1e8899a",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.scale1.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.scale2.html": [
-        "2b80f16898eee98e5ddc01395d4212dbb0d4056f",
+        "447a6dfadc424585a465b01bc4780536d62fb659",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.scale2.worker.js": [
-        "9c6d4fbf54a34d00e03a5e1b2ef35264bc43c70c",
+        "5223de78166ab9cb4da576dcb4c5dbf7ed7d08bd",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.scale2.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.skew.html": [
-        "55e96e08e06e460f3da40dc6ba9194918a320801",
+        "1fb118b12264aa46f19ca8dd9368dd0ae0cc1f78",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.skew.worker.js": [
-        "745afe4ff53ccaed94d9a77b72ca3f170d1db281",
+        "e65b796d068b755bf8afb61a9bcaa2e343be84a6",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.skew.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.unaffected.html": [
-        "58e7f75dc8e504c75b69196ce3c2f266966aabaa",
+        "3fc9cfad8835582460769b18686ec451dfbde3df",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.unaffected.worker.js": [
-        "a47c32d0099eec7289874dc5f937a0c119f52d51",
+        "d9df1ada9430a68967f7b0ed3bf7736c29b93e1b",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.unaffected.worker.html",
          {}
         ]
        ],
        "2d.path.stroke.union.html": [
-        "c3f063fe52d32ae61bf37340acf5d867280dcd33",
+        "6b980acff2dacaba83a7ba62850b4c2f18435e06",
         [
          null,
          {}
         ]
        ],
        "2d.path.stroke.union.worker.js": [
-        "282cb10bf75d8dfcde1de8eae49208ecbd10ebd8",
+        "3b05feec0398b0709ab0451726228422c9ddd1ab",
         [
          "html/canvas/offscreen/path-objects/2d.path.stroke.union.worker.html",
          {}
         ]
        ],
        "2d.path.transformation.basic.html": [
-        "18370041384d0b7bc6b039c1e85ba81c80727ac2",
+        "27f00aae0372fe2fa28c8a016df3a53d4cb761d0",
         [
          null,
          {}
         ]
        ],
        "2d.path.transformation.basic.worker.js": [
-        "7bc112dd1d0b2c90c6929bacc7f921b525b5941f",
+        "3ae4c876d5bcf680f949e487b1c0cdbfea6989c4",
         [
          "html/canvas/offscreen/path-objects/2d.path.transformation.basic.worker.html",
          {}
         ]
        ],
        "2d.path.transformation.changing.html": [
-        "b8a467387d55d49deaf0927a4da7c30ecc2e1249",
+        "786a5cf5891b2f05ff1747be699e66145e272b27",
         [
          null,
          {}
         ]
        ],
        "2d.path.transformation.changing.worker.js": [
-        "2460d24b199e378a4aeeef4b4ce731885178047e",
+        "2d8993c685c176b11feaebe49effe0ae13f1cecf",
         [
          "html/canvas/offscreen/path-objects/2d.path.transformation.changing.worker.html",
          {}
         ]
        ],
        "2d.path.transformation.multiple.html": [
-        "fcc2942435f5e02d5ce3df781bd73b6a840e56a5",
+        "636491bb0eee665c71e0d07113fd0752b58cbf41",
         [
          null,
          {}
         ]
        ],
        "2d.path.transformation.multiple.worker.js": [
-        "a2a04ca7776a9bbf8ca947babdc591edbb36e8f8",
+        "a9fb37d0de1012a2519db384d2949a812a069a9a",
         [
          "html/canvas/offscreen/path-objects/2d.path.transformation.multiple.worker.html",
          {}
