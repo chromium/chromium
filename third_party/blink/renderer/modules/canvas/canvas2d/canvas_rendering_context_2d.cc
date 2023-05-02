@@ -480,8 +480,6 @@ String CanvasRenderingContext2D::font() const {
 }
 
 void CanvasRenderingContext2D::setFont(const String& new_font) {
-  recordreplay::Assert("[RUN-1219-1694] CanvasRenderingContext2D::setFont %s",
-    new_font.Utf8().c_str());
   // The style resolution required for fonts is not available in frame-less
   // documents.
   if (!canvas()->GetDocument().GetFrame())

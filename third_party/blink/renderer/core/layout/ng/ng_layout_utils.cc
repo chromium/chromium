@@ -185,17 +185,11 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
   NGBoxFragment fragment(style.GetWritingDirection(), physical_fragment);
 
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #0");
-
   if (fragment_geometry.border_box_size.inline_size != fragment.InlineSize())
     return NGLayoutCacheStatus::kNeedsLayout;
 
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #1");
-
   if (style.MayHavePadding() && fragment_geometry.padding != fragment.Padding())
     return NGLayoutCacheStatus::kNeedsLayout;
-
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #2");
 
   // Tables are special - we can't determine the final block-size ahead of time
   // (or based on the previous intrinsic size).
@@ -205,19 +199,15 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   //
   // *NOTE* - any logic below this branch shouldn't apply to tables.
   if (node.IsTable()) {
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #3.0");
     if (!new_space.AreBlockSizeConstraintsEqual(old_space) ||
         BlockSizeMayChange(node, new_space, old_space, layout_result))
       return NGLayoutCacheStatus::kNeedsLayout;
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #3.1");
     return NGLayoutCacheStatus::kHit;
   }
 
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #4");
   LayoutUnit block_size = fragment_geometry.border_box_size.block_size;
   bool is_initial_block_size_indefinite = block_size == kIndefiniteSize;
   if (is_initial_block_size_indefinite) {
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #5.0");
     LayoutUnit intrinsic_block_size;
     // Intrinsic block-size is only defined if the node is unfragmented.
     if (!physical_fragment.IsFirstForNode() || physical_fragment.BreakToken())
@@ -281,38 +271,29 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
         new_space, style, fragment_geometry.border + fragment_geometry.padding,
         intrinsic_block_size, fragment_geometry.border_box_size.inline_size);
 
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #5.1");
     if (block_size == kIndefiniteSize)
       return NGLayoutCacheStatus::kNeedsLayout;
-
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #5.2");
   }
 
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #6");
   bool is_block_size_equal = block_size == fragment.BlockSize();
 
   if (!is_block_size_equal) {
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #7.0");
     // Only block-flow supports changing the block-size for simplified layout.
     if (!node.IsBlockFlow() || node.IsLayoutNGCustom())
       return NGLayoutCacheStatus::kNeedsLayout;
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #7.1");
 
     // Fieldsets stretch their content to the final block-size, which might
     // affect scrollbars.
     if (node.IsFieldsetContainer())
       return NGLayoutCacheStatus::kNeedsLayout;
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #7.2");
 
     if (layout_result.DisableSimplifiedLayout())
       return NGLayoutCacheStatus::kNeedsLayout;
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #7.3");
 
     // If we are the document or body element in quirks mode, changing our size
     // means that a scrollbar was added/removed. Require full layout.
     if (node.IsQuirkyAndFillsViewport())
       return NGLayoutCacheStatus::kNeedsLayout;
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #7.4");
 
     // If a block (within a formatting-context) changes to/from an empty-block,
     // margins may collapse through this node, requiring full layout. We
@@ -320,10 +301,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     if (!physical_fragment.IsFormattingContextRoot() &&
         !block_size != !fragment.BlockSize())
       return NGLayoutCacheStatus::kNeedsLayout;
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #7.5");
   }
 
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #8");
   const bool has_descendant_that_depends_on_percentage_block_size =
       layout_result.HasDescendantThatDependsOnPercentageBlockSize();
   const bool is_old_initial_block_size_indefinite =
@@ -337,28 +316,18 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   // TODO(ikilpatrick): There is an "optimization" for grid which would involve
   // *always* setting the initial block-size for grid as indefinite, then
   // re-running computing the grid if we have any "auto" tracks etc.
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #9 %d %d",
-    (int) is_old_initial_block_size_indefinite,
-    (int) is_initial_block_size_indefinite);
   if (is_old_initial_block_size_indefinite !=
       is_initial_block_size_indefinite) {
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #10.0 %d %d",
-      (int) node.IsGrid(),
-      (int) has_descendant_that_depends_on_percentage_block_size);
     if (node.IsGrid() || has_descendant_that_depends_on_percentage_block_size)
       return NGLayoutCacheStatus::kNeedsLayout;
   }
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #11");
 
   if (has_descendant_that_depends_on_percentage_block_size) {
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #12.0");
     // If our initial block-size is definite, we know that if we change our
     // block-size we'll affect any descendant that depends on the resulting
     // percentage block-size.
     if (!is_block_size_equal && !is_initial_block_size_indefinite)
       return NGLayoutCacheStatus::kNeedsLayout;
-
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #12.1");
 
     DCHECK(is_block_size_equal || is_initial_block_size_indefinite);
 
@@ -373,18 +342,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     // As we only care about the quirks-mode %-block-size behavior we remove
     // this false-positive by checking if we have an initial indefinite
     // block-size.
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #12.2 %d %d",
-      (int) is_initial_block_size_indefinite,
-      (int) physical_fragment.DependsOnPercentageBlockSize());
     if (is_initial_block_size_indefinite &&
         physical_fragment.DependsOnPercentageBlockSize()) {
-      recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #12.3 %d %d %d %d %d",
-        (int) is_old_initial_block_size_indefinite,
-        new_space.PercentageResolutionBlockSize().RawValue(),
-        old_space.PercentageResolutionBlockSize().RawValue(),
-        new_space.ReplacedPercentageResolutionBlockSize().RawValue(),
-        old_space.ReplacedPercentageResolutionBlockSize().RawValue());
-        
       DCHECK(is_old_initial_block_size_indefinite);
       if (new_space.PercentageResolutionBlockSize() !=
           old_space.PercentageResolutionBlockSize())
@@ -394,9 +353,6 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
         return NGLayoutCacheStatus::kNeedsLayout;
     }
   }
-
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #13 %d",
-    (int) new_space.IsTableCell());
 
   // Table-cells with vertical alignment might shift their contents if the
   // block-size changes.
@@ -419,10 +375,6 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
         auto new_alignment_baseline = new_space.TableCellAlignmentBaseline();
         auto old_alignment_baseline = old_space.TableCellAlignmentBaseline();
 
-        recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #14.0 %d %d",
-          (int) !!new_alignment_baseline,
-          (int) !!old_alignment_baseline
-        );
         // Do nothing if neither alignment baseline is set.
         if (!new_alignment_baseline && !old_alignment_baseline)
           break;
@@ -432,10 +384,6 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
         if (!new_alignment_baseline && old_alignment_baseline)
           return NGLayoutCacheStatus::kNeedsLayout;
 
-        recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #14.1 %d",
-          new_alignment_baseline->RawValue()
-        );
-
         // We've been provided a new alignment baseline, just check that it
         // matches the previously generated baseline.
         if (!old_alignment_baseline) {
@@ -444,35 +392,20 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
           break;
         }
 
-        recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #14.1 %d %d",
-          old_alignment_baseline->RawValue(),
-          new_alignment_baseline->RawValue()
-        );
-
         // If the alignment baselines differ at this stage, we need layout.
         if (*new_alignment_baseline != *old_alignment_baseline)
           return NGLayoutCacheStatus::kNeedsLayout;
 
-        recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #14.2");
         break;
       }
       case EVerticalAlign::kMiddle:
       case EVerticalAlign::kBottom:
-        recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #15.0 %d",
-          (int) is_block_size_equal);
-
         // 'middle', and 'bottom' vertical alignment depend on the block-size.
         if (!is_block_size_equal)
           return NGLayoutCacheStatus::kNeedsLayout;
         break;
     }
-
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #16");
   }
-
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatusWithGeometry #17 %d %d",
-    (int) node.IsTable(),
-    (int) is_block_size_equal);
 
   // If we've reached here we know that we can potentially "stretch"/"shrink"
   // ourselves without affecting any of our children.
@@ -520,17 +453,12 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
   const NGConstraintSpace& old_space =
       cached_layout_result.GetConstraintSpaceForCaching();
 
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatus #0");
-
   if (!new_space.MaySkipLayout(old_space))
     return NGLayoutCacheStatus::kNeedsLayout;
-
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatus #1");
 
   if (new_space.AreInlineSizeConstraintsEqual(old_space) &&
       new_space.AreBlockSizeConstraintsEqual(old_space)) {
 
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatus #2.0");
     // It is possible that our intrinsic size has changed, check for that here.
     // TODO(cbiesinger): Investigate why this check doesn't apply to
     // |MaySkipLegacyLayout|.
@@ -538,26 +466,17 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
                                 new_space, fragment_geometry))
       return NGLayoutCacheStatus::kNeedsLayout;
 
-    recordreplay::Assert("[RUN-1219-1663] CalculateSizeBasedLayoutCacheStatus #2.1 old=(%s) new=(%s)",
-      old_space.ToString().Ascii().c_str(),
-      new_space.ToString().Ascii().c_str()
-    );
     // We don't have to check our style if we know the constraint space sizes
     // will remain the same.
     if (new_space.AreSizesEqual(old_space))
       return NGLayoutCacheStatus::kHit;
 
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatus #2.2");
     // TODO(ikilpatrick): Always miss the cache for tables whose block
     // size-constraints change.
     if (!SizeMayChange(node, new_space, old_space, cached_layout_result))
       return NGLayoutCacheStatus::kHit;
-
-    recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatus #2.3");
   }
 
-  recordreplay::Assert("[RUN-1219-1657] CalculateSizeBasedLayoutCacheStatus #3 %d",
-    (int) !*fragment_geometry);
   if (!*fragment_geometry) {
     *fragment_geometry =
         CalculateInitialFragmentGeometry(new_space, node, break_token);

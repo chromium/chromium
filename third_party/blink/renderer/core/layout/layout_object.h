@@ -3004,11 +3004,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void Remove() {
     NOT_DESTROYED();
-    recordreplay::Assert(
-      "[RUN-1219-1694] LayoutObject::Remove %d parent=%d",
-      this->RecordReplayId(),
-      this->Parent() ? this->Parent()->RecordReplayId() : -1
-    );
     if (Parent())
       Parent()->RemoveChild(this);
   }

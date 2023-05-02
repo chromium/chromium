@@ -113,16 +113,8 @@ inline LayoutMultiColumnFlowThread* GetFlowThread(const LayoutBox& box) {
 template <typename Algorithm, typename Callback>
 NOINLINE void CreateAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
                                     const Callback& callback) {
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] CreateAlgorithmAndRun Start %d node_id=%d",
-                       params.node.GetLayoutBox()->RecordReplayId(),
-                       params.node.RecordReplayId());
-
   Algorithm algorithm(params);
   callback(&algorithm);
-
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] CreateAlgorithmAndRun Done");
 }
 
 template <typename Callback>
@@ -416,11 +408,6 @@ const NGLayoutResult* NGBlockNode::Layout(
     const NGBlockBreakToken* break_token,
     const NGEarlyBreak* early_break,
     const NGColumnSpannerPath* column_spanner_path) const {
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] NGBlockNode::Layout Start %d cs=%d",
-                       GetLayoutBox()->RecordReplayId(),
-                       constraint_space.CacheSlot());
-
   // Use the old layout code and synthesize a fragment.
   if (!CanUseNewLayout())
     return RunLegacyLayout(constraint_space);
@@ -449,10 +436,6 @@ const NGLayoutResult* NGBlockNode::Layout(
   const NGLayoutResult* layout_result = box_->CachedLayoutResult(
       constraint_space, break_token, early_break, column_spanner_path,
       &fragment_geometry, &cache_status);
-
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] NGBlockNode::Layout #2 %d %d",
-                       !!layout_result, (int)cache_status);
 
   if (cache_status == NGLayoutCacheStatus::kHit) {
     DCHECK(layout_result);
@@ -487,9 +470,6 @@ const NGLayoutResult* NGBlockNode::Layout(
     }
   }
 
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] NGBlockNode::Layout #3");
-
   if (!fragment_geometry) {
     fragment_geometry =
         CalculateInitialFragmentGeometry(constraint_space, *this, break_token);
@@ -512,10 +492,6 @@ const NGLayoutResult* NGBlockNode::Layout(
       layout_result = box_->CachedLayoutResult(
           constraint_space, break_token, early_break, column_spanner_path,
           &fragment_geometry, &cache_status);
-
-      // https://linear.app/replay/issue/RUN-1219
-      recordreplay::Assert("[RUN-1219] NGBlockNode::Layout #8 %d %d",
-                           !!layout_result, (int)cache_status);
     }
   }
 
@@ -542,17 +518,11 @@ const NGLayoutResult* NGBlockNode::Layout(
     const NGLayoutResult* previous_result = layout_result;
 #endif
 
-    // https://linear.app/replay/issue/RUN-1219
-    recordreplay::Assert("[RUN-1219] NGBlockNode::Layout #10");
-
     // A child may have changed size while performing "simplified" layout (it
     // may have gained or removed scrollbars, changing its size). In these
     // cases "simplified" layout will return a null layout-result, indicating
     // we need to perform a full layout.
     layout_result = RunSimplifiedLayout(params, *layout_result);
-
-    // https://linear.app/replay/issue/RUN-1219
-    recordreplay::Assert("[RUN-1219] NGBlockNode::Layout #11");
 
 #if DCHECK_IS_ON()
     if (layout_result) {
@@ -646,9 +616,6 @@ const NGLayoutResult* NGBlockNode::Layout(
       // message.
       box_->SetNeedsLayout(layout_invalidation_reason::kScrollbarChanged,
                            kMarkOnlyThis);
-
-      // https://linear.app/replay/issue/RUN-1219
-      recordreplay::Assert("[RUN-1219] NGBlockNode::Layout #20");
 
       fragment_geometry = CalculateInitialFragmentGeometry(constraint_space,
                                                            *this, break_token);
@@ -1025,11 +992,6 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     const MinMaxSizesType type,
     const NGConstraintSpace& constraint_space,
     const MinMaxSizesFloatInput float_input) const {
-
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] NGBlockNode::ComputeMinMaxSizes id=%d",
-    RecordReplayId());
-
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
   if (IsListItem())

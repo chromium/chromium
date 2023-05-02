@@ -69,7 +69,6 @@ UseCounter* CSSFontSelector::GetUseCounter() const {
 void CSSFontSelector::RegisterForInvalidationCallbacks(
     FontSelectorClient* client) {
   CHECK(client);
-  recordreplay::Assert("[RUN-1219-1728] CSSFontSelector::RegisterForInvalidationCallbacks");
   clients_.insert(client);
   if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers")) {
     record_replay_strong_clients_.insert(client);
@@ -78,7 +77,6 @@ void CSSFontSelector::RegisterForInvalidationCallbacks(
 
 void CSSFontSelector::UnregisterForInvalidationCallbacks(
     FontSelectorClient* client) {
-  recordreplay::Assert("[RUN-1219-1728] CSSFontSelector::UnregisterForInvalidationCallbacks");
   clients_.erase(client);
   if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers")) {
     record_replay_strong_clients_.erase(client);

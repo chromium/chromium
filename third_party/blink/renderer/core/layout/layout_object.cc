@@ -3652,9 +3652,6 @@ inline void LayoutObject::ClearLayoutRootIfNeeded() const {
 
 void LayoutObject::WillBeDestroyed() {
   NOT_DESTROYED();
-  recordreplay::Assert("[RUN-1219-1694] LayoutObject::WillBeDestroyed %d",
-    this->RecordReplayId());
-
   // Destroy any leftover anonymous children.
   LayoutObjectChildList* children = VirtualChildren();
   if (children)

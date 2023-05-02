@@ -919,10 +919,6 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
     Element* element,
     const StyleRecalcContext& style_recalc_context,
     const StyleRequest& style_request) {
-  recordreplay::Assert(
-    "[RUN-1219-1708] StyleResolver::ResolveStyle #0 elem=%d",
-    element ? element->RecordReplayId() : -1
-  );
   if (!element) {
     DCHECK(style_request.IsPseudoStyleRequest());
     return nullptr;
@@ -946,10 +942,6 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
   // style computation itself, also also where the caching for the base
   // computed style optimization happens.
   ApplyBaseStyle(element, style_recalc_context, style_request, state, cascade);
-  recordreplay::Assert(
-    "[RUN-1219-1708] StyleResolver::ResolveStyle #1 elem=%d",
-    element->RecordReplayId()
-  );
 
   if (style_request.IsPseudoStyleRequest() && state.HadNoMatchedProperties()) {
     DCHECK(!cascade.InlineStyleLost());
@@ -1262,10 +1254,6 @@ void StyleResolver::ApplyBaseStyleNoCache(
     const StyleRequest& style_request,
     StyleResolverState& state,
     StyleCascade& cascade) {
-  recordreplay::Assert(
-    "[RUN-1219-1708] StyleResolver::ApplyBaseStyleNoCache #0 elem=%d",
-    element->RecordReplayId()
-  );
   InitStyleAndApplyInheritance(*element, style_request, state);
 
   // For some very special elements (e.g. <video>): Ensure internal UA style
@@ -1321,11 +1309,6 @@ void StyleResolver::ApplyBaseStyleNoCache(
     }
   }
 
-  recordreplay::Assert(
-    "[RUN-1219-1708] StyleResolver::ApplyBaseStyleNoCache #1 elem=%d",
-    element->RecordReplayId()
-  );
-
   // Preserve the text autosizing multiplier on style recalc. Autosizer will
   // update it during layout if needed.
   // NOTE: This must occur before CascadeAndApplyMatchedProperties for correct
@@ -1333,11 +1316,6 @@ void StyleResolver::ApplyBaseStyleNoCache(
   PreserveTextAutosizingMultiplierIfNeeded(state, style_request);
 
   CascadeAndApplyMatchedProperties(state, cascade);
-
-  recordreplay::Assert(
-    "[RUN-1219-1708] StyleResolver::ApplyBaseStyleNoCache #2 elem=%d",
-    element->RecordReplayId()
-  );
 
   if (collector.MatchedResult().DependsOnSizeContainerQueries())
     state.Style()->SetDependsOnSizeContainerQueries(true);
@@ -1381,15 +1359,7 @@ void StyleResolver::ApplyBaseStyle(
     StyleCascade& cascade) {
   DCHECK(style_request.pseudo_id != kPseudoIdFirstLineInherited);
 
-  recordreplay::Assert(
-    "[RUN-1219-1708] StyleResolver::ApplyBaseStyle #0 elem=%d",
-    element->RecordReplayId()
-  );
   if (state.CanCacheBaseStyle() && CanReuseBaseComputedStyle(state)) {
-    recordreplay::Assert(
-      "[RUN-1219-1708] StyleResolver::ApplyBaseStyle #1 elem=%d",
-      element->RecordReplayId()
-    );
     const ComputedStyle* animation_base_computed_style =
         CachedAnimationBaseComputedStyle(state);
     DCHECK(animation_base_computed_style);
@@ -1423,10 +1393,6 @@ void StyleResolver::ApplyBaseStyle(
 
   if (!style_recalc_context.parent_forces_recalc &&
       CanApplyInlineStyleIncrementally(element, state, style_request)) {
-    recordreplay::Assert(
-      "[RUN-1219-1708] StyleResolver::ApplyBaseStyle #2 elem=%d",
-      element->RecordReplayId()
-    );
     // We are in a situation where we can reuse the old style
     // and just apply the element's inline style on top of it
     // (see the function comment).
@@ -1494,19 +1460,9 @@ void StyleResolver::ApplyBaseStyle(
     return;
   }
 
-  recordreplay::Assert(
-    "[RUN-1219-1708] StyleResolver::ApplyBaseStyle #3 elem=%d",
-    element->RecordReplayId()
-  );
-
   // None of the caches applied, so we need a full recalculation.
   ApplyBaseStyleNoCache(element, style_recalc_context, style_request, state,
                         cascade);
-
-  recordreplay::Assert(
-    "[RUN-1219-1708] StyleResolver::ApplyBaseStyle #4 elem=%d",
-    element->RecordReplayId()
-  );
 }
 
 CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
@@ -2152,10 +2108,6 @@ StyleResolver::BeforeChangeStyleForTransitionUpdate(
 
 void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
                                                      StyleCascade& cascade) {
-
-  recordreplay::Assert(
-    "[RUN-1219-1708] StyleResolver::CascadeAndApplyMatchedProperties #0"
-  );
   const MatchResult& result = cascade.GetMatchResult();
 
   CacheSuccess cache_success = ApplyMatchedCache(state, result);
@@ -2163,9 +2115,6 @@ void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
   if (cache_success.IsFullCacheHit())
     return;
 
-  recordreplay::Assert(
-    "[RUN-1219-1708] StyleResolver::CascadeAndApplyMatchedProperties #1"
-  );
   auto apply = [&state, &cascade, &cache_success](CascadeFilter filter) {
     if (cache_success.ShouldApplyInheritedOnly()) {
       cascade.Apply(filter.Add(CSSProperty::kInherited, false));
@@ -2183,22 +2132,12 @@ void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
   // again to get the correct result.
   apply(CascadeFilter(CSSProperty::kLegacyOverlapping, true));
 
-  recordreplay::Assert(
-    "[RUN-1219-1708] StyleResolver::CascadeAndApplyMatchedProperties #2"
-  );
-
   if (state.RejectedLegacyOverlapping()) {
     scoped_refptr<ComputedStyle> non_legacy_style =
         ComputedStyle::Clone(state.StyleRef());
-    recordreplay::Assert(
-      "[RUN-1219-1708] StyleResolver::CascadeAndApplyMatchedProperties #3"
-    );
     // Re-apply all overlapping properties (both legacy and non-legacy).
     apply(CascadeFilter(CSSProperty::kOverlapping, false));
 
-    recordreplay::Assert(
-      "[RUN-1219-1708] StyleResolver::CascadeAndApplyMatchedProperties #4"
-    );
     UseCountLegacyOverlapping(GetDocument(), *non_legacy_style,
                               state.StyleRef());
   }

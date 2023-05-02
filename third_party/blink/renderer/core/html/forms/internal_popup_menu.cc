@@ -158,10 +158,6 @@ scoped_refptr<FontData> PopupMenuCSSFontSelector::GetFontData(
 
 void PopupMenuCSSFontSelector::FontsNeedUpdate(FontSelector* font_selector,
                                                FontInvalidationReason reason) {
-  recordreplay::Assert(
-    "[RUN-1219-1728] PopupMenuCSSFontSelector::FontsNeedUpdate %d",
-    this->RecordReplayId()
-  );
   DispatchInvalidationCallbacks(reason);
 }
 
