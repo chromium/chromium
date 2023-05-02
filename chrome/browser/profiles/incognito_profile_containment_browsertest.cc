@@ -304,12 +304,11 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
       "LocalStorage", "ServiceWorker", "SessionCookie", "WebSql"};
 
   for (const std::string& type : kStorageTypes) {
-    bool data = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser->tab_strip_model()->GetActiveWebContents(), "set" + type + "()",
-        &data));
-
-    ASSERT_TRUE(data) << "Couldn't create data for: " << type;
+    ASSERT_TRUE(
+        content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                        "set" + type + "()")
+            .ExtractBool())
+        << "Couldn't create data for: " << type;
   }
 
   CloseBrowserSynchronously(browser);
