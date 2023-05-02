@@ -100,6 +100,12 @@ public class PrivacySettings extends PreferenceFragmentCompat
             // available to restricted users.
             getPreferenceScreen().removePreference(sandboxPreference);
         } else {
+            if (PrivacySandboxBridge.isRestrictedNoticeEnabled()) {
+                // Update the summary to one that describes only ad measurement if ad-measurement
+                // is available to restricted users.
+                sandboxPreference.setSummary(getContext().getString(
+                        R.string.settings_ad_privacy_restricted_link_row_sub_label));
+            }
             // Overwrite the click listener to pass a correct referrer to the fragment.
             sandboxPreference.setOnPreferenceClickListener(preference -> {
                 PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(getContext(),
