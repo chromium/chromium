@@ -197,6 +197,11 @@ IN_PROC_BROWSER_TEST_F(PageAnchorsMetricsObserverBrowserTest,
       ukm::builders::NavigationPredictorUserInteractions::kEntryName,
       user_interactions_entries_size + 1u);
 
+  // Upon restoring from BFCache the `AnchorElementData` for page 1 should be
+  // recorded to UKM.
+  anchor_elements_entries_size = WaitForUKMEntry(
+      ukm::builders::NavigationPredictorAnchorElementMetrics::kEntryName,
+      anchor_elements_entries_size + 1u);
   // Do some interactions.
   EXPECT_TRUE(content::ExecuteScript(web_contents(),
                                      R"(
@@ -217,6 +222,12 @@ IN_PROC_BROWSER_TEST_F(PageAnchorsMetricsObserverBrowserTest,
   user_interactions_entries_size = WaitForUKMEntry(
       ukm::builders::NavigationPredictorUserInteractions::kEntryName,
       user_interactions_entries_size + 1u);
+
+  // Upon restoring from BFCache the `AnchorElementData` for page 2 should be
+  // recorded to UKM.
+  anchor_elements_entries_size = WaitForUKMEntry(
+      ukm::builders::NavigationPredictorAnchorElementMetrics::kEntryName,
+      anchor_elements_entries_size + 1u);
 
   // Do some interactions.
   EXPECT_TRUE(content::ExecuteScript(web_contents(),

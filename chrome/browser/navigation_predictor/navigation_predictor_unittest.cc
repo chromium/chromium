@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "navigation_predictor_metrics_document_data.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,10 +59,10 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
   }
 
   void RecordPropertyPageLinkClickDataToUkm() {
-    PageAnchorsMetricsObserver::PageLinkClickData* data =
-        PageAnchorsMetricsObserver::PageLinkClickData::
-            GetOrCreateForCurrentDocument(main_rfh());
-    data->RecordToUkm(main_rfh()->GetPageUkmSourceId());
+    NavigationPredictorMetricsDocumentData* data =
+        NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+            main_rfh());
+    data->RecordPageLinkClickData(main_rfh()->GetPageUkmSourceId());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -111,57 +112,58 @@ TEST_F(NavigationPredictorTest, ReportNewAnchorElements) {
   predictor_service()->ReportNewAnchorElements(std::move(metrics));
   base::RunLoop().RunUntilIdle();
 
-  PageAnchorsMetricsObserver::AnchorsData* data =
-      PageAnchorsMetricsObserver::AnchorsData::GetOrCreateForCurrentDocument(
-          main_rfh());
-  EXPECT_EQ(1u, data->number_of_anchors_);
-  EXPECT_EQ(0u, data->number_of_anchors_contains_image_);
-  EXPECT_EQ(0u, data->number_of_anchors_in_iframe_);
-  EXPECT_EQ(0u, data->number_of_anchors_same_host_);
-  EXPECT_EQ(0u, data->number_of_anchors_url_incremented_);
-  EXPECT_EQ(10, data->total_clickable_space_);
-  EXPECT_EQ(10 * 100, data->MedianLinkLocation());
-  EXPECT_EQ(GetDefaultViewport().height(), data->viewport_height_);
-  EXPECT_EQ(GetDefaultViewport().width(), data->viewport_width_);
+  NavigationPredictorMetricsDocumentData::AnchorsData& data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          main_rfh())
+          ->GetAnchorsData();
+  EXPECT_EQ(1u, data.number_of_anchors_);
+  EXPECT_EQ(0u, data.number_of_anchors_contains_image_);
+  EXPECT_EQ(0u, data.number_of_anchors_in_iframe_);
+  EXPECT_EQ(0u, data.number_of_anchors_same_host_);
+  EXPECT_EQ(0u, data.number_of_anchors_url_incremented_);
+  EXPECT_EQ(10, data.total_clickable_space_);
+  EXPECT_EQ(10 * 100, data.MedianLinkLocation());
+  EXPECT_EQ(GetDefaultViewport().height(), data.viewport_height_);
+  EXPECT_EQ(GetDefaultViewport().width(), data.viewport_width_);
 
   metrics.clear();
   metrics.push_back(CreateMetricsPtr());
   metrics[0]->contains_image = true;
   predictor_service()->ReportNewAnchorElements(std::move(metrics));
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2u, data->number_of_anchors_);
-  EXPECT_EQ(1u, data->number_of_anchors_contains_image_);
-  EXPECT_EQ(0u, data->number_of_anchors_in_iframe_);
-  EXPECT_EQ(0u, data->number_of_anchors_same_host_);
-  EXPECT_EQ(0u, data->number_of_anchors_url_incremented_);
-  EXPECT_EQ(20, data->total_clickable_space_);
-  EXPECT_EQ(5 * 100, data->MedianLinkLocation());
+  EXPECT_EQ(2u, data.number_of_anchors_);
+  EXPECT_EQ(1u, data.number_of_anchors_contains_image_);
+  EXPECT_EQ(0u, data.number_of_anchors_in_iframe_);
+  EXPECT_EQ(0u, data.number_of_anchors_same_host_);
+  EXPECT_EQ(0u, data.number_of_anchors_url_incremented_);
+  EXPECT_EQ(20, data.total_clickable_space_);
+  EXPECT_EQ(5 * 100, data.MedianLinkLocation());
 
   metrics.clear();
   metrics.push_back(CreateMetricsPtr());
   metrics[0]->is_in_iframe = true;
   predictor_service()->ReportNewAnchorElements(std::move(metrics));
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(3u, data->number_of_anchors_);
-  EXPECT_EQ(1u, data->number_of_anchors_contains_image_);
-  EXPECT_EQ(1u, data->number_of_anchors_in_iframe_);
-  EXPECT_EQ(0u, data->number_of_anchors_same_host_);
-  EXPECT_EQ(0u, data->number_of_anchors_url_incremented_);
-  EXPECT_EQ(30, data->total_clickable_space_);
-  EXPECT_EQ(0, data->MedianLinkLocation());
+  EXPECT_EQ(3u, data.number_of_anchors_);
+  EXPECT_EQ(1u, data.number_of_anchors_contains_image_);
+  EXPECT_EQ(1u, data.number_of_anchors_in_iframe_);
+  EXPECT_EQ(0u, data.number_of_anchors_same_host_);
+  EXPECT_EQ(0u, data.number_of_anchors_url_incremented_);
+  EXPECT_EQ(30, data.total_clickable_space_);
+  EXPECT_EQ(0, data.MedianLinkLocation());
 
   metrics.clear();
   metrics.push_back(CreateMetricsPtr());
   metrics[0]->is_same_host = true;
   predictor_service()->ReportNewAnchorElements(std::move(metrics));
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(4u, data->number_of_anchors_);
-  EXPECT_EQ(1u, data->number_of_anchors_contains_image_);
-  EXPECT_EQ(1u, data->number_of_anchors_in_iframe_);
-  EXPECT_EQ(1u, data->number_of_anchors_same_host_);
-  EXPECT_EQ(0u, data->number_of_anchors_url_incremented_);
-  EXPECT_EQ(40, data->total_clickable_space_);
-  EXPECT_EQ(0, data->MedianLinkLocation());
+  EXPECT_EQ(4u, data.number_of_anchors_);
+  EXPECT_EQ(1u, data.number_of_anchors_contains_image_);
+  EXPECT_EQ(1u, data.number_of_anchors_in_iframe_);
+  EXPECT_EQ(1u, data.number_of_anchors_same_host_);
+  EXPECT_EQ(0u, data.number_of_anchors_url_incremented_);
+  EXPECT_EQ(40, data.total_clickable_space_);
+  EXPECT_EQ(0, data.MedianLinkLocation());
 
   metrics.clear();
   metrics.push_back(CreateMetricsPtr());
@@ -169,13 +171,13 @@ TEST_F(NavigationPredictorTest, ReportNewAnchorElements) {
   metrics[0]->ratio_area = 0.05;
   predictor_service()->ReportNewAnchorElements(std::move(metrics));
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(5u, data->number_of_anchors_);
-  EXPECT_EQ(1u, data->number_of_anchors_contains_image_);
-  EXPECT_EQ(1u, data->number_of_anchors_in_iframe_);
-  EXPECT_EQ(1u, data->number_of_anchors_same_host_);
-  EXPECT_EQ(1u, data->number_of_anchors_url_incremented_);
-  EXPECT_EQ(45, data->total_clickable_space_);
-  EXPECT_EQ(0, data->MedianLinkLocation());
+  EXPECT_EQ(5u, data.number_of_anchors_);
+  EXPECT_EQ(1u, data.number_of_anchors_contains_image_);
+  EXPECT_EQ(1u, data.number_of_anchors_in_iframe_);
+  EXPECT_EQ(1u, data.number_of_anchors_same_host_);
+  EXPECT_EQ(1u, data.number_of_anchors_url_incremented_);
+  EXPECT_EQ(45, data.total_clickable_space_);
+  EXPECT_EQ(0, data.MedianLinkLocation());
 }
 
 TEST_F(NavigationPredictorTest, ReportSameAnchorElementTwice) {
@@ -192,10 +194,12 @@ TEST_F(NavigationPredictorTest, ReportSameAnchorElementTwice) {
   predictor_service()->ReportNewAnchorElements(std::move(metrics));
   base::RunLoop().RunUntilIdle();
 
-  PageAnchorsMetricsObserver::AnchorsData* data =
-      PageAnchorsMetricsObserver::AnchorsData::GetOrCreateForCurrentDocument(
-          main_rfh());
-  EXPECT_EQ(1u, data->number_of_anchors_);
+  NavigationPredictorMetricsDocumentData::AnchorsData& data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          main_rfh())
+          ->GetAnchorsData();
+
+  EXPECT_EQ(1u, data.number_of_anchors_);
 }
 
 // Basic test to check the ReportNewAnchorElements method can be
@@ -210,18 +214,19 @@ TEST_F(NavigationPredictorTest, ReportNewAnchorElementsMultipleAnchors) {
   predictor_service()->ReportNewAnchorElements(std::move(metrics));
   base::RunLoop().RunUntilIdle();
 
-  PageAnchorsMetricsObserver::AnchorsData* data =
-      PageAnchorsMetricsObserver::AnchorsData::GetOrCreateForCurrentDocument(
-          main_rfh());
-  EXPECT_EQ(2u, data->number_of_anchors_);
-  EXPECT_EQ(1u, data->number_of_anchors_contains_image_);
-  EXPECT_EQ(0u, data->number_of_anchors_in_iframe_);
-  EXPECT_EQ(0u, data->number_of_anchors_same_host_);
-  EXPECT_EQ(0u, data->number_of_anchors_url_incremented_);
-  EXPECT_EQ(20, data->total_clickable_space_);
-  EXPECT_EQ(5 * 100, data->MedianLinkLocation());
-  EXPECT_EQ(GetDefaultViewport().height(), data->viewport_height_);
-  EXPECT_EQ(GetDefaultViewport().width(), data->viewport_width_);
+  NavigationPredictorMetricsDocumentData::AnchorsData& data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          main_rfh())
+          ->GetAnchorsData();
+  EXPECT_EQ(2u, data.number_of_anchors_);
+  EXPECT_EQ(1u, data.number_of_anchors_contains_image_);
+  EXPECT_EQ(0u, data.number_of_anchors_in_iframe_);
+  EXPECT_EQ(0u, data.number_of_anchors_same_host_);
+  EXPECT_EQ(0u, data.number_of_anchors_url_incremented_);
+  EXPECT_EQ(20, data.total_clickable_space_);
+  EXPECT_EQ(5 * 100, data.MedianLinkLocation());
+  EXPECT_EQ(GetDefaultViewport().height(), data.viewport_height_);
+  EXPECT_EQ(GetDefaultViewport().width(), data.viewport_width_);
 }
 
 class MetricsBuilder {
@@ -488,19 +493,20 @@ class MockNavigationPredictorForTesting : public NavigationPredictor {
                                                  std::move(receiver));
   }
   void RecordUserInteractionMetrics() {
-    auto& user_interactions = GetUserInteractionsData();
-    user_interactions.RecordUserInteractionMetrics(ukm_source_id_);
+    auto& data = GetNavigationPredictorMetricsDocumentData();
+    data.RecordUserInteractionsData(ukm_source_id_);
   }
-  const std::unordered_map<
+  std::unordered_map<
       int,
-      PageAnchorsMetricsObserver::UserInteractionsData::UserInteractions>&
-  user_interactions() const {
-    return GetUserInteractionsData().user_interactions_;
+      NavigationPredictorMetricsDocumentData::UserInteractionsData>&
+  user_interactions() {
+    return GetNavigationPredictorMetricsDocumentData()
+        .GetUserInteractionsData();
   }
-  const PageAnchorsMetricsObserver::UserInteractionsData::UserInteractions&
+  const NavigationPredictorMetricsDocumentData::UserInteractionsData&
   user_interaction(AnchorId anchor_id) {
     auto index_it = tracked_anchor_id_to_index_.find(anchor_id);
-    return GetUserInteractionsData().user_interactions_[index_it->second];
+    return user_interactions()[index_it->second];
   }
   absl::optional<base::TimeDelta> navigation_start_to_click() {
     return navigation_start_to_click_;
@@ -1052,12 +1058,12 @@ TEST_F(NavigationPredictorUserInteractionsTest,
   mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
   auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
       main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
-  PageAnchorsMetricsObserver::UserInteractionsData* user_interactions_data =
-      PageAnchorsMetricsObserver::UserInteractionsData::
-          GetOrCreateForCurrentDocument(main_rfh());
+  NavigationPredictorMetricsDocumentData* navigation_predictor_metrics_data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          main_rfh());
 
   ukm::SourceId ukm_source_id = main_rfh()->GetPageUkmSourceId();
-  user_interactions_data->SetUkmSourceIdForTesting(ukm_source_id + 1);
+  navigation_predictor_metrics_data->SetUkmSourceId(ukm_source_id + 1);
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   auto anchor_id = ReportNewAnchorElement(predictor_service.get());
@@ -1073,7 +1079,7 @@ TEST_F(NavigationPredictorUserInteractionsTest,
   ReportAnchorElementLeftViewport(predictor_service.get(), anchor_id,
                                   base::Microseconds(300));
 
-  predictor_service_host->RecordUserInteractionMetrics();
+  EXPECT_DEATH(predictor_service_host->RecordUserInteractionMetrics(), "");
   base::RunLoop().RunUntilIdle();
 
   // There should be no new records.

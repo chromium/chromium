@@ -4,6 +4,7 @@
 
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
 
+#include "chrome/browser/navigation_predictor/navigation_predictor_metrics_document_data.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
@@ -40,11 +41,13 @@ class PageAnchorsMetricsObserverTest
     tester()->SimulateTimingUpdate(timing_);
   }
 
-  TestPageAnchorsMetricsObserver::UserInteractionsData&
-  GetUserInteractionsData() {
-    TestPageAnchorsMetricsObserver::UserInteractionsData* data =
-        TestPageAnchorsMetricsObserver::UserInteractionsData::
-            GetOrCreateForCurrentDocument(main_rfh());
+  NavigationPredictorMetricsDocumentData&
+  GetNavigationPredictorMetricsDocumentData() {
+    // Create the `NavigationPredictorMetricsDocumentData` object for this
+    // document if it doesn't already exist.
+    NavigationPredictorMetricsDocumentData* data =
+        NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+            main_rfh());
     EXPECT_TRUE(data);
     return *data;
   }
@@ -84,7 +87,7 @@ class PageAnchorsMetricsObserverTest
 
  private:
   void ResetTest() {
-    GetUserInteractionsData().Clear();
+    GetNavigationPredictorMetricsDocumentData().ClearUserInteractionsData();
 
     page_load_metrics::InitPageLoadTimingForTest(&timing_);
     timing_.navigation_start = base::Time::FromDoubleT(2);
@@ -107,31 +110,12 @@ TEST_F(PageAnchorsMetricsObserverTest,
        NavigateToUntrackedUrlShouldForceRecordingUkmData) {
   StartTest();
 
-  TestPageAnchorsMetricsObserver::UserInteractionsData::UserInteractions
+  NavigationPredictorMetricsDocumentData::UserInteractionsData
       user_interactions;
-  GetUserInteractionsData().user_interactions_[0] = user_interactions;
+  GetNavigationPredictorMetricsDocumentData().AddUserInteractionsData(
+      0, user_interactions);
   tester()->NavigateToUntrackedUrl();
 
   using UkmEntry = ukm::builders::NavigationPredictorUserInteractions;
   VerifyUKMEntry(UkmEntry::kEntryName, UkmEntry::kAnchorIndexName, 0);
-}
-
-TEST_F(PageAnchorsMetricsObserverTest, UkmSourceIdMixUp) {
-  StartTest();
-
-  // This page's UKM source id should be valid.
-  auto ukm_source_id = GetUkmSourceId();
-  EXPECT_TRUE(GetUserInteractionsData().IsValidUkmSourceId(ukm_source_id));
-  // A random UKM source id should be invalid.
-  EXPECT_FALSE(GetUserInteractionsData().IsValidUkmSourceId(ukm_source_id + 1));
-  TestPageAnchorsMetricsObserver::UserInteractionsData::UserInteractions
-      user_interactions;
-  GetUserInteractionsData().user_interactions_[0] = user_interactions;
-  // Now we navigate away.
-  tester()->NavigateToUntrackedUrl();
-  using UkmEntry = ukm::builders::NavigationPredictorUserInteractions;
-  VerifyUKMEntry(UkmEntry::kEntryName, UkmEntry::kAnchorIndexName, 0);
-
-  // The last ukm_source_id is not valid anymore.
-  EXPECT_FALSE(GetUserInteractionsData().IsValidUkmSourceId(ukm_source_id));
 }

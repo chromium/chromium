@@ -5,189 +5,21 @@
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
 
 #include "base/debug/dump_without_crashing.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_metrics_document_data.h"
 #include "content/public/browser/navigation_handle.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-
-PageAnchorsMetricsObserver::AnchorsData::AnchorsData(
-    content::RenderFrameHost* render_frame_host)
-    : DocumentUserData<AnchorsData>(render_frame_host) {
-  DCHECK(render_frame_host);
-  ukm_source_id_ = render_frame_host->GetMainFrame()->GetPageUkmSourceId();
-}
-
-PageAnchorsMetricsObserver::AnchorsData::~AnchorsData() {
-  RecordAnchorsData(ukm_source_id_);
-}
-
-int PageAnchorsMetricsObserver::AnchorsData::MedianLinkLocation() {
-  DCHECK(!link_locations_.empty());
-  sort(link_locations_.begin(), link_locations_.end());
-  size_t idx = link_locations_.size() / 2;
-  if (link_locations_.size() % 2 == 0) {
-    return (link_locations_[idx - 1] + link_locations_[idx]) * 50;
-  }
-  return link_locations_[link_locations_.size() / 2] * 100;
-}
-
-void PageAnchorsMetricsObserver::AnchorsData::RecordAnchorsData(
-    ukm::SourceId ukm_source_id) {
-  if (number_of_anchors_ == 0) {
-    // NavigationPredictor did not record any anchor data, don't log anything.
-    return;
-  }
-
-  ukm::builders::NavigationPredictorPageLinkMetrics builder(ukm_source_id);
-  builder.SetMedianLinkLocation(MedianLinkLocation());
-  builder.SetNumberOfAnchors_ContainsImage(number_of_anchors_contains_image_);
-  builder.SetNumberOfAnchors_InIframe(number_of_anchors_in_iframe_);
-  builder.SetNumberOfAnchors_SameHost(number_of_anchors_same_host_);
-  builder.SetNumberOfAnchors_Total(number_of_anchors_);
-  builder.SetNumberOfAnchors_URLIncremented(number_of_anchors_url_incremented_);
-  builder.SetTotalClickableSpace(total_clickable_space_);
-  builder.SetViewport_Height(viewport_height_);
-  builder.SetViewport_Width(viewport_width_);
-  builder.Record(ukm::UkmRecorder::Get());
-  // `AnchorData` should persist and be logged again in case of BFCache
-  // navigation.
-}
-
-DOCUMENT_USER_DATA_KEY_IMPL(PageAnchorsMetricsObserver::AnchorsData);
-
-PageAnchorsMetricsObserver::UserInteractionsData::UserInteractionsData(
-    content::RenderFrameHost* render_frame_host)
-    : DocumentUserData<UserInteractionsData>(render_frame_host) {
-  DCHECK(render_frame_host);
-  ukm_source_id_ = render_frame_host->GetMainFrame()->GetPageUkmSourceId();
-}
-
-PageAnchorsMetricsObserver::UserInteractionsData::~UserInteractionsData() {
-  RecordUserInteractionMetrics(ukm_source_id_);
-}
-
-// TODO(isaboori): `IsValidUkmSourceId` is a temporary check to make sure the
-// new refactor works as intended and should be removed later.
-bool PageAnchorsMetricsObserver::UserInteractionsData::IsValidUkmSourceId(
-    ukm::SourceId ukm_source_id) {
-  // `NavigationPredictor` is trying to update the user
-  // interactions data with a different `ukm_sourc_id`s, and it should never
-  // happen. Return false and call base::debug::DumpWithoutCrashing().
-  if (ukm_source_id_ != ukm_source_id) {
-    base::debug::DumpWithoutCrashing();
-    return false;
-  }
-  return true;
-}
-
-void PageAnchorsMetricsObserver::UserInteractionsData::
-    RecordUserInteractionMetrics(ukm::SourceId ukm_source_id) {
-  if (user_interactions_.empty()) {
-    return;
-  }
-
-  absl::optional<base::TimeDelta> navigation_start_to_now;
-  if (!navigation_start_time_.is_null()) {
-    navigation_start_to_now = base::TimeTicks::Now() - navigation_start_time_;
-  }
-  // In case we don't have a valid |navigation_start_to_click_|, the best we
-  // could do is to use |navigation_start_to_now|. It may cause some
-  // inconsistency in the measurements but it is better than not recording it.
-  if (!navigation_start_to_click_.has_value()) {
-    navigation_start_to_click_ = navigation_start_to_now;
-  }
-
-  auto get_max_time_ms = [this](auto const& max_time,
-                                auto const last_navigation_start_to) {
-    int64_t max_time_ms = -1;
-    if (last_navigation_start_to.has_value() &&
-        navigation_start_to_click_.has_value()) {
-      max_time_ms = std::max(max_time_ms, (navigation_start_to_click_.value() -
-                                           last_navigation_start_to.value())
-                                              .InMilliseconds());
-    }
-    if (max_time.has_value()) {
-      max_time_ms = std::max(max_time_ms, max_time.value().InMilliseconds());
-    }
-    return max_time_ms;
-  };
-
-  auto* ukm_recorder = ukm::UkmRecorder::Get();
-
-  for (const auto& [anchor_index, user_interaction] : user_interactions_) {
-    ukm::builders::NavigationPredictorUserInteractions builder(ukm_source_id);
-    builder.SetAnchorIndex(anchor_index);
-    builder.SetIsInViewport(user_interaction.is_in_viewport);
-    builder.SetPointerHoveringOverCount(ukm::GetExponentialBucketMin(
-        user_interaction.pointer_hovering_over_count, 1.3));
-    builder.SetIsPointerHoveringOver(user_interaction.is_hovered);
-    builder.SetMaxEnteredViewportToLeftViewportMs(ukm::GetExponentialBucketMin(
-        get_max_time_ms(
-            user_interaction.max_time_in_viewport,
-            user_interaction.last_navigation_start_to_entered_viewport),
-        1.3));
-    builder.SetMaxHoverDwellTimeMs(ukm::GetExponentialBucketMin(
-        get_max_time_ms(user_interaction.max_hover_dwell_time,
-                        user_interaction.last_navigation_start_to_pointer_over),
-        1.3));
-    builder.Record(ukm_recorder);
-  }
-  // Clear the UserInteractionData for the next page load.
-  Clear();
-}
-
-void PageAnchorsMetricsObserver::UserInteractionsData::Clear() {
-  user_interactions_.clear();
-  navigation_start_to_click_.reset();
-}
-
-DOCUMENT_USER_DATA_KEY_IMPL(PageAnchorsMetricsObserver::UserInteractionsData);
-
-PageAnchorsMetricsObserver::PageLinkClickData::PageLinkClickData(
-    content::RenderFrameHost* render_frame_host)
-    : DocumentUserData<PageLinkClickData>(render_frame_host) {
-  DCHECK(render_frame_host);
-}
-
-PageAnchorsMetricsObserver::PageLinkClickData::~PageLinkClickData() = default;
-
-void PageAnchorsMetricsObserver::PageLinkClickData::RecordToUkm(
-    ukm::SourceId ukm_source_id) {
-  if (page_link_clicks_.empty()) {
-    return;
-  }
-  auto* ukm_recorder = ukm::UkmRecorder::Get();
-
-  for (const auto& page_link_click : page_link_clicks_) {
-    ukm::builders::NavigationPredictorPageLinkClick builder(ukm_source_id);
-    builder.SetAnchorElementIndex(page_link_click.anchor_element_index_);
-    if (page_link_click.href_unchanged_.has_value()) {
-      builder.SetHrefUnchanged(page_link_click.href_unchanged_.value());
-    }
-    builder.SetNavigationStartToLinkClickedMs(ukm::GetExponentialBucketMin(
-        page_link_click.navigation_start_to_link_clicked_.InMilliseconds(),
-        1.3));
-    builder.Record(ukm_recorder);
-  }
-  // Clear the PageLinkClickData for the next page load.
-  Clear();
-}
-
-void PageAnchorsMetricsObserver::PageLinkClickData::Clear() {
-  page_link_clicks_.clear();
-}
-
-DOCUMENT_USER_DATA_KEY_IMPL(PageAnchorsMetricsObserver::PageLinkClickData);
 
 void PageAnchorsMetricsObserver::RecordUserInteractionDataToUkm() {
   if (!render_frame_host_) {
     return;
   }
-  PageAnchorsMetricsObserver::UserInteractionsData* data =
-      PageAnchorsMetricsObserver::UserInteractionsData::
-          GetOrCreateForCurrentDocument(render_frame_host_);
+  NavigationPredictorMetricsDocumentData* data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          render_frame_host_);
   CHECK(data);
   data->SetNavigationStartTime(GetDelegate().GetNavigationStart());
-  data->RecordUserInteractionMetrics(ukm_source_id_);
+  data->RecordUserInteractionsData(ukm_source_id_);
 }
 
 void PageAnchorsMetricsObserver::RecordAnchorDataToUkm() {
@@ -195,28 +27,39 @@ void PageAnchorsMetricsObserver::RecordAnchorDataToUkm() {
     return;
   }
 
-  PageAnchorsMetricsObserver::AnchorsData* data =
-      PageAnchorsMetricsObserver::AnchorsData::GetOrCreateForCurrentDocument(
+  NavigationPredictorMetricsDocumentData* data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
           render_frame_host_);
-  if (!data) {
-    return;
-  }
-
-  data->RecordAnchorsData(ukm_source_id_);
+  CHECK(data);
+  data->RecordAnchorData(ukm_source_id_);
 }
 
 void PageAnchorsMetricsObserver::RecordPageLinkClickDataToUkm() {
   if (!render_frame_host_) {
     return;
   }
-  PageAnchorsMetricsObserver::PageLinkClickData* data =
-      PageAnchorsMetricsObserver::PageLinkClickData::
-          GetOrCreateForCurrentDocument(render_frame_host_);
-  DCHECK(data);
-  data->RecordToUkm(ukm_source_id_);
+  NavigationPredictorMetricsDocumentData* data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          render_frame_host_);
+  CHECK(data);
+  data->RecordPageLinkClickData(ukm_source_id_);
+}
+
+void PageAnchorsMetricsObserver::RecordAnchorElementMetricsDataToUkm() {
+  if (!render_frame_host_) {
+    return;
+  }
+  NavigationPredictorMetricsDocumentData* data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          render_frame_host_);
+  CHECK(data);
+  data->RecordAnchorElementMetricsData(ukm_source_id_);
 }
 
 void PageAnchorsMetricsObserver::RecordDataToUkm() {
+  // `AnchorElementMetricsData` are already recorded to UKM as we receive them,
+  // and we don't need to record them again here. The edge case scenario is
+  // handled separately in `OnRestoreFromBackForwardCache`.
   RecordPageLinkClickDataToUkm();
   RecordAnchorDataToUkm();
   RecordUserInteractionDataToUkm();
@@ -259,30 +102,38 @@ PageAnchorsMetricsObserver::FlushMetricsOnAppEnterBackground(
   return STOP_OBSERVING;
 }
 
+void PageAnchorsMetricsObserver::UpdateRenderFrameHostAndSourceId(
+    content::NavigationHandle* navigation_handle) {
+  render_frame_host_ = navigation_handle->GetRenderFrameHost();
+  ukm_source_id_ = ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
+                                          ukm::SourceIdType::NAVIGATION_ID);
+
+  NavigationPredictorMetricsDocumentData* data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          render_frame_host_);
+  CHECK(data);
+  data->SetUkmSourceId(ukm_source_id_);
+}
+
 void PageAnchorsMetricsObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {
   DCHECK(is_in_prerendered_page_);
   is_in_prerendered_page_ = false;
-  render_frame_host_ = navigation_handle->GetRenderFrameHost();
-  ukm_source_id_ = ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
-                                          ukm::SourceIdType::NAVIGATION_ID);
+  UpdateRenderFrameHostAndSourceId(navigation_handle);
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PageAnchorsMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
-  render_frame_host_ = navigation_handle->GetRenderFrameHost();
-  ukm_source_id_ = ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
-                                          ukm::SourceIdType::NAVIGATION_ID);
+  UpdateRenderFrameHostAndSourceId(navigation_handle);
   return CONTINUE_OBSERVING;
 }
 
 void PageAnchorsMetricsObserver::OnRestoreFromBackForwardCache(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     content::NavigationHandle* navigation_handle) {
-  render_frame_host_ = navigation_handle->GetRenderFrameHost();
-  ukm_source_id_ = ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
-                                          ukm::SourceIdType::NAVIGATION_ID);
+  UpdateRenderFrameHostAndSourceId(navigation_handle);
+  RecordAnchorElementMetricsDataToUkm();
 }
 
 void PageAnchorsMetricsObserver::OnRenderFrameDeleted(

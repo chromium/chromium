@@ -102,24 +102,13 @@ int NavigationPredictor::GetLinearBucketForRatioArea(int value) const {
   return ukm::GetLinearBucketMin(static_cast<int64_t>(value), 5);
 }
 
-PageAnchorsMetricsObserver::UserInteractionsData&
-NavigationPredictor::GetUserInteractionsData() const {
-  // Create the UserInteractionsData object for this document if it doesn't
-  // already exist.
-  PageAnchorsMetricsObserver::UserInteractionsData* data =
-      PageAnchorsMetricsObserver::UserInteractionsData::
-          GetOrCreateForCurrentDocument(&render_frame_host());
-  DCHECK(data);
-  return *data;
-}
-
-PageAnchorsMetricsObserver::PageLinkClickData&
-NavigationPredictor::GetPageLinkClickData() const {
-  // Create the PageLinkClickData object for this document if it doesn't
-  // already exist.
-  PageAnchorsMetricsObserver::PageLinkClickData* data =
-      PageAnchorsMetricsObserver::PageLinkClickData::
-          GetOrCreateForCurrentDocument(&render_frame_host());
+NavigationPredictorMetricsDocumentData&
+NavigationPredictor::GetNavigationPredictorMetricsDocumentData() const {
+  // Create the `NavigationPredictorMetricsDocumentData` object for this
+  // document if it doesn't already exist.
+  NavigationPredictorMetricsDocumentData* data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          &render_frame_host());
   DCHECK(data);
   return *data;
 }
@@ -133,10 +122,8 @@ void NavigationPredictor::ReportNewAnchorElements(
   // Create the AnchorsData object for this WebContents if it doesn't already
   // exist. Note that NavigationPredictor only runs on the main frame, but get
   // reports for links from all same-process iframes.
-  PageAnchorsMetricsObserver::AnchorsData* data =
-      PageAnchorsMetricsObserver::AnchorsData::GetOrCreateForCurrentDocument(
-          &render_frame_host());
-  DCHECK(data);
+  NavigationPredictorMetricsDocumentData::AnchorsData& data =
+      GetNavigationPredictorMetricsDocumentData().GetAnchorsData();
   GURL document_url;
   std::vector<GURL> new_predictions;
   for (auto& element : elements) {
@@ -145,23 +132,23 @@ void NavigationPredictor::ReportNewAnchorElements(
       continue;
     }
 
-    data->number_of_anchors_++;
+    data.number_of_anchors_++;
     if (element->contains_image) {
-      data->number_of_anchors_contains_image_++;
+      data.number_of_anchors_contains_image_++;
     }
     if (element->is_url_incremented_by_one) {
-      data->number_of_anchors_url_incremented_++;
+      data.number_of_anchors_url_incremented_++;
     }
     if (element->is_in_iframe) {
-      data->number_of_anchors_in_iframe_++;
+      data.number_of_anchors_in_iframe_++;
     }
     if (element->is_same_host) {
-      data->number_of_anchors_same_host_++;
+      data.number_of_anchors_same_host_++;
     }
-    data->viewport_height_ = element->viewport_size.height();
-    data->viewport_width_ = element->viewport_size.width();
-    data->total_clickable_space_ += element->ratio_area * 100;
-    data->link_locations_.push_back(element->ratio_distance_top_to_visible_top);
+    data.viewport_height_ = element->viewport_size.height();
+    data.viewport_width_ = element->viewport_size.width();
+    data.total_clickable_space_ += element->ratio_area * 100;
+    data.link_locations_.push_back(element->ratio_distance_top_to_visible_top);
 
     // Collect the target URL if it is new, without ref (# fragment).
     GURL::Replacements replacements;
@@ -221,16 +208,15 @@ void NavigationPredictor::ReportAnchorElementClick(
 
     // Record PreloadOnHover.HoverTakenMs and PreloadOnHover.PointerDownTakenMs
     // to UKM.
-    auto& user_interactions_data = GetUserInteractionsData();
-    auto& user_interactions = user_interactions_data.user_interactions_;
+    auto& user_interactions =
+        GetNavigationPredictorMetricsDocumentData().GetUserInteractionsData();
     auto& user_interaction = user_interactions[index_it->second];
     // navigation_start_to_click_ is set to click->navigation_start_to_click and
     // should always has a value.
     CHECK(navigation_start_to_click_.has_value());
-    if (user_interactions_data.IsValidUkmSourceId(ukm_source_id_) &&
-        (user_interaction.last_navigation_start_to_pointer_over.has_value() ||
-         user_interaction.last_navigation_start_to_last_pointer_down
-             .has_value())) {
+    if (user_interaction.last_navigation_start_to_pointer_over.has_value() ||
+        user_interaction.last_navigation_start_to_last_pointer_down
+            .has_value()) {
       ukm::builders::NavigationPredictorPreloadOnHover preload_on_hover_builder(
           ukm_source_id_);
       if (user_interaction.last_navigation_start_to_pointer_over.has_value()) {
@@ -258,7 +244,7 @@ void NavigationPredictor::ReportAnchorElementClick(
     }
   }
 
-  PageAnchorsMetricsObserver::PageLinkClickData::PageLinkClick page_link_click;
+  NavigationPredictorMetricsDocumentData::PageLinkClickData page_link_click;
   page_link_click.anchor_element_index_ = anchor_index;
   auto it = anchors_.find(anchor_id);
   if (it != anchors_.end()) {
@@ -266,28 +252,23 @@ void NavigationPredictor::ReportAnchorElementClick(
         (it->second->target_url == click->target_url);
   }
   navigation_start_to_click_ = click->navigation_start_to_click;
-  auto& user_interactions_data = GetUserInteractionsData();
-  if (user_interactions_data.IsValidUkmSourceId(ukm_source_id_)) {
-    user_interactions_data.navigation_start_to_click_ =
-        navigation_start_to_click_;
-  }
-
   // navigation_start_to_click_ is set to click->navigation_start_to_click and
   // should always has a value.
   CHECK(navigation_start_to_click_.has_value());
+
+  GetNavigationPredictorMetricsDocumentData().SetNavigationStartToClick(
+      navigation_start_to_click_.value());
+
   page_link_click.navigation_start_to_link_clicked_ =
       navigation_start_to_click_.value();
-  GetPageLinkClickData().page_link_clicks_.push_back(
+  GetNavigationPredictorMetricsDocumentData().AddPageLinkClickData(
       std::move(page_link_click));
 }
 
 void NavigationPredictor::ReportAnchorElementsLeftViewport(
     std::vector<blink::mojom::AnchorElementLeftViewportPtr> elements) {
-  auto& user_interactions_data = GetUserInteractionsData();
-  if (!user_interactions_data.IsValidUkmSourceId(ukm_source_id_)) {
-    return;
-  }
-  auto& user_interactions = user_interactions_data.user_interactions_;
+  auto& user_interactions =
+      GetNavigationPredictorMetricsDocumentData().GetUserInteractionsData();
   for (const auto& element : elements) {
     auto index_it =
         tracked_anchor_id_to_index_.find(AnchorId(element->anchor_id));
@@ -305,11 +286,8 @@ void NavigationPredictor::ReportAnchorElementsLeftViewport(
 
 void NavigationPredictor::ReportAnchorElementPointerOver(
     blink::mojom::AnchorElementPointerOverPtr pointer_over_event) {
-  auto& user_interactions_data = GetUserInteractionsData();
-  if (!user_interactions_data.IsValidUkmSourceId(ukm_source_id_)) {
-    return;
-  }
-  auto& user_interactions = user_interactions_data.user_interactions_;
+  auto& user_interactions =
+      GetNavigationPredictorMetricsDocumentData().GetUserInteractionsData();
   auto index_it =
       tracked_anchor_id_to_index_.find(AnchorId(pointer_over_event->anchor_id));
   if (index_it == tracked_anchor_id_to_index_.end()) {
@@ -327,11 +305,8 @@ void NavigationPredictor::ReportAnchorElementPointerOver(
 
 void NavigationPredictor::ReportAnchorElementPointerOut(
     blink::mojom::AnchorElementPointerOutPtr hover_event) {
-  auto& user_interactions_data = GetUserInteractionsData();
-  if (!user_interactions_data.IsValidUkmSourceId(ukm_source_id_)) {
-    return;
-  }
-  auto& user_interactions = user_interactions_data.user_interactions_;
+  auto& user_interactions =
+      GetNavigationPredictorMetricsDocumentData().GetUserInteractionsData();
   auto index_it =
       tracked_anchor_id_to_index_.find(AnchorId(hover_event->anchor_id));
   if (index_it == tracked_anchor_id_to_index_.end()) {
@@ -377,11 +352,8 @@ void NavigationPredictor::ReportAnchorElementPointerDown(
     return;
   }
 
-  auto& user_interactions_data = GetUserInteractionsData();
-  if (!user_interactions_data.IsValidUkmSourceId(ukm_source_id_)) {
-    return;
-  }
-  auto& user_interactions = user_interactions_data.user_interactions_;
+  auto& user_interactions =
+      GetNavigationPredictorMetricsDocumentData().GetUserInteractionsData();
   auto& user_interaction = user_interactions[index_it->second];
   user_interaction.last_navigation_start_to_last_pointer_down =
       pointer_down_event->navigation_start_to_pointer_down;
@@ -396,9 +368,10 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
   if (elements.empty()) {
     return;
   }
-
-  auto& user_interactions_data = GetUserInteractionsData();
-  auto& user_interactions = user_interactions_data.user_interactions_;
+  auto& navigation_predictor_metrics_data =
+      GetNavigationPredictorMetricsDocumentData();
+  auto& user_interactions =
+      navigation_predictor_metrics_data.GetUserInteractionsData();
   for (const auto& element : elements) {
     AnchorId anchor_id(element->anchor_id);
     auto index_it = tracked_anchor_id_to_index_.find(anchor_id);
@@ -407,12 +380,10 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
       // NavigationPredictorAnchorElementMetrics record.
       continue;
     }
-    if (user_interactions_data.IsValidUkmSourceId(ukm_source_id_)) {
-      auto& user_interaction = user_interactions[index_it->second];
-      user_interaction.is_in_viewport = true;
-      user_interaction.last_navigation_start_to_entered_viewport =
-          element->navigation_start_to_entered_viewport;
-    }
+    auto& user_interaction = user_interactions[index_it->second];
+    user_interaction.is_in_viewport = true;
+    user_interaction.last_navigation_start_to_entered_viewport =
+        element->navigation_start_to_entered_viewport;
 
     auto anchor_it = anchors_.find(anchor_id);
     if (anchor_it == anchors_.end()) {
@@ -437,58 +408,50 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
       continue;
     }
 
-    ukm::builders::NavigationPredictorAnchorElementMetrics
-        anchor_element_builder(ukm_source_id_);
+    NavigationPredictorMetricsDocumentData::AnchorElementMetricsData metrics;
 
-    anchor_element_builder.SetAnchorIndex(index_it->second);
-    anchor_element_builder.SetIsInIframe(anchor->is_in_iframe);
-    anchor_element_builder.SetIsURLIncrementedByOne(
-        anchor->is_url_incremented_by_one);
-    anchor_element_builder.SetContainsImage(anchor->contains_image);
-    anchor_element_builder.SetSameOrigin(anchor->is_same_host);
-    anchor_element_builder.SetHasTextSibling(anchor->has_text_sibling ? 1 : 0);
-    anchor_element_builder.SetIsBold(anchor->font_weight > 500 ? 1 : 0);
-    anchor_element_builder.SetNavigationStartToLinkLoggedMs(
-        ukm::GetExponentialBucketMin(
-            element->navigation_start_to_entered_viewport.InMilliseconds(),
-            1.3));
+    metrics.is_in_iframe_ = anchor->is_in_iframe;
+    metrics.is_url_incremented_by_one_ = anchor->is_url_incremented_by_one;
+    metrics.contains_image_ = anchor->contains_image;
+    metrics.is_same_origin_ = anchor->is_same_host;
+    metrics.has_text_sibling_ = anchor->has_text_sibling;
+    metrics.is_bold_ = anchor->font_weight > 500;
+    metrics.navigation_start_to_link_logged =
+        element->navigation_start_to_entered_viewport;
 
-    uint32_t font_size_bucket;
     if (anchor->font_size_px < 10) {
-      font_size_bucket = 1;
+      metrics.font_size_ = 1;
     } else if (anchor->font_size_px < 18) {
-      font_size_bucket = 2;
+      metrics.font_size_ = 2;
     } else {
-      font_size_bucket = 3;
+      metrics.font_size_ = 3;
     }
-    anchor_element_builder.SetFontSize(font_size_bucket);
 
     base::StringPiece path = anchor->target_url.path_piece();
     int64_t path_length = path.length();
     path_length = ukm::GetLinearBucketMin(path_length, 10);
     // Truncate at 100 characters.
-    path_length = std::min(path_length, static_cast<int64_t>(100));
-    anchor_element_builder.SetPathLength(path_length);
+    metrics.path_length_ = std::min(path_length, static_cast<int64_t>(100));
 
     int64_t num_slashes = base::ranges::count(path, '/');
     // Truncate at 5.
-    num_slashes = std::min(num_slashes, static_cast<int64_t>(5));
-    anchor_element_builder.SetPathDepth(num_slashes);
+    metrics.path_depth_ = std::min(num_slashes, static_cast<int64_t>(5));
 
     // 10-bucket hash of the URL's path.
     uint32_t hash = base::PersistentHash(path.data(), path.length());
-    anchor_element_builder.SetBucketedPathHash(hash % 10);
+    metrics.bucketed_path_hash_ = hash % 10;
 
     // Convert the ratio area and ratio distance from [0,1] to [0,100].
     int percent_ratio_area = static_cast<int>(anchor->ratio_area * 100);
+    metrics.percent_clickable_area_ =
+        GetLinearBucketForRatioArea(percent_ratio_area);
+
     int percent_ratio_distance_root_top =
         static_cast<int>(anchor->ratio_distance_root_top * 100);
+    metrics.percent_vertical_distance_ =
+        GetLinearBucketForLinkLocation(percent_ratio_distance_root_top);
 
-    anchor_element_builder.SetPercentClickableArea(
-        GetLinearBucketForRatioArea(percent_ratio_area));
-    anchor_element_builder.SetPercentVerticalDistance(
-        GetLinearBucketForLinkLocation(percent_ratio_distance_root_top));
-
-    anchor_element_builder.Record(ukm_recorder_);
+    navigation_predictor_metrics_data.AddAnchorElementMetricsData(
+        index_it->second, std::move(metrics));
   }
 }
