@@ -112,6 +112,9 @@ class ExtensionsToolbarUITest : public DialogBrowserTest {
   // title. Extension must use 'extensions/blocked_actions/content_scripts'.
   bool DidInjectScript(content::WebContents* web_contents);
 
+  // Navigate to `url` in the currently active web contents.
+  void NavigateTo(const GURL& url);
+
   // Waits for the extensions container to animate (on pin, unpin, pop-out,
   // etc.)
   void WaitForAnimation();

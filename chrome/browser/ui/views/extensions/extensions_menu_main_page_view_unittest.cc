@@ -8,9 +8,11 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -258,6 +260,41 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // extension" (default setting).
   EXPECT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+
+  // Button is hidden when site setting is set to "block all extensions".
+  UpdateUserSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetVisible());
+}
+
+// Verifies the site access toggle properties for an extension that only
+// requests active tab access.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, SiteAccessToggle_ActiveTab) {
+  auto extension = InstallExtensionWithPermissions("Extension", {"activeTab"});
+
+  const GURL url("http://www.example.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  ShowMenu();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+
+  // Button is visible and off when site setting is set to "customize by
+  // extension" (default setting) and active tab hasn't been granted.
+  EXPECT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+
+  // Button is visible and on when site setting is set to "customize by
+  // extension" and active tab as been granted.
+  extensions::ActiveTabPermissionGranter* active_tab_permission_granter =
+      extensions::TabHelper::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())
+          ->active_tab_permission_granter();
+  ASSERT_TRUE(active_tab_permission_granter);
+  active_tab_permission_granter->GrantIfRequested(extension.get());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
 

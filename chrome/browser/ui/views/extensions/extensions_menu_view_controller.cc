@@ -235,12 +235,12 @@ ExtensionMenuItemView::SiteAccessToggleState GetSiteAccessToggleState(
     return ExtensionMenuItemView::SiteAccessToggleState::kHidden;
   }
 
-  PermissionsManager::UserSiteAccess site_access =
-      PermissionsManager::Get(&profile)->GetUserSiteAccess(
-          extension, web_contents.GetLastCommittedURL());
-  return site_access == PermissionsManager::UserSiteAccess::kOnClick
-             ? ExtensionMenuItemView::SiteAccessToggleState::kOff
-             : ExtensionMenuItemView::SiteAccessToggleState::kOn;
+  // Button is on iff the extension has access to the site.
+  auto site_interaction = SitePermissionsHelper(&profile).GetSiteInteraction(
+      extension, &web_contents);
+  return site_interaction == SitePermissionsHelper::SiteInteraction::kGranted
+             ? ExtensionMenuItemView::SiteAccessToggleState::kOn
+             : ExtensionMenuItemView::SiteAccessToggleState::kOff;
 }
 
 }  // namespace

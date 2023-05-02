@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
+#include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
@@ -37,9 +38,13 @@ class ExtensionsMenuMainPageViewInteractiveUITest
   // Opens menu on "main page" by default.
   void ShowMenu();
 
+  // Asserts there is exactly one menu item and then returns it.
+  ExtensionMenuItemView* GetOnlyMenuItem();
+
   void ClickSiteSettingToggle();
 
   ExtensionsMenuMainPageView* main_page();
+  std::vector<ExtensionMenuItemView*> menu_items();
 
   // ExtensionsToolbarUITest:
   void ShowUi(const std::string& name) override;
@@ -60,6 +65,16 @@ void ExtensionsMenuMainPageViewInteractiveUITest::ShowMenu() {
   DCHECK(main_page());
 }
 
+ExtensionMenuItemView*
+ExtensionsMenuMainPageViewInteractiveUITest::GetOnlyMenuItem() {
+  std::vector<ExtensionMenuItemView*> items = menu_items();
+  if (items.size() != 1u) {
+    ADD_FAILURE() << "Not exactly one item; size is: " << items.size();
+    return nullptr;
+  }
+  return *items.begin();
+}
+
 void ExtensionsMenuMainPageViewInteractiveUITest::ClickSiteSettingToggle() {
   DCHECK(main_page());
 
@@ -77,6 +92,12 @@ ExtensionsMenuMainPageViewInteractiveUITest::main_page() {
       menu_coordinator()->GetControllerForTesting();
   DCHECK(menu_controller);
   return menu_controller->GetMainPageViewForTesting();
+}
+
+std::vector<ExtensionMenuItemView*>
+ExtensionsMenuMainPageViewInteractiveUITest::menu_items() {
+  ExtensionsMenuMainPageView* page = main_page();
+  return page ? page->GetMenuItems() : std::vector<ExtensionMenuItemView*>();
 }
 
 void ExtensionsMenuMainPageViewInteractiveUITest::ShowUi(
@@ -172,4 +193,51 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   EXPECT_TRUE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
   EXPECT_TRUE(
       DidInjectScript(browser()->tab_strip_model()->GetActiveWebContents()));
+}
+
+// Test that running an extension's action, when site permission were withheld,
+// sets the extension's site access toggle on.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
+                       SiteAccessToggle_RunAction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", "<all_urls>");
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  GURL urlA = embedded_test_server()->GetURL("a.com", "/title1.html");
+  NavigateTo(urlA);
+
+  ShowUi("");
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+
+  // Verify user site setting is "customize by extension" (default) and
+  // the extension has "on click" site access.
+  auto* permissions_manager = PermissionsManager::Get(browser()->profile());
+  ASSERT_EQ(permissions_manager->GetUserSiteSetting(url::Origin::Create(urlA)),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  ASSERT_EQ(permissions_manager->GetUserSiteAccess(*extension.get(), urlA),
+            PermissionsManager::UserSiteAccess::kOnClick);
+
+  // Button is visible and off since extension has withheld site access.
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+
+  // Button is visible and on when the extension's action is executed.
+  ClickButton(menu_item->primary_action_button_for_testing());
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+
+  // Button is visible and off when re navigating to the page as site access is
+  // revoked.
+  // Note that refreshing the page doesn't revoke tab permissions, thus we
+  // need to re navigate to the url.
+  GURL urlB = embedded_test_server()->GetURL("b.com", "/title1.html");
+  NavigateTo(urlB);
+  NavigateTo(urlA);
+  ShowMenu();
+  menu_item = GetOnlyMenuItem();
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
 }
