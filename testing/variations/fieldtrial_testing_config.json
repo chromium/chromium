@@ -12978,6 +12978,22 @@
             ]
         }
     ],
+    "TrackpadGestureSupport": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230427",
+                    "enable_features": [
+                        "ConvertTrackpadEventsToMouse"
+                    ]
+                }
+            ]
+        }
+    ],
     "TranslateMessageUI": [
         {
             "platforms": [
