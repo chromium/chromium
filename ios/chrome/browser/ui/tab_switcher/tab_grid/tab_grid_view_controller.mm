@@ -1285,6 +1285,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self.pinnedTabsViewController pinnedTabsAvailable:pinnedTabsAvailable];
   }
   [self updateToolbarsAppearance];
+  [self setupEditButton];
   // Make sure the current page becomes the first responder, so that it can
   // register and handle key commands.
   [self.currentPageViewController becomeFirstResponder];
@@ -1575,14 +1576,21 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   ActionFactory* actionFactory = [[ActionFactory alloc]
       initWithScenario:MenuScenarioHistogram::kTabGridEdit];
   __weak TabGridViewController* weakSelf = self;
-  NSArray<UIMenuElement*>* menuElements = @[
-    [actionFactory actionToCloseAllTabsWithBlock:^{
-      [weakSelf closeAllButtonTapped:nil];
-    }],
-    [actionFactory actionToSelectTabsWithBlock:^{
-      [weakSelf selectTabsButtonTapped:nil];
-    }]
-  ];
+  NSMutableArray<UIMenuElement*>* menuElements =
+      [@[ [actionFactory actionToCloseAllTabsWithBlock:^{
+        [weakSelf closeAllButtonTapped:nil];
+      }] ] mutableCopy];
+  // Disable the "Select All" option from the edit button when there is no tabs
+  // in the regular tab grid. "Close All" can still be called if there is
+  // element in inactive tabs.
+  BOOL disabledSelectAll = self.currentPage == TabGridPageRegularTabs &&
+                           self.regularTabsViewController.isGridEmpty;
+  if (!disabledSelectAll) {
+    [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
+                    [weakSelf selectTabsButtonTapped:nil];
+                  }]];
+  }
+
   UIMenu* menu = [UIMenu menuWithChildren:menuElements];
   [self.topToolbar setEditButtonMenu:menu];
   [self.bottomToolbar setEditButtonMenu:menu];
@@ -1857,7 +1865,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   GridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
 
-  BOOL enabled = gridViewController && ![gridViewController isGridEmpty];
+  // "Close all" can be called if there is element in regular tab grid or in
+  // inactive tabs.
+  BOOL enabled =
+      gridViewController && (![gridViewController isGridEmpty] ||
+                             ![gridViewController isInactiveGridEmpty]);
   BOOL incognitoTabsNeedsAuth =
       (self.currentPage == TabGridPageIncognitoTabs &&
        self.incognitoTabsViewController.contentNeedsAuthentication);
@@ -2591,11 +2603,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
     crash_keys::SetRegularTabCount(totalTabCount);
     [self handleTabCountChangeWithTabCount:totalTabCount];
-
   } else if (gridViewController == self.incognitoTabsViewController) {
     crash_keys::SetIncognitoTabCount(count);
     [self handleTabCountChangeWithTabCount:count];
   }
+  [self setupEditButton];
 }
 
 - (void)gridViewController:(GridViewController*)gridViewController
@@ -2775,7 +2787,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)handleCloseAllButtonForRegularTabsWithAnchor:(UIBarButtonItem*)anchor {
   DCHECK_EQ(self.undoCloseAllAvailable,
-            self.regularTabsViewController.gridEmpty);
+            (self.regularTabsViewController.gridEmpty &&
+             self.regularTabsViewController.inactiveGridEmpty));
 
   if (self.undoCloseAllAvailable) {
     [self undoCloseAllItemsForRegularTabs];

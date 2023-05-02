@@ -351,6 +351,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return self.items.count == 0;
 }
 
+- (BOOL)isInactiveGridEmpty {
+  return self.inactiveTabsCount == 0;
+}
+
 // Returns the items whose associated cell is visible.
 - (NSSet<TabSwitcherItem*>*)visibleGridItems {
   NSArray<NSIndexPath*>* visibleItemsIndexPaths =
