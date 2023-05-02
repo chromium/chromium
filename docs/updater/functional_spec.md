@@ -925,10 +925,13 @@ any piece of software it manages is permitted to send usage stats.
 
 #### Windows:
 *   Applications enable usage stats by writing:
-    `HKCU\SOFTWARE\{Company}\Update\ClientState\{APPID}` → usagestats (DWORD): 1
-    or
+    `HKCU\SOFTWARE\{Company}\Update\ClientState\{APPID}` → usagestats
+    (DWORD): 1 for user install,
+    and either
     `HKLM\SOFTWARE\{Company}\Update\ClientStateMedium\{APPID}` → usagestats
-    (DWORD): 1
+    (DWORD): 1 or
+    `HKLM\SOFTWARE\{Company}\Update\ClientState\{APPID}` → usagestats
+    (DWORD): 1 for system install.
 *   Applications rescind this permission by writing a value of 0.
 
 #### macOS:

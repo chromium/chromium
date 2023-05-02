@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/registry.h"
@@ -17,26 +18,44 @@
 
 namespace updater {
 
+namespace {
+
+bool AppUsageStatsAllowed(UpdaterScope scope, const std::wstring& app_id) {
+  DWORD usagestats = 0;
+  if (IsSystemInstall(scope) &&
+      base::win::RegKey(UpdaterScopeToHKeyRoot(scope),
+                        base::StrCat({CLIENT_STATE_MEDIUM_KEY, app_id}).c_str(),
+                        Wow6432(KEY_READ))
+              .ReadValueDW(L"usagestats", &usagestats) == ERROR_SUCCESS) {
+    return usagestats == 1;
+  }
+
+  if (base::win::RegKey(UpdaterScopeToHKeyRoot(scope),
+                        base::StrCat({CLIENT_STATE_KEY, app_id}).c_str(),
+                        Wow6432(KEY_READ))
+          .ReadValueDW(L"usagestats", &usagestats) == ERROR_SUCCESS) {
+    return usagestats == 1;
+  }
+
+  return false;
+}
+
+}  // namespace
+
 bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
                                UpdaterScope scope) {
   for (auto app_id : app_ids) {
     if (base::EqualsCaseInsensitiveASCII(app_id, kUpdaterAppId)) {
       continue;
     }
-    std::wstring app_id_u16;
-    DWORD usagestats = 0;
-    if (base::win::RegKey(
-            UpdaterScopeToHKeyRoot(scope),
-            base::StrCat({IsSystemInstall(scope) ? CLIENT_STATE_MEDIUM_KEY
-                                                 : CLIENT_STATE_KEY,
-                          base::SysUTF8ToWide(app_id)})
-                .c_str(),
-            Wow6432(KEY_READ))
-                .ReadValueDW(L"usagestats", &usagestats) == ERROR_SUCCESS &&
-        usagestats == 1) {
+
+    if (AppUsageStatsAllowed(scope, base::SysUTF8ToWide(app_id))) {
+      VLOG(2) << "usagestats enabled by app " << app_id;
       return true;
     }
   }
+
+  VLOG(2) << "No app enables usagestats.";
   return false;
 }
 

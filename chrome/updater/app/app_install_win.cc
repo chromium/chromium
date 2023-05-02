@@ -300,18 +300,30 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
 
 void SetUsageStats(UpdaterScope scope,
                    const std::string& app_id,
-                   bool usage_stats_enabled) {
+                   absl::optional<bool> usage_stats) {
+  if (!usage_stats) {
+    return;
+  }
+
   const LONG result =
       base::win::RegKey(
           UpdaterScopeToHKeyRoot(scope),
-          base::StrCat({IsSystemInstall(scope) ? CLIENT_STATE_MEDIUM_KEY
-                                               : CLIENT_STATE_KEY,
-                        base::SysUTF8ToWide(app_id)})
-              .c_str(),
+          base::StrCat({CLIENT_STATE_KEY, base::SysUTF8ToWide(app_id)}).c_str(),
           Wow6432(KEY_WRITE))
-          .WriteValue(L"usagestats", usage_stats_enabled ? 1 : 0);
-  VLOG_IF(1, result != ERROR_SUCCESS)
-      << "Error writing usage stats for " << app_id << ":" << result;
+          .WriteValue(L"usagestats", usage_stats.value() ? 1 : 0);
+  if (result != ERROR_SUCCESS) {
+    VLOG(1) << "Error writing usage stats for " << app_id << ":" << result;
+    return;
+  }
+
+  if (IsSystemInstall(scope)) {
+    base::win::RegKey(
+        UpdaterScopeToHKeyRoot(scope),
+        base::StrCat({CLIENT_STATE_MEDIUM_KEY, base::SysUTF8ToWide(app_id)})
+            .c_str(),
+        Wow6432(KEY_WRITE))
+        .DeleteValue(L"usagestats");
+  }
 }
 
 // Implements installing a single application by invoking the code in
@@ -500,8 +512,9 @@ void AppInstallControllerImpl::DoInstallApp() {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&SetUsageStats, GetUpdaterScope(), app_id_,
-                     tag_args && tag_args->usage_stats_enable &&
-                         *tag_args->usage_stats_enable),
+                     tag_args && tag_args->usage_stats_enable
+                         ? absl::make_optional(*tag_args->usage_stats_enable)
+                         : absl::nullopt),
       base::BindOnce(
           &UpdateService::Install, update_service_, request,
           GetDecodedInstallDataFromAppArgs(app_id_),
@@ -634,8 +647,9 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&SetUsageStats, GetUpdaterScope(), app_id_,
-                     tag_args && tag_args->usage_stats_enable &&
-                         *tag_args->usage_stats_enable),
+                     tag_args && tag_args->usage_stats_enable
+                         ? absl::make_optional(*tag_args->usage_stats_enable)
+                         : absl::nullopt),
       base::BindOnce(
           &UpdateService::RegisterApp, update_service_, request,
           base::BindOnce(
