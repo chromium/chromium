@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/assistant/assistant_interface_binder.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
@@ -201,6 +202,10 @@ void AssistantBrowserDelegateImpl::OnUserProfileLoaded(
 }
 
 void AssistantBrowserDelegateImpl::OnUserSessionStarted(bool is_primary_user) {
+  if (ash::features::IsOobeSkipAssistantEnabled()) {
+    return;
+  }
+
   // Disable the handling for browser tests to prevent the Assistant being
   // enabled unexpectedly.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
