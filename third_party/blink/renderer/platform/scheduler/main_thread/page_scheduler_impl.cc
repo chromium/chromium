@@ -275,6 +275,14 @@ void PageSchedulerImpl::SetPageFrozenImpl(
   if (frozen) {
     SetPageLifecycleState(PageLifecycleState::kFrozen);
     main_thread_scheduler_->OnPageFrozen();
+    if (audio_state_ == AudioState::kRecentlyAudible) {
+      // A recently audible page is being frozen before the audio silent timer
+      // fired, which can happen if freezing from outside the scheduler (e.g.
+      // bfcache). Transition to silent now since since freezing isn't dependent
+      // on the timeout.
+      on_audio_silent_closure_.Cancel();
+      OnAudioSilent();
+    }
   } else {
     // The new state may have already been set if unfreezing through the
     // renderer, but that's okay - duplicate state changes won't be recorded.
@@ -401,11 +409,18 @@ void PageSchedulerImpl::AudioStateChanged(bool is_audio_playing) {
     on_audio_silent_closure_.Cancel();
 
     audio_state_ = AudioState::kRecentlyAudible;
-    main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
-        FROM_HERE, on_audio_silent_closure_.GetCallback(), kRecentAudioDelay);
-    // No need to call NotifyFrames or
-    // MainThreadScheduler::OnAudioStateChanged here, as for outside world
-    // kAudible and kRecentlyAudible are the same thing.
+    if (IsFrozen()) {
+      // The page was frozen from outside the scheduler before receiving the the
+      // audio state change notification. Transition to silent and bypass the
+      // recently audible mechanism since the page is already frozen.
+      OnAudioSilent();
+    } else {
+      main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
+          FROM_HERE, on_audio_silent_closure_.GetCallback(), kRecentAudioDelay);
+      // No need to call NotifyFrames or
+      // MainThreadScheduler::OnAudioStateChanged here, as for outside world
+      // kAudible and kRecentlyAudible are the same thing.
+    }
   }
 }
 
@@ -414,8 +429,10 @@ void PageSchedulerImpl::OnAudioSilent() {
   audio_state_ = AudioState::kSilent;
   NotifyFrames();
   main_thread_scheduler_->OnAudioStateChanged();
-  if (IsBackgrounded()) {
+  if (IsBackgrounded() && !IsFrozen()) {
     SetPageLifecycleState(PageLifecycleState::kHiddenBackgrounded);
+  }
+  if (IsBackgrounded()) {
     MoveTaskQueuesToCorrectWakeUpBudgetPoolAndUpdate();
   }
   if (ShouldFreezePage()) {
@@ -804,7 +821,7 @@ bool PageSchedulerImpl::IsBackgrounded() const {
 bool PageSchedulerImpl::ShouldFreezePage() const {
   if (!base::FeatureList::IsEnabled(blink::features::kStopInBackground))
     return false;
-  return IsOrdinary() && IsBackgrounded();
+  return IsOrdinary() && IsBackgrounded() && !IsFrozen();
 }
 
 void PageSchedulerImpl::DoFreezePage() {
