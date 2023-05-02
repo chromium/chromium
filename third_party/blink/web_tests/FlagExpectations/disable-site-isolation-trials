@@ -85,11 +85,9 @@ crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unfenced-top.https.html [ Timeout ]
-crbug.com/626703 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/can-load-api.https.html [ Timeout ]
+crbug.com/626703 [ Release ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/can-load-api.https.html [ Timeout ]
 crbug.com/626703 virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Timeout ]
-crbug.com/626703 external/wpt/png/cicp-chunk.html [ Timeout ]
 crbug.com/626703 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass ]
-crbug.com/626703 external/wpt/preload/prefetch-types.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Crash Failure ]
 crbug.com/626703 external/wpt/url/a-element-origin-xhtml.xhtml [ Crash Failure ]
 crbug.com/626703 external/wpt/fullscreen/api/document-exit-fullscreen-nested-in-iframe.html [ Timeout ]

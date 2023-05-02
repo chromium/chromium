@@ -65,10 +65,8 @@ crbug.com/1117211 css3/filters/composited-layer-promotion-after-outset-overlap-c
 # ref tests that fail in highdpi
 crbug.com/1179572 animations/cross-fade-webkit-mask-box-image.html [ Failure ]
 
-crbug.com/1409713 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 crbug.com/1353771 virtual/view-transition/external/wpt/css/css-view-transitions/new-content-with-overflow-zoomed.html [ Failure ]
 crbug.com/1353771 virtual/view-transition/external/wpt/css/css-view-transitions/old-content-with-overflow-zoomed.html [ Failure ]
-crbug.com/1409713 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 crbug.com/1353771 virtual/view-transition/external/wpt/css/css-view-transitions/element-with-overflow.html [ Failure ]
 crbug.com/1412910 virtual/view-transition/external/wpt/css/css-view-transitions/fractional-translation-from-position.html [ Failure ]
 crbug.com/1414855 virtual/view-transition/external/wpt/css/css-view-transitions/new-content-captures-spans.html [ Failure ]
@@ -415,7 +413,6 @@ crbug.com/970200 external/wpt/css/css-text/text-indent/text-indent-tab-positions
 crbug.com/1017164 external/wpt/css/css-text/word-break/word-break-normal-tdd-000.html [ Failure ]
 crbug.com/1205953 external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-007.html [ Failure ]
-crbug.com/641245 external/wpt/css/motion/offset-path-ray-005.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/regions/basic.html [ Failure ]
 
 # Background attachment not clipped.
@@ -455,8 +452,6 @@ crbug.com/1310040 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligib
 
 crbug.com/1324618 external/wpt/css/css-images/object-view-box-fit-fill* [ Pass ]
 
-crbug.com/1430357 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
-crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
 
 # crbug.com/1339051: some ref tests generate output with minor differences.
 crbug.com/1339051 fast/forms/suggestion-picker/month-suggestion-picker-appearance-rtl.html [ Failure ]

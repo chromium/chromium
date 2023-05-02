@@ -59,8 +59,6 @@ crbug.com/1350279 [ Linux ] external/wpt/accessibility/crashtests/svg-mouse-list
 # This has been marked as Skip in the TestExpectations file.
 crbug.com/1385278 [ Linux ] external/wpt/resource-timing/iframe-failed-commit.html [ Skip ]
 
-# Tests frequently cause ci builder step failure
-crbug.com/1393081 [ Linux ] virtual/view-transition/external/wpt/css/css-view-transitions/input-blocked-when-rendering-suppressed.html [ Failure ]
 
 # Sheriff 2023-04-04
 crbug.com/1430360 [ Linux ] external/wpt/custom-elements/form-associated/label-delegatesFocus.html [ Failure Pass ]
