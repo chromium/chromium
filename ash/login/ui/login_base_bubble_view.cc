@@ -254,6 +254,9 @@ gfx::Point LoginBaseBubbleView::CalculatePosition() {
 
 void LoginBaseBubbleView::SetAnchorView(
     base::WeakPtr<views::View> anchor_view) {
+  if (layer()) {
+    layer()->GetAnimator()->StopAnimating();
+  }
   anchor_view_ = std::move(anchor_view);
 }
 
