@@ -148,10 +148,13 @@ void InspectDOMHandler::DidReceiveConsoleMessage(
   }
 
   std::vector<base::Value> params;
-  web::WebFrame* main_web_frame =
-      web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
-  params.push_back(base::Value(main_web_frame->GetFrameId()));
-  params.push_back(base::Value(sender_frame->GetFrameId()));
+  std::string sender_frame_id = sender_frame->GetFrameId();
+  web::WebFrame* main_web_frame = nullptr;
+  web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
+  std::string main_web_frame_id =
+      main_web_frame ? main_web_frame->GetFrameId() : sender_frame_id;
+  params.push_back(base::Value(main_web_frame_id));
+  params.push_back(base::Value(sender_frame_id));
   params.push_back(base::Value(message.url.spec()));
   params.push_back(base::Value(base::SysNSStringToUTF8(message.level)));
   params.push_back(base::Value(base::SysNSStringToUTF8(message.message)));
