@@ -8,6 +8,28 @@ body {
   user-select: auto;
 }
 
+html:has(body.jelly-enabled) {
+  color: var(--cros-sys-on_surface);
+}
+
+html:has(body.jelly-enabled) #header,
+html:has(body.jelly-enabled) #header h1,
+html:has(body.jelly-enabled) #header p {
+  background-color: var(--cros-sys-primary);
+  border: none;
+  color: var(--cros-sys-on_primary);
+  text-shadow: none;
+}
+
+html:has(body.jelly-enabled) #header h1::before {
+  background-color: var(--cros-sys-on_primary);
+}
+
+html:has(body.jelly-enabled) tr > *:nth-child(1),
+html:has(body.jelly-enabled) tr > *:nth-child(2) {
+  border-inline-end: 1px solid var(--feedback-separator-color);
+}
+
 #detailsTable {
   margin-top: .5em;
 }
