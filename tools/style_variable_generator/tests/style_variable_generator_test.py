@@ -23,7 +23,7 @@ print(os.path.join(os.path.dirname(__file__)))
 
 # Dirty hack to make updating goldens easier. Setting to true then running the
 # tests will force all goldens to match script output.
-UPDATE_GOLDENS = False
+UPDATE_GOLDENS = True
 
 
 class BaseStyleGeneratorTest:

@@ -36,9 +36,10 @@ html:not(body) {
 
   --cros-sys-reference_opacity: var(--cros-sys-disabled_opacity);
 
-  --cros-color-primary: var(--cros-sys-primary_container);
-  --cros-color-primary-light: var(--cros-sys-primary_container);
-  --cros-color-primary-dark: var(--cros-sys-primary_container);
+  --cros_color_primary-rgb: var(--cros-sys-primary_container-rgb);
+  --cros_color_primary: var(--cros-sys-primary_container);
+  --cros_color_primary-light: var(--cros_color_primary);
+  --cros_color_primary-dark: var(--cros_color_primary);
 }
 
 @media (prefers-color-scheme: dark) {

@@ -169,7 +169,6 @@ class ColorModel(ModeKeyedModel):
         self.variable_type = VariableType.COLOR
 
     def Add(self, name, value_obj, context):
-        name = full_token_name(name, context)
         added = []
         # If a color has generate_per_mode set, a separate variable will be
         # created for each mode, suffixed by mode name.
@@ -306,6 +305,23 @@ class NamespacedModel(SimpleModel):
         return super().Add(name, value_obj, context)
 
 
+# A color model where all variables are prefixed with the current namespace.
+class NamespacedColorModel(ColorModel):
+    def Add(self, name, value_obj, context):
+        name = full_token_name(name, context)
+        return super().Add(name, value_obj, context)
+
+
+# A color model specifically for storing mappings of arbitrary css vars to some
+# known StyleVariable.
+class LegacyMappingsModel(ColorModel):
+    def Add(self, name, value_obj, context):
+        if isinstance(value_obj, dict):
+            raise ValueError(
+                'Legacy mappings can only be singular references.')
+        return super().Add(name, value_obj, context)
+
+
 class Model(object):
     def __init__(self):
         # A map of all variables to their |StyleVariable| object.
@@ -317,13 +333,13 @@ class Model(object):
         self.opacities = OpacityModel()
         self.submodels[VariableType.OPACITY] = self.opacities
 
-        self.colors = ColorModel(self.opacities)
+        self.colors = NamespacedColorModel(self.opacities)
         self.submodels[VariableType.COLOR] = self.colors
 
         self.untyped_css = NamespacedModel(VariableType.UNTYPED_CSS)
         self.submodels[VariableType.UNTYPED_CSS] = self.untyped_css
 
-        self.legacy_mappings = SimpleModel(VariableType.LEGACY_MAPPING)
+        self.legacy_mappings = LegacyMappingsModel(self.opacities)
         self.submodels[VariableType.LEGACY_MAPPING] = self.legacy_mappings
 
         def CheckTypeFace(name, value_obj, context):

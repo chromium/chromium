@@ -79,13 +79,14 @@ const TYPOGRAPHY_CSS = window ? `
 ` : '';
 
 const LEGACY_MAPPINGS_CSS = window ? `
-{%- if legacy_mappings %}
-{%-   for name, value in legacy_mappings.items() %}
-  {{name | to_css_var_name_unscoped}}: {{value | process_simple_ref}};
-  {{name | to_css_var_name_unscoped}}-light: {{value | process_simple_ref}};
-  {{name | to_css_var_name_unscoped}}-dark: {{value | process_simple_ref}};
-{%    endfor -%}
-{% endif -%}
+{%- for name, color in legacy_mappings[Modes.DEFAULT].items() %}
+{%-   if needs_rgb_variant(color) %}
+    {{name | to_css_var_name}}-rgb: {{color | css_color_rgb}};
+{%-   endif %}
+    {{name | to_css_var_name}}: {{css_color_var(name, color, mode)}};
+    {{name | to_css_var_name}}-light: var({{name | to_css_var_name}});
+    {{name | to_css_var_name}}-dark: var({{name | to_css_var_name}});
+{%  endfor -%}
 ` : '';
 
 /**

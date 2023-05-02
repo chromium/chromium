@@ -24,8 +24,14 @@ class CSSStyleGenerator(BaseGenerator):
             resolved_colors = self.model.colors.Flatten(resolve_missing=True)
             resolved_opacities = self.model.opacities.Flatten(
                 resolve_missing=True)
+            resolved_legacy_mappings = self.model.legacy_mappings.Flatten(
+                resolve_missing=True)
             colors = {
                 Modes.DEFAULT: resolved_colors[self.generate_single_mode]
+            }
+            legacy_mappings = {
+                Modes.DEFAULT:
+                resolved_legacy_mappings[self.generate_single_mode]
             }
             opacities = {
                 Modes.DEFAULT: resolved_opacities[self.generate_single_mode]
@@ -33,14 +39,15 @@ class CSSStyleGenerator(BaseGenerator):
         else:
             colors = self.model.colors.Flatten()
             opacities = self.model.opacities.Flatten()
+            legacy_mappings = self.model.legacy_mappings.Flatten()
 
         return {
             'opacities': opacities,
             'colors': colors,
+            'legacy_mappings': legacy_mappings,
             'typefaces': self.model.typefaces,
             'font_families': self.model.font_families,
             'untyped_css': self.model.untyped_css,
-            'legacy_mappings': self.model.legacy_mappings,
         }
 
     def GetFilters(self):
