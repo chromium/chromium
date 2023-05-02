@@ -68,17 +68,15 @@ enum class TextWrap : uint8_t {
   kWrap = 0,
   kNoWrap = 1,
   kBalance = 2,
+  kPretty = 3,
   // Ensure `kTextWrapBits` can hold all values.
 };
 
 // Ensure this is in sync with `css_properties.json5`.
 static constexpr int kTextWrapBits = 2;
 
-inline bool IsTextWrapAny(TextWrap value, TextWrap flags) {
-  return static_cast<uint8_t>(value) & static_cast<uint8_t>(flags);
-}
 inline bool ShouldWrapLine(TextWrap wrap) {
-  return !IsTextWrapAny(wrap, TextWrap::kNoWrap);
+  return wrap != TextWrap::kNoWrap;
 }
 
 //

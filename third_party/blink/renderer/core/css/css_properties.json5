@@ -5971,7 +5971,7 @@
       inherited: true,
       field_template: "primitive",
       field_size: 2,  // Ensure this is in sync with `kTextWrapBits`.
-      keywords: ["wrap", "nowrap", "balance"],
+      keywords: ["wrap", "nowrap", "balance", "pretty"],
       type_name: "TextWrap",
       default_value: "TextWrap::kWrap",
       include_paths: ["third_party/blink/renderer/core/css/white_space.h"],

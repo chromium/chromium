@@ -1124,6 +1124,12 @@
       name: "CSSTextWrap",
       status: "stable",
     },
+    // `text-wrap: pretty`. crbug.com/1432798
+    {
+      name: "CSSTextWrapPretty",
+      status: "test",
+      depends_on: ["CSSTextWrap", "CSSWhiteSpaceShorthand"],
+    },
     // Support for CSS Toggles, https://tabatkins.github.io/css-toggle/
     {
       name: "CSSToggles",

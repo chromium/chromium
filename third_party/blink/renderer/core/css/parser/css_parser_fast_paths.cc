@@ -1342,8 +1342,14 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
         return value_id == CSSValueID::kWrap ||
                value_id == CSSValueID::kBalance;
       }
+      if (!RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled()) {
+        return value_id == CSSValueID::kWrap ||
+               value_id == CSSValueID::kNowrap ||
+               value_id == CSSValueID::kBalance;
+      }
       return value_id == CSSValueID::kWrap || value_id == CSSValueID::kNowrap ||
-             value_id == CSSValueID::kBalance;
+             value_id == CSSValueID::kBalance ||
+             value_id == CSSValueID::kPretty;
     case CSSPropertyID::kTransformBox:
       return value_id == CSSValueID::kFillBox ||
              value_id == CSSValueID::kViewBox;
