@@ -24,6 +24,27 @@ static_library("quick_start") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  public_deps = [ ":quick_start" ]
+  deps = [
+    "proto",
+    "//base",
+    "//chrome/browser/nearby_sharing/public/cpp",
+    "//chromeos/ash/services/nearby/public/mojom:mojom",
+    "//components/cbor",
+    "//crypto",
+    "//mojo/public/cpp/bindings:bindings",
+    "//sandbox/policy",
+    "//testing/gtest",
+    "//url",
+  ]
+  sources = [
+    "fake_quick_start_decoder.cc",
+    "fake_quick_start_decoder.h",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
