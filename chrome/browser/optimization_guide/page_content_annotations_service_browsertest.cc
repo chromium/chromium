@@ -29,7 +29,6 @@
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
-#include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -435,31 +434,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
           &run_loop),
       std::vector<std::string>{"this is a test"},
       AnnotationType::kContentVisibility);
-
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       PageTopicsDomainPreProcessing) {
-  PageContentAnnotationsService* service =
-      PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
-
-  base::RunLoop run_loop;
-  service->BatchAnnotate(
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const std::vector<BatchAnnotationResult>& results) {
-            ASSERT_EQ(results.size(), 1U);
-            EXPECT_EQ(results[0].input(), "www.chromium.org");
-            EXPECT_EQ(results[0].type(), AnnotationType::kPageTopics);
-            // Intentionally does not test the output of model inference, since
-            // that is well covered in the unittests for
-            // PageContentAnnotationsModelManager.
-            run_loop->Quit();
-          },
-          &run_loop),
-      std::vector<std::string>{"www.chromium.org"},
-      AnnotationType::kPageTopics);
 
   run_loop.Run();
 }

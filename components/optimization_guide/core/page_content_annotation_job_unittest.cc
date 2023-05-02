@@ -24,7 +24,7 @@ class PageContentAnnotationJobTest : public testing::Test {
 
 TEST_F(PageContentAnnotationJobTest, IteratesInput) {
   PageContentAnnotationJob job(base::NullCallback(), {"1", "2", "3"},
-                               AnnotationType::kPageTopics);
+                               AnnotationType::kContentVisibility);
   absl::optional<std::string> input;
 
   input = job.GetNextInput();
@@ -47,14 +47,14 @@ TEST_F(PageContentAnnotationJobTest, Callback) {
   PageContentAnnotationJob job(
       base::BindOnce(&PageContentAnnotationJobTest::OnBatchAnnotationComplete,
                      base::Unretained(this), &results),
-      {"1", "2", "3"}, AnnotationType::kPageTopics);
+      {"1", "2", "3"}, AnnotationType::kContentVisibility);
 
   // Drain the inputs before running the callback.
   while (job.GetNextInput()) {
   }
 
   BatchAnnotationResult expected =
-      BatchAnnotationResult::CreatePageTopicsResult("1", absl::nullopt);
+      BatchAnnotationResult::CreateContentVisibilityResult("1", absl::nullopt);
 
   job.PostNewResult(expected, 0);
   job.OnComplete();
@@ -69,7 +69,7 @@ TEST_F(PageContentAnnotationJobTest, Callback) {
 
 TEST_F(PageContentAnnotationJobTest, DeathOnUncompleted) {
   PageContentAnnotationJob job(base::NullCallback(), {"1", "2", "3"},
-                               AnnotationType::kPageTopics);
+                               AnnotationType::kContentVisibility);
   EXPECT_TRUE(job.GetNextInput());
   EXPECT_DCHECK_DEATH(job.OnComplete());
 }

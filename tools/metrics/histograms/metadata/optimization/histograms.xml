@@ -25,7 +25,11 @@ chromium-metrics-reviews@google.com.
 <variants name="AnnotationType">
   <variant name="ContentVisibility" summary="Content Visibility"/>
   <variant name="PageEntities" summary="Page Entities"/>
-  <variant name="PageTopics" summary="Page Topics"/>
+  <variant name="PageTopics" summary="Page Topics">
+    <obsolete>
+      Removed in M115.
+    </obsolete>
+  </variant>
   <variant name="Unknown" summary="Unknown"/>
 </variants>
 
@@ -1012,6 +1016,9 @@ chromium-metrics-reviews@google.com.
 <histogram name="OptimizationGuide.PageTopicsOverrideList.FileLoadResult"
     enum="OptimizationGuidePageTopicsOverrideListFileLoadResult"
     expires_after="2023-10-15">
+  <obsolete>
+    Removed in M115.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1025,6 +1032,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.PageTopicsOverrideList.GotFile"
     enum="Boolean" expires_after="M117">
+  <obsolete>
+    Removed in M115.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1035,6 +1045,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.PageTopicsOverrideList.UsedOverride"
     enum="Boolean" expires_after="2023-10-15">
+  <obsolete>
+    Removed in M115.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

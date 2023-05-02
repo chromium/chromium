@@ -15,7 +15,7 @@
 namespace optimization_guide {
 
 namespace {
-const std::vector<WeightedIdentifier> kOutput{WeightedIdentifier(1337, 1.0)};
+const double kOutput = 0.5;
 }
 
 class TestJobExecutor : public PageContentAnnotationJobExecutor {
@@ -30,7 +30,7 @@ class TestJobExecutor : public PageContentAnnotationJobExecutor {
       base::OnceCallback<void(const BatchAnnotationResult&)> callback)
       override {
     std::move(callback).Run(
-        BatchAnnotationResult::CreatePageTopicsResult(input, kOutput));
+        BatchAnnotationResult::CreateContentVisibilityResult(input, kOutput));
   }
 };
 
@@ -63,7 +63,7 @@ TEST_F(PageContentAnnotationJobExecutorTest, FullFlow) {
       std::make_unique<PageContentAnnotationJob>(
           std::move(outside_callers_result_callback),
           std::vector<std::string>{"input1", "input2"},
-          AnnotationType::kPageTopics);
+          AnnotationType::kContentVisibility);
 
   // Actual model execution can take a little while, so try to keep tests from
   // flaking.
@@ -75,9 +75,9 @@ TEST_F(PageContentAnnotationJobExecutorTest, FullFlow) {
 
   ASSERT_EQ(2U, results.size());
   EXPECT_EQ(results[0].input(), "input1");
-  EXPECT_EQ(results[0].topics(), absl::make_optional(kOutput));
+  EXPECT_EQ(results[0].visibility_score(), absl::make_optional(kOutput));
   EXPECT_EQ(results[1].input(), "input2");
-  EXPECT_EQ(results[1].topics(), absl::make_optional(kOutput));
+  EXPECT_EQ(results[1].visibility_score(), absl::make_optional(kOutput));
 }
 
 }  // namespace optimization_guide

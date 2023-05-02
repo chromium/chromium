@@ -159,9 +159,6 @@ BASE_FEATURE(kOptimizationGuideMetadataValidation,
              "OptimizationGuideMetadataValidation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPageTopicsBatchAnnotations,
-             "PageTopicsBatchAnnotations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPageVisibilityBatchAnnotations,
              "PageVisibilityBatchAnnotations",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -563,10 +560,6 @@ bool ShouldDeferStartupActiveTabsHintsFetch() {
   );
 }
 
-bool PageTopicsBatchAnnotationsEnabled() {
-  return base::FeatureList::IsEnabled(kPageTopicsBatchAnnotations);
-}
-
 bool PageVisibilityBatchAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(kPageVisibilityBatchAnnotations);
 }
@@ -588,9 +581,6 @@ bool PageContentAnnotationValidationEnabledForType(AnnotationType type) {
 
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
   switch (type) {
-    case AnnotationType::kPageTopics:
-      return cmd->HasSwitch(
-          switches::kPageContentAnnotationsValidationPageTopics);
     case AnnotationType::kPageEntities:
       return cmd->HasSwitch(
           switches::kPageContentAnnotationsValidationPageEntities);

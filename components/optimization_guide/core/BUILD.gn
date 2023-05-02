@@ -208,8 +208,6 @@ static_library("core") {
       "page_content_annotation_job_executor.h",
       "page_entities_model_handler.cc",
       "page_entities_model_handler.h",
-      "page_topics_model_handler.cc",
-      "page_topics_model_handler.h",
       "page_visibility_model_handler.cc",
       "page_visibility_model_handler.h",
     ]
@@ -403,7 +401,6 @@ source_set("unit_tests") {
       "bert_model_executor_unittest.cc",
       "model_validator_unittest.cc",
       "page_content_annotation_job_executor_unittest.cc",
-      "page_topics_model_handler_unittest.cc",
       "page_visibility_model_handler_unittest.cc",
       "tflite_model_executor_unittest.cc",
     ]

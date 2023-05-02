@@ -11,7 +11,6 @@
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/page_content_annotation_job.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
-#include "components/optimization_guide/core/page_topics_model_handler.h"
 #include "components/optimization_guide/core/page_visibility_model_handler.h"
 #include "net/base/priority_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -92,11 +91,6 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   void SetUpPageEntitiesModel(OptimizationGuideModelProvider* model_provider,
                               base::OnceCallback<void(bool)> callback);
 
-  // Set up the machinery for execution of the page topics v2 model. This should
-  // only be run at construction.
-  void SetUpPageTopicsV2Model(
-      OptimizationGuideModelProvider* optimization_guide_model_provider);
-
   // Set up the machinery for execution of the page visibility model. This
   // should only be run at construction.
   void SetUpPageVisibilityModel(
@@ -111,10 +105,6 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
 
   // Called when a |job| finishes executing, just before it is deleted.
   void OnJobExecutionComplete();
-
-  // The model handler responsible for executing the on demand page topics
-  // model.
-  std::unique_ptr<PageTopicsModelHandler> page_topics_model_handler_;
 
   // The model handler for the page visibility model.
   std::unique_ptr<PageVisibilityModelHandler> page_visibility_model_handler_;

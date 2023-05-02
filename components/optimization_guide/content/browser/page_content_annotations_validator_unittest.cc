@@ -46,7 +46,6 @@ TEST(PageContentAnnotationsValidatorTest, AllEnabledByExperiment) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kPageContentAnnotationsValidation,
       {
-          {"PageTopics", "true"},
           {"PageEntities", "true"},
           {"ContentVisibility", "true"},
       });
@@ -58,10 +57,9 @@ TEST(PageContentAnnotationsValidatorTest, AllEnabledByExperiment) {
   task_env.FastForwardBy(base::Seconds(30));
 
   const auto& annotation_requests = annotator.annotation_requests();
-  ASSERT_EQ(3U, annotation_requests.size());
-  EXPECT_EQ(annotation_requests[0].second, AnnotationType::kPageTopics);
-  EXPECT_EQ(annotation_requests[1].second, AnnotationType::kPageEntities);
-  EXPECT_EQ(annotation_requests[2].second, AnnotationType::kContentVisibility);
+  ASSERT_EQ(2U, annotation_requests.size());
+  EXPECT_EQ(annotation_requests[0].second, AnnotationType::kPageEntities);
+  EXPECT_EQ(annotation_requests[1].second, AnnotationType::kContentVisibility);
 }
 
 TEST(PageContentAnnotationsValidatorTest, AllEnabledByCommandLine) {
@@ -69,8 +67,6 @@ TEST(PageContentAnnotationsValidatorTest, AllEnabledByCommandLine) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
 
-  cmd->AppendSwitchASCII(switches::kPageContentAnnotationsValidationPageTopics,
-                         "page topics,pt input2, pt keeps whitespace  ");
   cmd->AppendSwitchASCII(
       switches::kPageContentAnnotationsValidationPageEntities,
       "page entities,pe input2, pe keeps whitespace  ");
@@ -85,28 +81,21 @@ TEST(PageContentAnnotationsValidatorTest, AllEnabledByCommandLine) {
   task_env.FastForwardBy(base::Seconds(30));
 
   const auto& annotation_requests = annotator.annotation_requests();
-  ASSERT_EQ(3U, annotation_requests.size());
+  ASSERT_EQ(2U, annotation_requests.size());
 
   EXPECT_THAT(annotation_requests[0].first, testing::ElementsAreArray({
-                                                "page topics",
-                                                "pt input2",
-                                                " pt keeps whitespace  ",
-                                            }));
-  EXPECT_EQ(annotation_requests[0].second, AnnotationType::kPageTopics);
-
-  EXPECT_THAT(annotation_requests[1].first, testing::ElementsAreArray({
                                                 "page entities",
                                                 "pe input2",
                                                 " pe keeps whitespace  ",
                                             }));
-  EXPECT_EQ(annotation_requests[1].second, AnnotationType::kPageEntities);
+  EXPECT_EQ(annotation_requests[0].second, AnnotationType::kPageEntities);
 
-  EXPECT_THAT(annotation_requests[2].first, testing::ElementsAreArray({
+  EXPECT_THAT(annotation_requests[1].first, testing::ElementsAreArray({
                                                 "content viz",
                                                 "cv input2",
                                                 " cv keeps whitespace  ",
                                             }));
-  EXPECT_EQ(annotation_requests[2].second, AnnotationType::kContentVisibility);
+  EXPECT_EQ(annotation_requests[1].second, AnnotationType::kContentVisibility);
 }
 
 TEST(PageContentAnnotationsValidatorTest, OnlyOneEnabled_Cmd) {
@@ -114,7 +103,6 @@ TEST(PageContentAnnotationsValidatorTest, OnlyOneEnabled_Cmd) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   for (AnnotationType type : {
-           AnnotationType::kPageTopics,
            AnnotationType::kPageEntities,
            AnnotationType::kContentVisibility,
        }) {
@@ -123,10 +111,6 @@ TEST(PageContentAnnotationsValidatorTest, OnlyOneEnabled_Cmd) {
     base::CommandLine* cmd = scoped_cmd.GetProcessCommandLine();
 
     switch (type) {
-      case AnnotationType::kPageTopics:
-        cmd->AppendSwitch(
-            switches::kPageContentAnnotationsValidationPageTopics);
-        break;
       case AnnotationType::kPageEntities:
         cmd->AppendSwitch(
             switches::kPageContentAnnotationsValidationPageEntities);
@@ -157,7 +141,6 @@ TEST(PageContentAnnotationsValidatorTest, OnlyOneEnabled_Feature) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   for (AnnotationType type : {
-           AnnotationType::kPageTopics,
            AnnotationType::kPageEntities,
            AnnotationType::kContentVisibility,
        }) {
@@ -165,11 +148,6 @@ TEST(PageContentAnnotationsValidatorTest, OnlyOneEnabled_Feature) {
     base::test::ScopedFeatureList scoped_feature_list;
 
     switch (type) {
-      case AnnotationType::kPageTopics:
-        scoped_feature_list.InitAndEnableFeatureWithParameters(
-            features::kPageContentAnnotationsValidation,
-            {{"PageTopics", "true"}});
-        break;
       case AnnotationType::kPageEntities:
         scoped_feature_list.InitAndEnableFeatureWithParameters(
             features::kPageContentAnnotationsValidation,
@@ -201,7 +179,8 @@ TEST(PageContentAnnotationsValidatorTest, TimerDelayByCmd) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
 
-  cmd->AppendSwitch(switches::kPageContentAnnotationsValidationPageTopics);
+  cmd->AppendSwitch(
+      switches::kPageContentAnnotationsValidationContentVisibility);
   cmd->AppendSwitchASCII(
       switches::kPageContentAnnotationsValidationStartupDelaySeconds, "5");
 
@@ -223,10 +202,11 @@ TEST(PageContentAnnotationsValidatorTest, TimerDelayByFeature) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotationsValidation, {
-                                                       {"PageTopics", "true"},
-                                                       {"startup_delay", "5"},
-                                                   });
+      features::kPageContentAnnotationsValidation,
+      {
+          {"ContentVisibility", "true"},
+          {"startup_delay", "5"},
+      });
 
   TestPageContentAnnotator annotator;
   auto validator =
@@ -246,7 +226,8 @@ TEST(PageContentAnnotationsValidatorTest, BatchSizeByCmd) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
 
-  cmd->AppendSwitch(switches::kPageContentAnnotationsValidationPageTopics);
+  cmd->AppendSwitch(
+      switches::kPageContentAnnotationsValidationContentVisibility);
   cmd->AppendSwitchASCII(
       switches::kPageContentAnnotationsValidationBatchSizeOverride, "5");
 
@@ -266,10 +247,11 @@ TEST(PageContentAnnotationsValidatorTest, BatchSizeByFeature) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotationsValidation, {
-                                                       {"PageTopics", "true"},
-                                                       {"batch_size", "5"},
-                                                   });
+      features::kPageContentAnnotationsValidation,
+      {
+          {"ContentVisibility", "true"},
+          {"batch_size", "5"},
+      });
 
   TestPageContentAnnotator annotator;
   auto validator =
@@ -291,14 +273,14 @@ TEST(PageContentAnnotationsValidatorTest, CommandOverridesFeature) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kPageContentAnnotationsValidation,
       {
-          {"PageTopics", "true"},
           {"PageEntities", "true"},
           {"ContentVisibility", "true"},
           {"batch_size", "3"},
       });
 
-  cmd->AppendSwitchASCII(switches::kPageContentAnnotationsValidationPageTopics,
-                         "page topics");
+  cmd->AppendSwitchASCII(
+      switches::kPageContentAnnotationsValidationContentVisibility,
+      "content visibility");
   cmd->AppendSwitchASCII(
       switches::kPageContentAnnotationsValidationBatchSizeOverride, "5");
 
@@ -309,17 +291,14 @@ TEST(PageContentAnnotationsValidatorTest, CommandOverridesFeature) {
   task_env.FastForwardBy(base::Seconds(30));
 
   const auto& annotation_requests = annotator.annotation_requests();
-  ASSERT_EQ(3U, annotation_requests.size());
+  ASSERT_EQ(2U, annotation_requests.size());
 
-  EXPECT_THAT(annotation_requests[0].first,
-              testing::ElementsAre("page topics"));
-  EXPECT_EQ(annotation_requests[0].second, AnnotationType::kPageTopics);
+  EXPECT_EQ(annotation_requests[0].first.size(), 5U);
+  EXPECT_EQ(annotation_requests[0].second, AnnotationType::kPageEntities);
 
-  EXPECT_EQ(annotation_requests[1].first.size(), 5U);
-  EXPECT_EQ(annotation_requests[1].second, AnnotationType::kPageEntities);
-
-  EXPECT_EQ(annotation_requests[2].first.size(), 5U);
-  EXPECT_EQ(annotation_requests[2].second, AnnotationType::kContentVisibility);
+  EXPECT_THAT(annotation_requests[1].first,
+              testing::ElementsAre("content visibility"));
+  EXPECT_EQ(annotation_requests[1].second, AnnotationType::kContentVisibility);
 }
 
 }  // namespace optimization_guide

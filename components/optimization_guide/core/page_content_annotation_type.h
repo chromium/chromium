@@ -17,10 +17,6 @@ namespace optimization_guide {
 enum class AnnotationType {
   kUnknown,
 
-  // The input will be annotated with the topics on the page. These topics are
-  // fairly high-level like "sports" or "news".
-  kPageTopics,
-
   // The input will be annotated for the visibility of the content.
   kContentVisibility,
 

@@ -94,8 +94,6 @@ const char kPageContentAnnotationsValidationBatchSizeOverride[] =
 // Enables the specific annotation type to run validation at startup after a
 // delay. A comma separated list of inputs can be given as a value which will be
 // used as input for the validation job.
-const char kPageContentAnnotationsValidationPageTopics[] =
-    "page-content-annotations-validation-page-topics";
 const char kPageContentAnnotationsValidationPageEntities[] =
     "page-content-annotations-validation-page-entities";
 const char kPageContentAnnotationsValidationContentVisibility[] =
@@ -253,8 +251,7 @@ absl::optional<size_t> PageContentAnnotationsValidationBatchSize() {
 
 bool LogPageContentAnnotationsValidationToConsole() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(kPageContentAnnotationsValidationPageTopics) ||
-         command_line->HasSwitch(
+  return command_line->HasSwitch(
              kPageContentAnnotationsValidationPageEntities) ||
          command_line->HasSwitch(
              kPageContentAnnotationsValidationContentVisibility);
@@ -266,10 +263,6 @@ PageContentAnnotationsValidationInputForType(AnnotationType type) {
 
   std::string value;
   switch (type) {
-    case AnnotationType::kPageTopics:
-      value = command_line->GetSwitchValueASCII(
-          kPageContentAnnotationsValidationPageTopics);
-      break;
     case AnnotationType::kPageEntities:
       value = command_line->GetSwitchValueASCII(
           kPageContentAnnotationsValidationPageEntities);
