@@ -33,15 +33,6 @@ bool CreateDirectory(storage::mojom::Directory* output_dir,
 // A file writer that uses a storage::FilesystemProxy.
 class Writer : public zip::FileWriterDelegate {
  public:
-  Writer(mojo::Remote<storage::mojom::Directory> output_dir,
-         base::FilePath path)
-      : FileWriterDelegate(base::File()),
-        owned_output_dir_(std::move(output_dir)),
-        output_dir_(owned_output_dir_.get()),
-        path_(std::move(path)) {
-    DCHECK(output_dir_);
-  }
-
   Writer(storage::mojom::Directory* output_dir, base::FilePath path)
       : FileWriterDelegate(base::File()),
         output_dir_(output_dir),
