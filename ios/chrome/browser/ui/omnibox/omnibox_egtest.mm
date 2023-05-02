@@ -9,6 +9,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "build/build_config.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -782,7 +783,7 @@ void FocusFakebox() {
 // display a callout menu with cut,copy and paste (if there is a text on the
 // pasteboard).
 // TODO(crbug.com/1435485): Test is failing on official device builds.
-#if !defined(TARGET_OS_SIMULATOR) && defined(OFFICIAL_BUILD)
+#if !TARGET_OS_SIMULATOR && defined(OFFICIAL_BUILD)
 #define MAYBE_testTapOmniboxOnPreEditState DISABLED_testTapOmniboxOnPreEditState
 #else
 #define MAYBE_testTapOmniboxOnPreEditState testTapOmniboxOnPreEditState
@@ -822,7 +823,7 @@ void FocusFakebox() {
 // Tests that Cut callout button would erase the current url and copy it on the
 // pasteboard.
 // TODO(crbug.com/1435485): Test is failing on official device builds.
-#if !defined(TARGET_OS_SIMULATOR) && defined(OFFICIAL_BUILD)
+#if !TARGET_OS_SIMULATOR && defined(OFFICIAL_BUILD)
 #define MAYBE_testCutCalloutButton DISABLED_testCutCalloutButton
 #else
 #define MAYBE_testCutCalloutButton testCutCalloutButton
@@ -858,7 +859,7 @@ void FocusFakebox() {
 // Tests that Paste callout button would erase the current url and replace it
 // with text on pasteboard.
 // TODO(crbug.com/1435485): Test is failing on official device builds.
-#if !defined(TARGET_OS_SIMULATOR) && defined(OFFICIAL_BUILD)
+#if !TARGET_OS_SIMULATOR && defined(OFFICIAL_BUILD)
 #define MAYBE_testPasteCalloutButton DISABLED_testPasteCalloutButton
 #else
 #define MAYBE_testPasteCalloutButton testPasteCalloutButton
