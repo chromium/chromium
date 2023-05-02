@@ -144,7 +144,7 @@ TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey) {
           "WithNonce",
           NetworkIsolationKey(kTopLevelSite, kCookieSite, kNonce),
           /*allow_nonced_partition_keys=*/false,
-          CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kNonce),
+          CookiePartitionKey::FromURLForTesting(kCookieSite.GetURL(), kNonce),
       },
       {
           "NoncedAllowed_KeyWithoutNonce",
@@ -156,7 +156,7 @@ TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey) {
           "NoncedAllowed_KeyWithoutNonce",
           NetworkIsolationKey(kTopLevelSite, kCookieSite, kNonce),
           /*allow_nonced_partition_keys=*/true,
-          CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kNonce),
+          CookiePartitionKey::FromURLForTesting(kCookieSite.GetURL(), kNonce),
       },
   };
 
