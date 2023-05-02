@@ -1,5 +1,6 @@
 <style>
   #container {
+    border-spacing: 0;
     width: var(--cr-toolbar-field-width);
   }
 
@@ -19,20 +20,35 @@
   #rowList {
     display: flex;
     flex-direction: column;
+    width: 100%;
+  }
+
+  thead {
+    /* Hide the thead elements, since their purpose is for
+     * screen readers. */
+    display: none;
   }
 </style>
 
-<div id="container" part="container">
-  <div id="title">[[title]]</div>
-  <div id="rowList">
-    <template id="list" is="dom-repeat" items="[[accelRowDataArray]]">
-      <accelerator-row
-          accelerator-infos="[[getSortedAccelerators(item.acceleratorInfos)]]"
-          action="[[item.layoutInfo.action]]"
-          description="[[item.layoutInfo.description]]"
-          layout-style="[[item.layoutInfo.style]]"
-          source="[[item.layoutInfo.source]]">
-      </accelerator-row>
-    </template>
-  </div>
-</div>
+<table id="container" part="container">
+    <caption id="title">[[title]]</caption>
+    <thead>
+      <!-- Empty header rows are used so that ChromeVox correctly interprets
+           this table as a data table and not a layout table.-->
+      <tr>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody id="rowList">
+      <template id="list" is="dom-repeat" items="[[accelRowDataArray]]">
+        <accelerator-row
+            accelerator-infos="[[getSortedAccelerators(item.acceleratorInfos)]]"
+            action="[[item.layoutInfo.action]]"
+            description="[[item.layoutInfo.description]]"
+            layout-style="[[item.layoutInfo.style]]"
+            source="[[item.layoutInfo.source]]">
+        </accelerator-row>
+      </template>
+    </tbody>
+</table>

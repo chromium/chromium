@@ -85,8 +85,10 @@ suite('inputKeyTest', function() {
     const iconWrapperElement = inputKeyElement.shadowRoot!.querySelector(
                                    '#key > div') as HTMLDivElement;
     assertTrue(isVisible(iconWrapperElement));
-    assertEquals('take screenshot', iconWrapperElement.ariaLabel);
     assertEquals('img', iconWrapperElement.getAttribute('role'));
+    const iconDescriptionElement = inputKeyElement.shadowRoot!.querySelector(
+                                       '#icon-description') as HTMLDivElement;
+    assertEquals('take screenshot', iconDescriptionElement.textContent);
   });
 
   test('MetaKeyShowLauncherIcon', async () => {
@@ -104,7 +106,9 @@ suite('inputKeyTest', function() {
     assertTrue(isVisible(iconElement));
     assertTrue(isVisible(iconWrapperElement));
     assertEquals('shortcut-customization-keys:launcher', iconElement.icon);
-    assertEquals('open launcher', iconWrapperElement.ariaLabel);
+    const iconDescriptionElement = inputKeyElement.shadowRoot!.querySelector(
+                                       '#icon-description') as HTMLDivElement;
+    assertEquals('open launcher', iconDescriptionElement.textContent);
   });
 
   test('MetaKeyShowSearchIcon', async () => {
@@ -115,14 +119,17 @@ suite('inputKeyTest', function() {
     await flush();
 
     // Should show search icon when hasLauncherButton is false.
-    const iconElement2 = inputKeyElement.shadowRoot!.querySelector(
-                             '#key-icon') as IronIconElement;
-    const iconWrapperElement2 = inputKeyElement.shadowRoot!.querySelector(
-                                    '#key > div') as HTMLDivElement;
-    assertTrue(isVisible(iconElement2));
-    assertTrue(isVisible(iconWrapperElement2));
-    assertEquals('shortcut-customization-keys:search', iconElement2.icon);
-    assertEquals('open search', iconWrapperElement2.ariaLabel);
+    const iconElement = inputKeyElement.shadowRoot!.querySelector(
+                            '#key-icon') as IronIconElement;
+    const iconWrapperElement = inputKeyElement.shadowRoot!.querySelector(
+                                   '#key > div') as HTMLDivElement;
+    assertTrue(isVisible(iconElement));
+    assertTrue(isVisible(iconWrapperElement));
+    assertEquals('shortcut-customization-keys:search', iconElement.icon);
+
+    const iconDescriptionElement = inputKeyElement.shadowRoot!.querySelector(
+                                       '#icon-description') as HTMLDivElement;
+    assertEquals('open search', iconDescriptionElement.textContent);
   });
 
   test('MetaKeyIsAlwaysModifier', async () => {
