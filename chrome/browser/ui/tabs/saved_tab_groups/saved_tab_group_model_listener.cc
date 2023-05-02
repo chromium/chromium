@@ -64,7 +64,14 @@ void SavedTabGroupModelListener::TabGroupedStateChanged(
   // Remove `contents` from its current saved group, if it's in one.
   for (auto& [local_group_id, listener] : local_tab_group_listeners_) {
     if (local_group_id != new_local_group_id) {
-      listener.RemoveWebContentsIfPresent(contents);
+      if (!listener.RemoveWebContentsIfPresent(contents)) {
+        // If this emptied the group, the saved group was removed, so we must
+        // stop listening to `local_group_id`.
+        DisconnectLocalTabGroup(local_group_id);
+        // Not only did we find our old group, we also concurrently modified the
+        // data structure we're iterating over. Abort, abort.
+        break;
+      }
     }
   }
 

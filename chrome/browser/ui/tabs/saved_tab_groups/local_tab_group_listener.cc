@@ -96,14 +96,14 @@ void LocalTabGroupListener::AddWebContents(content::WebContents* web_contents,
                                           model_);
 }
 
-void LocalTabGroupListener::RemoveWebContentsIfPresent(
+bool LocalTabGroupListener::RemoveWebContentsIfPresent(
     content::WebContents* web_contents) {
   if (paused_) {
-    return;
+    return true;
   }
 
   if (web_contents_to_tab_id_map_.count(web_contents) == 0) {
-    return;
+    return true;
   }
 
   const base::Token tab_id =
@@ -112,4 +112,6 @@ void LocalTabGroupListener::RemoveWebContentsIfPresent(
 
   web_contents_to_tab_id_map_.erase(web_contents);
   model_->RemoveTabFromGroup(saved_guid_, tab_guid);
+
+  return model_->Contains(saved_guid_);
 }

@@ -44,8 +44,11 @@ class LocalTabGroupListener {
                       int index);
 
   // If `web_contents` is in this listener's local tab group, removes it from
-  // the saved tab group and stops tracking it.
-  void RemoveWebContentsIfPresent(content::WebContents* web_contents);
+  // the saved tab group and stops tracking it. Returns true if the saved group
+  // still exists, and false if removing `web_contents` also removed the group
+  // (by emptying it). In the latter case, callers should destroy this listener.
+  [[nodiscard]] bool RemoveWebContentsIfPresent(
+      content::WebContents* web_contents);
 
   // Testing Accessors.
   std::unordered_map<content::WebContents*, SavedTabGroupWebContentsListener>&
