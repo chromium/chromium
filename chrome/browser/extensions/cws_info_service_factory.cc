@@ -34,6 +34,7 @@ CWSInfoServiceFactory::CWSInfoServiceFactory()
           ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
+  DependsOn(extensions::ExtensionManagementFactory::GetInstance());
 }
 
 KeyedService* CWSInfoServiceFactory::BuildServiceInstanceFor(
