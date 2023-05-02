@@ -34,10 +34,14 @@
   }
 
   .toggle-row,
-  .discount-toggle-row {
+  .toggle-option-row {
     align-items: center;
     display: flex;
     height: 52px;
+  }
+
+  .toggle-option-row {
+    margin-inline-start: 16px;
   }
 
   .toggle-section + .toggle-section {
@@ -86,17 +90,28 @@
               title="[[item.name]]">
           </cr-toggle>
         </div>
-        <!-- Discount toggle is a workaround for crbug.com/1199465 and will be
-        removed after module customization is better defined. Please avoid
-        using similar pattern for other features. -->
+        <!-- Cart and Discount option toggles are workarounds for
+        crbug.com/1199465 and will be removed after module customization is
+        better defined. Please avoid using similar pattern for other
+        features. -->
         <template is="dom-if"
-            if=
-        "[[showDiscountToggle_(item.id, item.checked, discountToggleEligible_)]]">
-          <div class="discount-toggle-row">
+            if="[[showCartOptionToggle_(item.id, item.checked)]]">
+          <div id="cartOption" class="toggle-option-row">
+            <div class="toggle-name">
+              $i18n{modulesCartSentence}
+            </div>
+            <cr-toggle checked="{{cartOptionToggle_.enabled}}"
+                title="$i18n{modulesCartSentence}"></cr-toggle>
+          </div>
+        </template>
+        <template is="dom-if"
+            if="[[showDiscountOptionToggle_(item.id, item.checked,
+            discountOptionToggleEligible_, cartOptionToggle_.enabled)]]">
+          <div id="discountOption" class="toggle-option-row">
             <div class="toggle-name">
               $i18n{modulesCartDiscountConsentAccept}
             </div>
-            <cr-toggle checked="{{discountToggle_.enabled}}"
+            <cr-toggle checked="{{discountOptionToggle_.enabled}}"
                 title="$i18n{modulesCartDiscountConsentAccept}"></cr-toggle>
           </div>
         </template>
