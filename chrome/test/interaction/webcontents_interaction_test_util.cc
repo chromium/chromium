@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -371,6 +372,9 @@ class WebContentsInteractionTestUtil::WebViewData : public views::ViewObserver {
   // object are performed.
   void Init() {
     scoped_observation_.Observe(web_view_);
+    web_contents_attached_subscription_ =
+        web_view_->AddWebContentsAttachedCallback(base::BindRepeating(
+            &WebViewData::OnWebContentsAttached, base::Unretained(this)));
     ui::ElementIdentifier id =
         web_view_->GetProperty(views::kElementIdentifierKey);
     if (!id) {
@@ -473,6 +477,18 @@ class WebContentsInteractionTestUtil::WebViewData : public views::ViewObserver {
       QueueMinimumSizeEvent();
   }
 
+  void OnWebContentsAttached(views::WebView* observed_view) {
+    CHECK_EQ(web_view_.get(), observed_view);
+    content::WebContents* const to_observe =
+        visible_ ? observed_view->web_contents() : nullptr;
+    if (owner_->web_contents() == to_observe) {
+      return;
+    }
+    owner_->Observe(to_observe);
+    owner_->DiscardCurrentElement();
+    owner_->MaybeCreateElement();
+  }
+
   void QueueMinimumSizeEvent() {
     if (!owner_->current_element_)
       return;
@@ -502,6 +518,7 @@ class WebContentsInteractionTestUtil::WebViewData : public views::ViewObserver {
   std::unique_ptr<MinimumSizeData> minimum_size_data_;
   base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
       this};
+  base::CallbackListSubscription web_contents_attached_subscription_;
   base::WeakPtrFactory<WebViewData> weak_factory_{this};
 };
 

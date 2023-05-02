@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_VIEW_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_VIEW_VIEWS_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
@@ -75,7 +76,8 @@ class ExtensionViewViews : public views::WebView,
   // views::WebView:
   ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void PreferredSizeChanged() override;
-  void OnWebContentsAttached() override;
+
+  void OnWebContentsAttached(views::WebView*);
 
   raw_ptr<extensions::ExtensionViewHost, DanglingUntriaged> host_;
 
@@ -97,6 +99,9 @@ class ExtensionViewViews : public views::WebView,
 
   // The associated observers.
   base::ObserverList<Observer> observers_;
+
+  // Registers the callback for when web contents are attached.
+  base::CallbackListSubscription web_contents_attached_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_VIEW_VIEWS_H_
