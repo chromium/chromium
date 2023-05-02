@@ -145,7 +145,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DispatchWillSendSubmitEvent(HTMLFormElement*) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
-  bool NavigateBackForward(
+  void NavigateBackForward(
       int offset,
       absl::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id) const override;

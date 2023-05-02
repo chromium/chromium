@@ -1163,6 +1163,7 @@ void LocalFrameMojoHandler::NotifyNavigationApiOfDisposedEntries(
 void LocalFrameMojoHandler::TraverseCancelled(
     const String& navigation_api_key,
     mojom::blink::TraverseCancelledReason reason) {
+  frame_->GetPage()->HistoryNavigationVirtualTimePauser().UnpauseVirtualTime();
   frame_->DomWindow()->navigation()->TraverseCancelled(navigation_api_key,
                                                        reason);
 }

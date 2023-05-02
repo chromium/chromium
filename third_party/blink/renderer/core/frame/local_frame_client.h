@@ -197,7 +197,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual void DidStartLoading() = 0;
   virtual void DidStopLoading() = 0;
 
-  virtual bool NavigateBackForward(
+  virtual void NavigateBackForward(
       int offset,
       absl::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id) const = 0;
