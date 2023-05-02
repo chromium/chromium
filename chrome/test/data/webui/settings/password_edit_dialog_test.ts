@@ -988,17 +988,6 @@ suite('PasswordEditDialog', function() {
         addDialog.$.viewExistingPasswordLink.click();
         await flushTasks();
 
-        if (!loadTimeData.getBoolean(
-                'useSystemAuthenticationForPasswordManager')) {
-          const passwordDialog = addDialog.shadowRoot!.querySelector(
-              'settings-password-prompt-dialog');
-          assertTrue(!!passwordDialog);
-
-          // if the user clicks cancel, add dialog is still visible.
-          passwordDialog.dispatchEvent(new CustomEvent('close'));
-          await flushTasks();
-        }
-
         assertAddDialogParts(addDialog);
         assertFalse(!!addDialog.shadowRoot!.querySelector(
             'settings-password-prompt-dialog'));

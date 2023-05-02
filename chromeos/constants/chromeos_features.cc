@@ -71,12 +71,6 @@ BASE_FEATURE(kJelly, "Jelly", base::FEATURE_DISABLED_BY_DEFAULT);
 // controls all system UI updates and new system components. go/jelly-flags
 BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables system authentication on Ash for password manager, which uses
-// WebUI instead by default. Cleanup CL: https://crrev.com/c/4055733/2.
-BASE_FEATURE(kPasswordManagerSystemAuthentication,
-             "PasswordManagerSystemAuthentication",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable quick answers V2 settings sub-toggles.
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              "QuickAnswersV2SettingsSubToggle",
@@ -121,10 +115,6 @@ bool IsJellyrollEnabled() {
   // Force Jellyroll features on if Jelly is enabled since they need to be
   // tested together. b/270742469
   return IsJellyEnabled() || base::FeatureList::IsEnabled(kJellyroll);
-}
-
-bool IsPasswordManagerSystemAuthenticationEnabled() {
-  return base::FeatureList::IsEnabled(kPasswordManagerSystemAuthentication);
 }
 
 bool IsQuickAnswersV2TranslationDisabled() {

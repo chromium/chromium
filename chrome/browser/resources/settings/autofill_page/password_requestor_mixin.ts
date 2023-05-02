@@ -58,57 +58,15 @@ export const PasswordRequestorMixin = dedupingMixin(
         requestPlaintextPassword(
             id: number,
             reason: chrome.passwordsPrivate.PlaintextReason): Promise<string> {
-          // <if expr="is_chromeos">
-          // If no password was found, refresh auth token and retry.
-          if (loadTimeData.getBoolean(
-                  'useSystemAuthenticationForPasswordManager')) {
-            return PasswordManagerImpl.getInstance().requestPlaintextPassword(
-                id, reason);
-          }
-          return new Promise(resolve => {
-            PasswordManagerImpl.getInstance()
-                .requestPlaintextPassword(id, reason)
-                .then(password => resolve(password), () => {
-                  this.tokenRequestManager.request(() => {
-                    this.requestPlaintextPassword(id, reason).then(resolve);
-                  });
-                });
-          });
-          // </if>
-          // <if expr="not is_chromeos">
           return PasswordManagerImpl.getInstance().requestPlaintextPassword(
               id, reason);
-          // </if>
         }
 
         requestCredentialDetails(id: number):
             Promise<chrome.passwordsPrivate.PasswordUiEntry> {
-          // <if expr="is_chromeos">
-          // If no password was found, refresh auth token and retry.
-          if (loadTimeData.getBoolean(
-                  'useSystemAuthenticationForPasswordManager')) {
-            return PasswordManagerImpl.getInstance()
-                .requestCredentialsDetails([id])
-                .then(passwords => passwords[0]);
-          }
-          return new Promise((resolve, reject) => {
-            PasswordManagerImpl.getInstance()
-                .requestCredentialsDetails([id])
-                .then(passwords => resolve(passwords[0]))
-                .catch(() => {
-                  this.tokenRequestManager.request(
-                      () => PasswordManagerImpl.getInstance()
-                                .requestCredentialsDetails([id])
-                                .then(passwords => resolve(passwords[0]))
-                                .catch(reject));
-                });
-          });
-          // </if>
-          // <if expr="not is_chromeos">
           return PasswordManagerImpl.getInstance()
               .requestCredentialsDetails([id])
               .then(passwords => passwords[0]);
-          // </if>
         }
 
         // <if expr="is_chromeos">

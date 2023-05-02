@@ -480,14 +480,6 @@ suite('PasswordsUITest', function() {
             routes.PASSWORD_VIEW, new URLSearchParams('id=123'), false);
         await flushTasks();
 
-        // <if expr="is_chromeos">
-        if (!loadTimeData.getBoolean(
-                'useSystemAuthenticationForPasswordManager')) {
-          autofillSection.tokenRequestManager.resolve();
-          await flushTasks();
-        }
-        // </if>
-
         const eventDetail = {entry: {id: 123}} as unknown as
             PasswordListItemElement;
         autofillSection.shadowRoot!.querySelector('password-view')!

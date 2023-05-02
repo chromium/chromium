@@ -352,12 +352,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("userCannotManuallyEnterPassword", false);
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_CHROMEOS)
-  html_source->AddBoolean(
-      "useSystemAuthenticationForPasswordManager",
-      chromeos::features::IsPasswordManagerSystemAuthenticationEnabled());
-#endif
-
   bool show_privacy_guide =
       !chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild();
   html_source->AddBoolean("showPrivacyGuide", show_privacy_guide);
