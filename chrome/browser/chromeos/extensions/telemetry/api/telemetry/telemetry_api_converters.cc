@@ -215,7 +215,8 @@ cx_telem::StatefulPartitionInfo UncheckedConvertPtr(
 }
 
 cx_telem::NetworkInfo UncheckedConvertPtr(
-    chromeos::network_health::mojom::NetworkPtr input) {
+    chromeos::network_health::mojom::NetworkPtr input,
+    bool has_mac_address_permission) {
   cx_telem::NetworkInfo result;
 
   result.type = Convert(input->type);
@@ -227,6 +228,26 @@ cx_telem::NetworkInfo UncheckedConvertPtr(
   result.ipv6_addresses = input->ipv6_addresses;
   if (input->signal_strength) {
     result.signal_strength = input->signal_strength->value;
+  }
+  if (has_mac_address_permission) {
+    result.mac_address = std::move(input->mac_address);
+  }
+
+  return result;
+}
+
+cx_telem::InternetConnectivityInfo UncheckedConvertPtr(
+    chromeos::network_health::mojom::NetworkHealthStatePtr input,
+    bool has_mac_address_permission) {
+  cx_telem::InternetConnectivityInfo result;
+  for (auto& network : input->networks) {
+    auto converted_network = converters::ConvertPtr<cx_telem::NetworkInfo>(
+        std::move(network), has_mac_address_permission);
+
+    // Don't include networks with an undefined type.
+    if (converted_network.type != cx_telem::NetworkType::kNone) {
+      result.networks.push_back(std::move(converted_network));
+    }
   }
 
   return result;

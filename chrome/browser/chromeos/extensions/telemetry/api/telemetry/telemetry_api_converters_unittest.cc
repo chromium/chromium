@@ -550,22 +550,25 @@ TEST(TelemetryApiConverters, NetworkTypeEnum) {
             Convert(chromeos::network_config::mojom::NetworkType::kWiFi));
 }
 
-TEST(TelemetryApiConverters, NetworkInfo) {
+TEST(TelemetryApiConverters, NetworkInfoWithoutPermission) {
   constexpr char kIpv4Address[] = "1.1.1.1";
   const std::vector<std::string> kIpv6Addresses = {
       "FE80:CD00:0000:0CDE:1257:0000:211E:729C",
       "CD00:FE80:0000:1257:0CDE:0000:729C:211E"};
   constexpr uint32_t kSignalStrength = 100;
+  constexpr char kMacAddress[] = "00-B0-D0-63-C2-26";
 
   auto input = chromeos::network_health::mojom::Network::New();
   input->type = chromeos::network_config::mojom::NetworkType::kWiFi;
   input->state = chromeos::network_health::mojom::NetworkState::kOnline;
   input->ipv4_address = kIpv4Address;
   input->ipv6_addresses = kIpv6Addresses;
+  input->mac_address = kMacAddress;
   input->signal_strength =
       chromeos::network_health::mojom::UInt32Value::New(kSignalStrength);
 
-  auto result = ConvertPtr<cx_telem::NetworkInfo>(std::move(input));
+  auto result = ConvertPtr<cx_telem::NetworkInfo>(
+      std::move(input), /* has_mac_address_permission= */ false);
   EXPECT_EQ(result.type, cx_telem::NetworkType::kWifi);
   EXPECT_EQ(result.state, cx_telem::NetworkState::kOnline);
 
@@ -575,8 +578,121 @@ TEST(TelemetryApiConverters, NetworkInfo) {
   ASSERT_EQ(result.ipv6_addresses.size(), 2LU);
   EXPECT_EQ(result.ipv6_addresses, kIpv6Addresses);
 
+  // mac_address is not converted in ConvertPtr() without permission.
+  EXPECT_FALSE(result.mac_address);
+
   ASSERT_TRUE(result.signal_strength);
   EXPECT_EQ(static_cast<double_t>(*result.signal_strength), kSignalStrength);
+}
+
+TEST(TelemetryApiConverters, NetworkInfoWithPermission) {
+  constexpr char kMacAddress[] = "00-B0-D0-63-C2-26";
+
+  auto input = chromeos::network_health::mojom::Network::New();
+  input->mac_address = kMacAddress;
+
+  auto result = ConvertPtr<cx_telem::NetworkInfo>(
+      std::move(input), /* has_mac_address_permission= */ true);
+
+  ASSERT_TRUE(result.mac_address);
+  EXPECT_EQ(*result.mac_address, kMacAddress);
+}
+
+TEST(TelemetryApiConverters, InternetConnectivityInfoWithoutPermission) {
+  constexpr char kIpv4Address[] = "1.1.1.1";
+  const std::vector<std::string> kIpv6Addresses = {
+      "FE80:CD00:0000:0CDE:1257:0000:211E:729C",
+      "CD00:FE80:0000:1257:0CDE:0000:729C:211E"};
+  constexpr uint32_t kSignalStrength = 100;
+  constexpr char kMacAddress[] = "00-B0-D0-63-C2-26";
+
+  auto network = chromeos::network_health::mojom::Network::New();
+  network->type = chromeos::network_config::mojom::NetworkType::kWiFi;
+  network->state = chromeos::network_health::mojom::NetworkState::kOnline;
+  network->ipv4_address = kIpv4Address;
+  network->ipv6_addresses = kIpv6Addresses;
+  network->mac_address = kMacAddress;
+  network->signal_strength =
+      chromeos::network_health::mojom::UInt32Value::New(kSignalStrength);
+
+  auto input = chromeos::network_health::mojom::NetworkHealthState::New();
+  input->networks.push_back(std::move(network));
+
+  auto result = ConvertPtr<cx_telem::InternetConnectivityInfo>(
+      std::move(input), /* has_mac_address_permission= */ false);
+  ASSERT_EQ(result.networks.size(), 1UL);
+
+  auto result_network = std::move(result.networks.front());
+  EXPECT_EQ(result_network.type, cx_telem::NetworkType::kWifi);
+  EXPECT_EQ(result_network.state, cx_telem::NetworkState::kOnline);
+
+  ASSERT_TRUE(result_network.ipv4_address);
+  EXPECT_EQ(*result_network.ipv4_address, kIpv4Address);
+
+  ASSERT_EQ(result_network.ipv6_addresses.size(), 2LU);
+  EXPECT_EQ(result_network.ipv6_addresses, kIpv6Addresses);
+
+  // mac_address is not converted in ConvertPtr() without permission.
+  EXPECT_FALSE(result_network.mac_address);
+
+  ASSERT_TRUE(result_network.signal_strength);
+  EXPECT_EQ(static_cast<double_t>(*result_network.signal_strength),
+            kSignalStrength);
+}
+
+TEST(TelemetryApiConverters, InternetConnectivityInfoWithPermission) {
+  constexpr char kIpv4Address[] = "1.1.1.1";
+  const std::vector<std::string> kIpv6Addresses = {
+      "FE80:CD00:0000:0CDE:1257:0000:211E:729C",
+      "CD00:FE80:0000:1257:0CDE:0000:729C:211E"};
+  constexpr uint32_t kSignalStrength = 100;
+  constexpr char kMacAddress[] = "00-B0-D0-63-C2-26";
+
+  auto network = chromeos::network_health::mojom::Network::New();
+  network->type = chromeos::network_config::mojom::NetworkType::kWiFi;
+  network->state = chromeos::network_health::mojom::NetworkState::kOnline;
+  network->ipv4_address = kIpv4Address;
+  network->ipv6_addresses = kIpv6Addresses;
+  network->mac_address = kMacAddress;
+  network->signal_strength =
+      chromeos::network_health::mojom::UInt32Value::New(kSignalStrength);
+
+  // Networks with a type like kAll, kMobile and kWireless should not show
+  // up.
+  auto invalid_network = chromeos::network_health::mojom::Network::New();
+  invalid_network->type = chromeos::network_config::mojom::NetworkType::kAll;
+  invalid_network->state =
+      chromeos::network_health::mojom::NetworkState::kOnline;
+  invalid_network->mac_address = "00:00:5e:00:53:fu";
+  invalid_network->ipv4_address = "2.2.2.2";
+  invalid_network->ipv6_addresses = {"FE80:0000:CD00:729C:0CDE:1257:0000:211E"};
+  invalid_network->signal_strength =
+      chromeos::network_health::mojom::UInt32Value::New(100);
+
+  auto input = chromeos::network_health::mojom::NetworkHealthState::New();
+  input->networks.push_back(std::move(invalid_network));
+  input->networks.push_back(std::move(network));
+
+  auto result = ConvertPtr<cx_telem::InternetConnectivityInfo>(
+      std::move(input), /* has_mac_address_permission= */ true);
+  ASSERT_EQ(result.networks.size(), 1UL);
+
+  auto result_network = std::move(result.networks.front());
+  EXPECT_EQ(result_network.type, cx_telem::NetworkType::kWifi);
+  EXPECT_EQ(result_network.state, cx_telem::NetworkState::kOnline);
+
+  ASSERT_TRUE(result_network.ipv4_address);
+  EXPECT_EQ(*result_network.ipv4_address, kIpv4Address);
+
+  ASSERT_EQ(result_network.ipv6_addresses.size(), 2LU);
+  EXPECT_EQ(result_network.ipv6_addresses, kIpv6Addresses);
+
+  ASSERT_TRUE(result_network.mac_address);
+  EXPECT_EQ(*result_network.mac_address, kMacAddress);
+
+  ASSERT_TRUE(result_network.signal_strength);
+  EXPECT_EQ(static_cast<double_t>(*result_network.signal_strength),
+            kSignalStrength);
 }
 
 TEST(TelemetryApiConverters, TpmVersion) {

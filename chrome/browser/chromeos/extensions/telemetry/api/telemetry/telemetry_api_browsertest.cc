@@ -677,24 +677,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       network->signal_strength =
           chromeos::network_health::mojom::UInt32Value::New(100);
 
-      // Networks with a type like kAll, kMobile and kWireless should not show
-      // up.
-      auto invalid_network = chromeos::network_health::mojom::Network::New();
-      invalid_network->type =
-          chromeos::network_config::mojom::NetworkType::kAll;
-      invalid_network->state =
-          chromeos::network_health::mojom::NetworkState::kOnline;
-      invalid_network->mac_address = "00:00:5e:00:53:fu";
-      invalid_network->ipv4_address = "2.2.2.2";
-      invalid_network->ipv6_addresses = {
-          "FE80:0000:CD00:729C:0CDE:1257:0000:211E"};
-      invalid_network->signal_strength =
-          chromeos::network_health::mojom::UInt32Value::New(100);
-
       auto network_info =
           chromeos::network_health::mojom::NetworkHealthState::New();
       network_info->networks.push_back(std::move(network));
-      network_info->networks.push_back(std::move(invalid_network));
 
       telemetry_info->network_result =
           crosapi::ProbeNetworkResult::NewNetworkHealth(
