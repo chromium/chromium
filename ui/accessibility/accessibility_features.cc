@@ -150,7 +150,7 @@ bool IsExperimentalAccessibilityDictationContextCheckingEnabled() {
 
 BASE_FEATURE(kExperimentalAccessibilityGoogleTtsLanguagePacks,
              "ExperimentalAccessibilityGoogleTtsLanguagePacks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled() {
   return base::FeatureList::IsEnabled(
