@@ -305,9 +305,15 @@ bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
   race_network_request_loader_client_ =
       std::move(race_network_request_url_loader_client);
 
-  version->CountFeature(
-      blink::mojom::WebFeature::
-          kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest);
+  if (is_enabled_by_origin_trial) {
+    version->CountFeature(
+        blink::mojom::WebFeature::
+            kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial);
+  } else if (is_enabled_by_feature_flag) {
+    version->CountFeature(
+        blink::mojom::WebFeature::
+            kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest);
+  }
 
   return true;
 }
