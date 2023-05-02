@@ -311,6 +311,7 @@ fyi_reclient_test_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
+    execution_timeout = 4 * time.hour,
 )
 
 fyi_reclient_test_builder(
