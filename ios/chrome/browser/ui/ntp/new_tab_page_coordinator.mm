@@ -447,9 +447,19 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
       return;
     }
   }
-
   // No active NTPs were found.
   [self stop];
+}
+
+- (BOOL)isNTPActiveForCurrentWebState {
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (currentWebState) {
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(currentWebState);
+    return NTPHelper && NTPHelper->IsActive();
+  }
+  return NO;
 }
 
 - (void)stopScrolling {
