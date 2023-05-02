@@ -75,7 +75,10 @@
               start-icon="settings20:ads-click"
               class="hr"
               label="$i18n{adPrivacyLinkRowLabel}"
-              sub-label="$i18n{adPrivacyLinkRowSubLabel}"
+              sub-label="[[computeAdPrivacySublabel_(
+                  isPrivacySandboxRestricted_,
+                  isPrivacySandboxRestrictedNoticeEnabled_,
+                  isPrivacySandboxSettings4_)]]"
               on-click="onPrivacySandboxClick_"
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>

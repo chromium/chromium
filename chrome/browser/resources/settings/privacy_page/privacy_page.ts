@@ -453,6 +453,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
                      this.i18n('privacySandboxTrialsDisabled');
   }
 
+  private computeAdPrivacySublabel_(): string {
+    // When the privacy sandbox is restricted with a notice, the sublabel
+    // wording indicates measurement only, rather than general ad privacy.
+    const restricted = this.isPrivacySandboxRestricted_ &&
+        this.isPrivacySandboxRestrictedNoticeEnabled_;
+    return restricted ? this.i18n('adPrivacyRestrictedLinkRowSubLabel') :
+                        this.i18n('adPrivacyLinkRowSubLabel');
+  }
+
   private computeNotificationsDefaultBehaviorLabel_(): string {
     return this.safetyCheckNotificationPermissionsEnabled_ ?
         this.i18n('siteSettingsNotificationsDefaultBehaviorDescription') :

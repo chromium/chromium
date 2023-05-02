@@ -504,6 +504,7 @@ suite(`PrivacySandbox4EnabledButRestrictedWithNotice`, function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: true,
       isPrivacySandboxRestrictedNoticeEnabled: true,
+      isPrivacySandboxSettings4: true,
     });
 
     settingsPrefs = document.createElement('settings-prefs');
@@ -538,6 +539,18 @@ suite(`PrivacySandbox4EnabledButRestrictedWithNotice`, function() {
       Router.getInstance().navigateTo(path);
       assertEquals(path, Router.getInstance().getCurrentRoute());
     }
+  });
+
+  test('privacySandboxRowSublabel', function() {
+    const privacySandboxLinkRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#privacySandboxLinkRow')!;
+    // Ensure that a measurement-specific message is shown in this
+    // configuration. The default is tested in the regular
+    // PrivacySandbox4Enabled suite.
+    assertEquals(
+        loadTimeData.getString('adPrivacyRestrictedLinkRowSubLabel'),
+        privacySandboxLinkRow.subLabel);
   });
 });
 
