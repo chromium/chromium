@@ -153,11 +153,27 @@ class CSSStyleGenerator(BaseGenerator):
         if isinstance(c, ColorRGB):
             return '%d, %d, %d' % (c.r, c.g, c.b)
 
-        raise NotImplementedError()
+        raise NotImplementedError(f'Cannot reduce {c} to RBG')
 
-    def CSSBlendInputColor(self, c):
+    def CSSBlendInputColor(self, c, mode):
         '''Resolves a color for use in a color-mix call.'''
+        # TODO(b/278121949): Assert that the color is opaque.
+        if (isinstance(c, ColorVar)):
+            return 'var(%s)' % self.ToCSSVarName(c.var)
+        if (isinstance(c, ColorBlend)):
+            return self.ToBlendColor(c, mode)
         return 'rgb(%s)' % self.CSSColorRGB(c)
+
+    def ToBlendColor(self, color, mode):
+        '''Resolves a color blend. Allows for nested blends.'''
+        assert (isinstance(color, ColorBlend))
+        blendPercentage = float(
+            color.blendPercentage
+            or self.ExtractOpacity(color.blended_colors[0], mode))
+        return 'color-mix(in srgb, %s %s%%, %s)' % (
+            self.CSSBlendInputColor(color.blended_colors[0],
+                                    mode), blendPercentage,
+            self.CSSBlendInputColor(color.blended_colors[1], mode))
 
     def ExtractOpacity(self, c, mode):
         if isinstance(c, ColorVar):
@@ -175,13 +191,7 @@ class CSSStyleGenerator(BaseGenerator):
             return 'var(%s)' % self.ToCSSVarName(color.var)
 
         if isinstance(color, ColorBlend):
-            blendPercentage = float(
-                color.blendPercentage
-                or self.ExtractOpacity(color.blended_colors[0], mode))
-            return 'color-mix(in srgb, %s %s%%, %s)' % (
-                self.CSSBlendInputColor(
-                    color.blended_colors[0]), blendPercentage,
-                self.CSSBlendInputColor(color.blended_colors[1]))
+            return self.ToBlendColor(color, mode)
 
         if isinstance(color,
                       ((ColorRGB, ColorRGBVar))) and color.opacity.a != 1:

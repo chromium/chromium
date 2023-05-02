@@ -43,5 +43,19 @@ test_colors: [
       light_value: 0xFFFFFFFF,
       dark_value: 0xFFFFFFFF
     }
+  },
+  {
+    key: "cros.sys.blend-a-ref-blend",
+    value: {
+      light_value: 0xFFFFFFFF,
+      dark_value: 0xFFFFFFFF
+    }
+  },
+  {
+    key: "cros.sys.blend-a-blend",
+    value: {
+      light_value: 0xFFFFFFFF,
+      dark_value: 0xFFFFFFFF
+    }
   }
 ]

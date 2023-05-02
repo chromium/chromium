@@ -46,6 +46,16 @@ void AddCrosSysColorsToMixer(ui::ColorMixer& mixer, bool dark_mode) {
   } else {
     mixer[kCrosSysBlendOpac] = ui::GetResultingPaintColor({SkColorSetRGB(0xFF, 0xFF, 0xFF)}, {kCrosRefPrimary50});
   }
+  if (dark_mode) {
+    mixer[kCrosSysBlendARefBlend] = ui::GetResultingPaintColor({SkColorSetRGB(0xFF, 0xFF, 0xFF)}, {kCrosSysBlendOpac});
+  } else {
+    mixer[kCrosSysBlendARefBlend] = ui::GetResultingPaintColor({SkColorSetRGB(0xFF, 0xFF, 0xFF)}, {kCrosSysBlendOpac});
+  }
+  if (dark_mode) {
+    mixer[kCrosSysBlendABlend] = ui::GetResultingPaintColor({SkColorSetRGB(0xFF, 0xFF, 0xFF)}, ui::GetResultingPaintColor({kCrosSysBlendOpac}, {SkColorSetRGB(0xFF, 0xFF, 0xFF)}));
+  } else {
+    mixer[kCrosSysBlendABlend] = ui::GetResultingPaintColor({SkColorSetRGB(0xFF, 0xFF, 0xFF)}, ui::GetResultingPaintColor({kCrosSysBlendOpac}, {SkColorSetRGB(0xFF, 0xFF, 0xFF)}));
+  }
 }
 
 
@@ -65,6 +75,10 @@ std::string ColorIdName(ui::ColorId id) {
       return "--cros-sys-on_primary_container";
     case kCrosSysBlendOpac:
       return "--cros-sys-blend_opac";
+    case kCrosSysBlendARefBlend:
+      return "--cros-sys-blend_a_ref_blend";
+    case kCrosSysBlendABlend:
+      return "--cros-sys-blend_a_blend";
   }
   NOTREACHED();
   return "";
