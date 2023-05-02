@@ -151,6 +151,7 @@
 <translation id="1810845389119482123">未完成初始同步设置</translation>
 <translation id="1829244130665387512">在网页中查找</translation>
 <translation id="1832459821645506983">是的，我同意</translation>
+<translation id="185383612275551373">同步即可获取 Google 提供的与您最相关的内容</translation>
 <translation id="1854311313115643875">在试用期间，Ad measurement 允许您访问的网站向 Chrome 请求信息来对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。
 
 如果您删除了浏览记录（无论是全部删除，还是只删除了在特定网站上的浏览记录），关联的衡量信息会一并删除。请参阅<ph name="BEGIN_LINK" />您的浏览记录<ph name="END_LINK" />。</translation>
@@ -888,7 +889,6 @@
 <translation id="5833984609253377421">分享链接</translation>
 <translation id="5834764604050996579">如需扫描二维码，请允许 Chrome 使用您的摄像头</translation>
 <translation id="5839058148541733625">Chrome 恐龙</translation>
-<translation id="5842437907245493289">在“书签”页面中使用文件夹图标整理您跟踪的商品</translation>
 <translation id="5853623416121554550">已暂停</translation>
 <translation id="5854512288214985237">系统不会向 Google 发送任何统计信息或崩溃报告</translation>
 <translation id="5855546874025048181">修正为：<ph name="REFINE_TEXT" /></translation>
@@ -1263,6 +1263,7 @@
 <translation id="7709918231054955894">同步显示您的所有标签页</translation>
 <translation id="772434085369393266">将导航路径升级到 HTTPS，并在加载不支持 HTTPS 的网站前向您发出警告。您无法更改此设置，因为您已启用“高级保护”。</translation>
 <translation id="7725024127233776428">您添加了书签的网页会显示在此处</translation>
+<translation id="7733878270780732638">设备上的存储空间不足。</translation>
 <translation id="7757787379047923882">分享自“<ph name="DEVICE_NAME" />”的文字</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">添加地址</translation>

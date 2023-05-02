@@ -293,6 +293,7 @@
 <translation id="3484914941826596830">फर्मवेअर अपडेट होत असताना, हे बाह्य डिव्हाइस अनप्लग करू नका किंवा तुमचा कॉंप्युटर बंद करू नका. तुम्ही ही विंडो लहान करू शकता. या अपडेटला काही मिनिटे लागू शकतात आणि या कालावधीदरम्यान तुमचे बाह्य डिव्हाइस कदाचित काम करणार नाही.</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
+<translation id="3502426834823382181">सर्व अ‍ॅप्स पहा</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />परफॉर्मन्स माग डेटा<ph name="END_LINK1" /> पाठवा</translation>
 <translation id="3517001332549868749">ChromeOS अपडेट</translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
@@ -636,6 +637,7 @@
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">गडद थीम सुरू करा</translation>
+<translation id="6285899124799306373">लाँचर उघडा</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> चाचणी रद्द करण्यात आली आहे</translation>
 <translation id="631063167932043783">अ‍ॅप एक्सप्लोर करा</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> वर फर्मवेअर अपडेट करा</translation>
@@ -651,6 +653,7 @@
 <translation id="6382182670717268353">स्क्रीन सेव्हरचे पूर्वावलोकन</translation>
 <translation id="6388847657025262518">स्कॅनरचा दस्तऐवज फीडर अडकला आहे. फीडर तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6394634179843537518">फाइल जोडा</translation>
+<translation id="6401427872449207797">ब्राउझर शोध</translation>
 <translation id="6410257289063177456">इमेज फाइल</translation>
 <translation id="641081527798843608">जुळणारा विषय</translation>
 <translation id="6412715219990689313">बिल्ट-इन कीबोर्ड</translation>
@@ -876,6 +879,7 @@
 <translation id="8312330582793120272">मीडिया प्ले करा</translation>
 <translation id="8318753676953949627">कोणत्याही इमेज नाहीत</translation>
 <translation id="8329018942023753850">Calculator ॲप</translation>
+<translation id="8335869473001018124">शोध उघडा</translation>
 <translation id="8336739000755212683">डिव्हाइस खाते इमेज बदला</translation>
 <translation id="8347227221149377169">प्रिंट कार्ये</translation>
 <translation id="8351855506390808906">कीमॅपिंग टच पॉइंट</translation>

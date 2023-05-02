@@ -460,6 +460,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3936394396199829062">లావెండర్ ఎరుపు</translation>
 <translation id="3943857333388298514">పేస్ట్ చేయండి</translation>
 <translation id="3962990492275676168">ప్రస్తుత స్థానం నుండి చదవడం ప్రారంభించండి</translation>
+<translation id="397094149579293440">ఎంచుకున్న టెక్స్ట్ ఏదీ లేదు</translation>
 <translation id="3970951409746498040">ఇసుక గోధుమ రంగు</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">జింక చర్మం రంగు</translation>
@@ -566,6 +567,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="4786285211967466855">మునుపటి స్థాయి 1 శీర్షిక లేదు</translation>
 <translation id="4787577491510559358">ప్రస్తుత అంశం యొక్క ఫార్మాటింగ్‌ను ప్రకటిస్తుంది</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4802034228771424756">ఫోకస్ చేసిన టెక్స్ట్ ఫీల్డ్ ఏదీ లేదు</translation>
 <translation id="4804818685124855865">డిస్‌కనెక్ట్ చేయి</translation>
 <translation id="481165870889056555">ప్రస్తుత పేజీ యొక్క శీర్షికను తెలియజేయండి</translation>
 <translation id="4815668758102003883">లేత నీలమణి రంగు</translation>
@@ -588,13 +590,16 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="489907760999452556">అంతర్గత లింక్</translation>
 <translation id="4909019435900810068">ఒక పదం వెనుకకు జరుపు</translation>
 <translation id="4911349081560453449">మునుపటి చెక్‌బాక్స్ లేదు</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> సాధ్యం కాదు, మళ్లీ ట్రై చేయండి</translation>
 <translation id="492295894462528572">ముందుమాట</translation>
 <translation id="495046168593986294">పైకి స్క్రోల్ చేయి</translation>
 <translation id="495170559598752135">చర్యలు</translation>
 <translation id="4953585991029886728">వచనాన్ని ఎడిట్ చేయండి</translation>
+<translation id="4964701498510730546">టెక్స్ట్ ఫీల్డ్ ఖాళీగా ఉంది</translation>
 <translation id="4973717656530883744">కనిష్టం <ph name="X" /></translation>
 <translation id="4974612477719259470">మునుపటి బటన్ లేదు</translation>
 <translation id="4979404613699303341">మునుపటి బటన్</translation>
+<translation id="4981239367072766915">గుర్తించలేని ఇన్‌పుట్</translation>
 <translation id="4982917827052020884">మీరు సాధారణంగా ఉపయోగించే కొన్ని కీలతో ప్రారంభిద్దాము. ప్రస్తుతం నడుస్తోన్న ఏ స్పీచ్‌ను అయినా ఆపేందుకు కంట్రోల్ కీని ఉపయోగించవచ్చు. మీ కీబోర్డ్ దిగువున ఎడమవైపు మూలన కంట్రోల్ కీని కనుగొనండి. కొనసాగించడానికి, కంట్రోల్ కీని నొక్కండి.</translation>
 <translation id="4983588134362688868">పేజీ ఎగువకు వెళ్లండి</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, విండో</translation>
@@ -602,6 +607,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="4994420463726586413">ప్రస్తుత బ్యాటరీ స్థితిని ప్రకటిస్తుంది</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, రేడియో బటన్ ఎంచుకోబడింది</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, మెనూ అంశం రేడియో బటన్ ఎంచుకోబడింది</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> సాధ్యం కాదు, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">ప్రసంగ లాగింగ్‌ని ప్రారంభించండి</translation>
 <translation id="5041394372352067729">బ్రెయిలీ డిస్‌ప్లేను పేజీ పైకి తరలించండి</translation>
 <translation id="5042770794184672516">ప్రసంగ వాల్యూమ్‌ను పెంచండి</translation>

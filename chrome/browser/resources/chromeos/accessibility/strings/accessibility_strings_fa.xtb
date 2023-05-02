@@ -459,6 +459,7 @@
 <translation id="3936394396199829062">صورتی مات</translation>
 <translation id="3943857333388298514">جاگذاری</translation>
 <translation id="3962990492275676168">شروع به خواندن از محل کنونی</translation>
+<translation id="397094149579293440">نوشتار انتخاب نشده است</translation>
 <translation id="3970951409746498040">قهوه‌ای خاکی</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">هلویی</translation>
@@ -565,6 +566,7 @@
 <translation id="4786285211967466855">عنوان سطح ۱ قبلی وجود ندارد</translation>
 <translation id="4787577491510559358">اعلام قالب‌بندی برای مورد کنونی</translation>
 <translation id="479989351350248267">جستجو</translation>
+<translation id="4802034228771424756">فیلد نوشتاری متمرکز نشده است</translation>
 <translation id="4804818685124855865">قطع اتصال</translation>
 <translation id="481165870889056555">اعلام عنوان صفحه کنونی</translation>
 <translation id="4815668758102003883">فیروزه‌ای کدر</translation>
@@ -587,13 +589,16 @@
 <translation id="489907760999452556">پیوند داخلی</translation>
 <translation id="4909019435900810068">یک واژه عقب بروید</translation>
 <translation id="4911349081560453449">چارگوش انتخاب قبلی وجود ندارد</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> نشد، دوباره امتحان کنید</translation>
 <translation id="492295894462528572">پیش‌گفتار</translation>
 <translation id="495046168593986294">پیمایش به بالا</translation>
 <translation id="495170559598752135">کنش‌ها</translation>
 <translation id="4953585991029886728">ویرایش نوشتار</translation>
+<translation id="4964701498510730546">فیلد نوشتار خالی است</translation>
 <translation id="4973717656530883744">حداقل <ph name="X" /></translation>
 <translation id="4974612477719259470">دکمه قبلی وجود ندارد</translation>
 <translation id="4979404613699303341">دکمه قبلی</translation>
+<translation id="4981239367072766915">ورودی شناسایی نشد</translation>
 <translation id="4982917827052020884">‏بیایید با چند کلید شروع کنیم که به‌طور مرتب از آن‌ها استفاده می‌کنید. از کلید Control می‌توان برای متوقف کردن گفتار فعلی استفاده کرد. کلید Control را می‌توانید در گوشه پایین سمت چپ صفحه‌کلید پیدا کنید. برای ادامه، کلید Control را فشار دهید.</translation>
 <translation id="4983588134362688868">رفتن به بالای صفحه</translation>
 <translation id="4986606102545753256"><ph name="NAME" />، پنجره</translation>
@@ -601,6 +606,7 @@
 <translation id="4994420463726586413">اعلام وضعیت فعلی باتری</translation>
 <translation id="4997282455736854877"><ph name="NAME" />، دکمه رادیویی انتخاب شد</translation>
 <translation id="5012724933919010465"><ph name="NAME" />، دکمه رادیویی گزینه منو انتخاب شد</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> نشد، <ph name="REASON" /></translation>
 <translation id="5020651427400641814">فعال کردن گزارش‌گیری از گفتار</translation>
 <translation id="5041394372352067729">انتقال نمایشگر بریل به بالای صفحه</translation>
 <translation id="5042770794184672516">افزایش میزان صدای گفتار</translation>

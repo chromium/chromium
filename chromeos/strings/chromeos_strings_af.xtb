@@ -293,6 +293,7 @@
 <translation id="3484914941826596830">Moenie hierdie eksterne toestel uitprop of jou rekenaar afskakel terwyl die fermware opdateer nie. Jy kan hierdie venster klein maak. Hierdie opdatering kan 'n paar minute neem, en jou eksterne toestel sal dalk nie in hierdie tyd werk nie.</translation>
 <translation id="3486220673238053218">definisie</translation>
 <translation id="3488065109653206955">Deels geaktiveer</translation>
+<translation id="3502426834823382181">bekyk alle apps</translation>
 <translation id="3510890413042482857">Stuur <ph name="BEGIN_LINK1" />werkverrigtingnasporingdata<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-opdatering</translation>
 <translation id="3527036260304016759">Misluk – Onbekende fout</translation>
@@ -636,6 +637,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Skakel donkertema aan</translation>
+<translation id="6285899124799306373">maak lanseerder oop</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-toets is gekanselleer</translation>
 <translation id="631063167932043783">Verken program</translation>
 <translation id="6319207335391420837">Dateer fermware op <ph name="DEVICE_NAME" /> op</translation>
@@ -651,6 +653,7 @@
 <translation id="6382182670717268353">Sluimerskermvoorskou</translation>
 <translation id="6388847657025262518">Die skandeerder se dokumentvoerder is geblokkeer. Gaan die dokumentvoerder na en probeer weer.</translation>
 <translation id="6394634179843537518">Voeg lêer by</translation>
+<translation id="6401427872449207797">blaaiersoektog</translation>
 <translation id="6410257289063177456">Prentlêers</translation>
 <translation id="641081527798843608">Voorwerppassing</translation>
 <translation id="6412715219990689313">Ingeboude sleutelbord</translation>
@@ -876,6 +879,7 @@
 <translation id="8312330582793120272">speel media</translation>
 <translation id="8318753676953949627">Geen prente nie</translation>
 <translation id="8329018942023753850">sakrekenaarapp</translation>
+<translation id="8335869473001018124">maak soektog oop</translation>
 <translation id="8336739000755212683">Verander toestelrekeningprent</translation>
 <translation id="8347227221149377169">Druktake</translation>
 <translation id="8351855506390808906">Sleutelkarteringraakpunt</translation>

@@ -160,17 +160,6 @@
             * ntlm
             이 옵션을 비워 두면 세 가지 스키마를 모두 사용할 수 있습니다.</translation>
 <translation id="1153306961094113710">원격 디버깅 허용</translation>
-<translation id="1156636278540386588">브라우저에서 매니페스트 v2 확장 프로그램의 사용 가능 여부를 제어합니다.
-
-매니페스트 v2 확장 프로그램 지원이 중단되며 향후 모든 확장 프로그램을 v3로 이전해야 합니다. 이전에 관한 자세한 내용과 타임라인은 https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/에서 확인할 수 있습니다.
-
-정책을 <ph name="DEFAULT" />(0)으로 설정하거나 설정하지 않으면 위 일정에 따라 브라우저에서 v2 확장 프로그램 로드를 결정합니다.
-정책을 <ph name="DISABLE" />(1)로 설정하면 v2 확장 프로그램 설치가 차단되고 기존 확장 프로그램은 사용 중지됩니다. 이 옵션은 기본적으로 v2 지원이 사용 중지된 후에 정책이 설정되지 않은 경우와 동일하게 처리됩니다.
-정책을 <ph name="ENABLE" />(2)으로 설정하면 v2 확장 프로그램이 허용됩니다. 이 옵션은 기본적으로 v2 지원이 사용 중지되기 전에 정책이 설정되지 않은 경우와 동일하게 처리됩니다.
-정책을 <ph name="ENABLE_FOR_FORCED_EXTENSIONS" />(3)로 설정하면 강제 설치된 v2 확장 프로그램이 허용됩니다. 여기에는 <ph name="INSTALLATION_MODE" />가 'force_installed' 또는 'normal_installed'이며 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 또는 <ph name="EXTENSION_SETTINGS_POLICY_NAME" />에 의해 나열된 확장 프로그램이 포함됩니다. 다른 모든 v2 확장 프로그램은 사용 중지됩니다. 이 옵션은 기본적으로 v2 지원이 사용 중지되기 전에 정책이 설정되지 않은 경우와 동일하게 처리됩니다.
-
-
-확장 프로그램 사용 가능 여부는 다른 정책에 의해 계속 제어됩니다.</translation>
 <translation id="115699958189272121"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> 이벤트 보고</translation>
 <translation id="1157003104143964656">이 설정은 로그인 가로채기를 사용 또는 사용 중지합니다.
 
@@ -2315,17 +2304,6 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
 <translation id="3125472566440502628">텍스트 읽어주기 사용 중지</translation>
 <translation id="3126748868885248792">마우스 오른쪽 버튼이 기본 버튼</translation>
 <translation id="3128072319047570212">키 생성기 설정</translation>
-<translation id="3129155711165832367">X.509 인증서는 인증서의 확장 프로그램에 이름 제약조건과 같은 제약조건을 인코딩할 수 있습니다. RFC 5280은 신뢰 앵커 인증서에 이러한 제약조건을 적용하는 것이 선택사항임을 명시합니다. 이제 <ph name="PRODUCT_NAME" /> 112부터 플랫폼 인증서 저장소에서 로드된 인증서에 이러한 제약조건이 적용됩니다.
-
-이 정책은 기업에서 비공개 루트에 인코딩된 제약조건 문제가 발생하는 경우 일시적인 선택 해제로 존재합니다. 이 경우 인증서 정책을 수정하는 동안 제약조건 시행을 일시적으로 중지하는 데 이 정책을 사용할 수 있습니다.
-
-이 정책을 설정하지 않거나 사용 설정하면 <ph name="PRODUCT_NAME" />은 플랫폼 트러스트 저장소에서 로드된 신뢰 앵커에 인코딩된 제약조건을 적용합니다.
-
-정책을 사용 중지하면 <ph name="PRODUCT_NAME" />은 플랫폼 트러스트 저장소에서 로드된 신뢰 앵커에 인코딩된 제약조건을 적용하지 않습니다.
-
-<ph name="PRODUCT_NAME" /> 버전 112에서 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> 정책이 사용 중지되면 이 정책은 적용되지 않습니다.
-
-이 정책은 <ph name="PRODUCT_NAME" /> 버전 115부터 삭제될 예정입니다.</translation>
 <translation id="3131703464330936425">모바일 데이터 로밍 허용 안함</translation>
 <translation id="3135820765957090754">설정을 사용하면 사용자가 <ph name="PRODUCT_OS_NAME" /> 기기 및 연결된 Android 휴대전화 간에 Wi-Fi 네트워크 구성을 동기화할 수 있습니다. Wi-Fi 네트워크 구성을 동기화하려면 사용자가 설정 절차를 완료하여 이 기능을 명시적으로 선택해야 합니다.
 

@@ -293,6 +293,7 @@
 <translation id="3484914941826596830">Не искључујте спољни уређај ни рачунар док се фирмвер ажурира. Можете да умањите овај прозор. Ово ажурирање може да потраје неколико минута, а спољни уређај можда неће радити током тог периода.</translation>
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3488065109653206955">Делимично активирано</translation>
+<translation id="3502426834823382181">прикажи све апликације</translation>
 <translation id="3510890413042482857">Шаљи <ph name="BEGIN_LINK1" />податке о праћењу учинка<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ажурирање Chrome ОС-а</translation>
 <translation id="3527036260304016759">Није успело – непозната грешка</translation>
@@ -636,6 +637,7 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Укључите тамну тему</translation>
+<translation id="6285899124799306373">отворите покретач</translation>
 <translation id="6302401976930124515">Тест <ph name="TEST_NAME" /> је отказан</translation>
 <translation id="631063167932043783">Истражите апликацију</translation>
 <translation id="6319207335391420837">Ажурирајте фирмвер на уређају <ph name="DEVICE_NAME" /></translation>
@@ -651,6 +653,7 @@
 <translation id="6382182670717268353">Преглед Чувара екрана</translation>
 <translation id="6388847657025262518">Механизам за увлачење докумената на скенеру је заглављен. Проверите механизам и пробајте поново.</translation>
 <translation id="6394634179843537518">Додајте фајл</translation>
+<translation id="6401427872449207797">претрага прегледача</translation>
 <translation id="6410257289063177456">Датотеке слика</translation>
 <translation id="641081527798843608">Подударање наслова</translation>
 <translation id="6412715219990689313">Уграђена тастатура</translation>
@@ -876,6 +879,7 @@
 <translation id="8312330582793120272">пуштајте медије</translation>
 <translation id="8318753676953949627">Нема слика</translation>
 <translation id="8329018942023753850">апликација Калкулатор</translation>
+<translation id="8335869473001018124">отворите претрагу</translation>
 <translation id="8336739000755212683">Промените слику налога на уређају</translation>
 <translation id="8347227221149377169">Задаци штампања</translation>
 <translation id="8351855506390808906">Тачка контакта за мапирање тастера</translation>

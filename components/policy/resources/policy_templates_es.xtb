@@ -160,17 +160,6 @@ Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph 
             * ntlm
             Si dejas esta opción vacía, se podrán usar los tres esquemas.</translation>
 <translation id="1153306961094113710">Permitir depuración remota</translation>
-<translation id="1156636278540386588">Controla si el navegador puede usar extensiones de Manifest V2.
-
-Las extensiones de Manifest V2 dejarán de estar disponibles, y todas las extensiones deberán migrarse a V3 en el futuro. Para consultar más detalles y el calendario de la migración, visita https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
-
-Si a la política se le asigna el valor <ph name="DEFAULT" /> (0) o no se establece, el navegador decidirá si se cargan las extensiones de V2 según el calendario indicado arriba.
-Si a la política se le asigna el valor <ph name="DISABLE" /> (1), se bloqueará la instalación de extensiones de V2 y se inhabilitarán las ya instaladas. La opción se tratará como si la política no se hubiera establecido después de que se desactive la compatibilidad con V2 de forma predeterminada.
-Si a la política se le asigna el valor <ph name="ENABLE" /> (2), se permitirán las extensiones de V2. La opción se tratará como si la política no se hubiera establecido antes de que se desactive la compatibilidad con V2 de forma predeterminada.
-Si a la política se le asigna el valor <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), se permitirá la instalación forzada de extensiones de V2. Esto incluye las extensiones que figuran en <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> con el valor force_installed o normal_installed asignado a <ph name="INSTALLATION_MODE" />. El resto de las extensiones de V2 se inhabilitarán. La opción se tratará como si la política no se hubiera establecido antes de que se desactive la compatibilidad con V2 de forma predeterminada.
-
-
-La disponibilidad de las extensiones seguirá estando controlada por otras políticas.</translation>
 <translation id="115699958189272121">Informar de los eventos de <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /></translation>
 <translation id="1157003104143964656">Este ajuste habilita o inhabilita la interceptación de inicio de sesión.
 
@@ -2311,17 +2300,6 @@ Esta política es temporal y se eliminará más adelante.</translation>
 <translation id="3125472566440502628">Inhabilitar la función Enunciar selección</translation>
 <translation id="3126748868885248792">El botón derecho es el principal</translation>
 <translation id="3128072319047570212">Configuración del generador de claves</translation>
-<translation id="3129155711165832367">Los certificados X.509 pueden codificar restricciones, como restricciones de nombres, en extensiones del certificado. RFC 5280 especifica que implementar obligatoriamente estas restricciones en los certificados de anclas de confianza es opcional. A partir de la versión 112 de <ph name="PRODUCT_NAME" />, se implementarán obligatoriamente estas restricciones en los certificados cargados desde el almacén de certificados de la plataforma.
-
-Esta política es un mecanismo temporal para inhabilitar dicha implementación si una empresa tiene problemas con las restricciones codificadas en sus certificados raíz privados. En ese caso, esta política se puede usar para inhabilitar temporalmente la implementación obligatoria de las restricciones mientras esa empresa soluciona los problemas con los certificados.
-
-Si esta política se habilita o no se define, <ph name="PRODUCT_NAME" /> implementará obligatoriamente las restricciones codificadas en anclas de confianza cargadas desde el almacén de confianza de la plataforma.
-
-Si esta política se inhabilita, <ph name="PRODUCT_NAME" /> no implementará obligatoriamente las restricciones codificadas en anclas de confianza cargadas desde el almacén de confianza de la plataforma.
-
-En la versión 112 de <ph name="PRODUCT_NAME" />, esta política no tendrá efecto si se inhabilita la política <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
-
-Se prevé que esta política se elimine en la versión 115 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3131703464330936425">No permitir el roaming de datos de móviles</translation>
 <translation id="3135820765957090754">Si se habilita esta opción, los usuarios podrán sincronizar los ajustes de la red Wi‑Fi entre sus dispositivos <ph name="PRODUCT_OS_NAME" /> y un teléfono Android conectado. Para poder sincronizar los ajustes de la red Wi‑Fi, los usuarios deben aceptar explícitamente esta función completando un proceso de configuración.
 

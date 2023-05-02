@@ -8833,6 +8833,9 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8725178340343806893">Omiljeno/oznake</translation>
 <translation id="87254326763805752">Potvrdite pristupni ključ</translation>
 <translation id="8726206820263995930">Greška prilikom preuzimanja postavki pravila sa servera. <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Šalji <ph name="BEGIN_LINK1" />metapodatke o automatskom popunjavanju<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (vaši podaci o automatskom popunjavanju se neće dijeliti)</translation>
 <translation id="8728351286589123703">Vaša odabrana odobrenja će se poništiti</translation>
 <translation id="8729133765463465108">Kamerom skenirajte QR kôd</translation>
 <translation id="8730621377337864115">Gotovo</translation>

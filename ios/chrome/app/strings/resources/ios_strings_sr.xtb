@@ -610,6 +610,7 @@
 <translation id="4979397965658815378">Пријавите се помоћу Google налога да бисте имали обележиваче, лозинке, историју и друга подешавања на свим уређајима</translation>
 <translation id="4986678885919050584">Уклони са овог уређаја</translation>
 <translation id="498985224078955265">Да бисте послали ову картицу на други уређај, пријавите се у Chrome на оба уређаја.</translation>
+<translation id="4996567535980789550">Укључите синхронизацију да бисте управљали садржајем који видите</translation>
 <translation id="5005498671520578047">Копирање лозинке</translation>
 <translation id="5016420433031926653">Пошаљите на <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Подсети ме касније</translation>
@@ -666,6 +667,7 @@
 <translation id="543338862236136125">Измените лозинку</translation>
 <translation id="5433691172869980887">Корисничко име је копирано</translation>
 <translation id="5439599923922718668">Често посећивано</translation>
+<translation id="5439618055789623719">Пријављени сте као <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Информације о безбедности странице</translation>
 <translation id="5443952882982198570">Кредитне картице</translation>
 <translation id="5444892875087332195">Обележивачи</translation>
@@ -1236,6 +1238,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9034759925968272072">Нећемо вас одјавити са Google налога. Google налог можда има друге облике историје прегледања на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Прикажи оригинал</translation>
 <translation id="9039373489628511875">Пропусни опсег</translation>
+<translation id="9043368763795653245">Да бисте персонализовали Discover фид и Chrome, укључите синхронизацију.</translation>
 <translation id="9055772144595778347">Пријављивање није успело</translation>
 <translation id="9055960261314198756">Побољшана заштита је искључена</translation>
 <translation id="9057972802061533987">Праћење није успело. Дошло је до грешке.</translation>

@@ -601,6 +601,7 @@ Connect your device to power.</translation>
 <translation id="3735740477244556633">Sort by</translation>
 <translation id="3738664582935948253">You can now show clicks and keyboard shortcuts in screen recordings</translation>
 <translation id="3742055079367172538">Screenshot taken</translation>
+<translation id="3756485814916578707">Casting screen</translation>
 <translation id="3765841986579723851">Edited today</translation>
 <translation id="3773700760453577392">An administrator has disallowed multiple sign-in for <ph name="USER_EMAIL" />. All users must sign out to continue.</translation>
 <translation id="3779139509281456663">Connecting <ph name="NAME" /></translation>
@@ -822,6 +823,7 @@ Connect your device to power.</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">The Google Assistant is not available in a demo session.</translation>
 <translation id="4789348252524569426">Can't install speech files. Your device needs to be updated. Restart your device and try again.</translation>
+<translation id="478959186716341421">Casting</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Disconnect</translation>
 <translation id="4814539958450445987">Login Screen</translation>
@@ -1557,6 +1559,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8185090165691050712">Turn on/off menu to resize lock mode</translation>
 <translation id="8192202700944119416">Notifications are hidden.</translation>
 <translation id="8196787716797768628">Use gestures to quickly switch between apps and interact with your Chromebook in tablet mode.</translation>
+<translation id="8198456017687137612">Cast tab</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8203795194971602413">Right click</translation>
 <translation id="8209010265547628927">Reset</translation>

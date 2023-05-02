@@ -118,6 +118,7 @@
 <translation id="2929907241665500097">Chrome ଅପଡେଟ୍ ହେଲା ନାହିଁ, କିଛି ତ୍ରୁଟି ହୋଇଗଲା। <ph name="BEGIN_LINK" />Chrome ଅପଡେଟ୍ ସମସ୍ୟା ଏବଂ ବିଫଳ ଅପଡେଟଗୁଡ଼ିକର ସମାଧାନ କରନ୍ତୁ।<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - Chrome</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flexକୁ ଅପଡେଟ କରିବା ପାଇଁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome ଏକ୍ସଟେନସନ HID ଡିଭାଇସଗୁଡ଼ିକୁ ଆକ୍ସେସ କରୁଛି}=1{Google Chrome ଏକ୍ସଟେନସନ HID ଡିଭାଇସଗୁଡ଼ିକୁ ଆକ୍ସେସ କରୁଛି}other{Google Chrome ଏକ୍ସଟେନସନ #ଟି HID ଡିଭାଇସଗୁଡ଼ିକୁ ଆକ୍ସେସ କରୁଛି}}</translation>
 <translation id="303514781271618814">ଆପଣଙ୍କର କମ୍ ଡାଟା ବ୍ୟବହାର କରି ସମାନ ବ୍ରାଉଜିଂ ଅନୁଭୂତି ଡେଲିଭର କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦେଉଥିବା ନୂଆ ଫିଚରଗୁଡ଼ିକୁ Chrome ଏକ୍ସପ୍ଲୋର କରୁଛି</translation>
 <translation id="3037838751736561277">Google Chrome ପୃଷ୍ଠପଟ ମୋଡ୍‌ରେ ଅଛି।</translation>
 <translation id="3038232873781883849">ଇନଷ୍ଟଲ କରିବା ପାଇଁ ଅପେକ୍ଷା କରାଯାଉଛି...</translation>
@@ -223,6 +224,7 @@
 <translation id="4970880042055371251">ChromeOS ସଂସ୍କରଣ</translation>
 <translation id="4970947549776831107">ଏହି ପ୍ରକାରର ଫାଇଲ ବିପଦଜନକ ହୋଇଥିବା ଯୋଗୁଁ Chrome ଏହି ଫାଇଲକୁ ବ୍ଲକ କରିଛି</translation>
 <translation id="4990567037958725628">Google Chrome କ୍ୟାନାରୀ</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{ଏକ Google Chrome ଏକ୍ସଟେନସନ HID ଡିଭାଇସଗୁଡ଼ିକୁ ଆକ୍ସେସ କରୁଛି}=1{ଏକ Google Chrome ଏକ୍ସଟେନସନ 1ଟି HID ଡିଭାଇସକୁ ଆକ୍ସେସ କରୁଛି}other{ଏକ Google Chrome ଏକ୍ସଟେନସନ #ଟି HID ଡିଭାଇସକୁ ଆକ୍ସେସ କରୁଛି}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{ଯେତେବେଳେ 1 ମିନିଟ ପାଇଁ Chrome ବ୍ୟବହାର କରାଯାଏ ନାହିଁ, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ସ୍ୱତଃ ଏହାକୁ ବନ୍ଦ କରିଦିଅନ୍ତି। ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରାଯାଏ। ଏଥିରେ ଇତିହାସ, ଅଟୋଫିଲ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}other{ଯେତେବେଳେ # ମିନିଟ ପାଇଁ Chrome ବ୍ୟବହାର କରାଯାଏ ନାହିଁ, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ସ୍ୱତଃ ଏହାକୁ ବନ୍ଦ କରିଦିଅନ୍ତି। ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରାଯାଏ। ଏଥିରେ ଇତିହାସ, ଅଟୋଫିଲ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}}</translation>
 <translation id="5098668839038261629">ଚାଲୁ ଥିବା ସମୟରେ, ଆପଣ Chromeରୁ ମଧ୍ୟ ସାଇନ ଆଉଟ ହୋଇଯିବେ</translation>
 <translation id="5132929315877954718">Google Chrome ପାଇଁ ଆହୁରି ଭଲ ଆପ୍, ଗେମ୍, ଏକ୍ସଟେନ୍‌ସନ୍ ଏବଂ ଥିମ୍‌ଗୁଡ଼ିକ ଖୋଜି ପାଆନ୍ତୁ।</translation>

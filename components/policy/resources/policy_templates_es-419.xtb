@@ -162,19 +162,6 @@ esto no impide que se tomen capturas de pantalla con aplicaciones del sistema op
             * ntlm
             Si no completas esta opción, se usarán los tres esquemas.</translation>
 <translation id="1153306961094113710">Permitir la depuración remota</translation>
-<translation id="1156636278540386588">Controla si el navegador puede usar extensiones de Manifest v2.
-
-La compatibilidad con extensiones de Manifest v2 dejará de estar disponible y todas las extensiones deberán
-migrar a v3 en el futuro. Para obtener más información y el cronograma de
-migración, consulta https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
-
-Si estableces la política como <ph name="DEFAULT" /> (0) o no la estableces, el navegador determinará las cargas de las extensiones de v2, de acuerdo con el cronograma que se indica más arriba.
-Si estableces la política como <ph name="DISABLE" /> (1), se bloqueará la instalación de extensiones de v2 y se inhabilitarán las extensiones existentes. La opción se tratará de la misma manera que si no estableces la política después de que la compatibilidad con v2 se desactive de forma predeterminada.
-Si estableces la política como <ph name="ENABLE" /> (2), se permitirán las extensiones de v2. La opción se tratará de la misma manera que si no estableces la política antes de que la compatibilidad con v2 se desactive de forma predeterminada.
-Si estableces la política como <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), se permitirán las extensiones de v2 instaladas de manera automática. Esto incluye las extensiones que aparecen en la lista de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o de <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> con <ph name="INSTALLATION_MODE" /> "force_installed" o "normal_installed". Todas las demás extensiones de v2 están inhabilitadas. La opción se tratará de la misma manera que si no estableces la política antes de que la compatibilidad con v2 se desactive de forma predeterminada.
-
-
-La disponibilidad de las extensiones aún se controla mediante otras políticas.</translation>
 <translation id="115699958189272121">Informar los eventos de <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /></translation>
 <translation id="1157003104143964656">Esta configuración habilita o inhabilita la intercepción de acceso.
 
@@ -260,6 +247,11 @@ Sin embargo, los patrones de coincidencia de orígenes para esta política no pu
 <translation id="1223789468190631420">La Navegación segura habilita el estado para las fuentes de confianza</translation>
 <translation id="123018742985150697">Solicitar correspondencia entre el usuario local y el propietario del host de acceso remoto</translation>
 <translation id="123081309365616809">Permite transmitir contenido al dispositivo</translation>
+<translation id="1233815313234662905">Si le asignas a la política el valor "0" (la opción predeterminada), podrás acceder a las herramientas para desarrolladores y la Consola de JavaScript. No obstante, no podrás hacerlo en el contexto de extensiones instaladas por una política empresarial ni, a partir de la versión 114 y si es un usuario administrado, de extensiones integradas en el navegador. Si le asignas a la política el valor "1", podrás acceder a las herramientas para desarrolladores y la Consola de JavaScript en todos los contextos, incluido el de extensiones instaladas por una política empresarial. Si le asignas a la política el valor "2", no podrás acceder a las herramientas para desarrolladores ni inspeccionar elementos de sitios web.
+
+      Esta configuración también desactivará las combinaciones de teclas y las entradas del menú contextual o de cualquier menú que permiten abrir las herramientas para desarrolladores o la Consola de JavaScript.
+
+      A partir de la versión 99 de <ph name="PRODUCT_NAME" />, esta configuración también controla los puntos de entrada de la función "Ver el código fuente de la página". Si estableces esta política como "DeveloperToolsDisallowed" (valor 2), los usuarios no podrán ver los códigos fuente de las páginas mediante una combinación de teclas ni el menú contextual. Para bloquear la vista de los códigos fuente, debes agregar "view-source:*" a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1239526922294123540">Controla si los sitios web pueden enviar solicitudes a extremos de red más privados de una forma no segura.
 
           Si estableces esta política como verdadera, se inhabilitarán todas las verificaciones del <ph name="PRIVATE_NETWORK_ACCESS" /> para todos los orígenes. Esto puede permitir que ocurran ataques <ph name="CSRF" /> en servidores de redes privadas.
@@ -2332,33 +2324,6 @@ Esta política es temporal y se quitará en el futuro.</translation>
 <translation id="3125472566440502628">Inhabilitar Seleccionar para pronunciar</translation>
 <translation id="3126748868885248792">El botón principal es el derecho</translation>
 <translation id="3128072319047570212">Configuración de keygen</translation>
-<translation id="3129155711165832367">Los certificados X.509 pueden codificar restricciones, como limitaciones de nombres,
-en las extensiones del certificado. RFC 5280 especifica que la aplicación forzosa de tales
-restricciones en los certificados de anclas de confianza es opcional. A partir de
-la versión 112 de <ph name="PRODUCT_NAME" />,
-se aplicarán de manera forzosa estas restricciones
-en los certificados cargados desde el almacén de certificados de la plataforma.
-
-Esta política existe como una inhabilitación temporal en caso de que una empresa encuentre
-problemas con las restricciones codificadas en sus raíces privadas. En ese caso, esta
-política se puede usar para inhabilitar de forma temporal la aplicación forzosa de las restricciones
-y, a la vez, corregir los problemas de certificación.
-
-Si no estableces esta política o la habilitas,
-<ph name="PRODUCT_NAME" /> aplicará de manera forzosa
-las restricciones codificadas en las anclas de confianza cargadas desde el almacén de confianza de la plataforma.
-
-Si la inhabilitas,
-<ph name="PRODUCT_NAME" /> no aplicará de manera forzosa
-las restricciones codificadas en las anclas de confianza cargadas desde el almacén de confianza de la plataforma.
-
-En la versión 112 de <ph name="PRODUCT_NAME" />,
-esta política no tiene efecto si
-se inhabilita la política
-<ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
-
-Se planea quitar esta política en la
-versión 115 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3131703464330936425">No permitir el roaming de datos móviles</translation>
 <translation id="3135820765957090754">Si habilitas esta configuración, los usuarios podrán sincronizar los ajustes de la red Wi-Fi entre sus dispositivos con <ph name="PRODUCT_OS_NAME" /> y un teléfono Android conectado. Para poder sincronizar los ajustes de la red Wi-Fi, los usuarios deben habilitar esta función de forma explícita completando un flujo de configuración.
 
@@ -8156,6 +8121,7 @@ Si estableces alguna de las siguientes políticas, deberás establecerla como in
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />, se enviarán las solicitudes de búsqueda de imágenes con el método GET.</translation>
 <translation id="8314214821702356835">Permite que los usuarios reproduzcan contenido multimedia cuando está bloqueado el dispositivo</translation>
+<translation id="8314308739926578606">No permitir el uso de las Herramientas para desarrolladores en extensiones y apps instaladas por una política empresarial ni, a partir de la versión 114 y si es un usuario administrado, extensiones integradas en el navegador. Permitir el uso de las Herramientas para desarrolladores en otros contextos</translation>
 <translation id="8316940611391250886">No permitir certificados que carezcan de una extensión subjectAlternativeName</translation>
 <translation id="8319678975002906774">Establece los valores de la configuración administrada como los sitios web de orígenes específicos</translation>
 <translation id="8320149248919453401">Modo de carga de la batería</translation>
