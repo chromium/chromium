@@ -302,6 +302,7 @@
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
 #include "chrome/browser/ui/webui/ash/vm/vm.mojom.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
+#include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom.h"
@@ -1515,6 +1516,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   registry.ForWebUI<ash::smb_dialog::SmbShareDialogUI>()
       .Add<color_change_listener::mojom::PageHandler>();
   registry.ForWebUI<ash::smb_dialog::SmbCredentialsDialogUI>()
+      .Add<color_change_listener::mojom::PageHandler>();
+  registry.ForWebUI<FeedbackUI>()
       .Add<color_change_listener::mojom::PageHandler>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

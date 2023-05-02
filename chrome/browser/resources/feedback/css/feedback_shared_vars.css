@@ -2,6 +2,20 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+html:has(body.jelly-enabled) {
+  --feedback-alert-color: var(--cros-sys-alert);
+  --feedback-bg-color: var(--cros-sys-app_base_shaded);
+  --feedback-box-shadow-color: var(--cros-sys-shadow);
+  --feedback-focus-color: var(--cros-sys-focus_ring);
+  --feedback-highlight-color: var(--cros-sys-highlight_shape);
+  --feedback-link-color: var(--cros-sys-link);
+  --feedback-primary-color: var(--cros-sys-primary);
+  --feedback-prominent-color: var(--cros-sys-prominent);
+  --feedback-secondary-color: var(--cros-sys-secondary);
+  --feedback-separator-color: var(--cros-sys-separator);
+  --feedback-textfield-bg-color: var(--cros-sys-input_field_on_shaded);
+}
+
 html:not(body) {
   /* Google colors used in UI. */
   --google-blue-50: rgb(232, 240, 254);
@@ -34,6 +48,20 @@ html:not(body) {
 }
 
 @media (prefers-color-scheme: dark) {
+  html:has(body.jelly-enabled) {
+    --feedback-alert-color: var(--cros-sys-alert);
+    --feedback-bg-color: var(--cros-sys-app_base_shaded);
+    --feedback-box-shadow-color: var(--cros-sys-shadow);
+    --feedback-focus-color: var(--cros-sys-focus_ring);
+    --feedback-highlight-color: var(--cros-sys-highlight_shape);
+    --feedback-link-color: var(--cros-sys-link);
+    --feedback-primary-color: var(--cros-sys-primary);
+    --feedback-prominent-color: var(--cros-sys-prominent);
+    --feedback-secondary-color: var(--cros-sys-secondary);
+    --feedback-separator-color: var(--cros-sys-separator);
+    --feedback-textfield-bg-color: var(--cros-sys-input_field_on_shaded);
+  }
+
   html:not(body) {
     --feedback-alert-color: var(--google-red-300);
     --feedback-bg-color: var(--google-grey-900);
