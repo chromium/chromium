@@ -26,10 +26,12 @@ Missing class com.google.android.gms.feedback.ApplicationProperties (referenced 
     expected = """\
 some initial message
 Warning: some message
+Missing class com.google.android.gms.feedback.ApplicationProperties (referenced from: com.google.protobuf.GeneratedMessageLite$GeneratedExtension com.google.protobuf.BaseGeneratedExtensionRegistryLite.findLiteExtensionByNumber(com.google.protobuf.MessageLite, int))
 """
     # pylint: enable=line-too-long
-    filter_func = dex.CreateStderrFilter(
-        show_desugar_default_interface_warnings=False)
+    filters = (dex.DEFAULT_IGNORE_WARNINGS +
+               ('CONTAINING_TYPE_', 'libcore', 'PublicStopClientEvent'))
+    filter_func = dex.CreateStderrFilter(filters)
     self.assertEqual(filter_func(output), expected)
 
     # Test no preamble, not filtered.
@@ -39,7 +41,7 @@ Warning: some message
 
     # Test no preamble, filtered
     output = """\
-Missing class org.chromium.build.NativeLibraries',
+Warning: PublicStopClientEvent is hungry.
 """
     expected = ''
     self.assertEqual(filter_func(output), expected)

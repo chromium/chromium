@@ -19,6 +19,30 @@ from util import diff_utils
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
 
+_IGNORE_WARNINGS = (
+    # E.g. Triggers for weblayer_instrumentation_test_apk since both it and its
+    # apk_under_test have no shared_libraries.
+    # https://crbug.com/1364192 << To fix this in a better way.
+    r'Missing class org.chromium.build.NativeLibraries',
+    # Caused by internal protobuf package: https://crbug.com/1183971
+    r'referenced from: com\.google\.protobuf\.GeneratedMessageLite\$GeneratedExtension',  # pylint: disable=line-too-long
+    # Caused by protobuf runtime using -identifiernamestring in a way that
+    # doesn't work with R8. Looks like:
+    # Rule matches the static final field `...`, which may have been inlined...
+    # com.google.protobuf.*GeneratedExtensionRegistryLite {
+    #   static java.lang.String CONTAINING_TYPE_*;
+    # }
+    r'GeneratedExtensionRegistryLite\.CONTAINING_TYPE_',
+    # Relevant for R8 when optimizing an app that doesn't use protobuf.
+    r'Ignoring -shrinkunusedprotofields since the protobuf-lite runtime is',
+    # TODO(crbug.com/1303951): Don't ignore all such warnings.
+    r'Proguard configuration rule does not match anything:',
+    # TODO(agrieve): Remove once we update to U SDK.
+    r'OnBackAnimationCallback',
+    # We enforce that this class is removed via -checkdiscard.
+    r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
+)
+
 _BLOCKLISTED_EXPECTATION_PATHS = [
     # A separate expectation file is created for these files.
     'clank/third_party/google3/pg_confs/',
@@ -316,12 +340,16 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
 
     cmd += sorted(base_context.input_jars)
 
+    if options.verbose or os.environ.get('R8_VERBOSE') == '1':
+      stderr_filter = None
+    else:
+      filters = list(dex.DEFAULT_IGNORE_WARNINGS)
+      filters += _IGNORE_WARNINGS
+      if options.show_desugar_default_interface_warnings:
+        filters += dex.INTERFACE_DESUGARING_WARNINGS
+      stderr_filter = dex.CreateStderrFilter(filters)
+
     try:
-      if options.verbose or os.environ.get('R8_VERBOSE') == '1':
-        stderr_filter = None
-      else:
-        stderr_filter = dex.CreateStderrFilter(
-            options.show_desugar_default_interface_warnings)
       logging.debug('Running R8')
       build_utils.CheckOutput(cmd,
                               print_stdout=True,
