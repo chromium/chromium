@@ -5,7 +5,7 @@
 #include "chromeos/ash/components/sync_wifi/fake_pending_network_configuration_tracker.h"
 
 #include "base/containers/contains.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chromeos/ash/components/sync_wifi/pending_network_configuration_update.h"
 
 namespace ash::sync_wifi {
@@ -19,7 +19,7 @@ FakePendingNetworkConfigurationTracker::
 std::string FakePendingNetworkConfigurationTracker::TrackPendingUpdate(
     const NetworkIdentifier& id,
     const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics) {
-  std::string change_id = base::GenerateGUID();
+  std::string change_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   id_to_pending_update_map_.emplace(
       id, PendingNetworkConfigurationUpdate(id, change_id, specifics,
                                             /*completed_attempts=*/0));

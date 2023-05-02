@@ -5,7 +5,7 @@
 #include "chromeos/ash/components/sync_wifi/local_network_collector_impl.h"
 
 #include "base/barrier_closure.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -171,7 +171,7 @@ void LocalNetworkCollectorImpl::SetNetworkMetadataStore(
 }
 
 std::string LocalNetworkCollectorImpl::InitializeRequest() {
-  std::string request_guid = base::GenerateGUID();
+  std::string request_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   request_guid_to_complete_protos_[request_guid] =
       std::vector<sync_pb::WifiConfigurationSpecifics>();
   request_guid_to_in_flight_networks_[request_guid] =
