@@ -1161,7 +1161,7 @@
 
 - (void)inactiveTabsCoordinatorDidFinish:
     (InactiveTabsCoordinator*)inactiveTabsCoordinator {
-  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
+  CHECK(IsInactiveTabsAvailable());
   [self.inactiveTabsCoordinator hide];
 }
 

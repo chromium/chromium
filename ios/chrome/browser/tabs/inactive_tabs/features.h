@@ -27,7 +27,12 @@ extern const char kTabInactivityThresholdTwoWeeksParam[];
 extern const char kTabInactivityThresholdThreeWeeksParam[];
 extern const char kTabInactivityThresholdOneMinuteDemoParam[];
 
-// Convenience method for determining if Inactive Tabs is enabled.
+// Convenience method for determining if Inactive Tabs is available (it is not
+// available on iPad or if not explicitly enabled by Finch).
+bool IsInactiveTabsAvailable();
+
+// Convenience method for determining if Inactive Tabs is available and not
+// explicitly disabled by the user.
 bool IsInactiveTabsEnabled();
 
 // Convenience method for determining the tab inactivity threshold.

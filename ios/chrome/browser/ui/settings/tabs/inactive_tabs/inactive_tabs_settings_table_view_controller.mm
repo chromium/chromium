@@ -67,7 +67,7 @@ int InactiveDaysThresholdWithItemType(ItemType item_type) {
 #pragma mark - Initialization
 
 - (instancetype)init {
-  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
+  CHECK(IsInactiveTabsAvailable());
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(IDS_IOS_OPTIONS_MOVE_INACTIVE_TABS);
