@@ -1,0 +1,8 @@
+include_rules = [
+  "+ios/chrome/browser/ui/link_to_text",
+  "+ios/chrome/browser/ui/search_with",
+  "+ios/chrome/browser/ui/overlays/overlay_container_coordinator.h",
+  "+ios/chrome/browser/ui/screen_time/screen_time_coordinator.h",
+  "+ios/chrome/browser/ui/partial_translate",
+  "+ios/chrome/browser/ui/fullscreen",
+]

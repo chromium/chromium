@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/ui/app_store_rating",
+  "+ios/chrome/browser/ui/post_restore_signin",
+  "+ios/chrome/browser/ui/whats_new",
+  "+ios/chrome/browser/ui/credential_provider_promo",
+  "+ios/chrome/browser/ui/default_promo",
+]

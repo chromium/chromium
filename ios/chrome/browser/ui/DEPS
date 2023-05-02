@@ -1,17 +1,13 @@
 include_rules = [
-"+components/signin/internal/identity_manager/account_capabilities_constants.h",
-"+ios/chrome/browser/ui",
+  # Subfolders have to explicitly declare their dependences.
+  # Avoid adding top-level deps, prefer to use ios/c/b/shared if needed.
+  "-ios/chrome/browser/ui",
 ]
 
 specific_include_rules = {
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.
   "browser_view_controller_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "keyboard_commands_egtest\.mm": [
     "+ios/web/public/test/http_server",
   ],
 }

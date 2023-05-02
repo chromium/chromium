@@ -1,3 +1,8 @@
+include_rules = [
+  "+ios/chrome/browser/ui/scanner",
+  "+ios/chrome/browser/ui/location_bar",
+]
+
 specific_include_rules = {
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.

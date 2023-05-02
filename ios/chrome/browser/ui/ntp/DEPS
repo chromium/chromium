@@ -1,3 +1,22 @@
+include_rules = [
+  "+ios/chrome/browser/ui/content_suggestions",
+  "+ios/chrome/browser/ui/gestures",
+  "+ios/chrome/browser/ui/bubble/bubble_presenter.h",
+  "+ios/chrome/browser/ui/first_run/ios_first_run_field_trials.h",
+  "+ios/chrome/browser/ui/authentication",
+  "+ios/chrome/browser/ui/follow",
+  "+ios/chrome/browser/ui/overscroll_actions",
+  "+ios/chrome/browser/ui/context_menu/link_preview",
+  "+ios/chrome/browser/ui/omnibox",
+  "+ios/chrome/browser/ui/favicon",
+  "+ios/chrome/browser/ui/toolbar/buttons",
+  "+ios/chrome/browser/ui/start_surface",
+  "+ios/chrome/browser/ui/lens",
+  "+ios/chrome/browser/ui/thumb_strip",
+  "+ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h",
+  "+ios/chrome/browser/ui/toolbar/public",
+]
+
 specific_include_rules = {
   # TODO(crbug.com/620932): Remove this exception.
   "^new_tab_page_controller\.mm$": [

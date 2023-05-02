@@ -1,3 +1,11 @@
+include_rules = [
+  "+ios/chrome/browser/ui/authentication",
+  "+ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/ui/settings/sync/utils",
+  "+ios/chrome/browser/ui/sharing",
+  "+ios/chrome/browser/ui/menu",
+]
+
 specific_include_rules = {
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.

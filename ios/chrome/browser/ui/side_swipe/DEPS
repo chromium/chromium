@@ -1,3 +1,11 @@
+include_rules = [
+  "+ios/chrome/browser/ui/fullscreen",
+  "+ios/chrome/browser/ui/tabs/requirements/tab_strip_highlighting.h",
+  "+ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h",
+  "+ios/chrome/browser/ui/ntp/new_tab_page_util.h",
+  "+ios/chrome/browser/ui/toolbar/public",
+]
+
 specific_include_rules = {
   # TODO(crbug.com/620932): Remove this exception.
   "^side_swipe_controller\.h$": [
