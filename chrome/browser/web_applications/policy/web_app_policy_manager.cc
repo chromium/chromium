@@ -424,7 +424,7 @@ void WebAppPolicyManager::ParsePolicySettings() {
       });
 
   if (it != web_apps_list.end() && it->is_dict()) {
-    if (!default_settings_->Parse(*it, true)) {
+    if (!default_settings_->Parse(it->GetDict(), true)) {
       SYSLOG(WARNING) << "Malformed default web app management setting.";
       default_settings_->ResetSettings();
     }
@@ -447,7 +447,7 @@ void WebAppPolicyManager::ParsePolicySettings() {
     }
 
     WebAppPolicyManager::WebAppSetting by_url(*default_settings_);
-    if (by_url.Parse(iter, false)) {
+    if (by_url.Parse(iter.GetDict(), false)) {
       settings_by_url_[url.spec()] = by_url;
     } else {
       LOG(WARNING) << "Malformed web app settings for " << url;
@@ -697,9 +697,9 @@ WebAppPolicyManager::WebAppSetting::WebAppSetting() {
   ResetSettings();
 }
 
-bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value& dict,
+bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value::Dict& dict,
                                                bool for_default_settings) {
-  const std::string* run_on_os_login_str = dict.FindStringKey(kRunOnOsLogin);
+  const std::string* run_on_os_login_str = dict.FindString(kRunOnOsLogin);
   if (run_on_os_login_str) {
     if (*run_on_os_login_str == kAllowed) {
       run_on_os_login_policy = RunOnOsLoginPolicy::kAllowed;
@@ -720,7 +720,7 @@ bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value& dict,
           features::kDesktopPWAsEnforceWebAppSettingsPolicy) &&
       base::FeatureList::IsEnabled(features::kDesktopPWAsPreventClose) &&
       run_on_os_login_policy == RunOnOsLoginPolicy::kRunWindowed) {
-    absl::optional<bool> prevent_close_value = dict.FindBoolKey(kPreventClose);
+    absl::optional<bool> prevent_close_value = dict.FindBool(kPreventClose);
     if (prevent_close_value && *prevent_close_value) {
       prevent_close = true;
     }
