@@ -271268,16 +271268,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "93b92966d4f558fde1a232a121cfaae27c8b7ab4",
-     []
-    ],
-    "mtime.json": [
-     "917bdd843af7ac22405dd730bbc803d05558cfb7",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -350422,10 +350412,6 @@
         "cc313a155a167fa9f8182346c96764fe949da455",
         []
        ],
-       "cross-document-traversal-cross-document-traversal-expected.txt": [
-        "bc974a74ff1fc48aa94303d9a8d43bfe48f233a5",
-        []
-       ],
        "cross-document-traversal-cross-document-traversal.html.ini": [
         "8452eaf736003e12ee2fa8edbdc844ffbdb6fc95",
         []
@@ -387107,8 +387093,12 @@
       []
      ],
      "resources": {
+      "cached-resource.txt": [
+       "c57eff55ebc0c54973903af5f72bac72762cf4f4",
+       []
+      ],
       "util.js": [
-       "50abce14cdc520f81178d452d6f165e9401bfbd0",
+       "425303ce2c9c0a490468c3a002609abcad75ad5f",
        []
       ]
      }
@@ -471737,6 +471727,13 @@
       {}
      ]
     ],
+    "connected-callbacks-template.html": [
+     "ed404332dbd8b675e02cbc5448873bcee1114744",
+     [
+      null,
+      {}
+     ]
+    ],
     "connected-callbacks.html": [
      "d6e68262a850a9a952877264fdf64594e8025375",
      [
@@ -471936,6 +471933,13 @@
     },
     "microtasks-and-constructors.html": [
      "78d2cba42c0c32c37a540de7a792b657991575bd",
+     [
+      null,
+      {}
+     ]
+    ],
+    "overwritten-customElements-global.html": [
+     "dcb97b6652894e3a2d16d769c372d371145f0877",
      [
       null,
       {}
@@ -606037,24 +606041,6 @@
        }
       ]
      ],
-     "focus-navigation-scroller-delegatesFocus.html": [
-      "5fc4f84a7b974f2b9f825b801a795d80cb9fa491",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "focus-navigation-scroller-tabindex.html": [
-      "0b5b66eb48d315f1a9365bd2a4e38f90adfda01a",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
      "focus-navigation-slot-fallback-default-tabindex.html": [
       "e8e0293e77bd28aba469bccffcb8d6c4245a7691",
       [
@@ -609456,7 +609442,7 @@
    "storage": {
     "buckets": {
      "buckets_storage_policy.tentative.https.any.js": [
-      "d6dce3675d0bca18a379518c6ecf2c7ec1310930",
+      "a66fd81cd4394209d1c534322b2b150cac35adf6",
       [
        "storage/buckets/buckets_storage_policy.tentative.https.any.html",
        {
@@ -609536,7 +609522,7 @@
      ]
     },
     "estimate-indexeddb.https.any.js": [
-     "b0c6b944dd6ff83a00b38cac6d6c4e3ea8424979",
+     "f0b82b9fa09fb1ef7000e398fb0fdb034504a008",
      [
       "storage/estimate-indexeddb.https.any.html",
       {
@@ -609544,6 +609530,10 @@
         [
          "title",
          "StorageManager: estimate() for indexeddb"
+        ],
+        [
+         "script",
+         "/storage/buckets/resources/util.js"
         ]
        ]
       }
@@ -609555,6 +609545,10 @@
         [
          "title",
          "StorageManager: estimate() for indexeddb"
+        ],
+        [
+         "script",
+         "/storage/buckets/resources/util.js"
         ]
        ]
       }
