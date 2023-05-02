@@ -368,10 +368,12 @@ TEST_F(PasswordsGrouperTest, FederatedAndroidAppGroupedWithRegularPasswords) {
 
   CredentialUIEntry credential({form}),
       federated_credential({federated_android_form});
-  EXPECT_THAT(
-      grouper().GetAffiliatedGroupsWithGroupingInfo(),
-      ElementsAre(AffiliatedGroup({federated_credential, credential},
-                                  {GetShownOrigin(federated_credential)})));
+  EXPECT_THAT(grouper().GetAffiliatedGroupsWithGroupingInfo(),
+              ElementsAre(AffiliatedGroup(
+                  {federated_credential, credential},
+                  {GetShownOrigin(federated_credential),
+                   GURL("https://www.gstatic.com/images/branding/product/1x/"
+                        "play_apps_32dp.png")})));
 }
 
 TEST_F(PasswordsGrouperTest, EncodedCharactersInSignonRealm) {

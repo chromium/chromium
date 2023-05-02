@@ -25,6 +25,8 @@ namespace {
 constexpr char kDefaultFallbackIconUrl[] = "https://t1.gstatic.com/faviconV2";
 constexpr char kFallbackIconQueryParams[] =
     "client=PASSWORD_MANAGER&type=FAVICON&size=32&url=";
+constexpr char kDefaultAndroidIcon[] =
+    "https://www.gstatic.com/images/branding/product/1x/play_apps_32dp.png";
 
 // Converts signon_realm (url for federated forms) into GURL and strips path. If
 // form is valid Android credential or conversion fails signon_realm is returned
@@ -192,7 +194,7 @@ FacetBrandingInfo CreateBrandingInfoFromFacetURI(
       FacetURI::FromPotentiallyInvalidSpec(credential.GetFirstSignonRealm());
   if (facet_uri.IsValidAndroidFacetURI()) {
     branding_info.name = SplitByDotAndReverse(facet_uri.android_package_name());
-    // TODO(crbug.com/1355956): Handle Android App icon URL.
+    branding_info.icon_url = GURL(kDefaultAndroidIcon);
     return branding_info;
   }
   std::string group_name = password_manager_util::GetExtendedTopLevelDomain(
