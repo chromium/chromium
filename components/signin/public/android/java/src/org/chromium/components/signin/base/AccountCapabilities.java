@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Stores the state associated with supported account capabilities.
- * This class has a native counterpart.
+ * Stores the state associated with supported account capabilities. This class has a native
+ * counterpart.
  */
 public class AccountCapabilities {
     private final Map<String, Boolean> mAccountCapabilities;
@@ -63,9 +63,7 @@ public class AccountCapabilities {
         return new AccountCapabilities(capabilities);
     }
 
-    /**
-     * Please keep the list of capability getters alphabetically sorted.
-     */
+    /** Please keep the list of capability getters alphabetically sorted. */
 
     /**
      * @return canHaveEmailAddressDisplayed capability value.
@@ -112,6 +110,15 @@ public class AccountCapabilities {
     public @Tribool int isAllowedForMachineLearning() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME);
+    }
+
+    /**
+     * @return isSubjectToChromePrivacySandboxRestrictedMeasurementNotice capability value.
+     */
+    public @Tribool int isSubjectToChromePrivacySandboxRestrictedMeasurementNotice() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants
+                        .IS_SUBJECT_TO_CHROME_PRIVACY_SANDBOX_RESTRICTED_MEASUREMENT_NOTICE);
     }
 
     /**
