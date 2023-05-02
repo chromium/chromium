@@ -195,14 +195,8 @@ class Buffer final : public ui::GbmBuffer {
     DCHECK(!mmap_data_);
     uint32_t stride;
     void* addr;
-    addr =
-#if defined(MINIGBM)
-        gbm_bo_map2(bo_, 0, 0, gbm_bo_get_width(bo_), gbm_bo_get_height(bo_),
-                    GBM_BO_TRANSFER_READ_WRITE, &stride, &mmap_data_, 0);
-#else
-        gbm_bo_map(bo_, 0, 0, gbm_bo_get_width(bo_), gbm_bo_get_height(bo_),
-                   GBM_BO_TRANSFER_READ_WRITE, &stride, &mmap_data_);
-#endif
+    addr = gbm_bo_map(bo_, 0, 0, gbm_bo_get_width(bo_), gbm_bo_get_height(bo_),
+                      GBM_BO_TRANSFER_READ_WRITE, &stride, &mmap_data_);
 
     if (!addr)
       return nullptr;
