@@ -19,6 +19,7 @@
 #import "components/sessions/core/session_id.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/sessions/core/tab_restore_service_helper.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/application_context/application_context.h"
@@ -147,7 +148,8 @@ class TabGridMediatorTest : public PlatformTest {
     auth_service_ = static_cast<AuthenticationService*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
-    auth_service_->SignIn(identity);
+    auth_service_->SignIn(identity,
+                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
     tab_restore_service_ =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
