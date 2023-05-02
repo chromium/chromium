@@ -15,6 +15,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service_observer.h"
+#include "ios/chrome/common/credential_provider/memory_credential_store.h"
 
 class FaviconLoader;
 
@@ -41,7 +42,10 @@ class CredentialProviderService
   // Initializes the service.
   CredentialProviderService(
       PrefService* prefs,
-      scoped_refptr<password_manager::PasswordStoreInterface> password_store,
+      scoped_refptr<password_manager::PasswordStoreInterface>
+          profile_password_store,
+      scoped_refptr<password_manager::PasswordStoreInterface>
+          account_password_store,
       id<MutableCredentialStore> credential_store,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
@@ -69,6 +73,7 @@ class CredentialProviderService
   // Replaces all data with credentials created from the passed forms and then
   // syncs to disk. Errors are treated as an empty list of credentials.
   void SyncAllCredentials(
+      password_manager::PasswordStoreInterface* store,
       absl::variant<
           std::vector<std::unique_ptr<password_manager::PasswordForm>>,
           password_manager::PasswordStoreBackendError> forms_or_error);
@@ -78,10 +83,12 @@ class CredentialProviderService
 
   // Add credentials from `forms`.
   void AddCredentials(
+      MemoryCredentialStore* store,
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
 
   // Removes credentials from `forms`.
   void RemoveCredentials(
+      MemoryCredentialStore* store,
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
 
   // Syncs account_id_.
@@ -92,6 +99,10 @@ class CredentialProviderService
   void UpdateUserEmail();
 
   // PasswordStoreConsumer:
+  void OnGetPasswordStoreResultsFrom(
+      password_manager::PasswordStoreInterface* store,
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
+      override;
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
       override;
@@ -108,6 +119,7 @@ class CredentialProviderService
   // If no affiliation matcher is available, it is called right away. Errors are
   // treated as an empty list of credentials.
   void OnInjectedAffiliationAfterLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
       absl::variant<
           std::vector<std::unique_ptr<password_manager::PasswordForm>>,
           password_manager::PasswordStoreBackendError> forms_or_error);
@@ -118,8 +130,17 @@ class CredentialProviderService
   // Observer for when `saving_passwords_enabled_` changes.
   void OnSavingPasswordsEnabledChanged();
 
-  // The interface for getting and manipulating a user's saved passwords.
-  const scoped_refptr<password_manager::PasswordStoreInterface> password_store_;
+  // For each of the 2 PasswordStoreInterfaces (profile and account), returns
+  // the corresponding in-memory store used for password deduplication. See
+  // comment in {profile,account}_credential_store_ declaration.
+  MemoryCredentialStore* GetCredentialStore(
+      password_manager::PasswordStoreInterface* store) const;
+
+  // The interfaces for getting and manipulating a user's saved passwords.
+  const scoped_refptr<password_manager::PasswordStoreInterface>
+      profile_password_store_;
+  const scoped_refptr<password_manager::PasswordStoreInterface>
+      account_password_store_;
 
   // Identity manager to observe.
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -135,8 +156,18 @@ class CredentialProviderService
   // favicon images.
   const raw_ptr<FaviconLoader> favicon_loader_;
 
-  // The interface for saving and updating credentials.
-  const id<MutableCredentialStore> credential_store_;
+  // In-memory stores used to dedupe entries from `profile_password_store_` and
+  // `account_password_store_` before persisting via `dual_credential_store_`.
+  // TODO(crbug.com/1425420): This is super hacky. Refactor this class to use
+  // SavedPasswordsPresenter, which deduplicates internally.
+  MemoryCredentialStore* const profile_credential_store_ =
+      [[MemoryCredentialStore alloc] init];
+  MemoryCredentialStore* const account_credential_store_ =
+      [[MemoryCredentialStore alloc] init];
+
+  // The interface for saving and updating credentials. Stores deduplicated
+  // results from `profile_password_store_` and `account_password_store_`.
+  const id<MutableCredentialStore> dual_credential_store_;
 
   // The current validation ID or nil.
   NSString* account_id_ = nil;
