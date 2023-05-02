@@ -128,6 +128,11 @@ extern const base::FeatureParam<int> kExpandedHighEfficiencyChipThresholdBytes;
 extern const base::FeatureParam<base::TimeDelta>
     kExpandedHighEfficiencyChipDiscardedDuration;
 
+// Percentiles of PMF across all tabs on all browsers.
+extern const base::FeatureParam<int> kHighEfficiencyChartPmf25PercentileBytes;
+extern const base::FeatureParam<int> kHighEfficiencyChartPmf50PercentileBytes;
+extern const base::FeatureParam<int> kHighEfficiencyChartPmf75PercentileBytes;
+
 extern const base::FeatureParam<int> kDiscardedTabTreatmenOption;
 
 enum class DiscardTabTreatmentOptions {

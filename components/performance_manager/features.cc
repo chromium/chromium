@@ -102,6 +102,16 @@ const base::FeatureParam<base::TimeDelta>
         &kMemorySavingsReportingImprovements,
         "expanded_high_efficiency_chip_discarded_duration", base::Hours(6)};
 
+const base::FeatureParam<int> kHighEfficiencyChartPmf25PercentileBytes{
+    &kMemorySavingsReportingImprovements,
+    "high_efficiency_chart_pmf_25_percentile_bytes", 62 * 1024 * 1024};
+const base::FeatureParam<int> kHighEfficiencyChartPmf50PercentileBytes{
+    &kMemorySavingsReportingImprovements,
+    "high_efficiency_chart_pmf_50_percentile_bytes", 112 * 1024 * 1024};
+const base::FeatureParam<int> kHighEfficiencyChartPmf75PercentileBytes{
+    &kMemorySavingsReportingImprovements,
+    "high_efficiency_chart_pmf_75_percentile_bytes", 197 * 1024 * 1024};
+
 const base::FeatureParam<int> kDiscardedTabTreatmenOption{
     &kDiscardedTabTreatment, "discard_tab_treatment_option",
     static_cast<int>(DiscardTabTreatmentOptions::kFadeFullsizedFavicon)};
