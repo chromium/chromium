@@ -3395,6 +3395,7 @@ source_set("ash") {
     "//chrome/browser/ash/guest_os:guest_os_diagnostics_mojom",
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start",
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start_pref_names",
+    "//chrome/browser/ash/login/oobe_quick_start/connectivity:connectivity",
     "//chrome/browser/ash/login/oobe_quick_start/logging",
     "//chrome/browser/ash/power/ml/smart_dim",
     "//chrome/browser/ash/system_web_apps/types",

@@ -14,16 +14,14 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-class NearbyConnectionsManager;
-
 namespace ash::quick_start {
 
 class TargetDeviceBootstrapController
     : public TargetDeviceConnectionBroker::ConnectionLifecycleListener {
  public:
   explicit TargetDeviceBootstrapController(
-      base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-      bool is_resume_after_update = false);
+      std::unique_ptr<TargetDeviceConnectionBroker>
+          target_device_connection_broker);
   TargetDeviceBootstrapController(TargetDeviceBootstrapController&) = delete;
   TargetDeviceBootstrapController& operator=(TargetDeviceBootstrapController&) =
       delete;

@@ -37,11 +37,9 @@ TargetDeviceBootstrapController::QRCodePixelData GenerateQRCode(
 }  // namespace
 
 TargetDeviceBootstrapController::TargetDeviceBootstrapController(
-    base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-    bool is_resume_after_update)
-    : connection_broker_(TargetDeviceConnectionBrokerFactory::Create(
-          nearby_connections_manager,
-          is_resume_after_update)) {}
+    std::unique_ptr<TargetDeviceConnectionBroker>
+        target_device_connection_broker)
+    : connection_broker_(std::move(target_device_connection_broker)) {}
 
 TargetDeviceBootstrapController::~TargetDeviceBootstrapController() = default;
 
