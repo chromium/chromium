@@ -40,12 +40,14 @@ crosapi::mojom::VideoConferenceMediaAppInfoPtr CreateFakeMediaApp(
     bool is_capturing_screen,
     const std::u16string& title,
     std::string url,
+    const crosapi::mojom::VideoConferenceAppType app_type =
+        crosapi::mojom::VideoConferenceAppType::kChromeTab,
     const base::UnguessableToken& id = base::UnguessableToken::Create()) {
   return crosapi::mojom::VideoConferenceMediaAppInfo::New(
       id,
       /*last_activity_time=*/base::Time::Now(), is_capturing_camera,
       is_capturing_microphone, is_capturing_screen, title,
-      /*url=*/GURL(url));
+      /*url=*/GURL(url), app_type);
 }
 
 // Verifies the information of `ReturnToAppButton`.
@@ -264,7 +266,9 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   EXPECT_FALSE(second_app_row->GetVisible());
 
   // Clicking the summary row should expand the panel.
-  summary_row->OnButtonClicked(/*id=*/base::UnguessableToken::Null());
+  summary_row->OnButtonClicked(
+      /*id=*/base::UnguessableToken::Null(),
+      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kDefaultValue);
   EXPECT_TRUE(summary_row->expanded());
 
   // Verify the views in expanded state:
@@ -276,7 +280,9 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   EXPECT_TRUE(second_app_row->GetVisible());
 
   // Click again. Should be in collapsed state.
-  summary_row->OnButtonClicked(/*id=*/base::UnguessableToken::Null());
+  summary_row->OnButtonClicked(
+      /*id=*/base::UnguessableToken::Null(),
+      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kDefaultValue);
   EXPECT_FALSE(summary_row->expanded());
 }
 
@@ -324,6 +330,8 @@ TEST_F(ReturnToAppPanelTest, ReturnToApp) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
+  base::HistogramTester histogram_tester;
+
   auto app_id1 = base::UnguessableToken::Create();
   auto app_id2 = base::UnguessableToken::Create();
 
@@ -331,11 +339,14 @@ TEST_F(ReturnToAppPanelTest, ReturnToApp) {
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
-      /*url=*/kMeetTestUrl, /*id=*/app_id1));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kChromeApp,
+      /*id=*/app_id1));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/"", /*id=*/app_id2));
+      /*url=*/"", /*app_type=*/crosapi::mojom::VideoConferenceAppType::kArcApp,
+      /*id=*/app_id2));
 
   LeftClickOn(toggle_bubble_button());
   auto* return_to_app_panel = GetReturnToAppPanel();
@@ -359,9 +370,18 @@ TEST_F(ReturnToAppPanelTest, ReturnToApp) {
   LeftClickOn(first_app_row);
   EXPECT_TRUE(controller()->app_to_launch_state_[app_id1]);
   EXPECT_FALSE(controller()->app_to_launch_state_[app_id2]);
+  histogram_tester.ExpectBucketCount(
+      "Ash.VideoConference.ReturnToApp.Click",
+      crosapi::mojom::VideoConferenceAppType::kChromeApp, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.VideoConference.ReturnToApp.Click",
+      crosapi::mojom::VideoConferenceAppType::kArcApp, 0);
 
   LeftClickOn(second_app_row);
   EXPECT_TRUE(controller()->app_to_launch_state_[app_id2]);
+  histogram_tester.ExpectBucketCount(
+      "Ash.VideoConference.ReturnToApp.Click",
+      crosapi::mojom::VideoConferenceAppType::kArcApp, 1);
 }
 
 TEST_F(ReturnToAppPanelTest, ExpandAnimation) {

@@ -6127,6 +6127,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.VideoConference.ReturnToApp.Click"
+    enum="VideoConferenceAppType" expires_after="2024-03-16">
+  <owner>leandre@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the app type of the media app that users want to return to when they
+    click the return to app button in the video conference panel.
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.VideoConference.ReturnToAppButton.FadeOut.AnimationSmoothness"
     units="%" expires_after="2024-04-20">

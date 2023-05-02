@@ -62,7 +62,8 @@ class ASH_EXPORT ReturnToAppButton : public views::Button {
                     bool is_capturing_camera,
                     bool is_capturing_microphone,
                     bool is_capturing_screen,
-                    const std::u16string& display_text);
+                    const std::u16string& display_text,
+                    crosapi::mojom::VideoConferenceAppType app_type);
 
   ReturnToAppButton(const ReturnToAppButton&) = delete;
   ReturnToAppButton& operator=(const ReturnToAppButton&) = delete;
@@ -87,7 +88,8 @@ class ASH_EXPORT ReturnToAppButton : public views::Button {
   FRIEND_TEST_ALL_PREFIXES(ReturnToAppPanelTest, ExpandCollapse);
 
   // Callback for the button.
-  void OnButtonClicked(const base::UnguessableToken& id);
+  void OnButtonClicked(const base::UnguessableToken& id,
+                       crosapi::mojom::VideoConferenceAppType app_type);
 
   // Indicates if the running app is using camera, microphone, or screen
   // sharing.

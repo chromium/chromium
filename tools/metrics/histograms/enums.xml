@@ -106644,6 +106644,20 @@ Full version information for the fingerprint enum values:
   <int value="18" label="ARIB_STD_B67"/>
 </enum>
 
+<enum name="VideoConferenceAppType">
+  <summary>
+    Possible different app types that a running media app (which the Video
+    Conference tray is keeping track) can have.
+  </summary>
+  <int value="0" label="Browser Unknown"/>
+  <int value="1" label="Chrome Tab"/>
+  <int value="2" label="Chrome Extension"/>
+  <int value="3" label="Chrome App"/>
+  <int value="4" label="Web App"/>
+  <int value="5" label="ARC App"/>
+  <int value="6" label="App Service Unknown"/>
+</enum>
+
 <enum name="VideoDecodeAcceleratorError">
   <int value="1" label="Illegal state">
     An operation was attempted during an incompatible decoder state.

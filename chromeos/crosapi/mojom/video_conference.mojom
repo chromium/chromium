@@ -70,6 +70,7 @@ interface VideoConferenceManager {
       => (bool success);
 };
 
+// Note to keep this in sync with VideoConferenceAppType in enums.xml.
 [Stable, Extensible]
 enum VideoConferenceAppType {
   // App is traced by Browser, but the type is unknown.

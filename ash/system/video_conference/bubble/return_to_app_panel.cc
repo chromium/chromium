@@ -268,19 +268,22 @@ class ReturnToAppExpandButton : public views::ImageView,
 // -----------------------------------------------------------------------------
 // ReturnToAppButton:
 
-ReturnToAppButton::ReturnToAppButton(ReturnToAppPanel* panel,
-                                     bool is_top_row,
-                                     const base::UnguessableToken& id,
-                                     bool is_capturing_camera,
-                                     bool is_capturing_microphone,
-                                     bool is_capturing_screen,
-                                     const std::u16string& display_text)
+ReturnToAppButton::ReturnToAppButton(
+    ReturnToAppPanel* panel,
+    bool is_top_row,
+    const base::UnguessableToken& id,
+    bool is_capturing_camera,
+    bool is_capturing_microphone,
+    bool is_capturing_screen,
+    const std::u16string& display_text,
+    crosapi::mojom::VideoConferenceAppType app_type)
     : is_capturing_camera_(is_capturing_camera),
       is_capturing_microphone_(is_capturing_microphone),
       is_capturing_screen_(is_capturing_screen),
       panel_(panel) {
   SetCallback(base::BindRepeating(&ReturnToAppButton::OnButtonClicked,
-                                  weak_ptr_factory_.GetWeakPtr(), id));
+                                  weak_ptr_factory_.GetWeakPtr(), id,
+                                  app_type));
 
   auto spacing = is_top_row ? kReturnToAppButtonTopRowSpacing / 2
                             : kReturnToAppButtonSpacing / 2;
@@ -345,11 +348,15 @@ void ReturnToAppButton::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void ReturnToAppButton::OnButtonClicked(const base::UnguessableToken& id) {
+void ReturnToAppButton::OnButtonClicked(
+    const base::UnguessableToken& id,
+    crosapi::mojom::VideoConferenceAppType app_type) {
   // For rows that are not the summary row (which has non-empty `id`), perform
   // return to app.
   if (!id.is_empty()) {
     ash::VideoConferenceTrayController::Get()->ReturnToApp(id);
+    base::UmaHistogramEnumeration("Ash.VideoConference.ReturnToApp.Click",
+                                  app_type);
     return;
   }
 
@@ -539,7 +546,7 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
         /*panel=*/this,
         /*is_top_row=*/true, app->id, app->is_capturing_camera,
         app->is_capturing_microphone, app->is_capturing_screen,
-        GetMediaAppDisplayText(app));
+        GetMediaAppDisplayText(app), app->app_type);
     app_button->expand_indicator()->SetVisible(false);
     container_view_->AddChildView(std::move(app_button));
 
@@ -565,12 +572,14 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
       IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT,
       static_cast<int>(apps.size()));
 
+  // Note that the `app_type` parameter for the summary row is unused.
   summary_row_view_ =
       container_view_->AddChildView(std::make_unique<ReturnToAppButton>(
           /*panel=*/this,
           /*is_top_row=*/true, /*app_id=*/base::UnguessableToken::Null(),
           any_apps_capturing_camera, any_apps_capturing_microphone,
-          any_apps_capturing_screen, summary_text));
+          any_apps_capturing_screen, summary_text,
+          /*app_type=*/crosapi::mojom::VideoConferenceAppType::kDefaultValue));
   summary_row_view_->AddObserver(this);
 
   for (auto& app : apps) {
@@ -578,7 +587,7 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
         /*panel=*/this,
         /*is_top_row=*/false, app->id, app->is_capturing_camera,
         app->is_capturing_microphone, app->is_capturing_screen,
-        GetMediaAppDisplayText(app)));
+        GetMediaAppDisplayText(app), app->app_type));
   }
 }
 
