@@ -243,7 +243,8 @@ class MockVaapiWrapper : public VaapiWrapper {
 class MockVP9RateControl
     : public VideoRateControl<libvpx::VP9RateControlRtcConfig,
                               libvpx::VP9RateControlRTC,
-                              libvpx::VP9FrameParamsQpRTC> {
+                              libvpx::VP9FrameParamsQpRTC,
+                              int> {
  public:
   MockVP9RateControl() = default;
   ~MockVP9RateControl() override = default;

@@ -11,54 +11,31 @@
 
 namespace media {
 
-// Template method specialization for VP9.
-// TODO(b/278162842): Remove when AV1 also has a GetLoopfilterLevel() method.
-template <>
-int VideoRateControl<libvpx::VP9RateControlRtcConfig,
-                     libvpx::VP9RateControlRTC,
-                     libvpx::VP9FrameParamsQpRTC>::GetLoopfilterLevel() const {
-  return impl_->GetLoopfilterLevel();
-}
-
-// Template method specialization for VP8.
-template <>
-int VideoRateControl<libvpx::VP8RateControlRtcConfig,
-                     libvpx::VP8RateControlRTC,
-                     libvpx::VP8FrameParamsQpRTC>::GetLoopfilterLevel() const {
-  return impl_->GetLoopfilterLevel();
-}
-
-// Template method specialization for VP8.
-template <>
-int VideoRateControl<aom::AV1RateControlRtcConfig,
-                     aom::AV1RateControlRTC,
-                     aom::AV1FrameParamsRTC>::GetLoopfilterLevel() const {
-  NOTIMPLEMENTED();
-  return -1;
-}
-
 template <>
 void VideoRateControl<libvpx::VP9RateControlRtcConfig,
                       libvpx::VP9RateControlRTC,
-                      libvpx::VP9FrameParamsQpRTC>::
-    PostEncodeUpdate(uint64_t encoded_frame_size,
-                     const libvpx::VP9FrameParamsQpRTC& frame_params) {
+                      libvpx::VP9FrameParamsQpRTC,
+                      int>::PostEncodeUpdate(uint64_t encoded_frame_size,
+                                             const libvpx::VP9FrameParamsQpRTC&
+                                                 frame_params) {
   impl_->PostEncodeUpdate(encoded_frame_size, frame_params);
 }
 
 template <>
 void VideoRateControl<libvpx::VP8RateControlRtcConfig,
                       libvpx::VP8RateControlRTC,
-                      libvpx::VP8FrameParamsQpRTC>::
-    PostEncodeUpdate(uint64_t encoded_frame_size,
-                     const libvpx::VP8FrameParamsQpRTC& frame_params) {
+                      libvpx::VP8FrameParamsQpRTC,
+                      int>::PostEncodeUpdate(uint64_t encoded_frame_size,
+                                             const libvpx::VP8FrameParamsQpRTC&
+                                                 frame_params) {
   impl_->PostEncodeUpdate(encoded_frame_size);
 }
 
 template <>
 void VideoRateControl<aom::AV1RateControlRtcConfig,
                       aom::AV1RateControlRTC,
-                      aom::AV1FrameParamsRTC>::
+                      aom::AV1FrameParamsRTC,
+                      aom::AV1LoopfilterLevel>::
     PostEncodeUpdate(uint64_t encoded_frame_size,
                      const aom::AV1FrameParamsRTC& frame_params) {
   impl_->PostEncodeUpdate(encoded_frame_size);

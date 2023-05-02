@@ -99,7 +99,8 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   using VP8RateControl = VideoRateControl<libvpx::VP8RateControlRtcConfig,
                                           libvpx::VP8RateControlRTC,
-                                          libvpx::VP8FrameParamsQpRTC>;
+                                          libvpx::VP8FrameParamsQpRTC,
+                                          int>;
   std::unique_ptr<VP8RateControl> rate_ctrl_;
 };
 
