@@ -5511,8 +5511,8 @@ chromium-metrics-reviews@google.com.
   <token key="AutocompleteStatus">
     <variant name="Recognized" summary="Anything among predefined fields"/>
     <variant name="Specified" summary="Any specified autocomplete entry"/>
-    <variant name="Unrecognzied"
-        summary="Anything not among predifined fields"/>
+    <variant name="Unrecognized"
+        summary="Anything not among predefined fields"/>
   </token>
 </histogram>
 
