@@ -129,6 +129,9 @@ class MockWebWrapper : public WebWrapper {
 
   const GURL& GetLastCommittedURL() override;
 
+  bool IsFirstLoadForNavigationFinished() override;
+  void SetIsFirstLoadForNavigationFinished(bool finished);
+
   bool IsOffTheRecord() override;
 
   void RunJavascript(
@@ -142,8 +145,9 @@ class MockWebWrapper : public WebWrapper {
  private:
   GURL last_committed_url_;
   bool is_off_the_record_;
+  bool is_first_load_finished_{true};
 
-  raw_ptr<base::Value> mock_js_result_;
+  raw_ptr<base::Value> mock_js_result_{nullptr};
 };
 
 class ShoppingServiceTestBase : public testing::Test {
@@ -165,6 +169,10 @@ class ShoppingServiceTestBase : public testing::Test {
   static void MergeProductInfoData(ProductInfo* info,
                                    const base::Value::Dict& on_page_data_map);
 
+  // Skip the delay for running the on-page javascript for product info and
+  // wait until the task completes.
+  void SimulateProductInfoJsTaskFinished();
+
   // Get the count of the number of tabs a particular URL is open in from the
   // product info cache.
   int GetProductInfoCacheOpenURLCount(const GURL& url);
@@ -173,7 +181,8 @@ class ShoppingServiceTestBase : public testing::Test {
   const ProductInfo* GetFromProductInfoCache(const GURL& url);
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // Used primarily for decoding JSON for the mock javascript execution.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;

@@ -75,6 +75,7 @@ TEST_F(ShoppingServiceMetricsTest,
   ASSERT_NE(kImageUrl, cached_info->image_url);
 
   DidFinishLoad(&web);
+  SimulateProductInfoJsTaskFinished();
 
   // After the page has loaded and the on-page js has run, we should have the
   // on-page image.
@@ -109,6 +110,7 @@ TEST_F(ShoppingServiceMetricsTest,
   ASSERT_EQ(kImageUrl, cached_info->image_url.spec());
 
   DidFinishLoad(&web);
+  SimulateProductInfoJsTaskFinished();
 
   // After the page has loaded and the on-page js has run, we should have the
   // on-page image.
@@ -143,6 +145,7 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoServerImage) {
   ASSERT_NE(kImageUrl, cached_info->image_url);
 
   DidFinishLoad(&web);
+  SimulateProductInfoJsTaskFinished();
 
   // After the page has loaded and the on-page js has run, we should have the
   // on-page image.
@@ -176,6 +179,7 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoLocalImage) {
   ASSERT_EQ(kImageUrl, cached_info->image_url);
 
   DidFinishLoad(&web);
+  SimulateProductInfoJsTaskFinished();
 
   // After the page has loaded and the on-page js has run, we should not have
   // detected another image and report "server only".

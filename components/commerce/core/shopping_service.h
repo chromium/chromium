@@ -10,6 +10,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -69,6 +70,10 @@ extern const char kOgPriceAmount[];
 extern const long kToMicroCurrency;
 
 extern const char kImageAvailabilityHistogramName[];
+
+// The amount of time to wait after the last "stopped loading" event to run the
+// on-page extraction for product info.
+extern const uint64_t kProductInfoJavascriptDelayMs;
 
 // The availability of the product image for an offer. This needs to be kept in
 // sync with the ProductImageAvailability enum in enums.xml.
@@ -142,6 +147,8 @@ struct ProductInfoCacheEntry {
 
   // Whether the fallback javascript needs to run for page.
   bool needs_javascript_run{false};
+
+  std::unique_ptr<base::CancelableOnceClosure> run_javascript_task;
 
   // The product info associated with the URL.
   std::unique_ptr<ProductInfo> product_info;
@@ -326,12 +333,23 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // A notification that the user navigated away from the |from_url|.
   void DidNavigateAway(WebWrapper* web, const GURL& from_url);
 
+  // A notification that the provided web wrapper has stopped loading. This does
+  // not necessarily correspond to the page being completely finished loading
+  // and is a useful signal to help detect and deal with single-page web apps.
+  void DidStopLoading(WebWrapper* web);
+
   // A notification that the provided web wrapper has finished loading its main
   // frame.
   void DidFinishLoad(WebWrapper* web);
 
-  // Perform any logic associated with page load for the product info API.
-  void HandleDidFinishLoadForProductInfo(WebWrapper* web);
+  // Schedule (or reschedule) the on-page javascript execution. Calling this
+  // sequentially for the same web wrapper with the same URL will cancel the
+  // pending task and schedule a new one. The script will, at most, run once
+  // per unique navigation.
+  void ScheduleProductInfoJavascript(WebWrapper* web);
+
+  // Run the on-page, javascript info extraction if needed.
+  void TryRunningJavascriptForProductInfo(base::WeakPtr<WebWrapper> web);
 
   // Whether APIs like |GetProductInfoForURL| are enabled and allowed to be
   // used.
@@ -350,6 +368,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   void HandleOptGuideProductInfoResponse(
       const GURL& url,
+      WebWrapper* web,
       ProductInfoCallback callback,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);

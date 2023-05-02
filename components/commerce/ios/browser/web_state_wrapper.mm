@@ -20,11 +20,21 @@ namespace commerce {
 WebStateWrapper::WebStateWrapper(web::WebState* web_state)
     : web_state_(web_state) {}
 
+WebStateWrapper::~WebStateWrapper() = default;
+
 const GURL& WebStateWrapper::GetLastCommittedURL() {
   if (!web_state_)
     return GURL::EmptyGURL();
 
   return web_state_->GetLastCommittedURL();
+}
+
+bool WebStateWrapper::IsFirstLoadForNavigationFinished() {
+  return is_first_load_for_nav_finished_;
+}
+
+void WebStateWrapper::SetIsFirstLoadForNavigationFinished(bool finished) {
+  is_first_load_for_nav_finished_ = finished;
 }
 
 bool WebStateWrapper::IsOffTheRecord() {

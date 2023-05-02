@@ -213,6 +213,14 @@ const GURL& MockWebWrapper::GetLastCommittedURL() {
   return last_committed_url_;
 }
 
+bool MockWebWrapper::IsFirstLoadForNavigationFinished() {
+  return is_first_load_finished_;
+}
+
+void MockWebWrapper::SetIsFirstLoadForNavigationFinished(bool finished) {
+  is_first_load_finished_ = finished;
+}
+
 bool MockWebWrapper::IsOffTheRecord() {
   return is_off_the_record_;
 }
@@ -270,6 +278,12 @@ void ShoppingServiceTestBase::DidNavigatePrimaryMainFrame(WebWrapper* web) {
 
 void ShoppingServiceTestBase::DidFinishLoad(WebWrapper* web) {
   shopping_service_->DidFinishLoad(web);
+  base::RunLoop().RunUntilIdle();
+}
+
+void ShoppingServiceTestBase::SimulateProductInfoJsTaskFinished() {
+  task_environment_.FastForwardBy(
+      base::Milliseconds(kProductInfoJavascriptDelayMs));
   base::RunLoop().RunUntilIdle();
 }
 

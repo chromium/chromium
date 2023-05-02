@@ -27,9 +27,13 @@ class WebContentsWrapper : public WebWrapper {
                               int32_t js_world_id);
   WebContentsWrapper(const WebContentsWrapper&) = delete;
   WebContentsWrapper operator=(const WebContentsWrapper&) = delete;
-  ~WebContentsWrapper() override = default;
+  ~WebContentsWrapper() override;
 
   const GURL& GetLastCommittedURL() override;
+
+  bool IsFirstLoadForNavigationFinished() override;
+
+  void SetIsFirstLoadForNavigationFinished(bool finished);
 
   bool IsOffTheRecord() override;
 
@@ -44,6 +48,11 @@ class WebContentsWrapper : public WebWrapper {
 
   // The ID of the isolated world to run javascript in.
   int32_t js_world_id_;
+
+  // Whether the first load after a navigation has completed. This is useful
+  // when dealing with single-page apps that may not fire subsequent load
+  // events.
+  bool is_first_load_for_nav_finished_{false};
 };
 
 }  // namespace commerce
