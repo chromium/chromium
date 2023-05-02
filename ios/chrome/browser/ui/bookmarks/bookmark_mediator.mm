@@ -170,14 +170,13 @@ const int64_t kLastUsedFolderNone = -1;
                                          title:(NSString*)folderTitle
                                          count:(int)count {
   std::u16string result;
+  id<SystemIdentity> identity =
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
   if (base::FeatureList::IsEnabled(
           kEnableEmailInBookmarksReadingListSnackbar) &&
-      _syncSetupService->IsSyncRequested() &&
+      identity &&
       _syncSetupService->IsDataTypePreferred(
           syncer::UserSelectableType::kBookmarks)) {
-    id<SystemIdentity> identity =
-        _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
-    DCHECK(identity);
     std::u16string email = base::SysNSStringToUTF16(identity.userEmail);
     if (addFolder) {
       std::u16string title = base::SysNSStringToUTF16(folderTitle);
