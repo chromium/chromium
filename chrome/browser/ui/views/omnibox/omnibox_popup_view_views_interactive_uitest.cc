@@ -8,16 +8,8 @@
 // Check that the location bar background (and the background of the textfield
 // it contains) changes when it receives focus, and matches the popup background
 // color.
-// Flaky on Linux and Windows. See https://crbug.com/1120701
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_PopupMatchesLocationBarBackground \
-  DISABLED_PopupMatchesLocationBarBackground
-#else
-#define MAYBE_PopupMatchesLocationBarBackground \
-  PopupMatchesLocationBarBackground
-#endif
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
-                       MAYBE_PopupMatchesLocationBarBackground) {
+                       PopupMatchesLocationBarBackground) {
   // In dark mode the omnibox focused and unfocused colors are the same, which
   // makes this test fail; see comments below.
   BrowserView::GetBrowserViewForBrowser(browser())
