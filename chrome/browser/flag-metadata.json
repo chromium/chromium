@@ -3278,6 +3278,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-start-surface-spare-tab",
+    "owners": [ "sreejakshetty", "chrome-brapp-loading@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-start-surface-with-accessibility",
     "owners": [ "hanxi", "xinyiji", "clank-start" ],
     "expiry_milestone": 130

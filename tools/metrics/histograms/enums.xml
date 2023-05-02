@@ -62800,6 +62800,7 @@ from previous Chrome versions.
   <int value="268383828" label="WebAssemblyStringref:enabled"/>
   <int value="268535107"
       label="ash-new-touch-support-for-screen-magnification"/>
+  <int value="269249648" label="StartSurfaceSpareTab:disabled"/>
   <int value="269631838" label="BorealisLinuxMode:disabled"/>
   <int value="270038252" label="SignInProfileCreationEnterprise:disabled"/>
   <int value="270118291" label="SyncAutofillWalletOfferData:disabled"/>
@@ -63126,6 +63127,7 @@ from previous Chrome versions.
   <int value="426199960" label="Commander:enabled"/>
   <int value="426540253" label="PowerScheduler:disabled"/>
   <int value="427184788" label="WebFeed:enabled"/>
+  <int value="427351143" label="StartSurfaceSpareTab:enabled"/>
   <int value="427807224" label="IPH_Snooze:disabled"/>
   <int value="427945554" label="StrictExtensionIsolation:enabled"/>
   <int value="428554364" label="OffsetParentNewSpecBehavior:disabled"/>
