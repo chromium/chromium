@@ -679,6 +679,11 @@ void AXObject::Detach() {
   SANITIZER_CHECK(!is_adding_children_) << ToString(true, true);
 #endif
 
+#if !defined(NDEBUG)
+  // Facilitates debugging of detached objects by providing info on what it was.
+  detached_object_debug_info_ = ToString(true, true);
+#endif
+
   // Clear any children and call DetachFromParent() on them so that
   // no children are left with dangling pointers to their parent.
   ClearChildren();
@@ -7168,10 +7173,21 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
   // Build a friendly name for debugging the object.
   // If verbose, build a longer name name in the form of:
   // CheckBox axid#28 <input.someClass#cbox1> name="checkbox"
+#if !defined(NDEBUG)
+  if (IsDetached() && verbose) {
+    return "(detached) " + detached_object_debug_info_;
+  }
+#endif
+
   String string_builder = InternalRoleName(RoleValue()).EncodeForDebugging();
 
-  if (IsDetached())
+  if (IsDetached()) {
     string_builder = string_builder + " (detached)";
+  }
+
+  if (AXObjectCache().HasBeenDisposed()) {
+    return string_builder + " (doc shutdown) #" + String::Number(AXObjectID());
+  }
 
   if (verbose) {
     string_builder = string_builder + " axid#" + String::Number(AXObjectID());
@@ -7225,7 +7241,8 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
                              : !AccessibilityIsIncludedInTree())
         string_builder = string_builder + " isRemovedFromTree";
     }
-    if (GetNode()) {
+    if (GetNode() && GetDocument()->Lifecycle().GetState() >=
+                         DocumentLifecycle::kLayoutClean) {
       if (GetNode()->OwnerShadowHost()) {
         string_builder = string_builder + (GetNode()->IsInUserAgentShadowRoot()
                                                ? " inUserAgentShadowRoot:"
@@ -7237,11 +7254,9 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       if (GetNode()->GetShadowRoot()) {
         string_builder = string_builder + " hasShadowRoot";
       }
-      if (!GetDocument()->IsFlatTreeTraversalForbidden()) {
-        if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
-                *GetNode(), DisplayLockActivationReason::kAccessibility)) {
-          string_builder = string_builder + " isDisplayLocked";
-        }
+      if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+              *GetNode(), DisplayLockActivationReason::kAccessibility)) {
+        string_builder = string_builder + " isDisplayLocked";
       }
     }
     if (cached_values_only) {
@@ -7268,7 +7283,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       string_builder = string_builder + " isInert";
     if (IsMissingParent())
       string_builder = string_builder + " isMissingParent";
-    if (NeedsToUpdateChildren()) {
+    if (children_dirty_) {
       string_builder = string_builder + " needsToUpdateChildren";
     } else if (!children_.empty()) {
       string_builder = string_builder + " #children=";

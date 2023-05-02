@@ -264,6 +264,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool is_computing_role_ = false;
   mutable bool is_updating_cached_values_ = false;
 #endif
+#if !defined(NDEBUG)
+  // Keep track of what the object used to be, to make it easier to debug
+  // situations involving detached objects.
+  String detached_object_debug_info_;
+#endif
 
 #if defined(AX_FAIL_FAST_BUILD)
   bool is_adding_children_ = false;
