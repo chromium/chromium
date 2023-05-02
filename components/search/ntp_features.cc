@@ -289,6 +289,12 @@ BASE_FEATURE(kNtpHistoryClustersModuleUseModelRanking,
              "NtpHistoryClustersModuleUseModelRanking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, ChromeCart module will show together with ChromeCart+History
+// cluster module when available.
+BASE_FEATURE(kNtpChromeCartHistoryClusterCoexist,
+             "NtpChromeCartHistoryClusterCoexist",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<double>
     kNtpElementLuminosityChangeForLightBackgroundParam{
         &kNtpComprehensiveTheming,

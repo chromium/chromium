@@ -116,4 +116,59 @@ TEST(NewTabPageModulesTest,
       HasModulesEnabled(kSampleModules, identity_test_env.identity_manager()));
 }
 
+TEST(NewTabPageModulesTest, ShowChromeCart_WithoutChromeCartInHistoryModule) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{ntp_features::kNtpChromeCartModule,
+                            ntp_features::kNtpHistoryClustersModule},
+      /*disabled_features=*/{
+          ntp_features::kNtpChromeCartInHistoryClusterModule});
+
+  const std::vector<std::pair<const std::string, int>> module_id_names =
+      MakeModuleIdNames(false);
+  std::vector<std::string> module_names;
+  for (auto pair : module_id_names) {
+    module_names.emplace_back(pair.first);
+  }
+  ASSERT_FALSE(std::find(module_names.begin(), module_names.end(),
+                         "chrome_cart") == module_names.end());
+}
+
+TEST(NewTabPageModulesTest, NoChromeCart_WithChromeCartInHistoryModule) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{ntp_features::kNtpChromeCartModule,
+                            ntp_features::kNtpHistoryClustersModule,
+                            ntp_features::kNtpChromeCartInHistoryClusterModule},
+      /*disabled_features=*/{});
+
+  const std::vector<std::pair<const std::string, int>> module_id_names =
+      MakeModuleIdNames(false);
+  std::vector<std::string> module_names;
+  for (auto pair : module_id_names) {
+    module_names.emplace_back(pair.first);
+  }
+  ASSERT_TRUE(std::find(module_names.begin(), module_names.end(),
+                        "chrome_cart") == module_names.end());
+}
+
+TEST(NewTabPageModulesTest,
+     ShowChromeCart_WithChromeCartInHistoryModuleCoexist) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{ntp_features::kNtpChromeCartModule,
+                            ntp_features::kNtpHistoryClustersModule,
+                            ntp_features::kNtpChromeCartInHistoryClusterModule,
+                            ntp_features::kNtpChromeCartHistoryClusterCoexist},
+      /*disabled_features=*/{});
+
+  const std::vector<std::pair<const std::string, int>> module_id_names =
+      MakeModuleIdNames(false);
+  std::vector<std::string> module_names;
+  for (auto pair : module_id_names) {
+    module_names.emplace_back(pair.first);
+  }
+  ASSERT_FALSE(std::find(module_names.begin(), module_names.end(),
+                         "chrome_cart") == module_names.end());
+}
 }  // namespace ntp

@@ -2626,6 +2626,9 @@ extern const char kNtpHistoryClustersModuleDescription[];
 extern const char kNtpChromeCartInHistoryClustersModuleName[];
 extern const char kNtpChromeCartInHistoryClustersModuleDescription[];
 
+extern const char kNtpChromeCartHistoryClusterCoexistName[];
+extern const char kNtpChromeCartHistoryClusterCoexistDescription[];
+
 extern const char kNtpMiddleSlotPromoDismissalName[];
 extern const char kNtpMiddleSlotPromoDismissalDescription[];
 

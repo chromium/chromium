@@ -5258,6 +5258,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "ntp-chrome-cart-journeys-module-coexist",
+    "owners": [ "yuezhanggg", "romanarora", "tiborg" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "ntp-chrome-cart-module",
     "owners": [ "wychen", "tiborg", "yuezhanggg" ],
     "expiry_milestone": 115

@@ -4583,6 +4583,12 @@ const char kNtpChromeCartInHistoryClustersModuleDescription[] =
     "Shows ChromeCart tile in the Journeys module when available on the New "
     "Tab Page.";
 
+const char kNtpChromeCartHistoryClusterCoexistName[] =
+    "NTP ChromeCart and Journeys Module Coexist";
+const char kNtpChromeCartHistoryClusterCoexistDescription[] =
+    "Shows ChromeCart module and ChromeCart+Journeys module together when "
+    "available on the New Tab Page.";
+
 const char kNtpMiddleSlotPromoDismissalName[] =
     "NTP Middle Slot Promo Dismissal";
 const char kNtpMiddleSlotPromoDismissalDescription[] =
