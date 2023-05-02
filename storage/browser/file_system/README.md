@@ -89,6 +89,12 @@ And further more it references:
    a global singleton `ExternalMountPoints` and finally a global singleton
    `IsolatedContext`.
 
+## `FileSystemURL`
+
+The equivalent of a file path, but for the virtual file systems that this API
+serves. `FileSystemContext::CreateFileStreamReader` takes a `FileSystemURL`
+argument the same way that `fopen` takes a file path.
+
 ## `SandboxFileSystemBackend`
 
 The main entry point of support for sandboxed file systems. This class forwards
