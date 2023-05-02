@@ -30,6 +30,13 @@ except ImportError:
   # to know which version of pyyaml to use.
   import yaml as pyyaml
 
+def _SafeListDir(directory):
+  '''Wrapper around os.listdir() that ignores files created by Finder.app.'''
+  # On macOS, Finder.app creates .DS_Store files when a user visit a
+  # directory causing failure of the script laters on because there
+  # are no such group as .DS_Store. Skip the file to prevent the error.
+  return filter(lambda name:(name != '.DS_Store'),os.listdir(directory))
+
 TEMPLATES_PATH =  os.path.join(
   os.path.dirname(__file__), 'templates')
 
@@ -215,7 +222,7 @@ def _GetMetadata():
   '''Returns an object containing the policy metadata in order to build the
      policy definition template.'''
   result = {}
-  for file in os.listdir(TEMPLATES_PATH):
+  for file in _SafeListDir(TEMPLATES_PATH):
     filename = os.fsdecode(file)
     file_basename, file_extension = os.path.splitext(filename)
     if not file_extension == ".yaml":
@@ -231,13 +238,13 @@ def _GetPoliciesAndGroups():
   '''
   result = {}
   policy_definitions_path = os.path.join(TEMPLATES_PATH, POLICY_DEFINITIONS_KEY)
-  for group_name in os.listdir(policy_definitions_path):
+  for group_name in _SafeListDir(policy_definitions_path):
     result[group_name] = {'policies': {}, 'policy_atomic_groups': {}}
     group_path = os.path.join(policy_definitions_path, group_name)
     if not os.path.isdir(group_path):
       continue
 
-    for file in os.listdir(group_path):
+    for file in _SafeListDir(group_path):
       filename = os.fsdecode(file)
       file_basename, file_extension = os.path.splitext(filename)
       file_path = os.path.join(group_path, filename)
