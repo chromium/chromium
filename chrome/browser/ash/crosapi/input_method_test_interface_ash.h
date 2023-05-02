@@ -93,6 +93,9 @@ class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
   void HasCapabilities(const std::vector<std::string>& capabilities,
                        HasCapabilitiesCallback callback) override;
   void ConfirmComposition(ConfirmCompositionCallback callback) override;
+  void DeleteSurroundingText(uint32_t length_before_selection,
+                             uint32_t length_after_selection,
+                             DeleteSurroundingTextCallback callback) override;
 
   // FakeTextInputMethod::Observer:
   void OnFocus() override;
