@@ -3761,8 +3761,8 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SELECT_LAST_TAB" desc="Label for accelerator action - Go to last tab in window.">
         Go to last tab in window
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_OPEN_FILE" desc="Label for accelerator action - Open file in Chrome broswer.">
-        Open file in Chrome broswer
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_OPEN_FILE" desc="Label for accelerator action - Open file in Chrome browser.">
+        Open file in Chrome browser
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEW_INCOGNITO_WINDOW" desc="Label for accelerator action - Open new tab in new Incognito window.">
         Open new tab in new Incognito window
