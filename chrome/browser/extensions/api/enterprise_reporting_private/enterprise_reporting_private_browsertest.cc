@@ -134,8 +134,7 @@ class EnterpriseReportingPrivateGetContextInfoBaseBrowserTest
 
   void SetupDMToken() {
 #if BUILDFLAG(IS_CHROMEOS)
-    policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting("dm_token"));
+    policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 #else
     browser_dm_token_storage_ =
         std::make_unique<policy::FakeBrowserDMTokenStorage>();
