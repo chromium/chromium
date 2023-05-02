@@ -1,5 +1,5 @@
 {
-  "name": "Test Printer Provider Extension",
+  "name": "Test Extensions",
   "description" : "Base Level Extension",
   "version": "1.0",
   "manifest_version": 2,
@@ -9,9 +9,5 @@
   "options_ui": {
     "page": "options.html",
     "chrome_style": true
-  },
-  "permissions": ["printerProvider"],
-  "background": {
-    "scripts": ["background.js"]
   }
 }

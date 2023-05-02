@@ -32,7 +32,6 @@
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
-#include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
@@ -82,7 +81,6 @@
 #include "printing/printing_features.h"
 #include "printing/printing_utils.h"
 #include "printing/test_printing_context.h"
-#include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -118,46 +116,6 @@ namespace {
 
 constexpr int kTestPrinterCapabilitiesMaxCopies = 99;
 const int kDefaultDocumentCookie = PrintSettings::NewCookie();
-
-// The size is in dots. For Letter, it is 8.5 x 11 inches scaled by
-// `kDefaultPdfDpi`. For ISO A4, it is approximately 8.27 x 11.69 inches scaled
-// by `kDefaultPdfDpi`.
-constexpr gfx::Size kLetterPdfPhysicalSize = gfx::Size(2550, 3300);
-constexpr gfx::Size kIsoA4PdfPhysicalSize = gfx::Size(2480, 3507);
-
-// Sticky settings containing an extension printer as the most recently used
-// destination. This must be in sync with
-// //chrome/test/data/printing/test_extension/background.js.
-constexpr char kStickySettingsWithExtensionPrinter[] = R"({
-    "version": 2,
-    "recentDestinations": [
-      {
-        "id": "%s:printer",
-        "origin": "extension",
-        "capabilities": null,
-        "displayName": "test extension printer",
-        "extensionId": "%s",
-        "extensionName": "Test Printer Provider Extension"
-      }
-    ]
-  })";
-
-// Sticky settings containing an extension printer with a missing printable area
-// as the most recently used destination. This must be in sync with
-// //chrome/test/data/printing/test_extension/background.js.
-constexpr char kStickySettingsWithExtensionPrinterMissingPrintableArea[] = R"({
-    "version": 2,
-    "recentDestinations": [
-      {
-        "id": "%s:printer_missing_printable_area",
-        "origin": "extension",
-        "capabilities": null,
-        "displayName": "extension printer missing printable area",
-        "extensionId": "%s",
-        "extensionName": "Test Printer Provider Extension"
-      }
-    ]
-  })";
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 constexpr char kFakeDmToken[] = "fake-dm-token";
@@ -881,22 +839,17 @@ class PrintExtensionBrowserTest : public extensions::ExtensionBrowserTest {
       base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
       extension = LoadExtension(
           test_data_dir.AppendASCII("printing").AppendASCII("test_extension"));
-      extension_id_ = extension->id();
       ASSERT_TRUE(extension);
     }
 
     GURL url(chrome::kChromeUIExtensionsURL);
-    std::string query = base::StringPrintf("options=%s", extension_id_.c_str());
+    std::string query =
+        base::StringPrintf("options=%s", extension->id().c_str());
     GURL::Replacements replacements;
     replacements.SetQueryStr(query);
     url = url.ReplaceComponents(replacements);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
-
-  const extensions::ExtensionId& extension_id() const { return extension_id_; }
-
- private:
-  extensions::ExtensionId extension_id_;
 };
 
 class SitePerProcessPrintExtensionBrowserTest
@@ -1618,83 +1571,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePrintBrowserTest, DisableCaching) {
 IN_PROC_BROWSER_TEST_F(PrintExtensionBrowserTest, PrintOptionPage) {
   LoadExtensionAndNavigateToOptionPage();
   PrintAndWaitUntilPreviewIsReady();
-}
-
-// Test fetching an extension printer.
-IN_PROC_BROWSER_TEST_F(PrintExtensionBrowserTest,
-                       UpdatePrintSettingsExtensionPrinter) {
-  LoadExtensionAndNavigateToOptionPage();
-
-  // The extension id may vary from device to device, so directly use the
-  // extension id instead of a hardcoded value.
-  const char* test_extension_id = extension_id().c_str();
-  std::string extension_printer_settings =
-      base::StringPrintf(kStickySettingsWithExtensionPrinter, test_extension_id,
-                         test_extension_id);
-
-  // Setting a recent destination as an extension printer triggers extension
-  // printer handling instead of defaulting to "Save as PDF" or a local printer.
-  auto* sticky_settings = PrintPreviewStickySettings::GetInstance();
-  sticky_settings->StoreAppState(extension_printer_settings);
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  TestPrintViewManager print_view_manager(web_contents);
-  PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
-
-  PrintAndWaitUntilPreviewIsReady();
-
-  const mojom::PrintPagesParamsPtr& snooped_params =
-      print_view_manager.snooped_params();
-  ASSERT_TRUE(snooped_params);
-  EXPECT_EQ(gfx::Size(kDefaultPdfDpi, kDefaultPdfDpi),
-            snooped_params->params->dpi);
-  EXPECT_EQ(kLetterPdfPhysicalSize, snooped_params->params->page_size);
-  // This must be in sync with
-  // //chrome/test/data/printing/test_extension/background.js.
-  EXPECT_EQ(gfx::Rect(300, 300, 1800, 2850),
-            snooped_params->params->printable_area);
-  EXPECT_EQ(gfx::Size(1800, 2732), snooped_params->params->content_size);
-}
-
-// Test fetching an extension printer that has missing printable area. The
-// printable area should be set to a default value.
-IN_PROC_BROWSER_TEST_F(
-    PrintExtensionBrowserTest,
-    UpdatePrintSettingsExtensionPrinterMissingPrintableArea) {
-  LoadExtensionAndNavigateToOptionPage();
-
-  // The extension id may vary from device to device, so directly use the
-  // extension id instead of a hardcoded value.
-  const char* test_extension_id = extension_id().c_str();
-  std::string extension_printer_settings = base::StringPrintf(
-      kStickySettingsWithExtensionPrinterMissingPrintableArea,
-      test_extension_id, test_extension_id);
-
-  // Setting a recent destination as an extension printer triggers extension
-  // printer handling instead of defaulting to "Save as PDF" or a local printer.
-  auto* sticky_settings = PrintPreviewStickySettings::GetInstance();
-  sticky_settings->StoreAppState(extension_printer_settings);
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  TestPrintViewManager print_view_manager(web_contents);
-  PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
-
-  PrintAndWaitUntilPreviewIsReady();
-
-  const mojom::PrintPagesParamsPtr& snooped_params =
-      print_view_manager.snooped_params();
-  ASSERT_TRUE(snooped_params);
-  EXPECT_EQ(gfx::Size(kDefaultPdfDpi, kDefaultPdfDpi),
-            snooped_params->params->dpi);
-  EXPECT_EQ(kIsoA4PdfPhysicalSize, snooped_params->params->page_size);
-  // The default printable area is platform-dependent, so just check that the
-  // printable area and content size are non-empty.
-  EXPECT_FALSE(snooped_params->params->printable_area.IsEmpty());
-  EXPECT_FALSE(snooped_params->params->content_size.IsEmpty());
 }
 
 // Printing an extension option page with site per process is enabled.
