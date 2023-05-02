@@ -41,9 +41,9 @@ class MockPasswordPrompt : public AccountChooserPrompt,
   MockPasswordPrompt(const MockPasswordPrompt&) = delete;
   MockPasswordPrompt& operator=(const MockPasswordPrompt&) = delete;
 
-  MOCK_METHOD0(ShowAccountChooser, void());
-  MOCK_METHOD0(ShowAutoSigninPrompt, void());
-  MOCK_METHOD0(ControllerGone, void());
+  MOCK_METHOD(void, ShowAccountChooser, (), (override));
+  MOCK_METHOD(void, ShowAutoSigninPrompt, (), (override));
+  MOCK_METHOD(void, ControllerGone, (), (override));
 };
 
 password_manager::PasswordForm GetLocalForm() {

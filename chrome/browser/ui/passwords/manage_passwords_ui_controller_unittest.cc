@@ -94,15 +94,15 @@ constexpr int kGreatDissmisalCount = 10;
 class CredentialManagementDialogPromptMock : public AccountChooserPrompt,
                                              public AutoSigninFirstRunPrompt {
  public:
-  MOCK_METHOD0(ShowAccountChooser, void());
-  MOCK_METHOD0(ShowAutoSigninPrompt, void());
-  MOCK_METHOD0(ControllerGone, void());
+  MOCK_METHOD(void, ShowAccountChooser, (), (override));
+  MOCK_METHOD(void, ShowAutoSigninPrompt, (), (override));
+  MOCK_METHOD(void, ControllerGone, (), (override));
 };
 
 class PasswordLeakDialogMock : public CredentialLeakPrompt {
  public:
-  MOCK_METHOD0(ShowCredentialLeakPrompt, void());
-  MOCK_METHOD0(ControllerGone, void());
+  MOCK_METHOD(void, ShowCredentialLeakPrompt, (), (override));
+  MOCK_METHOD(void, ControllerGone, (), (override));
 };
 
 class TestManagePasswordsIconView : public ManagePasswordsIconView {

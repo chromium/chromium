@@ -181,11 +181,9 @@ class MockPasswordManagerExporter
 
   ~MockPasswordManagerExporter() override = default;
 
-  MOCK_METHOD0(PreparePasswordsForExport, void());
-  MOCK_METHOD0(Cancel, void());
-  MOCK_METHOD1(SetDestination, void(const base::FilePath&));
-  MOCK_METHOD0(GetExportProgressStatus,
-               password_manager::ExportProgressStatus());
+  MOCK_METHOD(void, PreparePasswordsForExport, (), (override));
+  MOCK_METHOD(void, Cancel, (), (override));
+  MOCK_METHOD(void, SetDestination, (const base::FilePath&), (override));
 };
 
 class FakePasswordParserService

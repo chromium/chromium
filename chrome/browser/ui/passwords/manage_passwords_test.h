@@ -76,9 +76,6 @@ class ManagePasswordsTest : public InteractiveBrowserTest {
   // Get the UI controller for the current WebContents.
   ManagePasswordsUIController* GetController();
 
-  MOCK_METHOD1(OnChooseCredential,
-               void(const password_manager::CredentialInfo&));
-
  private:
   std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager();
 

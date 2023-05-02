@@ -26,14 +26,15 @@ class CredentialManagerDialogControllerMock
   MOCK_CONST_METHOD0(GetAutoSigninPromoTitle, std::u16string());
   MOCK_CONST_METHOD0(GetAutoSigninText, std::u16string());
   MOCK_CONST_METHOD0(ShouldShowFooter, bool());
-  MOCK_METHOD0(OnSmartLockLinkClicked, void());
-  MOCK_METHOD2(OnChooseCredentials,
-               void(const password_manager::PasswordForm& password_form,
-                    password_manager::CredentialType credential_type));
-  MOCK_METHOD0(OnSignInClicked, void());
-  MOCK_METHOD0(OnAutoSigninOK, void());
-  MOCK_METHOD0(OnAutoSigninTurnOff, void());
-  MOCK_METHOD0(OnCloseDialog, void());
+  MOCK_METHOD(void,
+              OnChooseCredentials,
+              (const password_manager::PasswordForm& password_form,
+               password_manager::CredentialType credential_type),
+              (override));
+  MOCK_METHOD(void, OnSignInClicked, (), (override));
+  MOCK_METHOD(void, OnAutoSigninOK, (), (override));
+  MOCK_METHOD(void, OnAutoSigninTurnOff, (), (override));
+  MOCK_METHOD(void, OnCloseDialog, (), (override));
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_MOCK_H_

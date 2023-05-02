@@ -53,7 +53,7 @@ std::vector<const PasswordForm*> GetRawPointers(
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
-  MOCK_METHOD0(UpdateFormManagers, void());
+  MOCK_METHOD(void, UpdateFormManagers, (), (override));
 };
 
 class ManagePasswordsStateTest : public testing::Test {
