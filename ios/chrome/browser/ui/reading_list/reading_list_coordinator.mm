@@ -306,6 +306,18 @@
   [self openItemOfflineInNewTab:item];
 }
 
+- (void)didLoadContent {
+  if (!_shouldShowSignInPromo) {
+    return;
+  }
+
+  SigninPromoViewConfigurator* promoConfigurator =
+      [_signinPromoViewMediator createConfigurator];
+  [self.tableViewController promoStateChanged:YES
+                            promoConfigurator:promoConfigurator
+                                promoDelegate:_signinPromoViewMediator];
+}
+
 #pragma mark - URL Loading Helpers
 
 // Loads reading list URLs. If `offlineURL` is valid and `loadOfflineVersion` is

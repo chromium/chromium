@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -20,12 +21,23 @@
 
 using chrome_test_util::PrimarySignInButton;
 
+namespace {
+NSString* const kReadTitle = @"foobar";
+NSString* const kReadURL = @"http://readfoobar.com";
+}  // namespace
+
 // Reading List integration tests for Chrome with account storage and UI
 // enabled.
 @interface ReadingListAccountStorageTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation ReadingListAccountStorageTestCase
+
+- (void)tearDown {
+  [super tearDown];
+  GREYAssertNil([ReadingListAppInterface clearEntries],
+                @"Unable to clear Reading List entries");
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
@@ -86,6 +98,22 @@ using chrome_test_util::PrimarySignInButton;
   // Result: the sign-in is successful without any issue.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
                                         consent:signin::ConsentLevel::kSignin];
+}
+
+// Tests that if the data is reloaded after the account storage promo is shown,
+// the promo item is still shown.
+// See https://crbug.com/1439243.
+- (void)testPromoShownAfterContentReload {
+  [ReadingListEarlGreyUI openReadingList];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
+  GREYAssertNil(
+      [ReadingListAppInterface addEntryWithURL:[NSURL URLWithString:kReadURL]
+                                         title:kReadTitle
+                                          read:YES],
+      @"Unable to add Reading List item");
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 }
 
 @end
