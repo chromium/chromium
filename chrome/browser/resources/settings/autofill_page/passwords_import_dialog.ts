@@ -22,9 +22,10 @@ import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -106,7 +107,10 @@ export class PasswordsImportDialogElement extends
 
   static get properties() {
     return {
-      dialogState: Number,
+      dialogState: {
+        type: Number,
+        observer: 'focusOnFirstActionableItem_',
+      },
 
       importDialogStateEnum_: {
         type: Object,
@@ -203,6 +207,24 @@ export class PasswordsImportDialogElement extends
           this.i18nAdvanced('importPasswordsDescriptionDevice');
     }
     this.dialogState = ImportDialogState.START;
+  }
+
+  private focusOnFirstActionableItem_() {
+    afterNextRender(this, () => {
+      let elementToFocus = this.$.close as HTMLElement;
+      if (this.isState_(ImportDialogState.CONFLICTS)) {
+        const firstCheckbox =
+            this.$.conflictsList.querySelector('cr-checkbox') as HTMLElement;
+        if (firstCheckbox) {
+          elementToFocus = firstCheckbox;
+        }
+      } else if (!this.shouldHideDeleteFileOption_()) {
+        elementToFocus = this.$.deleteFileOption as HTMLElement;
+      } else if (this.shouldShowStorePicker_()) {
+        elementToFocus = this.$.storePicker as HTMLElement;
+      }
+      focusWithoutInk(elementToFocus);
+    });
   }
 
   private computeConflictsListClass_(): string {
@@ -376,7 +398,6 @@ export class PasswordsImportDialogElement extends
       default:
         assertNotReached();
     }
-    this.$.close.focus();
   }
 
   private async handleSuccess_() {
@@ -418,8 +439,6 @@ export class PasswordsImportDialogElement extends
       this.descriptionText_ = sanitizeInnerHtml(descriptionText);
     }
     this.dialogState = ImportDialogState.SUCCESS;
-
-    this.$.close.focus();
   }
 
   private getStoreOptionAccountText_(): string {
