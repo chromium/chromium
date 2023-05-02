@@ -507,4 +507,28 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
   return update;
 }
 
+mojom::VisualAnnotationPtr ConvertProtoToVisualAnnotation(
+    const chrome_screen_ai::VisualAnnotation& annotation_proto) {
+  auto annotation = screen_ai::mojom::VisualAnnotation::New();
+
+  for (const auto& line : annotation_proto.lines()) {
+    auto line_box = screen_ai::mojom::LineBox::New();
+    line_box->text_line = line.utf8_string();
+    line_box->block_id = line.block_id();
+    line_box->language = line.language();
+    line_box->order_within_block = line.order_within_block();
+
+    for (const auto& word : line.words()) {
+      auto word_box = screen_ai::mojom::WordBox::New();
+      word_box->word = word.utf8_string();
+      word_box->dictionary_word = word.dictionary_word();
+      word_box->language = word.language();
+      line_box->words.push_back(std::move(word_box));
+    }
+    annotation->lines.push_back(std::move(line_box));
+  }
+
+  return annotation;
+}
+
 }  // namespace screen_ai

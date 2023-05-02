@@ -55,6 +55,12 @@ class ScreenAIService : public mojom::ScreenAIService,
                             bool success);
 
  private:
+  // The list of available annotations in the `library_`.
+  enum class VisualAnnotationType {
+    kOcr = 0,
+    kLayoutExtraction = 1,
+  };
+
   std::unique_ptr<ScreenAILibraryWrapper> library_;
 
   // mojom::ScreenAIAnnotator:
@@ -66,6 +72,11 @@ class ScreenAIService : public mojom::ScreenAIService,
   void PerformOcrAndReturnAXTreeUpdate(
       const SkBitmap& image,
       PerformOcrAndReturnAXTreeUpdateCallback callback) override;
+
+  // mojom::ScreenAIAnnotator:
+  void PerformOcrAndReturnAnnotation(
+      const SkBitmap& image,
+      PerformOcrAndReturnAnnotationCallback callback) override;
 
   // mojom::Screen2xMainContentExtractor:
   void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
@@ -94,12 +105,16 @@ class ScreenAIService : public mojom::ScreenAIService,
 
   // Wrapper functions for task scheduler.
   void VisualAnnotationInternal(const SkBitmap& image,
-                                bool run_ocr,
-                                bool run_layout_extraction,
+                                VisualAnnotationType annotation_type,
                                 ui::AXTreeUpdate* annotation);
   void ExtractMainContentInternal(const ui::AXTreeUpdate& snapshot,
                                   const ukm::SourceId& ukm_source_id,
                                   std::vector<int32_t>* content_node_ids);
+
+  // A wrapper to call the `library_`. Updates `annotation_proto` if successful.
+  bool PerformAnnotation(VisualAnnotationType annotation_type,
+                         const SkBitmap& image,
+                         chrome_screen_ai::VisualAnnotation* annotation_proto);
 
   // Internal task scheduler that starts after library load is completed.
   scoped_refptr<base::DeferredSequencedTaskRunner> task_runner_;

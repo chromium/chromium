@@ -185,8 +185,7 @@ void ScreenAIService::ExtractSemanticLayout(
       FROM_HERE,
       base::BindOnce(&ScreenAIService::VisualAnnotationInternal,
                      weak_ptr_factory_.GetWeakPtr(), std::move(image),
-                     /*run_ocr=*/false, /*run_layout_extraction=*/true,
-                     annotation_ptr),
+                     VisualAnnotationType::kLayoutExtraction, annotation_ptr),
       base::BindOnce(
           [](mojo::Remote<mojom::ScreenAIAnnotatorClient>* client,
              const ui::AXTreeID& parent_tree_id,
@@ -213,6 +212,41 @@ void ScreenAIService::ExtractSemanticLayout(
           std::move(callback), std::move(annotation)));
 }
 
+void ScreenAIService::PerformOcrAndReturnAnnotation(
+    const SkBitmap& image,
+    PerformOcrAndReturnAnnotationCallback callback) {
+  auto annotation_proto =
+      std::make_unique<chrome_screen_ai::VisualAnnotation>();
+  // To force the compiler to do it before the std::move.
+  chrome_screen_ai::VisualAnnotation* annotation_proto_ptr =
+      annotation_proto.get();
+  task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&ScreenAIService::PerformAnnotation),
+                     weak_ptr_factory_.GetWeakPtr(), VisualAnnotationType::kOcr,
+                     std::move(image), annotation_proto_ptr),
+      base::BindOnce(
+          [](PerformOcrAndReturnAnnotationCallback callback,
+             std::unique_ptr<chrome_screen_ai::VisualAnnotation>
+                 annotation_proto) {
+            std::move(callback).Run(
+                ConvertProtoToVisualAnnotation(*annotation_proto));
+          },
+          std::move(callback), std::move(annotation_proto)));
+}
+
+bool ScreenAIService::PerformAnnotation(
+    VisualAnnotationType annotation_type,
+    const SkBitmap& image,
+    chrome_screen_ai::VisualAnnotation* annotation_proto) {
+  switch (annotation_type) {
+    case VisualAnnotationType::kOcr:
+      return library_->PerformOcr(image, *annotation_proto);
+    case VisualAnnotationType::kLayoutExtraction:
+      return library_->ExtractLayout(image, *annotation_proto);
+  }
+}
+
 void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
     const SkBitmap& image,
     PerformOcrAndReturnAXTreeUpdateCallback callback) {
@@ -227,8 +261,7 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
       FROM_HERE,
       base::BindOnce(&ScreenAIService::VisualAnnotationInternal,
                      weak_ptr_factory_.GetWeakPtr(), std::move(image),
-                     /*run_ocr=*/true, /*run_layout_extraction=*/false,
-                     annotation_ptr),
+                     VisualAnnotationType::kOcr, annotation_ptr),
       base::BindOnce(
           [](PerformOcrAndReturnAXTreeUpdateCallback callback,
              std::unique_ptr<ui::AXTreeUpdate> update) {
@@ -243,23 +276,14 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
           std::move(callback), std::move(annotation)));
 }
 
-void ScreenAIService::VisualAnnotationInternal(const SkBitmap& image,
-                                               bool run_ocr,
-                                               bool run_layout_extraction,
-                                               ui::AXTreeUpdate* annotation) {
-  // Currently we only support either of OCR or LayoutExtraction features.
-  DCHECK_NE(run_ocr, run_layout_extraction);
-
+void ScreenAIService::VisualAnnotationInternal(
+    const SkBitmap& image,
+    VisualAnnotationType annotation_type,
+    ui::AXTreeUpdate* annotation) {
   chrome_screen_ai::VisualAnnotation annotation_proto;
   // TODO(https://crbug.com/1278249): Consider adding a signature that
   // verifies the data integrity and source.
-  bool result = false;
-  if (run_ocr) {
-    result = library_->PerformOcr(image, annotation_proto);
-  } else /* if (run_layout_extraction) */ {
-    result = library_->ExtractLayout(image, annotation_proto);
-  }
-  if (!result) {
+  if (!PerformAnnotation(annotation_type, image, &annotation_proto)) {
     DCHECK_EQ(annotation->tree_data.tree_id, ui::AXTreeIDUnknown());
     VLOG(1) << "Screen AI library could not process snapshot or no OCR data.";
     return;
