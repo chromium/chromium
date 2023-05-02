@@ -469,14 +469,22 @@ void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
               return;
             }
 
-            LOG(ERROR) << "Failed to open application with path: "
-                       << app_bundle_path << ", retrying in 100ms";
-            internals::GetShortcutIOTaskRunner()->PostDelayedTask(
-                FROM_HERE,
-                base::BindOnce(&base::mac::LaunchApplication, app_bundle_path,
-                               command_line, url_specs, options,
-                               std::move(callback)),
-                base::Milliseconds(100));
+            // Only retry for the one specific error code that seems to need
+            // this. Like above, retrying in all cases can otherwise itself
+            // cause flaky tests.
+            if (result.error().domain == NSCocoaErrorDomain &&
+                result.error().code == NSFileReadCorruptFileError) {
+              LOG(ERROR) << "Failed to open application with path: "
+                         << app_bundle_path << ", retrying in 100ms";
+              internals::GetShortcutIOTaskRunner()->PostDelayedTask(
+                  FROM_HERE,
+                  base::BindOnce(&base::mac::LaunchApplication, app_bundle_path,
+                                 command_line, url_specs, options,
+                                 std::move(callback)),
+                  base::Milliseconds(100));
+              return;
+            }
+            std::move(callback).Run(std::move(result));
           },
           app_bundle_path, command_line, url_specs, options,
           std::move(callback)));
