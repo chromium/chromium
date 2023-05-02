@@ -26,11 +26,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -91,9 +93,10 @@ void ClickButton(views::Button* button) {
   views::test::ButtonTestApi(button).NotifyClick(event);
 }
 
-// Parameter stands for whether in incognito mode.
-class VideoConferenceIntegrationTest : public testing::WithParamInterface<bool>,
-                                       public WebRtcTestBase {
+// Parameter stands for whether in incognito mode; and whether in guest mode.
+class VideoConferenceIntegrationTest
+    : public testing::WithParamInterface<std::tuple<bool, bool>>,
+      public WebRtcTestBase {
  public:
   VideoConferenceIntegrationTest() {
     // kOnDeviceSpeechRecognition is to support live caption.
@@ -111,7 +114,7 @@ class VideoConferenceIntegrationTest : public testing::WithParamInterface<bool>,
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Create an incognito browser when parameter is true.
-    if (GetParam()) {
+    if (std::get<0>(GetParam())) {
       browser_ = Browser::Create(Browser::CreateParams(
           browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
           true));
@@ -199,6 +202,16 @@ class VideoConferenceIntegrationTest : public testing::WithParamInterface<bool>,
         ::ash::switches::kCameraEffectsSupportedByHardware);
     // Used for bypassing tab capturing selection.
     command_line->AppendSwitch(::switches::kThisTabCaptureAutoAccept);
+
+    // If in guest mode.
+    if (std::get<1>(GetParam())) {
+      command_line->AppendSwitch(ash::switches::kGuestSession);
+      command_line->AppendSwitchASCII(ash::switches::kLoginUser,
+                                      user_manager::kGuestUserName);
+      command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+                                      TestingProfile::kTestUserProfileDir);
+      command_line->AppendSwitch(::switches::kIncognito);
+    }
   }
 
   // Returns all `ReturnToAppButton`s into a vector for easier check.
@@ -276,9 +289,12 @@ class VideoConferenceIntegrationTest : public testing::WithParamInterface<bool>,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         VideoConferenceIntegrationTest,
-                         ::testing::Values(true, false));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    VideoConferenceIntegrationTest,
+    ::testing::Values(std::make_tuple<bool, bool>(false, false),
+                      std::make_tuple<bool, bool>(true, false),
+                      std::make_tuple<bool, bool>(false, true)));
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        CaptureVideoShowsVcTray) {
