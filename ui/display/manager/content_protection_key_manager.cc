@@ -6,7 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "ui/display/display_features.h"
-#include "ui/display/manager/display_manager_util.h"
+#include "ui/display/manager/util/display_manager_util.h"
 
 namespace display {
 

@@ -114,8 +114,8 @@ bool HandleDPI(FakeDisplaySnapshot::Builder* builder, StringPiece dpi) {
 // Returns false if any invalid options are provided. If an option appears more
 // than once it will have no effect the second time.
 bool HandleOptions(FakeDisplaySnapshot::Builder* builder, StringPiece options) {
-  for (size_t i = 0; i < options.size(); ++i) {
-    switch (options[i]) {
+  for (char option : options) {
+    switch (option) {
       case 'o':
         builder->SetHasOverscan(true);
         break;
@@ -129,7 +129,7 @@ bool HandleOptions(FakeDisplaySnapshot::Builder* builder, StringPiece options) {
         builder->SetType(DISPLAY_CONNECTION_TYPE_INTERNAL);
         break;
       default:
-        LOG(ERROR) << "Invalid option specifier \"" << options[i] << "\"";
+        LOG(ERROR) << "Invalid option specifier \"" << option << "\"";
         return false;
     }
   }
@@ -141,9 +141,9 @@ bool HandleOptions(FakeDisplaySnapshot::Builder* builder, StringPiece options) {
 
 using Builder = FakeDisplaySnapshot::Builder;
 
-Builder::Builder() {}
+Builder::Builder() = default;
 
-Builder::~Builder() {}
+Builder::~Builder() = default;
 
 std::unique_ptr<FakeDisplaySnapshot> Builder::Build() {
   if (modes_.empty() || id_ == kInvalidDisplayId) {
@@ -418,7 +418,7 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
                       vsync_rate_min,
                       drm_formats_and_modifiers) {}
 
-FakeDisplaySnapshot::~FakeDisplaySnapshot() {}
+FakeDisplaySnapshot::~FakeDisplaySnapshot() = default;
 
 // static
 std::unique_ptr<DisplaySnapshot> FakeDisplaySnapshot::CreateFromSpec(

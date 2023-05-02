@@ -16,7 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/numerics/safe_conversions.h"
-#include "ui/display/manager/display_manager_util.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"

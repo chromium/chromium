@@ -8,8 +8,8 @@
 #include "components/exo/wayland/wayland_display_util.h"
 #include "components/exo/wm_helper.h"
 #include "ui/display/display.h"
-#include "ui/display/manager/display_manager_util.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/manager/util/display_manager_util.h"
 
 namespace exo::wayland {
 namespace {

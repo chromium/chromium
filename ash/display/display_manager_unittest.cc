@@ -56,10 +56,9 @@
 #include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_change_observer.h"
 #include "ui/display/manager/display_layout_store.h"
-#include "ui/display/manager/display_manager_util.h"
-#include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/test/touch_device_manager_test_api.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_constants.h"
@@ -2283,7 +2282,7 @@ TEST_F(DisplayManagerTest, UpdateMouseCursorAfterRotateZoom) {
 
 class TestDisplayObserver : public display::DisplayObserver {
  public:
-  TestDisplayObserver() : changed_(false) {}
+  TestDisplayObserver() = default;
 
   TestDisplayObserver(const TestDisplayObserver&) = delete;
   TestDisplayObserver& operator=(const TestDisplayObserver&) = delete;
@@ -2313,7 +2312,7 @@ class TestDisplayObserver : public display::DisplayObserver {
 
  private:
   MirrorWindowTestApi test_api;
-  bool changed_;
+  bool changed_ = false;
 };
 
 TEST_F(DisplayManagerTest, SoftwareMirroring) {

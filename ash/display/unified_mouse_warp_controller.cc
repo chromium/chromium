@@ -18,7 +18,7 @@
 #include "ui/display/display_finder.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/display/manager/display_manager_utilities.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/geometry/transform.h"
