@@ -121,11 +121,9 @@ dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
   unsigned long        framesAssembledFromMultiplePackets;
   double               totalAssemblyTime;
   // https://w3c.github.io/webrtc-provisional-stats/#RTCInboundRtpStreamStats-dict*
-  DOMString            contentType;
+  DOMString             contentType;
   // https://github.com/w3c/webrtc-provisional-stats/issues/40
-  DOMString            googTimingFrameInfo;
-  unsigned long long   retransmittedPacketsReceived;
-  unsigned long long   retransmittedBytesReceived;
+  DOMString             googTimingFrameInfo;
 };
 
 // https://w3c.github.io/webrtc-stats/#remoteinboundrtpstats-dict*
