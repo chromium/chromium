@@ -2142,6 +2142,11 @@ const char kOmniboxCR23ExpandedStateHeightName[] =
 const char kOmniboxCR23ExpandedStateHeightDescription[] =
     "Updates Omnibox expanded state height to comply with CR23 guidelines.";
 
+const char kOmniboxCR23ExpandedStateLayoutName[] =
+    "Omnibox Expanded State Layout";
+const char kOmniboxCR23ExpandedStateLayoutDescription[] =
+    "Updates Omnibox expanded state layout to comply with CR23 guidelines.";
+
 const char kOmniboxCR23ExpandedStateShapeName[] =
     "Omnibox Expanded State Shape";
 const char kOmniboxCR23ExpandedStateShapeDescription[] =

@@ -371,14 +371,17 @@ extern const base::FeatureParam<double> kSquareSuggestIconEntitiesScale;
 // Omnibox UI simplification - uniform row heights.
 // Returns true if the feature to enable uniform row height is enabled.
 bool IsUniformRowHeightEnabled();
+
 // Specifies the row height in pixels for omnibox suggestions.
 extern const base::FeatureParam<int> kSuggestionRowHeight;
 // Specifies the vertical margin to use in one-line rich entity and answer
 // suggestions.
 extern const base::FeatureParam<int> kRichSuggestionVerticalMargin;
+
 // Omnibox GM3 - icons.
 // Returns true if the feature to enable GM3 icons is enabled.
 bool IsChromeRefreshIconsEnabled();
+
 // Omnibox GM3 - text style.
 // Returns true if the feature to enable GM3 text styling is enabled.
 bool IsGM3TextStyleEnabled();
@@ -386,6 +389,10 @@ bool IsGM3TextStyleEnabled();
 extern const base::FeatureParam<int> kFontSizeTouchUI;
 // Specifies the omnibox font size (non-Touch UI).
 extern const base::FeatureParam<int> kFontSizeNonTouchUI;
+
+// Omnibox CR23 - layout.
+// Returns true if `kExpandedLayout` is enabled.
+bool IsCr23LayoutEnabled();
 
 // ---------------------------------------------------------
 // Clipboard URL suggestions:

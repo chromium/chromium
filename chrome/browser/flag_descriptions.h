@@ -1202,6 +1202,9 @@ extern const char kOmniboxCR23ExpandedStateColorsDescription[];
 extern const char kOmniboxCR23ExpandedStateHeightName[];
 extern const char kOmniboxCR23ExpandedStateHeightDescription[];
 
+extern const char kOmniboxCR23ExpandedStateLayoutName[];
+extern const char kOmniboxCR23ExpandedStateLayoutDescription[];
+
 extern const char kOmniboxCR23ExpandedStateShapeName[];
 extern const char kOmniboxCR23ExpandedStateShapeDescription[];
 

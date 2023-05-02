@@ -5871,6 +5871,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxCR23ExpandedStateColorsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kExpandedStateColors)},
 
+    {"omnibox-cr23-expanded-state-layout",
+     flag_descriptions::kOmniboxCR23ExpandedStateLayoutName,
+     flag_descriptions::kOmniboxCR23ExpandedStateLayoutDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kExpandedLayout)},
+
     {"omnibox-gm3-steady-state-background-color",
      flag_descriptions::kOmniboxGM3SteadyStateBackgroundColorName,
      flag_descriptions::kOmniboxGM3SteadyStateBackgroundColorDescription,

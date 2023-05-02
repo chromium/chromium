@@ -58495,6 +58495,7 @@ from previous Chrome versions.
       label="IncognitoBrandConsistencyForAndroid:disabled"/>
   <int value="-2037280696" label="EcheSWASendStartSignaling:disabled"/>
   <int value="-2036629516" label="SideSearchStatePerTab:enabled"/>
+  <int value="-2036268747" label="OmniboxExpandedLayout:disabled"/>
   <int value="-2036149591" label="FaviconsFromWebManifest:disabled"/>
   <int value="-2036127998" label="LocalWebApprovals:disabled"/>
   <int value="-2035126988" label="enabled-new-style-notification"/>
@@ -63274,6 +63275,7 @@ from previous Chrome versions.
   <int value="506015849" label="OmniboxFuzzyUrlSuggestions:disabled"/>
   <int value="506153966" label="WebAppSyncGeneratedIconUpdateFix:disabled"/>
   <int value="506680761" label="WebNFC:disabled"/>
+  <int value="507206806" label="OmniboxExpandedLayout:enabled"/>
   <int value="508272289" label="SharedHighlightingAmp:disabled"/>
   <int value="510066229"
       label="AutofillEnforceMinRequiredFieldsForQuery:enabled"/>

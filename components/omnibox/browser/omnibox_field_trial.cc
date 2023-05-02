@@ -685,9 +685,11 @@ const base::FeatureParam<int> OmniboxFieldTrial::kRichSuggestionVerticalMargin(
     4);
 
 bool OmniboxFieldTrial::IsChromeRefreshIconsEnabled() {
-  return features::GetChromeRefresh2023Level() ==
-             features::ChromeRefresh2023Level::kLevel2 ||
-         base::FeatureList::IsEnabled(omnibox::kOmniboxCR23SteadyStateIcons);
+  static bool enabled =
+      features::GetChromeRefresh2023Level() ==
+          features::ChromeRefresh2023Level::kLevel2 ||
+      base::FeatureList::IsEnabled(omnibox::kOmniboxCR23SteadyStateIcons);
+  return enabled;
 }
 
 bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
@@ -723,6 +725,14 @@ const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeNonTouchUI(
     &omnibox::kOmniboxSteadyStateTextStyle,
     "OmniboxFontSizeNonTouchUI",
     12);
+
+bool OmniboxFieldTrial::IsCr23LayoutEnabled() {
+  static const bool enabled =
+      features::GetChromeRefresh2023Level() ==
+          features::ChromeRefresh2023Level::kLevel2 ||
+      base::FeatureList::IsEnabled(omnibox::kExpandedLayout);
+  return enabled;
+}
 
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
