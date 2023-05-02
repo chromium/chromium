@@ -29,42 +29,23 @@ bool StyleRecalcChange::TraverseChild(const Node& node) const {
 }
 
 bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
-  recordreplay::Assert("[RUN-1219-1706] StyleRecalcChange::ShouldRecalcStyleFor #0 %d",
-    node.RecordReplayId());
   if (flags_ & kSuppressRecalc) {
-    recordreplay::Assert("StyleRecalcChange::ShouldRecalcStyleFor %d suppressRecalc",
-      node.RecordReplayId());
     return false;
   }
   if (RecalcChildren()) {
-    recordreplay::Assert("[RUN-1219-1706] StyleRecalcChange::ShouldRecalcStyleFor %d recalcChildren",
-      node.RecordReplayId());
     return true;
   }
   if (node.NeedsStyleRecalc()) {
-    recordreplay::Assert("[RUN-1219-1706] StyleRecalcChange::ShouldRecalcStyleFor %d needsStyleRecalc",
-      node.RecordReplayId());
     return true;
   }
   // Early exit before getting the computed style.
   if (!RecalcContainerQueryDependent()) {
-    recordreplay::Assert("[RUN-1219-1706] StyleRecalcChange::ShouldRecalcStyleFor %d needsStyleRecalc",
-      node.RecordReplayId());
     return false;
   }
   const ComputedStyle* old_style = node.GetComputedStyle();
   // Container queries may affect display:none elements, and we since we store
   // that dependency on ComputedStyle we need to recalc style for display:none
   // subtree roots.
-  recordreplay::Assert(
-    "[RUN-1219-1706] StyleRecalcChange::ShouldRecalcStyleFor END %d old=%d sz=%d dsz=%d st=%d dst=%d",
-    node.RecordReplayId(),
-    (int) !!old_style,
-    (int) RecalcSizeContainerQueryDependent(),
-    (int) (old_style && old_style->DependsOnSizeContainerQueries()),
-    (int) RecalcStyleContainerQueryDependent(),
-    (int) (old_style && old_style->DependsOnStyleContainerQueries())
-  );
   return !old_style ||
          (RecalcSizeContainerQueryDependent() &&
           old_style->DependsOnSizeContainerQueries()) ||

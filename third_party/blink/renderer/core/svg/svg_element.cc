@@ -84,8 +84,6 @@ SVGElement::~SVGElement() {
 }
 
 void SVGElement::DetachLayoutTree(bool performing_reattach) {
-  recordreplay::Assert("[RUN-1219-1694] SVGElement::DetachLayoutTree %d",
-    this->RecordReplayId());
   Element::DetachLayoutTree(performing_reattach);
   // To avoid a noncollectable Blink GC reference cycle, we must clear the
   // ComputedStyle here. See http://crbug.com/878032#c11

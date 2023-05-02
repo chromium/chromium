@@ -1258,10 +1258,6 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
                              const HeapVector<NGInlineItem>* previous_items,
                              const Font* override_font) const {
 
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeText id=%d items=%u",
-    RecordReplayId(), (unsigned) data->items.size());
-
   TRACE_EVENT0("fonts", "NGInlineNode::ShapeText");
   const String& text_content = data->text_content;
   HeapVector<NGInlineItem>* items = &data->items;
@@ -1274,15 +1270,12 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
          data->segments->EndOffset() == text_content.length());
 
   for (unsigned index = 0; index < items->size();) {
-    recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeText #1 index=%u", index);
     NGInlineItem& start_item = (*items)[index];
 
     if (start_item.Type() != NGInlineItem::kText || !start_item.Length()) {
       index++;
       continue;
     }
-    // https://linear.app/replay/issue/RUN-1219
-    recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeText #2");
 
     const ComputedStyle& start_style = *start_item.Style();
     const Font& font =
@@ -1313,8 +1306,6 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
       index++;
       continue;
     }
-    // https://linear.app/replay/issue/RUN-1219
-    recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeText #3");
 
     // Scan forward until an item is encountered that should trigger a shaping
     // break. This ensures that adjacent text items are shaped together whenever
@@ -1368,8 +1359,6 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
       index++;
       continue;
     }
-    // https://linear.app/replay/issue/RUN-1219
-    recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeText #4");
 
     // Results may only be reused if all items in the range remain valid.
     if (previous_text) {
@@ -1397,15 +1386,11 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
         continue;
       }
     }
-    // https://linear.app/replay/issue/RUN-1219
-    recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeText #5");
 
     // Shape each item with the full context of the entire node.
     scoped_refptr<ShapeResult> shape_result;
     if (MutableData() && MutableData()->IsShapingDeferred() &&
         font.PrimaryFont()) {
-      // https://linear.app/replay/issue/RUN-1219
-      recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeText #6");
       unsigned length = end_offset - start_item.StartOffset();
       shape_result = ShapeResult::CreateForSpacesWithPerGlyphWidth(
           &font, TextDirection::kLtr, start_item.StartOffset(), length,
@@ -1470,10 +1455,6 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
 // Create HeapVector<NGInlineItem> with :first-line rules applied if needed.
 void NGInlineNode::ShapeTextForFirstLineIfNeeded(NGInlineNodeData* data) const {
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeTextForFirstLineIfNeeded id=%d",
-    RecordReplayId());
-
   // First check if the document has any :first-line rules.
   DCHECK(!data->first_line_items_);
   LayoutObject* layout_object = GetLayoutBox();
@@ -1524,10 +1505,6 @@ void NGInlineNode::ShapeTextIncludingFirstLine(
     const String* previous_text,
     const HeapVector<NGInlineItem>* previous_items) const {
 
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeTextIncludingFirstLine id=%d",
-    RecordReplayId());
-
   DCHECK_NE(new_state, NGInlineNodeData::kShapingNone);
   data->shaping_state_ = new_state;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -1538,9 +1515,6 @@ void NGInlineNode::ShapeTextIncludingFirstLine(
 #endif
 
   ShapeText(data, previous_text, previous_items);
-
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeTextIncludingFirstLine #2");
 
   if (new_state == NGInlineNodeData::kShapingDone)
     ShapeTextForFirstLineIfNeeded(data);
@@ -1934,10 +1908,6 @@ MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
     WritingMode container_writing_mode,
     const NGConstraintSpace& space,
     const MinMaxSizesFloatInput& float_input) const {
-
-  // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] NGInlineNode::ComputeMinMaxSizes id=%d",
-    RecordReplayId());
 
   PrepareLayoutIfNeeded();
   ShapeTextOrDefer(space);

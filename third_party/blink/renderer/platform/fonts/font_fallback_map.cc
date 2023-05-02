@@ -21,27 +21,18 @@ FontFallbackMap::~FontFallbackMap() {
 
 scoped_refptr<FontFallbackList> FontFallbackMap::Get(
     const FontDescription& font_description) {
-  recordreplay::Assert("[RUN-1219-1708] FontFallbackMap::Get %d #0",
-    record_replay_id_);
   AutoLockForParallelTextShaping guard(lock_);
   auto iter = fallback_list_for_description_.find(font_description);
   if (iter != fallback_list_for_description_.end()) {
     DCHECK(iter->value->IsValid());
     return iter->value;
   }
-  recordreplay::Assert("[RUN-1219-1708] FontFallbackMap::Get %d #1",
-    record_replay_id_);
   auto add_result = fallback_list_for_description_.insert(
       font_description, FontFallbackList::Create(*this));
-  recordreplay::Assert("[RUN-1219-1708] FontFallbackMap::Get %d #2",
-    record_replay_id_);
   return add_result.stored_value->value;
 }
 
 void FontFallbackMap::Remove(const FontDescription& font_description) {
-  recordreplay::Assert("[RUN-1219-1718] FontFallbackMap::Remove #0 %d %u",
-    record_replay_id_, StringHash::GetHash(font_description.ToString()));
-    
   AutoLockForParallelTextShaping guard(lock_);
   auto iter = fallback_list_for_description_.find(font_description);
   DCHECK_NE(iter, fallback_list_for_description_.end());
@@ -51,14 +42,6 @@ void FontFallbackMap::Remove(const FontDescription& font_description) {
 }
 
 void FontFallbackMap::InvalidateAll() {
-  // Only assert if events aren't disallowed.
-  // This is called from the font-fallback-map destructor, which may
-  // execute during GC.
-  if (!recordreplay::AreEventsDisallowed()) {
-    recordreplay::Assert("[RUN-1219-1718] FontFallbackMap::InvalidateAll %d",
-      record_replay_id_);
-  }
-
   lock_.AssertAcquired();
   for (auto& entry : fallback_list_for_description_)
     entry.value->MarkInvalid();
@@ -67,15 +50,10 @@ void FontFallbackMap::InvalidateAll() {
 
 template <typename Predicate>
 void FontFallbackMap::InvalidateInternal(Predicate predicate) {
-  recordreplay::Assert("[RUN-1219-1718] FontFallbackMap::InvalidateInternal %d #0",
-    record_replay_id_);
   lock_.AssertAcquired();
   Vector<FontDescription> invalidated;
   for (auto& entry : fallback_list_for_description_) {
     if (predicate(*entry.value)) {
-      recordreplay::Assert("[RUN-1219-1718] FontFallbackMap::InvalidateInternal #1 %d %s",
-        record_replay_id_,
-        entry.key.ToString().Utf8().data());
       invalidated.push_back(entry.key);
       entry.value->MarkInvalid();
     }
@@ -85,10 +63,6 @@ void FontFallbackMap::InvalidateInternal(Predicate predicate) {
 
 void FontFallbackMap::FontsNeedUpdate(FontSelector*,
                                       FontInvalidationReason reason) {
-  recordreplay::Assert(
-    "[RUN-1219-1728] FontFallbackMap::FontNeedsUpdate %d",
-    this->RecordReplayId()
-  );
   AutoLockForParallelTextShaping guard(lock_);
   switch (reason) {
     case FontInvalidationReason::kFontFaceLoaded:
@@ -107,8 +81,6 @@ void FontFallbackMap::FontsNeedUpdate(FontSelector*,
 }
 
 void FontFallbackMap::FontCacheInvalidated() {
-  recordreplay::Assert("[RUN-1219-1718] FontFallbackMap::FontCacheInvalidated %d",
-    record_replay_id_);
   AutoLockForParallelTextShaping guard(lock_);
   InvalidateAll();
 }

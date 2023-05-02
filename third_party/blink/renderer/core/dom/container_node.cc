@@ -802,11 +802,6 @@ void ContainerNode::RemoveBetween(Node* previous_child,
                                   Node* next_child,
                                   Node& old_child) {
   EventDispatchForbiddenScope assert_no_event_dispatch;
-  recordreplay::Assert("[RUN-1219-1694] ContainerNode::RemoveBetween %d %d %d %d",
-    this->RecordReplayId(),
-    previous_child ? previous_child->RecordReplayId() : -1,
-    next_child ? next_child->RecordReplayId() : -1,
-    old_child.RecordReplayId());
 
   DCHECK_EQ(old_child.parentNode(), this);
 
@@ -1070,12 +1065,7 @@ void ContainerNode::AttachLayoutTree(AttachContext& context) {
 }
 
 void ContainerNode::DetachLayoutTree(bool performing_reattach) {
-  recordreplay::Assert("[RUN-1219-1694] ContainerNode::DetachLayoutTree #1 %d",
-    this->RecordReplayId());
   for (Node* child = firstChild(); child; child = child->nextSibling()) {
-    recordreplay::Assert("[RUN-1219-1694] ContainerNode::DetachLayoutTree #2 %d child=%d",
-      this->RecordReplayId(),
-      child->RecordReplayId());
     child->DetachLayoutTree(performing_reattach);
   }
   Node::DetachLayoutTree(performing_reattach);

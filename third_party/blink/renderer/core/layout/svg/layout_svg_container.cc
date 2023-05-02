@@ -119,11 +119,6 @@ void LayoutSVGContainer::AddChild(LayoutObject* child,
 }
 
 void LayoutSVGContainer::RemoveChild(LayoutObject* child) {
-  recordreplay::Assert(
-    "[RUN-1219-1694] LayoutSVGContainer::RemoveChild %d child=%d",
-    this->RecordReplayId(),
-    child->RecordReplayId()
-  );
   NOT_DESTROYED();
   LayoutSVGModelObject::RemoveChild(child);
 
