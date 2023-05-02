@@ -193,9 +193,25 @@ std::vector<IID> GetActiveInterfaces(UpdaterScope scope) {
         switch (scope) {
           case UpdaterScope::kUser:
             return {
-                __uuidof(IUpdateStateUser),     __uuidof(IUpdaterUser),
-                __uuidof(ICompleteStatusUser),  __uuidof(IUpdaterObserverUser),
+                __uuidof(IUpdateStateUser),
+                __uuidof(IUpdaterUser),
+                __uuidof(ICompleteStatusUser),
+                __uuidof(IUpdaterObserverUser),
                 __uuidof(IUpdaterCallbackUser),
+
+                // legacy interfaces.
+                __uuidof(IAppVersionWebUser),
+                __uuidof(ICurrentStateUser),
+                __uuidof(IGoogleUpdate3WebUser),
+                __uuidof(IAppBundleWebUser),
+                __uuidof(IAppWebUser),
+                __uuidof(IAppCommandWebUser),
+                __uuidof(IPolicyStatusUser),
+                __uuidof(IPolicyStatus2User),
+                __uuidof(IPolicyStatus3User),
+                __uuidof(IPolicyStatusValueUser),
+                __uuidof(IProcessLauncherUser),
+                __uuidof(IProcessLauncher2User),
             };
           case UpdaterScope::kSystem:
             return {
@@ -204,6 +220,20 @@ std::vector<IID> GetActiveInterfaces(UpdaterScope scope) {
                 __uuidof(ICompleteStatusSystem),
                 __uuidof(IUpdaterObserverSystem),
                 __uuidof(IUpdaterCallbackSystem),
+
+                // legacy interfaces.
+                __uuidof(IAppVersionWebSystem),
+                __uuidof(ICurrentStateSystem),
+                __uuidof(IGoogleUpdate3WebSystem),
+                __uuidof(IAppBundleWebSystem),
+                __uuidof(IAppWebSystem),
+                __uuidof(IAppCommandWebSystem),
+                __uuidof(IPolicyStatusSystem),
+                __uuidof(IPolicyStatus2System),
+                __uuidof(IPolicyStatus3System),
+                __uuidof(IPolicyStatusValueSystem),
+                __uuidof(IProcessLauncherSystem),
+                __uuidof(IProcessLauncher2System),
             };
         }
       }(),
@@ -401,18 +431,42 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
           {__uuidof(IUpdaterInternalCallbackSystem), kUpdaterInternalIndex},
 
           // Updater legacy typelib.
-          {__uuidof(IAppBundleWeb), kUpdaterLegacyIndex},
-          {__uuidof(IAppWeb), kUpdaterLegacyIndex},
-          {__uuidof(IAppCommandWeb), kUpdaterLegacyIndex},
           {__uuidof(IAppVersionWeb), kUpdaterLegacyIndex},
+          {__uuidof(IAppVersionWebUser), kUpdaterLegacyIndex},
+          {__uuidof(IAppVersionWebSystem), kUpdaterLegacyIndex},
           {__uuidof(ICurrentState), kUpdaterLegacyIndex},
+          {__uuidof(ICurrentStateUser), kUpdaterLegacyIndex},
+          {__uuidof(ICurrentStateSystem), kUpdaterLegacyIndex},
           {__uuidof(IGoogleUpdate3Web), kUpdaterLegacyIndex},
+          {__uuidof(IGoogleUpdate3WebUser), kUpdaterLegacyIndex},
+          {__uuidof(IGoogleUpdate3WebSystem), kUpdaterLegacyIndex},
+          {__uuidof(IAppBundleWeb), kUpdaterLegacyIndex},
+          {__uuidof(IAppBundleWebUser), kUpdaterLegacyIndex},
+          {__uuidof(IAppBundleWebSystem), kUpdaterLegacyIndex},
+          {__uuidof(IAppWeb), kUpdaterLegacyIndex},
+          {__uuidof(IAppWebUser), kUpdaterLegacyIndex},
+          {__uuidof(IAppWebSystem), kUpdaterLegacyIndex},
+          {__uuidof(IAppCommandWeb), kUpdaterLegacyIndex},
+          {__uuidof(IAppCommandWebUser), kUpdaterLegacyIndex},
+          {__uuidof(IAppCommandWebSystem), kUpdaterLegacyIndex},
           {__uuidof(IPolicyStatus), kUpdaterLegacyIndex},
+          {__uuidof(IPolicyStatusUser), kUpdaterLegacyIndex},
+          {__uuidof(IPolicyStatusSystem), kUpdaterLegacyIndex},
           {__uuidof(IPolicyStatus2), kUpdaterLegacyIndex},
+          {__uuidof(IPolicyStatus2User), kUpdaterLegacyIndex},
+          {__uuidof(IPolicyStatus2System), kUpdaterLegacyIndex},
           {__uuidof(IPolicyStatus3), kUpdaterLegacyIndex},
+          {__uuidof(IPolicyStatus3User), kUpdaterLegacyIndex},
+          {__uuidof(IPolicyStatus3System), kUpdaterLegacyIndex},
           {__uuidof(IPolicyStatusValue), kUpdaterLegacyIndex},
+          {__uuidof(IPolicyStatusValueUser), kUpdaterLegacyIndex},
+          {__uuidof(IPolicyStatusValueSystem), kUpdaterLegacyIndex},
           {__uuidof(IProcessLauncher), kUpdaterLegacyIndex},
+          {__uuidof(IProcessLauncherUser), kUpdaterLegacyIndex},
+          {__uuidof(IProcessLauncherSystem), kUpdaterLegacyIndex},
           {__uuidof(IProcessLauncher2), kUpdaterLegacyIndex},
+          {__uuidof(IProcessLauncher2User), kUpdaterLegacyIndex},
+          {__uuidof(IProcessLauncher2System), kUpdaterLegacyIndex},
       }};
   auto index = kTypeLibIndexes->find(iid);
   CHECK(index != kTypeLibIndexes->end());

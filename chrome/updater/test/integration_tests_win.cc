@@ -811,12 +811,25 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
          }()) {
       Microsoft::WRL::ComPtr<IUnknown> updater_legacy_server;
       ASSERT_HRESULT_SUCCEEDED(CreateLocalServer(clsid, updater_legacy_server));
+
+      // The non-user/system-specialized interfaces are registered for all
+      // installs for backward compatibility.
       Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
       ASSERT_HRESULT_SUCCEEDED(updater_legacy_server.As(&google_update));
+      google_update.Reset();
+      EXPECT_HRESULT_SUCCEEDED(updater_legacy_server.CopyTo(
+          IsSystemInstall(scope) ? __uuidof(IGoogleUpdate3WebSystem)
+                                 : __uuidof(IGoogleUpdate3WebUser),
+          IID_PPV_ARGS_Helper(&google_update)));
       Microsoft::WRL::ComPtr<IAppBundleWeb> app_bundle;
       Microsoft::WRL::ComPtr<IDispatch> dispatch;
       ASSERT_HRESULT_SUCCEEDED(google_update->createAppBundleWeb(&dispatch));
       EXPECT_HRESULT_SUCCEEDED(dispatch.As(&app_bundle));
+      app_bundle.Reset();
+      EXPECT_HRESULT_SUCCEEDED(
+          dispatch.CopyTo(IsSystemInstall(scope) ? __uuidof(IAppBundleWebSystem)
+                                                 : __uuidof(IAppBundleWebUser),
+                          IID_PPV_ARGS_Helper(&app_bundle)));
     }
   }
 
@@ -911,7 +924,11 @@ void InitializeBundle(UpdaterScope scope,
   Microsoft::WRL::ComPtr<IDispatch> dispatch;
   ASSERT_HRESULT_SUCCEEDED(update3web->createAppBundleWeb(&dispatch));
   ASSERT_HRESULT_SUCCEEDED(dispatch.As(&bundle));
-
+  bundle.Reset();
+  ASSERT_HRESULT_SUCCEEDED(dispatch.CopyTo(IsSystemInstall(scope)
+                                               ? __uuidof(IAppBundleWebSystem)
+                                               : __uuidof(IAppBundleWebUser),
+                                           IID_PPV_ARGS_Helper(&bundle)));
   EXPECT_HRESULT_SUCCEEDED(bundle->initialize());
 
   bundle_web = bundle;
@@ -945,10 +962,20 @@ HRESULT DoUpdate(UpdaterScope scope,
     EXPECT_HRESULT_SUCCEEDED(bundle->get_appWeb(0, &app_dispatch));
     Microsoft::WRL::ComPtr<IAppWeb> app;
     EXPECT_HRESULT_SUCCEEDED(app_dispatch.As(&app));
+    app.Reset();
+    EXPECT_HRESULT_SUCCEEDED(app_dispatch.CopyTo(IsSystemInstall(scope)
+                                                     ? __uuidof(IAppWebSystem)
+                                                     : __uuidof(IAppWebUser),
+                                                 IID_PPV_ARGS_Helper(&app)));
     Microsoft::WRL::ComPtr<IDispatch> state_dispatch;
     EXPECT_HRESULT_SUCCEEDED(app->get_currentState(&state_dispatch));
     Microsoft::WRL::ComPtr<ICurrentState> state;
     EXPECT_HRESULT_SUCCEEDED(state_dispatch.As(&state));
+    state.Reset();
+    EXPECT_HRESULT_SUCCEEDED(state_dispatch.CopyTo(
+        IsSystemInstall(scope) ? __uuidof(ICurrentStateSystem)
+                               : __uuidof(ICurrentStateUser),
+        IID_PPV_ARGS_Helper(&state)));
     EXPECT_HRESULT_SUCCEEDED(state->get_stateValue(&state_value));
 
     std::wstring state_description;
@@ -1195,12 +1222,21 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
   ASSERT_HRESULT_SUCCEEDED(bundle->get_appWeb(0, &app_dispatch));
   Microsoft::WRL::ComPtr<IAppWeb> app;
   ASSERT_HRESULT_SUCCEEDED(app_dispatch.As(&app));
+  app.Reset();
+  ASSERT_HRESULT_SUCCEEDED(app_dispatch.CopyTo(
+      IsSystemInstall(scope) ? __uuidof(IAppWebSystem) : __uuidof(IAppWebUser),
+      IID_PPV_ARGS_Helper(&app)));
 
   Microsoft::WRL::ComPtr<IDispatch> command_dispatch;
   ASSERT_HRESULT_SUCCEEDED(app->get_command(
       base::win::ScopedBstr(commandid).Get(), &command_dispatch));
   Microsoft::WRL::ComPtr<IAppCommandWeb> app_command_web;
   ASSERT_HRESULT_SUCCEEDED(command_dispatch.As(&app_command_web));
+  app_command_web.Reset();
+  ASSERT_HRESULT_SUCCEEDED(command_dispatch.CopyTo(
+      IsSystemInstall(scope) ? __uuidof(IAppCommandWebSystem)
+                             : __uuidof(IAppCommandWebUser),
+      IID_PPV_ARGS_Helper(&app_command_web)));
 
   std::vector<base::win::ScopedVariant> variant_params;
   variant_params.reserve(kMaxParameters);
