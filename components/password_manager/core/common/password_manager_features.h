@@ -146,7 +146,7 @@ inline constexpr base::FeatureParam<bool> kFallbackOnRemoveOperations = {
 inline constexpr base::FeatureParam<bool>
     kFallbackOnUserAffectingReadOperations = {
         &kUnifiedPasswordManagerAndroid,
-        "fallback_on_user_affecting_read_operations", false};
+        "fallback_on_user_affecting_read_operations", true};
 
 // Fallback on GetAllLogins* and GetAutofillableLogins operations which are
 // needed for certain features (e.g. PhishGuard) but do not affect the core
