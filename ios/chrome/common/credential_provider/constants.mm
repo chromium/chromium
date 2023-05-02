@@ -97,16 +97,3 @@ NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled() {
       stringByAppendingString:
           kUserDefaulsCredentialProviderSavingPasswordsEnabled];
 }
-
-NSArray<NSString*>* UnusedUserDefaultsCredentialProviderKeys() {
-  return @[
-    @"UserDefaultsCredentialProviderASIdentityStoreSyncCompleted.V0",
-    @"UserDefaultsCredentialProviderFirstTimeSyncCompleted.V0"
-  ];
-}
-
-NSString* const kUserDefaultsCredentialProviderASIdentityStoreSyncCompleted =
-    @"UserDefaultsCredentialProviderASIdentityStoreSyncCompleted.V1";
-
-NSString* const kUserDefaultsCredentialProviderFirstTimeSyncCompleted =
-    @"UserDefaultsCredentialProviderFirstTimeSyncCompleted.V1";

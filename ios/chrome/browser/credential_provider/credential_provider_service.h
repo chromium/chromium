@@ -66,10 +66,6 @@ class CredentialProviderService
   // the old ones are deleted.
   void RequestSyncAllCredentials();
 
-  // Evaluates if a credential refresh is needed, and request all the
-  // credentials to sync them if needed.
-  void RequestSyncAllCredentialsIfNeeded();
-
   // Replaces all data with credentials created from the passed forms and then
   // syncs to disk. Errors are treated as an empty list of credentials.
   void SyncAllCredentials(
@@ -78,7 +74,7 @@ class CredentialProviderService
           password_manager::PasswordStoreBackendError> forms_or_error);
 
   // Syncs the credential store to disk.
-  void SyncStore(bool set_first_time_sync_flag);
+  void SyncStore();
 
   // Add credentials from `forms`.
   void AddCredentials(
@@ -117,7 +113,6 @@ class CredentialProviderService
           password_manager::PasswordStoreBackendError> forms_or_error);
 
   // syncer::SyncServiceObserver:
-  void OnSyncConfigurationCompleted(syncer::SyncService* sync) override;
   void OnStateChanged(syncer::SyncService* sync) override;
 
   // Observer for when `saving_passwords_enabled_` changes.
@@ -141,7 +136,7 @@ class CredentialProviderService
   const raw_ptr<FaviconLoader> favicon_loader_;
 
   // The interface for saving and updating credentials.
-  const id<MutableCredentialStore> credential_store_ = nil;
+  const id<MutableCredentialStore> credential_store_;
 
   // The current validation ID or nil.
   NSString* account_id_ = nil;
