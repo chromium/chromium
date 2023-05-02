@@ -8,42 +8,8 @@
 
 #include "base/at_exit.h"
 #include "base/threading/platform_thread.h"
+#include "base/record_replay_inline.h"
 
-#if !BUILDFLAG(IS_WIN)
-#include <dlfcn.h>
-#else
-#include <windows.h>
-#endif
-
-static void* LookupRecordReplaySymbol(const char* name) {
-#if !BUILDFLAG(IS_WIN)
-  void* fnptr = dlsym(RTLD_DEFAULT, name);
-#else
-  HMODULE module = GetModuleHandleA("windows-recordreplay.dll");
-  void* fnptr = module ? (void*)GetProcAddress(module, name) : nullptr;
-#endif
-  return fnptr ? fnptr : reinterpret_cast<void*>(1);
-}
-
-static void RecordReplayBeginPassThroughEvents() {
-  static void* fnptr;
-  if (!fnptr) {
-    fnptr = LookupRecordReplaySymbol("RecordReplayBeginPassThroughEvents");
-  }
-  if (fnptr != reinterpret_cast<void*>(1)) {
-    reinterpret_cast<void(*)()>(fnptr)();
-  }
-}
-
-static void RecordReplayEndPassThroughEvents() {
-  static void* fnptr;
-  if (!fnptr) {
-    fnptr = LookupRecordReplaySymbol("RecordReplayEndPassThroughEvents");
-  }
-  if (fnptr != reinterpret_cast<void*>(1)) {
-    reinterpret_cast<void(*)()>(fnptr)();
-  }
-}
 
 namespace base {
 namespace internal {
@@ -70,7 +36,7 @@ bool NeedsLazyInstance(std::atomic<uintptr_t>& state) {
   if (state.load(std::memory_order_acquire) == kLazyInstanceStateCreating) {
     // Don't interact with the recording while we get the current time or sleep
     // in non-deterministic ways.
-    RecordReplayBeginPassThroughEvents();
+    RecordReplayAutoPassThroughEvents pt;
 
     const base::TimeTicks start = base::TimeTicks::Now();
     do {
@@ -85,8 +51,6 @@ bool NeedsLazyInstance(std::atomic<uintptr_t>& state) {
         PlatformThread::Sleep(Milliseconds(1));
     } while (state.load(std::memory_order_acquire) ==
              kLazyInstanceStateCreating);
-
-    RecordReplayEndPassThroughEvents();
   }
   // Someone else created the instance.
   return false;
