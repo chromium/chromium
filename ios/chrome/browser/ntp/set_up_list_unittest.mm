@@ -6,6 +6,7 @@
 
 #import "base/test/gtest_util.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/default_browser/utils.h"
@@ -57,7 +58,8 @@ class SetUpListTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
-    auth_service_->SignIn(identity);
+    auth_service_->SignIn(identity,
+                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
     auth_service_->GrantSyncConsent(identity);
   }
 
