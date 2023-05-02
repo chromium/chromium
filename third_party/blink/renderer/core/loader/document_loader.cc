@@ -2513,6 +2513,8 @@ void DocumentLoader::CommitNavigation() {
     }
   }
 
+  frame_->ClearScrollSnapshotClients();
+
   // Clear the user activation state.
   // TODO(crbug.com/736415): Clear this bit unconditionally for all frames.
   if (frame_->IsMainFrame())

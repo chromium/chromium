@@ -853,6 +853,8 @@ class CORE_EXPORT LocalFrame final
   // https://github.com/w3c/csswg-drafts/issues/5261
   bool ValidateScrollSnapshotClients();
 
+  void ClearScrollSnapshotClients();
+
   const HeapHashSet<WeakMember<ScrollSnapshotClient>>&
   GetUnvalidatedScrollSnapshotClientsForTesting() {
     return unvalidated_scroll_snapshot_clients_;

@@ -3493,6 +3493,11 @@ bool LocalFrame::ValidateScrollSnapshotClients() {
   return valid;
 }
 
+void LocalFrame::ClearScrollSnapshotClients() {
+  scroll_snapshot_clients_.clear();
+  unvalidated_scroll_snapshot_clients_.clear();
+}
+
 void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
   for (auto& client : scroll_snapshot_clients_) {
     if (client->ShouldScheduleNextService()) {
