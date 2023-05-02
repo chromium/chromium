@@ -88,7 +88,7 @@
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # Flaking frequently on Fuchsia and nobody has triaged why.
-crbug.com/1288217 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de ] Maps_maps [ Failure ]
+crbug.com/1288217 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de no-clang-coverage ] Maps_maps [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
