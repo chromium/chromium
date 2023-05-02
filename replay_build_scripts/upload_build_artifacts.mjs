@@ -182,7 +182,9 @@ async function main(options) {
   let buildArchives = [];
   const buildId = await buildChromiumSymbols(options);
 
-  switch (currentPlatform()) {
+  const platform = currentPlatform();
+
+  switch (platform) {
     case "linux":
       buildArchives = prepareLinuxBinaries(buildId);
       break;
@@ -201,12 +203,14 @@ async function main(options) {
 
   log(`Pushing Artifacts to S3`);
 
+  const downloadUris = [];
   for (const buildArchive of buildArchives) {
     // Push build to S3.
     uploadToAllBuckets(buildArchive, `builds/${buildArchive}`);
     fs.unlinkSync(buildArchive);
 
     // Copy build to downloads folder.
+    const s3WebsiteUri = `s3://${S3Website}/downloads/${buildArchive}`;
     spawnChecked(
       "aws",
       [
@@ -215,11 +219,29 @@ async function main(options) {
         "--cache-control",
         "max-age=3600",
         `s3://${S3Bucket}/builds/${buildArchive}`,
-        `s3://${S3Website}/downloads/${buildArchive}`,
+        s3WebsiteUri,
       ],
       { stdio: "inherit" }
     );
+    downloadUris.push(s3WebsiteUri);
   }
+
+  const markdownDownloadList = downloadUris
+    .map((uri) =>
+      uri.replace("s3://recordreplay-website", "https://static.replay.io")
+    )
+    .map((uri) => `* [${path.basename(uri)}](${uri})`)
+    .join("\n");
+
+  const markdownMessage = `# ${platform} links\n\n${markdownDownloadList}\n`;
+
+  spawnChecked(
+    "buildkite-agent",
+    ["annotate", "--append", "--style", "info", markdownMessage],
+    {
+      stdio: "inherit",
+    }
+  );
 
   const symbolsFile = `${buildId}.symbols.tgz`;
   uploadToAllBuckets(symbolsFile, `symbols/${symbolsFile}`);
