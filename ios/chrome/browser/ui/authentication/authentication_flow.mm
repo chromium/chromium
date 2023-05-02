@@ -11,6 +11,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/reading_list/features/reading_list_switches.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/sync/driver/sync_user_settings.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
@@ -23,6 +25,7 @@
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
@@ -549,8 +552,10 @@ enum AuthenticationState {
       << ", dualReadingListModelEnabled: " << dualReadingListModelEnabled
       << ", readingListTransportUponSignInEnabled: "
       << readingListTransportUponSignInEnabled;
-  // TODO(crbug.com/1427044): Need to call the right APIs to opt in, as soon as
-  // those APIs will be implemented.
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState([self originalBrowserState]);
+  syncer::SyncUserSettings* syncUserSettings = syncService->GetUserSettings();
+  syncUserSettings->SetBookmarksAndReadingListAccountStorageOptIn(true);
   _shouldShowSigninSnackbar = YES;
   [self continueSignin];
 }
