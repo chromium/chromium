@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/ranges.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
@@ -587,11 +588,18 @@ struct AutocompleteMatch {
   // exists, and nullptr otherwise.
   OmniboxAction* GetPrimaryAction() const;
 
-  // Finds first action where predicate returns true. This is a special use
+  // Returns if `predicate` returns true for the match or one of its duplicates.
+  template <typename UnaryPredicate>
+  bool MatchOrDuplicateMeets(UnaryPredicate predicate) const {
+    return predicate(*this) ||
+           base::ranges::any_of(duplicate_matches, std::move(predicate));
+  }
+
+  // Finds first action where `predicate` returns true. This is a special use
   // utility method for situations where actions with certain constraints
   // need to be selected. If no such action is found, returns nullptr.
-  template <typename Predicate>
-  OmniboxAction* GetActionWhere(Predicate predicate) const {
+  template <typename UnaryPredicate>
+  OmniboxAction* GetActionWhere(UnaryPredicate predicate) const {
     auto it = base::ranges::find_if(actions, std::move(predicate));
     return it != actions.end() ? it->get() : nullptr;
   }

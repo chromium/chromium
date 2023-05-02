@@ -40,7 +40,9 @@
 #include "components/history_clusters/core/config.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/bookmark_scoring_signals_annotator.h"
 #include "components/omnibox/browser/builtin_provider.h"
@@ -1553,6 +1555,13 @@ void AutocompleteController::RunUrlScoringModel(
        match_index++) {
     auto* match = result_.match_at(match_index);
     if (match->scoring_signals.has_value()) {
+      // Only eligible matches should have scoring signals.
+      DCHECK(match->MatchOrDuplicateMeets([](const auto& match) {
+        return AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match);
+      })) << "Unexpected "
+          << AutocompleteMatchType::ToString(match->type) << " match at index "
+          << match_index << " sent to the scoring model.";
+
       // Run the model for matches with scoring signals.
       provider_client_->GetAutocompleteScoringModelService()
           ->ScoreAutocompleteUrlMatch(&scoring_model_task_tracker_,
