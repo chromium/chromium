@@ -288,7 +288,10 @@ void LazyLoadImageObserver::OnVisibilityChanged(
         image_element->EnsureVisibleLoadTimeMetrics();
     // The image's visiblity shouldn't still be monitored if the time when the
     // image first became visible has already been measured.
-    DCHECK(visible_load_time_metrics.time_when_first_visible.is_null());
+    if (!visible_load_time_metrics.time_when_first_visible.is_null()) {
+      visibility_metrics_observer_->unobserve(image_element);
+      continue;
+    }
 
     if (!visible_load_time_metrics.has_initial_intersection_been_set) {
       visible_load_time_metrics.has_initial_intersection_been_set = true;
