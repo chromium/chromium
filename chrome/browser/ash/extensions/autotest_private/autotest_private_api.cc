@@ -618,8 +618,10 @@ chromeos::WindowStateType GetExpectedWindowState(
       return chromeos::WindowStateType::kMinimized;
     case api::autotest_private::WMEventType::kWmeventFullscreen:
       return chromeos::WindowStateType::kFullscreen;
+    case api::autotest_private::WMEventType::kWmeventSnapPrimary:
     case api::autotest_private::WMEventType::kWmeventSnapLeft:
       return chromeos::WindowStateType::kPrimarySnapped;
+    case api::autotest_private::WMEventType::kWmeventSnapSecondary:
     case api::autotest_private::WMEventType::kWmeventSnapRight:
       return chromeos::WindowStateType::kSecondarySnapped;
     case api::autotest_private::WMEventType::kWmeventFloat:
@@ -640,8 +642,10 @@ ash::WMEventType ToWMEventType(api::autotest_private::WMEventType event_type) {
       return ash::WMEventType::WM_EVENT_MINIMIZE;
     case api::autotest_private::WMEventType::kWmeventFullscreen:
       return ash::WMEventType::WM_EVENT_FULLSCREEN;
+    case api::autotest_private::WMEventType::kWmeventSnapPrimary:
     case api::autotest_private::WMEventType::kWmeventSnapLeft:
       return ash::WMEventType::WM_EVENT_SNAP_PRIMARY;
+    case api::autotest_private::WMEventType::kWmeventSnapSecondary:
     case api::autotest_private::WMEventType::kWmeventSnapRight:
       return ash::WMEventType::WM_EVENT_SNAP_SECONDARY;
     case api::autotest_private::WMEventType::kWmeventFloat:
@@ -666,9 +670,9 @@ api::autotest_private::WindowStateType ToWindowStateType(
     case chromeos::WindowStateType::kFullscreen:
       return api::autotest_private::WindowStateType::kFullscreen;
     case chromeos::WindowStateType::kPrimarySnapped:
-      return api::autotest_private::WindowStateType::kLeftSnapped;
+      return api::autotest_private::WindowStateType::kPrimarySnapped;
     case chromeos::WindowStateType::kSecondarySnapped:
-      return api::autotest_private::WindowStateType::kRightSnapped;
+      return api::autotest_private::WindowStateType::kSecondarySnapped;
     case chromeos::WindowStateType::kPip:
       return api::autotest_private::WindowStateType::kPip;
     case chromeos::WindowStateType::kFloated:
@@ -4720,6 +4724,10 @@ AutotestPrivateSetAppWindowStateFunction::Run() {
   }
 
   if (params->change.event_type ==
+          api::autotest_private::WMEventType::kWmeventSnapPrimary ||
+      params->change.event_type ==
+          api::autotest_private::WMEventType::kWmeventSnapSecondary ||
+      params->change.event_type ==
           api::autotest_private::WMEventType::kWmeventSnapLeft ||
       params->change.event_type ==
           api::autotest_private::WMEventType::kWmeventSnapRight) {
