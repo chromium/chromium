@@ -36,6 +36,7 @@
       "chrome/app/google_chrome_strings.grd",
       "chrome/browser/password_check/android/internal/java/strings/android_password_check_strings.grd",
       "chrome/browser/resources/chromeos/accessibility/strings/accessibility_strings.grd",
+      "chrome/browser/recent_tabs/internal/android/java/strings/android_restore_tabs_strings.grd",
       "chrome/browser/touch_to_fill/android/internal/java/strings/android_touch_to_fill_strings.grd",
       "chrome/browser/ui/android/fast_checkout/internal/java/strings/android_fast_checkout_strings.grd",
       "chrome/browser/ui/android/strings/android_chrome_strings.grd",

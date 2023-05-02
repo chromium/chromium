@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.SELE
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.DEVICE_SCREEN;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.HOME_SCREEN;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.REVIEW_TABS_SCREEN;
+import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.UNINITIALIZED;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.VISIBLE;
 
 import org.junit.After;
@@ -83,7 +84,7 @@ public class RestoreTabsMediatorUnitTest {
         assertThat(mModel.get(HOME_SCREEN_DELEGATE),
                 instanceOf(RestoreTabsPromoScreenCoordinator.Delegate.class));
         Assert.assertNotNull(mModel.get(DETAIL_SCREEN_BACK_CLICK_HANDLER));
-        Assert.assertEquals(mModel.get(CURRENT_SCREEN), HOME_SCREEN);
+        Assert.assertEquals(mModel.get(CURRENT_SCREEN), UNINITIALIZED);
         Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 0);
     }
 
@@ -95,7 +96,7 @@ public class RestoreTabsMediatorUnitTest {
         testSessions.add(session);
 
         when(mForeignSessionHelper.getMobileAndTabletForeignSessions()).thenReturn(testSessions);
-        mMediator.showOptions();
+        mMediator.showHomeScreen();
         Assert.assertEquals(mModel.get(VISIBLE), true);
         mMediator.dismiss();
         Assert.assertEquals(mModel.get(VISIBLE), false);
@@ -109,7 +110,7 @@ public class RestoreTabsMediatorUnitTest {
         testSessions.add(session);
 
         when(mForeignSessionHelper.getMobileAndTabletForeignSessions()).thenReturn(testSessions);
-        mMediator.showOptions();
+        mMediator.showHomeScreen();
         Assert.assertEquals(mModel.get(VISIBLE), true);
         Assert.assertEquals(mModel.get(CURRENT_SCREEN), HOME_SCREEN);
         Assert.assertEquals(mModel.get(SELECTED_DEVICE), testSessions.get(0));

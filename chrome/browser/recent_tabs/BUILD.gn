@@ -33,6 +33,7 @@ android_library_factory("factory_java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/recent_tabs/internal:java",
     "//chrome/browser/tabmodel:java",
+    "//components/browser_ui/bottomsheet/android:java",
   ]
 }
 

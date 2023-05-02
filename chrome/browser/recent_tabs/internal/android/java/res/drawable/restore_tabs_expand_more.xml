@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromDegrees="@integer/expand_more_horizontal_rotation_degree"
+    android:toDegrees="@integer/expand_more_horizontal_rotation_degree"
+    android:drawable="@drawable/ic_expand_more_black_24dp">
+</rotate>

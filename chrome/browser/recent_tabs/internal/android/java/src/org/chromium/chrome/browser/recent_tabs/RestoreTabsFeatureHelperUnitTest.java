@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import android.app.Activity;
 
 import androidx.test.filters.SmallTest;
 
@@ -16,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -23,6 +27,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
@@ -48,6 +53,10 @@ public class RestoreTabsFeatureHelperUnitTest {
     private RestoreTabsControllerFactory.ControllerListener mListener;
     @Mock
     private TabCreatorManager mTabCreatorManager;
+    @Mock
+    private BottomSheetController mBottomSheetController;
+
+    private Activity mActivity;
 
     @Before
     public void setUp() {
@@ -56,13 +65,16 @@ public class RestoreTabsFeatureHelperUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
         jniMocker.mock(ForeignSessionHelperJni.TEST_HOOKS, mForeignSessionHelperJniMock);
 
+        when(mForeignSessionHelperJniMock.init(mProfile)).thenReturn(1L);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mController = RestoreTabsControllerFactory.createInstance(
-                mProfile, mListener, mTabCreatorManager);
+                mActivity, mProfile, mListener, mTabCreatorManager, mBottomSheetController);
         mHelper = mController.getFeatureHelper();
     }
 
     @After
     public void tearDown() {
+        mController.destroy();
         Profile.setLastUsedProfileForTesting(null);
         TrackerFactory.setTrackerForTests(null);
     }

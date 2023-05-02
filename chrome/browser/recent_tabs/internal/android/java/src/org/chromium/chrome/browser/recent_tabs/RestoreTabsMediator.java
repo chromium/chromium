@@ -76,10 +76,20 @@ public class RestoreTabsMediator {
         };
     }
 
-    public void showOptions() {
+    public void showHomeScreen() {
+        if (mModel.get(RestoreTabsProperties.CURRENT_SCREEN)
+                == RestoreTabsProperties.ScreenType.HOME_SCREEN) {
+            return;
+        }
+
         setDeviceListItems(mForeignSessionHelper.getMobileAndTabletForeignSessions());
         setTabListItems();
-        setCurrentScreen(mModel.get(RestoreTabsProperties.CURRENT_SCREEN));
+
+        // On initialization, the current screen is not set to prevent re-setting the home screen at
+        // this call site. Some property keys like HOME_SCREEN_DELEGATE are set after initialization
+        // and with the streamlined binding of keys based on screen type, logic for those keys will
+        // not be run until the home screen is set here, re-binding all the screen relevant keys.
+        setCurrentScreen(RestoreTabsProperties.ScreenType.HOME_SCREEN);
         mModel.set(RestoreTabsProperties.VISIBLE, true);
     }
 
