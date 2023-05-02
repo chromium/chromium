@@ -143,7 +143,10 @@ def _BuildWithChromium():
   return args.get('build_with_chromium', False)
 
 
-def Initialize(output_directory=None, custom_deps=None, adb_path=None):
+def Initialize(output_directory=None,
+               custom_deps=None,
+               adb_path=None,
+               use_local_devil_tools=False):
   """Initializes devil with chromium's binaries and third-party libraries.
 
   This includes:
@@ -169,6 +172,8 @@ def Initialize(output_directory=None, custom_deps=None, adb_path=None):
         }
     adb_path: An optional path to use for the adb binary. If not set, this uses
       the adb binary provided by the Android SDK.
+    use_local_devil_tools: Use locally built versions of md5sum,
+      forwarder_dist, etc.
   """
   build_with_chromium = _BuildWithChromium()
 
@@ -176,7 +181,7 @@ def Initialize(output_directory=None, custom_deps=None, adb_path=None):
     'config_type': 'BaseConfig',
     'dependencies': {},
   }
-  if build_with_chromium and output_directory:
+  if use_local_devil_tools:
     # Non-chromium users of chromium's //build directory fetch build products
     # from google storage rather than use locally built copies. Chromium uses
     # locally-built copies so that changes to the tools can be easily tested.
