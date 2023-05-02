@@ -7128,6 +7128,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_QUEST_CART_ANNOTATION" desc="Annotation that shows in the ChromeCart tile in Quest module to let users know that this tile is from pending items in their shopping cart.">
         In your cart
       </message>
+      <message name="IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_PLURAL" desc="Label of the ChromeCart tile in Quest module containing information of the tile that will be announced in accessibility mode. This is used when there is more than one product in cart.">
+        <ph name="PRODUCT_ITEM_COUNT">$1<ex>2</ex></ph> items in your cart <ph name="DISCOUNT_TEXT">$2<ex>15% off</ex></ph> from <ph name="MERCHANT_NAME">$3<ex>Amazon</ex></ph>, <ph name="MERCHANT_DOMAIN">$4<ex>amazon.com</ex></ph>, viewed <ph name="RELATIVE_TIME">$5<ex>3 days ago</ex></ph>
+      </message>
+      <message name="IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_SINGULAR" desc="Label of the ChromeCart tile in Quest module containing information of the tile that will be announced in accessibility mode. This is used when there is only one product in cart.">
+        1 item in your cart <ph name="DISCOUNT_TEXT">$1<ex>15% off</ex></ph> from <ph name="MERCHANT_NAME">$2<ex>Amazon</ex></ph>, <ph name="MERCHANT_DOMAIN">$3<ex>amazon.com</ex></ph>, viewed <ph name="RELATIVE_TIME">$4<ex>3 days ago</ex></ph>
+      </message>
+      <message name="IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_DEFAULT" desc="Label of the ChromeCart tile in Quest module containing information of the tile that will be announced in accessibility mode. This is used when we don't know the product count in cart.">
+        Items in your cart <ph name="DISCOUNT_TEXT">$1<ex>15% off</ex></ph> from <ph name="MERCHANT_NAME">$2<ex>Amazon</ex></ph>, <ph name="MERCHANT_DOMAIN">$3<ex>amazon.com</ex></ph>, viewed <ph name="RELATIVE_TIME">$4<ex>3 days ago</ex></ph>
+      </message>
       <message name="IDS_NTP_MODULES_CART_INFO" desc="Text shown in the body of the info dialog of the cart module.">
         You’re seeing carts that help you easily get back to items you left in shopping carts across the web.
         <ph name="BREAK">&lt;br&gt;</ph>
