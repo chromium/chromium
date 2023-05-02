@@ -181,19 +181,20 @@ void EventRouter::RouteDispatchEvent(content::RenderProcessHost* rph,
   mojo::AssociatedRemote<mojom::EventDispatcher>& dispatcher =
       rph_dispatcher_map_[rph][worker_thread_id];
 
-  if (worker_thread_id == kMainThreadId) {
-    if (!dispatcher.is_bound()) {
+  if (!dispatcher.is_bound()) {
+    if (worker_thread_id == kMainThreadId) {
       IPC::ChannelProxy* channel = rph->GetChannel();
       if (!channel) {
         return;
       }
       channel->GetRemoteAssociatedInterface(
           dispatcher.BindNewEndpointAndPassReceiver());
+    } else {
+      // EventDispatcher for worker threads should be bound at
+      // `BindServiceWorkerEventDispatcher`.
+      return;
     }
   }
-  // EventDispatcher for worker threads should be bound at
-  // `BindServiceWorkerEventDispatcher`.
-  CHECK(dispatcher);
 
   // The RenderProcessHost might be dead, but if the RenderProcessHost
   // is alive then the dispatcher must be connected.
