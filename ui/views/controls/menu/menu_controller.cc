@@ -3440,6 +3440,7 @@ void MenuController::SetAnchorParametersForItem(MenuItemView* item,
     anchor->constraint_adjustment =
         ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideY |
         ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipX |
+        ui::OwnedWindowConstraintAdjustment::kAdjustmentResizeX |
         ui::OwnedWindowConstraintAdjustment::kAdjustmentRezizeY;
   } else {
     if (state_.context_menu) {
