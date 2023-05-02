@@ -21,6 +21,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/graphite/TextureInfo.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
@@ -80,10 +81,16 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     sk_sp<SkImage> image() { return image_; }
     void SetImage(sk_sp<SkImage> image,
                   std::vector<GrBackendFormat> backend_formats);
+    void SetImage(sk_sp<SkImage> image,
+                  std::vector<skgpu::graphite::TextureInfo> texture_infos);
     void clear_image() { image_.reset(); }
     const std::vector<GrBackendFormat>& backend_formats() {
       return backend_formats_;
     }
+    const std::vector<skgpu::graphite::TextureInfo>& texture_infos() {
+      return texture_infos_;
+    }
+
     const cc::PaintOpBuffer* paint_op_buffer() const {
       return paint_op_buffer_;
     }
@@ -114,6 +121,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     // The promise image which is used on display thread.
     sk_sp<SkImage> image_;
     std::vector<GrBackendFormat> backend_formats_;
+    std::vector<skgpu::graphite::TextureInfo> texture_infos_;
     raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_ = nullptr;
     absl::optional<SkColor4f> clear_color_;
   };
