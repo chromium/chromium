@@ -172,15 +172,22 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ApplyGainmap(
     return base_image;
   }
 
-  // Render the gainmap shader to the surface
+  // Use nearest-neighbor interpolation for the base image (it is the same size
+  // as the surface, so no interpolation will be done anyway) and linear
+  // interpolation for the gainmap (it is often 1/4 width and 1/4 height of the
+  // base image).
+  const SkSamplingOptions base_sampling_options(SkFilterMode::kNearest);
+  const SkSamplingOptions gainmap_sampling_options(SkFilterMode::kLinear);
+
+  // Render the gainmap shader to the surface.
   SkRect image_rect = SkRect::MakeSize(SkSize::Make(base_image->dimensions()));
   SkRect gainmap_rect =
       SkRect::MakeSize(SkSize::Make(gainmap_image->dimensions()));
   SkRect surface_rect =
       SkRect::MakeSize(SkSize::Make(surface_info.dimensions()));
   sk_sp<SkShader> shader = SkGainmapShader::Make(
-      base_image, image_rect, SkSamplingOptions(), gainmap_image, gainmap_rect,
-      SkSamplingOptions(), gainmap_info, surface_rect,
+      base_image, image_rect, base_sampling_options, gainmap_image,
+      gainmap_rect, gainmap_sampling_options, gainmap_info, surface_rect,
       dst_max_luminance_relative, surface_color_space);
   DCHECK(shader);
   SkPaint paint;
