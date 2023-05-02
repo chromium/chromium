@@ -271,7 +271,6 @@ public class ExperimentalOptionsTest {
     @Test
     @MediumTest
     @OnlyRunNativeCronet
-    @DisabledTest(message = "https://crbug.com/1404719")
     // Experimental options should be specified through a JSON compliant string. When that is not
     // the case building a Cronet engine should fail.
     public void testWrongJsonExperimentalOptions() throws Exception {
