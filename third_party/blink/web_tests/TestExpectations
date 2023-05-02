@@ -130,7 +130,9 @@ crbug.com/1254943 paint/invalidation/overflow/resize-child-within-overflow.html 
 crbug.com/1254943 fast/events/hit-test-counts.html [ Failure ]
 
 # Image isn't present:
+crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-dom-intercept-attr.html [ Failure Pass ]
 crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-dom-offset-attr.html [ Failure Pass ]
+crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
 crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Failure Pass ]
 crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-offset-prop.html [ Failure Pass ]
 crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Failure Pass ]
@@ -5321,9 +5323,6 @@ crbug.com/1255679 http/tests/devtools/service-workers/service-workers-wasm-test.
 
 # Disabled to allow devtools-frontend roll
 crbug.com/1258618 virtual/portals/http/tests/devtools/portals/portals-elements-nesting-after-adoption.js [ Crash Failure Pass Timeout ]
-
-# Sheriff 2021-10-06
-crbug.com/1257298 svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
 
 # Sheriff 2021-10-12
 crbug.com/1259133 [ Mac10.14 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
