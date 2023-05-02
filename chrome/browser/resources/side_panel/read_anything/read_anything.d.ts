@@ -68,6 +68,9 @@ declare namespace chrome {
     // the link's corresponding AXNode in the main pane.
     function onLinkClicked(nodeId: number): void;
 
+    // Indicates that the Reading mode panel selection was cleared.
+    function clearSelection(): void;
+
     // Called when a user makes a selection change. AnchorNodeID and
     // focusAXNodeID are AXNodeIDs which identify the anchor and focus AXNodes
     // in the main pane. The selection can either be forward or backwards.
