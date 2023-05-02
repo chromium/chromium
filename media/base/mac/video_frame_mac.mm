@@ -17,6 +17,10 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/mac/io_surface.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace media {
 
 namespace {

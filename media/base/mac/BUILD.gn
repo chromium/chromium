@@ -37,7 +37,10 @@ source_set("mac") {
       "VideoToolbox.framework",
     ]
   }
-  configs += [ "//media:subcomponent_config" ]
+  configs += [
+    "//media:subcomponent_config",
+    "//build/config/compiler:enable_arc",
+  ]
 
   deps = [
     "//media/base",

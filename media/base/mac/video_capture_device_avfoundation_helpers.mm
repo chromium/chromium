@@ -7,6 +7,10 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace media {
 
 NSArray<AVCaptureDevice*>* GetVideoCaptureDevices(bool use_discovery_session) {
@@ -22,13 +26,13 @@ NSArray<AVCaptureDevice*>* GetVideoCaptureDevices(bool use_discovery_session) {
 #endif
       ];
 
-      AVCaptureDeviceDiscoverySession* deviceDescoverySession =
+      AVCaptureDeviceDiscoverySession* deviceDiscoverySession =
           [AVCaptureDeviceDiscoverySession
               discoverySessionWithDeviceTypes:captureDeviceType
                                     mediaType:AVMediaTypeVideo
                                      position:
                                          AVCaptureDevicePositionUnspecified];
-      devices = deviceDescoverySession.devices;
+      devices = deviceDiscoverySession.devices;
     }
   }
 

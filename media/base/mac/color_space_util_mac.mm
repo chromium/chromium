@@ -15,6 +15,10 @@
 #include "base/no_destructor.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace media {
 
 namespace {
