@@ -1264,8 +1264,6 @@ extern const char kSCTAuditingHashdanceReportCount[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kConsumerAutoUpdateToggle[];
-extern const char kHindiInscriptLayoutEnabled[];
-extern const char kDeviceHindiInscriptLayoutEnabled[];
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

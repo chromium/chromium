@@ -1358,4 +1358,13 @@ TEST_F(DeviceSettingsProviderTest, DeviceSystemAecDisabled) {
   EXPECT_EQ(base::Value(false), *provider_->Get(kDeviceSystemAecEnabled));
 }
 
+TEST_F(DeviceSettingsProviderTest, DeviceHindiInscriptLayoutEnabled) {
+  device_policy_->payload()
+      .mutable_device_hindi_inscript_layout_enabled()
+      ->set_enabled(true);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kDeviceHindiInscriptLayoutEnabled));
+}
+
 }  // namespace ash

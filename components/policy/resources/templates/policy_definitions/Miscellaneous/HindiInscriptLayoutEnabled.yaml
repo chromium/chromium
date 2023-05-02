@@ -20,6 +20,7 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:108-
+- chrome_os:108-114
+deprecated: true
 tags: []
 type: main

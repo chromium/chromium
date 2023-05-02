@@ -389,6 +389,9 @@ extern const char kDeviceReportXDREvents[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kDevicePrintingClientNameTemplate[];
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
+extern const char kDeviceHindiInscriptLayoutEnabled[];
+
 }  // namespace ash
 
 namespace chromeos {

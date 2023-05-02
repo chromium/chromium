@@ -595,4 +595,9 @@ const char kDeviceReportXDREvents[] = "cros.device.device_report_xdr_events";
 const char kDevicePrintingClientNameTemplate[] =
     "cros.device.printing.client_name_template";
 
+// A boolean pref that indicates whether Hindi Inscript keyboard layout
+// is available.
+const char kDeviceHindiInscriptLayoutEnabled[] =
+    "cros.device.hindi_inscript_layout_enabled";
+
 }  // namespace ash
