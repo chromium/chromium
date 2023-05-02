@@ -66,12 +66,12 @@
 </style>
 <div id="separator" class="hr" hidden="[[first]]"></div>
 <div id="list-item" focus-row-container>
-  <site-favicon url="[[group.iconUrl]]" domain="[[group.name]]"
+  <site-favicon url="[[getGroupIcon_(group)]]" domain="[[getGroupName_(group)]]"
       aria-hidden="true">
   </site-favicon>
   <div id="credentialInfo">
     <div id="shownUrl" class="label text-elide">
-      [[group.name]]
+      [[getGroupName_(group)]]
     </div>
     <div id="usernameContainer" class="cr-secondary-text label">
       <span id="username" class="text-elide">[[item.username]]</span>
@@ -113,7 +113,7 @@
 <template is="dom-if" if="[[showEditPasswordDisclaimer_]]" restamp>
   <edit-password-disclaimer-dialog
       on-edit-password-click="onEditPasswordClick_"
-      origin="[[group.name]]"
+      origin="[[getGroupName_(group)]]"
       on-close="onEditDisclaimerClosed_">
   </edit-password-disclaimer-dialog>
 </template>
@@ -125,7 +125,7 @@
 <template is="dom-if" if="[[showDeletePasswordDialog_]]" restamp>
   <delete-password-disclaimer-dialog id="deletePasswordDialog"
       on-delete-password-click="onDeletePasswordClick_"
-      on-close="onDeletePasswordDialogClosed_" origin="[[group.name]]"
+      on-close="onDeletePasswordDialogClosed_" origin="[[getGroupName_(group)]]"
       action-url="[[item.changePasswordUrl]]">
   </delete-password-disclaimer-dialog>
 </template>
