@@ -142,6 +142,12 @@ void RecordCaptureModeRecordTime(base::TimeDelta recording_duration,
 }
 
 void RecordVideoFileSizeKB(bool is_gif, int size_in_kb) {
+  if (!Shell::HasInstance()) {
+    // This function can be called asynchronously after the `Shell` instance had
+    // already been destroyed.
+    return;
+  }
+
   if (size_in_kb < 0) {
     LOG(ERROR) << "Failed to calculate the video file size. Is GIF: " << is_gif;
     return;
