@@ -819,7 +819,8 @@ void FileSystemAccessDirectoryHandleImpl::GetUniqueId(
 
   base::Uuid id = manager()->GetUniqueId(*this);
   DCHECK(id.is_valid());
-  std::move(callback).Run(id.AsLowercaseString());
+  std::move(callback).Run(file_system_access_error::Ok(),
+                          id.AsLowercaseString());
 }
 
 base::WeakPtr<FileSystemAccessHandleBase>

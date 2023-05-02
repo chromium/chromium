@@ -316,11 +316,14 @@ void FileSystemDirectoryHandle::IsSameEntryImpl(
 }
 
 void FileSystemDirectoryHandle::GetUniqueIdImpl(
-    base::OnceCallback<void(const WTF::String&)> callback) {
+    base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
+                            const WTF::String&)> callback) {
   if (!mojo_ptr_.is_bound()) {
-    // TODO(crbug.com/1413551): Consider throwing a kInvalidState exception here
-    // rather than returning an empty string.
-    std::move(callback).Run("");
+    std::move(callback).Run(
+        mojom::blink::FileSystemAccessError::New(
+            mojom::blink::FileSystemAccessStatus::kInvalidState,
+            base::File::Error::FILE_ERROR_FAILED, "Context Destroyed"),
+        "");
     return;
   }
   mojo_ptr_->GetUniqueId(std::move(callback));

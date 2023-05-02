@@ -13,6 +13,8 @@ interface FileSystemAccessFileWriter {
   // written.
   // TODO(mek): This might need some way of reporting progress events back to
   // the renderer.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   Write(uint64 offset, handle<data_pipe_consumer> stream) =>
       (FileSystemAccessError result, uint64 bytes_written);
 

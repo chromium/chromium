@@ -59,12 +59,18 @@ interface FileSystemAccessFileHandle {
 
   // Requests read and/or write permission for this handle. Returns the new
   // permission status for this handle.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   RequestPermission(bool writable) => (FileSystemAccessError result, PermissionStatus status);
 
   // Returns a blob representing the current state of this file.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   AsBlob() => (FileSystemAccessError result, mojo_base.mojom.FileInfo info, SerializedBlob? blob);
 
   // Returns a FileWriter object. The FileWriter provides write operations on a file.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   CreateFileWriter(bool keep_existing_data, bool auto_close) => (
       FileSystemAccessError result, pending_remote<FileSystemAccessFileWriter>? writer);
 
@@ -87,9 +93,13 @@ interface FileSystemAccessFileHandle {
   // Returns a file object and an access handle host. The file can be used to
   // initiate file operations from the renderer. The access handle host acts as
   // an exclusive write lock while the mojo pipe remains open.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   OpenAccessHandle() =>  (FileSystemAccessError result, FileSystemAccessAccessHandleFile? file, pending_remote<FileSystemAccessAccessHandleHost>? access_handle_host);
 
   // Returns true if `other` represents the same file on disk as this handle.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   IsSameEntry(pending_remote<FileSystemAccessTransferToken> other) =>
       (FileSystemAccessError result, bool is_same);
 
@@ -100,5 +110,7 @@ interface FileSystemAccessFileHandle {
 
   // Returns a uniquely identifying string for the handle.
   // `id` must be in GUID version 4 format.
-  GetUniqueId() => (string id);
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
+  GetUniqueId() => (FileSystemAccessError result, string id);
 };
