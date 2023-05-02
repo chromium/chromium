@@ -608,8 +608,7 @@ class CopyOrMoveIOTaskWithScansTest
     // Set a device management token. It is required to enable scanning.
     // Without it, FileTransferAnalysisDelegate::IsEnabled() always
     // returns absl::nullopt.
-    SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting("dm_token"));
+    SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 
     // Set the analysis connector (enterprise_connectors) for FILE_TRANSFER.
     // It is also required for FileTransferAnalysisDelegate::IsEnabled() to

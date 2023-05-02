@@ -730,8 +730,7 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
     // Set a device management token. It is required to enable scanning.
     // Without it, FileTransferAnalysisDelegate::IsEnabled() always
     // returns absl::nullopt.
-    SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting("dm_token"));
+    SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 
     // Enable reporting.
     safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(),
