@@ -30,13 +30,7 @@
 namespace {
 // Base height value for the bottom sheet without the table view.
 // TODO(crbug.com/1422350): This needs some proper calculation.
-CGFloat const kBaseHeightForBottomSheet = 225;
-
-// Spacing size before image if there are no navigation bar.
-CGFloat const kCustomSpacingBeforeImageIfNoNavigationBar = 24;
-
-// Spacing size after image.
-CGFloat const kCustomSpacingAfterImage = 30;
+CGFloat const kBaseHeightForBottomSheet = 195;
 
 // Sets a custom radius for the half sheet presentation.
 CGFloat const kHalfSheetCornerRadius = 20;
@@ -117,9 +111,8 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   self.imageHasFixedSize = YES;
   self.showsVerticalScrollIndicator = NO;
   self.showDismissBarButton = NO;
-  self.customSpacingBeforeImageIfNoNavigationBar =
-      kCustomSpacingBeforeImageIfNoNavigationBar;
-  self.customSpacingAfterImage = kCustomSpacingAfterImage;
+  self.customSpacing = 0;
+  self.customSpacingAfterImage = 0;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;
   self.actionHandler = self;
@@ -140,7 +133,19 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
   [self adjustTableViewWidthConstraint];
+  if (!_tableViewIsMinimized) {
+    // Recompute sheet height and enable/disable scrolling if required.
+    __weak __typeof(self) weakSelf = self;
+    [coordinator
+        animateAlongsideTransition:nil
+                        completion:^(
+                            id<UIViewControllerTransitionCoordinatorContext>
+                                context) {
+                          [weakSelf expand];
+                        }];
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -446,9 +451,9 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 }
 
 // Enables scrolling of the table view
-- (void)enableScrolling {
-  _tableView.scrollEnabled = YES;
-  self.scrollEnabled = YES;
+- (void)setTableViewScrollEnabled:(BOOL)enabled {
+  _tableView.scrollEnabled = enabled;
+  self.scrollEnabled = enabled;
 }
 
 // Performs the expand bottom sheet animation.
@@ -463,9 +468,7 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
     auto fullHeightBlock = ^CGFloat(
         id<UISheetPresentationControllerDetentResolutionContext> context) {
       BOOL tooLarge = (fullHeight > context.maximumDetentValue);
-      if (tooLarge) {
-        [weakSelf enableScrolling];
-      }
+      [weakSelf setTableViewScrollEnabled:tooLarge];
       return tooLarge ? context.maximumDetentValue : fullHeight;
     };
     UISheetPresentationControllerDetent* customDetentExpand =
@@ -481,7 +484,7 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
     }];
   } else {
     // Expand to large detent.
-    [self enableScrolling];
+    [self setTableViewScrollEnabled:YES];
     [presentationController animateChanges:^{
       presentationController.selectedDetentIdentifier =
           UISheetPresentationControllerDetentIdentifierLarge;
