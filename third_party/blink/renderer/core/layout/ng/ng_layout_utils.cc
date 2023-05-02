@@ -453,6 +453,12 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
   const NGConstraintSpace& old_space =
       cached_layout_result.GetConstraintSpaceForCaching();
 
+  recordreplay::Assert("[RUN-1855-1856] CalculateSizeBasedLayoutCacheStatus node(%d) old(%s) new(%s)",
+    node.RecordReplayId(),
+    old_space.ToString().Ascii().c_str(),
+    new_space.ToString().Ascii().c_str()
+  );
+
   if (!new_space.MaySkipLayout(old_space))
     return NGLayoutCacheStatus::kNeedsLayout;
 
