@@ -47,6 +47,20 @@ absl::optional<ApnPropertiesPtr> GetApnFromDict(
                                                     is_apn_revamp_enabled);
 }
 
+bool ContainsMatchingApn(const base::Value::Dict* cellular_dict,
+                         const std::string& access_point_name) {
+  chromeos::network_config::mojom::ManagedApnListPtr apn_list =
+      chromeos::network_config::GetManagedApnList(
+          cellular_dict->Find(::onc::cellular::kAPNList),
+          ash::features::IsApnRevampEnabled());
+  for (const auto& apn : apn_list->active_value) {
+    if (apn->access_point_name == access_point_name) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 ApnMigrator::ApnMigrator(
@@ -290,6 +304,44 @@ void ApnMigrator::OnGetManagedProperties(
       pre_revamp_custom_apn->apn_types = {ApnType::kAttach, ApnType::kDefault};
       remote_cros_network_config_->CreateCustomApn(
           guid, std::move(pre_revamp_custom_apn));
+    } else if (last_connected_attach_apn && last_connected_default_apn &&
+               pre_revamp_custom_apn->access_point_name ==
+                   (*last_connected_attach_apn)->access_point_name &&
+               pre_revamp_custom_apn->access_point_name !=
+                   (*last_connected_default_apn)->access_point_name) {
+      NET_LOG(EVENT) << "Network's last connected attach APN matches the saved "
+                        "custom APN, but not the last connected default APN.";
+      bool has_matching_default_apn = ContainsMatchingApn(
+          cellular_dict, (*last_connected_default_apn)->access_point_name);
+
+      if (has_matching_default_apn) {
+        NET_LOG(EVENT) << "Network's last connected default APN matches an "
+                          "APN in the network list, migrating last connected "
+                          "default and attach APN: "
+                       << guid << " in the Enabled state";
+
+        (*last_connected_attach_apn)->state = ApnState::kEnabled;
+        (*last_connected_attach_apn)->apn_types = {ApnType::kAttach};
+
+        (*last_connected_default_apn)->state = ApnState::kEnabled;
+        (*last_connected_default_apn)->apn_types = {ApnType::kDefault};
+
+        remote_cros_network_config_->CreateCustomApn(
+            guid, last_connected_default_apn->Clone());
+      } else {
+        //  Fallback to the catch-all case where the attach APN with a disabled
+        //  state is migrated so that Shill will know to use the revamped logic.
+        NET_LOG(EVENT)
+            << "Network's last connected default APN does not match an "
+               "APN in the network list, migrating last connected "
+               "attach APN: "
+            << guid << " in the Disabled state";
+        (*last_connected_attach_apn)->state = ApnState::kDisabled;
+        (*last_connected_attach_apn)->apn_types = {ApnType::kAttach};
+      }
+
+      remote_cros_network_config_->CreateCustomApn(
+          guid, last_connected_attach_apn->Clone());
     } else if (!last_connected_attach_apn && last_connected_default_apn &&
                pre_revamp_custom_apn->access_point_name ==
                    (*last_connected_default_apn)->access_point_name) {

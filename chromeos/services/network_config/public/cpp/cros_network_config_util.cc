@@ -388,4 +388,42 @@ mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn,
   return apn;
 }
 
+mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value,
+                                           bool is_apn_revamp_enabled) {
+  if (!value) {
+    return nullptr;
+  }
+  if (value->is_list()) {
+    auto result = mojom::ManagedApnList::New();
+    std::vector<mojom::ApnPropertiesPtr> active;
+    for (const base::Value& e : value->GetList()) {
+      active.push_back(GetApnProperties(e.GetDict(), is_apn_revamp_enabled));
+    }
+    result->active_value = std::move(active);
+    return result;
+  } else if (value->is_dict()) {
+    ManagedDictionary managed_dict = GetManagedDictionary(&value->GetDict());
+    if (!managed_dict.active_value.is_list()) {
+      NET_LOG(ERROR) << "No active or effective value for APNList";
+      return nullptr;
+    }
+    auto result = mojom::ManagedApnList::New();
+    for (const base::Value& e : managed_dict.active_value.GetList()) {
+      result->active_value.push_back(
+          GetApnProperties(e.GetDict(), is_apn_revamp_enabled));
+    }
+    result->policy_source = managed_dict.policy_source;
+    if (!managed_dict.policy_value.is_none()) {
+      result->policy_value = std::vector<mojom::ApnPropertiesPtr>();
+      for (const base::Value& e : managed_dict.policy_value.GetList()) {
+        result->policy_value->push_back(
+            GetApnProperties(e.GetDict(), is_apn_revamp_enabled));
+      }
+    }
+    return result;
+  }
+  NET_LOG(ERROR) << "Expected list or dictionary, found: " << *value;
+  return nullptr;
+}
+
 }  // namespace chromeos::network_config
