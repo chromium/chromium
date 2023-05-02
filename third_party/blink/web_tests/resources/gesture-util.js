@@ -802,3 +802,33 @@ async function clickAndWaitForScroll(x, y, scrollendEventReceiver = document) {
         .send();
   }, scrollendEventReceiver);
 }
+
+function waitForStableScrollOffset(scroller, timeout) {
+  timeout = timeout || 5000;
+  return new Promise((resolve, reject) => {
+    let last_x = scroller.scrollLeft;
+    let last_y = scroller.scrollTop;
+    let start_timestamp = performance.now();
+    let last_change_timestamp = start_timestamp;
+    let last_change_frame_number = 0;
+    function tick(frame_number, timestamp) {
+      // We run a rAF loop until 100 milliseconds and at least five animation
+      // frames have elapsed since the last scroll offset change, with a timeout
+      // after `timeout` milliseconds.
+      if (scroller.scrollLeft != last_x || scroller.scrollTop != last_y) {
+        last_change_timestamp = timestamp;
+        last_x = scroller.scrollLeft;
+        last_y = scroller.scrollTop;
+      }
+      if (timestamp - last_change_timestamp > 100 &&
+          frame_number - last_change_frame_number > 4) {
+        resolve();
+      } else if (timestamp - start_timestamp > timeout) {
+        reject();
+      } else {
+        requestAnimationFrame(tick.bind(null, frame_number + 1));
+      }
+    }
+    tick(0, start_timestamp);
+  });
+}
