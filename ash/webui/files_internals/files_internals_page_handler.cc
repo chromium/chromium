@@ -48,6 +48,30 @@ void FilesInternalsPageHandler::GetMoveConfirmationShownForOneDrive(
       files_internals_ui_->delegate()->GetMoveConfirmationShownForOneDrive());
 }
 
+void FilesInternalsPageHandler::GetMoveConfirmationShownForLocalToDrive(
+    GetMoveConfirmationShownForLocalToDriveCallback callback) {
+  std::move(callback).Run(files_internals_ui_->delegate()
+                              ->GetMoveConfirmationShownForLocalToDrive());
+}
+
+void FilesInternalsPageHandler::GetMoveConfirmationShownForLocalToOneDrive(
+    GetMoveConfirmationShownForLocalToOneDriveCallback callback) {
+  std::move(callback).Run(files_internals_ui_->delegate()
+                              ->GetMoveConfirmationShownForLocalToOneDrive());
+}
+
+void FilesInternalsPageHandler::GetMoveConfirmationShownForCloudToDrive(
+    GetMoveConfirmationShownForCloudToDriveCallback callback) {
+  std::move(callback).Run(files_internals_ui_->delegate()
+                              ->GetMoveConfirmationShownForCloudToDrive());
+}
+
+void FilesInternalsPageHandler::GetMoveConfirmationShownForCloudToOneDrive(
+    GetMoveConfirmationShownForCloudToOneDriveCallback callback) {
+  std::move(callback).Run(files_internals_ui_->delegate()
+                              ->GetMoveConfirmationShownForCloudToOneDrive());
+}
+
 void FilesInternalsPageHandler::GetAlwaysMoveOfficeFilesToDrive(
     GetAlwaysMoveOfficeFilesToDriveCallback callback) {
   std::move(callback).Run(

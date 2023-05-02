@@ -35,6 +35,14 @@ class FilesInternalsPageHandler : public mojom::files_internals::PageHandler {
       GetMoveConfirmationShownForDriveCallback callback) override;
   void GetMoveConfirmationShownForOneDrive(
       GetMoveConfirmationShownForOneDriveCallback callback) override;
+  void GetMoveConfirmationShownForLocalToDrive(
+      GetMoveConfirmationShownForLocalToDriveCallback callback) override;
+  void GetMoveConfirmationShownForLocalToOneDrive(
+      GetMoveConfirmationShownForLocalToOneDriveCallback callback) override;
+  void GetMoveConfirmationShownForCloudToDrive(
+      GetMoveConfirmationShownForCloudToDriveCallback callback) override;
+  void GetMoveConfirmationShownForCloudToOneDrive(
+      GetMoveConfirmationShownForCloudToOneDriveCallback callback) override;
   void GetAlwaysMoveOfficeFilesToDrive(
       GetAlwaysMoveOfficeFilesToDriveCallback callback) override;
   void SetAlwaysMoveOfficeFilesToDrive(bool always_move) override;

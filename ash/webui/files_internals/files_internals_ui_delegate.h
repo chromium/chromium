@@ -25,6 +25,11 @@ class FilesInternalsUIDelegate {
   virtual bool GetMoveConfirmationShownForDrive() const = 0;
   virtual bool GetMoveConfirmationShownForOneDrive() const = 0;
 
+  virtual bool GetMoveConfirmationShownForLocalToDrive() const = 0;
+  virtual bool GetMoveConfirmationShownForLocalToOneDrive() const = 0;
+  virtual bool GetMoveConfirmationShownForCloudToDrive() const = 0;
+  virtual bool GetMoveConfirmationShownForCloudToOneDrive() const = 0;
+
   virtual bool GetAlwaysMoveOfficeFilesToDrive() const = 0;
   virtual void SetAlwaysMoveOfficeFilesToDrive(bool always_move) = 0;
 

@@ -22,6 +22,19 @@ interface PageHandler {
   // Gets the filebrowser.office.move_confirmation_shown_for_onedrive pref.
   GetMoveConfirmationShownForOneDrive() =>(bool confirmation_shown);
 
+  // Gets the filebrowser.office.move_confirmation_shown_for_local_to_drive
+  // pref.
+  GetMoveConfirmationShownForLocalToDrive() => (bool confirmation_shown);
+  // Gets the filebrowser.office.move_confirmation_shown_for_local_to_onedrive
+  // pref.
+  GetMoveConfirmationShownForLocalToOneDrive() => (bool confirmation_shown);
+  // Gets the filebrowser.office.move_confirmation_shown_for_cloud_to_drive
+  // pref.
+  GetMoveConfirmationShownForCloudToDrive() =>(bool confirmation_shown);
+  // Gets the filebrowser.office.move_confirmation_shown_for_cloud_to_onedrive
+  // pref.
+  GetMoveConfirmationShownForCloudToOneDrive() =>(bool confirmation_shown);
+
   // Gets the filebrowser.office.always_move_to_drive pref.
   GetAlwaysMoveOfficeFilesToDrive() => (bool always_move);
   // Sets the filebrowser.office.always_move_to_drive pref.

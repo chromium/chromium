@@ -33,6 +33,46 @@ const refreshMoveConfirmationShownForOneDrive = async () => {
       moveConfirmationShownForOneDrive ? 'Yes' : 'No';
 };
 
+const refreshMoveConfirmationShownForLocalToDrive = async () => {
+  const moveConfirmationShownForLocalToDriveStatus = document.getElementById(
+      'move-confirmation-shown-for-local-to-drive-status');
+  const moveConfirmationShownForLocalToDrive =
+      (await pageHandler.getMoveConfirmationShownForLocalToDrive())
+          .confirmationShown;
+  moveConfirmationShownForLocalToDriveStatus.innerText =
+      moveConfirmationShownForLocalToDrive ? 'Yes' : 'No';
+};
+
+const refreshMoveConfirmationShownForLocalToOneDrive = async () => {
+  const moveConfirmationShownForLocalToOneDriveStatus = document.getElementById(
+      'move-confirmation-shown-for-local-to-onedrive-status');
+  const moveConfirmationShownForLocalToOneDrive =
+      (await pageHandler.getMoveConfirmationShownForLocalToOneDrive())
+          .confirmationShown;
+  moveConfirmationShownForLocalToOneDriveStatus.innerText =
+      moveConfirmationShownForLocalToOneDrive ? 'Yes' : 'No';
+};
+
+const refreshMoveConfirmationShownForCloudToDrive = async () => {
+  const moveConfirmationShownForCloudToDriveStatus = document.getElementById(
+      'move-confirmation-shown-for-cloud-to-drive-status');
+  const moveConfirmationShownForCloudToDrive =
+      (await pageHandler.getMoveConfirmationShownForCloudToDrive())
+          .confirmationShown;
+  moveConfirmationShownForCloudToDriveStatus.innerText =
+      moveConfirmationShownForCloudToDrive ? 'Yes' : 'No';
+};
+
+const refreshMoveConfirmationShownForCloudToOneDrive = async () => {
+  const moveConfirmationShownForCloudToOneDriveStatus = document.getElementById(
+      'move-confirmation-shown-for-cloud-to-onedrive-status');
+  const moveConfirmationShownForCloudToOneDrive =
+      (await pageHandler.getMoveConfirmationShownForCloudToOneDrive())
+          .confirmationShown;
+  moveConfirmationShownForCloudToOneDriveStatus.innerText =
+      moveConfirmationShownForCloudToOneDrive ? 'Yes' : 'No';
+};
+
 const refreshAlwaysMoveToDriveStatus = async () => {
   const officeAlwaysMoveToDriveStatus =
       document.getElementById('office-always-move-to-drive-status');
@@ -64,6 +104,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   refreshOfficeSetupComplete();
   refreshMoveConfirmationShownForDrive();
   refreshMoveConfirmationShownForOneDrive();
+  refreshMoveConfirmationShownForLocalToDrive();
+  refreshMoveConfirmationShownForLocalToOneDrive();
+  refreshMoveConfirmationShownForCloudToDrive();
+  refreshMoveConfirmationShownForCloudToOneDrive();
   refreshAlwaysMoveToDriveStatus();
   refreshAlwaysMoveToOneDriveStatus();
 
@@ -74,6 +118,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     refreshOfficeSetupComplete();
     refreshMoveConfirmationShownForDrive();
     refreshMoveConfirmationShownForOneDrive();
+    refreshMoveConfirmationShownForLocalToDrive();
+    refreshMoveConfirmationShownForLocalToOneDrive();
+    refreshMoveConfirmationShownForCloudToDrive();
+    refreshMoveConfirmationShownForCloudToOneDrive();
   });
 
   const clearAlwaysMoveToDriveButton =

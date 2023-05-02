@@ -611,6 +611,10 @@ extern const char kOfficeFilesAlwaysMoveToDrive[];
 extern const char kOfficeFilesAlwaysMoveToOneDrive[];
 extern const char kOfficeMoveConfirmationShownForDrive[];
 extern const char kOfficeMoveConfirmationShownForOneDrive[];
+extern const char kOfficeMoveConfirmationShownForLocalToDrive[];
+extern const char kOfficeMoveConfirmationShownForLocalToOneDrive[];
+extern const char kOfficeMoveConfirmationShownForCloudToDrive[];
+extern const char kOfficeMoveConfirmationShownForCloudToOneDrive[];
 extern const char kOfficeFileMovedToOneDrive[];
 extern const char kOfficeFileMovedToGoogleDrive[];
 #endif

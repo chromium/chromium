@@ -445,14 +445,14 @@ bool OfficeSetupComplete(Profile* profile);
 void SetAlwaysMoveOfficeFilesToDrive(Profile* profile, bool complete = true);
 // Whether we should always move office files to Google Drive without first
 // asking the user.
-bool AlwaysMoveOfficeFilesToDrive(Profile* profile);
+bool GetAlwaysMoveOfficeFilesToDrive(Profile* profile);
 
 // Sets the user preference storing whether we should always move office files
 // to OneDrive without first asking the user.
 void SetAlwaysMoveOfficeFilesToOneDrive(Profile* profile, bool complete = true);
 // Whether we should always move office files to OneDrive without first asking
 // the user.
-bool AlwaysMoveOfficeFilesToOneDrive(Profile* profile);
+bool GetAlwaysMoveOfficeFilesToOneDrive(Profile* profile);
 
 // Sets the user preference storing whether the move confirmation dialog has
 // been shown before for moving files to Drive.
@@ -467,6 +467,38 @@ void SetOfficeMoveConfirmationShownForOneDrive(Profile* profile, bool complete);
 // Whether the move confirmation dialog has been shown before for moving files
 // to OneDrive.
 bool GetOfficeMoveConfirmationShownForOneDrive(Profile* profile);
+
+// Sets the user preference storing whether the move confirmation dialog has
+// been shown before for uploading files from a local source to Drive.
+void SetOfficeMoveConfirmationShownForLocalToDrive(Profile* profile,
+                                                   bool shown);
+// Whether the move confirmation dialog has been shown before for uploading
+// files from a local source to Drive.
+bool GetOfficeMoveConfirmationShownForLocalToDrive(Profile* profile);
+
+// Sets the user preference storing whether the move confirmation dialog has
+// been shown before for uploading files from a local source to OneDrive.
+void SetOfficeMoveConfirmationShownForLocalToOneDrive(Profile* profile,
+                                                      bool shown);
+// Whether the move confirmation dialog has been shown before for uploading
+// files from a local source to OneDrive.
+bool GetOfficeMoveConfirmationShownForLocalToOneDrive(Profile* profile);
+
+// Sets the user preference storing whether the move confirmation dialog has
+// been shown before for uploading files from a cloud source to Drive.
+void SetOfficeMoveConfirmationShownForCloudToDrive(Profile* profile,
+                                                   bool shown);
+// Whether the move confirmation dialog has been shown before for uploading
+// files from a cloud source to Drive.
+bool GetOfficeMoveConfirmationShownForCloudToDrive(Profile* profile);
+
+// Sets the user preference storing whether the move confirmation dialog has
+// been shown before for uploading files from a cloud source to OneDrive.
+void SetOfficeMoveConfirmationShownForCloudToOneDrive(Profile* profile,
+                                                      bool shown);
+// Whether the move confirmation dialog has been shown before for uploading
+// files from a cloud source to OneDrive.
+bool GetOfficeMoveConfirmationShownForCloudToOneDrive(Profile* profile);
 
 // Sets the preference `office.file_moved_one_drive`.
 void SetOfficeFileMovedToOneDrive(Profile* profile, base::Time moved);

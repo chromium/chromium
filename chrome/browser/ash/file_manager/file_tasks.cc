@@ -502,6 +502,14 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 false);
   registry->RegisterBooleanPref(prefs::kOfficeMoveConfirmationShownForOneDrive,
                                 false);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForLocalToDrive, false);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForLocalToOneDrive, false);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForCloudToDrive, false);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForCloudToOneDrive, false);
   registry->RegisterTimePref(prefs::kOfficeFileMovedToOneDrive, base::Time());
   registry->RegisterTimePref(prefs::kOfficeFileMovedToGoogleDrive,
                              base::Time());
@@ -1244,7 +1252,7 @@ void SetAlwaysMoveOfficeFilesToDrive(Profile* profile, bool always_move) {
                                   always_move);
 }
 
-bool AlwaysMoveOfficeFilesToDrive(Profile* profile) {
+bool GetAlwaysMoveOfficeFilesToDrive(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive);
 }
 
@@ -1253,7 +1261,7 @@ void SetAlwaysMoveOfficeFilesToOneDrive(Profile* profile, bool always_move) {
                                   always_move);
 }
 
-bool AlwaysMoveOfficeFilesToOneDrive(Profile* profile) {
+bool GetAlwaysMoveOfficeFilesToOneDrive(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
       prefs::kOfficeFilesAlwaysMoveToOneDrive);
 }
@@ -1277,6 +1285,50 @@ void SetOfficeMoveConfirmationShownForOneDrive(Profile* profile,
 bool GetOfficeMoveConfirmationShownForOneDrive(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
       prefs::kOfficeMoveConfirmationShownForOneDrive);
+}
+
+void SetOfficeMoveConfirmationShownForLocalToDrive(Profile* profile,
+                                                   bool shown) {
+  profile->GetPrefs()->SetBoolean(
+      prefs::kOfficeMoveConfirmationShownForLocalToDrive, shown);
+}
+
+bool GetOfficeMoveConfirmationShownForLocalToDrive(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kOfficeMoveConfirmationShownForLocalToDrive);
+}
+
+void SetOfficeMoveConfirmationShownForLocalToOneDrive(Profile* profile,
+                                                      bool shown) {
+  profile->GetPrefs()->SetBoolean(
+      prefs::kOfficeMoveConfirmationShownForLocalToOneDrive, shown);
+}
+
+bool GetOfficeMoveConfirmationShownForLocalToOneDrive(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kOfficeMoveConfirmationShownForLocalToOneDrive);
+}
+
+void SetOfficeMoveConfirmationShownForCloudToDrive(Profile* profile,
+                                                   bool shown) {
+  profile->GetPrefs()->SetBoolean(
+      prefs::kOfficeMoveConfirmationShownForCloudToDrive, shown);
+}
+
+bool GetOfficeMoveConfirmationShownForCloudToDrive(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kOfficeMoveConfirmationShownForCloudToDrive);
+}
+
+void SetOfficeMoveConfirmationShownForCloudToOneDrive(Profile* profile,
+                                                      bool shown) {
+  profile->GetPrefs()->SetBoolean(
+      prefs::kOfficeMoveConfirmationShownForCloudToOneDrive, shown);
+}
+
+bool GetOfficeMoveConfirmationShownForCloudToOneDrive(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kOfficeMoveConfirmationShownForCloudToOneDrive);
 }
 
 void SetOfficeFileMovedToOneDrive(Profile* profile, base::Time moved) {

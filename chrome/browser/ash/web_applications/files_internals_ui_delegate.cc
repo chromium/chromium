@@ -65,6 +65,14 @@ void ChromeFilesInternalsUIDelegate::SetOfficeSetupComplete(bool complete) {
                                                                        false);
       file_manager::file_tasks::SetOfficeMoveConfirmationShownForOneDrive(
           profile, false);
+      file_manager::file_tasks::SetOfficeMoveConfirmationShownForLocalToDrive(
+          profile, false);
+      file_manager::file_tasks::
+          SetOfficeMoveConfirmationShownForLocalToOneDrive(profile, false);
+      file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToDrive(
+          profile, false);
+      file_manager::file_tasks::
+          SetOfficeMoveConfirmationShownForCloudToOneDrive(profile, false);
     }
   }
 }
@@ -84,10 +92,40 @@ bool ChromeFilesInternalsUIDelegate::GetMoveConfirmationShownForOneDrive()
              profile);
 }
 
+bool ChromeFilesInternalsUIDelegate::GetMoveConfirmationShownForLocalToDrive()
+    const {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  return profile && file_manager::file_tasks::
+                        GetOfficeMoveConfirmationShownForLocalToDrive(profile);
+}
+
+bool ChromeFilesInternalsUIDelegate::
+    GetMoveConfirmationShownForLocalToOneDrive() const {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  return profile &&
+         file_manager::file_tasks::
+             GetOfficeMoveConfirmationShownForLocalToOneDrive(profile);
+}
+
+bool ChromeFilesInternalsUIDelegate::GetMoveConfirmationShownForCloudToDrive()
+    const {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  return profile && file_manager::file_tasks::
+                        GetOfficeMoveConfirmationShownForCloudToDrive(profile);
+}
+
+bool ChromeFilesInternalsUIDelegate::
+    GetMoveConfirmationShownForCloudToOneDrive() const {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  return profile &&
+         file_manager::file_tasks::
+             GetOfficeMoveConfirmationShownForCloudToOneDrive(profile);
+}
+
 bool ChromeFilesInternalsUIDelegate::GetAlwaysMoveOfficeFilesToDrive() const {
   Profile* profile = Profile::FromWebUI(web_ui_);
   return profile &&
-         file_manager::file_tasks::AlwaysMoveOfficeFilesToDrive(profile);
+         file_manager::file_tasks::GetAlwaysMoveOfficeFilesToDrive(profile);
 }
 
 void ChromeFilesInternalsUIDelegate::SetAlwaysMoveOfficeFilesToDrive(
@@ -112,7 +150,7 @@ bool ChromeFilesInternalsUIDelegate::GetAlwaysMoveOfficeFilesToOneDrive()
     const {
   Profile* profile = Profile::FromWebUI(web_ui_);
   return profile &&
-         file_manager::file_tasks::AlwaysMoveOfficeFilesToOneDrive(profile);
+         file_manager::file_tasks::GetAlwaysMoveOfficeFilesToOneDrive(profile);
 }
 
 void ChromeFilesInternalsUIDelegate::SetAlwaysMoveOfficeFilesToOneDrive(

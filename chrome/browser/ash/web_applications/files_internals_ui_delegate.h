@@ -33,6 +33,11 @@ class ChromeFilesInternalsUIDelegate : public ash::FilesInternalsUIDelegate {
   bool GetMoveConfirmationShownForDrive() const override;
   bool GetMoveConfirmationShownForOneDrive() const override;
 
+  bool GetMoveConfirmationShownForLocalToDrive() const override;
+  bool GetMoveConfirmationShownForLocalToOneDrive() const override;
+  bool GetMoveConfirmationShownForCloudToDrive() const override;
+  bool GetMoveConfirmationShownForCloudToOneDrive() const override;
+
   bool GetAlwaysMoveOfficeFilesToDrive() const override;
   void SetAlwaysMoveOfficeFilesToDrive(bool always_move) override;
 

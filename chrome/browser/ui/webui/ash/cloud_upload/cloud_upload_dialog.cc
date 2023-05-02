@@ -324,14 +324,15 @@ void CloudOpenTask::OpenODFSUrls() {
 
 void CloudOpenTask::ConfirmMoveOrStartUpload() {
   if (cloud_provider_ == CloudProvider::kGoogleDrive) {
-    if (file_manager::file_tasks::AlwaysMoveOfficeFilesToDrive(profile_)) {
+    if (file_manager::file_tasks::GetAlwaysMoveOfficeFilesToDrive(profile_)) {
       // No dialog required.
       StartUpload();
     } else {
       InitAndShowDialog(mojom::DialogPage::kMoveConfirmationGoogleDrive);
     }
   } else if (cloud_provider_ == CloudProvider::kOneDrive) {
-    if (file_manager::file_tasks::AlwaysMoveOfficeFilesToOneDrive(profile_)) {
+    if (file_manager::file_tasks::GetAlwaysMoveOfficeFilesToOneDrive(
+            profile_)) {
       // No dialog required.
       StartUpload();
     } else {

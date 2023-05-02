@@ -1867,6 +1867,26 @@ const char kOfficeMoveConfirmationShownForDrive[] =
 const char kOfficeMoveConfirmationShownForOneDrive[] =
     "filebrowser.office.move_confirmation_shown_for_onedrive";
 
+// Whether the move confirmation dialog has been shown before for uploading
+// local files to Drive.
+const char kOfficeMoveConfirmationShownForLocalToDrive[] =
+    "filebrowser.office.move_confirmation_shown_for_local_to_drive";
+
+// Whether the move confirmation dialog has been shown before for uploading
+// local files to OneDrive.
+const char kOfficeMoveConfirmationShownForLocalToOneDrive[] =
+    "filebrowser.office.move_confirmation_shown_for_local_to_onedrive";
+
+// Whether the move confirmation dialog has been shown before for uploading
+// cloud files to Drive.
+const char kOfficeMoveConfirmationShownForCloudToDrive[] =
+    "filebrowser.office.move_confirmation_shown_for_cloud_to_drive";
+
+// Whether the move confirmation dialog has been shown before for uploading
+// cloud files to OneDrive.
+const char kOfficeMoveConfirmationShownForCloudToOneDrive[] =
+    "filebrowser.office.move_confirmation_shown_for_cloud_to_onedrive";
+
 // The timestamp of the latest office file automatically moved to OneDrive.
 const char kOfficeFileMovedToOneDrive[] =
     "filebrowser.office.file_moved_one_drive";
