@@ -1854,6 +1854,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.Fetch.CheckPoint.BodyConsumerBase"
+    enum="BodyConsumerBaseFetchCheckPoint" expires_after="2023-09-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records check points in the `BodyConsumerBase` class have been executed.
+    This metrics is for investigating crbug.com/1431885.
+  </summary>
+</histogram>
+
+<histogram name="Net.Fetch.CheckPoint.FetchManagerLoader"
+    enum="FetchManagerLoaderCheckPoint" expires_after="2023-09-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records check points in the `FetchManager::Loader` class have been executed.
+    This metrics is for investigating crbug.com/1431885.
+  </summary>
+</histogram>
+
 <histogram name="Net.HasBrokenNEON" enum="BooleanBroken"
     expires_after="2023-02-19">
   <obsolete>
