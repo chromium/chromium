@@ -628,6 +628,191 @@ class FormatQueryResults(unittest.TestCase):
         {'shards': 11},
     )
 
+  @mock.patch('query_optimal_shard_counts.TEST_SUITE_EXCLUDE_SET',
+              new={'browser_tests', 'ui_tests'})
+  def testTestSuiteExcludeSet(self):
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+            optimal_shard_count=15,
+            shard_count=10,
+            most_used_shard_count=10,
+        ),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='browser_tests',
+            optimal_shard_count=25,
+            shard_count=20,
+            most_used_shard_count=20,
+        ),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='ui_tests',
+            optimal_shard_count=15,
+            shard_count=10,
+            most_used_shard_count=10,
+        ),
+    ])
+    existing_output_file_data = json.dumps({
+        'chromium.linux': {
+            'Linux Tests': {
+                'browser_tests': {
+                    'shards': 10,
+                }
+            }
+        },
+        'chromium.android': {
+            'android-12-x64-rel': {
+                'browser_tests': {
+                    'shards': 20,
+                }
+            }
+        },
+    })
+    with open(self.output_file, 'w') as f:
+      f.write(existing_output_file_data)
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+
+    self.assertEqual(
+        script_result['chromium.linux']['Linux Tests']['browser_tests']
+        ['shards'],
+        10,
+    )
+    self.assertEqual(
+        script_result['chromium.android']['android-12-x64-rel']['browser_tests']
+        ['shards'],
+        20,
+    )
+    self.assertTrue(
+        'ui_tests' not in script_result['chromium.linux']['Linux Tests'])
+
+  @mock.patch('query_optimal_shard_counts.BUILDER_EXCLUDE_SET',
+              new={'mac-rel', 'linux-rel'})
+  def testBuilderExcludeSet(self):
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.mac',
+            waterfall_builder_name='Mac Builder',
+            try_builder='mac-rel',
+            test_suite='browser_tests',
+            optimal_shard_count=15,
+            shard_count=10,
+            most_used_shard_count=10,
+        ),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='ui_tests',
+            optimal_shard_count=15,
+            shard_count=10,
+            most_used_shard_count=10,
+        ),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+            optimal_shard_count=15,
+            shard_count=12,
+            most_used_shard_count=12,
+        ),
+    ])
+    existing_output_file_data = json.dumps({
+        'chromium.linux': {
+            'Linux Tests': {
+                'ui_tests': {
+                    'shards': 10,
+                }
+            }
+        },
+        'chromium.mac': {
+            'Mac Builder': {
+                'browser_tests': {
+                    'shards': 10,
+                }
+            }
+        }
+    })
+    with open(self.output_file, 'w') as f:
+      f.write(existing_output_file_data)
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+
+    self.assertEqual(
+        script_result['chromium.linux']['Linux Tests']['ui_tests']['shards'],
+        10,
+    )
+    self.assertEqual(
+        script_result['chromium.mac']['Mac Builder']['browser_tests']['shards'],
+        10,
+    )
+    self.assertTrue(
+        'browser_tests' not in script_result['chromium.linux']['Linux Tests'])
+
+  @mock.patch('query_optimal_shard_counts.BUILDER_TEST_SUITE_EXCLUDE_DICT',
+              new={'linux-rel': {'browser_tests', 'ui_tests'}})
+  def testBuilderTestSuiteExcludeDict(self):
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+            optimal_shard_count=15,
+            shard_count=10,
+            most_used_shard_count=10,
+        ),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='ui_tests',
+            optimal_shard_count=15,
+            shard_count=10,
+            most_used_shard_count=10,
+        ),
+    ])
+    existing_output_file_data = json.dumps({
+        'chromium.linux': {
+            'Linux Tests': {
+                'browser_tests': {
+                    'shards': 10,
+                }
+            }
+        },
+        'chromium.android': {
+            'android-12-x64-rel': {
+                'browser_tests': {
+                    'shards': 20,
+                }
+            }
+        },
+    })
+    with open(self.output_file, 'w') as f:
+      f.write(existing_output_file_data)
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+
+    self.assertEqual(
+        script_result['chromium.linux']['Linux Tests']['browser_tests']
+        ['shards'],
+        10,
+    )
+    self.assertTrue(
+        'ui_tests' not in script_result['chromium.linux']['Linux Tests'])
+
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)
