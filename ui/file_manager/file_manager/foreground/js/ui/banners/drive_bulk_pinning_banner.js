@@ -28,7 +28,9 @@ export class DriveBulkPinningBanner extends EducationalBanner {
     this.shadowRoot.querySelector('.action-button')
         .addEventListener('click', (e) => {
           e.preventDefault();
-          document.querySelector('xf-bulk-pinning-dialog').show();
+          const dialog = document.querySelector('xf-bulk-pinning-dialog');
+          dialog.state = 'offline';
+          dialog.show();
         });
   }
 
