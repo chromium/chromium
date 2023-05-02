@@ -403,12 +403,12 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
           base::UmaHistogramEnumeration(
               kSafetyCheckInteractions,
               SafetyCheckInteractions::kPasswordsManage);
-          password_manager::LogPasswordCheckReferrer(
-              password_manager::PasswordCheckReferrer::kSafetyCheck);
 
           if (IsPasswordCheckupEnabled()) {
             [self.handler showPasswordCheckupPage];
           } else {
+            password_manager::LogPasswordCheckReferrer(
+                password_manager::PasswordCheckReferrer::kSafetyCheck);
             [self.handler showPasswordIssuesPage];
           }
           break;
