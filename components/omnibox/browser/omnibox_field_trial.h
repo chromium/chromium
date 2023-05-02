@@ -643,7 +643,8 @@ struct MLConfig {
 
   // If true, the would-be default match from the legacy system is determined
   // before ML scoring is invoked, and preserved even after re-scoring and
-  // re-ranking with the new scores.
+  // re-ranking with the new scores.  This param has no effect if
+  // `ml_url_scoring_rerank_final_matches_only` above is false.
   bool ml_url_scoring_preserve_default{false};
 
   // If true, creates Omnibox autocompete URL scoring model.
