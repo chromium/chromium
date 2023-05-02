@@ -9376,8 +9376,6 @@ if (!is_android) {
       "base/mixin_based_in_process_browser_test.h",
       "base/mojo_web_ui_browser_test.cc",
       "base/mojo_web_ui_browser_test.h",
-      "base/perf/performance_test.cc",
-      "base/perf/performance_test.h",
       "base/save_desktop_snapshot.cc",
       "base/save_desktop_snapshot.h",
       "base/test_chrome_web_ui_controller_factory.cc",
