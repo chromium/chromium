@@ -72,9 +72,13 @@ struct TitledUrlMatch;
 //
 // You should NOT directly create a BookmarkModel, instead go through the
 // BookmarkModelFactory.
-class BookmarkModel : public BookmarkUndoProvider,
-                      public KeyedService,
-                      public base::SupportsUserData {
+//
+// Marked final to prevent unintended subclassing.
+// `MoveToOtherModelWithNewNodeIdsAndUuids` affects two instances, and assumes
+// that both instances are `BookmarkModel`, not some subclasses.
+class BookmarkModel final : public BookmarkUndoProvider,
+                            public KeyedService,
+                            public base::SupportsUserData {
  public:
   explicit BookmarkModel(std::unique_ptr<BookmarkClient> client);
 
@@ -176,6 +180,24 @@ class BookmarkModel : public BookmarkUndoProvider,
   void Copy(const BookmarkNode* node,
             const BookmarkNode* new_parent,
             size_t index);
+
+  // Moves `node` to another instance of `BookmarkModel` as determined by
+  // `dest_model`, where it is inserted under `dest_parent` as a last child.
+  // If `node` is a folder, all descendants (if any) are also moved, maintaining
+  // the same hierarchy.
+  // Please note that `BookmarkNode` objects that are `node` descendants are not
+  // reused. Instead, the hierarchy is cloned (and new IDs are generated) and
+  // this cloned hierarchy is added to `dest_model`.
+  //
+  // `node` must belong to this model, while `dest_parent` must belong to
+  // `dest_model` (which must be different from `this`).
+  //
+  // Calling this will send `OnWillRemoveBookmarks` and `BookmarkNodeRemoved`
+  // for observers of this model and `BookmarkNodeAdded` for observers of
+  // `dest_model`.
+  void MoveToOtherModelWithNewNodeIdsAndUuids(const BookmarkNode* node,
+                                              BookmarkModel* dest_model,
+                                              const BookmarkNode* dest_parent);
 
   // Returns the favicon for |node|. If the favicon has not yet been loaded,
   // a load will be triggered and the observer of the model notified when done.
@@ -375,6 +397,14 @@ class BookmarkModel : public BookmarkUndoProvider,
   //
   // This does NOT delete the node.
   void RemoveNodeFromIndexRecursive(BookmarkNode* node);
+
+  // Clones `node` and all its descendants (if any) for adding it in
+  // `dest_model`. Doesn't add it to `dest_model` - this is the responsibility
+  // of the caller. Bookmarks IDs are not copied and new IDs are generated
+  // instead.
+  std::unique_ptr<BookmarkNode> CloneSubtreeForOtherModelWithNewNodeIdsAndUuids(
+      const BookmarkNode* node,
+      BookmarkModel* dest_model);
 
   // Called when done loading. Updates internal state and notifies observers.
   void DoneLoading(std::unique_ptr<BookmarkLoadDetails> details);
