@@ -1169,13 +1169,20 @@ std::string ToSwaActionId(const std::string& action_id) {
 
 }  // namespace
 
+std::set<std::string> WordGroupExtensions() {
+  static const base::NoDestructor<std::set<std::string>> extensions(
+      std::initializer_list<std::string>({".doc", ".docx"}));
+  return *extensions;
+}
+
 void SetWordFileHandler(Profile* profile, const TaskDescriptor& task) {
   UpdateDefaultTask(
-      profile, task, {".doc", ".docx"},
+      profile, task, WordGroupExtensions(),
       {"application/msword",
        "application/"
        "vnd.openxmlformats-officedocument.wordprocessingml.document"});
 }
+
 void SetWordFileHandlerToFilesSWA(Profile* profile,
                                   const std::string& action_id) {
   TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
@@ -1183,9 +1190,15 @@ void SetWordFileHandlerToFilesSWA(Profile* profile,
   SetWordFileHandler(profile, task);
 }
 
+std::set<std::string> ExcelGroupExtensions() {
+  static const base::NoDestructor<std::set<std::string>> extensions(
+      std::initializer_list<std::string>({".xls", ".xlsx"}));
+  return *extensions;
+}
+
 void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task) {
   UpdateDefaultTask(
-      profile, task, {".xls", ".xlsx"},
+      profile, task, ExcelGroupExtensions(),
       {"application/vnd.ms-excel",
        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
 }
@@ -1197,9 +1210,15 @@ void SetExcelFileHandlerToFilesSWA(Profile* profile,
   SetExcelFileHandler(profile, task);
 }
 
+std::set<std::string> PowerPointGroupExtensions() {
+  static const base::NoDestructor<std::set<std::string>> extensions(
+      std::initializer_list<std::string>({".ppt", ".pptx"}));
+  return *extensions;
+}
+
 void SetPowerPointFileHandler(Profile* profile, const TaskDescriptor& task) {
   UpdateDefaultTask(
-      profile, task, {".ppt", ".pptx"},
+      profile, task, PowerPointGroupExtensions(),
       {"application/vnd.ms-powerpoint",
        "application/"
        "vnd.openxmlformats-officedocument.presentationml.presentation"});

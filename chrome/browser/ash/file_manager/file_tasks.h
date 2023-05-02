@@ -410,6 +410,13 @@ bool IsHtmlFile(const base::FilePath& path);
 // Returns whether |path| is a MS Office file according to its extension.
 bool IsOfficeFile(const base::FilePath& path);
 
+// Returns the group of extensions we consider to be 'Word', 'Excel' or
+// 'PowerPoint' files for the purpose of setting preferences. The extensions
+// contain the '.' character at the start.
+std::set<std::string> WordGroupExtensions();
+std::set<std::string> ExcelGroupExtensions();
+std::set<std::string> PowerPointGroupExtensions();
+
 // Updates the default task for each of the office file types.
 void SetWordFileHandler(Profile* profile, const TaskDescriptor& task);
 void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task);

@@ -195,9 +195,9 @@ bool FileIsOnODFS(Profile* profile, const FileSystemURL& url) {
 }
 
 bool HasWordFile(const std::vector<storage::FileSystemURL>& file_urls) {
-  constexpr const char* kWordExtensions[] = {".doc", ".docx"};
   for (auto& url : file_urls) {
-    for (const char* extension : kWordExtensions) {
+    for (const std::string& extension :
+         file_manager::file_tasks::WordGroupExtensions()) {
       if (url.path().MatchesExtension(extension)) {
         return true;
       }
@@ -207,9 +207,9 @@ bool HasWordFile(const std::vector<storage::FileSystemURL>& file_urls) {
 }
 
 bool HasExcelFile(const std::vector<storage::FileSystemURL>& file_urls) {
-  constexpr const char* kExcelExtensions[] = {".xls", ".xlsx"};
   for (auto& url : file_urls) {
-    for (const char* extension : kExcelExtensions) {
+    for (const std::string& extension :
+         file_manager::file_tasks::ExcelGroupExtensions()) {
       if (url.path().MatchesExtension(extension)) {
         return true;
       }
@@ -219,9 +219,9 @@ bool HasExcelFile(const std::vector<storage::FileSystemURL>& file_urls) {
 }
 
 bool HasPowerPointFile(const std::vector<storage::FileSystemURL>& file_urls) {
-  constexpr const char* kPowerpointExtensions[] = {".ppt", ".pptx"};
   for (auto& url : file_urls) {
-    for (const char* extension : kPowerpointExtensions) {
+    for (const std::string& extension :
+         file_manager::file_tasks::PowerPointGroupExtensions()) {
       if (url.path().MatchesExtension(extension)) {
         return true;
       }
@@ -704,12 +704,24 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
   // (and for StartUpload?).
   if (user_response == kUserActionConfirmOrUploadToGoogleDrive) {
     cloud_provider_ = CloudProvider::kGoogleDrive;
-    SetWordFileHandlerToFilesSWA(
-        profile_, file_manager::file_tasks::kActionIdWebDriveOfficeWord);
-    SetExcelFileHandlerToFilesSWA(
-        profile_, file_manager::file_tasks::kActionIdWebDriveOfficeExcel);
-    SetPowerPointFileHandlerToFilesSWA(
-        profile_, file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint);
+
+    // Because we treat Docs/Sheets/Slides as three separate apps, only set
+    // the default handler for the types that we are dealing with.
+    // We don't currently check MIME types, which could mean we get into edge
+    // cases if the MIME type doesn't match the file extension.
+    if (HasWordFile(file_urls_)) {
+      SetWordFileHandlerToFilesSWA(
+          profile_, file_manager::file_tasks::kActionIdWebDriveOfficeWord);
+    }
+    if (HasExcelFile(file_urls_)) {
+      SetExcelFileHandlerToFilesSWA(
+          profile_, file_manager::file_tasks::kActionIdWebDriveOfficeExcel);
+    }
+    if (HasPowerPointFile(file_urls_)) {
+      SetPowerPointFileHandlerToFilesSWA(
+          profile_,
+          file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint);
+    }
     SetOfficeSetupComplete(profile_);
     OpenOrMoveFiles();
   } else if (user_response == kUserActionConfirmOrUploadToOneDrive) {

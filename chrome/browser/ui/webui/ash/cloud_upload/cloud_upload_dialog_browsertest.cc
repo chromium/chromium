@@ -66,6 +66,8 @@ const char kDocMimeType[] = "application/msword";
 const char kDocxFileExtension[] = ".docx";
 const char kDocxMimeType[] =
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+const char kPptFileExtension[] = ".ppt";
+const char kPptMimeType[] = "application/vnd.ms-powerpoint";
 const char kPptxFileExtension[] = ".pptx";
 const char kPptxMimeType[] =
     "application/vnd.openxmlformats-officedocument.presentationml.presentation";
@@ -491,6 +493,107 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
       &default_task));
 }
 
+IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, DefaultSetForDocsOnly) {
+  // Watch for File Handler dialog URL chrome://cloud-upload.
+  content::TestNavigationObserver navigation_observer_dialog(
+      (GURL(chrome::kChromeUICloudUploadURL)));
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  // Check that the Setup flow has never run and so the File
+  // Handler dialog will be launched when CloudOpenTask::Execute() is
+  // called.
+  ASSERT_FALSE(file_manager::file_tasks::OfficeSetupComplete(profile()));
+
+  // Launch File Handler dialog.
+  ASSERT_TRUE(CloudOpenTask::Execute(profile(), files_,
+                                     CloudProvider::kGoogleDrive, nullptr));
+
+  // Wait for File Handler dialog to open at chrome://cloud-upload.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  // Get the web contents of the dialog to be able to query
+  // `FileHandlerPageElement`.
+  content::WebContents* web_contents = GetWebContentsFromCloudUploadDialog();
+
+  // Wait for local tasks to be filled in, which indicates the dialog is ready.
+  bool dialog_init_complete = false;
+  base::Value::List observed_app_ids;
+  while (!dialog_init_complete) {
+    // It is possible that the `FileHandlerPageElement` element still hasn't
+    // been initiated yet. It is completed when the `localTasks` member is
+    // non-empty.
+    content::EvalJsResult eval_result =
+        content::EvalJs(web_contents,
+                        "document.querySelector('file-handler-page')"
+                        ".localTasks.map(task => task.appId)");
+    if (!eval_result.error.empty()) {
+      continue;
+    }
+    observed_app_ids = eval_result.ExtractList().TakeList();
+    dialog_init_complete = !observed_app_ids.empty();
+  }
+
+  // Check that there is not a default task for doc/x files.
+  file_manager::file_tasks::TaskDescriptor default_task;
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kDocxMimeType, kDocxFileExtension,
+      &default_task));
+
+  // Check that there is not a default task for ppt/x files.
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kPptMimeType, kPptFileExtension, &default_task));
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kPptxMimeType, kPptxFileExtension,
+      &default_task));
+
+  // Click the Docs task.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      "document.querySelector('file-handler-page').$('#drive').click()"));
+
+  content::TestNavigationObserver navigation_observer_move_page(
+      (GURL(chrome::kChromeUICloudUploadURL)));
+  navigation_observer_move_page.StartWatchingNewWebContents();
+
+  // Click the open button.
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.querySelector('file-handler-page')"
+                              ".$('.action-button').click()"));
+
+  // Wait for the move confirmation dialog to open, so we know that the File
+  // Handler dialog closed.
+  navigation_observer_move_page.Wait();
+  ASSERT_TRUE(navigation_observer_move_page.last_navigation_succeeded());
+
+  // Check that the Setup flow has been marked complete.
+  ASSERT_TRUE(file_manager::file_tasks::OfficeSetupComplete(profile()));
+
+  // Check that the Docs/Slides task has been made the default for doc/x and
+  // ppt/x files, but the Sheets task has not been made default for xlsx files,
+  // because there was not an xlsx file selected by the user.
+  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
+  ASSERT_TRUE(IsWebDriveOfficeTask(default_task));
+  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kDocxMimeType, kDocxFileExtension,
+      &default_task));
+  ASSERT_TRUE(IsWebDriveOfficeTask(default_task));
+  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kPptMimeType, kPptFileExtension, &default_task));
+  ASSERT_TRUE(IsWebDriveOfficeTask(default_task));
+  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kPptxMimeType, kPptxFileExtension,
+      &default_task));
+  ASSERT_TRUE(IsWebDriveOfficeTask(default_task));
+
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kXlsxMimeType, kXlsxFileExtension,
+      &default_task));
+}
+
 // Tests that OnDialogComplete() opens the specified fake file task.
 IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
                        OnDialogCompleteOpensFileTasks) {
@@ -754,10 +857,13 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
       (GURL(chrome::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  // Check that there is not a default task for doc files.
+  // Check that there is not a default task for doc or xlsx files.
   file_manager::file_tasks::TaskDescriptor default_task;
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
       *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kXlsxMimeType, kXlsxFileExtension,
+      &default_task));
 
   // Open the Welcome Page for the OneDrive set up part of the Setup flow. This
   // will lead to the Office PWA being set as the default task.
@@ -783,9 +889,13 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
                        ".querySelector('.action-button').click()")) {
   }
 
-  // Check that the Office PWA has been made the default for doc files.
+  // Check that the Office PWA has been made the default for doc and xlsx files.
   ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
       *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
+  ASSERT_TRUE(IsOpenInOfficeTask(default_task));
+  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kXlsxMimeType, kXlsxFileExtension,
+      &default_task));
   ASSERT_TRUE(IsOpenInOfficeTask(default_task));
 }
 
