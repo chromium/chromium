@@ -29,59 +29,6 @@
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 
-namespace {
-
-// Used for UMA metrics. Do not reorder.
-enum TeleportWindowType {
-  TELEPORT_WINDOW_BROWSER = 0,
-  TELEPORT_WINDOW_INCOGNITO_BROWSER,
-  TELEPORT_WINDOW_V1_APP,
-  TELEPORT_WINDOW_V2_APP,
-  DEPRECATED_TELEPORT_WINDOW_PANEL,
-  TELEPORT_WINDOW_POPUP,
-  TELEPORT_WINDOW_UNKNOWN,
-  NUM_TELEPORT_WINDOW_TYPES
-};
-
-// Records the type of window which was transferred to another desktop.
-void RecordUMAForTransferredWindowType(aura::Window* window) {
-  // We need to figure out what kind of window this is to record the transfer.
-  Browser* browser = chrome::FindBrowserWithWindow(window);
-  TeleportWindowType window_type = TELEPORT_WINDOW_UNKNOWN;
-  if (browser) {
-    if (browser->profile()->IsOffTheRecord()) {
-      window_type = TELEPORT_WINDOW_INCOGNITO_BROWSER;
-    } else if (browser->is_type_app() || browser->is_type_app_popup()) {
-      window_type = TELEPORT_WINDOW_V1_APP;
-    } else if (browser->is_type_popup()) {
-      window_type = TELEPORT_WINDOW_POPUP;
-    } else {
-      window_type = TELEPORT_WINDOW_BROWSER;
-    }
-  } else {
-    // Unit tests might come here without a profile manager.
-    if (!g_browser_process->profile_manager())
-      return;
-    // If it is not a browser, it is probably be a V2 application. In that case
-    // one of the AppWindowRegistry instances should know about it.
-    extensions::AppWindow* app_window = nullptr;
-    std::vector<Profile*> profiles =
-        g_browser_process->profile_manager()->GetLoadedProfiles();
-    for (std::vector<Profile*>::iterator it = profiles.begin();
-         it != profiles.end() && app_window == nullptr; it++) {
-      app_window =
-          extensions::AppWindowRegistry::Get(*it)->GetAppWindowForNativeWindow(
-              window);
-    }
-    if (app_window)
-      window_type = TELEPORT_WINDOW_V2_APP;
-  }
-  UMA_HISTOGRAM_ENUMERATION("MultiProfile.TeleportWindowType", window_type,
-                            NUM_TELEPORT_WINDOW_TYPES);
-}
-
-}  // namespace
-
 // This class keeps track of all applications which were started for a user.
 // When an app gets created, the window will be tagged for that user. Note
 // that the destruction does not need to be tracked here since the universal
@@ -203,9 +150,6 @@ void MultiProfileSupport::OnWindowOwnerEntryChanged(aura::Window* window,
                                                     const AccountId& account_id,
                                                     bool was_minimized,
                                                     bool teleported) {
-  if (was_minimized)
-    RecordUMAForTransferredWindowType(window);
-
   const AccountId& owner = multi_user_window_manager_->GetWindowOwner(window);
   // Browser windows don't use kAvatarIconKey. See
   // BrowserNonClientFrameViewAsh::UpdateProfileIcons().

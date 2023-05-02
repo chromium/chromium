@@ -70650,16 +70650,6 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Return by launcher"/>
 </enum>
 
-<enum name="MultiProfileTeleportWindowType">
-  <int value="0" label="Tabbed browser"/>
-  <int value="1" label="Tabbed incognito browser"/>
-  <int value="2" label="V1 app"/>
-  <int value="3" label="V2 app"/>
-  <int value="4" label="Panel"/>
-  <int value="5" label="Popup"/>
-  <int value="6" label="Unknown"/>
-</enum>
-
 <enum name="MultitaskMenuActionType">
   <int value="0" label="Half split button was pressed"/>
   <int value="1" label="Fullscreen button was pressed"/>

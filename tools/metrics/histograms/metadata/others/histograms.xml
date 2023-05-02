@@ -8204,14 +8204,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MultiProfile.TeleportWindowType"
-    enum="MultiProfileTeleportWindowType" expires_after="2020-05-31">
-  <owner>skuhne@chromium.org</owner>
-  <summary>
-    Counts the number of teleported windows by types in separated desktop mode.
-  </summary>
-</histogram>
-
 <histogram name="MultiProfile.UsersPerSessionIncremental" units="units"
     expires_after="2022-04-10">
   <owner>skuhne@chromium.org</owner>
