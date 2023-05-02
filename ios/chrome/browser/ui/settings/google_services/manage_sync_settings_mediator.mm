@@ -71,21 +71,6 @@ UIImageConfiguration* AccessoryConfiguration() {
 // Enterprise icon.
 NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 
-// Returns true if the initial sync setup is currently ongoing. Sync initial
-// setup is considered to finished iff:
-//   1. User is signed in with sync enabled and the sync setup was completed.
-//   OR
-//   2. User is not signed in or has disabled sync.
-// Otherwise we consider that the initial setup is still pending.
-// Note that if the user visits the Advanced Settings during the opt-in flow,
-// the Sync consent is not granted yet. In this case, IsSyncRequested() is
-// set to true, indicating that the sync was requested but the initial setup
-// has not been finished yet.
-bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
-  return sync_setup_service->IsSyncRequested() &&
-         !sync_setup_service->IsFirstSetupComplete();
-}
-
 }  // namespace
 
 @interface ManageSyncSettingsMediator () <
@@ -214,7 +199,6 @@ bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
 
   BOOL shouldSyncEverythingBeEditable = !self.disabledBecauseOfSyncError;
   BOOL shouldSyncEverythingItemBeOn =
-      self.syncSetupService->IsSyncRequested() &&
       self.syncSetupService->IsSyncEverythingEnabled();
   SyncSwitchItem* syncEverythingItem =
       base::mac::ObjCCastStrict<SyncSwitchItem>(self.syncEverythingItem);
@@ -246,7 +230,6 @@ bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
     syncer::UserSelectableType dataType =
         static_cast<syncer::UserSelectableType>(syncSwitchItem.dataType);
     BOOL isDataTypeSynced =
-        self.syncSetupService->IsSyncRequested() &&
         self.syncSetupService->IsDataTypePreferred(dataType);
     BOOL isEnabled = self.shouldSyncDataItemEnabled &&
                      ![self isManagedSyncSettingsDataType:dataType];
@@ -269,13 +252,11 @@ bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
 
   SyncSwitchItem* syncSwitchItem =
       base::mac::ObjCCast<SyncSwitchItem>(self.autocompleteWalletItem);
-  BOOL isAutofillOn = self.syncSetupService->IsSyncRequested() &&
-                      self.syncSetupService->IsDataTypePreferred(
-                          syncer::UserSelectableType::kAutofill);
+  BOOL isAutofillOn = self.syncSetupService->IsDataTypePreferred(
+      syncer::UserSelectableType::kAutofill);
   BOOL autocompleteWalletEnabled =
       isAutofillOn && self.shouldSyncDataItemEnabled;
-  BOOL autocompleteWalletOn = self.syncSetupService->IsSyncRequested() &&
-                              self.autocompleteWalletPreference.value;
+  BOOL autocompleteWalletOn = self.autocompleteWalletPreference.value;
   BOOL needsUpdate = (syncSwitchItem.enabled != autocompleteWalletEnabled) ||
                      (syncSwitchItem.on != autocompleteWalletOn);
   syncSwitchItem.enabled = autocompleteWalletEnabled;
@@ -529,8 +510,7 @@ bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
 
 - (BOOL)shouldSyncDataItemEnabled {
   return (!self.syncSetupService->IsSyncEverythingEnabled() ||
-          !self.allItemsAreSynceable ||
-          !self.syncSetupService->IsSyncRequested()) &&
+          !self.allItemsAreSynceable) &&
          !self.disabledBecauseOfSyncError;
 }
 
@@ -788,10 +768,6 @@ bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
 // Updates the sync errors section. If `notifyConsumer` is YES, the consumer is
 // notified about model changes.
 - (void)updateSyncErrorsSection:(BOOL)notifyConsumer {
-  if (IsInitialSyncSetupOngoing(self.syncSetupService)) {
-    return;
-  }
-
   // Checks if the sync setup service state has changed from the saved state in
   // the table view model.
   absl::optional<SyncSettingsItemType> type = [self syncErrorItemType];
@@ -845,6 +821,9 @@ bool IsInitialSyncSetupOngoing(SyncSetupService* sync_setup_service) {
 // Returns the sync error item type or absl::nullopt if the item
 // is not an error.
 - (absl::optional<SyncSettingsItemType>)syncErrorItemType {
+  if (!self.syncConsentGiven) {
+    return absl::nullopt;
+  }
   if (self.isSyncDisabledByAdministrator) {
     return absl::make_optional<SyncSettingsItemType>(
         SyncDisabledByAdministratorErrorItemType);

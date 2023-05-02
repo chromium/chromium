@@ -30,9 +30,10 @@ class SyncSetupService : public KeyedService {
   ~SyncSetupService() override;
 
   // Returns whether the user wants Sync to run.
-  // TODO(crbug.com/1291953): Callers should typically use CanSyncFeatureStart()
-  // or IsSyncFeatureEnabled() instead.
+  // TODO(crbug.com/1219990): Remove this function once all calling sites,
+  // including downstream ones, are cleaned up.
   virtual bool IsSyncRequested() const;
+
   // Returns whether Sync-the-transport can start the Sync feature.
   virtual bool CanSyncFeatureStart() const;
 

@@ -105,10 +105,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   void FirstSetupSyncOnWithConsentEnabled() {
     ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
-        .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsSyncRequested())
-        .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
         .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
@@ -117,26 +113,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
   }
 
-  void FirstSetupSyncOnWithConsentDisabled() {
-    ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
-        .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
-        .WillByDefault(Return(false));
-    ON_CALL(*sync_setup_service_mock_, IsSyncRequested())
-        .WillByDefault(Return(false));
-    ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
-        .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
-        .WillByDefault(Return(true));
-    ON_CALL(*sync_service_mock_, GetTransportState())
-        .WillByDefault(Return(syncer::SyncService::TransportState::DISABLED));
-  }
-
   void FirstSetupSyncOff() {
-    ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
-        .WillByDefault(Return(false));
-    ON_CALL(*sync_setup_service_mock_, IsSyncRequested())
-        .WillByDefault(Return(false));
     ON_CALL(*sync_setup_service_mock_, IsFirstSetupComplete())
         .WillByDefault(Return(false));
     ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
@@ -349,42 +326,6 @@ TEST_F(ManageSyncSettingsMediatorTest,
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
                                        SignOutSectionIdentifier];
   EXPECT_EQ(1UL, shown_sign_out_items.count);
-}
-
-// Tests Signout is shown when first setup is complete and sync engine is off.
-TEST_F(ManageSyncSettingsMediatorTest, SyncEngineOffSignOutVisible) {
-  // Set Sync disabled expectations.
-  FirstSetupSyncOnWithConsentDisabled();
-
-  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
-
-  // "Turn off Sync" item is shown.
-  NSArray* hidden_sign_out_items = [mediator_.consumer.tableViewModel
-      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
-                                       SignOutSectionIdentifier];
-  EXPECT_EQ(1UL, hidden_sign_out_items.count);
-}
-
-// Tests data types are editable when first setup is complete and sync engine
-// is off.
-TEST_F(ManageSyncSettingsMediatorTest,
-       SyncEngineOffSyncEverythingAndDataTypeEditable) {
-  // Set Sync disabled expectations.
-  FirstSetupSyncOnWithConsentDisabled();
-
-  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
-
-  NSArray* items = [mediator_.consumer.tableViewModel
-      itemsInSectionWithIdentifier:SyncDataTypeSectionIdentifier];
-  for (TableViewItem* item in items) {
-    SyncSwitchItem* switch_item =
-        base::mac::ObjCCastStrict<SyncSwitchItem>(item);
-    if (switch_item.type == AutocompleteWalletItemType) {
-      EXPECT_FALSE(switch_item.enabled);
-    } else {
-      EXPECT_TRUE(switch_item.enabled);
-    }
-  }
 }
 
 // Tests that the items are correct when a sync type list is managed.
