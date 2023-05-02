@@ -21,7 +21,7 @@ HighEfficiencyChipTabHelper::HighEfficiencyChipTabHelper(
       content::WebContentsUserData<HighEfficiencyChipTabHelper>(*contents) {}
 
 bool HighEfficiencyChipTabHelper::ShouldChipBeVisible() const {
-  return was_discarded_ && is_page_supported_ && IsProactiveDiscard();
+  return was_discarded_ && is_site_supported_ && IsProactiveDiscard();
 }
 
 bool HighEfficiencyChipTabHelper::ShouldIconAnimate() const {
@@ -50,6 +50,14 @@ uint64_t HighEfficiencyChipTabHelper::GetMemorySavingsInBytes() const {
                    kKiloByte;
 }
 
+void HighEfficiencyChipTabHelper::SetSiteWasAddedToExclusionList() {
+  was_site_added_to_exclusion_list_ = true;
+}
+
+bool HighEfficiencyChipTabHelper::GetWasSiteAddedToExclusionList() const {
+  return was_site_added_to_exclusion_list_;
+}
+
 void HighEfficiencyChipTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Pages can only be discarded while they are in the background, and we only
@@ -69,7 +77,8 @@ void HighEfficiencyChipTabHelper::DidStartNavigation(
   was_discarded_ = navigation_handle->ExistingDocumentWasDiscarded();
   was_animated_ = false;
   was_chip_hidden_ = false;
-  is_page_supported_ =
+  was_site_added_to_exclusion_list_ = false;
+  is_site_supported_ =
       high_efficiency::IsURLSupported(navigation_handle->GetURL());
 }
 

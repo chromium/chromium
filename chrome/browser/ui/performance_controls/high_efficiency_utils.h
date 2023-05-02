@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_UTILS_H_
 
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -17,6 +18,9 @@ bool IsURLSupported(GURL url);
 // Returns the discard reason if |contents| has been discarded
 absl::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
     content::WebContents* contents);
+
+// Adds the given site to the discard exclusion list
+void AddSiteToExceptionsList(PrefService* pref_service, std::string site);
 
 }  // namespace high_efficiency
 

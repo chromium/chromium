@@ -49,6 +49,12 @@ class HighEfficiencyChipTabHelper
   // Returns the memory savings (in bytes) of the previously discarded tab.
   uint64_t GetMemorySavingsInBytes() const;
 
+  // Indicates that the site the tab this helper is currently on has been
+  // added to the exclusion list through the dialog bubble.
+  void SetSiteWasAddedToExclusionList();
+
+  bool GetWasSiteAddedToExclusionList() const;
+
   // content::WebContentsObserver
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -62,7 +68,8 @@ class HighEfficiencyChipTabHelper
   bool was_discarded_ = false;
   bool was_animated_ = false;
   bool was_chip_hidden_ = false;
-  bool is_page_supported_ = false;
+  bool is_site_supported_ = false;
+  bool was_site_added_to_exclusion_list_ = false;
   absl::optional<mojom::LifecycleUnitDiscardReason> discard_reason_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

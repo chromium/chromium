@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -34,6 +35,8 @@
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
@@ -41,9 +44,12 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "url/gurl.h"
@@ -124,7 +130,7 @@ class HighEfficiencyInteractiveTest : public InteractiveBrowserTest {
     }));
   }
 
-  // Attepmpts to discard the tab at discard_tab_index and navigates to that
+  // Attempts to discard the tab at discard_tab_index and navigates to that
   // tab and waits for it to reload
   auto DiscardAndSelectTab(int discard_tab_index,
                            const ui::ElementIdentifier& contents_id) {
@@ -285,6 +291,13 @@ class HighEfficiencyChipInteractiveTest : public HighEfficiencyInteractiveTest {
   HighEfficiencyChipInteractiveTest() = default;
   ~HighEfficiencyChipInteractiveTest() override = default;
 
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        performance_manager::features::kDiscardExceptionsImprovements);
+
+    HighEfficiencyInteractiveTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     HighEfficiencyInteractiveTest::SetUpOnMainThread();
 
@@ -364,6 +377,9 @@ class HighEfficiencyChipInteractiveTest : public HighEfficiencyInteractiveTest {
       run_loop.Run();
     }));
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Page Action Chip should appear expanded the first three times a tab is
@@ -563,6 +579,95 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
                            memory_estimate * 1024)) != std::string::npos;
               },
               browser())));
+}
+
+// High Efficiency Dialog bubble should add the site it is currently on
+// to the exclusion list if the cancel button of the dialog bubble is clicked.
+// Opening the dialog button again will cause the cancel button to be disabled.
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       ModifyExclusionListOnCancelButtonClick) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      DiscardAndSelectTab(0, kFirstTabContents),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      CheckViewProperty(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
+          &views::LabelButton::GetText,
+          l10n_util::GetStringUTF16(
+              IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST)),
+      // Clicking the dialog's cancel button should add the site to the
+      // exclusion list
+      PressButton(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton),
+      WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      Do(base::BindLambdaForTesting([=]() {
+        PrefService* const pref_service = browser()->profile()->GetPrefs();
+        const base::Value::List& discard_exclusion = pref_service->GetList(
+            performance_manager::user_tuning::prefs::kTabDiscardingExceptions);
+        EXPECT_EQ(1u, discard_exclusion.size());
+        std::string current_site_host = browser()
+                                            ->tab_strip_model()
+                                            ->GetActiveWebContents()
+                                            ->GetURL()
+                                            .host();
+        std::string added_exception = discard_exclusion.front().GetString();
+        EXPECT_EQ(current_site_host, added_exception);
+      })),
+      FlushEvents(),
+      // Dialog's cancel button should now be disabled since the site was added
+      // to the list
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      CheckViewProperty(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
+          &views::Button::GetState,
+          views::Button::ButtonState::STATE_DISABLED));
+}
+
+// High Efficiency Dialog bubble's cancel button's state should be preserved
+// for that tab even when navigating to another tab.
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       CancelButtonStatePreseveredWhenSwitchingTabs) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GetURL("/title1.html")),
+      DiscardAndSelectTab(0, kFirstTabContents), TryDiscardTab(1),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      // Add site to the exclusion list
+      PressButton(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton),
+      WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      FlushEvents(),
+      // Check that the cancel button is now disabled
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      CheckViewProperty(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
+          &views::Button::GetState, views::Button::ButtonState::STATE_DISABLED),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      // Second tab's cancel button should be normal since the cancel button
+      // wasn't clicked for this tab
+      SelectTab(kTabStripElementId, 1),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      CheckViewProperty(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
+          &views::Button::GetState, views::Button::ButtonState::STATE_NORMAL),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      // Ensure that the first tab's cancel button stays disabled even after we
+      // navigated to another tab
+      SelectTab(kTabStripElementId, 0),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      CheckViewProperty(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
+          &views::Button::GetState,
+          views::Button::ButtonState::STATE_DISABLED));
 }
 
 // Tests Discarding on pages with various types of content

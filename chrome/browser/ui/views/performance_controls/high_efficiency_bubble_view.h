@@ -17,6 +17,7 @@ class HighEfficiencyBubbleView {
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHighEfficiencyDialogBodyElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHighEfficiencyDialogOkButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHighEfficiencyDialogCancelButton);
 
   static views::BubbleDialogModelHost* ShowBubble(
       Browser* browser,

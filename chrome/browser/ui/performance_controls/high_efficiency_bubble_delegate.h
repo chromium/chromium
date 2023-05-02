@@ -20,6 +20,8 @@ class HighEfficiencyBubbleDelegate : public ui::DialogModelDelegate {
 
   void OnSettingsClicked();
 
+  void OnAddSiteToExclusionListButtonClicked();
+
   void OnDialogDestroy();
 
  private:

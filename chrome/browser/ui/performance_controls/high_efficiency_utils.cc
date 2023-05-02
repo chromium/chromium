@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "content/public/common/url_constants.h"
 
 namespace high_efficiency {
@@ -22,6 +24,20 @@ absl::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
              ? absl::nullopt
              : absl::make_optional<::mojom::LifecycleUnitDiscardReason>(
                    pre_discard_resource_usage->discard_reason());
+}
+
+void AddSiteToExceptionsList(PrefService* pref_service, std::string site) {
+  base::Value::List discard_exclusion_list =
+      pref_service
+          ->GetList(
+              performance_manager::user_tuning::prefs::kTabDiscardingExceptions)
+          .Clone();
+  if (!base::Contains(discard_exclusion_list, site)) {
+    discard_exclusion_list.Append(site);
+    pref_service->SetList(
+        performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
+        std::move(discard_exclusion_list));
+  }
 }
 
 }  //  namespace high_efficiency
