@@ -83468,6 +83468,14 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="45" label="Prefetch Failed: Per Page Limit Exceeded">
     The prefetch was eligible but rejected due to the per-page limit exceeded.
   </int>
+  <int value="46"
+      label="Prefetch Not Eligible: Same-site Cross-origin Prefetch Required
+             Proxy">
+    The prefetch needed to fetch a same-site cross-origin URL and required the
+    use of the prefetch proxy. These prefetches are blocked since the default
+    network context cannot be configured to use the prefetch proxy for a single
+    prefetch request. See crbug.com/1439986.
+  </int>
 </enum>
 
 <enum name="PrefetchRedirect">

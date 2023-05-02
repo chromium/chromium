@@ -139,8 +139,8 @@ void PrefetchDocumentManager::ProcessCandidates(
   // to handle all prefetches and the prefetch proxy code in chrome/browser/ is
   // removed, then we can move the logic of which speculation candidates this
   // code can handle up a layer to |SpeculationHostImpl|.
-  const url::Origin& referring_origin =
-      render_frame_host().GetLastCommittedOrigin();
+  net::SchemefulSite referring_site(
+      render_frame_host().GetLastCommittedOrigin());
 
   std::vector<std::tuple<GURL, PrefetchType, blink::mojom::Referrer,
                          network::mojom::NoVarySearchPtr,
@@ -149,29 +149,26 @@ void PrefetchDocumentManager::ProcessCandidates(
 
   auto should_process_entry =
       [&](const blink::mojom::SpeculationCandidatePtr& candidate) {
-        bool is_same_origin = referring_origin.IsSameOriginWith(candidate->url);
-        bool private_prefetch =
-            candidate->requires_anonymous_client_ip_when_cross_origin &&
-            !is_same_origin;
-
         // This code doesn't not support speculation candidates with the action
         // of |blink::mojom::SpeculationAction::kPrefetchWithSubresources|. See
         // https://crbug.com/1296309.
-
-        if (candidate->action == blink::mojom::SpeculationAction::kPrefetch) {
-          // TODO(https://crbug.com/1414582): Change this check to look at site
-          // instead of origin.
-          bool use_isolated_network_context = !is_same_origin;
-          bool use_prefetch_proxy = !is_same_origin && private_prefetch;
-          prefetches.emplace_back(
-              candidate->url,
-              PrefetchType(use_isolated_network_context, use_prefetch_proxy,
-                           candidate->eagerness),
-              *candidate->referrer, candidate->no_vary_search_expected.Clone(),
-              candidate->injection_world);
-          return true;
+        if (candidate->action != blink::mojom::SpeculationAction::kPrefetch) {
+          return false;
         }
-        return false;
+
+        net::SchemefulSite prefetch_site(candidate->url);
+
+        prefetches.emplace_back(
+            candidate->url,
+            PrefetchType(
+                /*use_isolated_network_context=*/referring_site !=
+                    prefetch_site,
+                /*use_prefetch_proxy=*/
+                candidate->requires_anonymous_client_ip_when_cross_origin,
+                candidate->eagerness),
+            *candidate->referrer, candidate->no_vary_search_expected.Clone(),
+            candidate->injection_world);
+        return true;
       };
 
   base::EraseIf(candidates, should_process_entry);
@@ -179,9 +176,10 @@ void PrefetchDocumentManager::ProcessCandidates(
   if (const auto& host_to_bypass = PrefetchBypassProxyForHost()) {
     for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected,
                 world] : prefetches) {
-      if (prefetch_type.IsProxyRequired() &&
-          prefetch_url.host() == *host_to_bypass)
+      if (prefetch_type.IsProxyRequiredWhenCrossOrigin() &&
+          prefetch_url.host() == *host_to_bypass) {
         prefetch_type.SetProxyBypassedForTest();
+      }
     }
   }
 
@@ -306,6 +304,8 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     case PrefetchStatus::kPrefetchFailedInvalidRedirect:
     case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
     case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
+    case PrefetchStatus::
+        kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
       return true;
   }
 }

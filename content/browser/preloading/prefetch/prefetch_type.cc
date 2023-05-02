@@ -16,10 +16,7 @@ PrefetchType::PrefetchType(bool use_isolated_network_context,
                            blink::mojom::SpeculationEagerness eagerness)
     : use_isolated_network_context_(use_isolated_network_context),
       use_prefetch_proxy_(use_prefetch_proxy),
-      eagerness_(eagerness) {
-  // Checks that the given dimensions are a supported prefetch type.
-  DCHECK(!(!use_isolated_network_context && use_prefetch_proxy));
-}
+      eagerness_(eagerness) {}
 
 PrefetchType::~PrefetchType() = default;
 PrefetchType::PrefetchType(const PrefetchType& prefetch_type) = default;

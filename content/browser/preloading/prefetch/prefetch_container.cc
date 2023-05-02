@@ -87,6 +87,8 @@ void SetIneligibilityFromStatus(PreloadingAttempt* attempt,
       case PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
       case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
       case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
+      case PrefetchStatus::
+          kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
         attempt->SetEligibility(ToPreloadingEligibility(status));
         break;
       default:
@@ -227,6 +229,8 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kSubresourceThrottled:
       case PrefetchStatus::kPrefetchPositionIneligible:
       case PrefetchStatus::kPrefetchFailedRedirectsDisabled_DEPRECATED:
+      case PrefetchStatus::
+          kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
         NOTIMPLEMENTED();
     }
   }
@@ -280,6 +284,8 @@ PrefetchContainer::PrefetchContainer(
       prefetch_url_(url),
       prefetch_type_(prefetch_type),
       referrer_(referrer),
+      referring_origin_(url::Origin::Create(referrer_.url)),
+      referring_site_(net::SchemefulSite(referrer_.url)),
       no_vary_search_expected_(std::move(no_vary_search_expected)),
       prefetch_document_manager_(prefetch_document_manager),
       ukm_source_id_(prefetch_document_manager_
@@ -698,7 +704,7 @@ void PrefetchContainer::UpdateServingPageMetrics() {
   }
 
   serving_page_metrics_container_->SetRequiredPrivatePrefetchProxy(
-      GetPrefetchType().IsProxyRequired());
+      GetPrefetchType().IsProxyRequiredWhenCrossOrigin());
   serving_page_metrics_container_->SetPrefetchHeaderLatency(
       GetPrefetchHeaderLatency());
   if (HasPrefetchStatus()) {
@@ -767,6 +773,11 @@ void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
         base::TimeTicks::Now() - blocked_until_head_start_time_.value(),
         served);
   }
+}
+
+bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {
+  return !referring_origin_.IsSameOriginWith(url) &&
+         prefetch_type_.IsProxyRequiredWhenCrossOrigin();
 }
 
 std::ostream& operator<<(std::ostream& ostream,
