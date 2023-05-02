@@ -138,6 +138,7 @@ declare global {
         suspiciousInstall: boolean;
         corruptInstall: boolean;
         updateRequired: boolean;
+        publishedInStoreRequired: boolean;
         blockedByPolicy: boolean;
         reloading: boolean;
         custodianApprovalRequired: boolean;

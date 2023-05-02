@@ -588,6 +588,9 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
           prefs::kSupervisedUserExtensionsMayRequestPermissions) &&
       (custodian_approval_required || permissions_increase);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  info->disable_reasons.published_in_store_required =
+      (disable_reasons &
+       disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY) != 0;
 
   // Error collection.
   bool error_console_enabled =

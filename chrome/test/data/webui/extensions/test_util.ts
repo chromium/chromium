@@ -188,6 +188,7 @@ export function createExtensionInfo(
           suspiciousInstall: false,
           corruptInstall: false,
           updateRequired: false,
+          publishedInStoreRequired: false,
           blockedByPolicy: false,
           custodianApprovalRequired: false,
           parentDisabledPermissions: false,

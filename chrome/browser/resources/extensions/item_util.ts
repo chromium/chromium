@@ -63,6 +63,7 @@ export function userCanChangeEnablement(
   if (item.disableReasons.corruptInstall ||
       item.disableReasons.suspiciousInstall ||
       item.disableReasons.updateRequired ||
+      item.disableReasons.publishedInStoreRequired ||
       item.disableReasons.blockedByPolicy) {
     return false;
   }

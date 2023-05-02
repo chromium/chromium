@@ -246,6 +246,12 @@
         <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
         <span>$i18n{updateRequiredByPolicy}</span>
       </div>
+      <div class="cr-row continuation warning"
+          id="published-in-store-required-warning"
+          hidden$="[[!data.disableReasons.publishedInStoreRequired]]">
+        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <span>$i18n{publishedInStoreRequiredByPolicy}</span>
+      </div>
     </div>
     <div id="allowlist-warning" class="cr-row continuation"
         hidden$="[[!showAllowlistWarning_(data.*)]]">

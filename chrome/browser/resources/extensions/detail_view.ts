@@ -186,6 +186,7 @@ export class ExtensionsDetailViewElement extends
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
         this.data.disableReasons.updateRequired || !!this.data.blacklistText ||
+        this.data.disableReasons.publishedInStoreRequired ||
         this.data.runtimeWarnings.length > 0;
   }
 

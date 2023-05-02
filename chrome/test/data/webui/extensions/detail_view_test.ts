@@ -394,6 +394,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#suspicious-warning', false);
     testWarningVisible('#blacklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#published-in-store-required-warning', false);
 
     item.set('data.runtimeWarnings', ['Dummy warning']);
     flush();
@@ -402,6 +403,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#suspicious-warning', false);
     testWarningVisible('#blacklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#published-in-store-required-warning', false);
 
     item.set('data.disableReasons.corruptInstall', true);
     flush();
@@ -410,6 +412,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#suspicious-warning', false);
     testWarningVisible('#blacklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#published-in-store-required-warning', false);
     const testIsVisible = isChildVisible.bind(null, item);
     assertTrue(testIsVisible('#enableToggle'));
 
@@ -420,6 +423,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#suspicious-warning', true);
     testWarningVisible('#blacklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#published-in-store-required-warning', false);
 
     item.set('data.blacklistText', 'This item is blocklisted');
     flush();
@@ -428,6 +432,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#suspicious-warning', true);
     testWarningVisible('#blacklisted-warning', true);
     testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#published-in-store-required-warning', false);
 
     item.set('data.blacklistText', null);
     flush();
@@ -436,6 +441,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#suspicious-warning', true);
     testWarningVisible('#blacklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#published-in-store-required-warning', false);
 
     item.set('data.disableReasons.updateRequired', true);
     flush();
@@ -444,17 +450,29 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#suspicious-warning', true);
     testWarningVisible('#blacklisted-warning', false);
     testWarningVisible('#update-required-warning', true);
+    testWarningVisible('#published-in-store-required-warning', false);
+
+    item.set('data.disableReasons.publishedInStoreRequired', true);
+    flush();
+    testWarningVisible('#runtime-warnings', true);
+    testWarningVisible('#corrupted-warning', true);
+    testWarningVisible('#suspicious-warning', true);
+    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#update-required-warning', true);
+    testWarningVisible('#published-in-store-required-warning', true);
 
     item.set('data.runtimeWarnings', []);
     item.set('data.disableReasons.corruptInstall', false);
     item.set('data.disableReasons.suspiciousInstall', false);
     item.set('data.disableReasons.updateRequired', false);
+    item.set('data.disableReasons.publishedInStoreRequired', false);
     flush();
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', false);
     testWarningVisible('#blacklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#published-in-store-required-warning', false);
 
     item.set('data.showSafeBrowsingAllowlistWarning', true);
     flush();
@@ -463,6 +481,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#suspicious-warning', false);
     testWarningVisible('#blacklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#published-in-store-required-warning', false);
     testWarningVisible('#allowlist-warning', true);
 
     item.set('data.disableReasons.suspiciousInstall', true);
@@ -472,6 +491,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#suspicious-warning', true);
     testWarningVisible('#blacklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#published-in-store-required-warning', false);
     testWarningVisible('#allowlist-warning', true);
 
     // Test that the allowlist warning is not shown when there is already a
@@ -484,6 +504,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#suspicious-warning', true);
     testWarningVisible('#blacklisted-warning', true);
     testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#published-in-store-required-warning', false);
     testWarningVisible('#allowlist-warning', false);
   });
 

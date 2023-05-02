@@ -140,6 +140,7 @@ namespace developerPrivate {
     boolean suspiciousInstall;
     boolean corruptInstall;
     boolean updateRequired;
+    boolean publishedInStoreRequired;
     boolean blockedByPolicy;
     boolean reloading;
     boolean custodianApprovalRequired;

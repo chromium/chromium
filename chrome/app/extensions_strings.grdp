@@ -70,6 +70,9 @@
   <message name="IDS_EXTENSIONS_DISABLED_UPDATE_REQUIRED_BY_POLICY" desc="Text shown in the extensions settings for extensions disabled due to minimum version requirement from enterprise policy">
     This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.
   </message>
+  <message name="IDS_EXTENSIONS_DISABLED_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY" desc="Text shown in the extensions settings for extensions disabled because they are no longer published and available on the Chrome Web Store as required by enterprise policy">
+    This extension has been disabled by enterprise policy because it is no longer available on the Chrome Web Store.
+  </message>
   <message name="IDS_EXTENSIONS_MATCHING_RESTRICTED_SITES_ALLOW" desc="The label for the dialog option to allow the extension to always run on a site that matches one or more user restricted sites.">
     Allow
   </message>
