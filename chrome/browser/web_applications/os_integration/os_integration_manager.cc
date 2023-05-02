@@ -575,6 +575,12 @@ void OsIntegrationManager::RegisterShortcutsMenu(
     return;
   }
 
+  // Exit early if shortcuts_menu_item_infos are not populated.
+  if (shortcuts_menu_item_infos.size() < 1) {
+    std::move(callback).Run(Result::kOk);
+    return;
+  }
+
   ResultCallback metrics_callback =
       base::BindOnce([](Result result) {
         base::UmaHistogramBoolean("WebApp.ShortcutsMenuRegistration.Result",
@@ -596,6 +602,15 @@ void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
     return;
   }
 
+  std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos =
+      registrar_->GetAppShortcutsMenuItemInfos(app_id);
+
+  // Exit early if shortcuts_menu_item_infos are not populated.
+  if (shortcuts_menu_item_infos.size() < 1) {
+    std::move(callback).Run(Result::kOk);
+    return;
+  }
+
   ResultCallback metrics_callback =
       base::BindOnce([](Result result) {
         base::UmaHistogramBoolean("WebApp.ShortcutsMenuRegistration.Result",
@@ -604,7 +619,7 @@ void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
       }).Then(std::move(callback));
 
   shortcut_manager_->ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
-      app_id, std::move(metrics_callback));
+      app_id, shortcuts_menu_item_infos, std::move(metrics_callback));
 }
 
 void OsIntegrationManager::RegisterRunOnOsLogin(const AppId& app_id,

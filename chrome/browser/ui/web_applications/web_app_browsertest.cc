@@ -1488,10 +1488,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu,
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(
       base::BindLambdaForTesting([&](const AppId& installed_app_id) {
-        // The result is false because there are no shortcuts for registration.
+        // Verify that since the shortcuts menu items are not registered,
+        // none of the buckets are filled.
         EXPECT_THAT(
-            tester.GetAllSamples("WebApp.ShortcutsMenuRegistration.Result"),
-            BucketsAre(base::Bucket(false, 1)));
+            tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
+            BucketsAre(base::Bucket(true, 0), base::Bucket(false, 0)));
         run_loop_install.Quit();
       }));
   content::CreateAndLoadWebContentsObserver app_loaded_observer;
