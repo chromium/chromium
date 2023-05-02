@@ -6143,11 +6143,6 @@ const FeatureEntry kFeatureEntries[] = {
          reading_list::switches::kReadLaterReminderNotification)},
 #endif
 
-    {"tab-groups-new-badge-promo",
-     flag_descriptions::kTabGroupsNewBadgePromoName,
-     flag_descriptions::kTabGroupsNewBadgePromoDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabGroupsNewBadgePromo)},
-
     {"tab-groups-save", flag_descriptions::kTabGroupsSaveName,
      flag_descriptions::kTabGroupsSaveDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupsSave)},
