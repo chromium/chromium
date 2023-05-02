@@ -53,9 +53,13 @@ void CopyNewReports(
 
 std::vector<crashpad::CrashReportDatabase::Report> GetNewReports(
     time_t latest_creation_time) {
+  auto crashpad_path = crash_reporter::GetCrashpadDatabasePath();
+  if (!crashpad_path) {
+    VLOG(1) << "enterprise.crash_reporting: no valid crashpad path";
+    return {};
+  }
   std::unique_ptr<crashpad::CrashReportDatabase> database =
-      crashpad::CrashReportDatabase::InitializeWithoutCreating(
-          crash_reporter::GetCrashpadDatabasePath());
+      crashpad::CrashReportDatabase::InitializeWithoutCreating(*crashpad_path);
   if (!database) {
     VLOG(1) << "enterprise.crash_reporting: failed to fetch crashpad db";
     return {};

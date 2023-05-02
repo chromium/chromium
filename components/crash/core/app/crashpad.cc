@@ -29,6 +29,7 @@
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/abseil-cpp/absl/base/internal/raw_logging.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/annotation.h"
 #include "third_party/crashpad/crashpad/client/annotation_list.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
@@ -320,12 +321,18 @@ void RequestSingleCrashUpload(const std::string& local_id) {
 #endif
 }
 
-base::FilePath GetCrashpadDatabasePath() {
+absl::optional<base::FilePath> GetCrashpadDatabasePath() {
 #if BUILDFLAG(IS_WIN)
-  return base::FilePath(GetCrashpadDatabasePath_ExportThunk());
+  base::FilePath::StringType::const_pointer path =
+      GetCrashpadDatabasePath_ExportThunk();
 #else
-  return base::FilePath(GetCrashpadDatabasePathImpl());
+  base::FilePath::StringType::const_pointer path =
+      GetCrashpadDatabasePathImpl();
 #endif
+  if (!path) {
+    return absl::nullopt;
+  }
+  return base::FilePath(path);
 }
 
 void ClearReportsBetween(const base::Time& begin, const base::Time& end) {
