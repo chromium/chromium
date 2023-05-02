@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DeleteController;
 import org.chromium.chrome.browser.download.home.list.mutator.DateOrderedListMutator;
 import org.chromium.chrome.browser.download.home.list.mutator.ListMutationController;
-import org.chromium.chrome.browser.download.home.metrics.OfflineItemStartupLogger;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils.ViewAction;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
@@ -205,8 +204,6 @@ class DateOrderedListMediator implements BackPressHandler {
         mListMutator = new DateOrderedListMutator(mTypeFilter, mModel, justNowProvider);
         mListMutationController =
                 new ListMutationController(mUiConfig, justNowProvider, mListMutator, mModel);
-
-        new OfflineItemStartupLogger(config, mInvalidStateFilter);
 
         mSearchFilter.addObserver(new EmptyStateObserver(mSearchFilter, dateOrderedListObserver));
         mThumbnailProvider = new ThumbnailProviderImpl(discardableReferencePool,
