@@ -108,7 +108,7 @@ class ContentSettingBubbleModel {
 
     GURL url;
     RadioItems radio_items;
-    int default_item;
+    int default_item = 0;
 
     // Whether the user can control this radio group. False if controlled by
     // policy, etc.
@@ -132,7 +132,7 @@ class ContentSettingBubbleModel {
     std::u16string label;
     blink::MediaStreamDevice default_device;
     blink::MediaStreamDevice selected_device;
-    bool disabled;
+    bool disabled = false;
   };
   typedef std::map<blink::mojom::MediaStreamType, MediaMenu> MediaMenuMap;
 

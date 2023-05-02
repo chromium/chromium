@@ -352,7 +352,7 @@ class ContentSettingMixedScriptBubbleModel
   ContentSettingMixedScriptBubbleModel& operator=(
       const ContentSettingMixedScriptBubbleModel&) = delete;
 
-  ~ContentSettingMixedScriptBubbleModel() override {}
+  ~ContentSettingMixedScriptBubbleModel() override = default;
 
  private:
   void SetManageText();
@@ -476,7 +476,7 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
   set_radio_group(radio_group);
 }
 
-ContentSettingRPHBubbleModel::~ContentSettingRPHBubbleModel() {}
+ContentSettingRPHBubbleModel::~ContentSettingRPHBubbleModel() = default;
 
 void ContentSettingRPHBubbleModel::CommitChanges() {
   PerformActionForSelectedItem();
@@ -542,7 +542,7 @@ ContentSettingSingleRadioGroup::ContentSettingSingleRadioGroup(
   SetRadioGroup();
 }
 
-ContentSettingSingleRadioGroup::~ContentSettingSingleRadioGroup() {}
+ContentSettingSingleRadioGroup::~ContentSettingSingleRadioGroup() = default;
 
 void ContentSettingSingleRadioGroup::CommitChanges() {
   if (settings_changed()) {
@@ -704,7 +704,7 @@ ContentSettingCookiesBubbleModel::ContentSettingCookiesBubbleModel(
   set_custom_link_enabled(true);
 }
 
-ContentSettingCookiesBubbleModel::~ContentSettingCookiesBubbleModel() {}
+ContentSettingCookiesBubbleModel::~ContentSettingCookiesBubbleModel() = default;
 
 void ContentSettingCookiesBubbleModel::CommitChanges() {
   // On some plattforms e.g. MacOS X it is possible to close a tab while the
@@ -859,7 +859,8 @@ ContentSettingMediaStreamBubbleModel::ContentSettingMediaStreamBubbleModel(
   SetCustomLink();
 }
 
-ContentSettingMediaStreamBubbleModel::~ContentSettingMediaStreamBubbleModel() {}
+ContentSettingMediaStreamBubbleModel::~ContentSettingMediaStreamBubbleModel() =
+    default;
 
 void ContentSettingMediaStreamBubbleModel::CommitChanges() {
   for (const auto& media_menu : bubble_content().media_menus) {
@@ -1405,7 +1406,8 @@ ContentSettingDownloadsBubbleModel::ContentSettingDownloadsBubbleModel(
   SetRadioGroup();
 }
 
-ContentSettingDownloadsBubbleModel::~ContentSettingDownloadsBubbleModel() {}
+ContentSettingDownloadsBubbleModel::~ContentSettingDownloadsBubbleModel() =
+    default;
 
 void ContentSettingDownloadsBubbleModel::CommitChanges() {
   if (selected_item() != bubble_content().radio_group.default_item) {
@@ -1776,45 +1778,41 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
     WebContents* web_contents,
     ContentSettingsType content_type) {
   DCHECK(web_contents);
-  if (content_type == ContentSettingsType::COOKIES) {
-    return std::make_unique<ContentSettingCookiesBubbleModel>(delegate,
-                                                              web_contents);
-  }
-  if (content_type == ContentSettingsType::POPUPS) {
-    return std::make_unique<ContentSettingPopupBubbleModel>(delegate,
-                                                            web_contents);
-  }
-
-  if (content_type == ContentSettingsType::MIXEDSCRIPT) {
-    return std::make_unique<ContentSettingMixedScriptBubbleModel>(delegate,
-                                                                  web_contents);
-  }
-  if (content_type == ContentSettingsType::PROTOCOL_HANDLERS) {
-    custom_handlers::ProtocolHandlerRegistry* registry =
-        ProtocolHandlerRegistryFactory::GetForBrowserContext(
-            web_contents->GetBrowserContext());
-    return std::make_unique<ContentSettingRPHBubbleModel>(
-        delegate, web_contents, registry);
-  }
-  if (content_type == ContentSettingsType::AUTOMATIC_DOWNLOADS) {
-    return std::make_unique<ContentSettingDownloadsBubbleModel>(delegate,
+  switch (content_type) {
+    case ContentSettingsType::COOKIES:
+      return std::make_unique<ContentSettingCookiesBubbleModel>(delegate,
                                                                 web_contents);
+    case ContentSettingsType::POPUPS:
+      return std::make_unique<ContentSettingPopupBubbleModel>(delegate,
+                                                              web_contents);
+    case ContentSettingsType::MIXEDSCRIPT:
+      return std::make_unique<ContentSettingMixedScriptBubbleModel>(
+          delegate, web_contents);
+    case ContentSettingsType::PROTOCOL_HANDLERS: {
+      custom_handlers::ProtocolHandlerRegistry* registry =
+          ProtocolHandlerRegistryFactory::GetForBrowserContext(
+              web_contents->GetBrowserContext());
+      return std::make_unique<ContentSettingRPHBubbleModel>(
+          delegate, web_contents, registry);
+    }
+    case ContentSettingsType::AUTOMATIC_DOWNLOADS:
+      return std::make_unique<ContentSettingDownloadsBubbleModel>(delegate,
+                                                                  web_contents);
+    case ContentSettingsType::ADS:
+      return std::make_unique<ContentSettingSubresourceFilterBubbleModel>(
+          delegate, web_contents);
+    case ContentSettingsType::IMAGES:
+    case ContentSettingsType::JAVASCRIPT:
+    case ContentSettingsType::SOUND:
+    case ContentSettingsType::CLIPBOARD_READ_WRITE:
+    case ContentSettingsType::MIDI_SYSEX:
+    case ContentSettingsType::SENSORS:
+      return std::make_unique<ContentSettingSingleRadioGroup>(
+          delegate, web_contents, content_type);
+    default:
+      NOTREACHED() << "No bubble for the content type "
+                   << static_cast<int32_t>(content_type) << ".";
   }
-  if (content_type == ContentSettingsType::ADS) {
-    return std::make_unique<ContentSettingSubresourceFilterBubbleModel>(
-        delegate, web_contents);
-  }
-  if (content_type == ContentSettingsType::IMAGES ||
-      content_type == ContentSettingsType::JAVASCRIPT ||
-      content_type == ContentSettingsType::SOUND ||
-      content_type == ContentSettingsType::CLIPBOARD_READ_WRITE ||
-      content_type == ContentSettingsType::MIDI_SYSEX ||
-      content_type == ContentSettingsType::SENSORS) {
-    return std::make_unique<ContentSettingSingleRadioGroup>(
-        delegate, web_contents, content_type);
-  }
-  NOTREACHED() << "No bubble for the content type "
-               << static_cast<int32_t>(content_type) << ".";
   return nullptr;
 }
 
@@ -1824,29 +1822,29 @@ ContentSettingBubbleModel::ContentSettingBubbleModel(Delegate* delegate,
   DCHECK(web_contents_);
 }
 
-ContentSettingBubbleModel::~ContentSettingBubbleModel() {}
+ContentSettingBubbleModel::~ContentSettingBubbleModel() = default;
 
-ContentSettingBubbleModel::RadioGroup::RadioGroup() : default_item(0) {}
+ContentSettingBubbleModel::RadioGroup::RadioGroup() = default;
 
-ContentSettingBubbleModel::RadioGroup::~RadioGroup() {}
+ContentSettingBubbleModel::RadioGroup::~RadioGroup() = default;
 
-ContentSettingBubbleModel::DomainList::DomainList() {}
+ContentSettingBubbleModel::DomainList::DomainList() = default;
 
 ContentSettingBubbleModel::DomainList::DomainList(const DomainList& other) =
     default;
 
-ContentSettingBubbleModel::DomainList::~DomainList() {}
+ContentSettingBubbleModel::DomainList::~DomainList() = default;
 
-ContentSettingBubbleModel::MediaMenu::MediaMenu() : disabled(false) {}
+ContentSettingBubbleModel::MediaMenu::MediaMenu() = default;
 
 ContentSettingBubbleModel::MediaMenu::MediaMenu(const MediaMenu& other) =
     default;
 
-ContentSettingBubbleModel::MediaMenu::~MediaMenu() {}
+ContentSettingBubbleModel::MediaMenu::~MediaMenu() = default;
 
-ContentSettingBubbleModel::BubbleContent::BubbleContent() {}
+ContentSettingBubbleModel::BubbleContent::BubbleContent() = default;
 
-ContentSettingBubbleModel::BubbleContent::~BubbleContent() {}
+ContentSettingBubbleModel::BubbleContent::~BubbleContent() = default;
 
 ContentSettingSimpleBubbleModel*
 ContentSettingBubbleModel::AsSimpleBubbleModel() {

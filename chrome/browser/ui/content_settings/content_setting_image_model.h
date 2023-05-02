@@ -56,7 +56,7 @@ class ContentSettingImageModel {
   ContentSettingImageModel(const ContentSettingImageModel&) = delete;
   ContentSettingImageModel& operator=(const ContentSettingImageModel&) = delete;
 
-  virtual ~ContentSettingImageModel() {}
+  virtual ~ContentSettingImageModel() = default;
 
   // Generates a vector of all image models to be used within one window.
   static std::vector<std::unique_ptr<ContentSettingImageModel>>
