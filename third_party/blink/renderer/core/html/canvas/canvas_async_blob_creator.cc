@@ -228,6 +228,7 @@ void CanvasAsyncBlobCreator::Dispose() {
   callback_.Clear();
   script_promise_resolver_.Clear();
   image_ = nullptr;
+  encoded_image_.clear();
 }
 
 ImageEncodeOptions* CanvasAsyncBlobCreator::GetImageEncodeOptionsForMimeType(
