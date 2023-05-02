@@ -447,9 +447,9 @@ class MachineLevelUserCloudPolicyManagerTest : public PlatformBrowserTest {
     CloudPolicyStoreObserverStub observer;
 
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-    DMToken browser_dm_token =
-        dm_token.empty() ? DMToken::CreateEmptyTokenForTesting()
-                         : DMToken::CreateValidTokenForTesting(dm_token);
+    DMToken browser_dm_token = dm_token.empty()
+                                   ? DMToken::CreateEmptyToken()
+                                   : DMToken::CreateValidToken(dm_token);
     std::unique_ptr<MachineLevelUserCloudPolicyStore> policy_store =
         MachineLevelUserCloudPolicyStore::Create(
             browser_dm_token, client_id, base::FilePath(), user_data_dir,
